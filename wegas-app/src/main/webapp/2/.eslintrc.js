@@ -36,6 +36,9 @@ module.exports = {
     'react/no-unescaped-entities': 'off',
     'react/prop-types': 'off',
     'react/no-unsafe': ['error', { checkAliases: true }],
+    // eslint@6.8.0
+    '@typescript-eslint/ban-ts-ignore': 'off',
+    '@typescript-eslint/no-inferrable-types': 'off',
   },
   overrides: [
     {

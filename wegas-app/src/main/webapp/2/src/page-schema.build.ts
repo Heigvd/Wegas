@@ -1,7 +1,29 @@
 /*
 This files runs on node.
 */
-import * as ts from 'typescript';
+import {
+  Symbol,
+  Node,
+  CompilerOptions,
+  ScriptTarget,
+  ModuleKind,
+  JsxEmit,
+  ModuleResolutionKind,
+  createProgram,
+  Type,
+  forEachChild,
+  SignatureKind,
+  isExportAssignment,
+  getCombinedModifierFlags,
+  Declaration,
+  ModifierFlags,
+  TypeFlags,
+  StringLiteralType,
+  NumberLiteralType,
+  IndexKind,
+  SymbolFlags,
+  displayPartsToString,
+} from 'typescript';
 import * as globby from 'globby';
 
 const DEBUG = false;
@@ -10,15 +32,15 @@ function log(...t: unknown[]) {
     console.log(...t);
   }
 }
-const compilerOptions: ts.CompilerOptions = {
-  target: ts.ScriptTarget.ES2017,
-  module: ts.ModuleKind.ESNext,
+const compilerOptions: CompilerOptions = {
+  target: ScriptTarget.ES2017,
+  module: ModuleKind.ESNext,
   allowJs: false,
   checkJs: false,
-  jsx: ts.JsxEmit.React,
+  jsx: JsxEmit.React,
   noEmit: true,
   allowUnusedLabels: true,
-  moduleResolution: ts.ModuleResolutionKind.NodeJs,
+  moduleResolution: ModuleResolutionKind.NodeJs,
 };
 type PrimitiveType = number | boolean | string | null;
 interface MonacoSnippet {
@@ -64,7 +86,7 @@ interface Definition {
   defaultSnippets?: MonacoSnippet[];
 }
 /**
- * Special case WegasComponent, to be replaced by our Components.
+ * Special case WegasComponent, to be replaced by our Componen
  */
 const OUR_ELEMENT_TYPE_NAME = 'WegasComponent';
 
@@ -72,12 +94,12 @@ export default function() {
   const files: string[] = globby.sync('src/Components/AutoImport/**/*.tsx');
   // log(files);
   const lib = globby.sync('types/**/*.d.ts');
-  const program = ts.createProgram(files.concat(lib), compilerOptions);
+  const program = createProgram(files.concat(lib), compilerOptions);
   const checker = program.getTypeChecker();
-  const symbol_cache = new Map<ts.Symbol, Definition>();
+  const symbol_cache = new Map<Symbol, Definition>();
   // const t_cache = new WeakSet();
 
-  const types: { type: ts.Type | null; fileName: string }[] = [];
+  const types: { type: Type | null; fileName: string }[] = [];
   // log(files.concat(lib));
   for (const sourceFile of program.getSourceFiles()) {
     sourceFile.getSourceFile().fileName;
@@ -85,7 +107,7 @@ export default function() {
       !sourceFile.isDeclarationFile &&
       files.some(f => sourceFile.fileName.indexOf(f) > -1)
     ) {
-      ts.forEachChild(sourceFile, visit);
+      forEachChild(sourceFile, visit);
     }
   }
   const schema = oneOf(types);
@@ -97,7 +119,7 @@ export default function() {
   };
   // log(JSON.stringify(oneOf(types), undefined, 2));
 
-  function extractProps(node: ts.Node) {
+  function extractProps(node: Node) {
     const typeName = node
       .getSourceFile()
       .fileName.replace(/src\/Components\/AutoImport\/(.*).tsx?/, '$1');
@@ -115,7 +137,7 @@ export default function() {
         });
       }
     }
-    const sign = checker.getSignaturesOfType(t, ts.SignatureKind.Call);
+    const sign = checker.getSignaturesOfType(t, SignatureKind.Call);
     sign.forEach(s => {
       types.push({
         type: s.parameters[0]
@@ -125,32 +147,29 @@ export default function() {
       });
     });
   }
-  function visit(node: ts.Node) {
+  function visit(node: Node) {
     // log(node.getSourceFile().fileName);
     if (isNodeDefaultExported(node)) {
       extractProps(node);
       return;
     }
-    if (ts.isExportAssignment(node)) {
+    if (isExportAssignment(node)) {
       extractProps(node.expression);
       return;
     }
   }
 
-  function isNodeDefaultExported(node: ts.Node): boolean {
-    const modifier = ts.getCombinedModifierFlags(node as ts.Declaration);
+  function isNodeDefaultExported(node: Node): boolean {
+    const modifier = getCombinedModifierFlags(node as Declaration);
     return (
-      (modifier & ts.ModifierFlags.ExportDefault) ===
-      ts.ModifierFlags.ExportDefault
+      (modifier & ModifierFlags.ExportDefault) === ModifierFlags.ExportDefault
     );
   }
 
   /*
   Types to Schema
   */
-  function oneOf(
-    types: { type: ts.Type | null; fileName: string }[],
-  ): Definition {
+  function oneOf(types: { type: Type | null; fileName: string }[]): Definition {
     const defs: { [k: string]: Definition } = {};
     log(types[0].type);
     defs.components = {
@@ -232,10 +251,10 @@ export default function() {
     }
     return root;
   }
-  function symbolUniqueName(symbol: ts.Symbol) {
+  function symbolUniqueName(symbol: Symbol) {
     return checker.getFullyQualifiedName(symbol) + (symbol as any).id;
   }
-  function serialize(symbol: ts.Symbol | undefined, ref: ts.Type): Definition {
+  function serialize(symbol: Symbol | undefined, ref: Type): Definition {
     if (symbol === undefined) {
       return serializeType(ref, true);
     }
@@ -261,31 +280,28 @@ export default function() {
     return { $ref: `#/definitions/${name}` };
   }
 
-  function serializeType(typ: ts.Type, skipSymbol?: true): Definition {
-    // log('Type', checker.typeToString(typ), ts.TypeFlags[typ.getFlags()]);
+  function serializeType(typ: Type, skipSymbol?: true): Definition {
+    // log('Type', checker.typeToString(typ), TypeFlags[typ.getFlags()]);
 
     if (
       typ.getFlags() &
-      (ts.TypeFlags.Number |
-        ts.TypeFlags.String |
-        ts.TypeFlags.Boolean |
-        ts.TypeFlags.Null)
+      (TypeFlags.Number | TypeFlags.String | TypeFlags.Boolean | TypeFlags.Null)
     ) {
       return { ...doc(typ.getSymbol()), type: checker.typeToString(typ) };
     }
-    if (typ.getFlags() & ts.TypeFlags.StringOrNumberLiteral) {
+    if (typ.getFlags() & TypeFlags.StringOrNumberLiteral) {
       return {
         ...doc(typ.getSymbol()),
-        enum: [(typ as ts.StringLiteralType | ts.NumberLiteralType).value],
+        enum: [(typ as StringLiteralType | NumberLiteralType).value],
       };
     }
-    if (typ.getFlags() & ts.TypeFlags.BooleanLiteral) {
+    if (typ.getFlags() & TypeFlags.BooleanLiteral) {
       return {
         ...doc(typ.getSymbol()),
         enum: [(typ as any).intrinsicName === 'true'],
       };
     }
-    if (typ.getFlags() & ts.TypeFlags.Any) {
+    if (typ.getFlags() & TypeFlags.Any) {
       return doc(typ.getSymbol());
     }
     if (typ.isUnion()) {
@@ -310,7 +326,7 @@ export default function() {
     //   }
     // }
     // t_cache.add(typ);
-    const arrayType = checker.getIndexTypeOfType(typ, ts.IndexKind.Number);
+    const arrayType = checker.getIndexTypeOfType(typ, IndexKind.Number);
     if (arrayType) {
       const sym = arrayType.getSymbol();
       if (sym) {
@@ -343,7 +359,7 @@ export default function() {
         required,
         additionalProperties: false,
         properties: props.reduce((all, p) => {
-          if (!(p.getFlags() & ts.SymbolFlags.Optional)) {
+          if (!(p.getFlags() & SymbolFlags.Optional)) {
             required.push(p.getName());
           }
           const decl = p.declarations ? p.declarations[0] : undefined;
@@ -359,13 +375,13 @@ export default function() {
     return {};
   }
 
-  function doc(symbol?: ts.Symbol): Definition {
+  function doc(symbol?: Symbol): Definition {
     if (symbol === undefined) {
       return {};
     }
     return {
       description:
-        ts.displayPartsToString(symbol.getDocumentationComment(checker)) ||
+        displayPartsToString(symbol.getDocumentationComment(checker)) ||
         undefined,
     };
   }

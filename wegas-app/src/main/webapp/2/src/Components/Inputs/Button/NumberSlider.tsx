@@ -1,8 +1,5 @@
 import * as React from 'react';
-// import Slider from 'react-input-slider';
 import { Interpolation, css } from 'emotion';
-
-// @ts-ignore
 import Slider from 'react-input-slider';
 import { debounceAction } from '../../../Helper/debounceAction';
 import { textCenter } from '../../../css/classes';
@@ -11,30 +8,6 @@ const valueDisplayStyle = css({
   textAlign: 'center',
   padding: '5px',
 });
-
-interface SliderProps {
-  axis?: 'x' | 'y' | 'xy';
-  x?: number;
-  xmax?: number;
-  xmin?: number;
-  y?: number;
-  ymax?: number;
-  ymin?: number;
-  xstep?: number;
-  ystep?: number;
-  onChange?: (values: { x: number; y: number }) => void;
-  onDragStart?: (e: MouseEvent) => void;
-  onDragEnd?: (e: MouseEvent) => void;
-  disabled?: boolean;
-  styles?: {
-    track?: Interpolation;
-    active?: Interpolation;
-    thumb?: Interpolation;
-    disabled?: Interpolation;
-  };
-}
-
-const TypedSlider = Slider as (props: SliderProps) => JSX.Element;
 
 export const displayModes = ['None', 'External', 'Internal', 'Both'] as const;
 export type DisplayMode =
@@ -160,7 +133,7 @@ export function NumberSlider({
   return (
     <div className={textCenter}>
       <Info />
-      <TypedSlider
+      <Slider
         styles={{
           track: desinterpolate(trackStyle),
           active: desinterpolate(activePartStyle),
