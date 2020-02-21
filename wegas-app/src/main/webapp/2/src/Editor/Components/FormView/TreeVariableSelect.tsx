@@ -8,13 +8,13 @@ import { VariableDescriptor, GameModel } from '../../../data/selectors';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { CommonViewContainer, CommonView } from './commonView';
 import { LabeledView, Labeled } from './labeled';
-import { inputStyle } from './String';
 import { css } from 'emotion';
 import { IconButton } from '../../../Components/Inputs/IconButton';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { toScriptableClassName } from '../../../Helper/wegasClassNames';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 import { scriptEditStyle } from './Script/Script';
+import { inputStyle } from '../../../Components/Inputs/inputStyles';
 
 const treeCss = css({
   padding: '5px 10px',

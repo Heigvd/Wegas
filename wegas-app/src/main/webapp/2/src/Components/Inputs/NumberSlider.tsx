@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Interpolation, css } from 'emotion';
 import Slider from 'react-input-slider';
 import { debounceAction } from '../../Helper/debounceAction';
-import { textCenter } from '../../css/classes';
+import { textCenter, expand } from '../../css/classes';
 
 const valueDisplayStyle = css({
   textAlign: 'center',
@@ -137,7 +137,9 @@ export function NumberSlider({
         styles={{
           track: desinterpolate(trackStyle),
           active: desinterpolate(activePartStyle),
-          thumb: desinterpolate(handleStyle),
+          thumb: handleStyle
+            ? desinterpolate(handleStyle)
+            : css({ cursor: 'pointer' }),
           disabled: desinterpolate(disabledStyle),
         }}
         axis="x"

@@ -4,9 +4,9 @@ import { CommonViewContainer, CommonView } from './commonView';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { Labeled, LabeledView } from './labeled';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
-import { inputDefaultCSS } from './String';
 import { flex, flexColumn } from '../../../css/classes';
 import { ListDescriptorChild } from '../../editionConfig';
+import { inputDefaultCSS } from '../../../Components/Inputs/inputStyles';
 
 export interface Choice {
   value: {};

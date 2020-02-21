@@ -8,6 +8,7 @@ const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 const smp = new SpeedMeasurePlugin();
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin;
+const nodeExternals = require('webpack-node-externals');
 
 const PROD = process.env.NODE_ENV === 'production';
 const PREPROD = process.env.NODE_ENV === 'pre-production';
@@ -35,6 +36,8 @@ const modules = {
     fs: 'empty',
     module: 'empty',
   },
+  // target: 'node', // in order to ignore built-in modules like path, fs, etc.
+  // externals: [nodeExternals()], // in order to ignore all modules in node_modules folder
   // stats: 'verbose',
   devtool: PROD || PREPROD ? 'source-map' : 'inline-source-map',
   entry: {
@@ -121,7 +124,10 @@ const modules = {
   },
   devServer: {
     port: PREPROD ? 4004 : 3003,
-    overlay: true,
+    overlay: {
+      warnings: false,
+      errors: true,
+    },
     publicPath: '/Wegas/2/dist/',
     proxy: {
       '/Wegas': {
