@@ -29,7 +29,7 @@ function Example({
 3. Finaly you must register the component with :
    - a type name
    - an icon
-   - a shema
+   - a schema
    - the Wegas entities that can be used with the component (in case you drag and drop entity on the page)
    - the component default props when created from an entity
 4. Code it as the following example :
@@ -40,7 +40,7 @@ registerComponent(
     /* your component */ Example,
     /* component type */ 'Example',
     /* component icon in palette */ 'ambulance',
-    /* shema in component edition form */
+    /* schema in component edition form */
     {
       exampleProp1: schemaProps.scriptVariable('Variable', true, [
         'StringDescriptor',
@@ -58,7 +58,7 @@ registerComponent(
 );
 ```
 
-5. The `schemaProps` object has been created to ease the shema creation. Don't forget to specify the required argument especially if the prop is optional (required is true by default)
+5. The `schemaProps` object has been created to ease the schema creation. Don't forget to specify the required argument especially if the prop is optional (required is true by default)
 
 ## Important notice
 

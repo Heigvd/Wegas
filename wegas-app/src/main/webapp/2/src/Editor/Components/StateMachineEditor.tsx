@@ -9,15 +9,27 @@ import { entityIs } from '../../data/entities';
 import { Actions } from '../../data';
 import { Toolbar } from '../../Components/Toolbar';
 import { FontAwesome } from './Views/FontAwesome';
-import { getInstance } from '../../data/methods/VariableDescriptorMethods';
+import {
+  getInstance,
+  editorLabel,
+} from '../../data/methods/VariableDescriptorMethods';
 import { themeVar } from '../../Components/Theme';
 import { EditorAction } from '../../data/Reducer/globalState';
 import { State as RState } from '../../data/Reducer/reducers';
 import { wlog } from '../../Helper/wegaslog';
 import { ComponentWithForm } from './FormView/ComponentWithForm';
 import { store } from '../../data/store';
-import { forceScroll, grow } from '../../css/classes';
+import {
+  forceScroll,
+  grow,
+  flex,
+  relative,
+  expand,
+  showOverflow,
+} from '../../css/classes';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
+import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
+import { createTranslatableContent } from './FormView/translatable';
 
 const editorStyle = css({
   position: 'relative',
@@ -112,20 +124,22 @@ const JS_PLUMB_OPTIONS: Defaults = {
 };
 
 interface StateMachineEditorProps {
-  stateMachine: IFSMDescriptor;
+  stateMachine: IFSMDescriptor | IDialogueDescriptor;
   stateMachineInstance: IFSMInstance;
   localDispatch?: StoreDispatch;
   search: RState['global']['search'];
 }
 interface StateMachineEditorState {
   plumb?: jsPlumbInstance;
-  stateMachine: IFSMDescriptor;
+  stateMachine: IFSMDescriptor | IDialogueDescriptor;
   oldProps: StateMachineEditorProps;
 }
 class StateMachineEditor extends React.Component<
   StateMachineEditorProps,
   StateMachineEditorState
 > {
+  static contextType = languagesCTX;
+
   static getDerivedStateFromProps(
     nextProps: StateMachineEditorProps,
     { oldProps }: StateMachineEditorState,
@@ -157,14 +171,16 @@ class StateMachineEditor extends React.Component<
       }),
     );
   };
-  createTransition = ({ from, to }: { from: number; to: number }) => {
-    this.setState(
-      produce((state: StateMachineEditorState) => {
-        const { states } = state.stateMachine;
-        states[from].transitions.push({
+
+  createTransition(
+    stateMachine: IAbstractStateMachineDescriptor,
+    nextStateId: number,
+  ): ITransition | IDialogueTransition {
+    return entityIs(stateMachine, 'FSMDescriptor', true)
+      ? {
           '@class': 'Transition',
           label: '',
-          nextStateId: to,
+          nextStateId,
           triggerCondition: {
             '@class': 'Script',
             language: 'JavaScript',
@@ -177,7 +193,33 @@ class StateMachineEditor extends React.Component<
           },
           index: 0,
           version: 0,
-        });
+        }
+      : {
+          '@class': 'DialogueTransition',
+          nextStateId,
+          triggerCondition: {
+            '@class': 'Script',
+            language: 'JavaScript',
+            content: '',
+          },
+          preStateImpact: {
+            '@class': 'Script',
+            language: 'JavaScript',
+            content: '',
+          },
+          index: 0,
+          version: 0,
+          actionText: createTranslatableContent(this.context.lang),
+        };
+  }
+
+  produceTransition = ({ from, to }: { from: number; to: number }) => {
+    this.setState(
+      produce((state: StateMachineEditorState) => {
+        const { states } = state.stateMachine;
+        (states[from].transitions as IAbstractTransition[]).push(
+          this.createTransition(state.stateMachine, to),
+        );
       }),
     );
   };
@@ -188,23 +230,29 @@ class StateMachineEditor extends React.Component<
       newSourceId: string;
       newTargetId: string;
     },
-    transition: ITransition,
+    transition: ITransition | IDialogueTransition,
   ) => {
     this.setState(
       produce((state: StateMachineEditorState) => {
         const { states } = state.stateMachine;
         if (info.originalSourceId === info.newSourceId) {
-          const tr = states[Number(info.originalSourceId)].transitions.find(
+          const tr = (states[Number(info.originalSourceId)]
+            .transitions as IAbstractTransition[]).find(
             t => t.id === transition.id,
           );
           if (tr != null) {
             tr.nextStateId = Number(info.newTargetId);
           }
         } else {
-          states[Number(info.originalSourceId)].transitions = states[
+          (states[
             Number(info.originalSourceId)
-          ].transitions.filter(t => t.id !== transition.id);
-          states[Number(info.newSourceId)].transitions.push({
+          ] as IAbstractState).transitions = (states[
+            Number(info.originalSourceId)
+          ].transitions as IAbstractTransition[]).filter(
+            t => t.id !== transition.id,
+          );
+          (states[Number(info.newSourceId)]
+            .transitions as IAbstractTransition[]).push({
             ...transition,
           });
         }
@@ -218,7 +266,8 @@ class StateMachineEditor extends React.Component<
         delete states[id];
         // delete transitions pointing to deleted state
         for (const s in states) {
-          states[s].transitions = states[s].transitions.filter(
+          (states[s] as IAbstractState).transitions = (states[s]
+            .transitions as IAbstractTransition[]).filter(
             t => t.nextStateId !== id,
           );
         }
@@ -235,7 +284,47 @@ class StateMachineEditor extends React.Component<
       }),
     );
   };
-  createState = (state: IState, transitionSource?: number) => {
+
+  createState = (
+    position: { left: number; top: number },
+    transitionSource?: number,
+  ) => {
+    const { lang } = this.context;
+    const state: IState | IDialogueState = entityIs(
+      this.props.stateMachine,
+      'FSMDescriptor',
+    )
+      ? {
+          '@class': 'State',
+          version: 0,
+          onEnterEvent: {
+            '@class': 'Script',
+            content: '',
+            language: 'JavaScript',
+          },
+          editorPosition: {
+            x: position.left >= 10 ? position.left : 10,
+            y: position.top >= 10 ? position.top : 10,
+          },
+          label: '',
+          transitions: [],
+        }
+      : {
+          '@class': 'DialogueState',
+          version: 0,
+          onEnterEvent: {
+            '@class': 'Script',
+            content: '',
+            language: 'JavaScript',
+          },
+          editorPosition: {
+            x: position.left >= 10 ? position.left : 10,
+            y: position.top >= 10 ? position.top : 10,
+          },
+          text: createTranslatableContent(lang),
+          transitions: [],
+        };
+
     this.setState(
       produce((store: StateMachineEditorState) => {
         const nextId =
@@ -245,34 +334,26 @@ class StateMachineEditor extends React.Component<
           ) + 1;
         store.stateMachine.states[nextId] = state;
         if (transitionSource != undefined) {
-          store.stateMachine.states[transitionSource].transitions.push({
-            '@class': 'Transition',
-            label: '',
-            nextStateId: nextId,
-            triggerCondition: {
-              '@class': 'Script',
-              language: 'JavaScript',
-              content: '',
-            },
-            preStateImpact: {
-              '@class': 'Script',
-              language: 'JavaScript',
-              content: '',
-            },
-            index: 0,
-            version: 0,
-          });
+          (store.stateMachine.states[transitionSource]
+            .transitions as ISAbstractTransition[]).push(
+            this.createTransition(store.stateMachine, nextId),
+          );
         }
         return;
       }),
     );
   };
   editState = (e: ModifierKeysEvent, id: number) => {
-    const actions: EditorAction<IFSMDescriptor>['more'] = {};
+    const actions: EditorAction<
+      IFSMDescriptor | IDialogueDescriptor
+    >['more'] = {};
     if (id !== this.props.stateMachine.defaultInstance.currentStateId) {
       actions.delete = {
         label: 'delete',
-        action: (_entity: IFSMDescriptor, path?: (string | number)[]) => {
+        action: (
+          _entity: IFSMDescriptor | IDialogueDescriptor,
+          path?: (string | number)[],
+        ) => {
           this.deleteState(Number(path![1]));
         },
       };
@@ -335,7 +416,7 @@ class StateMachineEditor extends React.Component<
         if (ev !== undefined) {
           // let the data create it!
           plumb.deleteConnection(info.connection);
-          this.createTransition({
+          this.produceTransition({
             from: Number(info.sourceId),
             to: Number(info.targetId),
           });
@@ -357,34 +438,21 @@ class StateMachineEditor extends React.Component<
       });
       plumb.bind('connectionMoved', (info, ev) => {
         if (ev !== undefined) {
-          const transition: ITransition = (info.connection as any).getParameter(
+          const transition:
+            | ITransition
+            | IDialogueTransition = (info.connection as any).getParameter(
             'transition',
           );
           this.moveTransition(info, transition);
         }
       });
-      plumb.bind('connectionAborted', async connection => {
-        const left = (connection.target as HTMLElement).style.left;
-        const top = (connection.target as HTMLElement).style.top;
-        const src = connection.sourceId;
-        this.createState(
-          {
-            '@class': 'State',
-            version: 0,
-            onEnterEvent: {
-              '@class': 'Script',
-              content: '',
-              language: 'JavaScript',
-            },
-            editorPosition: {
-              x: parseInt(left || '0', 10),
-              y: parseInt(top || '0', 10),
-            },
-            label: '',
-            transitions: [],
-          },
-          Number(src),
-        );
+      plumb.bind('connectionAborted', connection => {
+        const str_left = (connection.target as HTMLElement).style.left;
+        const str_top = (connection.target as HTMLElement).style.top;
+        const left = parseInt(str_left ? str_left : "0");
+        const top = parseInt(str_top ? str_top : "0");
+        const src = Number(connection.sourceId);
+        this.createState({ left, top }, src);
       });
     });
   }
@@ -395,7 +463,9 @@ class StateMachineEditor extends React.Component<
   }
   componentDidUpdate(
     _prevProps: StateMachineEditorProps,
-    { stateMachine: oldStateMachine }: { stateMachine: IFSMDescriptor },
+    {
+      stateMachine: oldStateMachine,
+    }: { stateMachine: IFSMDescriptor | IDialogueDescriptor },
   ) {
     requestAnimationFrame(() => {
       if (this.state.plumb != null) {
@@ -422,36 +492,41 @@ class StateMachineEditor extends React.Component<
       plumb.setSuspendDrawing(true);
     }
     return (
-      <div
-        ref={n => {
-          this.container = n;
-        }}
-        className={editorStyle}
-      >
-        {plumb != null &&
-          Object.keys(stateMachine.states).map(k => {
-            const key = Number(k);
-            return (
-              <State
-                editState={this.editState}
-                state={stateMachine.states[key]}
-                currentState={
-                  Number(key) === stateMachineInstance.currentStateId
-                }
-                id={key}
-                initialState={
-                  stateMachine.defaultInstance.currentStateId === key
-                }
-                key={key}
-                plumb={plumb}
-                deleteState={this.deleteState}
-                moveState={this.moveState}
-                editTransition={this.editTransition}
-                search={this.props.search}
-              />
-            );
-          })}
-      </div>
+      <Toolbar>
+        <Toolbar.Header>{editorLabel(stateMachine)}</Toolbar.Header>
+        <Toolbar.Content className={cx(flex, relative, showOverflow)}>
+          <div
+            ref={n => {
+              this.container = n;
+            }}
+            className={cx(editorStyle, expand)}
+          >
+            {plumb != null &&
+              Object.keys(stateMachine.states).map(k => {
+                const key = Number(k);
+                return (
+                  <State
+                    editState={this.editState}
+                    state={stateMachine.states[key]}
+                    currentState={
+                      Number(key) === stateMachineInstance.currentStateId
+                    }
+                    id={key}
+                    initialState={
+                      stateMachine.defaultInstance.currentStateId === key
+                    }
+                    key={key}
+                    plumb={plumb}
+                    deleteState={this.deleteState}
+                    moveState={this.moveState}
+                    editTransition={this.editTransition}
+                    search={this.props.search}
+                  />
+                );
+              })}
+          </div>
+        </Toolbar.Content>
+      </Toolbar>
     );
   }
 }
@@ -461,17 +536,20 @@ export function ConnectedStateMachineEditor({
 }: {
   localDispatch?: StateMachineEditorProps['localDispatch'];
 }) {
-  const stateMachine = React.useRef<IFSMDescriptor>();
+  const stateMachine = React.useRef<IFSMDescriptor | IDialogueDescriptor>();
   const globalState = useStore(s => {
     if (
       s.global.editing &&
       (s.global.editing.type === 'VariableFSM' ||
+        // The following condition seems stupid, need to be tested ans documented
         s.global.editing.type === 'Variable')
     ) {
-      stateMachine.current = s.global.editing.entity as IFSMDescriptor;
-      const lastFSM = VariableDescriptor.select(
-        s.global.editing.entity.id,
-      ) as IFSMDescriptor;
+      stateMachine.current = s.global.editing.entity as
+        | IFSMDescriptor
+        | IDialogueDescriptor;
+      const lastFSM = VariableDescriptor.select(s.global.editing.entity.id) as
+        | IFSMDescriptor
+        | IDialogueDescriptor;
       if (shallowDifferent(stateMachine.current, lastFSM))
         stateMachine.current = lastFSM;
     }
@@ -479,8 +557,8 @@ export function ConnectedStateMachineEditor({
       ? getInstance(stateMachine.current)
       : undefined;
     if (
-      entityIs<IFSMDescriptor>(stateMachine.current, 'FSMDescriptor') &&
-      entityIs<IFSMInstance>(instance, 'FSMInstance')
+      entityIs(stateMachine.current, 'AbstractStateMachineDescriptor', true) &&
+      entityIs(instance, 'FSMInstance', true)
     ) {
       return {
         descriptor: stateMachine.current,
@@ -534,8 +612,17 @@ const sourceStyle = css({
     pointerEvents: 'none',
   },
 });
+
+function getValue(state: IState | IDialogueState, lang: string): string {
+  return entityIs(state, 'State')
+    ? state.label
+    : state.text.translations[lang]
+    ? state.text.translations[lang].translation
+    : '';
+}
+
 class State extends React.Component<{
-  state: IState;
+  state: IState | IDialogueState;
   id: number;
   initialState: boolean;
   plumb: jsPlumbInstance;
@@ -546,10 +633,12 @@ class State extends React.Component<{
   editTransition: (
     e: ModifierKeysEvent,
     path: [number, number],
-    transition: ITransition,
+    transition: ITransition | IDialogueTransition,
   ) => void;
   search: RState['global']['search'];
 }> {
+  static contextType = languagesCTX;
+
   container: Element | null = null;
   componentDidMount() {
     const { plumb } = this.props;
@@ -580,9 +669,10 @@ class State extends React.Component<{
   onClickEdit = (e: ModifierKeysEvent) =>
     this.props.editState(e, this.props.id);
   isBeingSearched = () => {
-    const { label, onEnterEvent } = this.props.state;
+    const value = getValue(this.props.state, this.context.lang);
+    const { onEnterEvent } = this.props.state;
     const searched =
-      (label ? label : '') + (onEnterEvent ? onEnterEvent.content : '');
+      (value ? value : '') + (onEnterEvent ? onEnterEvent.content : '');
     return searchWithState(this.props.search, searched);
   };
   render() {
@@ -608,7 +698,9 @@ class State extends React.Component<{
         }}
       >
         <Toolbar vertical>
-          <Toolbar.Content className="content">{state.label}</Toolbar.Content>
+          <Toolbar.Content className="content">
+            {getValue(this.props.state, this.context.lang)}
+          </Toolbar.Content>
           <Toolbar.Header>
             <IconButton
               icon="edit"
@@ -625,11 +717,11 @@ class State extends React.Component<{
             )}
           </Toolbar.Header>
         </Toolbar>
-        {state.transitions.map((t, i) => (
+        {(state.transitions as IAbstractTransition[]).map((t, i) => (
           <Transition
             key={`${this.props.id}-${t.nextStateId}-${t.id}`}
             plumb={this.props.plumb}
-            transition={t}
+            transition={t as ITransition | IDialogueTransition}
             position={i}
             parent={this.props.id}
             editTransition={this.props.editTransition}
@@ -642,14 +734,14 @@ class State extends React.Component<{
 }
 
 class Transition extends React.Component<{
-  transition: ITransition;
+  transition: ITransition | IDialogueTransition;
   plumb: jsPlumbInstance;
   parent: number;
   position: number;
   editTransition: (
     e: ModifierKeysEvent,
     path: [number, number],
-    transition: ITransition,
+    transition: ITransition | IDialogueTransition,
   ) => void;
   search: RState['global']['search'];
 }> {
@@ -669,17 +761,19 @@ class Transition extends React.Component<{
       target: String(tgt),
       ...(src === tgt ? ({ connector: ['StateMachine'] } as any) : undefined),
     });
-    (this.connection as any).bind(
-      'click',
-      (connection: any, e: ModifierKeysEvent) => {
-        this.props.editTransition(
-          e,
-          [this.props.parent, this.props.position],
-          connection.getParameter('transition'),
-        );
-      },
-    );
-    this.updateData();
+    if (this.connection) {
+      (this.connection as any).bind(
+        'click',
+        (connection: any, e: ModifierKeysEvent) => {
+          this.props.editTransition(
+            e,
+            [this.props.parent, this.props.position],
+            connection.getParameter('transition'),
+          );
+        },
+      );
+      this.updateData();
+    }
   }
   componentDidUpdate() {
     this.updateData();
@@ -693,14 +787,16 @@ class Transition extends React.Component<{
       }
   }
   updateData = () => {
-    const {triggerCondition, label, preStateImpact } = this.props.transition;
+    const {triggerCondition, preStateImpact } = this.props.transition;
 
     try {
       this.connection!.setParameter('transition', this.props.transition);
       this.connection!.setParameter('transitionIndex', this.props.position);
-      this.connection!.setLabel(this.buildLabel(label, 
+      if(entityIs(this.props.transition, "Transition")){
+        this.connection!.setLabel(this.buildLabel(this.props.transition.label, 
         triggerCondition ? triggerCondition.content : '', 
         preStateImpact ? preStateImpact.content : ''));
+      }
 
       // "(this.connection! as any)" is compulsory since jsPlumb is not fully implemented for TS
       if (this.isBeingSearched()) {

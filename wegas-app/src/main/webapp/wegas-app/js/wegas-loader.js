@@ -965,8 +965,8 @@ YUI().use(function(Y) {
             },
             "wegas-accounting-balance": {
                 //path: 'js/wegas-accounting-balance-min.js',
-                requires: ["wegas-accounting-css"],
-                ws_provides: "BalanceSheet"
+                requires: ["wegas-accounting-css", "wegas-template"],
+                ws_provides: ["BalanceSheet", "BalanceSheetWrapper"]
             }
         }
     });
@@ -1146,7 +1146,7 @@ YUI().use(function(Y) {
             },
             tinymce: {
                 path: "tinymce/tinymce.min.js"
-                //fullpath: "//unpkg.com/tinymce@4.9.5/tinymce.js"
+                    //fullpath: "//unpkg.com/tinymce@4.9.5/tinymce.js"
             },
             excanvas: {
                 path: "excanvas/excanvas.compiled.js"

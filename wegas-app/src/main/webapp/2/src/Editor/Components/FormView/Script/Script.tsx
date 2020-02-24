@@ -9,13 +9,27 @@ import { store } from '../../../../data/store';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
 import { WyswygScriptEditor } from './WyswygScriptEditor';
-import { Statement, program } from '@babel/types';
+import {
+  Statement,
+  program,
+  BinaryExpression,
+  isBooleanLiteral,
+  BooleanLiteral,
+  isCallExpression,
+  Expression,
+  isExpressionStatement,
+  isLogicalExpression,
+  expressionStatement,
+  LogicalExpression,
+  logicalExpression,isBinaryExpression,CallExpression,isEmptyStatement
+} from '@babel/types';
 import { parse } from '@babel/parser';
 import generate from '@babel/generator';
-import { debounceAction } from '../../../../Helper/debounceAction';
+import { Menu } from '../../../../Components/Menu';
+import { ResizeHandle } from '../../ResizeHandle';
 
 export const scriptEditStyle = css({
-  height: '5em',
+  // height: '5em',
   marginTop: '0.8em',
   width: '500px',
 });
@@ -29,34 +43,106 @@ export type CodeLanguage =
   | 'JSON'
   | 'PlainText';
 
-export const scriptIsCondition = (
-  mode?: ScriptMode,
-  scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
-) =>
-  mode === 'GET' &&
-  (scriptableClassFilter === undefined ||
-    scriptableClassFilter.includes('boolean'));
+const operators = ['&&', '||'] as const;
 
-export const returnTypes = (
+type Operator = typeof operators[number];
+
+export function isScriptCondition(mode?: ScriptMode) {
+  return mode === 'GET';
+}
+
+export function returnTypes(
   mode?: ScriptMode,
-  scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
-): WegasScriptEditorReturnTypeName[] | undefined =>
-  mode === 'GET'
-    ? ['boolean']
-    : mode === 'SET' && mode === undefined
-    ? ['void']
-    : scriptableClassFilter;
+): WegasScriptEditorReturnTypeName[] | undefined {
+  return isScriptCondition(mode) ? ['boolean'] : undefined;
+}
+
+function conditionGenerator(
+  operator: Operator,
+  expression: Expression,
+  prevStatement: Statement[] = [],
+): Statement[] {
+  if (isLogicalExpression(expression) && expression.operator === operator) {
+    return conditionGenerator(operator, expression.left, [
+      expressionStatement(expression.right),
+      ...prevStatement,
+    ]);
+  } else {
+    return [expressionStatement(expression), ...prevStatement];
+  }
+}
+
+function concatBinaryExpressionsToLogicalExpression(
+  operator: Operator,
+  binaryExpressions: (BinaryExpression | BooleanLiteral | CallExpression)[],
+  index: number = 0,
+): LogicalExpression {
+  if (index === binaryExpressions.length - 2) {
+    return logicalExpression(
+      operator,
+      binaryExpressions[index],
+      binaryExpressions[index + 1],
+    );
+  } else {
+    return logicalExpression(
+      operator,
+      binaryExpressions[index],
+      concatBinaryExpressionsToLogicalExpression(
+        operator,
+        binaryExpressions,
+        index + 1,
+      ),
+    );
+  }
+}
+
+function concatStatementsToCondition(
+  operator: Operator,
+  statements: Statement[],
+): Statement[] {
+  const binaryExpressions: (
+    | BinaryExpression
+    | BooleanLiteral
+    | CallExpression
+  )[] = [];
+  let canBeMerged = true;
+  statements.forEach(s => {
+    if (
+      isExpressionStatement(s) &&
+      (isBinaryExpression(s.expression) ||
+        isBooleanLiteral(s.expression) ||
+        isCallExpression(s.expression))
+    ) {
+      binaryExpressions.push(s.expression);
+    } else {
+      canBeMerged = isEmptyStatement(s);
+    }
+  });
+
+  //binaryExpressions.reverse();
+
+  if (canBeMerged) {
+    if (binaryExpressions.length === 1) {
+      return [expressionStatement(binaryExpressions[0])];
+    } else {
+      const binaryCondition = concatBinaryExpressionsToLogicalExpression(
+        operator,
+        binaryExpressions,
+      );
+      return [expressionStatement(binaryCondition)];
+    }
+  } else {
+    throw Error("Condition's expressions cannot be merged");
+  }
+}
 
 export interface ScriptView {
   mode?: ScriptMode;
-  singleExpression?: boolean;
-  // clientScript?: boolean;
-  scriptableClassFilter?: WegasScriptEditorReturnTypeName[];
 }
 
-interface ScriptProps
+export interface ScriptProps
   extends WidgetProps.BaseProps<LabeledView & CommonView & ScriptView> {
-  value?: string | IScript;
+  value?: string | IScript | undefined;
   context?: IVariableDescriptor<IVariableInstance>;
   onChange: (code: IScript) => void;
 }
@@ -70,42 +156,68 @@ export function Script({
 }: ScriptProps) {
   const [error, setError] = React.useState(errorMessage);
   const [srcMode, setSrcMode] = React.useState(false);
-  const [scriptContent, setScriptContent] = React.useState('');
-  const [expressions, setExpressions] = React.useState<Statement[] | null>(
-    null,
-  );
+  const script = React.useRef('');
+  const [statements, setStatements] = React.useState<Statement[] | null>(null);
+  const [operator, setOperator] = React.useState<Operator>(operators[0]);
 
   const isServerScript = view.mode === 'SET';
 
-  const testScript = React.useCallback(() => {
-    try {
-      store.dispatch(runScript(scriptContent, Player.selectCurrent(), context));
-      setError(undefined);
-    } catch (error) {
-      setError([error.message]);
-    }
-  }, [context, scriptContent]);
+  const testScript = React.useCallback(
+    value => {
+      try {
+        store.dispatch(runScript(value, Player.selectCurrent(), context));
+        setError(undefined);
+      } catch (error) {
+        setError([error.message]);
+      }
+    },
+    [context],
+  );
 
   const onCodeChange = React.useCallback(
     (value: string) => {
-      debounceAction('ScriptEditorOnChange', () => {
-        const cleanValue = scriptIsCondition(
-          view.mode,
-          view.scriptableClassFilter,
-        )
-          ? value.replace(/;/gm, '&&')
-          : value;
+      if (value !== script.current) {
+        script.current = value;
         onChange({
           '@class': 'Script',
           language: 'JavaScript',
-          content: cleanValue,
+          content: value,
         });
-        setScriptContent(() => {
-          return cleanValue;
-        });
-      });
+      }
     },
-    [onChange, view.mode, view.scriptableClassFilter],
+    [onChange],
+  );
+
+  const onStatementsChange = React.useCallback(
+    (statements: Statement[], operator: Operator) => {
+      let returnedProgram = program(statements ? statements : []);
+      if (statements.length > 0 && isScriptCondition(view.mode)) {
+        try {
+          returnedProgram = program(
+            concatStatementsToCondition(operator, statements),
+          );
+        } catch (e) {
+          setError([e.message]);
+        }
+      } else {
+        returnedProgram = program(statements);
+      }
+      onCodeChange(generate(returnedProgram).code);
+    },
+    [onCodeChange, view.mode],
+  );
+
+  const onSelectOperator = React.useCallback(
+    (operator: Operator) => {
+      setOperator(operator);
+      if (!error && !srcMode) {
+        // TODO : Something could be done when in src mode
+        if (statements !== null) {
+          onStatementsChange(statements, operator);
+        }
+      }
+    },
+    [error, onStatementsChange, srcMode, statements],
   );
 
   React.useEffect(() => {
@@ -119,41 +231,45 @@ export function Script({
   }, [error]);
 
   React.useEffect(() => {
-    setScriptContent(
-      value == null ? '' : typeof value === 'string' ? value : value.content,
-    );
+    const newValue =
+      value == null ? '' : typeof value === 'string' ? value : value.content;
+    if (script.current !== newValue) {
+      script.current = newValue;
+    }
   }, [value]);
 
   React.useEffect(() => {
     try {
-      if (scriptContent === '') {
-        setExpressions(null);
+      const newValue =
+        value == null ? '' : typeof value === 'string' ? value : value.content;
+      if (newValue === '') {
+        setStatements(null);
       } else {
-        const newScriptContent = scriptIsCondition(
-          view.mode,
-          view.scriptableClassFilter,
-        )
-          ? scriptContent.replace(/&&/gm, ';')
-          : scriptContent;
-        const newExpressions = parse(newScriptContent, { sourceType: 'script' })
-          .program.body;
-        if (view.singleExpression) {
-          if (newExpressions.length > 1) {
-            throw Error('Too much expressions for a single expression script');
+        let newExpressions = parse(newValue, { sourceType: 'script' }).program
+          .body;
+
+        if (isScriptCondition(view.mode)) {
+          if (newExpressions.length === 1) {
+            const condition = newExpressions[0];
+            if (isExpressionStatement(condition)) {
+              newExpressions = conditionGenerator(
+                operator,
+                condition.expression,
+              );
+            } else {
+              setError(['The script cannot be parsed']);
+            }
+          } else {
+            setError(['The script cannot be parsed as a condition']);
           }
         }
-        setExpressions(newExpressions);
+        setStatements(newExpressions);
       }
       setError(undefined);
     } catch (e) {
       setError([e.message]);
     }
-  }, [
-    scriptContent,
-    view.singleExpression,
-    view.mode,
-    view.scriptableClassFilter,
-  ]);
+  }, [operator, value, view.mode]);
 
   return (
     <CommonViewContainer view={view} errorMessage={error}>
@@ -170,28 +286,35 @@ export function Script({
                 />
               )}
               {isServerScript && (
-                <IconButton icon="play" onClick={testScript} />
+                <IconButton
+                  icon="play"
+                  onClick={() => testScript(script.current)}
+                />
+              )}
+              {isScriptCondition(view.mode) && (
+                <Menu
+                  label={operator}
+                  items={operators.map(o => ({ label: o }))}
+                  onSelect={({ label }) => onSelectOperator(label)}
+                />
               )}
               {srcMode ? (
-                <div className={scriptEditStyle}>
+                <ResizeHandle minSize={200}>
                   <WegasScriptEditor
-                    value={scriptContent}
-                    onBlur={onCodeChange}
+                    value={script.current}
                     onChange={onCodeChange}
                     minimap={false}
                     noGutter={true}
-                    returnType={view.scriptableClassFilter}
+                    returnType={returnTypes(view.mode)}
                   />
-                </div>
+                </ResizeHandle>
               ) : (
                 <WyswygScriptEditor
-                  expressions={expressions}
-                  onChange={e => onCodeChange(generate(program(e)).code)}
+                  expressions={statements}
+                  onChange={e => {
+                    onStatementsChange(e, operator);
+                  }}
                   mode={view.mode}
-                  scriptableClassFilter={returnTypes(
-                    view.mode,
-                    view.scriptableClassFilter,
-                  )}
                 />
               )}
             </>

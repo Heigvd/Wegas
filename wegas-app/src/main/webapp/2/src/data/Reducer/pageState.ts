@@ -2,9 +2,8 @@ import u from 'immer';
 import { ActionType, StateActions, ActionCreator } from '../actions';
 import { PageAPI } from '../../API/pages.api';
 import { Page } from '../selectors';
-import { compare } from 'fast-json-patch';
+import { compare, ReplaceOperation } from 'fast-json-patch';
 import { ThunkResult } from '../store';
-import { ReplaceOperation } from 'fast-json-patch/lib/core';
 import { Reducer } from 'redux';
 
 export interface PageState {
@@ -17,17 +16,14 @@ const pageState: Reducer<Readonly<PageState>> = u(
       case ActionType.PAGE_FETCH:
         return { ...state, ...action.payload.pages };
       case ActionType.PAGE_INDEX:
-        return action.payload.reduce(
-          (all, curr) => {
-            let page = state[curr.id];
-            if (page != null) {
-              page = { ...page, '@name': curr.name, '@index': curr.index };
-            }
-            all[curr.id] = page;
-            return all;
-          },
-          {} as PageState,
-        );
+        return action.payload.reduce((all, curr) => {
+          let page = state[curr.id];
+          if (page != null) {
+            page = { ...page, '@name': curr.name, '@index': curr.index };
+          }
+          all[curr.id] = page;
+          return all;
+        }, {} as PageState);
     }
   },
   {},

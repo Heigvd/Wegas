@@ -2,23 +2,28 @@ import * as React from 'react';
 import TreeNode, { treeHeadStyle } from './TreeNode';
 import HandleUpDown from './HandleUpDown';
 
-interface Item {
+export interface Item<T> {
   label: string;
-  value: string;
+  value: T;
   selectable?: boolean;
+  items?: Item<T>[];
   className?: string;
-  items?: Item[];
-}
-interface TreeSelectProps {
-  items: Item[];
-  selected?: string;
-  onSelect: (item: string) => void;
 }
 
-export function TreeSelect({ items, onSelect, selected }: TreeSelectProps) {
-  const [updatedItems, setUpdatedItems] = React.useState<Item[]>([]);
+interface TreeSelectProps<T> {
+  items: Item<T>[];
+  selected?: T;
+  onSelect: (item: T) => void;
+}
+
+export function TreeSelect<T>({
+  items,
+  onSelect,
+  selected,
+}: TreeSelectProps<T>) {
+  const [updatedItems, setUpdatedItems] = React.useState<Item<T>[]>([]);
   const onChildChange = React.useCallback((i: number) => {
-    return (child: Item) =>
+    return (child: Item<T>) =>
       setUpdatedItems(items => [
         ...items.slice(0, i),
         child,
@@ -33,7 +38,7 @@ export function TreeSelect({ items, onSelect, selected }: TreeSelectProps) {
       {[
         updatedItems.map((item, index) => (
           <TreeNode
-            key={item.value}
+            key={JSON.stringify(item.value)}
             {...item}
             selected={selected}
             onSelect={onSelect}

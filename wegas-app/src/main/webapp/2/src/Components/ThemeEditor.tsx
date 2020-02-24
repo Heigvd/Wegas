@@ -10,8 +10,7 @@ import {
 } from './Theme';
 import { cx, css } from 'emotion';
 import { flex, grow, flexColumn, defaultPadding } from '../css/classes';
-import { ChromePicker } from 'react-color';
-import { OnChangeHandler } from 'react-color/lib/components/common/ColorWrap';
+import { ColorChangeHandler, ChromePicker } from 'react-color';
 import * as Color from 'color';
 import { useOnClickOutside } from './Hooks/useOnClickOutside';
 import { IconButton } from './Inputs/Button/IconButton';
@@ -19,7 +18,6 @@ import { Menu } from './Menu';
 import { TextPrompt } from '../Editor/Components/TextPrompt';
 import { ConfirmButton } from './Inputs/Button/ConfirmButton';
 import { NumberSlider } from './Inputs/Button/NumberSlider';
-import { wlog } from '../Helper/wegaslog';
 import { MessageString } from '../Editor/Components/MessageString';
 
 const colorButton = (color: string, bgColor?: string) =>
@@ -43,7 +41,7 @@ const colorButton = (color: string, bgColor?: string) =>
 interface MyColorPickerProps {
   color: string;
   bgColor?: string;
-  onChange?: OnChangeHandler;
+  onChange?: ColorChangeHandler;
 }
 
 function MyColorPicker({ color, bgColor, onChange }: MyColorPickerProps) {
@@ -52,8 +50,6 @@ function MyColorPicker({ color, bgColor, onChange }: MyColorPickerProps) {
   useOnClickOutside(pickerZone, () => {
     setDisplayed(false);
   });
-
-  wlog(Color(bgColor).lightness());
 
   return (
     <div className={flex} ref={pickerZone}>
@@ -73,7 +69,7 @@ function MyColorPicker({ color, bgColor, onChange }: MyColorPickerProps) {
       />
       {displayed && (
         <ChromePicker
-          className={grow}
+          // className={grow}
           color={color}
           onChangeComplete={onChange}
         />
@@ -275,23 +271,23 @@ export default function ThemeEditor() {
           <div className={cx(flex, grow, flexColumn, defaultPadding)}>
             {Object.keys(currentModifiers).map(
               (k: keyof ThemeColorModifiers) => (
-              <p key={k}>
-                <label
-                  className={cx(
-                    css({ display: 'flex', alignItems: 'center' }),
-                  )}
-                  htmlFor={k}
-                  title={k}
-                >
-                  {k} :
-                </label>
-                <NumberSlider
-                  max={1}
-                  min={0}
-                  value={currentModifiers[k]}
-                  onChange={v => setThemeModifer(currentModifiedTheme, k, v)}
-                />
-              </p>
+                <p key={k}>
+                  <label
+                    className={cx(
+                      css({ display: 'flex', alignItems: 'center' }),
+                    )}
+                    htmlFor={k}
+                    title={k}
+                  >
+                    {k} :
+                  </label>
+                  <NumberSlider
+                    max={1}
+                    min={0}
+                    value={currentModifiers[k]}
+                    onChange={v => setThemeModifer(currentModifiedTheme, k, v)}
+                  />
+                </p>
               ),
             )}
           </div>

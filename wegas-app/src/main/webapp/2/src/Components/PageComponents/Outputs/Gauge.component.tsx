@@ -23,12 +23,9 @@ registerComponent(
     'Gauge',
     'tachometer-alt',
     {
-      script: schemaProps.scriptVariable(
-        'Variable',
-        false,
-        ['NumberDescriptor'],
-        true,
-      ),
+      script: schemaProps.scriptVariable('Variable', false, [
+        'NumberDescriptor',
+      ]),
       neutralValue: schemaProps.number('Neutral value', false),
       positiveColor: schemaProps.string('Positive color', false),
       negativeColor: schemaProps.string('Negative color', false),

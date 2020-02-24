@@ -8,6 +8,7 @@ import { LibrariesLoader } from './Components/LibrariesLoader';
 import { ClassesProvider } from '../Components/Contexts/ClassesProvider';
 import { FeaturesProvider } from '../Components/Contexts/FeaturesProvider';
 import { ThemeProvider } from '../Components/Theme';
+import '../data/store';
 
 // Importing all the files containing ".component." to allow component registration without explicit import
 const componentModules = require.context(
