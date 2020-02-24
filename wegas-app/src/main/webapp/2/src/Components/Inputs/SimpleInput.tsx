@@ -13,13 +13,37 @@ function undefToEmpty(val?: string | number) {
 }
 
 export interface SimpleInputProps {
+  /**
+   * value - the value to input
+   */
   value?: string | number;
+  /**
+   * onChange - return the value set by the component
+   */
   onChange?: (value: string) => void;
+  /**
+   * rows - the number of rows allowed for input
+   */
   rows?: number;
+  /**
+   * disabled - disable the component
+   */
   disabled?: boolean;
+  /**
+   * readOnly - disable the click on the component
+   */
   readOnly?: boolean;
+  /**
+   * placeholder - the hint displayed in the input zone
+   */
   placeholder?: string;
+  /**
+   * autoComplete - enables the browser autocompletion
+   */
   autoComplete?: boolean;
+  /**
+   * id - enables the browser autocompletion
+   */
   id?: string;
 }
 

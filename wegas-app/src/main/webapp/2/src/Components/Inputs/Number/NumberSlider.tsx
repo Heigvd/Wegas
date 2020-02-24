@@ -23,7 +23,6 @@ export interface NumberSliderProps {
   value: number;
   /**
    * onChange - callback when the slider is used
-   * if onChange is not sat, the component will automatically be read-only
    */
   onChange?: (value: number) => void;
   /**
@@ -43,6 +42,10 @@ export interface NumberSliderProps {
    * Can be a string or a formatting function that takes the value and return a string
    */
   displayValues?: DisplayMode;
+  /**
+   * readOnly - disable the click on the component
+   */
+  readOnly?: boolean;
   /**
    * disabled - set the component in disabled mode
    */
@@ -79,6 +82,7 @@ export function NumberSlider({
   min,
   steps,
   displayValues,
+  readOnly,
   disabled,
   rightPartStyle,
   leftPartStyle,
@@ -99,7 +103,7 @@ export function NumberSlider({
 
   const onSliderChange = React.useCallback(
     debounce((value: number) => {
-      onChange && onChange(value);
+      !readOnly && onChange && onChange(value);
     }, 100),
     [onChange],
   );

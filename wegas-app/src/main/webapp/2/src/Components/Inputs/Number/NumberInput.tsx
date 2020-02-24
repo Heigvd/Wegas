@@ -4,7 +4,13 @@ import { omit } from 'lodash-es';
 
 export interface NumberInputProps
   extends Omit<SimpleInputProps, 'rows' | 'onChange'> {
+  /**
+   * value - the value to input
+   */
   value?: number;
+  /**
+   * onChange - return the value set by the component
+   */
   onChange?: (value: number) => void;
 }
 

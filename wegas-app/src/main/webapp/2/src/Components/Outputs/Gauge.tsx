@@ -4,6 +4,7 @@ import { useScript } from '../Hooks/useScript';
 import { useVariableInstance } from '../Hooks/useVariable';
 import { themeVar } from '../Theme';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
+import { wlog } from '../../Helper/wegaslog';
 
 const containerStyle = css({
   minWidth: '8em',
@@ -91,6 +92,19 @@ export function Gauge(props: GaugeProps) {
   const valueAngle = 180 - ratio(boundedValue, min, max) * 180;
   const end = polarToCartesian(500, 500, 450, valueAngle);
   const positive = valueAngle < neutralAngle;
+
+  wlog(descriptor.broadcastScope);
+  wlog(descriptor.comments);
+  // wlog(descriptor.defaultInstance);
+  wlog(descriptor.defaultValue);
+  wlog(descriptor.editorTag);
+  wlog(descriptor.historySize);
+  wlog(descriptor.id);
+  // wlog(descriptor.label);
+
+  // WE HAVE A BIG PROBLEM WITH PROXIFIED INHERITED VALUES!!!
+
+  debugger;
 
   return (
     <div className={containerStyle}>
