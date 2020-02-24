@@ -88,6 +88,10 @@
     color: #fff;
 }
 
+.wegas-boolean-input.readonly .wegas-boolean-input-checkboxes li.selected,
+.wegas-string-input.readonly .wegas-string-input-checkboxes li.selected{
+    background-color: #9fcee0;
+}
 
 .wegas-boolean-input-checkboxes li.selected:before,
 .wegas-string-input-checkboxes li.selected:before {
@@ -105,10 +109,11 @@
     counter-reset: selecteds
 }
 
-.wegas-string-input-checkboxes.selecteds li {
+.wegas-string-input:not(.readonly) .wegas-string-input-checkboxes.selecteds li {
     cursor: grab;
 }
-.wegas-string-input-checkboxes.unselecteds li {
+
+.wegas-string-input:not(.readonly) .wegas-string-input-checkboxes.unselecteds li {
     cursor: grab;
 }
 
@@ -139,6 +144,11 @@
     color: white;
     transition: .3s;
     user-select: none;
+}
+
+.wegas-boolean-input.readonly .wegas-boolean-input-checkboxes li,
+.wegas-string-input.readonly .wegas-string-input-checkboxes li{
+    background: hsl(133, 4%, 70%);
 }
 
 ol.wegas-string-input-checkboxes:empty {

@@ -550,7 +550,7 @@ YUI.add("wegas-i18n", function(Y) {
 
         function getAvailableLang() {
             return Y.Array.reduce(Y.config.groups.wegas.allModules, [], function(previous, currentValue) {
-                if (currentValue.indexOf("wegas-i18n-global-" === 0)) {
+                if (currentValue.indexOf("wegas-i18n-global-") === 0) {
                     previous.push(currentValue.substring(18));
                 }
                 return previous;
