@@ -8,9 +8,9 @@ import {
 } from '../../../Components/Theme';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { generateAbsolutePath, FileAPI, fileURL } from '../../../API/files.api';
-import { IconButton } from '../../../Components/Inputs/IconButton';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { TextPrompt } from '../TextPrompt';
-import { ConfirmButton } from '../../../Components/Inputs/ConfirmButton';
+import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import { GameModel } from '../../../data/selectors';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { store, StoreDispatch } from '../../../data/store';

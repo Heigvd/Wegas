@@ -3,8 +3,8 @@ import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
 import { defaultPadding, expand, noOverflow } from '../../css/classes';
 import './FormView';
-import { Button } from '../../Components/Inputs/Button';
-import { ConfirmButton } from '../../Components/Inputs/ConfirmButton';
+import { Button } from '../../Components/Inputs/Buttons/Button';
+import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 
 interface EditorProps<T> {
   entity?: T;

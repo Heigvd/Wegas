@@ -9,7 +9,7 @@ import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { CommonViewContainer, CommonView } from './commonView';
 import { LabeledView, Labeled } from './labeled';
 import { css } from 'emotion';
-import { IconButton } from '../../../Components/Inputs/IconButton';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { toScriptableClassName } from '../../../Helper/wegasClassNames';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';

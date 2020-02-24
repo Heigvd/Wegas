@@ -29,9 +29,9 @@ import { LabeledView, Labeled } from '../Editor/Components/FormView/labeled';
 import { FileBrowser } from '../Editor/Components/FileBrowser/FileBrowser';
 import { css, cx } from 'emotion';
 import { classesCTX } from './Contexts/ClassesProvider';
-import { debounceAction } from '../Helper/debounceAction';
 import { flexColumn, flex } from '../css/classes';
 import { WidgetProps } from 'jsoninput/typings/types';
+import { debounce } from 'lodash-es';
 
 const toolbar = css({
   width: '300px',
@@ -214,6 +214,14 @@ export default function HTMLEditor({
     }
   }, [fileBrowsing.fn]);
 
+  const onEditorChange = React.useCallback(
+    debounce((value: string) => {
+      HTMLContent.current = value;
+      onChange && onChange(HTMLContent.current);
+    }, 500),
+    [onChange],
+  );
+
   const toolBarId = 'externalEditorToolbar' + String(HTMLEditorID++);
 
   return (
@@ -235,12 +243,7 @@ export default function HTMLEditor({
             testbutton: { text: 'test', className: 'testclass' },
           })}
           onInit={editor => (HTMLEditor.current = editor.target)}
-          onEditorChange={value => {
-            debounceAction('HTMLEditorOnChange', () => {
-              HTMLContent.current = value;
-              onChange && onChange(HTMLContent.current);
-            });
-          }}
+          onEditorChange={onEditorChange}
           onFocus={() => setEditorFocus(true)}
           onBlur={() => setEditorFocus(false)}
         />

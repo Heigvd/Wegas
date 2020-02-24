@@ -27,7 +27,7 @@ import { useStore } from '../../../../../data/store';
 import { GameModel } from '../../../../../data/selectors';
 import { parseStatement, generateStatement } from './astManagement';
 import { WegasTypeString } from '../../../../editionConfig';
-import { IconButton } from '../../../../../Components/Inputs/IconButton';
+import { IconButton } from '../../../../../Components/Inputs/Buttons/IconButton';
 import { MessageString } from '../../../MessageString';
 import { WegasScriptEditor } from '../../../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';

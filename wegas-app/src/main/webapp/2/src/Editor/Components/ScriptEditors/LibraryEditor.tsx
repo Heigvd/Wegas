@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TabLayout } from '../../../Components/Tabs';
 import { Toolbar } from '../../../Components/Toolbar';
-import { IconButton } from '../../../Components/Inputs/IconButton';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import {
   LibraryAPI,
   NewLibErrors,
@@ -15,7 +15,7 @@ import { WebSocketEvent, useWebsocket } from '../../../API/websocket';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
 import MergeEditor from './MergeEditor';
 import { TextPrompt } from '../TextPrompt';
-import { ConfirmButton } from '../../../Components/Inputs/ConfirmButton';
+import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import { WegasScriptEditor } from './WegasScriptEditor';
 import {
   clientScriptEval,

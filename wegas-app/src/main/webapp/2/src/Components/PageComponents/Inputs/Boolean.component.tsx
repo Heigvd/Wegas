@@ -9,7 +9,7 @@ import { useVariableInstance } from '../../Hooks/useVariable';
 import { store } from '../../../data/store';
 import { Actions } from '../../../data';
 import { useScript } from '../../Hooks/useScript';
-import { Toggler } from '../../Inputs/Toggler';
+import { Toggler } from '../../Inputs/Boolean/Toggler';
 
 interface PlayerBooleanProps extends PageComponentMandatoryProps {
   /**

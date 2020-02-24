@@ -8,12 +8,12 @@ import {
 import { useDrop, DropTargetMonitor } from 'react-dnd';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { themeVar } from '../../Theme';
-import { IconButton } from '../../Inputs/IconButton';
-import { ConfirmButton } from '../../Inputs/ConfirmButton';
-import { Toggler, TogglerProps } from '../../Inputs/Toggler';
 import List from '../../Layouts/List';
 import { expand } from '../../../css/classes';
 import { Centered } from '../../Layouts/Centered';
+import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
+import { IconButton } from '../../Inputs/Buttons/IconButton';
+import { Toggler, TogglerProps } from '../../Inputs/Boolean/Toggler';
 
 const editItemStyle = css({
   display: 'list-item',

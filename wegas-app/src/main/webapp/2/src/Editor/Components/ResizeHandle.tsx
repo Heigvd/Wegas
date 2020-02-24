@@ -8,7 +8,7 @@ import {
   centeredContent,
   schrink,
 } from '../../css/classes';
-import { IconButton } from '../../Components/Inputs/IconButton';
+import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 
 interface ResizeHandleProps {
   minSize?: number;

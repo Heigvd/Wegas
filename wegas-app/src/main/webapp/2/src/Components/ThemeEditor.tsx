@@ -13,11 +13,11 @@ import { flex, grow, flexColumn, defaultPadding } from '../css/classes';
 import { ColorChangeHandler, ChromePicker } from 'react-color';
 import * as Color from 'color';
 import { useOnClickOutside } from './Hooks/useOnClickOutside';
-import { IconButton } from './Inputs/IconButton';
+import { IconButton } from './Inputs/Buttons/IconButton';
 import { Menu } from './Menu';
 import { TextPrompt } from '../Editor/Components/TextPrompt';
-import { ConfirmButton } from './Inputs/ConfirmButton';
-import { NumberSlider } from './Inputs/NumberSlider';
+import { ConfirmButton } from './Inputs/Buttons/ConfirmButton';
+import { NumberSlider } from './Inputs/Number/NumberSlider';
 import { MessageString } from '../Editor/Components/MessageString';
 
 const colorButton = (color: string, bgColor?: string) =>

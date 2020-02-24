@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { IconButton } from './IconButton';
-import { useOnClickOutside } from '../Hooks/useOnClickOutside';
+import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import { css } from 'emotion';
 import { Button, DisableBorders, disableBordersCSS } from './Button';
-import { themeVar } from '../Theme';
-import { Icon } from '../../Editor/Components/Views/FontAwesome';
+import { themeVar } from '../../Theme';
+import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 
 const buttonZone = (disableBorders?: DisableBorders) =>
   css({

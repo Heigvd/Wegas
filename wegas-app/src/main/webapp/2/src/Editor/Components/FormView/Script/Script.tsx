@@ -2,7 +2,7 @@ import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { LabeledView, Labeled } from '../labeled';
 import { CommonView, CommonViewContainer } from '../commonView';
-import { IconButton } from '../../../../Components/Inputs/IconButton';
+import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import { css } from 'emotion';
 import { store } from '../../../../data/store';
@@ -21,7 +21,10 @@ import {
   isLogicalExpression,
   expressionStatement,
   LogicalExpression,
-  logicalExpression,isBinaryExpression,CallExpression,isEmptyStatement
+  logicalExpression,
+  isBinaryExpression,
+  CallExpression,
+  isEmptyStatement,
 } from '@babel/types';
 import { parse } from '@babel/parser';
 import generate from '@babel/generator';
@@ -118,8 +121,6 @@ function concatStatementsToCondition(
       canBeMerged = isEmptyStatement(s);
     }
   });
-
-  //binaryExpressions.reverse();
 
   if (canBeMerged) {
     if (binaryExpressions.length === 1) {
@@ -273,7 +274,7 @@ export function Script({
 
   return (
     <CommonViewContainer view={view} errorMessage={error}>
-      <Labeled label={view.label} description={view.description} /*{...view}*/>
+      <Labeled label={view.label} description={view.description}>
         {({ labelNode }) => {
           return (
             <>

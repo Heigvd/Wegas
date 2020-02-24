@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Downshift, { StateChangeOptions } from 'downshift';
 import { css, cx } from 'emotion';
-import { IconButton } from './Inputs/IconButton';
+import { IconButton } from './Inputs/Buttons/IconButton';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { useKeyboard } from './Hooks/useKeyboard';
 import { themeVar } from './Theme';
@@ -76,7 +76,7 @@ export function Menu<T extends Item<T>>({
   const keyboardEvents = useKeyboard();
 
   const onStateChange = React.useCallback(
-    (changes: StateChangeOptions<any>) => {
+    (changes: StateChangeOptions<never>) => {
       if (changes.isOpen != null && changes.isOpen) {
         onOpen && onOpen();
       }

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Interpolation, css } from 'emotion';
 import Slider from 'react-input-slider';
-import { debounceAction } from '../../Helper/debounceAction';
-import { textCenter, expand } from '../../css/classes';
+import { textCenter } from '../../../css/classes';
+import { debounce } from 'lodash-es';
 
 const valueDisplayStyle = css({
   textAlign: 'center',
@@ -99,6 +99,13 @@ export function NumberSlider({
     [value /*internalValue,*/],
   );
 
+  const onSliderChange = React.useCallback(
+    debounce((value: number) => {
+      onChange && onChange(value);
+    }, 500),
+    [onChange],
+  );
+
   const Info = () => {
     let display;
     if (displayValues == null) {
@@ -149,9 +156,7 @@ export function NumberSlider({
         x={internalValue}
         onChange={({ x }) => {
           setValue(x);
-          debounceAction('NumberSliderOnChange', () => {
-            onChange && onChange(x);
-          });
+          onSliderChange(x);
         }}
         disabled={disabled}
       />

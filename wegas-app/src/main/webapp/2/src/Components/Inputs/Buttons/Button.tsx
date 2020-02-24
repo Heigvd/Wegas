@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import { CSSProperties } from 'react';
-import { themeVar } from '../Theme';
+import { themeVar } from '../../Theme';
 
 export interface DisableBorders {
   top?: boolean;

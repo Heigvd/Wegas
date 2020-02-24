@@ -2,7 +2,7 @@ import { css, cx } from 'emotion';
 import produce from 'immer';
 import { Connection, Defaults, jsPlumbInstance } from 'jsplumb';
 import * as React from 'react';
-import { IconButton } from '../../Components/Inputs/IconButton';
+import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { VariableDescriptor } from '../../data/selectors';
 import { StoreDispatch, useStore } from '../../data/store';
 import { entityIs } from '../../data/entities';
@@ -449,8 +449,8 @@ class StateMachineEditor extends React.Component<
       plumb.bind('connectionAborted', connection => {
         const str_left = (connection.target as HTMLElement).style.left;
         const str_top = (connection.target as HTMLElement).style.top;
-        const left = parseInt(str_left ? str_left : "0");
-        const top = parseInt(str_top ? str_top : "0");
+        const left = parseInt(str_left ? str_left : '0');
+        const top = parseInt(str_top ? str_top : '0');
         const src = Number(connection.sourceId);
         this.createState({ left, top }, src);
       });
@@ -778,24 +778,30 @@ class Transition extends React.Component<{
   componentDidUpdate() {
     this.updateData();
   }
-  buildLabel(label: string, condition: string, impact: string){
-      if (label){
-          return label;
-      } else {
-        return (condition ? "Condition: " + condition + ' ' : '') + 
-          (impact ? "Impact: " + impact + ' ' : '');
-      }
+  buildLabel(label: string, condition: string, impact: string) {
+    if (label) {
+      return label;
+    } else {
+      return (
+        (condition ? 'Condition: ' + condition + ' ' : '') +
+        (impact ? 'Impact: ' + impact + ' ' : '')
+      );
+    }
   }
   updateData = () => {
-    const {triggerCondition, preStateImpact } = this.props.transition;
+    const { triggerCondition, preStateImpact } = this.props.transition;
 
     try {
       this.connection!.setParameter('transition', this.props.transition);
       this.connection!.setParameter('transitionIndex', this.props.position);
-      if(entityIs(this.props.transition, "Transition")){
-        this.connection!.setLabel(this.buildLabel(this.props.transition.label, 
-        triggerCondition ? triggerCondition.content : '', 
-        preStateImpact ? preStateImpact.content : ''));
+      if (entityIs(this.props.transition, 'Transition')) {
+        this.connection!.setLabel(
+          this.buildLabel(
+            this.props.transition.label,
+            triggerCondition ? triggerCondition.content : '',
+            preStateImpact ? preStateImpact.content : '',
+          ),
+        );
       }
 
       // "(this.connection! as any)" is compulsory since jsPlumb is not fully implemented for TS

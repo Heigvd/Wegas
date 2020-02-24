@@ -2,7 +2,7 @@ import * as React from 'react';
 import { GameModel, Global } from '../../data/selectors';
 import { cx } from 'emotion';
 import { StoreConsumer } from '../../data/store';
-import { IconButton } from '../../Components/Inputs/IconButton';
+import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { Actions } from '../../data';
 import { FontAwesome } from './Views/FontAwesome';
 import { FeatureToggler } from '../../Components/Contexts/FeaturesProvider';
