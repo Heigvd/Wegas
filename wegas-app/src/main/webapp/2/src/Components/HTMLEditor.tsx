@@ -32,6 +32,7 @@ import { classesCTX } from './Contexts/ClassesProvider';
 import { flexColumn, flex } from '../css/classes';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { debounce } from 'lodash-es';
+import { wlog } from '../Helper/wegaslog';
 
 const toolbar = css({
   width: '300px',
@@ -230,9 +231,11 @@ export default function HTMLEditor({
         <div id={toolBarId} className={toolbar}>
           {!editorFocus && (
             <img
-              src={require(onSave
-                ? '../pictures/tinymcetoolbar.png'
-                : '../pictures/tinymcetoolbarnosave.png')}
+              src={
+                require(onSave
+                  ? '../pictures/tinymcetoolbar.png'
+                  : '../pictures/tinymcetoolbarnosave.png').default
+              }
               onClick={() => HTMLEditor.current && HTMLEditor.current.focus()}
             />
           )}

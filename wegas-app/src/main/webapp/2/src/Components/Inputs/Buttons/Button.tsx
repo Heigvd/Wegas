@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { CSSProperties } from 'react';
 import { themeVar } from '../../Theme';
 
@@ -57,7 +57,7 @@ const buttonStyle = (
     paddingRight: '5px',
     paddingTop: '2px',
     paddingBottom: '2px',
-    cursor: disabled ? 'not-allowed' : 'pointer',
+    cursor: disabled ? 'default' : 'pointer',
     ':hover':
       disabled || noHover
         ? undefined
@@ -94,9 +94,7 @@ export function Button({
   return (
     <button
       style={style}
-      className={
-        className ? className : buttonStyle(disabled, noHover, disableBorders)
-      }
+      className={cx(buttonStyle(disabled, noHover, disableBorders), className)}
       onClick={onClick}
       disabled={disabled}
       tabIndex={tabIndex}

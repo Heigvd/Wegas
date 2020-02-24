@@ -17,6 +17,8 @@ const InstancesEditor = React.lazy(() => import('./Variable/InstancesEditor'));
 const HTMLEditor = React.lazy(() => import('../../Components/HTMLEditor'));
 const ThemeEditor = React.lazy(() => import('../../Components/ThemeEditor'));
 
+const Tester = React.lazy(() => import('../../Testers/MultipleChoicesTester'));
+
 const layout = css({
   display: 'flex',
   flexDirection: 'column',
@@ -35,6 +37,7 @@ export const availableLayoutTabs = {
   TestHTMLEditor: (
     <HTMLEditor value={'<div class="testClass">Testing testClass</div>'} />
   ),
+  Tester: <Tester />,
   ThemeEditor: <ThemeEditor />,
   PageEditor: <PageEditor />,
 };

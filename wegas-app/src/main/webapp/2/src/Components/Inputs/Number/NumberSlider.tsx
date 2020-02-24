@@ -3,6 +3,8 @@ import { Interpolation, css } from 'emotion';
 import Slider from 'react-input-slider';
 import { textCenter } from '../../../css/classes';
 import { debounce } from 'lodash-es';
+import { checkMinMax } from './numberComponentHelper';
+import { themeVar } from '../../Theme';
 
 const valueDisplayStyle = css({
   textAlign: 'center',
@@ -14,7 +16,7 @@ export type DisplayMode =
   | typeof displayModes[number]
   | ((value: number, internalValue: number) => React.ReactNode);
 
-interface NumberSliderProps {
+export interface NumberSliderProps {
   /**
    * value - the current value of the slider
    */
@@ -27,11 +29,11 @@ interface NumberSliderProps {
   /**
    * max - the maximum value to slide (100 by default)
    */
-  max?: number;
+  max: number;
   /**
    * min - the minimum value to slide (0 by default)
    */
-  min?: number;
+  min: number;
   /**
    * steps - the number of steps between min and max value. 100 by default.
    */
@@ -48,19 +50,15 @@ interface NumberSliderProps {
   /**
    * trackStyle - the style of the track
    */
-  trackStyle?: Interpolation;
+  rightPartStyle?: Interpolation;
   /**
-   * activePartStyle - the style of the left part of the track
+   * leftPartStyle - the style of the left part of the track
    */
-  activePartStyle?: Interpolation;
+  leftPartStyle?: Interpolation;
   /**
    * handleStyle - the style of the slider handle
    */
   handleStyle?: Interpolation;
-  /**
-   * disabledStyle - the style of the slider in disabled mode
-   */
-  disabledStyle?: Interpolation;
 }
 
 const desinterpolate = (style?: Interpolation) =>
@@ -77,17 +75,17 @@ const desinterpolate = (style?: Interpolation) =>
 export function NumberSlider({
   value,
   onChange,
-  max = 100,
-  min = 0,
+  max,
+  min,
   steps,
   displayValues,
   disabled,
-  trackStyle,
-  activePartStyle,
+  rightPartStyle,
+  leftPartStyle,
   handleStyle,
-  disabledStyle,
 }: NumberSliderProps) {
   const [internalValue, setValue] = React.useState(value);
+
   React.useEffect(
     () => {
       if (value !== internalValue) {
@@ -102,9 +100,14 @@ export function NumberSlider({
   const onSliderChange = React.useCallback(
     debounce((value: number) => {
       onChange && onChange(value);
-    }, 500),
+    }, 100),
     [onChange],
   );
+
+  const minMaxCheck = checkMinMax(min, max, internalValue);
+  if (minMaxCheck !== undefined) {
+    return minMaxCheck;
+  }
 
   const Info = () => {
     let display;
@@ -142,12 +145,13 @@ export function NumberSlider({
       <Info />
       <Slider
         styles={{
-          track: desinterpolate(trackStyle),
-          active: desinterpolate(activePartStyle),
+          track: desinterpolate(rightPartStyle),
+          active: leftPartStyle
+            ? desinterpolate(leftPartStyle)
+            : desinterpolate({ backgroundColor: themeVar.primaryLighterColor }),
           thumb: handleStyle
             ? desinterpolate(handleStyle)
             : css({ cursor: 'pointer' }),
-          disabled: desinterpolate(disabledStyle),
         }}
         axis="x"
         xmax={max}

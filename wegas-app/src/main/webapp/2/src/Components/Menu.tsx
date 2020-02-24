@@ -76,7 +76,8 @@ export function Menu<T extends Item<T>>({
   const keyboardEvents = useKeyboard();
 
   const onStateChange = React.useCallback(
-    (changes: StateChangeOptions<never>) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (changes: StateChangeOptions<any>) => {
       if (changes.isOpen != null && changes.isOpen) {
         onOpen && onOpen();
       }
