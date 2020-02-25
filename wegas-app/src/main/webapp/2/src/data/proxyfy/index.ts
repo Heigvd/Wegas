@@ -1,5 +1,8 @@
 import { inheritanceChain } from '../entities';
 import { methods } from './methods';
+import { deepClone } from 'fast-json-patch/module/core';
+
+const proxyCache = new WeakMap<IAbstractEntity, IAbstractEntity>();
 
 const traps = {
   get: function(
@@ -19,10 +22,7 @@ const traps = {
     return true;
   },
 };
-// function immutable(o: object) {
-//   return new Proxy(o, traps);
-// }
-const proxyCache = new WeakMap<IAbstractEntity, IAbstractEntity>();
+
 /**
  * Proxy the AbstractEntity given. Defensively makes it readonly through a proxy.
  * Also adds some methods to it.
@@ -37,7 +37,10 @@ export function proxyfy<Entity extends IAbstractEntity>(
       return proxyCache.get(entity) as Entity;
     }
     const iChain = [entity['@class'], ...inheritanceChain(entity['@class'])];
-    const p = new Proxy(entity, {
+    /**
+     * IMPORTANT: To avoid proxy unmutability errors with ES6 Proxies use deepClone of object
+     */
+    const p = new Proxy(deepClone(entity), {
       ...traps,
       get: function(obj, prop: string | number) {
         for (const cls of iChain) {
