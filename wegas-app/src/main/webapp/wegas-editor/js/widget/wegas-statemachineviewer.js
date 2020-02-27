@@ -54,6 +54,12 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 var header = this.toolbar.get("header");
                 this._childrenContainer = this.get(CONTENT_BOX).one(".sm-zoom")
                     .setStyle("transform", "scale(1)");
+
+                this.title = new Y.Wegas.Text({
+                    label: this.get(ENTITY) && this.get(ENTITY).getLabel(),
+                    cssClass: 'wegas-statemachineviewer-title wegas-form-title'
+                }).render(header);
+
                 this.btnNew = new Y.Button({
                     label: "<span class=\"wegas-icon wegas-icon-new\"></span>New"
                 }).render(header);
@@ -141,6 +147,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 }
             },
             syncUI: function() {
+                this.updateTitle();
                 this.highlightCurrentState();
             },
             destructor: function() {
@@ -158,6 +165,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 this.sliderZoom.destroy();
                 this.btnNew.destroy();
                 this.btnZoomValue.destroy();
+                this.title.destroy();
             },
             initJsPlumb: function() {
                 jp = window.jsPlumb.getInstance({
@@ -296,6 +304,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
 
                 }
                 this.highlightCurrentState();
+                this.updateTitle();
                 jp.setSuspendDrawing(false, true);
                 this.hideOverlay();
                 this.highlightUnusedStates();
@@ -341,6 +350,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                         //}
                     });
                 }
+                this.updateTitle();
                 this.highlightCurrentState();
                 jp.setSuspendDrawing(false, true);
                 this.hideOverlay();
@@ -475,6 +485,12 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 }
 
             },
+            updateTitle: function() {
+                var sm = this.get("entity");
+                if (sm) {
+                    this.title.setContent(sm.getEditorLabel());
+                }
+            },
             highlightCurrentState: function() {
                 var currentStateNode, sm = this.get(ENTITY);
                 if (!sm) {
@@ -548,7 +564,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         },
         syncUI: function() {
             if (!this.globals) {
-                // global not known yet, request them and, then, resync 
+                // global not known yet, request them and, then, resync
                 var globals = [Y.Wegas.RForm.Script.getGlobals('getter'), Y.Wegas.RForm.Script.getGlobals('condition')];
                 Promise.all(globals).then(Y.bind(function(globalsP) {
                     this.globals = Y.mix(Y.mix({}, globalsP[0]), globalsP[1]);
