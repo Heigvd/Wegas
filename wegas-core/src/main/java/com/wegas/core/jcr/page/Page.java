@@ -164,7 +164,6 @@ public class Page {
     /**
      * @return page name
      */
-    @Deprecated
     public String getName() {
         return name;
     }
@@ -172,7 +171,6 @@ public class Page {
     /**
      * @param name
      */
-    @Deprecated
     public void setName(String name) {
         this.name = name;
     }
@@ -230,12 +228,10 @@ public class Page {
         return node.asText();
     }
 
-    @Deprecated
     public Integer getIndex() {
         return index;
     }
 
-    @Deprecated
     public void setIndex(int index) {
         this.index = index;
     }

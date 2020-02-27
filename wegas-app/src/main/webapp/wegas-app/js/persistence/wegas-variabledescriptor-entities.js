@@ -143,10 +143,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     /**
      * VariableDescriptor mapper
      */
-    persistence.VariableDescriptor = Base.create(
-        'VariableDescriptor',
-        persistence.Entity,
-        [],
+    persistence.VariableDescriptor = Base.create('VariableDescriptor', persistence.Entity, [],
         {
             /**
              *
@@ -226,266 +223,265 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             getParent: function() {
                 return Y.Wegas.Facade.Variable.cache.findParentDescriptor(this);
             }
-        },
-        {
-            ATTRS: {
-                version: VERSION_ATTR_DEF,
-                visibility: Wegas.persistence.Entity.ATTRS_DEF.VISIBILITY,
-                comments: {
-                    type: ['null', STRING],
-                    index: 100,
-                    view: {
-                        type: 'textarea',
-                        className: 'wegas-comments',
-                        borderTop: true,
-                        label: 'Comments',
-                    }
-                },
-                editorTag: {
-                    type: NULLSTRING,
-                    optional: false,
-                    value: "",
-                    index: -15,
-                    view: {
-                        label: "Tag",
-                        description: "Never displayed to players"
-                    }
-                },
-                label: Y.Wegas.Helper.getTranslationAttr({
-                    label: "Label",
-                    index: -10,
-                    description: "Displayed to players",
-                    type: STRING
-                }),
-                name: {
-                    type: ["null", STRING],
-                    index: -7,
-                    maxWritableVisibility: PRIVATE,
-                    minLength: 1,
-                    view: {
-                        className: 'wegas-advanced-feature',
-                        label: 'Script alias',
-                        //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
-                        description: "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
-                    },
-                    validator: function(s) {
-                        return s === null || Y.Lang.isString(s);
-                    }
-                },
-                scopeType: {
-                    value: "TeamScope",
-                    index: -6,
-                    view: {
-                        className: 'wegas-advanced-feature'
-                    },
-                    view: {
-                        type: SELECT,
-                        layout: 'shortInline',
-                        choices: [
-                            {
-                                value: 'PlayerScope',
-                                label: 'each player'
-                            },
-                            {
-                                value: 'TeamScope',
-                                label: 'each team'
-                            },
-                            {
-                                value: 'GameModelScope',
-                                label: 'the whole game'
-                            }
-                        ],
-                        label: 'One variable for'
-                    }
-                },
-                broadcastScope: {
-                    type: STRING,
-                    index: -5,
-                    value: "TeamScope",
-                    errored: function(val, formVal) {
-                        var errors = [],
-                            scopeType = formVal.scopeType;
-                        if (scopeType === "TeamScope" && val === "PlayerScope" ||
-                            scopeType === "GameModelScope" && (val === "PlayerScope" || val === "TeamScope")) {
-                            errors.push('Invalid combination');
-                        }
-                        return errors.join(', ');
-                    },
-                    view: {
-                        type: SELECT,
-                        label: 'Variable is visible by',
-                        layout: 'shortInline',
-                        choices: [
-                            {
-                                value: 'PlayerScope',
-                                label: 'the player only'
-                            },
-                            {
-                                value: 'TeamScope',
-                                label: "team members"
-                            },
-                            {
-                                value: 'GameScope',
-                                label: 'everybody'
-                            }
-                        ]
-                    }
-                },
-                defaultInstance: {
-                    value: {},
-                    validator: function(o) {
-                        return o instanceof persistence.VariableInstance;
-                    },
-                    maxWritableVisibility: PROTECTED
+        }, {
+        ATTRS: {
+            version: VERSION_ATTR_DEF,
+            visibility: Wegas.persistence.Entity.ATTRS_DEF.VISIBILITY,
+            comments: {
+                type: ['null', STRING],
+                index: 100,
+                view: {
+                    type: 'textarea',
+                    className: 'wegas-comments',
+                    borderTop: true,
+                    label: 'Comments',
                 }
             },
-            EDITMENU: {
-                editBtn: {
-                    index: -1,
-                    maxVisibility: "INTERNAL",
-                    cfg: {
-                        type: "EditEntityButton"
-                    }
+            editorTag: {
+                type: NULLSTRING,
+                optional: false,
+                value: "",
+                index: -15,
+                view: {
+                    label: "Tag",
+                    description: "Never displayed to players"
+                }
+            },
+            label: Y.Wegas.Helper.getTranslationAttr({
+                label: "Label",
+                index: -10,
+                description: "Displayed to players",
+                type: STRING
+            }),
+            name: {
+                type: ["null", STRING],
+                index: -7,
+                maxWritableVisibility: PRIVATE,
+                minLength: 1,
+                view: {
+                    className: 'wegas-advanced-feature',
+                    label: 'Script alias',
+                    //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
+                    description: "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
                 },
-                copyBtn: {
-                    index: 10,
-                    maxVisibility: "INTERNAL",
-                    cfg: {
-                        type: BUTTON,
-                        label: "Duplicate",
-                        plugins: [{
-                                fn: "DuplicateEntityAction"
-                            }]
-                    }
+                validator: function(s) {
+                    return s === null || Y.Lang.isString(s);
+                }
+            },
+            scopeType: {
+                value: "TeamScope",
+                index: -6,
+                view: {
+                    className: 'wegas-advanced-feature'
                 },
-                deleteBtn: {
-                    index: 20,
-                    maxVisibility: "PRIVATE", // only visible for private variables
-                    cfg: {
-                        type: "DeleteEntityButton"
+                view: {
+                    type: SELECT,
+                    layout: 'shortInline',
+                    choices: [
+                        {
+                            value: 'PlayerScope',
+                            label: 'each player'
+                        },
+                        {
+                            value: 'TeamScope',
+                            label: 'each team'
+                        },
+                        {
+                            value: 'GameModelScope',
+                            label: 'the whole game'
+                        }
+                    ],
+                    label: 'One variable for'
+                }
+            },
+            broadcastScope: {
+                type: STRING,
+                index: -5,
+                value: "TeamScope",
+                errored: function(val, formVal) {
+                    var errors = [],
+                        scopeType = formVal.scopeType;
+                    if (scopeType === "TeamScope" && val === "PlayerScope" ||
+                        scopeType === "GameModelScope" && (val === "PlayerScope" || val === "TeamScope")) {
+                        errors.push('Invalid combination');
                     }
+                    return errors.join(', ');
                 },
-                exportBtn: {
-                    index: 30,
-                    maxVisibility: "INTERNAL",
-                    cfg: {
-                        type: BUTTON,
-                        label: "Export",
-                        plugins: [{
-                                fn: "WidgetMenu",
-                                cfg: {
-                                    children: [{
-                                            type: "PrintButton",
-                                            label: "Html"
-                                        }, {
-                                            type: "PrintButton",
-                                            label: "Html (Players document)",
-                                            mode: "player"
-                                        }, {
-                                            type: "PrintButton",
-                                            label: "Pdf",
-                                            outputType: "pdf"
-                                        }, {
-                                            type: "PrintButton",
-                                            label: "Pdf (Players document)",
-                                            outputType: "pdf",
-                                            mode: "player"
-                                        }, {
-                                            type: "OpenEntityButton",
-                                            label: "Json",
-                                            url: "rest/Export/GameModel/VariableDescriptor/{id}"
-                                        }]
-                                }
+                view: {
+                    type: SELECT,
+                    label: 'Variable is visible by',
+                    layout: 'shortInline',
+                    choices: [
+                        {
+                            value: 'PlayerScope',
+                            label: 'the player only'
+                        },
+                        {
+                            value: 'TeamScope',
+                            label: "team members"
+                        },
+                        {
+                            value: 'GameScope',
+                            label: 'everybody'
+                        }
+                    ]
+                }
+            },
+            defaultInstance: {
+                value: {},
+                validator: function(o) {
+                    return o instanceof persistence.VariableInstance;
+                },
+                maxWritableVisibility: PROTECTED
+            }
+        },
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                maxVisibility: "INTERNAL",
+                cfg: {
+                    type: "EditEntityButton"
+                }
+            },
+            copyBtn: {
+                index: 10,
+                maxVisibility: "INTERNAL",
+                cfg: {
+                    type: BUTTON,
+                    label: "Duplicate",
+                    plugins: [{
+                            fn: "DuplicateEntityAction"
+                        }]
+                }
+            },
+            deleteBtn: {
+                index: 20,
+                maxVisibility: "PRIVATE", // only visible for private variables
+                cfg: {
+                    type: "DeleteEntityButton"
+                }
+            },
+            exportBtn: {
+                index: 30,
+                maxVisibility: "INTERNAL",
+                cfg: {
+                    type: BUTTON,
+                    label: "Export",
+                    plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                children: [{
+                                        type: "PrintButton",
+                                        label: "Html"
+                                    }, {
+                                        type: "PrintButton",
+                                        label: "Html (Players document)",
+                                        mode: "player"
+                                    }, {
+                                        type: "PrintButton",
+                                        label: "Pdf",
+                                        outputType: "pdf"
+                                    }, {
+                                        type: "PrintButton",
+                                        label: "Pdf (Players document)",
+                                        outputType: "pdf",
+                                        mode: "player"
+                                    }, {
+                                        type: "OpenEntityButton",
+                                        label: "Json",
+                                        url: "rest/Export/GameModel/VariableDescriptor/{id}"
+                                    }]
                             }
-                        ]
-                    }
-                },
-                usagesBtn: {
-                    index: 40,
-                    maxVisibility: "INTERNAL",
-                    cfg: {
-                        type: BUTTON,
-                        label: 'Search for usages',
-                        plugins: [
-                            {
-                                fn: 'SearchEntityAction'
-                            }
-                        ]
-                    }
-                },
-                resetVisibilityBtn: {
-                    index: 50,
-                    cfg: {
-                        type: "BUTTON",
-                        label: "Reset visibilities",
-                        cssClass: "wegas-model-feature",
-                        plugins: [
-                            {
-                                fn: "WidgetMenu",
-                                cfg: {
-                                    children: [
-                                        {
-                                            type: BUTTON,
-                                            label: "Model",
-                                            plugins: [
-                                                {
-                                                    fn: "ResetVisibilityAction",
-                                                    cfg: {
-                                                        visibility: 'INTERNAL'
-                                                    }
+                        }
+                    ]
+                }
+            },
+            usagesBtn: {
+                index: 40,
+                maxVisibility: "INTERNAL",
+                cfg: {
+                    type: BUTTON,
+                    label: 'Search for usages',
+                    plugins: [
+                        {
+                            fn: 'SearchEntityAction'
+                        }
+                    ]
+                }
+            },
+            resetVisibilityBtn: {
+                index: 50,
+                cfg: {
+                    type: "BUTTON",
+                    label: "Reset visibilities",
+                    cssClass: "wegas-model-feature",
+                    plugins: [
+                        {
+                            fn: "WidgetMenu",
+                            cfg: {
+                                children: [
+                                    {
+                                        type: BUTTON,
+                                        label: "Model",
+                                        plugins: [
+                                            {
+                                                fn: "ResetVisibilityAction",
+                                                cfg: {
+                                                    visibility: 'INTERNAL'
                                                 }
-                                            ]
-                                        }, {
-                                            type: BUTTON,
-                                            label: "Protected",
-                                            plugins: [
-                                                {
-                                                    fn: "ResetVisibilityAction",
-                                                    cfg: {
-                                                        visibility: 'PROTECTED'
-                                                    }
+                                            }
+                                        ]
+                                    }, {
+                                        type: BUTTON,
+                                        label: "Protected",
+                                        plugins: [
+                                            {
+                                                fn: "ResetVisibilityAction",
+                                                cfg: {
+                                                    visibility: 'PROTECTED'
                                                 }
-                                            ]
-                                        }, {
-                                            type: BUTTON,
-                                            label: "Inherited",
-                                            plugins: [
-                                                {
-                                                    fn: "ResetVisibilityAction",
-                                                    cfg: {
-                                                        visibility: 'INHERITED'
-                                                    }
+                                            }
+                                        ]
+                                    }, {
+                                        type: BUTTON,
+                                        label: "Inherited",
+                                        plugins: [
+                                            {
+                                                fn: "ResetVisibilityAction",
+                                                cfg: {
+                                                    visibility: 'INHERITED'
                                                 }
-                                            ]
-                                        }, {
-                                            type: BUTTON,
-                                            label: "Private (delete from scenario !)",
-                                            plugins: [
-                                                {
-                                                    fn: "ResetVisibilityAction",
-                                                    cfg: {
-                                                        visibility: 'PRIVATE'
-                                                    }
+                                            }
+                                        ]
+                                    }, {
+                                        type: BUTTON,
+                                        label: "Private (delete from scenario !)",
+                                        plugins: [
+                                            {
+                                                fn: "ResetVisibilityAction",
+                                                cfg: {
+                                                    visibility: 'PRIVATE'
                                                 }
-                                            ]
-                                        }, {
-                                            type: BUTTON,
-                                            label: "Release from model (preserve in scenarios)",
-                                            plugins: [
-                                                {
-                                                    fn: "ReleaseVariableAction"
-                                                }
-                                            ]
-                                        }
+                                            }
+                                        ]
+                                    }, {
+                                        type: BUTTON,
+                                        label: "Release from model (preserve in scenarios)",
+                                        plugins: [
+                                            {
+                                                fn: "ReleaseVariableAction"
+                                            }
+                                        ]
+                                    }
 
-                                    ]
-                                }
+                                ]
                             }
-                        ]
-                    }
+                        }
+                    ]
                 }
             }
-        });
+        }
+    });
     /**
      * Scope mapper
      */
@@ -2068,6 +2064,16 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 type: STRING,
                 optional: true,
                 view: {label: "Name"}
+            },
+            trainerPage: {
+                type: ["null", BOOLEAN],
+                required: false,
+                view: {label: "Show in dashboard"}
+            },
+            scenaristPage: {
+                type: ["null", BOOLEAN],
+                required: false,
+                view: {label: "Show in editor"}
             }
         }
     });
@@ -2076,6 +2082,15 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         {
             EDITORNAME: 'Page Folder properties',
             ATTRS: {
+                id: {
+                    type: STRING,
+                    setter: function(val) {
+                        // override setter from Entity
+                        return val;
+                    },
+                    id: {view: {type: 'hidden'}},
+                },
+                path: {view: {type: 'hidden'}},
                 name: {
                     type: STRING,
                     optional: true,

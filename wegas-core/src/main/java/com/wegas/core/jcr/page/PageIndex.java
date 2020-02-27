@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +67,34 @@ public class PageIndex {
         }
     }
 
+    /**
+     * Find parent folder of an item
+     * @param needle
+     * @return null if not found
+     */
+    public Folder findParent(IndexItem needle) {
+        List<Folder> folders = new ArrayList<>();
+        folders.add(this.root);
+        while (!folders.isEmpty()) {
+            Folder currentFolder = folders.remove(0);
+            for (IndexItem item : currentFolder.getItems()) {
+                if (item == needle) {
+                    return currentFolder;
+                } else if (item instanceof Folder) {
+                    folders.add((Folder) item);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find page entry by id
+     *
+     * @param pageId id of the page
+     *
+     * @return the page entry or null
+     */
     public Page findPage(String pageId) {
         List<Folder> folders = new ArrayList<>();
         folders.add(this.root);
@@ -133,6 +162,8 @@ public class PageIndex {
 
         private String name;
         private String id;
+        private Boolean trainerPage;
+        private Boolean scenaristPage;
 
         public Page() {
         }
@@ -156,6 +187,22 @@ public class PageIndex {
 
         public void setId(String id) {
             this.id = id;
+        }
+
+        public Boolean isTrainerPage() {
+            return trainerPage;
+        }
+
+        public void setTrainerPage(Boolean trainerPage) {
+            this.trainerPage = trainerPage;
+        }
+
+        public Boolean isScenaristPage() {
+            return scenaristPage;
+        }
+
+        public void setScenaristPage(Boolean scenaristPage) {
+            this.scenaristPage = scenaristPage;
         }
     }
 
@@ -208,7 +255,7 @@ public class PageIndex {
             return null;
         }
 
-        public String generageUniqueId(String base) {
+        public String generateUniqueId(String base) {
             String id = base;
             int i = 0;
             while (findChild(id) != null) {
@@ -218,10 +265,11 @@ public class PageIndex {
         }
     }
 
-    public static class RenamePayload {
+    public static class NewItemPayload {
 
         private List<String> path;
-        private String name;
+        private IndexItem item;
+        private JsonNode payload;
 
         public void setPath(List<String> path) {
             this.path = path;
@@ -231,14 +279,43 @@ public class PageIndex {
             return path;
         }
 
-        public String getName() {
-            return name;
+        public IndexItem getItem() {
+            return item;
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public void setItem(IndexItem item) {
+            this.item = item;
         }
 
+        public JsonNode getPayload() {
+            return payload;
+        }
+
+        public void setPayload(JsonNode payload) {
+            this.payload = payload;
+        }
+    }
+
+    public static class UpdatePayload {
+
+        private List<String> path;
+        private IndexItem item;
+
+        public void setPath(List<String> path) {
+            this.path = path;
+        }
+
+        public List<String> getPath() {
+            return path;
+        }
+
+        public IndexItem getItem() {
+            return item;
+        }
+
+        public void setItem(IndexItem item) {
+            this.item = item;
+        }
     }
 
     public static class MovePayload {

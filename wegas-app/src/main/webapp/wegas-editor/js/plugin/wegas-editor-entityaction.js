@@ -149,6 +149,10 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             i = EditEntityAction.stackedIcon(i, 'fa-paw');
                             i.tooltip = 'Reset visibilities recursively';
                             break;
+                        case "Set as default":
+                            i = EditEntityAction.stackedIcon(i, 'fa-star');
+                            i.tooltip = 'Set as default';
+                            break;
                     }
                 }
             });

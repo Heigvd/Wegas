@@ -18,9 +18,137 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
         Plugin = Y.Plugin,
         DATASOURCE = Wegas.Facade.Page.cache;
 
+    function getAddBtnMenuItems(path) {
+        return [
+            {
+                type: 'AddPageIndexItemButton',
+                label: '<span class="fa fa-folder-o"> </span> Folder',
+                cssClass: 'border-bottom',
+                targetClass: 'PageFolderMeta',
+                path: path
+            },
+            {
+                type: 'AddPageIndexItemButton',
+                label: '<span class="fa fa-list"> </span> Standard (List layout)',
+                targetClass: 'PageMeta',
+                path: path,
+                cfg: {
+                    type: 'FlexList'
+                }
+            },
+            {
+                type: 'AddPageIndexItemButton',
+                label: '<span class="fa fa-picture-o"> </span> Beginner (Absolute layout)',
+                targetClass: 'PageMeta',
+                path: path,
+                cfg: {
+                    type: 'AbsoluteLayout'
+                }
+            }
+        ];
+    }
+
+    function getPageMenuItems(treeView, data) {
+        return [{
+                type: "Button",
+                label: "Edit",
+                on: {
+                    click: Y.bind(treeView.editPageMeta, treeView, data)
+                }
+            },
+            {
+                type: "Button",
+                label: "Set as default",
+                on: {
+                    click: Y.bind(treeView.setAsDefaultPage, treeView, data.page)
+                }
+            },
+            {
+                type: "Button",
+                label: "Duplicate",
+                on: {
+                    click: Y.bind(treeView.duplicatePage, treeView, data.page)
+                }
+            },
+            {
+                type: "Button",
+                label: "Delete",
+                on: {
+                    click: Y.bind(treeView.deletePage, treeView, data.page)
+                }
+            }];
+    }
+
+
+    var AddPageIndexItemButton = Y.Base.create("AddPageIndexItemButton", Y.Wegas.Button, [], {
+        initializer: function() {
+            AddPageIndexItemButton.superclass.initializer.apply(this, arguments);
+            this.onClickHandler = this.on("click", this.onClick, this);
+        },
+        destructor: function() {
+            this.onClickHandler && this.onClickHandler;
+        },
+        showAddForm: function(entity) {
+            Y.Plugin.EditEntityAction.showEditForm(entity, Y.bind(function(newVal) {
+                newVal["@class"] = (this.get("targetClass") === "PageMeta" ? "Page" : "Folder");
+
+                var data = {
+                    path: this.get("path") || [],
+                    item: newVal,
+                    payload: this.get("cfg")
+                };
+                Y.Wegas.Facade.Page.cache.createIndexItem(data);
+            }, this));
+        },
+        onClick: function() {
+            Plugin.EditEntityAction.allowDiscardingEdits(Y.bind(function() {
+                Y.Wegas.Editable.useAndRevive(Y.merge({// Load target class dependencies
+                    "@class": this.get("targetClass")
+                }, Y.clone(this.get("cfg"))), Y.bind(function(entity) {
+                    this.showAddForm(entity);
+                }, this));
+            }, this));
+        }
+    }, {
+        NS: "AddEntityChildAction",
+        ATTRS: {
+            targetClass: {
+                type: 'string'
+            },
+            cfg: {},
+            path: {
+                type: 'array'
+            }
+        }
+    });
+    Y.Wegas.AddPageIndexItemButton = AddPageIndexItemButton;
+
+    var SetPageAsDefaultButton = Y.Base.create("SetPageAsDefault", Y.Wegas.Button, [], {
+        initializer: function() {
+            SetPageAsDefaultButton.superclass.initializer.apply(this, arguments);
+            this.onClickHandler = this.on("click", this.onClick, this);
+        },
+        destructor: function() {
+            this.onClickHandler && this.onClickHandler;
+        },
+        onClick: function() {
+        }
+    }, {
+        NS: "SetPageAsDefault",
+        ATTRS: {
+        }
+    });
+    Y.Wegas.AddPageIndexItemButton = AddPageIndexItemButton;
+
+
+
+
+
+
     PageTreeview = Y.Base.create("wegas-editor-page", Y.Widget, [Wegas.Widget, Wegas.Editable, Y.WidgetChild], {
         renderUI: function() {
             this.treeView = new Y.TreeView().render(this.get(CONTENT_BOX)); // Render the treeview
+            //this.treeView.get("contentBox").addClass("index-folder");
             this.treeView.addTarget(this); // Treeview events bubble
             this.plug(Plugin.WidgetToolbar); // Add a toolbar
 
@@ -33,8 +161,8 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                             nodeClass: "widget-node",
                             parentNode: "container-node"
                         }, {
-                            nodeClass: "page-node",
-                            parentNode: "yui3-treeview"
+                            nodeClass: "index-item",
+                            parentNode: ["index-folder", "yui3-treeview"]
                         }]
                 });
 
@@ -68,18 +196,24 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
 
             if (DATASOURCE.isEditable()) {
                 this.treeView.sortable.on("sort", function(e) {
-                    if (e.dragWidget.get("data.page")) {
-                        DATASOURCE.move(e.dragWidget.get("data.page"), e.index, Y.bind(function() {
-                            this.getIndex();
-                        }, this));
-                    } else if (!e.dropWidget.get(BOUNDING_BOX)
-                        .hasClass("container-node")) { //@TODO: find something better.
-                        e.preventDefault();
-                        this.getIndex();
+
+                    var data = e.dragWidget.get("data");
+                    if (data.page || data.folder) {
+                        // index update
+                        var destData = e.dropWidget.get("data");
+                        var destPath = destData && destData.path || [];
+                        DATASOURCE.move(data.path, destPath, e.index);
+
                     } else if (e.dropWidget.get("data.widget")) {
-                        Y.log("Drop !!");
-                        e.dropWidget.get("data.widget").add(e.dragWidget.get("data.widget"), e.index);
-                        DATASOURCE.patch(e.dropWidget.get("data.widget").get("root").toObject());
+                        // move widget
+                        if (e.dropWidget.get(BOUNDING_BOX).hasClass("container-node")) {
+                            Y.log("MOVE WIDGET")
+                            e.dropWidget.get("data.widget").add(e.dragWidget.get("data.widget"), e.index);
+                            DATASOURCE.patch(e.dropWidget.get("data.widget").get("root").toObject());
+                        } else {
+                            e.preventDefault();
+                            this.getIndex();
+                        }
                     }
                 }, this);
             }
@@ -98,12 +232,17 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
 
                         this.focusedOverlay.get(BOUNDING_BOX).addClass("wegas-focused-widget");
                     }
-                    var rect = node.get("data.widget").get(BOUNDING_BOX).getDOMNode().getBoundingClientRect();
-                    this.focusedOverlay.set("x", rect.x);
-                    this.focusedOverlay.set("y", rect.y);
-                    this.focusedOverlay.set("width", rect.width);
-                    this.focusedOverlay.set("height", rect.height);
-                    this.focusedOverlay.show();
+                    var rect = node.get("data.widget").get(BOUNDING_BOX).getDOMNode();
+                    rect = rect && rect.getBoundingClientRect();
+                    if (rect) {
+                        this.focusedOverlay.set("x", rect.x);
+                        this.focusedOverlay.set("y", rect.y);
+                        this.focusedOverlay.set("width", rect.width);
+                        this.focusedOverlay.set("height", rect.height);
+                        this.focusedOverlay.show();
+                    } else {
+                        this.focusedOverlay.hide();
+                    }
                 }
             }, ".content-header", this);
 
@@ -138,14 +277,27 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             }));
             this.handlers.push(Y.after("edit-entity:edit", function(e) {
                 var pageId = e.entity instanceof Y.Wegas.persistence.PageMeta && e.entity.get("id");
-                var folderId = e.entity instanceof Y.Wegas.persistence.PageFolderMeta && e.entity.get("id");
+                var isFolder = e.entity instanceof Y.Wegas.persistence.PageFolderMeta;
+                var path = e.entity.get("path")
 
                 var cur = this.treeView.find(function(item) {
                     var data = item.get("data");
-                    if (pageId && data && data.page === pageId) {
+                    if (pageId && data && data.page && data.page.id === pageId) {
                         return true;
-                    } else if (folderId) {
-                        // TODO: compare PATH !!!
+                    } else if (isFolder) {
+                        // folder must have the same path
+                        if (data && data.path && path) {
+                            if (data.path.length === path.length) {
+                                for (var i = 0; i < path.length; i++) {
+                                    if (data.path[i] !== path[i]) {
+                                        return false;
+                                    }
+                                }
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
                         return false;
                     } else {
                         return item.get("data.widget") ?
@@ -153,64 +305,38 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                             false;
                     }
                 });
+
                 this.treeView.deselectAll();
+
                 if (cur) {
-                    this.currentSelection = e.entity.get("id");
-                    cur.set("selected", 2);
+                    this.selectItem(cur)
                 }
-            }, this));
-            this.handlers.push(Y.after("edit-entity:cancel", function(e) {
-                this.currentSelection = -1;
-                this.treeView.set("selected", 0);
             }, this));
 
-            // Initialize the 'New page' button menu :
-            var menu = [{
-                    type: "Button",
-                    label: "Standard (List layout)",
-                    on: {click: Y.bind(this.newPage, this, {type: "FlexList"})}
-                }, {
-                    type: "Button",
-                    label: "Beginner (Absolute layout)",
-                    on: {click: Y.bind(this.newPage, this, {type: "AbsoluteLayout"})}
-                }, {
-                    type: "Button",
-                    label: "Folder",
-                    on: {click: Y.bind(this.newFolder, this)}
-                }
-            ];
+            this.handlers.push(Y.after("edit-entity:cancel", function(e) {
+                this.selectItem(null);
+            }, this));
 
             if (this.btnNew) {
+                // Initialize the 'New page' button menu :
                 this.btnNew.plug(Plugin.WidgetMenu, {
-                    children: menu
+                    children: getAddBtnMenuItems([])
                 });
             }
         },
-        newPage: function(cfg, event) {
-            DATASOURCE.createPage(cfg, Y.bind(function(page, id) {
-                this.changePage(id, Y.bind(function(id) {
-                    this.treeView.some(function() {
-                        if (+this.get("data.page") === +id) {
-                            this.fire("click");
-                            return true;
-                        }
-                    });
-                }, this, id), true);
-            }, this));
+        selectItem: function(item) {
+            if (item) {
+                item.expandParents();
+                item.set("selected", 2);
+            } else {
+                this.treeView.set("selected", 0);
+            }
         },
         newFolder: function(cfg, event) {
-            DATASOURCE.createFolder(cfg, Y.bind(function(page, id) {
-                this.changePage(id, Y.bind(function(id) {
-                    this.treeView.some(function() {
-                        if (+this.get("data.page") === +id) {
-                            this.fire("click");
-                            return true;
-                        }
-                    });
-                }, this, id), true);
+            DATASOURCE.createFolder(cfg, Y.bind(function() {
+
             }, this));
         },
-
         getIndex: function() {
             if (this.indexReq) {
                 return;
@@ -219,13 +345,6 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 this.indexReq = null;
                 this.buildIndex(index);
             }, this));
-        },
-        buildWidgetTree: function(node) {
-            var widget = this.get("pageLoader").get("widget");
-            this.cleanAllChildren();
-            node.destroyAll();
-            this.buildSubTree(node, widget);
-            node.expand(false);
         },
         buildSubTree: function(widget) {
             var selected;
@@ -269,19 +388,13 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             }
         },
         updateWidget: function(e) {
-            var updatedWidget = e.target || e.currentTarget; // currentTarget is the page, target the widget
+            var widget = e.target || e.currentTarget; // currentTarget is the page, target the widget
             var currentNode;
-
-            var isPage = !!updatedWidget["@pageId"];
 
             // fetch the node whom the updated child belongs
             currentNode = this.treeView.find(function(item) {
-                if (isPage) {
-                    return item.get("data.page") === updatedWidget["@pageId"];
-                } else {
-                    if (item.get("data.widget")) {
-                        return item.get("data.widget") === updatedWidget;
-                    }
+                if (item.get("data.widget")) {
+                    return item.get("data.widget") === widget;
                 }
             });
 
@@ -289,30 +402,21 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 var state = this.treeView.saveState();
                 var scrollTop = this.get("contentBox").getDOMNode().scrollTop;
                 currentNode.destroyAll();
+                currentNode.get("boundingBox").addClass("no-transition");
 
-                if (isPage) {
-                    // rebuild the while page tree
-                    this.buildSub(currentNode, updatedWidget);
-                } else {
-                    /*
-                     * after a widget.rebuild(), update references.
-                     */
-                    e.currentTarget.detach("*:addChild", this._addChild, this);
-                    e.currentTarget.onceAfter("*:addChild", this._addChild, this);
+                var newTree = this.buildSubTree(widget);
+                currentNode.add(newTree.children);
 
-                    e.currentTarget.detach("*:removeChild", this._removeChild, this);
-                    e.currentTarget.onceAfter("*:removeChild", this._removeChild, this);
+                this.reinitListener(widget);
+                this.initListeners(currentNode);
 
-                    updatedWidget.each(function(item) {
-                        this.buildSubTree(currentNode, item);
-                    }, this);
-
-                }
                 this.treeView.applyState(state);
 
+                this.get("contentBox").getDOMNode().scrollTop = scrollTop;
+
                 // transitoin duration definee in treeview.css: 150ms
-                Y.later(155, this, function() {
-                    this.get("contentBox").getDOMNode().scrollTop = scrollTop;
+                Y.later(5, currentNode, function() {
+                    this.get("boundingBox").removeClass("no-transition");
                 });
             } else {
                 // node not found:  update whole treeview
@@ -334,46 +438,40 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
              * after a widget.rebuild(), update references.
              */
             if (node.item(0)) {
-                node.item(0).get("data.widget").detach("*:addChild", this._addChild, this);
-                node.item(0).get("data.widget").onceAfter("*:addChild", this._addChild, this);
-            }
-
-            if (node.item(0)) {
-                node.item(0).get("data.widget").detach("*:removeChild", this._removeChild, this);
-                node.item(0).get("data.widget").onceAfter("*:removeChild", this._removeChild, this);
+                this.reinitListener(node.item(0).get("data.widget"));
             }
         },
-        new_buildSub: function(widget) {
-            if (node.item(0) && node.item(0).expand) {
-                node.item(0).expand(false);
-            }
-            /*
-             * after a widget.rebuild(), update references.
-             */
-            if (node.item(0)) {
-                node.item(0).get("data.widget").detach("*:addChild", this._addChild, this);
-                node.item(0).get("data.widget").onceAfter("*:addChild", this._addChild, this);
-            }
+        reinitListener: function(widget) {
+            if (widget) {
+                widget.detach("*:addChild", this._addChild, this);
+                widget.onceAfter("*:addChild", this._addChild, this);
 
-            if (node.item(0)) {
-                node.item(0).get("data.widget").detach("*:removeChild", this._removeChild, this);
-                node.item(0).get("data.widget").onceAfter("*:removeChild", this._removeChild, this);
+                widget.detach("*:removeChild", this._removeChild, this);
+                widget.onceAfter("*:removeChild", this._removeChild, this);
             }
         },
-
-        _genTree: function(item, displayedPage, pageWidget, path) {
-            var currentPath = path ? path.splice() : [];
+        initListeners: function(root) {
+            root.get("contentBox").all(".widget-node").each(function(widgetNode) {
+                var leaf = Y.Widget.getByNode(widgetNode);
+                if (leaf) {
+                    this.reinitListener(leaf.get("data.widget"));
+                }
+            }, this);
+        },
+        _genTree: function(item, displayedPage, defaultPage, pageWidget, path) {
+            var currentPath = path ? path.slice() : [];
 
             if (item.items) {
                 // folder
-                currentPath.push(item.name);
+                if (item.name != undefined) {
+                    // skip root
+                    currentPath.push(item.name);
+                }
                 var children = [];
                 var i;
 
                 for (i in item.items) {
-                    children.push(
-                        this._genTree(item.items[i], displayedPage, pageWidget, currentPath)
-                        );
+                    children.push(this._genTree(item.items[i], displayedPage, defaultPage, pageWidget, currentPath));
                 }
                 return {
                     type: 'TreeNode',
@@ -383,8 +481,8 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                         path: currentPath,
                         folder: item
                     },
-                    cssClass: "wegas-editor-page-folder-node",
-                    iconCSS: 'wegas-icon-variabledescriptor wegas-icon-listdescriptor'
+                    cssClass: "index-folder index-item",
+                    iconCSS: 'fa fa-folder'
                 };
             } else if (item.id) {
                 currentPath.push(item.id);
@@ -393,17 +491,19 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                     label: (item.name ? item.name : "<i>Unnamed</i>") + " (" + item.id + ")",
                     data: {
                         path: currentPath,
-                        page: item.id,
-                        name: item.name
+                        page: item
                     },
-                    cssClass: "wegas-editor-page-node",
-                    iconCSS: "wegas-icon-page"
+                    cssClass: "index-item",
+                    iconCSS: "fa fa-file"
                 };
 
-                if (item.id === displayedPage) {
+                if (item.id === defaultPage) {
+                    node.cssClass += " default-page";
+                }
 
-                    node.type = 'TreeNode',
-                        node.cssClass += " current-page";
+                if (item.id === displayedPage) {
+                    node.type = 'TreeNode';
+                    node.cssClass += " current-page";
                     node.collapsed = false;
                     node.children = this.buildSubTree(pageWidget);
                 }
@@ -428,28 +528,62 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             this.showOverlay();
             this.treeView.destroyAll();
 
-            this.treeView.add(this._genTree(index.root, pageId, pageWidget).children);
+            this.treeView.add(this._genTree(index.root, pageId, index.defaultPageId, pageWidget).children);
+            this.initListeners(this.treeView);
 
             this.treeView.applyState(twState);
 
+            this.selectItem(this.treeView.find(function(item) {
+                return item && item.get("data.page.id") === pageId;
+            }));
+
             this.hideOverlay();
         },
+        setAsDefaultPage: function(page) {
+            DATASOURCE.setDefaultPage(page.id, Y.bind(this.buildIndex, this));
+        },
         editPageMeta: function(data) {
-            Plugin.EditEntityAction.showEditForm(new Wegas.persistence.PageMeta({
-                id: data.page,
-                name: data.name
-            }), Y.bind(function(value, page) {
-                Plugin.EditEntityAction.hideEditFormOverlay();
-                DATASOURCE.renameItem(data.path, value.name, Y.bind(this.buildIndex, this));
-            }, this));
+            var thePage = new Wegas.persistence.PageMeta(data.page);
+            var form = Plugin.EditEntityAction.showEditForm(thePage,
+                Y.bind(function(value) {
+                    Plugin.EditEntityAction.hideEditFormOverlay();
+                    DATASOURCE.updateIndexItem(data.path, value, Y.bind(this.buildIndex, this));
+                }, this));
+
+            var menu = getPageMenuItems(this, data).slice(1);
+            Plugin.EditEntityAction.processMenu(menu, thePage);
+            form.toolbar.add(menu);
         },
         editFolderMeta: function(data) {
-            Plugin.EditEntityAction.showEditForm(new Wegas.persistence.PageFolderMeta({
-                name: data.name
-            }), Y.bind(function(value, page) {
-                Plugin.EditEntityAction.hideEditFormOverlay();
-                DATASOURCE.renameItem(data.path, value.name, Y.bind(this.buildIndex, this));
-            }, this));
+            var folder = new Wegas.persistence.PageFolderMeta({
+                "@class": "Folder",
+                name: data.folder.name,
+                id: data.folder.name,
+                items: data.folder.items,
+                path: data.path
+            });
+            var form = Plugin.EditEntityAction.showEditForm(folder,
+                Y.bind(function(value) {
+                    Plugin.EditEntityAction.hideEditFormOverlay();
+                    delete value["@path"];
+                    delete value["items"];
+                    delete value["id"];
+                    DATASOURCE.updateIndexItem(data.path, value, Y.bind(this.buildIndex, this));
+                }, this));
+
+            var menu = [{
+                    type: "Button",
+                    label: "Add",
+                    plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                children: getAddBtnMenuItems(data.path)
+                            }
+                        }]
+                }];
+
+            Plugin.EditEntityAction.processMenu(menu, folder);
+            form.toolbar.add(menu);
         },
         deletePage: function(pageId) {
             var treeNode, i;
@@ -479,15 +613,6 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             DATASOURCE.duplicate(pageId, Y.bind(function(page, id) {
                 this.changePage(id, null, true);
             }, this));
-        },
-        cleanAllChildren: function() {
-            var i;
-            for (i in this.treeView._items) {
-                if (this.treeView._items.hasOwnProperty(i)) {
-                    this.treeView._items[i].collapse(false);
-                }
-                //this.treeView._items[i].removeAll();
-            }
         },
         changePage: function(pageId, callback, force) {
             var pageLoader = this.get("pageLoader");
@@ -560,17 +685,20 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
         onTreeViewSelection: function(e) {
             var selection = e.target,
                 data = selection.get("data"),
-                page, widget;
+                page, widget, folder;
             if (Y.Lang.isUndefined(data)) {
                 return;
             }
             page = data.page;
             widget = data.widget;
+            folder = data.folder;
 
             if (page) {
-                this.get(HOST).changePage(page, Y.bind(function(widget) {
+                this.get(HOST).changePage(page.id, Y.bind(function(widget) {
                     PageTreeviewToolbarMenu.superclass.onTreeViewSelection.call(this, e);
                 }, this));
+            } else if (folder) {
+                PageTreeviewToolbarMenu.superclass.onTreeViewSelection.call(this, e);
             } else if (widget && !widget.get("destroyed")) {
                 Wegas.Helper.scrollIntoViewIfNot(widget.get(BOUNDING_BOX));
                 PageTreeviewToolbarMenu.superclass.onTreeViewSelection.call(this, e);
@@ -584,32 +712,12 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             }
             if (data.page) {
                 // Add page edit, copy and delete buttons
-                menuItems = [{
-                        type: "Button",
-                        label: "<span class=\"wegas-icon wegas-icon-edit\"></span>Edit",
-                        on: {
-                            click: Y.bind(host.editPageMeta, host, data)
-                        }
-                    },
-                    {
-                        type: "Button",
-                        label: "<span class=\"wegas-icon wegas-icon-copy\"></span>Duplicate",
-                        on: {
-                            click: Y.bind(host.duplicatePage, host, data.page)
-                        }
-                    },
-                    {
-                        type: "Button",
-                        label: "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
-                        on: {
-                            click: Y.bind(host.deletePage, host, data.page)
-                        }
-                    }];
+                menuItems = getPageMenuItems(host, data);
             } else if (data.widget) {
                 menuItems = PageTreeviewToolbarMenu.superclass.getMenuItems.call(this, data);
-                //if (data.page) {
-                //menuItems.splice(menuItems.length - 2, 2); // Remove widget delete, copy button
-                //}
+                if (data.widget === data.widget.get("root")) {
+                    menuItems.splice(menuItems.length - 2, 2); // Remove widget delete, copy button
+                }
             } else if (data.folder) {
                 menuItems = [{
                         type: "Button",
@@ -617,7 +725,18 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                         on: {
                             click: Y.bind(host.editFolderMeta, host, data)
                         }
-                    }];
+                    },
+                    {
+                        type: "Button",
+                        label: "Add",
+                        plugins: [{
+                                fn: "WidgetMenu",
+                                cfg: {
+                                    children: getAddBtnMenuItems(data.path)
+                                }
+                            }]
+                    }
+                ];
 
             }
             return menuItems;

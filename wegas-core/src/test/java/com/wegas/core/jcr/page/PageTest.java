@@ -45,7 +45,7 @@ public class PageTest extends AbstractArquillianTest {
     private JCRTestFacade jcrTestFacade;
 
     @Before
-    public void before() throws RepositoryException {
+    public void before() throws RepositoryException, JsonProcessingException {
         pageFacade.createPage(gameModel, "1", pageContent.deepCopy());
     }
 

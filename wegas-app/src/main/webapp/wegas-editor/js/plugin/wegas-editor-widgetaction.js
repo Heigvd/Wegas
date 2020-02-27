@@ -91,6 +91,10 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                     type: "array",
                     view: {type: "hidden"}
                 };
+                if (widget.isRoot()){
+                    // can not duplicate or delete root
+                    menuItems.splice(menuItems.length -2, 2);
+                }
                 showForm = Y.bind(function(cfg) {
                     var form = Plugin.EditEntityAction.showEditForm(widget, Y.bind(function(val, entity) {
                         Plugin.EditEntityAction.showEditFormOverlay();

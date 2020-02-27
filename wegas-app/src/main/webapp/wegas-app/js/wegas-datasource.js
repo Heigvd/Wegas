@@ -1532,8 +1532,6 @@ YUI.add('wegas-datasource', function(Y) {
             var old = Y.JSON.stringify(this.getCache(pageId)),
                 page;
             if (Y.Lang.isObject(object)) {
-                delete object['@name'];
-                delete object['@index'];
                 if (Y.JSON.stringify(object) !== old) {
                     this.get(HOST).data["" + pageId] = object;
                     page = Y.clone(object);
@@ -1564,7 +1562,7 @@ YUI.add('wegas-datasource', function(Y) {
                 pe = Y.clone(page);
             delete pe["@pageId"];
             return this.sendRequest({
-                request: "" + pageId,
+                request: "Page/" + pageId,
                 cfg: {
                     method: PUT,
                     data: Y.JSON.stringify(pe)
@@ -1578,52 +1576,23 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
         },
-        /**
-         *
-         * @param {Object} entity
-         * @param {Function} (optional) callback, parameters (page created, page's id, index);
-         * @returns {undefined}
-         */
-        createPage: function(entity, callback) {
-            var pe = Y.clone(entity);
-            delete pe["@pageId"];
+        createIndexItem: function(data, callback) {
             this.index = null;
-            return this.sendRequest({request: "", cfg: {
-                    method: PUT,
-                    data: Y.JSON.stringify(pe)
+            return this.sendRequest({request: "CreateIndexItem",
+                cfg: {
+                    method: POST,
+                    data: data
                 },
                 on: {
                     success: Y.bind(function(e) {
                         if (callback instanceof Function) {
-                            this.getIndex(Y.bind(callback,
-                                callback,
-                                e.response.results,
-                                e.data.getResponseHeader("Page")));
+                            this.getIndex(callback);
                         } else {
                             this.getIndex();
                         }
                     }, this)
                 }
             });
-        },
-        createFolder: function(entity, callback) {
-            var folder = Y.clone(entity);
-            this.index = null;
-            /*return this.sendRequest({request: "",
-             cfg: {
-             method: PUT,
-             data: Y.JSON.stringify(pe)
-             },
-             on: {
-             success: Y.bind(function(e) {
-             if (callback instanceof Function) {
-             this.getIndex(Y.bind(callback, callback, e.response.results, e.data.getResponseHeader("Page")));
-             } else {
-             this.getIndex();
-             }
-             }, this)
-             }
-             });*/
         },
         /**
          * @function
@@ -1644,7 +1613,7 @@ YUI.add('wegas-datasource', function(Y) {
             // Y.JSON.stringify(newPage)));
             patch = jsonpatch.compare(oldPage, newPage);
             return this.sendRequest({
-                request: "" + pageId,
+                request: "Patch/" + pageId,
                 cfg: {
                     method: PUT,
                     headers: {
@@ -1662,15 +1631,32 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
         },
-        renameItem: function(path, name, callback) {
+        setDefaultPage: function(pageId, callback) {
             this.index = null;
             return this.sendRequest({
-                request: "rename",
+                request: "SetDefault/" + pageId,
+                cfg: {
+                    method: PUT
+                },
+                on: {
+                    success: Y.bind(function(e) {
+                        if (callback instanceof Function) {
+                            callback(e.response.results);
+                        }
+                    }, this)
+                }
+            });
+        },
+
+        updateIndexItem: function(path, item, callback) {
+            this.index = null;
+            return this.sendRequest({
+                request: "UpdateIndex",
                 cfg: {
                     method: PUT,
                     data: {
                         path: path,
-                        name: name
+                        item: item
                     }
                 },
                 on: {
@@ -1685,7 +1671,7 @@ YUI.add('wegas-datasource', function(Y) {
         duplicate: function(pageId, callback) {
             this.index = null;
             return this.sendRequest({
-                request: "" + pageId + "/duplicate",
+                request: "Duplicate/" + pageId,
                 on: {
                     success: Y.bind(function(e) {
                         if (callback instanceof Function) {
@@ -1709,7 +1695,7 @@ YUI.add('wegas-datasource', function(Y) {
         deletePage: function(pageId, callback) {
             this.index = null;
             return this.sendRequest({
-                request: "" + pageId,
+                request: "Page/" + pageId,
                 cfg: {
                     method: 'DELETE'
                 },
@@ -1759,7 +1745,7 @@ YUI.add('wegas-datasource', function(Y) {
             } else if (!this.pageQuery[pageId]) {
                 this.pageQuery[pageId] = true;
                 return this.sendRequest({
-                    request: "" + pageId,
+                    request: "Page/" + pageId,
                     on: {
                         success: Y.bind(function(e) {
                             var page;
@@ -1783,29 +1769,26 @@ YUI.add('wegas-datasource', function(Y) {
                 });
             }
         },
-        move: function(pageId, pos, callback) {
-            this.getMeta(pageId, Y.bind(function(meta) {
-                if (+meta.index === pos) {
-                    //Same pos. return old index
-                    this.getIndex(callback);
-
-                } else {
-                    this.index = null;
-                    return this.sendRequest({
-                        request: "" + pageId + "/move/" + pos,
-                        cfg: {
-                            method: PUT
-                        },
-                        on: {
-                            success: function(e) {
-                                if (callback instanceof Function) {
-                                    callback(e.response.results);
-                                }
-                            }
+        move: function(from, to, pos, callback) {
+            this.index = null;
+            return this.sendRequest({
+                request: "Move",
+                cfg: {
+                    method: PUT,
+                    data: {
+                        from: from,
+                        to: to,
+                        pos: pos
+                    }
+                },
+                on: {
+                    success: function(e) {
+                        if (callback instanceof Function) {
+                            callback(e.response.results);
                         }
-                    });
+                    }
                 }
-            }, this));
+            });
         },
         getMeta: function(pageId, callback) {
             this.getIndex(function(index) {
@@ -1822,7 +1805,7 @@ YUI.add('wegas-datasource', function(Y) {
         },
         getIndex: function(callback) {
             var cfg = {
-                request: "index",
+                request: "Index",
                 on: {}
             };
             if (this.index && callback instanceof Function) {

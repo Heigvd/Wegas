@@ -170,6 +170,7 @@ public class Pages extends JTARepositoryConnector {
     public void store(Page page) throws RepositoryException {
         Node n = this.connector.addChild(page.getId());
         n.setProperty("content", page.getContent().toString());
+        this.setMeta(page);
     }
 
     /**
@@ -177,10 +178,9 @@ public class Pages extends JTARepositoryConnector {
      *
      * @throws RepositoryException
      */
-    @Deprecated
     public void setMeta(Page page) throws RepositoryException {
         Node n = this.connector.getChild(page.getId());
-        if (page.getName() != null) {
+        if (!Helper.isNullOrEmpty(page.getName())) {
             n.setProperty(Page.NAME_KEY, page.getName());
         }
         if (page.getIndex() != null) {
@@ -296,22 +296,6 @@ public class Pages extends JTARepositoryConnector {
         Collections.sort(pages, (Page o1, Page o2) -> o1.getIndex().compareTo(o2.getIndex()));
 
         return pages;
-    }
-
-    /**
-     * Return the first page or null is there is no pages
-     *
-     * @return
-     *
-     * @throws RepositoryException
-     */
-    public Page getDefaultPage() throws RepositoryException {
-        final NodeIterator query = this.connector.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('"
-            + this.connector.getRootPath() + "') order by n.index, localname(n)", 1);
-        if (query.hasNext()) {
-            return new Page(query.nextNode());
-        }
-        return null;
     }
 
     @Override
