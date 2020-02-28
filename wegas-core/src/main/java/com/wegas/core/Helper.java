@@ -173,6 +173,20 @@ public class Helper {
         return t == null || t.isEmpty();
     }
 
+    /**
+     * Return the first non-null and non-empty args
+     * @param args
+     * @return first non-empty arguments or empty string
+     */
+    public static String coalesce(String ...args){
+        for (String arg: args){
+            if (!Helper.isNullOrEmpty(arg)){
+                return arg;
+            }
+        }
+        return "";
+    }
+
     public static enum NewNameStrategy {
         ORDINAL,
         HASH

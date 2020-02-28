@@ -9,7 +9,9 @@ package com.wegas.core.persistence.variable.primitive;
 
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.View.I18nHtmlView;
@@ -59,4 +61,25 @@ public class StaticTextDescriptor extends VariableDescriptor<StaticTextInstance>
             this.text.setParentDescriptor(this);
         }
     }
+
+    /**
+     * Hack to act as TextDescriptor
+     * @return the text
+     */
+    @JsonIgnore
+    public String getValue(Player self) {
+        return this.getText().translateOrEmpty(self);
+    }
+
+    /**
+     *
+     * @param p
+     *
+     * @return the text
+     */
+    @JsonIgnore
+    public TranslatableContent getTrValue(Player p) {
+        return this.getText();
+    }
+
 }

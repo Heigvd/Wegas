@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
@@ -46,13 +47,13 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @NamedQuery(name = "Player.findPlayerByGameModelIdAndUserId",
-        query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.gameTeams.game.gameModel.id = :gameModelId")
+    query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.gameTeams.game.gameModel.id = :gameModelId")
 @NamedQuery(name = "Player.findPlayerByGameIdAndUserId",
-        query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.gameTeams.game.id = :gameId")
+    query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.gameTeams.game.id = :gameId")
 @NamedQuery(name = "Player.findPlayerByTeamIdAndUserId",
-        query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.id = :teamId")
+    query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.id = :teamId")
 @NamedQuery(name = "Player.findToPopulate",
-        query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
+    query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(indexes = {
     @Index(columnList = "user_id"),
@@ -77,7 +78,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      */
     @Column(length = 16, columnDefinition = "character varying(16) default ''::character varying")
     @WegasEntityProperty(nullable = false, optional = false,
-            view = @View(label = "Language", readOnly = true, value = StringView.class))
+        view = @View(label = "Language", readOnly = true, value = StringView.class))
     private String lang;
 
     @JsonIgnore
@@ -89,14 +90,14 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     /**
      *
-     * @Column(name = "user_id", nullable = true, insertable = false, updatable
-     * = false) private Long userId;
+     * @Column(name = "user_id", nullable = true, insertable = false, updatable = false) private
+     * Long userId;
      */
     /**
      *
      */
     @WegasEntityProperty(optional = false, nullable = false,
-            view = @View(label = "Name", readOnly = true, value = StringView.class))
+        view = @View(label = "Name", readOnly = true, value = StringView.class))
     private String name;
     /**
      *
@@ -121,12 +122,12 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     @Version
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
-            sameEntityOnly = true, view = @View(
-                    label = "Version",
-                    readOnly = true,
-                    value = NumberView.class,
-                    featureLevel = ADVANCED
-            )
+        sameEntityOnly = true, view = @View(
+            label = "Version",
+            readOnly = true,
+            value = NumberView.class,
+            featureLevel = ADVANCED
+        )
     )
     @Column(columnDefinition = "bigint default '0'::bigint")
     private Long version;
@@ -141,8 +142,8 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     /**
      *
-     * @Column(name = "parentteam_id", nullable = false, insertable = false,
-     * updatable = false) private Long teamId;
+     * @Column(name = "parentteam_id", nullable = false, insertable = false, updatable = false)
+     * private Long teamId;
      */
     /**
      *
@@ -186,7 +187,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     @PreUpdate
     public void preUpdate() {
         if ((this.getName() == null || this.getName().equals(""))
-                && this.getUser() != null) {                                    // User may be null for test players
+            && this.getUser() != null) {                                    // User may be null for test players
             this.name = this.getUser().getName();
         }
     }
@@ -245,8 +246,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     /**
      *
-     * @param teamId public void setTeamId(Long teamId) { this.teamId = teamId;
-     *               }
+     * @param teamId public void setTeamId(Long teamId) { this.teamId = teamId; }
      */
     /**
      * @return the userId
@@ -368,8 +368,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     }
 
     /**
-     * Retrieve all variableInstances that belongs to this player only (ie.
-     * playerScoped)
+     * Retrieve all variableInstances that belongs to this player only (ie. playerScoped)
      *
      * @return all player playerScoped instances
      */
@@ -486,5 +485,57 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     public boolean isTestPlayer() {
         return this.getTeam() instanceof DebugTeam || this.getGame() instanceof DebugGame;
+    }
+
+    /**
+     * Assert the given player has a valid email address, according to the list of allowed
+     * domains.If the domain list is empty then everything is allowed.If not empty, the player must
+     * have an address in this domain.Moreover, if mustBeVerigied is true, the address must have
+     * been verified
+     * <p>
+     * An administrator is always allowed, as well as test players.
+     *
+     * @param allowedDomains     list of allowed domain
+     * @param mustBeVerified     ensure the player has verified his address
+     * @param notAllowedMessage  to override default error message, may be null
+     * @param notVerifiedMessage to override default error message, may be null
+     */
+    public void assertEmailValdity(List<String> allowedDomains,
+        boolean mustBeVerified, String notAllowedMessage, String notVerifiedMessage) {
+
+        if (allowedDomains != null && !allowedDomains.isEmpty()) {
+            User user = this.getUser();
+
+            // test player is not linked to any user
+            if (user != null) {
+                List<String> domains = new ArrayList<>(allowedDomains.size());
+                for (String domain : allowedDomains) {
+                    String trim = domain.toLowerCase().trim();
+                    if (!Helper.isNullOrEmpty(trim)) {
+                        domains.add(trim);
+                    }
+                }
+                if (!domains.isEmpty()) {
+
+                    AbstractAccount account = user.getMainAccount();
+                    if (Helper.isNullOrEmpty(account.getEmail())) {
+                        throw WegasErrorMessage.error("You have to provide an email address!");
+                    } else {
+                        String domain = account.getEmail().split("@")[1].toLowerCase();
+                        if (!domains.contains(domain)) {
+                            throw WegasErrorMessage.error(
+                                Helper.coalesce(notAllowedMessage,
+                                    "Email addresses \"@" + domain + "\" are not allowed")
+                            );
+                        }
+                    }
+                    if (mustBeVerified && !account.isVerified()) {
+                        throw WegasErrorMessage.error(
+                            Helper.coalesce(notVerifiedMessage,
+                                "You have to verify your email address"));
+                    }
+                }
+            }
+        }
     }
 }
