@@ -226,7 +226,8 @@ YUI.add("wegas-entitychooser", function(Y) {
                                 getLabel = eval("(" + getLabel + ")");
                             }
                             label = getLabel(items[i], items[i].get("name"), function(name, the_label) {
-                                entityBox.one("[data-name='" + name + "']").setContent(I18n.t(the_label));
+                                entityBox.one("[data-name='" + name + "']").setContent(
+                                    typeof the_label === 'string' ? the_label : I18n.t(the_label));
                             });
                         }
 
