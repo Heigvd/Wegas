@@ -9,7 +9,7 @@ import { useDrop, DropTargetMonitor } from 'react-dnd';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { themeVar } from '../../Theme';
 import List from '../../Layouts/List';
-import { expand } from '../../../css/classes';
+import { expandBoth } from '../../../css/classes';
 import { Centered } from '../../Layouts/Centered';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
@@ -47,7 +47,7 @@ export function ComponentEditorHandle({
       <div className={className}>
         <div
           className={cx(
-            expand,
+            expandBoth,
             css({ background: themeVar.primaryHoverColor }),
           )}
         >

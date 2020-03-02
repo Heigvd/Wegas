@@ -102,7 +102,7 @@ export default function NumberSliderTester({
         min={0}
         max={10}
         disabled
-        disabledStyle={{ backgroundColor: 'red' }}
+        // disabledStyle={{ backgroundColor: 'red' }}
       />
       <NumberSliderPack
         label="Handlestyle"

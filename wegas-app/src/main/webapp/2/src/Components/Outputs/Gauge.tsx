@@ -1,128 +1,87 @@
 import * as React from 'react';
-import { css } from 'emotion';
-import { useScript } from '../Hooks/useScript';
-import { useVariableInstance } from '../Hooks/useVariable';
-import { themeVar } from '../Theme';
-import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
-import { TranslatableContent } from '../../data/i18n';
+import {
+  expandBoth,
+  centeredContent,
+  textCenter,
+  expandWidth,
+  flexColumn,
+  grow,
+} from '../../css/classes';
+import { PieChart, PieChartSection } from './PieChart';
+import { wlog } from '../../Helper/wegaslog';
+import { Value } from './Value';
+import { cx } from 'emotion';
 
-const containerStyle = css({
-  minWidth: '8em',
-  position: 'relative',
-});
-const textStyle = css({
-  position: 'absolute',
-  bottom: 0,
-  width: '100%',
-  textAlign: 'center',
-});
-function degToRad(angle: number) {
-  return (Math.PI * angle) / 180;
-}
-function polarToCartesian(
-  cx: number,
-  cy: number,
-  r: number,
-  angle_deg: number,
-) {
-  const rad = degToRad(angle_deg);
-  return [cx + r * Math.cos(rad), cy - r * Math.sin(rad)];
-}
-/**
- * Compute the ratio of a given value between it's boundaries
- * @param value
- * @param min
- * @param max
- */
-function ratio(value: number, min: number, max: number) {
-  return (value - min) / (max - min);
+interface GaugeSection {
+  backgroundColor: React.CSSProperties['backgroundColor'];
+  stopValue: number;
 }
 
 export interface GaugeProps {
   /**
-   * script - a script returning a NumberDescriptor
+   * value - the current value of the slider
    */
-  script?: IScript;
+  value: number;
   /**
-   * Zero, defaults to min
+   * min - the minimum value to slide (0 by default)
    */
-  neutralValue?: number;
+  min: number;
   /**
-   * Color above neutral threshold
+   * sections - the sections in the gauge (at least one section must be defined with the maximum value as stopValue)
    */
-  positiveColor?: string;
+  sections: GaugeSection[];
   /**
-   * Color bellow neutral threshold
+   * label - The label to display with the gauge
    */
-  negativeColor?: string;
+  label?: string;
+  /**
+   * displayValue - should the current value be displayed with the gauge
+   */
+  displayValue?: boolean;
+  /**
+   * minAngle - the angle of the min value (0 is left, 90 is top, 180 is right, 270 is bottom)
+   */
+  minAngle: number;
+  /**
+   * maxAngle - the angle of the max value (0 is left, 90 is top, 180 is right, 270 is bottom)
+   */
+  maxAngle: number;
+  /**
+   * holeSize - the proportion of the hole in the center of the gauge (from 0 to 100)
+   */
+  holeSize?: number;
 }
 
-export function Gauge(props: GaugeProps) {
-  const { script } = props;
-  const descriptor = useScript(
-    script ? script.content : '',
-  ) as ISNumberDescriptor;
-  const instance = useVariableInstance(descriptor);
-  if (descriptor === undefined || instance === undefined) {
-    return <pre>Not found: {script ? script.content : ''}</pre>;
-  }
-  const {
-    positiveColor = themeVar.successColor,
-    negativeColor = themeVar.errorColor,
-  } = props;
-  const min = descriptor.minValue;
-  const max = descriptor.maxValue;
-  if (min == null || max == null || min === max) {
-    return (
-      <span>
-        <FontAwesome
-          style={{ color: themeVar.warningColor }}
-          icon="exclamation-triangle"
-        />
-        {min === max
-          ? `Min value (${min}) and max value (${max}) are the same, use a number box to display a constant number`
-          : `Missing min or max value in ${descriptor.label}`}
-      </span>
-    );
-  }
-  const boundedValue = Math.max(min, Math.min(max, instance.value));
-  const neutral = props.neutralValue === undefined ? min : props.neutralValue;
-  const neutralAngle = 180 - ratio(neutral, min, max) * 180;
-  const start = polarToCartesian(500, 500, 450, neutralAngle);
-  const valueAngle = 180 - ratio(boundedValue, min, max) * 180;
-  const end = polarToCartesian(500, 500, 450, valueAngle);
-  const positive = valueAngle < neutralAngle;
+export function Gauge({
+  value,
+  min,
+  sections,
+  label,
+  displayValue,
+  minAngle,
+  maxAngle,
+  holeSize = 50,
+}: GaugeProps) {
+  const sortedSections = sections.sort((a, b) => a.stopValue - b.stopValue);
+  const maxValue = sortedSections.slice(-1)[0].stopValue;
+
+  const computedSections: PieChartSection[] = sortedSections.map(s => ({
+    angleTo:
+      minAngle + ((maxAngle - minAngle) * s.stopValue) / (maxValue - min),
+    fill: s.backgroundColor,
+  }));
 
   return (
-    <div className={containerStyle}>
-      <svg viewBox="0 0 1000 500">
-        <path
-          strokeWidth="75"
-          fill="none"
-          stroke={themeVar.disabledColor}
-          d="M 50 500 A 450 450 0 0 1 950 500"
-        />
-        <path
-          strokeWidth="75"
-          fill="none"
-          stroke={positive ? positiveColor : negativeColor}
-          d={`M ${start[0]} ${start[1]} A 450 450 0 0 ${positive ? 1 : 0} ${
-            end[0]
-          } ${end[1]}`}
-        />
-        <circle
-          cx={end[0]}
-          cy={end[1]}
-          r="37"
-          strokeWidth="20"
-          stroke={themeVar.primaryLighterColor}
-          fill={themeVar.primaryDarkerColor}
-        />
-      </svg>
-      <div className={textStyle}>
-        <div>{descriptor.label}</div>
-        <div>{instance.value}</div>
-      </div>
+    <div className={cx(textCenter, centeredContent, flexColumn)}>
+      {label && <Value className={grow} value={label} />}
+      <PieChart
+        minAngle={minAngle}
+        sections={computedSections}
+        holeSize={holeSize}
+        border={{ color: 'black', size: '4' }}
+        className={grow}
+      />
+      {displayValue && <Value className={grow} value={value} />}
     </div>
   );
 }

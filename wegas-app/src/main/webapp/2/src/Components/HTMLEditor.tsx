@@ -32,7 +32,6 @@ import { classesCTX } from './Contexts/ClassesProvider';
 import { flexColumn, flex } from '../css/classes';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { debounce } from 'lodash-es';
-import { wlog } from '../Helper/wegaslog';
 
 const toolbar = css({
   width: '300px',

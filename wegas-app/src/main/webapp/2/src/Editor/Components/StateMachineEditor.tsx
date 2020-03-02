@@ -24,7 +24,7 @@ import {
   grow,
   flex,
   relative,
-  expand,
+  expandBoth,
   showOverflow,
 } from '../../css/classes';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
@@ -499,7 +499,7 @@ class StateMachineEditor extends React.Component<
             ref={n => {
               this.container = n;
             }}
-            className={cx(editorStyle, expand)}
+            className={cx(editorStyle, expandBoth)}
           >
             {plumb != null &&
               Object.keys(stateMachine.states).map(k => {

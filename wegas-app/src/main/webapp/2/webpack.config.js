@@ -8,7 +8,6 @@ const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 const smp = new SpeedMeasurePlugin();
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin;
-const nodeExternals = require('webpack-node-externals');
 
 const PROD = process.env.NODE_ENV === 'production';
 const PREPROD = process.env.NODE_ENV === 'pre-production';

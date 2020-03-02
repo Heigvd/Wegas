@@ -1,7 +1,7 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
-import { defaultPadding, expand, noOverflow } from '../../css/classes';
+import { defaultPadding, expandBoth, noOverflow } from '../../css/classes';
 import './FormView';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
@@ -55,7 +55,7 @@ export class Form<T> extends React.Component<
   }
   render() {
     return (
-      <Toolbar className={expand}>
+      <Toolbar className={expandBoth}>
         <Toolbar.Header>
           {this.props.update && (
             <Button

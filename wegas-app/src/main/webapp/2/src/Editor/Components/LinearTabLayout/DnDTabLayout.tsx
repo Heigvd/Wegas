@@ -13,7 +13,7 @@ import {
   flex,
   relative,
   absoute,
-  expand,
+  expandBoth,
   hidden,
   hideOverflow,
   autoScroll,
@@ -268,8 +268,8 @@ export function DnDTabLayout({
         </div>
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, relative)}>
-        <div className={cx(expand, hideOverflow)}>
-          <div className={cx(autoScroll, absoute, expand, flex)}>
+        <div className={cx(expandBoth, hideOverflow)}>
+          <div className={cx(autoScroll, absoute, expandBoth, flex)}>
             {defaultActiveLabel && (
               <Reparentable
                 id={defaultActiveLabel}
@@ -286,7 +286,7 @@ export function DnDTabLayout({
             dropRightProps.canDrop ||
             dropTopProps.canDrop ||
             dropBottomProps.canDrop) && (
-            <div className={cx(absoute, expand)}>
+            <div className={cx(absoute, expandBoth)}>
               <div
                 ref={dropLeft}
                 className={cx(

@@ -69,7 +69,7 @@ export default function LanguageEditor() {
                 return (
                   <React.Fragment key={language.code}>
                     {index > 0 && (
-                      <div className={cx(flex, grow, centeredContent)}>
+                      <div className={cx(grow, centeredContent)}>
                         <IconButton
                           icon="arrows-alt-h"
                           tooltip="Priorize language on the right"
@@ -88,7 +88,7 @@ export default function LanguageEditor() {
                         />
                       </div>
                     )}
-                    <div className={cx(flex, grow, centeredContent)}>
+                    <div className={cx(grow, centeredContent)}>
                       {language.code}
                       <input
                         type="checkbox"
@@ -156,7 +156,7 @@ export default function LanguageEditor() {
                   return (
                     <div
                       key={language.code}
-                      className={cx(flex, grow, centeredContent)}
+                      className={cx(grow, centeredContent)}
                     >
                       <div className={flexColumn}>
                         <div>{`${language.lang} (${language.code})`}</div>

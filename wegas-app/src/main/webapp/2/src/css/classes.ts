@@ -38,8 +38,14 @@ export const showOverflow = css({
 });
 
 // Size
-export const expand = css({
+export const expandBoth = css({
   width: '100%',
+  height: '100%',
+});
+export const expandWidth = css({
+  width: '100%',
+});
+export const expandHeight = css({
   height: '100%',
 });
 export const schrink = css({
@@ -68,6 +74,7 @@ export const itemCenter = css({
   alignItems: 'center',
 });
 export const centeredContent = css({
+  display: 'flex',
   justifyContent: 'center',
 });
 export const foregroundContent = css({

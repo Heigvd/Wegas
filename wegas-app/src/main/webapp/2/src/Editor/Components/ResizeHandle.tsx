@@ -4,7 +4,7 @@ import {
   flex,
   flexColumn,
   grow,
-  expand,
+  expandBoth,
   centeredContent,
   schrink,
 } from '../../css/classes';
@@ -35,8 +35,8 @@ export function ResizeHandle({
       style={{ height: clientY ? clientY : '100%' }}
       className={cx(flex, flexColumn)}
     >
-      <div className={cx(flex, grow, expand)}>{children}</div>
-      <div className={cx(flex, centeredContent)}>
+      <div className={cx(flex, grow, expandBoth)}>{children}</div>
+      <div className={cx(centeredContent)}>
         <div className={cx(schrink)}>
           <IconButton
             icon={['circle', { color: 'white', icon: 'caret-down' }]}
