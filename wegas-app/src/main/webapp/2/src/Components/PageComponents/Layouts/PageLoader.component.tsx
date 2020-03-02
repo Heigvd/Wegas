@@ -6,7 +6,7 @@ import {
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { useScript } from '../../Hooks/useScript';
-import { PageLoader } from '../../../Editor/Components/Page/PageLoader';
+import { PageIdLoader } from '../../../Editor/Components/Page/PageLoader';
 
 interface PlayerPageLoaderProps extends PageComponentMandatoryProps {
   selectedPageId?: IScript;
@@ -25,7 +25,7 @@ function PlayerPageLoader({
       {selectedPageId === undefined ? (
         <pre>Unknown pageid</pre>
       ) : (
-        <PageLoader selectedPageId={pageId} />
+        <PageIdLoader selectedPageId={pageId} />
       )}
     </>
   );

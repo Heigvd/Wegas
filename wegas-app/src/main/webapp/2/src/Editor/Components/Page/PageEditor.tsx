@@ -83,9 +83,6 @@ interface SaveModalState {
 }
 type ModalState = PageModalState | ErrorModalState | SaveModalState;
 
-const computePageLabel = (id: string, pageName?: string | null) =>
-  pageName ? `${pageName} (${id})` : id;
-
 const savingProgressStatus: OnSaveStatus = {
   status: 'warning',
   text: 'Saving page in progress',
@@ -104,15 +101,17 @@ const savingErrorStatus: OnSaveStatus = {
 interface PagesState {
   defaultPage: string;
   selectedPage: string;
-  pages: { [id: string]: { name: string; page: WegasComponent } };
+  pages: PagesWithName;
   editedPath?: string[];
-  // pages: Pages;
 }
 
-const returnPages = (
+export const computePageLabel = (id: string, pageName?: string | null) =>
+  pageName ? `${pageName} (${id})` : id;
+
+export const returnPages = (
   pages: Pages,
   item?: PageIndexItem,
-): { [id: string]: { name: string; page: WegasComponent } } => {
+): PagesWithName => {
   if (item == null) {
     return {};
   }

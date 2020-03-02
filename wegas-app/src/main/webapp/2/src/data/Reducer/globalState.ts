@@ -198,23 +198,23 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.PAGE_LOAD_ID:
         state.currentPageId = action.payload;
         return;
-      case ActionType.PAGE_INDEX:
-        // if current page doesn't exist
-        if (!action.payload.some(meta => meta.id === state.currentPageId)) {
-          if (action.payload.length > 0) {
-            // there is at lease 1 page
-            state.currentPageId = action.payload[0].id;
-          } else {
-            state.currentPageId = undefined;
-          }
-        }
-        return;
-      case ActionType.PAGE_SRC_MODE:
-        state.pageSrc = action.payload;
-        return;
-      case ActionType.PAGE_EDIT_MODE:
-        state.pageEdit = action.payload;
-        return;
+      // case ActionType.PAGE_INDEX:
+      //   // if current page doesn't exist
+      //   if (!action.payload.some(meta => meta.id === state.currentPageId)) {
+      //     if (action.payload.length > 0) {
+      //       // there is at lease 1 page
+      //       state.currentPageId = action.payload[0].id;
+      //     } else {
+      //       state.currentPageId = undefined;
+      //     }
+      //   }
+      //   return;
+      // case ActionType.PAGE_SRC_MODE:
+      //   state.pageSrc = action.payload;
+      //   return;
+      // case ActionType.PAGE_EDIT_MODE:
+      //   state.pageEdit = action.payload;
+      //   return;
       case ActionType.SEARCH_CLEAR:
         state.search = { type: 'NONE' };
         return;

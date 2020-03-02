@@ -34,7 +34,7 @@ export const PageAPI = {
    * @param gameModelId gameModelId to fetch pages from
    * @param pageId optional pageId
    */
-  getAll(gameModelId: number): Promise<Pages & { index: PageIndex }> {
+  getAll(gameModelId: number): Promise<AllPages> {
     return rest(PAGE_BASE(gameModelId)).then(res => {
       return res.json();
     });

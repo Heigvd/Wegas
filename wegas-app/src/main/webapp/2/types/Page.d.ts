@@ -1,17 +1,17 @@
 type PageIndexItem = PageIndexFolder | PageIndexPage;
 
 interface PageIndexFolder {
-  '@class': 'Folder',
+  '@class': 'Folder';
   name: string;
   items: PageIndexItem[];
 }
 
 interface PageIndexPage {
-    '@class': 'Page',
-    id?: string;
-    name: string;
-    trainerPage?: boolean
-    scenaristPage?: boolean
+  '@class': 'Page';
+  id?: string;
+  name: string;
+  trainerPage?: boolean;
+  scenaristPage?: boolean;
 }
 
 interface PageIndex {
@@ -26,6 +26,18 @@ interface WegasComponent {
     [prop: string]: any;
   };
 }
+
 interface Pages {
   [id: string]: WegasComponent;
+}
+
+type AllPages = Pages & { index: PageIndex };
+
+interface PageWithName {
+  name: string;
+  page: WegasComponent;
+}
+
+interface PagesWithName {
+  [id: string]: PageWithName;
 }
