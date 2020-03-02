@@ -72,6 +72,20 @@ const pageComponentReducer: Reducer<Readonly<PageComponentsState>> = u(
   {},
 );
 
+/**
+ * importPageComponents will import all pages component in the project. This function must be called in the entry file.
+ */
+export const importPageComponents = () => {
+  // Importing all the files containing ".component." to allow component registration without explicit import
+  const componentModules = require.context(
+    '../../../',
+    true,
+    /\.component\./,
+    'lazy-once',
+  );
+  componentModules.keys().map(k => componentModules(k));
+};
+
 export const componentsStore = createStore(
   pageComponentReducer,
   composeEnhancers(

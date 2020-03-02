@@ -21,6 +21,11 @@ import { Button } from '../../../Components/Inputs/Button/Button';
 import { MessageString } from '../MessageString';
 import { Toggler } from '../../../Components/Inputs/Button/Toggler';
 import { css } from 'emotion';
+import { noop } from 'lodash-es';
+import { themeVar } from '../../../Components/Theme';
+// import pageState, { PageState } from '../../../data/Reducer/pageState';
+// import pageState from '../../../data/Reducer/pageState';
+// import { PagesLayout } from './PagesLayout';
 
 const innerButtonStyle = css({
   margin: '2px auto 2px auto',
@@ -41,10 +46,10 @@ export const pageCTX = React.createContext<PageContext>({
   editMode: false,
   showBorders: false,
   showControls: true,
-  onDrop: () => {},
-  onEdit: () => {},
-  onDelete: () => {},
-  onUpdate: () => {},
+  onDrop: noop,
+  onEdit: noop,
+  onDelete: noop,
+  onUpdate: noop,
 });
 
 const defaultPage = {
@@ -97,10 +102,30 @@ const savingErrorStatus: OnSaveStatus = {
 };
 
 interface PagesState {
+  defaultPage: string;
   selectedPage: string;
+  pages: { [id: string]: { name: string; page: WegasComponent } };
   editedPath?: string[];
-  pages: Pages;
+  // pages: Pages;
 }
+
+const returnPages = (
+  pages: Pages,
+  item?: PageIndexItem,
+): { [id: string]: { name: string; page: WegasComponent } } => {
+  if (item == null) {
+    return {};
+  }
+  if (item['@class'] === 'Folder') {
+    return {
+      ...item.items.reduce((o, i) => ({ ...o, ...returnPages(pages, i) }), {}),
+    };
+  }
+  return { [item.id!]: { name: item.name, page: pages[item.id!] } };
+};
+
+const selectedPage = (pagesState: PagesState): WegasComponent =>
+  pagesState.pages[pagesState.selectedPage].page;
 
 export default function PageEditor() {
   const gameModelId = GameModel.selectCurrent().id!;
@@ -108,14 +133,9 @@ export default function PageEditor() {
     type: 'close',
   });
   const [pagesState, setPagesState] = React.useState<PagesState>({
+    defaultPage: '0',
     selectedPage: '0',
-    pages: {
-      '0': {
-        '@index': 0,
-        '@name': 'loading...',
-        ...loadingPage,
-      },
-    },
+    pages: { '0': { name: 'Loading page', page: loadingPage } },
   });
   const [srcMode, setSrcMode] = React.useState<boolean>(false);
   const [editMode, setEditMode] = React.useState(false);
@@ -123,71 +143,56 @@ export default function PageEditor() {
   const [showControls, setShowControls] = React.useState(true);
 
   const components = usePageComponentStore(s => s);
-  const selectedPage: Page | undefined =
-    pagesState.pages[String(pagesState.selectedPage)];
+  // const selectedPage: string | undefined =
+  //   pagesState.pages[String(pagesState.selectedPage)];
 
-  const loadIndex = React.useCallback(gameModelId => {
-    PageAPI.getIndex(gameModelId).then(res => {
-      let pages: Pages = {};
-      res.forEach((index, _i, indexes) => {
-        PageAPI.get(gameModelId, index.id, true).then(res => {
-          pages = { ...pages, ...res };
-          if (Object.keys(pages).length === indexes.length) {
-            setPagesState(s => ({
-              ...s,
-              pages: pages,
-              selectedPage:
-                s.selectedPage !== '0' ? s.selectedPage : Object.keys(pages)[0],
-            }));
-          }
-        });
+  const loadIndex = React.useCallback(
+    (gameModelId, firstTime: boolean = false) => {
+      PageAPI.getAll(gameModelId).then(pages => {
+        const index = pages['index'];
+        setPagesState(ops => ({
+          defaultPage: index.defaultPageId,
+          selectedPage: firstTime ? index.defaultPageId : ops.defaultPage,
+          pages: returnPages(pages, index.root),
+        }));
       });
-    });
-  }, []);
+    },
+    [],
+  );
 
   const patchPage = React.useCallback(
-    (
-      selectedPageId: string,
-      page: Omit<Page, '@index'>,
-      callback?: (res: Page) => void,
-    ) => {
-      if (selectedPage) {
-        setModalState({ type: 'save', label: savingProgressStatus });
-        const diff = compare(selectedPage, page);
-        PageAPI.patch(gameModelId, JSON.stringify(diff), selectedPageId, true)
-          .then(res => {
-            const resKey = Object.keys(res)[0];
-            setPagesState(s => ({
-              ...s,
-              pages: { ...s.pages, [resKey]: res[resKey] },
-            }));
-            setModalState({ type: 'save', label: savingDoneStatus });
-            if (callback) {
-              callback(res);
-            }
-          })
-          .catch(e =>
-            setModalState({
-              type: 'save',
-              label: {
-                ...savingErrorStatus,
-                text: savingErrorStatus.text + '(' + e + ')',
-              },
-            }),
-          );
-      }
+    (page: WegasComponent, callback?: (res: WegasComponent) => void) => {
+      setModalState({ type: 'save', label: savingProgressStatus });
+      const diff = compare(selectedPage(pagesState), page);
+      PageAPI.patch(
+        gameModelId,
+        JSON.stringify(diff),
+        pagesState.selectedPage,
+        true,
+      )
+        .then(res => {
+          setModalState({ type: 'save', label: savingDoneStatus });
+          if (callback) {
+            callback(res);
+          }
+        })
+        .catch(e =>
+          setModalState({
+            type: 'save',
+            label: {
+              ...savingErrorStatus,
+              text: savingErrorStatus.text + '(' + e + ')',
+            },
+          }),
+        );
     },
-    [gameModelId, selectedPage],
+    [gameModelId, pagesState],
   );
-  editMode;
-  React.useEffect(() => {
-    loadIndex(gameModelId);
-  }, [loadIndex, gameModelId]);
 
   const findComponent = React.useCallback(
     (path: string[]) => {
       const browsePath = [...path];
-      const newPage = deepClone(selectedPage);
+      const newPage = deepClone(selectedPage(pagesState)) as WegasComponent;
       let parent: WegasComponent | undefined = undefined;
       let component: WegasComponent = newPage;
       while (browsePath.length > 0) {
@@ -201,7 +206,7 @@ export default function PageEditor() {
       }
       return { newPage, component, parent };
     },
-    [selectedPage],
+    [pagesState],
   );
 
   const onEdit = React.useCallback(
@@ -230,22 +235,22 @@ export default function PageEditor() {
         }
         path.push(`${index ? index : 0}`);
         onEdit(path);
-        patchPage(pagesState.selectedPage, newPage);
+        patchPage(newPage);
       }
     },
-    [components, pagesState.selectedPage, patchPage, onEdit, findComponent],
+    [components, patchPage, onEdit, findComponent],
   );
 
   const onDelete = React.useCallback(
     (path: string[]) => {
-      const newPage: Page = deepClone(selectedPage);
+      const newPage = deepClone(selectedPage(pagesState)) as WegasComponent;
       let parent: WegasComponent = newPage;
       const browsePath = [...path];
       while (browsePath.length > 0) {
         if (parent.props.children) {
           if (browsePath.length == 1) {
             parent.props.children.splice(Number(browsePath[0]), 1);
-            patchPage(pagesState.selectedPage, newPage);
+            patchPage(newPage);
             return;
           }
           parent = parent.props.children[Number(browsePath[0])];
@@ -253,7 +258,7 @@ export default function PageEditor() {
         browsePath.splice(0, 1);
       }
     },
-    [selectedPage, pagesState.selectedPage, patchPage],
+    [pagesState, patchPage],
   );
 
   const onUpdate = React.useCallback(
@@ -280,15 +285,19 @@ export default function PageEditor() {
               1,
               comp,
             );
-            patchPage(pagesState.selectedPage, newPage);
+            patchPage(newPage);
           }
         } else {
-          patchPage(pagesState.selectedPage, value as Page);
+          patchPage(value as WegasComponent);
         }
       }
     },
-    [pagesState.selectedPage, patchPage, pagesState.editedPath, findComponent],
+    [patchPage, pagesState.editedPath, findComponent],
   );
+
+  React.useEffect(() => {
+    loadIndex(gameModelId, true);
+  }, [loadIndex, gameModelId]);
 
   return (
     <Toolbar>
@@ -307,26 +316,22 @@ export default function PageEditor() {
                 } else {
                   if (success) {
                     if (modalState.type === 'newpage') {
-                      PageAPI.setPage(
+                      PageAPI.newIndexItem(
                         gameModelId,
-                        { ...defaultPage, ['@name']: value },
-                        undefined,
-                        true,
+                        [],
+                        {
+                          '@class': 'Page',
+                          name: value,
+                        },
+                        defaultPage,
                       ).then(res => {
                         setPagesState(pages => ({ ...pages, ...res }));
                         setModalState({ type: 'close' });
                       });
                     } else {
-                      patchPage(
-                        pagesState.selectedPage,
-                        {
-                          ...selectedPage,
-                          ['@name']: value,
-                        },
-                        () => {
-                          setModalState({ type: 'close' });
-                        },
-                      );
+                      patchPage(selectedPage(pagesState), () => {
+                        setModalState({ type: 'close' });
+                      });
                     }
                   }
                 }
@@ -357,19 +362,12 @@ export default function PageEditor() {
             )
           )}
           <Menu
-            label={
-              selectedPage === undefined
-                ? 'No selected page'
-                : computePageLabel(
-                    pagesState.selectedPage,
-                    selectedPage['@name'],
-                  )
-            }
+            label={pagesState.pages[pagesState.selectedPage].name}
             items={Object.keys(pagesState.pages).map((k: string) => {
               return {
                 label: (
                   <span>
-                    {computePageLabel(k, pagesState.pages[k]['@name'])}
+                    {computePageLabel(k, pagesState.pages[k].name)}
                     <ConfirmButton
                       icon="trash"
                       onAction={success => {
@@ -378,6 +376,18 @@ export default function PageEditor() {
                             loadIndex(gameModelId),
                           );
                         }
+                      }}
+                    />
+                    <IconButton
+                      icon={
+                        k === pagesState.defaultPage
+                          ? { icon: 'star', color: themeVar.successColor }
+                          : 'star'
+                      }
+                      onClick={() => {
+                        PageAPI.setDefaultPage(gameModelId, k).then(() =>
+                          loadIndex(gameModelId),
+                        );
                       }}
                     />
                   </span>
@@ -439,20 +449,31 @@ export default function PageEditor() {
         />
       </Toolbar.Header>
       <Toolbar.Content>
-        {srcMode ? (
-          <JSONandJSEditor
-            content={JSON.stringify(selectedPage, null, 2)}
-            status={modalState.type === 'save' ? modalState.label : undefined}
-            onSave={content =>
-              patchPage(pagesState.selectedPage, JSON.parse(content))
-            }
-          />
-        ) : (
-          <ReflexContainer orientation="vertical" className={splitter}>
+        <ReflexContainer orientation="vertical" className={splitter}>
+          {/* <ReflexElement flex={pagesState.editedPath ? 0.3 : 0.125}>
+            LAYOUT
+            <PagesLayout />
+          </ReflexElement>
+          <ReflexSplitter /> */}
+          {srcMode && (
+            <ReflexElement>
+              <JSONandJSEditor
+                content={JSON.stringify(selectedPage, null, 2)}
+                status={
+                  modalState.type === 'save' ? modalState.label : undefined
+                }
+                onSave={content =>
+                  patchPage(selectedPage(pagesState), JSON.parse(content))
+                }
+              />
+            </ReflexElement>
+          )}
+          {!srcMode && editMode && (
             <ReflexElement
               flex={editMode ? (pagesState.editedPath ? 0.3 : 0.125) : 0}
             >
               <div style={{ float: 'left' }}>
+                LAYOUT
                 <ComponentPalette />
               </div>
               {pagesState.editedPath && (
@@ -469,7 +490,9 @@ export default function PageEditor() {
                 />
               )}
             </ReflexElement>
-            {editMode && <ReflexSplitter />}
+          )}
+          {!srcMode && editMode && <ReflexSplitter />}
+          {!srcMode && (
             <ReflexElement style={{ display: 'flex' }}>
               <pageCTX.Provider
                 value={{
@@ -482,11 +505,15 @@ export default function PageEditor() {
                   onUpdate,
                 }}
               >
-                <PageLoader selectedPage={selectedPage} />
+                {pagesState.selectedPage ? (
+                  <PageLoader selectedPage={selectedPage(pagesState)} />
+                ) : (
+                  'Loading pages...'
+                )}
               </pageCTX.Provider>
             </ReflexElement>
-          </ReflexContainer>
-        )}
+          )}
+        </ReflexContainer>
       </Toolbar.Content>
     </Toolbar>
   );
