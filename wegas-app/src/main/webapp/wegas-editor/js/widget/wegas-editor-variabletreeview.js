@@ -78,7 +78,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
              searchVal = "";
              this._timer.reset();
              }
-
+             
              }, this)
              }
              });
@@ -194,6 +194,12 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 }
             });
         },
+        findByEntityId: function(entityId) {
+            return entityId && this.treeView.find(function(item) {
+                return item.get("data.entity") &&
+                    item.get("data.entity").get("id") === entityId;
+            });
+        },
         bindUI: function() {
             var ds = this.get(DATASOURCE),
                 instanceDs = Y.Wegas.Facade.Instance,
@@ -207,14 +213,22 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 //this.handlers.push(instanceDs.after("addedInstance", this.updateInstance, this));
                 //this.handlers.push(ds.after("added", this.addEntity, this));
                 this.handlers.push(ds.after("delete", this.deleteEntity, this));
-                this.handlers.push(Y.after("edit-entity:edit", function(e) {
-                    var cur = this.treeView.find(function(item) {
-                        return item.get("data.entity") ?
-                            item.get("data.entity").get("id") === e.entity.get("id") :
-                            false;
 
-                    });
+                this.handlers.push(Y.after("edit-entity:edit", function(e) {
                     this.treeView.deselectAll();
+
+                    var cur = null;
+                    var item = e.entity;
+
+                    while (item && !cur) {
+                        cur = this.findByEntityId(item.get("id"));
+                        if (!cur && item._getParent) {
+                            item = item._getParent();
+                        } else {
+                            item = null;
+                        }
+                    }
+
                     if (cur) {
                         this.currentSelection = e.entity.get("id");
                         cur.expandParents();

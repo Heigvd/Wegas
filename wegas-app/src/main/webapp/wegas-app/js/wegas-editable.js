@@ -217,16 +217,9 @@ YUI.add('wegas-editable', function(Y) {
                 }
             }
         },
-        /**
-         * clone and return the edition menu associated to this object, to be used a an inputex object.
-         *
-         * @function
-         * @param {type} data
-         * @returns {Array}
-         */
-        getMenuCfg: function(data) {
+        getMenuConfigMap: function(data) {
             var menus = this.getStatic("EDITMENU", true),
-                menu = this._aggregateMenuConfig(menus),
+                menu = this._aggregateMenuConfigMap(menus),
                 visibility;
 
             menu = Y.JSON.parse(Y.JSON.stringify(menu)); // CLONE
@@ -236,24 +229,24 @@ YUI.add('wegas-editable', function(Y) {
             // filter unhauthoried buttons
 
             if (!Y.one("body.wegas-internalmode")) {
-                menu = menu.filter(function(item) {
-                    return this._getMode("EDITABLE", visibility, item.maxVisibility) === "EDITABLE";
-                }, this);
+                for (var key in menu) {
+                    if (menu.hasOwnProperty(key)) {
+                        if (!this._getMode("EDITABLE", visibility, menu[key].maxVisibility) === "EDITABLE") {
+                            delete menu[key];
+                        }
+                    }
+                }
             }
-
-            // only keep configs
-            menu = menu.map(function(item) {
-                return item.cfg;
-            });
 
             data = data || {};
             data.entity = data.entity || this;
             data.widget = data.widget || this;
-            Editable.mixMenuCfg(menu, data);
+
+            Editable.mixMenuCfg(Object.values(menu).map(function(item){return item.cfg}), data);
+
             return menu;
         },
-
-        _aggregateMenuConfig: function(menus) {
+        _aggregateMenuConfigMap: function(menus) {
             var aggMenu = {},
                 menu,
                 key,
@@ -273,11 +266,22 @@ YUI.add('wegas-editable', function(Y) {
                     }
                 }
             }
+            return aggMenu;
+        },
+        /**
+         * clone and return the edition menu associated to this object, to be used a an inputex object.
+         *
+         * @function
+         * @param {type} data
+         * @returns {Array}
+         */
+        getMenuCfg: function(data) {
+            var menuMap = this.getMenuConfigMap(data);
 
-            menu = [];
-            for (key in aggMenu) {
-                if (aggMenu.hasOwnProperty(key) && aggMenu[key]) {
-                    menu.push(aggMenu[key]);
+            var menu = [];
+            for (var key in menuMap) {
+                if (menuMap.hasOwnProperty(key) && menuMap[key]) {
+                    menu.push(menuMap[key]);
                 }
             }
             menu.sort(function(a, b) {
@@ -292,9 +296,14 @@ YUI.add('wegas-editable', function(Y) {
                     return 1;
                 }
             });
+
+            // only keep configs
+            menu = menu.map(function(item) {
+                return item.cfg;
+            });
+
             return menu;
         },
-
         /**
          * Returns the edition menu associated to this object, to be used a an wysiwyg editor.
          * @function
@@ -594,7 +603,12 @@ YUI.add('wegas-editable', function(Y) {
             var allAttrs = Y.Wegas.Editable.staticGetStatic(klass, "ATTRS");
             return Y.BaseCore.prototype._aggregateAttrs.call({
                 _attrCfgHash: function() {
-                    return this.constructor._ATTR_CFG_HASH;
+                    if (this.constructor._ATTR_CFG_HASH) {
+                        return this.constructor._ATTR_CFG_HASH;
+                    } else {
+                        debugger;
+                        return {};
+                    }
                 },
                 constructor: klass
             }, allAttrs);

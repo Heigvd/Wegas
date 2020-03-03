@@ -12,9 +12,9 @@ const choices = currentValue => () =>
                 success: e => {
                     const events = e.response.entities;
                     if (events.indexOf(currentValue) < 0) {
-                        resolve(events.concat(currentValue));
+                        resolve(events.concat(currentValue).sort());
                     } else {
-                        resolve(events);
+                        resolve(events.sort());
                     }
                 }
             }
