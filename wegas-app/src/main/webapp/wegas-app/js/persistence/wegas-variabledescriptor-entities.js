@@ -483,6 +483,20 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             }
                         ]
                     }
+                },
+                findAndReplaceBtn: {
+                    index: 40,
+                    maxVisibility: "INTERNAL",
+                    cfg: {
+                        type: BUTTON,
+                        label: 'Find & Replace',
+                        cssClass: "wegas-advanced-feature",
+                        plugins: [
+                            {
+                                fn: 'FindAndReplaceEntityAction'
+                            }
+                        ]
+                    }
                 }
             }
         });

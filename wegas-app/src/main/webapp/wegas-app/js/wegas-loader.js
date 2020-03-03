@@ -797,7 +797,8 @@ YUI().use(function(Y) {
             "wegas-find-and-replace": {
                 path: "js/widget/wegas-find-and-replace-min.js",
                 requires: ["wegas-modal", "wegas-plugin"],
-                ws_provides: ["FindAndReplace", "FindAndReplaceWidget", "FindAndReplaceModal", "FindAndReplaceAction"]
+                ws_provides: ["FindAndReplace", "FindAndReplaceWidget", "FindAndReplaceModal",
+                    "FindAndReplaceAction", "FindAndReplaceEntityAction"]
             },
             "wegas-statemachineviewer": {
                 path: "js/widget/wegas-statemachineviewer-min.js",

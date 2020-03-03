@@ -149,6 +149,10 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             i = EditEntityAction.stackedIcon(i, 'fa-paw');
                             i.tooltip = 'Reset visibilities recursively';
                             break;
+                        case "Find & Replace":
+                            i = EditEntityAction.stackedIcon(i, 'fa-search');
+                            i.tooltip = 'Find & Replace';
+                            break;
                     }
                 }
             });
@@ -1005,7 +1009,6 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         }
     });
     Plugin.ResetVisibilityAction = ResetVisibilityAction;
-
 
     ReleaseVariableAction = Y.Base.create("ReleaseVariableAction", EntityAction, [], {
         execute: function() {
