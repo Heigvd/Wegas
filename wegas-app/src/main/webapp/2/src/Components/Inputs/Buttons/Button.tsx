@@ -67,16 +67,20 @@ const buttonStyle = (
           },
   });
 
-export interface ButtonProps {
-  label: React.ReactNode;
+export interface CommonButtonProps {
+  label?: React.ReactNode;
   onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   disabled?: boolean;
-  noHover?: boolean;
-  className?: string;
-  style?: CSSProperties;
-  disableBorders?: DisableBorders;
   tabIndex?: number;
   tooltip?: string;
+  noHover?: boolean;
+  type?: 'submit' | 'reset' | 'button';
+  className?: string;
+  id?: string;
+}
+
+export interface ButtonProps extends CommonButtonProps {
+  disableBorders?: DisableBorders;
 }
 
 export function Button({
@@ -86,19 +90,21 @@ export function Button({
   noHover,
   disableBorders,
   className,
-  style,
   children,
   tabIndex,
   tooltip,
+  type,
+  id,
 }: React.PropsWithChildren<ButtonProps>) {
   return (
     <button
-      style={style}
+      id={id}
       className={cx(buttonStyle(disabled, noHover, disableBorders), className)}
       onClick={onClick}
       disabled={disabled}
       tabIndex={tabIndex}
       title={tooltip}
+      type={type}
     >
       <>
         {label}

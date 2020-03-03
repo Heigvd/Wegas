@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import { themeVar } from '../../Theme';
+import { InputProps } from '../SimpleInput';
 
 const togglerStyle = (disabled?: boolean, inactive?: boolean) =>
   css({
@@ -21,27 +22,11 @@ const handleStyle = css({
   backgroundColor: themeVar.primaryColor,
 });
 
-export interface TogglerProps {
+export interface TogglerProps extends InputProps<boolean> {
   /**
    * defaultChecked - the initial state of the toggler (false by default)
    */
   defaultChecked?: boolean;
-  /**
-   * checked - the current state of the toggler
-   */
-  checked?: boolean;
-  /**
-   * onClick - returns the actual value of the toggler
-   */
-  onClick?: (value: boolean) => void;
-  /**
-   * disabled - if true, the component will show as disabled
-   */
-  disabled?: boolean;
-  /**
-   * inactive - if true, the component will be readonly
-   */
-  inactive?: boolean;
   /**
    * togglerClassName - the className of the component
    */
@@ -62,50 +47,57 @@ export interface TogglerProps {
 
 export function Toggler({
   defaultChecked,
-  checked,
-  onClick,
+  value,
+  onChange,
   togglerClassName,
   handlerClassName,
   disabled,
-  inactive,
+  readOnly,
   labels,
   hint,
+  className,
+  id,
 }: TogglerProps) {
-  const [value, setValue] = React.useState(
+  const [checked, setChecked] = React.useState(
     defaultChecked !== undefined
       ? defaultChecked
-      : checked !== undefined
-      ? checked
+      : value !== undefined
+      ? value
       : false,
   );
 
   React.useEffect(() => {
-    if (checked !== undefined) {
-      setValue(checked);
+    if (value !== undefined) {
+      setChecked(value);
     }
-  }, [checked]);
+  }, [value]);
 
   return (
     <div
+      id={id}
       className={
-        togglerClassName ? togglerClassName : togglerStyle(disabled, inactive)
+        className
+          ? className
+          : togglerClassName
+          ? togglerClassName
+          : togglerStyle(disabled, readOnly)
       }
       onClick={e => {
         e.stopPropagation();
         !disabled &&
-          !inactive &&
-          setValue(v => {
-            onClick && onClick(!v);
+          !readOnly &&
+          setChecked(v => {
+            onChange && onChange(!v);
             return !v;
           });
       }}
       style={{
-        backgroundColor: value ? themeVar.successColor : themeVar.errorColor,
+        backgroundColor: checked ? themeVar.successColor : themeVar.errorColor,
         display: 'flex',
       }}
       title={hint}
     >
-      {!value && (
+      {!checked && (
         <div style={{ flex: '1 1 auto' }} title={hint}>
           {labels ? labels.off : ''}
         </div>
@@ -114,7 +106,7 @@ export function Toggler({
         className={handlerClassName ? handlerClassName : handleStyle}
         title={hint}
       />
-      {value && (
+      {checked && (
         <div style={{ flex: '1 1 auto' }} title={hint}>
           {labels ? labels.on : ''}
         </div>

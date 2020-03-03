@@ -2,42 +2,36 @@ import * as React from 'react';
 import { css, cx } from 'emotion';
 import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
 import { themeVar } from '../../Theme';
+import { CommonButtonProps } from './Button';
 
-export interface IconButtonProps /*extends Props*/ {
+export interface IconButtonProps extends CommonButtonProps {
   icon: Icons;
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onMouseDown?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onMouseUp?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onMouseMove?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  label?: React.ReactNode;
-  disabled?: boolean;
   pressed?: boolean;
-  id?: string;
-  tooltip?: string;
-  tabIndex?: number;
   prefixedLabel?: boolean;
-  type?: 'submit' | 'reset';
-  className?: string;
-  ref?: React.ClassAttributes<HTMLButtonElement>['ref'];
+  // ref?: React.ClassAttributes<HTMLButtonElement>['ref'];
 }
 const defaultActiveStyle = css({ color: themeVar.primaryDarkerColor });
 
-export const shapeStyle = css({
-  width: 'auto',
-  margin: '3px',
-  background: 'none',
-  border: 'none',
-  fontFamily: 'initial',
-  fontSize: 'initial',
-  cursor: 'pointer',
-  textAlign: 'center',
-  display: 'inline-block',
-  color: themeVar.primaryColor,
-  ':hover,:focus': {
-    color: themeVar.primaryLighterColor,
-    outline: 'none',
-  },
-});
+export const shapeStyle = (noHover?: boolean) =>
+  css({
+    width: 'auto',
+    margin: '3px',
+    background: 'none',
+    border: 'none',
+    fontFamily: 'initial',
+    fontSize: 'initial',
+    cursor: 'pointer',
+    textAlign: 'center',
+    display: 'inline-block',
+    color: themeVar.primaryColor,
+    ':hover,:focus': {
+      color: noHover ? undefined : themeVar.primaryLighterColor,
+      outline: 'none',
+    },
+  });
 
 const disabledStyle = css({
   color: themeVar.disabledColor,
@@ -65,12 +59,13 @@ export const IconButton: React.FunctionComponent<IconButtonProps> = (
     type,
     className,
     icon,
-    ref,
+    noHover,
+    // ref,
   } = props;
 
   return (
     <button
-      ref={ref}
+      // ref={ref}
       id={id}
       type={type}
       title={tooltip}
@@ -91,10 +86,14 @@ export const IconButton: React.FunctionComponent<IconButtonProps> = (
           ? event => !disabled && onMouseMove(event)
           : onMouseMove
       }
-      className={cx(shapeStyle, className, {
-        [disabledStyle]: Boolean(disabled),
-        [defaultActiveStyle]: Boolean(pressed),
-      })}
+      className={cx(
+        shapeStyle(noHover),
+        {
+          [disabledStyle]: Boolean(disabled),
+          [defaultActiveStyle]: Boolean(pressed),
+        },
+        className,
+      )}
     >
       {prefixedLabel && label}
       <IconComp icon={icon} />

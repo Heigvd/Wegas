@@ -5,6 +5,9 @@ import { textCenter } from '../../../css/classes';
 import { debounce } from 'lodash-es';
 import { checkMinMax } from './numberComponentHelper';
 import { themeVar } from '../../Theme';
+import { Value } from '../../Outputs/Value';
+import { InputProps } from '../SimpleInput';
+import { NumberInput } from './NumberInput';
 
 const valueDisplayStyle = css({
   textAlign: 'center',
@@ -14,17 +17,9 @@ const valueDisplayStyle = css({
 export const displayModes = ['None', 'External', 'Internal', 'Both'] as const;
 export type DisplayMode =
   | typeof displayModes[number]
-  | ((value: number, internalValue: number) => React.ReactNode);
+  | ((internalValue: number, inputValue?: number) => React.ReactNode);
 
-export interface NumberSliderProps {
-  /**
-   * value - the current value of the slider
-   */
-  value: number;
-  /**
-   * onChange - callback when the slider is used
-   */
-  onChange?: (value: number) => void;
+export interface NumberSliderProps extends InputProps<number> {
   /**
    * max - the maximum value to slide (100 by default)
    */
@@ -34,6 +29,14 @@ export interface NumberSliderProps {
    */
   min: number;
   /**
+   * label - the current label of the slider
+   */
+  label?: string;
+  /**
+   * numberInput - displays a number input to control the slider
+   */
+  numberInput?: boolean;
+  /**
    * steps - the number of steps between min and max value. 100 by default.
    */
   steps?: number;
@@ -42,14 +45,6 @@ export interface NumberSliderProps {
    * Can be a string or a formatting function that takes the value and return a string
    */
   displayValues?: DisplayMode;
-  /**
-   * readOnly - disable the click on the component
-   */
-  readOnly?: boolean;
-  /**
-   * disabled - set the component in disabled mode
-   */
-  disabled?: boolean;
   /**
    * trackStyle - the style of the track
    */
@@ -80,6 +75,8 @@ export function NumberSlider({
   onChange,
   max,
   min,
+  label,
+  numberInput,
   steps,
   displayValues,
   readOnly,
@@ -87,13 +84,15 @@ export function NumberSlider({
   rightPartStyle,
   leftPartStyle,
   handleStyle,
+  className,
+  id,
 }: NumberSliderProps) {
-  const [internalValue, setValue] = React.useState(value);
+  const [internalValue, setValue] = React.useState<number>(value || 0);
 
   React.useEffect(
     () => {
       if (value !== internalValue) {
-        setValue(value);
+        setValue(value || 0);
       }
     },
     // We don't need to refresh on internalValue change because it will be already done in the onChange function
@@ -102,10 +101,11 @@ export function NumberSlider({
   );
 
   const onSliderChange = React.useCallback(
-    debounce((value: number) => {
+    value => {
+      setValue(value);
       !readOnly && onChange && onChange(value);
-    }, 100),
-    [onChange],
+    },
+    [onChange, readOnly],
   );
 
   const minMaxCheck = checkMinMax(min, max, internalValue);
@@ -139,13 +139,21 @@ export function NumberSlider({
           break;
       }
     } else if (typeof displayValues === 'function') {
-      display = displayValues(value, internalValue);
+      display = displayValues(internalValue, value);
     }
     return <div className={valueDisplayStyle}>{display}</div>;
   };
 
   return (
-    <div className={textCenter}>
+    <div id={id} className={className ? className : textCenter}>
+      {label && <Value value={label} />}
+      {numberInput && (
+        <NumberInput
+          value={value}
+          onChange={onSliderChange}
+          className={css({ textAlign: 'center' })}
+        />
+      )}
       <Info />
       <Slider
         styles={{
@@ -162,10 +170,7 @@ export function NumberSlider({
         xmin={min}
         xstep={Math.abs(max - min) / (steps ? steps : 100)}
         x={internalValue}
-        onChange={({ x }) => {
-          setValue(x);
-          onSliderChange(x);
-        }}
+        onChange={({ x }) => onSliderChange(x)}
         disabled={disabled}
       />
     </div>

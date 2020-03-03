@@ -4,15 +4,15 @@ import {
   registerComponent,
   PageComponentMandatoryProps,
 } from '../tools/componentFactory';
-import { GaugeProps, Gauge } from '../../Outputs/Gauge';
+import { CustomGaugeProps, CustomGauge } from '../../Outputs/CustomGauge';
 import { schemaProps } from '../tools/schemaProps';
 
-function PlayerGauge(props: GaugeProps & PageComponentMandatoryProps) {
+function PlayerGauge(props: CustomGaugeProps & PageComponentMandatoryProps) {
   const { EditHandle } = props;
   return (
     <>
       <EditHandle />
-      <Gauge {...props} />
+      <CustomGauge {...props} />
     </>
   );
 }

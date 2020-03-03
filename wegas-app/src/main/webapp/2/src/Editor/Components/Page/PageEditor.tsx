@@ -405,18 +405,12 @@ export default function PageEditor() {
                 disableBorders={{ right: true }}
               >
                 <div className={innerButtonStyle}>
-                  <Toggler
-                    checked={showControls}
-                    onClick={() => setShowControls(c => !c)}
-                  />
+                  <Toggler value={showControls} onChange={setShowControls} />
                 </div>
               </Button>
               <Button label={'Toggle borders'} disableBorders={{ left: true }}>
                 <div className={innerButtonStyle}>
-                  <Toggler
-                    checked={showBorders}
-                    onClick={() => setShowBorders(b => !b)}
-                  />
+                  <Toggler value={showBorders} onChange={setShowBorders} />
                 </div>
               </Button>
             </>

@@ -27,7 +27,7 @@ export default function NumberSliderTester({
       <div className={testerSectionStyle}>
         {props.label}
         <NumberSlider
-          key="simple"
+          label="simple"
           value={currentValue}
           onChange={v => {
             setValue(v);
@@ -36,7 +36,17 @@ export default function NumberSliderTester({
           {...props}
         />
         <NumberSlider
-          key="display none"
+          label="number input"
+          value={currentValue}
+          onChange={v => {
+            setValue(v);
+            onChange && onChange(v);
+          }}
+          {...props}
+          numberInput
+        />
+        <NumberSlider
+          label="display none"
           value={currentValue}
           onChange={v => {
             setValue(v);
@@ -46,7 +56,7 @@ export default function NumberSliderTester({
           {...props}
         />
         <NumberSlider
-          key="display external"
+          label="display external"
           value={currentValue}
           onChange={v => {
             setValue(v);
@@ -56,7 +66,7 @@ export default function NumberSliderTester({
           {...props}
         />
         <NumberSlider
-          key="display internal"
+          label="display internal"
           value={currentValue}
           onChange={v => {
             setValue(v);
@@ -66,7 +76,7 @@ export default function NumberSliderTester({
           {...props}
         />
         <NumberSlider
-          key="display both"
+          label="display both"
           value={currentValue}
           onChange={v => {
             setValue(v);
@@ -76,13 +86,13 @@ export default function NumberSliderTester({
           {...props}
         />
         <NumberSlider
-          key="display function"
+          label="display function"
           value={currentValue}
           onChange={v => {
             setValue(v);
             onChange && onChange(v);
           }}
-          displayValues={(v, iv) => (
+          displayValues={(iv, v) => (
             <div>{`Testing displayer\n - value:${v}\n - internal:${iv}`}</div>
           )}
           {...props}

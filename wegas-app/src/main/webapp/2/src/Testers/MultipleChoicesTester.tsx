@@ -23,13 +23,13 @@ export default function MultipleChoicesTester() {
       Simple
       <MultipleChoice
         choices={testChoices}
-        chosen={chosen}
+        value={chosen}
         onChange={setChosen}
       />
       Styled
       <MultipleChoice
         choices={testChoices}
-        chosen={chosen}
+        value={chosen}
         onChange={setChosen}
         choiceClassName={css({
           backgroundColor: '#009c00',
@@ -47,14 +47,14 @@ export default function MultipleChoicesTester() {
       Disabled
       <MultipleChoice
         choices={testChoices}
-        chosen={chosen}
+        value={chosen}
         onChange={setChosen}
         disabled
       />
       ReadOnly
       <MultipleChoice
         choices={testChoices}
-        chosen={chosen}
+        value={chosen}
         onChange={setChosen}
         readOnly
       />

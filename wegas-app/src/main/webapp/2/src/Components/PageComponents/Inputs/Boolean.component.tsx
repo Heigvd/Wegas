@@ -50,8 +50,8 @@ const PlayerBoolean: React.FunctionComponent<PlayerBooleanProps> = props => {
           togglerClassName={props.className}
           defaultChecked={instance.value}
           disabled={props.disabled}
-          inactive={props.inactive}
-          onClick={() => {
+          readOnly={props.inactive}
+          onChange={() => {
             store.dispatch(
               Actions.VariableInstanceActions.runScript(
                 `${script}.setValue(self, ${!instance.value});`,

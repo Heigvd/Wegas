@@ -12,19 +12,15 @@ function undefToEmpty(val?: string | number) {
   return val;
 }
 
-export interface SimpleInputProps {
+export interface InputProps<T> {
   /**
    * value - the value to input
    */
-  value?: string | number;
+  value?: T;
   /**
    * onChange - return the value set by the component
    */
-  onChange?: (value: string) => void;
-  /**
-   * rows - the number of rows allowed for input
-   */
-  rows?: number;
+  onChange?: (value: T) => void;
   /**
    * disabled - disable the component
    */
@@ -34,6 +30,21 @@ export interface SimpleInputProps {
    */
   readOnly?: boolean;
   /**
+   * id - the id of the input
+   */
+  id?: string;
+  /**
+   * className - the class to apply on the input
+   */
+  className?: string;
+}
+
+export interface SimpleInputProps extends InputProps<string | number> {
+  /**
+   * rows - the number of rows allowed for input
+   */
+  rows?: number;
+  /**
    * placeholder - the hint displayed in the input zone
    */
   placeholder?: string;
@@ -41,10 +52,6 @@ export interface SimpleInputProps {
    * autoComplete - enables the browser autocompletion
    */
   autoComplete?: boolean;
-  /**
-   * id - enables the browser autocompletion
-   */
-  id?: string;
 }
 
 export function SimpleInput({
@@ -56,6 +63,7 @@ export function SimpleInput({
   placeholder,
   autoComplete,
   id,
+  className,
 }: SimpleInputProps) {
   const [currentValue, setCurrentValue] = React.useState(value);
 
@@ -87,7 +95,7 @@ export function SimpleInput({
   if (typeof rows === 'number') {
     return (
       <textarea
-        className={inputStyle}
+        className={className ? className : inputStyle}
         id={id}
         value={undefToEmpty(currentValue)}
         rows={rows}
@@ -103,7 +111,7 @@ export function SimpleInput({
   return (
     <input
       type="text"
-      className={inputStyle}
+      className={className ? className : inputStyle}
       id={id}
       value={undefToEmpty(currentValue)}
       onChange={onInputChange}

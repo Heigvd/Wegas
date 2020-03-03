@@ -2,7 +2,12 @@ import * as React from 'react';
 import { IconButton } from './IconButton';
 import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import { css } from 'emotion';
-import { Button, DisableBorders, disableBordersCSS } from './Button';
+import {
+  Button,
+  DisableBorders,
+  disableBordersCSS,
+  ButtonProps,
+} from './Button';
 import { themeVar } from '../../Theme';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 
@@ -17,10 +22,8 @@ const buttonZone = (disableBorders?: DisableBorders) =>
     width: 'max-content',
   });
 
-interface ConfirmButtonProps {
-  label?: React.ReactNode;
+interface ConfirmButtonProps extends ButtonProps {
   icon?: Icon;
-  tooltip?: string;
   onAction?: (success: boolean) => void;
   onBlur?: () => void;
   defaultConfirm?: boolean;
@@ -28,67 +31,101 @@ interface ConfirmButtonProps {
   disableBorders?: DisableBorders;
 }
 
-export function ConfirmButton(props: ConfirmButtonProps /*& IconButtonProps*/) {
-  const [confirmation, setConfirmation] = React.useState(props.defaultConfirm);
+export function ConfirmButton({
+  label,
+  icon,
+  onClick,
+  onAction,
+  onBlur,
+  defaultConfirm,
+  dontResetOnBlur,
+  disabled,
+  noHover,
+  disableBorders,
+  className,
+  tabIndex,
+  tooltip,
+  type,
+  id,
+}: ConfirmButtonProps) {
+  const [confirmation, setConfirmation] = React.useState(defaultConfirm);
   const confirmButton = React.useRef(null);
 
   useOnClickOutside(confirmButton, () => {
-    if (!props.dontResetOnBlur) {
+    if (!dontResetOnBlur) {
       setConfirmation(false);
     }
-    if (props.onBlur) {
-      props.onBlur();
+    if (onBlur) {
+      onBlur();
     }
   });
 
-  const onClick = React.useCallback(
+  const onClickVerify = React.useCallback(
     (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       event.stopPropagation();
+      onClick && onClick(event);
       setConfirmation(true);
     },
-    [],
+    [onClick],
+  );
+
+  const onConfirm = React.useCallback(
+    (accept: boolean) => (
+      event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    ) => {
+      event.stopPropagation();
+      onClick && onClick(event);
+      onAction && onAction(accept);
+      setConfirmation(defaultConfirm);
+    },
+    [defaultConfirm, onAction, onClick],
   );
 
   return !confirmation ? (
-    <>
-      {props.label && (
+    <div tabIndex={tabIndex} ref={confirmButton} id={id} className={className}>
+      {label && (
         <Button
-          label={props.label}
-          onClick={onClick}
-          disableBorders={props.disableBorders}
-          tooltip={props.tooltip}
+          label={label}
+          onClick={onClickVerify}
+          disableBorders={disableBorders}
+          tooltip={tooltip}
+          disabled={disabled}
+          noHover={noHover}
         />
       )}
-      {props.icon && (
+      {icon && (
         <IconButton
-          icon={props.icon}
-          onClick={onClick}
-          tooltip={props.tooltip}
+          icon={icon}
+          onClick={onClickVerify}
+          tooltip={tooltip}
+          disabled={disabled}
+          noHover={noHover}
         />
       )}
-    </>
+    </div>
   ) : (
-    <div ref={confirmButton} className={buttonZone(props.disableBorders)}>
+    <div
+      ref={confirmButton}
+      tabIndex={tabIndex}
+      id={id}
+      className={className ? className : buttonZone(disableBorders)}
+    >
       <Button
         label="Accept"
-        noHover
-        style={{ backgroundColor: themeVar.warningColor }}
+        // style={{ backgroundColor: themeVar.warningColor }}
+        className={css({ backgroundColor: themeVar.warningColor })}
         disableBorders={{ right: true }}
-        onClick={event => {
-          event.stopPropagation();
-          props.onAction && props.onAction(true);
-          setConfirmation(props.defaultConfirm);
-        }}
+        onClick={onConfirm(true)}
+        disabled={disabled}
+        noHover={noHover != null ? noHover : true}
+        type={type}
       />
       <Button
         label="Cancel"
-        noHover
         disableBorders={{ left: true }}
-        onClick={event => {
-          event.stopPropagation();
-          props.onAction && props.onAction(false);
-          setConfirmation(props.defaultConfirm);
-        }}
+        onClick={onConfirm(false)}
+        disabled={disabled}
+        noHover={noHover != null ? noHover : true}
       />
     </div>
   );

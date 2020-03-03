@@ -25,6 +25,7 @@ module.exports = {
   rules: {
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
+    'react/display-name': 'off',
     'no-console': 'warn',
     'no-alert': 'error',
     'no-var': 'error',

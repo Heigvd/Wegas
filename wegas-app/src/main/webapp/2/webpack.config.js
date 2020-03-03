@@ -35,8 +35,6 @@ const modules = {
     fs: 'empty',
     module: 'empty',
   },
-  // target: 'node', // in order to ignore built-in modules like path, fs, etc.
-  // externals: [nodeExternals()], // in order to ignore all modules in node_modules folder
   // stats: 'verbose',
   devtool: PROD || PREPROD ? 'source-map' : 'inline-source-map',
   entry: {
@@ -53,6 +51,8 @@ const modules = {
   },
   plugins: plugins,
   module: {
+    // https://github.com/ivan-aksamentov/reactlandia-bolerplate-lite/issues/5#issuecomment-413306341
+    exprContextCritical: false,
     rules: [
       {
         test: /\.tsx?$/,
@@ -122,11 +122,9 @@ const modules = {
     ],
   },
   devServer: {
+    stats: 'errors-warnings',
     port: PREPROD ? 4004 : 3003,
-    overlay: {
-      warnings: false,
-      errors: true,
-    },
+    overlay: true,
     publicPath: '/Wegas/2/dist/',
     proxy: {
       '/Wegas': {

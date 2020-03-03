@@ -3,6 +3,7 @@ import { Button } from '../Buttons/Button';
 import { debounce, omit } from 'lodash-es';
 import { themeVar } from '../../Theme';
 import { cx, css } from 'emotion';
+import { InputProps } from '../SimpleInput';
 
 const choiceStyle = css({
   backgroundColor: themeVar.primaryLighterColor,
@@ -32,27 +33,11 @@ interface Choices<T> {
   [label: string]: T;
 }
 
-export interface MultipleChoiceProps<T> {
+export interface MultipleChoiceProps<T> extends InputProps<Choices<T>> {
   /**
    * choices - all the possible choices
    */
   choices: Choices<T>;
-  /**
-   * chosen - the chosen choices
-   */
-  chosen?: Choices<T>;
-  /**
-   * onChange - return the choices chosen in the component
-   */
-  onChange?: (chosen: Choices<T>) => void;
-  /**
-   * disabled - disable the component
-   */
-  disabled?: boolean;
-  /**
-   * readOnly - disable the click on the component
-   */
-  readOnly?: boolean;
   /**
    * selectedClassName - the class to apply on an active choice
    */
@@ -61,29 +46,26 @@ export interface MultipleChoiceProps<T> {
    * choiceClassName - the class to apply on the choices
    */
   choiceClassName?: string;
-  /**
-   * className - the class to apply on the component
-   */
-  className?: string;
 }
 
 export function MultipleChoice<T>({
   choices,
-  chosen,
+  value,
   onChange,
   disabled,
   readOnly,
   selectedClassName,
   choiceClassName,
   className,
+  id,
 }: MultipleChoiceProps<T>) {
-  const [currentChosen, setCurrentChosen] = React.useState(
-    chosen ? chosen : {},
+  const [currentChosen, setCurrentChosen] = React.useState<Choices<T>>(
+    value ? value : {},
   );
 
   React.useEffect(() => {
-    setCurrentChosen(chosen ? chosen : {});
-  }, [chosen]);
+    setCurrentChosen(value ? value : {});
+  }, [value]);
 
   const debouncedOnChange = React.useCallback(
     debounce((newChosen: Choices<T>) => {
@@ -93,7 +75,7 @@ export function MultipleChoice<T>({
   );
 
   return (
-    <div>
+    <div id={id} className={className}>
       {Object.entries(choices).map(([key, choice]) => {
         const selected = Object.keys(currentChosen).includes(key);
         return (
@@ -112,20 +94,16 @@ export function MultipleChoice<T>({
                 debouncedOnChange(newSet);
               }
             }}
-            className={cx(
-              choiceStyle,
-              {
-                [selectedClassName
-                  ? selectedClassName
-                  : selectedChoiceStyle]: selected,
-                [disabledChoiceStyle]: disabled && !selected,
-                [choiceClassName
-                  ? choiceClassName
-                  : themeVar.primaryLighterColor]: !disabled && !selected,
-                [unusableChoiceStyle]: disabled || readOnly,
-              },
-              className,
-            )}
+            className={cx(choiceStyle, {
+              [selectedClassName
+                ? selectedClassName
+                : selectedChoiceStyle]: selected,
+              [disabledChoiceStyle]: disabled && !selected,
+              [choiceClassName
+                ? choiceClassName
+                : themeVar.primaryLighterColor]: !disabled && !selected,
+              [unusableChoiceStyle]: disabled || readOnly,
+            })}
             disabled={disabled}
           />
         );

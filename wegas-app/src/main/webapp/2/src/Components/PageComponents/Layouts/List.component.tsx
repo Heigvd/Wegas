@@ -53,8 +53,8 @@ function PlayerList(props: PlayerListProps) {
       >
         <EditHandle
           togglerProps={{
-            onClick: setShowLayout,
-            checked: showLayout,
+            onChange: setShowLayout,
+            value: showLayout,
             hint: 'Highlight list borders (only during edition mode)',
           }}
           vertical={!props.horizontal}

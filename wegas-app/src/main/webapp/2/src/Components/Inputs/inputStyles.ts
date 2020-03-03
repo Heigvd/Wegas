@@ -1,4 +1,5 @@
 import { css } from 'emotion';
+import { themeVar } from '../Theme';
 
 export const inputDefaultCSS = {
   minWidth: '4em',
@@ -7,9 +8,9 @@ export const inputDefaultCSS = {
 
 export const inputStyle = css({
   ...inputDefaultCSS,
-  width: '100%',
   resize: 'vertical',
-  border: 'thin solid',
+  borderStyle: 'thin solid',
+  borderRadius: themeVar.borderRadius,
   '::placeholder': {
     fontStyle: 'italic',
   },

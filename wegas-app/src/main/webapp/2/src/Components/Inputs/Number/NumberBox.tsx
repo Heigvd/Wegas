@@ -4,6 +4,7 @@ import { themeVar } from '../../Theme';
 import { cx, css } from 'emotion';
 import { flex } from '../../../css/classes';
 import { checkMinMax } from './numberComponentHelper';
+import { InputProps } from '../SimpleInput';
 
 const numberSquareStyle = css({
   borderColor: themeVar.disabledColor,
@@ -66,11 +67,7 @@ function NumberSquare({
   );
 }
 
-export interface NumberBoxProps {
-  /**
-   * value - the value to show in the box
-   */
-  value: number;
+export interface NumberBoxProps extends InputProps<number> {
   /**
    * minValue - the minimal value
    */
@@ -80,18 +77,6 @@ export interface NumberBoxProps {
    */
   maxValue?: number;
   /**
-   * onChange - return the value set by the component
-   */
-  onChange?: (value: number) => void;
-  /**
-   * disabled - disable the component
-   */
-  disabled?: boolean;
-  /**
-   * readOnly - disable the click on the component
-   */
-  readOnly?: boolean;
-  /**
    * activeClassName - the class to apply on an active box
    */
   activeClassName?: string;
@@ -99,10 +84,6 @@ export interface NumberBoxProps {
    * boxClassName - the class to apply on the boxes
    */
   boxClassName?: string;
-  /**
-   * className - the class to apply on the component
-   */
-  className?: string;
 }
 
 export function NumberBox({
@@ -114,14 +95,16 @@ export function NumberBox({
   readOnly,
   activeClassName,
   boxClassName,
+  className,
+  id,
 }: NumberBoxProps) {
-  const [currentValue, setCurrentValue] = React.useState(value);
+  const [currentValue, setCurrentValue] = React.useState(value || 0);
 
   const computedMinValue = minValue !== undefined ? minValue : 0;
   const computedMaxValue = maxValue !== undefined ? maxValue : currentValue + 1;
 
   React.useEffect(() => {
-    setCurrentValue(value);
+    setCurrentValue(value || 0);
   }, [value]);
 
   const debouncedOnChange = React.useCallback(
@@ -160,5 +143,9 @@ export function NumberBox({
     );
   }
 
-  return <div className={flex}>{squares}</div>;
+  return (
+    <div id={id} className={className ? className : flex}>
+      {squares}
+    </div>
+  );
 }
