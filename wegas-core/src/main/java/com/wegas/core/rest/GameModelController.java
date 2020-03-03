@@ -595,6 +595,14 @@ public class GameModelController {
     }
 
     @GET
+    @Path("{gameModelId: [1-9][0-9]*}/FindAllRefToFiles/{variableId: ([1-9][0-9]*)?}")
+    public Set<String> findRefToFiles(
+        @PathParam("gameModelId") Long gameModelId, 
+        @PathParam("variableId") Long vdId) {
+        return gameModelFacade.findAllRefToFiles(gameModelId, vdId);
+    }
+
+    @GET
     @Path("{gameModelId: [1-9][0-9]*}/TestPlayer")
     public Player getTestPlayer(
         @PathParam("gameModelId") Long gameModelId

@@ -56,6 +56,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -514,7 +515,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-                try ( ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
+                try (ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
 
                     // serialise the json
                     ZipEntry gameModelEntry = new ZipEntry("gamemodel.json");
@@ -1143,7 +1144,18 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);
 
         if (payload.getProcessVariables()) {
-            MergeHelper.visitMergeable(mergeable, Boolean.TRUE, replacer);
+            if (payload.getRoots() != null && !payload.getReplace().isEmpty()) {
+                for (String variableName : payload.getRoots()) {
+                    try {
+                        VariableDescriptor variable = variableDescriptorFacade.find(mergeable, variableName);
+                        MergeHelper.visitMergeable(variable, Boolean.TRUE, replacer);
+                    } catch (WegasNoResultException ex) {
+                        throw WegasErrorMessage.error("Variable \"" + variableName + "\" not found");
+                    }
+                }
+            } else {
+                MergeHelper.visitMergeable(mergeable, Boolean.TRUE, replacer);
+            }
         }
 
         if (payload.getProcessPages()) {
@@ -1184,7 +1196,57 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         // match : Event.fire("eventName"), Event.fire(\"event\") + Event.fired
         payload.setFind("Event.fire\\(\\\\?\"([^\"\\\\]+)\\\\?\"\\)|Event.fired\\(\\\\?\"([^\"\\\\]+)\\\\?\"\\)");
 
-        RegexExtractorVisitor extractor = new RegexExtractorVisitor(payload);
+        RegexExtractorVisitor extractor = new RegexExtractorVisitor(payload, variableDescriptorFacade);
+        List<List<String>> process = extractor.process(gameModel);
+
+        Set<String> events = new HashSet<>();
+
+        for (List<String> line : process) {
+            events.addAll(line);
+        }
+        return events;
+    }
+
+    public Set<String> findAllRefToFiles(Long gameModelId, Long vdId) {
+        GameModel gm = this.find(gameModelId);
+        VariableDescriptor variable = null;
+
+        if (vdId != null) {
+            variable = variableDescriptorFacade.find(vdId);
+        }
+        return this.findAllRefToFiles(gm, variable);
+    }
+
+    /**
+     * Go through the givenGameModel variables and fetch each references to internal files
+     *
+     * @param gameModel the gamemodel to search for reference in
+     * @param root      Optional variable to search in, if null, search the whole gameModel
+     *
+     * @return
+     */
+    public Set<String> findAllRefToFiles(GameModel gameModel,
+        VariableDescriptor root) {
+        FindAndReplacePayload payload = new FindAndReplacePayload();
+
+        payload.setLangsFromGameModel(gameModel);
+
+        payload.setProcessVariables(true);
+        payload.setProcessPages(false);
+        payload.setProcessScripts(false);
+        payload.setProcessStyles(false);
+
+        if (root != null) {
+            List<String> roots = new ArrayList<>();
+            roots.add(root.getName());
+            payload.setRoots(roots);
+        }
+
+        payload.setRegex(true);
+        // match : Event.fire("eventName"), Event.fire(\"event\") + Event.fired
+        payload.setFind("data-file=\\\\?\"([^\"\\\\]+)\\\\?\"");
+
+        RegexExtractorVisitor extractor = new RegexExtractorVisitor(payload, variableDescriptorFacade);
         List<List<String>> process = extractor.process(gameModel);
 
         Set<String> events = new HashSet<>();
