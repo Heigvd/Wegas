@@ -31,6 +31,12 @@ registerComponent(
       negativeColor: schemaProps.string('Negative color', false),
     },
     [],
-    () => ({}),
+    () => ({
+      value: 0,
+      minAngle: 0,
+      maxAngle: 180,
+      min: 0,
+      sections: [],
+    }),
   ),
 );

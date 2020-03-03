@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Interpolation, css } from 'emotion';
 import Slider from 'react-input-slider';
 import { textCenter } from '../../../css/classes';
-import { debounce } from 'lodash-es';
 import { checkMinMax } from './numberComponentHelper';
 import { themeVar } from '../../Theme';
 import { Value } from '../../Outputs/Value';

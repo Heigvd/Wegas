@@ -1,14 +1,7 @@
 import * as React from 'react';
 import { CustomGauge } from '../Components/Outputs/CustomGauge';
-import {
-  expandBoth,
-  flex,
-  grow,
-  flexRow,
-  showOverflow,
-  autoScroll,
-} from '../css/classes';
-import { cx, css } from 'emotion';
+import { expandBoth, flex, grow, flexRow, autoScroll } from '../css/classes';
+import { cx } from 'emotion';
 import { NumberSlider } from '../Components/Inputs/Number/NumberSlider';
 import { degreeToRadian } from '../Components/Outputs/PieChart';
 import { Toggler } from '../Components/Inputs/Boolean/Toggler';

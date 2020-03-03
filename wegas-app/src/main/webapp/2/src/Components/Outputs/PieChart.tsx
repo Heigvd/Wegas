@@ -706,10 +706,10 @@ export function PieChart({
               computedHoleRatio,
               centerX,
               centerY,
-              // i === 0 || i === bluredSections.length - 1
-              //   ? s.fillColor
-              //   : `Url(#pie-grad-${i})`,
-              s.fillColor,
+              i === 0 || i === bluredSections.length - 1
+                ? s.fillColor
+                : `Url(#pie-grad-${i})`,
+              // s.fillColor,
             ),
           )}
         {filteredBlurSections.map(s =>
