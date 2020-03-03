@@ -410,7 +410,7 @@ YUI().use(function(Y) {
             "wegas-cssstyles-extra": {
                 path: "js/plugin/wegas-cssstyles-extra-min.js",
                 requires: "wegas-cssstyles",
-                ws_provides: ["CSSBackground", "CSSText", "CSSPosition", "CSSSize"]
+                ws_provides: ["CSSBackground", "CSSBackgroundImage", "CSSText", "CSSPosition", "CSSSize"]
             },
             "wegas-conditionaldisplay": {
                 path: "js/plugin/wegas-conditionaldisplay-min.js",
