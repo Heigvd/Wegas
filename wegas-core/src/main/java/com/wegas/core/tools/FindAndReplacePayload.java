@@ -26,6 +26,8 @@ public class FindAndReplacePayload {
     private String find;
     private String replace;
 
+    private List<String> roots;
+
     private boolean matchCase = false;
     private boolean regex = true;
 
@@ -54,6 +56,14 @@ public class FindAndReplacePayload {
 
     public void setReplace(String replace) {
         this.replace = replace;
+    }
+
+    public List<String> getRoots() {
+        return roots;
+    }
+
+    public void setRoots(List<String> varRoots) {
+        this.roots = varRoots;
     }
 
     public boolean isMatchCase() {
