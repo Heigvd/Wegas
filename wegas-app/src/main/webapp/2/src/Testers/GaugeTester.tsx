@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Gauge } from '../Components/Outputs/Gauge';
 import { expandBoth, flex, grow, flexRow } from '../css/classes';
-import { cx } from 'emotion';
+import { cx, css } from 'emotion';
 import { NumberSlider } from '../Components/Inputs/Number/NumberSlider';
 
 export default function GaugeTester() {
@@ -9,12 +9,24 @@ export default function GaugeTester() {
     minAngle: 15,
     maxAngle: 165,
     holeSize: 30,
+    value: 50,
   });
+
   return (
     <div className={cx(flex, flexRow, expandBoth)}>
-      <div className={cx(grow, expandBoth)}>
+      <div
+        className={cx(
+          grow,
+          css({
+            width: '400px',
+            height: '400px',
+            maxWidth: '400px',
+            maxHeight: '400px',
+          }),
+        )}
+      >
         <Gauge
-          value={50}
+          value={values.value}
           min={0}
           sections={[
             { backgroundColor: 'red', stopValue: 33 },
@@ -29,25 +41,40 @@ export default function GaugeTester() {
         />
       </div>
       <div className={grow}>
-        min angle
+        value
         <NumberSlider
           min={0}
+          max={100}
+          value={values.value}
+          onChange={v => setValues(ov => ({ ...ov, value: v }))}
+          displayValues="External"
+        />
+        min angle
+        <NumberSlider
+          min={-360}
           max={360}
           value={values.minAngle}
           onChange={v =>
             setValues(ov => ({
               ...ov,
               minAngle: v,
-              maxAngle: ov.maxAngle > v + 360 ? v + 360 : ov.maxAngle,
+              maxAngle:
+                ov.maxAngle > v + 360
+                  ? v + 360
+                  : ov.maxAngle < v
+                  ? v
+                  : ov.maxAngle,
             }))
           }
+          displayValues="External"
         />
         max angle
         <NumberSlider
-          min={0}
+          min={values.minAngle}
           max={values.minAngle + 360}
           value={values.maxAngle}
           onChange={v => setValues(ov => ({ ...ov, maxAngle: v }))}
+          displayValues="External"
         />
         hole size
         <NumberSlider
@@ -55,6 +82,7 @@ export default function GaugeTester() {
           max={100}
           value={values.holeSize}
           onChange={v => setValues(ov => ({ ...ov, holeSize: v }))}
+          displayValues="External"
         />
       </div>
     </div>
