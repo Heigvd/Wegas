@@ -7,13 +7,8 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.tools.FindAndReplaceVisitor;
 import ch.albasim.wegas.annotations.ProtectionLevel;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.difflib.algorithm.DiffException;
-import com.github.difflib.text.DiffRow;
-import com.github.difflib.text.DiffRowGenerator;
 import com.wegas.core.Helper;
 import com.wegas.core.api.GameModelFacadeI;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
@@ -36,36 +31,32 @@ import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.Mergeable;
-import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.GmType;
 import static com.wegas.core.persistence.game.GameModel.GmType.*;
 import com.wegas.core.persistence.game.GameModel.Status;
-import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
-import com.wegas.core.persistence.variable.statemachine.State;
-import com.wegas.core.rest.FindAndReplacePayload;
+import com.wegas.core.tools.FindAndReplacePayload;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.tools.RegexExtractorVisitor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -250,7 +241,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * Create variable instances for owner (not for its children !)
      *
      * @param gameModel the game model which define variabledescriptors
-     * @param owner owner to create instances for
+     * @param owner     owner to create instances for
      */
     public void createInstances(GameModel gameModel, InstanceOwner owner) {
         for (VariableDescriptor vd : gameModel.getVariableDescriptors()) {
@@ -275,7 +266,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Revive instances directly owned by the given owner by firing {@link InstanceRevivedEvent} for each instances
+     * Revive instances directly owned by the given owner by firing {@link InstanceRevivedEvent} for
+     * each instances
      *
      * @param owner owner to revive instances for
      */
@@ -286,8 +278,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Same as {@link #revivePrivateInstances(com.wegas.core.persistence.InstanceOwner) } but also revive instances
-     * owned by owner chilidren
+     * Same as {@link #revivePrivateInstances(com.wegas.core.persistence.InstanceOwner) } but also
+     * revive instances owned by owner chilidren
      *
      * @param owner instances owner
      */
@@ -333,7 +325,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Same as {@link #create(com.wegas.core.persistence.game.GameModel) } but add a debug game to the gamemodel
+     * Same as {@link #create(com.wegas.core.persistence.game.GameModel) } but add a debug game to
+     * the gamemodel
      *
      * @param gm the gameModel to persist
      */
@@ -344,8 +337,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     /**
      * @param toUpdate GameModel to update
-     * @param source GameModel to fetch instance from
-     * @param player instances owner
+     * @param source   GameModel to fetch instance from
+     * @param player   instances owner
      *
      * @return the gameModel with default instance merged with player's ones
      */
@@ -464,7 +457,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         String newName = oName != null ? oName : "newLogId";
 
         TypedQuery<String> query = this.getEntityManager()
-                .createNamedQuery("GameModel.findDistinctLogIds", String.class);
+            .createNamedQuery("GameModel.findDistinctLogIds", String.class);
         List<String> usedLogIds = query.getResultList();
 
         return Helper.findUniqueLabel(newName, usedLogIds);
@@ -656,11 +649,13 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Create a new scenario based on another gameModel (the source). The source GameModel must be either a MODEL or a
-     * SCENARIO.
+     * Create a new scenario based on another gameModel (the source). The source GameModel must be
+     * either a MODEL or a SCENARIO.
      * <ul>
-     * <li><b>MODEL:</b> the new scenario will be a copy of the model, whithout any PRIVATE content.</li>
-     * <li><b>SCENARIO:</b> the new scenario will be a copy of the source, including PRIVATE content</li>
+     * <li><b>MODEL:</b> the new scenario will be a copy of the model, whithout any PRIVATE
+     * content.</li>
+     * <li><b>SCENARIO:</b> the new scenario will be a copy of the source, including PRIVATE
+     * content</li>
      * </ul>
      *
      * @param sourceId id of the gameModel to based the new one on
@@ -766,6 +761,23 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findAllInstantiations", GameModel.class);
         query.setParameter("id", gm.getId());
         return query.getResultList();
+    }
+
+    /**
+     * Do a JPA query to fetch the reference of the given model.
+     * 
+     * @param gm the model
+     *
+     * @return the reference of the model or null
+     */
+    public GameModel findReference(GameModel gm) {
+        try {
+            TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findReference", GameModel.class);
+            query.setParameter("id", gm.getId());
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     /**
@@ -938,16 +950,17 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
-     * Someone can ask GameModelController#LiveEdition/ to inform a given audience such an entity is being edited. Thus,
-     * others users may display the new entity before it is fully flushed in database. client may also prevent users to
-     * edit this entity (prevent co-edition)
+     * Someone can ask GameModelController#LiveEdition/ to inform a given audience such an entity is
+     * being edited. Thus, others users may display the new entity before it is fully flushed in
+     * database. client may also prevent users to edit this entity (prevent co-edition)
      */
     public void liveUpdate(String channel, AbstractEntity entity) {
         websocketFacade.sendLiveUpdate(channel, entity.getClass().getSimpleName() + "_" + entity.getId(), entity, requestManager.getSocketId());
     }
 
     /**
-     * Find all gameModel matching the given type and the given status the current user has access too.
+     * Find all gameModel matching the given type and the given status the current user has access
+     * too.
      *
      * @param type
      * @param status
@@ -955,7 +968,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @return
      */
     public Collection<GameModel> findByTypeStatusAndUser(GameModel.GmType type,
-            GameModel.Status status) {
+        GameModel.Status status) {
         ArrayList<GameModel> gameModels = new ArrayList<>();
 
         Map<Long, List<String>> pMatrix = this.getPermissionMatrix(type, status);
@@ -972,13 +985,13 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     public Map<Long, List<String>> getPermissionMatrix(GameModel.GmType type,
-            GameModel.Status status) {
+        GameModel.Status status) {
         Map<Long, List<String>> pMatrix = new HashMap<>();
 
         String roleQuery = "SELECT p FROM Permission p WHERE "
-                + "(p.role.id in "
-                + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
-                + ")";
+            + "(p.role.id in "
+            + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
+            + ")";
 
         String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId ";
 
@@ -1148,7 +1161,18 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);
 
         if (payload.getProcessVariables()) {
+            if (payload.getRoots() != null && !payload.getReplace().isEmpty()) {
+                for (String variableName : payload.getRoots()) {
+                    try {
+                        VariableDescriptor variable = variableDescriptorFacade.find(mergeable, variableName);
+                        MergeHelper.visitMergeable(variable, Boolean.TRUE, replacer);
+                    } catch (WegasNoResultException ex) {
+                        throw WegasErrorMessage.error("Variable \"" + variableName + "\" not found");
+                    }
+                }
+            } else {
             MergeHelper.visitMergeable(mergeable, Boolean.TRUE, replacer);
+        }
         }
 
         if (payload.getProcessPages()) {
@@ -1171,344 +1195,82 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         return this.findAndReplace(this.find(gameModelId), payload);
     }
 
-    public static class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
-
-        private final DiffRowGenerator generator;
-
-        private final StringBuilder output;
-
-        private final Pattern pattern;
-
-        private final List<String> pages = new ArrayList<>();
-        private final List<GameModelContent> contents = new ArrayList<>();
-
-        private final FindAndReplacePayload payload;
-        private int flags = Pattern.UNICODE_CASE | Pattern.UNICODE_CHARACTER_CLASS;
-
-        public FindAndReplaceVisitor(FindAndReplacePayload payload) {
-            this.payload = payload;
-            if (!payload.isMatchCase()) {
-                flags |= Pattern.CASE_INSENSITIVE;
+    public Set<String> findAllFiredEvents(Long gameModelId) {
+        return this.findAllFiredEvents(this.find(gameModelId));
             }
 
-            if (!payload.isRegex()) {
-                flags |= Pattern.LITERAL;
+    public Set<String> findAllFiredEvents(GameModel gameModel) {
+        FindAndReplacePayload payload = new FindAndReplacePayload();
+
+        payload.setLangsFromGameModel(gameModel);
+
+        payload.setProcessVariables(true);
+        payload.setProcessPages(true);
+        payload.setProcessScripts(true);
+        payload.setProcessStyles(false);
+
+        payload.setRegex(true);
+        // match : Event.fire("eventName"), Event.fire(\"event\") + Event.fired
+        payload.setFind("Event.fire\\(\\\\?\"([^\"\\\\]+)\\\\?\"\\)|Event.fired\\(\\\\?\"([^\"\\\\]+)\\\\?\"\\)");
+
+        RegexExtractorVisitor extractor = new RegexExtractorVisitor(payload, variableDescriptorFacade);
+        List<List<String>> process = extractor.process(gameModel);
+
+        Set<String> events = new HashSet<>();
+
+        for (List<String> line : process) {
+            events.addAll(line);
+                    }
+        return events;
+                }
+
+    public Set<String> findAllRefToFiles(Long gameModelId, Long vdId) {
+        GameModel gm = this.find(gameModelId);
+        VariableDescriptor variable = null;
+
+        if (vdId != null) {
+            variable = variableDescriptorFacade.find(vdId);
             }
-
-            this.pattern = Pattern.compile(payload.getFind(), flags);
-
-            this.output = new StringBuilder();
-
-            this.generator = DiffRowGenerator.create()
-                    .showInlineDiffs(true)
-                    .inlineDiffByWord(true)
-                    .mergeOriginalRevised(true)
-                    .build();
+        return this.findAllRefToFiles(gm, variable);
         }
 
         /**
+     * Go through the givenGameModel variables and fetch each references to internal files
          *
-         * @param content
+     * @param gameModel the gamemodel to search for reference in
+     * @param root      Optional variable to search in, if null, search the whole gameModel
          *
-         * @return content with replacement done or null id nothing to replace
+     * @return
          */
-        public String replace(String content) {
-            if (!Helper.isNullOrEmpty(content)) {
-                Matcher matcher = pattern.matcher(content);
-                String newContent = matcher.replaceAll(payload.getReplace());
-                if (!content.equals(newContent)) {
-                    return newContent;
-                }
+    public Set<String> findAllRefToFiles(GameModel gameModel,
+        VariableDescriptor root) {
+        FindAndReplacePayload payload = new FindAndReplacePayload();
+
+        payload.setLangsFromGameModel(gameModel);
+
+        payload.setProcessVariables(true);
+        payload.setProcessPages(false);
+        payload.setProcessScripts(false);
+        payload.setProcessStyles(false);
+
+        if (root != null) {
+            List<String> roots = new ArrayList<>();
+            roots.add(root.getName());
+            payload.setRoots(roots);
             }
-            return null;
+
+        payload.setRegex(true);
+        // match : Event.fire("eventName"), Event.fire(\"event\") + Event.fired
+        payload.setFind("data-file=\\\\?\"([^\"\\\\]+)\\\\?\"");
+
+        RegexExtractorVisitor extractor = new RegexExtractorVisitor(payload, variableDescriptorFacade);
+        List<List<String>> process = extractor.process(gameModel);
+
+        Set<String> events = new HashSet<>();
+
+        for (List<String> line : process) {
+            events.addAll(line);
         }
-
-        @Override
-        public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references) {
-            if (target instanceof Translation) {
-                Translation tr = (Translation) target;
-
-                if (this.payload.shouldProcessLang(tr.getLang())) {
-                    String newContent = this.replace(tr.getTranslation());
-
-                    if (newContent != null) {
-                        this.genEntry(ancestors, target, field, tr.getTranslation(), newContent);
-                        if (!payload.isPretend()) {
-                            tr.setTranslation(newContent);
-                        }
-                    }
-                }
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        public void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references) {
-            if (!this.isProtected(ancestors.peekFirst(), protectionLevel)) {
-                if (field != null) {
-                    if (field.getAnnotation() != null) {
-                        if (field.getAnnotation().searchable()) {
-                            if (target instanceof String) {
-                                if (field.getType() == WegasFieldProperties.FieldType.PROPERTY) {
-                                    String newContent = this.replace((String) target);
-                                    if (newContent != null) {
-                                        this.genEntry(ancestors, target, field, (String) target, newContent);
-
-                                        if (!payload.isPretend()) {
-                                            try {
-                                                update(newContent, target, protectionLevel, level, field, ancestors, key, references);
-                                            } catch (Exception ex) {
-                                                output.append("<br/> ERROR: ").append(ex);
-                                            }
-                                        }
-                                    }
-                                }
-                            } else if (target instanceof JsonNode) {
-                                if (field.getField().getName().equals("pages") && ancestors.peekFirst() instanceof GameModel) {
-                                    JsonNode node = (ObjectNode) target;
-                                    String content = node.toString();
-                                    String newContent = this.replace(node.toString());
-                                    if (newContent != null) {
-                                        this.genEntry(ancestors, null, field, content, newContent);
-
-                                        if (!payload.isPretend()) {
-                                            try {
-                                                JsonNode newNode = JacksonMapperProvider.getMapper().readTree(newContent);
-                                                update(newNode, target, protectionLevel, level, field, ancestors, key, references);
-
-                                            } catch (Exception ex) {
-                                                output.append("<br/> ERROR: ").append(ex);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        /**
-         * Update the property
-         *
-         * @param newValue
-         * @param target
-         * @param protectionLevel
-         * @param level
-         * @param field
-         * @param ancestors
-         * @param key
-         * @param references
-         *
-         * @throws IllegalAccessException
-         * @throws IllegalArgumentException
-         * @throws InvocationTargetException
-         */
-        private void update(Object newValue, Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references)
-                throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-            if (field.getType() == WegasFieldProperties.FieldType.CHILDREN) {
-                Object get = field.getPropertyDescriptor().getReadMethod().invoke(ancestors.peekFirst());
-                if (get instanceof Map) {
-                    Map map = (Map) get;
-                    map.put(key, newValue);
-                    field.getPropertyDescriptor().getWriteMethod().invoke(ancestors.peekFirst(), map);
-                } else if (get instanceof List && key instanceof Integer) {
-                    List list = (List) get;
-                    list.remove(key);
-                    list.add((int) key, newValue);
-                    field.getPropertyDescriptor().getWriteMethod().invoke(ancestors.peekFirst(), list);
-                } else if (get instanceof Set) {
-                    Set set = (Set) get;
-                    set.remove(target);
-                    set.add(newValue);
-                    field.getPropertyDescriptor().getWriteMethod().invoke(ancestors.peekFirst(), set);
-                }
-            } else if (field.getType() == WegasFieldProperties.FieldType.PROPERTY) {
-                field.getPropertyDescriptor().getWriteMethod().invoke(ancestors.peekFirst(), newValue);
-            }
-        }
-
-        String getOutput() {
-            return output.toString();
-        }
-
-        public void processPages(GameModel gameModel) {
-            if (!this.isProtected(gameModel, ProtectionLevel.ALL)) {
-                Map<String, JsonNode> pages = gameModel.getPages();
-                for (Entry<String, JsonNode> entry : pages.entrySet()) {
-                    JsonNode page = entry.getValue();
-                    String pageId = entry.getKey();
-
-                    String content = page.toString();
-                    String newContent = this.replace(content);
-                    if (newContent != null) {
-
-                        this.genEntry("Page " + pageId, prettyPrintJson(content), prettyPrintJson(newContent));
-
-                        if (!payload.isPretend()) {
-                            try {
-                                JsonNode newNode = JacksonMapperProvider.getMapper().readTree(newContent);
-                                pages.put(pageId, newNode);
-                                // propagation
-                                this.pages.add(pageId);
-                            } catch (Exception ex) {
-                                output.append("<br/> ERROR: ").append(ex);
-                            }
-                        }
-                    }
-                }
-                gameModel.setPages(pages);
-            }
-        }
-
-        private void processLibrary(List<GameModelContent> library, String title) {
-            for (GameModelContent content : library) {
-                String newContent = this.replace(content.getContent());
-                if (newContent != null) {
-                    this.genEntry(title + "\"" + content.getContentKey() + "\"", content.getContent(), newContent);
-
-                    if (!payload.isPretend()) {
-                        try {
-                            content.setContent(newContent);
-                            this.contents.add(content);
-                        } catch (Exception ex) {
-                            output.append("<br/> ERROR: ").append(ex);
-                        }
-                    }
-                }
-            }
-        }
-
-        private String genName(Object object) {
-            if (object instanceof VariableDescriptor) {
-                return ((VariableDescriptor) object).getEditorLabel();
-            }
-
-            if (object instanceof LabelledEntity) {
-                return ((LabelledEntity) object).getLabel().translateOrEmpty((GameModel) null);
-            }
-
-            if (object instanceof NamedEntity) {
-                return ((NamedEntity) object).getName();
-            }
-
-            if (object instanceof State) {
-                return "#" + ((State) object).getIndex();
-            }
-
-            if (object instanceof Translation) {
-                return "[" + ((Translation) object).getLang() + "]";
-            }
-
-            return null;
-        }
-
-        private StringBuilder ancestorsPrettyPrinter(Deque<Mergeable> ancestors, Object target, WegasFieldProperties field) {
-            StringBuilder sb = new StringBuilder();
-            Iterator<Mergeable> it = ancestors.descendingIterator();
-            while (it.hasNext()) {
-                Mergeable ancestor = it.next();
-
-                if (ancestor instanceof GameModel == false) {
-                    String name = genName(ancestor);
-
-                    /*if (Helper.isNullOrEmpty(name)) {
-                    name = ancestor.getClass().getSimpleName();
-                    }*/
-                    if (!Helper.isNullOrEmpty(name)) {
-                        sb.append(name);
-
-                        if (it.hasNext()) {
-                            sb.append("/");
-                        }
-                    }
-                }
-            }
-
-            String name = genName(target);
-
-            if (!Helper.isNullOrEmpty(name)) {
-                sb.append(name);
-            }
-
-            if (field != null && field.getField() != null) {
-                sb.append("::").append(field.getField().getName());
-            }
-            return sb;
-        }
-
-        private void genEntry(Deque<Mergeable> ancestors, Object target, WegasFieldProperties field, String oldContent, String newContent) {
-            this.genEntry(this.ancestorsPrettyPrinter(ancestors, target, field).toString(), oldContent, newContent);
-        }
-
-        private String prettyPrintJson(String content) {
-            try {
-                ObjectMapper mapper = JacksonMapperProvider.getMapper();
-                JsonNode tree = mapper.readTree(content);
-                return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(tree);
-            } catch (IOException ex) {
-                return content;
-            }
-        }
-
-        private void genEntry(String title, String oldContent, String newContent) {
-
-            output.append("<div class='find-result-entry'>");
-            output.append("  <div class='find-result-entry-title'>").append(title).append("</div>");
-
-            try {
-                List<DiffRow> rows = generator.generateDiffRows(Arrays.asList(oldContent.split("\\n")), Arrays.asList(newContent.split("\\n")));
-                output.append("  <div class='find-result-entry-diff");
-
-                if (rows.size() > 1) {
-                    output.append(" show-lines");
-                }
-                output.append("'>");
-
-                boolean skip = false;
-
-                for (int i = 0; i < rows.size(); i++) {
-                    DiffRow row = rows.get(i);
-                    if (row.getTag() != DiffRow.Tag.EQUAL) {
-                        output.append("<div class='find-result-entry-line'>");
-                        output.append("<span class='find-result-entry-number'>").append(i).append("</span>");
-                        output.append("<span class='find-result-entry-change'>").append(row.getOldLine()).append("</span>");
-                        output.append("</div>");
-                        skip = false;
-                    } else if (!skip) {
-                        output.append("<div class='find-result-entry-skip'>").append("[...]").append("</div>");
-                        skip = true;
-                    }
-                }
-                output.append("  </div>");
-            } catch (DiffException ex) {
-                output.append("<div class='find-result-entry-sidebyside'>");
-                output.append("  <div class='find-result-entry-old'>").append(oldContent).append("</div>");
-                output.append("  <div class='find-result-entry-new'>").append(newContent).append("</div>");
-                output.append("</div>");
-            }
-
-            output.append("</div>");
-        }
-
-        public void processStyles(GameModel gameModel) {
-            this.processLibrary(gameModel.getCssLibraryList(), "Stylesheet");
-        }
-
-        public void processScripts(GameModel gameModel) {
-            this.processLibrary(gameModel.getClientScriptLibraryList(), "Client Script");
-            this.processLibrary(gameModel.getScriptLibraryList(), "Server Script");
-        }
-
-        public void propagate(GameModel gameModel, WebsocketFacade websocketFacade) {
-            for (String pageId : pages) {
-                websocketFacade.pageUpdate(gameModel.getId(), pageId, null); //no requestId allows the requester to be notified too
-            }
-            //for (GameModelContent content : contents) {
-            //websocketFacade.gameModelContentUpdate(content, null); //no requestId allows the requester to be notified too
-            //}
-        }
+        return events;
     }
 }

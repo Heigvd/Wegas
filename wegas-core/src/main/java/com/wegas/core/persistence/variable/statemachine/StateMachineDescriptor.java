@@ -33,9 +33,9 @@ public class StateMachineDescriptor extends AbstractStateMachineDescriptor<State
             State state = new State();
             state.setLabel("");
             state.setVersion(0l);
-            state.setEditorPosition(new Coordinate());
-            state.getEditorPosition().setX(100);
-            state.getEditorPosition().setY(100);
+
+            state.setX(100);
+            state.setY(100);
 
             state.setOnEnterEvent(new Script());
 

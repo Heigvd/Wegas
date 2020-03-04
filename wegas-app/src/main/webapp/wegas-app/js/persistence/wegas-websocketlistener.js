@@ -174,7 +174,10 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 };
 
                 for (i = 0; i < parsed.updatedEntities.length; i += 1) {
-                    entity = Y.Wegas.Editable.revive(parsed.updatedEntities[i]);
+                    entity = Y.Wegas.Editable.revive({
+                        "@class": parsed.updatedEntities[i].type,
+                        id: parsed.updatedEntities[i].id
+                    });
 
                     ds = this.getDatasourceFromEntity(entity);
                     if (entity instanceof Y.Wegas.persistence.VariableInstance) {
@@ -254,7 +257,9 @@ YUI.add('wegas-websocketlistener', function(Y) {
             } else if (entity instanceof Y.Wegas.persistence.VariableDescriptor ||
                 entity instanceof Y.Wegas.persistence.GameModel) {
                 return Y.Wegas.Facade.Variable;
-            } else if (entity instanceof Y.Wegas.persistence.Game) {
+            } else if (entity instanceof Y.Wegas.persistence.Player ||
+                entity instanceof Y.Wegas.persistence.Team ||
+                entity instanceof Y.Wegas.persistence.Game) {
                 return Y.Wegas.Facade.Game;
             } else {
                 return null;

@@ -21,15 +21,17 @@ import 'tinymce/skins/ui/oxide/skin.min.css';
 import { Editor as TinyEditor } from '@tinymce/tinymce-react';
 import { Modal } from './Modal';
 import { generateAbsolutePath, fileURL } from '../API/files.api';
-import { WidgetProps } from 'jsoninput/typings/types';
 import {
   CommonView,
   CommonViewContainer,
 } from '../Editor/Components/FormView/commonView';
 import { LabeledView, Labeled } from '../Editor/Components/FormView/labeled';
 import { FileBrowser } from '../Editor/Components/FileBrowser/FileBrowser';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { classesCTX } from './Contexts/ClassesProvider';
+import { debounceAction } from '../Helper/debounceAction';
+import { flexColumn, flex } from '../css/classes';
+import { WidgetProps } from 'jsoninput/typings/types';
 
 const toolbar = css({
   width: '300px',
@@ -62,14 +64,24 @@ interface HTMLEditorProps {
    * onChange - function called each time the content of the editor changes
    */
   onChange?: (content: string) => void;
+  /**
+   * className - classes to apply to the element
+   */
+  className?: string;
+  /**
+   * id - the id of the main container
+   */
+  id?: string;
 }
 
-let id = 0;
+let HTMLEditorID = 0;
 
 export default function HTMLEditor({
   value,
   onSave,
   onChange,
+  className,
+  id,
 }: HTMLEditorProps) {
   const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>(
     {},
@@ -152,12 +164,12 @@ export default function HTMLEditor({
         editor.on('init', () => {
           formatter = editor.formatter;
         });
-        editor.on('blur', () => {
-          // TODO : find a way to close the expended toolbar to avoid bug
-          // editor.execCommand('commandName');
-          // wlog(e);
-          // debugger;
-        });
+        // editor.on('blur', () => {
+        //   // TODO : find a way to close the expended toolbar to avoid bug
+        //   // editor.execCommand('commandName');
+        //   // wlog(e);
+        //   // debugger;
+        // });
         extraButtonsKeys.forEach(btnName => {
           editor.ui.registry.addToggleButton(btnName, {
             text: extraButtons[btnName].text,
@@ -165,7 +177,11 @@ export default function HTMLEditor({
             onAction: () => {
               formatter && formatter.toggle(`custom-${btnName}`);
               editor.fire('change', {
-                level: { content: editor.getContent() },
+                event: {
+                  target: {
+                    getContent: editor.getContent,
+                  },
+                },
               });
             },
             onSetup: function(buttonApi) {
@@ -198,10 +214,10 @@ export default function HTMLEditor({
     }
   }, [fileBrowsing.fn]);
 
-  const toolBarId = 'externalEditorToolbar' + String(id++);
+  const toolBarId = 'externalEditorToolbar' + String(HTMLEditorID++);
 
   return (
-    <div>
+    <div className={className} id={id}>
       <div style={{ visibility: fileBrowsing.fn ? 'hidden' : 'visible' }}>
         <div id={toolBarId} className={toolbar}>
           {!editorFocus && (
@@ -214,14 +230,16 @@ export default function HTMLEditor({
           )}
         </div>
         <TinyEditor
-          initialValue={value}
+          value={value}
           init={config(toolBarId, {
             testbutton: { text: 'test', className: 'testclass' },
           })}
           onInit={editor => (HTMLEditor.current = editor.target)}
-          onChange={(event: { level: { content: string } }) => {
-            HTMLContent.current = event.level ? event.level.content : '';
-            onChange && onChange(HTMLContent.current);
+          onEditorChange={value => {
+            debounceAction('HTMLEditorOnChange', () => {
+              HTMLContent.current = value;
+              onChange && onChange(HTMLContent.current);
+            });
           }}
           onFocus={() => setEditorFocus(true)}
           onBlur={() => setEditorFocus(false)}
@@ -245,6 +263,10 @@ export default function HTMLEditor({
     </div>
   );
 }
+
+const labeledHTMLEditorStyle = css({
+  display: 'inline-block',
+});
 
 interface HtmlProps
   extends WidgetProps.BaseProps<
@@ -273,19 +295,6 @@ export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
     oldProps: this.props,
     value: this.props.value || '<p></p>',
   };
-  onChange = (value: string) => {
-    if (this.state.value !== value) {
-      const oldVal = this.state.value;
-      this.setState({ value }, () => {
-        if (oldVal !== this.state.value) {
-          this.props.onChange(this.state.value);
-        }
-      });
-    } else {
-      this.setState({ value });
-    }
-  };
-
   render() {
     return (
       <CommonViewContainer
@@ -293,11 +302,16 @@ export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
         errorMessage={this.props.errorMessage}
       >
         <Labeled {...this.props.view}>
-          {({ labelNode /*, inputId*/ }) => (
-            <>
+          {({ labelNode, inputId }) => (
+            <div className={cx(flex, flexColumn)}>
               {labelNode}
-              <HTMLEditor value={this.state.value} onChange={this.onChange} />
-            </>
+              <HTMLEditor
+                value={this.state.value}
+                onChange={this.props.onChange}
+                className={labeledHTMLEditorStyle}
+                id={inputId}
+              />
+            </div>
           )}
         </Labeled>
       </CommonViewContainer>

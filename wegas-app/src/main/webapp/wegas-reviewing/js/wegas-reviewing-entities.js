@@ -393,6 +393,23 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 }
             });
         },
+        getContainer: function() {
+            var evalContainerId = this.get("parentId");
+            var parent;
+            Y.Wegas.Facade.Variable.cache.findByFn(function(item) {
+                if (item instanceof Y.Wegas.persistence.PeerReviewDescriptor) {
+                    if (item.get("feedback") && item.get("feedback").get("id") === evalContainerId) {
+                        parent = item.get("feedback");
+                        return true;
+                    }
+                    if (item.get("fbComments") && item.get("fbComments").get("id") === evalContainerId) {
+                        parent = item.get("fbComments");
+                        return true;
+                    }
+                }
+            });
+            return parent;
+        },
         getEditorLabel: function() {
             return I18n.t(this.get("label"));
         }
@@ -415,23 +432,10 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 description: "Displayed to players",
                 type: STRING
             }),
-            index: {
-                type: NUMBER,
-                view: {label: "Index"}
-            },
             description: Y.Wegas.Helper.getTranslationAttr({
                 label: "Description",
                 type: HTML
-            }),
-            description: {
-                type: NULLSTRING,
-                optional: true,
-                view: {
-                    type: HTML,
-                    label: "Description",
-                    height: '50px'
-                }
-            }
+            })
         },
         EDITMENU: {
             editBtn: {

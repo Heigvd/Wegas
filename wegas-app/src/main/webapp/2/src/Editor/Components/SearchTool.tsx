@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IconButton } from '../../Components/Button/IconButton';
+import { IconButton } from '../../Components/Inputs/Button/IconButton';
 import { Modal } from '../../Components/Modal';
 import { Actions } from '../../data';
 import { editorLabel } from '../../data/methods/VariableDescriptorMethods';
@@ -8,7 +8,7 @@ import { VariableDescriptor } from '../../data/selectors';
 import { StoreConsumer, StoreDispatch } from '../../data/store';
 import { getEntityActions, getIcon } from '../editionConfig';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
-import { FontAwesome, withDefault } from './Views/FontAwesome';
+import { withDefault, IconComp } from './Views/FontAwesome';
 import { css } from 'emotion';
 import { entityIs } from '../../data/entities';
 import { focusTabContext } from './LinearTabLayout/LinearLayout';
@@ -33,22 +33,14 @@ function SearchResult({
 }) {
   const focusTab = React.useContext(focusTabContext);
   const Title = asyncSFC(async () => (
-    <FontAwesome
-      icon={withDefault(await getIcon(variable!), 'question')}
-      fixedWidth
-    />
+    <IconComp icon={withDefault(getIcon(variable!), 'question')} />
   ));
   return (
     <li
       key={vId}
       className={resultStyle}
       onClick={() => {
-        if (
-          entityIs<IAbstractStateMachineDescriptor>(
-            variable,
-            'IAbstractStateMachineDescriptor',
-          )
-        ) {
+        if (entityIs(variable, 'AbstractStateMachineDescriptor')) {
           focusTab('StateMachine');
         }
         onClick();
@@ -184,8 +176,7 @@ class SearchPanel extends React.Component<
     return (
       <>
         <IconButton
-          icon="search"
-          mask="cloud"
+          icon={{ icon: 'search', mask: 'cloud' }}
           tooltip="Cloud search"
           onClick={this.togglePanel}
         />

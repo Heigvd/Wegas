@@ -16,7 +16,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.google.common.base.Objects;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
@@ -37,6 +39,7 @@ import com.wegas.editor.View.StringView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
@@ -56,8 +59,8 @@ import org.slf4j.LoggerFactory;
     query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.id = :teamId")
 @NamedQuery(name = "Player.findToPopulate",
     query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
-@NamedNativeQuery(name = "Player.AreUsersTeamMate",
-    query = "SELECT true FROM player as self JOIN player AS mate on mate.team_id = self.team_id WHERE self.user_id =?1 AND mate.user_id = ?2")
+@NamedNativeQuery(name = "Player.isUserTeamMateOfPlayer",
+    query = "SELECT true FROM player as self JOIN player AS mate on mate.team_id = self.team_id WHERE self.id =?1 AND mate.user_id = ?2")
 @NamedQuery(name = "Player.findGameIds",
     query = "SELECT p.team.gameTeams.game.id FROM Player p where p.user.id = :userId")
 @NamedNativeQuery(name = "Player.IsTrainerForUser",
@@ -258,6 +261,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      * @return gameModel the player is linked to
      */
     @JsonIgnore
+    @Override
     public GameModel getGameModel() {
         return this.getTeam().getGame().getGameModel();
     }
@@ -403,6 +407,29 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     }
 
     /**
+     * {@inheritDoc }
+     */
+    @Override
+    @JsonIgnore
+    public Player getUserLivePlayer(User user) {
+        if (this.getStatus().equals(Status.LIVE) 
+            && Objects.equal(this.user, user)) {
+            return this;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Player getTestPlayer() {
+        if (this.isTestPlayer()){
+            return this;
+        } else {
+            return null;
+        }
+    }
+
+    /**
      *
      * @param privateInstances
      */
@@ -417,7 +444,13 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
-        return this.getTeam().getEntities();
+        String audience = this.getTeam().getChannel();
+
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+        ArrayList<AbstractEntity> entities = new ArrayList<>();
+        entities.add(this);
+        map.put(audience, entities);
+        return map;
     }
 
     @Override
@@ -487,5 +520,57 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     public boolean isTestPlayer() {
         return this.getTeam() instanceof DebugTeam || this.getGame() instanceof DebugGame;
+    }
+
+    /**
+     * Assert the given player has a valid email address, according to the list of allowed
+     * domains.If the domain list is empty then everything is allowed.If not empty, the player must
+     * have an address in this domain.Moreover, if mustBeVerigied is true, the address must have
+     * been verified
+     * <p>
+     * An administrator is always allowed, as well as test players.
+     *
+     * @param allowedDomains     list of allowed domain
+     * @param mustBeVerified     ensure the player has verified his address
+     * @param notAllowedMessage  to override default error message, may be null
+     * @param notVerifiedMessage to override default error message, may be null
+     */
+    public void assertEmailValdity(List<String> allowedDomains,
+        boolean mustBeVerified, String notAllowedMessage, String notVerifiedMessage) {
+
+        if (allowedDomains != null && !allowedDomains.isEmpty()) {
+            User user = this.getUser();
+
+            // test player is not linked to any user
+            if (user != null) {
+                List<String> domains = new ArrayList<>(allowedDomains.size());
+                for (String domain : allowedDomains) {
+                    String trim = domain.toLowerCase().trim();
+                    if (!Helper.isNullOrEmpty(trim)) {
+                        domains.add(trim);
+                    }
+                }
+                if (!domains.isEmpty()) {
+
+                    AbstractAccount account = user.getMainAccount();
+                    if (Helper.isNullOrEmpty(account.getEmail())) {
+                        throw WegasErrorMessage.error("You have to provide an email address!");
+                    } else {
+                        String domain = account.getEmail().split("@")[1].toLowerCase();
+                        if (!domains.contains(domain)) {
+                            throw WegasErrorMessage.error(
+                                Helper.coalesce(notAllowedMessage,
+                                    "Email addresses \"@" + domain + "\" are not allowed")
+                            );
+                        }
+                    }
+                    if (mustBeVerified && !account.isVerified()) {
+                        throw WegasErrorMessage.error(
+                            Helper.coalesce(notVerifiedMessage,
+                                "You have to verify your email address"));
+                    }
+                }
+            }
+        }
     }
 }

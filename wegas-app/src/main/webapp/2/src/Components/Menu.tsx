@@ -1,11 +1,11 @@
 import * as React from 'react';
 import Downshift, { StateChangeOptions } from 'downshift';
 import { css, cx } from 'emotion';
-import { IconButton } from './Button/IconButton';
-import { Props } from '@fortawesome/react-fontawesome';
+import { IconButton } from './Inputs/Button/IconButton';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { useKeyboard } from './Hooks/useKeyboard';
 import { themeVar } from './Theme';
+import { IconName } from '@fortawesome/fontawesome-svg-core';
 
 interface Item<T> {
   label: React.ReactNode;
@@ -15,9 +15,9 @@ interface Item<T> {
 export interface MenuProps<T extends Item<T>> {
   onSelect: (item: T, keyEvent: ModifierKeysEvent) => void;
   onOpen?: () => void;
-  items: T[];
+  items: readonly T[];
   label?: React.ReactNode;
-  icon?: Props['icon'];
+  icon?: IconName;
   direction?: 'left' | 'down' | 'right' | 'top';
   buttonClassName?: string;
   listClassName?: string;
@@ -91,14 +91,11 @@ export function Menu<T extends Item<T>>({
       itemToString={emtpyStr}
     >
       {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
-        <div className={String(container)}>
+        <div className={container}>
           <div className={itemStyle} onClick={() => toggleMenu()}>
             {label}
             <IconButton
-              icon={withDefault(
-                icon,
-                `caret-${realDirection}` as Props['icon'],
-              )}
+              icon={withDefault(icon, `caret-${realDirection}` as IconName)}
               onClick={ev => {
                 ev.stopPropagation();
                 toggleMenu();

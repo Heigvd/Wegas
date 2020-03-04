@@ -25,7 +25,6 @@ div.wegas-balance {
 div.wegas-balance > .wegas-balance-titles,
 div.wegas-balance > .wegas-balance-contents,
 div.wegas-balance > .wegas-balance-sums {
-    clear  : both;
     display: flex;
 }
 div.wegas-balance .wegas-balance-assets,
@@ -35,15 +34,11 @@ div.wegas-balance .wegas-balance-liabilities{
 
 div.wegas-balance .wegas-balance-assets
 {
-    float:left;
-    left: 0;
     border-right: 1px solid black;
     margin-right: -1px;
 }
 
 div.wegas-balance .wegas-balance-liabilities {
-    float: right;
-    right: 0;
 }
 
 div.wegas-balance .wegas-balance-assets > .wegas-balance-title,
@@ -61,8 +56,12 @@ div.wegas-balance .wegas-balance-liabilities > .wegas-balance-category {
 }
 
 
-div.wegas-balance .wegas-balance-assets > .wegas-balance-amount,
-div.wegas-balance .wegas-balance-liabilities > .wegas-balance-amount {
+div.wegas-balance .wegas-balance-sums > div {
+    display:flex;
+    justify-content: flex-end;
+}
+
+div.wegas-balance .wegas-balance-sums  .wegas-balance-amount {
     font-weight: bold;
     border-top: 4px double black;
     width: 25%;
@@ -74,7 +73,6 @@ div.wegas-balance-category {
 }
 
 .wegas-balance-amount {
-    float: right;
     padding-right: 5px;
 }
 
@@ -83,22 +81,58 @@ div.wegas-balance-category {
     clear: both;
 }
 
-.wegas-balance-category > .wegas-balance-title {
-    font-size: 1.1em;
+.wegas-balance-line {
+    display: flex;
+}
+
+.wegas-balance-line .wegas-balance-title {
+    flex-grow: 1;
+    align-self: center;
+}
+
+.wegas-balance-line:hover .wegas-balance-title span {
+    /*background-color: #f1f1f1;*/
+    text-decoration: underline;
+}
+
+.wegas-balance-line:hover .wegas-balance-input {
+    outline: 2px solid #f1f1f1;
+}
+
+.wegas-balance-line:focus-within .wegas-balance-title {
+    color: #0B919A;
+    font-weight: 500;
+}
+
+.wegas-balance-line .wegas-balance-input:focus {
+    outline: 1px solid #0B919A;
+}
+
+.wegas-balance-line:focus-within .wegas-balance-amount {
+
+}
+
+.wegas-accounting-balance-wrapper--title,
+.wegas-accounting-balance-wrapper--item-title,
+.wegas-balance-category > .wegas-balance-line .wegas-balance-title {
     font-variant: small-caps;
-    float: left;
     font-weight: bold;
 }
 
-.wegas-balance-category > .wegas-balance-amount {
+.wegas-balance-category > .wegas-balance-line .wegas-balance-title {
+    font-size: 1.1em;
+}
+
+.wegas-balance-category > .wegas-balance-line .wegas-balance-amount {
     font-weight: bold;
-    float: right;
 }
 
 .wegas-balance-input.wegas-balance-amount{
     width: 54px;
     text-align: right;
     margin-right: 5px;
+    margin-top: 1px;
+    margin-bottom: 1px;
 }
 
 .wegas-balance-input.invalid{
@@ -106,10 +140,47 @@ div.wegas-balance-category {
     background: #ffDFD3;    
 }
 
-.wegas-balance-item {
-    height: 26px;
+
+.wegas-accounting-balance-wrapper--title {
+    text-align: center;
+    font-size: 1.5em;
+    margin-bottom: 10px;
 }
-.wegas-balance-item > .wegas-balance-title {
-    vertical-align: sub;
-    float: left;
+
+.wegas-accounting-balance-wrapper .wegas-accounting-balance-wrapper--item {
+    /*border-left: 1px solid black;*/
+    margin-left: 20px;
+    overflow: hidden;
+}
+
+.wegas-accounting-balance-wrapper--item:first-child {
+    /*border-left: none;*/
+    /*margin-left: 0;*/
+}
+
+.wegas-accounting-balance-wrapper--item .wegas-accounting-balance {
+    background-color: #f7f7f7;
+}
+
+
+.wegas-accounting-balance-wrapper--item-title {
+    text-align: center;
+    font-size: 1.4em;
+    border-bottom: 1px solid;
+}
+
+
+.wegas-accounting-balance-wrapper--hint {
+    color: #343539;
+    max-width: 380px;
+    font-size: 11px;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.wegas-accounting-balance-wrapper--hint.hidden,
+.wegas-accounting-balance-wrapper--validate.hidden {
+    display: none;
 }

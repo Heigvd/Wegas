@@ -1012,6 +1012,21 @@
     font-size: 30px;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-find-outdated {
+    font-size: 14px;
+    cursor: pointer;
+    vertical-align: -2px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-find-outdated .fa-toggle-on {
+    font-size: 12px;
+    color: #F57C00;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-find-outdated .fa-search {
+    color: #4e525e;
+}
+
 .wegas-i18n-manager .wegas-i18n-manager--languages .language .language-title {
     font-size: 1.4em;
     padding-right: 5px;
@@ -1508,4 +1523,50 @@
     line-height: 23px;
     font-size: 18px;
     text-align: center;
+}
+
+.wegas-model-propagator {
+
+}
+
+.wegas-model-propagator .modal-title {
+    font-size: 24px;
+}
+
+.wegas-model-propagator .modal-content .diff {
+    padding-left: 1em;
+    border-left: 1px dashed lightgray;
+}
+
+.wegas-model-propagator .modal-content .change .line-number {
+    display: inline-block;
+    width: 25px;
+    padding-right: 5px;
+    color: gray;
+    user-select: none;
+    text-align: right;
+    background: #eeeaea;
+    vertical-align: top;
+}
+
+.wegas-model-propagator .modal-content pre {
+    display: inline-block;
+}
+
+.wegas-model-propagator .modal-content .change .line-change {
+    width: calc(100% - 35px);
+    overflow-wrap: anywhere;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+
+.wegas-model-propagator .modal-content .change .line-change .editNewInline,
+.wegas-model-propagator .modal-content .side2side-change .new {
+    background-color: #acf2bd;
+}
+
+.wegas-model-propagator .modal-content .change .line-change .editOldInline,
+.wegas-model-propagator .modal-content .side2side-change .old {
+    background-color: #fdb8c0;
+    text-decoration: line-through;
 }

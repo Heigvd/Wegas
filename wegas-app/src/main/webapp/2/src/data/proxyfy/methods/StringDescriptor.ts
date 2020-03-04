@@ -23,6 +23,30 @@ export function isValueSelected(sd: IStringDescriptor) {
   };
 }
 
+export function areSelectedValues(sd: IStringDescriptor) {
+  return (self: IPlayer, expectedValues: string[], strictOrder: boolean) => {
+    const values = parseStringValues(sd, self);
+    if (values.length === expectedValues.length){
+      if (strictOrder){
+        for (let i = 0; i < values.length;i++){
+          if (values[i] !== expectedValues[i]){
+            return false;
+          }
+        }
+      } else {
+        for (let i = 0; i < values.length;i++){
+          if (values[i].indexOf(expectedValues[i]) < 0){
+            return false;
+          }
+        }
+      }
+
+      return true;
+    }
+    return false;
+  };
+}
+
 export function setValue(_sd: IStringDescriptor) {
   return (_self: IPlayer, _value: ITranslatableContent) => {
     throw Error('This is readonly');
@@ -34,6 +58,16 @@ export function isNotSelectedValue(sd: IStringDescriptor) {
 }
 
 export function countSelectedValues(sd: IStringDescriptor) {
-  return (self: IPlayer, value: string) =>
-    parseStringValues(sd, self).filter(v => v === value).length;
+  return (self: IPlayer) =>
+    parseStringValues(sd, self).length;
+}
+
+export function getPositionOfValue(sd: IStringDescriptor) {
+  return (self: IPlayer, value:string) => {
+    const pos = parseStringValues(sd, self).indexOf(value);
+    if (pos >= 0){
+      return pos+1;
+    }
+    return undefined;
+  }
 }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TabLayout } from '../../../Components/Tabs';
 import { Toolbar } from '../../../Components/Toolbar';
-import { IconButton } from '../../../Components/Button/IconButton';
+import { IconButton } from '../../../Components/Inputs/Button/IconButton';
 import {
   LibraryAPI,
   NewLibErrors,
@@ -14,13 +14,15 @@ import u from 'immer';
 import { WebSocketEvent, useWebsocket } from '../../../API/websocket';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
 import MergeEditor from './MergeEditor';
-import { StyledLabel } from '../../../Components/AutoImport/String/Label';
 import { TextPrompt } from '../TextPrompt';
-import { ConfirmButton } from '../../../Components/Button/ConfirmButton';
+import { ConfirmButton } from '../../../Components/Inputs/Button/ConfirmButton';
 import { WegasScriptEditor } from './WegasScriptEditor';
-import { clientScriptEval, useGlobals } from '../../../Components/Hooks/useScript';
-import * as ts from 'typescript';
+import {
+  clientScriptEval,
+  useGlobals,
+} from '../../../Components/Hooks/useScript';
 import { Menu } from '../../../Components/Menu';
+import { MessageString } from '../MessageString';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [
@@ -320,7 +322,7 @@ const isEditAllowed = (librariesState: ILibrariesState): boolean => {
     librariesState.selected !== '' &&
     (GameModel.selectCurrent().type !== 'SCENARIO' ||
       libEntry.library.visibility === 'PRIVATE' ||
-        libEntry.library.visibility === 'INHERITED')
+      libEntry.library.visibility === 'INHERITED')
   );
 };
 
@@ -479,7 +481,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           });
           if (scriptType === 'ClientScript') {
             try {
-              clientScriptEval(ts.transpile(libEntry.library.content));
+              clientScriptEval(libEntry.library.content);
             } catch (e) {
               setModalState({
                 type: 'warning',
@@ -633,21 +635,21 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
               </>
             )}
             {isLibraryOutdated(libEntry) ? (
-              <StyledLabel
+              <MessageString
                 type="error"
                 value="The script is dangeroulsy outdated!"
               />
             ) : libEntry.status.isEdited ? (
-              <StyledLabel type="warning" value="The script is not saved" />
+              <MessageString type="warning" value="The script is not saved" />
             ) : (
-              <StyledLabel
+              <MessageString
                 type="succes"
                 value="The script is saved"
                 duration={3000}
               />
             )}
             {(modalState.type === 'error' || modalState.type === 'warning') && (
-              <StyledLabel
+              <MessageString
                 type={modalState.type}
                 value={modalState.label}
                 duration={3000}
@@ -685,7 +687,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             onSave={onSaveLibrary}
           />
         ) : (
-          <StyledLabel
+          <MessageString
             value="Please create a library by pressing the + button"
             type={'warning'}
           />

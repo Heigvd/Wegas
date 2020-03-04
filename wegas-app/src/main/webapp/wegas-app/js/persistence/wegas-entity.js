@@ -289,11 +289,11 @@ YUI.add('wegas-entity', function(Y) {
                     id: this.get("parentId"),
                 });
                 if (parent instanceof Y.Wegas.persistence.GameModel) {
-                    return Y.Wegas.Facade.GameModel.cache.find("id", entity.get("parentId"));
+                    return Y.Wegas.Facade.GameModel.cache.find("id", this.get("parentId"));
                 } else if (parent instanceof Y.Wegas.persistence.VariableDescriptor) {
-                    return Y.Wegas.Facade.Variable.cache.find("id", entity.get("parentId"));
+                    return Y.Wegas.Facade.Variable.cache.find("id", this.get("parentId"));
                 } else if (parent instanceof Y.Wegas.persistence.VariableInstance) {
-                    return Y.Wegas.Facade.Instance.cache.find("id", entity.get("parentId"));
+                    return Y.Wegas.Facade.Instance.cache.find("id", this.get("parentId"));
                 }
             }
         }
@@ -386,11 +386,12 @@ YUI.add('wegas-entity', function(Y) {
             },
             VISIBILITY: {
                 type: STRING,
+                required: true,
                 index: -4,
                 valueFn: function() {
                     // default visibility is inherited if the object belongs to a model, private otherwise
                     return Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
-                        .get("type") === "MODEL" ? "INHERITED" : "PRIVATE";
+                        .get("type") === "MODEL" ? undefined : "PRIVATE";
                 },
                 view: {
                     type: SELECT,

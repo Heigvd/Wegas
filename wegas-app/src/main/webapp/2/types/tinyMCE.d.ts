@@ -204,7 +204,11 @@ interface TinyMCENodeChangeEvent {
 }
 
 interface TinyMCEChangeEvent {
-  level: { content: string };
+  event: {
+    target: {
+      getContent: () => string;
+    };
+  };
 }
 
 interface TinyMCEEventsCallback {

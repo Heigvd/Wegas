@@ -11,9 +11,9 @@ import { StoreConsumer, StoreDispatch, store } from '../../data/store';
 import { AvailableViews } from './FormView';
 import { cx } from 'emotion';
 import { flex, grow, flexColumn } from '../../css/classes';
-import { StyledLabel } from '../../Components/AutoImport/String/Label';
-import { shallowDifferent } from '../../data/connectStore';
 import { Edition } from '../../data/Reducer/globalState';
+import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
+import { MessageString } from './MessageString';
 
 export interface EditorProps<T> {
   entity?: T;
@@ -181,9 +181,9 @@ async function WindowedEditor<T extends IMergeable>({
   // First try to get schema from simple filters
   const customSchemas = store.getState().global.schemas;
   let customSchema: SimpleSchema | void;
-  const simpleCustomShemaName = customSchemas.filtered[pathEntity['@class']];
-  if (simpleCustomShemaName !== undefined) {
-    const nfSchema = customSchemas.views[simpleCustomShemaName](
+  const simpleCustomSchemaName = customSchemas.filtered[pathEntity['@class']];
+  if (simpleCustomSchemaName !== undefined) {
+    const nfSchema = customSchemas.views[simpleCustomSchemaName](
       pathEntity as TypedEntity,
       schema,
     );
@@ -191,7 +191,7 @@ async function WindowedEditor<T extends IMergeable>({
       customSchema = nfSchema;
     }
   }
-  // Then try to get shema from complex filters
+  // Then try to get schema from complex filters
   for (const schemaName of customSchemas.unfiltered) {
     const nfSchema = customSchemas.views[schemaName](
       pathEntity as TypedEntity,
@@ -202,10 +202,9 @@ async function WindowedEditor<T extends IMergeable>({
       break;
     }
   }
-
   return (
     <div className={cx(flex, grow, flexColumn)}>
-      <StyledLabel
+      <MessageString
         value={error && error.message}
         type={'error'}
         duration={3000}
@@ -227,7 +226,6 @@ async function WindowedEditor<T extends IMergeable>({
           entity,
           customSchema !== undefined ? customSchema : schema,
         )}
-        // schema={overrideSchema(entity, schema)}
       />
     </div>
   );

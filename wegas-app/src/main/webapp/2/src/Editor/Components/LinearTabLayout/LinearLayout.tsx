@@ -13,14 +13,16 @@ import { flex, noOverflow, grow } from '../../../css/classes';
 import { themeVar } from '../../../Components/Theme';
 import { availableLayoutTabs } from '../Layout';
 
-const splitter = css({
+export const splitter = css({
+  '&.reflex-container > .reflex-splitter': {
+    backgroundColor: themeVar.primaryLighterColor,
+    zIndex: 0,
+  },
   '&.reflex-container.vertical > .reflex-splitter': {
     width: '5px',
-    backgroundColor: themeVar.primaryLighterColor,
   },
   '&.reflex-container.horizontal > .reflex-splitter': {
     height: '5px',
-    backgroundColor: themeVar.primaryLighterColor,
   },
 });
 
@@ -354,6 +356,7 @@ const incrementNumericKey = (key: string, increment: number = 1) => {
  *
  * @param layouts
  */
+// @ts-ignore
 const logLayouts = (layouts: LayoutMap) => {
   wlog(
     'layouts',
@@ -878,7 +881,6 @@ function MainLinearLayout<T extends ComponentMap>(props: LinearLayoutProps<T>) {
       }
     }
   };
-  logLayouts(layout.layoutMap);
   return (
     <focusTabContext.Provider
       value={(id: keyof typeof availableLayoutTabs) => {

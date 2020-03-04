@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public class XlsxSpreadsheet {
 
-    private static final Logger logger =LoggerFactory.getLogger(XlsxSpreadsheet.class);
+    private static final Logger logger = LoggerFactory.getLogger(XlsxSpreadsheet.class);
 
     private Workbook wb;
 
@@ -87,7 +87,7 @@ public class XlsxSpreadsheet {
     public CellStyle createPercentStyle() {
         CellStyle style = wb.createCellStyle();
         style.setDataFormat(wb.createDataFormat()
-                .getFormat(BuiltinFormats.getBuiltinFormat(10)));
+            .getFormat(BuiltinFormats.getBuiltinFormat(10)));
         return style;
     }
 
@@ -161,6 +161,7 @@ public class XlsxSpreadsheet {
      * Add a cell and move cursor to the next column
      *
      * @param style optional style
+     *
      * @return the brand new cell
      */
     public Cell addCell(CellStyle style) {
@@ -186,6 +187,7 @@ public class XlsxSpreadsheet {
      * set current cell value and move cursor to the right
      *
      * @param value current cell value
+     *
      * @return the edited cell
      */
     public Cell addValue(Object value) {
@@ -195,12 +197,21 @@ public class XlsxSpreadsheet {
     /**
      * set current cell value and move cursor to the right. set style if defined
      *
-     * @param value current cell value
+     * @param oValue current cell value
      * @param style optional style
+     *
      * @return the edited cell
      */
-    public Cell addValue(Object value, CellStyle style) {
+    public Cell addValue(Object oValue, CellStyle style) {
         Cell cell = this.addCell(style);
+
+        Object value = oValue;
+        if (oValue instanceof String) {
+            try {
+                value = Double.parseDouble((String) oValue);
+            } catch (NumberFormatException ex) {
+            }
+        }
 
         if (value instanceof Number) {
             cell.setCellValue(((Number) value).doubleValue());
@@ -243,6 +254,7 @@ public class XlsxSpreadsheet {
      * set current cell formula and move cursor to the right.
      *
      * @param formula current cell formula
+     *
      * @return the edited cell
      */
     public Cell addFormnula(String formula) {
@@ -253,7 +265,8 @@ public class XlsxSpreadsheet {
      * set current cell formula and move cursor to the right. set style if defined
      *
      * @param formula current cell formula
-     * @param style optional style
+     * @param style   optional style
+     *
      * @return the edited cell
      */
     public Cell addFormnula(String formula, CellStyle style) {

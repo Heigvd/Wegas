@@ -1,28 +1,36 @@
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from './Components/FormView';
 import { formValidation } from './formValidation';
 import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/globalState';
 import { ThunkResult } from '../data/store';
+import { TYPESTRING } from 'jsoninput/typings/types';
+import { Icons } from './Components/Views/FontAwesome';
 
-export type ConfigurationSchema<E> = Record<keyof E, Schema<AvailableViews>>;
+export type WegasTypeString = TYPESTRING | 'identifier';
+
+export type WegasMethodParameter = {
+  type: WegasTypeString;
+} & Schema<AvailableViews>;
+
+export const wegasMethodReturnValues = ['number', 'string', 'boolean'] as const;
+
+export type WegasMethodReturnType = ValueOf<typeof wegasMethodReturnValues>;
+
+export interface WegasMethod {
+  label: string;
+  parameters: WegasMethodParameter[];
+  returns?: WegasMethodReturnType;
+}
+
+export function isWegasMethodReturnType(
+  value: string,
+): value is WegasMethodReturnType {
+  return (wegasMethodReturnValues as readonly string[]).includes(value);
+}
 
 export interface MethodConfig {
-  [method: string]: {
-    label: string;
-    parameters: (Schema<AvailableViews> & {
-      type:
-        | 'string'
-        | 'number'
-        | 'array'
-        | 'object'
-        | 'boolean'
-        | 'identifier'
-        | 'null';
-    })[];
-    returns?: 'number' | 'string' | 'boolean';
-  };
+  [method: string]: WegasMethod;
 }
 
 /**
@@ -171,13 +179,16 @@ export interface EActions {
 export async function getEntityActions(
   entity: IAbstractEntity,
 ): Promise<EActions> {
-  if (entityIs<IFSMDescriptor>(entity, 'FSMDescriptor')) {
+  if (
+    entityIs(entity, 'FSMDescriptor') ||
+    entityIs(entity, 'DialogueDescriptor')
+  ) {
     return { edit: editStateMachine };
   }
   return { edit: editVariable };
 }
 
-export async function getMethodConfig<T extends IAbstractEntity>(
+export async function getVariableMethodConfig<T extends IAbstractEntity>(
   entity: T,
 ): Promise<MethodConfig> {
   return fetchConfig(entity['@class'] + '.json').then(res =>
@@ -185,15 +196,10 @@ export async function getMethodConfig<T extends IAbstractEntity>(
   );
 }
 
-export async function getIcon<T extends IAbstractEntity>(
+export function getIcon<T extends IAbstractEntity>(
   entity: T,
-): Promise<IconProp> {
-  switch (
-    entity['@class'] as
-      | ValueOf<typeof ListDescriptorChild>
-      | ValueOf<typeof QuestionDescriptorChild>
-      | ValueOf<typeof ChoiceDescriptorChild>
-  ) {
+): Icons | undefined {
+  switch (entity['@class'] as WegasClassNames) {
     case 'ChoiceDescriptor':
       return 'check-square';
     case 'FSMDescriptor':
@@ -201,7 +207,7 @@ export async function getIcon<T extends IAbstractEntity>(
     case 'ListDescriptor':
       return 'folder';
     case 'NumberDescriptor':
-      return 'chart-line';
+      return ['circle', { value: 'ℝ', color: 'white', fontSize: '0.7em' }];
     case 'QuestionDescriptor':
       return 'question-circle';
     case 'Result':
@@ -218,20 +224,33 @@ export async function getIcon<T extends IAbstractEntity>(
       return 'paragraph';
     case 'TriggerDescriptor':
       return 'random';
+    case 'WhQuestionDescriptor':
+      return ['square-full', { icon: 'question', color: 'white', size: 'xs' }];
+    case 'InboxDescriptor':
+      return 'envelope';
+    case 'DialogueDescriptor':
+      return 'comments';
+    case 'ResourceDescriptor':
+      return 'user';
+    case 'PeerReviewDescriptor':
+      return 'user-friends';
     case 'TaskDescriptor':
-      return 'list-ul';
+      return 'list-ol';
+    case 'EvaluationDescriptorContainer':
+      return 'eye';
+    case 'GradeDescriptor':
+      return 'arrows-alt-h';
+    case 'TextEvaluationDescriptor':
+      return 'book-reader';
+    case 'CategorizedEvaluationDescriptor':
+      return 'clipboard-list';
   }
 }
 
-export async function getLabel<T extends IAbstractEntity>(
+export function getLabel<T extends IAbstractEntity>(
   entity: T,
-): Promise<string> {
-  switch (
-    entity['@class'] as
-      | ValueOf<typeof ListDescriptorChild>
-      | ValueOf<typeof QuestionDescriptorChild>
-      | ValueOf<typeof ChoiceDescriptorChild>
-  ) {
+): string | undefined {
+  switch (entity['@class'] as WegasClassNames) {
     case 'ChoiceDescriptor':
       return 'Choice';
     case 'FSMDescriptor':
@@ -256,11 +275,28 @@ export async function getLabel<T extends IAbstractEntity>(
       return 'Text';
     case 'TriggerDescriptor':
       return 'Trigger';
+    case 'WhQuestionDescriptor':
+      return 'Open question';
+    case 'InboxDescriptor':
+      return 'Inbox';
+    case 'DialogueDescriptor':
+      return 'Dialogue';
+    case 'ResourceDescriptor':
+      return 'Resource';
+    case 'PeerReviewDescriptor':
+      return 'Peer review';
     case 'TaskDescriptor':
       return 'Task';
+    case 'GradeDescriptor':
+      return 'Grade';
+    case 'TextEvaluationDescriptor':
+      return 'Text evaluation';
+    case 'CategorizedEvaluationDescriptor':
+      return 'Categorized evaluation';
   }
+  return '';
 }
-const ListDescriptorChild = [
+export const ListDescriptorChild = [
   'NumberDescriptor',
   'StringDescriptor',
   'ListDescriptor',
@@ -270,11 +306,27 @@ const ListDescriptorChild = [
   'ObjectDescriptor',
   'TriggerDescriptor',
   'QuestionDescriptor',
+  'WhQuestionDescriptor',
+  'InboxDescriptor',
+  'DialogueDescriptor',
+  'ResourceDescriptor',
+  'PeerReviewDescriptor',
   'FSMDescriptor',
 ] as const;
 const QuestionDescriptorChild = [
   'SingleResultChoiceDescriptor',
   'ChoiceDescriptor',
+] as const;
+const WhQuestionDescriptorChild = [
+  'NumberDescriptor',
+  'StringDescriptor',
+  'TextDescriptor',
+  'BooleanDescriptor',
+] as const;
+const EvaluationDescriptorContainerChild = [
+  'GradeDescriptor',
+  'TextEvaluationDescriptor',
+  'CategorizedEvaluationDescriptor',
 ] as const;
 const ChoiceDescriptorChild = ['Result'] as const;
 export async function getChildren<T extends IAbstractEntity>(
@@ -285,8 +337,12 @@ export async function getChildren<T extends IAbstractEntity>(
       return ListDescriptorChild;
     case 'QuestionDescriptor':
       return QuestionDescriptorChild;
+    case 'WhQuestionDescriptor':
+      return WhQuestionDescriptorChild;
     case 'ChoiceDescriptor':
       return ChoiceDescriptorChild;
+    case 'EvaluationDescriptorContainer':
+      return EvaluationDescriptorContainerChild;
     default:
       return [];
   }

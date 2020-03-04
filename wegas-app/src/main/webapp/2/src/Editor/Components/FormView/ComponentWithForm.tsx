@@ -10,14 +10,13 @@ import {
 import { css, cx } from 'emotion';
 import { Edition, closeEditor } from '../../../data/Reducer/globalState';
 import { StoreDispatch } from '../../../data/store';
-import {
-  createStoreConnector,
-  shallowDifferent,
-} from '../../../data/connectStore';
+import { createStoreConnector } from '../../../data/connectStore';
 import { flex, grow, autoScroll } from '../../../css/classes';
 import { InstancesEditorProps } from '../Variable/InstancesEditor';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { Toolbar } from '../../../Components/Toolbar';
+import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { Button } from '../../../Components/Inputs/Button/Button';
 
 const growBig = css({
   flex: '30 1 auto',
@@ -99,9 +98,10 @@ export function ComponentWithForm({
         <div className={cx(flex, grow, autoScroll)}>
           <Toolbar>
             <Toolbar.Header>
-              <button onClick={() => setInstanceView(false)}>
-                Close instance editor
-              </button>
+              <Button
+                label="Close instance editor"
+                onClick={() => setInstanceView(false)}
+              />
             </Toolbar.Header>
             <Toolbar.Content>
               <AsyncInstancesEditor

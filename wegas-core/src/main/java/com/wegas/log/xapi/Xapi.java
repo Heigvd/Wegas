@@ -13,6 +13,7 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -91,8 +92,8 @@ public class Xapi implements XapiI {
 
     private LearningLockerClient getLearningLockerClient() {
         return new LearningLockerClient(Helper.getWegasProperty("xapi.ll.host"),
-                "Basic " + Helper.getWegasProperty("xapi.auth"),
-                requestManager.getBaseUrl());
+            "Basic " + Helper.getWegasProperty("xapi.auth"),
+            Helper.getWegasProperty("xapi.agent.homepage", requestManager.getBaseUrl()));
     }
 
     @Override
@@ -118,8 +119,8 @@ public class Xapi implements XapiI {
 
     @Override
     public IStatementObject activity(String id, String activityType,
-            Map<String, String> name,
-            Map<String, String> definition) {
+        Map<String, String> name,
+        Map<String, String> definition) {
         Activity activity = new Activity(id);
         ActivityDefinition def = new ActivityDefinition();
         def.setType(activityType);
@@ -201,9 +202,9 @@ public class Xapi implements XapiI {
     }
 
     private Context genContext() {
-        final String logID = requestManager.getPlayer().getGameModel().getProperties().getLogID();
-        final Team team = requestManager.getPlayer().getTeam();
-        final Game game = requestManager.getPlayer().getGame();
+        final Team team = requestManager.getCurrentTeam();
+        final Game game = team.getGame();
+        final String logID = game.getGameModel().getProperties().getLogID();
 
         final Context context = new Context();
         final List<User> instructorsUser = userFacade.findEditors("g" + game.getId());
@@ -215,15 +216,15 @@ public class Xapi implements XapiI {
             context.setInstructor(new Group(instructorsAgent));
         }
 
-        ContextActivities ctx = new ContextActivities();
-        ctx.setCategory(new ArrayList<Activity>() {
+        ContextActivities ctxActivities = new ContextActivities();
+        ctxActivities.setCategory(new ArrayList<Activity>() {
             private static final long serialVersionUID = 1L;
 
             {
                 add(new Activity(LOG_ID_PREFIX + logID));
             }
         });
-        ctx.setGrouping(new ArrayList<Activity>() {
+        ctxActivities.setGrouping(new ArrayList<Activity>() {
             private static final long serialVersionUID = 1L;
 
             {
@@ -231,7 +232,7 @@ public class Xapi implements XapiI {
                 add(new Activity("internal://wegas/game/" + String.valueOf(game.getId())));
             }
         });
-        context.setContextActivities(ctx);
+        context.setContextActivities(ctxActivities);
         return context;
     }
 
@@ -244,31 +245,31 @@ public class Xapi implements XapiI {
      */
     private Agent agent(User user) {
         return new Agent(null, new Account(String.valueOf(user.getId()),
-                this.getAgentHomePage()));
+            this.getAgentHomePage()));
     }
 
     /**
      * Check if there is a current player, not Debug, there is a LogID and xapi is configured
      */
     private Boolean isValid() {
-        final Player player = requestManager.getPlayer();
+        final Team team = requestManager.getCurrentTeam();
 
         boolean logDebug = Helper.getWegasProperty("xapi.log_debug_player", "false").equals("true");
 
-        if (player == null) {
+        if (team == null) {
             logger.debug("No player");
             return false;
-        } else if (!logDebug && (player.getTeam() instanceof DebugTeam || player.getTeam() instanceof DebugTeam)) {
+        } else if (!logDebug && (team instanceof DebugTeam || team.getGame() instanceof DebugGame)) {
             logger.debug("Do not log statements for debug players");
             return false;
-        } else if (Helper.isNullOrEmpty(player.getGameModel().getProperties().getLogID())) {
+        } else if (Helper.isNullOrEmpty(team.getGame().getGameModel().getProperties().getLogID())) {
             logger.debug("No Log ID defined");
             return false;
         } else if (Helper.isNullOrEmpty(this.getAgentHomePage())) {
             logger.debug("No Agent homepage");
             return false;
         } else if (Helper.isNullOrEmpty(Helper.getWegasProperty("xapi.auth"))
-                || Helper.isNullOrEmpty(Helper.getWegasProperty("xapi.host"))) {
+            || Helper.isNullOrEmpty(Helper.getWegasProperty("xapi.host"))) {
             logger.debug("XAPI host/auth are not defined");
             return false;
         }
@@ -277,7 +278,7 @@ public class Xapi implements XapiI {
 
     public Statement buildQuestionStatement(String questionName, String choiceName, String resultName) {
         IStatementObject activity = activity("act:wegas/question/"
-                + questionName + "/choice/" + choiceName);
+            + questionName + "/choice/" + choiceName);
 
         Statement stmt = userStatement(Verbs.ANSWERED, activity);
         stmt.setResult(result(resultName));
@@ -288,8 +289,8 @@ public class Xapi implements XapiI {
     public void replyValidate(ReplyValidate reply) {
         if (isValid()) {
             Statement stmt = buildQuestionStatement(reply.question.getDescriptor().getName(),
-                    reply.choice.getDescriptor().getName(),
-                    reply.reply.getResultName());
+                reply.choice.getDescriptor().getName(),
+                reply.reply.getResultName());
 
             post(stmt);
         }
@@ -306,13 +307,13 @@ public class Xapi implements XapiI {
                     // skip numbers
                 } else if (item instanceof StringDescriptor) {
                     statements.add(
-                            this.buildAuthorStringInstance((StringInstance) variableDescriptorFacade.getInstance(item, player)));
+                        this.buildAuthorStringInstance((StringInstance) variableDescriptorFacade.getInstance(item, player)));
                 } else if (item instanceof TextDescriptor) {
                     statements.add(
-                            this.buildAuthorTextInstance((TextInstance) variableDescriptorFacade.getInstance(item, player)));
+                        this.buildAuthorTextInstance((TextInstance) variableDescriptorFacade.getInstance(item, player)));
                 } else if (item instanceof BooleanDescriptor) {
                     statements.add(
-                            this.buildAuthorBooleanInstance((BooleanInstance) variableDescriptorFacade.getInstance(item, player)));
+                        this.buildAuthorBooleanInstance((BooleanInstance) variableDescriptorFacade.getInstance(item, player)));
                 }
             }
             statements.add(this.build(Verbs.ANSWERED, "act:wegas/whQuestion/" + whDesc.getName()));
@@ -387,26 +388,43 @@ public class Xapi implements XapiI {
     }
 
     private String digest(Map<String, String> registry, String salt, String value) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            md.update(salt.getBytes(StandardCharsets.UTF_8));
+        if (!Helper.isNullOrEmpty(value)) {
+            try {
+                MessageDigest md = MessageDigest.getInstance("MD5");
+                md.update(salt.getBytes(StandardCharsets.UTF_8));
 
-            if (!registry.containsKey(value)) {
-                String digest = DatatypeConverter.printHexBinary(md.digest(value.getBytes(StandardCharsets.UTF_8)));
-                String shortDigest;
+                if (!registry.containsKey(value)) {
+                    String digest = DatatypeConverter.printHexBinary(md.digest(value.getBytes(StandardCharsets.UTF_8)));
+                    String shortDigest;
 
-                int start = 0;
-                do {
-                    shortDigest = digest.substring(start, start + 7);
-                    start++;
-                } while (registry.containsValue(shortDigest));
+                    int start = 0;
+                    do {
+                        shortDigest = digest.substring(start, start + 7);
+                        start++;
+                    } while (registry.containsValue(shortDigest));
 
-                registry.put(value, shortDigest);
+                    registry.put(value, shortDigest);
+                }
+
+                return registry.get(value);
+            } catch (NoSuchAlgorithmException ex) {
+                return value;
             }
+        } else {
+            return "";
+        }
+    }
 
-            return registry.get(value);
-        } catch (NoSuchAlgorithmException ex) {
-            return value;
+    private void digestIds(Map<String, String> registry, List<ProjectedStatement> statements) {
+        String salt = Helper.getWegasProperty("xapi.salt");
+        if (Helper.isNullOrEmpty(salt)) {
+            salt = Helper.genToken(48);
+        }
+        // hash userId
+        for (ProjectedStatement stmt : statements) {
+            stmt.setActor(digest(registry, salt, stmt.getActor()));
+            stmt.setTeam(digest(registry, salt, stmt.getTeam()));
+            stmt.setGame(digest(registry, salt, stmt.getGame()));
         }
     }
 
@@ -414,28 +432,7 @@ public class Xapi implements XapiI {
 
         Map<String, String> registry = new HashMap<>();
 
-        // hash userId
-        for (ProjectedStatement stmt : statements) {
-            try {
-                User user = userFacade.find(Long.parseLong(stmt.getActor()));
-                Team team = teamFacade.find(Long.parseLong(stmt.getTeam()));
-                Game game = gameFacade.find(Long.parseLong(stmt.getGame()));
-
-                if (user != null) {
-                    stmt.setActor(digest(registry, user.getMainAccount().getRefId(), stmt.getActor()));
-                }
-
-                if (team != null) {
-                    stmt.setTeam(digest(registry, team.getRefId(), stmt.getTeam()));
-                }
-
-                if (game != null) {
-                    stmt.setGame(digest(registry, game.getRefId(), stmt.getGame()));
-                }
-
-            } catch (NumberFormatException ex) {
-            }
-        }
+        digestIds(registry, statements);
 
         String sep = ",";
         StringBuilder csv = new StringBuilder();
@@ -451,28 +448,7 @@ public class Xapi implements XapiI {
 
         Map<String, String> registry = new HashMap<>();
 
-        // hash userId
-        for (ProjectedStatement stmt : statements) {
-            try {
-                User user = userFacade.find(Long.parseLong(stmt.getActor()));
-                Team team = teamFacade.find(Long.parseLong(stmt.getTeam()));
-                Game game = gameFacade.find(Long.parseLong(stmt.getGame()));
-
-                if (user != null) {
-                    stmt.setActor(digest(registry, user.getMainAccount().getRefId(), stmt.getActor()));
-                }
-
-                if (team != null) {
-                    stmt.setTeam(digest(registry, team.getRefId(), stmt.getTeam()));
-                }
-
-                if (game != null) {
-                    stmt.setGame(digest(registry, game.getRefId(), stmt.getGame()));
-                }
-
-            } catch (NumberFormatException ex) {
-            }
-        }
+        digestIds(registry, statements);
 
         XlsxSpreadsheet xlsx = new XlsxSpreadsheet();
         xlsx.addSheet("logs");

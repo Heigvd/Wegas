@@ -39,7 +39,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
@@ -514,9 +513,9 @@ public class WebsocketFacade {
             User user = newPlayer.getUser();
             if (user != null) {
                 try {
-                    for (Entry<String, List<AbstractEntity>> entry : newPlayer.getGame().getEntities().entrySet()) {
+                    /*for (Entry<String, List<AbstractEntity>> entry : newPlayer.getGame().getEntities().entrySet()) {
                         this.propagate(new EntityUpdatedEvent(entry.getValue()), entry.getKey(), null);
-                    }
+                    }*/
 
                     pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update",
                         parseJSON(
@@ -604,11 +603,13 @@ public class WebsocketFacade {
                 User user = this.getUserFromChannel(hook.getChannel());
                 if (user != null) {
                     this.registerUser(user);
+                    userFacade.touchLastSeenAt(user);
                 }
             } else if (hook.getName().equals("channel_vacated")) {
                 Long userId = this.getUserIdFromChannel(hook.getChannel());
                 if (userId != null) {
                     onlineUsers.remove(userId);
+                    userFacade.touchLastSeenAt(userId);
                 }
             }
 

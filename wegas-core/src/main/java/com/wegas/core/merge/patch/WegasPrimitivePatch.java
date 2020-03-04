@@ -9,6 +9,9 @@ package com.wegas.core.merge.patch;
 
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import ch.albasim.wegas.annotations.WegasCallback;
+import com.github.difflib.algorithm.DiffException;
+import com.github.difflib.text.DiffRow;
+import com.github.difflib.text.DiffRowGenerator;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.merge.utils.LifecycleCollector;
@@ -17,6 +20,8 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
@@ -24,8 +29,8 @@ import java.util.Objects;
 /**
  * Patch for primitive value.
  * <p>
- * There is two cases. First one patch an entity field with the help of getter and setter.
- * The second one patch a primitive within a collection or a map.
+ * There is two cases. First one patch an entity field with the help of getter and setter. The
+ * second one patch a primitive within a collection or a map.
  *
  * @author maxence
  */
@@ -56,10 +61,10 @@ public final class WegasPrimitivePatch extends WegasPatch {
      * @param cascade
      */
     WegasPrimitivePatch(Object identifier, int order,
-            WegasCallback userCallback, Mergeable entity,
-            Method getter, Method setter, Object fromValue, Object toValue,
-            boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
-            ProtectionLevel protectionLevel) {
+        WegasCallback userCallback, Mergeable entity,
+        Method getter, Method setter, Object fromValue, Object toValue,
+        boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
+        ProtectionLevel protectionLevel) {
         super(identifier, order, getter, setter, userCallback, ignoreNull, sameEntityOnly, initOnly, false, protectionLevel);
         this.identifier = identifier;
         this.fromValue = fromValue;
@@ -158,10 +163,129 @@ public final class WegasPrimitivePatch extends WegasPatch {
     }
 
     @Override
-    protected StringBuilder print(int ident) {
-        StringBuilder sb = super.print(ident);
+    protected StringBuilder print(int indent) {
+        StringBuilder sb = super.print(indent);
         sb.append(" from ").append(fromValue).append(" to ").append(toValue);
         return sb;
     }
 
+    private String valuetoString(Object value) {
+        if (value != null) {
+            return value.toString();
+        } else {
+            return "";
+        }
+    }
+
+    @Override
+    protected PatchDiff buildDiff() {
+        if (Objects.equals(fromValue, toValue)
+            || identifier.equals("version")
+            || identifier.equals("refId")) {
+            return null;
+        } else {
+            String from = valuetoString(fromValue);
+            String to = valuetoString(toValue);
+            if (from.equals(to)) {
+                return null;
+            } else {
+                return new PrimitiveDiff(this.identifier.toString(), from, to);
+            }
+        }
+    }
+
+    public abstract static class Change {
+
+    }
+
+    public static class SideBySideChange extends Change {
+
+        private final String oldValue;
+        private final String newValue;
+
+        public SideBySideChange(String oldValue, String newValue) {
+            this.oldValue = oldValue;
+            this.newValue = newValue;
+        }
+
+        public String getOldValue() {
+            return oldValue;
+        }
+
+        public String getNewValue() {
+            return newValue;
+        }
+    }
+
+    public static class LineChange extends Change {
+
+        private final int lineNumber;
+        private final String content;
+        private final String tag;
+
+        public LineChange(int lineNumber, String content, DiffRow.Tag tag) {
+            this.lineNumber = lineNumber;
+            this.content = content;
+            this.tag = tag.name();
+        }
+
+        public int getLineNumber() {
+            return lineNumber;
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        public String getTag(){
+            return tag;
+        }
+    }
+
+    public static class PrimitiveDiff extends PatchDiff {
+
+        private static DiffRowGenerator generator = DiffRowGenerator.create()
+            .showInlineDiffs(true)
+            .inlineDiffByWord(true)
+            .mergeOriginalRevised(true)
+            .build();
+
+        private final String title;
+
+        private List<Change> changes;
+
+        public List<Change> getChanges() {
+            return changes;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public PrimitiveDiff(String identifier, String from, String to) {
+
+            this.title = identifier;
+
+            changes = new ArrayList<>();
+
+            try {
+                List<DiffRow> rows = generator.generateDiffRows(Arrays.asList(from.split("\\n")), Arrays.asList(to.split("\\n")));
+
+                boolean skip = false;
+
+                for (int i = 0; i < rows.size(); i++) {
+                    DiffRow row = rows.get(i);
+                    if (row.getTag() != DiffRow.Tag.EQUAL) {
+                        changes.add(new LineChange(i, row.getOldLine(), row.getTag()));
+                        skip = false;
+                    } else if (!skip) {
+                        changes.add(new LineChange(i, "[...]", row.getTag()));
+                        skip = true;
+                    }
+                }
+            } catch (DiffException ex) {
+                this.changes.add(new SideBySideChange(from, to));
+            }
+        }
+    }
 }

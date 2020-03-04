@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
-import { IconButton } from '../../../Components/Button/IconButton';
+import { IconButton } from '../../../Components/Inputs/Button/IconButton';
 
 const pointerStyle = css({
   cursor: 'pointer',
@@ -81,28 +81,28 @@ function noop() {
   return;
 }
 
-function update(
-  props: TreeNodeProps,
-  val: Partial<TreeNodeProps>,
-): TreeNodeProps {
+function update<T>(
+  props: TreeNodeProps<T>,
+  val: Partial<TreeNodeProps<T>>,
+): TreeNodeProps<T> {
   return {
     ...props,
     ...val,
   };
 }
-interface TreeNodeProps {
+interface TreeNodeProps<T> {
   label: string;
-  value: string;
+  value: T;
   expanded?: boolean;
-  selected?: string;
+  selected?: T;
   selectable?: boolean;
   match?: boolean;
-  items?: TreeNodeProps[];
-  onSelect?: (item: string) => void;
-  onChange?: (props: TreeNodeProps) => void;
+  items?: TreeNodeProps<T>[];
+  onSelect?: (item: T) => void;
+  onChange?: (props: TreeNodeProps<T>) => void;
   className?: string;
 }
-export default function TreeNode(props: TreeNodeProps): JSX.Element {
+export default function TreeNode<T>(props: TreeNodeProps<T>): JSX.Element {
   const {
     label,
     value,
@@ -130,7 +130,7 @@ export default function TreeNode(props: TreeNodeProps): JSX.Element {
   }
 
   function onChildChange(i: number) {
-    return function childChange(child: TreeNodeProps) {
+    return function childChange(child: TreeNodeProps<T>) {
       if (items == null) {
         return;
       }
@@ -188,10 +188,15 @@ export default function TreeNode(props: TreeNodeProps): JSX.Element {
         className={`${treeHeadStyle} ${cx({
           [noSelectStyle]: !selectable,
           [pointerStyle]: selectable,
-          [selectedStyle]: !!selected && selected === value,
+          [selectedStyle]:
+            !!selected && JSON.stringify(selected) === JSON.stringify(value),
         })}`}
       >
-        {label !== undefined ? label : value}
+        {label !== undefined
+          ? label
+          : typeof value === 'string'
+          ? value
+          : JSON.stringify(value)}
       </a>
       {items ? (
         <ul

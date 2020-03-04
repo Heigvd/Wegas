@@ -15,43 +15,105 @@ YUI.add('wegas-model-propagator', function(Y) {
         [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Parent], {
         renderUI: function() {
             this.add(new Y.Wegas.Text({
-                content: "Propagate Model to senarios:"
+                cssClass: "modal-title",
+                content: "Please review diff"
             }));
-        },
-        propagate: function() {
-            this.get("contentBox").setContent("Propagate Model to senarios:");
+
+            this.content = new Y.Wegas.Text({
+                cssClass: "modal-content",
+                content: "Diff is loading..."
+            })
+            this.add(this.content);
+
+            this.waitForDiff = true;
+
             Y.Wegas.Facade.GameModel.sendRequest({
-                request: "/" + this.get("gameModel").get("id") + "/Propagate",
+                request: "/" + this.get("gameModel").get("id") + "/Diff",
                 cfg: {
-                    method: "PUT",
-                    updateCache: false
+                    updateCache: false,
                 },
                 on: {
-                    success: Y.bind(function(e) {
-                        Y.Wegas.Alerts.showNotification("Successfull propagation", {
-                            timeout: 2500
-                        });
-                        this.fire("model:propagated");
-                    }, this),
-                    failure: Y.bind(function(e) {
-                        var cb = this.get("contentBox");
-                        this.fire("model:propagationFailed");
-                        var events = e.serverResponse.get("events");
-                        for (var i in events) {
-                            var event = events[i];
-
-                            if (event.get("@class") === "ExceptionEvent") {
-                                for (var j in event.get("val").exceptions) {
-                                    var exception = event.get("val").exceptions[j];
-                                    cb.append("<p>" +
-                                        exception.get("val").message
-                                        + "</p>");
-                                }
-                            }
-                        }
-                    }, this)
+                    success: Y.bind(this.syncDiff, this)
                 }
             });
+        },
+        _genOutput: function(diff) {
+            var output = "<div class='diff'>";
+            if (diff.title) {
+                output += "<span class='diff-title'>" + diff.title + "</span>";
+            }
+
+            if (diff.diffs) {
+                for (var i in diff.diffs) {
+                    output += this._genOutput(diff.diffs[i]);
+                }
+            }
+
+            if (diff.changes) {
+                for (var i in diff.changes) {
+                    var change = diff.changes[i];
+                    if (change.lineNumber || change.content) {
+                        output += "<div class='change'>";
+                        if (diff.changes.length > 1) {
+                            output += "<span class='line-number'>" + change.lineNumber + "</span>";
+                        }
+                        output += "<pre class='line-change change-tag-" + change.tag + "'>" + change.content + "</pre>";
+                        output += "</div>";
+                    } else {
+                        output += "<div class='side2side-change'>";
+                        output += "<pre class='old'>" + change.oldValue + "</pre>";
+                        output += "<pre class='new'>" + change.newValue + "</pre>";
+                        output += "</div>";
+                    }
+                }
+            }
+            output += "</div>";
+            return output;
+        },
+        syncDiff: function(response) {
+            var diff = response.response.entity.get("val");
+            this.content.set("content", this._genOutput(diff));
+            this.content.syncUI();
+            this.waitForDiff = false;
+        },
+        propagate: function() {
+            if (!this.waitForDiff) {
+                this.get("contentBox").setContent("Propagate Model to senarios:");
+                Y.Wegas.Facade.GameModel.sendRequest({
+                    request: "/" + this.get("gameModel").get("id") + "/Propagate",
+                    cfg: {
+                        method: "PUT",
+                        updateCache: false
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            Y.Wegas.Alerts.showNotification("Successfull propagation", {
+                                timeout: 2500
+                            });
+                            this.fire("model:propagated");
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            this.fire("model:propagationFailed");
+                            var events = e.serverResponse.get("events");
+                            for (var i in events) {
+                                var event = events[i];
+
+
+                                this.content.set("content", "");
+                                this.content.syncUI();
+                                if (event.get("@class") === "ExceptionEvent") {
+                                    for (var j in event.get("val").exceptions) {
+                                        var exception = event.get("val").exceptions[j];
+                                        this.content.get("contentBox").append("<p>" +
+                                            exception.get("val").message
+                                            + "</p>");
+                                    }
+                                }
+                            }
+                        }, this)
+                    }
+                });
+            }
         }
     }, {
         ATTRS: {

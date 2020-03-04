@@ -1,19 +1,24 @@
 import * as React from 'react';
 import { Toolbar } from './Toolbar';
-import { ThemeModifiers, Theme, themeCTX, ThemeValues } from './Theme';
+import {
+  ThemeColorModifiers,
+  Theme,
+  themeCTX,
+  ThemeColors,
+  ThemeEntries,
+  themeVar,
+} from './Theme';
 import { cx, css } from 'emotion';
-import { flex, grow, flexColumn } from '../css/classes';
-import { ChromePicker } from 'react-color';
-import { OnChangeHandler } from 'react-color/lib/components/common/ColorWrap';
+import { flex, grow, flexColumn, defaultPadding } from '../css/classes';
+import { ColorChangeHandler, ChromePicker } from 'react-color';
 import * as Color from 'color';
 import { useOnClickOutside } from './Hooks/useOnClickOutside';
-import { IconButton } from './Button/IconButton';
+import { IconButton } from './Inputs/Button/IconButton';
 import { Menu } from './Menu';
 import { TextPrompt } from '../Editor/Components/TextPrompt';
-import { StyledLabel } from './AutoImport/String/Label';
-import { ConfirmButton } from './Button/ConfirmButton';
-import { NumberSlider } from './NumberSlider';
-import { wlog } from '../Helper/wegaslog';
+import { ConfirmButton } from './Inputs/Button/ConfirmButton';
+import { NumberSlider } from './Inputs/Button/NumberSlider';
+import { MessageString } from '../Editor/Components/MessageString';
 
 const colorButton = (color: string, bgColor?: string) =>
   css({
@@ -29,18 +34,14 @@ const colorButton = (color: string, bgColor?: string) =>
             : Color(bgColor).lighten(0.5)
           ).toString(),
     borderWidth: '5px',
-    borderRadius: '5px',
+    borderRadius: themeVar.borderRadius,
     cursor: 'pointer',
   });
-
-const themeAttrForm = css({
-  padding: '10px',
-});
 
 interface MyColorPickerProps {
   color: string;
   bgColor?: string;
-  onChange?: OnChangeHandler;
+  onChange?: ColorChangeHandler;
 }
 
 function MyColorPicker({ color, bgColor, onChange }: MyColorPickerProps) {
@@ -49,8 +50,6 @@ function MyColorPicker({ color, bgColor, onChange }: MyColorPickerProps) {
   useOnClickOutside(pickerZone, () => {
     setDisplayed(false);
   });
-
-  wlog(Color(bgColor).lightness());
 
   return (
     <div className={flex} ref={pickerZone}>
@@ -70,7 +69,7 @@ function MyColorPicker({ color, bgColor, onChange }: MyColorPickerProps) {
       />
       {displayed && (
         <ChromePicker
-          className={grow}
+          // className={grow}
           color={color}
           onChangeComplete={onChange}
         />
@@ -99,7 +98,8 @@ export default function ThemeEditor() {
     addNewTheme,
     deleteTheme,
     setSelectedTheme,
-    setThemeValue,
+    setThemeEntry,
+    setThemeColor,
     setThemeModifer,
   } = React.useContext(themeCTX);
   const [currentModifiedTheme, setModifiedTheme] = React.useState<string>(
@@ -114,7 +114,8 @@ export default function ThemeEditor() {
     ),
   );
 
-  const currentValues = themeState.themes[currentModifiedTheme].values;
+  const currentEntries = themeState.themes[currentModifiedTheme].entries;
+  const currentValues = themeState.themes[currentModifiedTheme].colors;
   const currentModifiers = themeState.themes[currentModifiedTheme].modifiers;
 
   return (
@@ -178,7 +179,7 @@ export default function ThemeEditor() {
               onBlur={() => setModalState({ type: 'close' })}
             />
             {modalState.type === 'error' && (
-              <StyledLabel
+              <MessageString
                 type="error"
                 value={modalState.label}
                 onLabelVanish={() => setModalState({ type: 'close' })}
@@ -238,9 +239,9 @@ export default function ThemeEditor() {
         />
       </Toolbar.Header>
       <Toolbar.Content>
-        {selectedSection.values && (
-          <div className={cx(flex, grow, flexColumn, themeAttrForm)}>
-            {Object.keys(currentValues).map((k: keyof ThemeValues) => (
+        {selectedSection.colors && (
+          <div className={cx(flex, grow, flexColumn, defaultPadding)}>
+            {Object.keys(currentValues).map((k: keyof ThemeColors) => (
               <p key={k}>
                 <label
                   className={cx(
@@ -255,11 +256,11 @@ export default function ThemeEditor() {
                 <MyColorPicker
                   color={currentValues[k]}
                   bgColor={
-                    themeState.themes[themeState.selectedTheme.editor].values
+                    themeState.themes[themeState.selectedTheme.editor].colors
                       .backgroundColor
                   }
                   onChange={color => {
-                    setThemeValue(currentModifiedTheme, k, color.hex);
+                    setThemeColor(currentModifiedTheme, k, color.hex);
                   }}
                 />
               </p>
@@ -267,24 +268,50 @@ export default function ThemeEditor() {
           </div>
         )}
         {selectedSection.modifiers && (
-          <div className={cx(flex, grow, flexColumn, themeAttrForm)}>
-            {Object.keys(currentModifiers).map((k: keyof ThemeModifiers) => (
+          <div className={cx(flex, grow, flexColumn, defaultPadding)}>
+            {Object.keys(currentModifiers).map(
+              (k: keyof ThemeColorModifiers) => (
+                <p key={k}>
+                  <label
+                    className={cx(
+                      css({ display: 'flex', alignItems: 'center' }),
+                    )}
+                    htmlFor={k}
+                    title={k}
+                  >
+                    {k} :
+                  </label>
+                  <NumberSlider
+                    max={1}
+                    min={0}
+                    value={currentModifiers[k]}
+                    onChange={v => setThemeModifer(currentModifiedTheme, k, v)}
+                  />
+                </p>
+              ),
+            )}
+          </div>
+        )}
+        {selectedSection.entries && (
+          <div className={cx(flex, grow, flexColumn, defaultPadding)}>
+            {Object.keys(currentEntries).map((k: keyof ThemeEntries) => (
               <p key={k}>
                 <label
-                  className={cx(
-                    // titleStyle,
-                    css({ display: 'flex', alignItems: 'center' }),
-                  )}
+                  className={cx(css({ display: 'flex', alignItems: 'center' }))}
                   htmlFor={k}
                   title={k}
                 >
                   {k} :
                 </label>
                 <NumberSlider
-                  max={1}
+                  max={15}
                   min={0}
-                  value={currentModifiers[k]}
-                  onChange={v => setThemeModifer(currentModifiedTheme, k, v)}
+                  steps={15}
+                  value={Number(currentEntries[k].replace('px', ''))}
+                  onChange={v =>
+                    setThemeEntry(currentModifiedTheme, k, v + 'px')
+                  }
+                  displayValues={val => val + 'px'}
                 />
               </p>
             ))}

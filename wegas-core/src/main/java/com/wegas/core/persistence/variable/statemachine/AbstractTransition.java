@@ -11,6 +11,7 @@ import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
 import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.INTERNAL;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -154,6 +155,7 @@ public abstract class AbstractTransition extends AbstractEntity {
 
     @JsonView(Views.IndexI.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @WegasExtraProperty(view = @View(value = Hidden.class, label=""))
     public Long getStateMachineId() {
         return this.getState().getStateMachineId();
     }

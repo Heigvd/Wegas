@@ -120,7 +120,8 @@ YUI().use(function(Y) {
                     "StringDescriptor",
                     "StringInstance",
                     "TextDescriptor",
-                    "TextInstance"
+                    "TextInstance",
+                    "StaticTextDescriptor"
                 ]
             },
             "wegas-statemachine-entities": {
@@ -256,7 +257,7 @@ YUI().use(function(Y) {
             "wegas-text-input": {
                 path: "js/widget/wegas-text-input-min.js",
                 ws_provides: ["TextInput", "StringInput", "BooleanInput", "SaveStatusAggregator"],
-                requires: ["wegas-text-inputcss", "wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button", "event-valuechange"]
+                requires: ["sortable", "wegas-text-inputcss", "wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button", "event-valuechange"]
             },
             "wegas-number-inputcss": {
                 type: CSS
@@ -409,7 +410,7 @@ YUI().use(function(Y) {
             "wegas-cssstyles-extra": {
                 path: "js/plugin/wegas-cssstyles-extra-min.js",
                 requires: "wegas-cssstyles",
-                ws_provides: ["CSSBackground", "CSSText", "CSSPosition", "CSSSize"]
+                ws_provides: ["CSSBackground", "CSSBackgroundImage", "CSSText", "CSSPosition", "CSSSize"]
             },
             "wegas-conditionaldisplay": {
                 path: "js/plugin/wegas-conditionaldisplay-min.js",
@@ -796,7 +797,8 @@ YUI().use(function(Y) {
             "wegas-find-and-replace": {
                 path: "js/widget/wegas-find-and-replace-min.js",
                 requires: ["wegas-modal", "wegas-plugin"],
-                ws_provides: ["FindAndReplace", "FindAndReplaceWidget", "FindAndReplaceModal", "FindAndReplaceAction"]
+                ws_provides: ["FindAndReplace", "FindAndReplaceWidget", "FindAndReplaceModal",
+                    "FindAndReplaceAction", "FindAndReplaceEntityAction"]
             },
             "wegas-statemachineviewer": {
                 path: "js/widget/wegas-statemachineviewer-min.js",
@@ -964,8 +966,8 @@ YUI().use(function(Y) {
             },
             "wegas-accounting-balance": {
                 //path: 'js/wegas-accounting-balance-min.js',
-                requires: ["wegas-accounting-css"],
-                ws_provides: "BalanceSheet"
+                requires: ["wegas-accounting-css", "wegas-template"],
+                ws_provides: ["BalanceSheet", "BalanceSheetWrapper"]
             }
         }
     });
@@ -1145,7 +1147,7 @@ YUI().use(function(Y) {
             },
             tinymce: {
                 path: "tinymce/tinymce.min.js"
-                //fullpath: "//unpkg.com/tinymce@4.9.5/tinymce.js"
+                    //fullpath: "//unpkg.com/tinymce@4.9.5/tinymce.js"
             },
             excanvas: {
                 path: "excanvas/excanvas.compiled.js"

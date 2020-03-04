@@ -4,13 +4,12 @@ const VD_BASE = (gameModelId: number) =>
   `/GameModel/${gameModelId}/VariableDescriptor/`;
 export const VariableDescriptorAPI = {
   getAll(gameModelId: number) {
-    return managedModeRequest(VD_BASE(gameModelId), undefined, 'Editor');
+    return managedModeRequest(VD_BASE(gameModelId));
   },
   update(gameModelId: number, variableDescriptor: IVariableDescriptor) {
     return managedModeRequest(
       `${VD_BASE(gameModelId)}${variableDescriptor.id}`,
       { method: 'PUT', body: JSON.stringify(variableDescriptor) },
-      'Editor',
     );
   },
   post(
@@ -24,7 +23,6 @@ export const VariableDescriptorAPI = {
         method: 'POST',
         body: JSON.stringify(variableDescriptor),
       },
-      'Editor',
     );
   },
   delete(gameModelId: number, variableDescriptor: IVariableDescriptor) {
@@ -33,7 +31,6 @@ export const VariableDescriptorAPI = {
       {
         method: 'DELETE',
       },
-      'Editor',
     );
   },
   move(
@@ -87,10 +84,6 @@ export const VariableDescriptorAPI = {
     }).then(res => res.json() as Promise<number[]>);
   },
   reset(gameModelId: number) {
-    return managedModeRequest(
-      `${VD_BASE(gameModelId)}Reset`,
-      undefined,
-      'Editor',
-    );
+    return managedModeRequest(`${VD_BASE(gameModelId)}Reset`);
   },
 };

@@ -12,34 +12,26 @@ angular.module('wegas.service.wegasTranslations', [])
             },
             default: function() {
                 $translateProvider.useSanitizeValueStrategy('escape'); // Minimal security required against XSS, but it prevents HTML inside translation strings.
-                if (localStorage.getObject("wegas-config")) {
-                    $translateProvider.preferredLanguage(localStorage.getObject("wegas-config").commons.language);
+                var cfg = localStorage.getObject("wegas-config");
+                if (cfg && cfg.commons && cfg.commons.language) {
+                    $translateProvider.preferredLanguage(cfg.commons.language);
                 } else {
                     var frList = ['fr', 'fr-fr', 'fr-ch', 'fr-mc', 'fr-ca', 'fr-lu'],
                         isFr = false,
                         language = window.navigator.userLanguage || window.navigator.language;
+                    language = language.toLowerCase();
                     frList.forEach(function(frCode) {
-                        if (language.toLowerCase() === frCode) {
+                        if (language === frCode) {
                             isFr = true;
                         }
                     });
-                    if (isFr) {
                         localStorage.setObject("wegas-config", {
                             'commons': {
-                                'language': 'fr'
+                            'language': (isFr ? 'fr' : 'en')
                             },
                             'users': {}
                         });
-                        $translateProvider.preferredLanguage('fr');
-                    } else {
-                        localStorage.setObject("wegas-config", {
-                            'commons': {
-                                'language': 'en'
-                            },
-                            'users': {}
-                        });
-                        $translateProvider.preferredLanguage('en');
-                    }
+                    $translateProvider.preferredLanguage(isFr ? 'fr' : 'en');
                 }
             },
             $get: function() {
@@ -181,6 +173,26 @@ angular.module('wegas.service.wegasTranslations', [])
                     ],
                     'translations': {
                         // Commons
+                        'WEGAS-KEYWORD-AND': {
+                            'en': 'and',
+                            'fr': "et"
+                        },
+                        'WEGAS-TERMS-OF-USE-TITLE': {
+                            'en': 'the general terms of use',
+                            'fr': "les conditions générales"
+                        },
+                        'WEGAS-DATA-PRIVACY-TITLE': {
+                            'en': 'the data management policy',
+                            'fr': "la politique de gestion des données"
+                        },
+                        'WEGAS-TERMS-OF-USE-URL': {
+                            'en': 'https://www.albasim.ch/en/terms-of-use/',
+                            'fr': 'https://www.albasim.ch/en/terms-of-use/'
+                        },
+                        'WEGAS-DATA-PRIVACY-URL': {
+                            'en': 'https://www.albasim.ch/en/data-policy/',
+                            'fr': 'https://www.albasim.ch/en/data-policy/'
+                        },
                         'LANGUAGE-FRENCH-NAME': {
                             'en': "Français",
                             'fr': "Français"
@@ -231,12 +243,6 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Username and password cannot be empty",
                             'fr': "Veuillez renseigner l'email et le mot de passe"
                         },
-                        /*
-                         'CREATE-ACCOUNT-LABEL': {
-                         'en': "New user?",
-                         'fr': "Nouvel utilisateur ?"
-                         },
-                         */
                         'LOGIN-AAI-ACCOUNT-BTN': {
                             'en': "Recommended to AAI users:",
                             'fr': "Recommandé aux utilisateurs AAI:"
@@ -276,10 +282,6 @@ angular.module('wegas.service.wegasTranslations', [])
                         'CREATE-ACCOUNT-INPUT-AGREE': {
                             'en': 'I agree with',
                             'fr': "J'accepte"
-                        },
-                        'CREATE-ACCOUNT-INPUT-TERMS': {
-                            'en': 'the terms of use',
-                            'fr': "les conditions générales"
                         },
                         'CREATE-ACCOUNT-SEND-BTN': {
                             'en': "Let's go!",

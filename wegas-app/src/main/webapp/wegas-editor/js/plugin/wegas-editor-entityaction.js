@@ -149,6 +149,10 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             i = EditEntityAction.stackedIcon(i, 'fa-paw');
                             i.tooltip = 'Reset visibilities recursively';
                             break;
+                        case "Find & Replace":
+                            i = EditEntityAction.stackedIcon(i, 'fa-search');
+                            i.tooltip = 'Find & Replace';
+                            break;
                     }
                 }
             });
@@ -900,6 +904,19 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     on: {
                         success: Y.bind(function(e) {
                             var entity = e.response.entity;
+                            
+                            if (entity.getMenuConfigMap) {
+                                var menu = entity.getMenuConfigMap(entity);
+                                if (menu.editBtn) {
+                                    // the brand new entity has a custom editAction: use it
+                                    var button = Wegas.Widget.create(menu.editBtn.cfg);
+                                    button.fire("click");
+                                    button.destroy();
+                                    this.hideOverlay();
+                                    return;
+                                }
+                            }
+                            // fallback: no custom editAction: open entity as-is
                             EditEntityAction.showUpdateForm(entity, this.get(DATASOURCE));
                             this.hideOverlay();
                         }, this),
@@ -993,7 +1010,6 @@ YUI.add("wegas-editor-entityaction", function(Y) {
     });
     Plugin.ResetVisibilityAction = ResetVisibilityAction;
 
-
     ReleaseVariableAction = Y.Base.create("ReleaseVariableAction", EntityAction, [], {
         execute: function() {
             if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL") {
@@ -1017,11 +1033,11 @@ YUI.add("wegas-editor-entityaction", function(Y) {
     });
     Plugin.ReleaseVariableAction = ReleaseVariableAction;
 
-    var ConvertToListAction = Y.Base.create("ConvertToListAction", EntityAction, [], {
+    var ConvertToTextAction = Y.Base.create("ConvertToTextAction", EntityAction, [], {
         execute: function() {
             this.showOverlay();
             Y.Wegas.Facade.Variable.cache.sendRequest({
-                request: '/' + this.get(ENTITY).get("id") + "/ConvertToList",
+                request: '/' + this.get(ENTITY).get("id") + "/ConvertToText",
                 cfg: {
                     method: 'PUT'
                 },
@@ -1032,11 +1048,34 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             });
         }
     }, {
-        NS: "ConvertToListAction",
+        NS: "ConvertToTextAction",
         ATTRS: {
         }
     });
-    Plugin.ConvertToListAction = ConvertToListAction;
+    Plugin.ConvertToTextAction = ConvertToTextAction;
+
+
+    var ConvertToStaticTextAction = Y.Base.create("ConvertToStaticTextAction", EntityAction, [], {
+        execute: function() {
+            this.showOverlay();
+            Y.Wegas.Facade.Variable.cache.sendRequest({
+                request: '/' + this.get(ENTITY).get("id") + "/ConvertToStaticText",
+                cfg: {
+                    method: 'PUT'
+                },
+                on: {
+                    success: Y.bind(this.hideOverlay, this),
+                    failure: Y.bind(this.hideOverlay, this)
+                }
+            });
+        }
+    }, {
+        NS: "ConvertToStaticTextAction",
+        ATTRS: {
+        }
+    });
+    Plugin.ConvertToStaticTextAction = ConvertToStaticTextAction;
+
 
     /**
      * @class

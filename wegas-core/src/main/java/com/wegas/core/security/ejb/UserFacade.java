@@ -111,8 +111,7 @@ public class UserFacade extends BaseFacade<User> {
             newUser.addAccount(new GuestJpaAccount());
             this.merge(newUser);
 
-            Subject subject = SecurityUtils.getSubject();
-            subject.login(new GuestToken(newUser.getMainAccount().getId()));
+            requestManager.login(new GuestToken(newUser.getMainAccount().getId()));
 
             return newUser;
         }
@@ -145,7 +144,7 @@ public class UserFacade extends BaseFacade<User> {
             UsernamePasswordToken shiroToken = new UsernamePasswordToken(email, token);
             shiroToken.setRememberMe(false);
             try {
-                subject.login(shiroToken);
+                requestManager.login(subject, shiroToken);
                 User user = this.getCurrentUser();
                 AbstractAccount mainAccount = user.getMainAccount();
                 if (mainAccount instanceof JpaAccount) {
@@ -153,6 +152,9 @@ public class UserFacade extends BaseFacade<User> {
                     jpaAccount.getShadow().setToken(null);
                     jpaAccount.setVerified(Boolean.TRUE);
                 }
+
+                this.touchLastSeenAt(user);
+
                 return user;
             } catch (AuthenticationException aex) {
             }
@@ -169,7 +171,7 @@ public class UserFacade extends BaseFacade<User> {
             if (gAccount instanceof GuestJpaAccount) {
                 logger.error("Logged as guest");
                 guest = gAccount.getUser();
-                subject.logout();
+                requestManager.logout(subject);
             }
         }
 
@@ -177,7 +179,7 @@ public class UserFacade extends BaseFacade<User> {
         UsernamePasswordToken token = new UsernamePasswordToken(authInfo.getLogin(), authInfo.getPassword());
         token.setRememberMe(authInfo.isRemember());
         try {
-            subject.login(token);
+            requestManager.login(subject, token);
             if (authInfo.isAgreed()) {
                 AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
                 if (account instanceof JpaAccount) {
@@ -186,6 +188,7 @@ public class UserFacade extends BaseFacade<User> {
             }
 
             User user = this.getCurrentUser();
+            this.touchLastSeenAt(user);
 
             if (guest != null) {
                 this.transferPlayers(guest, user);
@@ -207,10 +210,11 @@ public class UserFacade extends BaseFacade<User> {
             if (subject.isAuthenticated()
                 && accountFacade.find((Long) subject.getPrincipal()) instanceof GuestJpaAccount) {
                 /**
-                 * Subject is authenticated as guest but try to signup with a full account -> let's upgrade
+                 * Subject is authenticated as guest but try to sign up with a full account : let's
+                 * upgrade
                  */
                 GuestJpaAccount from = (GuestJpaAccount) accountFacade.find((Long) subject.getPrincipal());
-                subject.logout();
+                requestManager.logout(subject);
                 return this.upgradeGuest(from, account);
             } else {
                 // Check if e-mail is already taken and if yes return a localized error message:
@@ -239,8 +243,20 @@ public class UserFacade extends BaseFacade<User> {
         if (subject.isRunAs()) {
             subject.releaseRunAs();
         } else {
-            requestManager.logout();
-            subject.logout();
+            this.touchLastSeenAt(requestManager.getCurrentUser());
+            // flush to db before logout !
+            this.flush();
+            requestManager.logout(subject);
+        }
+    }
+
+    public void touchLastSeenAt(Long userId) {
+        touchLastSeenAt(this.find(userId));
+    }
+
+    public void touchLastSeenAt(User user) {
+        if (user != null) {
+            user.setLastSeenAt(new Date());
         }
     }
 
@@ -335,7 +351,7 @@ public class UserFacade extends BaseFacade<User> {
             if (account.getShadow() == null) {
                 account.setShadow(new Shadow());
             }
-            if (account.getDetails() == null){
+            if (account.getDetails() == null) {
                 account.setDetails(new AccountDetails());
             }
         }
@@ -343,13 +359,16 @@ public class UserFacade extends BaseFacade<User> {
         getEntityManager().persist(user);
 
         for (AbstractAccount account : user.getAccounts()) {
-            if (account instanceof JpaAccount) {
-                ((JpaAccount) account).shadowPasword();
-            }
+            if (account != null) {
+                if (account instanceof JpaAccount) {
+                    ((JpaAccount) account).shadowPasword();
+                }
 
-            account.shadowEmail();
+                account.shadowEmail();
+            }
         }
 
+        this.touchLastSeenAt(user);
         /*
          * Very strange behaviour: without this flush, RequestManages faild to be injected within others beans...
          */
@@ -742,8 +761,8 @@ public class UserFacade extends BaseFacade<User> {
     /**
      * Send a e mail to a user. Generates a disposable token with
      *
-     * @param request               current http request is used to guess the public hostname to generate the link to
-     *                              send
+     * @param request               current http request is used to guess the public hostname to
+     *                              generate the link to send
      * @param account               Jpa account to send email to
      * @param subject               Subject of the message
      * @param text                  text of the message with "{{link}}" inside
@@ -766,9 +785,9 @@ public class UserFacade extends BaseFacade<User> {
                     account.getShadow().setToken(hashToken);
 
                     String theLink = Helper.getPublicBaseUrl(request)
-                            + "/#/" + path + "/" + account.getDetails().getEmail() + "/" + token;
+                        + "/#/" + path + "/" + account.getDetails().getEmail() + "/" + token;
 
-                if (text.contains("{{link}}")) {
+                    if (text.contains("{{link}}")) {
                         text = text.replace("{{link}}", theLink);
                     } else {
                         text = text + "<br /><a href='" + theLink + "'>" + path.toUpperCase() + "</a>";
@@ -781,9 +800,9 @@ public class UserFacade extends BaseFacade<User> {
 
                     String from = "noreply@" + Helper.getWegasProperty("mail.default_domain");
                     emailFacade.send(account.getDetails().getEmail(), from, null, subject,
-                            body,
-                            Message.RecipientType.TO,
-                            "text/html; charset=utf-8", true);
+                        body,
+                        Message.RecipientType.TO,
+                        "text/html; charset=utf-8", true);
                 } catch (MessagingException ex) {
                     logger.error("Error while sending validation email to {}", account.getDetails().getEmail());
                 }
@@ -792,9 +811,10 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     /**
-     * Sends the given email as one separate message per addressee (as a measure against spam filters) and an additional
-     * one to the sender to provide him a copy of the message. If an address is invalid (but syntactically correct), it
-     * should not prevent from sending to the other addressees.
+     * Sends the given email as one separate message per addressee (as a measure against spam
+     * filters) and an additional one to the sender to provide him a copy of the message. If an
+     * address is invalid (but syntactically correct), it should not prevent from sending to the
+     * other addressees.
      */
     public void sendEmail(Email email) /* throws MessagingException */ {
         List<Exception> exceptions = new ArrayList<>();
@@ -805,10 +825,10 @@ public class UserFacade extends BaseFacade<User> {
             if (mainAccount instanceof JpaAccount || mainAccount instanceof AaiAccount) {
                 try {
                     emailFacade.send(mainAccount.getDetails().getEmail(),
-                            email.getFrom(), email.getReplyTo(),
-                            email.getSubject(),
-                            email.getBody(),
-                            Message.RecipientType.TO, "text/html; charset=utf-8", true);
+                        email.getFrom(), email.getReplyTo(),
+                        email.getSubject(),
+                        email.getBody(),
+                        Message.RecipientType.TO, "text/html; charset=utf-8", true);
                 } catch (MessagingException e) {
                     exceptions.add(e);
                 }

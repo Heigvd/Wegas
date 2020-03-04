@@ -6,9 +6,9 @@ import { Schema } from 'jsoninput';
 import { AvailableViews } from '../Editor/Components/FormView';
 import { StoreDispatch } from './store';
 import { EditingState, closeEditor, Edition } from './Reducer/globalState';
-import { shallowDifferent } from './connectStore';
 import { getEntityActions } from '../Editor/editionConfig';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
+import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
 
 export { ActionType };
 export type ActionTypeValues = ValueOf<typeof ActionType>;
@@ -47,13 +47,17 @@ export const ActionCreator = {
   EDITOR_ERROR_REMOVE: () => createAction(ActionType.EDITOR_ERROR_REMOVE, {}),
   EDITOR_ERROR: (data: { error: string }) =>
     createAction(ActionType.EDITOR_ERROR, data),
-  EDITOR_SET_METHOD: (data: GlobalMethodPayload) =>
-    createAction(ActionType.EDITOR_SET_METHOD, data),
-  EDITOR_SET_SCHEMA: (data: {
+  EDITOR_SET_CLIENT_METHOD: (data: ClientMethodPayload) =>
+    createAction(ActionType.EDITOR_SET_CLIENT_METHOD, data),
+  EDITOR_REGISTER_SERVER_METHOD: (data: ServerMethodPayload) =>
+    createAction(ActionType.EDITOR_REGISTER_SERVER_METHOD, data),
+  EDITOR_SET_VARIABLE_SCHEMA: (data: {
     name: string;
     schemaFN?: CustomSchemaFN;
     simpleFilter?: WegasClassNames;
-  }) => createAction(ActionType.EDITOR_SET_SCHEMA, data),
+  }) => createAction(ActionType.EDITOR_SET_VARIABLE_SCHEMA, data),
+  // EDITOR_SET_VARIABLE_METHOD: (data: ClientMethodPayload) =>
+  // createAction(ActionType.EDITOR_SET_SERVER_METHOD, data),
   VARIABLE_EDIT: variableEditAction(ActionType.VARIABLE_EDIT),
   FSM_EDIT: variableEditAction(ActionType.FSM_EDIT),
   FILE_EDIT: (data: {

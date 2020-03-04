@@ -527,16 +527,25 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             } else {
                 index = "";
             }
+            var toDisplay;
 
             if (!this.get("editorTag") && !trLabel) {
-                return this.get("name");
+                toDisplay = this.get("name");
             } else if (!this.get("editorTag")) {
-                return index + trLabel;
+                toDisplay = index + trLabel;
             } else if (!trLabel) {
-                return this.get("editorTag");
+                toDisplay = this.get("editorTag");
             } else {
-                return this.get("editorTag") + " - " + index + trLabel;
+                toDisplay = this.get("editorTag") + " - " + index + trLabel;
             }
+
+            if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL"
+                && this.get("visibility") === "PRIVATE") {
+                toDisplay = "<i class='private-in-model'>" + toDisplay + "</i>";
+            }
+
+            return toDisplay;
+
         },
         getIconCss: function() {
             return "fa fa-list";
@@ -986,8 +995,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 type: ARRAY,
                 setter: function(v) {
                     v.sort(function(a, b) {
-                        // TODO natural sort
-                        return a.get("name").localeCompare(b.get("name"));
+                        // older first
+                        return a.get("createdTime") - b.get("createdTime");
                     });
                     return v;
                 },

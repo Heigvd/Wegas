@@ -88,6 +88,10 @@
     color: #fff;
 }
 
+.wegas-boolean-input.readonly .wegas-boolean-input-checkboxes li.selected,
+.wegas-string-input.readonly .wegas-string-input-checkboxes li.selected{
+    background-color: #9fcee0;
+}
 
 .wegas-boolean-input-checkboxes li.selected:before,
 .wegas-string-input-checkboxes li.selected:before {
@@ -95,6 +99,29 @@
     font-family:"FontAwesome";
     font-size:11px;
     margin-right: 6px;
+}
+
+.wegas-string-input-checkboxes.unselecteds li.selected:before {
+    cursor: move;
+}
+
+.wegas-string-input-checkboxes.selecteds {
+    counter-reset: selecteds
+}
+
+.wegas-string-input:not(.readonly) .wegas-string-input-checkboxes.selecteds li {
+    cursor: grab;
+}
+
+.wegas-string-input:not(.readonly) .wegas-string-input-checkboxes.unselecteds li {
+    cursor: grab;
+}
+
+.wegas-string-input-checkboxes.selecteds li:before {
+    counter-increment: selecteds;
+    content: counter(selecteds) ".";
+    font-family: unset;
+    font-size: unset;
 }
 
 .wegas-string-input-checkboxes.maximumReached li:not(.selected){
@@ -109,7 +136,7 @@
     background: hsl(133, 4%, 31%);
     /* text-transform: uppercase; */
     /* height: 24px; */
-    margin: 2px 5px 4px 15px;
+    margin: 2px 15px 4px 0px;
     /* font-size: 11px; */
     font-weight: 500;
     /* padding: 4px 8px 4px 24px; */
@@ -118,6 +145,45 @@
     transition: .3s;
     user-select: none;
 }
+
+.wegas-boolean-input.readonly .wegas-boolean-input-checkboxes li,
+.wegas-string-input.readonly .wegas-string-input-checkboxes li{
+    background: hsl(133, 4%, 70%);
+}
+
+ol.wegas-string-input-checkboxes:empty {
+    margin: 2px 5px 4px 0px;
+    padding: 0px 10px;
+    height: 21px;
+    width: fit-content;
+    color: #4c524d;
+    border: 2px dashed grey;
+    font-style: italic;
+    box-sizing: border-box;
+    border-radius: 6px;
+}
+
+ol.wegas-string-input-checkboxes:empty:before {
+    content: "drop here";
+    box-sizing: content-box;
+}
+
+
+.wegas-string-input-checkboxes.yui3-dd-drop-active-valid li {
+    transition: none;
+}
+
+/* The one the user is dragging has no before content */
+.wegas-string-input-checkboxes.yui3-dd-drop-active-valid li.yui3-dd-draggable:not(.yui3-dd-dragging):before {
+    content: "";
+    counter-increment: none;
+}
+
+
+.wegas-string-input-checkboxes.unselecteds li.selected:before {
+    content: "\f00d";
+}
+
 
 .wegas-boolean-input:not(.readonly) .wegas-boolean-input-checkboxes li:focus,
 .wegas-boolean-input:not(.readonly) .wegas-boolean-input-checkboxes li:hover,

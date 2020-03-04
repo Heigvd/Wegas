@@ -33,8 +33,18 @@ export const PageAPI = {
    * @param gameModelId gameModelId to fetch pages from
    * @param pageId optional pageId, will return all page if omited
    */
-  get(gameModelId: number, pageId: string = ''): Promise<Pages> {
-    return rest(PAGE_BASE(gameModelId) + pageId).then(extractPage);
+  get(
+    gameModelId: number,
+    pageId: string = '',
+    extract: boolean = false,
+  ): Promise<Pages> {
+    return rest(PAGE_BASE(gameModelId) + pageId).then(res => {
+      if (extract) {
+        return extractPage(res);
+      } else {
+        return res.json();
+      }
+    });
   },
 
   /**
@@ -50,11 +60,22 @@ export const PageAPI = {
    * @param page
    * @param id optional id. Create a new page if omitted
    */
-  setPage(gameModelId: number, page: WegasComponent, id: string = '') {
+  setPage(
+    gameModelId: number,
+    page: WegasComponent | Page,
+    id: string = '',
+    extract: boolean = false,
+  ) {
     return rest(PAGE_BASE(gameModelId) + id, {
       method: 'PUT',
       body: JSON.stringify(page),
-    }).then(extractPage);
+    }).then(res => {
+      if (extract) {
+        return extractPage(res);
+      } else {
+        return res.json();
+      }
+    });
   },
   /**
    * Delete a page or all page
@@ -72,7 +93,12 @@ export const PageAPI = {
    * @param patch
    * @param id page to patch
    */
-  patch(gameModelId: number, patch: string, id: string) {
+  patch(
+    gameModelId: number,
+    patch: string,
+    id: string,
+    extract: boolean = false,
+  ) {
     return rest(
       PAGE_BASE(gameModelId) + id,
       {
@@ -81,7 +107,13 @@ export const PageAPI = {
       },
       undefined,
       'text/plain',
-    ).then(extractPage);
+    ).then(res => {
+      if (extract) {
+        return extractPage(res);
+      } else {
+        return res.json();
+      }
+    });
   },
   /**
    * Move a page to a given index

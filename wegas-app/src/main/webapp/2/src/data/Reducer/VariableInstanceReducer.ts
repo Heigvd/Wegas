@@ -6,6 +6,8 @@ import { ThunkResult, store } from '../store';
 import { Player } from '../selectors';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { QuestionDescriptorAPI } from '../../API/questionDescriptor.api';
+import { isSelected, getReply } from '../proxyfy/methods/ChoiceDescriptor';
+import { getInstance } from '../methods/VariableDescriptorMethods';
 
 export interface VariableInstanceState {
   [id: string]: Readonly<IVariableInstance> | undefined;
@@ -89,6 +91,27 @@ export function runScript(
 }
 
 // Question specific actions
+
+export function readChoice(
+  choice: IChoiceDescriptor,
+  player?: IPlayer,
+): ThunkResult {
+  return function(dispatch, getState) {
+    const gameModelId = getState().global.currentGameModelId;
+    const p = player != null ? player : Player.selectCurrent();
+    if (p.id == null) {
+      throw Error('Missing persisted player');
+    }
+    return QuestionDescriptorAPI.readChoice(
+      gameModelId,
+      p.id,
+      choice,
+    ).then(res =>
+      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
+
 export function selectAndValidate(
   choice: IChoiceDescriptor,
   player?: IPlayer,
@@ -103,6 +126,80 @@ export function selectAndValidate(
       gameModelId,
       p.id,
       choice,
+    ).then(res =>
+      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
+
+export function selectChoice(
+  choice: IChoiceDescriptor,
+  player?: IPlayer,
+): ThunkResult {
+  return function(dispatch, getState) {
+    const gameModelId = getState().global.currentGameModelId;
+    const p = player != null ? player : Player.selectCurrent();
+    if (p.id == null) {
+      throw Error('Missing persisted player');
+    }
+    return QuestionDescriptorAPI.selectChoice(
+      gameModelId,
+      p.id,
+      choice,
+    ).then(res =>
+      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
+
+export function cancelReply(
+  choice: IChoiceDescriptor,
+  player?: IPlayer,
+): ThunkResult {
+  return function(dispatch, getState) {
+    const gameModelId = getState().global.currentGameModelId;
+    const p = player != null ? player : Player.selectCurrent();
+    const reply = getReply(choice)(p);
+    if (p.id == null || !reply) {
+      throw Error('Missing persisted player');
+    }
+    return QuestionDescriptorAPI.cancelReply(
+      gameModelId,
+      p.id,
+      reply,
+    ).then(res =>
+      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
+
+export function toggleReply(
+  choice: IChoiceDescriptor,
+  player?: IPlayer,
+): ThunkResult {
+  const p = player != null ? player : Player.selectCurrent();
+  if (isSelected(choice)(p)) {
+    return cancelReply(choice, p);
+  } else {
+    return selectChoice(choice, p);
+  }
+}
+
+export function validateQuestion(
+  question: IQuestionDescriptor,
+  player?: IPlayer,
+): ThunkResult {
+  return function(dispatch, getState) {
+    const gameModelId = getState().global.currentGameModelId;
+    const p = player != null ? player : Player.selectCurrent();
+    const instance = getInstance(question);
+    if (p.id == null || instance == null) {
+      throw Error('Missing persisted player');
+    }
+    return QuestionDescriptorAPI.validateQuestion(
+      gameModelId,
+      p.id,
+      instance,
     ).then(res =>
       dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );

@@ -2,13 +2,13 @@ import { css } from 'emotion';
 import * as React from 'react';
 import { themeVar } from '../../../Components/Theme';
 import { Toolbar } from '../../../Components/Toolbar';
-import { IconButton } from '../../../Components/Button/IconButton';
+import { IconButton } from '../../../Components/Inputs/Button/IconButton';
 import WegasDiffEditor, {
   ExtendedDiffNavigator,
   DiffEditorLineChanges,
 } from './WegasDiffEditor';
-import { StyledLabel } from '../../../Components/AutoImport/String/Label';
 import { arrayToText, textToArray } from './SrcEditor';
+import { MessageString } from '../MessageString';
 
 const diffLabel = css({
   color: themeVar.primaryLighterColor,
@@ -342,7 +342,7 @@ function MergeEditor({
           />
         )}
         {modalState.type === 'error' && (
-          <StyledLabel
+          <MessageString
             type="error"
             value={modalState.label}
             duration={3000}

@@ -121,15 +121,13 @@ public class GameController extends AbstractGameController {
             if (gameModel != null) {
                 if (gameModel.isScenario() || gameModel.isModel()){
                     // use the debug player from the debug game
-                    currentPlayer = gameModel.getAnyLivePlayer();
+                    currentPlayer = gameModel.getTestPlayer();
                 } else {
                     currentPlayer = playerFacade.findPlayerInGameModel(this.gameModelId, currentUserId);
 
                     if (currentPlayer == null) {
                         // fallback: use a test player
-                        for (Game g : gameModel.getGames()) {
-                            currentPlayer = g.getTestPlayer();
-                        }
+                        currentPlayer = gameModel.getTestPlayer();
                     }
                 }
             }
@@ -143,7 +141,7 @@ public class GameController extends AbstractGameController {
             } catch (IOException ex) {
                 logger.error("Dispatch error: {}", ex);
             }
-        } else if (!currentPlayer.getGame().getStatus().equals(Game.Status.LIVE)) {
+        } else if ( currentPlayer.getGame().getStatus().equals(Game.Status.DELETE) || currentPlayer.getGame().getStatus().equals(Game.Status.SUPPRESSED)) {
             currentPlayer = null;
             errorController.gameDeleted();
         } else if (!requestManager.hasPlayerRight(currentPlayer)) {

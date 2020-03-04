@@ -122,7 +122,9 @@ YUI.add("wegas-pageloader", function(Y) {
             Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });
-            delete PAGE_LOADER_INSTANCES[this.get("pageLoaderId")];
+            if (PAGE_LOADER_INSTANCES[this.get("pageLoaderId")] === this) {
+                delete PAGE_LOADER_INSTANCES[this.get("pageLoaderId")];
+            }
         },
         /**
          * reload current page from cache
@@ -219,7 +221,7 @@ YUI.add("wegas-pageloader", function(Y) {
                     Wegas.Facade.Page.cache.getPage(val, Y.bind(function(widgetCfg) { // Retrieve page
                         this.showOverlay();
 
-                        Y.log("Destroy previous widget (page " + (widgetCfg ? widgetCfg["@pageId"] : "N/A")+ ")", "log", "Wegas.PageLoader");
+                        Y.log("Destroy previous widget (page " + (widgetCfg ? widgetCfg["@pageId"] : "N/A") + ")", "log", "Wegas.PageLoader");
                         this.set(WIDGET, null);
                         if (!widgetCfg) {
                             this.get(CONTENTBOX).setContent("<center class=" + pageloaderErrorMessageClass +

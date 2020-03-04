@@ -1,7 +1,10 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
+import { defaultPadding, expand, noOverflow } from '../../css/classes';
 import './FormView';
+import { Button } from '../../Components/Inputs/Button/Button';
+import { ConfirmButton } from '../../Components/Inputs/Button/ConfirmButton';
 
 interface EditorProps<T> {
   entity?: T;
@@ -52,10 +55,11 @@ export class Form<T> extends React.Component<
   }
   render() {
     return (
-      <Toolbar>
+      <Toolbar className={expand}>
         <Toolbar.Header>
           {this.props.update && (
-            <button
+            <Button
+              label="Save"
               disabled={this.state.val === this.props.entity}
               onClick={() => {
                 if (this.state.val !== this.props.entity && this.form) {
@@ -70,43 +74,50 @@ export class Form<T> extends React.Component<
                   }
                 }
               }}
-            >
-              Save
-            </button>
+              disableBorders={{ right: true }}
+            />
           )}
-          <button
-            onClick={() => {
-              this.setState({ val: this.props.entity });
+          <ConfirmButton
+            label="Reset"
+            onAction={accept => {
+              accept && this.setState({ val: this.props.entity });
             }}
-          >
-            reset
-          </button>
+            disableBorders={{
+              left: this.props.update !== undefined,
+              right: this.props.actions.length > 0,
+            }}
+          />
           {this.props.actions.map((a, i) => {
             return (
-              <button
+              <Button
+                label={a.label}
                 key={i}
                 tabIndex={1}
                 onClick={() => a.action(this.state.val, this.props.path)}
-              >
-                {a.label}
-              </button>
+                disableBorders={{
+                  left: true,
+                  right: i !== this.props.actions.length - 1,
+                }}
+              />
             );
           })}
         </Toolbar.Header>
-        <Toolbar.Content>
-          <JSONForm
-            ref={n => {
-              if (n != null) {
-                this.form = n;
-              }
-            }}
-            key={this.state.id}
-            value={this.state.val}
-            schema={this.props.schema}
-            onChange={val => {
-              this.setState({ val });
-            }}
-          />
+        <Toolbar.Content className={noOverflow}>
+          <div className={defaultPadding}>
+            <JSONForm
+              ref={n => {
+                if (n != null) {
+                  this.form = n;
+                }
+              }}
+              key={this.state.id}
+              value={this.state.val}
+              schema={this.props.schema}
+              onChange={val => {
+                this.setState({ val });
+              }}
+            />
+          </div>
         </Toolbar.Content>
       </Toolbar>
     );

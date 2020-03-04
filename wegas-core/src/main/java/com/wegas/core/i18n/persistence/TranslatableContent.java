@@ -310,9 +310,9 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     }
 
     /**
-     * Returns the most preferred translation according to given languages.
-     * returns the first translation which is not empty. If all translation are empty
-     * returns, the first non null, returns null o otherwise
+     * Returns the most preferred translation according to given languages. returns the first
+     * translation which is not empty. If all translation are empty returns, the first non null,
+     * returns null o otherwise
      *
      * @param languages languages codes sorted by preference
      *
@@ -342,7 +342,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
 
     public Translation translate(GameModel gameModel) {
         if (gameModel != null) {
-            Player player = gameModel.findTestPlayer();
+            Player player = gameModel.getTestPlayer();
             return this.translate(gameModel.getPreferredLanguagesCodes(player));
         } else {
             return getAnyTranslation();
@@ -389,6 +389,16 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         return trC;
     }
 
+    public TranslatableContent clone() {
+        TranslatableContent trC = new TranslatableContent();
+        for (Translation t : this.getRawTranslations()) {
+            trC.getRawTranslations().add(
+                new Translation(t.getLang(), t.getTranslation(), 
+                    t.getStatus(), trC));
+        }
+        return trC;
+    }
+
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         Broadcastable owner = this.getOwner();
@@ -416,9 +426,8 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     }
 
     /**
-     * Convenient method to use within merge implementation.
-     * other may be null, in this case, null is returned.
-     * target may be null, a brand new object will be returned.
+     * Convenient method to use within merge implementation. other may be null, in this case, null
+     * is returned. target may be null, a brand new object will be returned.
      * <p>
      * <p>
      * in merge example: this.setField(TranslatableContent.merger(this.getField(), o.getField()))

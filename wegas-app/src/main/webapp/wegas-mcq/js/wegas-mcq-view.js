@@ -23,6 +23,10 @@ YUI.add('wegas-mcq-view', function(Y) {
         initializer: function() {
             this.handlers = {};
         },
+        toObject: function() {
+            // do not use toObject from Wegas-parent as we do NOT want to serialise children
+            return Y.Wegas.Editable.prototype.toObject.apply(this, arguments);
+        },
         renderUI: function() {
             var whQuestion = this.get("variable.evaluated"),
                 whQuestionInstance = whQuestion.getInstance(),

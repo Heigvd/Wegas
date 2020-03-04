@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useStore } from '../../data/store';
 import { State } from '../../data/Reducer/reducers';
-import { refDifferent } from '../../data/connectStore';
 import { GameModel } from '../../data/selectors';
 import { MonacoDefinitionsLibraries } from '../../Editor/Components/ScriptEditors/SrcEditor';
 import { classesCTX } from '../Contexts/ClassesProvider';
@@ -12,16 +11,20 @@ import entitiesSrc from '!!raw-loader!../../../types/generated/WegasScriptableEn
 // @ts-ignore
 import editorGlobalSrc from '!!raw-loader!../../../types/scripts/EditorGlobals.d.ts';
 // @ts-ignore
-import methodGlobalSrc from '!!raw-loader!../../../types/scripts/MethodGlobals.d.ts';
+import clientMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ClientMethodGlobals.d.ts';
 // @ts-ignore
 import schemaGlobalSrc from '!!raw-loader!../../../types/scripts/SchemaGlobals.d.ts';
 // @ts-ignore
 import classesGlobalSrc from '!!raw-loader!../../../types/scripts/ClassesGlobals.d.ts';
+// @ts-ignore
+import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMethodsGlobals.d.ts';
+
+import { refDifferent } from './storeHookFactory';
 
 // We'll keep it for later uses
 // const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
 
-export function useGlobalLibs(clientScript?: boolean) {
+export function useGlobalLibs() {
   const globalLibs = React.useRef<MonacoDefinitionsLibraries[]>([]);
   const { classes } = React.useContext(classesCTX);
 
@@ -35,7 +38,7 @@ export function useGlobalLibs(clientScript?: boolean) {
       return newObject;
     }, {});
 
-    const globalMethods = s.global.methods;
+    const globalMethods = s.global.clientMethods;
     const globalSchemas = s.global.schemas.views;
 
     const currentLanguages = Object.values(
@@ -64,13 +67,15 @@ export function useGlobalLibs(clientScript?: boolean) {
         }
         declare const Editor: EditorClass;
     
-        interface GlobalMethods {\n${Object.keys(globalMethods).reduce(
+        interface ClientMethods {\n${Object.keys(globalMethods).reduce(
           (s, k) => {
             const method = globalMethods[k];
-            const isArray = method.array === 'array';
+            const isArray = method.returnStyle === 'array';
             return (
               s +
-              `'${k}' : () => ${isArray ? ' (' : ' '} ${method.types.reduce(
+              `'${k}' : () => ${
+                isArray ? ' (' : ' '
+              } ${method.returnTypes.reduce(
                 (s, t, i) => s + (i > 0 ? ' | ' : '') + t,
                 '',
               )} ${isArray ? ')[]' : ''};\n`
@@ -78,23 +83,19 @@ export function useGlobalLibs(clientScript?: boolean) {
           },
           '',
         )}}
-        interface MethodClass ${
-          clientScript ? 'extends GlobalMethodClass ' : ''
-        }{
-          getMethod: <T extends keyof GlobalMethods>(name : T) => GlobalMethods[T];
+        interface ClientMethodClass extends GlobalClientMethodClass {
+          getMethod: <T extends keyof ClientMethods>(name : T) => ClientMethods[T];
         }
-        declare const Methods : MethodClass
+        declare const ClientMethods : ClientMethodClass;
     
         type GlobalSchemas = ${Object.keys(globalSchemas).reduce(
           (s, k) => s + `\n  | '${k}'`,
           '',
         )}}
-        interface SchemaClass ${
-          clientScript ? 'extends GlobalSchemaClass ' : ''
-        }{
+        interface SchemaClass extends GlobalSchemaClass {
           removeSchema: (name: GlobalSchemas) => void;
         }
-        declare const Schemas : SchemaClass
+        declare const Schemas : SchemaClass;
         
         type GlobalClasses = ${
           classes.length === 0
@@ -104,8 +105,14 @@ export function useGlobalLibs(clientScript?: boolean) {
         interface ClassesClass extends GlobalClassesClass{
           removeClass: (className: GlobalClasses) => void;
         }
-        declare const Classes : ClassesClass
-    
+        declare const Classes : ClassesClass;
+
+        declare const ServerMethods : GlobalServerMethodClass;
+
+        declare const RequestManager : WRequestManager;
+        declare const Event : WEvent;
+        declare const DelayedEvent : WDelayedEvent;
+
         `;
   }, refDifferent);
 
@@ -115,7 +122,8 @@ export function useGlobalLibs(clientScript?: boolean) {
         content: `
             ${entitiesSrc}\n
             ${editorGlobalSrc}\n
-            ${methodGlobalSrc}\n
+            ${clientMethodGlobalSrc}\n
+            ${serverMethodGlobalSrc}\n
             ${schemaGlobalSrc}\n
             ${classesGlobalSrc}\n
             ${libs}\n

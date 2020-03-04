@@ -408,7 +408,7 @@ YUI.add('wegas-template', function(Y) {
         }
     );
     Wegas.TextTemplate = Y.Base.create('wegas-template', AbstractTemplate, [], {
-        TEMPLATE: Micro.compile('<div><%== (this.variable instanceof Y.Wegas.persistence.ListDescriptor ? this.variable.getLabel() : this.value) %></div>')
+        TEMPLATE: Micro.compile('<div><%== I18n.tVar(this.variable) %></div>')
     }, {
         ATTRS: {
             /**
@@ -421,7 +421,8 @@ YUI.add('wegas-template', function(Y) {
                 view: {
                     type: 'variableselect',
                     label: 'Variable',
-                    classFilter: ['TextDescriptor', 'StringDescriptor', 'ListDescriptor']
+                    classFilter: ['TextDescriptor', 'StringDescriptor',
+                        'ListDescriptor', 'StaticTextDescriptor']
                 }
             },
             data: {

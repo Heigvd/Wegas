@@ -59,6 +59,7 @@ import jdk.nashorn.api.scripting.ScriptUtils;
 import jdk.nashorn.internal.runtime.ScriptObject;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
+import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.subject.SimplePrincipalCollection;
@@ -191,6 +192,12 @@ public class RequestManager implements RequestManagerI {
      * The current player
      */
     private Player currentPlayer;
+
+    /**
+     * The current team
+     */
+    private Team currentTeam;
+
     /**
      * The current user
      */
@@ -476,9 +483,9 @@ public class RequestManager implements RequestManagerI {
      */
     @Override
     public User getCurrentUser() {
+        if (this.currentUser == null || currentPrincipal == null) {
         final Subject subject = SecurityUtils.getSubject();
         Long principal = (Long) subject.getPrincipal();
-        if (this.currentUser == null || currentPrincipal == null || !currentPrincipal.equals(principal)) {
             this.clearPermissions();
             try {
                 if (subject.isRemembered() || subject.isAuthenticated()) {
@@ -526,6 +533,62 @@ public class RequestManager implements RequestManagerI {
             this.setCurrentScriptContext(null);
         }
         this.currentPlayer = currentPlayer != null ? (currentPlayer.getId() != null ? playerFacade.find(currentPlayer.getId()) : currentPlayer) : null;
+
+        /*
+         * make sure to set the current team
+         */
+        if (currentPlayer != null) {
+            this.setCurrentTeam(currentPlayer.getTeam());
+            this.assertUpdateRight(currentPlayer);
+        } else {
+            this.setCurrentTeam(null);
+        }
+    }
+
+    /**
+     * Get the current team. When a currentPlayer is available, the currentTeam always equals the
+     * currentPlayer.getTeam().
+     * <p>
+     * There is at least one case a currentTeam is set without any currentPlayer : on team creation
+     *
+     * @return
+     */
+    public Team getCurrentTeam() {
+        return this.currentTeam;
+    }
+
+    /**
+     * set the current team.
+     *
+     * @param team
+     */
+    public void setCurrentTeam(Team team) {
+        if (team != null) {
+            User user = getCurrentUser();
+
+            // if currentPlayer is set, make sure it is member of the new current team.
+            // set to null otherwise
+            if (currentPlayer != null) {
+                if (!team.equals(currentPlayer.getTeam())) {
+                    // current player is not a member of the current team
+                    this.setPlayer(null);
+                    // warning: setPlayer(null) will also set currentTeam to null
+                }
+            }
+
+            // if no current user, try to find one
+            if (currentPlayer == null) {
+                Player newPlayer = playerFacade.findPlayerInTeam(team.getId(), user.getId());
+                this.setPlayer(newPlayer);
+            }
+
+        }
+        this.currentTeam = team;
+
+        if (this.currentTeam != null) {
+            // if current Team is defined, make sure current user has edit right
+            this.assertUpdateRight(team);
+        }
     }
 
     /**
@@ -614,13 +677,12 @@ public class RequestManager implements RequestManagerI {
 
         for (AbstractEntity entity : destroyedEntities) {
             if (entity instanceof Broadcastable) {
-                if (entity instanceof Team || entity instanceof Player) {
-                    //hack -> entities containes the game -> update
-                    addAll(map, ((Broadcastable) entity).getEntities());
-                } else if (entity instanceof VariableDescriptor
+                if (entity instanceof VariableDescriptor
                     || entity instanceof VariableInstance
+                    || entity instanceof GameModel
                     || entity instanceof Game
-                    || entity instanceof GameModel) {
+                    || entity instanceof Player
+                    || entity instanceof Team) {
                     removeAll(map, ((Broadcastable) entity).getEntities());
                 }
             }
@@ -1180,6 +1242,15 @@ public class RequestManager implements RequestManagerI {
     }
 
     public void logout() {
+        this.logout(SecurityUtils.getSubject());
+    }
+
+    public void logout(Subject subject) {
+        subject.logout();
+        this.clearCurrents();
+    }
+
+    public void clearCurrents() {
         this.currentUser = null;
         this.currentPrincipal = null;
         this.clearPermissions();
@@ -1380,6 +1451,8 @@ public class RequestManager implements RequestManagerI {
         if (!(gameModel.isPersisted() || gameModelFacade.isPersisted(gameModel.getId())) // not yet persisted means the gameModel is being created right kown
             || hasDirectGameModelEditPermission(gameModel)) {
             return true;
+        } else if (gameModel.isReference() && hasGameModelPermission(gameModel.getBasedOn(), thePerm)) {
+            return true;
         } else if (gameModel.isPlay()) {
             /**
              * GameModel permission against a "PLAY" gameModel.
@@ -1479,17 +1552,23 @@ public class RequestManager implements RequestManagerI {
      * @return
      */
     private boolean isTeamMate(WegasIsTeamMate wegasIsTeamMate) {
-        User self = this.getCurrentUser();
         Long mateId = wegasIsTeamMate.getUserId();
 
-        Query query = getEntityManager().createNamedQuery("Player.AreUsersTeamMate");
+        Player self = getPlayer();
+        if (getPlayer() != null) {
 
-        query.setParameter(1, self.getId());
-        query.setParameter(2, mateId);
+            Query query = getEntityManager().createNamedQuery("Player.isUserTeamMateOfPlayer");
 
-        List results = query.getResultList();
+            query.setParameter(1, self.getId());
+            query.setParameter(2, mateId);
 
-        return !results.isEmpty();
+            List results = query.getResultList();
+
+            return !results.isEmpty();
+        } else {
+            logger.error("NO CURRENT PLAYER IN CONTEXT!");
+            return false;
+        }
     }
 
     private boolean isTrainerForUser(WegasIsTrainerForUser perm) {
@@ -1885,7 +1964,9 @@ public class RequestManager implements RequestManagerI {
                     subject.releaseRunAs();
                 }
                 SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
+
                 subject.runAs(newSubject);
+                this.clearCurrents();
                 return this.getCurrentUser();
                 //} else {
                 //    throw WegasErrorMessage.error("Su is forbidden !");
@@ -1928,9 +2009,10 @@ public class RequestManager implements RequestManagerI {
             if (subject.isRunAs()) {
                 logger.info("Su-Exit: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
                 subject.releaseRunAs();
+                this.clearCurrents();
             } else {
                 logger.info("Su-Exit LOGOUT");
-                subject.logout();
+                this.logout(subject);
                 if (this.previousSubject != null) {
                     ThreadContext.bind(previousSubject);
                     this.previousSubject = null;
@@ -1940,6 +2022,17 @@ public class RequestManager implements RequestManagerI {
         } catch (Exception ex) {
             logger.error("EX: ", ex);
         }
+    }
+
+    public Subject login(AuthenticationToken token) {
+        return this.login(SecurityUtils.getSubject(), token);
+    }
+
+    public Subject login(Subject subject, AuthenticationToken token) {
+        subject.login(token);
+        // clear current info
+        this.clearCurrents();
+        return subject;
     }
 
     /**
