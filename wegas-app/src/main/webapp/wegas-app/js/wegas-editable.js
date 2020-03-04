@@ -231,7 +231,7 @@ YUI.add('wegas-editable', function(Y) {
             if (!Y.one("body.wegas-internalmode")) {
                 for (var key in menu) {
                     if (menu.hasOwnProperty(key)) {
-                        if (!this._getMode("EDITABLE", visibility, menu[key].maxVisibility) === "EDITABLE") {
+                        if (!menu[key] || !this._getMode("EDITABLE", visibility, menu[key].maxVisibility) === "EDITABLE") {
                             delete menu[key];
                         }
                     }
