@@ -12,6 +12,7 @@ interface LanguagesContext extends LanguagesProviderProps {
   selectLang: (lang: string) => void;
   availableLang: IGameModelLanguage[];
 }
+
 export const languagesCTX = React.createContext<LanguagesContext>({
   lang: '',
   selectLang: () => {},

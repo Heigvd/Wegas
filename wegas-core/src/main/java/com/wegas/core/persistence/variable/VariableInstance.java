@@ -100,6 +100,7 @@ import org.slf4j.LoggerFactory;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class),
     @JsonSubTypes.Type(name = "TextInstance", value = TextInstance.class),
+    @JsonSubTypes.Type(name = "StaticTextInstance", value = StaticTextInstance.class),
     @JsonSubTypes.Type(name = "BooleanInstance", value = BooleanInstance.class),
     @JsonSubTypes.Type(name = "ListInstance", value = ListInstance.class),
     @JsonSubTypes.Type(name = "NumberInstance", value = NumberInstance.class),

@@ -16,7 +16,7 @@ interface WegasScriptEditorNameAndTypes extends WegasEntitesNamesAndClasses {
 }
 
 interface ArrayedTypeMap<T = {}> {
-  undefined: T[keyof T];
+  single: T[keyof T];
   array: T[keyof T][];
 }
 
@@ -26,26 +26,33 @@ type WegasScriptEditorReturnType = WegasScriptEditorNameAndTypes[WegasScriptEdit
 
 type ArrayedAndNot<T extends {}> = ArrayedTypeMap<T>[keyof ArrayedTypeMap];
 
-type GlobalMethodAdd = <
-  T extends keyof WegasScriptEditorNameAndTypes,
-  AT extends ArrayedTypeMap<Pick<WegasScriptEditorNameAndTypes, T>>,
-  A extends keyof AT
+/**
+ * Add a custom client method that can be used in client scripts
+ * @param name - the name of the method
+ * @param types - the returned types of the method
+ * @param array - the method will return a signle object or an array of objects
+ * @param method - the method to add
+ */
+type ClientMethodAdd = <
+  RT extends keyof WegasScriptEditorNameAndTypes,
+  ART extends ArrayedTypeMap<Pick<WegasScriptEditorNameAndTypes, RT>>,
+  RA extends keyof ART
 >(
   name: string,
-  types: T[],
-  array: A,
-  method: () => AT[A],
+  returnTypes: RT[],
+  returnStyle: RA,
+  method: () => ART[RA],
 ) => void;
 
-interface GlobalMethodPayload {
+interface ClientMethodPayload {
   name: string;
-  types: WegasScriptEditorReturnTypeName[];
-  array: keyof ArrayedTypeMap;
+  returnTypes: WegasScriptEditorReturnTypeName[];
+  returnStyle: keyof ArrayedTypeMap;
   method: () => unknown;
 }
 
-interface GlobalMethodClass {
-  addMethod: GlobalMethodAdd;
+interface GlobalClientMethodClass {
+  addMethod: ClientMethodAdd;
   getMethod: (
     name: string,
   ) => () => ArrayedAndNot<WegasScriptEditorNameAndTypes>;

@@ -134,6 +134,10 @@ const IMPACT = {
                 {
                     type: 'string',
                     required: true,
+                    view: {
+                        type: 'eventselect',
+                        layout: 'shortInline'
+                    }
                 }
             ]
         }
@@ -151,10 +155,10 @@ const IMPACT = {
 export function genChoices(type = 'getter') {
     const impacts = IMPACT[type];
     return Object.keys(impacts).map(k => ({
-            label: impacts[k].label,
-            value: k,
-            className: `${impacts[k].className}`
-        }));
+        label: impacts[k].label,
+        value: k,
+        className: `${impacts[k].className}`
+    }));
 }
 /**
  * Get a schema for a given method.

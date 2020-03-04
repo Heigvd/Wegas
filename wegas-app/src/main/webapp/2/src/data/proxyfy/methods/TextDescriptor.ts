@@ -17,3 +17,10 @@ export function setValue(_td: ITextDescriptor) {
     throw Error('This is readonly');
   };
 }
+
+export function setValueIfChanged(_td: ITextDescriptor) {
+  return (_self: IPlayer, _value: ITranslatableContent) => {
+    throw Error('This is readonly');
+  };
+}
+

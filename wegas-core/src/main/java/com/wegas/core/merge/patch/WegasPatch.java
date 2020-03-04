@@ -394,8 +394,8 @@ public abstract class WegasPatch {
         return this.print(0).toString();
     }
 
-    public String diff(){
-        return this.printDiffOnly(0);
+    public PatchDiff diff(){
+        return this.buildDiff();
     }
 
     /**
@@ -444,4 +444,10 @@ public abstract class WegasPatch {
         }
         return this.vdf;
     }
+
+
+    protected abstract PatchDiff buildDiff();
+
+    public static abstract class PatchDiff{
+    };
 }

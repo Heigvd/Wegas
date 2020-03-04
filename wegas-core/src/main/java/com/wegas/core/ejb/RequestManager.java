@@ -59,6 +59,7 @@ import jdk.nashorn.api.scripting.ScriptUtils;
 import jdk.nashorn.internal.runtime.ScriptObject;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
+import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.subject.SimplePrincipalCollection;
@@ -482,9 +483,9 @@ public class RequestManager implements RequestManagerI {
      */
     @Override
     public User getCurrentUser() {
+        if (this.currentUser == null || currentPrincipal == null) {
         final Subject subject = SecurityUtils.getSubject();
         Long principal = (Long) subject.getPrincipal();
-        if (this.currentUser == null || currentPrincipal == null || !currentPrincipal.equals(principal)) {
             this.clearPermissions();
             try {
                 if (subject.isRemembered() || subject.isAuthenticated()) {
@@ -1241,6 +1242,15 @@ public class RequestManager implements RequestManagerI {
     }
 
     public void logout() {
+        this.logout(SecurityUtils.getSubject());
+    }
+
+    public void logout(Subject subject) {
+        subject.logout();
+        this.clearCurrents();
+    }
+
+    public void clearCurrents() {
         this.currentUser = null;
         this.currentPrincipal = null;
         this.clearPermissions();
@@ -1954,7 +1964,9 @@ public class RequestManager implements RequestManagerI {
                     subject.releaseRunAs();
                 }
                 SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
+
                 subject.runAs(newSubject);
+                this.clearCurrents();
                 return this.getCurrentUser();
                 //} else {
                 //    throw WegasErrorMessage.error("Su is forbidden !");
@@ -1997,9 +2009,10 @@ public class RequestManager implements RequestManagerI {
             if (subject.isRunAs()) {
                 logger.info("Su-Exit: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
                 subject.releaseRunAs();
+                this.clearCurrents();
             } else {
                 logger.info("Su-Exit LOGOUT");
-                subject.logout();
+                this.logout(subject);
                 if (this.previousSubject != null) {
                     ThreadContext.bind(previousSubject);
                     this.previousSubject = null;
@@ -2009,6 +2022,17 @@ public class RequestManager implements RequestManagerI {
         } catch (Exception ex) {
             logger.error("EX: ", ex);
         }
+    }
+
+    public Subject login(AuthenticationToken token) {
+        return this.login(SecurityUtils.getSubject(), token);
+    }
+
+    public Subject login(Subject subject, AuthenticationToken token) {
+        subject.login(token);
+        // clear current info
+        this.clearCurrents();
+        return subject;
     }
 
     /**

@@ -54,6 +54,12 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 var header = this.toolbar.get("header");
                 this._childrenContainer = this.get(CONTENT_BOX).one(".sm-zoom")
                     .setStyle("transform", "scale(1)");
+
+                this.title = new Y.Wegas.Text({
+                    label: this.get(ENTITY) && this.get(ENTITY).getLabel(),
+                    cssClass: 'wegas-statemachineviewer-title wegas-form-title'
+                }).render(header);
+
                 this.btnNew = new Y.Button({
                     label: "<span class=\"wegas-icon wegas-icon-new\"></span>New"
                 }).render(header);
@@ -141,6 +147,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 }
             },
             syncUI: function() {
+                this.updateTitle();
                 this.highlightCurrentState();
             },
             destructor: function() {
@@ -158,6 +165,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 this.sliderZoom.destroy();
                 this.btnNew.destroy();
                 this.btnZoomValue.destroy();
+                this.title.destroy();
             },
             initJsPlumb: function() {
                 jp = window.jsPlumb.getInstance({
@@ -294,6 +302,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
 
                 }
                 this.highlightCurrentState();
+                this.updateTitle();
                 jp.setSuspendDrawing(false, true);
                 this.hideOverlay();
                 this.highlightUnusedStates();
@@ -339,6 +348,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                         //}
                     });
                 }
+                this.updateTitle();
                 this.highlightCurrentState();
                 jp.setSuspendDrawing(false, true);
                 this.hideOverlay();
@@ -470,6 +480,12 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                     this.sliderZoom.set("value", this.currentZoom * StateMachineViewer.FACTOR_ZOOM);
                 }
 
+            },
+            updateTitle: function() {
+                var sm = this.get("entity");
+                if (sm) {
+                    this.title.setContent(sm.getEditorLabel());
+                }
             },
             highlightCurrentState: function() {
                 var currentStateNode, sm = this.get(ENTITY);
@@ -1007,8 +1023,16 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                     }
                 }
             } else {
+                label = "";
+                if (entity.get("label")) {
+                    label = "<div style='text-align: center;'>" + entity.get("label") + "</div>";
+                } else {
                 if (condition) {
-                    label = "<div class=\"transition-label-content\">" + condition + "</div>";
+                        label += "<div class=\"transition-label-title\">Condition: </div><div class=\"transition-label-content\" >" + condition + "</div>";
+                    }
+                    if (impact) {
+                        label += "<div class=\"transition-label-title\">Impact: </div><div class=\"transition-label-content\" >" + impact + "</div>";
+                    }
                 }
             }
 

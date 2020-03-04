@@ -563,6 +563,10 @@ YUI.add('wegas-widget', function(Y) {
                                     value: {fn: 'CSSBackground'}
                                 },
                                 {
+                                    label: 'Background Image',
+                                    value: {fn: 'CSSBackgroundImage'}
+                                },
+                                {
                                     label: 'Position',
                                     value: {fn: 'CSSPosition'}
                                 },

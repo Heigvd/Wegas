@@ -16,8 +16,12 @@ function genChoices(items, level, maxLevel, classFilter, selectable) {
     let ret = [];
     if (level <= maxLevel) {
         items.forEach(i => {
-            if (i.get('@class') === 'ListDescriptor' ||
-                i.get('@class') === 'WhQuestionDescriptor') {
+            const isEnabled = !classFilter.length
+                || classFilter.indexOf(i.get('@class')) !== -1;
+
+            if (i.get('@class') === 'ListDescriptor'
+                || i.get('@class') === 'QuestionDescriptor'
+                || i.get('@class') === 'WhQuestionDescriptor') {
                 const newItems = genChoices(
                     i.get('items'),
                     level + 1,
@@ -25,21 +29,18 @@ function genChoices(items, level, maxLevel, classFilter, selectable) {
                     classFilter,
                     selectable
                 );
-                if (newItems.length > 0 || enableFolder) {
+                if (newItems.length > 0 || isEnabled) {
                     ret.push({
                         label: genSpaces(level) + i.getEditorLabel(),
                         value: i.get('name'),
                         children: newItems,
                         disabled:
-                            !enableFolder ||
-                            (selectable && selectable.indexOf(level) === -1),
+                            !isEnabled
+                            || (selectable && selectable.indexOf(level) === -1),
                     });
                     ret = ret.concat(newItems);
                 }
-            } else if (
-                !classFilter.length ||
-                classFilter.indexOf(i.get('@class')) !== -1
-            ) {
+            } else if (isEnabled) {
                 ret.push({
                     label: genSpaces(level) + i.getEditorLabel(),
                     value: i.get('name'),

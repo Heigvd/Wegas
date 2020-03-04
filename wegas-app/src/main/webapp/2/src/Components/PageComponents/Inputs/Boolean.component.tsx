@@ -85,12 +85,9 @@ registerComponent(
     'Boolean',
     'check-square',
     {
-      script: schemaProps.scriptVariable(
-        'Variable',
-        true,
-        ['BooleanDescriptor'],
-        true,
-      ),
+      script: schemaProps.scriptVariable('Variable', true, [
+        'BooleanDescriptor',
+      ]),
       type: schemaProps.select('Type', false, ['radio', 'checkbox', 'toggler']),
       disabled: schemaProps.boolean('Disabled', false),
       inactive: schemaProps.boolean('Inactive', false),

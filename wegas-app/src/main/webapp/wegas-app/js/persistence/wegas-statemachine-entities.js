@@ -362,10 +362,35 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     /*
      * Transition Entity
      */
-    persistence.Transition = Y.Base.create("Transition", persistence.Entity, [], {}, {
+    persistence.Transition = Y.Base.create("Transition", persistence.Entity, [], {
+        /**
+         * override Entity._getParent
+         * @returns the state the transition starts in
+         */
+        _getParent: function() {
+            if (this.get("stateMachineId") && this.get("parentId")) {
+                var fsm = Y.Wegas.Facade.Variable.cache.find("id", this.get("stateMachineId"));
+                if (fsm){
+                    var states = fsm.get("states");
+                    for (var i in states){
+                        if (states[i] && states[i].get("id") === this.get("parentId")){
+                            return states[i];
+                        }
+                    }
+                }
+            }
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "Transition",
+            },
+            label: {
+                type: [NULL, STRING],
+                "transient": false,
+                view: {
+                    label: "Label"
+                }
             },
             triggerCondition: {
                 type: [NULL, OBJECT],

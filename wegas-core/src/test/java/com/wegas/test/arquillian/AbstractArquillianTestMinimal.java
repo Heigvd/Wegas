@@ -302,7 +302,7 @@ public abstract class AbstractArquillianTestMinimal {
         if (user.isGuest()) {
             GuestToken guestToken = new GuestToken(user.getUser().getMainAccount().getId());
             userFacade.logout();
-            subject.login(guestToken);
+            requestManager.login(subject, guestToken);
         } else {
             userFacade.logout();
             AuthenticationInformation info = new AuthenticationInformation();
@@ -313,7 +313,7 @@ public abstract class AbstractArquillianTestMinimal {
 
             userFacade.authenticate(info);
 
-            subject.login(new UsernamePasswordToken(user.getUsername(), user.getPassword()));
+            requestManager.login(subject, new UsernamePasswordToken(user.getUsername(), user.getPassword()));
             requestManager.setPlayer(null);
         }
 
@@ -326,7 +326,7 @@ public abstract class AbstractArquillianTestMinimal {
     public User login(String username, String password) {
         Subject subject = SecurityUtils.getSubject();
         userFacade.logout();
-        subject.login(new UsernamePasswordToken(username, password));
+        requestManager.login(subject, new UsernamePasswordToken(username, password));
         return userFacade.getCurrentUser();
     }
 

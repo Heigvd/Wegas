@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
+import com.wegas.core.persistence.Orderable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -58,7 +59,7 @@ import javax.persistence.*;
     @JsonSubTypes.Type(value = GradeDescriptor.class)
 })
 public abstract class EvaluationDescriptor<T extends EvaluationInstance>
-        extends AbstractEntity implements LabelledEntity {
+        extends AbstractEntity implements LabelledEntity, Orderable {
 
     @OneToMany(mappedBy = "evaluationDescriptor", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<EvaluationInstance> evaluationInstances;
@@ -75,9 +76,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     /**
      * to sort evaluation descriptor and instance
      */
-    @WegasEntityProperty(
-            optional = false, nullable = false, proposal = One.class,
-            view = @View(label = "Index"))
+    @JsonIgnore
     private Integer index;
 
     /**
@@ -138,6 +137,12 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
      */
     public EvaluationDescriptor(String name) {
         this.name = name;
+    }
+
+    @Override
+    @JsonIgnore
+    public Integer getOrder() {
+        return this.getIndex();
     }
 
     public int getIndex() {

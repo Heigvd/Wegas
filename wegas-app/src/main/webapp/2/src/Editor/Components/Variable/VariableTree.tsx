@@ -17,9 +17,9 @@ import { StoreDispatch, useStore, store } from '../../../data/store';
 import { css, cx } from 'emotion';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { Menu } from '../../../Components/Menu';
-import { withDefault } from '../Views/FontAwesome';
+import { withDefault, IconComp } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
-import { AddMenuParent, AddMenuChoice } from './AddMenu';
+import { AddMenuParent, AddMenuChoice, AddMenuFeedback } from './AddMenu';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { SearchTool } from '../SearchTool';
 import { focusTabContext } from '../LinearTabLayout/LinearLayout';
@@ -34,7 +34,6 @@ import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { Edition } from '../../../data/Reducer/globalState';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { IconComp } from '../../../Components/Inputs/Button/IconButton';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -210,8 +209,19 @@ function CTree(
   );
   if (variable) {
     const Title = asyncSFC(async () => {
-      const icon = await getIcon(variable!);
-      return <IconComp icon={withDefault(icon, 'question')} />;
+      const icon = getIcon(variable!);
+      return (
+        <>
+          <IconComp icon={withDefault(icon, 'question')} />
+          {entityIs(variable, 'EvaluationDescriptorContainer') &&
+          props.subPath &&
+          props.subPath.length === 1
+            ? props.subPath[0] === 'feedback'
+              ? 'Feedback'
+              : 'Feedback comment'
+            : editorLabel(variable)}
+        </>
+      );
     });
     if (!match) {
       return null;
@@ -231,7 +241,10 @@ function CTree(
               if (e.ctrlKey && props.localDispatch) {
                 dispatch = props.localDispatch;
               } else {
-                if (entityIs<IFSMDescriptor>(variable, 'FSMDescriptor')) {
+                if (
+                  entityIs(variable, 'FSMDescriptor') ||
+                  entityIs(variable, 'DialogueDescriptor')
+                ) {
                   focusTab('StateMachine');
                 }
                 focusTab('Editor');
@@ -248,20 +261,27 @@ function CTree(
           >
             <span className={nodeContentStyle}>
               <Title />
-              {editorLabel(variable)}
             </span>
-            {entityIs<IListDescriptor>(variable, 'ListDescriptor') ||
-            entityIs<IQuestionDescriptor>(variable, 'QuestionDescriptor') ? (
+            {entityIs(variable, 'ListDescriptor') ||
+            entityIs(variable, 'QuestionDescriptor') ||
+            entityIs(variable, 'WhQuestionDescriptor') ? (
               <AddMenuParent
                 variable={variable}
                 localDispatch={props.localDispatch}
                 focusTab={focusTab}
               />
-            ) : entityIs<IChoiceDescriptor>(variable, 'ChoiceDescriptor') ? (
+            ) : entityIs(variable, 'ChoiceDescriptor') ? (
               <AddMenuChoice
                 variable={variable}
                 localDispatch={props.localDispatch}
                 focusTab={focusTab}
+              />
+            ) : entityIs(variable, 'EvaluationDescriptorContainer') ? (
+              <AddMenuFeedback
+                variable={variable}
+                localDispatch={props.localDispatch}
+                focusTab={focusTab}
+                path={props.subPath![0] as "feedback" | "fbComments"}
               />
             ) : null}
           </span>
@@ -280,7 +300,7 @@ function CTree(
                   localDispatch={props.localDispatch}
                 />
               ))
-            : entityIs<IChoiceDescriptor>(variable, 'ChoiceDescriptor')
+            : entityIs(variable, 'ChoiceDescriptor')
             ? variable.results.map((r, index) => (
                 <CTree
                   nodeProps={nodeProps}
@@ -288,6 +308,43 @@ function CTree(
                   search={props.search}
                   variableId={r.parentId!}
                   subPath={['results', String(index)]}
+                  localState={props.localState}
+                  localDispatch={props.localDispatch}
+                />
+              ))
+            : entityIs(variable, 'PeerReviewDescriptor')
+            ? [
+                <CTree
+                  nodeProps={nodeProps}
+                  key={0}
+                  search={props.search}
+                  variableId={props.variableId}
+                  subPath={['feedback']}
+                  localState={props.localState}
+                  localDispatch={props.localDispatch}
+                />,
+                <CTree
+                  nodeProps={nodeProps}
+                  key={1}
+                  search={props.search}
+                  variableId={props.variableId}
+                  subPath={['fbComments']}
+                  localState={props.localState}
+                  localDispatch={props.localDispatch}
+                />,
+              ]
+            : entityIs(variable, 'EvaluationDescriptorContainer')
+            ? variable.evaluations.map((r, index) => (
+                <CTree
+                  nodeProps={nodeProps}
+                  key={r.id}
+                  search={props.search}
+                  variableId={props.variableId}
+                  subPath={[
+                    ...(props.subPath ? props.subPath : []),
+                    'evaluations',
+                    String(index),
+                  ]}
                   localState={props.localState}
                   localDispatch={props.localDispatch}
                 />

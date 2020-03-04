@@ -12,34 +12,26 @@ angular.module('wegas.service.wegasTranslations', [])
             },
             default: function() {
                 $translateProvider.useSanitizeValueStrategy('escape'); // Minimal security required against XSS, but it prevents HTML inside translation strings.
-                if (localStorage.getObject("wegas-config")) {
-                    $translateProvider.preferredLanguage(localStorage.getObject("wegas-config").commons.language);
+                var cfg = localStorage.getObject("wegas-config");
+                if (cfg && cfg.commons && cfg.commons.language) {
+                    $translateProvider.preferredLanguage(cfg.commons.language);
                 } else {
                     var frList = ['fr', 'fr-fr', 'fr-ch', 'fr-mc', 'fr-ca', 'fr-lu'],
                         isFr = false,
                         language = window.navigator.userLanguage || window.navigator.language;
+                    language = language.toLowerCase();
                     frList.forEach(function(frCode) {
-                        if (language.toLowerCase() === frCode) {
+                        if (language === frCode) {
                             isFr = true;
                         }
                     });
-                    if (isFr) {
                         localStorage.setObject("wegas-config", {
                             'commons': {
-                                'language': 'fr'
+                            'language': (isFr ? 'fr' : 'en')
                             },
                             'users': {}
                         });
-                        $translateProvider.preferredLanguage('fr');
-                    } else {
-                        localStorage.setObject("wegas-config", {
-                            'commons': {
-                                'language': 'en'
-                            },
-                            'users': {}
-                        });
-                        $translateProvider.preferredLanguage('en');
-                    }
+                    $translateProvider.preferredLanguage(isFr ? 'fr' : 'en');
                 }
             },
             $get: function() {

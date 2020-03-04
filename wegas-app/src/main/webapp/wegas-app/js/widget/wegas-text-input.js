@@ -418,10 +418,11 @@ YUI.add('wegas-text-input', function(Y) {
             var payload = this.getPayload(content);
             var textInstance = payload.descriptor.getInstance().toObject();
 
-            var oneTr = textInstance.trValue.translations[I18n.getCode()];
-            oneTr.translation = content;
             textInstance.trValue.translations = {};
-            textInstance.trValue.translations[I18n.getCode()] = oneTr;
+            textInstance.trValue.translations[I18n.getCode()] = {
+                status: "",
+                translation: content,
+            };
 
             this.fire('editing', payload);
 
@@ -1203,7 +1204,7 @@ YUI.add('wegas-text-input', function(Y) {
             }
             this.on('save', this._save);
 
-            var sortable = this.getSortable();
+            var sortable = this.getSortable() && !this.get('readonly.evaluated');
 
             if (sortable && this.get('clickSelect')){
                 var selectedsContainer = CB.one(".selecteds");
@@ -1532,12 +1533,16 @@ YUI.add('wegas-text-input', function(Y) {
         },
         updateFromUl: function(e) {
             if (!this.get('readonly.evaluated')) {
-                this.updateValue(e.target.getData().value === "true");
+                // toggle
+                var clickedValue = e.target.getData().value === "true";
+                var isSelected = e.target.hasClass("selected");
+                var newValue = clickedValue ? !isSelected : isSelected; // XOR
+                this.updateValue(newValue);
             }
         }
     }, {
-        /** @lends Y.Wegas.StringInput */
-        EDITORNAME: 'StringInput',
+        /** @lends Y.Wegas.BooleanInput */
+        EDITORNAME: 'BooleanInput',
         ATTRS: {
             /**
              * The target variable, returned either based on the name attribute,

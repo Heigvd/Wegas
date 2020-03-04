@@ -16,20 +16,21 @@ interface IName {
 
 interface IEntityArrayFieldSelectProps extends WidgetProps.BaseProps {
   context?: {
-      variableName?: string;
-  },
+    variableName?: string;
+  };
   view: {
     returnAttr: string;
     scope: 'instance' | string;
     field: string;
     context?: {
-        entity: string;
+      entity: string;
     };
     name: IName;
   } & CommonView &
     LabeledView;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function optionNameToString(result: any, name: IName) {
   const separator = name ? name.separator || ',' : ',';
   if (!name || !name.values || name.values.length <= 0) {
@@ -50,10 +51,10 @@ function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
     ? VariableDescriptor.first('name', context.variableName)
     : props.formValue;
   if (!computedEntity) {
-    return null;
+    return <pre>No computedEntity found</pre>;
   }
 
-  const results: unknown =
+  const options =
     scope !== 'instance'
       ? (computedEntity as Record<string, unknown>)[field]
       : (getInstance(computedEntity as IVariableDescriptor) as Record<
@@ -61,22 +62,21 @@ function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
           unknown
         >)[field];
 
-  if (results == null) {
-    return null;
+  if (options == null) {
+    return <pre>No attribute {field} found</pre>;
   }
 
-  let aResults: unknown;
-  if (Array.isArray(results)) {
-    aResults = results;
-  } else if (typeof results === 'object' && results !== null) {
-    aResults = Object.values(results);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let aOptions: any[];
+  if (Array.isArray(options)) {
+    aOptions = options;
+  } else if (typeof options === 'object' && options !== null) {
+    aOptions = Object.values(options);
   } else {
-    return null;
+    return <pre>Attribute {field} is not iterable</pre>;
   }
-  if (!Array.isArray(aResults)) {
-    return null;
-  }
-  const choices = aResults.map(r => ({
+
+  const choices = aOptions.map(r => ({
     value: r[returnAttr || 'name'],
     label: optionNameToString(r, name),
   }));

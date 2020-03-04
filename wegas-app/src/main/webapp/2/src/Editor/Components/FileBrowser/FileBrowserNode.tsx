@@ -13,7 +13,6 @@ import { TextPrompt } from '../TextPrompt';
 import { ConfirmButton } from '../../../Components/Inputs/Button/ConfirmButton';
 import { GameModel } from '../../../data/selectors';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import { file } from '@babel/types';
 import { store, StoreDispatch } from '../../../data/store';
 import { editFile } from '../../../data/Reducer/globalState';
 import { flex, grow, hidden, block } from '../../../css/classes';
@@ -343,7 +342,7 @@ export function FileBrowserNode({
         if (newFile) {
           successFiles.push(newFile);
         }
-        if (i === file.length - 1) {
+        if (i === files.length - 1) {
           onAction && onAction(successFiles);
         }
       });

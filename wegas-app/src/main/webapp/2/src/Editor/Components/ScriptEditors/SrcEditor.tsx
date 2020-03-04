@@ -9,7 +9,6 @@ import Editor, {
   EditorDidMount,
 } from '@monaco-editor/react';
 import schemas from '../../../page-schema.build';
-import { wlog } from '../../../Helper/wegaslog';
 
 export type SrcEditorLanguages =
   | 'javascript'
@@ -221,10 +220,20 @@ function SrcEditor({
   const [reactMonaco, setReactMonaco] = React.useState<MonacoEditor>();
   const getValue = React.useRef<() => string>();
   const editorValue = React.useRef(value || '');
-
+  const mounted = React.useRef<boolean>(false);
+  React.useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  });
   React.useEffect(() => {
     if (!reactMonaco) {
-      monaco.init().then(setReactMonaco);
+      monaco.init().then(me => {
+        if (mounted.current) {
+          setReactMonaco(me);
+        }
+      });
     }
   }, [reactMonaco]);
 
@@ -288,11 +297,6 @@ function SrcEditor({
           addExtraLib(reactMonaco.languages.typescript.typescriptDefaults, [
             ...extraLibs,
           ]);
-
-        wlog(
-          'monaco editor ts version : ' +
-            reactMonaco.languages.typescript.typescriptVersion,
-        );
       } else if (language === 'json') {
         reactMonaco.languages.json.jsonDefaults.setDiagnosticsOptions({
           validate: true,

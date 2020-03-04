@@ -651,50 +651,66 @@ public final class WegasEntityPatch extends WegasPatch {
         return sb;
     }
 
-    @Override
-    protected String printDiffOnly(int indent) {
-        List<String> items = new ArrayList<>();
+    private String getPrettyTitle() {
+        String title = null;
+        if (this.toEntity instanceof VariableDescriptor) {
+            title = ((VariableDescriptor) toEntity).getEditorLabel();
+        }
 
-        for (WegasPatch patch : patches) {
-            String child = patch.printDiffOnly(indent + 1);
-            if (child != null) {
-                items.add(child);
+        if (title == null && this.toEntity instanceof LabelledEntity) {
+            title = ((LabelledEntity) this.toEntity).getLabel().toString();
+        }
+
+        if (title == null && this.toEntity instanceof NamedEntity) {
+            title = ((NamedEntity) this.toEntity).getName();
+        }
+
+        if (title == null) {
+            title = this.identifier.toString();
+        }
+        return title;
+    }
+
+    @Override
+    protected PatchDiff buildDiff() {
+
+        if (this.toEntity instanceof ModelScoped) {
+            if (((ModelScoped) this.toEntity).getVisibility().equals(ModelScoped.Visibility.PRIVATE)) {
+                return null;
             }
         }
 
-        if (items.isEmpty()) {
-            return null;
+        List<PatchDiff> subs = new ArrayList<>();
+
+        for (WegasPatch patch : patches) {
+            PatchDiff sub = patch.buildDiff();
+            if (sub != null) {
+                subs.add(sub);
+            }
+        }
+        if (!subs.isEmpty()) {
+            return new DiffCollection(this.getPrettyTitle(), subs);
         } else {
-            StringBuilder sb = new StringBuilder(this.indentString(indent));
-            if (this.toEntity instanceof ModelScoped) {
-                if (((ModelScoped) this.toEntity).getVisibility().equals(ModelScoped.Visibility.PRIVATE)) {
-                    return null;
-                }
-            }
+            return null;
+        }
+    }
 
-            String title = null;
-            if (this.toEntity instanceof VariableDescriptor) {
-                title = ((VariableDescriptor) toEntity).getEditorLabel();
-            }
+    public static class DiffCollection extends PatchDiff {
 
-            if (title == null && this.toEntity instanceof LabelledEntity) {
-                title = ((LabelledEntity) this.toEntity).getLabel().toString();
-            }
+        private final String title;
+        private final List<PatchDiff> diffs;
 
-            if (title == null && this.toEntity instanceof NamedEntity) {
-                title = ((NamedEntity) this.toEntity).getName();
-            }
+        public DiffCollection(String title, List<PatchDiff> diffs) {
+            this.title = title;
+            this.diffs = diffs;
+        }
 
-            if (title == null) {
-                title = this.identifier.toString();
-            }
-            sb.append(title);
+        public String getTitle() {
+            return title;
+        }
 
-            for (String child : items) {
-                newLine(sb, 0);
-                sb.append(child);
-            }
-            return sb.toString();
+        public List<PatchDiff> getDiffs() {
+            return diffs;
         }
     }
 

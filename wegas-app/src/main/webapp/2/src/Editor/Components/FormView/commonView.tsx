@@ -18,14 +18,14 @@ const borderTop = css({
 const shortInline = css({
   display: 'inline-block',
   marginRight: '2em',
-  verticalAlign: 'top',
+  verticalAlign: 'bottom',
   maxWidth: '11em',
 });
 const LAYOUTS = {
   shortInline: shortInline,
   inline: css({
     display: 'inline-block',
-    verticalAlign: 'top',
+    verticalAlign: 'bottom',
   }),
   extraShortInline: css(shortInline, {
     maxWidth: '5em',

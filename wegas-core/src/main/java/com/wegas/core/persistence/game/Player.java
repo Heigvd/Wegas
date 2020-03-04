@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.google.common.base.Objects;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
@@ -519,5 +520,57 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     public boolean isTestPlayer() {
         return this.getTeam() instanceof DebugTeam || this.getGame() instanceof DebugGame;
+    }
+
+    /**
+     * Assert the given player has a valid email address, according to the list of allowed
+     * domains.If the domain list is empty then everything is allowed.If not empty, the player must
+     * have an address in this domain.Moreover, if mustBeVerigied is true, the address must have
+     * been verified
+     * <p>
+     * An administrator is always allowed, as well as test players.
+     *
+     * @param allowedDomains     list of allowed domain
+     * @param mustBeVerified     ensure the player has verified his address
+     * @param notAllowedMessage  to override default error message, may be null
+     * @param notVerifiedMessage to override default error message, may be null
+     */
+    public void assertEmailValdity(List<String> allowedDomains,
+        boolean mustBeVerified, String notAllowedMessage, String notVerifiedMessage) {
+
+        if (allowedDomains != null && !allowedDomains.isEmpty()) {
+            User user = this.getUser();
+
+            // test player is not linked to any user
+            if (user != null) {
+                List<String> domains = new ArrayList<>(allowedDomains.size());
+                for (String domain : allowedDomains) {
+                    String trim = domain.toLowerCase().trim();
+                    if (!Helper.isNullOrEmpty(trim)) {
+                        domains.add(trim);
+                    }
+                }
+                if (!domains.isEmpty()) {
+
+                    AbstractAccount account = user.getMainAccount();
+                    if (Helper.isNullOrEmpty(account.getEmail())) {
+                        throw WegasErrorMessage.error("You have to provide an email address!");
+                    } else {
+                        String domain = account.getEmail().split("@")[1].toLowerCase();
+                        if (!domains.contains(domain)) {
+                            throw WegasErrorMessage.error(
+                                Helper.coalesce(notAllowedMessage,
+                                    "Email addresses \"@" + domain + "\" are not allowed")
+                            );
+                        }
+                    }
+                    if (mustBeVerified && !account.isVerified()) {
+                        throw WegasErrorMessage.error(
+                            Helper.coalesce(notVerifiedMessage,
+                                "You have to verify your email address"));
+                    }
+                }
+            }
+        }
     }
 }

@@ -76,6 +76,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             value: 'TextDescriptor'
         },
         {
+            label: 'Static Text',
+            value: 'StaticTextDescriptor'
+        },
+        {
             label: 'Number',
             value: 'NumberDescriptor'
         },
@@ -479,6 +483,20 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             }
                         ]
                     }
+                },
+                findAndReplaceBtn: {
+                    index: 40,
+                    maxVisibility: "INTERNAL",
+                    cfg: {
+                        type: BUTTON,
+                        label: 'Find & Replace',
+                        cssClass: "wegas-advanced-feature",
+                        plugins: [
+                            {
+                                fn: 'FindAndReplaceEntityAction'
+                            }
+                        ]
+                    }
                 }
             }
         });
@@ -689,15 +707,15 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         },
         {
             EDITMENU: {
-                convertToListBtn: {
+                convertToStaticTextBtn: {
                     index: 21,
                     maxVisibility: "PRIVATE", // only visible for private variables
                     cfg: {
-                        label: "Convert To List",
+                        label: "Convert To Static Text",
                         type: "Button",
                         cssClass: "wegas-advanced-feature",
                         plugins: [{
-                                fn: "ConvertToListAction"
+                                fn: "ConvertToStaticTextAction"
                             }
                         ]
                     }
@@ -976,6 +994,79 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         }
     );
     /**
+     * StaticTextDescriptor mapper
+     */
+    persistence.StaticTextDescriptor = Base.create('StaticTextDescriptor',
+        persistence.VariableDescriptor, [], {
+        getIconCss: function() {
+            return 'fa fa-paragraph';
+        }
+    },
+        {
+            EDITMENU: {
+                convertToTextBtn: {
+                    index: 21,
+                    maxVisibility: "PRIVATE", // only visible for private variables
+                    cfg: {
+                        label: "Convert To Variable Text",
+                        type: "Button",
+                        cssClass: "wegas-advanced-feature",
+                        plugins: [{
+                                fn: "ConvertToTextAction"
+                            }
+                        ]
+                    }
+                }
+            },
+            ATTRS: {
+                '@class': {
+                    value: 'StaticTextDescriptor'
+                },
+                text: Y.Wegas.Helper.getTranslationAttr({
+                    label: "Text",
+                    type: HTML
+                }),
+                defaultInstance: {
+                    view: {type: HIDDEN},
+                    type: 'object',
+                    valueFn: function() {
+                        return new persistence.StaticTextInstance();
+                    },
+                    properties: {
+                        '@class': {
+                            type: STRING,
+                            value: 'StaticTextInstance',
+                            view: {
+                                type: HIDDEN
+                            }
+                        },
+                        id: IDATTRDEF,
+                        version: VERSION_ATTR_DEF,
+                        refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
+                        parentId: IDATTRDEF,
+                        parentType: {
+                            type: "string",
+                            view: {type: HIDDEN}
+                        }
+                    }
+                }
+            },
+            METHODS: {
+            }
+        }
+    );
+    /**
+     * StaticTextInstance mapper
+     */
+    persistence.StaticTextInstance = Base.create('StaticTextInstance',
+        persistence.VariableInstance, [], {}, {
+        ATTRS: {
+            '@class': {
+                value: 'StaticTextInstance'
+            }
+        }
+    });
+    /**
      * TextDescriptor mapper
      */
     persistence.TextDescriptor = Base.create(
@@ -989,15 +1080,15 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         },
         {
             EDITMENU: {
-                convertToListBtn: {
+                convertToStaticTextBtn: {
                     index: 21,
                     maxVisibility: "PRIVATE", // only visible for private variables
                     cfg: {
-                        label: "Convert To List",
+                        label: "Convert To Static Text",
                         type: "Button",
                         cssClass: "wegas-advanced-feature",
                         plugins: [{
-                                fn: "ConvertToListAction"
+                                fn: "ConvertToStaticTextAction"
                             }
                         ]
                     }
@@ -1043,6 +1134,14 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 setValue: {
                     label: 'set',
                     className: 'wegas-method-returnline',
+                    arguments: [
+                        SELFARG,
+                        Y.Wegas.Helper.getTranslationAttr({type: HTML})
+                    ]
+                },
+                setValueIfChanged: {
+                    label: 'set (if changed)',
+                    className: 'wegas-method-returnline wegas-advanced-features',
                     arguments: [
                         SELFARG,
                         Y.Wegas.Helper.getTranslationAttr({type: HTML})
@@ -1460,6 +1559,12 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                         },
                                         {
                                             type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-paragraph"></span> Static Text',
+                                            targetClass: 'StaticTextDescriptor',
+                                            cssClass: 'wegas-advanced-feature'
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
                                             label: '<span class="fa fa-font"></span> String',
                                             targetClass: 'StringDescriptor'
                                                 //cssClass: "wegas-advanced-feature"
@@ -1712,7 +1817,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             value: "", // prevent undefined as Java will interprets such a value as a literat "undefined" !
                             view: {
                                 label: 'Token',
-                                className: 'wegas-advanced-feature',
                                 description: 'Message identifier used to reference the message within FSM/Trigger conditions'
                             }
                         },

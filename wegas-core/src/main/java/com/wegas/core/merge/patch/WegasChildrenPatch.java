@@ -425,4 +425,20 @@ public final class WegasChildrenPatch extends WegasPatch {
             return sb.toString();
         }
     }
+
+    protected PatchDiff buildDiff() {
+        List<PatchDiff> subs = new ArrayList<>();
+
+        for (WegasPatch patch : patches) {
+            PatchDiff sub = patch.buildDiff();
+            if (sub != null) {
+                subs.add(sub);
+            }
+        }
+        if (!subs.isEmpty()) {
+            return new WegasEntityPatch.DiffCollection(null, subs);
+        } else {
+            return null;
+        }
+    }
 }

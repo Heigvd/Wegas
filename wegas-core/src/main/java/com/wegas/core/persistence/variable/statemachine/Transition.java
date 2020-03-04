@@ -7,6 +7,9 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
+import com.wegas.editor.ValueGenerators.EmptyString;
 import javax.persistence.Entity;
 
 /**
@@ -14,4 +17,26 @@ import javax.persistence.Entity;
  */
 @Entity
 public class Transition extends AbstractTransition {
+
+    /**
+     *
+     */
+    @WegasEntityProperty(searchable = true,
+        optional = false, nullable = false, proposal = EmptyString.class,
+        view = @View(label = "Label"))
+    private String label;
+
+    /**
+     * @return state name
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @param label
+     */
+    public void setLabel(String label) {
+        this.label = label;
+    }
 }

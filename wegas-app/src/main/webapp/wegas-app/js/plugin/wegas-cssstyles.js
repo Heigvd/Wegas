@@ -24,10 +24,10 @@ YUI.add('wegas-cssstyles', function(Y) {
         {
             /** @lends Y.Plugin.CSSStyles */
             /**
-         * Lifecycle methods
-         * @function
-         * @private
-         */
+             * Lifecycle methods
+             * @function
+             * @private
+             */
             initializer: function() {
                 this.styleList = [];
                 if (this.get('host') instanceof Y.Widget) {
@@ -46,28 +46,28 @@ YUI.add('wegas-cssstyles', function(Y) {
                 });
             },
             /**
-         * @function
-         * @private
-         * @description remove a style
-         */
+             * @function
+             * @private
+             * @description remove a style
+             */
             removeStyle: function(e) {
                 var styleToRemove;
                 for (styleToRemove in e.prevVal) {
                     if (
                         e.prevVal.hasOwnProperty(styleToRemove) &&
                         !e.newVal.hasOwnProperty(styleToRemove)
-                    ) {
+                        ) {
                         this.nodeStyle(styleToRemove, '');
                         this.styleList.splice(
                             Y.Array.indexOf(this.styleList, styleToRemove)
-                        );
+                            );
                     }
                 }
             },
             /**
-         * @function
-         * @private
-         */
+             * @function
+             * @private
+             */
             setStyle: function(newStylesList, style) {
                 if (Y.Array.indexOf(this.styleList, style) === -1) {
                     this.styleList.push(style);
@@ -75,10 +75,10 @@ YUI.add('wegas-cssstyles', function(Y) {
                 this.nodeStyle(style, newStylesList[style]);
             },
             /**
-         * Destructor methods.
-         * @function
-         * @private
-         */
+             * Destructor methods.
+             * @function
+             * @private
+             */
             destructor: function() {
                 var styleToRemove;
                 for (styleToRemove in this.get('styles')) {
@@ -86,31 +86,32 @@ YUI.add('wegas-cssstyles', function(Y) {
                         this.nodeStyle(styleToRemove, '');
                         this.styleList.splice(
                             Y.Array.indexOf(this.styleList, styleToRemove)
-                        );
+                            );
                     }
                 }
             },
             /**
-         *
-         * @private
-         * @param {type} key Style to edit
-         * @param {type} value Style's value
-         * @returns {undefined}
-         */
+             *
+             * @private
+             * @param {type} key Style to edit
+             * @param {type} value Style's value
+             * @returns {undefined}
+             */
             nodeStyle: function(key, value) {
                 var host = this.get('host'),
                     node = host instanceof Y.Widget
-                        ? host.get(this.get('targetNode'))
-                        : host;
+                    ? host.get(this.get('targetNode'))
+                    : host;
 
                 node.setStyle(key, value);
             },
             /**
-         * @function
-         * @private
-         * @description setValue from style
-         */
-            setValue: function(styles) {
+             * @function
+             * @private
+             * @description setValue from style
+             */
+            setValue: function(oStyles) {
+                var styles = Y.clone(oStyles);
                 var style, value;
                 if (styles) {
                     for (style in styles) {
@@ -118,15 +119,14 @@ YUI.add('wegas-cssstyles', function(Y) {
                             value = styles[style];
                             if (value) {
                                 value = Y.Lang.trim(value);
-                                if (
-                                    Y.Array.indexOf(
-                                        CSSStyles.MEASURE_STYLE,
-                                        style
-                                    ) > -1 &&
-                                    parseInt(value, 10).toString() === value
-                                ) {
-                                    styles[style] =
-                                        value + CSSStyles.MEASURE_SUFFIX;
+                                if (Y.Array.indexOf(CSSStyles.MEASURE_STYLE, style) > -1
+                                    && parseInt(value, 10).toString() === value) {
+                                    styles[style] = value + CSSStyles.MEASURE_SUFFIX;
+                                } else if (Y.Array.indexOf(CSSStyles.FILE_STYLE, style) > -1) {
+                                    if (value.indexOf("/") === 0) {
+                                        value = Y.Wegas.Facade.File.get("source") + "read" + value;
+                                    }
+                                    styles[style] = "url(" + value + ")";
                                 }
                             }
                             this.setStyle(styles, style);
@@ -176,6 +176,9 @@ YUI.add('wegas-cssstyles', function(Y) {
                 'paddingTop',
                 'paddingBottom',
                 'paddingRight'
+            ],
+            FILE_STYLE: [
+                'backgroundImage'
             ]
         }
     );

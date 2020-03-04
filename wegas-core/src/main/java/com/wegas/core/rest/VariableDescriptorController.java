@@ -192,11 +192,20 @@ public class VariableDescriptorController {
     }
 
     @PUT
-    @Path("{id: [1-9][0-9]*}/ConvertToList")
-    public VariableDescriptor convertToList(@PathParam("id") Long vdId,
+    @Path("{id: [1-9][0-9]*}/ConvertToText")
+    public VariableDescriptor convertToText(@PathParam("id") Long vdId,
             @PathParam("scopeType") String scopeType) {
-        return variableDescriptorFacade.convertToList(vdId);
+        return variableDescriptorFacade.convertToText(vdId);
     }
+
+    @PUT
+    @Path("{id: [1-9][0-9]*}/ConvertToStaticText")
+    public VariableDescriptor convertToStaticText(@PathParam("id") Long vdId,
+            @PathParam("scopeType") String scopeType) {
+        return variableDescriptorFacade.convertToStaticText(vdId);
+    }
+
+
 
     /**
      * @param descriptorId
