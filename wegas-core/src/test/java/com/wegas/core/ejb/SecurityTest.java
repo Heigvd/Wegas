@@ -16,6 +16,7 @@ import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.InputStream;
 import javax.ejb.EJBException;
 import org.apache.shiro.authc.AuthenticationException;
+import org.jboss.arquillian.test.spi.ArquillianProxyException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -47,7 +48,7 @@ public class SecurityTest extends AbstractArquillianTest {
         scriptFacade.eval(player, new Script("JavaScript", script), null);
     }
 
-    @Test(expected = WegasScriptException.class)
+    @Test(expected = ArquillianProxyException.class)
     public void testEntityManagerIsNotAccessible() {
         String password = "SuperSecure";
 
