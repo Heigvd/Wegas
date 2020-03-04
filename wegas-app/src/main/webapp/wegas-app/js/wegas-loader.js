@@ -277,7 +277,7 @@ YUI().use(function(Y) {
             },
             "wegas-text": {
                 path: "js/widget/wegas-text-min.js",
-                ws_provides: "Text",
+                ws_provides: ["Text", "String"],
                 requires: "wegas-widget"
             },
             "wegas-image": {
