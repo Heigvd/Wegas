@@ -2009,8 +2009,6 @@ public class RequestManager implements RequestManagerI {
      */
     public void releaseSu() {
         try {
-            // flush before logout
-            this.getEntityManager().flush();
             Subject subject = SecurityUtils.getSubject();
             if (subject.isRunAs()) {
                 logger.info("Su-Exit: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());

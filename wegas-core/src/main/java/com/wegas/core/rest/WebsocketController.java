@@ -136,6 +136,8 @@ public class WebsocketController {
                 websocketFacade.pusherChannelExistenceWebhook(hook);
             }
         } finally {
+            // flush before logout
+            requestManager.getEntityManager().flush();
             requestManager.releaseSu();
         }
     }
