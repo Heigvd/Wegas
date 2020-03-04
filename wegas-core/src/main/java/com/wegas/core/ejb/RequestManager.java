@@ -34,6 +34,8 @@ import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasIsTeamMate;
+import com.wegas.core.security.util.WegasIsTrainerForUser;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.*;
@@ -49,6 +51,7 @@ import javax.inject.Named;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.script.ScriptContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
@@ -203,6 +206,8 @@ public class RequestManager implements RequestManagerI {
      * Current shiro principal (i.e. accountId)
      */
     private Long currentPrincipal;
+
+    private Subject previousSubject;
 
     /**
      * Request identifier
@@ -534,6 +539,7 @@ public class RequestManager implements RequestManagerI {
          */
         if (currentPlayer != null) {
             this.setCurrentTeam(currentPlayer.getTeam());
+            this.assertUpdateRight(currentPlayer);
         } else {
             this.setCurrentTeam(null);
         }
@@ -557,7 +563,32 @@ public class RequestManager implements RequestManagerI {
      * @param team
      */
     public void setCurrentTeam(Team team) {
+        if (team != null) {
+            User user = getCurrentUser();
+
+            // if currentPlayer is set, make sure it is member of the new current team.
+            // set to null otherwise
+            if (currentPlayer != null) {
+                if (!team.equals(currentPlayer.getTeam())) {
+                    // current player is not a member of the current team
+                    this.setPlayer(null);
+                    // warning: setPlayer(null) will also set currentTeam to null
+                }
+            }
+
+            // if no current user, try to find one
+            if (currentPlayer == null) {
+                Player newPlayer = playerFacade.findPlayerInTeam(team.getId(), user.getId());
+                this.setPlayer(newPlayer);
+            }
+
+        }
         this.currentTeam = team;
+
+        if (this.currentTeam != null) {
+            // if current Team is defined, make sure current user has edit right
+            this.assertUpdateRight(team);
+        }
     }
 
     /**
@@ -646,13 +677,12 @@ public class RequestManager implements RequestManagerI {
 
         for (AbstractEntity entity : destroyedEntities) {
             if (entity instanceof Broadcastable) {
-                if (entity instanceof Team || entity instanceof Player) {
-                    //hack -> entities containes the game -> update
-                    addAll(map, ((Broadcastable) entity).getEntities());
-                } else if (entity instanceof VariableDescriptor
+                if (entity instanceof VariableDescriptor
                     || entity instanceof VariableInstance
+                    || entity instanceof GameModel
                     || entity instanceof Game
-                    || entity instanceof GameModel) {
+                    || entity instanceof Player
+                    || entity instanceof Team) {
                     removeAll(map, ((Broadcastable) entity).getEntities());
                 }
             }
@@ -1421,14 +1451,19 @@ public class RequestManager implements RequestManagerI {
         if (!(gameModel.isPersisted() || gameModelFacade.isPersisted(gameModel.getId())) // not yet persisted means the gameModel is being created right kown
             || hasDirectGameModelEditPermission(gameModel)) {
             return true;
+        } else if (gameModel.isReference() && hasGameModelPermission(gameModel.getBasedOn(), thePerm)) {
+            return true;
         } else if (gameModel.isPlay()) {
             /**
              * GameModel permission against a "PLAY" gameModel.
              */
             for (Game game : gameModel.getGames()) {
                 // has permission to at least on game of the game model ?
-                if (this.hasGamePermission(game, thePerm.getLevel() == WegasEntityPermission.Level.READ ? false : true)) {
-                    return true;
+                if (game instanceof DebugGame == false) {
+                    // very old gamemodel owhn several game : in this case ignore debug one
+                    if (this.hasGamePermission(game, (thePerm.getLevel() != WegasEntityPermission.Level.READ))) {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -1511,6 +1546,50 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
+     *
+     * @param wegasIsTeamMate
+     *
+     * @return
+     */
+    private boolean isTeamMate(WegasIsTeamMate wegasIsTeamMate) {
+        Long mateId = wegasIsTeamMate.getUserId();
+
+        Player self = getPlayer();
+        if (getPlayer() != null) {
+
+            Query query = getEntityManager().createNamedQuery("Player.isUserTeamMateOfPlayer");
+
+            query.setParameter(1, self.getId());
+            query.setParameter(2, mateId);
+
+            List results = query.getResultList();
+
+            return !results.isEmpty();
+        } else {
+            logger.error("NO CURRENT PLAYER IN CONTEXT!");
+            return false;
+        }
+    }
+
+    private boolean isTrainerForUser(WegasIsTrainerForUser perm) {
+        User self = this.getCurrentUser();
+        if (self != null) {
+            Long userId = perm.getUserId();
+
+            Query query = getEntityManager().createNamedQuery("Player.IsTrainerForUser");
+
+            query.setParameter(1, userId);
+            query.setParameter(2, self.getId());
+
+            List results = query.getResultList();
+
+            return !results.isEmpty();
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Returns {@code true} if the currentUser owns the permission
      *
      * @param permission permission to check
@@ -1526,7 +1605,10 @@ public class RequestManager implements RequestManagerI {
             } else {
 
                 this.getCurrentUser();
-                if (hasRole("Administrator") || permission instanceof WegasMembership && this.isMemberOf((WegasMembership) permission)
+                if (hasRole("Administrator")
+                    || permission instanceof WegasMembership && this.isMemberOf((WegasMembership) permission)
+                    || permission instanceof WegasIsTeamMate && this.isTeamMate((WegasIsTeamMate) permission)
+                    || permission instanceof WegasIsTrainerForUser && isTrainerForUser((WegasIsTrainerForUser) permission)
                     || permission instanceof WegasEntityPermission && this.hasEntityPermission((WegasEntityPermission) permission)) {
                     log(" >>> GRANT: {}", permission);
                     this.grant(permission);
@@ -1586,7 +1668,7 @@ public class RequestManager implements RequestManagerI {
         logIndent++;
         if (!hasAnyPermission(permissions)) {
             String msg = type + " Permission Denied (" + permissions + ") for user " + this.getCurrentUser() + " on entity " + entity;
-            Helper.printWegasStackTrace(new Exception(msg));
+            //Helper.printWegasStackTrace(new Exception(msg));
             log(msg);
             throw new WegasAccessDenied(entity, type, msg, this.getCurrentUser());
         }
@@ -1893,20 +1975,23 @@ public class RequestManager implements RequestManagerI {
                 //} else {
                 //    throw WegasErrorMessage.error("Su is forbidden !");
                 //}
+            } else {
+                this.previousSubject = subject;
+
             }
         } catch (UnavailableSecurityManagerException | IllegalStateException | NullPointerException ex) {
             // runAs faild
             Helper.printWegasStackTrace(ex);
+
+            // The subject does not exists -> create from strach and bind
+            Collection<Realm> realms = new ArrayList<>();
+            realms.add(new JpaRealm());
+            realms.add(new AaiRealm());
+            realms.add(new GuestRealm());
+
+            SecurityUtils.setSecurityManager(new DefaultSecurityManager(realms));
+
         }
-
-        // The subject does not exists -> create from strach and bind
-        Collection<Realm> realms = new ArrayList<>();
-        realms.add(new JpaRealm());
-        realms.add(new AaiRealm());
-        realms.add(new GuestRealm());
-
-        SecurityUtils.setSecurityManager(new DefaultSecurityManager(realms));
-
         Subject.Builder b = new Subject.Builder();
         SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
         b.authenticated(true).principals(newSubject);
@@ -1932,6 +2017,10 @@ public class RequestManager implements RequestManagerI {
             } else {
                 logger.info("Su-Exit LOGOUT");
                 this.logout(subject);
+                if (this.previousSubject != null) {
+                    ThreadContext.bind(previousSubject);
+                    this.previousSubject = null;
+                }
             }
             this.getCurrentUser();
         } catch (Exception ex) {

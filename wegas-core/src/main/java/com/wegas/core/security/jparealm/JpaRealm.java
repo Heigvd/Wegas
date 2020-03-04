@@ -42,23 +42,29 @@ public class JpaRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
         UsernamePasswordToken token = (UsernamePasswordToken) authcToken;
         AccountFacade accountFacade = AccountFacade.lookup();
+        RequestManager requestManager = RequestFacade.lookup().getRequestManager();
         try {
+            requestManager.su();
             JpaAccount account = accountFacade.findJpaByEmail(token.getUsername());
-            SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
-            info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
+
+            SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getShadow().getPasswordHex(), getName());
+            info.setCredentialsSalt(new SimpleByteSource(account.getShadow().getSalt()));
             return info;
 
-        } catch (WegasNoResultException e) {                                         // Could not find correponding mail,
+        } catch (WegasNoResultException e) {
+            // Could not find correponding mail,
             try {
                 JpaAccount account = accountFacade.findJpaByUsername(token.getUsername());// try with the username
-                SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
-                info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
+                SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getShadow().getPasswordHex(), getName());
+                info.setCredentialsSalt(new SimpleByteSource(account.getShadow().getSalt()));
                 return info;
 
             } catch (WegasNoResultException ex) {
                 logger.error("Unable to find token", ex);
                 return null;
             }
+        } finally {
+            requestManager.releaseSu();
         }
     }
 

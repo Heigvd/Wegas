@@ -8,7 +8,6 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.cron.EjbTimerFacade;
-import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
@@ -132,10 +131,10 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
     //@Test
     public void testSendNewPassword() throws Exception {
         JpaAccount acc = accountFacade.findJpaByEmail(EMAIL);
-        String oldToken = acc.getToken();
+        String oldToken = acc.getShadow().getToken();
         userFacade.requestPasswordReset(EMAIL, null);
         acc = accountFacade.findJpaByEmail(EMAIL);
-        Assert.assertFalse(oldToken.equals(acc.getToken()));
+        Assert.assertFalse(oldToken.equals(acc.getShadow().getToken()));
     }
 
     /**
@@ -160,14 +159,13 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
         System.setProperty("guestallowed", "true");
     }
 
-    @Test
-    public void testDuplicateUsername() {
+    @Test(expected = EJBException.class)
+    public void testDuplicateUsername(){
+        // first sign up is fine
         this.signup("user_1234@local");
-        try {
-            this.signup("user_1234@local");
-            Assert.fail("Shoudl throw exception !");
-        } catch (WegasConflictException ex) {
-        }
+
+        // second with same address is not
+        this.signup("user_1234@local");
     }
 
     @Test

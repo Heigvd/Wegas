@@ -25,6 +25,8 @@ import javax.persistence.*;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
+ * @param <T>
+ * @param <U>
  */
 @Entity
 //@Table(name = "FSMDescriptor")
@@ -48,7 +50,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
      */
     @OneToMany(mappedBy = "stateMachine", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKeyColumn(name = "fsm_statekey")
-    @JsonView(Views.ExtendedI.class)
+    @JsonView(Views.EditorI.class)
     @WegasEntityProperty(ignoreNull = true, protectionLevel = ProtectionLevel.INHERITED,
             optional = false, nullable = false, proposal = EmptyMap.class,
             view = @View(label = "", value = Hidden.class))

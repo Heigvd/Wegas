@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -10,10 +10,13 @@ package com.wegas.core.persistence.game;
 import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.google.common.base.Objects;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
@@ -23,6 +26,7 @@ import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
@@ -35,6 +39,7 @@ import com.wegas.editor.View.StringView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
@@ -54,6 +59,16 @@ import org.slf4j.LoggerFactory;
     query = "SELECT p FROM Player p WHERE p.user.id = :userId AND p.team.id = :teamId")
 @NamedQuery(name = "Player.findToPopulate",
     query = "SELECT a FROM Player a WHERE a.status LIKE 'WAITING' OR a.status LIKE 'RESCHEDULED'")
+@NamedNativeQuery(name = "Player.isUserTeamMateOfPlayer",
+    query = "SELECT true FROM player as self JOIN player AS mate on mate.team_id = self.team_id WHERE self.id =?1 AND mate.user_id = ?2")
+@NamedQuery(name = "Player.findGameIds",
+    query = "SELECT p.team.gameTeams.game.id FROM Player p where p.user.id = :userId")
+@NamedNativeQuery(name = "Player.IsTrainerForUser",
+    query = "SELECT true FROM player as player "
+        + " JOIN team AS team on team.id = player.team_id"
+        + " JOIN gameteams AS gt on gt.id = team.gameteams_id"
+        + " JOIN permission perm on perm.permissions LIKE 'Game:%Edit%:g' || gt.game_id"
+        + " WHERE player.user_id = ?1 AND perm.user_id = ?2")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(indexes = {
     @Index(columnList = "user_id"),
@@ -95,10 +110,9 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      */
     /**
      *
+     * @WegasEntityProperty(optional = false, nullable = false, view = @View(label = "Name",
+     * readOnly = true, value = StringView.class)) private String name;
      */
-    @WegasEntityProperty(optional = false, nullable = false,
-        view = @View(label = "Name", readOnly = true, value = StringView.class))
-    private String name;
     /**
      *
      */
@@ -153,19 +167,11 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     /**
      *
-     * @param name
-     */
-    public Player(String name) {
-        this.name = name;
-    }
-
-    /**
-     *
      * @param user
      * @param team
      */
     public Player(User user, Team team) {
-        this.name = user.getName();
+        //this.name = user.getName();
         this.user = user;
         //this.userId = user.getId();
         this.team = team;
@@ -182,16 +188,10 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     /**
      *
+     * @PrePersist @PreUpdate public void preUpdate() { if ((this.getName() == null ||
+     * this.getName().equals("")) && this.getUser() != null) { // User may be null for test players
+     * this.name = this.getUser().getName(); } }
      */
-    @PrePersist
-    @PreUpdate
-    public void preUpdate() {
-        if ((this.getName() == null || this.getName().equals(""))
-            && this.getUser() != null) {                                    // User may be null for test players
-            this.name = this.getUser().getName();
-        }
-    }
-
     @Override
     public Long getId() {
         return id;
@@ -261,6 +261,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      * @return gameModel the player is linked to
      */
     @JsonIgnore
+    @Override
     public GameModel getGameModel() {
         return this.getTeam().getGame().getGameModel();
     }
@@ -300,15 +301,18 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     /**
      * @return the name
      */
+    @JsonView({
+        Views.EditorI.class
+    /*Views.LobbyI.class*/
+    })
+    @WegasExtraProperty
     public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
+        if (this.getUser() != null) {
+            AbstractAccount account = this.getUser().getMainAccount();
+            return account.getName();
+        } else {
+            return "Test player";
+        }
     }
 
     @Override
@@ -344,6 +348,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      * @return true if the user's main account is verified
      */
     @JsonProperty
+    @JsonView(Views.EditorI.class)
     public Boolean isVerifiedId() {
         if (this.user != null) {
             return user.getMainAccount().isVerified();
@@ -355,13 +360,14 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     /*
     * @return the user's verified homeOrg if it's an AaiAccount or equivalent, otherwise return the empty string
      */
+    @JsonView(Views.EditorI.class)
     public String getHomeOrg() {
         if (this.user != null) {
             AbstractAccount account = user.getMainAccount();
             if (account instanceof AaiAccount) {
                 return "AAI " + ((AaiAccount) account).getHomeOrg();
             } else if (account != null && Boolean.TRUE == account.isVerified()) { // avoid NPE : isVerified() means isVerified().getValue() !!
-                return Helper.anonymizeEmail(account.getEmail());
+                return account.getEmailDomain();
             }
         }
         return "";
@@ -401,6 +407,29 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     }
 
     /**
+     * {@inheritDoc }
+     */
+    @Override
+    @JsonIgnore
+    public Player getUserLivePlayer(User user) {
+        if (this.getStatus().equals(Status.LIVE) 
+            && Objects.equal(this.user, user)) {
+            return this;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Player getTestPlayer() {
+        if (this.isTestPlayer()){
+            return this;
+        } else {
+            return null;
+        }
+    }
+
+    /**
      *
      * @param privateInstances
      */
@@ -415,7 +444,13 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
-        return this.getTeam().getEntities();
+        String audience = this.getTeam().getChannel();
+
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+        ArrayList<AbstractEntity> entities = new ArrayList<>();
+        entities.add(this);
+        map.put(audience, entities);
+        return map;
     }
 
     @Override

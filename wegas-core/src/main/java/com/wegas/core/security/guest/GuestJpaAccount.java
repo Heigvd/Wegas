@@ -29,11 +29,6 @@ public class GuestJpaAccount extends AbstractAccount {
     }
 
     @Override
-    public String getEmail() {
-        return null;
-    }
-
-    @Override
     public Boolean isVerified() {
         return false;
     }

@@ -134,20 +134,13 @@ public class PrintController {
             if (gameModel != null) {
                 if (gameModel.isScenario() || gameModel.isModel()){
                     // use the debug player from the debug game
-                    currentPlayer = gameModel.getAnyLivePlayer();
+                    currentPlayer = gameModel.getTestPlayer();
                 } else {
                     currentPlayer = playerFacade.findPlayerInGameModel(this.gameModelId, userFacade.getCurrentUser().getId());
 
                     if (currentPlayer == null) {
                         // fallback: use a test player
-                        for (Game g : gameModel.getGames()) {
-                            for (Team t : g.getTeams()) {
-                                if (t instanceof DebugTeam) {
-                                    currentPlayer = t.getAnyLivePlayer();
-                                    break;
-                                }
-                            }
-                        }
+                        currentPlayer = gameModel.getTestPlayer();
                     }
                 }
             }

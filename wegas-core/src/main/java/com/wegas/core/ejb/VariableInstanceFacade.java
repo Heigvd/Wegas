@@ -24,6 +24,7 @@ import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.resourceManagement.ejb.IterationFacade;
@@ -362,7 +363,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
                  * A player who match the given variableInstance scope must be
                  * manually selected !
                  */
-                Player p = find.getOwner().getAnyLivePlayer();
+                Player p = find.getOwner().getUserLivePlayerOrDebugPlayer(requestManager.getCurrentUser());
                 requestFacade.getRequestManager().setPlayer(p);
             }
 
@@ -389,7 +390,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
         Player p = requestManager.getPlayer();
 
         if (p == null) {
-            p = aThis.getEffectiveOwner().getAnyLivePlayer();
+            p = aThis.getOwner().getUserLivePlayerOrDebugPlayer(requestManager.getCurrentUser());
         }
 
         scriptEvent.fire(p, "numberUpdate", new NumberUpdate(aThis, previousValue));

@@ -41,12 +41,14 @@ public class WaitingController extends AbstractGameController {
     /**
      *
      */
-    @Inject @HttpParam
+    @Inject
+    @HttpParam
     private Long gameId;
     /**
      *
      */
-    @Inject @HttpParam
+    @Inject
+    @HttpParam
     private Long gameModelId;
     /**
      *
@@ -92,7 +94,7 @@ public class WaitingController extends AbstractGameController {
     }
 
     public String getCurrentUserEmail() {
-        return this.getCurrentUser().getMainAccount().getEmail();
+        return this.getCurrentUser().getMainAccount().getDetails().getEmail();
     }
 
     /**
@@ -112,19 +114,14 @@ public class WaitingController extends AbstractGameController {
             if (game != null) {
                 if (game instanceof DebugGame) {
                     // use the debug player
-                    currentPlayer = game.getPlayers().get(0);
+                    currentPlayer = game.getTestPlayer();
                 } else {
                     // use the player owned by the current user
                     currentPlayer = playerFacade.findPlayer(this.gameId, currentUserId);
 
                     if (currentPlayer == null) {
                         // fallback: use the test player
-                        for (Team t : game.getTeams()) {
-                            if (t instanceof DebugTeam) {
-                                currentPlayer = t.getAnyLivePlayer();
-                                break;
-                            }
-                        }
+                        currentPlayer = game.getTestPlayer();
                     }
                 }
             }
@@ -133,22 +130,15 @@ public class WaitingController extends AbstractGameController {
         if (this.gameModelId != null) {
             GameModel gameModel = gameModelFacade.find(this.gameModelId);
             if (gameModel != null) {
-                if (gameModel.isScenario() || gameModel.isModel()){
+                if (gameModel.isScenario() || gameModel.isModel()) {
                     // use the debug player from the debug game
-                    currentPlayer = gameModel.getAnyLivePlayer();
+                    currentPlayer = gameModel.getTestPlayer();
                 } else {
                     currentPlayer = playerFacade.findPlayerInGameModel(this.gameModelId, currentUserId);
 
                     if (currentPlayer == null) {
                         // fallback: use a test player
-                        for (Game g : gameModel.getGames()) {
-                            for (Team t : g.getTeams()) {
-                                if (t instanceof DebugTeam) {
-                                    currentPlayer = t.getAnyLivePlayer();
-                                    break;
-                                }
-                            }
-                        }
+                        currentPlayer = gameModel.getTestPlayer();
                     }
                 }
             }
@@ -160,7 +150,7 @@ public class WaitingController extends AbstractGameController {
         } else if (!currentPlayer.getStatus().equals(Status.LIVE)) {
             currentPlayer.setQueueSize(populatorFacade.getQueue().indexOf(currentPlayer) + 1);
         } else if (!userFacade.matchCurrentUser(currentPlayer.getId())
-                && !requestManager.hasPlayerRight(currentPlayer)) {
+            && !requestManager.hasPlayerRight(currentPlayer)) {
             errorController.accessDenied();
         }
     }

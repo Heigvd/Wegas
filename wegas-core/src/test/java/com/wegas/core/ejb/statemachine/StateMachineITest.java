@@ -85,15 +85,16 @@ public class StateMachineITest extends AbstractArquillianTest {
         login(user41);
         teamFacade.create(game.getId(), team4);
 
-
         WegasUser user11 = this.signup("user11@local");
         login(user11);
-        Player testPlayer11 = gameFacade.joinTeam(team.getId(), "TestPlayer11", null);
-        
-        login(user41);
-        Player testPlayer41 = gameFacade.joinTeam(team4.getId(), "testPlayer41", null);
+        Player testPlayer11 = gameFacade.joinTeam(team.getId(), null);
+        logger.error("Player 11: {}", testPlayer11);
 
-        logger.error("Players: " + testPlayer11 + " : " + testPlayer41);
+        login(user41);
+        Player testPlayer41 = gameFacade.joinTeam(team4.getId(), null);
+        logger.error("Player 41: {}", testPlayer41);
+
+
         NumberDescriptor number = (NumberDescriptor) variableDescriptorFacade.find(testNumber.getId());
         /* CONTEXT? */
 
@@ -118,11 +119,11 @@ public class StateMachineITest extends AbstractArquillianTest {
          */
         WegasUser user42 = this.signup("user42@local");
         login(user42);
-        Player testPlayer42 = gameFacade.joinTeam(team4.getId(), "TestPlayer42", null);
+        Player testPlayer42 = gameFacade.joinTeam(team4.getId(), null);
 
         login(trainer);
         gameModelFacade.reset(scenario.getId());
-        
+
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer11)).getValue(), 0.0);
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer41)).getValue(), 0.0);
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player21)).getValue(), 0.0);
@@ -133,10 +134,9 @@ public class StateMachineITest extends AbstractArquillianTest {
          */
         Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
 
-        
         WegasUser user43 = this.signup("user43@local");
         login(user43);
-        Player testPlayer43 = gameFacade.joinTeam(team4.getId(), "TestPlayer43", null);
+        Player testPlayer43 = gameFacade.joinTeam(team4.getId(), null);
         Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
 
         login(trainer);
@@ -146,24 +146,24 @@ public class StateMachineITest extends AbstractArquillianTest {
          * Player added in empty team.
          */
         login(user31);
-        Player testPlayer31 = gameFacade.joinTeam(team3.getId(), "TestPlayer31", null);
+        Player testPlayer31 = gameFacade.joinTeam(team3.getId(), null);
         Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
 
         login(trainer);
         gameModelFacade.reset(scenario.getId());
         Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
-        
+
         WegasUser user32 = this.signup("user32@local");
         login(user32);
-        Player testPlayer32 = gameFacade.joinTeam(team3.getId(), "TestPlayer32", null);
+        Player testPlayer32 = gameFacade.joinTeam(team3.getId(), null);
 
         WegasUser user33 = this.signup("user33@local");
         login(user33);
-        Player testPlayer33 = gameFacade.joinTeam(team3.getId(), "TestPlayer33", null);
+        Player testPlayer33 = gameFacade.joinTeam(team3.getId(), null);
 
         WegasUser user34 = this.signup("user34@local");
         login(user34);
-        Player testPlayer34 = gameFacade.joinTeam(team3.getId(), "TestPlayer34", null);
+        Player testPlayer34 = gameFacade.joinTeam(team3.getId(), null);
 
         login(trainer);
         Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
@@ -185,7 +185,8 @@ public class StateMachineITest extends AbstractArquillianTest {
 
         WegasUser user31 = this.signup("user31@local");
         login(user31);
-        Player testPlayer = gameFacade.joinTeam(team.getId(), "TestPlayer31", null);
+        Player testPlayer = gameFacade.joinTeam(team.getId(), null);
+        requestManager.setPlayer(testPlayer);
 
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
         NumberInstance p0Instance = (NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer);

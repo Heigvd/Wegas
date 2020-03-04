@@ -55,6 +55,7 @@ public class TeamController {
     @Path("{teamId : [1-9][0-9]*}")
     public Team get(@PathParam("teamId") Long teamId) {
         Team t = teamFacade.find(teamId);
+        requestManager.setCurrentTeam(t);
         return t;
     }
 

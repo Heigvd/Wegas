@@ -764,6 +764,23 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
+     * Do a JPA query to fetch the reference of the given model.
+     * 
+     * @param gm the model
+     *
+     * @return the reference of the model or null
+     */
+    public GameModel findReference(GameModel gm) {
+        try {
+            TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findReference", GameModel.class);
+            query.setParameter("id", gm.getId());
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    /**
      * Same as {@link remove(java.lang.Long) } but within a brand new transaction
      *
      * @param gameModelId id of the gameModel to remove
@@ -1154,8 +1171,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     }
                 }
             } else {
-                MergeHelper.visitMergeable(mergeable, Boolean.TRUE, replacer);
-            }
+            MergeHelper.visitMergeable(mergeable, Boolean.TRUE, replacer);
+        }
         }
 
         if (payload.getProcessPages()) {
@@ -1180,7 +1197,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     public Set<String> findAllFiredEvents(Long gameModelId) {
         return this.findAllFiredEvents(this.find(gameModelId));
-    }
+            }
 
     public Set<String> findAllFiredEvents(GameModel gameModel) {
         FindAndReplacePayload payload = new FindAndReplacePayload();
@@ -1203,9 +1220,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         for (List<String> line : process) {
             events.addAll(line);
-        }
+                    }
         return events;
-    }
+                }
 
     public Set<String> findAllRefToFiles(Long gameModelId, Long vdId) {
         GameModel gm = this.find(gameModelId);
@@ -1213,18 +1230,18 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         if (vdId != null) {
             variable = variableDescriptorFacade.find(vdId);
-        }
+            }
         return this.findAllRefToFiles(gm, variable);
-    }
+        }
 
-    /**
+        /**
      * Go through the givenGameModel variables and fetch each references to internal files
-     *
+         *
      * @param gameModel the gamemodel to search for reference in
      * @param root      Optional variable to search in, if null, search the whole gameModel
-     *
+         *
      * @return
-     */
+         */
     public Set<String> findAllRefToFiles(GameModel gameModel,
         VariableDescriptor root) {
         FindAndReplacePayload payload = new FindAndReplacePayload();
@@ -1240,7 +1257,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             List<String> roots = new ArrayList<>();
             roots.add(root.getName());
             payload.setRoots(roots);
-        }
+            }
 
         payload.setRegex(true);
         // match : Event.fire("eventName"), Event.fire(\"event\") + Event.fired

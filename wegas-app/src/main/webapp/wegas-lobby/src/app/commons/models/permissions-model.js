@@ -112,7 +112,7 @@ angular.module('wegas.models.permissions', [])
 
         model.getScenarioPermissions = function(scenarioId) {
             var deferred = $q.defer(),
-                url = "rest/Extended/User/FindUserPermissionByInstance/gm" + scenarioId;
+                url = "rest/Public/User/FindUserPermissionByInstance/gm" + scenarioId;
 
             /**
              * 

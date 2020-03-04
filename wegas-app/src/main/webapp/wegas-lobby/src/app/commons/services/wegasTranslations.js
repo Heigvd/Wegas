@@ -25,12 +25,12 @@ angular.module('wegas.service.wegasTranslations', [])
                             isFr = true;
                         }
                     });
-                    localStorage.setObject("wegas-config", {
-                        'commons': {
+                        localStorage.setObject("wegas-config", {
+                            'commons': {
                             'language': (isFr ? 'fr' : 'en')
-                        },
-                        'users': {}
-                    });
+                            },
+                            'users': {}
+                        });
                     $translateProvider.preferredLanguage(isFr ? 'fr' : 'en');
                 }
             },
@@ -1188,6 +1188,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'PRIVATE-PROFILE-INPUT-LABEL-LASTNAME': {
                             'en': "Last name",
                             'fr': "Nom de famille"
+                        },
+                        'PRIVATE-PROFILE-INPUT-LABEL-COMMENT': {
+                            'en': "Admin comments",
+                            'fr': "Remarques administrateur"
                         },
                         'PRIVATE-PROFILE-INPUT-PLACEHOLDER-EMAIL': {
                             'en': "Please enter your email",
