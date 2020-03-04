@@ -8,6 +8,7 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.cron.EjbTimerFacade;
+import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
@@ -159,7 +160,7 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
         System.setProperty("guestallowed", "true");
     }
 
-    @Test(expected = EJBException.class)
+    @Test(expected = WegasConflictException.class)
     public void testDuplicateUsername(){
         // first sign up is fine
         this.signup("user_1234@local");
