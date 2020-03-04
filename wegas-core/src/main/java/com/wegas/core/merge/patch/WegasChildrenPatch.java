@@ -402,30 +402,6 @@ public final class WegasChildrenPatch extends WegasPatch {
         return sb;
     }
 
-    @Override
-    protected String printDiffOnly(int indent) {
-        List<String> items = new ArrayList<>();
-
-        for (WegasPatch patch : patches) {
-            String child = patch.printDiffOnly(indent + 1);
-            if (child != null) {
-                items.add(child);
-            }
-        }
-
-        if (items.isEmpty()) {
-            return null;
-        } else {
-            StringBuilder sb = new StringBuilder(this.indentString(indent));
-            sb.append(this.identifier);
-            for (String child : items) {
-                newLine(sb, 0);
-                sb.append(child);
-            }
-            return sb.toString();
-        }
-    }
-
     protected PatchDiff buildDiff() {
         List<PatchDiff> subs = new ArrayList<>();
 

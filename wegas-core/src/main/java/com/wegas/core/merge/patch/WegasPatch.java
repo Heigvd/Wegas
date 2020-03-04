@@ -417,8 +417,6 @@ public abstract class WegasPatch {
         return sb;
     }
 
-    protected abstract String printDiffOnly(int ident);
-
     protected String indentString(int ident) {
         String indent = "";
         for (int i = 0; i < ident; i++) {
