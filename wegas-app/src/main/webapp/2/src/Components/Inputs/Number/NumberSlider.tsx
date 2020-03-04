@@ -150,7 +150,7 @@ export function NumberSlider({
         <NumberInput
           value={value}
           onChange={onSliderChange}
-          className={css({ textAlign: 'center' })}
+          // className={textCenter}
         />
       )}
       <Info />

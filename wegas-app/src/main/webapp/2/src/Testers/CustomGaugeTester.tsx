@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { CustomGauge } from '../Components/Outputs/CustomGauge';
 import { expandBoth, flex, grow, flexRow, autoScroll } from '../css/classes';
-import { cx } from 'emotion';
+import { cx, css } from 'emotion';
 import { NumberSlider } from '../Components/Inputs/Number/NumberSlider';
 import { degreeToRadian } from '../Components/Outputs/PieChart';
 import { Toggler } from '../Components/Inputs/Boolean/Toggler';
@@ -23,10 +23,11 @@ export default function CustomGaugeTester() {
           value={values.value}
           min={0}
           sections={[
-            { backgroundColor: 'red', stopValue: 25 },
-            { backgroundColor: 'yellow', stopValue: 50 },
-            { backgroundColor: 'green', stopValue: 75 },
-            { backgroundColor: 'blue', stopValue: 100 },
+            { backgroundColor: '#ff0000', stopValue: 20 },
+            { backgroundColor: '#ff0040', stopValue: 40 },
+            { backgroundColor: '#ff0080', stopValue: 60 },
+            { backgroundColor: '#ff00C0', stopValue: 80 },
+            { backgroundColor: '#ff00E0', stopValue: 100 },
           ]}
           minAngle={values.minAngle}
           maxAngle={values.maxAngle}
@@ -136,7 +137,7 @@ export default function CustomGaugeTester() {
           useGradient={values.useGradient}
         />
       </div>
-      <div className={grow}>
+      <div className={cx(grow, autoScroll)}>
         <NumberSlider
           label="Value"
           min={0}
@@ -193,8 +194,8 @@ export default function CustomGaugeTester() {
           displayValues="Internal"
           numberInput
         />
-        Use gradient
         <Toggler
+          label="Use gradient"
           value={values.useGradient}
           onChange={v => setValues(ov => ({ ...ov, useGradient: v }))}
         />

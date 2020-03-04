@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { wwarn, wlog } from '../../Helper/wegaslog';
+import { cloneDeep } from 'lodash-es';
+import u from 'immer';
 
 const viewBox = {
   minX: 0,
@@ -12,44 +14,47 @@ const chartStyle = {
   radius: 240,
 };
 
+let pieChartId = 0;
+
 // https://stackoverflow.com/questions/18206361/svg-multiple-color-on-circle-stroke
-function generateGradient(
+const generateGradient = (
   sections: PieChartSection[],
   centerX: number,
   centerY: number,
   radius: number,
   holeRatio: number,
-) {
-  return sections
-    .map((s, i, a) => {
-      if (a[i - 1] == null) {
-        return null;
-      } else {
-        const lastSection = a[i - 1];
-        const startColor = lastSection.fillColor;
-        const stopColor = s.fillColor;
-        const holeRadius = chartStyle.radius * (holeRatio / 100);
-        const colorRadius = (radius + holeRadius) / 2;
+) => {
+  const newPieChartId = `pie-grad-${pieChartId++}-`;
+  return {
+    gradients: sections
+      .map((s, i, a) => {
+        if (a[i - 1] == null) {
+          return null;
+        } else {
+          const lastSection = a[i - 1];
+          const startColor = lastSection.fillColor;
+          const stopColor = s.fillColor;
+          const holeRadius = chartStyle.radius * (holeRatio / 100);
+          const colorRadius = (radius + holeRadius) / 2;
 
-        const coord1 = polarToCartesian(
-          centerX,
-          centerY,
-          colorRadius,
-          lastSection.angleTo,
-        );
-        const coord2 = polarToCartesian(
-          centerX,
-          centerY,
-          colorRadius,
-          s.angleTo,
-        );
+          const coord1 = polarToCartesian(
+            centerX,
+            centerY,
+            colorRadius,
+            lastSection.angleTo,
+          );
+          const coord2 = polarToCartesian(
+            centerX,
+            centerY,
+            colorRadius,
+            s.angleTo,
+          );
 
-        // Create a gradient for this segment
-        return (
-          <>
+          // Create a gradient for this segment
+          return (
             <linearGradient
-              key={`pie-grad-${i}`}
-              id={`pie-grad-${i}`}
+              key={newPieChartId + i}
+              id={newPieChartId + i}
               gradientUnits="userSpaceOnUse"
               x1={coord1.x}
               y1={coord1.y}
@@ -61,29 +66,30 @@ function generateGradient(
               <stop offset="66%" stopColor={stopColor} />
               <stop offset="100%" stopColor={stopColor} />
             </linearGradient>
-          </>
-        );
-      }
-    })
-    .filter(s => s != null);
-}
+          );
+        }
+      })
+      .filter(s => s != null),
+    currentId: newPieChartId,
+  };
+};
 
 export const degreeToRadian = (degAngle: number) =>
   ((degAngle - 180) * Math.PI) / 180;
 
 // https://stackoverflow.com/questions/5736398/how-to-calculate-the-svg-path-for-an-arc-of-a-circle
-function polarToCartesian(
+const polarToCartesian = (
   centerX: number,
   centerY: number,
   radius: number,
   angleInDegrees: number,
-) {
+) => {
   const angleInRadians = degreeToRadian(angleInDegrees);
   return {
     x: centerX + radius * Math.cos(angleInRadians),
     y: centerY + radius * Math.sin(angleInRadians),
   };
-}
+};
 
 const translationFromAngle = (
   minAngle: number,
@@ -133,13 +139,13 @@ function generateArc(
   ].join(' ');
 }
 
-function generateLine(
+const generateLine = (
   radius: number,
   angle: number,
   centerX: number,
   centerY: number,
   startCoordinates?: boolean,
-) {
+) => {
   const start = polarToCartesian(centerX, centerY, chartStyle.radius, angle);
   const end = polarToCartesian(centerX, centerY, radius, angle);
 
@@ -149,9 +155,9 @@ function generateLine(
     end.x,
     end.y,
   ].join(' ');
-}
+};
 
-function svgPieceOfCake(
+const svgPieceOfCake = (
   minAngle: number,
   maxAngle: number,
   holeRatio: number,
@@ -161,7 +167,7 @@ function svgPieceOfCake(
   fill?: string,
   stroke?: string,
   strokeWidth?: number,
-) {
+) => {
   const holeRadius = chartStyle.radius * (holeRatio / 100);
   const translate = translationFromAngle(minAngle, maxAngle, explodeRatio);
 
@@ -249,19 +255,22 @@ function svgPieceOfCake(
       </>
     );
   }
-}
+};
 
-function svgStringOfCake(
+const svgStringOfCake = (
   minAngle: number,
   maxAngle: number,
   holeRatio: number,
   centerX: number,
   centerY: number,
   stroke?: string,
-) {
+  explodeRatio: number = 0,
+) => {
   const holeRadius = chartStyle.radius * (holeRatio / 100);
   const stringRadius = (holeRadius + chartStyle.radius) / 2;
   const strokeWidth = (chartStyle.radius - stringRadius) * 2;
+  const translate = translationFromAngle(minAngle, maxAngle, explodeRatio);
+
   return (
     <path
       stroke={stroke}
@@ -276,9 +285,10 @@ function svgStringOfCake(
         0,
         true,
       )}`}
+      transform={`translate(${translate.x} ${translate.y})`}
     />
   );
-}
+};
 
 export interface SimpleNeedleStyle {
   '@class': 'SimpleNeedle';
@@ -318,13 +328,13 @@ export interface SVGNeedleStyle {
 
 export type NeedleStyle = SimpleNeedleStyle | ImageNeedleStyle | SVGNeedleStyle;
 
-function svgNeedle(
+const svgNeedle = (
   { needle, needleStyle = { '@class': 'SimpleNeedle' } }: NeedleProps,
   centerX: number,
   centerY: number,
   holeRatio: number = 50,
   explodeRatio: number = 0,
-) {
+) => {
   const holeRadius = chartStyle.radius * (holeRatio / 100);
   const translate = translationFromAngle(needle, undefined, explodeRatio);
   switch (needleStyle['@class']) {
@@ -372,24 +382,25 @@ function svgNeedle(
       );
     }
   }
-}
+};
 
 const filterSections = (
-  sections: (PieChartSection & { minAngle: number })[],
+  sections: ComputedPieChartSection[],
   needleCfg?: NeedleProps,
 ) => {
-  const filteredSections = sections.filter(
+  const filteredSections = cloneDeep(sections).filter(
     s =>
       // Don't filter if needle is not set
       !needleCfg ||
       !needleCfg.followNeedle ||
       // Keep section if last section as lower angle than needle
-      s.minAngle < needleCfg.needle,
+      s.minAngle <= needleCfg.needle,
   );
 
   // Finally, set the last section's angle to the needle's angle if followNeedle is sat
-  if (needleCfg && needleCfg.followNeedle) {
-    filteredSections[filteredSections.length - 1].angleTo = needleCfg.needle;
+  const lastSection = filteredSections[filteredSections.length - 1];
+  if (needleCfg && needleCfg.followNeedle && lastSection) {
+    lastSection.angleTo = needleCfg.needle;
   }
   return filteredSections;
 };
@@ -523,6 +534,202 @@ export interface PieChartSection {
   border?: BorderProps;
 }
 
+export interface ComputedPieChartSection extends PieChartSection {
+  /**
+   * minAngle - the angle where the section start
+   */
+  minAngle: number;
+}
+
+interface PieChartState {
+  minAngle: number;
+  maxAngle: number;
+  holeRatio: number;
+  explodeRatio: number;
+  sections: ComputedPieChartSection[];
+  filteredSections: ComputedPieChartSection[];
+  bluredSections: ComputedPieChartSection[];
+  filteredbluredSections: ComputedPieChartSection[];
+  chartSizes: {
+    width: number;
+    height: number;
+    centerX: number;
+    centerY: number;
+  };
+  gradient: {
+    gradients: (JSX.Element | null)[];
+    currentId: string;
+  };
+}
+
+interface HoleRatioAction {
+  type: 'HOLE_RATIO';
+  holeRatio: number;
+}
+interface ExplodeRatioAction {
+  type: 'EXPLODE_RATIO';
+  explodeRatio: number;
+}
+interface ExplodeRatioAction {
+  type: 'EXPLODE_RATIO';
+  explodeRatio: number;
+}
+interface SectionsAction {
+  type: 'SECTIONS';
+  minAngle: number;
+  sections: PieChartSection[];
+}
+interface FilterSectionsAction {
+  type: 'FILTER_SECTIONS';
+  sections: ComputedPieChartSection[];
+  needleCfg?: NeedleProps;
+}
+interface FilterBluredSectionsAction {
+  type: 'FILTER_BLURED_SECTIONS';
+  sections: ComputedPieChartSection[];
+  needleCfg?: NeedleProps;
+}
+interface ChartSizesAction {
+  type: 'CHART_SIZES';
+  minAngle: number;
+  maxAngle: number;
+  explodeRatio: number;
+}
+interface GradientAction {
+  type: 'GRADIENT';
+  bluredSections: ComputedPieChartSection[];
+  centerX: number;
+  centerY: number;
+  holeRatio: number;
+}
+
+type PieChartStateAction =
+  | HoleRatioAction
+  | ExplodeRatioAction
+  | SectionsAction
+  | FilterSectionsAction
+  | FilterBluredSectionsAction
+  | ChartSizesAction
+  | GradientAction;
+
+/**
+ * setLibraryState - the reducer for libraries management
+ */
+const setPieChartState = (
+  oldState: PieChartState,
+  action: PieChartStateAction,
+) =>
+  u(oldState, oldState => {
+    switch (action.type) {
+      // case 'MIN_ANGLE': {
+      //   oldState.minAngle = boundedValue(action.minAngle, -360, 360);
+      //   break;
+      // }
+      case 'HOLE_RATIO': {
+        oldState.holeRatio = boundedValue(action.holeRatio, 0, 100);
+        break;
+      }
+      case 'EXPLODE_RATIO': {
+        oldState.explodeRatio = boundedValue(action.explodeRatio, 0);
+        break;
+      }
+      case 'SECTIONS': {
+        oldState.minAngle = boundedValue(action.minAngle, -360, 360);
+        // Generate slices
+        let computedSections = action.sections
+          .sort((a, b) => a.angleTo - b.angleTo)
+          .map((s, i, a) => ({
+            ...s,
+            minAngle: i === 0 ? oldState.minAngle : a[i - 1].angleTo,
+          }));
+
+        // Search max angle
+        const maxAngle = computedSections.slice(-1)[0].angleTo;
+
+        // If max angle is greater than 360, rationalize section angles
+        const deltaAngle = maxAngle - oldState.minAngle;
+        const angleRatio = deltaAngle > 360 ? 360 / deltaAngle : 1;
+        oldState.maxAngle =
+          deltaAngle > 360 ? oldState.minAngle + 360 : maxAngle;
+        computedSections = computedSections.map(s => ({
+          ...s,
+          minAngle: s.minAngle * angleRatio,
+          angleTo: s.angleTo * angleRatio,
+        }));
+        oldState.sections = computedSections;
+
+        // Prepare variables for blured sections
+        let bluredSections: ComputedPieChartSection[] = [];
+        const firstSection = computedSections[0];
+        const lastSection = computedSections[computedSections.length - 1];
+        const angleShift =
+          (firstSection.minAngle + firstSection.angleTo) / 2 -
+          firstSection.minAngle;
+        // Shift the sections clockwise in order to display color gradient at the good position
+        bluredSections = [
+          ...computedSections.map((s, i) =>
+            i === 0
+              ? {
+                  ...s,
+                  minAngle: s.minAngle,
+                  angleTo: s.minAngle + angleShift,
+                }
+              : {
+                  ...s,
+                  minAngle: s.minAngle - angleShift,
+                  angleTo: s.angleTo - angleShift,
+                },
+          ),
+          {
+            angleTo: oldState.maxAngle,
+            fillColor: lastSection.fillColor,
+            minAngle: oldState.maxAngle - angleShift,
+            border: lastSection.border,
+          },
+        ];
+        oldState.bluredSections = bluredSections;
+        break;
+      }
+      case 'FILTER_SECTIONS': {
+        //Filter the sections if follow needle is active
+        oldState.filteredSections = filterSections(
+          action.sections,
+          action.needleCfg,
+        );
+        break;
+      }
+      case 'FILTER_BLURED_SECTIONS': {
+        //Filter the sections if follow needle is active
+        oldState.filteredbluredSections = filterSections(
+          action.sections,
+          action.needleCfg,
+        );
+        break;
+      }
+      case 'CHART_SIZES': {
+        //Filter the sections if follow needle is active
+        oldState.chartSizes = computedHeights(
+          action.minAngle,
+          action.maxAngle,
+          action.explodeRatio,
+        );
+        break;
+      }
+      case 'GRADIENT': {
+        //Filter the sections if follow needle is active
+        oldState.gradient = generateGradient(
+          action.bluredSections,
+          action.centerX,
+          action.centerY,
+          chartStyle.radius,
+          action.holeRatio,
+        );
+
+        break;
+      }
+    }
+  });
+
 export interface PieChartProps {
   /**
    * minAngle - the angle of the pie chart (0 is left, 90 is top, 180 is right, 270 is bottom)
@@ -568,6 +775,30 @@ export function PieChart({
   explodeRatio = 0,
   className,
 }: PieChartProps) {
+  const [pieChartState, dispatchStateAction] = React.useReducer(
+    setPieChartState,
+    {
+      minAngle: 0,
+      maxAngle: 1,
+      holeRatio: 0,
+      explodeRatio: 0,
+      sections: [],
+      filteredSections: [],
+      bluredSections: [],
+      filteredbluredSections: [],
+      chartSizes: {
+        width: viewBox.width,
+        height: viewBox.height,
+        centerX: viewBox.width / 2,
+        centerY: viewBox.height,
+      },
+      gradient: {
+        gradients: [],
+        currentId: '',
+      },
+    },
+  );
+
   if (needleCfg != null && explodeRatio > 0) {
     wwarn(
       'Displaying a needle in an exploded Piechart does not make sense!\n\
@@ -616,7 +847,7 @@ export function PieChart({
   //Filter the sections if follow needle is active
   const filteredSections = filterSections(computedSections, needleCfg);
 
-  let bluredSections: (PieChartSection & { minAngle: number })[] = [];
+  let bluredSections: ComputedPieChartSection[] = [];
   const firstSection = computedSections[0];
   const lastSection = computedSections[computedSections.length - 1];
   const angleShift =
@@ -652,31 +883,29 @@ export function PieChart({
     explodeRatio,
   );
 
-  if (needleCfg && needleCfg.followNeedle) {
-    wlog('computedSections');
-    wlog(computedSections);
-    wlog('bluredSections');
-    wlog(bluredSections);
-    wlog('filteredBlurSections');
-    wlog(filteredBlurSections);
-    wlog('needleCfg');
-    wlog(needleCfg);
-  }
+  // if (needleCfg && needleCfg.followNeedle) {
+  //   wlog('computedSections');
+  //   wlog(computedSections);
+  //   wlog('bluredSections');
+  //   wlog(bluredSections);
+  //   wlog('filteredBlurSections');
+  //   wlog(filteredBlurSections);
+  //   wlog('needleCfg');
+  //   wlog(needleCfg);
+  // }
+
+  const { gradients, currentId: id } = generateGradient(
+    bluredSections,
+    centerX,
+    centerY,
+    chartStyle.radius,
+    computedHoleRatio,
+  );
 
   return (
     <div className={className}>
       <svg viewBox={`0 0 ${width} ${height}`}>
-        {useGradient && (
-          <defs>
-            {generateGradient(
-              bluredSections,
-              centerX,
-              centerY,
-              chartStyle.radius,
-              holeRatio,
-            )}
-          </defs>
-        )}
+        {useGradient && <defs>{gradients}</defs>}
         {filteredSections.map(s =>
           svgPieceOfCake(
             s.minAngle,
@@ -708,23 +937,10 @@ export function PieChart({
               centerY,
               i === 0 || i === bluredSections.length - 1
                 ? s.fillColor
-                : `Url(#pie-grad-${i})`,
-              // s.fillColor,
+                : `Url(#${id + i})`,
+              computedExplodeRatio,
             ),
           )}
-        {filteredBlurSections.map(s =>
-          svgPieceOfCake(
-            s.minAngle,
-            s.angleTo,
-            computedHoleRatio,
-            centerX,
-            centerY,
-            explodeRatio,
-            undefined,
-            'black',
-            5,
-          ),
-        )}
         {border &&
           computedExplodeRatio === 0 &&
           svgPieceOfCake(
@@ -734,7 +950,7 @@ export function PieChart({
             centerX,
             centerY,
             undefined,
-            'url(#Gradient)',
+            undefined,
             border.color,
             border.size,
           )}
