@@ -17,7 +17,7 @@ const valueToAngle = (
   maxAngle: number,
 ) => minAngle + ((maxAngle - minAngle) * value) / (maxValue - minValue);
 
-interface GaugeSection {
+interface GaugeSection extends Omit<PieChartSection, 'angleTo' | 'fillColor'> {
   /**
    * stopValue - the section end value
    */
@@ -76,7 +76,7 @@ export interface CustomGaugeProps {
   /**
    * useGradient - blur the color sections
    */
-  useGradient?: boolean;
+  blur?: boolean;
 }
 
 export function CustomGauge({
@@ -91,13 +91,14 @@ export function CustomGauge({
   maxAngle,
   holeRatio = 50,
   explodeRatio = 0,
-  useGradient,
+  blur,
 }: CustomGaugeProps) {
   const sortedSections = sections.sort((a, b) => a.stopValue - b.stopValue);
   const maxValue = sortedSections.slice(-1)[0].stopValue;
   const computedSections: PieChartSection[] = sortedSections.map(s => ({
-    angleTo: valueToAngle(s.stopValue, min, maxValue, minAngle, maxAngle),
+    ...s,
     fillColor: s.backgroundColor,
+    angleTo: valueToAngle(s.stopValue, min, maxValue, minAngle, maxAngle),
   }));
 
   return (
@@ -115,7 +116,7 @@ export function CustomGauge({
         explodeRatio={explodeRatio}
         border={{ color: 'black', size: 4 }}
         className={grow}
-        useGradient={useGradient}
+        blur={blur}
       />
       {displayValue && <Value className={grow} value={value} />}
     </div>

@@ -35,7 +35,7 @@ export default function CustomGaugeTester() {
           holeRatio={values.holeSize}
           explodeRatio={values.explodeSize}
           label={'Simple Custom Gauge'}
-          useGradient={values.useGradient}
+          blur={values.useGradient}
         />
         <CustomGauge
           value={values.value}
@@ -53,7 +53,33 @@ export default function CustomGaugeTester() {
           holeRatio={values.holeSize}
           explodeRatio={values.explodeSize}
           label={'Follow needle gauge'}
-          useGradient={values.useGradient}
+          blur={values.useGradient}
+        />
+        <CustomGauge
+          value={values.value}
+          min={0}
+          sections={[
+            { backgroundColor: '#ff0000', stopValue: 20 },
+            {
+              backgroundColor: '#ff0040',
+              stopValue: 40,
+              border: { color: 'yellow', size: 3 },
+            },
+            { backgroundColor: '#ff0080', stopValue: 60 },
+            {
+              backgroundColor: '#ff00C0',
+              stopValue: 80,
+              border: { color: 'lime', size: 3 },
+            },
+            { backgroundColor: '#ff00E0', stopValue: 100 },
+          ]}
+          minAngle={values.minAngle}
+          maxAngle={values.maxAngle}
+          displayValue
+          holeRatio={values.holeSize}
+          explodeRatio={values.explodeSize}
+          label={'Simple Custom Gauge with some borders'}
+          blur={values.useGradient}
         />
         <CustomGauge
           value={values.value}
@@ -76,16 +102,15 @@ export default function CustomGaugeTester() {
             color: 'blue',
             strokeWidth: 10,
           }}
-          useGradient={values.useGradient}
+          blur={values.useGradient}
         />
         <CustomGauge
           value={values.value}
           min={0}
           sections={[
-            { backgroundColor: 'red', stopValue: 25 },
-            { backgroundColor: 'yellow', stopValue: 50 },
-            { backgroundColor: 'green', stopValue: 75 },
-            { backgroundColor: 'blue', stopValue: 100 },
+            { backgroundColor: 'red', stopValue: 20 },
+            { backgroundColor: 'yellow', stopValue: 80 },
+            { backgroundColor: 'green', stopValue: 100 },
           ]}
           minAngle={values.minAngle}
           maxAngle={values.maxAngle}
@@ -101,7 +126,7 @@ export default function CustomGaugeTester() {
             initAngle: 46,
             sizeRatio: 1.4,
           }}
-          useGradient={values.useGradient}
+          blur={values.useGradient}
         />
         <CustomGauge
           value={values.value}
@@ -134,7 +159,7 @@ export default function CustomGaugeTester() {
               );
             },
           }}
-          useGradient={values.useGradient}
+          blur={values.useGradient}
         />
       </div>
       <div className={cx(grow, autoScroll)}>

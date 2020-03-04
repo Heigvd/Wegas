@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { wwarn, wlog } from '../../Helper/wegaslog';
+import { wwarn } from '../../Helper/wegaslog';
 import { cloneDeep } from 'lodash-es';
 import u from 'immer';
+import { useDeepChanges } from '../Hooks/useDeepChanges';
 
 const viewBox = {
   minX: 0,
@@ -18,7 +19,7 @@ let pieChartId = 0;
 
 // https://stackoverflow.com/questions/18206361/svg-multiple-color-on-circle-stroke
 const generateGradient = (
-  sections: PieChartSection[],
+  sections: ComputedPieChartSection[],
   centerX: number,
   centerY: number,
   radius: number,
@@ -36,18 +37,20 @@ const generateGradient = (
           const stopColor = s.fillColor;
           const holeRadius = chartStyle.radius * (holeRatio / 100);
           const colorRadius = (radius + holeRadius) / 2;
+          const startAngle = (lastSection.minAngle + lastSection.angleTo) / 2;
+          const stopAngle = (s.minAngle + s.angleTo) / 2;
 
           const coord1 = polarToCartesian(
             centerX,
             centerY,
             colorRadius,
-            lastSection.angleTo,
+            startAngle,
           );
           const coord2 = polarToCartesian(
             centerX,
             centerY,
             colorRadius,
-            s.angleTo,
+            stopAngle,
           );
 
           // Create a gradient for this segment
@@ -62,8 +65,8 @@ const generateGradient = (
               y2={coord2.y}
             >
               <stop offset="0%" stopColor={startColor} />
-              <stop offset="33%" stopColor={startColor} />
-              <stop offset="66%" stopColor={stopColor} />
+              {/* <stop offset="25%" stopColor={startColor} />
+              <stop offset="75%" stopColor={stopColor} /> */}
               <stop offset="100%" stopColor={stopColor} />
             </linearGradient>
           );
@@ -157,17 +160,29 @@ const generateLine = (
   ].join(' ');
 };
 
-const svgPieceOfCake = (
-  minAngle: number,
-  maxAngle: number,
-  holeRatio: number,
-  centerX: number,
-  centerY: number,
-  explodeRatio: number = 0,
-  fill?: string,
-  stroke?: string,
-  strokeWidth?: number,
-) => {
+interface SvgPieceOfCakeProps {
+  minAngle: number;
+  maxAngle: number;
+  holeRatio: number;
+  centerX: number;
+  centerY: number;
+  explodeRatio?: number;
+  fill?: string;
+  stroke?: string;
+  strokeWidth?: number;
+}
+
+function SvgPieceOfCake({
+  minAngle,
+  maxAngle,
+  holeRatio,
+  centerX,
+  centerY,
+  explodeRatio = 0,
+  fill,
+  stroke,
+  strokeWidth,
+}: SvgPieceOfCakeProps) {
   const holeRadius = chartStyle.radius * (holeRatio / 100);
   const translate = translationFromAngle(minAngle, maxAngle, explodeRatio);
 
@@ -255,40 +270,109 @@ const svgPieceOfCake = (
       </>
     );
   }
-};
+}
 
-const svgStringOfCake = (
-  minAngle: number,
-  maxAngle: number,
-  holeRatio: number,
-  centerX: number,
-  centerY: number,
-  stroke?: string,
-  explodeRatio: number = 0,
-) => {
-  const holeRadius = chartStyle.radius * (holeRatio / 100);
-  const stringRadius = (holeRadius + chartStyle.radius) / 2;
-  const strokeWidth = (chartStyle.radius - stringRadius) * 2;
+interface SvgBlurredPieceOfCakeProps extends Omit<SvgPieceOfCakeProps, 'fill'> {
+  leftFill?: string;
+  rightFill?: string;
+}
+
+function SvgBlurredPieceOfCake({
+  minAngle,
+  maxAngle,
+  holeRatio,
+  centerX,
+  centerY,
+  explodeRatio = 0,
+  leftFill,
+  rightFill,
+  stroke,
+  strokeWidth,
+}: SvgBlurredPieceOfCakeProps) {
   const translate = translationFromAngle(minAngle, maxAngle, explodeRatio);
-
+  const middleAngle = (minAngle + maxAngle) / 2;
   return (
-    <path
-      stroke={stroke}
-      strokeWidth={strokeWidth}
-      fill="transparent"
-      d={`${generateArc(
-        stringRadius,
-        maxAngle,
-        minAngle,
-        centerX,
-        centerY,
-        0,
-        true,
-      )}`}
-      transform={`translate(${translate.x} ${translate.y})`}
-    />
+    <g transform={`translate(${translate.x} ${translate.y})`}>
+      <SvgPieceOfCake
+        centerX={centerX}
+        centerY={centerY}
+        holeRatio={holeRatio}
+        maxAngle={middleAngle}
+        minAngle={minAngle}
+        fill={leftFill}
+      />
+      <SvgPieceOfCake
+        centerX={centerX}
+        centerY={centerY}
+        holeRatio={holeRatio}
+        maxAngle={maxAngle}
+        minAngle={middleAngle}
+        fill={rightFill}
+      />
+      {(stroke || strokeWidth) && (
+        <SvgPieceOfCake
+          centerX={centerX}
+          centerY={centerY}
+          holeRatio={holeRatio}
+          maxAngle={maxAngle}
+          minAngle={minAngle}
+          stroke={stroke}
+          strokeWidth={strokeWidth}
+        />
+      )}
+    </g>
   );
-};
+}
+
+// function SvgStringOfCake({
+//   minAngle,
+//   maxAngle,
+//   holeRatio,
+//   centerX,
+//   centerY,
+//   fill,
+//   explodeRatio = 0,
+//   stroke,
+//   strokeWidth,
+// }: SvgPieceOfCakeProps) {
+//   const holeRadius = chartStyle.radius * (holeRatio / 100);
+//   const stringRadius = (holeRadius + chartStyle.radius) / 2;
+//   const stringWidth = (chartStyle.radius - stringRadius) * 2;
+//   const translate = translationFromAngle(minAngle, maxAngle, explodeRatio);
+
+//   return (
+//     <>
+//       <path
+//         stroke={fill}
+//         strokeWidth={stringWidth}
+//         fill="transparent"
+//         d={`${generateArc(
+//           stringRadius,
+//           maxAngle,
+//           minAngle,
+//           centerX,
+//           centerY,
+//           0,
+//           true,
+//         )}`}
+//         transform={`translate(${translate.x} ${translate.y})`}
+//       />
+//       {(stroke != null || strokeWidth != null) && (
+//         <SvgPieceOfCake
+//           centerX={centerX}
+//           centerY={centerY}
+//           explodeRatio={explodeRatio}
+//           holeRatio={holeRatio}
+//           maxAngle={maxAngle}
+//           minAngle={minAngle}
+//           fill="transparent"
+//           stroke={stroke}
+//           strokeWidth={strokeWidth}
+//         />
+//       )}
+//     </>
+//   );
+// }
 
 export interface SimpleNeedleStyle {
   '@class': 'SimpleNeedle';
@@ -328,61 +412,79 @@ export interface SVGNeedleStyle {
 
 export type NeedleStyle = SimpleNeedleStyle | ImageNeedleStyle | SVGNeedleStyle;
 
-const svgNeedle = (
-  { needle, needleStyle = { '@class': 'SimpleNeedle' } }: NeedleProps,
-  centerX: number,
-  centerY: number,
-  holeRatio: number = 50,
-  explodeRatio: number = 0,
-) => {
+function SvgNeedle({
+  needleCfg,
+  centerX,
+  centerY,
+  holeRatio = 50,
+  explodeRatio = 0,
+}: {
+  needleCfg: NeedleProps;
+  centerX: number;
+  centerY: number;
+  holeRatio: number;
+  explodeRatio: number;
+}) {
+  const { needle, needleStyle } = needleCfg;
   const holeRadius = chartStyle.radius * (holeRatio / 100);
   const translate = translationFromAngle(needle, undefined, explodeRatio);
-  switch (needleStyle['@class']) {
-    case 'SimpleNeedle':
-      return (
-        <path
-          stroke={needleStyle.color ? needleStyle.color : 'black'}
-          strokeWidth={
-            needleStyle.strokeWidth != null ? needleStyle.strokeWidth : 4
-          }
-          d={generateLine(holeRadius, needle, centerX, centerY, true)}
-          transform={`translate(${translate.x} ${translate.y})`}
-        />
-      );
-    case 'ImageNeedle': {
-      const initAngle =
-        needleStyle.initAngle == null ? 0 : needleStyle.initAngle;
-      const sizeRatio =
-        needleStyle.sizeRatio == null ? 1 : needleStyle.sizeRatio;
-      const width = needleStyle.width * sizeRatio;
-      const height = needleStyle.height * sizeRatio;
-      const x = centerX - width / 2;
-      const y = centerY - height / 2;
+  if (!needleStyle) {
+    return (
+      <path
+        stroke="black"
+        strokeWidth={4}
+        d={generateLine(holeRadius, needle, centerX, centerY, true)}
+        transform={`translate(${translate.x} ${translate.y})`}
+      />
+    );
+  } else {
+    switch (needleStyle['@class']) {
+      case 'SimpleNeedle':
+        return (
+          <path
+            stroke={needleStyle.color ? needleStyle.color : 'black'}
+            strokeWidth={
+              needleStyle.strokeWidth != null ? needleStyle.strokeWidth : 4
+            }
+            d={generateLine(holeRadius, needle, centerX, centerY, true)}
+            transform={`translate(${translate.x} ${translate.y})`}
+          />
+        );
+      case 'ImageNeedle': {
+        const initAngle =
+          needleStyle.initAngle == null ? 0 : needleStyle.initAngle;
+        const sizeRatio =
+          needleStyle.sizeRatio == null ? 1 : needleStyle.sizeRatio;
+        const width = needleStyle.width * sizeRatio;
+        const height = needleStyle.height * sizeRatio;
+        const x = centerX - width / 2;
+        const y = centerY - height / 2;
 
-      return (
-        <image
-          href={needleStyle.src}
-          x={x}
-          y={y}
-          width={width}
-          height={height}
-          transform={`rotate(${initAngle + needle},${centerX},${centerY})`}
-        />
-      );
-    }
-    case 'SVGNeedle': {
-      return needleStyle.svg(
-        centerX,
-        centerY,
-        needle,
-        chartStyle.radius,
-        holeRadius,
-        translate.x,
-        translate.y,
-      );
+        return (
+          <image
+            href={needleStyle.src}
+            x={x}
+            y={y}
+            width={width}
+            height={height}
+            transform={`rotate(${initAngle + needle},${centerX},${centerY})`}
+          />
+        );
+      }
+      case 'SVGNeedle': {
+        return needleStyle.svg(
+          centerX,
+          centerY,
+          needle,
+          chartStyle.radius,
+          holeRadius,
+          translate.x,
+          translate.y,
+        );
+      }
     }
   }
-};
+}
 
 const filterSections = (
   sections: ComputedPieChartSection[],
@@ -548,8 +650,7 @@ interface PieChartState {
   explodeRatio: number;
   sections: ComputedPieChartSection[];
   filteredSections: ComputedPieChartSection[];
-  bluredSections: ComputedPieChartSection[];
-  filteredbluredSections: ComputedPieChartSection[];
+  blurredSections: ComputedPieChartSection[];
   chartSizes: {
     width: number;
     height: number;
@@ -584,11 +685,6 @@ interface FilterSectionsAction {
   sections: ComputedPieChartSection[];
   needleCfg?: NeedleProps;
 }
-interface FilterBluredSectionsAction {
-  type: 'FILTER_BLURED_SECTIONS';
-  sections: ComputedPieChartSection[];
-  needleCfg?: NeedleProps;
-}
 interface ChartSizesAction {
   type: 'CHART_SIZES';
   minAngle: number;
@@ -597,7 +693,7 @@ interface ChartSizesAction {
 }
 interface GradientAction {
   type: 'GRADIENT';
-  bluredSections: ComputedPieChartSection[];
+  blurredSections: ComputedPieChartSection[];
   centerX: number;
   centerY: number;
   holeRatio: number;
@@ -608,12 +704,11 @@ type PieChartStateAction =
   | ExplodeRatioAction
   | SectionsAction
   | FilterSectionsAction
-  | FilterBluredSectionsAction
   | ChartSizesAction
   | GradientAction;
 
 /**
- * setLibraryState - the reducer for libraries management
+ * setPieChartState - the reducer for piechart management
  */
 const setPieChartState = (
   oldState: PieChartState,
@@ -621,10 +716,6 @@ const setPieChartState = (
 ) =>
   u(oldState, oldState => {
     switch (action.type) {
-      // case 'MIN_ANGLE': {
-      //   oldState.minAngle = boundedValue(action.minAngle, -360, 360);
-      //   break;
-      // }
       case 'HOLE_RATIO': {
         oldState.holeRatio = boundedValue(action.holeRatio, 0, 100);
         break;
@@ -658,15 +749,15 @@ const setPieChartState = (
         }));
         oldState.sections = computedSections;
 
-        // Prepare variables for blured sections
-        let bluredSections: ComputedPieChartSection[] = [];
+        // Prepare variables for blurred sections
+        let blurredSections: ComputedPieChartSection[] = [];
         const firstSection = computedSections[0];
         const lastSection = computedSections[computedSections.length - 1];
         const angleShift =
           (firstSection.minAngle + firstSection.angleTo) / 2 -
           firstSection.minAngle;
         // Shift the sections clockwise in order to display color gradient at the good position
-        bluredSections = [
+        blurredSections = [
           ...computedSections.map((s, i) =>
             i === 0
               ? {
@@ -687,20 +778,12 @@ const setPieChartState = (
             border: lastSection.border,
           },
         ];
-        oldState.bluredSections = bluredSections;
+        oldState.blurredSections = blurredSections;
         break;
       }
       case 'FILTER_SECTIONS': {
         //Filter the sections if follow needle is active
         oldState.filteredSections = filterSections(
-          action.sections,
-          action.needleCfg,
-        );
-        break;
-      }
-      case 'FILTER_BLURED_SECTIONS': {
-        //Filter the sections if follow needle is active
-        oldState.filteredbluredSections = filterSections(
           action.sections,
           action.needleCfg,
         );
@@ -718,7 +801,7 @@ const setPieChartState = (
       case 'GRADIENT': {
         //Filter the sections if follow needle is active
         oldState.gradient = generateGradient(
-          action.bluredSections,
+          action.blurredSections,
           action.centerX,
           action.centerY,
           chartStyle.radius,
@@ -756,9 +839,9 @@ export interface PieChartProps {
    */
   explodeRatio?: number;
   /**
-   * useGradient - blur the color sections
+   * blur - blur the color sections
    */
-  useGradient?: boolean;
+  blur?: boolean;
   /**
    * className - the class of the div around the pie chart
    */
@@ -769,35 +852,44 @@ export function PieChart({
   minAngle,
   sections,
   border,
-  useGradient,
+  blur,
   needleCfg,
   holeRatio = 50,
   explodeRatio = 0,
   className,
 }: PieChartProps) {
-  const [pieChartState, dispatchStateAction] = React.useReducer(
-    setPieChartState,
+  const [
     {
-      minAngle: 0,
-      maxAngle: 1,
-      holeRatio: 0,
-      explodeRatio: 0,
-      sections: [],
-      filteredSections: [],
-      bluredSections: [],
-      filteredbluredSections: [],
-      chartSizes: {
-        width: viewBox.width,
-        height: viewBox.height,
-        centerX: viewBox.width / 2,
-        centerY: viewBox.height,
-      },
-      gradient: {
-        gradients: [],
-        currentId: '',
-      },
+      minAngle: computedMinAngle,
+      maxAngle: computedMaxAngle,
+      holeRatio: computedHoleRatio,
+      explodeRatio: computedExplodeRatio,
+      sections: computedSections,
+      blurredSections,
+      filteredSections,
+      chartSizes,
+      gradient,
     },
-  );
+    dispatchStateAction,
+  ] = React.useReducer(setPieChartState, {
+    minAngle: 0,
+    maxAngle: 1,
+    holeRatio: 0,
+    explodeRatio: 0,
+    sections: [],
+    filteredSections: [],
+    blurredSections: [],
+    chartSizes: {
+      width: viewBox.width,
+      height: viewBox.height,
+      centerX: viewBox.width / 2,
+      centerY: viewBox.height,
+    },
+    gradient: {
+      gradients: [],
+      currentId: '',
+    },
+  });
 
   if (needleCfg != null && explodeRatio > 0) {
     wwarn(
@@ -806,156 +898,121 @@ export function PieChart({
     );
   }
 
-  // Verify values
-  const computedMinAngle = boundedValue(minAngle, -360, 360);
-  const computedHoleRatio = boundedValue(holeRatio, 0, 100);
-  const computedExplodeRatio = boundedValue(explodeRatio, 0);
+  React.useEffect(() => {
+    dispatchStateAction({ type: 'HOLE_RATIO', holeRatio });
+  }, [holeRatio]);
+
+  React.useEffect(() => {
+    dispatchStateAction({ type: 'EXPLODE_RATIO', explodeRatio });
+  }, [explodeRatio]);
+
+  React.useEffect(() => {
+    dispatchStateAction({ type: 'SECTIONS', minAngle, sections });
+  }, [minAngle, sections]);
+
+  useDeepChanges(
+    {
+      type: 'FILTER_SECTIONS',
+      sections: computedSections,
+      needleCfg,
+    },
+    dispatchStateAction,
+  );
+
+  useDeepChanges(
+    {
+      type: 'CHART_SIZES',
+      explodeRatio: computedExplodeRatio,
+      maxAngle: computedMaxAngle,
+      minAngle: computedMinAngle,
+    },
+    dispatchStateAction,
+  );
+
+  useDeepChanges(
+    {
+      type: 'GRADIENT',
+      // blurredSections,
+      blurredSections: computedSections,
+      centerX: chartSizes.centerX,
+      centerY: chartSizes.centerY,
+      holeRatio: computedHoleRatio,
+    },
+    dispatchStateAction,
+  );
 
   // Avoid 0 section
   if (sections.length === 0) {
     return <pre>{`At least one section must be set in the PieChart`}</pre>;
   }
-
-  // Generate slices
-  let computedSections = sections
-    .sort((a, b) => a.angleTo - b.angleTo)
-    .map((s, i, a) => ({
-      ...s,
-      minAngle: i === 0 ? computedMinAngle : a[i - 1].angleTo,
-    }));
-
-  // Compute values
-  const maxAngle = computedSections.slice(-1)[0].angleTo;
-
-  // Avoid anti-clockwise chart
-  if (maxAngle <= minAngle) {
+  // Avoid counter clockwise data
+  if (computedMaxAngle <= computedMinAngle) {
     return (
-      <pre>{`Max angle [${maxAngle}] should be greater than min angle [${minAngle}]`}</pre>
+      <pre>{`Max angle [${computedMaxAngle}] should be greater than min angle [${computedMinAngle}]`}</pre>
     );
   }
 
-  // If max angle is greater than 360, rationalize section angles
-  const deltaAngle = maxAngle - minAngle;
-  const angleRatio = deltaAngle > 360 ? 360 / deltaAngle : 1;
-  const computedMaxAngle = deltaAngle > 360 ? minAngle + 360 : maxAngle;
-  computedSections = computedSections.map(s => ({
-    ...s,
-    minAngle: s.minAngle * angleRatio,
-    angleTo: s.angleTo * angleRatio,
-  }));
-
-  //Filter the sections if follow needle is active
-  const filteredSections = filterSections(computedSections, needleCfg);
-
-  let bluredSections: ComputedPieChartSection[] = [];
-  const firstSection = computedSections[0];
-  const lastSection = computedSections[computedSections.length - 1];
-  const angleShift =
-    (firstSection.minAngle + firstSection.angleTo) / 2 - firstSection.minAngle;
-  bluredSections = [
-    ...computedSections.map((s, i) =>
-      i === 0
-        ? {
-            ...s,
-            minAngle: s.minAngle,
-            angleTo: s.minAngle + angleShift,
-          }
-        : {
-            ...s,
-            minAngle: s.minAngle - angleShift,
-            angleTo: s.angleTo - angleShift,
-          },
-    ),
-    {
-      angleTo: maxAngle,
-      fillColor: lastSection.fillColor,
-      minAngle: maxAngle - angleShift,
-      border: lastSection.border,
-    },
-  ];
-
-  const filteredBlurSections = filterSections(bluredSections, needleCfg);
-
-  // Compute viewbox and center values to keep the chart centered in the viewbox
-  const { width, height, centerX, centerY } = computedHeights(
-    minAngle,
-    computedMaxAngle,
-    explodeRatio,
-  );
-
-  // if (needleCfg && needleCfg.followNeedle) {
-  //   wlog('computedSections');
-  //   wlog(computedSections);
-  //   wlog('bluredSections');
-  //   wlog(bluredSections);
-  //   wlog('filteredBlurSections');
-  //   wlog(filteredBlurSections);
-  //   wlog('needleCfg');
-  //   wlog(needleCfg);
-  // }
-
-  const { gradients, currentId: id } = generateGradient(
-    bluredSections,
-    centerX,
-    centerY,
-    chartStyle.radius,
-    computedHoleRatio,
-  );
-
   return (
     <div className={className}>
-      <svg viewBox={`0 0 ${width} ${height}`}>
-        {useGradient && <defs>{gradients}</defs>}
-        {filteredSections.map(s =>
-          svgPieceOfCake(
-            s.minAngle,
-            s.angleTo,
-            computedHoleRatio,
-            centerX,
-            centerY,
-            explodeRatio,
-            s.fillColor,
-            s.border
-              ? s.border.color
-              : computedExplodeRatio > 0
-              ? border?.color
-              : undefined,
-            s.border
-              ? s.border.size
-              : computedExplodeRatio > 0
-              ? border?.size
-              : undefined,
-          ),
+      <svg viewBox={`0 0 ${chartSizes.width} ${chartSizes.height}`}>
+        {blur && <defs>{gradient.gradients}</defs>}
+        {blur
+          ? filteredSections.map((s, i, a) => (
+              <SvgBlurredPieceOfCake
+                key={JSON.stringify(s)}
+                centerX={chartSizes.centerX}
+                centerY={chartSizes.centerY}
+                explodeRatio={computedExplodeRatio}
+                holeRatio={computedHoleRatio}
+                minAngle={s.minAngle}
+                maxAngle={s.angleTo}
+                leftFill={
+                  i === 0 ? s.fillColor : `Url(#${gradient.currentId + i})`
+                }
+                rightFill={
+                  i === a.length - 1
+                    ? s.fillColor
+                    : `Url(#${gradient.currentId + (i + 1)})`
+                }
+                stroke={s.border?.color}
+                strokeWidth={s.border?.size}
+              />
+            ))
+          : filteredSections.map(s => (
+              <SvgPieceOfCake
+                key={JSON.stringify(s)}
+                centerX={chartSizes.centerX}
+                centerY={chartSizes.centerY}
+                explodeRatio={computedExplodeRatio}
+                holeRatio={computedHoleRatio}
+                minAngle={s.minAngle}
+                maxAngle={s.angleTo}
+                fill={s.fillColor}
+                stroke={s.border?.color}
+                strokeWidth={s.border?.size}
+              />
+            ))}
+        {border && computedExplodeRatio === 0 && (
+          <SvgPieceOfCake
+            centerX={chartSizes.centerX}
+            centerY={chartSizes.centerY}
+            explodeRatio={computedExplodeRatio}
+            holeRatio={computedHoleRatio}
+            minAngle={computedMinAngle}
+            maxAngle={computedMaxAngle}
+            stroke={border.color}
+            strokeWidth={border.size}
+          />
         )}
-        {useGradient &&
-          filteredBlurSections.map((s, i) =>
-            svgStringOfCake(
-              s.minAngle,
-              s.angleTo,
-              computedHoleRatio,
-              centerX,
-              centerY,
-              i === 0 || i === bluredSections.length - 1
-                ? s.fillColor
-                : `Url(#${id + i})`,
-              computedExplodeRatio,
-            ),
-          )}
-        {border &&
-          computedExplodeRatio === 0 &&
-          svgPieceOfCake(
-            computedMinAngle,
-            maxAngle,
-            computedHoleRatio,
-            centerX,
-            centerY,
-            undefined,
-            undefined,
-            border.color,
-            border.size,
-          )}
-        {needleCfg &&
-          svgNeedle(needleCfg, centerX, centerY, holeRatio, explodeRatio)}
+        {needleCfg && (
+          <SvgNeedle
+            centerX={chartSizes.centerX}
+            centerY={chartSizes.centerY}
+            explodeRatio={computedExplodeRatio}
+            holeRatio={computedHoleRatio}
+            needleCfg={needleCfg}
+          />
+        )}
       </svg>
     </div>
   );
