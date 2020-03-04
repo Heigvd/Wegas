@@ -484,8 +484,8 @@ public class RequestManager implements RequestManagerI {
     @Override
     public User getCurrentUser() {
         if (this.currentUser == null || currentPrincipal == null) {
-        final Subject subject = SecurityUtils.getSubject();
-        Long principal = (Long) subject.getPrincipal();
+            final Subject subject = SecurityUtils.getSubject();
+            Long principal = (Long) subject.getPrincipal();
             this.clearPermissions();
             try {
                 if (subject.isRemembered() || subject.isAuthenticated()) {
@@ -1573,16 +1573,20 @@ public class RequestManager implements RequestManagerI {
 
     private boolean isTrainerForUser(WegasIsTrainerForUser perm) {
         User self = this.getCurrentUser();
-        Long userId = perm.getUserId();
+        if (self != null) {
+            Long userId = perm.getUserId();
 
-        Query query = getEntityManager().createNamedQuery("Player.IsTrainerForUser");
+            Query query = getEntityManager().createNamedQuery("Player.IsTrainerForUser");
 
-        query.setParameter(1, userId);
-        query.setParameter(2, self.getId());
+            query.setParameter(1, userId);
+            query.setParameter(2, self.getId());
 
-        List results = query.getResultList();
+            List results = query.getResultList();
 
-        return !results.isEmpty();
+            return !results.isEmpty();
+        } else {
+            return false;
+        }
     }
 
     /**

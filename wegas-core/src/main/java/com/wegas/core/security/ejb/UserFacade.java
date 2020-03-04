@@ -11,6 +11,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.exception.client.WegasAccessDenied;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
@@ -126,7 +127,11 @@ public class UserFacade extends BaseFacade<User> {
      * @return true is username is already in use
      */
     public boolean checkExistingUsername(String username) {
-        return this.getUserByUsername(username) != null;
+        try {
+            return this.getUserByUsername(username) != null;
+        } catch (RuntimeException ex) {
+            return true;
+        }
     }
 
     /**
@@ -227,6 +232,8 @@ public class UserFacade extends BaseFacade<User> {
                     user = new User(account);
                     this.create(user);
                     return user;
+                } catch (RuntimeException ex) {
+                    throw new WegasConflictException("email");
                 }
             }
         } else {
