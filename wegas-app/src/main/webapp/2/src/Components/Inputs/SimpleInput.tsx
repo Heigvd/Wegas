@@ -22,6 +22,10 @@ export interface InputProps<T> {
    */
   onChange?: (value: T) => void;
   /**
+   * label - the current label of the input
+   */
+  label?: string;
+  /**
    * disabled - disable the component
    */
   disabled?: boolean;

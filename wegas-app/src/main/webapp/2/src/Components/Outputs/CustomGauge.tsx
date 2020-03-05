@@ -66,6 +66,10 @@ export interface CustomGaugeProps {
    */
   displayValue?: boolean;
   /**
+   * paddingRatio - the proportional size of the internal margin (from 0 to 1)
+   */
+  paddingRatio?: number;
+  /**
    * holeSize - the proportion of the hole in the center of the gauge (from 0 to 100)
    */
   holeRatio?: number;
@@ -89,6 +93,7 @@ export function CustomGauge({
   displayValue,
   minAngle,
   maxAngle,
+  paddingRatio,
   holeRatio = 50,
   explodeRatio = 0,
   blur,
@@ -112,6 +117,7 @@ export function CustomGauge({
         }}
         minAngle={minAngle}
         sections={computedSections}
+        paddingRatio={paddingRatio}
         holeRatio={holeRatio}
         explodeRatio={explodeRatio}
         border={{ color: 'black', size: 4 }}

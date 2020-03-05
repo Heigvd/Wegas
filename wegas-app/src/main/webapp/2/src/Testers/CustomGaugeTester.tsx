@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { CustomGauge } from '../Components/Outputs/CustomGauge';
 import { expandBoth, flex, grow, flexRow, autoScroll } from '../css/classes';
-import { cx, css } from 'emotion';
+import { cx } from 'emotion';
 import { NumberSlider } from '../Components/Inputs/Number/NumberSlider';
 import { degreeToRadian } from '../Components/Outputs/PieChart';
 import { Toggler } from '../Components/Inputs/Boolean/Toggler';
@@ -10,7 +10,7 @@ export default function CustomGaugeTester() {
   const [values, setValues] = React.useState({
     minAngle: 15,
     maxAngle: 165,
-    holeSize: 70,
+    holeSize: 0.7,
     explodeSize: 0,
     value: 50,
     useGradient: true,
@@ -124,9 +124,10 @@ export default function CustomGaugeTester() {
             width: 239,
             height: 242,
             initAngle: 46,
-            sizeRatio: 1.4,
+            sizeRatio: 4.6,
           }}
           blur={values.useGradient}
+          paddingRatio={0.3}
         />
         <CustomGauge
           value={values.value}
@@ -169,8 +170,7 @@ export default function CustomGaugeTester() {
           max={100}
           value={values.value}
           onChange={v => setValues(ov => ({ ...ov, value: v }))}
-          displayValues="Internal"
-          numberInput
+          displayValues="NumberInput"
         />
         <NumberSlider
           label="Min angle"
@@ -189,8 +189,7 @@ export default function CustomGaugeTester() {
                   : ov.maxAngle,
             }))
           }
-          displayValues="Internal"
-          numberInput
+          displayValues="NumberInput"
         />
         <NumberSlider
           label="Max angle"
@@ -198,26 +197,23 @@ export default function CustomGaugeTester() {
           max={values.minAngle + 360}
           value={values.maxAngle}
           onChange={v => setValues(ov => ({ ...ov, maxAngle: v }))}
-          displayValues="Internal"
-          numberInput
+          displayValues="NumberInput"
         />
         <NumberSlider
           label="Hole ratio"
           min={0}
-          max={100}
+          max={1}
           value={values.holeSize}
           onChange={v => setValues(ov => ({ ...ov, holeSize: v }))}
-          displayValues="Internal"
-          numberInput
+          displayValues="NumberInput"
         />
         <NumberSlider
           label="Explode ratio"
           min={0}
-          max={200}
+          max={2}
           value={values.explodeSize}
           onChange={v => setValues(ov => ({ ...ov, explodeSize: v }))}
-          displayValues="Internal"
-          numberInput
+          displayValues="NumberInput"
         />
         <Toggler
           label="Use gradient"

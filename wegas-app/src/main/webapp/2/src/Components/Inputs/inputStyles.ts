@@ -10,6 +10,7 @@ export const inputStyle = css({
   ...inputDefaultCSS,
   resize: 'vertical',
   borderStyle: 'thin solid',
+  borderColor: themeVar.primaryLighterColor,
   borderRadius: themeVar.borderRadius,
   '::placeholder': {
     fontStyle: 'italic',

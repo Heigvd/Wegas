@@ -3,8 +3,9 @@ import { debounce } from 'lodash-es';
 import { themeVar } from '../../Theme';
 import { cx, css } from 'emotion';
 import { flex } from '../../../css/classes';
-import { checkMinMax } from './numberComponentHelper';
+import { CheckMinMax } from './numberComponentHelper';
 import { InputProps } from '../SimpleInput';
+import { Value } from '../../Outputs/Value';
 
 const numberSquareStyle = css({
   borderColor: themeVar.disabledColor,
@@ -91,6 +92,7 @@ export function NumberBox({
   minValue,
   maxValue,
   onChange,
+  label,
   disabled,
   readOnly,
   activeClassName,
@@ -114,15 +116,6 @@ export function NumberBox({
     [onChange],
   );
 
-  const minMaxCheck = checkMinMax(
-    computedMinValue,
-    computedMaxValue,
-    currentValue,
-  );
-  if (minMaxCheck !== undefined) {
-    return minMaxCheck;
-  }
-
   const squares: JSX.Element[] = [];
 
   for (let i = computedMinValue; i <= computedMaxValue; ++i) {
@@ -145,6 +138,12 @@ export function NumberBox({
 
   return (
     <div id={id} className={className ? className : flex}>
+      {label && <Value value={label} />}
+      <CheckMinMax
+        min={computedMinValue}
+        max={computedMaxValue}
+        value={currentValue}
+      />
       {squares}
     </div>
   );

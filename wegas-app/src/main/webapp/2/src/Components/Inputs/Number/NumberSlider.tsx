@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Interpolation, css } from 'emotion';
 import Slider from 'react-input-slider';
 import { textCenter } from '../../../css/classes';
-import { checkMinMax } from './numberComponentHelper';
+import { CheckMinMax } from './numberComponentHelper';
 import { themeVar } from '../../Theme';
 import { Value } from '../../Outputs/Value';
 import { InputProps } from '../SimpleInput';
@@ -33,10 +33,6 @@ export interface NumberSliderProps extends InputProps<number> {
    * min - the minimum value to slide (0 by default)
    */
   min: number;
-  /**
-   * label - the current label of the slider
-   */
-  label?: string;
   /**
    * steps - the number of steps between min and max value. 100 by default.
    */
@@ -108,11 +104,6 @@ export function NumberSlider({
     [onChange, readOnly],
   );
 
-  const minMaxCheck = checkMinMax(min, max, internalValue);
-  if (minMaxCheck !== undefined) {
-    return minMaxCheck;
-  }
-
   const Info = () => {
     let display;
     if (displayValues == null) {
@@ -150,6 +141,7 @@ export function NumberSlider({
   return (
     <div id={id} className={className ? className : textCenter}>
       {label && <Value value={label} />}
+      <CheckMinMax min={min} max={max} value={internalValue} />
       <Info />
       <Slider
         styles={{

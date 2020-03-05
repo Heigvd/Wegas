@@ -1,11 +1,17 @@
 import * as React from 'react';
 import { MessageString } from '../../../Editor/Components/MessageString';
 
-export function checkMinMax(
-  min?: number,
-  max?: number,
-  value?: number,
-): JSX.Element | void {
+interface CheckMinMaxProps {
+  min?: number;
+  max?: number;
+  value?: number;
+}
+
+export function CheckMinMax({
+  min,
+  max,
+  value,
+}: CheckMinMaxProps): JSX.Element | null {
   if (min === undefined) {
     return <MessageString value={`Min value is undefined`} type={'error'} />;
   }
@@ -39,4 +45,5 @@ export function checkMinMax(
       />
     );
   }
+  return null;
 }

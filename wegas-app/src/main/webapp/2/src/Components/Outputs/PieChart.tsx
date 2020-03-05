@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { wwarn, wlog } from '../../Helper/wegaslog';
+import { wwarn } from '../../Helper/wegaslog';
 import { cloneDeep } from 'lodash-es';
 import u from 'immer';
 import { useDeepChanges } from '../Hooks/useDeepChanges';
@@ -7,12 +7,8 @@ import { useDeepChanges } from '../Hooks/useDeepChanges';
 const viewBox = {
   minX: 0,
   minY: 0,
-  width: 2000,
-  height: 2000,
-};
-
-const chartStyle = {
-  radius: 900,
+  size: 2000,
+  initPaddingRatio: 0.1,
 };
 
 let pieChartId = 0;
@@ -23,8 +19,8 @@ const generateGradient = (
   sections: ComputedPieChartSection[],
   centerX: number,
   centerY: number,
-  radius: number,
-  holeRatio: number,
+  startRadius: number,
+  stopRadius: number,
 ) => {
   const newPieChartId = `pie-grad-${pieChartId++}-`;
   return {
@@ -33,8 +29,7 @@ const generateGradient = (
         const lastSection = i === 0 ? a[a.length - 1] : a[i - 1];
         const startColor = lastSection.fillColor;
         const stopColor = s.fillColor;
-        const holeRadius = chartStyle.radius * (holeRatio / 100);
-        const colorRadius = (radius + holeRadius) / 2;
+        const colorRadius = (startRadius + stopRadius) / 2;
         const lastDelta = (lastSection.angleTo - lastSection.minAngle) / 2;
         const currentDelta = (s.angleTo - s.minAngle) / 2;
         const minDelta = Math.min(lastDelta, currentDelta);
@@ -96,11 +91,12 @@ const polarToCartesian = (
 };
 
 const translationFromAngle = (
+  radius: number,
   minAngle: number,
   maxAngle: number = minAngle,
   explodeRatio: number = 0,
 ) => {
-  const explodeRadius = chartStyle.radius * (explodeRatio / 100);
+  const explodeRadius = radius * explodeRatio;
   return {
     x: Math.cos(degreeToRadian((maxAngle + minAngle) / 2)) * explodeRadius,
     y: Math.sin(degreeToRadian((maxAngle + minAngle) / 2)) * explodeRadius,
@@ -144,14 +140,15 @@ function generateArc(
 }
 
 const generateLine = (
-  radius: number,
+  startRadius: number,
+  stopRadius: number,
   angle: number,
   centerX: number,
   centerY: number,
   startCoordinates?: boolean,
 ) => {
-  const start = polarToCartesian(centerX, centerY, chartStyle.radius, angle);
-  const end = polarToCartesian(centerX, centerY, radius, angle);
+  const start = polarToCartesian(centerX, centerY, startRadius, angle);
+  const end = polarToCartesian(centerX, centerY, stopRadius, angle);
 
   return [
     ...(startCoordinates ? ['M', start.x, start.y] : []),
@@ -164,9 +161,10 @@ const generateLine = (
 interface SvgPieceOfCakeProps {
   minAngle: number;
   maxAngle: number;
-  holeRatio: number;
   centerX: number;
   centerY: number;
+  startRadius: number;
+  stopRadius: number;
   explodeRatio?: number;
   fill?: string;
   stroke?: string;
@@ -176,16 +174,21 @@ interface SvgPieceOfCakeProps {
 function SvgPieceOfCake({
   minAngle,
   maxAngle,
-  holeRatio,
   centerX,
   centerY,
+  startRadius,
+  stopRadius,
   explodeRatio = 0,
   fill,
   stroke,
   strokeWidth,
 }: SvgPieceOfCakeProps) {
-  const holeRadius = chartStyle.radius * (holeRatio / 100);
-  const translate = translationFromAngle(minAngle, maxAngle, explodeRatio);
+  const translate = translationFromAngle(
+    stopRadius,
+    minAngle,
+    maxAngle,
+    explodeRatio,
+  );
   const deltaAngle = maxAngle - minAngle;
   const computedMaxAngle = minAngle + deltaAngle / 2;
   // As it's impossible to draw a circle with an arc beacause the start and end points will overlapse,
@@ -199,7 +202,7 @@ function SvgPieceOfCake({
         fillRule="evenodd"
         d={`
             ${generateArc(
-              chartStyle.radius,
+              stopRadius,
               computedMaxAngle,
               minAngle,
               centerX,
@@ -208,7 +211,7 @@ function SvgPieceOfCake({
               true,
             )}
             ${generateArc(
-              chartStyle.radius,
+              stopRadius,
               maxAngle,
               computedMaxAngle,
               centerX,
@@ -216,7 +219,7 @@ function SvgPieceOfCake({
               false,
             )}
             ${generateArc(
-              holeRadius,
+              startRadius,
               computedMaxAngle,
               minAngle,
               centerX,
@@ -225,7 +228,7 @@ function SvgPieceOfCake({
               true,
             )}
             ${generateArc(
-              holeRadius,
+              startRadius,
               maxAngle,
               computedMaxAngle,
               centerX,
@@ -245,7 +248,7 @@ function SvgPieceOfCake({
         fillRule="evenodd"
         d={`
                   ${generateArc(
-                    chartStyle.radius,
+                    stopRadius,
                     maxAngle,
                     minAngle,
                     centerX,
@@ -253,9 +256,15 @@ function SvgPieceOfCake({
                     false,
                     true,
                   )}
-                  ${generateLine(holeRadius, minAngle, centerX, centerY)}
+                  ${generateLine(
+                    stopRadius,
+                    startRadius,
+                    minAngle,
+                    centerX,
+                    centerY,
+                  )}
                   ${generateArc(
-                    holeRadius,
+                    startRadius,
                     maxAngle,
                     minAngle,
                     centerX,
@@ -279,9 +288,10 @@ interface SvgBlurredPieceOfCakeProps extends Omit<SvgPieceOfCakeProps, 'fill'> {
 function SvgBlurredPieceOfCake({
   minAngle,
   maxAngle,
-  holeRatio,
   centerX,
   centerY,
+  startRadius,
+  stopRadius,
   explodeRatio = 0,
   leftFill,
   rightFill,
@@ -289,7 +299,12 @@ function SvgBlurredPieceOfCake({
   stroke,
   strokeWidth,
 }: SvgBlurredPieceOfCakeProps) {
-  const translate = translationFromAngle(minAngle, maxAngle, explodeRatio);
+  const translate = translationFromAngle(
+    stopRadius,
+    minAngle,
+    maxAngle,
+    explodeRatio,
+  );
   let middleAngle = (originalSection.angleTo + originalSection.minAngle) / 2;
   const secondPart = maxAngle > middleAngle;
   middleAngle = secondPart ? middleAngle : maxAngle;
@@ -298,7 +313,8 @@ function SvgBlurredPieceOfCake({
       <SvgPieceOfCake
         centerX={centerX}
         centerY={centerY}
-        holeRatio={holeRatio}
+        startRadius={startRadius}
+        stopRadius={stopRadius}
         maxAngle={middleAngle}
         minAngle={minAngle}
         fill={leftFill}
@@ -307,7 +323,8 @@ function SvgBlurredPieceOfCake({
         <SvgPieceOfCake
           centerX={centerX}
           centerY={centerY}
-          holeRatio={holeRatio}
+          startRadius={startRadius}
+          stopRadius={stopRadius}
           maxAngle={maxAngle}
           minAngle={middleAngle}
           fill={rightFill}
@@ -317,7 +334,8 @@ function SvgBlurredPieceOfCake({
         <SvgPieceOfCake
           centerX={centerX}
           centerY={centerY}
-          holeRatio={holeRatio}
+          startRadius={startRadius}
+          stopRadius={stopRadius}
           maxAngle={maxAngle}
           minAngle={minAngle}
           stroke={stroke}
@@ -327,56 +345,6 @@ function SvgBlurredPieceOfCake({
     </g>
   );
 }
-
-// function SvgStringOfCake({
-//   minAngle,
-//   maxAngle,
-//   holeRatio,
-//   centerX,
-//   centerY,
-//   fill,
-//   explodeRatio = 0,
-//   stroke,
-//   strokeWidth,
-// }: SvgPieceOfCakeProps) {
-//   const holeRadius = chartStyle.radius * (holeRatio / 100);
-//   const stringRadius = (holeRadius + chartStyle.radius) / 2;
-//   const stringWidth = (chartStyle.radius - stringRadius) * 2;
-//   const translate = translationFromAngle(minAngle, maxAngle, explodeRatio);
-
-//   return (
-//     <>
-//       <path
-//         stroke={fill}
-//         strokeWidth={stringWidth}
-//         fill="transparent"
-//         d={`${generateArc(
-//           stringRadius,
-//           maxAngle,
-//           minAngle,
-//           centerX,
-//           centerY,
-//           0,
-//           true,
-//         )}`}
-//         transform={`translate(${translate.x} ${translate.y})`}
-//       />
-//       {(stroke != null || strokeWidth != null) && (
-//         <SvgPieceOfCake
-//           centerX={centerX}
-//           centerY={centerY}
-//           explodeRatio={explodeRatio}
-//           holeRatio={holeRatio}
-//           maxAngle={maxAngle}
-//           minAngle={minAngle}
-//           fill="transparent"
-//           stroke={stroke}
-//           strokeWidth={strokeWidth}
-//         />
-//       )}
-//     </>
-//   );
-// }
 
 export interface SimpleNeedleStyle {
   '@class': 'SimpleNeedle';
@@ -416,28 +384,43 @@ export interface SVGNeedleStyle {
 
 export type NeedleStyle = SimpleNeedleStyle | ImageNeedleStyle | SVGNeedleStyle;
 
+interface SvgNeedleProps {
+  needleCfg: NeedleProps;
+  centerX: number;
+  centerY: number;
+  startRadius: number;
+  stopRadius: number;
+  explodeRatio: number;
+}
+
 function SvgNeedle({
   needleCfg,
   centerX,
   centerY,
-  holeRatio = 50,
+  startRadius,
+  stopRadius,
   explodeRatio = 0,
-}: {
-  needleCfg: NeedleProps;
-  centerX: number;
-  centerY: number;
-  holeRatio: number;
-  explodeRatio: number;
-}) {
+}: SvgNeedleProps) {
   const { needle, needleStyle } = needleCfg;
-  const holeRadius = chartStyle.radius * (holeRatio / 100);
-  const translate = translationFromAngle(needle, undefined, explodeRatio);
+  const translate = translationFromAngle(
+    stopRadius,
+    needle,
+    undefined,
+    explodeRatio,
+  );
   if (!needleStyle) {
     return (
       <path
         stroke="black"
         strokeWidth={4}
-        d={generateLine(holeRadius, needle, centerX, centerY, true)}
+        d={generateLine(
+          startRadius,
+          stopRadius,
+          needle,
+          centerX,
+          centerY,
+          true,
+        )}
         transform={`translate(${translate.x} ${translate.y})`}
       />
     );
@@ -450,7 +433,14 @@ function SvgNeedle({
             strokeWidth={
               needleStyle.strokeWidth != null ? needleStyle.strokeWidth : 4
             }
-            d={generateLine(holeRadius, needle, centerX, centerY, true)}
+            d={generateLine(
+              startRadius,
+              stopRadius,
+              needle,
+              centerX,
+              centerY,
+              true,
+            )}
             transform={`translate(${translate.x} ${translate.y})`}
           />
         );
@@ -480,8 +470,8 @@ function SvgNeedle({
           centerX,
           centerY,
           needle,
-          chartStyle.radius,
-          holeRadius,
+          stopRadius,
+          startRadius,
           translate.x,
           translate.y,
         );
@@ -533,6 +523,7 @@ const boundedValue = (value: number, min?: number, max?: number) => {
 const computedHeights = (
   minAngle: number,
   maxAngle: number,
+  radius: number,
   explodeRatio: number = 0,
 ) => {
   const maxTop =
@@ -568,24 +559,24 @@ const computedHeights = (
     ? 1
     : Math.max(Math.cos(radianMaxAngle), Math.cos(radianMinAngle), 0);
 
-  const explodeRadius = chartStyle.radius * (explodeRatio / 100);
+  const explodeRadius = radius * explodeRatio;
 
-  const maxHeight = viewBox.height / 2 + explodeRadius;
-  const maxWidth = viewBox.width / 2 + explodeRadius;
+  const maxHeight = viewBox.size / 2 + explodeRadius;
+  const maxWidth = viewBox.size / 2 + explodeRadius;
 
   const sizeTop = propTop * maxHeight;
   const sizeBottom = propBottom * maxHeight;
   const sizeLeft = propLeft * maxWidth;
   const sizeRight = propRight * maxWidth;
 
-  const gaugeRadius = chartStyle.radius + explodeRadius / 2;
+  const gaugeRadius = radius + explodeRadius / 2;
   const gaugeTop = propTop * gaugeRadius;
   const gaugeBottom = propBottom * gaugeRadius;
   const gaugeLeft = propLeft * gaugeRadius;
   const gaugeRight = propRight * gaugeRadius;
 
-  const marginY = maxHeight - chartStyle.radius;
-  const marginX = maxWidth - chartStyle.radius;
+  const marginY = maxHeight - radius;
+  const marginX = maxWidth - radius;
 
   const centerY = gaugeTop + marginY / 2;
   const centerX = gaugeLeft + marginX / 2;
@@ -653,6 +644,8 @@ export interface ComputedPieChartSection extends PieChartSection {
 interface PieChartState {
   minAngle: number;
   maxAngle: number;
+  startRadius: number;
+  stopRadius: number;
   holeRatio: number;
   explodeRatio: number;
   sections: ComputedPieChartSection[];
@@ -677,9 +670,10 @@ interface ExplodeRatioAction {
   type: 'EXPLODE_RATIO';
   explodeRatio: number;
 }
-interface ExplodeRatioAction {
-  type: 'EXPLODE_RATIO';
-  explodeRatio: number;
+interface RadiusAction {
+  type: 'RADIUS';
+  paddingRatio: number;
+  holeRatio: number;
 }
 interface SectionsAction {
   type: 'SECTIONS';
@@ -695,6 +689,7 @@ interface ChartSizesAction {
   type: 'CHART_SIZES';
   minAngle: number;
   maxAngle: number;
+  radius: number;
   explodeRatio: number;
 }
 interface GradientAction {
@@ -702,12 +697,14 @@ interface GradientAction {
   blurredSections: ComputedPieChartSection[];
   centerX: number;
   centerY: number;
-  holeRatio: number;
+  startRadius: number;
+  stopRadius: number;
 }
 
 type PieChartStateAction =
   | HoleRatioAction
   | ExplodeRatioAction
+  | RadiusAction
   | SectionsAction
   | FilterSectionsAction
   | ChartSizesAction
@@ -723,11 +720,16 @@ const setPieChartState = (
   u(oldState, oldState => {
     switch (action.type) {
       case 'HOLE_RATIO': {
-        oldState.holeRatio = boundedValue(action.holeRatio, 0, 100);
+        oldState.holeRatio = boundedValue(action.holeRatio, 0, 1);
         break;
       }
       case 'EXPLODE_RATIO': {
         oldState.explodeRatio = boundedValue(action.explodeRatio, 0);
+        break;
+      }
+      case 'RADIUS': {
+        oldState.stopRadius = (viewBox.size * (1 - action.paddingRatio)) / 2;
+        oldState.startRadius = oldState.stopRadius * action.holeRatio;
         break;
       }
       case 'SECTIONS': {
@@ -754,37 +756,6 @@ const setPieChartState = (
           angleTo: s.angleTo * angleRatio,
         }));
         oldState.sections = computedSections;
-
-        // Prepare variables for blurred sections
-        // let blurredSections: ComputedPieChartSection[] = [];
-        // const firstSection = computedSections[0];
-        // const lastSection = computedSections[computedSections.length - 1];
-        // const angleShift =
-        //   (firstSection.minAngle + firstSection.angleTo) / 2 -
-        //   firstSection.minAngle;
-        // // Shift the sections clockwise in order to display color gradient at the good position
-        // blurredSections = [
-        //   ...computedSections.map((s, i) =>
-        //     i === 0
-        //       ? {
-        //           ...s,
-        //           minAngle: s.minAngle,
-        //           angleTo: s.minAngle + angleShift,
-        //         }
-        //       : {
-        //           ...s,
-        //           minAngle: s.minAngle - angleShift,
-        //           angleTo: s.angleTo - angleShift,
-        //         },
-        //   ),
-        //   {
-        //     angleTo: oldState.maxAngle,
-        //     fillColor: lastSection.fillColor,
-        //     minAngle: oldState.maxAngle - angleShift,
-        //     border: lastSection.border,
-        //   },
-        // ];
-        // oldState.blurredSections = blurredSections;
         break;
       }
       case 'FILTER_SECTIONS': {
@@ -800,10 +771,9 @@ const setPieChartState = (
         oldState.chartSizes = computedHeights(
           action.minAngle,
           action.maxAngle,
+          action.radius,
           action.explodeRatio,
         );
-        // wlog(action.maxAngle);
-        // wlog(oldState.chartSizes);
         break;
       }
       case 'GRADIENT': {
@@ -812,8 +782,8 @@ const setPieChartState = (
           action.blurredSections,
           action.centerX,
           action.centerY,
-          chartStyle.radius,
-          action.holeRatio,
+          action.startRadius,
+          action.stopRadius,
         );
 
         break;
@@ -839,7 +809,11 @@ export interface PieChartProps {
    */
   border?: BorderProps;
   /**
-   * holeRatio - the proportion of the hole in the center of the pie chart (from 0 to 100)
+   * paddingRatio - the proportional size of the internal margin (from 0 to 1)
+   */
+  paddingRatio?: number;
+  /**
+   * holeRatio - the proportion of the hole in the center of the pie chart (from 0 to 1)
    */
   holeRatio?: number;
   /**
@@ -862,7 +836,8 @@ export function PieChart({
   border,
   blur,
   needleCfg,
-  holeRatio = 50,
+  paddingRatio = viewBox.initPaddingRatio,
+  holeRatio = 0.5,
   explodeRatio = 0,
   className,
 }: PieChartProps) {
@@ -872,8 +847,9 @@ export function PieChart({
       maxAngle: computedMaxAngle,
       holeRatio: computedHoleRatio,
       explodeRatio: computedExplodeRatio,
+      startRadius,
+      stopRadius,
       sections: computedSections,
-      // blurredSections,
       filteredSections,
       chartSizes,
       gradient,
@@ -884,14 +860,15 @@ export function PieChart({
     maxAngle: 1,
     holeRatio: 0,
     explodeRatio: 0,
+    startRadius: 0,
+    stopRadius: 0,
     sections: [],
     filteredSections: [],
-    // blurredSections: [],
     chartSizes: {
-      width: viewBox.width,
-      height: viewBox.height,
-      centerX: viewBox.width / 2,
-      centerY: viewBox.height,
+      width: viewBox.size,
+      height: viewBox.size,
+      centerX: viewBox.size / 2,
+      centerY: viewBox.size,
     },
     gradient: {
       gradients: [],
@@ -914,9 +891,16 @@ export function PieChart({
     dispatchStateAction({ type: 'EXPLODE_RATIO', explodeRatio });
   }, [explodeRatio]);
 
-  React.useEffect(() => {
-    dispatchStateAction({ type: 'SECTIONS', minAngle, sections });
-  }, [minAngle, sections]);
+  useDeepChanges(
+    {
+      type: 'RADIUS',
+      holeRatio: computedHoleRatio,
+      paddingRatio: boundedValue(paddingRatio, 0, 1),
+    },
+    dispatchStateAction,
+  );
+
+  useDeepChanges({ type: 'SECTIONS', minAngle, sections }, dispatchStateAction);
 
   useDeepChanges(
     {
@@ -930,6 +914,7 @@ export function PieChart({
   useDeepChanges(
     {
       type: 'CHART_SIZES',
+      radius: stopRadius,
       explodeRatio: computedExplodeRatio,
       maxAngle: computedMaxAngle,
       minAngle: computedMinAngle,
@@ -943,7 +928,8 @@ export function PieChart({
       blurredSections: computedSections,
       centerX: chartSizes.centerX,
       centerY: chartSizes.centerY,
-      holeRatio: computedHoleRatio,
+      startRadius,
+      stopRadius,
     },
     dispatchStateAction,
   );
@@ -971,7 +957,8 @@ export function PieChart({
                 centerX={chartSizes.centerX}
                 centerY={chartSizes.centerY}
                 explodeRatio={computedExplodeRatio}
-                holeRatio={computedHoleRatio}
+                startRadius={startRadius}
+                stopRadius={stopRadius}
                 minAngle={s.minAngle}
                 maxAngle={s.angleTo}
                 leftFill={
@@ -997,7 +984,8 @@ export function PieChart({
                 centerX={chartSizes.centerX}
                 centerY={chartSizes.centerY}
                 explodeRatio={computedExplodeRatio}
-                holeRatio={computedHoleRatio}
+                startRadius={startRadius}
+                stopRadius={stopRadius}
                 minAngle={s.minAngle}
                 maxAngle={s.angleTo}
                 fill={s.fillColor}
@@ -1010,7 +998,8 @@ export function PieChart({
             centerX={chartSizes.centerX}
             centerY={chartSizes.centerY}
             explodeRatio={computedExplodeRatio}
-            holeRatio={computedHoleRatio}
+            startRadius={startRadius}
+            stopRadius={stopRadius}
             minAngle={computedMinAngle}
             maxAngle={computedMaxAngle}
             stroke={border.color}
@@ -1022,7 +1011,8 @@ export function PieChart({
             centerX={chartSizes.centerX}
             centerY={chartSizes.centerY}
             explodeRatio={computedExplodeRatio}
-            holeRatio={computedHoleRatio}
+            startRadius={startRadius}
+            stopRadius={stopRadius}
             needleCfg={needleCfg}
           />
         )}
