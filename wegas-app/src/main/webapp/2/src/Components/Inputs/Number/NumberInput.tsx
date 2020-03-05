@@ -8,7 +8,10 @@ export function NumberInput(props: NumberInputProps) {
   return (
     <SimpleInput
       {...omit(props, 'onChange')}
-      onChange={v => props.onChange && props.onChange(Number(v))}
+      onChange={v => {
+        debugger;
+        props.onChange && props.onChange(Number(v));
+      }}
     />
   );
 }

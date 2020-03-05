@@ -90,8 +90,8 @@ const polarToCartesian = (
 ) => {
   const angleInRadians = degreeToRadian(angleInDegrees);
   return {
-    x: centerX + radius * Math.cos(angleInRadians),
-    y: centerY + radius * Math.sin(angleInRadians),
+    x: (centerX + radius * Math.cos(angleInRadians)).toFixed(2),
+    y: (centerY + radius * Math.sin(angleInRadians)).toFixed(2),
   };
 };
 

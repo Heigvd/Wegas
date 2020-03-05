@@ -13,7 +13,13 @@ const valueDisplayStyle = css({
   padding: '5px',
 });
 
-export const displayModes = ['None', 'External', 'Internal', 'Both'] as const;
+export const displayModes = [
+  'None',
+  'External',
+  'Internal',
+  'Both',
+  'NumberInput',
+] as const;
 export type DisplayMode =
   | typeof displayModes[number]
   | ((internalValue: number, inputValue?: number) => React.ReactNode);
@@ -31,10 +37,6 @@ export interface NumberSliderProps extends InputProps<number> {
    * label - the current label of the slider
    */
   label?: string;
-  /**
-   * numberInput - displays a number input to control the slider
-   */
-  numberInput?: boolean;
   /**
    * steps - the number of steps between min and max value. 100 by default.
    */
@@ -75,7 +77,6 @@ export function NumberSlider({
   max,
   min,
   label,
-  numberInput,
   steps,
   displayValues,
   readOnly,
@@ -132,6 +133,9 @@ export function NumberSlider({
             </>
           );
           break;
+        case 'NumberInput':
+          display = <NumberInput value={value} onChange={onSliderChange} />;
+          break;
         case 'None':
         default:
           display = undefined;
@@ -146,13 +150,6 @@ export function NumberSlider({
   return (
     <div id={id} className={className ? className : textCenter}>
       {label && <Value value={label} />}
-      {numberInput && (
-        <NumberInput
-          value={value}
-          onChange={onSliderChange}
-          // className={textCenter}
-        />
-      )}
       <Info />
       <Slider
         styles={{
