@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { wwarn } from '../../Helper/wegaslog';
+import { wwarn, wlog } from '../../Helper/wegaslog';
 import { cloneDeep } from 'lodash-es';
 import u from 'immer';
 import { useDeepChanges } from '../Hooks/useDeepChanges';
@@ -7,17 +7,18 @@ import { useDeepChanges } from '../Hooks/useDeepChanges';
 const viewBox = {
   minX: 0,
   minY: 0,
-  width: 500,
-  height: 500,
+  width: 2000,
+  height: 2000,
 };
 
 const chartStyle = {
-  radius: 240,
+  radius: 900,
 };
 
 let pieChartId = 0;
 
 // https://stackoverflow.com/questions/18206361/svg-multiple-color-on-circle-stroke
+// TODO : test 3rd answer
 const generateGradient = (
   sections: ComputedPieChartSection[],
   centerX: number,
@@ -29,48 +30,48 @@ const generateGradient = (
   return {
     gradients: sections
       .map((s, i, a) => {
-        if (a[i - 1] == null) {
-          return null;
-        } else {
-          const lastSection = a[i - 1];
-          const startColor = lastSection.fillColor;
-          const stopColor = s.fillColor;
-          const holeRadius = chartStyle.radius * (holeRatio / 100);
-          const colorRadius = (radius + holeRadius) / 2;
-          const startAngle = (lastSection.minAngle + lastSection.angleTo) / 2;
-          const stopAngle = (s.minAngle + s.angleTo) / 2;
+        const lastSection = i === 0 ? a[a.length - 1] : a[i - 1];
+        const startColor = lastSection.fillColor;
+        const stopColor = s.fillColor;
+        const holeRadius = chartStyle.radius * (holeRatio / 100);
+        const colorRadius = (radius + holeRadius) / 2;
+        const lastDelta = (lastSection.angleTo - lastSection.minAngle) / 2;
+        const currentDelta = (s.angleTo - s.minAngle) / 2;
+        const minDelta = Math.min(lastDelta, currentDelta);
+        const startAngle = s.minAngle - minDelta;
+        const stopAngle = s.minAngle + minDelta;
 
-          const coord1 = polarToCartesian(
-            centerX,
-            centerY,
-            colorRadius,
-            startAngle,
-          );
-          const coord2 = polarToCartesian(
-            centerX,
-            centerY,
-            colorRadius,
-            stopAngle,
-          );
+        const coord1 = polarToCartesian(
+          centerX,
+          centerY,
+          colorRadius,
+          startAngle,
+        );
+        const coord2 = polarToCartesian(
+          centerX,
+          centerY,
+          colorRadius,
+          stopAngle,
+        );
 
-          // Create a gradient for this segment
-          return (
-            <linearGradient
-              key={newPieChartId + i}
-              id={newPieChartId + i}
-              gradientUnits="userSpaceOnUse"
-              x1={coord1.x}
-              y1={coord1.y}
-              x2={coord2.x}
-              y2={coord2.y}
-            >
-              <stop offset="0%" stopColor={startColor} />
-              {/* <stop offset="25%" stopColor={startColor} />
+        // Create a gradient for this segment
+        return (
+          <linearGradient
+            key={newPieChartId + i}
+            id={newPieChartId + i}
+            gradientUnits="userSpaceOnUse"
+            x1={coord1.x}
+            y1={coord1.y}
+            x2={coord2.x}
+            y2={coord2.y}
+          >
+            <stop offset="0%" stopColor={startColor} />
+            {/* <stop offset="25%" stopColor={startColor} />
               <stop offset="75%" stopColor={stopColor} /> */}
-              <stop offset="100%" stopColor={stopColor} />
-            </linearGradient>
-          );
-        }
+            <stop offset="100%" stopColor={stopColor} />
+          </linearGradient>
+        );
+        // }
       })
       .filter(s => s != null),
     currentId: newPieChartId,
@@ -112,7 +113,7 @@ function generateArc(
   minAngle: number,
   centerX: number,
   centerY: number,
-  invert: 0 | 1 = 0,
+  invert?: boolean,
   startCoordinates?: boolean,
 ) {
   const start = polarToCartesian(
@@ -136,7 +137,7 @@ function generateArc(
     radius,
     0,
     largeArcFlag,
-    invert,
+    Number(invert),
     end.x,
     end.y,
   ].join(' ');
@@ -185,73 +186,71 @@ function SvgPieceOfCake({
 }: SvgPieceOfCakeProps) {
   const holeRadius = chartStyle.radius * (holeRatio / 100);
   const translate = translationFromAngle(minAngle, maxAngle, explodeRatio);
-
+  const deltaAngle = maxAngle - minAngle;
+  const computedMaxAngle = minAngle + deltaAngle / 2;
   // As it's impossible to draw a circle with an arc beacause the start and end points will overlapse,
   // we have to draw 2 arcs instead of one and no line between them.
-  if (maxAngle - minAngle === 360) {
+  if (deltaAngle === 360) {
     return (
-      <>
-        <path
-          stroke={stroke}
-          strokeWidth={strokeWidth}
-          fill={fill ? fill : 'transparent'}
-          fillRule="evenodd"
-          d={`
+      <path
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        fill={fill ? fill : 'transparent'}
+        fillRule="evenodd"
+        d={`
             ${generateArc(
               chartStyle.radius,
-              maxAngle / 2,
+              computedMaxAngle,
               minAngle,
               centerX,
               centerY,
-              0,
+              false,
               true,
             )}
             ${generateArc(
               chartStyle.radius,
               maxAngle,
-              maxAngle / 2,
+              computedMaxAngle,
               centerX,
               centerY,
-              0,
+              false,
             )}
             ${generateArc(
               holeRadius,
-              maxAngle / 2,
+              computedMaxAngle,
               minAngle,
               centerX,
               centerY,
-              1,
+              true,
               true,
             )}
             ${generateArc(
               holeRadius,
               maxAngle,
-              maxAngle / 2,
+              computedMaxAngle,
               centerX,
               centerY,
-              1,
+              true,
             )}
             `}
-          transform={`translate(${translate.x} ${translate.y})`}
-        />
-      </>
+        transform={`translate(${translate.x} ${translate.y})`}
+      />
     );
   } else {
     return (
-      <>
-        <path
-          stroke={stroke}
-          strokeWidth={strokeWidth}
-          fill={fill ? fill : 'transparent'}
-          fillRule="evenodd"
-          d={`
+      <path
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        fill={fill ? fill : 'transparent'}
+        fillRule="evenodd"
+        d={`
                   ${generateArc(
                     chartStyle.radius,
                     maxAngle,
                     minAngle,
                     centerX,
                     centerY,
-                    0,
+                    false,
                     true,
                   )}
                   ${generateLine(holeRadius, minAngle, centerX, centerY)}
@@ -261,13 +260,12 @@ function SvgPieceOfCake({
                     minAngle,
                     centerX,
                     centerY,
-                    1,
+                    true,
                   )}
                   Z
                 `}
-          transform={`translate(${translate.x} ${translate.y})`}
-        />
-      </>
+        transform={`translate(${translate.x} ${translate.y})`}
+      />
     );
   }
 }
@@ -275,6 +273,7 @@ function SvgPieceOfCake({
 interface SvgBlurredPieceOfCakeProps extends Omit<SvgPieceOfCakeProps, 'fill'> {
   leftFill?: string;
   rightFill?: string;
+  originalSection: ComputedPieChartSection;
 }
 
 function SvgBlurredPieceOfCake({
@@ -286,11 +285,14 @@ function SvgBlurredPieceOfCake({
   explodeRatio = 0,
   leftFill,
   rightFill,
+  originalSection,
   stroke,
   strokeWidth,
 }: SvgBlurredPieceOfCakeProps) {
   const translate = translationFromAngle(minAngle, maxAngle, explodeRatio);
-  const middleAngle = (minAngle + maxAngle) / 2;
+  let middleAngle = (originalSection.angleTo + originalSection.minAngle) / 2;
+  const secondPart = maxAngle > middleAngle;
+  middleAngle = secondPart ? middleAngle : maxAngle;
   return (
     <g transform={`translate(${translate.x} ${translate.y})`}>
       <SvgPieceOfCake
@@ -301,14 +303,16 @@ function SvgBlurredPieceOfCake({
         minAngle={minAngle}
         fill={leftFill}
       />
-      <SvgPieceOfCake
-        centerX={centerX}
-        centerY={centerY}
-        holeRatio={holeRatio}
-        maxAngle={maxAngle}
-        minAngle={middleAngle}
-        fill={rightFill}
-      />
+      {secondPart && (
+        <SvgPieceOfCake
+          centerX={centerX}
+          centerY={centerY}
+          holeRatio={holeRatio}
+          maxAngle={maxAngle}
+          minAngle={middleAngle}
+          fill={rightFill}
+        />
+      )}
       {(stroke || strokeWidth) && (
         <SvgPieceOfCake
           centerX={centerX}
@@ -533,20 +537,23 @@ const computedHeights = (
 ) => {
   const maxTop =
     (maxAngle >= 90 && minAngle <= 90) ||
-    (maxAngle >= -270 && minAngle <= -270);
+    (maxAngle >= -270 && minAngle <= -270) ||
+    (maxAngle >= 450 && minAngle >= 90);
   const maxBottom =
     (maxAngle >= 270 && minAngle <= 270) ||
-    (maxAngle >= -90 && minAngle <= -90);
+    (maxAngle >= -90 && minAngle <= -90) ||
+    (maxAngle >= 630 && minAngle >= 270);
   const maxLeft =
-    (maxAngle >= 0 && minAngle <= 0) || (maxAngle >= -360 && minAngle <= -360);
+    (maxAngle >= 0 && minAngle <= 0) ||
+    (maxAngle >= -360 && minAngle <= -360) ||
+    (maxAngle >= 360 && minAngle >= 0);
   const maxRight =
     (maxAngle >= 180 && minAngle <= 180) ||
-    (maxAngle >= -180 && minAngle <= -180);
+    (maxAngle >= -180 && minAngle <= -180) ||
+    (maxAngle >= 540 && minAngle >= 180);
 
   const radianMaxAngle = degreeToRadian(maxAngle);
   const radianMinAngle = degreeToRadian(minAngle);
-
-  // const
 
   const propTop = maxTop
     ? 1
@@ -650,7 +657,6 @@ interface PieChartState {
   explodeRatio: number;
   sections: ComputedPieChartSection[];
   filteredSections: ComputedPieChartSection[];
-  blurredSections: ComputedPieChartSection[];
   chartSizes: {
     width: number;
     height: number;
@@ -750,35 +756,35 @@ const setPieChartState = (
         oldState.sections = computedSections;
 
         // Prepare variables for blurred sections
-        let blurredSections: ComputedPieChartSection[] = [];
-        const firstSection = computedSections[0];
-        const lastSection = computedSections[computedSections.length - 1];
-        const angleShift =
-          (firstSection.minAngle + firstSection.angleTo) / 2 -
-          firstSection.minAngle;
-        // Shift the sections clockwise in order to display color gradient at the good position
-        blurredSections = [
-          ...computedSections.map((s, i) =>
-            i === 0
-              ? {
-                  ...s,
-                  minAngle: s.minAngle,
-                  angleTo: s.minAngle + angleShift,
-                }
-              : {
-                  ...s,
-                  minAngle: s.minAngle - angleShift,
-                  angleTo: s.angleTo - angleShift,
-                },
-          ),
-          {
-            angleTo: oldState.maxAngle,
-            fillColor: lastSection.fillColor,
-            minAngle: oldState.maxAngle - angleShift,
-            border: lastSection.border,
-          },
-        ];
-        oldState.blurredSections = blurredSections;
+        // let blurredSections: ComputedPieChartSection[] = [];
+        // const firstSection = computedSections[0];
+        // const lastSection = computedSections[computedSections.length - 1];
+        // const angleShift =
+        //   (firstSection.minAngle + firstSection.angleTo) / 2 -
+        //   firstSection.minAngle;
+        // // Shift the sections clockwise in order to display color gradient at the good position
+        // blurredSections = [
+        //   ...computedSections.map((s, i) =>
+        //     i === 0
+        //       ? {
+        //           ...s,
+        //           minAngle: s.minAngle,
+        //           angleTo: s.minAngle + angleShift,
+        //         }
+        //       : {
+        //           ...s,
+        //           minAngle: s.minAngle - angleShift,
+        //           angleTo: s.angleTo - angleShift,
+        //         },
+        //   ),
+        //   {
+        //     angleTo: oldState.maxAngle,
+        //     fillColor: lastSection.fillColor,
+        //     minAngle: oldState.maxAngle - angleShift,
+        //     border: lastSection.border,
+        //   },
+        // ];
+        // oldState.blurredSections = blurredSections;
         break;
       }
       case 'FILTER_SECTIONS': {
@@ -796,6 +802,8 @@ const setPieChartState = (
           action.maxAngle,
           action.explodeRatio,
         );
+        // wlog(action.maxAngle);
+        // wlog(oldState.chartSizes);
         break;
       }
       case 'GRADIENT': {
@@ -865,7 +873,7 @@ export function PieChart({
       holeRatio: computedHoleRatio,
       explodeRatio: computedExplodeRatio,
       sections: computedSections,
-      blurredSections,
+      // blurredSections,
       filteredSections,
       chartSizes,
       gradient,
@@ -878,7 +886,7 @@ export function PieChart({
     explodeRatio: 0,
     sections: [],
     filteredSections: [],
-    blurredSections: [],
+    // blurredSections: [],
     chartSizes: {
       width: viewBox.width,
       height: viewBox.height,
@@ -932,7 +940,6 @@ export function PieChart({
   useDeepChanges(
     {
       type: 'GRADIENT',
-      // blurredSections,
       blurredSections: computedSections,
       centerX: chartSizes.centerX,
       centerY: chartSizes.centerY,
@@ -952,12 +959,13 @@ export function PieChart({
     );
   }
 
+  const circular = computedMaxAngle - computedMinAngle === 360;
   return (
     <div className={className}>
       <svg viewBox={`0 0 ${chartSizes.width} ${chartSizes.height}`}>
         {blur && <defs>{gradient.gradients}</defs>}
         {blur
-          ? filteredSections.map((s, i, a) => (
+          ? filteredSections.map((s, i) => (
               <SvgBlurredPieceOfCake
                 key={JSON.stringify(s)}
                 centerX={chartSizes.centerX}
@@ -967,13 +975,18 @@ export function PieChart({
                 minAngle={s.minAngle}
                 maxAngle={s.angleTo}
                 leftFill={
-                  i === 0 ? s.fillColor : `Url(#${gradient.currentId + i})`
+                  i === 0 && !circular
+                    ? s.fillColor
+                    : `Url(#${gradient.currentId + i})`
                 }
                 rightFill={
-                  i === a.length - 1
-                    ? s.fillColor
+                  i === computedSections.length - 1
+                    ? circular
+                      ? `Url(#${gradient.currentId + 0})`
+                      : s.fillColor
                     : `Url(#${gradient.currentId + (i + 1)})`
                 }
+                originalSection={computedSections[i]}
                 stroke={s.border?.color}
                 strokeWidth={s.border?.size}
               />

@@ -10,7 +10,7 @@ export default function CustomGaugeTester() {
   const [values, setValues] = React.useState({
     minAngle: 15,
     maxAngle: 165,
-    holeSize: 30,
+    holeSize: 70,
     explodeSize: 0,
     value: 50,
     useGradient: true,
