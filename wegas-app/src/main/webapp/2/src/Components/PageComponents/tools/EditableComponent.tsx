@@ -18,6 +18,8 @@ import { Toggler, TogglerProps } from '../../Inputs/Boolean/Toggler';
 const editItemStyle = css({
   display: 'list-item',
   marginLeft: '10px',
+  width: '100px',
+  height: '100px',
 });
 
 interface ComponentEditorHandleProps {

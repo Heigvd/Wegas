@@ -9,7 +9,7 @@ import { ListDescriptorChild } from '../../editionConfig';
 import { inputDefaultCSS } from '../../../Components/Inputs/inputStyles';
 
 export interface Choice {
-  value: {};
+  value?: {};
   label?: string;
   disabled?: boolean;
   selected?: boolean;
@@ -22,12 +22,14 @@ export type Choices = (string | Choice)[];
 interface ISelectProps extends WidgetProps.BaseProps {
   view: {
     choices: Choices;
+    undefined?: boolean;
   } & CommonView &
     LabeledView;
 }
 export interface IAsyncSelectProps extends WidgetProps.BaseProps {
   view: {
     choices: (() => Promise<Choices>) | Choices;
+    undefined?: boolean;
   } & CommonView &
     LabeledView;
 }
@@ -61,37 +63,55 @@ function genItems(o: string | Choice) {
   );
 }
 
-const title: Choice = {
+const defaultTitle: Choice = {
   value: '[[[default]]]',
   label: '- please select -',
   selected: true,
   disabled: true,
 };
 
+const undefinedTitle: Choice = {
+  value: undefined,
+  label: '- undefined -',
+  selected: true,
+  disabled: false,
+};
+
 function SelectView(props: ISelectProps) {
   const onChange = function onChange(
     event: React.ChangeEvent<{ value: string }>,
   ) {
-    props.onChange(JSON.parse(event.target.value));
+    let parsedValue = undefined;
+    try {
+      parsedValue = JSON.parse(event.target.value);
+    } finally {
+      props.onChange(parsedValue);
+    }
   };
+  const selectChoices = [
+    ...(props.view.undefined ? [undefinedTitle] : []),
+    ...props.view.choices,
+  ];
   const choices =
-    props.value != undefined
-      ? props.view.choices.some(c => {
+    props.value != undefined || props.view.undefined
+      ? selectChoices.some(c => {
           if ('string' === typeof c) {
             return props.value === c;
           }
           return props.value === c.value;
         })
-        ? props.view.choices
+        ? selectChoices
         : [
             {
               label: props.value,
               value: props.value,
               disabled: true,
             } as Choice | string,
-          ].concat(props.view.choices)
-      : ([title] as (Choice | string)[]).concat(props.view.choices || []);
-  const value = JSON.stringify(props.value) || JSON.stringify(title.value);
+          ].concat(selectChoices)
+      : ([defaultTitle] as (Choice | string)[]).concat(selectChoices || []);
+
+  const value =
+    JSON.stringify(props.value) || JSON.stringify(defaultTitle.value);
   return (
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>

@@ -232,6 +232,7 @@ export const schemaProps = {
         label,
         type: 'select',
         layout,
+        undefined: !required,
       },
     };
   },

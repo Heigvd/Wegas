@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-const alignItemsValues = [
+export const alignItemsValues = [
   'stretch',
   'flex-start',
   'flex-end',
@@ -9,10 +9,10 @@ const alignItemsValues = [
 ] as const;
 type AlignItems = typeof alignItemsValues[number];
 
-const alignSelfValues = ['auto', ...alignItemsValues] as const;
+export const alignSelfValues = ['auto', ...alignItemsValues] as const;
 type AlignSelf = typeof alignSelfValues[number];
 
-const flexBasisValues = [
+export const flexBasisValues = [
   'auto',
   'content',
   'max-content',
@@ -42,6 +42,10 @@ interface FlexListChildrenProps {
    * flexBasis - the initial size of the item, can be set like any css size value (%,px,em,...) or with the string "content"
    */
   flexBasis: FlexBasis;
+  /**
+   * className - the class to apply to the item
+   */
+  className: string;
 }
 
 export function FlexItem({
@@ -49,14 +53,20 @@ export function FlexItem({
   flexGrow,
   flexShrink,
   flexBasis,
+  className,
   children,
 }: React.PropsWithChildren<FlexListChildrenProps>) {
   return (
-    <div style={{ alignSelf, flexGrow, flexShrink, flexBasis }}>{children}</div>
+    <div
+      className={className}
+      style={{ alignSelf, flexGrow, flexShrink, flexBasis }}
+    >
+      {children}
+    </div>
   );
 }
 
-const flexDirectionValues = [
+export const flexDirectionValues = [
   'row',
   'row-reverse',
   'column',
@@ -64,10 +74,10 @@ const flexDirectionValues = [
 ] as const;
 type FlexDirection = typeof flexDirectionValues[number];
 
-const flexWrapValues = ['nowrap', 'wrap', 'wrap-reverse'] as const;
+export const flexWrapValues = ['nowrap', 'wrap', 'wrap-reverse'] as const;
 type FlexWrap = typeof flexWrapValues[number];
 
-const justifyContentValues = [
+export const justifyContentValues = [
   'flex-start',
   'flex-end',
   'center',
@@ -77,34 +87,42 @@ const justifyContentValues = [
 ] as const;
 type JustifyContent = typeof justifyContentValues[number];
 
-const alignContentValues = ['stretch', ...justifyContentValues] as const;
+export const alignContentValues = ['stretch', ...justifyContentValues] as const;
 type AlignContent = typeof alignContentValues[number];
 
 export interface FlexListProps {
   /**
    * flexDirection - the flex direction
    */
-  flexDirection: FlexDirection;
+  flexDirection?: FlexDirection;
   /**
    * flexWrap - the wrap policy
    */
-  flexWrap: FlexWrap;
+  flexWrap?: FlexWrap;
   /**
    * justifyContent - justifies the content of the list
    */
-  justifyContent: JustifyContent;
+  justifyContent?: JustifyContent;
   /**
    * alignItems - justifies the items perpendicularly to the flex direction
    */
-  alignItems: AlignItems;
+  alignItems?: AlignItems;
   /**
    * alignContent - if the list display items on multiple rows, justifies the items perpendicularly in the same way than justifyContent
    */
-  alignContent: AlignContent;
+  alignContent?: AlignContent;
+  /**
+   * className - the class to apply to the list
+   */
+  className?: string;
+  /**
+   * style - the style to apply to the list (always prefer className over style to avoid messing with original behaviour of the list)
+   */
+  style?: React.CSSProperties;
   /**
    * children - the items in the list
    */
-  children: FlexListChildrenProps[];
+  children?: FlexListChildrenProps[];
 }
 /**
  * Flex list.
@@ -115,10 +133,13 @@ export function FlexList({
   justifyContent,
   alignItems,
   alignContent,
+  className,
+  style,
   children,
 }: React.PropsWithChildren<FlexListProps>) {
   return (
     <div
+      className={className}
       style={{
         display: 'flex',
         flexDirection,
@@ -126,6 +147,7 @@ export function FlexList({
         justifyContent,
         alignItems,
         alignContent,
+        ...style,
       }}
     >
       {children}
