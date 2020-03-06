@@ -238,6 +238,20 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
+     * @param name
+     *
+     * @return all accounts which match the given name
+     *
+     */
+    public List<AbstractAccount> findAllByEmailOrUsername(String name) {
+        TypedQuery<AbstractAccount> query = getEntityManager()
+            .createNamedQuery("AbstractAccount.findByEmailOrUserName",
+                AbstractAccount.class);
+        query.setParameter("name", name);
+        return query.getResultList();
+    }
+
+    /**
      * @param email
      *
      * @return the JPA user who owns an account with this email address
@@ -388,7 +402,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         Predicate anyRolePredicate = cb.or(anyRoleFilter.toArray(new Predicate[anyRoleFilter.size()]));
 
         cq.where(cb.and(anyRolePredicate, tokenPredicate));
-        
+
         cq.distinct(true);
 
         TypedQuery<AbstractAccount> q = getEntityManager().createQuery(cq);

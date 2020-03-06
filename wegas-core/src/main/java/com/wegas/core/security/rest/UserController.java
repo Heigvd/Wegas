@@ -28,6 +28,7 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
+import com.wegas.core.security.util.AuthenticationMethod;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -110,8 +111,7 @@ public class UserController {
     /**
      * @return list of all users, sorted by names
      *
-     * @throws AuthorizationException if current user doesn't have the
-     *                                permission to see other users
+     * @throws AuthorizationException if current user doesn't have the permission to see other users
      */
     @GET
     public Collection<User> index() {
@@ -134,9 +134,8 @@ public class UserController {
      *
      * @return the user matching entityId
      *
-     * @throws AuthorizationException if searched users id not the current one
-     *                                or current one doesn't have the
-     *                                permissions to see others users
+     * @throws AuthorizationException if searched users id not the current one or current one
+     *                                doesn't have the permissions to see others users
      */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
@@ -149,9 +148,9 @@ public class UserController {
     }
 
     /**
-     * Returns the e-mail addresses of all players of the given game, with more
-     * relaxed security requirements than for getting the whole user profile:
-     * The caller must be trainer for the given game.
+     * Returns the e-mail addresses of all players of the given game, with more relaxed security
+     * requirements than for getting the whole user profile: The caller must be trainer for the
+     * given game.
      *
      * @param gameId
      *
@@ -175,10 +174,9 @@ public class UserController {
     }
 
     /**
-     * Returns the e-mail addresses of all players of the given team, with more
-     * relaxed security requirements than for getting the whole user profile:
-     * The caller must be trainer for the given game and the team must belong to
-     * the same game.
+     * Returns the e-mail addresses of all players of the given team, with more relaxed security
+     * requirements than for getting the whole user profile: The caller must be trainer for the
+     * given game and the team must belong to the same game.
      *
      * @param gameId
      * @param teamId
@@ -239,18 +237,17 @@ public class UserController {
 
     /**
      * Return accounts that match given "value" (like
-     * {@link #getAutoComplete(java.lang.String) getAutoComplete()} but are not
-     * yet member of the given game.
+     * {@link #getAutoComplete(java.lang.String) getAutoComplete()} but are not yet member of the
+     * given game.
      * <p>
-     * Returned Account will also have their email altered so they can be
-     * displayed to anybody (from user@tada.ch to use*****@tada.ch)
+     * Returned Account will also have their email altered so they can be displayed to anybody (from
+     * user@tada.ch to use*****@tada.ch)
      *
      * @param value  token to search
-     * @param gameId id of the game targeted account cannot be already
-     *               registered in
+     * @param gameId id of the game targeted account cannot be already registered in
      *
-     * @return list of account matching given search value which are not yet
-     *         member of the given game
+     * @return list of account matching given search value which are not yet member of the given
+     *         game
      */
     @GET
     @Path("AutoCompleteFull/{value}/{gameId : [1-9][0-9]*}")
@@ -260,15 +257,14 @@ public class UserController {
     }
 
     /**
-     * Same as {@link #getAutoComplete(java.lang.String) getAutoComplete} but
-     * account must be member of (at least) one role in rolesList
+     * Same as {@link #getAutoComplete(java.lang.String) getAutoComplete} but account must be member
+     * of (at least) one role in rolesList
      *
      * @param value     account search token
-     * @param rolesList list of roles targeted account should be members (one
-     *                  membership is sufficient)
+     * @param rolesList list of roles targeted account should be members (one membership is
+     *                  sufficient)
      *
-     * @return list of AbstractAccount matching the token that are member of at least
-     *         one given role
+     * @return list of AbstractAccount matching the token that are member of at least one given role
      */
     @POST
     @Path("AutoComplete/{value}")
@@ -287,8 +283,8 @@ public class UserController {
      *
      * @return the new user
      *
-     * @throws AuthorizationException if the current user doesn't have the
-     *                                permission to create users
+     * @throws AuthorizationException if the current user doesn't have the permission to create
+     *                                users
      */
     @POST
     public User create(User user) {
@@ -306,9 +302,8 @@ public class UserController {
      *
      * @return the updated user
      *
-     * @throws AuthorizationException if current user is not the updated user or
-     *                                if the current user doesn't have the
-     *                                permission to edit others users
+     * @throws AuthorizationException if current user is not the updated user or if the current user
+     *                                doesn't have the permission to edit others users
      */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
@@ -328,8 +323,7 @@ public class UserController {
      *
      * @return the user that has been deleted
      *
-     * @throws AuthorizationException currentUser does not have the permission
-     *                                to delete users
+     * @throws AuthorizationException currentUser does not have the permission to delete users
      *
      * @deprecated please delete account through account controller
      */
@@ -362,11 +356,24 @@ public class UserController {
      */
     @POST
     @Path("Authenticate")
-    public User login(
-            AuthenticationInformation authInfo,
-            @Context HttpServletRequest request,
-            @Context HttpServletResponse response) throws ServletException, IOException {
+    public User login(AuthenticationInformation authInfo,
+        @Context HttpServletRequest request,
+        @Context HttpServletResponse response) throws ServletException, IOException {
         return userFacade.authenticate(authInfo);
+    }
+
+    /**
+     * Which authentication methods can be used to authenticate a given username
+     *
+     * @param username username or email of the user to authenticate
+     *
+     * @return a list of authentication method available for this username
+     */
+    @GET
+    @Path("AuthenticateMethod/{username}")
+    public List<AuthenticationMethod> getAuthMethod(AuthenticationInformation authInfo,
+        @PathParam("username") String username) {
+        return userFacade.getAuthMethods(username);
     }
 
     /**
@@ -376,8 +383,8 @@ public class UserController {
      */
     @POST
     @Path("AuthenticateWithToken")
-    public User loginWithDisposableToken( AuthenticationInformation authInfo,
-            @Context HttpServletRequest request
+    public User loginWithDisposableToken(AuthenticationInformation authInfo,
+        @Context HttpServletRequest request
     ) throws ServletException, IOException, URISyntaxException {
         return userFacade.authenticateFromToken(authInfo.getLogin(), authInfo.getPassword());
     }
@@ -447,19 +454,26 @@ public class UserController {
         requestManager.su(accountId);
     }
 
+    @GET
+    @Path("AuthenticateMethod/{username}")
+    public List<AuthenticationMethod> getDefaultAuthMethod(AuthenticationInformation authInfo,
+        @PathParam("username") String username) {
+        return userFacade.getAuthMethods(username);
+    }
+
     /**
      * Create a user based on a JpaAccount
      *
      * @param account
      * @param request
      *
-     * @return Response : Status Not acceptable if email is wrong or username
-     *         already exist. Created otherwise.
+     * @return Response : Status Not acceptable if email is wrong or username already exist. Created
+     *         otherwise.
      */
     @POST
     @Path("Signup")
     public Response signup(JpaAccount account,
-            @Context HttpServletRequest request) {
+        @Context HttpServletRequest request) {
         WegasErrorMessage error;
 
         try {
@@ -492,7 +506,7 @@ public class UserController {
      * @return void
      */
     public void create(AaiAccount account,
-            @Context HttpServletRequest request) {
+        @Context HttpServletRequest request) {
         if (!this.checkExistingPersistentId(account.getPersistentId())) {
             User user = new User(account);
             userFacade.create(user);
@@ -504,16 +518,16 @@ public class UserController {
     /**
      * Logs in an AAI-authenticated user or creates a new account for him.
      *
-     * @return AaiLoginResponse telling e.g. if the user is new.
-     *         Session cookies for the user's browser are also returned.
+     * @return AaiLoginResponse telling e.g. if the user is new. Session cookies for the user's
+     *         browser are also returned.
      *
      * @param userDetails
      */
     @POST
     @Path("AaiLogin")
     public AaiLoginResponse aaiLogin(AaiUserDetails userDetails,
-            @Context HttpServletRequest request,
-            @Context HttpServletResponse response) throws ServletException, IOException {
+        @Context HttpServletRequest request,
+        @Context HttpServletResponse response) throws ServletException, IOException {
 
         // Check if the invocation is by HTTPS. @TODO: verify certificate.
         if (!request.isSecure()) {
@@ -528,7 +542,7 @@ public class UserController {
         String server = AaiConfigInfo.getAaiServer(); // Ignored if empty !
         String secret = AaiConfigInfo.getAaiSecret(); // Ignored if empty !
         if (server.length() != 0 && !getRequestingIP(request).equals(server)
-                || secret.length() != 0 && !userDetails.getSecret().equals(secret)) {
+            || secret.length() != 0 && !userDetails.getSecret().equals(secret)) {
             logger.trace("Real secret: {}, expected:{}", userDetails.getSecret(), secret);
             logger.trace("Real remote host : {}, expected: {}", getRequestingIP(request), server);
             Enumeration<String> headerNames = request.getHeaderNames();
@@ -574,8 +588,9 @@ public class UserController {
     }
 
     /**
-     * Returns the IP address of the requesting host by looking first at headers provided by (reverse) proxies.
-     * Depending on local config, it may be necessary to check additional headers.
+     * Returns the IP address of the requesting host by looking first at headers provided by
+     * (reverse) proxies. Depending on local config, it may be necessary to check additional
+     * headers.
      *
      * @param request
      *
@@ -592,7 +607,7 @@ public class UserController {
     @POST
     @Path("SendNewPassword")
     public void requestPasswordReset(AuthenticationInformation authInfo,
-            @Context HttpServletRequest request) {
+        @Context HttpServletRequest request) {
         userFacade.requestPasswordReset(authInfo.getLogin(), request);
     }
 
@@ -627,7 +642,7 @@ public class UserController {
         }
 
         String body = "<!DOCTYPE html><html><head></head><body>"
-                + email.getBody();
+            + email.getBody();
         body += "<br /><br /><hr /><i> Sent by " + name + " from albasim.ch</i></body></html>";
         email.setBody(body);
 
@@ -639,8 +654,7 @@ public class UserController {
     /**
      * Get all roles which have some permissions on the given instance..
      * <p>
-     * Map is { id : role id, name: role name, permissions: list of permissions
-     * related to instance}
+     * Map is { id : role id, name: role name, permissions: list of permissions related to instance}
      * <p>
      * deprecated ?
      *
@@ -648,8 +662,8 @@ public class UserController {
      *
      * @return list of "Role"
      *
-     * @throws AuthorizationException when current user doesn't have edit
-     *                                permission on given instance
+     * @throws AuthorizationException when current user doesn't have edit permission on given
+     *                                instance
      */
     @GET
     @Path("FindPermissionByInstance/{instance}")
@@ -674,8 +688,7 @@ public class UserController {
     /**
      * Find all teams for the current user.
      *
-     * @return teamsToReturn, the collection of teams where the current user is
-     *         a player.
+     * @return teamsToReturn, the collection of teams where the current user is a player.
      */
     @GET
     @Path("Current/Team")
@@ -688,7 +701,7 @@ public class UserController {
 
         for (Player p : players) {
             if (p.getStatus().equals(Populatable.Status.WAITING)
-                    || p.getStatus().equals(Populatable.Status.RESCHEDULED)) {
+                || p.getStatus().equals(Populatable.Status.RESCHEDULED)) {
                 p.setQueueSize(queue.indexOf(p) + 1);
             }
             teamsToReturn.add(p.getTeam());
@@ -726,8 +739,7 @@ public class UserController {
     /**
      * @param entityId
      *
-     * @return all users having any permissions related to game or gameModel
-     *         identified by entityId
+     * @return all users having any permissions related to game or gameModel identified by entityId
      */
     @GET
     @Path("FindUserPermissionByInstance/{entityId}")
@@ -741,8 +753,7 @@ public class UserController {
     /**
      * @param entityId
      *
-     * @return all users having any permissions related to game or gameModel
-     *         identified by entityId
+     * @return all users having any permissions related to game or gameModel identified by entityId
      */
     @GET
     @Path("FindEditorsByInstance/{entityId}")
@@ -768,7 +779,7 @@ public class UserController {
     @POST
     @Path("ShareGame/{gameId : [1-9][0-9]*}/{accountId : [1-9][0-9]*}")
     public void shareGame(@PathParam("gameId") Long gameId,
-            @PathParam("accountId") Long accountId) {
+        @PathParam("accountId") Long accountId) {
 
         User coTrainer = accountFacade.find(accountId).getUser();
 
@@ -779,7 +790,7 @@ public class UserController {
     @DELETE
     @Path("ShareGame/{gameId : [1-9][0-9]*}/{accountId : [1-9][0-9]*}")
     public void unshareGame(@PathParam("gameId") Long gameId,
-            @PathParam("accountId") Long accountId) {
+        @PathParam("accountId") Long accountId) {
 
         User coTrainer = accountFacade.find(accountId).getUser();
 
@@ -787,20 +798,19 @@ public class UserController {
     }
 
     /**
-     * Grant given permission to the given user to the specified gameModel.
-     * Previous user permissions to gameModel will be revoked
+     * Grant given permission to the given user to the specified gameModel. Previous user
+     * permissions to gameModel will be revoked
      *
      * @param gameModelId
-     * @param permission  (View|Edit|Delete|Duplicate|Instantiate), comma
-     *                    separated
+     * @param permission  (View|Edit|Delete|Duplicate|Instantiate), comma separated
      * @param accountId   user accountId
      */
     @POST
 
     @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{permission: (View|Edit|Delete|Duplicate|Instantiate|Translate-[A-Z]*|,)*}/{accountId : [1-9][0-9]*}")
     public void shareGameModel(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("permission") String permission,
-            @PathParam("accountId") Long accountId) {
+        @PathParam("permission") String permission,
+        @PathParam("accountId") Long accountId) {
 
         User user = accountFacade.find(accountId).getUser();
 
@@ -810,7 +820,7 @@ public class UserController {
     @DELETE
     @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{accountId : [1-9][0-9]*}")
     public void unshareGameModel(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("accountId") Long accountId) {
+        @PathParam("accountId") Long accountId) {
 
         User coScenarist = accountFacade.find(accountId).getUser();
 

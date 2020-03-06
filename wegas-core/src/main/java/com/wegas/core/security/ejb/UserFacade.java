@@ -11,7 +11,6 @@ import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.exception.client.WegasAccessDenied;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
@@ -32,6 +31,7 @@ import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.Shadow;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
+import com.wegas.core.security.util.AuthenticationMethod;
 import com.wegas.messaging.ejb.EMailFacade;
 import java.util.*;
 import javax.ejb.LocalBean;
@@ -165,6 +165,33 @@ public class UserFacade extends BaseFacade<User> {
             }
         }
         throw WegasErrorMessage.error("Email/token combination not found");
+    }
+
+    /**
+     * Return the list of hash method the client may use to sign in. Such methods
+     *
+     * 
+     * @param authInfo
+     *
+     * @return array of AAI | PLAIN | SHA-512 |
+     */
+    public List<AuthenticationMethod> getAuthMethods(String username) {
+        List<AuthenticationMethod> methods = new ArrayList<>();
+        try {
+            requestManager.su();
+
+            for (AbstractAccount account : accountFacade.findAllByEmailOrUsername(username)) {
+                AuthenticationMethod m = account.getAuthenticationMethod();
+                if (m != null) {
+                    methods.add(m);
+                }
+            }
+
+        } finally {
+            requestManager.releaseSu();
+        }
+
+        return methods;
     }
 
     public User authenticate(AuthenticationInformation authInfo) {

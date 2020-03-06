@@ -8,9 +8,13 @@
 package com.wegas.core.security.jparealm;
 
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.Helper;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Shadow;
+import com.wegas.core.security.util.AuthenticationMethod;
+import com.wegas.core.security.util.JpaAuthentication;
+import com.wegas.core.security.util.JpaAuthentication.HashMethod;
 import javax.persistence.*;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
@@ -39,6 +43,20 @@ public class JpaAccount extends AbstractAccount {
 
     @Column(columnDefinition = "boolean default false")
     private Boolean verified = false;
+
+    /**
+     *
+     */
+    @Column(length = 24, columnDefinition = "character varying(24) default 'PLAIN'::character varying")
+    @Enumerated(value = EnumType.STRING)
+    private HashMethod currentAuth;
+
+    /**
+     *
+     */
+    @Column(length = 24, columnDefinition = "character varying(24) default ''::character varying")
+    @Enumerated(value = EnumType.STRING)
+    private HashMethod nextAuth;
 
     /**
      *
@@ -93,5 +111,28 @@ public class JpaAccount extends AbstractAccount {
 
     public void setVerified(Boolean verified) {
         this.verified = verified;
+    }
+
+    @JsonIgnore
+    public HashMethod getCurrentAuth() {
+        return currentAuth;
+    }
+
+    public void setCurrentAuth(HashMethod currentAuth) {
+        this.currentAuth = currentAuth;
+    }
+
+    @JsonIgnore
+    public HashMethod getNextAuth() {
+        return nextAuth;
+    }
+
+    public void setNextAuth(HashMethod nextAuth) {
+        this.nextAuth = nextAuth;
+    }
+
+    @Override
+    public AuthenticationMethod getAuthenticationMethod() {
+        return new JpaAuthentication(this.currentAuth, this.nextAuth);
     }
 }

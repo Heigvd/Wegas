@@ -5,7 +5,7 @@
  * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-/* global Element, HTMLElement */
+/* global Element, HTMLElement, TextEncoder */
 
 /**
  * @fileoverview
@@ -14,10 +14,8 @@
  */
 YUI.add('wegas-helper', function(Y) {
     "use strict";
-
     var Wegas = Y.namespace("Wegas"),
         Helper;
-
     /**
      * @name Y.Wegas.Helper
      * @class
@@ -100,7 +98,6 @@ YUI.add('wegas-helper', function(Y) {
         formatDate: function(timestamp, fmt) {
             var date = new Date(timestamp),
                 months = ["Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
             function pad(value) {
                 return (value.toString().length < 2) ? '0' + value : value;
             }
@@ -221,7 +218,6 @@ YUI.add('wegas-helper', function(Y) {
         getFilename: function(path) {
             return path.replace(/^.*[\\\/]/, '');
         },
-
         /**
          *
          */
@@ -230,108 +226,101 @@ YUI.add('wegas-helper', function(Y) {
             // Polyfill for scrollIntoViewIfNeeded(), from https://gist.github.com/jocki84
             if (!Element.prototype.scrollIntoViewIfNeeded) {
                 Element.prototype.scrollIntoViewIfNeeded = function(centerIfNeeded) {
-            function withinBounds(value, min, max, extent) {
-                if (max - min > extent) {
-                    if (value > min) {
-                        // current scroll too far
-                        return min;
-                    }
-                    if (value + extent < max) {
-                        // current scroll too near
-                        return max - extent;
-                    }
-                    // partially visible, don't change anything
-                    return value;
-                } else {
-                    // enough place to show the whole area
-                    if (value > min) {
-                        // current scroll too far
-                        if (centerIfNeeded) {
-                            // center
-                            return (min + max - extent) / 2;
+                    function withinBounds(value, min, max, extent) {
+                        if (max - min > extent) {
+                            if (value > min) {
+                                // current scroll too far
+                                return min;
+                            }
+                            if (value + extent < max) {
+                                // current scroll too near
+                                return max - extent;
+                            }
+                            // partially visible, don't change anything
+                            return value;
+                        } else {
+                            // enough place to show the whole area
+                            if (value > min) {
+                                // current scroll too far
+                                if (centerIfNeeded) {
+                                    // center
+                                    return (min + max - extent) / 2;
+                                }
+                                // align bottom
+                                return max - extent;
+                            }
+                            if (value + extent < max) {
+                                // current scroll too near
+                                if (centerIfNeeded) {
+                                    // center
+                                    return (min + max - extent) / 2;
+                                }
+                                // align top
+                                return min;
+                            }
                         }
-                        // align bottom
-                        return max - extent;
+                        return value;
                     }
-                    if (value + extent < max) {
-                        // current scroll too near
-                        if (centerIfNeeded) {
-                            // center
-                            return (min + max - extent) / 2;
-                        }
-                        // align top
-                        return min;
+
+                    function translate(area, x, y) {
+                        return makeArea(x + area.left, y + area.top, area.width, area.height);
                     }
-                }
-                return value;
-            }
 
-            function translate(area, x, y) {
-                return makeArea(x + area.left, y + area.top, area.width, area.height);
-            }
-
-            function makeArea(left, top, width, height) {
-                return  {
-                    "left": left, "top": top, "width": width, "height": height,
-                    "right": left + width, "bottom": top + height,
-                    "relativeFromTo": function(lhs, rhs) {
-                        var newLeft = left, newTop = top;
-                        lhs = lhs.offsetParent;
-                        rhs = rhs.offsetParent;
-                        if (lhs === rhs) {
-                            return area;
-                        }
-                        for (; lhs; lhs = lhs.offsetParent) {
-                            newLeft += lhs.offsetLeft + lhs.clientLeft;
-                            newTop += lhs.offsetTop + lhs.clientTop;
-                        }
-                        for (; rhs; rhs = rhs.offsetParent) {
-                            newLeft -= rhs.offsetLeft + rhs.clientLeft;
-                            newTop -= rhs.offsetTop + rhs.clientTop;
-                        }
-                        return makeArea(newLeft, newTop, width, height);
+                    function makeArea(left, top, width, height) {
+                        return  {
+                            "left": left, "top": top, "width": width, "height": height,
+                            "right": left + width, "bottom": top + height,
+                            "relativeFromTo": function(lhs, rhs) {
+                                var newLeft = left, newTop = top;
+                                lhs = lhs.offsetParent;
+                                rhs = rhs.offsetParent;
+                                if (lhs === rhs) {
+                                    return area;
+                                }
+                                for (; lhs; lhs = lhs.offsetParent) {
+                                    newLeft += lhs.offsetLeft + lhs.clientLeft;
+                                    newTop += lhs.offsetTop + lhs.clientTop;
+                                }
+                                for (; rhs; rhs = rhs.offsetParent) {
+                                    newLeft -= rhs.offsetLeft + rhs.clientLeft;
+                                    newTop -= rhs.offsetTop + rhs.clientTop;
+                                }
+                                return makeArea(newLeft, newTop, width, height);
+                            }
+                        };
                     }
-                };
-            }
 
-            var parent, elem = this, area = makeArea(
-                this.offsetLeft, this.offsetTop,
-                this.offsetWidth, this.offsetHeight);
-
-            Y.log("InitialArea: " + JSON.stringify(area));
-            while ((parent = elem.parentNode) instanceof HTMLElement) {
-                var clientLeft = parent.offsetLeft + parent.clientLeft;
-                var clientTop = parent.offsetTop + parent.clientTop;
-
-                // Make area relative to parent's client area.
-                area = translate(area.relativeFromTo(elem, parent),
-                    -clientLeft, -clientTop);
-                Y.log(" - TrArea: " + JSON.stringify(area));
-
-                Y.log("Parent.scroll: " + parent.scrollLeft + " : " + parent.scrollTop);
-                parent.scrollLeft = withinBounds(
-                    parent.scrollLeft,
-                    area.left, area.right,
-                    parent.clientWidth);
-
-                parent.scrollTop = withinBounds(
-                    parent.scrollTop,
-                    area.top, area.bottom,
-                    parent.clientHeight);
-
-                Y.log("Parent.scroll: " + parent.scrollLeft + " : " + parent.scrollTop);
-                Y.log(" - TrAreaPre: " + JSON.stringify(area));
-
-                area.width = Math.min(area.width, parent.clientWidth);
-                area.height = Math.min(area.height, parent.clientHeight);
-                Y.log(" - TrAreaMid: " + JSON.stringify(area));
-
-                // Determine actual scroll amount by reading back scroll properties.
-                area = translate(area, clientLeft - parent.scrollLeft,
-                    clientTop - parent.scrollTop);
-                Y.log(" - TrAreapost: " + JSON.stringify(area));
-                elem = parent;
-            }
+                    var parent, elem = this, area = makeArea(
+                        this.offsetLeft, this.offsetTop,
+                        this.offsetWidth, this.offsetHeight);
+                    Y.log("InitialArea: " + JSON.stringify(area));
+                    while ((parent = elem.parentNode) instanceof HTMLElement) {
+                        var clientLeft = parent.offsetLeft + parent.clientLeft;
+                        var clientTop = parent.offsetTop + parent.clientTop;
+                        // Make area relative to parent's client area.
+                        area = translate(area.relativeFromTo(elem, parent),
+                            -clientLeft, -clientTop);
+                        Y.log(" - TrArea: " + JSON.stringify(area));
+                        Y.log("Parent.scroll: " + parent.scrollLeft + " : " + parent.scrollTop);
+                        parent.scrollLeft = withinBounds(
+                            parent.scrollLeft,
+                            area.left, area.right,
+                            parent.clientWidth);
+                        parent.scrollTop = withinBounds(
+                            parent.scrollTop,
+                            area.top, area.bottom,
+                            parent.clientHeight);
+                        Y.log("Parent.scroll: " + parent.scrollLeft + " : " + parent.scrollTop);
+                        Y.log(" - TrAreaPre: " + JSON.stringify(area));
+                        area.width = Math.min(area.width, parent.clientWidth);
+                        area.height = Math.min(area.height, parent.clientHeight);
+                        Y.log(" - TrAreaMid: " + JSON.stringify(area));
+                        // Determine actual scroll amount by reading back scroll properties.
+                        area = translate(area, clientLeft - parent.scrollLeft,
+                            clientTop - parent.scrollTop);
+                        Y.log(" - TrAreapost: " + JSON.stringify(area));
+                        elem = parent;
+                    }
                 };
             }
 
@@ -345,11 +334,140 @@ YUI.add('wegas-helper', function(Y) {
          */
         RegExpQuote: function(str) {
             return (String(str)).replace(/([.*?+\^$\[\]\\(){}|\-])/g, "\\$1");
+        },
+        Utf8ArrayToStr: function(array) {
+            // http://www.onicos.com/staff/iz/amuse/javascript/expert/utf.txt
+            /* utf.js - UTF-8 <=> UTF-16 convertion
+             *
+             * Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
+             * Version: 1.0
+             * LastModified: Dec 25 1999
+             * This library is free.  You can redistribute it and/or modify it.
+             */
+            var out, i, len, c;
+            var char2, char3;
+            out = "";
+            len = array.length;
+            i = 0;
+            while (i < len) {
+                c = array[i++];
+                switch (c >> 4)
+                {
+                    case 0:
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                    case 5:
+                    case 6:
+                    case 7:
+                        // 0xxxxxxx
+                        out += String.fromCharCode(c);
+                        break;
+                    case 12:
+                    case 13:
+                        // 110x xxxx   10xx xxxx
+                        char2 = array[i++];
+                        out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+                        break;
+                    case 14:
+                        // 1110 xxxx  10xx xxxx  10xx xxxx
+                        char2 = array[i++];
+                        char3 = array[i++];
+                        out += String.fromCharCode(((c & 0x0F) << 12) |
+                            ((char2 & 0x3F) << 6) |
+                            ((char3 & 0x3F) << 0));
+                        break;
+                }
+            }
+
+            return out;
+        },
+        utf16ToCodePoints: function(string) {
+            var s = String(string);
+            var len = s.length;
+
+            var cps = [];
+
+            for (var i = 0; i < len; i++) {
+                var c = s.charCodeAt(i);
+                if (c < 0xD800 || c >= 0xE000) {
+                    // those code point are stored as-is
+                    cps.push(c);
+                } else if (c < 0xDC00) {
+                    // those codepoints are encoded on two chars (surrogate pair)
+                    if (i < len) {
+                        i++;
+                        var c2 = s.charCodeAt(i);
+                        cps.push(0x10000 | ((c & 0x3FF) << 10) | (c2 & 0x3FF))
+                    } else {
+                        // whoops there is no two chars left
+                        cps.push(0xFFFD);
+                    }
+                } else if (c < 0xE000) {
+                    // invalid as such a char should have been handled by the previous case.
+                    cps.push(0xFFFD);
+                }
+            }
+            return cps;
+        },
+        strToUtf8Array: function(str) {
+            var cp = Y.Wegas.Helper.utf16ToCodePoints(str);
+            var array = [];
+            for (var i = 0; i < cp.length; i++) {
+                var char = cp[i];
+                // how many byte ?
+                if (char < 0x7F) {
+                    // 0xxxxxxx => one byte
+                    array.push(char);
+                } else if (char <= 0x7FF) {
+                    // <= 110x xxxx 10xx xxxx => two bytes
+                    array.push(0b11000000 | (char >> 6));
+                    array.push(0b10000000 | (char & 0x3F));
+                } else if (char <= 0xFFFF) {
+                    // 1110xxxx 10xxxxxx 10xxxxxx => three bytes
+                    array.push(0b11100000 | (char >> 12));
+                    array.push(0b10000000 | (char >> 6 & 0x3F));
+                    array.push(0b10000000 | (char & 0x3F));
+                } else {
+                    // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx => four bytes
+                    array.push(0b11110000 | (char >> 18));
+                    array.push(0b10000000 | (char >> 12 & 0b00111111));
+                    array.push(0b10000000 | (char >> 6 & 0b00111111));
+                    array.push(0b10000000 | (char & 0b00111111));
+                }
+            }
+
+            return new Uint8Array(array);
+        },
+        /**
+         * digest the value with the given algorithm
+         * @param {type} algorithm one of PLAIN (return the value as-is), SHA-256, SHA-384, SHA-512
+         * @param {type} value the value to hash
+         * @returns {Promise} 
+         */
+        digest: function(algorithm, value) {
+            // encode as (utf-8) Uint8Array
+            if (algorithm === 'PLAIN') {
+                return new Promise(function(resolve) {
+                    resolve(value);
+                })
+            } else {
+                var msgUint8 = (typeof (TextEncoder) !== 'undefined' ?
+                    new TextEncoder().encode(value)
+                    : Y.Wegas.Helper.strToUtf8Array(value));
+                return crypto.subtle.digest(algorithm, msgUint8)
+                    .then(function(hashBuffer) {
+                        var hashArray = Array.from(new Uint8Array(hashBuffer));
+                        return hashArray.map(function(b) {
+                            return b.toString(16).padStart(2, '0')
+                        }).join(''); // convert bytes to hex string
+                    });
+            }
         }
     };
     Wegas.Helper = Helper;
     Wegas.superbind = Helper.superbind;
-
     /**
      *
      */
@@ -566,7 +684,6 @@ YUI.add('wegas-helper', function(Y) {
                 });
                 return str;
             };
-
         return {
             removeDiacritics: removeDiacritics,
             isDiacritics: isDiacriticsRE
