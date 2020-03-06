@@ -1,6 +1,7 @@
 interface WegasComponent {
   type: string;
   props: {
+    name?: string;
     children?: WegasComponent[];
     [prop: string]: any;
   };

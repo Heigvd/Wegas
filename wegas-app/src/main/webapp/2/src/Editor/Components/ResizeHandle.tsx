@@ -6,7 +6,7 @@ import {
   grow,
   expandBoth,
   centeredContent,
-  schrink,
+  schrinkWidth,
 } from '../../css/classes';
 import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 
@@ -37,7 +37,7 @@ export function ResizeHandle({
     >
       <div className={cx(flex, grow, expandBoth)}>{children}</div>
       <div className={cx(centeredContent)}>
-        <div className={cx(schrink)}>
+        <div className={cx(schrinkWidth)}>
           <IconButton
             icon={['circle', { color: 'white', icon: 'caret-down' }]}
             onMouseDown={() => setMoving(true)}

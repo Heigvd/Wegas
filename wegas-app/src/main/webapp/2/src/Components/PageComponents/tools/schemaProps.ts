@@ -66,12 +66,14 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
+    borderTop?: boolean,
   ): TypedProps<BooleanProps> => ({
     required,
     type: 'boolean',
     value,
     index,
     view: {
+      borderTop,
       index,
       readOnly,
       featureLevel,
@@ -88,12 +90,14 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
+    borderTop?: boolean,
   ): TypedProps<StringInputProps> => ({
     required,
     type: 'number',
     value,
     index,
     view: {
+      borderTop,
       index,
       featureLevel,
       label,
@@ -109,12 +113,14 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
+    borderTop?: boolean,
   ): TypedProps<StringInputProps> => ({
     required,
     type: 'string',
     value,
     index,
     view: {
+      borderTop,
       index,
       layout,
       featureLevel,
@@ -142,6 +148,7 @@ export const schemaProps = {
       value,
       index,
       view: {
+        borderTop,
         index,
         featureLevel,
         label,
@@ -159,6 +166,7 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
+    borderTop?: boolean,
   ): TypedProps<ScriptProps> => ({
     required,
     type: 'object',
@@ -169,6 +177,7 @@ export const schemaProps = {
     },
     index,
     view: {
+      borderTop,
       index,
       featureLevel,
       label,
@@ -185,12 +194,14 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
+    borderTop?: boolean,
   ): TypedProps<CodeProps> => ({
     required,
     type: 'object',
     value,
     index,
     view: {
+      borderTop,
       index,
       featureLevel,
       label,
@@ -207,6 +218,7 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
+    borderTop?: boolean,
   ): TypedProps<IAsyncSelectProps> & { enum: readonly unknown[] } => {
     let enumerator: readonly unknown[] = [];
     let choices: SelectItem[] = [];
@@ -226,6 +238,7 @@ export const schemaProps = {
       type: returnType,
       index,
       view: {
+        borderTop,
         index,
         choices,
         featureLevel,
@@ -242,12 +255,14 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
+    borderTop?: boolean,
   ): TypedProps<PageSelectProps> => {
     return {
       required,
       type: 'object',
       index,
       view: {
+        borderTop,
         index,
         featureLevel,
         label,
@@ -264,11 +279,13 @@ export const schemaProps = {
     index: number = 0,
     layout?: SchemaLayout,
     items?: Item<string>[],
+    borderTop?: boolean,
   ): TypedProps<TreeVariableSelectProps> => ({
     required,
     type: 'string',
     index,
     view: {
+      borderTop,
       index,
       classFilter,
       featureLevel,
@@ -287,11 +304,13 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
+    borderTop?: boolean,
   ): TypedProps<TreeVSelectProps<T>> => ({
     required,
     type,
     index,
     view: {
+      borderTop,
       index,
       classFilter,
       featureLevel,
@@ -308,11 +327,13 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
+    borderTop?: boolean,
   ): TypedProps<ScripableVariableSelectProps> => ({
     required,
     type: 'object',
     index,
     view: {
+      borderTop,
       index,
       classFilter,
       featureLevel,
@@ -334,6 +355,7 @@ export const schemaProps = {
     layout?: SchemaLayout,
     highlight: boolean = true,
     sortable: boolean = false,
+    borderTop?: boolean,
   ): TypedProps<IArrayProps> => ({
     required,
     items: {
@@ -346,6 +368,7 @@ export const schemaProps = {
     type: 'array',
     index,
     view: {
+      borderTop,
       index,
       featureLevel,
       label,
@@ -364,12 +387,14 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
+    borderTop?: boolean,
   ): TypedProps<StatementViewProps> => ({
     required,
     type: 'object',
     index,
     value,
     view: {
+      borderTop,
       index,
       featureLevel,
       label,
@@ -379,3 +404,7 @@ export const schemaProps = {
     },
   }),
 };
+
+export type SchemaPropsSchemas = ReturnType<
+  typeof schemaProps[keyof typeof schemaProps]
+>;

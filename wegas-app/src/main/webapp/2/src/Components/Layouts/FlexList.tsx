@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { schemaProps } from '../PageComponents/tools/schemaProps';
 
 export const alignItemsValues = [
   'stretch',
@@ -20,32 +21,32 @@ export const flexBasisValues = [
 ] as const;
 type FlexBasis = typeof flexBasisValues[number] | string;
 
-interface FlexListChildrenProps {
+export interface FlexItemProps {
   /**
    * order - the order of the current item
    */
-  order: number;
+  order?: number;
   /**
    * alignSelf - justifies the items perpendicularly to the flex direction
    */
-  alignSelf: AlignSelf;
+  alignSelf?: AlignSelf;
   /**
    * flexGrow - size factor of the item in the list
    */
-  flexGrow: number;
+  flexGrow?: number;
   /**
    * flexShrink - size factor of the item in the list
    * Important : initial value is 1
    */
-  flexShrink: number;
+  flexShrink?: number;
   /**
    * flexBasis - the initial size of the item, can be set like any css size value (%,px,em,...) or with the string "content"
    */
-  flexBasis: FlexBasis;
+  flexBasis?: FlexBasis;
   /**
    * className - the class to apply to the item
    */
-  className: string;
+  className?: string;
 }
 
 export function FlexItem({
@@ -55,16 +56,29 @@ export function FlexItem({
   flexBasis,
   className,
   children,
-}: React.PropsWithChildren<FlexListChildrenProps>) {
+}: React.PropsWithChildren<FlexItemProps>) {
   return (
     <div
       className={className}
-      style={{ alignSelf, flexGrow, flexShrink, flexBasis }}
+      style={{
+        position: 'relative',
+        alignSelf,
+        flexGrow,
+        flexShrink,
+        flexBasis,
+      }}
     >
       {children}
     </div>
   );
 }
+
+export const flexItemSchema = {
+  alignSelf: schemaProps.select('Align self', false, alignSelfValues, 'string'),
+  flexGrow: schemaProps.number('Flex grow', false),
+  flexShrink: schemaProps.number('Flex shrink', false),
+  flexBasis: schemaProps.string('Flex basis', false),
+};
 
 export const flexDirectionValues = [
   'row',
@@ -122,7 +136,7 @@ export interface FlexListProps {
   /**
    * children - the items in the list
    */
-  children?: FlexListChildrenProps[];
+  children?: FlexItemProps[];
 }
 /**
  * Flex list.

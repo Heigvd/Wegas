@@ -14,16 +14,16 @@ function PlayerCentered({
   return <Centered className={className}>{children}</Centered>;
 }
 
-registerComponent(
-  pageComponentFactory(
-    PlayerCentered,
-    'Centered',
-    'align-center',
-    {
-      className: schemaProps.string('ClassName', false),
-      children: schemaProps.hidden(false),
-    },
-    [],
-    () => ({}),
-  ),
-);
+// registerComponent(
+//   pageComponentFactory(
+//     PlayerCentered,
+//     'Centered',
+//     'align-center',
+//     {
+//       className: schemaProps.string('ClassName', false),
+//       children: schemaProps.hidden(false),
+//     },
+//     [],
+//     () => ({}),
+//   ),
+// );

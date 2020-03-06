@@ -6,6 +6,8 @@ import { cx } from 'emotion';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { BaseView, Schema } from 'jsoninput/typings/types';
 import { MessageString } from '../MessageString';
+import { flexItemSchema } from '../../../Components/Layouts/FlexList';
+import { SchemaPropsSchemas } from '../../../Components/PageComponents/tools/schemaProps';
 
 interface EditorProps<T = WegasComponent['props']> {
   entity: T;
@@ -62,17 +64,28 @@ export interface ComponentEditorProps {
   entity?: WegasComponent;
   update?: (variable: WegasComponent) => void;
   actions?: EditorProps['actions'];
+  isFlexItem?: boolean;
 }
 
 export default function ComponentEditor({
   entity,
   update,
   actions,
+  isFlexItem,
 }: ComponentEditorProps) {
-  const schema = usePageComponentStore(
-    s => s[entity ? entity.type : 'List'].getSchema(),
-    deepDifferent,
-  );
+  const schema = usePageComponentStore(s => {
+    const baseSchema = s[entity ? entity.type : 'List'].getSchema();
+    if (isFlexItem) {
+      const firstPropView: SchemaPropsSchemas & {
+        view?: SchemaPropsSchemas['view'] & { borderTop?: boolean };
+      } = flexItemSchema.alignSelf;
+      if (firstPropView.view) {
+        firstPropView.view['borderTop'] = true;
+      }
+      baseSchema.properties = { ...baseSchema.properties, ...flexItemSchema };
+    }
+    return baseSchema;
+  }, deepDifferent);
   if (entity === undefined || schema === undefined) {
     return null;
   }

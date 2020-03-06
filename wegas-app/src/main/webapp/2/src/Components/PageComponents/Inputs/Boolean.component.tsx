@@ -41,7 +41,7 @@ const PlayerBoolean: React.FunctionComponent<PlayerBooleanProps> = props => {
   const instance = useVariableInstance(descriptor);
 
   return (
-    <>
+    <div style={{ position: 'relative' }}>
       <EditHandle />
       {script === '' || descriptor === undefined || instance === undefined ? (
         <pre>Not found: {script}</pre>
@@ -75,7 +75,7 @@ const PlayerBoolean: React.FunctionComponent<PlayerBooleanProps> = props => {
           }
         />
       )}
-    </>
+    </div>
   );
 };
 

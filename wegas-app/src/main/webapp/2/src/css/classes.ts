@@ -48,8 +48,15 @@ export const expandWidth = css({
 export const expandHeight = css({
   height: '100%',
 });
-export const schrink = css({
+export const schrinkBoth = css({
   width: 'fit-content',
+  height: 'fit-content',
+});
+export const schrinkWidth = css({
+  width: 'fit-content',
+});
+export const schrinkHeight = css({
+  height: 'fit-content',
 });
 
 // Flex

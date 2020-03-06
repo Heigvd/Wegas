@@ -48,8 +48,9 @@ export const pageCTX = React.createContext<PageContext>({
 });
 
 const defaultPage = {
-  type: 'List',
+  type: 'FlexList',
   props: {
+    flexDirection: 'column',
     children: [],
     style: {
       width: '100%',
@@ -243,6 +244,7 @@ export default function PageEditor() {
       const browsePath = [...path];
       while (browsePath.length > 0) {
         if (parent.props.children) {
+          // Avoid removing first componnent (FlexList) with browser path == 1
           if (browsePath.length == 1) {
             parent.props.children.splice(Number(browsePath[0]), 1);
             patchPage(pagesState.selectedPage, newPage);
@@ -452,6 +454,10 @@ export default function PageEditor() {
               {pagesState.editedPath && (
                 <ComponentEditor
                   entity={findComponent(pagesState.editedPath).component}
+                  isFlexItem={
+                    findComponent(pagesState.editedPath).parent?.type ===
+                    'FlexList'
+                  }
                   update={onUpdate}
                   actions={[
                     {

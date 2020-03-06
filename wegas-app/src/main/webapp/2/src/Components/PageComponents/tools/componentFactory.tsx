@@ -10,6 +10,7 @@ import {
   EditorHandleProps,
 } from './EditableComponent';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
+import { SchemaPropsSchemas } from './schemaProps';
 
 export interface PageComponent<
   P = { [name: string]: unknown } & { children?: WegasComponent[] }
@@ -19,7 +20,10 @@ export interface PageComponent<
   ) => React.FunctionComponent<P & PageComponentProps>;
   getName: () => string;
   getIcon: () => Icon;
-  getSchema: () => SimpleSchema;
+  getSchema: () => {
+    description: string;
+    properties: { [prop: string]: SchemaPropsSchemas };
+  };
   getAllowedVariables: () => (keyof WegasScriptEditorNameAndTypes)[];
   /**
    * gives a computed list of props from variable, if the variable is undefined, gives default props
@@ -118,7 +122,7 @@ export function pageComponentFactory<
   component: React.FunctionComponent<P>,
   componentName: string,
   icon: Icon,
-  schema: SimpleSchema,
+  schema: { [prop: string]: SchemaPropsSchemas },
   allowedVariables: T[],
   getComputedPropsFromVariable: (variable?: V) => R,
 ) {
@@ -149,6 +153,10 @@ export function pageComponentFactory<
     getComputedPropsFromVariable,
   };
 }
+
+export type PageComponentFactorySchemas = ReturnType<
+  typeof pageComponentFactory
+>['getSchema'];
 
 /**
  * Function that registers a component dynamically.

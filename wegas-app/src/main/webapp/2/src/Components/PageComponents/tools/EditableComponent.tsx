@@ -23,21 +23,25 @@ const editItemStyle = css({
 });
 
 interface ComponentEditorHandleProps {
-  name: string;
+  type: string;
   path: string[];
 }
 
 export interface EditorHandleProps {
+  componentName?: string;
   vertical?: boolean;
+  showHandle?: boolean;
+  opacity?: number;
   className?: string;
   togglerProps?: TogglerProps;
 }
 
 export function ComponentEditorHandle({
-  name,
+  type,
   path,
 }: ComponentEditorHandleProps) {
   return function EditHandle({
+    componentName,
     vertical,
     className,
     togglerProps,
@@ -46,13 +50,19 @@ export function ComponentEditorHandle({
       pageCTX,
     );
     return editMode && showControls ? (
-      <div className={className}>
-        <div
-          className={cx(
-            expandBoth,
-            css({ background: themeVar.primaryHoverColor }),
-          )}
-        >
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: vertical ? 0 : undefined,
+          left: vertical ? undefined : 0,
+          borderRadius: themeVar.borderRadius,
+          background: themeVar.primaryHoverColor,
+          // opacity: showHandle ? opacity : 0.0,
+        }}
+        className={'wegas-component-handle ' + className}
+      >
+        <div className={expandBoth}>
           <Centered
             className={css({
               padding: '2px',
@@ -61,7 +71,7 @@ export function ComponentEditorHandle({
             })}
           >
             <List horizontal={!vertical} shrink centered>
-              {name}
+              {(componentName ? componentName + ' : ' : '') + type}
               <IconButton icon="edit" onClick={() => onEdit(path)} />
               <ConfirmButton
                 icon="trash"
@@ -163,7 +173,7 @@ export function EditableComponent({
     content,
     uneditable
       ? () => null
-      : ComponentEditorHandle({ name: componentName, path }),
+      : ComponentEditorHandle({ type: componentName, path }),
     showBorders && !uneditable,
   );
 }
