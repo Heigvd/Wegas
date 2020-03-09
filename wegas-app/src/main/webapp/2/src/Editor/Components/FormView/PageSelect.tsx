@@ -10,6 +10,7 @@ import { scriptEditStyle } from './Script/Script';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 import { omit } from 'lodash-es';
+import { createScript } from '../../../Helper/wegasEntites';
 
 export interface PageSelectProps extends WidgetProps.BaseProps {
   view: CommonView & LabeledView;
@@ -49,9 +50,7 @@ export default function PageSelect(props: PageSelectProps) {
     (value?: string) => {
       const content = value ? value : '';
       props.onChange(
-        props.value
-          ? { ...props.value, content }
-          : { '@class': 'Script', content, language: 'Javascript' },
+        props.value ? { ...props.value, content } : createScript(content),
       );
     },
     [props],
@@ -69,11 +68,7 @@ export default function PageSelect(props: PageSelectProps) {
               props.onChange(
                 props.value
                   ? { ...props.value, content: value }
-                  : {
-                      '@class': 'Script',
-                      content: value,
-                      language: 'Javascript',
-                    },
+                  : createScript(value),
               )
             }
             language={

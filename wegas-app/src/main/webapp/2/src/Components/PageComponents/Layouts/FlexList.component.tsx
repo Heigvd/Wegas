@@ -2,11 +2,10 @@ import * as React from 'react';
 import {
   pageComponentFactory,
   registerComponent,
-  PageComponentMandatoryProps,
+  extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { css, cx } from 'emotion';
-import { themeVar } from '../../Theme';
+import { css } from 'emotion';
 import {
   FlexListProps,
   FlexList,
@@ -15,27 +14,11 @@ import {
   justifyContentValues,
   alignItemsValues,
   alignContentValues,
-  FlexItem,
-  FlexItemProps,
 } from '../../Layouts/FlexList';
-import { schrinkBoth } from '../../../css/classes';
-import { EditorHandleProps } from '../tools/EditableComponent';
-
-export const layoutHighlightStyle = css({
-  borderStyle: 'solid',
-  borderWidth: '2px',
-  borderColor: themeVar.searchColor,
-});
-
-export const childHighlightCSS = {
-  borderStyle: 'dotted',
-  borderWidth: '1px',
-  borderColor: themeVar.searchColor,
-};
-
-export const childHighlightStyle = css({
-  '&>*': childHighlightCSS,
-});
+import {
+  EditorHandleProps,
+  PageComponentMandatoryProps,
+} from '../tools/EditableComponent';
 
 export const hoverElement = css({
   backgroundColor: 'red',
@@ -47,40 +30,6 @@ export const hoverElement = css({
   },
 });
 
-interface ComponentContainerProps<T> extends PageComponentMandatoryProps {
-  child: React.FunctionComponent<T>;
-  childProps: T;
-  itemProps: FlexItemProps;
-  handleProps?: EditorHandleProps;
-}
-
-function ComponentContainer<T>(props: ComponentContainerProps<T>) {
-  const {
-    child,
-    childProps,
-    itemProps,
-    EditHandle,
-    handleProps,
-    showBorders,
-  } = props;
-
-  return (
-    <FlexItem
-      {...itemProps}
-      className={cx(
-        {
-          [childHighlightStyle]: showBorders,
-          [layoutHighlightStyle]: showBorders,
-        },
-        itemProps.className,
-      )}
-    >
-      <EditHandle {...handleProps} />
-      {child(childProps)}
-    </FlexItem>
-  );
-}
-
 type FlexListCompoentProps = FlexListProps & PageComponentMandatoryProps;
 interface PlayerFlexListProps extends FlexListCompoentProps {
   /**
@@ -90,40 +39,38 @@ interface PlayerFlexListProps extends FlexListCompoentProps {
 }
 
 function PlayerFlexList(props: PlayerFlexListProps) {
-  const { EditHandle, showBorders } = props;
+  const {
+    ComponentContainer,
+    showBorders,
+    childProps,
+    flexProps,
+  } = extractProps(props);
+
   const [showLayout, setShowLayout] = React.useState(
     showBorders ? true : false,
   );
-
   React.useEffect(() => {
     if (showBorders !== undefined) {
       setShowLayout(showBorders);
     }
   }, [showBorders]);
 
+  const handleProps: EditorHandleProps = {
+    componentName: props.name,
+    vertical:
+      props.flexDirection === 'column' ||
+      props.flexDirection === 'column-reverse',
+    togglerProps: {
+      onChange: setShowLayout,
+      value: showLayout,
+      hint: 'Highlight list borders (only during edition mode)',
+    },
+  };
+
   return (
-    <div
-      style={{ position: 'relative' }}
-      className={cx(
-        schrinkBoth,
-        { [childHighlightStyle]: showLayout },
-        hoverElement,
-      )}
-    >
-      <EditHandle
-        componentName={props.name}
-        vertical={
-          props.flexDirection === 'column' ||
-          props.flexDirection === 'column-reverse'
-        }
-        togglerProps={{
-          onChange: setShowLayout,
-          value: showLayout,
-          hint: 'Highlight list borders (only during edition mode)',
-        }}
-      />
-      <FlexList {...props} className={props.className} />
-    </div>
+    <ComponentContainer flexProps={flexProps} handleProps={handleProps}>
+      <FlexList {...childProps} />
+    </ComponentContainer>
   );
 }
 
@@ -159,9 +106,6 @@ registerComponent(
         alignContentValues,
         'string',
       ),
-      className: schemaProps.string('Class', false),
-      style: schemaProps.hidden(false, 'object'),
-      children: schemaProps.hidden(false, 'array'),
     },
     ['ISListDescriptor'],
     (val?: Readonly<ISListDescriptor>) =>

@@ -7,10 +7,13 @@ import { useAnyStore } from '../../Hooks/storeHookFactory';
 import {
   EditableComponent,
   PageComponentProps,
-  EditorHandleProps,
+  PageComponentMandatoryProps,
+  defaultMandatoryKeys,
 } from './EditableComponent';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 import { SchemaPropsSchemas } from './schemaProps';
+import { pick, omit } from 'lodash-es';
+import { flexItemDefaultKeys } from '../../Layouts/FlexList';
 
 export interface PageComponent<
   P = { [name: string]: unknown } & { children?: WegasComponent[] }
@@ -98,21 +101,6 @@ export function usePageComponentStore<R>(
   return useAnyStore(selector, shouldUpdate, componentsStore);
 }
 
-export interface PageComponentMandatoryProps {
-  /**
-   * EditHandle - a handle component that appear in edit mode
-   */
-  EditHandle: React.FunctionComponent<EditorHandleProps>;
-  /**
-   * displayBorders - ask the component to highlight its borders
-   */
-  showBorders?: boolean;
-  /**
-   * path - the location of the component in the page
-   */
-  path?: string[];
-}
-
 export function pageComponentFactory<
   P extends PageComponentMandatoryProps,
   T extends keyof WegasScriptEditorNameAndTypes,
@@ -134,8 +122,13 @@ export function pageComponentFactory<
         wegasChildren={props.children}
         uneditable={uneditable}
       >
-        {(content, EditHandle, showBorders) =>
-          component({ ...props, children: content, EditHandle, showBorders })
+        {(content, ComponentContainer, showBorders) =>
+          component({
+            ...props,
+            children: content,
+            ComponentContainer,
+            showBorders,
+          })
         }
       </EditableComponent>
     );
@@ -171,3 +164,34 @@ export const registerComponent: (
     PageComponentActionCreator.ADD_COMPONENT(component.getName(), component),
   );
 };
+
+/**
+ * Importing all the files containing ".component.".
+ * Allows component registration without explicit import within the hole project path
+ */
+export const importComponents = () => {
+  const componentModules = require.context(
+    '../../../',
+    true,
+    /\.component\./,
+    'lazy-once',
+  );
+  componentModules.keys().map(k => componentModules(k));
+};
+
+/**
+ * Extracts props from WegasComponent props
+ * @param props
+ */
+export function extractProps<T>(props: PageComponentMandatoryProps & T) {
+  return {
+    ComponentContainer: props.ComponentContainer,
+    showBorders: props.showBorders,
+    path: props.path,
+    flexProps: pick(props, flexItemDefaultKeys),
+    childProps: omit(props, [
+      ...defaultMandatoryKeys,
+      ...flexItemDefaultKeys,
+    ]) as T,
+  };
+}

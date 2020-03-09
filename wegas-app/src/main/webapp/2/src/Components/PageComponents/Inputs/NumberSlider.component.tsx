@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   registerComponent,
   pageComponentFactory,
-  PageComponentMandatoryProps,
+  extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import {
@@ -10,12 +10,11 @@ import {
   DisplayMode,
   displayModes,
 } from '../../Inputs/Number/NumberSlider';
-import { useVariableInstance } from '../../Hooks/useVariable';
 import { store } from '../../../data/store';
-import { Interpolation } from 'emotion';
 import { Actions } from '../../../data';
 import { omit } from 'lodash';
-import { useScript } from '../../Hooks/useScript';
+import { useComponentScript } from '../../Hooks/useComponentScript';
+import { PageComponentMandatoryProps } from '../tools/EditableComponent';
 
 interface PlayerNumberSliderProps extends PageComponentMandatoryProps {
   /**
@@ -35,58 +34,35 @@ interface PlayerNumberSliderProps extends PageComponentMandatoryProps {
    * disabled - set the component in disabled mode
    */
   disabled?: boolean;
-  /**
-   * trackStyle - the style of the track
-   */
-  trackStyle?: Interpolation;
-  /**
-   * activePartStyle - the style of the left part of the track
-   */
-  activePartStyle?: Interpolation;
-  /**
-   * handleStyle - the style of the slider handle
-   */
-  handleStyle?: Interpolation;
-  /**
-   * disabledStyle - the style of the slider in disabled mode
-   */
-  disabledStyle?: Interpolation;
 }
 
 function PlayerNumberSlider(props: PlayerNumberSliderProps) {
-  const { script, EditHandle } = props;
-  const content = script ? script.content : '';
-  const descriptor = useScript(content) as INumberDescriptor;
-  const instance = useVariableInstance(descriptor);
-  if (content === '' || descriptor === undefined || instance === undefined) {
-    return (
-      <>
-        <EditHandle />
-        <pre>Not found: {script}</pre>
-      </>
-    );
-  }
-
+  const { ComponentContainer, childProps, flexProps } = extractProps(props);
+  const { content, descriptor, instance, notFound } = useComponentScript<
+    INumberDescriptor
+  >(props.script);
   const min = descriptor.minValue || 0;
   const max = descriptor.maxValue || 1;
-
   return (
-    <>
-      <EditHandle />
-      <NumberSlider
-        value={instance.value}
-        onChange={v =>
-          store.dispatch(
-            Actions.VariableInstanceActions.runScript(
-              `${script}.setValue(self, ${v});`,
-            ),
-          )
-        }
-        min={min}
-        max={max}
-        {...omit(props, ['variable', 'min', 'max', 'path', 'children'])}
-      />
-    </>
+    <ComponentContainer flexProps={flexProps}>
+      {notFound ? (
+        <pre>Not found: {content}</pre>
+      ) : (
+        <NumberSlider
+          {...childProps}
+          value={instance.value}
+          onChange={v =>
+            store.dispatch(
+              Actions.VariableInstanceActions.runScript(
+                `${content}.setValue(self, ${v});`,
+              ),
+            )
+          }
+          min={min}
+          max={max}
+        />
+      )}
+    </ComponentContainer>
   );
 }
 
@@ -102,10 +78,6 @@ registerComponent(
       steps: schemaProps.number('Steps', false),
       displayValues: schemaProps.select('Display value', false, displayModes),
       disabled: schemaProps.boolean('Disabled', false),
-      trackStyle: schemaProps.code('Track style', false, 'JSON'),
-      activePartStyle: schemaProps.code('Active part style', false, 'JSON'),
-      handleStyle: schemaProps.code('Handle style', false, 'JSON'),
-      disabledStyle: schemaProps.code('Disabled style', false, 'JSON'),
     },
     [],
     () => ({}),

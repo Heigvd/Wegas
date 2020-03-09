@@ -30,6 +30,7 @@ import {
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { createTranslatableContent } from './FormView/translatable';
+import { createScript } from '../../Helper/wegasEntites';
 
 const editorStyle = css({
   position: 'relative',
@@ -181,32 +182,16 @@ class StateMachineEditor extends React.Component<
           '@class': 'Transition',
           label: '',
           nextStateId,
-          triggerCondition: {
-            '@class': 'Script',
-            language: 'JavaScript',
-            content: '',
-          },
-          preStateImpact: {
-            '@class': 'Script',
-            language: 'JavaScript',
-            content: '',
-          },
+          triggerCondition: createScript(),
+          preStateImpact: createScript(),
           index: 0,
           version: 0,
         }
       : {
           '@class': 'DialogueTransition',
           nextStateId,
-          triggerCondition: {
-            '@class': 'Script',
-            language: 'JavaScript',
-            content: '',
-          },
-          preStateImpact: {
-            '@class': 'Script',
-            language: 'JavaScript',
-            content: '',
-          },
+          triggerCondition: createScript(),
+          preStateImpact: createScript(),
           index: 0,
           version: 0,
           actionText: createTranslatableContent(this.context.lang),
@@ -297,11 +282,7 @@ class StateMachineEditor extends React.Component<
       ? {
           '@class': 'State',
           version: 0,
-          onEnterEvent: {
-            '@class': 'Script',
-            content: '',
-            language: 'JavaScript',
-          },
+          onEnterEvent: createScript(),
           editorPosition: {
             x: position.left >= 10 ? position.left : 10,
             y: position.top >= 10 ? position.top : 10,
@@ -312,11 +293,7 @@ class StateMachineEditor extends React.Component<
       : {
           '@class': 'DialogueState',
           version: 0,
-          onEnterEvent: {
-            '@class': 'Script',
-            content: '',
-            language: 'JavaScript',
-          },
+          onEnterEvent: createScript(),
           editorPosition: {
             x: position.left >= 10 ? position.left : 10,
             y: position.top >= 10 ? position.top : 10,

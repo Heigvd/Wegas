@@ -20,6 +20,7 @@ import {
 } from '../../../Editor/Components/FormView/TreeVariableSelect';
 import { IArrayProps } from '../../../Editor/Components/FormView/Array';
 import { StatementViewProps } from '../../../Editor/Components/FormView/Script/Expressions/ExpressionEditor';
+import { createScript } from '../../../Helper/wegasEntites';
 
 // type SchemaPrimitive =
 //   | 'boolean'
@@ -138,6 +139,7 @@ export const schemaProps = {
     layout?: SchemaLayout,
     readOnly: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
+    borderTop?: boolean,
   ) =>
     /* TODO : Improve  */
     /*: TypedProps<Parameters<typeof DEFINED_VIEWS[T]>[0]>*/
@@ -170,11 +172,7 @@ export const schemaProps = {
   ): TypedProps<ScriptProps> => ({
     required,
     type: 'object',
-    value: {
-      '@class': 'Script',
-      content: value || '',
-      language: language || 'JavaScript',
-    },
+    value: createScript(value, language),
     index,
     view: {
       borderTop,

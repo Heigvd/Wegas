@@ -8,6 +8,7 @@ import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { QuestionDescriptorAPI } from '../../API/questionDescriptor.api';
 import { isSelected, getReply } from '../proxyfy/methods/ChoiceDescriptor';
 import { getInstance } from '../methods/VariableDescriptorMethods';
+import { createScript } from '../../Helper/wegasEntites';
 
 export interface VariableInstanceState {
   [id: string]: Readonly<IVariableInstance> | undefined;
@@ -76,9 +77,7 @@ export function runScript(
       throw Error('Missing persisted player');
     }
     const finalScript: IScript =
-      'string' === typeof script
-        ? { '@class': 'Script', language: 'JavaScript', content: script }
-        : script;
+      'string' === typeof script ? createScript(script) : script;
     return VariableDescriptorAPI.runScript(
       gameModelId,
       p.id,

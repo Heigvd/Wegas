@@ -139,7 +139,7 @@ function generateArc(
   ].join(' ');
 }
 
-const generateLine = (
+export const generateLine = (
   startRadius: number,
   stopRadius: number,
   angle: number,

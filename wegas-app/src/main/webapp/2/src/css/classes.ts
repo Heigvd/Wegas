@@ -72,6 +72,9 @@ export const flexRow = css({
 export const flexWrap = css({
   flexWrap: 'wrap',
 });
+export const flexDistribute = css({
+  justifyContent: 'space-evenly',
+});
 
 // Position
 export const textCenter = css({

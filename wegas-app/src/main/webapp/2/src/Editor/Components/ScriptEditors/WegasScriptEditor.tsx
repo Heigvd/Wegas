@@ -13,7 +13,7 @@ import SrcEditor, {
 import { SrcEditorProps } from './SrcEditor';
 import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
 import { useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
-import { libes5 } from '../../../../types/scripts/libs';
+import { libes5 } from '../../../Helper/libs';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 
 export interface WegasScriptEditorProps extends SrcEditorProps {

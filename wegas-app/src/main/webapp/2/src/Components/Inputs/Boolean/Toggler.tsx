@@ -1,11 +1,15 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { themeVar } from '../../Theme';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
-import { textCenter } from '../../../css/classes';
+import { textCenter, flex } from '../../../css/classes';
 
-const togglerStyle = (disabled?: boolean, inactive?: boolean) =>
+const togglerStyle = (
+  disabled?: boolean,
+  readOnly?: boolean,
+  checked?: boolean,
+) =>
   css({
     minWidth: '50px',
     width: 'fit-content',
@@ -14,16 +18,18 @@ const togglerStyle = (disabled?: boolean, inactive?: boolean) =>
     borderStyle: 'solid',
     borderWidth: '2px',
     borderColor: disabled ? themeVar.disabledColor : themeVar.primaryColor,
-    cursor: disabled || inactive ? 'deafult' : 'pointer',
+    backgroundColor: checked ? themeVar.successColor : themeVar.errorColor,
+    cursor: disabled || readOnly ? 'default' : 'pointer',
     margin: 'auto',
   });
 
-const handleStyle = css({
-  borderRadius: '20px',
-  minWidth: '20px',
-  height: '20px',
-  backgroundColor: themeVar.primaryColor,
-});
+const handleStyle = (disabled?: boolean) =>
+  css({
+    borderRadius: '20px',
+    minWidth: '20px',
+    height: '20px',
+    backgroundColor: disabled ? themeVar.disabledColor : themeVar.primaryColor,
+  });
 
 export interface TogglerProps extends InputProps<boolean> {
   /**
@@ -81,12 +87,14 @@ export function Toggler({
   }, [value]);
 
   return (
-    <div id={id} className={className ? className : textCenter}>
+    <div id={id} className={cx(textCenter, className)}>
       {label && <Value value={label} />}
       <div
-        className={
-          togglerClassName ? togglerClassName : togglerStyle(disabled, readOnly)
-        }
+        className={cx(
+          togglerStyle(disabled, readOnly, checked),
+          flex,
+          togglerClassName,
+        )}
         onClick={e => {
           e.stopPropagation();
           !disabled &&
@@ -110,7 +118,7 @@ export function Toggler({
           </div>
         )}
         <div
-          className={handlerClassName ? handlerClassName : handleStyle}
+          className={cx(handleStyle(disabled), handlerClassName)}
           title={hint}
         />
         {checked && (

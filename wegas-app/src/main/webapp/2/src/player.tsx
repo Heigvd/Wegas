@@ -11,15 +11,9 @@ import { PageAPI } from './API/pages.api';
 import { GameModel } from './data/selectors';
 import { useWebsocket } from './API/websocket';
 import 'emotion';
+import { importComponents } from './Components/PageComponents/tools/componentFactory';
 
-// Importing all the files containing ".component." to allow component registration without explicit import
-const componentModules = require.context(
-  './',
-  true,
-  /\.component\./,
-  'lazy-once',
-);
-componentModules.keys().map(k => componentModules(k));
+importComponents();
 
 function PlayerPageLoader() {
   const [selectedPage, setSelectedPage] = React.useState<Page>();

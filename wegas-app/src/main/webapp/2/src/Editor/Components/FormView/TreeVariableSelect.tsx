@@ -11,7 +11,10 @@ import { LabeledView, Labeled } from './labeled';
 import { css } from 'emotion';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
-import { toScriptableClassName } from '../../../Helper/wegasClassNames';
+import {
+  toScriptableClassName,
+  createScript,
+} from '../../../Helper/wegasEntites';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 import { scriptEditStyle } from './Script/Script';
 import { inputStyle } from '../../../Components/Inputs/inputStyles';
@@ -267,7 +270,7 @@ export function ScripableVariableSelect(
       props.onChange(
         props.value
           ? { ...props.value, content: script }
-          : { '@class': 'Script', content: script, language: 'Javascript' },
+          : createScript(script),
       );
     },
     [props],
@@ -285,11 +288,7 @@ export function ScripableVariableSelect(
               props.onChange(
                 props.value
                   ? { ...props.value, content: value }
-                  : {
-                      '@class': 'Script',
-                      content: value,
-                      language: 'Javascript',
-                    },
+                  : createScript(value),
               )
             }
             language={

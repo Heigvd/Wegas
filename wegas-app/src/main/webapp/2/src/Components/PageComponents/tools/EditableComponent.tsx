@@ -14,6 +14,24 @@ import { Centered } from '../../Layouts/Centered';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { Toggler, TogglerProps } from '../../Inputs/Boolean/Toggler';
+import { FlexItemProps, FlexItem } from '../../Layouts/FlexList';
+import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
+
+export const layoutHighlightStyle = css({
+  borderStyle: 'solid',
+  borderWidth: '2px',
+  borderColor: themeVar.searchColor,
+});
+
+export const childHighlightCSS = {
+  borderStyle: 'dotted',
+  borderWidth: '1px',
+  borderColor: themeVar.searchColor,
+};
+
+export const childHighlightStyle = css({
+  '&>*': childHighlightCSS,
+});
 
 const editItemStyle = css({
   display: 'list-item',
@@ -22,7 +40,7 @@ const editItemStyle = css({
   height: '100px',
 });
 
-interface ComponentEditorHandleProps {
+interface ComponentEditorContainerProps {
   type: string;
   path: string[];
 }
@@ -36,11 +54,44 @@ export interface EditorHandleProps {
   togglerProps?: TogglerProps;
 }
 
-export function ComponentEditorHandle({
+export interface PageComponentMandatoryProps extends FlexItemProps {
+  /**
+   * ComponentContainer - the container that must surround any component
+   */
+  ComponentContainer: React.FunctionComponent<ComponentContainerProps>;
+  /**
+   * displayBorders - ask the component to highlight its borders
+   */
+  showBorders?: boolean;
+  /**
+   * path - the location of the component in the page
+   */
+  path?: string[];
+}
+
+function Nothing() {
+  return null;
+}
+
+const defaultMandatoryProps: PageComponentMandatoryProps = {
+  ComponentContainer: Nothing,
+  showBorders: undefined,
+  path: [],
+};
+
+export const defaultMandatoryKeys = Object.keys(defaultMandatoryProps);
+
+export interface ComponentContainerProps
+  extends Omit<PageComponentMandatoryProps, 'ComponentContainer'> {
+  flexProps: FlexItemProps;
+  handleProps?: EditorHandleProps;
+}
+
+export function ComponentEditorContainer({
   type,
   path,
-}: ComponentEditorHandleProps) {
-  return function EditHandle({
+}: ComponentEditorContainerProps) {
+  function EditHandle({
     componentName,
     vertical,
     className,
@@ -60,7 +111,7 @@ export function ComponentEditorHandle({
           background: themeVar.primaryHoverColor,
           // opacity: showHandle ? opacity : 0.0,
         }}
-        className={'wegas-component-handle ' + className}
+        className={'wegas-component-handle ' + (className ? className : '')}
       >
         <div className={expandBoth}>
           <Centered
@@ -87,6 +138,29 @@ export function ComponentEditorHandle({
         </div>
       </div>
     ) : null;
+  }
+  return function ComponentContainer({
+    children,
+    flexProps,
+    handleProps,
+    showBorders,
+  }: React.PropsWithChildren<ComponentContainerProps>) {
+    return (
+      <FlexItem
+        {...flexProps}
+        className={cx(
+          {
+            [childHighlightStyle]: showBorders,
+            [layoutHighlightStyle]: showBorders,
+          },
+          flexProps.className,
+        )}
+        style={flexProps.style}
+      >
+        {path.length > 0 && <EditHandle {...handleProps} />}
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </FlexItem>
+    );
   };
 }
 
@@ -122,18 +196,18 @@ function ComponentDropZone({ onDrop }: ComponentDropZoneProps) {
 }
 
 export interface PageComponentProps {
-  children?: WegasComponent[];
+  children?: JSX.Element[];
   path: string[];
 }
 
 interface EditableComponentProps {
   componentName: string;
   children: (
-    children: WegasComponent[],
-    EditHandle: React.FunctionComponent<EditorHandleProps>,
+    children: JSX.Element[],
+    ComponentContainer: React.FunctionComponent<ComponentContainerProps>,
     showBorders: boolean,
   ) => React.ReactElement | null;
-  wegasChildren?: WegasComponent[];
+  wegasChildren?: JSX.Element[];
   path: string[];
   uneditable?: boolean;
 }
@@ -147,7 +221,7 @@ export function EditableComponent({
 }: EditableComponentProps) {
   const { editMode: edit, onDrop, showBorders } = React.useContext(pageCTX);
   const editMode = edit && !uneditable;
-  let content: WegasComponent[] = [];
+  let content: JSX.Element[] = [];
   if (wegasChildren !== undefined) {
     content = editMode
       ? wegasChildren.reduce(
@@ -173,7 +247,7 @@ export function EditableComponent({
     content,
     uneditable
       ? () => null
-      : ComponentEditorHandle({ type: componentName, path }),
+      : ComponentEditorContainer({ type: componentName, path }),
     showBorders && !uneditable,
   );
 }

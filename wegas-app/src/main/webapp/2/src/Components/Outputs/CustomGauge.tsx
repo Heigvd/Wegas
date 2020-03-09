@@ -17,7 +17,8 @@ const valueToAngle = (
   maxAngle: number,
 ) => minAngle + ((maxAngle - minAngle) * value) / (maxValue - minValue);
 
-interface GaugeSection extends Omit<PieChartSection, 'angleTo' | 'fillColor'> {
+export interface GaugeSection
+  extends Omit<PieChartSection, 'angleTo' | 'fillColor'> {
   /**
    * stopValue - the section end value
    */
@@ -34,7 +35,7 @@ export interface CustomGaugeProps {
    */
   value: number;
   /**
-   * min - the minimum value to slide (0 by default)
+   * min - the minimum value to slide
    */
   min: number;
   /**

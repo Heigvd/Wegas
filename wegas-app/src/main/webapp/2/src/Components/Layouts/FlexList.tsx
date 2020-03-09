@@ -47,7 +47,23 @@ export interface FlexItemProps {
    * className - the class to apply to the item
    */
   className?: string;
+  /**
+   * style - the style to apply to the item (always prefer className over style to avoid messing with original behaviour of the item)
+   */
+  style?: React.CSSProperties;
 }
+
+export const flexItemDefaultProps: FlexItemProps = {
+  order: 0,
+  alignSelf: alignSelfValues[0],
+  flexGrow: 0,
+  flexShrink: 1,
+  flexBasis: flexBasisValues[0],
+  className: undefined,
+  style: undefined,
+};
+
+export const flexItemDefaultKeys = Object.keys(flexItemDefaultProps);
 
 export function FlexItem({
   alignSelf,
@@ -56,6 +72,7 @@ export function FlexItem({
   flexBasis,
   className,
   children,
+  style,
 }: React.PropsWithChildren<FlexItemProps>) {
   return (
     <div
@@ -66,6 +83,7 @@ export function FlexItem({
         flexGrow,
         flexShrink,
         flexBasis,
+        ...style,
       }}
     >
       {children}
@@ -78,6 +96,9 @@ export const flexItemSchema = {
   flexGrow: schemaProps.number('Flex grow', false),
   flexShrink: schemaProps.number('Flex shrink', false),
   flexBasis: schemaProps.string('Flex basis', false),
+  className: schemaProps.string('Classes', false),
+  style: schemaProps.code('Style', false, 'CSS', '', 'ADVANCED'),
+  children: schemaProps.hidden(false, 'array'),
 };
 
 export const flexDirectionValues = [

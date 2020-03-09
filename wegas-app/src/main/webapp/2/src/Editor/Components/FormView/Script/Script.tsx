@@ -30,6 +30,7 @@ import { parse } from '@babel/parser';
 import generate from '@babel/generator';
 import { Menu } from '../../../../Components/Menu';
 import { ResizeHandle } from '../../ResizeHandle';
+import { createScript } from '../../../../Helper/wegasEntites';
 
 export const scriptEditStyle = css({
   // height: '5em',
@@ -179,11 +180,7 @@ export function Script({
     (value: string) => {
       if (value !== script.current) {
         script.current = value;
-        onChange({
-          '@class': 'Script',
-          language: 'JavaScript',
-          content: value,
-        });
+        onChange(createScript(value));
       }
     },
     [onChange],

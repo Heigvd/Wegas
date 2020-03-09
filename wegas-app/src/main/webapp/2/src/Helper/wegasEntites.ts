@@ -5,3 +5,10 @@ export function toScriptableClassName(classes?: WegasClassNames[]) {
       })
     : undefined;
 }
+
+export function createScript(
+  content: string = '',
+  language: string = 'JavaScript',
+): IScript {
+  return { '@class': 'Script', content, language };
+}
