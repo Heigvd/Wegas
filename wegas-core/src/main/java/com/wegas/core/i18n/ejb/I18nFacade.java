@@ -1438,7 +1438,8 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
         }
 
         @Override
-        public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable references[]) {
+        public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level,
+            WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable references[]) {
 
             if (target instanceof TranslatableContent) {
                 boolean shouldKeepUserTranslation = false;

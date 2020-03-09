@@ -1012,6 +1012,21 @@
     font-size: 30px;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-find-outdated {
+    font-size: 14px;
+    cursor: pointer;
+    vertical-align: -2px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-find-outdated .fa-toggle-on {
+    font-size: 12px;
+    color: #F57C00;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-find-outdated .fa-search {
+    color: #4e525e;
+}
+
 .wegas-i18n-manager .wegas-i18n-manager--languages .language .language-title {
     font-size: 1.4em;
     padding-right: 5px;

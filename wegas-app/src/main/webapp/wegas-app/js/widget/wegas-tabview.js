@@ -305,7 +305,9 @@ YUI.add('wegas-tabview', function(Y) {
             var isNew = !(this.getTab(id));
             var nTab = this.createTab(id, tabViewSelector, tabCfg);          // create a new one
 
-            if (nTab && (isNew || widgetCfg.type === "StateMachineViewer")) {
+            if (nTab && (isNew 
+                || widgetCfg.type === "StateMachineViewer"
+                || widgetCfg.type === "FindAndReplaceWidget")) {
                 nTab.destroyAll();                                                  // Empty it
                 nTab.load(widgetCfg, fn);                                           // Load target widget
                 this.restoreColumn(tabViewSelector);

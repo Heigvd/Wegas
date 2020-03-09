@@ -282,7 +282,7 @@ angular.module('wegas.models.groups', [])
         };
         model.getMembers = function(groupId) {
             var deferred = $q.defer(),
-                url = "rest/User/FindUsersWithRole/" + groupId;
+                url = "rest/Shadow/User/FindUsersWithRole/" + groupId;
             $http.get(ServiceURL + url, {})
                 .success(function(data) {
                     if (data !== undefined && data.length !== 0) {

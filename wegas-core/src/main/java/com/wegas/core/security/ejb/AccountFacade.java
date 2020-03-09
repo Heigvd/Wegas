@@ -31,6 +31,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.slf4j.Logger;
@@ -88,11 +89,20 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         }
 
         // Silently discard any modification attempts made by non-admins to the comment field:
-        if (!requestManager.isAdmin()){
+        if (!requestManager.isAdmin()) {
             account.setComment(super.find(entityId).getComment());
         }
 
         AbstractAccount oAccount = super.update(entityId, account);
+
+        if (oAccount instanceof JpaAccount) {
+            JpaAccount jpaAccount = (JpaAccount) oAccount;
+            if (!Helper.isNullOrEmpty(jpaAccount.getPassword())) {
+                jpaAccount.shadowPasword();
+            }
+        }
+
+        oAccount.shadowEmail();
 
         /*
          * Only an administrator can modify memberships
@@ -127,7 +137,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         user.getAccounts().remove(entity);
         getEntityManager().remove(entity);
 
-        if (user.getAccounts().isEmpty()){
+        if (user.getAccounts().isEmpty()) {
             userFacade.remove(user);
         }
     }
@@ -273,11 +283,11 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             AaiAccount a = findByPersistentId(userDetails.getPersistentId());
 
             if (!a.getFirstname().equals(userDetails.getFirstname())
-                    || !a.getLastname().equals(userDetails.getLastname())
-                    || !a.getHomeOrg().equals(userDetails.getHomeOrg())
-                    || !a.getEmail().equals(userDetails.getEmail())) {
+                || !a.getLastname().equals(userDetails.getLastname())
+                || !a.getHomeOrg().equals(userDetails.getHomeOrg())
+                || !a.getDetails().getEmail().equals(userDetails.getEmail())) {
 
-                a.merge(new AaiAccount(userDetails)); //HAZARDOUS!!!!
+                a.merge(AaiAccount.build(userDetails)); //HAZARDOUS!!!!
                 update(a.getId(), a);
             }
         } catch (WegasNoResultException ex) {
@@ -285,7 +295,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         }
     }
 
-    private List<Predicate> getAccountAutoCompleteFilter(String input) {
+    private Predicate getAccountAutoCompleteFilter(String input) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
 
         String[] tokens = input.split(" ");
@@ -300,16 +310,19 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             if (!token.isEmpty()) {
                 token = "%" + token.toLowerCase() + "%";
 
-                andPreds.add(cb.or(cb.like(cb.lower(account.get("firstname")), token),
+                andPreds.add(
+                    cb.or(
+                        cb.like(cb.lower(account.get("firstname")), token),
                         cb.like(cb.lower(account.get("lastname")), token),
-                        cb.like(cb.lower(account.get("email")), token),
+                        cb.like(cb.lower(account.get("emailDomain")), token),
                         cb.like(cb.lower(account.get("username")), token)
-                ));
+                    )
+                );
             }
         }
         andPreds.add(cb.notEqual(account.type(), GuestJpaAccount.class)); // Exclude guest accounts
 
-        return andPreds;
+        return cb.and(andPreds.toArray(new Predicate[andPreds.size()]));
     }
 
     /**
@@ -321,51 +334,91 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      *
      * @return list of AbstractAccount matching the token
      */
-    public List<AbstractAccount> findByNameEmailOrUsername(String input) {
+    public List<AbstractAccount> findByNameEmailDomainOrUsername(String input) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<AbstractAccount> cq = cb.createQuery(AbstractAccount.class);
 
-        List<Predicate> filter = this.getAccountAutoCompleteFilter(input);
-        cq.where(cb.and(filter.toArray(new Predicate[filter.size()])));
+        Predicate filter = this.getAccountAutoCompleteFilter(input);
+        cq.where(filter);
 
         TypedQuery<AbstractAccount> q = getEntityManager().createQuery(cq);
         return q.getResultList();
     }
 
-    public List<AbstractAccount> findByNameEmailOrUsername_WithRole(String input, List<String> roleNames) {
+    public List<AbstractAccount> findByNameEmailDomainOrUsername_withRoles(String input, List<String> roleNames) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<AbstractAccount> cq = cb.createQuery(AbstractAccount.class);
+
         Root<AbstractAccount> account = cq.from(AbstractAccount.class);
 
-        List<Predicate> filter = this.getAccountAutoCompleteFilter(input);
-        cq.where(cb.and(filter.toArray(new Predicate[filter.size()])));
+        String[] tokens = input.split(" ");
+        List<Predicate> andPreds = new ArrayList<>(tokens.length);
+
+        int i;
+        for (i = 0; i < tokens.length; i++) {
+            String token = tokens[i];
+            if (!token.isEmpty()) {
+                token = "%" + token.toLowerCase() + "%";
+
+                andPreds.add(
+                    cb.or(
+                        cb.like(cb.lower(account.get("firstname")), token),
+                        cb.like(cb.lower(account.get("lastname")), token),
+                        cb.like(cb.lower(account.get("emailDomain")), token),
+                        cb.like(cb.lower(account.get("username")), token)
+                    )
+                );
+            }
+        }
+        andPreds.add(cb.notEqual(account.type(), GuestJpaAccount.class)); // Exclude guest accounts
+
+        Predicate tokenPredicate = cb.and(andPreds.toArray(new Predicate[andPreds.size()]));
+
+        List<Predicate> anyRoleFilter = new ArrayList<>();
+
+        Join<AbstractAccount, User> user = account.join("user");
+        Join<User, Role> role = user.join("roles");
+
+        for (String roleName : roleNames) {
+            anyRoleFilter.add(
+                cb.equal(role.get("name"), roleName)
+            );
+        }
+
+        Predicate anyRolePredicate = cb.or(anyRoleFilter.toArray(new Predicate[anyRoleFilter.size()]));
+
+        cq.where(cb.and(anyRolePredicate, tokenPredicate));
+        
+        cq.distinct(true);
 
         TypedQuery<AbstractAccount> q = getEntityManager().createQuery(cq);
+
         return q.getResultList();
     }
 
     /**
-     * Same as {@link #getAutoComplete(java.lang.String) getAutoComplete} but
-     * account must be member of (at least) one role in rolesList
+     * Same as {@link #getAutoComplete(java.lang.String) getAutoComplete} but account must be member
+     * of (at least) one role in rolesList
      *
      * @param value     account search token
-     * @param rolesList list of roles targeted account should be members (only
-     *                  one membership is sufficient)
+     * @param rolesList list of roles targeted account should be members (only one membership is
+     *                  sufficient)
      *
-     * @return list of AbstractAccounts (excluding guest accounts) matching the token that are a member of at least
-     *         one given role
+     * @return list of AbstractAccounts (excluding guest accounts) matching the token that are a
+     *         member of at least one given role
      */
-    public List<AbstractAccount> getAutoCompleteByRoles(String value,
-            Map<String, List<String>> rolesList) {
-        List<String> roles = rolesList.get("rolesList");
+    public List<AbstractAccount> getAutoCompleteByRoles(String value, List<String> rolesList) {
+        return findByNameEmailDomainOrUsername_withRoles(value, rolesList);
+        /*List<String> roles = rolesList.get("rolesList");
 
         List<AbstractAccount> returnValue = new ArrayList<>();
-        for (AbstractAccount a : findByNameEmailOrUsername(value)) {
+        for (AbstractAccount a : findByNameEmailDomainOrUsername(value)) {
             if (userFacade.hasAnyRole(a.getUser(), roles)) {
-                returnValue.add(hideEmail(a));
+                returnValue.add(a);
             }
         }
-        return returnValue;
+        return returnValue;*/
+
     }
 
     /**
@@ -377,7 +430,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         ArrayList<AbstractAccount> result = new ArrayList<>();
         for (Player player : team.getPlayers()) {
             if (player.getUser() != null) {
-                result.add(player.getUser().getMainAccount());                      // Test players dont have a user, we do not return anything since the target widget would not know what to do with it
+                // Test players dont have a user, we do not return anything since the target widget would not know what to do with it
+                result.add(player.getUser().getMainAccount());
             }
         }
         return result;
@@ -393,7 +447,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      * @return list of AbstractAccount matching the token
      */
     public List<AbstractAccount> getAutoComplete(String value) {
-        return findByNameEmailOrUsername(value);
+        return findByNameEmailDomainOrUsername(value);
     }
 
     // Remark: excludes guest accounts
@@ -403,17 +457,9 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             AbstractAccount ja = it.next();
             if (playerFacade.isInGame(gameId, ja.getUser().getId())) {
                 it.remove();
-            } else {
-                hideEmail(ja);
             }
         }
         return accounts;
-    }
-
-    private AbstractAccount hideEmail(AbstractAccount aa) {
-        this.getEntityManager().detach(aa);
-        aa.setEmail(Helper.anonymizeEmail(aa.getEmail()));
-        return aa;
     }
 
     /**

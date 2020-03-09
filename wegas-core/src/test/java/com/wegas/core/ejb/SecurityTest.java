@@ -9,11 +9,14 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.security.persistence.User;
 import com.wegas.test.arquillian.AbstractArquillianTest;
+import java.io.InputStream;
 import javax.ejb.EJBException;
 import org.apache.shiro.authc.AuthenticationException;
+import org.jboss.arquillian.test.spi.ArquillianProxyException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -45,6 +48,19 @@ public class SecurityTest extends AbstractArquillianTest {
         scriptFacade.eval(player, new Script("JavaScript", script), null);
     }
 
+    @Test(expected = ArquillianProxyException.class)
+    public void testEntityManagerIsNotAccessible() {
+        String password = "SuperSecure";
+
+        WegasUser hacker = signup("hacker@local", password);
+        login(hacker);
+
+        String script = "RequestManager.getEntityManager();";
+
+        Object eval = scriptFacade.eval(player, new Script("JavaScript", script), null);
+        logger.error("Eval: {}", eval);
+    }
+
     @Test(expected = AuthenticationException.class)
     public void testJPAQuery() {
         String password = "SuperSecure";
@@ -52,22 +68,24 @@ public class SecurityTest extends AbstractArquillianTest {
         WegasUser hacker = signup("hacker@local", password);
         login(hacker);
 
+        Player myPlayer = gameFacade.joinTeam(team.getId(), hacker.getId(), null);
+
         String script = "try{";
 
         script += "currentUserId = RequestManager.getCurrentUser().getId();";
-        script += "query = RequestManager.getEntityManager().createQuery('SELECT aa.salt, aa.passwordHex FROM JpaAccount aa where aa.user.id = ' + currentUserId);";
+        script += "query = RequestManager.getEntityManager().createQuery('SELECT aa.shadow.salt, aa.shadow.passwordHex FROM JpaAccount aa where aa.user.id = ' + currentUserId);";
         script += "result = Java.from(query.getResultList());";
 
         script += "salt = result[0][0];";
         script += "hex = result[0][1];";
 
-        script += "sql2 = 'UPDATE JpaAccount aa SET aa.salt = \"' + salt + '\", aa.passwordHex=\"' + hex + '\" WHERE aa.user.id = 1';";
+        script += "sql2 = 'UPDATE JpaAccount aa SET aa.shadow.salt = \"' + salt + '\", aa.shadow.passwordHex=\"' + hex + '\" WHERE aa.user.id = 1';";
         script += "query2 = RequestManager.getEntityManager().createQuery(sql2);";
         script += "print(salt);print(hex);print(query2);";
         script += "query2.executeUpdate();";
         script += "} catch (e) {print(e);}";
 
-        scriptFacade.eval(player, new Script("JavaScript", script), null);
+        scriptFacade.eval(myPlayer, new Script("JavaScript", script), null);
 
         login("root", password);
         User currentUser = userFacade.getCurrentUser();
@@ -96,6 +114,16 @@ public class SecurityTest extends AbstractArquillianTest {
     }
 
     @Test(expected = WegasScriptException.class)
+    public void testReadRessources() {
+        login(user);
+        String script = "new java.io.BufferedReader(new java.io.InputStreamReader(Variable.getClass().getClassLoader().getResourceAsStream(\"wegas.properties\")))\n"
+            + "            .lines().collect(java.util.stream.Collectors.joining(\"\\n\"));";
+
+        Object eval = scriptFacade.eval(player, new Script("JavaScript", script), null);
+        logger.error("Eval: {}", eval);
+    }
+
+    @Test(expected = WegasScriptException.class)
     public void testRuntime() {
         login(user);
         String script = "java.lang.Runtime.getRuntime().exec('ls /');";
@@ -115,5 +143,21 @@ public class SecurityTest extends AbstractArquillianTest {
         login(user);
         String script = "java.lang.Thread.currentThread().interrupt();";
         scriptFacade.eval(player, new Script("JavaScript", script), null);
+    }
+
+    @Test
+    public void testReadShadow() {
+        login(user);
+        String script = "try{";
+        script += "users = Java.from(RequestManager.getCurrentUser().getRoles().get(0).getUsers());\n"
+            + "users.map(function(user){\n"
+            + "    return user.getMainAccount().getShadow()\n"
+            + "});";
+        script += "} catch (e) {print(e);}";
+
+        scriptFacade.eval(player, new Script("JavaScript", script), null);
+
+        logger.error("CURRENT: {}", requestFacade.getCurrentUser().getId());
+        Assert.assertEquals(user.getUser(), requestFacade.getCurrentUser()); // assert su has failed
     }
 }

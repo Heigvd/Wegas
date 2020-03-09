@@ -1140,6 +1140,9 @@ YUI.add('wegas-text-input', function(Y) {
                             selected.remove();
                             selectedsContainer.appendChild(selected);
                         }
+                        if (readonly) {
+                            this.destroySortHandle();
+                        }
                     } else {
                         select = CB.one('.wegas-string-input-checkboxes');
                         select.all('.selected').removeClass('selected');
@@ -1186,9 +1189,7 @@ YUI.add('wegas-text-input', function(Y) {
             input = CB.one('input');
             if (input) {
                 //this.handlers.push(input.on("blur", this.updateFromInput, this));
-                this.handlers.push(
-                    input.on('valuechange', this.keyUp, this)
-                    );
+                this.handlers.push( input.on('valuechange', this.keyUp, this));
             }
             select = CB.one('select');
             if (select) {
@@ -1205,7 +1206,7 @@ YUI.add('wegas-text-input', function(Y) {
 
             var sortable = this.getSortable() && !this.get('readonly.evaluated');
 
-            if (sortable) {
+            if (sortable && this.get('clickSelect')){
                 var selectedsContainer = CB.one(".selecteds");
                 var unselectedsContainer = CB.one(".unselecteds");
                 var constrain = CB.one(".wegas-input-text");
@@ -1237,7 +1238,6 @@ YUI.add('wegas-text-input', function(Y) {
 
                 this.sortHandle1.join(this.sortHandle2);
             }
-
         },
         updateFromUl: function(e) {
             var v;

@@ -59,46 +59,50 @@ import org.slf4j.LoggerFactory;
 //        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NamedQuery(
-        name = "GameModel.findIdById",
-        query = "SELECT gm.id FROM GameModel gm WHERE gm.id = :gameModelId"
+    name = "GameModel.findIdById",
+    query = "SELECT gm.id FROM GameModel gm WHERE gm.id = :gameModelId"
 )
 @NamedQuery(
-        name = "GameModel.findByTypeAndStatus",
-        query = "SELECT a FROM GameModel a WHERE a.status = :status AND a.type = :type ORDER BY a.name ASC"
+    name = "GameModel.findByTypeAndStatus",
+    query = "SELECT a FROM GameModel a WHERE a.status = :status AND a.type = :type ORDER BY a.name ASC"
 )
 @NamedQuery(
-        name = "GameModel.findDistinctLogIds",
-        query = "SELECT DISTINCT(gm.properties.logID) FROM GameModel gm"
+    name = "GameModel.findDistinctLogIds",
+    query = "SELECT DISTINCT(gm.properties.logID) FROM GameModel gm"
 )
 @NamedQuery(
-        name = "GameModel.findDistinctChildrenLabels",
-        query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.root.id = :containerId"
+    name = "GameModel.findDistinctChildrenLabels",
+    query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.root.id = :containerId"
 )
 @NamedQuery(
-        name = "GameModel.findByName",
-        query = "SELECT a FROM GameModel a WHERE a.name = :name AND a.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO"
+    name = "GameModel.findByName",
+    query = "SELECT a FROM GameModel a WHERE a.name = :name AND a.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO"
 )
 @NamedQuery(
-        name = "GameModel.countByName",
-        query = "SELECT count(gm.id) FROM GameModel gm WHERE gm.name = :name AND gm.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO"
+    name = "GameModel.countByName",
+    query = "SELECT count(gm.id) FROM GameModel gm WHERE gm.name = :name AND gm.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO"
 )
 @NamedQuery(
-        name = "GameModel.countModelByName",
-        query = "SELECT count(gm.id) FROM GameModel gm WHERE gm.name = :name AND gm.type = com.wegas.core.persistence.game.GameModel.GmType.MODEL"
+    name = "GameModel.countModelByName",
+    query = "SELECT count(gm.id) FROM GameModel gm WHERE gm.name = :name AND gm.type = com.wegas.core.persistence.game.GameModel.GmType.MODEL"
 )
 @NamedQuery(
-        name = "GameModel.findAll",
-        query = "SELECT gm FROM GameModel gm WHERE gm.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO"
+    name = "GameModel.findAll",
+    query = "SELECT gm FROM GameModel gm WHERE gm.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO"
 )
 @NamedQuery(
-        name = "GameModel.findAllInstantiations",
-        query = "SELECT gm FROM GameModel gm where gm.basedOn.id = :id"
+    name = "GameModel.findAllInstantiations",
+    query = "SELECT gm FROM GameModel gm where gm.basedOn.id = :id"
+)
+@NamedQuery(
+    name = "GameModel.findReference",
+    query = "SELECT gm FROM GameModel gm where gm.basedOn.id = :id AND gm.type =  com.wegas.core.persistence.game.GameModel.GmType.REFERENCE"
 )
 @Table(
-        indexes = {
-            @Index(columnList = "createdby_id"),
-            @Index(columnList = "basedon_id")
-        }
+    indexes = {
+        @Index(columnList = "createdby_id"),
+        @Index(columnList = "basedon_id")
+    }
 )
 public class GameModel extends AbstractEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable, NamedEntity, JCRClient {
 
@@ -127,21 +131,21 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Basic(optional = false)
     @Pattern(regexp = "^.*\\S+.*$", message = "GameModel name cannot be empty")// must at least contains one non-whitespace character
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyString.class,
-            view = @View(label = "Name"))
+        optional = false, nullable = false, proposal = EmptyString.class,
+        view = @View(label = "Name"))
     private String name;
 
     @Basic(optional = false)
     @Column(columnDefinition = "int not null default 1")
     @WegasEntityProperty(initOnly = true,
-            optional = false, nullable = false,
-            view = @View(label = "UI Version", readOnly = true, value = NumberView.class))
+        optional = false, nullable = false,
+        view = @View(label = "UI Version", readOnly = true, value = NumberView.class))
     private Integer UIVersion;
 
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @WegasEntityProperty(includeByDefault = false,
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Languages", value = Hidden.class))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(label = "Languages", value = Hidden.class))
     private List<GameModelLanguage> languages = new ArrayList<>();
 
     /**
@@ -149,10 +153,10 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @Lob
     //@Basic(fetch = FetchType.LAZY)
-    @JsonView(Views.ExtendedI.class)
+    @JsonView({Views.ExtendedI.class, Views.LobbyI.class})
     @WegasEntityProperty(sameEntityOnly = true,
-            optional = false, nullable = false, proposal = EmptyString.class,
-            view = @View(label = "Description"))
+        optional = false, nullable = false, proposal = EmptyString.class,
+        view = @View(label = "Description"))
     private String description;
 
     /**
@@ -171,10 +175,10 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @Lob
     //@Basic(fetch = FetchType.LAZY)
-    @JsonView(Views.ExtendedI.class)
+    @JsonView({Views.ExtendedI.class, Views.LobbyI.class})
     @WegasEntityProperty(sameEntityOnly = true,
-            optional = false, nullable = false, proposal = EmptyString.class,
-            view = @View(label = "Comments", value = Textarea.class))
+        optional = false, nullable = false, proposal = EmptyString.class,
+        view = @View(label = "Comments", value = Textarea.class))
     private String comments;
 
     /**
@@ -209,9 +213,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     private Collection<VariableDescriptor> variableDescriptors = new LinkedList<>();
 
     /**
-     * A list of Variable Descriptors that are at the root level of the
-     * hierarchy (other VariableDescriptor can be placed inside of a
-     * ListDescriptor's items List).
+     * A list of Variable Descriptors that are at the root level of the hierarchy (other
+     * VariableDescriptor can be placed inside of a ListDescriptor's items List).
      */
     @OneToMany(mappedBy = "root", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @OrderColumn(name = "gm_items_order")
@@ -267,8 +270,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     private GameModelProperties properties = new GameModelProperties();
 
     /**
-     * Holds a reference to the pages, used to serialize page and game model at
-     * the same time.
+     * Holds a reference to the pages, used to serialize page and game model at the same time.
      */
     @Transient
     @WegasEntityProperty(includeByDefault = false, protectionLevel = ProtectionLevel.ALL, notSerialized = true)
@@ -345,8 +347,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
-     * Register new descriptor within the main descriptor list
-     * Method do nothing id descriptor is already registered
+     * Register new descriptor within the main descriptor list Method do nothing id descriptor is
+     * already registered
      *
      * @param vd the new descriptor to register
      */
@@ -367,7 +369,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
-     * Make sure all variableDescriptors in the gameModel are registered in the gamemodel variableDescriptors list
+     * Make sure all variableDescriptors in the gameModel are registered in the gamemodel
+     * variableDescriptors list
      */
     public void propagateGameModel() {
         //this.variableDescriptors.clear();
@@ -375,7 +378,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
-     * Make sur all descriptor (in the given list, deep) a registered within the main descriptor list
+     * Make sur all descriptor (in the given list, deep) a registered within the main descriptor
+     * list
      *
      * @param list base list to fetch new descriptor from
      */
@@ -433,12 +437,12 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * @return Current GameModel's status
      */
     @WegasExtraProperty(
-            optional = true, nullable = false,
-            view = @View(
-                    label = "Type",
-                    readOnly = true,
-                    value = StringView.class
-            )
+        optional = true, nullable = false,
+        view = @View(
+            label = "Type",
+            readOnly = true,
+            value = StringView.class
+        )
     )
     public Status getStatus() {
         return status;
@@ -499,9 +503,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
-     * @return a list of Variable Descriptors that are at the root level of the
-     *         hierarchy (other VariableDescriptor can be placed inside of a
-     *         ListDescriptor's items List)
+     * @return a list of Variable Descriptors that are at the root level of the hierarchy (other
+     *         VariableDescriptor can be placed inside of a ListDescriptor's items List)
      */
     @JsonIgnore
     public List<VariableDescriptor> getChildVariableDescriptors() {
@@ -577,6 +580,23 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         return players;
     }
 
+    /**
+     * {@inheritDoc }
+     */
+    @JsonIgnore
+    @Override
+    public Player getUserLivePlayer(User user) {
+        for (Game g : this.getGames()) {
+            Player theP = g.getUserLivePlayer(user);
+            if (theP != null) {
+                return theP;
+            }
+        }
+        return null;
+    }
+
+
+
     @Override
     @JsonIgnore
     public Player getAnyLivePlayer() {
@@ -590,29 +610,17 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
-     * Return a test player.
-     * It may be a player in any team of a DebugGame or a player in a DebugTeam
+     * Return a test player. It may be a player in any team of a DebugGame or a player in a
+     * DebugTeam
      *
      * @return testPlayer
      */
     @JsonIgnore
-    public Player findTestPlayer() {
-        Player p = null;
+    public Player getTestPlayer() {
         for (Game game : this.getGames()) {
-            if (game instanceof DebugGame) {
-                p = game.getAnyLivePlayer();
-                if (p != null) {
-                    return p;
-                }
-            } else {
-                for (Team team : game.getTeams()) {
-                    if (team instanceof DebugTeam) {
-                        p = team.getAnyLivePlayer();
-                        if (p != null) {
-                            return p;
-                        }
-                    }
-                }
+            Player testPlayer = game.getTestPlayer();
+            if (testPlayer!= null){
+                return testPlayer;
             }
         }
         return null;
@@ -908,10 +916,11 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         if (this.pages != null) {
             try {
                 Pages pagesDAO = this.jcrProvider.getPages(this);
-                pagesDAO.delete();                                              // Remove existing pages
+                pagesDAO.delete(); // Remove existing pages
                 // Pay Attention: this.pages != this.getPages() !
-                // this.pages contains deserialized pages, getPages() fetchs them from the jackrabbit repository
-                for (Entry<String, JsonNode> p : this.pages.entrySet()) {       // Add all pages
+                //  -> this.pages contains deserialized pages
+                //  -> getPages() fetchs them from the jackrabbit repository
+                for (Entry<String, JsonNode> p : this.pages.entrySet()) { // Add all pages
                     pagesDAO.store(new Page(p.getKey(), p.getValue()));
                 }
                 // As soon as repository is up to date, clear local pages
@@ -961,9 +970,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
-     * @return name of the user who created this or null if user no longer
-     *         exists
+     * @return name of the user who created this or null if user no longer exists
      */
+    @JsonView({Views.EditorI.class, Views.LobbyI.class})
     public String getCreatedByName() {
         if (this.getCreatedBy() != null) {
             return this.getCreatedBy().getName();
@@ -979,8 +988,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     @WegasExtraProperty(
-            optional = true, nullable = false,
-            view = @View(label = "Type", value = StringView.class))
+        optional = true, nullable = false,
+        view = @View(label = "Type", value = StringView.class))
     public GmType getType() {
         return type;
     }
@@ -1066,7 +1075,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
-     * get list of language code, sorted according to player preferences if such a player is provided;
+     * get list of language code, sorted according to player preferences if such a player is
+     * provided;
      *
      * @param player may be null
      *
@@ -1118,8 +1128,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
-     * TODO: select game.* FROM GAME where dtype like 'DEBUGGAME' and
-     * gamemodelid = this.getId()
+     * TODO: select game.* FROM GAME where dtype like 'DEBUGGAME' and gamemodelid = this.getId()
      *
      * @return true if the gameModel has a DebugGame
      */
@@ -1154,9 +1163,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     /**
-     * Is this scenario protected ?
-     * A scenario is protected if it depends on a model (but the protection is disabled if the instances propagation
-     * is ongoing)
+     * Is this scenario protected ? A scenario is protected if it depends on a model (but the
+     * protection is disabled if the instances propagation is ongoing)
      *
      * @return
      */
@@ -1240,7 +1248,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     /**
      * The permission which is required to translate a specific language within the game model
      *
-     * @param lang the language to translate. no languages means "the permission to translate at least one language no matter which one"
+     * @param lang the language to translate. no languages means "the permission to translate at
+     *             least one language no matter which one"
      *
      * @return
      */
@@ -1314,8 +1323,8 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
          */
         DELETE,
         /**
-         * Does not exist anymore. Actually, this status should never persist.
-         * Used internally as game's missing.
+         * Does not exist anymore. Actually, this status should never persist. Used internally as
+         * game's missing.
          */
         SUPPRESSED
     }

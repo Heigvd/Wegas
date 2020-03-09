@@ -105,10 +105,18 @@ function PluginElement({
                     // load required modules
                     const targetPlg = Y.Plugin[value.fn] as Y.Plugin_Base;
 
-                    // Do not use this hack to retrieve a plugin config
-                    //const w: Y.Plugin_Host = new Y.Wegas.Text(); 
-                    //w.plug(targetPlg);
-                    //const cfg = (w as any)[targetPlg.NS].getFormCfg();
+                    if (!(Y.Plugin[value.fn] as any)._ATTR_CFG_HASH) {
+                        // This plugin has never been used yet
+                        // need to plug it once to initilize static fields (sic)
+                        try {
+                            const w: Y.Plugin_Host = new Y.Wegas.Text();
+                            w.plug(targetPlg);
+                            (w as any)[targetPlg.NS].getFormCfg();
+                        } catch (e) {
+                            console.log("Error: " + Y.Plugin[value.fn]);
+                        }
+                    }
+
                     const cfg = Y.Wegas.Editable.staticGetFormCfg(Y.Plugin[value.fn]);
                     cfg.name = targetPlg.NAME;
                     cfg.view = {

@@ -87,7 +87,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                     VariableInstance vi = (VariableInstance) entity;
                     InstanceOwner owner = vi.getOwner();
                     if (owner != null) {
-                        player = owner.getAnyLivePlayer();
+                        player = owner.getUserLivePlayerOrDebugPlayer(requestManager.getCurrentUser());
                     }
                     break;
                 }

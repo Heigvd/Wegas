@@ -365,12 +365,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             label: "Editable",
                             type: HIDDEN
                         }
-                    }, {
-                        type: STRING,
-                        view: {
-                            label: "Description",
-                            type: HIDDEN
-                        }
                     }
                 ]
             },
@@ -533,16 +527,25 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             } else {
                 index = "";
             }
+            var toDisplay;
 
             if (!this.get("editorTag") && !trLabel) {
-                return this.get("name");
+                toDisplay = this.get("name");
             } else if (!this.get("editorTag")) {
-                return index + trLabel;
+                toDisplay = index + trLabel;
             } else if (!trLabel) {
-                return this.get("editorTag");
+                toDisplay = this.get("editorTag");
             } else {
-                return this.get("editorTag") + " - " + index + trLabel;
+                toDisplay = this.get("editorTag") + " - " + index + trLabel;
             }
+
+            if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL"
+                && this.get("visibility") === "PRIVATE") {
+                toDisplay = "<i class='private-in-model'>" + toDisplay + "</i>";
+            }
+
+            return toDisplay;
+
         },
         getIconCss: function() {
             return "fa fa-list";
@@ -949,15 +952,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         ATTRS: {
             "@class": {
                 value: "BurndownDescriptor"
-            },
-            description: {
-                type: STRING,
-                optional: true,
-                index: -1,
-                view: {
-                    label: "Description",
-                    type: HTML
-                }
             },
             defaultInstance: {
                 properties: {

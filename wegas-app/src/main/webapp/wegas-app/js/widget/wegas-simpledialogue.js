@@ -35,13 +35,13 @@ YUI.add("wegas-simpledialogue", function(Y) {
         },
         syncUI: function() {
             var dial = this.get("dialogueVariable.evaluated");
-            Y.Wegas.Facade.Variable.cache.getWithView(dial, "Extended", {
-                on: {
-                    success: Y.bind(function(e) {
-                        this.displayDialogue(e.response.entity);
-                    }, this)
-                }
-            });
+            this.displayDialogue(dial);
+            /*Y.Wegas.Facade.Variable.cache.getWithView(dial, "Extended", {
+             on: {
+             success: Y.bind(function(e) {
+             }, this)
+             }
+             });*/
         },
         displayDialogue: function(currentDialogue) {
             this.currentDialogue = currentDialogue;

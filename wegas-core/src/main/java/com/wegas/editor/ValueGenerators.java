@@ -12,8 +12,6 @@ import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModelProperties;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.statemachine.Coordinate;
-import com.wegas.resourceManagement.persistence.Iteration;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
 import java.util.ArrayList;
@@ -98,16 +96,6 @@ public class ValueGenerators {
 
         public String getValue() {
             return "TeamScope";
-        }
-    }
-
-    public static class Origin implements ValueGenerator {
-
-        public Coordinate getValue() {
-            Coordinate o = new Coordinate();
-            o.setX(0);
-            o.setY(0);
-            return o;
         }
     }
 

@@ -12,28 +12,58 @@
         <h2>{{(adminUsersEditIndexCtrl.user.isNonLocal ? 'ADMIN-USERS-NONLOCAL-TITLE' : 'ADMIN-USERS-MODALE-EDIT-TITLE')| translate}}</span></h2>
         <div id="editable-user-profile" ng-if="!adminUsersEditIndexCtrl.user.isNonLocal">
             <div class="form__row">
-                <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.firstname"
-                       placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-FIRSTNAME'| translate}}" autocomplete="off">
+                <div class="col-xs-3">
+                    <h4>{{'PRIVATE-PROFILE-INPUT-LABEL-FIRSTNAME'| translate}}</h4>
+                </div>
+                <div class="col-xs-9">
+                    <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.firstname"
+                           placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-FIRSTNAME'| translate}}" autocomplete="off">
+                </div>
             </div>
             <div class="form__row">
-                <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.lastname"
-                       placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-LASTNAME'| translate}}" autocomplete="off">
+                <div class="col-xs-3">
+                    <h4>{{'PRIVATE-PROFILE-INPUT-LABEL-LASTNAME'| translate}}</h4>
+                </div>
+                <div class="col-xs-9">
+                    <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.lastname"
+                           placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-LASTNAME'| translate}}" autocomplete="off">
+                </div>
             </div>
             <div class="form__row">
-                <input class="input" type="email" ng-model="adminUsersEditIndexCtrl.user.account.email"
-                       placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-EMAIL'| translate}}" autocomplete="off">
+                <div class="col-xs-3">
+                    <h4>{{'PRIVATE-PROFILE-INPUT-LABEL-EMAIL'| translate}}</h4>
+                </div>
+                <div class="col-xs-9">
+                    <input class="input" type="email" ng-model="adminUsersEditIndexCtrl.user.account.email"
+                           placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-EMAIL'| translate}}" autocomplete="off">
+                </div>
             </div>
             <div class="form__row">
-                <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.username"
-                       placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-USERNAME'| translate}}" autocomplete="off">
+                <div class="col-xs-3">
+                    <h4>{{'PRIVATE-PROFILE-INPUT-LABEL-USERNAME'| translate}}</h4>
+                </div>
+                <div class="col-xs-9">
+                    <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.username"
+                           placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-USERNAME'| translate}}" autocomplete="off">
+                </div>
             </div>
             <div class="form__row">
-                <input class="input" type="password" ng-model="adminUsersEditIndexCtrl.user.account.password"
-                       placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-PASSWORD'| translate}}" autocomplete="new-password">
+                <div class="col-xs-3">
+                    <h4>{{'PRIVATE-PROFILE-INPUT-LABEL-PASSWORD'| translate}}</h4>
+                </div>
+                <div class="col-xs-9">
+                    <input class="input" type="password" ng-model="adminUsersEditIndexCtrl.user.account.password"
+                           placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-PASSWORD'| translate}}" autocomplete="new-password">
+                </div>
             </div>
             <div class="form__row">
-                <input class="input" type="password" ng-model="adminUsersEditIndexCtrl.user.account.password2"
-                       placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-PASSWORD-AGAIN'| translate}}" autocomplete="new-password">
+                <div class="col-xs-3">
+                    <h4>{{'PRIVATE-PROFILE-INPUT-LABEL-PASSWORD-AGAIN'| translate}}</h4>
+                </div>
+                <div class="col-xs-9">
+                    <input class="input" type="password" ng-model="adminUsersEditIndexCtrl.user.account.password2"
+                           placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-PASSWORD-AGAIN'| translate}}" autocomplete="new-password">
+                </div>
             </div>
         </div>
         <div id="non-editable-user-profile" style="margin: 8px 20px; border-left: 2px solid gray; padding-left: 10px; padding-bottom: 3px;" ng-if="adminUsersEditIndexCtrl.user.isNonLocal">
@@ -42,8 +72,14 @@
             {{'ADMIN-USERS-NONLOCAL-EMAIL'| translate}}: {{adminUsersEditIndexCtrl.user.account.email}}
         </div>
         <div class="form__row">
-            <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.comment"
-                   placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-COMMENT'| translate}}" autocomplete="off">
+
+            <div class="col-xs-3">
+                <h4>{{'PRIVATE-PROFILE-INPUT-LABEL-COMMENT'| translate}}</h4>
+            </div>
+            <div class="col-xs-9">
+                <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.comment"
+                       placeholder="{{'PRIVATE-PROFILE-INPUT-PLACEHOLDER-COMMENT'| translate}}" autocomplete="off">
+            </div>
         </div>
         <div class="form__row">&nbsp;
             {{'ADMIN-USERS-MODALE-AGREED'| translate}}: {{ adminUsersEditIndexCtrl.user.account.agreedTime === null ? ('ADMIN-USERS-MODALE-AGREED-NOTYET' | translate) : (adminUsersEditIndexCtrl.user.account.agreedTime | date:"dd.MM.yyyy HH:mm:ss")}}<br/>

@@ -70,12 +70,12 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
-        sameEntityOnly = true, view = @View(
-            label = "Version",
-            readOnly = true,
-            value = NumberView.class,
-            featureLevel = ADVANCED
-        )
+            sameEntityOnly = true, view = @View(
+                    label = "Version",
+                    readOnly = true,
+                    value = NumberView.class,
+                    featureLevel = ADVANCED
+            )
     )
     @JsonView(Views.IndexI.class)
     private Long version;
@@ -92,8 +92,8 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
      */
     @JsonIgnore
     @WegasEntityProperty(searchable = true, callback = TranslatableCallback.class,
-        optional = false, nullable = false, proposal = EmptyArray.class,
-        view = @View(label = "Translations"))
+            optional = false, nullable = false, proposal = EmptyArray.class,
+            view = @View(label = "Translations"))
     @OneToMany(mappedBy = "translatableContent", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @PrivateOwned
     private List<Translation> translations = new ArrayList<>();
@@ -342,7 +342,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
 
     public Translation translate(GameModel gameModel) {
         if (gameModel != null) {
-            Player player = gameModel.findTestPlayer();
+            Player player = gameModel.getTestPlayer();
             return this.translate(gameModel.getPreferredLanguagesCodes(player));
         } else {
             return getAnyTranslation();

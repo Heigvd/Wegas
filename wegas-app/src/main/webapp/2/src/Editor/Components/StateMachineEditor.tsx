@@ -262,10 +262,8 @@ class StateMachineEditor extends React.Component<
   moveState = (id: number, pos: [number, number]) => {
     this.setState(
       produce((state: StateMachineEditorState) => {
-        state.stateMachine.states[id].editorPosition.x =
-          pos[0] < 0 ? 0 : pos[0];
-        state.stateMachine.states[id].editorPosition.y =
-          pos[1] < 0 ? 0 : pos[1];
+        state.stateMachine.states[id].x = pos[0] < 0 ? 0 : pos[0];
+        state.stateMachine.states[id].y = pos[1] < 0 ? 0 : pos[1];
       }),
     );
   };
@@ -283,10 +281,8 @@ class StateMachineEditor extends React.Component<
           '@class': 'State',
           version: 0,
           onEnterEvent: createScript(),
-          editorPosition: {
-            x: position.left >= 10 ? position.left : 10,
-            y: position.top >= 10 ? position.top : 10,
-          },
+          x: position.left >= 10 ? position.left : 10,
+          y: position.top >= 10 ? position.top : 10,
           label: '',
           transitions: [],
         }
@@ -294,10 +290,8 @@ class StateMachineEditor extends React.Component<
           '@class': 'DialogueState',
           version: 0,
           onEnterEvent: createScript(),
-          editorPosition: {
-            x: position.left >= 10 ? position.left : 10,
-            y: position.top >= 10 ? position.top : 10,
-          },
+          x: position.left >= 10 ? position.left : 10,
+          y: position.top >= 10 ? position.top : 10,
           text: createTranslatableContent(lang),
           transitions: [],
         };
@@ -670,8 +664,8 @@ class State extends React.Component<{
         }}
         style={{
           position: 'absolute',
-          left: state.editorPosition.x,
-          top: state.editorPosition.y,
+          left: state.x,
+          top: state.y,
         }}
       >
         <Toolbar vertical>

@@ -289,11 +289,11 @@ YUI.add('wegas-entity', function(Y) {
                     id: this.get("parentId"),
                 });
                 if (parent instanceof Y.Wegas.persistence.GameModel) {
-                    return Y.Wegas.Facade.GameModel.cache.find("id", entity.get("parentId"));
+                    return Y.Wegas.Facade.GameModel.cache.find("id", this.get("parentId"));
                 } else if (parent instanceof Y.Wegas.persistence.VariableDescriptor) {
-                    return Y.Wegas.Facade.Variable.cache.find("id", entity.get("parentId"));
+                    return Y.Wegas.Facade.Variable.cache.find("id", this.get("parentId"));
                 } else if (parent instanceof Y.Wegas.persistence.VariableInstance) {
-                    return Y.Wegas.Facade.Instance.cache.find("id", entity.get("parentId"));
+                    return Y.Wegas.Facade.Instance.cache.find("id", this.get("parentId"));
                 }
             }
         }
@@ -386,11 +386,12 @@ YUI.add('wegas-entity', function(Y) {
             },
             VISIBILITY: {
                 type: STRING,
+                required: true,
                 index: -4,
                 valueFn: function() {
                     // default visibility is inherited if the object belongs to a model, private otherwise
                     return Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
-                        .get("type") === "MODEL" ? "INHERITED" : "PRIVATE";
+                        .get("type") === "MODEL" ? undefined : "PRIVATE";
                 },
                 view: {
                     type: SELECT,
@@ -1135,231 +1136,216 @@ YUI.add('wegas-entity', function(Y) {
     /**
      * JpaAccount mapper
      */
-    persistence.JpaAccount = Base.create(
-        'JpaAccount',
-        persistence.Entity,
-        [],
-        {
-            getPublicName: function() {
-                return this.get(NAME);
-            }
-        },
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'JpaAccount'
-                },
-                name: {
-                    transient: true,
-                    getter: function() {
-                        if (this.get('firstname') || this.get('lastname')) {
-                            return (
-                                this.get('firstname') +
-                                ' ' +
-                                (this.get('lastname') || '')
-                                );
-                        } else {
-                            return this.get('email');
-                        }
-                    }
-                },
-                firstname: {
-                    type: STRING,
-                    view: {
-                        label: 'First name'
-                    }
-                },
-                lastname: {
-                    label: 'Last name',
-                    type: STRING,
-                    view: {
-                        label: 'Last name'
-                    }
-                },
-                email: {
-                    type: STRING,
-                    view: {
-                        type: 'string'
-                    }
-                },
-                username: {
-                    type: STRING,
-                    optional: true,
-                    view: {
-                        label: 'Username',
-                        description: 'Can be used to log in'
-                    }
-                },
-                hash: {
-                    transient: true
-                },
-                password: {
-                    type: STRING,
-                    optional: true,
-                    view: {
-                        type: 'password',
-                        label: 'Password',
-                        strengthIndicator: false,
-                        capsLockWarning: true,
-                        description: 'Leave blank for no change'
-                    }
-                },
-                passwordConfirm: {
-                    type: STRING,
-                    optional: true,
-                    errored: function(val, formVal) {
-                        if (val !== formVal.password) {
-                            return 'Passwords do not match';
-                        }
-                    },
-                    view: {
-                        type: 'password',
-                        label: 'Confirm password'
-                    }
-                },
-                roles: {
-                    optional: true,
-                    type: ARRAY,
-                    items: {
-                        type: STRING
-                    },
-                    view: {
-                        label: 'Groups'
-                    }
-                },
-                permissions: PERMISSION
+    persistence.JpaAccount = Base.create('JpaAccount', persistence.Entity, [], {
+        getPublicName: function() {
+            return this.get(NAME);
+        }
+    }, {
+        ATTRS: {
+            '@class': {
+                value: 'JpaAccount'
             },
-            EDITMENU: {
-                editBtn: {
-                    index: -1,
-                    cfg: {
-                        type: "EditEntityButton",
-                        label: "Edit user"
-                    }
-                },
-                deleteBtn: {
-                    index: 30,
-                    cfg: {
-                        type: "DeleteEntityButton"
+            name: {
+                transient: true,
+                getter: function() {
+                    if (this.get('firstname') || this.get('lastname')) {
+                        return (
+                            this.get('firstname') +
+                            ' ' +
+                            (this.get('lastname') || '')
+                            );
+                    } else {
+                        return this.get('email');
                     }
                 }
+            },
+            firstname: {
+                type: STRING,
+                view: {
+                    label: 'First name'
+                }
+            },
+            lastname: {
+                label: 'Last name',
+                type: STRING,
+                view: {
+                    label: 'Last name'
+                }
+            },
+            email: {
+                type: STRING,
+                view: {
+                    type: 'string'
+                }
+            },
+            username: {
+                type: STRING,
+                optional: true,
+                view: {
+                    label: 'Username',
+                    description: 'Can be used to log in'
+                }
+            },
+            hash: {
+                transient: true
+            },
+            password: {
+                type: STRING,
+                optional: true,
+                view: {
+                    type: 'password',
+                    label: 'Password',
+                    strengthIndicator: false,
+                    capsLockWarning: true,
+                    description: 'Leave blank for no change'
+                }
+            },
+            passwordConfirm: {
+                type: STRING,
+                optional: true,
+                errored: function(val, formVal) {
+                    if (val !== formVal.password) {
+                        return 'Passwords do not match';
+                    }
+                },
+                view: {
+                    type: 'password',
+                    label: 'Confirm password'
+                }
+            },
+            roles: {
+                optional: true,
+                type: ARRAY,
+                items: {
+                    type: STRING
+                },
+                view: {
+                    label: 'Groups'
+                }
+            },
+            permissions: PERMISSION
+        },
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                cfg: {
+                    type: "EditEntityButton",
+                    label: "Edit user"
+                }
+            },
+            deleteBtn: {
+                index: 30,
+                cfg: {
+                    type: "DeleteEntityButton"
+                }
             }
-        });
+        }
+    });
     /**
      * AaiAccount mapper
      */
-    persistence.AaiAccount = Base.create(
-        'AaiAccount',
-        persistence.Entity,
-        [],
-        {
-            getPublicName: function() {
-                return this.get(NAME);
-            }
-        },
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'AaiAccount'
-                },
-                name: {
-                    transient: true,
-                    getter: function() {
-                        if (this.get('firstname') || this.get('lastname')) {
-                            return (
-                                this.get('firstname') +
-                                ' ' +
-                                (this.get('lastname') || '')
-                                );
-                        } else {
-                            return this.get('email');
-                        }
-                    }
-                },
-                firstname: {
-                    type: STRING,
-                    view: {
-                        label: 'First name'
-                    }
-                },
-                lastname: {
-                    label: 'Last name',
-                    type: STRING,
-                    view: {
-                        label: 'Last name'
-                    }
-                },
-                email: {
-                    type: STRING,
-                    view: {
-                        type: 'email'
-                    }
-                },
-                roles: {
-                    optional: true,
-                    type: ARRAY,
-                    items: {
-                        type: STRING,
-                        choices: []
-                    },
-                    view: {
-                        label: 'Groups'
-                    }
-                },
-                permissions: PERMISSION
+    persistence.AaiAccount = Base.create('AaiAccount', persistence.Entity, [], {
+        getPublicName: function() {
+            return this.get(NAME);
+        }
+    }, {
+        ATTRS: {
+            '@class': {
+                value: 'AaiAccount'
             },
-            EDITMENU: {
-                editBtn: {
-                    index: -1,
-                    cfg: {
-                        type: "EditEntityButton",
-                        label: "Edit user"
-                    }
-                },
-                deleteBtn: {
-                    index: 30,
-                    cfg: {
-                        type: "DeleteEntityButton"
+            name: {
+                transient: true,
+                getter: function() {
+                    if (this.get('firstname') || this.get('lastname')) {
+                        return (
+                            this.get('firstname') +
+                            ' ' +
+                            (this.get('lastname') || '')
+                            );
+                    } else {
+                        return this.get('email');
                     }
                 }
+            },
+            firstname: {
+                type: STRING,
+                view: {
+                    label: 'First name'
+                }
+            },
+            lastname: {
+                label: 'Last name',
+                type: STRING,
+                view: {
+                    label: 'Last name'
+                }
+            },
+            email: {
+                type: STRING,
+                view: {
+                    type: 'email'
+                }
+            },
+            roles: {
+                optional: true,
+                type: ARRAY,
+                items: {
+                    type: STRING,
+                    choices: []
+                },
+                view: {
+                    label: 'Groups'
+                }
+            },
+            permissions: PERMISSION
+        },
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                cfg: {
+                    type: "EditEntityButton",
+                    label: "Edit user"
+                }
+            },
+            deleteBtn: {
+                index: 30,
+                cfg: {
+                    type: "DeleteEntityButton"
+                }
             }
-        });
+        }
+    });
     /**
      * GuestJpaAccount mapper
      */
-    persistence.GuestJpaAccount = Base.create(
-        'GuestJpaAccount',
-        persistence.Entity,
-        [],
-        {
-            getPublicName: function() {
-                return 'Guest';
+    persistence.GuestJpaAccount = Base.create('GuestJpaAccount', persistence.Entity, [], {
+        getPublicName: function() {
+            return 'Guest';
+        }
+    }, {
+        ATTRS: {
+            '@class': {
+                value: 'GuestJpaAccount'
+            },
+            permissions: {
+                transient: true,
+                value: []
             }
         },
-        {
-            ATTRS: {
-                '@class': {
-                    value: 'GuestJpaAccount'
-                },
-                permissions: {
-                    transient: true,
-                    value: []
+        EDITMENU: {
+            editBtn: {
+                index: -1,
+                cfg: {
+                    type: "EditEntityButton",
+                    label: "Edit user"
                 }
             },
-            EDITMENU: {
-                editBtn: {
-                    index: -1,
-                    cfg: {
-                        type: "EditEntityButton",
-                        label: "Edit user"
-                    }
-                },
-                deleteBtn: {
-                    index: 30,
-                    cfg: {
-                        type: "DeleteEntityButton"
-                    }
+            deleteBtn: {
+                index: 30,
+                cfg: {
+                    type: "DeleteEntityButton"
                 }
             }
-        });
+        }
+    });
 });

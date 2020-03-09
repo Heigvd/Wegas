@@ -326,8 +326,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @WegasExtraProperty(view = @View(
             index = -500,
             label = "Scope Key",
-            value = NumberView.class,
-            featureLevel = CommonView.FEATURE_LEVEL.INTERNAL
+            featureLevel = CommonView.FEATURE_LEVEL.INTERNAL,
+            value = NumberView.class
     ))
     public Long getScopeKey() {
         if (this.getTeamScope() != null) {

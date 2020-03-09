@@ -10,8 +10,10 @@ package com.wegas.core.persistence.variable.statemachine;
 import ch.albasim.wegas.annotations.View;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.rest.util.Views;
 import com.wegas.editor.JSONSchema.JSONObject;
 import com.wegas.editor.Schema;
 import com.wegas.editor.View.Hidden;
@@ -25,11 +27,16 @@ import javax.persistence.Entity;
  */
 @Entity
 @JsonIgnoreProperties(value = {"content"})
-@JsonTypeName("DialogueDescriptor")
 @Schema(property = "states", value = DialogueDescriptor.StateProp.class, view = @View(label = "", value = Hidden.class))
 public class DialogueDescriptor extends AbstractStateMachineDescriptor<DialogueState, DialogueTransition> {
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    @JsonView(Views.PublicI.class)
+    public Map<Long, DialogueState> getStates() {
+        return super.getStates();
+    }
 
     public static class StateProp extends JSONObject {
 
@@ -41,9 +48,8 @@ public class DialogueDescriptor extends AbstractStateMachineDescriptor<DialogueS
             state.setText(new TranslatableContent());
             state.getText().setVersion(0l);
 
-            state.setEditorPosition(new Coordinate());
-            state.getEditorPosition().setX(100);
-            state.getEditorPosition().setY(100);
+            state.setX(100);
+            state.setY(100);
 
             state.setOnEnterEvent(new Script());
 

@@ -9,12 +9,6 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.tools.FindAndReplaceVisitor;
 import ch.albasim.wegas.annotations.ProtectionLevel;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.difflib.algorithm.DiffException;
-import com.github.difflib.text.DiffRow;
-import com.github.difflib.text.DiffRowGenerator;
 import com.wegas.core.Helper;
 import com.wegas.core.api.GameModelFacadeI;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
@@ -37,22 +31,18 @@ import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.InstanceOwner;
-import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.Mergeable;
-import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.GmType;
 import static com.wegas.core.persistence.game.GameModel.GmType.*;
 import com.wegas.core.persistence.game.GameModel.Status;
-import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
-import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.tools.FindAndReplacePayload;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
@@ -64,10 +54,9 @@ import com.wegas.core.tools.RegexExtractorVisitor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -80,7 +69,6 @@ import javax.jcr.RepositoryException;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import javax.validation.Payload;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
 import org.apache.commons.io.IOUtils;
@@ -527,7 +515,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-                try ( ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
+                try (ZipOutputStream zipOutputStream = new ZipOutputStream(output, StandardCharsets.UTF_8)) {
 
                     // serialise the json
                     ZipEntry gameModelEntry = new ZipEntry("gamemodel.json");
@@ -773,6 +761,23 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findAllInstantiations", GameModel.class);
         query.setParameter("id", gm.getId());
         return query.getResultList();
+    }
+
+    /**
+     * Do a JPA query to fetch the reference of the given model.
+     * 
+     * @param gm the model
+     *
+     * @return the reference of the model or null
+     */
+    public GameModel findReference(GameModel gm) {
+        try {
+            TypedQuery<GameModel> query = this.getEntityManager().createNamedQuery("GameModel.findReference", GameModel.class);
+            query.setParameter("id", gm.getId());
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     /**
@@ -1156,7 +1161,18 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);
 
         if (payload.getProcessVariables()) {
+            if (payload.getRoots() != null && !payload.getReplace().isEmpty()) {
+                for (String variableName : payload.getRoots()) {
+                    try {
+                        VariableDescriptor variable = variableDescriptorFacade.find(mergeable, variableName);
+                        MergeHelper.visitMergeable(variable, Boolean.TRUE, replacer);
+                    } catch (WegasNoResultException ex) {
+                        throw WegasErrorMessage.error("Variable \"" + variableName + "\" not found");
+                    }
+                }
+            } else {
             MergeHelper.visitMergeable(mergeable, Boolean.TRUE, replacer);
+        }
         }
 
         if (payload.getProcessPages()) {
@@ -1181,7 +1197,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     public Set<String> findAllFiredEvents(Long gameModelId) {
         return this.findAllFiredEvents(this.find(gameModelId));
-    }
+            }
 
     public Set<String> findAllFiredEvents(GameModel gameModel) {
         FindAndReplacePayload payload = new FindAndReplacePayload();
@@ -1197,7 +1213,57 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         // match : Event.fire("eventName"), Event.fire(\"event\") + Event.fired
         payload.setFind("Event.fire\\(\\\\?\"([^\"\\\\]+)\\\\?\"\\)|Event.fired\\(\\\\?\"([^\"\\\\]+)\\\\?\"\\)");
 
-        RegexExtractorVisitor extractor = new RegexExtractorVisitor(payload);
+        RegexExtractorVisitor extractor = new RegexExtractorVisitor(payload, variableDescriptorFacade);
+        List<List<String>> process = extractor.process(gameModel);
+
+        Set<String> events = new HashSet<>();
+
+        for (List<String> line : process) {
+            events.addAll(line);
+                    }
+        return events;
+                }
+
+    public Set<String> findAllRefToFiles(Long gameModelId, Long vdId) {
+        GameModel gm = this.find(gameModelId);
+        VariableDescriptor variable = null;
+
+        if (vdId != null) {
+            variable = variableDescriptorFacade.find(vdId);
+            }
+        return this.findAllRefToFiles(gm, variable);
+        }
+
+        /**
+     * Go through the givenGameModel variables and fetch each references to internal files
+         *
+     * @param gameModel the gamemodel to search for reference in
+     * @param root      Optional variable to search in, if null, search the whole gameModel
+         *
+     * @return
+         */
+    public Set<String> findAllRefToFiles(GameModel gameModel,
+        VariableDescriptor root) {
+        FindAndReplacePayload payload = new FindAndReplacePayload();
+
+        payload.setLangsFromGameModel(gameModel);
+
+        payload.setProcessVariables(true);
+        payload.setProcessPages(false);
+        payload.setProcessScripts(false);
+        payload.setProcessStyles(false);
+
+        if (root != null) {
+            List<String> roots = new ArrayList<>();
+            roots.add(root.getName());
+            payload.setRoots(roots);
+            }
+
+        payload.setRegex(true);
+        // match : Event.fire("eventName"), Event.fire(\"event\") + Event.fired
+        payload.setFind("data-file=\\\\?\"([^\"\\\\]+)\\\\?\"");
+
+        RegexExtractorVisitor extractor = new RegexExtractorVisitor(payload, variableDescriptorFacade);
         List<List<String>> process = extractor.process(gameModel);
 
         Set<String> events = new HashSet<>();

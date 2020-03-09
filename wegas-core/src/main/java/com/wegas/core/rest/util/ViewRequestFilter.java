@@ -100,6 +100,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             case "Editor":
             case "Lobby":
             case "Instance":
+            case "Shadow":
                 //rmf.setView(this.stringToView(firstPathSeg));
                 view = Views.stringToView(firstPathSeg);
                 newUri = newUri.replace(firstPathSeg + "/", "");
@@ -124,6 +125,8 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             //rmf.setView(this.stringToView(cr.getUriInfo().getQueryParameters().get("view").get(0)));
             view = Views.stringToView(cr.getUriInfo().getQueryParameters().get("view").get(0));
         }
+
+        requestFacade.setView(view);
 
         // Propadate new view to ObjectWriter
         ObjectWriterInjector.set(new JsonViewModifier(view));

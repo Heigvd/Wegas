@@ -464,7 +464,7 @@ var ReviewHelper = (function() {
         }
 
         if (maxNumberOfValue === 0) {
-            if (game.getClass().getSimpleName() === "DebugGame") {
+            if (game instanceof com.wegas.core.persistence.game.DebugGame) {
                 maxNumberOfValue = 1;
             } else {
                 // evict test teams...

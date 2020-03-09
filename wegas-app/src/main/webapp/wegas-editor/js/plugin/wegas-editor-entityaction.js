@@ -149,6 +149,10 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             i = EditEntityAction.stackedIcon(i, 'fa-paw');
                             i.tooltip = 'Reset visibilities recursively';
                             break;
+                        case "Find & Replace":
+                            i = EditEntityAction.stackedIcon(i, 'fa-search');
+                            i.tooltip = 'Find & Replace';
+                            break;
                     }
                 }
             });
@@ -900,6 +904,19 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     on: {
                         success: Y.bind(function(e) {
                             var entity = e.response.entity;
+                            
+                            if (entity.getMenuConfigMap) {
+                                var menu = entity.getMenuConfigMap(entity);
+                                if (menu.editBtn) {
+                                    // the brand new entity has a custom editAction: use it
+                                    var button = Wegas.Widget.create(menu.editBtn.cfg);
+                                    button.fire("click");
+                                    button.destroy();
+                                    this.hideOverlay();
+                                    return;
+                                }
+                            }
+                            // fallback: no custom editAction: open entity as-is
                             EditEntityAction.showUpdateForm(entity, this.get(DATASOURCE));
                             this.hideOverlay();
                         }, this),
@@ -992,7 +1009,6 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         }
     });
     Plugin.ResetVisibilityAction = ResetVisibilityAction;
-
 
     ReleaseVariableAction = Y.Base.create("ReleaseVariableAction", EntityAction, [], {
         execute: function() {

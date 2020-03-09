@@ -9,6 +9,7 @@ package com.wegas.core.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.util.JacksonMapperProvider;
@@ -57,6 +58,9 @@ public class WebsocketController {
      */
     @Inject
     private WebsocketFacade websocketFacade;
+
+    @Inject
+    private RequestManager requestManager;
 
     @GET
     @Path("ApplicationKey")
@@ -123,11 +127,18 @@ public class WebsocketController {
     public void pusherChannelExistenceWebhook(@Context HttpServletRequest request, String rawHooks) throws IOException {
         websocketFacade.authenticateHookSource(request, rawHooks.getBytes());
 
-        ObjectMapper mapper = JacksonMapperProvider.getMapper();
-        PusherWebhooks hooks = mapper.readValue(rawHooks, PusherWebhooks.class);
+        requestManager.su();
+        try {
+            ObjectMapper mapper = JacksonMapperProvider.getMapper();
+            PusherWebhooks hooks = mapper.readValue(rawHooks, PusherWebhooks.class);
 
-        for (PusherChannelExistenceWebhook hook : hooks.getEvents()) {
-            websocketFacade.pusherChannelExistenceWebhook(hook);
+            for (PusherChannelExistenceWebhook hook : hooks.getEvents()) {
+                websocketFacade.pusherChannelExistenceWebhook(hook);
+            }
+        } finally {
+            // flush before logout
+            requestManager.getEntityManager().flush();
+            requestManager.releaseSu();
         }
     }
 
@@ -160,8 +171,8 @@ public class WebsocketController {
     }
 
     /**
-     * Clear internal list of online users. THe list will be rebuild next time
-     * Pusher/OnlineUser GET or POST is called
+     * Clear internal list of online users. THe list will be rebuild next time Pusher/OnlineUser GET
+     * or POST is called
      */
     @DELETE
     @Path("OnlineUser")

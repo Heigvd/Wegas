@@ -12,7 +12,6 @@ import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
@@ -47,7 +46,6 @@ import javax.persistence.*;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-@JsonTypeName(value = "Result")
 @Table(
         name = "MCQResult",
         uniqueConstraints = {

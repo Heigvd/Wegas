@@ -15,9 +15,7 @@ import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.AccountFacade;
-import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
-import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -58,24 +56,15 @@ public class TeamFacade extends BaseFacade<Team> {
     private StateMachineFacade stateMachineFacade;
 
     /**
-     * Get all account linked to team's players Account email addresses will be altered (by hiding
-     * some parts) so they can be publicly displayed
+     * Get all account linked to team's players
      *
      * @param teamId
      *
      * @return List of abstractAccount which are players of the team
      */
-    public List<AbstractAccount> getDetachedAccounts(Long teamId) {
+    public List<AbstractAccount> getInTeamAccounts(Long teamId) {
         Team entity = this.find(teamId);
-        ArrayList<AbstractAccount> accounts = accountFacade.findByTeam(entity);
-        for (AbstractAccount account : accounts) {
-            if (account instanceof JpaAccount) {
-                JpaAccount ja = (JpaAccount) account;
-                getEntityManager().detach(ja);
-                ja.setEmail(ja.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
-            }
-        }
-        return accounts;
+        return accountFacade.findByTeam(entity);
     }
 
     public String findUniqueNameForTeam(Game g, String baseName) {
@@ -121,6 +110,7 @@ public class TeamFacade extends BaseFacade<Team> {
         populatorScheduler.scheduleCreation();
         this.detach(t);
         t = this.find(t.getId());
+        requestManager.setCurrentTeam(t);
         return t;
     }
 
@@ -167,7 +157,7 @@ public class TeamFacade extends BaseFacade<Team> {
     /**
      * @param team
      *
-     * @return all instances which belons to the team
+     * @return all instances which belongs to the team
      *
      * @deprecated use JPA team.privateInstances
      */

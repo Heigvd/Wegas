@@ -86,70 +86,65 @@ YUI.add('wegas-plugin', function(Y) {
      *  @class
      *  @constructor
      */
-    var Action = Y.Base.create(
-        'wegas-actionplugin',
-        Plugin.Base,
-        [Wegas.Plugin, Wegas.Editable],
-        {
-            /** @lends Y.Plugin.Action */
-            /**
-             * @function
-             * @private
-             */
-            initializer: function() {
-                this.handlers = [];
-                this.get(HOST)
-                    .get('boundingBox')
-                    .addClass('wegas-' + this.get('targetEvent'));
-                this.onHostEvent(this.get('targetEvent'), this.filterEvent);
-            },
-            filterEvent: function(e) {
-                // Yui delegate design fire the event for each nested wiedget:we do not want this behaviour
-                // Hence, we make sure event target is the host
-                if (this.get("host") === e.target) {
-                    this.execute();
-                }
-            },
-            /**
-             * @function
-             * @protected
-             */
-            execute: function() {
-                Y.error(
-                    'Y.Plugin.Action.execute() is abstract, should be overridden'
-                    );
-            },
-            /**
-             * @function
-             * @private
-             * @description Detach all functions created by this widget.
-             */
-            destructor: function() {
-                for (var i = 0; i < this.handlers.length; i += 1) {
-                    if (this.handlers[i].detach) {
-                        // EventHandle
-                        this.handlers[i].detach();
-                    } else if (this.handlers[i].cancel) {
-                        //Timer
-                        this.handlers[i].cancel();
-                    }
-                }
+    var Action = Y.Base.create('wegas-actionplugin', Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+        /** @lends Y.Plugin.Action */
+        /**
+         * @function
+         * @private
+         */
+        initializer: function() {
+            this.handlers = [];
+            this.get(HOST)
+                .get('boundingBox')
+                .addClass('wegas-' + this.get('targetEvent'));
+            this.onHostEvent(this.get('targetEvent'), this.filterEvent);
+        },
+        filterEvent: function(e) {
+            // Yui delegate design fire the event for each nested wiedget:we do not want this behaviour
+            // Hence, we make sure event target is the host
+            if (this.get("host") === e.target) {
+                this.execute();
             }
         },
-        {
-            NS: 'wegas',
-            ATTRS: {
-                targetEvent: {
-                    type: 'string',
-                    value: 'click',
-                    view: {
-                        type: 'hidden'
-                    }
+        /**
+         * @function
+         * @protected
+         */
+        execute: function() {
+            Y.error(
+                'Y.Plugin.Action.execute() is abstract, should be overridden'
+                );
+        },
+        /**
+         * @function
+         * @private
+         * @description Detach all functions created by this widget.
+         */
+        destructor: function() {
+            for (var i = 0; i < this.handlers.length; i += 1) {
+                if (this.handlers[i].detach) {
+                    // EventHandle
+                    this.handlers[i].detach();
+                } else if (this.handlers[i].cancel) {
+                    //Timer
+                    this.handlers[i].cancel();
                 }
             }
         }
-    );
+    }, {
+        NS: 'wegas',
+        ATTRS: {
+            targetEvent: {
+                type: 'string',
+                value: 'click',
+                view: {
+                    type: 'hidden'
+                }
+            }
+        }
+    });
     Plugin.Action = Action;
+
     /**
      *  @class
      *  @name Y.Plugin.FireAndForgetRequestAction
@@ -213,61 +208,55 @@ YUI.add('wegas-plugin', function(Y) {
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var OpenUrlAction = Y.Base.create(
-        'OpenUrlAction',
-        Action,
-        [],
-        {
-            execute: function() {
-                this.open(this.get('url'));
-            },
-            open: function(url) {
-                if (
-                    url.indexOf('http://') !== 0 &&
-                    url.indexOf('https://') !== 0 &&
-                    url.indexOf('//') !== 0
-                    ) {
-                    url = Wegas.app.get('base') + url;
-                }
-                if (this.get('target') === 'blank') {
-                    window.open(url);
-                } else {
-                    window.location.href = url;
-                }
-            }
+    var OpenUrlAction = Y.Base.create('OpenUrlAction', Action, [], {
+        execute: function() {
+            this.open(this.get('url'));
         },
-        {
-            NS: 'openurlaction',
-            ATTRS: {
-                url: {
-                    type: 'string',
-                    view: {
-                        label: 'Open url'
-                    }
-                },
-                /**
-                 * Can be "self" or "blank"
-                 */
-                target: {
-                    type: 'string',
-                    value: 'blank',
-                    view: {
-                        type: 'select',
-                        choices: [
-                            {
-                                value: 'blank',
-                                label: 'In a new page'
-                            },
-                            {
-                                value: 'self',
-                                label: 'In the same page'
-                            }
-                        ]
-                    }
+        open: function(url) {
+            if (
+                url.indexOf('http://') !== 0 &&
+                url.indexOf('https://') !== 0 &&
+                url.indexOf('//') !== 0
+                ) {
+                url = Wegas.app.get('base') + url;
+            }
+            if (this.get('target') === 'blank') {
+                window.open(url);
+            } else {
+                window.location.href = url;
+            }
+        }
+    }, {
+        NS: 'openurlaction',
+        ATTRS: {
+            url: {
+                type: 'string',
+                view: {
+                    label: 'Open url'
+                }
+            },
+            /**
+             * Can be "self" or "blank"
+             */
+            target: {
+                type: 'string',
+                value: 'blank',
+                view: {
+                    type: 'select',
+                    choices: [
+                        {
+                            value: 'blank',
+                            label: 'In a new page'
+                        },
+                        {
+                            value: 'self',
+                            label: 'In the same page'
+                        }
+                    ]
                 }
             }
         }
-    );
+    });
     Plugin.OpenUrlAction = OpenUrlAction;
 
     /**
@@ -276,60 +265,54 @@ YUI.add('wegas-plugin', function(Y) {
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var OpenFileAction = Y.Base.create(
-        'OpenFilAction',
-        Action,
-        [],
-        {
-            execute: function() {
-                var theFile = Y.Wegas.Facade.File.get("source") + "read" + I18n.t(this.get("file"));
+    var OpenFileAction = Y.Base.create('OpenFilAction', Action, [], {
+        execute: function() {
+            var theFile = Y.Wegas.Facade.File.get("source") + "read" + I18n.t(this.get("file"));
 
-                this.open(theFile);
-            },
-            open: function(url) {
-                if (
-                    url.indexOf('http://') !== 0 &&
-                    url.indexOf('https://') !== 0 &&
-                    url.indexOf('//') !== 0
-                    ) {
-                    url = Wegas.app.get('base') + url;
-                }
-                if (this.get('target') === 'blank') {
-                    window.open(url);
-                } else {
-                    window.location.href = url;
-                }
-            }
+            this.open(theFile);
         },
-        {
-            NS: 'openfileaction',
-            ATTRS: {
-                file: Y.Wegas.Helper.getTranslationAttr({
-                    type: "wegasurl", label: "File"
-                }),
-                /**
-                 * Can be "self" or "blank"
-                 */
-                target: {
-                    type: 'string',
-                    value: 'blank',
-                    view: {
-                        type: 'select',
-                        choices: [
-                            {
-                                value: 'blank',
-                                label: 'In a new page'
-                            },
-                            {
-                                value: 'self',
-                                label: 'In the same page'
-                            }
-                        ]
-                    }
+        open: function(url) {
+            if (
+                url.indexOf('http://') !== 0 &&
+                url.indexOf('https://') !== 0 &&
+                url.indexOf('//') !== 0
+                ) {
+                url = Wegas.app.get('base') + url;
+            }
+            if (this.get('target') === 'blank') {
+                window.open(url);
+            } else {
+                window.location.href = url;
+            }
+        }
+    }, {
+        NS: 'openfileaction',
+        ATTRS: {
+            file: Y.Wegas.Helper.getTranslationAttr({
+                type: "wegasurl", label: "File"
+            }),
+            /**
+             * Can be "self" or "blank"
+             */
+            target: {
+                type: 'string',
+                value: 'blank',
+                view: {
+                    type: 'select',
+                    choices: [
+                        {
+                            value: 'blank',
+                            label: 'In a new page'
+                        },
+                        {
+                            value: 'self',
+                            label: 'In the same page'
+                        }
+                    ]
                 }
             }
         }
-    );
+    });
     Plugin.OpenFileAction = OpenFileAction;
 
 
@@ -340,95 +323,89 @@ YUI.add('wegas-plugin', function(Y) {
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var PrintActionPlugin = Y.Base.create(
-        'PrintActionPlugin',
-        Action,
-        [],
-        {
-            execute: function() {
-                var outputType = this.get('outputType'),
-                    displayPath = this.get('displayPath'),
-                    title = this.get('title.evaluated'),
-                    playerId = Wegas.Facade.Game.get('currentPlayerId'),
-                    roots = this.get('root.evaluated'),
-                    root = '',
-                    printUrl;
+    var PrintActionPlugin = Y.Base.create('PrintActionPlugin', Action, [], {
+        execute: function() {
+            var outputType = this.get('outputType'),
+                displayPath = this.get('displayPath'),
+                title = this.get('title.evaluated'),
+                playerId = Wegas.Facade.Game.get('currentPlayerId'),
+                roots = this.get('root.evaluated'),
+                root = '',
+                printUrl;
 
-                if (roots) {
-                    if (!Y.Lang.isArray(roots)) {
-                        roots = [roots];
-                    }
-                    Y.Array.each(
-                        roots,
-                        function(d) {
-                            root += d.get('name') + ',';
-                        },
-                        this
-                        );
-                    root = root.slice(0, -1);
+            if (roots) {
+                if (!Y.Lang.isArray(roots)) {
+                    roots = [roots];
                 }
-
-                printUrl =
-                    Wegas.app.get('base') +
-                    'print.html?id=' +
-                    playerId +
-                    '&outputType=' +
-                    outputType +
-                    '&displayPath=' +
-                    displayPath +
-                    (title ? '&title=' + title : '') +
-                    '&root=' +
-                    encodeURIComponent(root);
-                window.open(printUrl);
+                Y.Array.each(
+                    roots,
+                    function(d) {
+                        root += d.get('name') + ',';
+                    },
+                    this
+                    );
+                root = root.slice(0, -1);
             }
-        },
-        {
-            NS: 'PrintActionPlugin',
-            ATTRS: {
-                root: {
-                    type: 'object',
-                    /**
-                     * The target variable, returned either based on the name attribute,
-                     * and if absent by evaluating the expr attribute.
-                     */
-                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    view: {
-                        type: 'variableselect',
-                        label: 'Root Variable'
-                    }
-                },
-                title: {
-                    type: 'object',
-                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    view: {
-                        type: 'variableselect',
-                        label: 'Title'
-                    }
-                },
+
+            printUrl =
+                Wegas.app.get('base') +
+                'print.html?id=' +
+                playerId +
+                '&outputType=' +
+                outputType +
+                '&displayPath=' +
+                displayPath +
+                (title ? '&title=' + title : '') +
+                '&root=' +
+                encodeURIComponent(root);
+            window.open(printUrl);
+        }
+    }, {
+        NS: 'PrintActionPlugin',
+        ATTRS: {
+            root: {
+                type: 'object',
                 /**
-                 * Can be "html" or "pdf"
+                 * The target variable, returned either based on the name attribute,
+                 * and if absent by evaluating the expr attribute.
                  */
-                outputType: {
-                    type: 'string',
-                    value: 'html',
-                    view: {
-                        type: 'select',
-                        choices: ['html', 'pdf'],
-                        label: 'output type'
-                    }
-                },
-                displayPath: {
-                    type: 'string',
-                    value: 'true',
-                    view: {
-                        type: 'select',
-                        choices: ['true', 'false'],
-                        label: 'Display Path'
-                    }
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                view: {
+                    type: 'variableselect',
+                    label: 'Root Variable'
+                }
+            },
+            title: {
+                type: 'object',
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                view: {
+                    type: 'variableselect',
+                    label: 'Title'
+                }
+            },
+            /**
+             * Can be "html" or "pdf"
+             */
+            outputType: {
+                type: 'string',
+                value: 'html',
+                view: {
+                    type: 'select',
+                    choices: ['html', 'pdf'],
+                    label: 'output type'
+                }
+            },
+            displayPath: {
+                type: 'string',
+                value: 'true',
+                view: {
+                    type: 'select',
+                    choices: ['true', 'false'],
+                    label: 'Display Path'
                 }
             }
         }
-    );
+    });
     Plugin.PrintActionPlugin = PrintActionPlugin;
 
     /**
@@ -514,49 +491,47 @@ YUI.add('wegas-plugin', function(Y) {
             }
             return this.get('subpageId');
         }
-    },
-        {
-            NS: 'OpenPageAction',
-            ATTRS: {
-                subpageId: {
-                    type: 'string',
-                    view: {
-                        label: 'Open page',
-                        type: 'pageselect'
-                    }
-                },
-                targetPageLoaderId: {
-                    type: 'string',
-                    value: '',
-                    view: {
-                        label: 'Target',
-                        type: 'pageloaderselect',
-                        choices: [
-                            PAGELOADER_CONFIG.FULL_PAGE,
-                            PAGELOADER_CONFIG.CURRENT_PAGE_LOADER
-                        ]
-                    }
-                },
-                forceReload: {
+    }, {
+        NS: 'OpenPageAction',
+        ATTRS: {
+            subpageId: {
+                type: 'string',
+                view: {
+                    label: 'Open page',
+                    type: 'pageselect'
+                }
+            },
+            targetPageLoaderId: {
+                type: 'string',
+                value: '',
+                view: {
+                    label: 'Target',
+                    type: 'pageloaderselect',
+                    choices: [
+                        PAGELOADER_CONFIG.FULL_PAGE,
+                        PAGELOADER_CONFIG.CURRENT_PAGE_LOADER
+                    ]
+                }
+            },
+            forceReload: {
+                type: 'boolean',
+                value: false,
+                view: {
                     type: 'boolean',
-                    value: false,
-                    view: {
-                        type: 'boolean',
-                        label: "Force page reload",
-                        className: 'wegas-advanced-feature'
-                    }
-                },
-                variable: {
-                    type: 'object',
-                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    view: {
-                        type: 'variableselect',
-                        className: 'wegas-advanced-feature'
-                    }
+                    label: "Force page reload",
+                    className: 'wegas-advanced-feature'
+                }
+            },
+            variable: {
+                type: 'object',
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                view: {
+                    type: 'variableselect',
+                    className: 'wegas-advanced-feature'
                 }
             }
         }
-    );
+    });
     Plugin.OpenPageAction = OpenPageAction;
 
     /**
@@ -601,8 +576,6 @@ YUI.add('wegas-plugin', function(Y) {
     });
     Plugin.ExecuteScriptAction = ExecuteScriptAction;
 
-
-
     /**
      *  @class
      *  @name Y.Plugin.ExecuteLocalScriptAction
@@ -618,24 +591,20 @@ YUI.add('wegas-plugin', function(Y) {
                     }, this));
             }
         }
-    },
-        {
-            NS: 'ExecuteLocalScriptAction',
-            ATTRS: {
-                onClick: {
-                    type: 'string',
-                    value: "",
-                    view: {
-                        type: 'textarea',
-                        label: 'On click'
-                    }
+    }, {
+        NS: 'ExecuteLocalScriptAction',
+        ATTRS: {
+            onClick: {
+                type: 'string',
+                value: "",
+                view: {
+                    type: 'textarea',
+                    label: 'On click'
                 }
             }
         }
-    );
+    });
     Plugin.ExecuteLocalScriptAction = ExecuteLocalScriptAction;
-
-
 
     /**
      *  @class
@@ -643,41 +612,35 @@ YUI.add('wegas-plugin', function(Y) {
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var PlaySoundAction = Y.Base.create(
-        'PlaySoundAction',
-        Action,
-        [],
-        {
-            execute: function() {
-                var audio, url;
-                url = Y.Plugin.Injector.getImageUri(this.get('url'));
+    var PlaySoundAction = Y.Base.create('PlaySoundAction', Action, [], {
+        execute: function() {
+            var audio, url;
+            url = Y.Plugin.Injector.getImageUri(this.get('url'));
 
-                if (Y.Lang.isFunction(window.Audio)) {
-                    audio = new Audio(url);
-                    audio.play();
-                } else {
-                    new Wegas.Panel({
-                        bodyContent: '<div class=\'\'> <span class="fa fa-4x fa-bullhorn"></span> <span>Please listen to that <a target="_blank" href="' +
-                            url +
-                            '">sound</a>. <br /><br /><p style="font-size: 0.6em;color: rgba(153, 153, 153, 0.99);">(And, btw, upgrade your browser...)</p><span></div>'
-                    }).render();
-                }
+            if (Y.Lang.isFunction(window.Audio)) {
+                audio = new Audio(url);
+                audio.play();
+            } else {
+                new Wegas.Panel({
+                    bodyContent: '<div class=\'\'> <span class="fa fa-4x fa-bullhorn"></span> <span>Please listen to that <a target="_blank" href="' +
+                        url +
+                        '">sound</a>. <br /><br /><p style="font-size: 0.6em;color: rgba(153, 153, 153, 0.99);">(And, btw, upgrade your browser...)</p><span></div>'
+                }).render();
             }
-        },
-        {
-            NS: 'PlaySoundAction',
-            ATTRS: {
-                url: {
-                    value: '',
-                    type: 'string',
-                    view: {
-                        label: 'Sound',
-                        type: 'wegasurl'
-                    }
+        }
+    }, {
+        NS: 'PlaySoundAction',
+        ATTRS: {
+            url: {
+                value: '',
+                type: 'string',
+                view: {
+                    label: 'Sound',
+                    type: 'wegasurl'
                 }
             }
         }
-    );
+    });
     Plugin.PlaySoundAction = PlaySoundAction;
 
     /**
@@ -720,77 +683,72 @@ YUI.add('wegas-plugin', function(Y) {
     Plugin.ConfirmExecuteScriptAction = ConfirmExecuteScriptAction;
 
 
-    var ConfirmClick = Y.Base.create(
-        'wegas-confirm-click',
-        Plugin.Base,
-        [Wegas.Plugin, Wegas.Editable],
-        {
-            initializer: function() {
-                var handle = this.get("host").get("contentBox").on("click", this.beforeEvent, this);
-                this._handles.push(handle);
-            },
-            beforeEvent: function(e) {
-                if (!this.get(HOST).get('disabled')) {
-                    if (e._event.hasOwnProperty("isTrusted") && window.MouseEvent) {
-                        if (e._event.isTrusted) {
-                            // User click: event not yet confirmed : stop it ASAP
-                            Y.log("Event intercepted");
-                            e.halt(true);
-                            Y.Wegas.Panel.confirm(this._getMessage(), Y.bind(function() {
-                                // Click confirmed -> fire event again but from the widget, not the contentBox !
-                                var event = new MouseEvent('click', {
-                                    'view': window,
-                                    'bubbles': true,
-                                    'cancelable': true
-                                });
-                                e.target.getDOMNode().dispatchEvent(event);
-                            }, this));
-                        } else {
-                            Y.log("Event Confirmed :" + e);
-                        }
+    var ConfirmClick = Y.Base.create('wegas-confirm-click', Plugin.Base,
+        [Wegas.Plugin, Wegas.Editable], {
+        initializer: function() {
+            var handle = this.get("host").get("contentBox").on("click", this.beforeEvent, this);
+            this._handles.push(handle);
+        },
+        beforeEvent: function(e) {
+            if (!this.get(HOST).get('disabled')) {
+                if (e._event.hasOwnProperty("isTrusted") && window.MouseEvent) {
+                    if (e._event.isTrusted) {
+                        // User click: event not yet confirmed : stop it ASAP
+                        Y.log("Event intercepted");
+                        e.halt(true);
+                        Y.Wegas.Panel.confirm(this._getMessage(), Y.bind(function() {
+                            // Click confirmed -> fire event again but from the widget, not the contentBox !
+                            var event = new MouseEvent('click', {
+                                'view': window,
+                                'bubbles': true,
+                                'cancelable': true
+                            });
+                            e.target.getDOMNode().dispatchEvent(event);
+                        }, this));
                     } else {
-                        // compatibility
-                        if (!window.confirm(this._getMessage())) {
-                            e.halt(true);
-                        }
+                        Y.log("Event Confirmed :" + e);
                     }
-                }
-            },
-            _getMessage: function() {
-                var msgVar = this.get("variable.evaluated");
-                var msgValue = msgVar && msgVar.getValue && msgVar.getValue();
-                if (msgValue) {
-                    return msgValue;
                 } else {
-                    return this.get("message");
+                    // compatibility
+                    if (!window.confirm(this._getMessage())) {
+                        e.halt(true);
+                    }
                 }
             }
         },
-        {
-            NS: 'confirmallaction',
-            EDITORNAME: 'Click Confirmation',
-            ATTRS: {
-                message: {
-                    type: "string",
-                    value: "Confirm Action ?",
-                    view: {
-                        label: "Message"
-                    }
-                },
-                variable: {
-                    type: 'object',
-                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    view: {
-                        type: 'variableselect',
-                        label: 'Message Variable',
-                        description: "Override static message",
-                        classFilter: ['StringDescriptor', 'TextDescriptor'],
-                        className: "wegas-advanced-feature"
-                    }
+        _getMessage: function() {
+            var msgVar = this.get("variable.evaluated");
+            var msgValue = msgVar && msgVar.getValue && msgVar.getValue();
+            if (msgValue) {
+                return msgValue;
+            } else {
+                return this.get("message");
+            }
+        }
+    }, {
+        NS: 'confirmallaction',
+        EDITORNAME: 'Click Confirmation',
+        ATTRS: {
+            message: {
+                type: "string",
+                value: "Confirm Action ?",
+                view: {
+                    label: "Message"
+                }
+            },
+            variable: {
+                type: 'object',
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                view: {
+                    type: 'variableselect',
+                    label: 'Message Variable',
+                    description: "Override static message",
+                    classFilter: ['StringDescriptor', 'TextDescriptor'],
+                    className: "wegas-advanced-feature"
                 }
             }
         }
-    );
+    });
     Plugin.ConfirmClick = ConfirmClick;
 
     /**
@@ -799,98 +757,89 @@ YUI.add('wegas-plugin', function(Y) {
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var SaveObjectAction = Y.Base.create(
-        'SaveObjectAction',
-        Action,
-        [],
-        {
-            execute: function(e) {
-                var overlayGuest,
-                    i,
-                    host = this.get(HOST),
-                    guest = host.get('root'),
-                    variable = this.get('variable.evaluated'),
-                    //data = "var objProp = Variable.find(gameModel, \"" + variable.get("name") + "\").getInstance(self)" + ".properties;",
-                    //script = data + (this.get("clearStorage") ? "objProp.clear();" : "");
-                    data =
-                    'var instance = Variable.find(gameModel, "' +
-                    variable.get('name') +
-                    '").getInstance(self);',
-                    script =
-                    data +
-                    (this.get('clearStorage')
-                        ? 'instance.clearProperties();'
-                        : '');
+    var SaveObjectAction = Y.Base.create('SaveObjectAction', Action, [], {
+        execute: function(e) {
+            var overlayGuest,
+                i,
+                host = this.get(HOST),
+                guest = host.get('root'),
+                variable = this.get('variable.evaluated'),
+                //data = "var objProp = Variable.find(gameModel, \"" + variable.get("name") + "\").getInstance(self)" + ".properties;",
+                //script = data + (this.get("clearStorage") ? "objProp.clear();" : "");
+                data =
+                'var instance = Variable.find(gameModel, "' +
+                variable.get('name') +
+                '").getInstance(self);',
+                script =
+                data +
+                (this.get('clearStorage')
+                    ? 'instance.clearProperties();'
+                    : '');
 
-                if (guest.showOverlay && guest.hideOverlay) {
-                    overlayGuest = guest;
-                    overlayGuest.showOverlay();
-                }
-
-                for (i in e.value) {
-                    script +=
-                        "instance.setProperty('" +
-                        (i + '').replace(/'/g, "\\'") +
-                        "','" +
-                        (e.value[i] + '').replace(/'/g, "\\'") +
-                        "');";
-                    //script += "objProp.put('" + (i + "").replace(/'/g, "\\'") + "','" + (e.value[i] + "").replace(/'/g, "\\'") + "');";
-                }
-
-                Wegas.Facade.Variable.script.run(script, {
-                    on: {
-                        success: function() {
-                            overlayGuest && overlayGuest.hideOverlay();
-                        },
-                        failure: function() {
-                            overlayGuest && overlayGuest.hideOverlay();
-                        }
-                    }
-                });
+            if (guest.showOverlay && guest.hideOverlay) {
+                overlayGuest = guest;
+                overlayGuest.showOverlay();
             }
-        },
-        {
-            NS: 'SaveObjectAction',
-            EDITORNAME: 'Save to',
-            ATTRS: {
-                variable: {
-                    /**
-                     * The target variable, returned either based on the name attribute,
-                     * and if absent by evaluating the expr attribute.
-                     */
-                    type: 'object',
-                    getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                    view: {
-                        type: 'variableselect',
-                        label: 'Save to',
-                        classFilter: ['ObjectDescriptor']
+
+            for (i in e.value) {
+                script +=
+                    "instance.setProperty('" +
+                    (i + '').replace(/'/g, "\\'") +
+                    "','" +
+                    (e.value[i] + '').replace(/'/g, "\\'") +
+                    "');";
+                //script += "objProp.put('" + (i + "").replace(/'/g, "\\'") + "','" + (e.value[i] + "").replace(/'/g, "\\'") + "');";
+            }
+
+            Wegas.Facade.Variable.script.run(script, {
+                on: {
+                    success: function() {
+                        overlayGuest && overlayGuest.hideOverlay();
+                    },
+                    failure: function() {
+                        overlayGuest && overlayGuest.hideOverlay();
                     }
-                },
-                targetEvent: {
-                    value: 'submit',
-                    view: {
-                        label: 'Target event',
-                        className: 'wegas-advanced-feature'
-                    }
-                },
-                clearStorage: {
-                    type: 'boolean',
-                    value: true,
-                    view: {
-                        label: 'Replace Storage',
-                        description: 'Will remove existing data. Else add them to the existing one.'
-                    }
+                }
+            });
+        }
+    }, {
+        NS: 'SaveObjectAction',
+        EDITORNAME: 'Save to',
+        ATTRS: {
+            variable: {
+                /**
+                 * The target variable, returned either based on the name attribute,
+                 * and if absent by evaluating the expr attribute.
+                 */
+                type: 'object',
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                view: {
+                    type: 'variableselect',
+                    label: 'Save to',
+                    classFilter: ['ObjectDescriptor']
+                }
+            },
+            targetEvent: {
+                value: 'submit',
+                view: {
+                    label: 'Target event',
+                    className: 'wegas-advanced-feature'
+                }
+            },
+            clearStorage: {
+                type: 'boolean',
+                value: true,
+                view: {
+                    label: 'Replace Storage',
+                    description: 'Will remove existing data. Else add them to the existing one.'
                 }
             }
         }
-    );
+    });
     Plugin.SaveObjectAction = SaveObjectAction;
 
 
-    var IdleMonitor = Y.Base.create(
-        'wegas-idleMonitor',
-        Plugin.Base,
-        [Wegas.Plugin], {
+    var IdleMonitor = Y.Base.create('wegas-idleMonitor', Plugin.Base, [Wegas.Plugin], {
         initializer: function() {
             this.handlers = {};
             this.running = false;
@@ -963,23 +912,21 @@ YUI.add('wegas-plugin', function(Y) {
             window.removeEventListener("scroll", this.onScroll);
         }
 
-    },
-        {
-            NS: "idlemonitor",
-            ATTRS: {
-                timeout: {
-                    // idle after milliseconds
-                    type: "number",
-                    value: 20000
-                },
-                resolution: {
-                    // check idle status each milliseconds
-                    type: "number",
-                    value: 5000
-                }
+    }, {
+        NS: "idlemonitor",
+        ATTRS: {
+            timeout: {
+                // idle after milliseconds
+                type: "number",
+                value: 20000
+            },
+            resolution: {
+                // check idle status each milliseconds
+                type: "number",
+                value: 5000
             }
         }
-    );
+    });
     Plugin.IdleMonitor = IdleMonitor;
 
     var ScrollOnClick = Y.Base.create('wegas-scroll-onclick',
@@ -1066,6 +1013,4 @@ YUI.add('wegas-plugin', function(Y) {
     Plugin.ScrollOnClick2 = Y.Base.create('wegas-scroll-onclick2', ScrollOnClick, [], {}, {NS: 'ScrollOnClick2'});
     Plugin.ScrollOnClick3 = Y.Base.create('wegas-scroll-onclick3', ScrollOnClick, [], {}, {NS: 'ScrollOnClick3'});
     Plugin.ScrollOnClick4 = Y.Base.create('wegas-scroll-onclick3', ScrollOnClick, [], {}, {NS: 'ScrollOnClick4'});
-
-
 });

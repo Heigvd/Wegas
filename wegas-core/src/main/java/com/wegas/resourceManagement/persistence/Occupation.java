@@ -12,15 +12,14 @@ import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.True;
-import com.wegas.editor.View.Hidden;
 import java.util.Collection;
 import javax.persistence.*;
 
@@ -32,6 +31,7 @@ import javax.persistence.*;
 @Table(indexes = {
     @Index(columnList = "resourceinstance_id")
 })
+@JsonIgnoreProperties({"description"})
 public class Occupation extends AbstractEntity implements NamedEntity {
 
     private static final long serialVersionUID = 5183770682755470296L;
@@ -57,16 +57,6 @@ public class Occupation extends AbstractEntity implements NamedEntity {
             optional = false, nullable = false, proposal = True.class,
             view = @View(label = "Editable (?!?)", layout = shortInline))
     private Boolean editable = true;
-    /**
-     *
-     */
-    @Lob
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Description (!?!)", value = Hidden.class))
-    private String description = "";
 
     /**
      *
@@ -169,20 +159,6 @@ public class Occupation extends AbstractEntity implements NamedEntity {
      */
     public void setEditable(boolean editable) {
         this.editable = editable;
-    }
-
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     @Override
