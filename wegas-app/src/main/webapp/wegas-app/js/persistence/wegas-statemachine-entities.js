@@ -645,7 +645,13 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 label: "Text",
                 index: -1,
                 type: HTML
-            })
+            }),
+            label: {
+                transient:true,
+                view: {
+                    type: HIDDEN
+                }
+            }
         }
     });
 
@@ -717,6 +723,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 type: HTML
             }),
             label: {
+                transient:true,
                 view: {
                     type: HIDDEN
                 }
