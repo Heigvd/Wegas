@@ -81,7 +81,8 @@ YUI.add("wegas-i18n", function(Y) {
                 if ((match = /Variable\((.*)\)/.exec(params[0]))) {
                     value = Y.Wegas.Facade.Variable.cache.find("name", match[1]);
                 } else if ((match = /VariableInstance\((.*)\)/.exec(params[0]))) {
-                    value = Y.Wegas.Facade.Variable.cache.find("name", match[1]).getInstance();
+                    var variable = Y.Wegas.Facade.Variable.cache.find("name", match[1]);
+                    value = variable ? variable.getInstance() : null;
                 } else if (params[0] === "Player") {
                     value = Y.Wegas.Facade.Game.cache.getCurrentPlayer();
                 } else if (params[0] === "Team") {
