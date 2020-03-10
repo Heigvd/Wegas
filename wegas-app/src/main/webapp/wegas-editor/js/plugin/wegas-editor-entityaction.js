@@ -904,11 +904,12 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     on: {
                         success: Y.bind(function(e) {
                             var entity = e.response.entity;
-                            
+
                             if (entity.getMenuConfigMap) {
                                 var menu = entity.getMenuConfigMap(entity);
                                 if (menu.editBtn) {
                                     // the brand new entity has a custom editAction: use it
+                                    menu.editBtn.cfg.dataSource = this.get(DATASOURCE);
                                     var button = Wegas.Widget.create(menu.editBtn.cfg);
                                     button.fire("click");
                                     button.destroy();
