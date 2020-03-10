@@ -13,8 +13,8 @@ import com.wegas.core.Helper;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Shadow;
 import com.wegas.core.security.util.AuthenticationMethod;
+import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.JpaAuthentication;
-import com.wegas.core.security.util.JpaAuthentication.HashMethod;
 import javax.persistence.*;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
@@ -54,7 +54,7 @@ public class JpaAccount extends AbstractAccount {
     /**
      *
      */
-    @Column(length = 24, columnDefinition = "character varying(24) default ''::character varying")
+    @Column(length = 24, columnDefinition = "character varying(24)")
     @Enumerated(value = EnumType.STRING)
     private HashMethod nextAuth;
 
@@ -77,9 +77,24 @@ public class JpaAccount extends AbstractAccount {
      *
      */
     public void shadowPasword() {
-        if (this.password != null && !this.password.isEmpty()) {
-            String hash = new Sha256Hash(this.password,
-                (new SimpleByteSource(this.getShadow().getSalt())).getBytes()).toHex();
+        if (!Helper.isNullOrEmpty(this.password)){
+            Shadow shadow = this.getShadow();
+
+            HashMethod hashMethod = shadow.getHashMethod();
+            HashMethod nextHashMethod = shadow.getNextHashMethod();
+            
+            if (nextHashMethod != null){
+                hashMethod = nextHashMethod;
+                shadow.setNextHashMethod(null);
+                shadow.setHashMethod(hashMethod);
+            }
+            
+            if (hashMethod == null){
+                hashMethod = HashMethod.SHA_256;
+                shadow.setHashMethod(HashMethod.SHA_256);
+            }
+
+            String hash = hashMethod.hash(this.password, this.getShadow().getSalt());
             this.password = null;
             this.getShadow().setPasswordHex(hash);
         }

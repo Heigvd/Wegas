@@ -29,6 +29,7 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.core.security.util.AuthenticationMethod;
+import com.wegas.core.security.util.HashMethod;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -370,7 +371,7 @@ public class UserController {
      * @return a list of authentication method available for this username
      */
     @GET
-    @Path("AuthenticateMethod/{username}")
+    @Path("AuthMethod/{username}")
     public List<AuthenticationMethod> getAuthMethod(AuthenticationInformation authInfo,
         @PathParam("username") String username) {
         return userFacade.getAuthMethods(username);
@@ -386,7 +387,8 @@ public class UserController {
     public User loginWithDisposableToken(AuthenticationInformation authInfo,
         @Context HttpServletRequest request
     ) throws ServletException, IOException, URISyntaxException {
-        return userFacade.authenticateFromToken(authInfo.getLogin(), authInfo.getPassword());
+        return userFacade.authenticateFromToken(authInfo.getLogin(), 
+            authInfo.getHashes().get(HashMethod.PLAIN));
     }
 
     /**
@@ -455,10 +457,9 @@ public class UserController {
     }
 
     @GET
-    @Path("AuthenticateMethod/{username}")
-    public List<AuthenticationMethod> getDefaultAuthMethod(AuthenticationInformation authInfo,
-        @PathParam("username") String username) {
-        return userFacade.getAuthMethods(username);
+    @Path("DefaultAuthMethod")
+    public AuthenticationMethod getDefaultAuthMethod() {
+        return userFacade.getDefaultAuthMethod();
     }
 
     /**

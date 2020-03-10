@@ -1,0 +1,34 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="maxence" id="1583492938469-1">
+        <addColumn tableName="abstractaccount">
+            <column defaultValue="PLAIN" name="currentauth" type="varchar(24)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="maxence" id="1583492938469-2">
+        <addColumn tableName="abstractaccount">
+            <column name="nextauth" type="varchar(24)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="maxence" id="1583492938469-3">
+        <update tableName="abstractaccount">
+            <column name="currentauth" value='PLAIN'></column>
+        </update>
+    </changeSet>
+
+    <changeSet author="maxence" id="1583492938469-4">
+        <addColumn tableName="shadow">
+            <column defaultValue="SHA_256" name="hashmethod" type="varchar(24)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="maxence" id="1583492938469-5">
+        <addColumn tableName="shadow">
+            <column name="nexthashmethod" type="varchar(24)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="maxence" id="1583492938469-6">
+        <update tableName="shadow">
+            <column name="hashmethod" value='SHA_256'></column>
+        </update>
+    </changeSet>
+</databaseChangeLog>

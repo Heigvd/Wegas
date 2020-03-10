@@ -32,6 +32,8 @@ import com.wegas.core.security.persistence.Shadow;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.core.security.util.AuthenticationMethod;
+import com.wegas.core.security.util.HashMethod;
+import com.wegas.core.security.util.JpaAuthentication;
 import com.wegas.messaging.ejb.EMailFacade;
 import java.util.*;
 import javax.ejb.LocalBean;
@@ -167,13 +169,17 @@ public class UserFacade extends BaseFacade<User> {
         throw WegasErrorMessage.error("Email/token combination not found");
     }
 
+    public JpaAuthentication getDefaultAuthMethod() {
+        return new JpaAuthentication(HashMethod.PLAIN, null);
+    }
+
     /**
      * Return the list of hash method the client may use to sign in. Such methods
      *
-     * 
+     *
      * @param authInfo
      *
-     * @return array of AAI | PLAIN | SHA-512 |
+     * @return
      */
     public List<AuthenticationMethod> getAuthMethods(String username) {
         List<AuthenticationMethod> methods = new ArrayList<>();
@@ -208,13 +214,42 @@ public class UserFacade extends BaseFacade<User> {
         }
 
         //if (!currentUser.isAuthenticated()) {
-        UsernamePasswordToken token = new UsernamePasswordToken(authInfo.getLogin(), authInfo.getPassword());
+        String password = authInfo.getHashes().get(authInfo.getHashMethod());
+        UsernamePasswordToken token = new UsernamePasswordToken(authInfo.getLogin(), password);
         token.setRememberMe(authInfo.isRemember());
         try {
             requestManager.login(subject, token);
+
+            AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
+            if (account instanceof JpaAccount) {
+                JpaAccount jpaAccount = (JpaAccount) account;
+                String newHash = null;
+
+                if (jpaAccount.getShadow().getNextHashMethod() != null) {
+                    // shadow asks to use a new hash method
+                    // initialize newHash to trigger password update
+                    newHash = jpaAccount.getPassword();
+                }
+
+                if (!authInfo.getHashes().isEmpty()) {
+                    HashMethod nextAuth = jpaAccount.getNextAuth();
+                    // client send extra hashes, let's switch to the new method
+                    if (authInfo.getHashes().containsKey(jpaAccount.getNextAuth())) {
+                        // migrate to next auth method silently
+                        newHash = authInfo.getHashes().get(nextAuth);
+                        jpaAccount.setCurrentAuth(nextAuth);
+                        jpaAccount.setNextAuth(null);
+                    }
+                }
+
+                if (newHash != null) {
+                    jpaAccount.getShadow().generateNewSalt();
+                    jpaAccount.setPassword(newHash);
+                }
+            }
+
             if (authInfo.isAgreed()) {
-                AbstractAccount account = accountFacade.find((Long) subject.getPrincipal());
-                if (account instanceof JpaAccount) {
+                if (account instanceof JpaAccount) { // why JpaAccount only ?
                     ((JpaAccount) account).setAgreedTime(new Date());
                 }
             }
@@ -395,7 +430,11 @@ public class UserFacade extends BaseFacade<User> {
         for (AbstractAccount account : user.getAccounts()) {
             if (account != null) {
                 if (account instanceof JpaAccount) {
-                    ((JpaAccount) account).shadowPasword();
+                    JpaAuthentication authMethod = this.getDefaultAuthMethod();
+                    JpaAccount jpaAccount = (JpaAccount) account;
+                    jpaAccount.shadowPasword();
+                    jpaAccount.setCurrentAuth(authMethod.getMandatoryMethod());
+                    jpaAccount.setNextAuth(authMethod.getOptionalMethod());
                 }
 
                 account.shadowEmail();
@@ -941,7 +980,20 @@ public class UserFacade extends BaseFacade<User> {
         User user = guest.getUser();
         user.addAccount(account);
 
+        if (account.getShadow() == null) {
+            account.setShadow(new Shadow());
+        }
+        if (account.getDetails() == null) {
+            account.setDetails(new AccountDetails());
+        }
+
         accountFacade.create(account);
+
+        JpaAuthentication authMethod = this.getDefaultAuthMethod();
+
+        account.shadowPasword();
+        account.setCurrentAuth(authMethod.getMandatoryMethod());
+        account.setNextAuth(authMethod.getOptionalMethod());
         // Detach and delete account
         accountFacade.remove(guest.getId());
 

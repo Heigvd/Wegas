@@ -1,3 +1,5 @@
+/* global TextEncoder, Promise */
+
 angular.module('wegas.service.auth', [
     'wegas.models.sessions'
 ])
@@ -73,37 +75,12 @@ angular.module('wegas.service.auth', [
                 return deferred.promise;
             };
 
-        service.getLocalAuthenticatedUser = function() {
-            return authenticatedUser;
-        };
-
-        service.getAuthenticatedUser = function() {
-            var deferred = $q.defer();
-            if (authenticatedUser !== null) {
-                deferred.resolve(authenticatedUser);
-            } else {
-                if (loading) {
-                    wait().then(function() {
-                        deferred.resolve(authenticatedUser);
-                    });
-                } else {
-                    loading = true;
-                    getCurrentUser().then(function() {
-                        deferred.resolve(authenticatedUser);
-                        loading = false;
-                    });
-                }
-            }
-            return deferred.promise;
-        };
-
-
         /**
          * 
          * @param {type} string
          * @returns {Array}
          */
-        service.utf16toCodePoints = function(string) {
+        var utf16toCodePoints = function(string) {
             var s = String(string);
             var len = s.length;
 
@@ -132,8 +109,8 @@ angular.module('wegas.service.auth', [
             return cps;
         };
 
-        service.strToUtf8Array = function(str) {
-            var cp = service.utf16toCodePoints(str);
+        var strToUtf8Array = function(str) {
+            var cp = utf16toCodePoints(str);
             var array = [];
             for (var i = 0; i < cp.length; i++) {
                 var char = cp[i];
@@ -172,9 +149,13 @@ angular.module('wegas.service.auth', [
          * @param {type} data the value to hash
          * @returns {Promise} 
          */
-        service.digest = function(algorithm, data) {
+        var digest = function(algorithm, data) {
             // encode as (utf-8) Uint8Array
-            if (algorithm === 'PLAIN') {
+            if (!algorithm) {
+                return new Promise(function(resolve) {
+                    resolve(null);
+                });
+            } else if (algorithm === 'PLAIN') {
                 return new Promise(function(resolve) {
                     resolve(data);
                 });
@@ -182,8 +163,8 @@ angular.module('wegas.service.auth', [
                 var msgUint8 =
                     (typeof (TextEncoder) !== 'undefined' ?
                         new TextEncoder().encode(data)
-                        : service.strToUtf8Array(data));
-                return crypto.subtle.digest(algorithm, msgUint8)
+                        : strToUtf8Array(data));
+                return crypto.subtle.digest(algorithm.replace(/_/g, "-"), msgUint8)
                     .then(function(hashBuffer) {
                         var hashArray = Array.from(new Uint8Array(hashBuffer));
                         return hashArray.map(function(b) {
@@ -193,61 +174,119 @@ angular.module('wegas.service.auth', [
             }
         };
 
+        var digestAll = function(data, methods) {
+            return methods.map(function(method) {
+                return digest(method, data);
+            })
+        }
+
+        service.getLocalAuthenticatedUser = function() {
+            return authenticatedUser;
+        };
+
+        service.getAuthenticatedUser = function() {
+            var deferred = $q.defer();
+            if (authenticatedUser !== null) {
+                deferred.resolve(authenticatedUser);
+            } else {
+                if (loading) {
+                    wait().then(function() {
+                        deferred.resolve(authenticatedUser);
+                    });
+                } else {
+                    loading = true;
+                    getCurrentUser().then(function() {
+                        deferred.resolve(authenticatedUser);
+                        loading = false;
+                    });
+                }
+            }
+            return deferred.promise;
+        };
+
         service.login = function(login, password, agreed) {
             var deferred = $q.defer(),
                 url = "rest/User/Authenticate";
-            service.digest("PLAIN", password).then(function(digestedPassword) {
-                $http.post(window.ServiceURL + url, {
-                    "@class": "AuthenticationInformation",
-                    "login": login,
-                    "password": digestedPassword,
-                    "remember": true,
-                    "agreed": agreed === true
-                }, {
-                    "headers": {
-                        "managed-mode": "true"
-                    }
-                }).success(function(data) {
-                    if (data.events !== undefined && !data.events.length) {
-                        if (data.updatedEntities !== undefined &&
-                            data.updatedEntities[0].accounts !== undefined &&
-                            data.updatedEntities[0].accounts[0].agreedTime === null) {
-                            console.log("WEGAS LOBBY : User has not agreed to the terms of use");
-                            $translate('CREATE-ACCOUNT-FLASH-MUST-AGREE').then(function(message) {
-                                deferred.resolve(Responses.info(message, false, {agreed: false}));
+            $http.get(window.ServiceURL + "rest/User/AuthMethod/" + login).success(function(data) {
+                var jpaAuths = data.filter(function(method) {
+                    return method["@class"] === "JpaAuthentication"
+                });
+                if (jpaAuths.length) {
+                    Promise.all(digestAll(password, [
+                        jpaAuths[0].mandatoryMethod,
+                        jpaAuths[0].optionalMethod
+                    ])).then(
+                        function(digestedPasswords) {
+                            var extraHashes = {
+                            };
+                            extraHashes[jpaAuths[0].mandatoryMethod] = digestedPasswords[0];
+                            if (jpaAuths[0].optionalMethod) {
+                                extraHashes[jpaAuths[0].optionalMethod] = digestedPasswords[1];
+                            }
+                            $http.post(window.ServiceURL + url, {
+                                "@class": "AuthenticationInformation",
+                                "login": login,
+                                "hashMethod": jpaAuths[0].mandatoryMethod,
+                                "hashes": extraHashes,
+                                "remember": true,
+                                "agreed": agreed === true
+                            }, {
+                                "headers": {
+                                    "managed-mode": "true"
+                                }
+                            }).success(function(data) {
+                                if (data.events !== undefined && !data.events.length) {
+                                    if (data.updatedEntities !== undefined &&
+                                        data.updatedEntities[0].accounts !== undefined &&
+                                        data.updatedEntities[0].accounts[0].agreedTime === null) {
+                                        console.log("WEGAS LOBBY : User has not agreed to the terms of use");
+                                        $translate('CREATE-ACCOUNT-FLASH-MUST-AGREE').then(function(message) {
+                                            deferred.resolve(Responses.info(message, false, {agreed: false}));
+                                        });
+                                    } else {
+                                        authenticatedUser = null;
+                                        $translate('COMMONS-AUTH-LOGIN-FLASH-SUCCESS').then(function(message) {
+                                            deferred.resolve(Responses.success(message, true));
+                                        });
+                                        service.getAuthenticatedUser();
+                                    }
+                                } else if (data.events !== undefined) {
+                                    console.log("WEGAS LOBBY : Error during login");
+                                    console.log(data.events);
+                                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function(message) {
+                                        deferred.resolve(Responses.danger(message, false));
+                                    });
+                                } else {
+                                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-SERVER').then(function(message) {
+                                        deferred.resolve(Responses.danger(message, false));
+                                    });
+                                }
+                            }).error(function(data) {
+                                if (data.events !== undefined && data.events.length > 0) {
+                                    console.log("WEGAS LOBBY : Error during login");
+                                    console.log(data.events);
+                                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function(message) {
+                                        deferred.resolve(Responses.danger(message, false));
+                                    });
+                                } else {
+                                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-SERVER').then(function(message) {
+                                        deferred.resolve(Responses.danger(message, false));
+                                    });
+                                }
                             });
-                        } else {
-                            authenticatedUser = null;
-                            $translate('COMMONS-AUTH-LOGIN-FLASH-SUCCESS').then(function(message) {
-                                deferred.resolve(Responses.success(message, true));
-                            });
-                            service.getAuthenticatedUser();
-                        }
-                    } else if (data.events !== undefined) {
-                        console.log("WEGAS LOBBY : Error during login");
-                        console.log(data.events);
-                        $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function(message) {
-                            deferred.resolve(Responses.danger(message, false));
                         });
-                    } else {
-                        $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-SERVER').then(function(message) {
-                            deferred.resolve(Responses.danger(message, false));
-                        });
-                    }
-                }).error(function(data) {
-                    if (data.events !== undefined && data.events.length > 0) {
-                        console.log("WEGAS LOBBY : Error during login");
-                        console.log(data.events);
-                        $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function(message) {
-                            deferred.resolve(Responses.danger(message, false));
-                        });
-                    } else {
-                        $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-SERVER').then(function(message) {
-                            deferred.resolve(Responses.danger(message, false));
-                        });
-                    }
+                } else {
+                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function(message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
+                }
+            }).error(function(data) {
+                // no auth method
+                $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-SERVER').then(function(message) {
+                    deferred.resolve(Responses.danger(message, false));
                 });
             });
+
             return deferred.promise;
         };
 
@@ -257,7 +296,10 @@ angular.module('wegas.service.auth', [
             $http.post(window.ServiceURL + url, {
                 "@class": "AuthenticationInformation",
                 "login": email,
-                "password": token,
+                "hashMethod": "PLAIN",
+                "hashes": {
+                    "PLAIN": token
+                },
                 "remember": false,
                 "agreed": false
             }).success(function() {
@@ -288,23 +330,33 @@ angular.module('wegas.service.auth', [
         service.signup = function(email, username, password, firstname, lastname, agreed) {
             var deferred = $q.defer(),
                 url = "rest/User/Signup";
-            service.digest("PLAIN", password).then(function(digestedPassword) {
-                $http.post(window.ServiceURL + url, {
-                    "@class": "JpaAccount",
-                    "email": email,
-                    "username": username,
-                    "password": digestedPassword,
-                    "firstname": firstname,
-                    "lastname": lastname,
-                    "agreedTime": agreed ? Date.now() : null
-                }).success(function(data) {
-                    $translate('COMMONS-AUTH-CREATE-ACCOUNT-FLASH-SUCCESS').then(function(message) {
-                        deferred.resolve(Responses.success(message, true));
+
+            $http.get(window.ServiceURL + "rest/User/DefaultAuthMethod")
+                .success(function(authMethod) {
+                    var hashMethod = authMethod.mandatoryMethod;
+
+                    digest(hashMethod, password).then(function(digestedPassword) {
+                        $http.post(window.ServiceURL + url, {
+                            "@class": "JpaAccount",
+                            "email": email,
+                            "username": username,
+                            "password": digestedPassword,
+                            "firstname": firstname,
+                            "lastname": lastname,
+                            "agreedTime": agreed ? Date.now() : null
+                        }).success(function(data) {
+                            $translate('COMMONS-AUTH-CREATE-ACCOUNT-FLASH-SUCCESS').then(function(message) {
+                                deferred.resolve(Responses.success(message, true));
+                            });
+                        }).error(function(WegasError) {
+                            deferred.resolve(Responses.danger($translate.instant(WegasError.messageId), false, WegasError));
+                        });
                     });
                 }).error(function(WegasError) {
-                    deferred.resolve(Responses.danger($translate.instant(WegasError.messageId), false, WegasError));
-                });
+                deferred.resolve(Responses.danger($translate.instant(WegasError.messageId), false, WegasError));
             });
+
+
             return deferred.promise;
         };
 

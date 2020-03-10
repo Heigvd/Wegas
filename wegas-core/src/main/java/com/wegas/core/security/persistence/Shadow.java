@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
+import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
 import javax.persistence.*;
@@ -49,6 +50,14 @@ public class Shadow extends AbstractEntity {
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "shadow")
     private AbstractAccount account;
 
+    @Column(length = 24, columnDefinition = "character varying(24)")
+    @Enumerated(value = EnumType.STRING)
+    private HashMethod hashMethod = HashMethod.SHA_256;
+    
+    @Column(length = 24, columnDefinition = "character varying(24)")
+    @Enumerated(value = EnumType.STRING)
+    private HashMethod nextHashMethod;
+
     /**
      *
      */
@@ -75,7 +84,7 @@ public class Shadow extends AbstractEntity {
         this.account = account;
     }
 
-    private void generateNewSalt() {
+    public void generateNewSalt() {
         RandomNumberGenerator rng = new SecureRandomNumberGenerator();
         this.setSalt(rng.nextBytes().toHex());
     }
@@ -107,6 +116,22 @@ public class Shadow extends AbstractEntity {
      */
     public void setSalt(String salt) {
         this.salt = salt;
+    }
+
+    public HashMethod getHashMethod() {
+        return hashMethod;
+    }
+
+    public void setHashMethod(HashMethod hashMethod) {
+        this.hashMethod = hashMethod;
+    }
+
+    public HashMethod getNextHashMethod() {
+        return nextHashMethod;
+    }
+
+    public void setNextHashMethod(HashMethod nextHashMethod) {
+        this.nextHashMethod = nextHashMethod;
     }
 
     @Override

@@ -335,55 +335,51 @@ YUI.add('wegas-helper', function(Y) {
         RegExpQuote: function(str) {
             return (String(str)).replace(/([.*?+\^$\[\]\\(){}|\-])/g, "\\$1");
         },
-        Utf8ArrayToStr: function(array) {
-            // http://www.onicos.com/staff/iz/amuse/javascript/expert/utf.txt
-            /* utf.js - UTF-8 <=> UTF-16 convertion
-             *
-             * Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
-             * Version: 1.0
-             * LastModified: Dec 25 1999
-             * This library is free.  You can redistribute it and/or modify it.
-             */
-            var out, i, len, c;
-            var char2, char3;
-            out = "";
+        utf8ArrayToStr: function(array) {
+            var out, i, len, char;
+            var char2, char3, char4;
+            out = [];
             len = array.length;
-            i = 0;
-            while (i < len) {
-                c = array[i++];
-                switch (c >> 4)
-                {
-                    case 0:
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5:
-                    case 6:
-                    case 7:
-                        // 0xxxxxxx
-                        out += String.fromCharCode(c);
-                        break;
-                    case 12:
-                    case 13:
-                        // 110x xxxx   10xx xxxx
-                        char2 = array[i++];
-                        out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
-                        break;
-                    case 14:
-                        // 1110 xxxx  10xx xxxx  10xx xxxx
-                        char2 = array[i++];
-                        char3 = array[i++];
-                        out += String.fromCharCode(((c & 0x0F) << 12) |
-                            ((char2 & 0x3F) << 6) |
-                            ((char3 & 0x3F) << 0));
-                        break;
+            for (var i = 0; i < len; i++) {
+                char = array[i];
+                if (char & 0x80 === 0) {
+                    // 0xxx xxxx => 1 byte as is
+                    out.push(String.fromCharCode(char));
+                } else if (char & 0xC0) {
+                    // 110x xxxx  10xx xxxx => 2 bytes
+                    char2 = array[i++];
+                    out.push(String.fromCharCode(((char & 0x1F) << 6) | (char2 & 0x3F)));
+                } else if (char & 0xC0) {
+                    // 1110 xxxx  10xx xxxx 10xx xxxx=> 3 bytes
+                    char2 = array[i++];
+                    char3 = array[i++];
+
+                    out.push(String.fromCharCode(
+                        ((char & 0x0F) << 12) | ((char2 & 0x3F) << 6) | (char3 & 0x3F))
+                        );
+                } else if (char & 0xF0) {
+                    // 1111 0xxx  10xx xxxx 10xx xxxx 10xx xxxx => 3 bytes
+                    char2 = array[i++];
+                    char3 = array[i++];
+                    char4 = array[i++];
+
+                    out.push(String.fromCharCode(
+                        ((char & 0x07) << 18) 
+                        | ((char2 & 0x3F) << 12) 
+                        | ((char3 & 0x3F) << 6) 
+                        | (char4 & 0x3F))
+                        );
                 }
             }
 
-            return out;
+            return out.join("");
         },
-        utf16ToCodePoints: function(string) {
+        /**
+         * 
+         * @param {type} string
+         * @returns {Array}
+         */
+        utf16toCodePoints: function(string) {
             var s = String(string);
             var len = s.length;
 
@@ -412,29 +408,33 @@ YUI.add('wegas-helper', function(Y) {
             return cps;
         },
         strToUtf8Array: function(str) {
-            var cp = Y.Wegas.Helper.utf16ToCodePoints(str);
+            var cp = Y.Wegas.Helper.utf16toCodePoints(str);
             var array = [];
             for (var i = 0; i < cp.length; i++) {
                 var char = cp[i];
                 // how many byte ?
                 if (char < 0x7F) {
-                    // 0xxxxxxx => one byte
+                    // 7bits on one byte
+                    // 0xxxxxxx
                     array.push(char);
                 } else if (char <= 0x7FF) {
-                    // <= 110x xxxx 10xx xxxx => two bytes
-                    array.push(0b11000000 | (char >> 6));
-                    array.push(0b10000000 | (char & 0x3F));
+                    // 11bits on two bytes
+                    // 110x xxxx 10xx xxxx
+                    array.push(0xC0 | (char >> 6));
+                    array.push(0x80 | (char & 0x3F));
                 } else if (char <= 0xFFFF) {
-                    // 1110xxxx 10xxxxxx 10xxxxxx => three bytes
-                    array.push(0b11100000 | (char >> 12));
-                    array.push(0b10000000 | (char >> 6 & 0x3F));
-                    array.push(0b10000000 | (char & 0x3F));
+                    // 16bits on three bytes
+                    // 1110xxxx 10xxxxxx 10xxxxxx
+                    array.push(0xE0 | (char >> 12));
+                    array.push(0x80 | (char >> 6 & 0x3F));
+                    array.push(0x80 | (char & 0x3F));
                 } else {
-                    // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx => four bytes
-                    array.push(0b11110000 | (char >> 18));
-                    array.push(0b10000000 | (char >> 12 & 0b00111111));
-                    array.push(0b10000000 | (char >> 6 & 0b00111111));
-                    array.push(0b10000000 | (char & 0b00111111));
+                    // 24bits on four bytes
+                    // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx 
+                    array.push(0xF0 | (char >> 18));
+                    array.push(0x80 | (char >> 12 & 0x3F));
+                    array.push(0x80 | (char >> 6 & 0x3F));
+                    array.push(0x80 | (char & 0x3F));
                 }
             }
 
@@ -443,24 +443,25 @@ YUI.add('wegas-helper', function(Y) {
         /**
          * digest the value with the given algorithm
          * @param {type} algorithm one of PLAIN (return the value as-is), SHA-256, SHA-384, SHA-512
-         * @param {type} value the value to hash
+         * @param {type} data the value to hash
          * @returns {Promise} 
          */
-        digest: function(algorithm, value) {
+        digest: function(algorithm, data) {
             // encode as (utf-8) Uint8Array
             if (algorithm === 'PLAIN') {
                 return new Promise(function(resolve) {
-                    resolve(value);
-                })
+                    resolve(data);
+                });
             } else {
-                var msgUint8 = (typeof (TextEncoder) !== 'undefined' ?
-                    new TextEncoder().encode(value)
-                    : Y.Wegas.Helper.strToUtf8Array(value));
+                var msgUint8 =
+                    (typeof (TextEncoder) !== 'undefined' ?
+                        new TextEncoder().encode(data)
+                        : Y.Wegas.Helper.strToUtf8Array(data));
                 return crypto.subtle.digest(algorithm, msgUint8)
                     .then(function(hashBuffer) {
                         var hashArray = Array.from(new Uint8Array(hashBuffer));
                         return hashArray.map(function(b) {
-                            return b.toString(16).padStart(2, '0')
+                            return b.toString(16).padStart(2, '0');
                         }).join(''); // convert bytes to hex string
                     });
             }

@@ -18,21 +18,16 @@ package com.wegas.core.security.util;
  */
 public class JpaAuthentication extends AuthenticationMethod {
 
-    public static enum HashMethod {
-        PLAIN,
-        SHA_512
-    }
-
     private HashMethod mandatoryMethod;
 
-    private HashMethod optioanlMethod;
+    private HashMethod optionalMethod;
 
     public JpaAuthentication() {
     }
 
     public JpaAuthentication(HashMethod mandatoryMethod, HashMethod optioanlMethod) {
         this.mandatoryMethod = mandatoryMethod;
-        this.optioanlMethod = optioanlMethod;
+        this.optionalMethod = optioanlMethod;
     }
 
     public HashMethod getMandatoryMethod() {
@@ -43,11 +38,11 @@ public class JpaAuthentication extends AuthenticationMethod {
         this.mandatoryMethod = mandatoryMethod;
     }
 
-    public HashMethod getOptioanlMethod() {
-        return optioanlMethod;
+    public HashMethod getOptionalMethod() {
+        return optionalMethod;
     }
 
-    public void setOptioanlMethod(HashMethod optioanlMethod) {
-        this.optioanlMethod = optioanlMethod;
+    public void setOptionalMethod(HashMethod optionalMethod) {
+        this.optionalMethod = optionalMethod;
     }
 }

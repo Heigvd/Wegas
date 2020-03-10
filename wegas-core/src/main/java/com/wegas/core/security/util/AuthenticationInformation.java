@@ -8,6 +8,8 @@
 package com.wegas.core.security.util;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -16,7 +18,17 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class AuthenticationInformation {
 
     private String login;
-    private String password;
+
+    /**
+     * mandatory hash method
+     */
+    private HashMethod hashMethod;
+    
+    /**
+     * optional extra password, hashed with optional method
+     */
+    private Map<HashMethod, String> hashes = new HashMap<>();
+    
     private boolean remember;
     private boolean agreed = false;
 
@@ -31,12 +43,20 @@ public class AuthenticationInformation {
         this.login = login;
     }
 
-    public String getPassword() {
-        return password;
+    public HashMethod getHashMethod() {
+        return hashMethod;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setHashMethod(HashMethod hashMethod) {
+        this.hashMethod = hashMethod;
+    }
+
+    public Map<HashMethod, String> getHashes() {
+        return hashes;
+    }
+
+    public void setHashes(Map<HashMethod, String> hashes) {
+        this.hashes = hashes;
     }
 
     public boolean isRemember() {
@@ -53,5 +73,11 @@ public class AuthenticationInformation {
 
     public void setAgreed(Boolean agreed) {
         this.agreed = agreed;
+    }
+
+    public void addHash(HashMethod method, String password){
+        if (method != null){
+            this.getHashes().put(method, method.hash(password, ""));
+        }
     }
 }

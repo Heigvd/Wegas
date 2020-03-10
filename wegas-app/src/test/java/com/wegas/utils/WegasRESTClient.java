@@ -19,6 +19,9 @@ import com.wegas.core.security.persistence.AccountDetails;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
+import com.wegas.core.security.util.AuthenticationMethod;
+import com.wegas.core.security.util.HashMethod;
+import com.wegas.core.security.util.JpaAuthentication;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -81,11 +84,21 @@ public class WegasRESTClient {
     }
 
     public TestAuthenticationInformation signup(String email, String password) throws IOException {
+        AuthenticationMethod authMethod = getDefaultAuthenticationMethod();
+
+        String effectivePassword;
+
+        if (authMethod instanceof JpaAuthentication) {
+            effectivePassword = ((JpaAuthentication) authMethod).getMandatoryMethod().hash(password, "");
+        } else {
+            effectivePassword = password;
+        }
+
         JpaAccount ja = new JpaAccount();
         ja.setUsername(email);
         ja.setFirstname(email);
         ja.setLastname(email);
-        ja.setPassword(password);
+        ja.setPassword(effectivePassword);
 
         ja.setDetails(new AccountDetails());
         ja.getDetails().setEmail(email);
@@ -100,28 +113,53 @@ public class WegasRESTClient {
     }
 
     public TestAuthenticationInformation getAuthInfo(String username, String password) {
+
         TestAuthenticationInformation authInfo = new TestAuthenticationInformation();
         authInfo.setAgreed(Boolean.TRUE);
         authInfo.setLogin(username);
-        authInfo.setPassword(password);
+        authInfo.setHashMethod(HashMethod.PLAIN);
+        authInfo.getHashes().put(HashMethod.PLAIN, password);
         authInfo.setRemember(true);
 
         return authInfo;
     }
 
-    public void login(AuthenticationInformation authInfo) throws IOException {
-        HttpResponse loginResponse = this._post("/rest/User/Authenticate", authInfo);
-        HttpEntity entity = loginResponse.getEntity();
-        EntityUtils.consume(entity);
+    public AuthenticationMethod getDefaultAuthenticationMethod() throws IOException {
+        return this.get("/rest/User/DefaultAuthMethod", AuthenticationMethod.class);
+    }
 
-        if (loginResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-            throw WegasErrorMessage.error("Login failed");
+    public JpaAuthentication getAuthenticationMethod(String username) throws IOException {
+        List<AuthenticationMethod> methods = this.get("/rest/User/AuthMethod/" + username, new TypeReference<List<AuthenticationMethod>>() {
+        });
+
+        for (AuthenticationMethod method : methods) {
+            if (method instanceof JpaAuthentication) {
+                return (JpaAuthentication) method;
+            }
         }
+        return null;
+    }
 
-        Header[] headers = loginResponse.getHeaders("Set-Cookie");
+    public void login(TestAuthenticationInformation authInfo) throws IOException {
+        JpaAuthentication authMethod = this.getAuthenticationMethod(authInfo.getLogin());
+        if (authMethod != null) {
 
-        if (headers.length > 0) {
-            cookie = headers[0].getValue();
+            AuthenticationInformation credentials = authInfo.instantiate(authMethod);
+            HttpResponse loginResponse = this._post("/rest/User/Authenticate", credentials);
+            HttpEntity entity = loginResponse.getEntity();
+            EntityUtils.consume(entity);
+
+            if (loginResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                throw WegasErrorMessage.error("Login failed");
+            }
+
+            Header[] headers = loginResponse.getHeaders("Set-Cookie");
+
+            if (headers.length > 0) {
+                cookie = headers[0].getValue();
+            }
+        } else {
+            throw WegasErrorMessage.error("No authentication method");
         }
     }
 
@@ -340,6 +378,30 @@ public class WegasRESTClient {
 
         public void setAccountId(Long accountId) {
             this.accountId = accountId;
+        }
+
+        public AuthenticationInformation instantiate(JpaAuthentication authMethod) {
+            AuthenticationInformation credentials = new AuthenticationInformation();
+
+            credentials.setAgreed(this.isAgreed());
+            credentials.setLogin(this.getLogin());
+            credentials.setRemember(this.isRemember());
+
+            credentials.setHashMethod(authMethod.getMandatoryMethod());
+
+            credentials.getHashes().put(
+                authMethod.getMandatoryMethod(),
+                authMethod.getMandatoryMethod().hash(this.getHashes().get(HashMethod.PLAIN), "")
+            );
+
+            if (authMethod.getOptionalMethod() != null) {
+                credentials.getHashes().put(
+                    authMethod.getOptionalMethod(),
+                    authMethod.getOptionalMethod().hash(this.getHashes().get(HashMethod.PLAIN), "")
+                );
+            }
+
+            return credentials;
         }
 
     }
