@@ -765,7 +765,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     /**
      * Do a JPA query to fetch the reference of the given model.
-     * 
+     *
      * @param gm the model
      *
      * @return the reference of the model or null
@@ -1161,7 +1161,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);
 
         if (payload.getProcessVariables()) {
-            if (payload.getRoots() != null && !payload.getReplace().isEmpty()) {
+            if (payload.getRoots() != null && !payload.getRoots().isEmpty()) {
                 for (String variableName : payload.getRoots()) {
                     try {
                         VariableDescriptor variable = variableDescriptorFacade.find(mergeable, variableName);
@@ -1171,8 +1171,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     }
                 }
             } else {
-            MergeHelper.visitMergeable(mergeable, Boolean.TRUE, replacer);
-        }
+                MergeHelper.visitMergeable(mergeable, Boolean.TRUE, replacer);
+            }
         }
 
         if (payload.getProcessPages()) {
@@ -1197,7 +1197,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     public Set<String> findAllFiredEvents(Long gameModelId) {
         return this.findAllFiredEvents(this.find(gameModelId));
-            }
+    }
 
     public Set<String> findAllFiredEvents(GameModel gameModel) {
         FindAndReplacePayload payload = new FindAndReplacePayload();
@@ -1220,9 +1220,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         for (List<String> line : process) {
             events.addAll(line);
-                    }
+        }
         return events;
-                }
+    }
 
     public Set<String> findAllRefToFiles(Long gameModelId, Long vdId) {
         GameModel gm = this.find(gameModelId);
@@ -1230,18 +1230,18 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         if (vdId != null) {
             variable = variableDescriptorFacade.find(vdId);
-            }
-        return this.findAllRefToFiles(gm, variable);
         }
+        return this.findAllRefToFiles(gm, variable);
+    }
 
-        /**
+    /**
      * Go through the givenGameModel variables and fetch each references to internal files
-         *
+     *
      * @param gameModel the gamemodel to search for reference in
      * @param root      Optional variable to search in, if null, search the whole gameModel
-         *
+     *
      * @return
-         */
+     */
     public Set<String> findAllRefToFiles(GameModel gameModel,
         VariableDescriptor root) {
         FindAndReplacePayload payload = new FindAndReplacePayload();
@@ -1257,7 +1257,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             List<String> roots = new ArrayList<>();
             roots.add(root.getName());
             payload.setRoots(roots);
-            }
+        }
 
         payload.setRegex(true);
         // match : Event.fire("eventName"), Event.fire(\"event\") + Event.fired
@@ -1272,5 +1272,43 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             events.addAll(line);
         }
         return events;
+    }
+
+    public VariableDescriptor cherryPick(Long targetId, String variableName, Long sourceId) {
+        return this.cherryPick(this.find(targetId), variableName, this.find(sourceId));
+
+    }
+
+    public VariableDescriptor cherryPick(GameModel target, String variableName, GameModel source) {
+
+        VariableDescriptor toImport;
+        try {
+            toImport = variableDescriptorFacade.find(source, variableName);
+            VariableDescriptor theVar;
+            try {
+                theVar = variableDescriptorFacade.find(target, variableName);
+
+                if (!theVar.getRefId().equals(toImport.getRefId())) {
+                    throw WegasErrorMessage.error("Variable " + variableName + " already exists");
+                }
+            } catch (WegasNoResultException ex) {
+                theVar = null;
+            }
+
+            if (theVar != null) {
+                // update???
+            } else {
+                try {
+                    theVar = (VariableDescriptor) toImport.duplicate();
+                } catch (CloneNotSupportedException ex) {
+                    throw WegasErrorMessage.error("Error while duplicating variable");
+                }
+            }
+
+            return theVar;
+
+        } catch (WegasNoResultException ex) {
+            throw WegasErrorMessage.error("Variable " + variableName + " not found");
+        }
     }
 }
