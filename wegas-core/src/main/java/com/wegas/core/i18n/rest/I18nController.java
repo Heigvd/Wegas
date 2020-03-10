@@ -199,6 +199,17 @@ public class I18nController {
 
 
     @PUT
+    @Path("Clear/{lang: [a-zA-Z]+}/{mode: (All|Outdated)}")
+    @RequiresRoles("Administrator")
+    public GameModel clearLanguageTranslations(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("lang") String langCode,
+            @PathParam("mode") String mode) throws ScriptException {
+
+        return i18nFacade.clearLanguage(gameModelId, langCode, mode);
+    }
+
+
+    @PUT
     @Path("Translate/{source: [a-zA-Z]+}/{target: [a-zA-Z]+}")
     @Consumes(MediaType.TEXT_PLAIN)
     public DeeplTranslation translate(@PathParam("target") String targetLangCode,

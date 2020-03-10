@@ -249,7 +249,12 @@ YUI.add("wegas-i18n", function(Y) {
 
                 if (klass === "TranslatableContent" && translations) {
                     if (translations[code]) {
-                        return translations[code].status || "";
+                        var tr = translations[code];
+                        if (tr.get) {
+                            return tr.get("status") || "";
+                        } else {
+                            return tr.status || "";
+                        }
                     }
                 }
             }
@@ -318,16 +323,17 @@ YUI.add("wegas-i18n", function(Y) {
                         lang = langs[i];
                         tr = translations[lang.code] || (!caseSensitiveCode && translations[lang.code.toLowerCase()]);
 
-                        if (tr !== undefined) {
-
+                        if (tr !== undefined || forcedLang) {
+                            //when languages is forced, process translations anyway
                             if (tr.get) {
                                 tr = tr.toObject();
                             }
 
-                            if (tr.translation) {
+                            if (tr.translation || forcedLang) {
                                 theOne = lang;
+
                                 isOutdated = !!tr.status;
-                                tr = tr.translation;
+                                tr = tr.translation || "";
                                 break;
                             } else if (typeof tr === "string") {
                                 theOne = lang;
