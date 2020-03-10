@@ -263,7 +263,7 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
                 if (!Helper.isNullOrEmpty(name)) {
                     sb.append(name);
                     if (it.hasNext()) {
-                        sb.append("/");
+                        sb.append(" ⇨ ");
                     }
                 }
             }
