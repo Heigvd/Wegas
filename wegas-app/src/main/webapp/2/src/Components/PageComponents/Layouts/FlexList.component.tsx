@@ -56,19 +56,20 @@ function PlayerFlexList(props: PlayerFlexListProps) {
   }, [showBorders]);
 
   const handleProps: EditorHandleProps = {
-    componentName: props.name,
-    vertical:
-      props.flexDirection === 'column' ||
-      props.flexDirection === 'column-reverse',
+    componentName: childProps.name,
     togglerProps: {
       onChange: setShowLayout,
       value: showLayout,
       hint: 'Highlight list borders (only during edition mode)',
     },
   };
-
   return (
-    <ComponentContainer flexProps={flexProps} handleProps={handleProps}>
+    <ComponentContainer
+      flexProps={flexProps}
+      handleProps={handleProps}
+      showBorders={showLayout}
+      isLayout
+    >
       <FlexList {...childProps} />
     </ComponentContainer>
   );

@@ -2,12 +2,12 @@ import * as React from 'react';
 import {
   pageComponentFactory,
   registerComponent,
-  PageComponentMandatoryProps,
+  extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { ConnectedQuestionDisplay } from '../../AutoImport/Question/List';
-import { entityIs } from '../../../data/entities';
-import { useScript } from '../../Hooks/useScript';
+import { PageComponentMandatoryProps } from '../tools/EditableComponent';
+import { useComponentScript } from '../../Hooks/useComponentScript';
 
 interface QuestionDisplayProps extends PageComponentMandatoryProps {
   /**
@@ -16,20 +16,20 @@ interface QuestionDisplayProps extends PageComponentMandatoryProps {
   script?: IScript;
 }
 
-function QuestionDisplay({ script, EditHandle }: QuestionDisplayProps) {
-  const descriptor = useScript(
-    script ? script.content : '',
-  ) as IQuestionDescriptor;
+function QuestionDisplay(props: QuestionDisplayProps) {
+  const { ComponentContainer, childProps, flexProps } = extractProps(props);
+  const { content, descriptor, notFound } = useComponentScript<
+    IQuestionDescriptor
+  >(childProps.script);
+
   return (
-    <>
-      <EditHandle />
-      {descriptor === undefined ||
-      !entityIs(descriptor, 'QuestionDescriptor') ? (
-        <pre>Undefined entity</pre>
+    <ComponentContainer flexProps={flexProps}>
+      {notFound ? (
+        <pre>Not found: {content}</pre>
       ) : (
         <ConnectedQuestionDisplay entity={descriptor} />
       )}
-    </>
+    </ComponentContainer>
   );
 }
 

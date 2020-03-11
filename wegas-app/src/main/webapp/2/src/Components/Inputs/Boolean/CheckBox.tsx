@@ -3,7 +3,7 @@ import { css, cx } from 'emotion';
 import { themeVar } from '../../Theme';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
-import { textCenter } from '../../../css/classes';
+import { textCenter, shrinkWidth } from '../../../css/classes';
 import { IconButton } from '../Buttons/IconButton';
 
 const checkboxStyle = (disabled?: boolean, readOnly?: boolean) =>
@@ -62,7 +62,11 @@ export function CheckBox({
   }, [value]);
 
   return (
-    <div id={id} className={cx(textCenter, className)} title={hint}>
+    <div
+      id={id}
+      className={cx(textCenter, className, shrinkWidth)}
+      title={hint}
+    >
       {label && <Value value={label} />}
       <IconButton
         icon={checked ? 'check-square' : 'square'}

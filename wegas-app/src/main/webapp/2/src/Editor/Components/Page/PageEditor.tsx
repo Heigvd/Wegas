@@ -150,7 +150,7 @@ export default function PageEditor() {
     (
       selectedPageId: string,
       page: Omit<Page, '@index'>,
-      callback?: (res: Page) => void,
+      callback?: (res?: Page) => void,
     ) => {
       if (selectedPage) {
         setModalState({ type: 'save', label: savingProgressStatus });
@@ -167,15 +167,18 @@ export default function PageEditor() {
               callback(res);
             }
           })
-          .catch(e =>
+          .catch(e => {
             setModalState({
               type: 'save',
               label: {
                 ...savingErrorStatus,
                 text: savingErrorStatus.text + '(' + e + ')',
               },
-            }),
-          );
+            });
+            if (callback) {
+              callback();
+            }
+          });
       }
     },
     [gameModelId, selectedPage],
@@ -186,9 +189,9 @@ export default function PageEditor() {
   }, [loadIndex, gameModelId]);
 
   const findComponent = React.useCallback(
-    (path: string[]) => {
+    (path: string[], page?: Page) => {
       const browsePath = [...path];
-      const newPage = deepClone(selectedPage);
+      const newPage = page ? page : deepClone(selectedPage);
       let parent: WegasComponent | undefined = undefined;
       let component: WegasComponent = newPage;
       while (browsePath.length > 0) {
@@ -212,26 +215,49 @@ export default function PageEditor() {
 
   const onDrop = React.useCallback(
     (dndComponent: DnDComponent, path: string[], index?: number) => {
+      let newIndex = index;
       const { newPage, component } = findComponent(path);
       if (component) {
         if (component.props.children === undefined) {
           component.props.children = [];
         }
+        let droppedComp: WegasComponent | undefined;
+
+        // If dndComponent.path we move the component in the new path
+        if (dndComponent.path) {
+          const { component, parent } = findComponent(
+            dndComponent.path,
+            newPage,
+          );
+          const dndCompIndex = Number(dndComponent.path.slice(-1));
+          parent?.props.children?.splice(dndCompIndex, 1);
+          droppedComp = component;
+        }
+
+        if (droppedComp == null) {
+          droppedComp = {
+            type: dndComponent.componentName,
+            props: components[
+              dndComponent.componentName
+            ].getComputedPropsFromVariable(),
+          };
+        }
+
         const children = component.props.children;
-        const droppedComp: WegasComponent = {
-          type: dndComponent.componentName,
-          props: components[
-            dndComponent.componentName
-          ].getComputedPropsFromVariable(),
-        };
-        if (index !== undefined) {
-          children.splice(index, 0, droppedComp);
+        if (newIndex !== undefined) {
+          children.splice(newIndex, 0, droppedComp);
+          if (newIndex === children.length) {
+            newIndex = children.length - 1;
+          }
         } else {
           children.push(droppedComp);
         }
-        path.push(`${index ? index : 0}`);
-        onEdit(path);
-        patchPage(pagesState.selectedPage, newPage);
+        path.push(`${newIndex ? newIndex : 0}`);
+        patchPage(pagesState.selectedPage, newPage, page => {
+          if (page) {
+            onEdit(path);
+          }
+        });
       }
     },
     [components, pagesState.selectedPage, patchPage, onEdit, findComponent],

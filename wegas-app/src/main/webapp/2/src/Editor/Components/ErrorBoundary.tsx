@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { wlog, wwarn } from '../../Helper/wegaslog';
+import { wwarn } from '../../Helper/wegaslog';
 // https://reactjs.org/docs/error-boundaries.html
 
 export class ErrorBoundary extends React.Component<

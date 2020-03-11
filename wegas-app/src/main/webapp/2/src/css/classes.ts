@@ -48,14 +48,14 @@ export const expandWidth = css({
 export const expandHeight = css({
   height: '100%',
 });
-export const schrinkBoth = css({
+export const shrinkBoth = css({
   width: 'fit-content',
   height: 'fit-content',
 });
-export const schrinkWidth = css({
+export const shrinkWidth = css({
   width: 'fit-content',
 });
-export const schrinkHeight = css({
+export const shrinkHeight = css({
   height: 'fit-content',
 });
 

@@ -11,7 +11,7 @@ export interface IconButtonProps extends CommonButtonProps {
   onMouseMove?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   pressed?: boolean;
   prefixedLabel?: boolean;
-  // ref?: React.ClassAttributes<HTMLButtonElement>['ref'];
+  ref?: React.ClassAttributes<HTMLButtonElement>['ref'];
 }
 const defaultActiveStyle = css({ color: themeVar.primaryDarkerColor });
 
@@ -41,63 +41,65 @@ const disabledStyle = css({
   },
 });
 
-export const IconButton: React.FunctionComponent<IconButtonProps> = (
-  props: IconButtonProps,
-) => {
-  const {
-    onClick,
-    onMouseDown,
-    onMouseUp,
-    onMouseMove,
-    disabled,
-    tooltip,
-    tabIndex,
-    pressed,
-    label,
-    prefixedLabel,
-    id,
-    type,
-    className,
-    icon,
-    noHover,
-    // ref,
-  } = props;
+export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
+  (props, ref) => {
+    const {
+      onClick,
+      onMouseDown,
+      onMouseUp,
+      onMouseMove,
+      disabled,
+      tooltip,
+      tabIndex,
+      pressed,
+      label,
+      prefixedLabel,
+      id,
+      type,
+      className,
+      icon,
+      noHover,
+      // ref,
+    } = props;
 
-  return (
-    <button
-      // ref={ref}
-      id={id}
-      type={type}
-      title={tooltip}
-      tabIndex={tabIndex}
-      aria-label={tooltip}
-      aria-pressed={pressed}
-      onClick={onClick != null ? event => !disabled && onClick(event) : onClick}
-      onMouseDown={
-        onMouseDown != null
-          ? event => !disabled && onMouseDown(event)
-          : onMouseDown
-      }
-      onMouseUp={
-        onMouseUp != null ? event => !disabled && onMouseUp(event) : onMouseUp
-      }
-      onMouseMove={
-        onMouseMove != null
-          ? event => !disabled && onMouseMove(event)
-          : onMouseMove
-      }
-      className={cx(
-        shapeStyle(noHover),
-        {
-          [disabledStyle]: Boolean(disabled),
-          [defaultActiveStyle]: Boolean(pressed),
-        },
-        className,
-      )}
-    >
-      {prefixedLabel && label}
-      <IconComp icon={icon} />
-      {!prefixedLabel && label}
-    </button>
-  );
-};
+    return (
+      <button
+        ref={ref}
+        id={id}
+        type={type}
+        title={tooltip}
+        tabIndex={tabIndex}
+        aria-label={tooltip}
+        aria-pressed={pressed}
+        onClick={
+          onClick != null ? event => !disabled && onClick(event) : onClick
+        }
+        onMouseDown={
+          onMouseDown != null
+            ? event => !disabled && onMouseDown(event)
+            : onMouseDown
+        }
+        onMouseUp={
+          onMouseUp != null ? event => !disabled && onMouseUp(event) : onMouseUp
+        }
+        onMouseMove={
+          onMouseMove != null
+            ? event => !disabled && onMouseMove(event)
+            : onMouseMove
+        }
+        className={cx(
+          shapeStyle(noHover),
+          {
+            [disabledStyle]: Boolean(disabled),
+            [defaultActiveStyle]: Boolean(pressed),
+          },
+          className,
+        )}
+      >
+        {prefixedLabel && label}
+        <IconComp icon={icon} />
+        {!prefixedLabel && label}
+      </button>
+    );
+  },
+);

@@ -25,10 +25,8 @@ interface PlayerGaugeProps extends PageComponentMandatoryProps {
 }
 
 function PlayerGauge(props: PlayerGaugeProps) {
-  const { content, ComponentContainer, childProps, flexProps } = extractProps(
-    props,
-  );
-  const { descriptor, instance, notFound } = useComponentScript<
+  const { ComponentContainer, childProps, flexProps } = extractProps(props);
+  const { content, descriptor, instance, notFound } = useComponentScript<
     INumberDescriptor
   >(props.script);
   const min = descriptor.minValue || 0;

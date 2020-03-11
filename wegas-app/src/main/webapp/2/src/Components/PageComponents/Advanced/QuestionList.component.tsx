@@ -2,31 +2,28 @@ import * as React from 'react';
 import {
   pageComponentFactory,
   registerComponent,
-  PageComponentMandatoryProps,
+  extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { FunctionComponent } from 'react';
 import QuestionList from '../../AutoImport/Question/List';
+import { PageComponentMandatoryProps } from '../tools/EditableComponent';
 
 interface QuestionListDisplayProps extends PageComponentMandatoryProps {
   questionList?: string;
 }
 
-const QuestionListDisplay: FunctionComponent<QuestionListDisplayProps> = ({
-  EditHandle,
-  questionList,
-}) => {
+function QuestionListDisplay(props: QuestionListDisplayProps) {
+  const { ComponentContainer, childProps, flexProps } = extractProps(props);
   return (
-    <>
-      <EditHandle />
-      {questionList === undefined ? (
+    <ComponentContainer flexProps={flexProps}>
+      {childProps.questionList === undefined ? (
         <pre>No selected list</pre>
       ) : (
-        <QuestionList variable={questionList} />
+        <QuestionList variable={childProps.questionList} />
       )}
-    </>
+    </ComponentContainer>
   );
-};
+}
 
 registerComponent(
   pageComponentFactory(

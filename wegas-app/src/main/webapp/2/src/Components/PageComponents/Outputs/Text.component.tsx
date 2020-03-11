@@ -1,19 +1,19 @@
 import * as React from 'react';
 import { Text, TextProps } from '../../Outputs/Text';
 import {
-  PageComponentMandatoryProps,
   registerComponent,
   pageComponentFactory,
+  extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
+import { PageComponentMandatoryProps } from '../tools/EditableComponent';
 
 function PlayerText(props: TextProps & PageComponentMandatoryProps) {
-  const { EditHandle } = props;
+  const { ComponentContainer, childProps, flexProps } = extractProps(props);
   return (
-    <>
-      <EditHandle />
-      <Text {...props} />
-    </>
+    <ComponentContainer flexProps={flexProps}>
+      <Text {...childProps} />)
+    </ComponentContainer>
   );
 }
 

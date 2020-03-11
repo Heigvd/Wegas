@@ -36,7 +36,6 @@ import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory'
 import { pick } from 'lodash-es';
 import { CallExpression } from '@babel/types';
 import { StringLiteral } from '@babel/types';
-import { ResizeHandle } from '../../../ResizeHandle';
 
 const expressionEditorStyle = css({
   backgroundColor: themeVar.primaryHoverColor,
@@ -277,22 +276,21 @@ export function ExpressionEditor({
               onClick={() => onScripEditorSave(newSrc)}
             />
           )}
-          <ResizeHandle minSize={100}>
-            <WegasScriptEditor
-              value={
-                newSrc === undefined
-                  ? formState.statement
-                    ? generate(formState.statement).code
-                    : ''
-                  : newSrc
-              }
-              onChange={setNewSrc}
-              noGutter
-              minimap={false}
-              returnType={returnTypes(mode)}
-              onSave={onScripEditorSave}
-            />
-          </ResizeHandle>
+          <WegasScriptEditor
+            value={
+              newSrc === undefined
+                ? formState.statement
+                  ? generate(formState.statement).code
+                  : ''
+                : newSrc
+            }
+            onChange={setNewSrc}
+            noGutter
+            minimap={false}
+            returnType={returnTypes(mode)}
+            onSave={onScripEditorSave}
+            resizable
+          />
         </div>
       ) : (
         <Form

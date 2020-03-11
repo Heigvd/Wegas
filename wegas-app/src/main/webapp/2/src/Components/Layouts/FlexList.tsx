@@ -97,7 +97,8 @@ export const flexItemSchema = {
   flexShrink: schemaProps.number('Flex shrink', false),
   flexBasis: schemaProps.string('Flex basis', false),
   className: schemaProps.string('Classes', false),
-  style: schemaProps.code('Style', false, 'CSS', '', 'ADVANCED'),
+  style: schemaProps.code('Style', false, 'JSON', undefined, 'ADVANCED'),
+  // style: schemaProps.hidden(false, 'object'),
   children: schemaProps.hidden(false, 'array'),
 };
 

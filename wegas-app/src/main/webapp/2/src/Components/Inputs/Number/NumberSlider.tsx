@@ -7,6 +7,7 @@ import { themeVar } from '../../Theme';
 import { Value } from '../../Outputs/Value';
 import { InputProps } from '../SimpleInput';
 import { NumberInput } from './NumberInput';
+import { wlog } from '../../../Helper/wegaslog';
 
 const valueDisplayStyle = css({
   textAlign: 'center',
@@ -24,7 +25,14 @@ export type DisplayMode =
   | typeof displayModes[number]
   | ((internalValue: number, inputValue?: number) => React.ReactNode);
 
-export interface NumberSliderProps extends InputProps<number> {
+export type TriggerEvent = 'Change' | 'DragStart' | 'DragEnd' | 'NumberInput';
+
+export interface NumberSliderProps
+  extends Omit<InputProps<number>, 'onChange'> {
+  /**
+   * onChange - return the value set by the component
+   */
+  onChange?: (value: number, triggerEvent: TriggerEvent) => void;
   /**
    * max - the maximum value to slide (100 by default)
    */
@@ -84,22 +92,25 @@ export function NumberSlider({
   id,
 }: NumberSliderProps) {
   const [internalValue, setValue] = React.useState<number>(value || 0);
-
+  const refValue = React.useRef(value || 0);
   React.useEffect(
     () => {
-      if (value !== internalValue) {
+      if (value) {
+        refValue.current = value;
         setValue(value || 0);
       }
     },
-    // We don't need to refresh on internalValue change because it will be already done in the onChange function
     // eslint-disable-next-line
-    [value /*internalValue,*/],
+    [value],
   );
 
   const onSliderChange = React.useCallback(
-    value => {
-      setValue(value);
-      !readOnly && onChange && onChange(value);
+    (value: number, trigger: TriggerEvent) => {
+      if (trigger === 'Change' || trigger === 'NumberInput') {
+        refValue.current = value;
+        setValue(value);
+      }
+      !readOnly && onChange && onChange(value, trigger);
     },
     [onChange, readOnly],
   );
@@ -125,7 +136,12 @@ export function NumberSlider({
           );
           break;
         case 'NumberInput':
-          display = <NumberInput value={value} onChange={onSliderChange} />;
+          display = (
+            <NumberInput
+              value={value}
+              onChange={v => onSliderChange(v, 'NumberInput')}
+            />
+          );
           break;
         case 'None':
         default:
@@ -158,7 +174,10 @@ export function NumberSlider({
         xmin={min}
         xstep={Math.abs(max - min) / (steps ? steps : 100)}
         x={internalValue}
-        onChange={({ x }) => onSliderChange(x)}
+        onChange={({ x }) => onSliderChange(x, 'Change')}
+        onDragEnd={() =>
+          !readOnly && onChange && onChange(refValue.current, 'DragEnd')
+        }
         disabled={disabled}
       />
     </div>

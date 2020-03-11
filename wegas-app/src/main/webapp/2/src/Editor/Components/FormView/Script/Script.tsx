@@ -33,7 +33,7 @@ import { ResizeHandle } from '../../ResizeHandle';
 import { createScript } from '../../../../Helper/wegasEntites';
 
 export const scriptEditStyle = css({
-  // height: '5em',
+  minHeight: '5em',
   marginTop: '0.8em',
   width: '500px',
 });

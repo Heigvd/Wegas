@@ -3,7 +3,7 @@ import { css, cx } from 'emotion';
 import { themeVar } from '../../Theme';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
-import { textCenter, flex } from '../../../css/classes';
+import { textCenter, flex, shrinkWidth } from '../../../css/classes';
 
 const togglerStyle = (
   disabled?: boolean,
@@ -87,7 +87,7 @@ export function Toggler({
   }, [value]);
 
   return (
-    <div id={id} className={cx(textCenter, className)}>
+    <div id={id} className={cx(textCenter, className, shrinkWidth)}>
       {label && <Value value={label} />}
       <div
         className={cx(

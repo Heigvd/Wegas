@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { useScript } from '../Hooks/useScript';
-import { useVariableInstance } from '../Hooks/useVariable';
 import { TranslatableContent } from '../../data/i18n';
+import { useComponentScript } from '../Hooks/useComponentScript';
 
 export interface TextProps {
   script?: IScript;
@@ -9,17 +8,18 @@ export interface TextProps {
 }
 
 export function Text({ script, className }: TextProps) {
-  const textD = useScript(script ? script.content : '') as ISTextDescriptor;
-  const textI = useVariableInstance(textD);
-  return textD === undefined || textI === undefined ? (
-    <span>Not found: {script}</span>
+  const { content, instance, notFound } = useComponentScript<ITextDescriptor>(
+    script,
+  );
+  return notFound ? (
+    <span>Not found: {content}</span>
   ) : (
     <div className={className}>
       <div
         style={{ display: 'inline-block' }}
         dangerouslySetInnerHTML={{
           __html: TranslatableContent.toString(
-            textI.trValue === undefined ? null : textI.trValue,
+            instance.trValue === undefined ? null : instance.trValue,
           ),
         }}
       />

@@ -2,16 +2,19 @@ import * as React from 'react';
 import {
   pageComponentFactory,
   registerComponent,
-  PageComponentMandatoryProps,
+  extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
 import { splitter } from '../../../Editor/Components/LinearTabLayout/LinearLayout';
 import { cx, css } from 'emotion';
-import { layoutHighlightStyle, childHighlightCSS } from './List.component';
-import { flex, grow } from '../../../css/classes';
 import { OrientedLayoutProps } from '../../Layouts/List';
+import {
+  PageComponentMandatoryProps,
+  childHighlightCSS,
+  EditorHandleProps,
+} from '../tools/EditableComponent';
 
 const componentType = 'LinearLayout';
 
@@ -20,36 +23,45 @@ type LinearLayoutProps = OrientedLayoutProps<WegasComponent> &
 
 interface PlayerLinearLayoutProps extends LinearLayoutProps {
   /**
-   * keepSplitter - let the splitter for users to change the display
+   * allowResize - let the splitter for users to change the display
    */
-  keepSplitter?: boolean;
+  allowResize?: boolean;
   /**
-   * flexValues - allows to fix a specific flex value for each element in the layout
+   * containersSizeRatio - allows to fix a specific size ratio for each element in the layout
    */
-  flexValues?: { [containerId: string]: number };
+  containersSizeRatio?: { [containerId: string]: number };
+  /**
+   * name - the name of the component
+   */
+  name?: string;
 }
 
 function PlayerLinearLayout(props: PlayerLinearLayoutProps) {
-  const { EditHandle, showBorders, path, keepSplitter } = props;
-  const { editMode, onUpdate } = React.useContext(pageCTX);
-  const children: JSX.Element[] = [];
+  const {
+    ComponentContainer,
+    showBorders,
+    childProps,
+    flexProps,
+    path,
+  } = extractProps(props);
 
   const [showLayout, setShowLayout] = React.useState(
     showBorders ? true : false,
   );
-
   React.useEffect(() => {
     if (showBorders !== undefined) {
       setShowLayout(showBorders);
     }
   }, [showBorders]);
+  const { editMode, onUpdate } = React.useContext(pageCTX);
+  const children: JSX.Element[] = [];
 
   // The mapping is done outside from the return to avoid grouping ReflexSplitter and ReflexElement in fragment (avoid bug)
   for (let i = 0; i < props.children.length; editMode ? (i += 2) : (i += 1)) {
     if (
       i > 0 &&
       ((editMode && i !== props.children.length - 1) ||
-        (keepSplitter && !editMode))
+        (childProps.allowResize && !editMode))
     ) {
       children.push(
         <ReflexSplitter key={`SPLITTER${i / (editMode ? 2 : 1)}`} />,
@@ -59,8 +71,8 @@ function PlayerLinearLayout(props: PlayerLinearLayoutProps) {
       <ReflexElement
         key={`ELEMENT${i}`}
         flex={
-          props.flexValues
-            ? props.flexValues[Math.floor(i / (editMode ? 2 : 1))]
+          props.containersSizeRatio
+            ? props.containersSizeRatio[Math.floor(i / (editMode ? 2 : 1))]
             : 1000
         }
         onStopResize={args => {
@@ -70,7 +82,9 @@ function PlayerLinearLayout(props: PlayerLinearLayoutProps) {
                 type: componentType,
                 props: {
                   flexValues: {
-                    ...(props.flexValues ? props.flexValues : {}),
+                    ...(props.containersSizeRatio
+                      ? props.containersSizeRatio
+                      : {}),
                     [Math.floor(i / 2)]: args.component.props.flex,
                   },
                 },
@@ -92,35 +106,51 @@ function PlayerLinearLayout(props: PlayerLinearLayoutProps) {
     }
   }
 
+  const handleProps: EditorHandleProps = {
+    componentName: childProps.name,
+    togglerProps: {
+      onChange: setShowLayout,
+      value: showLayout,
+      hint: 'Highlight list borders (only during edition mode)',
+    },
+  };
+
   return (
-    <div
-      className={cx(showLayout && layoutHighlightStyle, flex, grow)}
-      style={{ width: '100%' }}
+    // <div
+    //   className={cx(showLayout && layoutHighlightStyle, flex, grow)}
+    //   style={{ width: '100%' }}
+    // >
+    //   <div
+    //     style={{
+    //       display: props.horizontal ? 'block' : 'inline-flex',
+    //       width: '100%',
+    //       height: '100%',
+    //     }}
+    //   >
+    //     <EditHandle
+    //       togglerProps={{
+    //         onChange: setShowLayout,
+    //         value: showLayout,
+    //         hint: 'Highlight list borders (only during edition mode)',
+    //       }}
+    //       vertical={!props.horizontal}
+    //     />
+    <ComponentContainer
+      flexProps={flexProps}
+      showBorders={showLayout}
+      handleProps={handleProps}
+      isLayout
     >
-      <div
-        style={{
-          display: props.horizontal ? 'block' : 'inline-flex',
-          width: '100%',
-          height: '100%',
-        }}
+      <ReflexContainer
+        className={splitter}
+        // Orientation is inverted to keep same logic in TabLayoutNode and ReflexLayoutNode (vertical==true : v, vertical==false : >)
+        orientation={childProps.horizontal ? 'vertical' : 'horizontal'}
       >
-        <EditHandle
-          togglerProps={{
-            onChange: setShowLayout,
-            value: showLayout,
-            hint: 'Highlight list borders (only during edition mode)',
-          }}
-          vertical={!props.horizontal}
-        />
-        <ReflexContainer
-          className={splitter}
-          // Orientation is inverted to keep same logic in TabLayoutNode and ReflexLayoutNode (vertical==true : v, vertical==false : >)
-          orientation={props.horizontal ? 'vertical' : 'horizontal'}
-        >
-          {children}
-        </ReflexContainer>
-      </div>
-    </div>
+        {children}
+      </ReflexContainer>
+    </ComponentContainer>
+    //   </div>
+    // </div>
   );
 }
 
@@ -130,12 +160,11 @@ registerComponent(
     componentType,
     'bars',
     {
-      children: schemaProps.hidden(false),
-      style: schemaProps.code('Style', false, 'JSON'),
+      name: schemaProps.string('Name', false),
       className: schemaProps.string('ClassName', false),
       horizontal: schemaProps.boolean('Horizontal', false),
-      flexValues: schemaProps.hidden(false, 'object'),
-      keepSplitter: schemaProps.boolean('Splitter', false),
+      containersSizeRatio: schemaProps.hidden(false, 'object'),
+      allowResize: schemaProps.boolean('Splitter', false),
     },
     [],
     () => ({ children: [] }),

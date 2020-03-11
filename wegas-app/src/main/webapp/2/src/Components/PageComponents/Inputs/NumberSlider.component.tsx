@@ -12,9 +12,9 @@ import {
 } from '../../Inputs/Number/NumberSlider';
 import { store } from '../../../data/store';
 import { Actions } from '../../../data';
-import { omit } from 'lodash';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { PageComponentMandatoryProps } from '../tools/EditableComponent';
+import { wlog } from '../../../Helper/wegaslog';
 
 interface PlayerNumberSliderProps extends PageComponentMandatoryProps {
   /**
@@ -40,7 +40,7 @@ function PlayerNumberSlider(props: PlayerNumberSliderProps) {
   const { ComponentContainer, childProps, flexProps } = extractProps(props);
   const { content, descriptor, instance, notFound } = useComponentScript<
     INumberDescriptor
-  >(props.script);
+  >(childProps.script);
   const min = descriptor.minValue || 0;
   const max = descriptor.maxValue || 1;
   return (
@@ -51,13 +51,16 @@ function PlayerNumberSlider(props: PlayerNumberSliderProps) {
         <NumberSlider
           {...childProps}
           value={instance.value}
-          onChange={v =>
-            store.dispatch(
-              Actions.VariableInstanceActions.runScript(
-                `${content}.setValue(self, ${v});`,
-              ),
-            )
-          }
+          onChange={(v, i) => {
+            if (i === 'DragEnd') {
+              wlog(v + ' ==> ONCHANGE');
+              store.dispatch(
+                Actions.VariableInstanceActions.runScript(
+                  `${content}.setValue(self, ${v});`,
+                ),
+              );
+            }
+          }}
           min={min}
           max={max}
         />

@@ -1,40 +1,46 @@
 import * as React from 'react';
 import { TranslatableContent } from '../../data/i18n';
-import { useVariableInstance } from '../Hooks/useVariable';
 import {
   pageComponentFactory,
   registerComponent,
-  PageComponentMandatoryProps,
+  extractProps,
 } from './tools/componentFactory';
 import { schemaProps } from './tools/schemaProps';
-import { useScript } from '../Hooks/useScript';
+import { PageComponentMandatoryProps } from './tools/EditableComponent';
+import { useComponentScript } from '../Hooks/useComponentScript';
+import { entityIs } from '../../data/entities';
 
 interface ExampleProps extends PageComponentMandatoryProps {
   script?: ISScript;
 }
 
-const Example: React.FunctionComponent<ExampleProps> = ({
-  script,
-  EditHandle,
-}: ExampleProps) => {
-  const descriptor = useScript(script ? script.content : '') as
-    | IStringDescriptor
-    | ISNumberDescriptor;
-  const instance = useVariableInstance(descriptor);
+const Example: React.FunctionComponent<ExampleProps> = (
+  props: ExampleProps,
+) => {
+  const {
+    ComponentContainer,
+    showBorders,
+    childProps,
+    flexProps,
+  } = extractProps(props);
+  const { content, instance, notFound } = useComponentScript<
+    INumberDescriptor | ITextDescriptor
+  >(childProps.script);
 
   return (
-    <>
-      <EditHandle />
-      {instance === undefined ? (
-        <span>{`Instance of ${descriptor.name} not found`}</span>
+    <ComponentContainer flexProps={flexProps} showBorders={showBorders}>
+      {notFound ? (
+        <pre>Not found: {content}</pre>
       ) : (
         <div>
-          {'trValue' in instance
+          {entityIs(instance, 'StringInstance')
             ? TranslatableContent.toString(instance.trValue)
-            : String(instance.value)}
+            : entityIs(instance, 'NumberInstance')
+            ? String(instance.value)
+            : 'The found variable is neither a StringInstance nore a NumberInstance'}
         </div>
       )}
-    </>
+    </ComponentContainer>
   );
 };
 

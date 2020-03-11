@@ -50,6 +50,7 @@ const generateGradient = (
         );
 
         // Create a gradient for this segment
+        // Putting key in a linearGradient throws warnings, need to wait for react to be updated
         return (
           <linearGradient
             key={newPieChartId + i}

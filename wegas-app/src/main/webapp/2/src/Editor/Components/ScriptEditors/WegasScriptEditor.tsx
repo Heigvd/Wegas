@@ -15,10 +15,12 @@ import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
 import { useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
 import { libes5 } from '../../../Helper/libs';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { ResizeHandle } from '../ResizeHandle';
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
   clientScript?: boolean;
   returnType?: WegasScriptEditorReturnTypeName[];
+  resizable?: boolean;
 }
 
 const header = (type?: string[]) => {
@@ -73,6 +75,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     /*TODO : allow non server methods here clientScript,*/ onChange,
     onBlur,
     onSave,
+    resizable,
   } = props;
   const language = props.language ? props.language : 'typescript';
   let editorLock: ((editor: MonacoSCodeEditor) => void) | undefined = undefined;
@@ -228,18 +231,27 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     [onSave, trimFunctionToScript],
   );
 
-  return (
+  const content = formatScriptToFunction(value || '', returnType);
+  const editor = (
     <SrcEditor
       key={Number(refresh)}
       {...props}
       language={language}
       extraLibs={extraLibs}
-      value={formatScriptToFunction(value || '', returnType)}
+      value={content}
       onEditorReady={editorLock}
       onChange={handleChange}
       onBlur={handleBlur}
       onSave={handleSave}
       defaultActions={actions}
     />
+  );
+
+  return resizable ? (
+    <ResizeHandle minSize={100} textContent={content}>
+      {editor}
+    </ResizeHandle>
+  ) : (
+    editor
   );
 }

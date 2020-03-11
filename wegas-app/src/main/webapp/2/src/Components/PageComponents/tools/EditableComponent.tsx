@@ -4,18 +4,19 @@ import { dropZoneClass } from '../../Contexts/DefaultDndProvider';
 import {
   DnDComponent,
   dndComponnent,
+  useComponentDrag,
 } from '../../../Editor/Components/Page/ComponentPalette';
 import { useDrop, DropTargetMonitor } from 'react-dnd';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { themeVar } from '../../Theme';
-import List from '../../Layouts/List';
-import { expandBoth } from '../../../css/classes';
-import { Centered } from '../../Layouts/Centered';
+import { flex, flexRow, textCenter } from '../../../css/classes';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
-import { Toggler, TogglerProps } from '../../Inputs/Boolean/Toggler';
+import { TogglerProps } from '../../Inputs/Boolean/Toggler';
 import { FlexItemProps, FlexItem } from '../../Layouts/FlexList';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
+import { useDebounce } from '../../Hooks/useDebounce';
+import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
@@ -30,7 +31,24 @@ export const childHighlightCSS = {
 };
 
 export const childHighlightStyle = css({
-  '&>*': childHighlightCSS,
+  '&>*>*': childHighlightCSS,
+});
+
+const handleControlStyle = css({
+  '&>.wegas-component-handle': {
+    visibility: 'collapse',
+    opacity: 0.0,
+    transition: 'visibility 2s, opacity 2s',
+  },
+  ':hover>.wegas-component-handle': {
+    visibility: 'visible',
+    opacity: 0.8,
+    transition: 'opacity 0s',
+  },
+});
+
+export const expandEditStyle = css({
+  padding: '30px',
 });
 
 const editItemStyle = css({
@@ -47,9 +65,6 @@ interface ComponentEditorContainerProps {
 
 export interface EditorHandleProps {
   componentName?: string;
-  vertical?: boolean;
-  showHandle?: boolean;
-  opacity?: number;
   className?: string;
   togglerProps?: TogglerProps;
 }
@@ -85,56 +100,57 @@ export interface ComponentContainerProps
   extends Omit<PageComponentMandatoryProps, 'ComponentContainer'> {
   flexProps: FlexItemProps;
   handleProps?: EditorHandleProps;
+  isLayout?: boolean;
 }
 
 export function ComponentEditorContainer({
   type,
   path,
 }: ComponentEditorContainerProps) {
+  const { editMode, showControls, onEdit, onDelete } = React.useContext(
+    pageCTX,
+  );
   function EditHandle({
     componentName,
-    vertical,
     className,
     togglerProps,
   }: EditorHandleProps) {
-    const { editMode, showControls, onEdit, onDelete } = React.useContext(
-      pageCTX,
-    );
+    const [, drag] = useComponentDrag(type, path);
     return editMode && showControls ? (
       <div
         style={{
           position: 'absolute',
-          top: 0,
-          right: vertical ? 0 : undefined,
-          left: vertical ? undefined : 0,
-          borderRadius: themeVar.borderRadius,
-          background: themeVar.primaryHoverColor,
-          // opacity: showHandle ? opacity : 0.0,
+          top: '-30px',
+          left: '-30px',
+          display: 'flex',
+          flexDirection: 'column',
         }}
         className={'wegas-component-handle ' + (className ? className : '')}
       >
-        <div className={expandBoth}>
-          <Centered
-            className={css({
-              padding: '2px',
-              width: 'fit-content',
-              height: 'fit-content',
-            })}
-          >
-            <List horizontal={!vertical} shrink centered>
-              {(componentName ? componentName + ' : ' : '') + type}
-              <IconButton icon="edit" onClick={() => onEdit(path)} />
-              <ConfirmButton
-                icon="trash"
-                onAction={success => {
-                  if (success) {
-                    onDelete(path);
-                  }
-                }}
-              />
-              {togglerProps && <Toggler {...togglerProps} />}
-            </List>
-          </Centered>
+        <div
+          style={{ fontSize: '10px' }}
+          className={cx(flex, flexRow, textCenter)}
+        >
+          {(componentName ? componentName + ' : ' : '') + type}
+        </div>
+        <div
+          style={{
+            borderRadius: themeVar.borderRadius,
+            background: themeVar.primaryHoverColor,
+          }}
+          className={cx(flex, flexRow)}
+        >
+          <IconButton icon="edit" onClick={() => onEdit(path)} />
+          <IconButton icon="arrows-alt" ref={drag} />
+          <ConfirmButton
+            icon="trash"
+            onAction={success => {
+              if (success) {
+                onDelete(path);
+              }
+            }}
+          />
+          {togglerProps && <CheckBox {...togglerProps} />}
         </div>
       </div>
     ) : null;
@@ -144,14 +160,17 @@ export function ComponentEditorContainer({
     flexProps,
     handleProps,
     showBorders,
+    isLayout,
   }: React.PropsWithChildren<ComponentContainerProps>) {
     return (
       <FlexItem
         {...flexProps}
         className={cx(
+          handleControlStyle,
           {
             [childHighlightStyle]: showBorders,
             [layoutHighlightStyle]: showBorders,
+            [expandEditStyle]: editMode && showControls && isLayout,
           },
           flexProps.className,
         )}
@@ -179,9 +198,11 @@ function ComponentDropZone({ onDrop }: ComponentDropZoneProps) {
       item: mon.getItem() as DnDComponent | null,
     }),
   });
+  const show = useDebounce(dropZoneProps.canDrop, 100);
+
   return (
     <>
-      {dropZoneProps.canDrop && (
+      {show && (
         <div className={editItemStyle}>
           <div
             ref={dropZone}

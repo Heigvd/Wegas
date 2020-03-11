@@ -188,7 +188,7 @@ export const schemaProps = {
     label?: string,
     required: boolean = true,
     language: CodeLanguage = 'JavaScript',
-    value?: string,
+    value?: {} | string,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,

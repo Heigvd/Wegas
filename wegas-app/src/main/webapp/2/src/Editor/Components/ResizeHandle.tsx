@@ -6,66 +6,47 @@ import {
   grow,
   expandBoth,
   centeredContent,
-  schrinkWidth,
+  shrinkWidth,
 } from '../../css/classes';
 import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 
 interface ResizeHandleProps {
-  minSize?: number;
+  minSize: number;
+  maxSize?: number;
+  textContent?: string;
+  lineHeight?: number;
 }
+
+const handleHeight = 28;
 
 export function ResizeHandle({
   minSize,
+  maxSize,
+  textContent,
+  lineHeight = 19,
   children,
 }: React.PropsWithChildren<ResizeHandleProps>) {
-  const container = React.useRef<HTMLDivElement>(null);
-  const [moving, setMoving] = React.useState(false);
-  const [clientY, setClientY] = React.useState<number | undefined>(minSize);
-
-  const mouseUpListener = React.useCallback(() => setMoving(false), []);
-
-  React.useEffect(() => {
-    window.addEventListener('mouseup', mouseUpListener);
-    return () => window.removeEventListener('mouseup', mouseUpListener);
-  });
+  const [open, setOpen] = React.useState(false);
+  const computedMinSize = minSize ? minSize + 'px' : '100%';
+  const textSize = textContent
+    ? (textContent.split(/\n/).length + 1) * lineHeight + handleHeight
+    : 0;
+  const computedMaxSize =
+    textContent || maxSize || minSize
+      ? Math.max(textSize, maxSize || 0, minSize || 0) + 'px'
+      : '100%';
 
   return (
     <div
-      ref={container}
-      style={{ height: clientY ? clientY : '100%' }}
+      style={{ height: open ? computedMaxSize : computedMinSize }}
       className={cx(flex, flexColumn)}
     >
       <div className={cx(flex, grow, expandBoth)}>{children}</div>
       <div className={cx(centeredContent)}>
-        <div className={cx(schrinkWidth)}>
+        <div className={cx(shrinkWidth)}>
           <IconButton
-            icon={['circle', { color: 'white', icon: 'caret-down' }]}
-            onMouseDown={() => setMoving(true)}
-            onMouseMove={e => {
-              if (moving) {
-                const cont = container.current;
-                if (cont != null) {
-                  const containerRect = e.currentTarget.parentElement!.parentElement!.parentElement!.getBoundingClientRect();
-                  const targetRect = e.currentTarget.getBoundingClientRect();
-                  const event_offsetY = e.pageY - containerRect.top;
-                  const targetRect_offsetY = e.pageY - targetRect.top;
-
-                  if (
-                    targetRect_offsetY < 0 ||
-                    targetRect_offsetY > targetRect.height
-                  ) {
-                    setMoving(false);
-                  }
-
-                  setClientY(
-                    event_offsetY +
-                      e.currentTarget.clientHeight -
-                      targetRect.height / 2,
-                  );
-                }
-              }
-            }}
-            onMouseUp={() => setMoving(false)}
+            icon={open ? 'angle-up' : 'angle-down'}
+            onClick={() => setOpen(o => !o)}
           />
         </div>
       </div>

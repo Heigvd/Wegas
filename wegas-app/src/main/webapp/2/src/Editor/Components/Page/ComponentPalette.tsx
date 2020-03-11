@@ -24,6 +24,7 @@ const paletteStyle = css({
 export interface DnDComponent {
   componentName: string;
   type: typeof dndComponnent;
+  path?: string[];
 }
 
 interface ComponentElementProps {
@@ -32,13 +33,21 @@ interface ComponentElementProps {
 
 export const dndComponnent: 'dndComponnent' = 'dndComponnent';
 
-function ComponentElement({ componentName }: ComponentElementProps) {
-  const [, drag] = useDrag<DnDComponent, unknown, unknown>({
+export function useComponentDrag(componentName: string, path?: string[]) {
+  return useDrag<DnDComponent, unknown, unknown>({
     item: {
-      componentName: componentName,
+      componentName,
       type: dndComponnent,
+      path,
     },
+    collect: monitor => ({
+      isDragging: !!monitor.isDragging(),
+    }),
   });
+}
+
+function ComponentElement({ componentName }: ComponentElementProps) {
+  const [, drag] = useComponentDrag(componentName);
   const component = usePageComponentStore(s => s[componentName]);
   return (
     <div ref={drag} className={componentStyle}>

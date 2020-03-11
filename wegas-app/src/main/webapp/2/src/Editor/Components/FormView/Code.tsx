@@ -18,16 +18,13 @@ export interface CodeProps
 export function Code({ view, value, onChange }: CodeProps) {
   const onValueChange = React.useCallback(
     (val: string) => {
-      if (view.language === 'CSS' || view.language === 'JSON') {
-        try {
-          const object = JSON.parse(val);
-          onChange(object);
-        } catch {
-          onChange({});
-        }
-      } else {
-        onChange(val);
-      }
+      onChange(
+        view.language === 'JSON'
+          ? val === ''
+            ? undefined
+            : JSON.parse(val)
+          : val,
+      );
     },
     [onChange, view.language],
   );
@@ -52,6 +49,7 @@ export function Code({ view, value, onChange }: CodeProps) {
                   onChange={onValueChange}
                   minimap={false}
                   noGutter={true}
+                  resizable
                 />
               </div>
             </>

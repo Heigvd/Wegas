@@ -2,13 +2,14 @@ import * as React from 'react';
 import {
   pageComponentFactory,
   registerComponent,
-  PageComponentMandatoryProps,
+  extractProps,
 } from '../tools/componentFactory';
 import { PageDeserializer } from '../tools/PageDeserializer';
 import { PageAPI } from '../../../API/pages.api';
 import { GameModel } from '../../../data/selectors';
 import { schemaProps } from '../tools/schemaProps';
 import { useScript } from '../../Hooks/useScript';
+import { PageComponentMandatoryProps } from '../tools/EditableComponent';
 
 const pages: Pages = {};
 const gameModelId = GameModel.selectCurrent().id!;
@@ -24,22 +25,20 @@ interface PlayerPageLoaderProps extends PageComponentMandatoryProps {
   selectedPageId?: IScript;
 }
 
-function PlayerPageLoader({
-  EditHandle,
-  selectedPageId,
-}: PlayerPageLoaderProps) {
+function PlayerPageLoader(props: PlayerPageLoaderProps) {
+  const { ComponentContainer, childProps, flexProps } = extractProps(props);
+  const { selectedPageId } = childProps;
   const pageId = useScript(
-    selectedPageId ? selectedPageId.content : '',
+    childProps.selectedPageId ? childProps.selectedPageId.content : '',
   ) as string;
   return (
-    <>
-      <EditHandle />
+    <ComponentContainer flexProps={flexProps}>
       {selectedPageId === undefined ? (
         <pre>Unknown pageid</pre>
       ) : (
         <PageDeserializer json={pages[pageId]} uneditable />
       )}
-    </>
+    </ComponentContainer>
   );
 }
 
