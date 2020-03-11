@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="jarle" id="1574090984-8">
+        
+        
+        <createTable tableName="surveydescriptor">
+            <column name="id" type="int8">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveydescriptor_pkey"/>
+            </column>
+            <column name="description_id" type="int8"/>
+            <column name="descriptionend_id" type="int8"/>
+        </createTable>
+        <createIndex indexName="index_surveydescriptor_description_id" tableName="surveydescriptor">
+            <column name="description_id"/>
+        </createIndex>
+        <createIndex indexName="index_surveydescriptor_descriptionend_id" tableName="surveydescriptor">
+            <column name="descriptionend_id"/>
+        </createIndex>
+        
+        
+        <createTable tableName="surveyinstance">
+            <column name="id" type="int8">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveyinstance_pkey"/>
+            </column>
+            <column name="active" type="bool"/>
+            <column name="requested" type="bool"/>
+            <column name="started" type="bool"/>
+            <column name="validated" type="bool"/>
+            <column name="closed" type="bool"/>
+        </createTable>
+        
+        
+        <createTable tableName="surveysectiondescriptor">
+            <column name="id" type="int8">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveysectiondescriptor_pkey"/>
+            </column>
+            <column name="description_id" type="int8"/>
+            <column name="survey_id" type="int8"/>
+            <column name="index" type="int4"/>
+        </createTable>
+        <createIndex indexName="index_surveysectiondescriptor_description_id" tableName="surveysectiondescriptor">
+            <column name="description_id"/>
+        </createIndex>
+        <createIndex indexName="index_surveysectiondescriptor_survey_id" tableName="surveysectiondescriptor">
+            <column name="survey_id"/>
+        </createIndex>
+
+
+        <createTable tableName="surveysectioninstance">
+            <column name="id" type="int8">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveysectioninstance_pkey"/>
+            </column>
+            <column name="active" type="bool"/>
+        </createTable>
+
+
+        <createTable tableName="surveyinputdescriptor">
+            <column name="id" type="int8">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveyinputdescriptor_pkey"/>
+            </column>
+            <column name="description_id" type="int8"/>
+            <column name="section_id" type="int8"/>
+            <column name="index" type="int4"/>
+        </createTable>
+        <createIndex indexName="index_surveyinputdescriptor_description_id" tableName="surveyinputdescriptor">
+            <column name="description_id"/>
+        </createIndex>
+        <createIndex indexName="index_surveyinputdescriptor_section_id" tableName="surveyinputdescriptor">
+            <column name="section_id"/>
+        </createIndex>
+
+
+        <createTable tableName="surveyinputinstance">
+            <column name="id" type="int8">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveyinputinstance_pkey"/>
+            </column>
+            <column name="active" type="bool"/>
+            <column name="isreplied" type="bool"/>
+        </createTable>
+
+
+        <createTable tableName="surveytextdescriptor">
+            <column name="id" type="int8">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveytextdescriptor_pkey"/>
+            </column>
+        </createTable>
+
+        
+        <createTable tableName="surveytextinstance">
+            <column name="id" type="int8">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveytextinstance_pkey"/>
+            </column>
+        </createTable>
+        
+        
+        <createTable tableName="surveynumberdescriptor">
+            <column name="id" type="int8">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveynumberdescriptor_pkey"/>
+            </column>
+            <column name="isscale" type="bool"/>
+            <column name="maxvalue" type="int8"/>
+            <column name="minvalue" type="int8"/>
+            <column name="unit_id" type="int8"/>
+        </createTable>
+        <createIndex indexName="index_surveynumberdescriptor_unit_id" tableName="surveynumberdescriptor">
+            <column name="unit_id"/>
+        </createIndex>
+        
+        <createTable tableName="surveynumberinstance">
+            <column name="id" type="int8">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveynumberinstance_pkey"/>
+            </column>
+        </createTable>
+        
+        
+        <createTable tableName="surveychoicesdescriptor">
+            <column name="id" type="int8">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveychoicesdescriptor_pkey"/>
+            </column>
+            <column name="maxselectable" type="int8"/>
+            <column name="isscale" type="bool"/>
+            <column name="isslider" type="bool"/>
+        </createTable>
+        
+        <createTable tableName="surveychoicesinstance">
+            <column name="id" type="int8">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="surveychoicesinstance_pkey"/>
+            </column>
+        </createTable>
+
+
+        <addForeignKeyConstraint baseColumnNames="section_id" baseTableName="surveyinputdescriptor" baseTableSchemaName="public" constraintName="fk_surveyinputdescriptor_section_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="surveysectiondescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="survey_id" baseTableName="surveysectiondescriptor" baseTableSchemaName="public" constraintName="fk_surveysectiondescriptor_survey_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="surveydescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveysectiondescriptor" baseTableSchemaName="public" constraintName="fk_surveysectiondescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveysectioninstance" baseTableSchemaName="public" constraintName="fk_surveysectioninstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveydescriptor" baseTableSchemaName="public" constraintName="fk_surveydescriptor_variabledescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveyinstance" baseTableSchemaName="public" constraintName="fk_surveyinstance_variableinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveyinputdescriptor" baseTableSchemaName="public" constraintName="fk_surveyinputdescriptor_variabledescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveyinputinstance" baseTableSchemaName="public" constraintName="fk_surveyinputinstance_variableinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveytextdescriptor" baseTableSchemaName="public" constraintName="fk_surveytextdescriptor_variabledescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveytextinstance" baseTableSchemaName="public" constraintName="fk_surveytextinstance_variableinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveynumberdescriptor" baseTableSchemaName="public" constraintName="fk_surveynumberdescriptor_variabledescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveynumberinstance" baseTableSchemaName="public" constraintName="fk_surveynumberinstance_variableinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveychoicesdescriptor" baseTableSchemaName="public" constraintName="fk_surveychoicesdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="surveychoicesinstance" baseTableSchemaName="public" constraintName="fk_surveychoicesinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variableinstance" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="surveydescriptor" constraintName="fk_surveydescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="surveysectiondescriptor" constraintName="fk_surveysectiondescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+        <addForeignKeyConstraint baseColumnNames="description_id" baseTableName="surveyinputdescriptor" constraintName="fk_surveyinputdescriptor_description_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+        <addForeignKeyConstraint baseColumnNames="unit_id" baseTableName="surveynumberdescriptor" constraintName="fk_surveynumberdescriptor_unit_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
+    </changeSet>
+    
+    <changeSet author="jarle" id="1574090984001-1">
+        <addColumn tableName="enumitem">
+            <column name="parentchoice_id" type="int8"/>
+        </addColumn>
+
+        <createIndex indexName="index_enumitem_parentchoice_id" tableName="enumitem">
+            <column name="parentchoice_id"/>
+        </createIndex>
+    
+        <addForeignKeyConstraint baseColumnNames="parentchoice_id" baseTableName="enumitem" constraintName="fk_enumitem_parentchoice_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor"/>
+    </changeSet>
+
+    <changeSet author="jarle" id="1574090984002-2">
+        <dropUniqueConstraint constraintName="unq_enumitem_0" tableName="enumitem"/>
+        <addUniqueConstraint columnNames="parentchoice_id, parentevaluation_id, parentstring_id, name" constraintName="unq_enumitem_0" tableName="enumitem"/>
+    </changeSet>
+
+</databaseChangeLog>

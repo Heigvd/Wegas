@@ -128,6 +128,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             value: 'Peer Review Descriptor'
         },
         {
+            label: 'Survey',
+            value: 'Survey Descriptor'
+        },
+        {
             label: 'Object',
             value: 'ObjectDescriptor'
         }
@@ -1642,6 +1646,12 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                             label: '<span class="fa fa-users"></span> Peer Review',
                                             targetClass: 'PeerReviewDescriptor',
                                             cssClass: 'wegas-advanced-feature'
+                                        },
+                                        {
+                                            type: 'AddEntityChildButton',
+                                            label: '<span class="fa fa-bar-chart"></span> Survey',
+                                            targetClass: 'SurveyDescriptor',
+                                            //cssClass: 'wegas-advanced-feature'
                                         },
                                         {
                                             type: 'AddEntityChildButton',

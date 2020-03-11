@@ -67,6 +67,12 @@ import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import com.wegas.resourceManagement.persistence.ResourceDescriptor;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
+import com.wegas.survey.persistence.SurveyDescriptor;
+import com.wegas.survey.persistence.input.SurveyInputDescriptor;
+import com.wegas.survey.persistence.input.SurveySectionDescriptor;
+import com.wegas.survey.persistence.input.SurveyTextDescriptor;
+import com.wegas.survey.persistence.input.SurveyNumberDescriptor;
+import com.wegas.survey.persistence.input.SurveyChoicesDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -165,6 +171,12 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
     @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
+    @JsonSubTypes.Type(name = "SurveyDescriptor", value = SurveyDescriptor.class),
+    @JsonSubTypes.Type(name = "SurveySectionDescriptor", value = SurveySectionDescriptor.class),
+    @JsonSubTypes.Type(name = "SurveyInputDescriptor", value = SurveyInputDescriptor.class),
+    @JsonSubTypes.Type(name = "SurveyTextDescriptor", value = SurveyTextDescriptor.class),
+    @JsonSubTypes.Type(name = "SurveyNumberDescriptor", value = SurveyNumberDescriptor.class),
+    @JsonSubTypes.Type(name = "SurveyChoicesDescriptor", value = SurveyChoicesDescriptor.class),
     @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
 //@MappedSuperclass

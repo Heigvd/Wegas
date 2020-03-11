@@ -29,6 +29,7 @@ import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.View.I18nStringView;
 import com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor;
+import com.wegas.survey.persistence.input.SurveyChoicesDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,12 +52,13 @@ import javax.persistence.UniqueConstraint;
 @Entity
 @Table(
         uniqueConstraints = {
-            @UniqueConstraint(columnNames = {"parentevaluation_id", "parentstring_id", "name"})
+            @UniqueConstraint(columnNames = {"parentevaluation_id", "parentstring_id", "parentchoice_id","name"})
         },
         indexes = {
             @Index(columnList = "label_id"),
             @Index(columnList = "parentevaluation_id"),
-            @Index(columnList = "parentstring_id")
+            @Index(columnList = "parentstring_id"),
+            @Index(columnList = "parentchoice_id")
         }
 )
 public class EnumItem extends AbstractEntity implements LabelledEntity, Orderable {
@@ -71,6 +73,10 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
     @JsonIgnore
     private StringDescriptor parentString;
 
+    @ManyToOne
+    @JsonIgnore
+    private SurveyChoicesDescriptor parentChoice;
+
     @Id
     @GeneratedValue
     @JsonView(Views.IndexI.class)
@@ -83,7 +89,7 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
             nullable = false,
             view = @View(
                     label = "Script alias",
-                    description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character.",
+                    description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'.",
                     featureLevel = ADVANCED
             ))
     private String name;
@@ -151,6 +157,7 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
         if (this.parentEvaluation != null) {
             // set other parents to null
             this.setParentString(null);
+            this.setParentChoice(null);
             if (this.parentEvaluation.getContainer() != null && this.getLabel() != null) {
                 this.getLabel().setParentDescriptor(parentEvaluation.getContainer().getParent());
             }
@@ -165,8 +172,25 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
         this.parentString = parentString;
         if (this.parentString != null) {
             this.setParentEvaluation(null);
+            this.setParentChoice(null);
             if (this.getLabel() != null) {
                 this.getLabel().setParentDescriptor(parentString);
+            }
+        }
+    }
+    
+    public SurveyChoicesDescriptor getParentChoice() {
+        return parentChoice;
+    }
+
+    public void setParentChoice(SurveyChoicesDescriptor parentChoice) {
+        this.parentChoice = parentChoice;
+        if (this.parentChoice != null) {
+            // set other parents to null
+            this.setParentString(null);
+            this.setParentEvaluation(null);
+            if (this.getLabel() != null) {
+                this.getLabel().setParentDescriptor(parentChoice);
             }
         }
     }
@@ -175,8 +199,10 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
     public WithPermission getMergeableParent() {
         if (this.getParentString() != null) {
             return getParentString();
-        } else {
+        } else if (this.getParentEvaluation() != null) {
             return getParentEvaluation();
+        } else {
+            return getParentChoice();
         }
     }
 
@@ -186,6 +212,8 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
             return parentEvaluation.getRequieredReadPermission();
         } else if (this.parentString != null) {
             return parentString.getRequieredReadPermission();
+        } else if (this.parentChoice != null) {
+            return parentChoice.getRequieredReadPermission();
         }
 
         return null;
@@ -197,6 +225,8 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
             return parentEvaluation.getRequieredUpdatePermission();
         } else if (this.parentString != null) {
             return parentString.getRequieredUpdatePermission();
+        } else if (this.parentChoice != null) {
+            return parentChoice.getRequieredUpdatePermission();
         }
 
         return null;
