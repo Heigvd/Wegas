@@ -125,7 +125,7 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
             // change detected
             this.value = value;
 
-            if (beans != null) {
+            if (!this.isDefaultInstance() && beans != null) {
                 beans.getVariableInstanceFacade().fireNumberChange(this, pVal);
             }
         }
