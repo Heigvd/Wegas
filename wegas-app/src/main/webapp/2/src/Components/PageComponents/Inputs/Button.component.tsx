@@ -13,7 +13,7 @@ import { createScript } from '../../../Helper/wegasEntites';
 
 export interface PlayerButtonProps extends PageComponentMandatoryProps {
   label: string;
-  script: IScript;
+  action: IScript;
 }
 
 const PlayerButton: React.FunctionComponent<PlayerButtonProps> = (
@@ -26,7 +26,7 @@ const PlayerButton: React.FunctionComponent<PlayerButtonProps> = (
         label={childProps.label}
         onClick={() =>
           store.dispatch(
-            Actions.VariableInstanceActions.runScript(childProps.script!),
+            Actions.VariableInstanceActions.runScript(childProps.action!),
           )
         }
       />
@@ -47,7 +47,7 @@ registerComponent(
     buttonSchema,
     [],
     () => ({
-      script: createScript(),
+      action: createScript(),
       label: 'Button',
     }),
   ),

@@ -19,7 +19,7 @@ export function Text({ script, className }: TextProps) {
         style={{ display: 'inline-block' }}
         dangerouslySetInnerHTML={{
           __html: TranslatableContent.toString(
-            instance.trValue === undefined ? null : instance.trValue,
+            instance!.trValue === undefined ? null : instance!.trValue,
           ),
         }}
       />

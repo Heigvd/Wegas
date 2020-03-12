@@ -29,8 +29,6 @@ function PlayerGauge(props: PlayerGaugeProps) {
   const { content, descriptor, instance, notFound } = useComponentScript<
     INumberDescriptor
   >(props.script);
-  const min = descriptor.minValue || 0;
-  const max = descriptor.maxValue || 1;
   return (
     <ComponentContainer flexProps={flexProps}>
       {notFound ? (
@@ -39,9 +37,9 @@ function PlayerGauge(props: PlayerGaugeProps) {
         <StandardGauge
           label={childProps.label}
           followNeedle={childProps.followNeedle}
-          min={min}
-          max={max}
-          value={instance.value}
+          min={descriptor!.minValue || 0}
+          max={descriptor!.maxValue || 1}
+          value={instance!.value}
         />
       )}
     </ComponentContainer>

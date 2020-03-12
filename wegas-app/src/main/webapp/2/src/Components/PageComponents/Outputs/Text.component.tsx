@@ -12,7 +12,7 @@ function PlayerText(props: TextProps & PageComponentMandatoryProps) {
   const { ComponentContainer, childProps, flexProps } = extractProps(props);
   return (
     <ComponentContainer flexProps={flexProps}>
-      <Text {...childProps} />)
+      <Text {...childProps} />
     </ComponentContainer>
   );
 }

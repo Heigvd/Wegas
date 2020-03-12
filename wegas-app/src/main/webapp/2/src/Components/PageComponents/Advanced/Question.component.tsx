@@ -27,7 +27,7 @@ function QuestionDisplay(props: QuestionDisplayProps) {
       {notFound ? (
         <pre>Not found: {content}</pre>
       ) : (
-        <ConnectedQuestionDisplay entity={descriptor} />
+        <ConnectedQuestionDisplay entity={descriptor!} />
       )}
     </ComponentContainer>
   );

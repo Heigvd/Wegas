@@ -39,7 +39,7 @@ registerComponent(
     () => ({
       icon: 'cube' as IconName,
       label: 'IconButton',
-      script: createScript(),
+      action: createScript(),
     }),
   ),
 );

@@ -7,7 +7,6 @@ import { themeVar } from '../../Theme';
 import { Value } from '../../Outputs/Value';
 import { InputProps } from '../SimpleInput';
 import { NumberInput } from './NumberInput';
-import { wlog } from '../../../Helper/wegaslog';
 
 const valueDisplayStyle = css({
   textAlign: 'center',

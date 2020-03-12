@@ -40,8 +40,6 @@ function PlayerNumberSlider(props: PlayerNumberSliderProps) {
   const { content, descriptor, instance, notFound } = useComponentScript<
     INumberDescriptor
   >(childProps.script);
-  const min = descriptor.minValue || 0;
-  const max = descriptor.maxValue || 1;
   return (
     <ComponentContainer flexProps={flexProps}>
       {notFound ? (
@@ -49,7 +47,7 @@ function PlayerNumberSlider(props: PlayerNumberSliderProps) {
       ) : (
         <NumberSlider
           {...childProps}
-          value={instance.value}
+          value={instance!.value}
           onChange={(v, i) => {
             if (i === 'DragEnd') {
               store.dispatch(
@@ -59,8 +57,8 @@ function PlayerNumberSlider(props: PlayerNumberSliderProps) {
               );
             }
           }}
-          min={min}
-          max={max}
+          min={descriptor!.minValue || 0}
+          max={descriptor!.maxValue || 1}
         />
       )}
     </ComponentContainer>

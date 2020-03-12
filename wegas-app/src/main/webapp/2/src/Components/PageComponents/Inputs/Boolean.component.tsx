@@ -52,7 +52,7 @@ function PlayerBoolean(
       ) : (
         <BooleanComponent
           label={childProps.label}
-          value={instance.value}
+          value={instance!.value}
           disabled={childProps.disabled}
           readOnly={childProps.inactive}
           onChange={v => {
