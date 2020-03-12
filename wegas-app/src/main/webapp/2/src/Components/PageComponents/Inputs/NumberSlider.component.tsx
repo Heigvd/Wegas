@@ -14,7 +14,6 @@ import { store } from '../../../data/store';
 import { Actions } from '../../../data';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { PageComponentMandatoryProps } from '../tools/EditableComponent';
-import { wlog } from '../../../Helper/wegaslog';
 
 interface PlayerNumberSliderProps extends PageComponentMandatoryProps {
   /**
@@ -53,7 +52,6 @@ function PlayerNumberSlider(props: PlayerNumberSliderProps) {
           value={instance.value}
           onChange={(v, i) => {
             if (i === 'DragEnd') {
-              wlog(v + ' ==> ONCHANGE');
               store.dispatch(
                 Actions.VariableInstanceActions.runScript(
                   `${content}.setValue(self, ${v});`,

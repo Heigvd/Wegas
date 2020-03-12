@@ -13,7 +13,7 @@ export function PageLoader({ selectedPage }: PageLoaderProps) {
     <DefaultDndProvider>
       <ThemeProvider contextName="player">
         <React.Suspense fallback={<TextLoader text="Building World!" />}>
-          <div style={{ display: 'flex', height: '100%' }}>
+          <div style={{ display: 'flex' /*, height: '100%' */ }}>
             <PageDeserializer json={selectedPage} />
           </div>
         </React.Suspense>

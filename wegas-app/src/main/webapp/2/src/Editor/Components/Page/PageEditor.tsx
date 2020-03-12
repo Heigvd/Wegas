@@ -31,6 +31,9 @@ interface PageContext {
   editMode: boolean;
   showBorders: boolean;
   showControls: boolean;
+  handles: {
+    [path: string]: { jsx: JSX.Element; dom: React.RefObject<HTMLDivElement> };
+  };
   onDrop: (dndComponent: DnDComponent, path: string[], index?: number) => void;
   onDelete: (path: string[]) => void;
   onEdit: (path: string[]) => void;
@@ -41,6 +44,7 @@ export const pageCTX = React.createContext<PageContext>({
   editMode: false,
   showBorders: false,
   showControls: true,
+  handles: {},
   onDrop: () => {},
   onEdit: () => {},
   onDelete: () => {},
@@ -121,6 +125,7 @@ export default function PageEditor() {
   const [srcMode, setSrcMode] = React.useState<boolean>(false);
   const [editMode, setEditMode] = React.useState(false);
   const [showBorders, setShowBorders] = React.useState(false);
+  const handles = React.useRef({});
   const [showControls, setShowControls] = React.useState(true);
 
   const components = usePageComponentStore(s => s);
@@ -502,6 +507,7 @@ export default function PageEditor() {
                   editMode,
                   showControls,
                   showBorders,
+                  handles: handles.current,
                   onDrop,
                   onDelete,
                   onEdit,

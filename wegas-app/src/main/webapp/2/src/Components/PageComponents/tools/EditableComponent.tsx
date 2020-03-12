@@ -36,9 +36,9 @@ export const childHighlightStyle = css({
 
 const handleControlStyle = css({
   '&>.wegas-component-handle': {
-    visibility: 'collapse',
+    visibility: 'hidden',
     opacity: 0.0,
-    transition: 'visibility 2s, opacity 2s',
+    transition: 'visibility 0.5s, opacity 0.5s',
   },
   ':hover>.wegas-component-handle': {
     visibility: 'visible',
@@ -47,8 +47,43 @@ const handleControlStyle = css({
   },
 });
 
+const handleContentStyle = css({
+  borderRadius: themeVar.borderRadius,
+  borderStyle: 'solid',
+  borderColor: 'transparent',
+  transition: 'border-color 0.5s',
+  ':hover': {
+    borderColor: themeVar.primaryLighterColor,
+    transition: 'border-color 0s',
+  },
+  '&>.wegas-component-handle-title': {
+    background: themeVar.primaryHoverColor,
+    borderTopLeftRadius: themeVar.borderRadius,
+    borderTopRightRadius: themeVar.borderRadius,
+    opacity: 0.0,
+    transition: 'visibility 0.5s, opacity 0.5s',
+  },
+  ':hover>.wegas-component-handle-title': {
+    opacity: 1,
+    transition: 'opacity 0s',
+  },
+  '&>.wegas-component-handle-content': {
+    background: themeVar.primaryHoverColor,
+    borderRadius: themeVar.borderRadius,
+    borderTopLeftRadius: themeVar.borderRadius,
+    transition: 'border-top-left-radius 0.5s, border-top-right-radius 0.5s',
+  },
+  ':hover>.wegas-component-handle-content': {
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    transition: 'border-top-left-radius 0s, border-top-right-radius 0s',
+  },
+});
+
 export const expandEditStyle = css({
-  padding: '30px',
+  borderStyle: 'solid',
+  borderWidth: '30px',
+  borderColor: themeVar.disabledColor,
 });
 
 const editItemStyle = css({
@@ -84,6 +119,23 @@ export interface PageComponentMandatoryProps extends FlexItemProps {
   path?: string[];
 }
 
+const flattenPath = (path: string[]) => {
+  const purePath = [...path];
+  let flatPath = '';
+  while (purePath.length) {
+    flatPath = '/' + purePath.pop() + flatPath;
+  }
+  return flatPath === '' ? '/' : flatPath;
+};
+
+const visitPath = (path: string[], callback: (path: string[]) => void) => {
+  const purePath = [...path];
+  do {
+    callback(purePath);
+    purePath.pop();
+  } while (purePath.length > 0);
+};
+
 function Nothing() {
   return null;
 }
@@ -107,51 +159,90 @@ export function ComponentEditorContainer({
   type,
   path,
 }: ComponentEditorContainerProps) {
-  const { editMode, showControls, onEdit, onDelete } = React.useContext(
-    pageCTX,
-  );
+  const {
+    editMode,
+    showControls,
+    handles,
+    onEdit,
+    onDelete,
+  } = React.useContext(pageCTX);
   function EditHandle({
     componentName,
     className,
     togglerProps,
   }: EditorHandleProps) {
+    const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
     const [, drag] = useComponentDrag(type, path);
+    const handleRef = React.createRef<HTMLDivElement>();
+
+    const HandleContent = React.forwardRef<HTMLDivElement>((_, ref) => {
+      return (
+        <div
+          style={{ display: 'flex', flexDirection: 'column' }}
+          ref={ref}
+          className={handleContentStyle}
+        >
+          <div
+            style={{ fontSize: '10px' }}
+            className={
+              cx(flex, flexRow, textCenter) + ' wegas-component-handle-title'
+            }
+          >
+            {(componentName ? componentName + ' : ' : '') + type}
+          </div>
+          <div
+            className={cx(flex, flexRow) + ' wegas-component-handle-content'}
+          >
+            <IconButton icon="edit" onClick={() => onEdit(path)} />
+            <IconButton icon="arrows-alt" ref={drag} />
+            <ConfirmButton
+              icon="trash"
+              onAction={success => {
+                if (success) {
+                  onDelete(path);
+                }
+              }}
+            />
+            {togglerProps && <CheckBox {...togglerProps} />}
+          </div>
+        </div>
+      );
+    });
+
+    handles[flattenPath(path)] = { jsx: <HandleContent />, dom: handleRef };
     return editMode && showControls ? (
       <div
         style={{
           position: 'absolute',
           top: '-30px',
           left: '-30px',
-          display: 'flex',
-          flexDirection: 'column',
         }}
         className={'wegas-component-handle ' + (className ? className : '')}
-      >
-        <div
-          style={{ fontSize: '10px' }}
-          className={cx(flex, flexRow, textCenter)}
-        >
-          {(componentName ? componentName + ' : ' : '') + type}
-        </div>
-        <div
-          style={{
-            borderRadius: themeVar.borderRadius,
-            background: themeVar.primaryHoverColor,
-          }}
-          className={cx(flex, flexRow)}
-        >
-          <IconButton icon="edit" onClick={() => onEdit(path)} />
-          <IconButton icon="arrows-alt" ref={drag} />
-          <ConfirmButton
-            icon="trash"
-            onAction={success => {
-              if (success) {
-                onDelete(path);
+        onMouseEnter={() => {
+          const computedHandles: JSX.Element[] = [];
+          const currentHandle = handles[flattenPath(path)];
+          if (currentHandle.dom.current) {
+            const {
+              x: cx,
+              y: cy,
+            } = currentHandle.dom.current.getBoundingClientRect();
+            computedHandles.push(currentHandle.jsx);
+            const trimmedPath = path.slice(0, -1);
+            visitPath(trimmedPath, visitedPath => {
+              const component = handles[flattenPath(visitedPath)];
+              if (component.dom.current) {
+                const { x, y } = component.dom.current.getBoundingClientRect();
+                if (x === cx && y === cy) {
+                  computedHandles.splice(0, 0, component.jsx);
+                }
               }
-            }}
-          />
-          {togglerProps && <CheckBox {...togglerProps} />}
-        </div>
+            });
+          }
+          setStackedHandles(computedHandles);
+        }}
+        onMouseLeave={() => setStackedHandles(undefined)}
+      >
+        {stackedHandles ? stackedHandles : <HandleContent ref={handleRef} />}
       </div>
     ) : null;
   }
@@ -170,7 +261,8 @@ export function ComponentEditorContainer({
           {
             [childHighlightStyle]: showBorders,
             [layoutHighlightStyle]: showBorders,
-            [expandEditStyle]: editMode && showControls && isLayout,
+            [expandEditStyle]:
+              editMode && showControls && isLayout && path.length === 0,
           },
           flexProps.className,
         )}
