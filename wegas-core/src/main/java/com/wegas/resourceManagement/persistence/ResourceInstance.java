@@ -21,6 +21,7 @@ import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyMap;
+import com.wegas.editor.View.HashListView;
 import com.wegas.editor.View.Hidden;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +91,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
     @JsonIgnore
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyMap.class,
-            view = @View(label = "Instance properties", featureLevel = ADVANCED))
+            view = @View(label = "Instance properties", featureLevel = ADVANCED, value = HashListView.class))
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *

@@ -46,20 +46,11 @@ export function WyswygScriptEditor({
                     ? expressionStatement(booleanLiteral(true))
                     : emptyStatement(),
                 ]),
-              // onChange([
-              //   ...(expressions == null ? [] : expressions),
-              //   isScriptCondition(mode)
-              //     ? expressionStatement(booleanLiteral(true))
-              //     : emptyStatement(),
-              // ]),
             ),
           },
         }}
         value={{
           statements:
-            // expressions == null
-            // ? []
-            // : expressions.map(e => ({ statement: e ? e : emptyStatement() })),
             expr == null
               ? []
               : expr.map(e => ({ statement: e ? e : emptyStatement() })),

@@ -25,11 +25,13 @@ import { TimestampView } from './Timestamp';
 import { VariableInput } from './Script/VariableInput';
 import PageSelect from './PageSelect';
 import StatementView from './Script/Expressions/ExpressionEditor';
+import HashMapView from './HashMap';
 
 export const DEFINED_VIEWS = {
   hidden,
   uneditable,
   object: ObjectView,
+  hashmap: HashMapView,
   string: StringInput,
   i18nstring: translatable(StringInput),
   number: StringInput,
@@ -55,7 +57,7 @@ export const DEFINED_VIEWS = {
 };
 setDefaultWidgets(DEFINED_VIEWS);
 
-type ViewTypes = keyof typeof DEFINED_VIEWS;
+export type ViewTypes = keyof typeof DEFINED_VIEWS;
 type PropsType<T> = T extends React.ComponentType<infer U>
   ? U
   : T extends (p: infer P) => unknown

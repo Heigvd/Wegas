@@ -403,6 +403,8 @@ export const schemaProps = {
   }),
 };
 
+export type SchemaPropsValues = keyof typeof schemaProps;
+
 export type SchemaPropsSchemas = ReturnType<
-  typeof schemaProps[keyof typeof schemaProps]
+  typeof schemaProps[SchemaPropsValues]
 >;

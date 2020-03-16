@@ -21,6 +21,7 @@ import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyMap;
 import com.wegas.editor.ValueGenerators.True;
 import com.wegas.editor.View.ArrayView;
+import com.wegas.editor.View.HashListView;
 import com.wegas.editor.View.Hidden;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.ArrayList;
@@ -93,7 +94,7 @@ public class TaskInstance extends VariableInstance implements Propertable {
     @JsonIgnore
     @WegasEntityProperty(
         optional = false, nullable = false, proposal = EmptyMap.class,
-        view = @View(label = "Instance properties"))
+        view = @View(label = "Instance properties", value = HashListView.class))
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
