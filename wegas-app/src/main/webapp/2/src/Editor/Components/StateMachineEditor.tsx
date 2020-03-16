@@ -528,6 +528,7 @@ export function ConnectedStateMachineEditor({
       ? getInstance(stateMachine.current)
       : undefined;
     if (
+      !entityIs(stateMachine.current, 'TriggerDescriptor', true) &&
       entityIs(stateMachine.current, 'AbstractStateMachineDescriptor', true) &&
       entityIs(instance, 'FSMInstance', true)
     ) {
