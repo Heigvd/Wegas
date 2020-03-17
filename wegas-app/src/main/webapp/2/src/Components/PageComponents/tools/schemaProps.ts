@@ -352,7 +352,7 @@ export const schemaProps = {
     index: number = 0,
     layout?: SchemaLayout,
     highlight: boolean = true,
-    sortable: boolean = false,
+    sortable: boolean = true,
     borderTop?: boolean,
   ): TypedProps<IArrayProps> => ({
     required,

@@ -25,13 +25,13 @@ import { TimestampView } from './Timestamp';
 import { VariableInput } from './Script/VariableInput';
 import PageSelect from './PageSelect';
 import StatementView from './Script/Expressions/ExpressionEditor';
-import HashMapView from './HashMap';
+import HashListView from './HashList';
 
 export const DEFINED_VIEWS = {
   hidden,
   uneditable,
   object: ObjectView,
-  hashmap: HashMapView,
+  hashlist: HashListView,
   string: StringInput,
   i18nstring: translatable(StringInput),
   number: StringInput,

@@ -42,25 +42,32 @@ const handleStyle = css({
   display: 'inline-grid',
 });
 
-function Adder(props: WidgetProps.ArrayProps & IArrayProps & { id: string }) {
-  const { userOnChildAdd } = props.view;
-  if (Array.isArray(props.view.choices)) {
+interface AdderProps {
+  onChildAdd: (value?: {} | undefined) => void;
+  choices?: {
+    label: React.ReactNode;
+    value: string;
+  }[];
+  id?: string;
+  tooltip?: string;
+}
+
+function Adder({ onChildAdd, choices, id, tooltip }: AdderProps) {
+  if (Array.isArray(choices)) {
     return (
       <Menu
-        items={props.view.choices}
+        items={choices}
         icon="plus-circle"
-        onSelect={({ value }) =>
-          userOnChildAdd ? userOnChildAdd(value) : props.onChildAdd(value)
-        }
+        onSelect={({ value }) => onChildAdd(value)}
       />
     );
   }
   return (
     <IconButton
-      id={props.id}
+      id={id}
       icon="plus-circle"
-      onClick={() => (userOnChildAdd ? userOnChildAdd() : props.onChildAdd())}
-      tooltip={props.view.tooltip}
+      onClick={() => onChildAdd()}
+      tooltip={tooltip}
     />
   );
 }
@@ -210,49 +217,134 @@ export interface IArrayProps
   value?: {}[];
 }
 
-function ArrayWidget(props: IArrayProps) {
-  const valueLength = Array.isArray(props.value) ? props.value.length : 0;
-  const { maxItems = Infinity, minItems = 0 } = props.schema;
-  const disabled = props.view.disabled;
-  const readOnly = props.view.readOnly;
+interface DropArrayProps {
+  array?: {}[];
+  onMove?: (array?: {}[]) => void;
+  onChildRemove?: (index: number) => void;
+  onChildAdd?: (value?: {}) => void;
+  choices?: { label: React.ReactNode; value: string }[];
+  tooltip?: string;
+  label?: React.ReactNode;
+  maxItems?: number;
+  minItems?: number;
+  inputId?: string;
+  disabled?: boolean;
+  readOnly?: boolean;
+  unsortable?: boolean;
+}
+
+export function DragDropArray({
+  array,
+  onMove,
+  onChildRemove,
+  onChildAdd,
+  choices,
+  tooltip,
+  label,
+  maxItems = Infinity,
+  minItems = 0,
+  inputId,
+  disabled,
+  readOnly,
+  children,
+  unsortable,
+}: React.PropsWithChildren<DropArrayProps>) {
+  const valueLength = Array.isArray(array) ? array.length : 0;
   return (
-    <CommonViewContainer errorMessage={props.errorMessage} view={props.view}>
-      <Labeled label={props.view.label} description={props.view.description}>
-        {({ inputId, labelNode }) => {
-          return (
-            <>
-              {labelNode}
-              {maxItems > valueLength && !disabled && !readOnly && (
-                <Adder id={inputId} {...props} />
-              )}
-              {React.Children.map(props.children, (c, i) => (
-                <>
-                  <ArrayDropzone
-                    onDrop={index => {
-                      props.onChange(array_move(props.value, index, i));
-                    }}
-                  />
-                  <ArrayItem
-                    index={i}
-                    onChildRemove={
-                      minItems < valueLength && !disabled && !readOnly
-                        ? props.onChildRemove
-                        : undefined
-                    }
-                    unmovable={valueLength < 2 && !disabled && !readOnly}
-                  >
-                    {c}
-                  </ArrayItem>
-                </>
-              ))}
-              <ArrayDropzone
-                onDrop={index => {
-                  props.onChange(array_move(props.value, index, valueLength));
-                }}
-              />
-            </>
-          );
-        }}
+    <>
+      {label}
+      {!unsortable &&
+        maxItems > valueLength &&
+        !disabled &&
+        !readOnly &&
+        onChildAdd && (
+          <Adder
+            id={inputId}
+            onChildAdd={onChildAdd}
+            choices={choices}
+            tooltip={tooltip}
+          />
+        )}
+      {React.Children.map(children, (c, i) => (
+        <>
+          {onMove && !unsortable && (
+            <ArrayDropzone
+              onDrop={index => {
+                onMove(array_move(array, index, i));
+              }}
+            />
+          )}
+          <ArrayItem
+            index={i}
+            onChildRemove={
+              minItems < valueLength && !disabled && !readOnly
+                ? onChildRemove
+                : undefined
+            }
+            unmovable={
+              !onMove ||
+              unsortable ||
+              (valueLength < 2 && !disabled && !readOnly)
+            }
+          >
+            {c}
+          </ArrayItem>
+        </>
+      ))}
+      {onMove && !unsortable && (
+        <ArrayDropzone
+          onDrop={index => {
+            onMove(array_move(array, index, valueLength));
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+function ArrayWidget({
+  errorMessage,
+  view,
+  onChange,
+  onChildAdd,
+  onChildRemove,
+  value,
+  children,
+  schema,
+}: IArrayProps) {
+  const {
+    label,
+    description,
+    choices,
+    disabled,
+    readOnly,
+    tooltip,
+    userOnChildAdd,
+    sortable,
+  } = view;
+  const { maxItems, minItems } = schema;
+  return (
+    <CommonViewContainer errorMessage={errorMessage} view={view}>
+      <Labeled label={label} description={description}>
+        {({ inputId, labelNode }) => (
+          <DragDropArray
+            onMove={onChange}
+            onChildAdd={userOnChildAdd ? userOnChildAdd : onChildAdd}
+            onChildRemove={onChildRemove}
+            array={value}
+            choices={choices}
+            disabled={disabled}
+            readOnly={readOnly}
+            inputId={inputId}
+            label={labelNode}
+            maxItems={maxItems}
+            minItems={minItems}
+            tooltip={tooltip}
+            unsortable={!sortable}
+          >
+            {children}
+          </DragDropArray>
+        )}
       </Labeled>
     </CommonViewContainer>
   );
