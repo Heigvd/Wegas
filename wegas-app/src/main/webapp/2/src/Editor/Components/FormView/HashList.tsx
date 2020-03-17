@@ -7,7 +7,6 @@ import { useDeepChanges } from '../../../Components/Hooks/useDeepChanges';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { LabeledView, Labeled } from './labeled';
 import { DragDropArray } from './Array';
-import { wlog } from '../../../Helper/wegaslog';
 
 interface ImprovedObjectValue {
   value: string;
@@ -85,10 +84,6 @@ function HashListView({
 
   const onChange = React.useCallback(
     (value?: ImprovedValues) => {
-      // wlog('CHANGES');
-      // wlog(value);
-      // debugger;
-      // onChangeOutside(value);
       onChangeOutside(extractValues(value || {}));
     },
     [onChangeOutside],
@@ -96,13 +91,8 @@ function HashListView({
 
   const [currentValue, setValue] = React.useState<ImprovedValues>({});
   useDeepChanges(value, nv => {
-    // wlog('NEW');
-    // wlog(value);
-    // debugger;
-    // setValue(nv);
     setValue(normalizeValues(nv || {}));
   });
-  // useDeepChanges(currentValue, onChange);
 
   return (
     <CommonViewContainer errorMessage={errorMessage} view={view}>
