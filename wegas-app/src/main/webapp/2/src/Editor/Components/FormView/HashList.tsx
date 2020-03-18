@@ -77,10 +77,12 @@ function HashListView({
   view,
   onChange: onChangeOutside,
   value,
+  schema,
 }: WidgetProps.ObjectProps<
   CommonView & LabeledView & { disabled?: boolean; tooltip?: string }
 >) {
   const { label, readOnly, disabled, description, tooltip } = view;
+  const { patternProperties } = schema;
 
   const onChange = React.useCallback(
     (value?: ImprovedValues) => {

@@ -6,11 +6,14 @@ import {
   autoScroll,
   flexDistribute,
   flexColumn,
-} from '../css/classes';
+} from '../../css/classes';
 import { cx, css } from 'emotion';
-import { Toggler } from '../Components/Inputs/Boolean/Toggler';
-import { CheckBox, CheckBoxProps } from '../Components/Inputs/Boolean/CheckBox';
-import { Button } from '../Components/Inputs/Buttons/Button';
+import { Toggler } from '../../Components/Inputs/Boolean/Toggler';
+import {
+  CheckBox,
+  CheckBoxProps,
+} from '../../Components/Inputs/Boolean/CheckBox';
+import { Button } from '../../Components/Inputs/Buttons/Button';
 
 function BoleanPack({
   label,

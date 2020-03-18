@@ -53,9 +53,15 @@ export interface SimpleInputProps extends InputProps<string | number> {
    */
   placeholder?: string;
   /**
-   * autoComplete - enables the browser autocompletion
+   * autoComplete - controls the browser autocompletion
    */
   autoComplete?: boolean;
+  /**
+   * onFocus - event that fires when te input is focused
+   */
+  onFocus?: (
+    event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => void;
 }
 
 export function SimpleInput({
@@ -68,6 +74,7 @@ export function SimpleInput({
   autoComplete,
   id,
   className,
+  onFocus,
 }: SimpleInputProps) {
   const [currentValue, setCurrentValue] = React.useState(value);
 
@@ -109,6 +116,7 @@ export function SimpleInput({
         disabled={disabled}
         readOnly={readOnly}
         autoComplete={autoComplete ? 'on' : 'off'}
+        onFocus={onFocus}
       />
     );
   }
@@ -124,6 +132,7 @@ export function SimpleInput({
       disabled={disabled}
       readOnly={readOnly}
       autoComplete={autoComplete ? 'on' : 'off'}
+      onFocus={onFocus}
     />
   );
 }

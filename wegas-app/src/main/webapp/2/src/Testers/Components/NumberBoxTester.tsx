@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NumberBox } from '../Components/Inputs/Number/NumberBox';
+import { NumberBox } from '../../Components/Inputs/Number/NumberBox';
 import { css } from 'emotion';
 
 export default function NumberBoxTester({

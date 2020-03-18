@@ -13,12 +13,14 @@ interface Item<T> {
   children?: T[];
 }
 export interface MenuProps<T extends Item<T>> {
+  id?: string;
   onSelect: (item: T, keyEvent: ModifierKeysEvent) => void;
   onOpen?: () => void;
   items: readonly T[];
   label?: React.ReactNode;
   icon?: IconName;
   direction?: 'left' | 'down' | 'right' | 'top';
+  containerClassName?: string;
   buttonClassName?: string;
   listClassName?: string;
 }
@@ -40,6 +42,7 @@ const container = css({
   position: 'relative',
 });
 const subMenuContainer = css({
+  color: themeVar.primaryColor,
   position: 'absolute',
   display: 'inline-block',
   padding: '5px',
@@ -47,7 +50,7 @@ const subMenuContainer = css({
   whiteSpace: 'nowrap',
   margin: '2px',
   backgroundColor: 'rgba(255,255,255,0.95)',
-  boxShadow: '0px 0px 4px 1px black',
+  boxShadow: `0px 0px 4px 1px ${themeVar.primaryColor}`,
   [`& .${container}`]: {
     width: '100%',
   },
@@ -63,12 +66,14 @@ function stopPropagation(ev: React.MouseEvent<HTMLElement>) {
 }
 
 export function Menu<T extends Item<T>>({
+  id,
   onOpen,
   onSelect,
   direction,
   label,
   items,
   icon,
+  containerClassName,
   buttonClassName,
   listClassName,
 }: MenuProps<T>) {
@@ -92,10 +97,11 @@ export function Menu<T extends Item<T>>({
       itemToString={emtpyStr}
     >
       {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
-        <div className={container}>
+        <div id={id} className={cx(container, containerClassName)}>
           <div className={itemStyle} onClick={() => toggleMenu()}>
-            {label}
             <IconButton
+              label={label}
+              prefixedLabel
               icon={withDefault(icon, `caret-${realDirection}` as IconName)}
               onClick={ev => {
                 ev.stopPropagation();

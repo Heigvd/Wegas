@@ -30,6 +30,7 @@ export interface IAsyncSelectProps extends WidgetProps.BaseProps {
   view: {
     choices: (() => Promise<Choices>) | Choices;
     undefined?: boolean;
+    openChoices?: boolean;
   } & CommonView &
     LabeledView;
 }

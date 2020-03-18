@@ -213,6 +213,7 @@ export const schemaProps = {
     required: boolean = true,
     values: readonly (string | SelectItem)[] = [],
     returnType: TYPESTRING | TYPESTRING[] = 'string',
+    openChoices: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
@@ -244,6 +245,7 @@ export const schemaProps = {
         type: 'select',
         layout,
         undefined: !required,
+        openChoices,
       },
     };
   },
@@ -399,6 +401,31 @@ export const schemaProps = {
       type: 'statement',
       layout,
       mode,
+    },
+  }),
+  hashlist: (
+    label?: string,
+    required: boolean = true,
+    value: object = {},
+    featureLevel: FeatureLevel = 'DEFAULT',
+    index: number = 0,
+    layout?: SchemaLayout,
+    borderTop?: boolean,
+  ): TypedProps<StatementViewProps> => ({
+    additionalProperties: {
+      required: false,
+      type: 'string',
+    },
+    required,
+    type: 'object',
+    value,
+    view: {
+      featureLevel,
+      index,
+      label,
+      type: 'hashlist',
+      layout,
+      borderTop,
     },
   }),
 };

@@ -13,7 +13,7 @@ interface LabeledProps extends LabeledView {
     labelNode: JSX.Element;
   }) => React.ReactNode;
 }
-const titleStyle = css({
+export const titleStyle = css({
   display: 'flex',
   '[title]': {
     display: 'inline-block',

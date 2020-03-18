@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   NumberSlider,
   NumberSliderProps,
-} from '../Components/Inputs/Number/NumberSlider';
+} from '../../Components/Inputs/Number/NumberSlider';
 import { testerSectionStyle } from './NumberInputTester';
 
 export default function NumberSliderTester({

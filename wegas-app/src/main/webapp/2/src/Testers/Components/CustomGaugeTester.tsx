@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { CustomGauge } from '../Components/Outputs/CustomGauge';
-import { expandBoth, flex, grow, flexRow, autoScroll } from '../css/classes';
+import { CustomGauge } from '../../Components/Outputs/CustomGauge';
+import { expandBoth, flex, grow, flexRow, autoScroll } from '../../css/classes';
 import { cx } from 'emotion';
-import { NumberSlider } from '../Components/Inputs/Number/NumberSlider';
-import { degreeToRadian } from '../Components/Outputs/PieChart';
-import { Toggler } from '../Components/Inputs/Boolean/Toggler';
+import { NumberSlider } from '../../Components/Inputs/Number/NumberSlider';
+import { degreeToRadian } from '../../Components/Outputs/PieChart';
+import { Toggler } from '../../Components/Inputs/Boolean/Toggler';
 
 export default function CustomGaugeTester() {
   const [values, setValues] = React.useState({

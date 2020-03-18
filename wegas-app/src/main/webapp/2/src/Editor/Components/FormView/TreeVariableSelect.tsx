@@ -18,6 +18,8 @@ import {
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 import { scriptEditStyle } from './Script/Script';
 import { inputStyle } from '../../../Components/Inputs/inputStyles';
+import StringInput from './String';
+import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 
 const treeCss = css({
   padding: '5px 10px',
@@ -183,6 +185,22 @@ export class TreeVSelect<T> extends React.Component<
                 readOnly={this.props.view.readOnly}
                 autoComplete="off"
               />
+              {/* <SimpleInput
+                id={inputId}
+                value={
+                  this.state.searching
+                    ? this.state.search || ''
+                    : labelForValue(allItems, this.props.value)
+                }
+                onChange={v =>
+                  this.setState({
+                    search: String(v),
+                  })
+                }
+                onFocus={this.inputFocus}
+                readOnly={this.props.view.readOnly}
+              /> */}
+
               {this.state.searching && (
                 <div className={treeCss}>
                   <SearchableItems

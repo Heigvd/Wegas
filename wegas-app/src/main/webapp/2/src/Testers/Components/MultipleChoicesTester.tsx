@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css } from 'emotion';
-import { MultipleChoice } from '../Components/Inputs/Choices/MultipleChoice';
+import { MultipleChoice } from '../../Components/Inputs/Choices/MultipleChoice';
 
 export const testerSectionStyle = css({
   borderStyle: 'solid',
