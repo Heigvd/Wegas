@@ -7,12 +7,10 @@ import { Value } from '../Components/Outputs/Value';
 import { MessageString } from '../Editor/Components/MessageString';
 import { schemaProps } from '../Components/PageComponents/tools/schemaProps';
 import { createScript } from '../Helper/wegasEntites';
+import { themeVar } from '../Components/Theme';
 
 //It's really important to import index.ts in order to have the widjets allready registered before using Form
 import '../Editor/Components/FormView';
-import { themeVar } from '../Components/Theme';
-
-// const dummyIMport = DEFINED_VIEWS;
 
 interface SchemaPropsTesterState {
   hidden: string[];
@@ -23,6 +21,7 @@ interface SchemaPropsTesterState {
   code: object;
   select: string;
   undefSelect?: string;
+  openSelect: string;
 }
 
 const testSchema = {
@@ -37,7 +36,12 @@ const testSchema = {
     'Option 2',
     'Option 3',
   ]),
-  undefSelect: schemaProps.select('Undefined Select', false, [
+  undefSelect: schemaProps.select('Undefined select', false, [
+    'Option 1',
+    'Option 2',
+    'Option 3',
+  ]),
+  openSelect: schemaProps.select('Open select', true, [
     'Option 1',
     'Option 2',
     'Option 3',
@@ -54,6 +58,7 @@ export default function SchemaPropsTester() {
     code: {},
     select: 'Option 1',
     undefSelect: undefined,
+    openSelect: '',
   });
   const [errors, setErrors] = React.useState<ValidationError[]>([]);
 
