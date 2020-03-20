@@ -331,7 +331,6 @@ YUI.add("wegas-i18n", function(Y) {
                                 langs.push({
                                     code: trLang,
                                     lang: "Ghost-" + trLang
-
                                 });
                             }
                         }

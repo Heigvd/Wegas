@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.wegas.core.AlphanumericComparator;
 import com.wegas.core.Helper;
 import com.wegas.core.api.VariableDescriptorFacadeI;
@@ -14,8 +15,16 @@ import com.wegas.core.tools.FindAndReplaceVisitor;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.jcr.content.AbstractContentDescriptor;
+import com.wegas.core.jcr.content.ContentConnector;
+import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
+import com.wegas.core.jcr.content.DescriptorFactory;
+import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.merge.utils.MergeHelper;
+import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.InstanceOwner;
+import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
@@ -53,18 +62,25 @@ import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.jcr.RepositoryException;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -106,7 +122,13 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     private TeamFacade teamFacade;
 
     @Inject
-    private ModelFacade mergeFacade;
+    private GameFacade gameFacade;
+
+    @Inject
+    private JCRConnectorProvider jcrConnectorProvider;
+
+    @Inject
+    private JCRFacade jcrFacade;
 
     private QuestionDescriptorFacade questionDescriptorFacade;
 
@@ -167,7 +189,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      *
      * @return the new descriptor
      */
-    public VariableDescriptor createChild(final GameModel gameModel, final DescriptorListI<VariableDescriptor> list,
+    public VariableDescriptor createChild(final GameModel gameModel,
+        final DescriptorListI<VariableDescriptor> list,
         final VariableDescriptor entity, boolean resetNames) {
 
         List<String> usedNames = this.findDistinctNames(gameModel, entity.getRefId());
@@ -493,31 +516,12 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         return this.resetVisibility(this.find(vdId), visibility);
     }
 
-    private AbstractScope getNewScopeFromClassName(String scopeType) {
-        AbstractScope scope;
-
-        switch (scopeType) {
-            case "TeamScope":
-                scope = new TeamScope();
-                scope.setBroadcastScope(scopeType);
-                break;
-            case "PlayerScope":
-                scope = new PlayerScope();
-                scope.setBroadcastScope(scopeType);
-                break;
-            case "GameModelScope":
-            default:
-                scope = new GameModelScope();
-                scope.setBroadcastScope("GameScope");
-                break;
-        }
-
-        return scope;
-    }
-
-    private VariableDescriptor changeScopeRecursively(VariableDescriptor vd, String newScopeType) {
+    private VariableDescriptor changeScopeRecursively(VariableDescriptor vd,
+        AbstractScope.ScopeType newScopeType) {
         if (!vd.getScope().getClass().getSimpleName().equals(newScopeType)) {
-            this.updateScope(vd, getNewScopeFromClassName(newScopeType));
+            this.updateScope(vd,
+                AbstractScope.build(newScopeType,
+                    newScopeType));
         }
 
         if (vd instanceof DescriptorListI) {
@@ -528,7 +532,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         return vd;
     }
 
-    public VariableDescriptor changeScopeRecursively(Long vdId, String newScopeType) {
+    public VariableDescriptor changeScopeRecursively(Long vdId,
+        AbstractScope.ScopeType newScopeType) {
         return this.changeScopeRecursively(this.find(vdId), newScopeType);
     }
 
@@ -551,7 +556,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                 staticText.setEditorTag(vd.getEditorTag());
                 String vdName = vd.getName();
                 staticText.setScope(new GameModelScope());
-                staticText.getScope().setBroadcastScope("GameScope");
+                staticText.getScope().setBroadcastScope(AbstractScope.ScopeType.GameModelScope);
 
                 DescriptorListI parent = vd.getParent();
                 GameModel gameModel = vd.getGameModel();
@@ -588,7 +593,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                     text.setEditorTag(vd.getEditorTag());
                     String vdName = vd.getName();
                     text.setScope(new TeamScope());
-                    text.getScope().setBroadcastScope("TeamScope");
+                    text.getScope().setBroadcastScope(AbstractScope.ScopeType.TeamScope);
 
                     text.getDefaultInstance().setTrValue(value);
 
@@ -982,6 +987,231 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         this.getEntityManager().persist(vd);
         vd = this.find(vd.getId());
         gameModelFacade.resetAndReviveScopeInstances(vd);
+    }
+
+    public VariableDescriptor cherryPick(Long targetId, String variableName, Long sourceId,
+        AbstractScope.ScopeType newScopeType) {
+        return this.cherryPick(gameModelFacade.find(targetId),
+            variableName, gameModelFacade.find(sourceId), newScopeType);
+    }
+
+    /**
+     * Cherry Pick a variable from the source gameModel and import it within the target gameModel.
+     * Such an import is recursive and all referenced files are
+     * {@link JCRFacade#importFile(com.wegas.core.jcr.content.AbstractContentDescriptor, com.wegas.core.jcr.content.ContentConnector)  imported}
+     * too.
+     * <p>
+     * Such imported files may be renamed to avoid overriding files.
+     *
+     *
+     * @param target       the gameModel in which to import the variable
+     * @param variableName name (scriptAlias) of the variable to import
+     * @param source       the gameModel in which to pick the variable
+     * @param newScopeType optional
+     *
+     * @return
+     */
+    public VariableDescriptor cherryPick(GameModel target, String variableName, GameModel source,
+        AbstractScope.ScopeType newScopeType) {
+
+        VariableDescriptor toImport;
+        try {
+            toImport = this.find(source, variableName);
+            VariableDescriptor theVar;
+            try {
+                theVar = this.find(target, variableName);
+
+                if (!theVar.getRefId().equals(toImport.getRefId())) {
+                    throw WegasErrorMessage.error("Variable " + variableName + " already exists");
+                }
+            } catch (WegasNoResultException ex) {
+                theVar = null;
+            }
+
+            if (theVar != null) {
+                // update ???
+                if (newScopeType != null) {
+                    this.changeScopeRecursively(theVar, newScopeType);
+                }
+                throw WegasErrorMessage.error("Patch not yet implemented");
+            } else {
+                try {
+                    theVar = (VariableDescriptor) toImport.duplicate();
+
+                    if (newScopeType != null) {
+                        // desc not yet persisted : do not care about instance when changing the scope
+                        MergeHelper.visitMergeable(theVar, Boolean.TRUE,
+                            new MergeHelper.MergeableVisitor() {
+
+                            @Override
+                            public boolean visit(Mergeable target, ProtectionLevel protectionLevel,
+                                int level, WegasFieldProperties field, Deque<Mergeable> ancestors,
+                                Mergeable... references) {
+                                if (target instanceof VariableDescriptor) {
+                                    VariableDescriptor vd = (VariableDescriptor) target;
+
+                                    if (vd.getScopeType() != newScopeType) {
+                                        vd.setScopeType(newScopeType);
+                                        vd.setBroadcastScope(newScopeType);
+                                    }
+                                    return vd instanceof DescriptorListI;
+                                }
+                                return true;
+                            }
+                        });
+                    }
+
+                    theVar = this.createChild(target, target,
+                        theVar, false);
+
+                    ContentConnector srcRepo = jcrConnectorProvider.getContentConnector(source,
+                        WorkspaceType.FILES);
+                    ContentConnector targetRepo = jcrConnectorProvider.getContentConnector(target,
+                        WorkspaceType.FILES);
+
+                    Set<String> filePaths = gameModelFacade.findAllRefToFiles(source, toImport);
+                    for (String path : filePaths) {
+                        AbstractContentDescriptor sourceFile = DescriptorFactory.getDescriptor(
+                            path, srcRepo);
+
+                        if (sourceFile.exist()) {
+                            AbstractContentDescriptor newItem = jcrFacade.importFile(sourceFile, targetRepo);
+                            if (!newItem.getFullPath().equals(path)) {
+                                // file collision: new item does has been moved to a new path
+
+                                FindAndReplacePayload payload = new FindAndReplacePayload();
+                                payload.setRegex(false);
+                                payload.setFind(path);
+                                payload.setReplace(newItem.getFullPath());
+                                payload.setPretend(false);
+                                payload.setLangsFromGameModel(source);
+
+                                FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);
+                                MergeHelper.visitMergeable(theVar, true, replacer);
+                            }
+                        } else {
+                            throw WegasErrorMessage.error("Source file \""
+                                + sourceFile.getFullPath()
+                                + "\" does not exist");
+                        }
+                    }
+
+                } catch (CloneNotSupportedException ex) {
+                    throw WegasErrorMessage.error("Error while duplicating variable");
+                } catch (RepositoryException ex) {
+                    throw WegasErrorMessage.error("Error while duplicating files");
+                } catch (IOException ex) {
+                    throw WegasErrorMessage.error("Error while duplicating file");
+                }
+            }
+
+            return theVar;
+
+        } catch (WegasNoResultException ex) {
+            throw WegasErrorMessage.error("Variable " + variableName + " not found");
+        }
+    }
+
+    /**
+     * Look into all gameModels accessible to the current player and retrieve the list of all
+     * variable of the given type
+     *
+     * @param variableType  type of variable to look for
+     * @param writePermOnly should restrict the search to editable gameModel (ie. trainer's own
+     *                      games and gameModel with edit permission)
+     *
+     * @return
+     */
+    public Collection<VariableIndex> fetchCherryPickable(Class<? extends VariableDescriptor> variableType, boolean writePermOnly) {
+        List<GameModel.GmType> types = new ArrayList<>();
+        types.add(GameModel.GmType.MODEL);
+        types.add(GameModel.GmType.SCENARIO);
+        types.add(GameModel.GmType.PLAY);
+
+        List<GameModel.Status> statuses = new ArrayList<>();
+        statuses.add(GameModel.Status.LIVE);
+        statuses.add(GameModel.Status.BIN);
+
+        // first step : fetch all gameModel id the current user can read
+        Map<Long, List<String>> matrix = gameModelFacade.getPermissionMatrix(types, statuses);
+
+        Set<Long> gmIds = new HashSet<>();
+
+        if (writePermOnly) {
+            for (Entry<Long, List<String>> entry : matrix.entrySet()) {
+                if (entry.getValue().contains("Edit") || entry.getValue().contains("*")) {
+                    gmIds.add(entry.getKey());
+                }
+            }
+        } else {
+            gmIds.addAll(matrix.keySet());
+        }
+
+        List<Game.Status> gStatuses = new ArrayList<>();
+        gStatuses.add(Game.Status.LIVE);
+        gStatuses.add(Game.Status.BIN);
+
+        Map<Long, List<String>> gMatrix = gameFacade.getPermissionMatrix(gStatuses);
+
+        TypedQuery<Long> gToGmQuery = getEntityManager().createNamedQuery(
+            "GameModel.findIdsByGameId", Long.class);
+
+        gToGmQuery.setParameter("gameIds", gMatrix.keySet());
+
+        gmIds.addAll(gToGmQuery.getResultList());
+
+        List<Class<? extends VariableDescriptor>> vdTypes = new ArrayList<>();
+
+        vdTypes.add(variableType);
+
+        TypedQuery<VariableDescriptor> query = getEntityManager().createNamedQuery(
+            "VariableDescriptor.findCherryPickables", VariableDescriptor.class);
+
+        query.setParameter("gameModelIds", gmIds);
+        query.setParameter("types", vdTypes);
+
+        /*
+         * group flat variable list by gameModel (one might want to use a JPQL "groupBy gameModel"
+         * Unfortunalty, JPQL does not provide a array_agg function to aggregate variables...
+         */
+        List<VariableDescriptor> resultList = query.getResultList();
+
+        Map<GameModel, VariableIndex> results = new HashMap<>();
+        for (VariableDescriptor vd : resultList) {
+            if (!results.containsKey(vd.getGameModel())) {
+                results.putIfAbsent(vd.getGameModel(), new VariableIndex(vd.getGameModel()));
+            }
+
+            VariableIndex index = results.get(vd.getGameModel());
+            index.getVariables().add(vd);
+        }
+
+        return results.values();
+    }
+
+    public static class VariableIndex {
+
+        private final GameModel gameModel;
+        private final Game game;
+        private final List<VariableDescriptor> variables;
+
+        public VariableIndex(GameModel gameModel) {
+            this.gameModel = gameModel;
+            this.game = this.gameModel.getGames().get(0);
+            this.variables = new ArrayList<>();
+        }
+
+        public GameModel getGameModel() {
+            return gameModel;
+        }
+
+        public Game getGame() {
+            return game;
+        }
+
+        public List<VariableDescriptor> getVariables() {
+            return variables;
+        }
     }
 
     /**

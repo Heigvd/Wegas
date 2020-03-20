@@ -26,6 +26,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.*;
+import com.wegas.core.persistence.variable.scope.AbstractScope.ScopeType;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
@@ -259,16 +260,15 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @JsonIgnore
     public InstanceOwner getBroadcastTarget() {
         if (this.getTeam() != null) {
-            if (this.getTeamScope().getBroadcastScope().equals("GameScope")) {
+            if (this.getTeamScope().getBroadcastScope() == ScopeType.GameModelScope) {
                 return this.getTeam().getGame();
             } else {
                 return this.getTeam();
             }
         } else if (this.getPlayer() != null) {
-            if (this.getPlayerScope().getBroadcastScope().equals("TeamScope")) {
-
+            if (this.getPlayerScope().getBroadcastScope() == ScopeType.TeamScope) {
                 return this.getPlayer().getTeam();
-            } else if (this.getPlayerScope().getBroadcastScope().equals("GameScope")) {
+            } else if (this.getPlayerScope().getBroadcastScope() == ScopeType.GameModelScope) {
                 return this.getPlayer().getGame();
             } else {
                 return this.getPlayer();
@@ -558,15 +558,15 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     public Collection<WegasPermission> getRequieredReadPermission() {
         WegasPermission perm = null;
         if (this.getTeam() != null) {
-            if (this.getTeamScope().getBroadcastScope().equals("GameScope")) {
+            if (this.getTeamScope().getBroadcastScope() == ScopeType.GameModelScope) {
                 perm = this.getTeam().getGame().getAssociatedReadPermission();
             } else {
                 perm = this.getTeam().getAssociatedWritePermission();
             }
         } else if (this.getPlayer() != null) {
-            if (this.getPlayerScope().getBroadcastScope().equals("TeamScope")) {
+            if (this.getPlayerScope().getBroadcastScope() == ScopeType.TeamScope) {
                 perm = this.getPlayer().getTeam().getAssociatedWritePermission();
-            } else if (this.getPlayerScope().getBroadcastScope().equals("GameScope")) {
+            } else if (this.getPlayerScope().getBroadcastScope() == ScopeType.GameModelScope) {
                 perm = this.getPlayer().getGame().getAssociatedReadPermission();
             } else {
                 perm = this.getPlayer().getAssociatedWritePermission();

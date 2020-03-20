@@ -276,7 +276,7 @@ public class UpdateController {
             AbstractScope oldScope = vd.getScope();
 
             GameModelScope scope = new GameModelScope();
-            scope.setBroadcastScope("GameScope");
+            scope.setBroadcastScope(AbstractScope.ScopeType.GameModelScope);
             scope.setVariableDescscriptor(vd);
             vd.setScope(scope);
             em.persist(vd);
@@ -375,7 +375,7 @@ public class UpdateController {
             String parentName = vd.getParentList().getName();
 
             GameModelScope scope = new GameModelScope();
-            scope.setBroadcastScope("GameScope");
+            scope.setBroadcastScope(AbstractScope.ScopeType.GameModelScope);
             vd.setScope(scope);
             String json = vd.toJson(Views.Export.class);
             logger.error("JSON for {}/{} variable: ", parentName, name, json);
