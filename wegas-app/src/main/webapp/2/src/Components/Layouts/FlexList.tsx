@@ -23,6 +23,32 @@ type FlexBasis = typeof flexBasisValues[number] | string;
 
 export interface FlexItemProps {
   /**
+   * layout : the layout CSS properties
+   */
+  layout?: {
+    /**
+     * order - the order of the current item
+     */
+    order?: number;
+    /**
+     * alignSelf - justifies the items perpendicularly to the flex direction
+     */
+    alignSelf?: AlignSelf;
+    /**
+     * flexGrow - size factor of the item in the list
+     */
+    flexGrow?: number;
+    /**
+     * flexShrink - size factor of the item in the list
+     * Important : initial value is 1
+     */
+    flexShrink?: number;
+    /**
+     * flexBasis - the initial size of the item, can be set like any css size value (%,px,em,...) or with the string "content"
+     */
+    flexBasis?: FlexBasis;
+  };
+  /**
    * order - the order of the current item
    */
   order?: number;
@@ -54,6 +80,13 @@ export interface FlexItemProps {
 }
 
 export const flexItemDefaultProps: FlexItemProps = {
+  layout: {
+    order: 0,
+    alignSelf: alignSelfValues[0],
+    flexGrow: 0,
+    flexShrink: 1,
+    flexBasis: flexBasisValues[0],
+  },
   order: 0,
   alignSelf: alignSelfValues[0],
   flexGrow: 0,
@@ -66,19 +99,18 @@ export const flexItemDefaultProps: FlexItemProps = {
 export const flexItemDefaultKeys = Object.keys(flexItemDefaultProps);
 
 export function FlexItem({
-  alignSelf,
-  flexGrow,
-  flexShrink,
-  flexBasis,
+  layout,
   className,
   children,
   style,
 }: React.PropsWithChildren<FlexItemProps>) {
+  const { order, alignSelf, flexGrow, flexShrink, flexBasis } = layout || {};
   return (
     <div
       className={className}
       style={{
         position: 'relative',
+        order,
         alignSelf,
         flexGrow,
         flexShrink,
@@ -92,13 +124,15 @@ export function FlexItem({
 }
 
 export const flexItemSchema = {
-  alignSelf: schemaProps.select('Align self', false, alignSelfValues, 'string'),
-  flexGrow: schemaProps.number('Flex grow', false),
-  flexShrink: schemaProps.number('Flex shrink', false),
-  flexBasis: schemaProps.string('Flex basis', false),
+  layout: schemaProps.hashlist('Layout properties', false, {
+    order: schemaProps.number('Order', false),
+    alignSelf: schemaProps.select('Align self', false, alignSelfValues),
+    flexGrow: schemaProps.number('Flex grow', false),
+    flexShrink: schemaProps.number('Flex shrink', false),
+    flexBasis: schemaProps.string('Flex basis', false),
+  }),
   className: schemaProps.string('Classes', false),
   style: schemaProps.code('Style', false, 'JSON', undefined, 'ADVANCED'),
-  // style: schemaProps.hidden(false, 'object'),
   children: schemaProps.hidden(false, 'array'),
 };
 
@@ -128,25 +162,30 @@ type AlignContent = typeof alignContentValues[number];
 
 export interface FlexListProps {
   /**
-   * flexDirection - the flex direction
+   * layout : the layout CSS properties
    */
-  flexDirection?: FlexDirection;
-  /**
-   * flexWrap - the wrap policy
-   */
-  flexWrap?: FlexWrap;
-  /**
-   * justifyContent - justifies the content of the list
-   */
-  justifyContent?: JustifyContent;
-  /**
-   * alignItems - justifies the items perpendicularly to the flex direction
-   */
-  alignItems?: AlignItems;
-  /**
-   * alignContent - if the list display items on multiple rows, justifies the items perpendicularly in the same way than justifyContent
-   */
-  alignContent?: AlignContent;
+  listLayout?: {
+    /**
+     * flexDirection - the flex direction
+     */
+    flexDirection?: FlexDirection;
+    /**
+     * flexWrap - the wrap policy
+     */
+    flexWrap?: FlexWrap;
+    /**
+     * justifyContent - justifies the content of the list
+     */
+    justifyContent?: JustifyContent;
+    /**
+     * alignItems - justifies the items perpendicularly to the flex direction
+     */
+    alignItems?: AlignItems;
+    /**
+     * alignContent - if the list display items on multiple rows, justifies the items perpendicularly in the same way than justifyContent
+     */
+    alignContent?: AlignContent;
+  };
   /**
    * className - the class to apply to the list
    */
@@ -164,15 +203,13 @@ export interface FlexListProps {
  * Flex list.
  */
 export function FlexList({
-  flexDirection,
-  flexWrap,
-  justifyContent,
-  alignItems,
-  alignContent,
+  listLayout,
   className,
   style,
   children,
 }: React.PropsWithChildren<FlexListProps>) {
+  const { flexDirection, flexWrap, justifyContent, alignItems, alignContent } =
+    listLayout || {};
   return (
     <div
       className={className}

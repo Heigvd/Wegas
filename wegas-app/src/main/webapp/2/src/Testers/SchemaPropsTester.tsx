@@ -21,7 +21,8 @@ interface SchemaPropsTesterState {
   code: object;
   select: string;
   undefSelect?: string;
-  openSelect: string;
+  simpleHashList: {};
+  customizedHashList: {};
 }
 
 const testSchema = {
@@ -41,11 +42,11 @@ const testSchema = {
     'Option 2',
     'Option 3',
   ]),
-  openSelect: schemaProps.select('Open select', true, [
-    'Option 1',
-    'Option 2',
-    'Option 3',
-  ]),
+  simpleHashList: schemaProps.hashlist('Simple hashlist', true),
+  customizedHashList: schemaProps.hashlist('Customized hashlist', true, {
+    Attribute1: schemaProps.select('Attribute1', true, ['1', '2', '3']),
+    Attribute2: schemaProps.select('Attribute2', true, ['A', 'B', 'C']),
+  }),
 };
 
 export default function SchemaPropsTester() {
@@ -58,7 +59,8 @@ export default function SchemaPropsTester() {
     code: {},
     select: 'Option 1',
     undefSelect: undefined,
-    openSelect: '',
+    simpleHashList: {},
+    customizedHashList: {},
   });
   const [errors, setErrors] = React.useState<ValidationError[]>([]);
 

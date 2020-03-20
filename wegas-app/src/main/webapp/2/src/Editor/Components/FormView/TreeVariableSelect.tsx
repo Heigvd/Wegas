@@ -17,9 +17,8 @@ import {
 } from '../../../Helper/wegasEntites';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 import { scriptEditStyle } from './Script/Script';
-import { inputStyle } from '../../../Components/Inputs/inputStyles';
-import StringInput from './String';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
+import { Searcher } from '../SearchTool';
 
 const treeCss = css({
   padding: '5px 10px',
@@ -121,8 +120,6 @@ export interface TreeVSelectProps<T>
   value?: T;
 }
 
-export type TreeVariableSelectProps = TreeVSelectProps<string>;
-
 export class TreeVSelect<T> extends React.Component<
   TreeVSelectProps<T> & { items: Item<T>[] },
   { search: string; searching: boolean }
@@ -158,6 +155,26 @@ export class TreeVSelect<T> extends React.Component<
       >
         <Labeled {...this.props.view}>
           {({ labelNode, inputId }) => (
+            // (
+            //   <>
+            //     {labelNode}
+            //     <Searcher
+            //       id={inputId}
+            //       items={allItems}
+            //       value={labelForValue(allItems, this.props.value)}
+            //       readOnly={this.props.view.readOnly}
+            //       listClassName={treeCss}
+            //       render={({ items, selected, onSelect }) => (
+            //         <TreeSelect
+            //           selected={selected}
+            //           items={items}
+            //           onSelect={onSelect}
+            //         />
+            //       )}
+            //       onChange={this.props.onChange}
+            //     />
+            //   </>
+            // )
             <div
               onBlur={ev => {
                 const me = ev.currentTarget;
@@ -171,21 +188,7 @@ export class TreeVSelect<T> extends React.Component<
               }}
             >
               {labelNode}
-              <input
-                type="text"
-                className={inputStyle}
-                id={inputId}
-                value={
-                  this.state.searching
-                    ? this.state.search || ''
-                    : labelForValue(allItems, this.props.value)
-                }
-                onChange={this.handleSearch}
-                onFocus={this.inputFocus}
-                readOnly={this.props.view.readOnly}
-                autoComplete="off"
-              />
-              {/* <SimpleInput
+              <SimpleInput
                 id={inputId}
                 value={
                   this.state.searching
@@ -199,8 +202,7 @@ export class TreeVSelect<T> extends React.Component<
                 }
                 onFocus={this.inputFocus}
                 readOnly={this.props.view.readOnly}
-              /> */}
-
+              />
               {this.state.searching && (
                 <div className={treeCss}>
                   <SearchableItems
@@ -226,6 +228,8 @@ export class TreeVSelect<T> extends React.Component<
     );
   }
 }
+
+export type TreeVariableSelectProps = TreeVSelectProps<string>;
 
 export function TreeVariableSelect(
   props: TreeVariableSelectProps,

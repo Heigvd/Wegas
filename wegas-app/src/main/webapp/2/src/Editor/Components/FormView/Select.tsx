@@ -78,6 +78,98 @@ const undefinedTitle: Choice = {
   disabled: false,
 };
 
+interface SelectorProps {
+  choices: Choices;
+  id?: string;
+  value: string;
+  onChange?: (
+    event: React.ChangeEvent<{
+      value: string;
+    }>,
+  ) => void;
+  readOnly?: boolean;
+}
+
+// function OpenSelector({
+//   choices,
+//   id,
+//   value,
+//   onChange,
+//   readOnly,
+// }: SelectorProps) {
+//   const SelectorState;
+
+//   return (
+//     <div
+//       onBlur={ev => {
+//         const me = ev.currentTarget;
+//         requestAnimationFrame(() => {
+//           if (!me.contains(document.activeElement)) {
+//             this.setState({
+//               searching: false,
+//             });
+//           }
+//         });
+//       }}
+//     >
+//       {labelNode}
+//       <SimpleInput
+//         id={inputId}
+//         value={
+//           this.state.searching
+//             ? this.state.search || ''
+//             : labelForValue(allItems, this.props.value)
+//         }
+//         onChange={v =>
+//           this.setState({
+//             search: String(v),
+//           })
+//         }
+//         onFocus={this.inputFocus}
+//         readOnly={this.props.view.readOnly}
+//       />
+//       {this.state.searching && (
+//         <div className={treeCss}>
+//           <SearchableItems
+//             match={(item, s) => {
+//               return item.label.toLowerCase().includes(s.toLowerCase());
+//             }}
+//             search={this.state.search}
+//             items={allItems}
+//             render={({ items }) => (
+//               <TreeSelect
+//                 selected={this.props.value}
+//                 items={items}
+//                 onSelect={this.handleOnSelect}
+//               />
+//             )}
+//           />
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
+function Selector({ choices, id, value, onChange, readOnly }: SelectorProps) {
+  return choices.length > 1 ? (
+    <select
+      id={id}
+      className={selectStyle}
+      value={value}
+      onChange={onChange}
+      disabled={readOnly}
+    >
+      {choices.map(genItems)}
+    </select>
+  ) : (
+    <span className={selectStyle}>
+      {'string' === typeof choices[0]
+        ? choices[0]
+        : (choices[0] as Choice).label}
+    </span>
+  );
+}
+
 function SelectView(props: ISelectProps) {
   const onChange = function onChange(
     event: React.ChangeEvent<{ value: string }>,
@@ -119,23 +211,13 @@ function SelectView(props: ISelectProps) {
         {({ inputId, labelNode }) => (
           <div className={cx(flex, flexColumn)}>
             {labelNode}
-            {choices.length > 1 ? (
-              <select
-                id={inputId}
-                className={selectStyle}
-                value={value}
-                onChange={onChange}
-                disabled={props.view.readOnly}
-              >
-                {choices.map(genItems)}
-              </select>
-            ) : (
-              <span className={selectStyle}>
-                {'string' === typeof choices[0]
-                  ? choices[0]
-                  : (choices[0] as Choice).label}
-              </span>
-            )}
+            <Selector
+              id={inputId}
+              value={value}
+              choices={choices}
+              onChange={onChange}
+              readOnly={props.view.readOnly}
+            />
           </div>
         )}
       </Labeled>

@@ -13,13 +13,23 @@ interface ImprovedObjectValue {
   index: number;
 }
 
+export type HashListViewProps = WidgetProps.ObjectProps<
+  CommonView & LabeledView & { disabled?: boolean; tooltip?: string }
+>;
+
 interface EntryViewProps<T> {
   prop: string;
   value: T;
   onChange: (key: string, value: T) => void;
+  patternProperties: HashListViewProps['schema']['patternProperties'];
 }
 
-export function EntryView<T>({ prop, value, onChange }: EntryViewProps<T>) {
+export function EntryView<T>({
+  prop,
+  value,
+  onChange,
+  patternProperties,
+}: EntryViewProps<T>) {
   return (
     <Form
       schema={{
@@ -32,15 +42,26 @@ export function EntryView<T>({ prop, value, onChange }: EntryViewProps<T>) {
             'DEFAULT',
             undefined,
             'shortInline',
+            false,
+            patternProperties != null,
           ),
-          value: schemaProps.string(
-            'Value',
-            true,
-            typeof value === 'string' ? value : JSON.stringify(value),
-            'DEFAULT',
-            undefined,
-            'shortInline',
-          ),
+          value:
+            patternProperties && patternProperties[prop]
+              ? {
+                  ...patternProperties[prop],
+                  view: {
+                    ...patternProperties[prop].view,
+                    layout: 'shortInline',
+                  },
+                }
+              : schemaProps.string(
+                  'Value',
+                  true,
+                  typeof value === 'string' ? value : JSON.stringify(value),
+                  'DEFAULT',
+                  undefined,
+                  'shortInline',
+                ),
         },
       }}
       value={{ prop, value }}
@@ -78,9 +99,7 @@ function HashListView({
   onChange: onChangeOutside,
   value,
   schema,
-}: WidgetProps.ObjectProps<
-  CommonView & LabeledView & { disabled?: boolean; tooltip?: string }
->) {
+}: HashListViewProps) {
   const { label, readOnly, disabled, description, tooltip } = view;
   const { patternProperties } = schema;
 
@@ -96,16 +115,26 @@ function HashListView({
     setValue(normalizeValues(nv || {}));
   });
 
+  const choices = patternProperties
+    ? Object.keys(patternProperties)
+        .filter(k => !Object.keys(currentValue).includes(k))
+        .map(k => ({
+          label: k,
+          value: k,
+        }))
+    : undefined;
+
   return (
     <CommonViewContainer errorMessage={errorMessage} view={view}>
       <Labeled label={label} description={description}>
         {({ inputId, labelNode }) => (
           <DragDropArray
-            onChildAdd={() => {
+            choices={choices}
+            onChildAdd={choice => {
               const index = Object.keys(currentValue).length;
               onChange({
                 ...currentValue,
-                [`key${index}`]: { index, value: '' },
+                [choice ? String(choice) : `key${index}`]: { index, value: '' },
               });
             }}
             onChildRemove={i => {
@@ -145,6 +174,7 @@ function HashListView({
                       setValue(newValue);
                       onChange(newValue);
                     }}
+                    patternProperties={patternProperties}
                   />
                 ))}
           </DragDropArray>

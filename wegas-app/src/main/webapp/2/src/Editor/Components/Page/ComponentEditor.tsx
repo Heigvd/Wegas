@@ -78,7 +78,7 @@ export default function ComponentEditor({
     if (isFlexItem) {
       const firstPropView: SchemaPropsSchemas & {
         view?: SchemaPropsSchemas['view'] & { borderTop?: boolean };
-      } = flexItemSchema.alignSelf;
+      } = flexItemSchema.layout;
       if (firstPropView.view) {
         firstPropView.view['borderTop'] = true;
       }

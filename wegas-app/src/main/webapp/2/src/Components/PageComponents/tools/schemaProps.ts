@@ -21,6 +21,10 @@ import {
 import { IArrayProps } from '../../../Editor/Components/FormView/Array';
 import { StatementViewProps } from '../../../Editor/Components/FormView/Script/Expressions/ExpressionEditor';
 import { createScript } from '../../../Helper/wegasEntites';
+import {
+  HashListViewProps,
+  PatternProps,
+} from '../../../Editor/Components/FormView/HashList';
 
 // type SchemaPrimitive =
 //   | 'boolean'
@@ -115,6 +119,7 @@ export const schemaProps = {
     index: number = 0,
     layout?: SchemaLayout,
     borderTop?: boolean,
+    readOnly?: boolean,
   ): TypedProps<StringInputProps> => ({
     required,
     type: 'string',
@@ -127,6 +132,7 @@ export const schemaProps = {
       featureLevel,
       label,
       type: 'string',
+      readOnly,
     },
   }),
   custom: <T extends keyof typeof DEFINED_VIEWS>(
@@ -212,6 +218,7 @@ export const schemaProps = {
     label?: string,
     required: boolean = true,
     values: readonly (string | SelectItem)[] = [],
+    value?: {} | string,
     returnType: TYPESTRING | TYPESTRING[] = 'string',
     openChoices: boolean = false,
     featureLevel: FeatureLevel = 'DEFAULT',
@@ -236,6 +243,7 @@ export const schemaProps = {
       required,
       type: returnType,
       index,
+      value,
       view: {
         borderTop,
         index,
@@ -406,12 +414,13 @@ export const schemaProps = {
   hashlist: (
     label?: string,
     required: boolean = true,
+    patternProperties?: PatternProps,
     value: object = {},
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
     borderTop?: boolean,
-  ): TypedProps<StatementViewProps> => ({
+  ) => ({
     additionalProperties: {
       required: false,
       type: 'string',
@@ -419,6 +428,7 @@ export const schemaProps = {
     required,
     type: 'object',
     value,
+    patternProperties,
     view: {
       featureLevel,
       index,

@@ -21,6 +21,7 @@ import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { MessageString } from '../MessageString';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { css } from 'emotion';
+import { flex } from '../../../css/classes';
 
 const innerButtonStyle = css({
   margin: '2px auto 2px auto',
@@ -54,7 +55,9 @@ export const pageCTX = React.createContext<PageContext>({
 const defaultPage = {
   type: 'FlexList',
   props: {
-    flexDirection: 'column',
+    listLayout: {
+      flexDirection: 'column',
+    },
     children: [],
     style: {
       width: '100%',
@@ -143,7 +146,10 @@ export default function PageEditor() {
               ...s,
               pages: pages,
               selectedPage:
-                s.selectedPage !== '0' ? s.selectedPage : Object.keys(pages)[0],
+                s.selectedPage !== '0' ||
+                !Object.keys(pages).includes(s.selectedPage)
+                  ? s.selectedPage
+                  : Object.keys(pages)[0],
             }));
           }
         });
@@ -401,7 +407,7 @@ export default function PageEditor() {
             items={Object.keys(pagesState.pages).map((k: string) => {
               return {
                 label: (
-                  <span>
+                  <div className={flex}>
                     {computePageLabel(k, pagesState.pages[k]['@name'])}
                     <ConfirmButton
                       icon="trash"
@@ -413,7 +419,7 @@ export default function PageEditor() {
                         }
                       }}
                     />
-                  </span>
+                  </div>
                 ),
                 id: k,
               };

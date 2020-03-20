@@ -82,31 +82,25 @@ registerComponent(
     'bars',
     {
       name: schemaProps.string('Name', false),
-      flexDirection: schemaProps.select(
-        'Direction',
-        false,
-        flexDirectionValues,
-        'string',
-      ),
-      flexWrap: schemaProps.select('Wrap', false, flexWrapValues, 'string'),
-      justifyContent: schemaProps.select(
-        'Justify content',
-        false,
-        justifyContentValues,
-        'string',
-      ),
-      alignItems: schemaProps.select(
-        'Align items',
-        false,
-        alignItemsValues,
-        'string',
-      ),
-      alignContent: schemaProps.select(
-        'Align content',
-        false,
-        alignContentValues,
-        'string',
-      ),
+      listLayout: schemaProps.hashlist('List layout properties', false, {
+        flexDirection: schemaProps.select(
+          'Direction',
+          false,
+          flexDirectionValues,
+        ),
+        flexWrap: schemaProps.select('Wrap', false, flexWrapValues, 'string'),
+        justifyContent: schemaProps.select(
+          'Justify content',
+          false,
+          justifyContentValues,
+        ),
+        alignItems: schemaProps.select('Align items', false, alignItemsValues),
+        alignContent: schemaProps.select(
+          'Align content',
+          false,
+          alignContentValues,
+        ),
+      }),
     },
     ['ISListDescriptor'],
     (val?: Readonly<ISListDescriptor>) =>

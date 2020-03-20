@@ -14,8 +14,8 @@ export function PageDeserializer({
   uneditable,
 }: PageDeserializerProps): JSX.Element {
   const realPath = path ? path : [];
-  const { children = [], ...restProps } = json.props || {};
-  const component = usePageComponentStore(s => s[json.type]);
+  const { children = [], ...restProps } = (json && json.props) || {};
+  const component = usePageComponentStore(s => s[(json && json.type) || '']);
 
   return component ? (
     <ErrorBoundary>
@@ -34,6 +34,8 @@ export function PageDeserializer({
         }) as JSX.Element
       }
     </ErrorBoundary>
+  ) : json == null ? (
+    <div>Unknown page</div>
   ) : (
     <div>{`Unknown component : ${json.type}`}</div>
   );
