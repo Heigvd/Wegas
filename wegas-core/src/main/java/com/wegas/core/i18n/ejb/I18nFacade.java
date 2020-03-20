@@ -653,29 +653,37 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
         String code = update.getCode();
         String newValue = update.getValue();
 
-        if (null == mode) {
-            // MINOR change, do not change the status
-            content.updateTranslation(code, newValue);
+        GameModel gameModel = content.getParentGameModel();
+        GameModelLanguage gmLang = gameModel.getLanguageByCode(code);
+        
+        if (gmLang == null && Helper.isNullOrEmpty(newValue)) {
+            // empty translation + ghost Language => remove
+            content.removeTranslation(code);
         } else {
-            switch (mode) {
-                case MAJOR:
-                    // make all tr as outdated
-                    for (Translation t : content.getRawTranslations()) {
-                        t.setStatus("outdated::" + code);
-                    }   // but this one is not
-                    content.updateTranslation(code, newValue, "");
-                    break;
-                case CATCH_UP:
-                    // clear the status as the new translation is up to date
-                    content.updateTranslation(code, newValue, "");
-                    break;
-                case OUTDATE:
-                    content.updateTranslation(code, newValue, "outdated::manual");
-                    break;
-                default:
-                    // MINOR change, do not change the status
-                    content.updateTranslation(code, newValue);
-                    break;
+            if (null == mode) {
+                // MINOR change, do not change the status
+                content.updateTranslation(code, newValue);
+            } else {
+                switch (mode) {
+                    case MAJOR:
+                        // make all tr as outdated
+                        for (Translation t : content.getRawTranslations()) {
+                            t.setStatus("outdated::" + code);
+                        }   // but this one is not
+                        content.updateTranslation(code, newValue, "");
+                        break;
+                    case CATCH_UP:
+                        // clear the status as the new translation is up to date
+                        content.updateTranslation(code, newValue, "");
+                        break;
+                    case OUTDATE:
+                        content.updateTranslation(code, newValue, "outdated::manual");
+                        break;
+                    default:
+                        // MINOR change, do not change the status
+                        content.updateTranslation(code, newValue);
+                        break;
+                }
             }
         }
         return content;

@@ -40,6 +40,11 @@ public class PlayerScope extends AbstractScope<Player> {
         return this.getVariableInstanceFacade().getPlayerInstance(this, player);
     }
 
+    @Override
+    public ScopeType getScopeType() {
+        return ScopeType.PlayerScope;
+    }
+
     /**
      *
      * @param v

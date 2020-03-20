@@ -143,6 +143,14 @@ import org.slf4j.LoggerFactory;
     query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
 )
 @NamedQuery(
+    name = "VariableDescriptor.findCherryPickablesIndex",
+    query = "SELECT vd.gameModel.id, vd.gameModel.name, vd.id, vd.name, vd.label FROM VariableDescriptor vd where vd.gameModel.id in :gameModelIds AND TYPE(vd) IN :types"
+)
+@NamedQuery(
+    name = "VariableDescriptor.findCherryPickables",
+    query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id in :gameModelIds AND TYPE(vd) IN :types"
+)
+@NamedQuery(
     name = "VariableDescriptor.findByGameModelIdAndName",
     query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
     hints = {
@@ -347,7 +355,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
             index = -400
         ))
     @Errored(CheckScope.class)
-    private String scopeType;
+    private AbstractScope.ScopeType scopeType;
 
     @Transient
     @WegasEntityProperty(
@@ -360,7 +368,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
             index = -390
         ))
     @Errored(CheckScope.class)
-    private String broadcastScope;
+    private AbstractScope.ScopeType broadcastScope;
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
@@ -745,28 +753,28 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     @JsonIgnore
-    public String getDeserialisedScopeType() {
+    public AbstractScope.ScopeType getDeserialisedScopeType() {
         return this.scopeType;
     }
 
-    public String getScopeType() {
+    public AbstractScope.ScopeType getScopeType() {
         if (this.scope != null) {
-            return this.scope.getJSONClassName();
+            return this.scope.getScopeType();
         } else {
             return scopeType;
         }
     }
 
-    public void setScopeType(String scopeType) {
+    public void setScopeType(AbstractScope.ScopeType scopeType) {
         this.scopeType = scopeType;
     }
 
     @JsonIgnore
-    public String getDeserialisedBroadcastScopeType() {
+    public AbstractScope.ScopeType getDeserialisedBroadcastScopeType() {
         return this.broadcastScope;
     }
 
-    public String getBroadcastScope() {
+    public AbstractScope.ScopeType getBroadcastScope() {
         if (this.scope != null) {
             return this.scope.getBroadcastScope();
         } else {
@@ -774,7 +782,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         }
     }
 
-    public void setBroadcastScope(String broadcastScope) {
+    public void setBroadcastScope(AbstractScope.ScopeType broadcastScope) {
         this.broadcastScope = broadcastScope;
     }
 

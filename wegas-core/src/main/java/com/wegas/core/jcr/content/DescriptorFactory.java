@@ -87,11 +87,9 @@ public class DescriptorFactory {
      * @throws RepositoryException
      */
     public static AbstractContentDescriptor getDescriptor(String absolutePath, ContentConnector contentConnector) throws RepositoryException {
-        AbstractContentDescriptor abstractContentDescriptor = new AbstractContentDescriptor(absolutePath, contentConnector) {
-        };
         Node node;
         try {
-            node = contentConnector.getNode(abstractContentDescriptor.fileSystemAbsolutePath);
+            node = contentConnector.getNode(absolutePath);
         } catch (PathNotFoundException ex) {
             return new DirectoryDescriptor(absolutePath, contentConnector);     //return a directory (inexistant)
         }

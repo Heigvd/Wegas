@@ -114,6 +114,15 @@ public interface Mergeable extends IMergeable {
     }
 
     @JsonIgnore
+    default Visibility getCLosestVisibility() {
+        if (this instanceof ModelScoped){
+                return ((ModelScoped) this).getVisibility();
+        } else {
+            return this.getInheritedVisibility();
+        }
+    }
+
+    @JsonIgnore
     <T extends Mergeable> T getMergeableParent();
 
     @JsonIgnore

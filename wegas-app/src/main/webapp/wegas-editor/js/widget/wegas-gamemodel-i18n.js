@@ -1259,7 +1259,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                 isGhost = typeof languages[l] === "string";
 
                                 langCode = isGhost ? languages[l] : languages[l].get("code");
-                                if (isGhost && !I18n.t(tr.value, {lang: langCode, caseSensitiveCode: true}) || "") {
+                                if (isGhost && !I18n.t(tr.value, {lang: langCode, caseSensitiveCode: true})) {
                                     continue;
                                 }
 
@@ -1838,7 +1838,11 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         },
         success: function(cfg, response) {
             Y.log("SUCCESS");
-            this.contents[cfg.key] = response.response.entity.get("translations")[cfg.code].translation;
+            var tr = response.response.entity.get("translations")[cfg.code];
+
+            // when deleting a ghost, tr no longer exists
+            this.contents[cfg.key] = tr ? tr.translation : ''
+
             //var newStatus = response.response.entity.get("translations")[cfg.code].status;
 
             cfg.node.removeClass("unsaved");
