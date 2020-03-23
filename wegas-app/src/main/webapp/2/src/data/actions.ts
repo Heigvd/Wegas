@@ -1,7 +1,6 @@
 import { normalizeDatas, NormalizedData, discriminant } from './normalize';
 import { IManagedResponse } from '../API/rest';
 import * as ActionType from './actionTypes';
-import { PageIndex } from '../API/pages.api';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../Editor/Components/FormView';
 import { StoreDispatch } from './store';
@@ -85,7 +84,8 @@ export const ActionCreator = {
   PAGE_EDIT_MODE: (data: boolean) =>
     createAction(ActionType.PAGE_EDIT_MODE, data),
   PAGE_LOAD_ID: (data?: string) => createAction(ActionType.PAGE_LOAD_ID, data),
-  PAGE_INDEX: (data: PageIndex) => createAction(ActionType.PAGE_INDEX, data),
+  PAGE_INDEX: (data: { index: PageIndex }) =>
+    createAction(ActionType.PAGE_INDEX, data),
   PAGE_SRC_MODE: (data: boolean) =>
     createAction(ActionType.PAGE_SRC_MODE, data),
   PAGE_EDIT: (data: { page: string; path: string[] }) =>

@@ -10,6 +10,7 @@ import { scriptEditStyle } from './Script/Script';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 import { omit } from 'lodash-es';
+import { returnPages, computePageLabel } from '../Page/PageEditor';
 
 export interface PageSelectProps extends WidgetProps.BaseProps {
   view: CommonView & LabeledView;
@@ -18,24 +19,17 @@ export interface PageSelectProps extends WidgetProps.BaseProps {
 }
 
 export default function PageSelect(props: PageSelectProps) {
-  const [pages, setPages] = React.useState<Pages>({});
+  const [pages, setPages] = React.useState<PagesWithName>({});
   const [pageValue, setPageValue] = React.useState('');
   const [srcMode, setSrcMode] = React.useState(false);
 
   React.useEffect(() => {
     const gameModelId = GameModel.selectCurrent().id!;
-    PageAPI.getIndex(gameModelId).then(res => {
-      let pages: Pages = {};
-      res.forEach((index, _i, indexes) => {
-        PageAPI.get(gameModelId, index.id, true).then(res => {
-          pages = { ...pages, ...res };
-          if (Object.keys(pages).length === indexes.length) {
-            setPages(pages);
-          }
-        });
-      });
+    PageAPI.getAll(gameModelId).then(pages => {
+      const index = pages['index'];
+      setPages(() => returnPages(pages, index.root));
     });
-  }, []);
+  });
 
   React.useEffect(() => {
     if (props.value === undefined) {
@@ -92,24 +86,13 @@ export default function PageSelect(props: PageSelectProps) {
           value={pageValue}
           view={{
             ...props.view,
-            choices: Object.keys(pages)
-              .filter(k => pages[k] !== undefined)
-              .map(k => ({ label: pages[k]['@name'] || String(k), value: k })),
+            choices: Object.entries(pages).map(([k, p]) => ({
+              label: computePageLabel(k, p.name),
+              value: k,
+            })),
           }}
         />
       )}
     </>
   );
-
-  // return (
-  //   <Select
-  //     {...props}
-  //     view={{
-  //       ...props.view,
-  //       choices: Object.keys(pages)
-  //         .filter(k => pages[k] !== undefined)
-  //         .map(k => ({ label: pages[k]['@name'] || String(k), value: k })),
-  //     }}
-  //   />
-  // );
 }

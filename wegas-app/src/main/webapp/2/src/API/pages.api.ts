@@ -11,7 +11,6 @@ async function extractPage(res: Response): Promise<Pages> {
   return j;
 }
 
-
 export const PageAPI = {
   /**
    * get default page
@@ -21,24 +20,25 @@ export const PageAPI = {
     return rest(PAGE_BASE(gameModelId) + 'Page/default').then(extractPage);
   },
   /**
-   * fetch a page or all
+   * fetch a page
    * @param gameModelId gameModelId to fetch pages from
-   * @param pageId optional pageId, will return all page if omited
+   * @param pageId optional pageId
    */
-  get(
-    gameModelId: number,
-    pageId: string = '',
-    extract: boolean = false,
-  ): Promise<Pages> {
+  get(gameModelId: number, pageId: string): Promise<Pages> {
     return rest(PAGE_BASE(gameModelId) + 'Page/' + pageId).then(res => {
-      if (extract) {
-        return extractPage(res);
-      } else {
-        return res.json();
-      }
+      return extractPage(res);
     });
   },
-
+  /**
+   * fetch a page
+   * @param gameModelId gameModelId to fetch pages from
+   * @param pageId optional pageId
+   */
+  getAll(gameModelId: number): Promise<AllPages> {
+    return rest(PAGE_BASE(gameModelId)).then(res => {
+      return res.json();
+    });
+  },
   /**
    * Get page index
    * @param gameModelId
@@ -46,7 +46,7 @@ export const PageAPI = {
   getIndex(gameModelId: number): Promise<PageIndex> {
     return rest(PAGE_BASE(gameModelId) + 'Index').then(res => res.json());
   },
-/**
+  /**
    * update an item of the index
    * @param gameModelId
    * @param path of the item to update ([folder.name | page.id])
@@ -61,8 +61,8 @@ export const PageAPI = {
     return rest(PAGE_BASE(gameModelId) + 'UpdateIndex', {
       method: 'PUT',
       body: JSON.stringify({
-          path: itemPath,
-          item: item,
+        path: itemPath,
+        item: item,
       }),
     }).then(res => res.json());
   },
@@ -80,13 +80,13 @@ export const PageAPI = {
     itemPath: string[],
     folderPath: string[],
     pos?: number,
-  ) : Promise<PageIndex> {
+  ): Promise<PageIndex> {
     return rest(PAGE_BASE(gameModelId) + 'Move', {
       method: 'PUT',
       body: JSON.stringify({
-          from: itemPath,
-          to: folderPath,
-          pos: pos,
+        from: itemPath,
+        to: folderPath,
+        pos: pos,
       }),
     }).then(res => res.json());
   },
@@ -97,10 +97,7 @@ export const PageAPI = {
    * @param pageId id of the new default page
    * @returns the new PageIndex
    */
-  setDefaultPage(
-    gameModelId: number,
-    pageId: string,
-  ) : Promise<PageIndex> {
+  setDefaultPage(gameModelId: number, pageId: string): Promise<PageIndex> {
     return rest(PAGE_BASE(gameModelId) + 'SetDefault/' + pageId, {
       method: 'PUT',
     }).then(res => res.json());
@@ -123,9 +120,9 @@ export const PageAPI = {
     return rest(PAGE_BASE(gameModelId) + 'CreateIndexItem', {
       method: 'PUT',
       body: JSON.stringify({
-          path: folderPath,
-          item: newItem,
-          payload: pageContent,
+        path: folderPath,
+        item: newItem,
+        payload: pageContent,
       }),
     }).then(res => res.json());
   },

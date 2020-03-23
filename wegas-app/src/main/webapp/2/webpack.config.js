@@ -51,6 +51,8 @@ const modules = {
   },
   plugins: plugins,
   module: {
+    // https://github.com/ivan-aksamentov/reactlandia-bolerplate-lite/issues/5#issuecomment-413306341
+    exprContextCritical: false,
     rules: [
       {
         test: /\.tsx?$/,
