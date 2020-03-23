@@ -23,7 +23,7 @@ public class OutdatedEntitiesEvent extends ClientEvent {
         private Long id;
 
         public OutdatedEntity(AbstractEntity entity) {
-            this.type = entity.getClass().getSimpleName();
+            this.type = entity.getJSONClassName();
             this.id = entity.getId();
         }
 

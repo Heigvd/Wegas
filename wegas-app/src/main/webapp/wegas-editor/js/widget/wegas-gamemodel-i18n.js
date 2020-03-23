@@ -200,6 +200,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 }, {
                     node: ".wegas-i18n-manager .node .fa-search",
                     html: "<p>Click on the magnifying glass to show the location of the translation in the table of contents</p>"
+                }, {
+                    node: '.wegas-language-find-outdated',
+                    html: "<p>Click on this magnifying glass to scroll to next translation to review</p>"
                 }
 
             ], {
@@ -342,7 +345,13 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
 
             this.languages.add(new Y.Wegas.Text({
                 content: "<div class='language" + (!id ? " unsaved" : "") + (readonly ? "" : "") + "' data-language-code='" + code + "'" + "' data-language-id='" + id + "'>" +
-                    (id ? "<div><span class='language-title'>" + lang + " (" + code + ")" + "</span><span class='save-all-container'><i class='wegas-language-save-all fa fa-save'></i></span></div>" : "") +
+                    (id ? "<div><span class='language-title'>" + lang + " (" + code + ")" + "</span>"
+                        + "<span alt='find outdated' class='wegas-language-find-outdated fa-stack fa-lg'>"
+                        + "  <i class=\"fa fa-toggle-on fa-flip-horizontal fa-stack-1x\" ></i>"
+                        + "  <i class=\"fa fa-search fa-stack-2x\"></i>"
+                        + "</span>"
+                        + "<span class='save-all-container'><i class='wegas-language-save-all fa fa-save'></i></span>"
+                        + "</div>" : "") +
                     "<div class='form'>" +
                     "<div><label>Code:</label> <input size='5'" + (readonly ? " readonly" : "") + " class='language-code' value='" + code + "'></div>" +
                     "<div><label>Name:</label> <input " + (readonly ? "readonly" : "") + " class='language-name' value='" + lang + "'></div>" +
@@ -354,6 +363,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     "</div>" +
                     (id && this.isCurrentUserAdmin && !this.isLimitReached && this.supportedLanguages.indexOf(code) >= 0 ? "<div class='auto-translator'><span>Auto-Translate: <i class='wegas-language-i18n-auto fa fa-language'></i></span></div>" : "") +
                     (id && this.isCurrentUserAdmin && this.supportedLanguages.indexOf(code) < 0 ? "<div class='auto-copy'><span>Copy: <i class='wegas-language-i18n-copy fa fa-language'></i></span></div>" : "") +
+                    (id && this.isCurrentUserAdmin ? "<div class='clear-language'><span>Clear: <i class='wegas-language-i18n-clear fa fa-trash-o'></i></span></div>" : "") +
                     "</div>"
             }));
         },
@@ -369,7 +379,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
             this.handlers.langChange = this.languages.wegasDelegate("change", this.languageChange, ".language .form input", this);
             this.handlers.autoTranslate = this.languages.wegasDelegate("click", this.openAutoTranslateMenu, ".wegas-language-i18n-auto", this);
             this.handlers.autoCopy = this.languages.wegasDelegate("click", this.openAutoCopyMenu, ".wegas-language-i18n-copy", this);
+            this.handlers.clearLang = this.languages.wegasDelegate("click", this.openClearMenu, ".wegas-language-i18n-clear", this);
             this.handlers.saveAll = this.languages.wegasDelegate("click", this.saveAll, ".wegas-language-save-all", this);
+            this.handlers.saveAll = this.languages.wegasDelegate("click", this.findNextOutdated, ".wegas-language-find-outdated", this);
             this.handlers.langSave = this.languages.wegasDelegate("click", this.languageSave, ".language:not(.loading) .validate", this);
             this.handlers.langCancel = this.languages.wegasDelegate("click", this.languageCancel, ".language:not(.loading) .cancel", this);
 
@@ -425,6 +437,38 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 langNode.toggleClass("has-unsaved", unsaved);
             }
 
+        },
+        findNextOutdated: function(e) {
+            var lang = e.target.ancestor("div.language").getData()["language-code"];
+            var selector = '.wegas-translation[lang="' + lang + '"].outdated';
+
+            var outdated = this.get("contentBox").all(selector)._nodes;
+
+            if (outdated.length) {
+                var parent = this.get("contentBox").one(".wegas-i18n-manager--editor").getDOMNode();
+                var currentScroll = parent.scrollTop;
+                var windowHeight = parent.offsetHeight;
+
+                var before = [];
+                var visible = [];
+                var after = [];
+                for (var i in outdated) {
+                    if (outdated[i].offsetTop < currentScroll) {
+                        // before
+                        before.push(outdated[i]);
+                    } else if (outdated[i].offsetTop < currentScroll + windowHeight) {
+                        // visible
+                        visible.push(outdated[i]);
+                    } else {
+                        // after
+                        after.push(outdated[i]);
+                    }
+                }
+
+                var sorted = after.concat(before).concat(visible);
+
+                Y.Wegas.Helper.scrollIntoViewIfNot(sorted[0]);
+            }
         },
         saveAll: function(e) {
             var lang = e.target.ancestor("div.language").getData()["language-code"];
@@ -500,11 +544,11 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         },
 
         openAutoCopyMenu: function(e) {
-            if (!this.i18CopynMenu) {
+            if (!this.i18nCopyMenu) {
                 this.i18nCopyMenu = new Y.Wegas.Menu();
                 this.i18nCopyMenu.on("button:click", this.autoCopy, this);
             } else {
-                this.i18nCopy.destroyAll();
+                this.i18nCopyMenu.destroyAll();
             }
 
             var langData = e.target.ancestor("div.language").getData(),
@@ -567,6 +611,65 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                     });
                 }, this));
         },
+        openClearMenu: function(e) {
+            if (!this.i18nClearMenu) {
+                this.i18nClearMenu = new Y.Wegas.Menu();
+                this.i18nClearMenu.on("button:click", this.clearLang, this);
+            } else {
+                this.i18nClearMenu.destroyAll();
+            }
+
+            var langData = e.target.ancestor("div.language").getData();
+
+            var btns = [{
+                    type: "Button",
+                    label: "Clear outdated translations",
+                    data: {
+                        eraseAll: false,
+                        target: langData["language-code"]
+                    }
+                }, {
+                    type: "Button",
+                    label: "Clear all translations",
+                    data: {
+                        eraseAll: true,
+                        target: langData["language-code"]
+                    }
+                }
+            ];
+
+            this.i18nClearMenu.add(btns);
+            this.i18nClearMenu.attachTo(e.target);
+        },
+        clearLang: function(e) {
+            var data = e.target.get("data");
+            Y.Wegas.Panel.confirm("Clear " + (data.eraseAll ? "all " : "outdated ") + data.target + " translations?",
+                Y.bind(function() {
+                    this.showOverlay();
+                    Y.Wegas.Facade.GameModel.sendRequest({
+                        request: "/" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
+                            .get("id") + "/I18n/Clear/" + data.target + "/" + (data.eraseAll ? "All " : "Outdated "),
+                        cfg: {
+                            method: "PUT"
+                        },
+                        on: {
+                            success: Y.bind(function() {
+                                this.hideOverlay();
+                                Y.Wegas.Alerts.showNotification("OK", {
+                                    timeout: 500
+                                });
+                            }, this),
+                            failure: Y.bind(function() {
+                                this.hideOverlay();
+                                Y.Wegas.Alerts.showNotification("Translation service error", {
+                                    iconCss: 'fa fa-warning'
+                                });
+                            }, this)
+                        }
+                    });
+                }, this));
+        },
+
         findLanguage: function(attr, needle, langToIgnore) {
             return Y.Array.find(Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("languages"), function(item) {
                 return (!langToIgnore || item.get("id") !== langToIgnore.get("id")) && item.get(attr) === needle;
@@ -1156,7 +1259,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                 isGhost = typeof languages[l] === "string";
 
                                 langCode = isGhost ? languages[l] : languages[l].get("code");
-                                if (isGhost && !I18n.t(tr.value, {lang: langCode, caseSensitiveCode: true}) || "") {
+                                if (isGhost && !I18n.t(tr.value, {lang: langCode, caseSensitiveCode: true})) {
                                     continue;
                                 }
 
@@ -1181,7 +1284,7 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                                     markup.push(trStatus);
                                     markup.push(")");
                                 }
-                                markup.push(")</span>");
+                                markup.push("</span>");
 
                                 markup.push("</div>"); // /translation title
                                 markup.push(I18n.t(tr.value, {
@@ -1735,7 +1838,11 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
         },
         success: function(cfg, response) {
             Y.log("SUCCESS");
-            this.contents[cfg.key] = response.response.entity.get("translations")[cfg.code].translation;
+            var tr = response.response.entity.get("translations")[cfg.code];
+
+            // when deleting a ghost, tr no longer exists
+            this.contents[cfg.key] = tr ? tr.translation : ''
+
             //var newStatus = response.response.entity.get("translations")[cfg.code].status;
 
             cfg.node.removeClass("unsaved");
@@ -2334,9 +2441,9 @@ YUI.add('wegas-gamemodel-i18n', function(Y) {
                 var index = ghosts.indexOf(this.current) + 1
                 this.current = ghosts.item(index % ghosts.size());
             } else {
-                this.current =null;
+                this.current = null;
             }
-            if (this.current){
+            if (this.current) {
                 this.current.scrollIntoView();
             }
         },

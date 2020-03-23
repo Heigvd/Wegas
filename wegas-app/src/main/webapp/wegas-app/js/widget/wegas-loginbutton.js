@@ -99,7 +99,6 @@ YUI.add("wegas-loginbutton", function(Y) {
             Wegas.LoginButton.superclass.syncUI.apply(this, arguments);
 
             var cUser = Wegas.Facade.User.cache.get("currentUser"),
-                cPlayer = Wegas.Facade.Game.cache.getCurrentPlayer(),
                 cTeam = Wegas.Facade.Game.cache.getCurrentTeam(),
                 mainAccount = cUser.getMainAccount(),
                 gameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel();
@@ -111,10 +110,11 @@ YUI.add("wegas-loginbutton", function(Y) {
             if (this.get("forcedLabel")) {
                 this.set("label", this.get("forcedLabel"));
             } else {
-                if (cTeam && !(gameModel && gameModel.get("properties.freeForAll"))) {
-                    this.set("label", cTeam.get("name") + " : " + cPlayer.get("name"));
+                
+                if (cTeam && !(gameModel && gameModel.get("properties").get("val").freeForAll)) {
+                    this.set("label", cTeam.get("name") + " : " + mainAccount.get("name"));
                 } else {
-                    this.set("label", cPlayer.get("name") || "Undefined");
+                    this.set("label", mainAccount.get("name") || "Undefined");
                 }
             }
         },

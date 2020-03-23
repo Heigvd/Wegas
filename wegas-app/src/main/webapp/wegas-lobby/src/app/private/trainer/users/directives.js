@@ -76,6 +76,8 @@ angular.module('private.trainer.users.directives', [
 
         ctrl.updateSession = function() {
             SessionsModel.getSession(ctrl.kindsOfSession, $stateParams.id).then(function(response) {
+                // hack to force refresh
+                response.data.teams = null;
                 callbackSession(response);
             });
         };

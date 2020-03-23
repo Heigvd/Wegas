@@ -277,9 +277,9 @@ class StateMachineEditor extends React.Component<
   moveState = (id: number, pos: [number, number]) => {
     this.setState(
       produce((state: StateMachineEditorState) => {
-        state.stateMachine.states[id].editorPosition.x =
+        state.stateMachine.states[id].x =
           pos[0] < 0 ? 0 : pos[0];
-        state.stateMachine.states[id].editorPosition.y =
+        state.stateMachine.states[id].y =
           pos[1] < 0 ? 0 : pos[1];
       }),
     );
@@ -302,10 +302,8 @@ class StateMachineEditor extends React.Component<
             content: '',
             language: 'JavaScript',
           },
-          editorPosition: {
-            x: position.left >= 10 ? position.left : 10,
-            y: position.top >= 10 ? position.top : 10,
-          },
+          x: position.left >= 10 ? position.left : 10,
+          y: position.top >= 10 ? position.top : 10,
           label: '',
           transitions: [],
         }
@@ -317,10 +315,8 @@ class StateMachineEditor extends React.Component<
             content: '',
             language: 'JavaScript',
           },
-          editorPosition: {
-            x: position.left >= 10 ? position.left : 10,
-            y: position.top >= 10 ? position.top : 10,
-          },
+          x: position.left >= 10 ? position.left : 10,
+          y: position.top >= 10 ? position.top : 10,
           text: createTranslatableContent(lang),
           transitions: [],
         };
@@ -495,36 +491,36 @@ class StateMachineEditor extends React.Component<
       <Toolbar>
         <Toolbar.Header>{editorLabel(stateMachine)}</Toolbar.Header>
         <Toolbar.Content className={cx(flex, relative, showOverflow)}>
-          <div
-            ref={n => {
-              this.container = n;
-            }}
+      <div
+        ref={n => {
+          this.container = n;
+        }}
             className={cx(editorStyle, expand)}
-          >
-            {plumb != null &&
-              Object.keys(stateMachine.states).map(k => {
-                const key = Number(k);
-                return (
-                  <State
-                    editState={this.editState}
-                    state={stateMachine.states[key]}
-                    currentState={
-                      Number(key) === stateMachineInstance.currentStateId
-                    }
-                    id={key}
-                    initialState={
-                      stateMachine.defaultInstance.currentStateId === key
-                    }
-                    key={key}
-                    plumb={plumb}
-                    deleteState={this.deleteState}
-                    moveState={this.moveState}
-                    editTransition={this.editTransition}
-                    search={this.props.search}
-                  />
-                );
-              })}
-          </div>
+      >
+        {plumb != null &&
+          Object.keys(stateMachine.states).map(k => {
+            const key = Number(k);
+            return (
+              <State
+                editState={this.editState}
+                state={stateMachine.states[key]}
+                currentState={
+                  Number(key) === stateMachineInstance.currentStateId
+                }
+                id={key}
+                initialState={
+                  stateMachine.defaultInstance.currentStateId === key
+                }
+                key={key}
+                plumb={plumb}
+                deleteState={this.deleteState}
+                moveState={this.moveState}
+                editTransition={this.editTransition}
+                search={this.props.search}
+              />
+            );
+          })}
+      </div>
         </Toolbar.Content>
       </Toolbar>
     );
@@ -693,8 +689,8 @@ class State extends React.Component<{
         }}
         style={{
           position: 'absolute',
-          left: state.editorPosition.x,
-          top: state.editorPosition.y,
+          left: state.x,
+          top: state.y,
         }}
       >
         <Toolbar vertical>
@@ -762,18 +758,18 @@ class Transition extends React.Component<{
       ...(src === tgt ? ({ connector: ['StateMachine'] } as any) : undefined),
     });
     if (this.connection) {
-      (this.connection as any).bind(
-        'click',
-        (connection: any, e: ModifierKeysEvent) => {
-          this.props.editTransition(
-            e,
-            [this.props.parent, this.props.position],
-            connection.getParameter('transition'),
-          );
-        },
-      );
-      this.updateData();
-    }
+    (this.connection as any).bind(
+      'click',
+      (connection: any, e: ModifierKeysEvent) => {
+        this.props.editTransition(
+          e,
+          [this.props.parent, this.props.position],
+          connection.getParameter('transition'),
+        );
+      },
+    );
+    this.updateData();
+  }
   }
   componentDidUpdate() {
     this.updateData();

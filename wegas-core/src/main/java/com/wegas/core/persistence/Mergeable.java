@@ -65,7 +65,7 @@ public interface Mergeable extends IMergeable {
     default public String getJSONClassName() {
         return Mergeable.getJSONClassName(this.getClass());
     }
-
+    
     @JsonProperty("@class")
     default public void setJSONClassName(String atClass){
         // no-op
@@ -110,6 +110,15 @@ public interface Mergeable extends IMergeable {
             }
         } else {
             throw WegasErrorMessage.error("Not yet implemented (" + this.toString() + ")");
+        }
+    }
+
+    @JsonIgnore
+    default Visibility getCLosestVisibility() {
+        if (this instanceof ModelScoped){
+                return ((ModelScoped) this).getVisibility();
+        } else {
+            return this.getInheritedVisibility();
         }
     }
 

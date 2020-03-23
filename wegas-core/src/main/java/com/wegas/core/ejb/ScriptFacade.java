@@ -12,6 +12,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.api.*;
 import com.wegas.core.ejb.nashorn.JSTool;
 import com.wegas.core.ejb.nashorn.JavaObjectInvocationHandler;
+import com.wegas.core.ejb.nashorn.NHClassFilter;
 import com.wegas.core.ejb.nashorn.NHClassLoader;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.WegasErrorMessageManager;
@@ -101,7 +102,9 @@ public class ScriptFacade extends WegasAbstractFacade {
     static {
         //engine = new ScriptEngineManager().getEngineByName("JavaScript");
         NashornScriptEngineFactory factory = new NashornScriptEngineFactory();
-        engine = factory.getScriptEngine(new NHClassLoader());
+        //engine = factory.getScriptEngine(new NHClassLoader());
+
+		engine = factory.getScriptEngine(new String[0], new NHClassLoader(), new NHClassFilter());
         //engine = factory.getScriptEngine(new String[] {} , new NHClassLoader(), new NHClassFilter());
 
         CompiledScript compile = null;
@@ -653,7 +656,7 @@ public class ScriptFacade extends WegasAbstractFacade {
         return this.eval(player, scripts, arguments);
     }
 
-    public Object eval(Player p, AbstractTransition transition, VariableDescriptor context) throws WegasScriptException {
+    public Object eval_doNotUse(Player p, AbstractTransition transition, VariableDescriptor context) throws WegasScriptException {
         String name = "transition:" + transition.getId();
         CachedScript cached = getCachedScript(name, transition.getVersion().toString(), transition.getTriggerCondition().getContent());
 

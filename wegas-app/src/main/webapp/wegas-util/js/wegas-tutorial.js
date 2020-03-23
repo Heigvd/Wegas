@@ -223,7 +223,7 @@ YUI.add("wegas-tutorial", function(Y) {
                 height: Math.max(rect.top + rect.height + margin, 0)
             });
             overlay3.setStyles({
-//                width: Math.max(viewport.width - rect.left + margin, 0),
+                width: Math.max(viewport.width - rect.left + margin, 0),
                 height: Math.max(viewport.height - rect.bottom - margin, 0)
             });
             overlay4.setStyles({

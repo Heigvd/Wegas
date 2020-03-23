@@ -341,26 +341,20 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 value: [],
                 view: {type: HIDDEN}
             },
-            editorPosition: {
-                valueFn: function() {
-                    return {
-                        x: 30,
-                        y: 30
-                    };
-                },
+            x: {
+                type: "number",
                 view: {
-                    label: 'Box position',
-                    className: 'wegas-advanced-feature'
-                },
-                properties: {
-                    x: {
-                        type: "number",
-                        view: {type: "uneditable", label: "x"}
-                    },
-                    y: {
-                        type: "number",
-                        view: {type: "uneditable", label: "y"}
-                    },
+                    className: 'wegas-advanced-feature',
+                    type: "uneditable",
+                    label: "x"
+                }
+            },
+            y: {
+                type: "number",
+                view: {
+                    className: 'wegas-advanced-feature',
+                    type: "uneditable",
+                    label: "y"
                 }
             }
         }
@@ -368,7 +362,25 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     /*
      * Transition Entity
      */
-    persistence.Transition = Y.Base.create("Transition", persistence.Entity, [], {}, {
+    persistence.Transition = Y.Base.create("Transition", persistence.Entity, [], {
+        /**
+         * override Entity._getParent
+         * @returns the state the transition starts in
+         */
+        _getParent: function() {
+            if (this.get("stateMachineId") && this.get("parentId")) {
+                var fsm = Y.Wegas.Facade.Variable.cache.find("id", this.get("stateMachineId"));
+                if (fsm){
+                    var states = fsm.get("states");
+                    for (var i in states){
+                        if (states[i] && states[i].get("id") === this.get("parentId")){
+                            return states[i];
+                        }
+                    }
+                }
+            }
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "Transition",
@@ -633,7 +645,13 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 label: "Text",
                 index: -1,
                 type: HTML
-            })
+            }),
+            label: {
+                transient:true,
+                view: {
+                    type: HIDDEN
+                }
+            }
         }
     });
 
@@ -705,6 +723,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 type: HTML
             }),
             label: {
+                transient:true,
                 view: {
                     type: HIDDEN
                 }

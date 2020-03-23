@@ -32,7 +32,7 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
             ATTRS: {
                 styles: {
                     type: 'object',
-                    view: { type: 'object' },
+                    view: {type: 'object'},
                     properties: {
                         backgroundColor: {
                             type: 'string',
@@ -69,7 +69,7 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
             ATTRS: {
                 styles: {
                     type: 'object',
-                    view: { type: 'object' },
+                    view: {type: 'object'},
                     properties: {
                         position: {
                             type: 'string',
@@ -97,11 +97,11 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
                         },
                         top: {
                             type: 'string',
-                            view: { label: 'Top' }
+                            view: {label: 'Top'}
                         },
                         left: {
                             type: 'string',
-                            view: { label: 'Left' }
+                            view: {label: 'Left'}
                         },
                         bottom: {
                             type: 'string',
@@ -145,7 +145,7 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
             ATTRS: {
                 styles: {
                     type: 'object',
-                    view: { type: 'object' },
+                    view: {type: 'object'},
                     properties: {
                         color: {
                             type: 'string',
@@ -225,7 +225,7 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
             ATTRS: {
                 styles: {
                     type: 'object',
-                    view: { type: 'object' },
+                    view: {type: 'object'},
                     properties: {
                         width: {
                             type: 'string',
@@ -247,4 +247,73 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
         }
     );
     Plugin.CSSSize = CSSSize;
+
+    var CSSBackgroundImage = function() {
+        CSSBackgroundImage.superclass.constructor.apply(this, arguments);
+    };
+
+    CSSBackgroundImage = Y.extend(CSSBackgroundImage, Plugin.CSSStyles, {}, {
+        /** @lends Y.Plugin.CSSSize */
+        ATTRS: {
+            styles: {
+                type: 'object',
+                view: {type: 'object'},
+                properties: {
+                    backgroundSize: {
+                        type: "string",
+                        value: "auto",
+                        view: {
+                            label: "Size",
+                            type: "select",
+                            choices: ["auto", "contain", "cover"],
+                            layout: "shortInline"
+                        }
+                    },
+                    backgroundRepeat: {
+                        type: "string",
+                        value: "repeat",
+                        view: {
+                            label: "Repeat",
+                            type: "select",
+                            choices: ["repeat", "repeat-x", "repeat-y", 'no-repeat'],
+                            layout: "shortInline"
+                        }
+                    },
+                    backgroundImage: {
+                        type: 'string',
+                        view: {
+                            label: 'URL',
+                            type: "wegasimageurl"
+                        }
+                    },
+                    backgroundPositionX: {
+                        type: "string",
+                        value: "left",
+                        view: {
+                            label: "Position X",
+                            type: "select",
+                            choices: ["left", "center", "right"],
+                            layout: "shortInline"
+                        }
+                    },
+                    backgroundPositionY: {
+                        type: "string",
+                        value: "top",
+                        view: {
+                            label: "Position Y",
+                            type: "select",
+                            choices: ["top", "center", "bottom"],
+                            layout: "shortInline"
+                        }
+                    }
+                }
+            }
+        },
+        NS: 'CSSBackgroundImage',
+        NAME: 'CSSBackgroundImage'
+    });
+    Plugin.CSSBackgroundImage = CSSBackgroundImage;
+
+
+
 });

@@ -21,6 +21,8 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.tools.ImportTranslationsVisitor;
+import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ListInstance;
@@ -66,6 +68,7 @@ import javax.ws.rs.PathParam;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.reflect.generics.factory.CoreReflectionFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -273,7 +276,7 @@ public class UpdateController {
             AbstractScope oldScope = vd.getScope();
 
             GameModelScope scope = new GameModelScope();
-            scope.setBroadcastScope("GameScope");
+            scope.setBroadcastScope(AbstractScope.ScopeType.GameModelScope);
             scope.setVariableDescscriptor(vd);
             vd.setScope(scope);
             em.persist(vd);
@@ -372,7 +375,7 @@ public class UpdateController {
             String parentName = vd.getParentList().getName();
 
             GameModelScope scope = new GameModelScope();
-            scope.setBroadcastScope("GameScope");
+            scope.setBroadcastScope(AbstractScope.ScopeType.GameModelScope);
             vd.setScope(scope);
             String json = vd.toJson(Views.Export.class);
             logger.error("JSON for {}/{} variable: ", parentName, name, json);
@@ -1043,4 +1046,33 @@ public class UpdateController {
         return sb.toString();
     }
 
+    @GET
+    @Path("ImportLanguages/{targetGmId : ([1-9][0-9]*)}/{sourceGmId : ([1-9][0-9]*)}/{langToCopy}/{refLang}")
+    public String importLanguages(@PathParam("targetGmId") Long targetgmId,
+        @PathParam("sourceGmId") Long srcGmId,
+        @PathParam("langToCopy") String codeToCopy,
+        @PathParam("refLang") String codeRef) {
+
+        GameModel target = gameModelFacade.find(targetgmId);
+        GameModel source = gameModelFacade.find(srcGmId);
+
+        if (target != null && source != null) {
+            GameModelLanguage targetLang = target.getLanguageByCode(codeToCopy);
+            if (targetLang != null) {
+                GameModelLanguage sourceLang = source.getLanguageByCode(codeToCopy);
+                if (sourceLang != null) {
+                    MergeHelper.visitMergeable(target, Boolean.TRUE,
+                        new ImportTranslationsVisitor(codeRef, codeToCopy,
+                            i18nFacade), source);
+                    return "Done";
+                } else {
+                    return "Source does not contains the lang to copy !";
+                }
+            } else {
+                return "Please create the lang in the target !";
+            }
+        } else {
+            return "Gamemodels not found";
+        }
+    }
 }

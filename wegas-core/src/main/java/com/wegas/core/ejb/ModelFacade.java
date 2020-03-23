@@ -539,13 +539,7 @@ public class ModelFacade {
      * @return the reference or null
      */
     public GameModel getReference(GameModel model) {
-        Collection<GameModel> implementations = gameModelFacade.getImplementations(model);
-        for (GameModel gm : implementations) {
-            if (gm.isReference()) {
-                return gm;
-            }
-        }
-        return null;
+        return gameModelFacade.findReference(model);
     }
 
     /**
@@ -676,6 +670,9 @@ public class ModelFacade {
                     if (langNameToCode.get(gml.getLang()) != null) {
                         errors.add("GameModel " + gameModel + " " + gml.getLang() + " has the wrong code of "
                                 + gml.getCode() + " rather than " + langNameToCode.get(gml.getLang()) + "!");
+                    }else {
+                        gml.forceRefId(null);
+                        gml.assertRefId();
                     }
                 }
             }

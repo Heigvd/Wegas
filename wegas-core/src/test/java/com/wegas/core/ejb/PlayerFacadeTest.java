@@ -120,7 +120,7 @@ public class PlayerFacadeTest extends AbstractArquillianTest {
     private WegasUser createPlayer(Team t, int i, int j) {
         WegasUser u = this.signup("massive_player_" + i + "_" + j + "@local");
         login(u);
-        gameFacade.joinTeam(t.getId(), u.getUsername(), null);
+        gameFacade.joinTeam(t.getId(), null);
         u.setUser(userFacade.find(u.getId()));
 
         return u;

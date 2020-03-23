@@ -81,7 +81,8 @@ YUI.add("wegas-i18n", function(Y) {
                 if ((match = /Variable\((.*)\)/.exec(params[0]))) {
                     value = Y.Wegas.Facade.Variable.cache.find("name", match[1]);
                 } else if ((match = /VariableInstance\((.*)\)/.exec(params[0]))) {
-                    value = Y.Wegas.Facade.Variable.cache.find("name", match[1]).getInstance();
+                    var variable = Y.Wegas.Facade.Variable.cache.find("name", match[1]);
+                    value = variable ? variable.getInstance() : null;
                 } else if (params[0] === "Player") {
                     value = Y.Wegas.Facade.Game.cache.getCurrentPlayer();
                 } else if (params[0] === "Team") {
@@ -249,7 +250,12 @@ YUI.add("wegas-i18n", function(Y) {
 
                 if (klass === "TranslatableContent" && translations) {
                     if (translations[code]) {
-                        return translations[code].status || "";
+                        var tr = translations[code];
+                        if (tr.get) {
+                            return tr.get("status") || "";
+                        } else {
+                            return tr.status || "";
+                        }
                     }
                 }
             }
@@ -305,7 +311,10 @@ YUI.add("wegas-i18n", function(Y) {
                         if (lang) {
                             langs = [lang];
                         } else {
-                            langs = [];
+                            langs = [{
+                                    code: forcedLang,
+                                    ghost: true
+                                }];
                         }
                     } else {
                         if (lang) {
@@ -313,21 +322,34 @@ YUI.add("wegas-i18n", function(Y) {
                             langs.splice(i, 1);
                             langs.unshift(lang);
                         }
+
+                        for (var trLang in translations) {
+                            // take ghost languages into account
+                            if (!langs.find(function(item) {
+                                return item.code === trLang;
+                            })) {
+                                langs.push({
+                                    code: trLang,
+                                    lang: "Ghost-" + trLang
+                                });
+                            }
+                        }
                     }
                     for (i in langs) {
                         lang = langs[i];
                         tr = translations[lang.code] || (!caseSensitiveCode && translations[lang.code.toLowerCase()]);
 
-                        if (tr !== undefined) {
-
+                        if (tr !== undefined || forcedLang) {
+                            //when languages is forced, process translations anyway
                             if (tr.get) {
                                 tr = tr.toObject();
                             }
 
-                            if (tr.translation) {
+                            if (tr.translation || forcedLang) {
                                 theOne = lang;
+
                                 isOutdated = !!tr.status;
-                                tr = tr.translation;
+                                tr = tr.translation || "";
                                 break;
                             } else if (typeof tr === "string") {
                                 theOne = lang;

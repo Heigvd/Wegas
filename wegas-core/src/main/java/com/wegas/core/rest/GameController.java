@@ -37,7 +37,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import org.apache.commons.text.StringEscapeUtils;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -249,7 +248,7 @@ public class GameController {
                     appendCSVField(sb, t.getStatus().name()).append(",");
                     appendCSVField(sb, p.getName()).append(",");
                     if (p.getUser() != null) {
-                        appendCSVField(sb, p.getUser().getMainAccount().getEmail()).append(",");
+                        appendCSVField(sb, p.getUser().getMainAccount().getDetails().getEmail()).append(",");
                         appendCSVField(sb, Boolean.TRUE.equals(p.getUser().getMainAccount().isVerified()) ? "yes" : "no").append(",");
                     } else {
                         sb.append(",").append(",");

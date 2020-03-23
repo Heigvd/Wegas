@@ -47,7 +47,7 @@ YUI.add('wegas-text', function(Y) {
                     video.load();
                 });
             },
-            setContent: function(content){
+            setContent: function(content) {
                 this.set("content", content);
                 this.syncUI();
             },
@@ -91,4 +91,16 @@ YUI.add('wegas-text', function(Y) {
         }
     );
     Y.Wegas.Text = Text;
+
+
+    var String = Y.Base.create('wegas-string', Y.Wegas.Text, [], {}, {
+        EDITORNAME: 'String',
+        ATTRS: {
+            content: Y.Wegas.Helper.getTranslationAttr({
+                label: "Content",
+                type: "string"
+            })
+        }
+    });
+    Y.Wegas.String = String;
 });

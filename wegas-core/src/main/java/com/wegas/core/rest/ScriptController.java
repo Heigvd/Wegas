@@ -166,7 +166,7 @@ public Object run(@PathParam("gameModelId") Long gameModelId,
     public Map<Long, WegasScriptException> testGameModel(@PathParam("gameModelId") Long gameModelId) {
         //requestFacade.getRequestManager().setEnv(RequestManager.RequestEnvironment.TEST);
         GameModel gameModel = gameModelFacade.find(gameModelId);
-        Player player = gameModel.getAnyLivePlayer();
+        Player player = gameModel.getTestPlayer();
 
         Map<Long, WegasScriptException> ret = new HashMap<>();
 

@@ -46,6 +46,7 @@ import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.AccountDetails;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
@@ -222,9 +223,9 @@ public class SerializationTest {
         User guUser = new User(guAccount);
         User jpaUser = new User(jpaAccount);
 
-        Player fbPlayer = new Player("Facebook Player");
-        Player guPlayer = new Player("Guest Player");
-        Player jpaPlayer = new Player("JPA Player");
+        Player fbPlayer = new Player();
+        Player guPlayer = new Player();
+        Player jpaPlayer = new Player();
 
         team1.addPlayer(fbPlayer);
         team1.addPlayer(guPlayer);
@@ -456,7 +457,8 @@ public class SerializationTest {
         JpaAccount ja = new JpaAccount();
         ja.setFirstname("Alan");
         ja.setLastname("Smithee");
-        ja.setEmail("alan@local");
+        ja.setDetails(new AccountDetails());
+        ja.getDetails().setEmail("alan@local");
         ja.setUsername("alan@local");
 
         String strJa = mapper.writeValueAsString(ja);

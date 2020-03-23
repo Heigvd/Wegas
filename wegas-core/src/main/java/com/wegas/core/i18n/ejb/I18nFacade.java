@@ -61,6 +61,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -281,8 +282,7 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
     }
 
     /**
-     * Destroy a translation.
-     * Remove translation from DB and maintain cache integrity
+     * Destroy a translation. Remove translation from DB and maintain cache integrity
      *
      * @param translation the translation to destroy
      */
@@ -526,9 +526,9 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
 
                     previousStatus = (String) result.getMember("trStatus");
                     translation = "{"
-                            + "\"translation\": " + newNewValue + ","
-                            + "\"status\": \"" + (newTrStatus != null ? newTrStatus : previousStatus) + "\""
-                            + "}";
+                        + "\"translation\": " + newNewValue + ","
+                        + "\"status\": \"" + (newTrStatus != null ? newTrStatus : previousStatus) + "\""
+                        + "}";
 
                     if (indexes != null) {
                         Integer startIndex = indexes[0];
@@ -545,9 +545,9 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
                     indexes = getIndexes(impact, result, "loc");
 
                     translation = "{"
-                            + "\"translation\": " + newNewValue + ","
-                            + "\"status\": \"" + (newTrStatus != null ? newTrStatus : "") + "\""
-                            + "}";
+                        + "\"translation\": " + newNewValue + ","
+                        + "\"status\": \"" + (newTrStatus != null ? newTrStatus : "") + "\""
+                        + "}";
 
                     if (indexes != null) {
                         Integer startIndex = indexes[0];
@@ -638,7 +638,7 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
             if (content.getParentDescriptor() != null) {
                 ModelScoped.Visibility visibility = content.getParentDescriptor().getVisibility();
                 if (visibility == ModelScoped.Visibility.INTERNAL
-                        || visibility == ModelScoped.Visibility.PROTECTED) {
+                    || visibility == ModelScoped.Visibility.PROTECTED) {
                     // newTranslation belongs to a variable readonly variable descriptor
                     return content;
                 }
@@ -653,29 +653,37 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
         String code = update.getCode();
         String newValue = update.getValue();
 
-        if (null == mode) {
-            // MINOR change, do not change the status
-            content.updateTranslation(code, newValue);
+        GameModel gameModel = content.getParentGameModel();
+        GameModelLanguage gmLang = gameModel.getLanguageByCode(code);
+        
+        if (gmLang == null && Helper.isNullOrEmpty(newValue)) {
+            // empty translation + ghost Language => remove
+            content.removeTranslation(code);
         } else {
-            switch (mode) {
-                case MAJOR:
-                    // make all tr as outdated
-                    for (Translation t : content.getRawTranslations()) {
-                        t.setStatus("outdated::" + code);
-                    }   // but this one is not
-                    content.updateTranslation(code, newValue, "");
-                    break;
-                case CATCH_UP:
-                    // clear the status as the new translation is up to date
-                    content.updateTranslation(code, newValue, "");
-                    break;
-                case OUTDATE:
-                    content.updateTranslation(code, newValue, "outdated::manual");
-                    break;
-                default:
-                    // MINOR change, do not change the status
-                    content.updateTranslation(code, newValue);
-                    break;
+            if (null == mode) {
+                // MINOR change, do not change the status
+                content.updateTranslation(code, newValue);
+            } else {
+                switch (mode) {
+                    case MAJOR:
+                        // make all tr as outdated
+                        for (Translation t : content.getRawTranslations()) {
+                            t.setStatus("outdated::" + code);
+                        }   // but this one is not
+                        content.updateTranslation(code, newValue, "");
+                        break;
+                    case CATCH_UP:
+                        // clear the status as the new translation is up to date
+                        content.updateTranslation(code, newValue, "");
+                        break;
+                    case OUTDATE:
+                        content.updateTranslation(code, newValue, "outdated::manual");
+                        break;
+                    default:
+                        // MINOR change, do not change the status
+                        content.updateTranslation(code, newValue);
+                        break;
+                }
             }
         }
         return content;
@@ -687,7 +695,8 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
      * @param scriptUpdate
      * @param mode
      *
-     * @return the parent which owns the script ({@link #getParent(com.wegas.core.i18n.rest.ScriptUpdate)})
+     * @return the parent which owns the script
+     *         ({@link #getParent(com.wegas.core.i18n.rest.ScriptUpdate)})
      *
      * @throws ScriptException
      */
@@ -748,7 +757,8 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
      * @param scriptUpdate
      * @param type
      *
-     * @return the parent which owns the script ({@link #getParent(com.wegas.core.i18n.rest.ScriptUpdate)})
+     * @return the parent which owns the script
+     *         ({@link #getParent(com.wegas.core.i18n.rest.ScriptUpdate)})
      */
     private AbstractEntity scriptUpdate(ScriptUpdate scriptUpdate, UpdateType type) {
         AbstractEntity theParent = this.getParent(scriptUpdate);
@@ -980,14 +990,15 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
     private Deepl getDeeplClient() {
         if (isTranslationServiceAvailable()) {
             return new Deepl(Helper.getWegasProperty("deepl.service_url", "https://api.deepl.com/v2"),
-                    Helper.getWegasProperty("deepl.auth_key"));
+                Helper.getWegasProperty("deepl.auth_key"));
         } else {
             throw WegasErrorMessage.error("No translation service");
         }
     }
 
     /**
-     * Initialise or Override all TranslatedContent "targetLangCode" translations within the model using an newTranslation service.
+     * Initialise or Override all TranslatedContent "targetLangCode" translations within the model
+     * using an newTranslation service.
      *
      *
      * @param gameModelId    id of the gameModel to translate
@@ -1041,10 +1052,28 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
                 }
 
             } else {
-                throw WegasErrorMessage.error("Source language in not defined in the gameModel");
+                throw WegasErrorMessage.error("Source language is not defined in the gameModel");
             }
         } else {
-            throw WegasErrorMessage.error("Source language in not defined in the gameModel");
+            throw WegasErrorMessage.error("Source language is not defined in the gameModel");
+        }
+
+        return gameModel;
+
+    }
+
+    public GameModel clearLanguage(Long gameModelId, String langCode, String mode) throws ScriptException {
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        if (gameModel.getLanguageByCode(langCode) != null) {
+
+            try {
+                clearGameModelLanguage(gameModel, langCode, mode);
+            } catch (UnsupportedEncodingException ex) {
+                throw WegasErrorMessage.error("Unsupported encoding exception " + ex);
+            }
+
+        } else {
+            throw WegasErrorMessage.error("Language is in not defined in the gameModel");
         }
 
         return gameModel;
@@ -1082,8 +1111,8 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
     }
 
     /**
-     * Automatic translation.
-     * For each encountered translatable content, auto-translate targetLangCode tr from sourceLangCode on.
+     * Automatic translation. For each encountered translatable content, auto-translate
+     * targetLangCode tr from sourceLangCode on.
      */
     private static class TranslationExtractor implements MergeableVisitor {
 
@@ -1125,8 +1154,8 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
                 if (source != null && !Helper.isNullOrEmpty(source.getTranslation())) {
                     if (!this.isProtected(trTarget, protectionLevel)) {
                         if (Helper.isNullOrEmpty(refCode) // re required empty translation
-                                || trTarget.getTranslation(refCode) == null // requiered empty is null
-                                || Helper.isNullOrEmpty(trTarget.getTranslation(refCode).getTranslation())) { // exists but is empty
+                            || trTarget.getTranslation(refCode) == null // requiered empty is null
+                            || Helper.isNullOrEmpty(trTarget.getTranslation(refCode).getTranslation())) { // exists but is empty
                             TranslationUpdate trUpdate = new TranslationUpdate();
                             trUpdate.setTrId(trTarget.getId());
                             trUpdate.setCode(langCode);
@@ -1175,6 +1204,77 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
                     } else {
                         throw WegasErrorMessage.error("Unsupported parent: " + parent);
                     }
+                }
+                return false;
+            }
+            return true;
+        }
+    }
+
+    private void clearGameModelLanguage(Mergeable target, String langCode, String mode) throws ScriptException, UnsupportedEncodingException {
+
+        TranslationEraser eraser = new TranslationEraser(langCode, this, "All".equals(mode));
+
+        MergeHelper.visitMergeable(target, Boolean.TRUE, eraser);
+    }
+
+    private static class TranslationEraser implements MergeableVisitor {
+
+        private final I18nFacade i18nFacade;
+
+        private final String langCode;
+        private final Boolean eraseAll;
+
+        private List<I18nUpdate> patchList = new LinkedList<>();
+
+        public TranslationEraser(String langCode, I18nFacade facade, Boolean eraseAll) {
+            this.langCode = langCode;
+            this.i18nFacade = facade;
+            this.eraseAll = eraseAll;
+        }
+
+        public List<I18nUpdate> getPatches() {
+            return patchList;
+        }
+
+        @Override
+        public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
+            if (target instanceof Translation) {
+                Translation tr = (Translation) target;
+
+                if (!this.isProtected(tr.getTranslatableContent(), protectionLevel)) {
+                    if (tr.getLang().equals(this.langCode)
+                        && (this.eraseAll || !Helper.isNullOrEmpty(tr.getStatus()))) {
+                        tr.setTranslation("");
+                        tr.setStatus("cleared");
+                    }
+                }
+                return false;
+
+            } else if (target instanceof Script) {
+                try {
+                    if (!this.isProtected(target, protectionLevel)) {
+                        Script script = (Script) target;
+                        String newScript = script.getContent();
+
+                        List<TranslatableContent> trs = i18nFacade.getInScriptTranslations(newScript);
+
+                        for (int i = 0; i < trs.size(); i++) {
+                            TranslatableContent trc = trs.get(i);
+                            Translation translation = trc.getTranslation(langCode);
+                            if (translation != null) {
+
+                                if (this.eraseAll || !Helper.isNullOrEmpty(translation.getStatus())) {
+                                    newScript = i18nFacade.updateScriptWithNewTranslation(newScript,
+                                        i, this.langCode, "", "cleared");
+                                }
+                            }
+                        }
+
+                        script.setContent(newScript);
+                    }
+                } catch (ScriptException ex) {
+                    logger.error("Fail to parse script: {}", ex);
                 }
                 return false;
             }
@@ -1319,8 +1419,8 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
     }
 
     /**
-     * Update each occurrence of the language code in the given gameModel.
-     * each TranslatableContent property and each TranslatableContnent in any script will be updated.
+     * Update each occurrence of the language code in the given gameModel. each TranslatableContent
+     * property and each TranslatableContnent in any script will be updated.
      *
      * @param gameModel
      * @param oldCode
@@ -1438,7 +1538,8 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
         }
 
         @Override
-        public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable references[]) {
+        public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level,
+            WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable references[]) {
 
             if (target instanceof TranslatableContent) {
                 boolean shouldKeepUserTranslation = false;
@@ -1590,8 +1691,8 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
     }
 
     /**
-     * get the list of language the current user has the right to edit.
-     * If the user has a global edit permission on the gameModel, then the wildcard "*" is returned.
+     * get the list of language the current user has the right to edit. If the user has a global
+     * edit permission on the gameModel, then the wildcard "*" is returned.
      *
      * @param gameModelId
      *
@@ -1607,9 +1708,9 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
         }
 
         return gameModel.getLanguages().stream()
-                .map(l -> l.getCode())
-                .filter(lang -> requestManager.hasPermission(gameModel.getAssociatedTranslatePermission(lang)))
-                .collect(Collectors.toList());
+            .map(l -> l.getCode())
+            .filter(lang -> requestManager.hasPermission(gameModel.getAssociatedTranslatePermission(lang)))
+            .collect(Collectors.toList());
     }
 
     /**

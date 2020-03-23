@@ -41,18 +41,34 @@ import javax.validation.constraints.Pattern;
  */
 @Entity
 @Table(
-        //uniqueConstraints = {
-        //    @UniqueConstraint(columnNames = {"name"}),
-        //    @UniqueConstraint(columnNames = {"token"})}, // partial index : WHERE status = LIVE OR status = BIN
-        indexes = {
-            @Index(columnList = "gamemodel_id"),
-            @Index(columnList = "createdby_id")
-        }
+    //uniqueConstraints = {
+    //    @UniqueConstraint(columnNames = {"name"}),
+    //    @UniqueConstraint(columnNames = {"token"})}, // partial index : WHERE status = LIVE OR status = BIN
+    indexes = {
+        @Index(columnList = "gamemodel_id"),
+        @Index(columnList = "createdby_id")
+    }
 )
-@NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC")
-@NamedQuery(name = "Game.findIdById", query = "SELECT DISTINCT g.id FROM Game g WHERE g.id = :gameId")
-@NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token")
-@NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
+@NamedQuery(
+    name = "Game.findByStatus",
+    query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"
+)
+@NamedQuery(
+    name = "Game.findByStatuses",
+    query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status IN :statuses ORDER BY g.createdTime ASC"
+)
+@NamedQuery(
+    name = "Game.findIdById",
+    query = "SELECT DISTINCT g.id FROM Game g WHERE g.id = :gameId"
+)
+@NamedQuery(
+    name = "Game.findByToken",
+    query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"
+)
+@NamedQuery(
+    name = "Game.findByNameLike",
+    query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name"
+)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Game extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, NamedEntity {
 
@@ -71,8 +87,8 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     @Basic(optional = false)
     @Pattern(regexp = "^.*\\S+.*$", message = "Game name cannot be empty")// must at least contains one non-whitespace character
     @WegasEntityProperty(
-            optional = false, nullable = false,
-            view = @View(label = "Name"))
+        optional = false, nullable = false,
+        view = @View(label = "Name"))
     private String name;
 
     /**
@@ -80,11 +96,10 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @NotNull
     @Basic(optional = false)
-
     @Pattern(regexp = "^([a-zA-Z0-9_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, numbers, dots, underscores or hyphens")
     @WegasEntityProperty(
-            nullable = false, optional = false,
-            view = @View(label = "Token"))
+        nullable = false, optional = false,
+        view = @View(label = "Token"))
     private String token;
 
     /**
@@ -127,8 +142,8 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @Enumerated
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = Open.class,
-            view = @View(label = "Access"))
+        optional = false, nullable = false, proposal = Open.class,
+        view = @View(label = "Access"))
     private GameAccess access = GameAccess.OPEN;
 
     /**
@@ -197,7 +212,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @JsonManagedReference("game-team")
     // Exclude this property from the Lobby view and force a fetch in Editor view:
-    @JsonView(Views.EditorI.class)
+    @JsonView(Views.ExtendedI.class)
     @WegasExtraProperty(optional = false, nullable = false, view = @View(label = "Teams", value = Hidden.class))
     public List<Team> getTeams() {
         return this.getGameTeams().getTeams();
@@ -239,6 +254,21 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @JsonIgnore
     @Override
+    public Player getUserLivePlayer(User user) {
+        for (Team t : this.getTeams()) {
+            Player theP = t.getUserLivePlayer(user);
+            if (theP != null) {
+                return theP;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @JsonIgnore
+    @Override
     public Player getAnyLivePlayer() {
         for (Team t : this.getTeams()) {
             return t.getAnyLivePlayer();
@@ -248,9 +278,14 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
 
     @JsonIgnore
     public Player getTestPlayer() {
-        for (Team t : this.getTeams()) {
-            if (t instanceof DebugTeam) {
-                return t.getAnyLivePlayer();
+        if (this instanceof DebugGame) {
+            return this.getAnyLivePlayer();
+        } else {
+            for (Team t : this.getTeams()) {
+                Player testPlayer = t.getTestPlayer();
+                if (testPlayer != null) {
+                    return testPlayer;
+                }
             }
         }
         return null;
@@ -271,6 +306,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      * @return the gameModel
      */
     @JsonView({Views.LobbyI.class, Views.EditorI.class})
+    @Override
     public GameModel getGameModel() {
         return gameModel;
     }
@@ -370,6 +406,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     /**
      * @return game creator name or null if the user doesn't exists anymore
      */
+    @JsonView({Views.EditorI.class, Views.LobbyI.class})
     public String getCreatedByName() {
         if (this.getCreatedBy() != null) {
             return this.getCreatedBy().getName();
@@ -386,8 +423,8 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     /**
-     * @param gameModelId the gameModelId to set public void setGameModelId(Long gameModelId) { this.gameModelId =
-     * gameModelId; }
+     * @param gameModelId the gameModelId to set public void setGameModelId(Long gameModelId) {
+     *                    this.gameModelId = gameModelId; }
      */
     /**
      * @return the access
@@ -496,7 +533,8 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
          */
         DELETE,
         /**
-         * Does not exist anymore. Actually, this status should never persist. Used internally as game's missing.
+         * Does not exist anymore. Actually, this status should never persist. Used internally as
+         * game's missing.
          */
         SUPPRESSED
     }

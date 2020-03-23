@@ -10,12 +10,16 @@ package com.wegas.core.tools;
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.merge.utils.WegasFieldProperties;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
@@ -32,11 +36,13 @@ public class RegexExtractorVisitor implements MergeHelper.MergeableVisitor {
     private final Pattern pattern;
     private final FindAndReplacePayload payload;
     private final List<List<String>> result;
+    private final VariableDescriptorFacade variableDescriptorFacade;
 
     private int flags = Pattern.UNICODE_CASE | Pattern.UNICODE_CHARACTER_CLASS;
 
-    public RegexExtractorVisitor(FindAndReplacePayload payload) {
+    public RegexExtractorVisitor(FindAndReplacePayload payload, VariableDescriptorFacade vdf) {
         this.payload = payload;
+        this.variableDescriptorFacade = vdf;
         if (!payload.isMatchCase()) {
             flags |= Pattern.CASE_INSENSITIVE;
         }
@@ -133,7 +139,20 @@ public class RegexExtractorVisitor implements MergeHelper.MergeableVisitor {
 
     public List<List<String>> process(GameModel gameModel) {
         if (payload.getProcessVariables()) {
-            MergeHelper.visitMergeable(gameModel, Boolean.TRUE, this);
+
+            if (payload.getRoots() != null && !payload.getRoots().isEmpty()) {
+                for (String variableName : payload.getRoots()) {
+                    try {
+                        VariableDescriptor variable = variableDescriptorFacade.find(gameModel, variableName);
+                        MergeHelper.visitMergeable(variable, Boolean.TRUE, this);
+                    } catch (WegasNoResultException ex) {
+                        throw WegasErrorMessage.error("Variable \"" + variableName + "\" not found");
+                    }
+                }
+            } else {
+                MergeHelper.visitMergeable(gameModel, Boolean.TRUE, this);
+            }
+
         }
 
         if (payload.getProcessPages()) {

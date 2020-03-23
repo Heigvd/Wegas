@@ -11,7 +11,6 @@ import ch.albasim.wegas.annotations.CommonView;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AcceptInjection;
@@ -27,7 +26,6 @@ import com.wegas.core.persistence.annotations.WegasRefs.Self;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +70,7 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
      *
      */
     @ElementCollection
-    @JsonView(Views.ExtendedI.class)
+    //@JsonView(Views.ExtendedI.class)
     //@OrderColumn
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyArray.class,
@@ -127,7 +125,7 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
             // change detected
             this.value = value;
 
-            if (beans != null) {
+            if (!this.isDefaultInstance() && beans != null) {
                 beans.getVariableInstanceFacade().fireNumberChange(this, pVal);
             }
         }

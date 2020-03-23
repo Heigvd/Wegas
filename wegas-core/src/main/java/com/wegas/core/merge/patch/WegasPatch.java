@@ -417,6 +417,14 @@ public abstract class WegasPatch {
         return sb;
     }
 
+    protected String indentString(int ident) {
+        String indent = "";
+        for (int i = 0; i < ident; i++) {
+            indent += "  ";
+        }
+        return indent;
+    }
+
     protected void indent(StringBuilder sb, int ident) {
         for (int i = 0; i < ident; i++) {
             sb.append("  ");

@@ -216,7 +216,7 @@ var WegasDashboard = (function() {
                             item.preventClick = itemCfg.preventClick;
                             item.sortable = itemCfg.sortable;
                             item.sortFn = itemCfg.sortFn;
-                            item.kind = variables[varName].descriptor.getClass().getSimpleName()
+                            item.kind = variables[varName].descriptor.getJSONClassName()
                                 .replaceAll("Descriptor", "").toLowerCase();
                             break;
                         default:

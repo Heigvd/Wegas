@@ -936,8 +936,10 @@
 .wegas-i18n-manager-content .wegas-i18n-manager--languages .language.readonly .form,
 .wegas-i18n-manager-content:not(.show-settings) .wegas-i18n-manager--languages .language .auto-translator,
 .wegas-i18n-manager-content:not(.show-settings) .wegas-i18n-manager--languages .language .auto-copy,
+.wegas-i18n-manager-content:not(.show-settings) .wegas-i18n-manager--languages .language .clear-language,
 .wegas-i18n-manager-content .wegas-i18n-manager--languages .language.readonly .wegas-language-i18n-auto,
 .wegas-i18n-manager-content .wegas-i18n-manager--languages .language.readonly .wegas-language-i18n-copy,
+.wegas-i18n-manager-content .wegas-i18n-manager--languages .language.readonly .wegas-language-i18n-clear,
 .wegas-i18n-manager-content:not(.show-settings) .wegas-i18n-manager--toolbar .create-button {
     display :none;
 }
@@ -1001,6 +1003,7 @@
     cursor: wait;
 }
 
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-i18n-clear,
 .wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-i18n-copy,
 .wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-i18n-auto {
     cursor: pointer;
@@ -1010,6 +1013,21 @@
 .wegas-i18n-manager .wegas-i18n-manager--languages-header .move-up {
     cursor: pointer;
     font-size: 30px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-find-outdated {
+    font-size: 14px;
+    cursor: pointer;
+    vertical-align: -2px;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-find-outdated .fa-toggle-on {
+    font-size: 12px;
+    color: #F57C00;
+}
+
+.wegas-i18n-manager .wegas-i18n-manager--languages .wegas-language-find-outdated .fa-search {
+    color: #4e525e;
 }
 
 .wegas-i18n-manager .wegas-i18n-manager--languages .language .language-title {
@@ -1413,6 +1431,7 @@
 .panel-inner .wegas-find-and-replace-widget .widget {
     flex-grow:1;
     position:relative;
+    overflow: auto;
 }
 .panel-inner .wegas-find-and-replace-widget .widget > div {
     position: absolute;
@@ -1424,13 +1443,19 @@
 
 .panel-inner .wegas-find-and-replace-widget .widget .wegas-find-and-replace-content{
     height:100%;
-    display: flex;
-    flex-direction: column;
+    /*display: flex;*/
+    /*flex-direction: column;*/
+}
+
+/* make treevariableselect visible ouside the widget */
+.panel-inner .wegas-find-and-replace-widget .widget .wegas-find-and-replace-content > .the-form > .wegas-react-form,
+.panel-inner .wegas-find-and-replace-widget .widget .wegas-find-and-replace-content > .the-form > .wegas-react-form > .wegas-react-form-content {
+    overflow: visible;
 }
 
 .panel-inner .wegas-find-and-replace-widget .widget .find-result{
-    flex-grow: 1;
-    flex-shrink: 1;
+    /*flex-grow: 1;*/
+    /*flex-shrink: 1;*/
     overflow: auto;
 }
 

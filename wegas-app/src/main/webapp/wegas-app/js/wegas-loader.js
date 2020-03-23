@@ -277,7 +277,7 @@ YUI().use(function(Y) {
             },
             "wegas-text": {
                 path: "js/widget/wegas-text-min.js",
-                ws_provides: "Text",
+                ws_provides: ["Text", "String"],
                 requires: "wegas-widget"
             },
             "wegas-image": {
@@ -410,7 +410,7 @@ YUI().use(function(Y) {
             "wegas-cssstyles-extra": {
                 path: "js/plugin/wegas-cssstyles-extra-min.js",
                 requires: "wegas-cssstyles",
-                ws_provides: ["CSSBackground", "CSSText", "CSSPosition", "CSSSize"]
+                ws_provides: ["CSSBackground", "CSSBackgroundImage", "CSSText", "CSSPosition", "CSSSize"]
             },
             "wegas-conditionaldisplay": {
                 path: "js/plugin/wegas-conditionaldisplay-min.js",
@@ -797,7 +797,8 @@ YUI().use(function(Y) {
             "wegas-find-and-replace": {
                 path: "js/widget/wegas-find-and-replace-min.js",
                 requires: ["wegas-modal", "wegas-plugin"],
-                ws_provides: ["FindAndReplace", "FindAndReplaceWidget", "FindAndReplaceModal", "FindAndReplaceAction"]
+                ws_provides: ["FindAndReplace", "FindAndReplaceWidget", "FindAndReplaceModal",
+                    "FindAndReplaceAction", "FindAndReplaceEntityAction"]
             },
             "wegas-statemachineviewer": {
                 path: "js/widget/wegas-statemachineviewer-min.js",

@@ -8,9 +8,11 @@
 package com.wegas.core.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +22,7 @@ import java.util.List;
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
-public interface InstanceOwner extends WithId{
+public interface InstanceOwner extends WithId {
 
     /**
      *
@@ -55,11 +57,39 @@ public interface InstanceOwner extends WithId{
     }
 
     /**
+     * Find a player owned by the given user
+     *
+     * @param user
+     * @return a live player linked to the user or null
+     */
+    @JsonIgnore
+    public Player getUserLivePlayer(User user);
+
+    /**
+     *
+     * @param user
+     *
+     * @return
+     */
+    default public Player getUserLivePlayerOrDebugPlayer(User user) {
+        Player p = this.getUserLivePlayer(user);
+        if (p == null) {
+            p = this.getGameModel().getTestPlayer();
+        }
+
+        return p;
+    }
+
+    /**
      * Get any player involved
      *
      * @return a (LIVE) player who have access to all owner's instances
      */
+    @JsonIgnore
     public Player getAnyLivePlayer();
+
+    @JsonIgnore
+    public Player getTestPlayer();
 
     /**
      * Return instances that belongs to this target only
@@ -92,4 +122,11 @@ public interface InstanceOwner extends WithId{
      */
     @JsonIgnore
     public WegasPermission getAssociatedWritePermission();
+
+    /**
+     * 
+     * @return 
+     */
+    //@JsonIgnore /* Do not JsonIgnore here as Game must serialize the gameModel (Lobby case) */
+    public GameModel getGameModel();
 }

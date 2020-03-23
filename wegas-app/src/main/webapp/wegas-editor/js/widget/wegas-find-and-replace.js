@@ -132,6 +132,24 @@ YUI.add('wegas-find-and-replace', function(Y) {
                             className: "wegas-internal-feature",
                             label: "Languages"
                         }
+                    },
+                    roots: {
+                        type: "array",
+                        value: [],
+                        items: {
+                            type: "string",
+                            view: {
+                                type: "treevariableselect",
+                                layout: "shortInline",
+                                label: ''
+                            }
+                        },
+                        visible: function(_val, formValue) {
+                            return formValue.processVariables;
+                        },
+                        view: {
+                            label: "Those Variables Only"
+                        }
                     }
                 }
             };
@@ -151,7 +169,9 @@ YUI.add('wegas-find-and-replace', function(Y) {
             }
 
             this.form = new Y.Wegas.RForm({
-                values: {},
+                values: {
+                    roots: this.get("roots")
+                },
                 cfg: cfg
             });
             this.form.render(this.get("contentBox").one(".the-form"));
@@ -212,6 +232,10 @@ YUI.add('wegas-find-and-replace', function(Y) {
         ATTRS: {
             gameModel: {
                 type: "Object"
+            },
+            roots: {
+                type: "array",
+                value: []
             }
         }
     });
@@ -275,7 +299,8 @@ YUI.add('wegas-find-and-replace', function(Y) {
             var gameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
             if (gameModel) {
                 this.findAndReplace = new Y.Wegas.FindAndReplace({
-                    "gameModel": gameModel
+                    gameModel: gameModel,
+                    roots: this.get("roots")
                 });
                 this.findAndReplace.render(this.get("contentBox").one((".widget")));
             }
@@ -291,11 +316,13 @@ YUI.add('wegas-find-and-replace', function(Y) {
         }
     }, {
         ATTRS: {
+            roots: {
+                type: 'array',
+                value: []
+            }
         }
     });
     Y.Wegas.FindAndReplaceWidget = FindAndReplaceWidget;
-
-
 
     FindAndReplaceAction = Y.Base.create("wegas-find-and-replace-action", Y.Plugin.Action, [], {
         execute: function() {
@@ -316,4 +343,26 @@ YUI.add('wegas-find-and-replace', function(Y) {
     });
     Y.Plugin.FindAndReplaceAction = FindAndReplaceAction;
 
+    var FindAndReplaceEntityAction = Y.Base.create("FindAndReplaceEntityAction", Y.Plugin.EntityAction,
+        [], {
+        execute: function() {
+            var button = new Y.Wegas.OpenTabButton({
+                label: "Find & replace",
+                wchildren: {
+                    "type": "FindAndReplaceWidget",
+                    roots: [this.get("entity").get("name")]
+                }
+            });
+            button.fire("click");
+            button.destroy();
+        }
+    }, {
+        NS: "FindAndReplaceEntityAction",
+        ATTRS: {
+            visibility: {
+                type: "string"
+            }
+        }
+    });
+    Y.Plugin.FindAndReplaceEntityAction = FindAndReplaceEntityAction;
 });

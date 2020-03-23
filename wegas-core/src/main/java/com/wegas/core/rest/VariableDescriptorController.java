@@ -18,10 +18,12 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.scope.AbstractScope;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -108,15 +110,14 @@ public class VariableDescriptorController {
      */
     @POST
     public VariableDescriptor create(@PathParam("gameModelId") Long gameModelId,
-            VariableDescriptor entity) {
+        VariableDescriptor entity) {
 
         this.variableDescriptorFacade.create(gameModelId, entity);
         return entity;
     }
 
     /**
-     * Add new descriptor in the given gameModel as a child of the descriptor
-     * identified by entityId
+     * Add new descriptor in the given gameModel as a child of the descriptor identified by entityId
      *
      * @param entityId the parent descriptor id
      * @param entity   the new descriptor
@@ -131,8 +132,8 @@ public class VariableDescriptorController {
     }
 
     /**
-     * Add new descriptor in the given gameModel as a child of the descriptor
-     * identified by entityName
+     * Add new descriptor in the given gameModel as a child of the descriptor identified by
+     * entityName
      *
      * @param gameModelId
      * @param entityName  parent entity, identified by its name
@@ -143,7 +144,7 @@ public class VariableDescriptorController {
     @POST
     @Path("{variableDescriptorName : [_a-zA-Z][_a-zA-Z0-9]*}")
     public VariableDescriptor createChild(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("variableDescriptorName") String entityName, VariableDescriptor entity) {
+        @PathParam("variableDescriptorName") String entityName, VariableDescriptor entity) {
 
         try {
             GameModel gm = gameModelFacade.find(gameModelId);
@@ -174,7 +175,7 @@ public class VariableDescriptorController {
     @PUT
     @Path("{id: [1-9][0-9]*}/visibility/{visibility: [A-Z]*}")
     public VariableDescriptor resetVisibilities(@PathParam("id") Long vdId,
-            @PathParam("visibility") ModelScoped.Visibility visibility) {
+        @PathParam("visibility") ModelScoped.Visibility visibility) {
         return variableDescriptorFacade.resetVisibility(vdId, visibility);
     }
 
@@ -187,25 +188,21 @@ public class VariableDescriptorController {
     @PUT
     @Path("{id: [1-9][0-9]*}/changeScope/{scopeType: GameModelScope|TeamScope|PlayerScope}")
     public VariableDescriptor changeScopeRecursivly(@PathParam("id") Long vdId,
-            @PathParam("scopeType") String scopeType) {
+        @PathParam("scopeType") AbstractScope.ScopeType scopeType) {
         return variableDescriptorFacade.changeScopeRecursively(vdId, scopeType);
     }
 
     @PUT
     @Path("{id: [1-9][0-9]*}/ConvertToText")
-    public VariableDescriptor convertToText(@PathParam("id") Long vdId,
-            @PathParam("scopeType") String scopeType) {
+    public VariableDescriptor convertToText(@PathParam("id") Long vdId) {
         return variableDescriptorFacade.convertToText(vdId);
     }
 
     @PUT
     @Path("{id: [1-9][0-9]*}/ConvertToStaticText")
-    public VariableDescriptor convertToStaticText(@PathParam("id") Long vdId,
-            @PathParam("scopeType") String scopeType) {
+    public VariableDescriptor convertToStaticText(@PathParam("id") Long vdId) {
         return variableDescriptorFacade.convertToStaticText(vdId);
     }
-
-
 
     /**
      * @param descriptorId
@@ -225,8 +222,8 @@ public class VariableDescriptorController {
     @PUT
     @Path("{descriptorId: [1-9][0-9]*}/Move/{parentDescriptorId: [1-9][0-9]*}/{index: [0-9]*}")
     public void move(@PathParam("descriptorId") Long descriptorId,
-            @PathParam("parentDescriptorId") Long parentDescriptorId,
-            @PathParam("index") int index) {
+        @PathParam("parentDescriptorId") Long parentDescriptorId,
+        @PathParam("index") int index) {
         variableDescriptorFacade.move(descriptorId, parentDescriptorId, index);
     }
 
@@ -326,5 +323,83 @@ public class VariableDescriptorController {
         criterias.remove("");
 
         return gameModelFacade.findMatchingDescriptorIds(gameModelId, criterias);
+    }
+
+    /**
+     * Import a variable from the source gameModel and import it within the target gameModel. Such
+     * an import is recursive and all referenced files are {@link JCRFacade#importFile(com.wegas.core.jcr.content.AbstractContentDescriptor,
+     * com.wegas.core.jcr.content.ContentConnector)  imported} too.
+     * <p>
+     * Such imported files may be renamed to avoid overriding preexisting files.
+     * <p>
+     * /**
+     * Import a variable from another gameModel
+     *
+     * @param gameModelId  the gameModel in which to put the variable
+     * @param vdId         the variable to import
+     * @param newScopeType if set, change scope recursively
+     *
+     * @return
+     */
+    @POST
+    @Path("CherryPick/{vdId: [1-9][0-9]*}{sep2: /?}{newScopeType: (PlayerScope|TeamScope|GameModelScope)?}")
+    public VariableDescriptor cherryPick(
+        @PathParam("gameModelId") Long gameModelId,
+        @PathParam("vdId") Long vdId,
+        @PathParam("newScopeType") AbstractScope.ScopeType newScopeType) {
+
+        VariableDescriptor vd = variableDescriptorFacade.find(vdId);
+        GameModel source = vd.getGameModel();
+
+        return variableDescriptorFacade.cherryPick(gameModelId, vd.getName(), source.getId(), newScopeType);
+    }
+
+    /**
+     * Convert class name to a VariableDescriptor Class
+     *
+     * @param className fullclass name (with package)
+     *
+     * @return the class matching the className
+     */
+    private Class<? extends VariableDescriptor> getClassByName(String className) {
+        try {
+            Class<?> loadClass = this.getClass().getClassLoader().loadClass(className);
+            if (VariableDescriptor.class.isAssignableFrom(loadClass)) {
+                return (Class<? extends VariableDescriptor>) loadClass;
+            } else {
+                throw WegasErrorMessage.error("Such class is not as variable descriptor: " + className);
+            }
+        } catch (ClassNotFoundException ex) {
+            logger.error("Class not found");
+            throw WegasErrorMessage.error("Such variable type does not exists: " + className);
+        }
+    }
+
+    /**
+     * Fetch list of readable pickable variable.
+     *
+     * @param varType
+     *
+     * @return list of tuple : gameModel.id, gameModel.name, vd.id, vd.name, vd.label
+     */
+    @GET
+    @Path("FetchWriteablePickable/{variableType : .+}")
+    public Collection<VariableDescriptorFacade.VariableIndex> fetchPickable(@PathParam("variableType") String varType) {
+
+        return variableDescriptorFacade.fetchCherryPickable(getClassByName(varType), true);
+    }
+
+    /**
+     * Fetch list of all pickable variable.
+     *
+     * @param varType
+     *
+     * @return list of tuple : gameModel.id, gameModel.name, vd.id, vd.name, vd.label
+     */
+    @GET
+    @Path("FetchAllPickable/{variableType : .+}")
+    public Collection<VariableDescriptorFacade.VariableIndex> fetchReadablePickable(@PathParam("variableType") String varType) {
+
+        return variableDescriptorFacade.fetchCherryPickable(getClassByName(varType), false);
     }
 }

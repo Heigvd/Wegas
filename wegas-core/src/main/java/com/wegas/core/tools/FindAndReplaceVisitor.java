@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
  * @author maxence
  */
 public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
-    
+
     private final DiffRowGenerator generator;
     private final StringBuilder output;
     private final Pattern pattern;
@@ -86,13 +86,15 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
     @Override
     public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references) {
         if (target instanceof Translation) {
-            Translation tr = (Translation) target;
-            if (this.payload.shouldProcessLang(tr.getLang())) {
-                String newContent = this.replace(tr.getTranslation());
-                if (newContent != null) {
-                    this.genEntry(ancestors, target, field, tr.getTranslation(), newContent);
-                    if (!payload.isPretend()) {
-                        tr.setTranslation(newContent);
+            if (!this.isProtected(target, protectionLevel)) {
+                Translation tr = (Translation) target;
+                if (this.payload.shouldProcessLang(tr.getLang())) {
+                    String newContent = this.replace(tr.getTranslation());
+                    if (newContent != null) {
+                        this.genEntry(ancestors, target, field, tr.getTranslation(), newContent);
+                        if (!payload.isPretend()) {
+                            tr.setTranslation(newContent);
+                        }
                     }
                 }
             }
@@ -216,15 +218,17 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
 
     private void processLibrary(List<GameModelContent> library, String title) {
         for (GameModelContent content : library) {
-            String newContent = this.replace(content.getContent());
-            if (newContent != null) {
-                this.genEntry(title + "\"" + content.getContentKey() + "\"", content.getContent(), newContent);
-                if (!payload.isPretend()) {
-                    try {
-                        content.setContent(newContent);
-                        this.contents.add(content);
-                    } catch (Exception ex) {
-                        output.append("<br/> ERROR: ").append(ex);
+            if (!this.isProtected(content, ProtectionLevel.PROTECTED)) {
+                String newContent = this.replace(content.getContent());
+                if (newContent != null) {
+                    this.genEntry(title + "\"" + content.getContentKey() + "\"", content.getContent(), newContent);
+                    if (!payload.isPretend()) {
+                        try {
+                            content.setContent(newContent);
+                            this.contents.add(content);
+                        } catch (Exception ex) {
+                            output.append("<br/> ERROR: ").append(ex);
+                        }
                     }
                 }
             }
@@ -263,7 +267,7 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
                 if (!Helper.isNullOrEmpty(name)) {
                     sb.append(name);
                     if (it.hasNext()) {
-                        sb.append("/");
+                        sb.append(" ⇨ ");
                     }
                 }
             }
@@ -343,5 +347,5 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
         //websocketFacade.gameModelContentUpdate(content, null); //no requestId allows the requester to be notified too
         //}
     }
-    
+
 }

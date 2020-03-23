@@ -57,6 +57,7 @@ import com.wegas.editor.View.NumberView;
 import com.wegas.editor.View.SelectView;
 import com.wegas.editor.View.Textarea;
 import com.wegas.editor.View.VisibilitySelectView;
+import com.wegas.editor.Visible;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
@@ -105,12 +106,12 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "label_id")
 })
 @NamedQuery(
-        name = "VariableDescriptor.findAllNamesInModelAndItsScenarios",
-        query = "SELECT DISTINCT(vd.name)"
-        + "FROM GameModel model "
-        + "LEFT JOIN GameModel scen ON (model = scen.basedOn AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
-        + "JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
-        + "WHERE model.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
+    name = "VariableDescriptor.findAllNamesInModelAndItsScenarios",
+    query = "SELECT DISTINCT(vd.name)"
+    + "FROM GameModel model "
+    + "LEFT JOIN GameModel scen ON (model = scen.basedOn AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
+    + "JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
+    + "WHERE model.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
 )
 /*@NamedQuery(
             name = "VariableDescriptor.findAllNamesInScenarioAndItsModelCluster",
@@ -124,23 +125,31 @@ import org.slf4j.LoggerFactory;
             + " WHERE scen.id = :gameModelId"
     )*/
 @NamedQuery(
-        name = "VariableDescriptor.findAllNamesInScenarioAndItsModel",
-        query = "SELECT DISTINCT(vd.name)"
-        + " FROM GameModel scen "
-        + " LEFT JOIN GameModel model ON (model = scen.basedOn AND model.type = com.wegas.core.persistence.game.GameModel.GmType.MODEL)"
-        + " JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
-        + " WHERE scen.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
+    name = "VariableDescriptor.findAllNamesInScenarioAndItsModel",
+    query = "SELECT DISTINCT(vd.name)"
+    + " FROM GameModel scen "
+    + " LEFT JOIN GameModel model ON (model = scen.basedOn AND model.type = com.wegas.core.persistence.game.GameModel.GmType.MODEL)"
+    + " JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
+    + " WHERE scen.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
 )
 @NamedQuery(
-        name = "VariableDescriptor.findByRootGameModelId",
-        query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
+    name = "VariableDescriptor.findByRootGameModelId",
+    query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
 )
 @NamedQuery(
-        name = "VariableDescriptor.findByGameModelIdAndName",
-        query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
-        hints = {
-            @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
-            @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
+    name = "VariableDescriptor.findCherryPickablesIndex",
+    query = "SELECT vd.gameModel.id, vd.gameModel.name, vd.id, vd.name, vd.label FROM VariableDescriptor vd where vd.gameModel.id in :gameModelIds AND TYPE(vd) IN :types"
+)
+@NamedQuery(
+    name = "VariableDescriptor.findCherryPickables",
+    query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id in :gameModelIds AND TYPE(vd) IN :types"
+)
+@NamedQuery(
+    name = "VariableDescriptor.findByGameModelIdAndName",
+    query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
+    hints = {
+        @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+        @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
 )
 @CacheIndexes(value = {
     @CacheIndex(columnNames = {"GAMEMODEL_ID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
@@ -169,8 +178,8 @@ import org.slf4j.LoggerFactory;
 //@MappedSuperclass
 @WegasEntity(callback = VariableDescriptor.VdMergeCallback.class)
 public abstract class VariableDescriptor<T extends VariableInstance>
-        extends AbstractEntity
-        implements LabelledEntity, Broadcastable, AcceptInjection, ModelScoped {
+    extends AbstractEntity
+    implements LabelledEntity, Broadcastable, AcceptInjection, ModelScoped {
 
     private static final long serialVersionUID = 1L;
 
@@ -179,9 +188,8 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     /**
      * HACK
      * <p>
-     * Injecting VariableDescriptorFacade here don't bring business logic within
-     * data because the very only functionality that is being used here aims to
-     * replace some slow JPA mechanisms
+     * Injecting VariableDescriptorFacade here don't bring business logic within data because the very only
+     * functionality that is being used here aims to replace some slow JPA mechanisms
      * <p>
      */
     @JsonIgnore
@@ -199,12 +207,12 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     @JsonView(value = Views.EditorI.class)
     @Column(name = "comments")
     @WegasEntityProperty(searchable = true,
-            optional = false, nullable = false, proposal = EmptyString.class,
-            view = @View(
-                    label = "Comments",
-                    borderTop = true,
-                    value = Textarea.class,
-                    index = 9000))
+        optional = false, nullable = false, proposal = EmptyString.class,
+        view = @View(
+            label = "Comments",
+            borderTop = true,
+            value = Textarea.class,
+            index = 9000))
     private String comments;
 
     /**
@@ -213,19 +221,18 @@ public abstract class VariableDescriptor<T extends VariableInstance>
      * <p>
      * According to WegasPatch spec, OVERRIDE should not be propagated to the instance when the descriptor is protected
      * <p>
-     * Here we cannot use type T, otherwise jpa won't handle the db ref
-     * correctly
+     * Here we cannot use type T, otherwise jpa won't handle the db ref correctly
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
     @JsonView(value = Views.EditorI.class)
     @WegasEntityProperty(
-            protectionLevel = ProtectionLevel.INTERNAL,
-            nullable = false,
-            optional = false,
-            view = @View(
-                    label = "Default instance",
-                    index = 500
-            ))
+        protectionLevel = ProtectionLevel.INTERNAL,
+        nullable = false,
+        optional = false,
+        view = @View(
+            label = "Default instance",
+            index = 500
+        ))
     private VariableInstance defaultInstance;
 
     /**
@@ -259,9 +266,13 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
     @Enumerated(value = EnumType.STRING)
     @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL,
-            nullable = false,
-            view = @View(label = "Visibility", value = VisibilitySelectView.class,
-                    index = -300))
+        nullable = false,
+        view = @View(
+            label = "Visibility",
+            value = VisibilitySelectView.class,
+            index = -300
+        ))
+    @Visible(ModelScoped.BelongsToModel.class)
     private Visibility visibility = Visibility.PRIVATE;
 
     /**
@@ -269,28 +280,27 @@ public abstract class VariableDescriptor<T extends VariableInstance>
      */
     //@JsonView(Views.EditorI.class)
     @WegasEntityProperty(searchable = true,
-            proposal = EmptyString.class,
-            optional = false, nullable = false,
-            view = @View(
-                    label = "Tag",
-                    description = "Never displayed to players",
-                    index = -480
-            ))
+        proposal = EmptyString.class,
+        optional = false, nullable = false,
+        view = @View(
+            label = "Tag",
+            description = "Never displayed to players",
+            index = -480
+        ))
     private String editorTag = "";
 
     /**
-     * Variable descriptor human readable name
-     * Player visible
+     * Variable descriptor human readable name Player visible
      */
     @OneToOne(cascade = CascadeType.ALL /*, orphanRemoval = true*/)
     @WegasEntityProperty(searchable = true,
-            nullable = false, optional = false, proposal = EmptyI18n.class,
-            view = @View(
-                    label = "Label",
-                    description = "Displayed to players",
-                    value = I18nStringView.class,
-                    index = -470
-            ))
+        nullable = false, optional = false, proposal = EmptyI18n.class,
+        view = @View(
+            label = "Label",
+            description = "Displayed to players",
+            value = I18nStringView.class,
+            index = -470
+        ))
     private TranslatableContent label;
 
     @Transient
@@ -304,13 +314,13 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     @Basic(optional = false)
     //@CacheIndex
     @WegasEntityProperty(protectionLevel = ProtectionLevel.INHERITED, searchable = true,
-            nullable = false,
-            view = @View(
-                    featureLevel = ADVANCED,
-                    label = "Script alias",
-                    description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character.",
-                    index = -460
-            ))
+        nullable = false,
+        view = @View(
+            featureLevel = ADVANCED,
+            label = "Script alias",
+            description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character.",
+            index = -460
+        ))
     protected String name;
 
     //@BatchFetch(BatchFetchType.JOIN)
@@ -324,43 +334,43 @@ public abstract class VariableDescriptor<T extends VariableInstance>
 
     @Transient
     @WegasEntityProperty(
-            proposal = TeamScopeVal.class,
-            nullable = false,
-            view = @View(
-                    label = "One variable for",
-                    value = SelectView.ScopeSelector.class,
-                    layout = shortInline,
-                    index = -400
-            ))
+        proposal = TeamScopeVal.class,
+        nullable = false,
+        view = @View(
+            label = "One variable for",
+            value = SelectView.ScopeSelector.class,
+            layout = shortInline,
+            index = -400
+        ))
     @Errored(CheckScope.class)
-    private String scopeType;
+    private AbstractScope.ScopeType scopeType;
 
     @Transient
     @WegasEntityProperty(
-            proposal = TeamScopeVal.class,
-            nullable = false,
-            view = @View(
-                    label = "Variable is visible by ",
-                    value = SelectView.BScopeSelector.class,
-                    layout = shortInline,
-                    index = -390
-            ))
+        proposal = TeamScopeVal.class,
+        nullable = false,
+        view = @View(
+            label = "Variable is visible by ",
+            value = SelectView.BScopeSelector.class,
+            layout = shortInline,
+            index = -390
+        ))
     @Errored(CheckScope.class)
-    private String broadcastScope;
+    private AbstractScope.ScopeType broadcastScope;
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(sameEntityOnly = true,
-            nullable = false, optional = false,
-            proposal = Zero.class,
-            view = @View(
-                    label = "Version",
-                    readOnly = true,
-                    value = NumberView.class,
-                    featureLevel = ADVANCED,
-                    index = -490,
-                    layout = shortInline
-            )
+        nullable = false, optional = false,
+        proposal = Zero.class,
+        view = @View(
+            label = "Version",
+            readOnly = true,
+            value = NumberView.class,
+            featureLevel = ADVANCED,
+            index = -490,
+            layout = shortInline
+        )
     )
     private Long version;
 
@@ -449,8 +459,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     /**
-     * Get the gameModel this descriptor stands in.
-     * RootLevel descriptor only.
+     * Get the gameModel this descriptor stands in. RootLevel descriptor only.
      *
      * @return
      */
@@ -605,8 +614,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     /**
-     * @param defaultInstance indicate whether one wants the default instance r
-     *                        the one belonging to player
+     * @param defaultInstance indicate whether one wants the default instance r the one belonging to player
      * @param player          the player
      *
      * @return either the default instance of the one belonging to player
@@ -722,8 +730,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     /**
      * @param scope the scope to set
      *
-     * @fixme here we cannot use managed references since this.class is
-     * abstract.
+     * @fixme here we cannot use managed references since this.class is abstract.
      */
     //@JsonManagedReference
     public void setScope(AbstractScope scope) {
@@ -734,29 +741,28 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     @JsonIgnore
-    public String getDeserialisedScopeType() {
+    public AbstractScope.ScopeType getDeserialisedScopeType() {
         return this.scopeType;
     }
 
-    public String getScopeType() {
+    public AbstractScope.ScopeType getScopeType() {
         if (this.scope != null) {
-            return this.scope.getJSONClassName();
+            return this.scope.getScopeType();
         } else {
             return scopeType;
         }
     }
 
-    public void setScopeType(String scopeType) {
+    public void setScopeType(AbstractScope.ScopeType scopeType) {
         this.scopeType = scopeType;
     }
 
-
     @JsonIgnore
-    public String getDeserialisedBroadcastScopeType() {
+    public AbstractScope.ScopeType getDeserialisedBroadcastScopeType() {
         return this.broadcastScope;
     }
 
-    public String getBroadcastScope() {
+    public AbstractScope.ScopeType getBroadcastScope() {
         if (this.scope != null) {
             return this.scope.getBroadcastScope();
         } else {
@@ -764,7 +770,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         }
     }
 
-    public void setBroadcastScope(String broadcastScope) {
+    public void setBroadcastScope(AbstractScope.ScopeType broadcastScope) {
         this.broadcastScope = broadcastScope;
     }
 
@@ -789,9 +795,8 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     /**
-     * @param context allow to circumscribe the propagation within the given
-     *                context. It may be an instance of GameModel, Game, Team,
-     *                or Player
+     * @param context allow to circumscribe the propagation within the given context. It may be an instance of
+     *                GameModel, Game, Team, or Player
      */
     public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         int sFlag = 0;
@@ -804,18 +809,18 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         }
 
         if ((context == null) // no-context
-                || (context instanceof GameModel) // gm ctx -> do not skip anything
-                || (context instanceof Game && sFlag < 4) // g ctx -> skip gms
-                || (context instanceof Team && sFlag < 3) // t ctx -> skip gms, gs
-                || (context instanceof Player && sFlag < 2)) { // p ctx -> skip gms, gs, ts
+            || (context instanceof GameModel) // gm ctx -> do not skip anything
+            || (context instanceof Game && sFlag < 4) // g ctx -> skip gms
+            || (context instanceof Team && sFlag < 3) // t ctx -> skip gms, gs
+            || (context instanceof Player && sFlag < 2)) { // p ctx -> skip gms, gs, ts
             scope.propagateDefaultInstance(context, create);
         }
     }
 
     public void createInstances(InstanceOwner instanceOwner) {
         if ((scope instanceof GameModelScope && instanceOwner instanceof GameModel)
-                || (scope instanceof TeamScope && instanceOwner instanceof Team)
-                || (scope instanceof PlayerScope && instanceOwner instanceof Player)) {
+            || (scope instanceof TeamScope && instanceOwner instanceof Team)
+            || (scope instanceof PlayerScope && instanceOwner instanceof Player)) {
             scope.propagateDefaultInstance(instanceOwner, true);
         }
     }
@@ -834,7 +839,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
      */
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getName() + ", #" + Integer.toHexString(this.hashCode()) + ", ref:" + this.getRefId() +" )";
+        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getName() + ", #" + Integer.toHexString(this.hashCode()) + ", ref:" + this.getRefId() + " )";
     }
 
     @Override
@@ -855,8 +860,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     /**
-     * WegasCallback for VariableDescriptor merge.
-     * Two purpose:
+     * WegasCallback for VariableDescriptor merge. Two purpose:
      * <ul>
      * <li>create/destroy instances when scope changes</li>
      * <li>assert name is valid within the model cluster</li>
@@ -920,17 +924,17 @@ public abstract class VariableDescriptor<T extends VariableInstance>
 
         public CheckScope() {
             super(
-                    new And(
-                            new Equals(scope, ts),
-                            new Equals(bScope, ps)
-                    ),
-                    new And(
-                            new Equals(scope, gs),
-                            new Or(
-                                    new Equals(bScope, ps),
-                                    new Equals(bScope, ts)
-                            )
+                new And(
+                    new Equals(scope, ts),
+                    new Equals(bScope, ps)
+                ),
+                new And(
+                    new Equals(scope, gs),
+                    new Or(
+                        new Equals(bScope, ps),
+                        new Equals(bScope, ts)
                     )
+                )
             );
         }
     }
