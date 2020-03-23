@@ -3,7 +3,7 @@ import TreeNode, { treeHeadStyle } from './TreeNode';
 import HandleUpDown from './HandleUpDown';
 
 export interface Item<T> {
-  label: string;
+  label: React.ReactNode;
   value: T;
   selectable?: boolean;
   items?: Item<T>[];

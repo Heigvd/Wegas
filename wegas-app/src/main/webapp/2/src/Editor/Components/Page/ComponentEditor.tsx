@@ -84,7 +84,7 @@ export default function ComponentEditor({
       }
       baseSchema.properties = { ...baseSchema.properties, ...flexItemSchema };
     }
-    return baseSchema;
+    return baseSchema as Schema<BaseView>;
   }, deepDifferent);
   if (entity === undefined || schema === undefined) {
     return null;

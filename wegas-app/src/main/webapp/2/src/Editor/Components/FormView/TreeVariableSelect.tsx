@@ -18,7 +18,6 @@ import {
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 import { scriptEditStyle } from './Script/Script';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
-import { Searcher } from '../SearchTool';
 
 const treeCss = css({
   padding: '5px 10px',
@@ -38,6 +37,11 @@ const treeCss = css({
   },
 });
 
+export interface TreeSelectItem<T> extends Item<T> {
+  label: string;
+  items?: TreeSelectItem<T>[];
+}
+
 export type StringOrT<FNT, T> = FNT extends undefined ? string : T;
 
 export function genVarItems<T = string>(
@@ -45,8 +49,8 @@ export function genVarItems<T = string>(
   selectableFn: (item: IVariableDescriptor) => boolean = () => true,
   classFilter: string[] = [],
   decorateFn?: (value: string) => T,
-): Item<StringOrT<typeof decorateFn, T>>[] {
-  function mapItem(i: number): Item<StringOrT<typeof decorateFn, T>> {
+): TreeSelectItem<StringOrT<typeof decorateFn, T>>[] {
+  function mapItem(i: number): TreeSelectItem<StringOrT<typeof decorateFn, T>> {
     const item = VariableDescriptor.select(i)!;
     const child = varIsList(item)
       ? genVarItems<T>(item.itemsIds, selectableFn, classFilter, decorateFn)
@@ -76,12 +80,12 @@ export function genVarItems<T = string>(
     );
 }
 function getItems<T>(
-  items: Item<T>[],
-  key: keyof Item<T>,
+  items: TreeSelectItem<T>[],
+  key: keyof TreeSelectItem<T>,
   val: any,
   limit: number = Infinity,
 ) {
-  let ret: Item<T>[] = [];
+  let ret: TreeSelectItem<T>[] = [];
   for (const item of items) {
     if (JSON.stringify(item[key]) === JSON.stringify(val)) {
       ret.push(item);
@@ -100,7 +104,7 @@ function getItems<T>(
   }
   return ret;
 }
-function labelForValue<T>(items: Item<T>[], value?: T) {
+function labelForValue<T>(items: TreeSelectItem<T>[], value?: T) {
   if (value != null) {
     const i = getItems(items, 'value', value, 1);
     if (i.length > 0) {
@@ -113,7 +117,7 @@ export interface TreeVSelectProps<T>
   extends WidgetProps.BaseProps<
     CommonView &
       LabeledView & {
-        items?: Item<T>[];
+        items?: TreeSelectItem<T>[];
         classFilter?: WegasClassNames[];
       }
   > {
@@ -121,7 +125,7 @@ export interface TreeVSelectProps<T>
 }
 
 export class TreeVSelect<T> extends React.Component<
-  TreeVSelectProps<T> & { items: Item<T>[] },
+  TreeVSelectProps<T> & { items: TreeSelectItem<T>[] },
   { search: string; searching: boolean }
 > {
   state = {
@@ -155,26 +159,6 @@ export class TreeVSelect<T> extends React.Component<
       >
         <Labeled {...this.props.view}>
           {({ labelNode, inputId }) => (
-            // (
-            //   <>
-            //     {labelNode}
-            //     <Searcher
-            //       id={inputId}
-            //       items={allItems}
-            //       value={labelForValue(allItems, this.props.value)}
-            //       readOnly={this.props.view.readOnly}
-            //       listClassName={treeCss}
-            //       render={({ items, selected, onSelect }) => (
-            //         <TreeSelect
-            //           selected={selected}
-            //           items={items}
-            //           onSelect={onSelect}
-            //         />
-            //       )}
-            //       onChange={this.props.onChange}
-            //     />
-            //   </>
-            // )
             <div
               onBlur={ev => {
                 const me = ev.currentTarget;
@@ -236,7 +220,7 @@ export function TreeVariableSelect(
 ): JSX.Element {
   const items = useStore(() => GameModel.selectCurrent().itemsIds);
   const varItems = genVarItems(items, undefined, props.view.classFilter);
-  const filteredItems = props.view.items
+  const filteredItems: TreeSelectItem<string>[] = props.view.items
     ? [
         {
           label: 'Variables',

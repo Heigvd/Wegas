@@ -30,10 +30,13 @@ function buildMenuItems(variable: IAbstractEntity) {
 
 interface AddMenuProps {
   localDispatch?: StoreDispatch;
-  onSelect?: MenuProps<{
-    label: JSX.Element;
-    value: string;
-  }>['onSelect'];
+  onSelect?: MenuProps<
+    string,
+    {
+      label: JSX.Element;
+      value: string;
+    }
+  >['onSelect'];
   focusTab?: (tab: string) => void;
 }
 

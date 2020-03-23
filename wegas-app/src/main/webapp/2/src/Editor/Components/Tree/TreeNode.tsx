@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { Item } from './TreeSelect';
 
 const pointerStyle = css({
   cursor: 'pointer',
@@ -90,17 +91,13 @@ function update<T>(
     ...val,
   };
 }
-interface TreeNodeProps<T> {
-  label: string;
-  value: T;
+interface TreeNodeProps<T> extends Item<T> {
   expanded?: boolean;
   selected?: T;
-  selectable?: boolean;
   match?: boolean;
   items?: TreeNodeProps<T>[];
   onSelect?: (item: T) => void;
   onChange?: (props: TreeNodeProps<T>) => void;
-  className?: string;
 }
 export default function TreeNode<T>(props: TreeNodeProps<T>): JSX.Element {
   const {

@@ -43,10 +43,22 @@ const testSchema = {
     'Option 3',
   ]),
   simpleHashList: schemaProps.hashlist('Simple hashlist', true),
-  customizedHashList: schemaProps.hashlist('Customized hashlist', true, {
-    Attribute1: schemaProps.select('Attribute1', true, ['1', '2', '3']),
-    Attribute2: schemaProps.select('Attribute2', true, ['A', 'B', 'C']),
-  }),
+  customizedHashList: schemaProps.hashlist('Customized hashlist', true, [
+    {
+      label: 'Attribute1',
+      value: {
+        prop: 'Attribute1',
+        schema: schemaProps.select('Attribute1', true, ['1', '2', '3']),
+      },
+    },
+    {
+      label: 'Attribute2',
+      value: {
+        prop: 'Attribute2',
+        schema: schemaProps.select('Attribute2', true, ['A', 'B', 'C']),
+      },
+    },
+  ]),
 };
 
 export default function SchemaPropsTester() {

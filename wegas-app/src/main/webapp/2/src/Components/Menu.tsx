@@ -6,13 +6,13 @@ import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { useKeyboard } from './Hooks/useKeyboard';
 import { themeVar } from './Theme';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
+import { Item } from '../Editor/Components/Tree/TreeSelect';
 
-interface Item<T> {
-  label: React.ReactNode;
+export interface MenuItem<T> extends Item<T> {
   disabled?: true;
-  children?: T[];
 }
-export interface MenuProps<T extends Item<T>> {
+
+export interface MenuProps<I, T extends MenuItem<I> = MenuItem<I>> {
   id?: string;
   onSelect: (item: T, keyEvent: ModifierKeysEvent) => void;
   onOpen?: () => void;
@@ -65,7 +65,7 @@ function stopPropagation(ev: React.MouseEvent<HTMLElement>) {
   ev.stopPropagation();
 }
 
-export function Menu<T extends Item<T>>({
+export function Menu<I, T extends MenuItem<I> = MenuItem<I>>({
   id,
   onOpen,
   onSelect,
@@ -76,7 +76,7 @@ export function Menu<T extends Item<T>>({
   containerClassName,
   buttonClassName,
   listClassName,
-}: MenuProps<T>) {
+}: MenuProps<I, T>) {
   const realDirection = direction ? direction : 'down';
   const keyboardEvents = useKeyboard();
 
@@ -131,7 +131,7 @@ export function Menu<T extends Item<T>>({
               }}
             >
               {items.map((item, index) => {
-                if (Array.isArray(item.children)) {
+                if (Array.isArray(item.items)) {
                   return (
                     <div
                       key={index}
@@ -147,7 +147,7 @@ export function Menu<T extends Item<T>>({
                           closeMenu();
                           onSelect(v, e);
                         }}
-                        items={item.children}
+                        items={item.items as T[]}
                         direction="right"
                         label={item.label}
                       />

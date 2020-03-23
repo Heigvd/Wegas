@@ -156,6 +156,7 @@ export default function ThemeEditor() {
               items={Object.keys(themeState.themes).map(k => ({
                 id: k,
                 label: k,
+                value: k,
               }))}
               onSelect={({ id }) => setModifiedTheme(id)}
             />
@@ -192,6 +193,7 @@ export default function ThemeEditor() {
               items={Object.keys(themeState.selectedTheme).map(
                 (k: keyof typeof themeState.selectedTheme) => ({
                   id: k,
+                  value: k,
                   label: (
                     <>
                       <span
@@ -202,6 +204,7 @@ export default function ThemeEditor() {
                         items={Object.keys(themeState.themes).map(k => ({
                           id: k,
                           label: k,
+                          value: k,
                         }))}
                         onSelect={({ id }) => setSelectedTheme(id, k)}
                       />
@@ -218,6 +221,7 @@ export default function ThemeEditor() {
           items={Object.keys(themeState.themes[currentModifiedTheme]).map(
             (k: keyof Theme) => ({
               id: k,
+              value: k,
               label: (
                 <>
                   <input

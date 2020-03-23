@@ -12,9 +12,11 @@ import { pick } from 'lodash-es';
 
 import { ScriptMode, isScriptCondition } from '../Script';
 
-import { Item } from '../../../Tree/TreeSelect';
-
-import { StringOrT, genVarItems } from '../../TreeVariableSelect';
+import {
+  StringOrT,
+  genVarItems,
+  TreeSelectItem,
+} from '../../TreeVariableSelect';
 
 import { store } from '../../../../../data/store';
 import { TYPESTRING } from 'jsoninput/typings/types';
@@ -228,7 +230,7 @@ export const typeCleaner = (
 export function genGlobalItems<T = string>(
   mode?: ScriptMode,
   decorateFn?: (value: string) => T,
-): Item<StringOrT<typeof decorateFn, T>>[] {
+): TreeSelectItem<StringOrT<typeof decorateFn, T>>[] {
   return Object.entries(store.getState().global.serverMethods)
     .filter(
       ([_k, v]) =>

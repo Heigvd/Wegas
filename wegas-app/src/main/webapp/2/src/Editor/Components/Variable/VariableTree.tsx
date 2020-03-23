@@ -281,7 +281,7 @@ function CTree(
                 variable={variable}
                 localDispatch={props.localDispatch}
                 focusTab={focusTab}
-                path={props.subPath![0] as "feedback" | "fbComments"}
+                path={props.subPath![0] as 'feedback' | 'fbComments'}
               />
             ) : null}
           </span>

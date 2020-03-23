@@ -4,64 +4,78 @@ import { CommonViewContainer, CommonView } from './commonView';
 import Form from 'jsoninput';
 import { omit } from 'lodash-es';
 import { useDeepChanges } from '../../../Components/Hooks/useDeepChanges';
-import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
+import {
+  schemaProps,
+  SchemaPropsSchemas,
+} from '../../../Components/PageComponents/tools/schemaProps';
 import { LabeledView, Labeled } from './labeled';
 import { DragDropArray } from './Array';
+import { Item } from '../Tree/TreeSelect';
 
 interface ImprovedObjectValue {
   value: string;
   index: number;
 }
 
+export type HashListChoices = Item<{
+  prop: string;
+  schema: SchemaPropsSchemas;
+}>[];
+
 export type HashListViewProps = WidgetProps.ObjectProps<
-  CommonView & LabeledView & { disabled?: boolean; tooltip?: string }
+  CommonView &
+    LabeledView & {
+      disabled?: boolean;
+      tooltip?: string;
+      choices: HashListChoices;
+    }
 >;
 
 interface EntryViewProps<T> {
   prop: string;
   value: T;
   onChange: (key: string, value: T) => void;
-  patternProperties: HashListViewProps['schema']['patternProperties'];
+  schema?: SchemaPropsSchemas;
 }
 
 export function EntryView<T>({
   prop,
   value,
   onChange,
-  patternProperties,
+  schema,
 }: EntryViewProps<T>) {
   return (
     <Form
       schema={{
         description: 'EntryView',
         properties: {
-          prop: schemaProps.string(
-            'Key',
-            true,
-            prop,
-            'DEFAULT',
-            undefined,
-            'shortInline',
-            false,
-            patternProperties != null,
-          ),
-          value:
-            patternProperties && patternProperties[prop]
-              ? {
-                  ...patternProperties[prop],
-                  view: {
-                    ...patternProperties[prop].view,
-                    layout: 'shortInline',
-                  },
-                }
-              : schemaProps.string(
-                  'Value',
-                  true,
-                  typeof value === 'string' ? value : JSON.stringify(value),
-                  'DEFAULT',
-                  undefined,
-                  'shortInline',
-                ),
+          prop: schema
+            ? schemaProps.hidden(true, 'string')
+            : schemaProps.string(
+                'Key',
+                true,
+                prop,
+                'DEFAULT',
+                undefined,
+                'shortInline',
+                false,
+              ),
+          value: schema
+            ? {
+                ...schema,
+                view: {
+                  ...schema.view,
+                  layout: 'shortInline',
+                },
+              }
+            : schemaProps.string(
+                'Value',
+                true,
+                typeof value === 'string' ? value : JSON.stringify(value),
+                'DEFAULT',
+                undefined,
+                'shortInline',
+              ),
         },
       }}
       value={{ prop, value }}
@@ -93,6 +107,8 @@ const extractValues = (values: ImprovedValues) =>
 const sortValues = (a: ImprovedObjectValue, b: ImprovedObjectValue) =>
   a.index - b.index;
 
+// const getChoiceValue = (label:)
+
 function HashListView({
   errorMessage,
   view,
@@ -123,6 +139,7 @@ function HashListView({
           value: k,
         }))
     : undefined;
+  // const entrySchema = choices
 
   return (
     <CommonViewContainer errorMessage={errorMessage} view={view}>
@@ -140,7 +157,7 @@ function HashListView({
             onChildRemove={i => {
               onChange(
                 Object.entries(currentValue)
-                  .filter(([, v]) => v.index !== i)
+                  .filter((_kv, vI) => vI !== i)
                   .reduce((o, [k, v]) => ({ ...o, [k]: v }), {}),
               );
             }}
@@ -174,7 +191,10 @@ function HashListView({
                       setValue(newValue);
                       onChange(newValue);
                     }}
-                    patternProperties={patternProperties}
+                    schema={
+                      patternProperties &&
+                      (patternProperties[k] as SchemaPropsSchemas)
+                    }
                   />
                 ))}
           </DragDropArray>

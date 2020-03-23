@@ -10,7 +10,7 @@ import {
 } from '../../css/classes';
 import { Value } from './Value';
 import { cx, css } from 'emotion';
-import { IconComp, Icons } from '../../Editor/Components/Views/FontAwesome';
+import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { themeVar } from '../Theme';
 
 const phasePathStyle = css({

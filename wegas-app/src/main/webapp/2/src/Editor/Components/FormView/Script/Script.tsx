@@ -292,7 +292,7 @@ export function Script({
               {isScriptCondition(view.mode) && (
                 <Menu
                   label={operator}
-                  items={operators.map(o => ({ label: o }))}
+                  items={operators.map(o => ({ label: o, value: o }))}
                   onSelect={({ label }) => onSelectOperator(label)}
                 />
               )}

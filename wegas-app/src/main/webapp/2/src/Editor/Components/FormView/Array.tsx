@@ -9,6 +9,7 @@ import { themeVar } from '../../../Components/Theme';
 import { useDrag, useDrop } from 'react-dnd';
 import { dropZoneFocusCss } from '../../../Components/Contexts/DefaultDndProvider';
 import { array_move } from '../../../Helper/tools';
+import { Item } from '../Tree/TreeSelect';
 
 const transparentStyle = css({
   opacity: 0,
@@ -44,10 +45,11 @@ const handleStyle = css({
 
 interface AdderProps {
   onChildAdd: (value?: {} | undefined) => void;
-  choices?: {
-    label: React.ReactNode;
-    value: string;
-  }[];
+  // choices?: {
+  //   label: React.ReactNode;
+  //   value: string;
+  // }[];
+  choices?: Item<string>[];
   id?: string;
   tooltip?: string;
 }
@@ -204,7 +206,7 @@ function ArrayDropzone({ onDrop, className, style }: ArrayDropzoneProps) {
 export interface IArrayProps
   extends WidgetProps.ArrayProps<
     {
-      choices?: { label: React.ReactNode; value: string }[];
+      choices?: Item<string>[];
       tooltip?: string;
       disabled?: boolean;
       userOnChildAdd?: (value?: {}) => void;
@@ -222,7 +224,7 @@ interface DropArrayProps {
   onMove?: (array?: {}[]) => void;
   onChildRemove?: (index: number) => void;
   onChildAdd?: (value?: {}) => void;
-  choices?: { label: React.ReactNode; value: string }[];
+  choices?: Item<string>[];
   tooltip?: string;
   label?: React.ReactNode;
   maxItems?: number;

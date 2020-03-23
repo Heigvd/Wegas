@@ -12,11 +12,6 @@ import { withDefault, IconComp } from './Views/FontAwesome';
 import { css } from 'emotion';
 import { entityIs } from '../../data/entities';
 import { focusTabContext } from './LinearTabLayout/LinearLayout';
-import { SimpleInput } from '../../Components/Inputs/SimpleInput';
-import { useDeepChanges } from '../../Components/Hooks/useDeepChanges';
-import { SearchableItems } from './Tree/searchable';
-import { JsxElement } from 'typescript';
-import { Item } from './Tree/TreeSelect';
 
 interface SearchPanelProps {
   search: State['global']['search'];
@@ -201,76 +196,3 @@ export function SearchTool() {
     </StoreConsumer>
   );
 }
-
-// interface SearcherProps<T> {
-//   value: string;
-//   items: Item<T>[];
-//   id?: string;
-//   searchedField: keyof Item<T>;
-//   render: (props: {
-//     items: Item<T>[];
-//     selected: T;
-//     onSelect: (item: Item<T>) => void;
-//   }) => JSX.Element;
-//   readOnly?: boolean;
-//   className?: string;
-//   listClassName?: string;
-//   onChange?: (value: T) => void;
-// }
-
-// export function Searcher<T>({
-//   value,
-//   items,
-//   id,
-//   searchedField,
-//   render,
-//   readOnly,
-//   className,
-//   listClassName,
-//   onChange,
-// }: SearcherProps<T>) {
-//   const [searcherState, setSearcherState] = React.useState({
-//     searching: false,
-//     search: value,
-//   });
-//   useDeepChanges(value, nv => setSearcherState(ov => ({ ...ov, search: nv })));
-//   const onSelect = React.useCallback((i) => {
-//     onChange && onChange(item);
-//   }, []);
-
-//   return (
-//     <div
-//       onBlur={ev => {
-//         const me = ev.currentTarget;
-//         requestAnimationFrame(() => {
-//           if (!me.contains(document.activeElement)) {
-//             setSearcherState(os => ({ ...os, searching: false }));
-//           }
-//         });
-//       }}
-//       className={className}
-//     >
-//       <SimpleInput
-//         id={id}
-//         value={searcherState.search}
-//         onChange={v => setSearcherState(ov => ({ ...ov, search: String(v) }))}
-//         onFocus={() => setSearcherState(ov => ({ ...ov, searching: true }))}
-//         readOnly={readOnly}
-//       />
-//       {searcherState.searching && (
-//         <div className={listClassName}>
-//           <SearchableItems
-//             match={(item, s) => {
-//               return item.label.toLowerCase().includes(s.toLowerCase());
-//             }}
-//             search={searcherState.search}
-//             items={items}
-//             render={({ items }) =>
-//               render({ items, selected: searcherState.search, onSelect })
-//             }
-//           />
-//         </div>
-//       )}
-//     </div>
-//   );
-// }

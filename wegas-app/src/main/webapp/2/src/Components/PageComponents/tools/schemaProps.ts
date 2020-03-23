@@ -12,30 +12,16 @@ import { StringInputProps } from '../../../Editor/Components/FormView/String';
 import { CodeProps } from '../../../Editor/Components/FormView/Code';
 import { IAsyncSelectProps } from '../../../Editor/Components/FormView/Select';
 import { PageSelectProps } from '../../../Editor/Components/FormView/PageSelect';
-import { Item } from '../../../Editor/Components/Tree/TreeSelect';
 import {
   TreeVariableSelectProps,
   ScripableVariableSelectProps,
   TreeVSelectProps,
+  TreeSelectItem,
 } from '../../../Editor/Components/FormView/TreeVariableSelect';
 import { IArrayProps } from '../../../Editor/Components/FormView/Array';
 import { StatementViewProps } from '../../../Editor/Components/FormView/Script/Expressions/ExpressionEditor';
 import { createScript } from '../../../Helper/wegasEntites';
-import {
-  HashListViewProps,
-  PatternProps,
-} from '../../../Editor/Components/FormView/HashList';
-
-// type SchemaPrimitive =
-//   | 'boolean'
-//   | 'number'
-//   | 'string'
-//   | 'object'
-//   | 'array'
-//   | 'never'
-//   | 'void'
-//   | 'undefined'
-//   | 'unknown';
+import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 
 type TypedProps<T extends { view: {} }> = Schema<
   T['view'] & {
@@ -286,7 +272,7 @@ export const schemaProps = {
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
-    items?: Item<string>[],
+    items?: TreeSelectItem<string>[],
     borderTop?: boolean,
   ): TypedProps<TreeVariableSelectProps> => ({
     required,
@@ -305,7 +291,7 @@ export const schemaProps = {
   }),
   tree: <T>(
     label?: string,
-    items?: Item<T>[],
+    items?: TreeSelectItem<T>[],
     required: boolean = true,
     classFilter: WegasClassNames[] = [],
     type: TYPESTRING | TYPESTRING[] = 'string',
@@ -414,7 +400,7 @@ export const schemaProps = {
   hashlist: (
     label?: string,
     required: boolean = true,
-    patternProperties?: PatternProps,
+    choices?: HashListChoices,
     value: object = {},
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
@@ -428,7 +414,7 @@ export const schemaProps = {
     required,
     type: 'object',
     value,
-    patternProperties,
+    choices,
     view: {
       featureLevel,
       index,

@@ -35,6 +35,7 @@ export const childHighlightStyle = css({
 });
 
 const handleControlStyle = css({
+  textAlign: 'center',
   '&>.wegas-component-handle': {
     visibility: 'hidden',
     opacity: 0.0,
