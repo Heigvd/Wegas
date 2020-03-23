@@ -91,7 +91,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
             + "      <div class=\"content wegas-template-content\"></div>"
             + "    </div>"
             + "    <div class=\"navigation-buttons\">"
-            + "      <div class=\"back\"></div><div class=\"next\"></div><div class=\"validate\"></div><div class=\"close\"></div>"
+//            + "      <div class=\"back\"></div><div class=\"next\"></div><div class=\"validate\"></div><div class=\"close\"></div>"
             + "    </div>"
             + "  </div>"
             + "</div>",
@@ -395,25 +395,36 @@ YUI.add("wegas-survey-widgets", function(Y) {
 
             // Don't recreate these when updating inside the scenarist editor:
             if (!this.validateButton) {
-                this.validateButton = new Y.Button({
-                    label: I18n.t("survey.global.validate"),
-                    visible: true
-                }).render(cb.one('.validate'));
+                var buttons = cb.one('.navigation-buttons');
 
-                this.nextButton = new Y.Button({
-                    label: I18n.t("survey.global.next"),
-                    visible: true
-                }).render(cb.one('.next'));
-
-                this.backButton = new Y.Button({
+                this.backButton = new Y.Wegas.Button({
                     label: I18n.t("survey.global.back"),
-                    visible: true
-                }).render(cb.one('.back'));
-                
-                this.closeButton = new Y.Button({
+                    visible: true,
+                    cssClass:'back'
+                }).render(buttons);
+
+                this.spacer = new Y.Wegas.Text({
+                    content:"",
+                    cssClass:'spacer'
+                }).render(buttons);
+ 
+                this.validateButton = new Y.Wegas.Button({
+                    label: I18n.t("survey.global.validate"),
+                    visible: true,
+                    cssClass:'validate'
+                }).render(buttons);
+
+                this.nextButton = new Y.Wegas.Button({
+                    label: I18n.t("survey.global.next"),
+                    visible: true,
+                    cssClass:'next'
+                }).render(buttons);
+               
+                this.closeButton = new Y.Wegas.Button({
                     label: I18n.t("survey.global.close"),
-                    visible: true
-                }).render(cb.one('.close')).hide();
+                    visible: true,
+                    cssClass:'close'
+                }).render(buttons).hide();
             } else {
                 this.validateButton.get(CONTENTBOX).removeClass("ready");
             }
@@ -835,6 +846,8 @@ YUI.add("wegas-survey-widgets", function(Y) {
             if (this.validateButton) {
                 this.validateButton.destroy();
             }
+
+            this.spacer &&this.spacer.destroy();
         },
         sendReplyRequest: function(inputId, cb) {
             if (inputId === undefined) {
