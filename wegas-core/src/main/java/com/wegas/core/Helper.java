@@ -133,7 +133,6 @@ public class Helper {
 //            return null;
 //        }
 //    }
-
     /**
      * Copy and sort the given list
      *
@@ -175,12 +174,14 @@ public class Helper {
 
     /**
      * Return the first non-null and non-empty args
+     *
      * @param args
+     *
      * @return first non-empty arguments or empty string
      */
-    public static String coalesce(String ...args){
-        for (String arg: args){
-            if (!Helper.isNullOrEmpty(arg)){
+    public static String coalesce(String... args) {
+        for (String arg : args) {
+            if (!Helper.isNullOrEmpty(arg)) {
                 return arg;
             }
         }
@@ -193,11 +194,11 @@ public class Helper {
     };
 
     /**
-     * Given a list of names and a name, generate a new name that is not already
-     * used (ie not in usedNames).
+     * Given a list of names and a name, generate a new name that is not already used (ie not in
+     * usedNames).
      * <p>
-     * If the initial name is already in use, it will be suffixes with an
-     * ordinal. Pattern must be used to detect the name baseName.
+     * If the initial name is already in use, it will be suffixes with an ordinal. Pattern must be
+     * used to detect the name baseName.
      *
      * @param name      initial name
      * @param usedNames names already in use
@@ -208,8 +209,8 @@ public class Helper {
      * @return name to use in place on initial one
      */
     private static String findUniqueName(final String name, List<String> usedNames,
-            String preSuff, String postSuff,
-            NewNameStrategy strategy) {
+        String preSuff, String postSuff,
+        NewNameStrategy strategy) {
 
         String pattern = "(.+)" + Pattern.quote(preSuff);
 
@@ -259,9 +260,8 @@ public class Helper {
     }
 
     /**
-     * Generate a unique name (within usedNames) based on name. If the initial
-     * name is contained in usedNames, it will be suffix with the first
-     * available ordinal, like in this example:
+     * Generate a unique name (within usedNames) based on name. If the initial name is contained in
+     * usedNames, it will be suffix with the first available ordinal, like in this example:
      * <ul>
      * <li>Name: "myName" </li>
      * <li>UsedName: "myName", "myName_1", "myName_3" </li>
@@ -278,9 +278,8 @@ public class Helper {
     }
 
     /**
-     * Generate a unique label (within usedLabels) based on label. If the
-     * initial label is contained in usedLabel, it will be suffix with the first
-     * available ordinal, like in this example:
+     * Generate a unique label (within usedLabels) based on label. If the initial label is contained
+     * in usedLabel, it will be suffix with the first available ordinal, like in this example:
      * <ul>
      * <li>Label: "My Label" </li>
      * <li>UsedLabel: "My Label", "Ma Label (1)", "My Label (3)" </li>
@@ -346,7 +345,7 @@ public class Helper {
      * @param defaultLabel label to set if entity one is unset
      */
     public static void setUniqueLabel(final LabelledEntity entity,
-            List<TranslatableContent> usedLabels, String defaultLabel) {
+        List<TranslatableContent> usedLabels, String defaultLabel) {
 
         // make sure the label exists
         TranslatableContent theLabel = entity.getLabel();
@@ -389,8 +388,8 @@ public class Helper {
      * @param gameModel
      */
     public static void setNameAndLabelForLabelledEntity(LabelledEntity le,
-            List<String> usedNames, List<TranslatableContent> usedLabels,
-            String base, GameModel gameModel) {
+        List<String> usedNames, List<TranslatableContent> usedLabels,
+        String base, GameModel gameModel) {
 
         String baseName = le.getName();
         String baseLabel = baseName;
@@ -431,7 +430,7 @@ public class Helper {
      * @return map oldName to newName
      */
     public static Map<String, String> setUniqueName(final VariableDescriptor vd, List<String> usedNames,
-            GameModel gameModel, Boolean forceReset) {
+        GameModel gameModel, Boolean forceReset) {
         Map<String, String> map = new HashMap<>();
         String oldName = vd.getName();
         if (forceReset) {
@@ -578,9 +577,9 @@ public class Helper {
      */
     public static String humanize(String camelCased) {
         Pattern p = Pattern.compile(
-                "(?<=[A-Z]|^)([A-Z])(?=[a-z])" + "|"
-                + "(?<=[^A-Z])([A-Z])" + "|"
-                + "(?<=[A-Za-z])([^A-Za-z])"
+            "(?<=[A-Z]|^)([A-Z])(?=[a-z])" + "|"
+            + "(?<=[^A-Z])([A-Z])" + "|"
+            + "(?<=[A-Za-z])([^A-Za-z])"
         );
         Matcher matcher = p.matcher(camelCased);
         StringBuffer sb = new StringBuffer();
@@ -657,16 +656,15 @@ public class Helper {
         //return random.ints(length, 48, 110) // 48-57 [0-9] 58-83 -> 65-90 [A-Z] 84-109 -> 97-122 [a-z]
         //        .map(i -> (i < 58 ? i : (i > 83 ? i + 13 : i + 7)))
         return random.ints(48, 123) // 48-57 [0-9] 65-90 [A-Z] 97-122 [a-z]
-                .filter(i -> (i < 58) || (i > 64 && i < 91) || (i > 96))
-                .limit(length)
-                .collect(StringBuilder::new, (sb, i) -> sb.append((char) i), StringBuilder::append)
-                .toString();
+            .filter(i -> (i < 58) || (i > 64 && i < 91) || (i > 96))
+            .limit(length)
+            .collect(StringBuilder::new, (sb, i) -> sb.append((char) i), StringBuilder::append)
+            .toString();
     }
 
     /**
      * Return a wegas property from java properties or from wegas-override.properties or from
-     * wegas.properties if wegas-override or it's respective property is
-     * missing.
+     * wegas.properties if wegas-override or it's respective property is missing.
      *
      * @param propertyName the property to read
      *
@@ -686,14 +684,13 @@ public class Helper {
     }
 
     /**
-     * Like {@link #getWegasProperty(java.lang.String) getWegasProperty()} but
-     * return the given default value if the property does not exists
+     * Like {@link #getWegasProperty(java.lang.String) getWegasProperty()} but return the given
+     * default value if the property does not exists
      *
      * @param propertyName
      * @param defaultValue
      *
-     * @return the wegasProperty or the defaultValue if the property does not
-     *         exists
+     * @return the wegasProperty or the defaultValue if the property does not exists
      */
     public static String getWegasProperty(String propertyName, String defaultValue) {
         try {
@@ -714,7 +711,7 @@ public class Helper {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < array.length; ++i) {
             sb.append(Integer.toHexString((array[i]
-                    & 0xFF) | 0x100).substring(1, 3));
+                & 0xFF) | 0x100).substring(1, 3));
         }
         return sb.toString();
     }
@@ -729,7 +726,7 @@ public class Helper {
     public static String md5Hex(String message) {
         try {
             MessageDigest md
-                    = MessageDigest.getInstance("MD5");
+                = MessageDigest.getInstance("MD5");
             return hex(md.digest(message.getBytes("CP1252")));
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
         }
@@ -755,12 +752,11 @@ public class Helper {
     /**
      * Unescapes a string that contains standard Java escape sequences.
      * <ul>
-     * <li><strong>&#92;b &#92;f &#92;n &#92;r &#92;t &#92;" &#92;'</strong> :
-     * BS, FF, NL, CR, TAB, double and single quote.</li>
-     * <li><strong>&#92;X &#92;XX &#92;XXX</strong> : Octal character
-     * specification (0 - 377, 0x00 - 0xFF).</li>
-     * <li><strong>&#92;uXXXX</strong> : Hexadecimal based Unicode
-     * character.</li>
+     * <li><strong>&#92;b &#92;f &#92;n &#92;r &#92;t &#92;" &#92;'</strong> : BS, FF, NL, CR, TAB,
+     * double and single quote.</li>
+     * <li><strong>&#92;X &#92;XX &#92;XXX</strong> : Octal character specification (0 - 377, 0x00 -
+     * 0xFF).</li>
+     * <li><strong>&#92;uXXXX</strong> : Hexadecimal based Unicode character.</li>
      * </ul>
      * https://gist.github.com/uklimaschewski/6741769
      *
@@ -937,7 +933,7 @@ public class Helper {
         sb.append(" - ").append(t.getMessage());
         for (StackTraceElement elem : t.getStackTrace()) {
             if (elem.getClassName().startsWith("com.wegas")
-                    || elem.getClassName().startsWith("jdk.nashorn")) {
+                || elem.getClassName().startsWith("jdk.nashorn")) {
                 sb.append("\n\tat ");
                 sb.append(elem);
             }
@@ -1089,8 +1085,9 @@ public class Helper {
     }
 
     /**
-     * Returns the IP address of the requesting host by looking first at headers provided by (reverse) proxies.
-     * Depending on local config, it may be necessary to check additional headers.
+     * Returns the IP address of the requesting host by looking first at headers provided by
+     * (reverse) proxies. Depending on local config, it may be necessary to check additional
+     * headers.
      *
      * @param request
      *
@@ -1112,7 +1109,8 @@ public class Helper {
     }
 
     /**
-     * Check if current visibility imply read only access for scenarist under given protection level.
+     * Check if current visibility imply read only access for scenarist under given protection
+     * level.
      *
      * @param level      protection level
      * @param visibility visibility to check
@@ -1127,9 +1125,9 @@ public class Helper {
         // private     t        f         f
 
         return (level == ProtectionLevel.ALL
-                || visibility == Visibility.INTERNAL
-                || (level == ProtectionLevel.PROTECTED && visibility == Visibility.PROTECTED)
-                || (level == ProtectionLevel.INHERITED && (visibility == Visibility.PROTECTED || visibility == Visibility.INHERITED)));
+            || visibility == Visibility.INTERNAL
+            || (level == ProtectionLevel.PROTECTED && visibility == Visibility.PROTECTED)
+            || (level == ProtectionLevel.INHERITED && (visibility == Visibility.PROTECTED || visibility == Visibility.INHERITED)));
     }
 
     public static String anonymizeEmail(String email) {

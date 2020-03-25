@@ -58,7 +58,7 @@ export const PageAPI = {
     itemPath: string[],
     item: PageIndexItem,
   ): Promise<PageIndex> {
-    return rest(PAGE_BASE(gameModelId) + 'UpdateIndex', {
+    return rest(PAGE_BASE(gameModelId) + 'IndexItem', {
       method: 'PUT',
       body: JSON.stringify({
         path: itemPath,
@@ -117,12 +117,30 @@ export const PageAPI = {
     newItem: PageIndexItem,
     pageContent?: WegasComponent,
   ) {
-    return rest(PAGE_BASE(gameModelId) + 'CreateIndexItem', {
+    return rest(PAGE_BASE(gameModelId) + 'IndexItem', {
       method: 'PUT',
       body: JSON.stringify({
         path: folderPath,
         item: newItem,
         payload: pageContent,
+      }),
+    }).then(res => res.json());
+  },
+
+  /**
+   * delete an item of the index. One can not delete a not-empty folder
+   * @param gameModelId
+   * @param path of the item to delete ([folder.name | page.id])
+   * @returns the new PageIndex
+   */
+  deleteIndexItem(
+    gameModelId: number,
+    itemPath: string[],
+  ): Promise<PageIndex> {
+    return rest(PAGE_BASE(gameModelId) + 'DeleteIndexItem', {
+      method: 'POST', // do not use DELETE, otherwise won't be able to post a body!
+      body: JSON.stringify({
+        path: itemPath,
       }),
     }).then(res => res.json());
   },

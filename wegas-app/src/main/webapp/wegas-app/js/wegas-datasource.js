@@ -208,14 +208,14 @@ YUI.add('wegas-datasource', function(Y) {
             /*
              * HACK4backwardcompat...
              * Since Descriptor and Instance datasources became two different DS,
-             * the global update event is sent by different datasource depending on 
-             * updated objects... 
-             * 
-             * Old stuff may still listen to descriptor DS event despiste 
-             * the targeted object is an instance... 
-             * 
+             * the global update event is sent by different datasource depending on
+             * updated objects...
+             *
+             * Old stuff may still listen to descriptor DS event despiste
+             * the targeted object is an instance...
+             *
              * Quick'n'ugly fix : make sure to send Variable event if Instance ds has been updated
-             * 
+             *
              * -> PLEASE USE updatedDescriptor and instanceDescriptor events when applicable
              */
             if (updatedDs.hasOwnProperty(Y.Wegas.Facade.Instance._yuid)) {
@@ -537,14 +537,14 @@ YUI.add('wegas-datasource', function(Y) {
                     return true;
                 }
             } else {
-                // 
+                //
                 if (inCacheEntity) {
                     var oldAttrs, newAttrs;
                     oldAttrs = inCacheEntity.getAttrs();
                     newAttrs = entity.getAttrs();
 
                     /*
-                     * Due to pusher asynchronoussness, make sure not overwritting up-to-date descriptor 
+                     * Due to pusher asynchronoussness, make sure not overwritting up-to-date descriptor
                      * if newAttrs.version attrs is missing, it means entity is not versioned -> update in all case
                      * otherwise, only update if newAttrs is not older
                      */
@@ -1146,7 +1146,7 @@ YUI.add('wegas-datasource', function(Y) {
                 if (scope.variableInstances[scopeKey]) {
 
                     /*
-                     * Updated instance already exists in the cache, due to pusher 
+                     * Updated instance already exists in the cache, due to pusher
                      * asynchronoussness, make sure not overwritting up-to-date instance
                      */
                     if (entity.get("version") >= scope.variableInstances[scopeKey].get("version")) {
@@ -1513,12 +1513,12 @@ YUI.add('wegas-datasource', function(Y) {
             if (page === "*" || page === '') {
                 for (i in result) {
                     if (result.hasOwnProperty(i)) {
-                        this.pageQuery[i] = false;
+//                        this.pageQuery[i] = false;
                         this.setCache(i, result[i]);
                     }
                 }
             } else if (page !== "index") {
-                this.pageQuery[page] = false;
+//                this.pageQuery[page] = false;
                 this.setCache(page, result);
             } else if (page === "index") {
                 this.index = result;
@@ -1576,20 +1576,62 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
         },
+        /**
+         *
+         * @param {type} data
+         * @param {type} callback (index) = {...}
+         */
         createIndexItem: function(data, callback) {
             this.index = null;
-            return this.sendRequest({request: "CreateIndexItem",
+            return this.sendRequest({request: "IndexItem",
                 cfg: {
                     method: POST,
                     data: data
                 },
                 on: {
                     success: Y.bind(function(e) {
+                        this.index = e.response.results;
                         if (callback instanceof Function) {
-                            this.getIndex(callback);
-                        } else {
-                            this.getIndex();
+                            callback(this.index);
                         }
+                    }, this)
+                }
+            });
+        },
+        /**
+         * @param {array} path
+         * @param {type} callback (index) = {...}
+         */
+        deleteIndexItem: function(path, callback) {
+            this.index = null;
+            return this.sendRequest({request: "DeleteIndexItem",
+                cfg: {
+                    method: POST,
+                    data: {
+                        path: path
+                    }
+                },
+                on: {
+                    success: Y.bind(function(e) {
+                        this.index = e.response.results;
+                        if (callback instanceof Function) {
+                            callback(this.index);
+                        }
+                    }, this),
+                    failure: Y.bind(function(e) {
+                        if (e.response.results) {
+                            try {
+                                var error = JSON.parse(e.response.results)
+                                Y.Wegas.Alerts.showMessage("error", error.message);
+                            } catch (e) {
+                                Y.Wegas.Alerts.showMessage("error", "Unexpected error");
+                            }
+                        }
+                        this.getIndex(function(index) {
+                            if (callback instanceof Function) {
+                                callback(index);
+                            }
+                        });
                     }, this)
                 }
             });
@@ -1651,7 +1693,7 @@ YUI.add('wegas-datasource', function(Y) {
         updateIndexItem: function(path, item, callback) {
             this.index = null;
             return this.sendRequest({
-                request: "UpdateIndex",
+                request: "IndexItem",
                 cfg: {
                     method: PUT,
                     data: {
@@ -1733,40 +1775,58 @@ YUI.add('wegas-datasource', function(Y) {
          */
         getPage: function(pageId, callback) {
             var page = null;
-            if (pageId === "default" && this.arePagesHardcoded()) {
-                pageId = 1;
-            }
-            if (this.getCache(pageId)) {
-                page = Y.clone(this.getCache(pageId));
-                page["@pageId"] = pageId;
-                if (callback instanceof Function) {
-                    callback(page);
-                }
-            } else if (!this.pageQuery[pageId]) {
-                this.pageQuery[pageId] = true;
-                return this.sendRequest({
-                    request: "Page/" + pageId,
-                    on: {
-                        success: Y.bind(function(e) {
-                            var page;
-                            this.pageQuery[pageId] = false;
-                            if (callback instanceof Function) {
+            if (pageId === "default") {
+                this.getIndex(Y.bind(function(index) {
+                    var resolved = "1";
+                    if (index) {
+                        resolved = index.defaultPageId;
+                    }
+                    this.getPage(resolved, callback);
+                }, this));
+            } else {
+                if (this.getCache(pageId)) {
+                    page = Y.clone(this.getCache(pageId));
+                    page["@pageId"] = pageId;
+                    if (callback instanceof Function) {
+                        callback(page);
+                    }
+                } else if (!this.pageQuery[pageId]) {
+                    this.pageQuery[pageId] = [callback];
+                    return this.sendRequest({
+                        request: "Page/" + pageId,
+                        on: {
+                            success: Y.bind(function(e) {
+                                var page;
                                 var pId = e.data.getResponseHeader("Page") || pageId;
                                 page = Y.clone(this.getCache(pId));
+
                                 if (page) {
                                     page["@pageId"] = pId;
-                                    callback(page);
                                 }
-                            }
-                        }, this),
-                        failure: Y.bind(function(e) {
-                            this.pageQuery[pageId] = false;
-                            if (Y.Lang.isFunction(callback)) {
-                                callback(null);
-                            }
-                        }, this)
-                    }
-                });
+
+                                for (var cbi in this.pageQuery[pageId]) {
+                                    var cb = this.pageQuery[pageId][cbi];
+                                    if (cb instanceof Function) {
+                                        cb(page);
+                                    }
+                                }
+
+                                this.pageQuery[pageId] = false;
+                            }, this),
+                            failure: Y.bind(function(e) {
+                                this.pageQuery[pageId] = false;
+                                for (var cbi in this.pageQuery[pageId]) {
+                                    var cb = this.pageQuery[pageId][cbi];
+                                    if (cb instanceof Function) {
+                                        cb(null);
+                                    }
+                                }
+                            }, this)
+                        }
+                    });
+                } else {
+                    this.pageQuery[pageId].push(callback);
+                }
             }
         },
         move: function(from, to, pos, callback) {
@@ -1786,7 +1846,22 @@ YUI.add('wegas-datasource', function(Y) {
                         if (callback instanceof Function) {
                             callback(e.response.results);
                         }
-                    }
+                    },
+                    failure: Y.bind(function(e) {
+                        if (e.response.results) {
+                            try {
+                                var error = JSON.parse(e.response.results)
+                                Y.Wegas.Alerts.showMessage("error", error.message);
+                            } catch (e) {
+                                Y.Wegas.Alerts.showMessage("error", "Unexpected error");
+                            }
+                        }
+                        this.getIndex(function(index) {
+                            if (callback instanceof Function) {
+                                callback(index);
+                            }
+                        });
+                    }, this)
                 }
             });
         },
@@ -1811,13 +1886,44 @@ YUI.add('wegas-datasource', function(Y) {
             if (this.index && callback instanceof Function) {
                 callback(this.index);
             } else {
-                if (callback instanceof Function) {
-                    cfg.on.success = function(e) {
-                        callback(e.response.results);
-                    };
+                if (this.arePagesHardcoded()) {
+                    this.getPage("index", Y.bind(function(index) {
+                        if (index) {
+                            callback(index);
+                        } else {
+                            // no hardcoded index
+                            var index = {
+                                root: {
+                                    "@class": "Folder",
+                                    name: null,
+                                    items: []
+                                },
+                                defaultPageId: "1",
+                            };
+                            var allPages = this.get("host").data;
+                            for (var pageId in allPages) {
+                                var page = allPages[pageId];
+                                if (page.type) {
+                                    index.root.items.push({
+                                        "@class": "Page",
+                                        name: page["@name"],
+                                        id: pageId
+                                    });
+                                }
+                            }
+
+                            callback(index);
+                        }
+                    }, this));
+                } else {
+                    if (callback instanceof Function) {
+                        cfg.on.success = function(e) {
+                            callback(e.response.results);
+                        };
+                    }
+                    // @FIXME: let some time for servers to sync.
+                    Y.later(1000, this, this.sendRequest, cfg);
                 }
-                // @FIXME: let some time for servers to sync.
-                Y.later(1000, this, this.sendRequest, cfg);
             }
         },
         _successHandler: function(e) {

@@ -147,14 +147,16 @@ export default function PageEditor() {
 
   const loadIndex = React.useCallback(
     (gameModelId, firstTime: boolean = false) => {
-      PageAPI.getAll(gameModelId).then(pages => {
-        const index = pages['index'];
-        setPagesState(ops => ({
-          defaultPage: index.defaultPageId,
-          selectedPage: firstTime ? index.defaultPageId : ops.defaultPage,
-          pages: returnPages(pages, index.root),
-        }));
-      });
+        // getIndex to make sure index exists
+        PageAPI.getIndex(gameModelId).then(index => {
+          PageAPI.getAll(gameModelId).then(pages => {
+            setPagesState(ops => ({
+              defaultPage: index.defaultPageId,
+              selectedPage: firstTime ? index.defaultPageId : ops.defaultPage,
+              pages: returnPages(pages, index.root),
+            }));
+          });
+        });
     },
     [],
   );

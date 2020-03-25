@@ -193,11 +193,12 @@ public class Pages extends JTARepositoryConnector {
      *
      * @throws RepositoryException
      */
-    public void deletePage(String pageId) throws RepositoryException, JsonProcessingException {
+    public PageIndex deletePage(String pageId) throws RepositoryException, JsonProcessingException {
         this.connector.deleteChild(pageId);
         PageIndex index = this.getIndex();
         index.deletePage(pageId);
         this.saveIndex(index);
+        return index;
     }
 
     /**

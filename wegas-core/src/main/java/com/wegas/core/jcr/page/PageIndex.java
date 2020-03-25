@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,7 +70,9 @@ public class PageIndex {
 
     /**
      * Find parent folder of an item
+     *
      * @param needle
+     *
      * @return null if not found
      */
     public Folder findParent(IndexItem needle) {
@@ -141,6 +144,16 @@ public class PageIndex {
                 }
             }
         }
+    }
+
+    public void deleteFolder(Folder folder, boolean force) {
+        if (folder != null && (folder.getItems().isEmpty() || force)) {
+            Folder parent = this.findParent(folder);
+            parent.getItems().remove(folder);
+        } else {
+            throw WegasErrorMessage.error("Failed to remove '" + folder.getName() + "':Directory not empty");
+        }
+
     }
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,

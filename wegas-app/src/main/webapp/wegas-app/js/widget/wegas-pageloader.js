@@ -242,10 +242,6 @@ YUI.add("wegas-pageloader", function(Y) {
                                 widget.render(this.get(CONTENTBOX));
                                 widget["@pageId"] = widgetCfg["@pageId"]; // @HACK set up a reference to the page
                                 this.set(WIDGET, widget);
-                                //pay attention :default page
-                                this.set("pageId", widget["@pageId"], {
-                                    noquery: true
-                                });
                             } catch (e) {
                                 this.set("widgetCfg", widgetCfg);
                                 this.get(CONTENTBOX).setContent("<center class=" + pageloaderErrorMessageClass +
@@ -254,6 +250,10 @@ YUI.add("wegas-pageloader", function(Y) {
                                     "error",
                                     "Wegas.PageLoader");
                             } finally {
+                                //pay attention :default page
+                                this.set("pageId", widgetCfg["@pageId"], {
+                                    noquery: true
+                                });
                                 this.hideOverlay();
                                 this.fire("contentUpdated", {
                                     page: val

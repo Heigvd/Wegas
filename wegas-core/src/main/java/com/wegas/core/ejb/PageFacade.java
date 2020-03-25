@@ -48,22 +48,34 @@ public class PageFacade {
 
     static final private Logger logger = LoggerFactory.getLogger(PageFacade.class);
 
+    /**
+     * Get index of pages. Create and persist it if it does not exist yet
+     *
+     * @param gm
+     *
+     * @return page index
+     *
+     * @throws RepositoryException
+     * @throws JsonProcessingException
+     */
     public PageIndex getPageIndex(GameModel gm) throws RepositoryException, JsonProcessingException {
         Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
         return pagesDAO.getIndex();
     }
 
     public void savePageIndex(GameModel gm, PageIndex index) throws RepositoryException {
-        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
-        pagesDAO.saveIndex(index);
-        this.registerPageIndexPropagates(pagesDAO, gm);
+        if (!gm.isProtected()) {
+            Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
+            pagesDAO.saveIndex(index);
+            this.registerPageIndexPropagates(pagesDAO, gm);
+        }
     }
 
     public Page getPage(GameModel gm, String pageId) throws RepositoryException, JsonProcessingException {
         Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
         String id = pageId;
         if (pageId.equals("default")) {
-            id = this.getPageIndex(gm).getDefaultPageId();
+            id = pagesDAO.getIndex().getDefaultPageId();
         }
         return pagesDAO.getPage(id);
     }
@@ -178,7 +190,7 @@ public class PageFacade {
         item.setTrainerPage(newItem.isTrainerPage());
     }
 
-    public void UpdateItem(GameModel gm, PageIndex.UpdatePayload payload)
+    public void updateItem(GameModel gm, PageIndex.UpdatePayload payload)
         throws RepositoryException, JsonProcessingException {
         Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
         PageIndex index = pagesDAO.getIndex();
@@ -208,6 +220,30 @@ public class PageFacade {
         pagesDAO.saveIndex(index);
     }
 
+    public PageIndex deleteItem(GameModel gm, PageIndex.UpdatePayload payload)
+        throws RepositoryException, JsonProcessingException {
+        Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
+        PageIndex index = pagesDAO.getIndex();
+
+        List<String> path = payload.getPath();
+        //PageIndex.IndexItem item = payload.getItem();
+
+        if (path == null || path.isEmpty()) {
+            throw WegasErrorMessage.error("Can not delete root");
+        } else {
+            PageIndex.IndexItem item = index.findItem(path);
+            if (item instanceof PageIndex.Folder) {
+                index.deleteFolder((PageIndex.Folder) item, false);
+                pagesDAO.saveIndex(index);
+                this.registerPageIndexPropagates(pagesDAO, gm);
+            } else if (item instanceof PageIndex.Page) {
+                index = this.deletePage(gm, item.getId());
+            }
+        }
+
+        return index;
+    }
+
     /**
      * Is path1 child of path2 ?
      *
@@ -219,11 +255,11 @@ public class PageFacade {
     private static boolean isChildOf(List<String> path1, List<String> path2) {
         if (path1 != null && !path1.isEmpty()) {
             if (path2 != null && !path2.isEmpty()) {
-                if (path2.size() <= path1.size()) {
+                if (path1.size() <= path2.size()) {
                     return false;
                 } else {
                     int i;
-                    for (i = 0; i < path1.size(); i++) {
+                    for (i = 0; i < path2.size(); i++) {
                         if (!path1.get(i).equals(path2.get(i))) {
                             return false;
                         }
@@ -280,7 +316,7 @@ public class PageFacade {
                         if (pos == null) {
                             pos = dest.getItems().size();
                         } else {
-                            pos = Math.max(pos, dest.getItems().size());
+                            pos = Math.min(Math.max(pos, 0), dest.getItems().size());
                         }
                         dest.getItems().add(pos, item);
 
@@ -306,10 +342,11 @@ public class PageFacade {
         this.registerPageIndexPropagates(pagesDAO, gm);
     }
 
-    public void deletePage(GameModel gm, String pageId) throws RepositoryException, JsonProcessingException {
+    public PageIndex deletePage(GameModel gm, String pageId) throws RepositoryException, JsonProcessingException {
         Pages pagesDAO = this.jcrConnectorProvider.getPages(gm);
-        pagesDAO.deletePage(pageId);
+        PageIndex index = pagesDAO.deletePage(pageId);
         this.registerPageIndexPropagates(pagesDAO, gm);
+        return index;
     }
 
     public Page patchPage(GameModel gm, String pageId, JsonPatch patch) throws RepositoryException, JsonProcessingException {

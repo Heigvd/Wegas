@@ -18,14 +18,15 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
         Plugin = Y.Plugin,
         DATASOURCE = Wegas.Facade.Page.cache;
 
-    function getAddBtnMenuItems(path) {
+    function getAddBtnMenuItems(path, tv) {
         return [
             {
                 type: 'AddPageIndexItemButton',
                 label: '<span class="fa fa-folder-o"> </span> Folder',
                 cssClass: 'border-bottom',
                 targetClass: 'PageFolderMeta',
-                path: path
+                path: path,
+                tv: tv
             },
             {
                 type: 'AddPageIndexItemButton',
@@ -34,7 +35,8 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 path: path,
                 cfg: {
                     type: 'FlexList'
-                }
+                },
+                tv: tv
             },
             {
                 type: 'AddPageIndexItemButton',
@@ -43,7 +45,8 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 path: path,
                 cfg: {
                     type: 'AbsoluteLayout'
-                }
+                },
+                tv: tv
             }
         ];
     }
@@ -74,7 +77,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 type: "Button",
                 label: "Delete",
                 on: {
-                    click: Y.bind(treeView.deletePage, treeView, data.page)
+                    click: Y.bind(treeView.deleteIndexItem, treeView, data.path, data.page)
                 }
             }];
     }
@@ -97,7 +100,8 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                     item: newVal,
                     payload: this.get("cfg")
                 };
-                Y.Wegas.Facade.Page.cache.createIndexItem(data);
+                var tv = this.get("tv");
+                Y.Wegas.Facade.Page.cache.createIndexItem(data, Y.bind(tv.buildIndex, tv));
             }, this));
         },
         onClick: function() {
@@ -116,6 +120,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 type: 'string'
             },
             cfg: {},
+            tv: {},
             path: {
                 type: 'array'
             }
@@ -138,12 +143,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
         ATTRS: {
         }
     });
-    Y.Wegas.AddPageIndexItemButton = AddPageIndexItemButton;
-
-
-
-
-
+    Y.Wegas.SetPageAsDefaultButton = SetPageAsDefaultButton;
 
     PageTreeview = Y.Base.create("wegas-editor-page", Y.Widget, [Wegas.Widget, Wegas.Editable, Y.WidgetChild], {
         renderUI: function() {
@@ -202,7 +202,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                         // index update
                         var destData = e.dropWidget.get("data");
                         var destPath = destData && destData.path || [];
-                        DATASOURCE.move(data.path, destPath, e.index);
+                        DATASOURCE.move(data.path, destPath, e.index, Y.bind(this.buildIndex, this));
 
                     } else if (e.dropWidget.get("data.widget")) {
                         // move widget
@@ -320,7 +320,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             if (this.btnNew) {
                 // Initialize the 'New page' button menu :
                 this.btnNew.plug(Plugin.WidgetMenu, {
-                    children: getAddBtnMenuItems([])
+                    children: getAddBtnMenuItems([], this)
                 });
             }
         },
@@ -565,7 +565,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             var form = Plugin.EditEntityAction.showEditForm(folder,
                 Y.bind(function(value) {
                     Plugin.EditEntityAction.hideEditFormOverlay();
-                    delete value["@path"];
+                    delete value["path"];
                     delete value["items"];
                     delete value["id"];
                     DATASOURCE.updateIndexItem(data.path, value, Y.bind(this.buildIndex, this));
@@ -577,13 +577,29 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                     plugins: [{
                             fn: "WidgetMenu",
                             cfg: {
-                                children: getAddBtnMenuItems(data.path)
+                                children: getAddBtnMenuItems(data.path, this)
                             }
                         }]
-                }];
+                }, {
+                    type: "Button",
+                    label: "Delete",
+                    on: {
+                        click: Y.bind(this.deleteIndexItem, this, data.path, data.folder)
+                    }
+                }
+            ];
 
             Plugin.EditEntityAction.processMenu(menu, folder);
             form.toolbar.add(menu);
+        },
+        deleteIndexItem: function(path, item) {
+            var type = item["@class"].toLowerCase();
+            var sPath = "/" + path.join("/");
+
+            Wegas.Panel.confirm("You are removing \""
+                + sPath + "\" " + type + " , this can't be undone. Are you sure?", Y.bind(function() {
+                    DATASOURCE.deleteIndexItem(path, Y.bind(this.buildIndex, this));
+                }, this));
         },
         deletePage: function(pageId) {
             var treeNode, i;
@@ -609,8 +625,8 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 this.hideOverlay();
             }, this));
         },
-        duplicatePage: function(pageId) {
-            DATASOURCE.duplicate(pageId, Y.bind(function(page, id) {
+        duplicatePage: function(page) {
+            DATASOURCE.duplicate(page.id, Y.bind(function(page, id) {
                 this.changePage(id, null, true);
             }, this));
         },
@@ -732,7 +748,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                         plugins: [{
                                 fn: "WidgetMenu",
                                 cfg: {
-                                    children: getAddBtnMenuItems(data.path)
+                                    children: getAddBtnMenuItems(data.path, this.get("host"))
                                 }
                             }]
                     }

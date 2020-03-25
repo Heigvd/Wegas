@@ -201,7 +201,7 @@ public class PageController {
      * @throws com.fasterxml.jackson.core.JsonProcessingException
      */
     @PUT
-    @Path("/UpdateIndex")
+    @Path("/IndexItem")
     public Response updateIndexItem(@PathParam("gameModelId") Long gameModelId,
         PageIndex.UpdatePayload payload)
         throws RepositoryException, JsonProcessingException {
@@ -209,9 +209,32 @@ public class PageController {
         GameModel gm = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gm);
 
-        pageFacade.UpdateItem(gm, payload);
+        pageFacade.updateItem(gm, payload);
 
         return Response.ok(pageFacade.getPageIndex(gm), MediaType.APPLICATION_JSON)
+            .header("Page", "index").build();
+    }
+
+    /**
+     * @param gameModelId 
+     * @param payload contains the path of the item to delete
+     *
+     * @throws RepositoryException
+     * @throws com.fasterxml.jackson.core.JsonProcessingException
+     * @throws WegasErrorMessage if trying to delete not empty folder
+     */
+    @POST // one would use DELETE, but such a method does not handle payload well...
+    @Path("/DeleteIndexItem")
+    public Response deleteIndexItem(@PathParam("gameModelId") Long gameModelId,
+        PageIndex.UpdatePayload payload)
+        throws RepositoryException, JsonProcessingException {
+
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
+
+        PageIndex index = pageFacade.deleteItem(gm, payload);
+
+        return Response.ok(index, MediaType.APPLICATION_JSON)
             .header("Page", "index").build();
     }
 
@@ -247,7 +270,7 @@ public class PageController {
     }
 
     @POST
-    @Path("/CreateIndexItem")
+    @Path("/IndexItem")
     public Response createIndexItem(@PathParam("gameModelId") Long gameModelId,
         PageIndex.NewItemPayload payload) throws RepositoryException, IOException {
 
