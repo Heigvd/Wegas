@@ -78,7 +78,6 @@ export function LangToggler() {
       items={availableLang.map(language => ({
         id: language.code,
         label: `${language.code} : ${language.lang}`,
-        value: language.lang,
       }))}
       onSelect={item => selectLang(item.id)}
     />

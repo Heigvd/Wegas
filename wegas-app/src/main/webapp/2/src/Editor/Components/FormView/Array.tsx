@@ -2,7 +2,7 @@ import * as React from 'react';
 import { css, cx } from 'emotion';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
-import { Menu } from '../../../Components/Menu';
+import { Menu, MenuItem, SelectedMenuItem } from '../../../Components/Menu';
 import { CommonViewContainer, CommonView } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 import { themeVar } from '../../../Components/Theme';
@@ -43,24 +43,20 @@ const handleStyle = css({
   display: 'inline-grid',
 });
 
-interface AdderProps {
-  onChildAdd: (value?: {} | undefined) => void;
-  // choices?: {
-  //   label: React.ReactNode;
-  //   value: string;
-  // }[];
-  choices?: Item<string>[];
+interface AdderProps<T> {
+  onChildAdd: (value?: SelectedMenuItem<T>) => void;
+  choices?: MenuItem<T>[];
   id?: string;
   tooltip?: string;
 }
 
-function Adder({ onChildAdd, choices, id, tooltip }: AdderProps) {
+function Adder<T>({ onChildAdd, choices, id, tooltip }: AdderProps<T>) {
   if (Array.isArray(choices)) {
     return (
       <Menu
         items={choices}
         icon="plus-circle"
-        onSelect={({ value }) => onChildAdd(value)}
+        onSelect={item => onChildAdd(item)}
       />
     );
   }
@@ -219,12 +215,12 @@ export interface IArrayProps
   value?: {}[];
 }
 
-interface DropArrayProps {
+interface DropArrayProps<T> {
   array?: {}[];
   onMove?: (array?: {}[]) => void;
   onChildRemove?: (index: number) => void;
-  onChildAdd?: (value?: {}) => void;
-  choices?: Item<string>[];
+  onChildAdd?: (value?: SelectedMenuItem<T>) => void;
+  choices?: MenuItem<T>[];
   tooltip?: string;
   label?: React.ReactNode;
   maxItems?: number;
@@ -235,7 +231,7 @@ interface DropArrayProps {
   unsortable?: boolean;
 }
 
-export function DragDropArray({
+export function DragDropArray<T>({
   array,
   onMove,
   onChildRemove,
@@ -250,7 +246,7 @@ export function DragDropArray({
   readOnly,
   children,
   unsortable,
-}: React.PropsWithChildren<DropArrayProps>) {
+}: React.PropsWithChildren<DropArrayProps<T>>) {
   const valueLength = Array.isArray(array) ? array.length : 0;
   return (
     <>
@@ -325,13 +321,14 @@ function ArrayWidget({
     sortable,
   } = view;
   const { maxItems, minItems } = schema;
+  const onNewChild = userOnChildAdd ? userOnChildAdd : onChildAdd;
   return (
     <CommonViewContainer errorMessage={errorMessage} view={view}>
       <Labeled label={label} description={description}>
         {({ inputId, labelNode }) => (
           <DragDropArray
             onMove={onChange}
-            onChildAdd={userOnChildAdd ? userOnChildAdd : onChildAdd}
+            onChildAdd={i => onNewChild(i ? i.value : undefined)}
             onChildRemove={onChildRemove}
             array={value}
             choices={choices}

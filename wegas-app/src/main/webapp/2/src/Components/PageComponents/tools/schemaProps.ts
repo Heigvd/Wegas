@@ -414,8 +414,8 @@ export const schemaProps = {
     required,
     type: 'object',
     value,
-    choices,
     view: {
+      choices,
       featureLevel,
       index,
       label,

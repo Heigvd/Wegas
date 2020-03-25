@@ -422,7 +422,6 @@ export default function PageEditor() {
                   </div>
                 ),
                 id: k,
-                value: k,
               };
             })}
             onSelect={({ id }) => {

@@ -591,7 +591,6 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                 (name: string) => ({
                   id: name,
                   label: name,
-                  value: name,
                 }),
               )}
               onSelect={({ id }) =>
@@ -608,7 +607,6 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                 .map(v => ({
                   id: v,
                   label: v,
-                  value: v,
                 }))}
               onSelect={({ id }) =>
                 dispatchStateAction({

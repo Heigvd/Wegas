@@ -12,12 +12,20 @@ export interface MenuItem<T> extends Item<T> {
   disabled?: true;
 }
 
+export interface SelectedMenuItem<T> extends MenuItem<T> {
+  path: number[];
+}
+
 export interface MenuProps<I, T extends MenuItem<I> = MenuItem<I>> {
   id?: string;
-  onSelect: (item: T, keyEvent: ModifierKeysEvent) => void;
+  onSelect: (
+    item: T & SelectedMenuItem<I>,
+    keyEvent: ModifierKeysEvent,
+  ) => void;
   onOpen?: () => void;
   items: readonly T[];
   label?: React.ReactNode;
+  path?: number[];
   icon?: IconName;
   direction?: 'left' | 'down' | 'right' | 'top';
   containerClassName?: string;
@@ -71,6 +79,7 @@ export function Menu<I, T extends MenuItem<I> = MenuItem<I>>({
   onSelect,
   direction,
   label,
+  path,
   items,
   icon,
   containerClassName,
@@ -93,7 +102,7 @@ export function Menu<I, T extends MenuItem<I> = MenuItem<I>>({
   return (
     <Downshift
       onStateChange={onStateChange}
-      onSelect={i => onSelect(i, keyboardEvents)}
+      onSelect={i => onSelect({ ...i, path: path || [] }, keyboardEvents)}
       itemToString={emtpyStr}
     >
       {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
@@ -130,7 +139,8 @@ export function Menu<I, T extends MenuItem<I> = MenuItem<I>>({
                 }
               }}
             >
-              {items.map((item, index) => {
+              {items.map((item: T, index: number) => {
+                const newPath = [...(path ? path : []), index];
                 if (Array.isArray(item.items)) {
                   return (
                     <div
@@ -150,6 +160,7 @@ export function Menu<I, T extends MenuItem<I> = MenuItem<I>>({
                         items={item.items as T[]}
                         direction="right"
                         label={item.label}
+                        path={newPath}
                       />
                     </div>
                   );

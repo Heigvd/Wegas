@@ -67,7 +67,6 @@ export function FeatureToggler() {
               {feature}
             </>
           ),
-          value: feature,
         }))}
         onSelect={({ id: feature }) => selectFeature(feature)}
       />

@@ -92,6 +92,7 @@ function update<T>(
   };
 }
 interface TreeNodeProps<T> extends Item<T> {
+  value: T;
   expanded?: boolean;
   selected?: T;
   match?: boolean;

@@ -4,7 +4,7 @@ import HandleUpDown from './HandleUpDown';
 
 export interface Item<T> {
   label: React.ReactNode;
-  value: T;
+  value?: T;
   selectable?: boolean;
   items?: Item<T>[];
   className?: string;

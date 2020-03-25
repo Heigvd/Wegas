@@ -123,19 +123,6 @@ export function FlexItem({
   );
 }
 
-export const flexItemSchema = {
-  layout: schemaProps.hashlist('Layout properties', false, {
-    order: schemaProps.number('Order', false),
-    alignSelf: schemaProps.select('Align self', false, alignSelfValues),
-    flexGrow: schemaProps.number('Flex grow', false),
-    flexShrink: schemaProps.number('Flex shrink', false),
-    flexBasis: schemaProps.string('Flex basis', false),
-  }),
-  className: schemaProps.string('Classes', false, undefined, undefined, 1000),
-  style: schemaProps.code('Style', false, 'JSON', undefined, 'ADVANCED', 1001),
-  children: schemaProps.hidden(false, 'array'),
-};
-
 export const flexDirectionValues = [
   'row',
   'row-reverse',
