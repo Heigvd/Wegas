@@ -42,6 +42,11 @@ public class GameModelScope extends AbstractScope<GameModel> {
     private VariableInstance variableInstance;
 
     @Override
+    public ScopeType getScopeType() {
+        return ScopeType.GameModelScope;
+    }
+
+    @Override
     protected void propagate(GameModel gameModel, boolean create) {
         VariableDescriptor vd = this.getVariableDescriptor();
         VariableInstance vi = this.getVariableInstance();

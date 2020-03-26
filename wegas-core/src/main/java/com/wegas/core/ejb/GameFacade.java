@@ -118,14 +118,15 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Create (persist) a new game base on a gameModel identified by gameModelId. This gameModel will first been
-     * duplicated (to freeze it against original gameModel update) Then, the game will be attached to this duplicate.
+     * Create (persist) a new game base on a gameModel identified by gameModelId. This gameModel
+     * will first been duplicated (to freeze it against original gameModel update) Then, the game
+     * will be attached to this duplicate.
      * <p>
-     * The game will contains a DebugTeam, which contains itself a test player. This team/testPlayer will be immediately
-     * usable since theirs variableInstance are create synchronously.
+     * The game will contains a DebugTeam, which contains itself a test player. This team/testPlayer
+     * will be immediately usable since theirs variableInstance are create synchronously.
      *
      * @param gameModelId id of the gameModel to create a new game for
-     * @param game the game to persist
+     * @param game        the game to persist
      *
      * @throws java.lang.CloneNotSupportedException
      *
@@ -157,11 +158,11 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      * Persist a new game within the given gameModel
      * <p>
-     * The game will contains a DebugTeam, which contains itself a test player. This team/testPlayer will be immediately
-     * usable since theirs variableInstance are create synchronously.
+     * The game will contains a DebugTeam, which contains itself a test player. This team/testPlayer
+     * will be immediately usable since theirs variableInstance are create synchronously.
      *
      * @param gameModel the gameModel to add the game in
-     * @param game the game to persist within the gameModel
+     * @param game      the game to persist within the gameModel
      */
     private void create(final GameModel gameModel, final Game game) {
         requestManager.assertCanInstantiateGameModel(gameModel);
@@ -171,11 +172,14 @@ public class GameFacade extends BaseFacade<Game> {
         if (game.getToken() == null) {
             game.setToken(this.createUniqueToken(game));
         } else if (this.findLiveOrBinByToken(game.getToken()) != null) {
-            throw WegasErrorMessage.error("This access key is already in use", "COMMONS-SESSIONS-TAKEN-TOKEN-ERROR");
+            throw WegasErrorMessage.error("This access key is already in use",
+                "COMMONS-SESSIONS-TAKEN-TOKEN-ERROR");
         }
         getEntityManager().persist(game);
 
-        game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
+        // @hack @fixme, guest are not stored in the db so link wont work
+        // well, I don't think a guest can create games...
+        game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null);
         gameModel.addGame(game);
 
         /*
@@ -278,7 +282,7 @@ public class GameFacade extends BaseFacade<Game> {
 
         // This is for retrocompatibility w/ game models that do not habe DebugGame
         if (entity.getGameModel().getGames().size() <= 1
-                && !(entity.getGameModel().getGames().get(0) instanceof DebugGame)) {// This is for retrocompatibility w/ game models that do not habe DebugGame
+            && !(entity.getGameModel().getGames().get(0) instanceof DebugGame)) {// This is for retrocompatibility w/ game models that do not habe DebugGame
             gameModelFacade.remove(entity.getGameModel());
         } else {
             getEntityManager().remove(entity);
@@ -319,9 +323,9 @@ public class GameFacade extends BaseFacade<Game> {
 
     public Game findByStatusAndToken(final String token, Game.Status status) {
         final TypedQuery<Game> tq = getEntityManager()
-                .createNamedQuery("Game.findByToken", Game.class)
-                .setParameter("token", token)
-                .setParameter("status", status);
+            .createNamedQuery("Game.findByToken", Game.class)
+            .setParameter("token", token)
+            .setParameter("status", status);
         try {
             return tq.getSingleResult();
         } catch (NoResultException ex) {
@@ -342,15 +346,16 @@ public class GameFacade extends BaseFacade<Game> {
 
     /**
      * @param gameModelId
-     * @param orderBy not used...
+     * @param orderBy     not used...
      *
-     * @return all games belonging to the gameModel identified by gameModelId but DebugGames, ordered by creation time
+     * @return all games belonging to the gameModel identified by gameModelId but DebugGames,
+     *         ordered by creation time
      */
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
         return getEntityManager().createQuery("SELECT g FROM Game g "
-                + "WHERE TYPE(g) != DebugGame AND g.gameModel.id = :gameModelId ORDER BY g.createdTime DESC", Game.class)
-                .setParameter("gameModelId", gameModelId)
-                .getResultList();
+            + "WHERE TYPE(g) != DebugGame AND g.gameModel.id = :gameModelId ORDER BY g.createdTime DESC", Game.class)
+            .setParameter("gameModelId", gameModelId)
+            .getResultList();
     }
 
     /**
@@ -359,7 +364,20 @@ public class GameFacade extends BaseFacade<Game> {
      * @return all games which match the given status
      */
     public List<Game> findAll(final Game.Status status) {
-        return getEntityManager().createNamedQuery("Game.findByStatus", Game.class).setParameter("status", status).getResultList();
+        return getEntityManager().createNamedQuery("Game.findByStatus", Game.class)
+            .setParameter("status", status).getResultList();
+    }
+
+    /**
+     * Find all game by status.
+     *
+     * @param statuses statuses to search
+     *
+     * @return all games which match any of the given status
+     */
+    public List<Game> findAll(final List<Game.Status> statuses) {
+        return getEntityManager().createNamedQuery("Game.findByStatuses", Game.class)
+            .setParameter("statuses", statuses).getResultList();
     }
 
     /**
@@ -391,22 +409,12 @@ public class GameFacade extends BaseFacade<Game> {
      * @return the list of all games which given status the current use has access to
      */
     public Collection<Game> findByStatusAndUser(Game.Status status) {
+        List<Game.Status> gStatuses = new ArrayList<>();
+        gStatuses.add(status);
+
+        Map<Long, List<String>> gMatrix = this.getPermissionMatrix(gStatuses);
+
         ArrayList<Game> games = new ArrayList<>();
-        Map<Long, List<String>> gMatrix = new HashMap<>();
-        Map<Long, List<String>> gmMatrix = new HashMap<>();
-
-        // Previous behaviour was to fetch all games from DB and then filter against user permissions
-        // it was time consuming
-        // New way is to fetch permissions first and extract games from this list
-        String roleQuery = "SELECT p FROM Permission p WHERE "
-                + "(p.role.id in "
-                + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
-                + ")";
-
-        String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId";
-
-        gameModelFacade.processQuery(userQuery, gmMatrix, gMatrix, GameModel.GmType.PLAY, GameModel.Status.LIVE, status);
-        gameModelFacade.processQuery(roleQuery, gmMatrix, gMatrix, GameModel.GmType.PLAY, GameModel.Status.LIVE, status);
 
         for (Map.Entry<Long, List<String>> entry : gMatrix.entrySet()) {
             Long id = entry.getKey();
@@ -424,10 +432,37 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
+     * Fetch all game ids that current user has access to which match any of the given statuses.
+     *
+     * @param statuses statuses of game to look for
+     *
+     * @return list of gameId mapped to the permission the user has
+     */
+    public Map<Long, List<String>> getPermissionMatrix(List<Game.Status> statuses) {
+        Map<Long, List<String>> gMatrix = new HashMap<>();
+
+        // Previous behaviour was to fetch all games from DB and then filter against user permissions
+        // it was time consuming
+        // New way is to fetch permissions first and extract games from this list
+        String roleQuery = "SELECT p FROM Permission p WHERE "
+            + "(p.role.id in "
+            + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
+            + ")";
+
+        String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId";
+
+        gameModelFacade.processQuery(userQuery, null, gMatrix, null, null, statuses);
+        gameModelFacade.processQuery(roleQuery, null, gMatrix, null, null, statuses);
+
+        return gMatrix;
+    }
+
+    /**
      * Create a new player within a team for the user identified by userId
      *
-     * @param teamId id of the team to join
-     * @param userId id of the user to create a player for, may be null to create an anonymous player
+     * @param teamId    id of the team to join
+     * @param userId    id of the user to create a player for, may be null to create an anonymous
+     *                  player
      * @param languages
      *
      * @return a new player, linked to a user, who just joined the team
@@ -444,8 +479,8 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Same as {@link #joinTeam(java.lang.Long, java.lang.Long, java.lang.String)} but anonymously. (for testing
-     * purpose)
+     * Same as {@link #joinTeam(java.lang.Long, java.lang.Long, java.lang.String)} but anonymously.
+     * (for testing purpose)
      *
      * @param teamId id of the team to join
      *
@@ -598,11 +633,11 @@ public class GameFacade extends BaseFacade<Game> {
     private void loadOverviews(XlsxSpreadsheet xlsx, Game game, boolean includeTestPlayer) {
         Player p = game.getTestPlayer();
         String script = ""
-                + "var result= [];"
-                + "if (WegasDashboard){"
-                + "  result = WegasDashboard.getAllOverviews(true);"
-                + "}"
-                + "result;";
+            + "var result= [];"
+            + "if (WegasDashboard){"
+            + "  result = WegasDashboard.getAllOverviews(true);"
+            + "}"
+            + "result;";
 
         CellStyle titleStyle = xlsx.createHeaderStyle();
         titleStyle.setAlignment(HorizontalAlignment.CENTER);
@@ -686,7 +721,7 @@ public class GameFacade extends BaseFacade<Game> {
 
                             Object value = teamData.get(itemId);
 
-                            if (kind.equals("inbox") || kind.equals("text")){
+                            if (kind.equals("inbox") || kind.equals("text")) {
                                 value = ((ScriptObjectMirror) value).getMember("body");
                             }
 

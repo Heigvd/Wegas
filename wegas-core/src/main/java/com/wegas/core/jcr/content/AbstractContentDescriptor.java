@@ -487,7 +487,9 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
         if (this.path.equals("/")) {
             this.fileSystemAbsolutePath = "/" + this.name;
         } else {
-            this.fileSystemAbsolutePath = this.path + "/" + this.name;
+            this.fileSystemAbsolutePath = this.path
+                + (this.path.endsWith("/") ? "" : "/")
+                + this.name;
         }
     }
 

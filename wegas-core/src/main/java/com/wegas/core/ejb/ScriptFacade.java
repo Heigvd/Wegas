@@ -656,7 +656,7 @@ public class ScriptFacade extends WegasAbstractFacade {
         return this.eval(player, scripts, arguments);
     }
 
-    public Object eval(Player p, AbstractTransition transition, VariableDescriptor context) throws WegasScriptException {
+    public Object eval_doNotUse(Player p, AbstractTransition transition, VariableDescriptor context) throws WegasScriptException {
         String name = "transition:" + transition.getId();
         CachedScript cached = getCachedScript(name, transition.getVersion().toString(), transition.getTriggerCondition().getContent());
 
