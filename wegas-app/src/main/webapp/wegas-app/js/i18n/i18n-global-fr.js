@@ -34,7 +34,8 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
             ok: "OK",
             cancel: "Annuler",
             yes: "oui",
-            no: "non"
+            no: "non",
+            submit: "valider"
         },
         i18n:{
             manager: {

@@ -1,0 +1,129 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2020  School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
+/*
+ * Created on : March 10, 2020
+ * Author     : jarle.hulaas@heig-vd.ch
+*/
+
+.wegas-spreadsheet {
+    width: max-content;
+}
+
+.wegas-spreadsheet table {
+    text-align: right;
+    border: 1px double #bbb;
+    box-shadow: 3px 3px 2px #bbb;
+    min-width: 600px;
+    margin-bottom: 10px;
+}
+
+.wegas-spreadsheet .wegas-submit-button {
+    float: right;
+    margin: 10px 0;
+}    
+    
+.wegas-spreadsheet .answerkey-definition-button {
+    max-width: 145px;
+    margin: 10px 0 10px;
+}
+
+.wegas-spreadsheet .answerkey-definition-button:before {
+    font-family: "FontAwesome";
+    text-transform: none;
+    content: "";
+    font-size: 17px;
+    position: relative;
+    top: 2px;
+    left: -6px;
+}
+
+.wegas-spreadsheet .answerkey-definition-button:hover {
+    border: 2px solid #009900;
+}
+
+.wegas-spreadsheet tr {
+    line-height: 1.5;
+}
+
+.wegas-spreadsheet td {
+    padding: 0px;
+    border: 1px solid #ddd;
+    background: #f9f9ff;
+}
+
+.wegas-spreadsheet .no-input {
+    padding: 2px 5px;
+}
+
+.wegas-spreadsheet input {
+    text-align: right;
+    width: calc(100% - 7px);
+    margin: 0;
+    padding: 0 2px 0 0;
+}
+
+.wegas-spreadsheet .checkbox.checked:before {
+    content: '\2714';
+    font-weight: 600;
+    color: #009900;
+}
+
+.wegas-spreadsheet .checkbox:before {
+    display: block;
+    text-align: center;
+    top: 3px;
+    left: 0px;
+    content: "\00A0";
+    width: 19px;
+    height: 19px;
+    font-size: 18px;
+    line-height: 19px;
+    margin: 0 auto;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    box-shadow: inset 0 0 1px 0px #bbb;
+}
+
+.wegas-spreadsheet .checkbox:hover:before {
+    background: #eee;
+    border-color: #999;
+}
+
+.wegas-spreadsheet input.errored,
+.wegas-spreadsheet .checkbox.errored:before {
+    border: 2px solid red !important;
+}
+
+/*************  Formatting classes to be entered by the scenarist in source mode    ***********/
+
+.wegas-spreadsheet .header-row {
+    text-align: center;    
+}
+
+.wegas-spreadsheet .header-column {
+    text-align: left;
+}
+
+.wegas-spreadsheet .gray-background {
+    background: #eee;
+}
+
+.wegas-spreadsheet .borders {
+    border: 1px double #999 !important;
+}
+
+.wegas-spreadsheet .underline-1px .formula {
+    border-bottom: 1px solid #333;
+    padding-left: 8px;
+}
+
+.wegas-spreadsheet .underline-2px .formula {
+    border-bottom: 2px solid #333;
+    padding-left: 8px;
+}
+

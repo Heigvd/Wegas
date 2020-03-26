@@ -474,6 +474,14 @@ YUI().use(function(Y) {
             },
             "wegas-chartistcss": {
                 type: CSS
+            },
+            "wegas-spreadsheet": {
+                path: "js/widget/wegas-spreadsheet-min.js",
+                requires: ["wegas-spreadsheetcss", "wegas-mcq-viewcss", "wegas-panel"],
+                ws_provides: "Spreadsheet"
+            },
+            "wegas-spreadsheetcss": {
+                type: CSS
             }
         }
     });
