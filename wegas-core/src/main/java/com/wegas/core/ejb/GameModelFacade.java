@@ -56,7 +56,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -765,7 +764,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     /**
      * Do a JPA query to fetch the reference of the given model.
-     * 
+     *
      * @param gm the model
      *
      * @return the reference of the model or null
@@ -886,6 +885,23 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
+     * Find all gameModels by type and status.
+     *
+     * @param gmTypes  gameModels must match one of the given types
+     * @param statuses gameModels must match one of the given statuses
+     *
+     * @return all gameModel matching the given status
+     */
+    public List<GameModel> findByTypesAndStatuses(List<GameModel.GmType> gmTypes,
+        final List<GameModel.Status> statuses) {
+
+        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByTypesAndStatuses", GameModel.class);
+        query.setParameter("types", gmTypes);
+        query.setParameter("statuses", statuses);
+        return query.getResultList();
+    }
+
+    /**
      * @param name
      * @param type
      *
@@ -984,8 +1000,36 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         return gameModels;
     }
 
+    /**
+     * Get the list of gameModels id the current user has access to.
+     *
+     * @param type   restrict to this kind of gameModel
+     * @param status restrict to gameModel with such a status
+     *
+     * @return list of gameModel id mapped with the permission the user has
+     */
     public Map<Long, List<String>> getPermissionMatrix(GameModel.GmType type,
         GameModel.Status status) {
+
+        List<GameModel.GmType> gmTypes = new ArrayList<>();
+        List<GameModel.Status> gmStatuses = new ArrayList<>();
+
+        gmTypes.add(type);
+        gmStatuses.add(status);
+
+        return getPermissionMatrix(gmTypes, gmStatuses);
+    }
+
+    /**
+     * Get the list of gameModels id the current user has access to.
+     *
+     * @param types    restrict to those kind of gameModel
+     * @param statuses restrict to gameModel having one of these status
+     *
+     * @return list of gameModel id mapped with the permission the user has
+     */
+    public Map<Long, List<String>> getPermissionMatrix(List<GameModel.GmType> types,
+        List<GameModel.Status> statuses) {
         Map<Long, List<String>> pMatrix = new HashMap<>();
 
         String roleQuery = "SELECT p FROM Permission p WHERE "
@@ -995,24 +1039,27 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId ";
 
-        this.processQuery(userQuery, pMatrix, null, type, status, null);
-        this.processQuery(roleQuery, pMatrix, null, type, status, null);
+        this.processQuery(userQuery, pMatrix, null, types, statuses, null);
+        this.processQuery(roleQuery, pMatrix, null, types, statuses, null);
 
         return pMatrix;
     }
 
-    public void processQuery(String sqlQuery, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, GameModel.GmType gmType, GameModel.Status gmStatus, Game.Status gStatus) {
+    public void processQuery(String sqlQuery, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, List<GameModel.GmType> gmTypes, List<GameModel.Status> gmStatuses, List<Game.Status> gStatuses) {
         TypedQuery<Permission> query = this.getEntityManager().createQuery(sqlQuery, Permission.class);
         User user = userFacade.getCurrentUser();
         query.setParameter("userId", user.getId());
         List<Permission> resultList = query.getResultList();
 
         for (Permission p : resultList) {
-            processPermission(p.getValue(), gmMatrix, gMatrix, gmType, gmStatus, gStatus);
+            processPermission(p.getValue(), gmMatrix, gMatrix, gmTypes, gmStatuses, gStatuses);
         }
     }
 
-    private void processPermission(String permission, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, GameModel.GmType gmType, GameModel.Status gmStatus, Game.Status gStatus) {
+    private void processPermission(String permission, Map<Long, List<String>> gmMatrix,
+        Map<Long, List<String>> gMatrix,
+        List<GameModel.GmType> gmTypes, List<GameModel.Status> gmStatuses,
+        List<Game.Status> gStatuses) {
         if (permission != null && !permission.isEmpty()) {
             String[] split = permission.split(":");
             if (split.length == 3) {
@@ -1020,11 +1067,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 String idPrefix = null;
                 Map<Long, List<String>> pMatrix;
 
-                if (split[0].equals("GameModel") && gmStatus != null && gmType != null) {
+                if (split[0].equals("GameModel") && gmStatuses != null && gmTypes != null) {
                     type = "GameModel";
                     idPrefix = "gm";
                     pMatrix = gmMatrix;
-                } else if (split[0].equals("Game") && gStatus != null) {
+                } else if (split[0].equals("Game") && gStatuses != null) {
                     type = "Game";
                     idPrefix = "g";
                     pMatrix = gMatrix;
@@ -1037,11 +1084,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 if (!pId.isEmpty()) {
                     if (pId.equals("*")) {
                         if (type.equals("GameModel")) {
-                            for (GameModel gm : this.findByTypeAndStatus(gmType, gmStatus)) {
+                            for (GameModel gm : this.findByTypesAndStatuses(gmTypes, gmStatuses)) {
                                 ids.add(gm.getId());
                             }
                         } else { //ie Game
-                            for (Game g : gameFacade.findAll(gStatus)) {
+                            for (Game g : gameFacade.findAll(gStatuses)) {
                                 ids.add(g.getId());
                             }
                         }
@@ -1050,12 +1097,14 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                         ids.add(id);
                         if (type.equals("GameModel")) {
                             GameModel gm = this.find(id);
-                            if (gm == null || gm.getType() != gmType || gm.getStatus() != gmStatus) {
+                            if (gm == null
+                                || !gmTypes.contains(gm.getType())
+                                || !gmStatuses.contains(gm.getStatus())) {
                                 return;
                             }
                         } else {
                             Game game = gameFacade.find(id);
-                            if (game == null || game.getStatus() != gStatus) {
+                            if (game == null || !gStatuses.contains(game.getStatus())) {
                                 return;
                             }
                         }
@@ -1161,7 +1210,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);
 
         if (payload.getProcessVariables()) {
-            if (payload.getRoots() != null && !payload.getReplace().isEmpty()) {
+            if (payload.getRoots() != null && !payload.getRoots().isEmpty()) {
                 for (String variableName : payload.getRoots()) {
                     try {
                         VariableDescriptor variable = variableDescriptorFacade.find(mergeable, variableName);
@@ -1171,8 +1220,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     }
                 }
             } else {
-            MergeHelper.visitMergeable(mergeable, Boolean.TRUE, replacer);
-        }
+                MergeHelper.visitMergeable(mergeable, Boolean.TRUE, replacer);
+            }
         }
 
         if (payload.getProcessPages()) {
@@ -1197,7 +1246,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     public Set<String> findAllFiredEvents(Long gameModelId) {
         return this.findAllFiredEvents(this.find(gameModelId));
-            }
+    }
 
     public Set<String> findAllFiredEvents(GameModel gameModel) {
         FindAndReplacePayload payload = new FindAndReplacePayload();
@@ -1220,9 +1269,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         for (List<String> line : process) {
             events.addAll(line);
-                    }
+        }
         return events;
-                }
+    }
 
     public Set<String> findAllRefToFiles(Long gameModelId, Long vdId) {
         GameModel gm = this.find(gameModelId);
@@ -1230,18 +1279,18 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         if (vdId != null) {
             variable = variableDescriptorFacade.find(vdId);
-            }
-        return this.findAllRefToFiles(gm, variable);
         }
+        return this.findAllRefToFiles(gm, variable);
+    }
 
-        /**
+    /**
      * Go through the givenGameModel variables and fetch each references to internal files
-         *
+     *
      * @param gameModel the gamemodel to search for reference in
      * @param root      Optional variable to search in, if null, search the whole gameModel
-         *
+     *
      * @return
-         */
+     */
     public Set<String> findAllRefToFiles(GameModel gameModel,
         VariableDescriptor root) {
         FindAndReplacePayload payload = new FindAndReplacePayload();
@@ -1257,7 +1306,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             List<String> roots = new ArrayList<>();
             roots.add(root.getName());
             payload.setRoots(roots);
-            }
+        }
 
         payload.setRegex(true);
         // match : Event.fire("eventName"), Event.fire(\"event\") + Event.fired

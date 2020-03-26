@@ -293,15 +293,15 @@ YUI.add('wegas-helper', function(Y) {
                     var parent, elem = this, area = makeArea(
                         this.offsetLeft, this.offsetTop,
                         this.offsetWidth, this.offsetHeight);
-                    Y.log("InitialArea: " + JSON.stringify(area));
+//                    Y.log("InitialArea: " + JSON.stringify(area));
                     while ((parent = elem.parentNode) instanceof HTMLElement) {
                         var clientLeft = parent.offsetLeft + parent.clientLeft;
                         var clientTop = parent.offsetTop + parent.clientTop;
                         // Make area relative to parent's client area.
                         area = translate(area.relativeFromTo(elem, parent),
                             -clientLeft, -clientTop);
-                        Y.log(" - TrArea: " + JSON.stringify(area));
-                        Y.log("Parent.scroll: " + parent.scrollLeft + " : " + parent.scrollTop);
+//                        Y.log(" - TrArea: " + JSON.stringify(area));
+//                        Y.log("Parent.scroll: " + parent.scrollLeft + " : " + parent.scrollTop);
                         parent.scrollLeft = withinBounds(
                             parent.scrollLeft,
                             area.left, area.right,
@@ -315,16 +315,25 @@ YUI.add('wegas-helper', function(Y) {
                         area.width = Math.min(area.width, parent.clientWidth);
                         area.height = Math.min(area.height, parent.clientHeight);
                         Y.log(" - TrAreaMid: " + JSON.stringify(area));
+//                        Y.log("Parent.scroll: " + parent.scrollLeft + " : " + parent.scrollTop);
+//                        Y.log(" - TrAreaPre: " + JSON.stringify(area));
+                        area.width = Math.min(area.width, parent.clientWidth);
+                        area.height = Math.min(area.height, parent.clientHeight);
+//                        Y.log(" - TrAreaMid: " + JSON.stringify(area));
+
                         // Determine actual scroll amount by reading back scroll properties.
                         area = translate(area, clientLeft - parent.scrollLeft,
                             clientTop - parent.scrollTop);
-                        Y.log(" - TrAreapost: " + JSON.stringify(area));
+//                        Y.log(" - TrAreapost: " + JSON.stringify(area));
                         elem = parent;
                     }
                 };
             }
-
-            node.getDOMNode().scrollIntoViewIfNeeded(true);
+            if (node instanceof Node) {
+                node.scrollIntoViewIfNeeded(true);
+            } else {
+                node.getDOMNode().scrollIntoViewIfNeeded(true);
+            }
         },
         /**
          * Quote a given string to be passed in a regular expression
@@ -364,9 +373,9 @@ YUI.add('wegas-helper', function(Y) {
                     char4 = array[i++];
 
                     out.push(String.fromCharCode(
-                        ((char & 0x07) << 18) 
-                        | ((char2 & 0x3F) << 12) 
-                        | ((char3 & 0x3F) << 6) 
+                        ((char & 0x07) << 18)
+                        | ((char2 & 0x3F) << 12)
+                        | ((char3 & 0x3F) << 6)
                         | (char4 & 0x3F))
                         );
                 }
@@ -375,7 +384,7 @@ YUI.add('wegas-helper', function(Y) {
             return out.join("");
         },
         /**
-         * 
+         *
          * @param {type} string
          * @returns {Array}
          */
@@ -430,7 +439,7 @@ YUI.add('wegas-helper', function(Y) {
                     array.push(0x80 | (char & 0x3F));
                 } else {
                     // 24bits on four bytes
-                    // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx 
+                    // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
                     array.push(0xF0 | (char >> 18));
                     array.push(0x80 | (char >> 12 & 0x3F));
                     array.push(0x80 | (char >> 6 & 0x3F));
@@ -444,7 +453,7 @@ YUI.add('wegas-helper', function(Y) {
          * digest the value with the given algorithm
          * @param {type} algorithm one of PLAIN (return the value as-is), SHA-256, SHA-384, SHA-512
          * @param {type} data the value to hash
-         * @returns {Promise} 
+         * @returns {Promise}
          */
         digest: function(algorithm, data) {
             // encode as (utf-8) Uint8Array

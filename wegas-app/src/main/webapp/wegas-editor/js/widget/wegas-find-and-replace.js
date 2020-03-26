@@ -139,7 +139,7 @@ YUI.add('wegas-find-and-replace', function(Y) {
                         items: {
                             type: "string",
                             view: {
-                                type: "flatvariableselect",
+                                type: "treevariableselect",
                                 layout: "shortInline",
                                 label: ''
                             }

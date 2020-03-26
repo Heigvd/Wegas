@@ -7,6 +7,8 @@
  */
 package com.wegas.core.security.aai;
 
+import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.ejb.AccountFacade;
 import org.apache.shiro.authc.*;
@@ -50,13 +52,17 @@ public class AaiRealm extends AuthorizingRealm {
         //Long userid = (Long)token.getPrincipal();
         AaiUserDetails userDetails = token.getUserDetails();
         AccountFacade accountFacade = AccountFacade.lookup();
+        RequestManager requestManager = RequestFacade.lookup().getRequestManager();
         try {
+            requestManager.su();
             AaiAccount account = accountFacade.findByPersistentId(userDetails.getPersistentId());
             AaiAuthenticationInfo info = new AaiAuthenticationInfo(account.getId(), userDetails, getName());
             return info;
         } catch (WegasNoResultException ex) {
             logger.error("Unable to find token", ex);
             return null;
+        } finally {
+            requestManager.releaseSu();
         }
     }
 }

@@ -38,20 +38,26 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  *
  * @author maxence
  */
 public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
-    
+
     private final DiffRowGenerator generator;
     private final StringBuilder output;
+
     private final Pattern pattern;
+    private final Pattern htmlEscapedPattern;
+
     private final List<String> pages = new ArrayList<>();
     private final List<GameModelContent> contents = new ArrayList<>();
     private final FindAndReplacePayload payload;
     private int flags = Pattern.UNICODE_CASE | Pattern.UNICODE_CHARACTER_CLASS;
+
+    private final String htmlEspacedReplace;
 
     public FindAndReplaceVisitor(FindAndReplacePayload payload) {
         this.payload = payload;
@@ -61,7 +67,14 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
         if (!payload.isRegex()) {
             flags |= Pattern.LITERAL;
         }
+
         this.pattern = Pattern.compile(payload.getFind(), flags);
+
+        this.htmlEscapedPattern = Pattern.compile(
+            StringEscapeUtils.escapeHtml4(payload.getFind()), flags);
+
+        this.htmlEspacedReplace = StringEscapeUtils.escapeHtml4(payload.getReplace());
+
         this.output = new StringBuilder();
         this.generator = DiffRowGenerator.create().showInlineDiffs(true).inlineDiffByWord(true).mergeOriginalRevised(true).build();
     }
@@ -74,8 +87,14 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
      */
     public String replace(String content) {
         if (!Helper.isNullOrEmpty(content)) {
+            // first, find & replace with unicode text
             Matcher matcher = pattern.matcher(content);
             String newContent = matcher.replaceAll(payload.getReplace());
+
+            // then find & replace with html encoding
+            Matcher htmlMatcher = htmlEscapedPattern.matcher(newContent);
+            newContent = htmlMatcher.replaceAll(htmlEspacedReplace);
+
             if (!content.equals(newContent)) {
                 return newContent;
             }
@@ -86,13 +105,15 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
     @Override
     public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references) {
         if (target instanceof Translation) {
-            Translation tr = (Translation) target;
-            if (this.payload.shouldProcessLang(tr.getLang())) {
-                String newContent = this.replace(tr.getTranslation());
-                if (newContent != null) {
-                    this.genEntry(ancestors, target, field, tr.getTranslation(), newContent);
-                    if (!payload.isPretend()) {
-                        tr.setTranslation(newContent);
+            if (!this.isProtected(target, protectionLevel)) {
+                Translation tr = (Translation) target;
+                if (this.payload.shouldProcessLang(tr.getLang())) {
+                    String newContent = this.replace(tr.getTranslation());
+                    if (newContent != null) {
+                        this.genEntry(ancestors, target, field, tr.getTranslation(), newContent);
+                        if (!payload.isPretend()) {
+                            tr.setTranslation(newContent);
+                        }
                     }
                 }
             }
@@ -216,15 +237,17 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
 
     private void processLibrary(List<GameModelContent> library, String title) {
         for (GameModelContent content : library) {
-            String newContent = this.replace(content.getContent());
-            if (newContent != null) {
-                this.genEntry(title + "\"" + content.getContentKey() + "\"", content.getContent(), newContent);
-                if (!payload.isPretend()) {
-                    try {
-                        content.setContent(newContent);
-                        this.contents.add(content);
-                    } catch (Exception ex) {
-                        output.append("<br/> ERROR: ").append(ex);
+            if (!this.isProtected(content, ProtectionLevel.PROTECTED)) {
+                String newContent = this.replace(content.getContent());
+                if (newContent != null) {
+                    this.genEntry(title + "\"" + content.getContentKey() + "\"", content.getContent(), newContent);
+                    if (!payload.isPretend()) {
+                        try {
+                            content.setContent(newContent);
+                            this.contents.add(content);
+                        } catch (Exception ex) {
+                            output.append("<br/> ERROR: ").append(ex);
+                        }
                     }
                 }
             }
@@ -263,7 +286,7 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
                 if (!Helper.isNullOrEmpty(name)) {
                     sb.append(name);
                     if (it.hasNext()) {
-                        sb.append("/");
+                        sb.append(" ⇨ ");
                     }
                 }
             }
@@ -343,5 +366,5 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
         //websocketFacade.gameModelContentUpdate(content, null); //no requestId allows the requester to be notified too
         //}
     }
-    
+
 }
