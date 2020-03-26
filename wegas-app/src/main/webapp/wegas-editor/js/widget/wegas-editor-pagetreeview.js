@@ -529,13 +529,14 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
             this.treeView.destroyAll();
 
             this.treeView.add(this._genTree(index.root, pageId, index.defaultPageId, pageWidget).children);
-            this.initListeners(this.treeView);
 
             this.treeView.applyState(twState);
 
             this.selectItem(this.treeView.find(function(item) {
                 return item && item.get("data.page.id") === pageId;
             }));
+
+            this.initListeners(this.treeView);
 
             this.hideOverlay();
         },
