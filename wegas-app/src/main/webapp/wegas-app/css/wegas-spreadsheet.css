@@ -26,22 +26,31 @@
     float: right;
     margin: 10px 0;
 }    
-    
+
+.wegas-spreadsheet .help-button,
 .wegas-spreadsheet .answerkey-definition-button {
     max-width: 145px;
-    margin: 10px 0 10px;
+    margin: 10px 10px 10px 0;
+    cursor: pointer;
 }
 
-.wegas-spreadsheet .answerkey-definition-button:before {
+.wegas-spreadsheet .help-button:before,
+.wegas-spreadsheet .answerkey-definition-button:before,
+.wegas-spreadsheet-help .answerkey-definition-button:before {
     font-family: "FontAwesome";
     text-transform: none;
     content: "";
     font-size: 17px;
     position: relative;
-    top: 2px;
-    left: -6px;
+    top: 1px;
+    left: -5px;
 }
 
+.wegas-spreadsheet .help-button:before {
+    content: '\f05a';
+}
+
+.wegas-spreadsheet .help-button:hover,
 .wegas-spreadsheet .answerkey-definition-button:hover {
     border: 2px solid #009900;
 }
@@ -98,6 +107,52 @@
 .wegas-spreadsheet .checkbox.errored:before {
     border: 2px solid red !important;
 }
+
+.wegas-spreadsheet-help {
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    background: rgba(110, 110, 110, 0.97) !important;
+}
+
+.wegas-spreadsheet-help .yui3-widget-bd {
+    margin: 10px;
+    text-align: left;
+    height: 400px;
+}
+
+/* Undo YUI3 cssreset: */
+.wegas-spreadsheet-help .yui3-widget-bd ul,
+.wegas-spreadsheet-help .yui3-widget-bd ol,
+.wegas-spreadsheet-help .yui3-widget-bd li {
+    margin: inherit;
+    padding: inherit;
+    list-style: inherit;
+}
+
+.wegas-spreadsheet-help h3 {
+    line-height: 2;
+}
+
+.wegas-spreadsheet-help .bordered,
+.wegas-spreadsheet-help .bordered-menu {
+    display: inline-block;
+    border: 1px solid white;
+    padding: 0 2px;
+    background: #ddd;
+    color: black;
+}
+
+.wegas-spreadsheet-help .bordered-menu {
+    font-weight: bold;
+}
+
+.wegas-spreadsheet-help .bordered-menu:after {
+    content: '▼';
+    padding-left: 6px;
+}
+
 
 /*************  Formatting classes to be entered by the scenarist in source mode    ***********/
 

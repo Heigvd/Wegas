@@ -23,11 +23,12 @@ YUI.add('wegas-spreadsheet', function(Y) {
         SHEET_CSS = "sheet",
         NUMBERINPUT_CSS = "numberinput",
         CHECKBOX_CSS = "checkbox",
+        ERRORED_CSS = "errored",
         DOT_SHEET_CSS = '.' + SHEET_CSS,
         DOT_NUMBERINPUT_CSS = DOT_SHEET_CSS + ' .' + NUMBERINPUT_CSS,
         DOT_CHECKBOX_CSS = DOT_SHEET_CSS + ' .' + CHECKBOX_CSS,
-        ERRORED = "errored",
-        SCENARIST_BUTTON = "<button class=\"answerkey-definition-button\">Scenarist: save this as <b>answer key</b></button>",
+        SCENARIST_BUTTON = "<button class=\"answerkey-definition-button\">Scenarist: save current state as <b>answer keys</b></button>",
+        HELP_BUTTON = "<button class=\"help-button\">Scenarist <b>help</b></button>",
         VALIDATE_BUTTON =  "<button class=\"yui3-button wegas-submit-button\">" + I18n.t("global.submit") + "</button>",
 
         // Shortcuts:
@@ -35,21 +36,66 @@ YUI.add('wegas-spreadsheet', function(Y) {
         WegasScript = Wegas.Facade.Variable.script,
         Spreadsheet;
 
-    /**
-     *  Classe pour gérer les faits comptables.
-     */
-    Spreadsheet = Y.Base.create("wegas-spreadsheet", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
 
-        finished : false,
-        contenuActuel : null,
+    Spreadsheet = Y.Base.create("wegas-spreadsheet", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
 
-        // Variable permettant de regrouper les opérations de persistence des variables Wegas
-        _bufferPersistence: "",
+        scenaristHelp: function() {
+            var msg = 
+                '<h3>Widget Parameters</h3><ol>' + 
+                '<li>The "Source" variable is a text that contains the HTML code of the spreadsheet. This variable is not modified by the widget.' +
+                '    Cells in a table are implicitly named according to the scheme <i>$B5</i> where "B" is the column name (from A to Z)' +
+                '    and "5" is the row number (from 1 to 99).</li>' +
+                '<li>The "Answers" variable is an object that will contain user inputs associated to cell names, e.g. { $B5, 3.14 }.' +
+                '    Once the user has clicked on the "submit" button, it will also contain two special properties:<ul>' +
+                '    <li>Property "validated" will be set to true when the user has clicked on the "submit" button.' +
+                '    <li>Property "errors" will be set to the number of errors found (or -1 if no answer keys are provided).' +
+                '    </ul>For further information, see below in section "Conditions on spreadsheet contents".' +
+                '<li>The "Answer keys" variable is optional. If this object is specified, as a scenarist, you must first enter the answer keys into the widget,' +
+                '    then click on the button ' + SCENARIST_BUTTON + ' to have your input saved as the expected solution.' + 
+                '</ol>' +
+                '<h3>Specification of Input Fields and Formulas</h3>' +
+                'Input fields in the HTML table are cells containing either: <ul>' +
+                '<li><i>=ReadNumber(decimals)</i><br>This will enable the user to enter a number. ' +
+                '    Parameter "decimals" indicates the number of decimals that shall be displayed in the end.' +
+                '<li><i>=ReadClick()</i><br>This will enable the user to click on the cell to validate or invalidate a proposition.' +
+                '</ul>' +
+                'A cell can contain a formula, consisting of a sum of numbers specified like this:' +
+                '<ul><li><i>=Sum(from, to, nbDecimals)</i><ol>' +
+                '<li>Parameter "from" is the first cell in a row or column, e.g. <i>$B3</i>' +
+                '<li>Parameter "to" is the last cell in the same row or column, e.g. <i>$B6</i>' +
+                '<li>Parameter "decimals" is the number of decimals to display' +
+                '</ol></ul>' +
+                '<h3>Formatting</h3>' +
+                'Table cells can be quite freely formatted inside a text or HTML editor. To complete this, a few CSS classes are provided:<ul>' +
+                '<li><i>header-row</i> centers the text' +
+                '<li><i>header-column</i> aligns text to the left' +
+                '<li><i>gray-background</i> gives the cell a gray background' +
+                '<li><i>borders</i> gives the cell darker borders' +
+                '<li><i>underline-1px</i> and <i>underline-2px</i> underline the result of a formula' +
+                '</ul>' +
+                '<h3>Conditions on Spreadsheet Contents</h3>' +
+                'A condition in a trigger or state machine can detect when a spreadsheet has been "submitted" by the user:' +
+                '<ul><li><span class="bordered">Answers</span> <span class="bordered-menu">property</span> <span class="bordered">validated</span> <span class="bordered-menu">equals</span> <span class="bordered">true</span><br>' +
+                '    where Answers is the name of the Object variable specified to hold user input.</li></ul>' +
+                'Add this condition to detect if user input contains errors:' +
+                '<ul><li><span class="bordered">Answers</span> <span class="bordered-menu">property</span> <span class="bordered">errors</span> <span class="bordered-menu">is different from</span> <span class="bordered">0</span><br>' +
+                '    This is only possible when an answer keys parameter has been provided to the widget.</li></ul>'                
+            ;
+            var panel = new Y.Wegas.Panel({
+                headerContent: "<h2>Help on the Spreadsheet Widget</h2>",
+                content: msg,
+                modal: false,
+                width: 600
+            }).render();
+            panel.get(CONTENTBOX).addClass("wegas-spreadsheet-help");
+            panel.plug(Y.Plugin.DraggablePanel, {});
+        },
 
-        // *** Lifecycle Methods *** //
+        // *** Lifecycle Method *** //
         initializer: function() {
             this.handlers = {};
-            
+            this.finished = false;
+            this.persistenceBuffer = "";
             this.isScenaristMode = (window.location.pathname.indexOf(GAME_EDITOR_PATH) >= 0),
 
             this.source = this.get("source.evaluated");
@@ -57,15 +103,15 @@ YUI.add('wegas-spreadsheet', function(Y) {
                 this.tableurHTML = this.source.getInstance().get("value");
             }
             
-            this.reponseTableur = this.get("answers.evaluated");
-            if (this.reponseTableur) {
-                this.answersObject = this.reponseTableur.getInstance().get("properties");
-                this.finished = this.finished || (this.answersObject[PROP_VALIDATED] === "true" || this.answersObject[PROP_VALIDATED] === true);
+            this.answersEntered = this.get("answers.evaluated");
+            if (this.answersEntered) {
+                this.answersEnteredObject = this.answersEntered.getInstance().get("properties");
+                this.finished = this.finished || (this.answersEnteredObject[PROP_VALIDATED] === "true" || this.answersEnteredObject[PROP_VALIDATED] === true);
             }
             
-            this.corrigeTableur = this.get("answerkeys.evaluated");
-            if (this.corrigeTableur) {
-                this.objCorrigeTableur = this.corrigeTableur.get("properties");
+            this.answerKeys = this.get("answerkeys.evaluated");
+            if (this.answerKeys) {
+                this.answerKeysObject = this.answerKeys.get("properties");
             }
 
         },
@@ -81,57 +127,58 @@ YUI.add('wegas-spreadsheet', function(Y) {
 
             if (this.isScenaristMode) {
                 this.get(CONTENTBOX).delegate("click", function (e) {
-                    this.sauvegarderCorrigeTableur();
+                    this.saveAnswerKeys();
                 }, ".answerkey-definition-button", this);
+                this.get(CONTENTBOX).delegate("click", function (e) {
+                    this.scenaristHelp();
+                }, ".help-button", this);                
             }
 
             if (this.finished) return;
 
             this.get(CONTENTBOX).delegate("click", function(e) {
-                // Ne pas finaliser si on vient d'avoir un problème de sauvegarde
-                if (this.erreurPersistence) {
-                    return;
-                }
-                
-                // Tableur: vérifier que tous les inputs soient remplis avec un nombre:
-                var emptyCells = 0,
-                    invalidCells = 0,
-                    ctx = this;
-                this.cb.all(DOT_NUMBERINPUT_CSS).each(function(node) {
-                    var val = node.getDOMNode().value.trim();
-                    if (val === "") {
-                        emptyCells++;
-                    } else if (ctx.verifyNumber(val) === undefined) {
-                        invalidCells++;
-                    }
-                });
-                if (emptyCells > 0) {
-                    Y.Wegas.Panel.alert("Please fill in all inputs.");
-                    return;
-                }
-                if (invalidCells > 0) {
-                    Y.Wegas.Panel.alert("Some values are not valid.<br/>Please correct.");
+                // Do not finalize if we just had a persistence issue
+                if (this.persistenceError ||
+                    this.hasEmptyOrInvalidInputs()) {
                     return;
                 }
                 
                 this.markAsFinished();
 
-                // 1. Corriger les données utilisateur
                 var nbErrors = this.correctSheet();
-
-                    
-                // 2. MàJ les variables de comptage niveau Wegas, globale (mais transitoire) et locale au fait courant.
-                //    Marquer la propriété "validé" de la réponse comme "true" (persiste que cet exercice est fini)
-
-                this.answersObject[PROP_ERRORS] = nbErrors;
-                this.saveProperty(PROP_ERRORS);
-                this.answersObject[PROP_VALIDATED] = true;
-                this.saveProperty(PROP_VALIDATED);
+                this.answersEnteredObject[PROP_ERRORS] = nbErrors;
+                this.saveAnswerProperty(PROP_ERRORS);
+                this.answersEnteredObject[PROP_VALIDATED] = true;
+                this.saveAnswerProperty(PROP_VALIDATED);
                                 
                 this.doPersist();
 
             }, "button.yui3-button", this);
 
+        },
+        
+        // Returns true if the spreadsheet has empty or invalid numeric inputs.
+        hasEmptyOrInvalidInputs: function() {
+            var emptyCells = 0,
+                invalidCells = 0,
+                ctx = this;
+            this.cb.all(DOT_NUMBERINPUT_CSS).each(function(node) {
+                var val = node.getDOMNode().value.trim();
+                if (val === "") {
+                    emptyCells++;
+                } else if (ctx.verifyNumber(val) === undefined) {
+                    invalidCells++;
+                }
+            });
+            if (emptyCells > 0) {
+                Y.Wegas.Panel.alert("Please fill in all inputs before.");
+                return true;
+            }
+            if (invalidCells > 0) {
+                Y.Wegas.Panel.alert("Some values are not valid.<br/>Please correct.");
+                return true;
+            }
+            return false;
         },
 
         // Evaluate all formulas inside the spreadsheet.
@@ -274,7 +321,7 @@ YUI.add('wegas-spreadsheet', function(Y) {
                         if (contents.length > 6 && contents.indexOf("=SUM(") === 0 && contents.charAt(contents.length-1) === ")") {
                             args = contents.substring(5, contents.length-1).split(',');
                             if (args.length !== 3) {
-                                alert("Formula in " + cellName + ": 3 arguments expected");
+                                Y.Wegas.Panel.alert("Formula in " + cellName + ": 3 arguments expected");
                                 continue;
                             }
                             var arg0 = args[0],
@@ -283,7 +330,7 @@ YUI.add('wegas-spreadsheet', function(Y) {
                             if (! this.isCellRef(arg0) ||
                                 ! this.isCellRef(arg1) ||
                                 isNaN(arg2)) {
-                                alert("Error in formula arguments in " + cellName);
+                                Y.Wegas.Panel.alert("Error in formula arguments in " + cellName);
                                 continue;
                             }
                             arg2 = +arg2;
@@ -319,7 +366,7 @@ YUI.add('wegas-spreadsheet', function(Y) {
                 var f = this.formulas[fi],
                     range = this.getRange(f.from, f.to);
                 if (range.length === 0) {
-                    alert("These arguments are not in a row nor a column in " + cellName);
+                    Y.Wegas.Panel.alert("These arguments are not in a row nor a column in " + cellName);
                 }
                 f.range = range;
             }
@@ -334,35 +381,34 @@ YUI.add('wegas-spreadsheet', function(Y) {
                     name = e.currentTarget.get('name'),
                     decimals = +e.currentTarget.getData().decimals;
                 if (strVal === '') { // Enable clearing the cell
-                    this.answersObject[name] = undefined;
+                    this.answersEnteredObject[name] = undefined;
                     this.saveInput(name);
                     this.displayNumber(name, undefined, decimals);
                     return;
                 }
                 var val = this.verifyNumber(strVal, decimals);
                 if (typeof val === 'number') {
-                    this.answersObject[name] = val;
+                    this.answersEnteredObject[name] = val;
                     this.saveInput(name);
                     this.displayNumber(name, val, decimals);
                 } else {
-                    this.answersObject[name] = undefined;
+                    this.answersEnteredObject[name] = undefined;
                     this.saveInput(name);
                     Y.Wegas.Panel.alert(Y.Wegas.I18n.t("errors.nan", {value: strVal}));
                 }
             }, this);
             // Handle click on "readClick" cells:
             this.cb.all(DOT_CHECKBOX_CSS).on('click', function (e) {
-                var ro = e.currentTarget.getAttribute('readonly');
-                if (ro) {
+                if (e.currentTarget.getAttribute('readonly')) {
                     return;
                 }
                 e.currentTarget.toggleClass('checked');
                 var name = e.currentTarget.getAttribute('name');
                 if (e.currentTarget.hasClass('checked')) {
                     // Store as string to facilitate comparison with expected results:
-                    this.answersObject[name] = "true";
+                    this.answersEnteredObject[name] = "true";
                 } else {
-                    this.answersObject[name] = undefined;
+                    this.answersEnteredObject[name] = undefined;
                 }
                 this.saveInput(name);
             }, this);
@@ -376,7 +422,10 @@ YUI.add('wegas-spreadsheet', function(Y) {
 
             cb.hide().setHTML(
                 this.isScenaristMode ?
-                    this.tableurHTML + SCENARIST_BUTTON + VALIDATE_BUTTON :
+                    this.tableurHTML +
+                        (this.answerKeysObject ? SCENARIST_BUTTON : '') +
+                        HELP_BUTTON +
+                        VALIDATE_BUTTON :
                     this.tableurHTML + VALIDATE_BUTTON);
             this.processTable(cb.one("table").addClass(SHEET_CSS).getDOMNode());
             cb.show();
@@ -412,45 +461,51 @@ YUI.add('wegas-spreadsheet', function(Y) {
         },
 
 
-        // Retourne le bilan des fautes trouvées dans la réponse au tableur courant:
+        // Returns the number of errors found, or -1 if no answer keys are defined.
         correctSheet: function() {
-            // Une réponse juste est une table où chaque input est identique à l'input correspondant du corrigé,
-            // Les inputs vides sont interdits lors du click sur "valider".
             var nbErrors = 0,
-                userRep = this.answersObject,
-                corr = this.objCorrigeTableur,
+                enteredAnswer = this.answersEnteredObject,
+                answerKeys = this.answerKeysObject,
                 i;
         
+            // Is there any answer key object ?
+            if (!answerKeys) {
+                return -1;
+            }
+            
             // Check if all expected values have been entered by the user:
-            for (i in corr) {
+            for (i in answerKeys) {
                 // Allow implicit string-number conversions:
-                if (userRep[i] != corr[i]) {
+                if (enteredAnswer[i] != answerKeys[i]) {
                     nbErrors++;
-                    this.setErroredCell(i);
+                    this.setCellAsErrored(i);
                 }
             }
 
             // Check if user has entered extraneous values:
-            for (i in userRep) {
-                // Allow string-number conversions:
-                if (userRep[i] && !corr[i]) {
-                    nbErrors++;
-                    this.setErroredCell(i);
+            for (i in enteredAnswer) {
+                if (i !== PROP_VALIDATED &&
+                    i !== PROP_ERRORS) {
+                    // Allow string-number conversions:
+                    if (enteredAnswer[i] && !answerKeys[i]) {
+                        nbErrors++;
+                        this.setCellAsErrored(i);
+                    }
                 }
             }
 
             return nbErrors;
         },
         
-        setErroredCell: function(name) {
-            var cellule = this.cb.one(DOT_SHEET_CSS + " [name=" + name + "]");
-            cellule.addClass(ERRORED);
+        setCellAsErrored: function(name) {
+            var cell = this.cb.one(DOT_SHEET_CSS + ' [name="' + name + '"]');
+            cell.addClass(ERRORED_CSS);
         },
 
-        // Persiste immédiatement une donnée entrée à la main:
+        // Persists some input:
         saveInput: function(propName) {
-            var value = this.answersObject[propName],
-                varName = this.reponseTableur.get("name");
+            var value = this.answersEnteredObject[propName],
+                varName = this.answersEntered.get("name");
             if (value !== undefined) {
                 WegasScript.remoteEval("Variable.find(gameModel, \"" + varName + "\").getInstance(self).setProperty(\"" + propName + "\", \"" + value + "\");", {});
             } else {
@@ -461,98 +516,102 @@ YUI.add('wegas-spreadsheet', function(Y) {
 
         doPersist: function(successMsg) {
             var ctx = this,
-                buffer = this._bufferPersistence,
                 cfg = {
                     on: {
                         success: function(e) {
                             if (successMsg)
-                                Y.log(successMsg);
+                                Y.Wegas.Panel.alert(successMsg);
                         },
                         failure: function(e) {
-                            ctx.erreurPersistence = true;
-                            alert("Problème de sauvegarde des données.\nVeuillez recommencer SVP.\n" + buffer);
+                            ctx.persistenceError = true;
+                            Y.Wegas.Panel.alert("Problem saving this data.\nPlease try again.\n");
                         }
                     }
                 };
-            if (this._bufferPersistence !== "") {
-                this.erreurPersistence = false;
-                WegasScript.remoteEval(this._bufferPersistence, cfg);
-                this._bufferPersistence = "";
+            if (this.persistenceBuffer !== "") {
+                this.persistenceError = false;
+                WegasScript.remoteEval(this.persistenceBuffer, cfg);
+                this.persistenceBuffer = "";
             }
         },
 
-        planifierPersistence: function(cmd) {
-            this._bufferPersistence += cmd + "\n";
+        schedulePersistence: function(cmd) {
+            this.persistenceBuffer += cmd + "\n";
         },
 
         saveVariable: function(name, value) {
-            this.planifierPersistence("Variable.find(gameModel, \"" + name + "\").setValue(self, " + value + ");");
+            this.schedulePersistence("Variable.find(gameModel, \"" + name + "\").setValue(self, " + value + ");");
         },
 
-        planifierPersistencePropriete: function(obj, varName, propName) {
-            var value = obj[propName];
+        saveAnswerProperty: function(propName) {
+            var varName = this.answersEntered.get("name"),
+                value = this.answersEnteredObject[propName];
             if (value !== undefined) {
-                this.planifierPersistence("Variable.find(gameModel, \"" + varName + "\").getInstance(self).setProperty(\"" + propName + "\", \"" + value + "\");");
+                this.schedulePersistence("Variable.find(gameModel, \"" + varName + "\").getInstance(self).setProperty(\"" + propName + "\", \"" + value + "\");");
             } else {
-                this.planifierPersistence("Variable.find(gameModel, \"" + varName + "\").getInstance(self).removeProperty(\"" + propName + "\");");
+                this.schedulePersistence("Variable.find(gameModel, \"" + varName + "\").getInstance(self).removeProperty(\"" + propName + "\");");
             }
         },
 
-        saveProperty: function(propName) {
-            this.planifierPersistencePropriete(this.answersObject, this.reponseTableur.get("name"), propName);
-        },
-
-        // Persiste dans la valeur par défaut de la variable "corrigé" du tableur.
-        planifierPersistenceCorrigeTableur: function(propName) {
-            var varName = this.corrigeTableur.get("name"),
-                value = this.objCorrigeTableur[propName];
+        // Persists into the descriptor of the Wegas "object" variable.
+        saveAnswerKeyProperty: function(propName) {
+            var varName = this.answerKeys.get("name"),
+                value = this.answerKeysObject[propName];
             if (value !== undefined) {
-                this.planifierPersistence("Variable.find(gameModel, \"" + varName + "\").setProperty(\"" + propName + "\", \"" + value + "\");");
+                this.schedulePersistence("Variable.find(gameModel, \"" + varName + "\").setProperty(\"" + propName + "\", \"" + value + "\");");
             } else {
-                this.planifierPersistence("Variable.find(gameModel, \"" + varName + "\").removeProperty(\"" + propName + "\");");
+                this.schedulePersistence("Variable.find(gameModel, \"" + varName + "\").removeProperty(\"" + propName + "\");");
             }
         },
 
-        // Scénariste: Sauvegarde this.answersObject comme réponse juste dans le descripteur de l'objet "Tableur - Corrigé".
-        sauvegarderCorrigeTableur: function() {
-            var reponse = this.answersObject,
-                ancienCorrige = this.corrigeTableur.get("properties");
-            this.objCorrigeTableur = {};
-            // Copier et persister la réponse actuelle comme corrigé
-            for (var name in reponse) {
-                if( reponse.hasOwnProperty(name) ) {
-                    // Ignorer certaines propriétés (les totaux ne sont jamais stockés dans la réponse, donc pas besoin de les filtrer ici)
+        // Scenarist: persists this.answersEnteredObject as answer keys into descriptor of chosen object.
+        saveAnswerKeys: function() {
+            if (this.hasEmptyOrInvalidInputs()) {
+                return;
+            }
+            var inputs = this.answersEnteredObject,
+                oldAnswerKeys = this.answerKeys.get("properties");
+            this.answerKeysObject = {};
+            for (var name in inputs) {
+                if( inputs.hasOwnProperty(name) ) {
                     if (name !== PROP_VALIDATED &&
                         name !== PROP_ERRORS) {
-                        this.objCorrigeTableur[name] = reponse[name];
-                        this.planifierPersistenceCorrigeTableur(name);
-                        delete ancienCorrige[name];
+                        this.answerKeysObject[name] = inputs[name];
+                        this.saveAnswerKeyProperty(name);
+                        delete oldAnswerKeys[name];
                     }
                 }
             }
-            // Supprimer de l'ancien corrigé les éventuelles propriétés non gardées :
-            for (var name in ancienCorrige) {
-                if (ancienCorrige.hasOwnProperty(name)) {
-                    this.planifierPersistenceCorrigeTableur(name);
+            // Remove from answer keys any properties that have not been kept :
+            for (var name in oldAnswerKeys) {
+                if (oldAnswerKeys.hasOwnProperty(name)) {
+                    // Save with undefined value:
+                    this.saveAnswerKeyProperty(name);
                 }
             }
-            this.doPersist("Sauvegardé comme corrigé du tableur no " + this.faitActuel + " !");
+            this.doPersist("Successfully persisted as new answer keys !");
         },
 
 
         // Restore spreadsheet from persisted values
         restoreSheet: function() {
-            var obj = this.answersObject,
+            var obj = this.answersEnteredObject,
                 tab = this.cb.one(DOT_SHEET_CSS);
             for (var name in obj) {
                 if( obj.hasOwnProperty(name) ) {
                     var valeur = obj[name],
                         cell, decimals;
-                    cell = tab.one("[name=" + name + "]");
+                    cell = tab.one('[name="' + name + '"]');
                     // Skip object properties like "validated" and "errors"
                     if (cell) {
-                        decimals = +cell.getData().decimals;
-                        this.displayNumber(name, valeur, decimals);
+                        if (cell.hasClass("numberinput")) {
+                            decimals = +cell.getData().decimals;
+                            this.displayNumber(name, valeur, decimals);
+                        } else if (cell.hasClass("checkbox")) {
+                            if (valeur === "true") {
+                                cell.addClass("checked")
+                            }
+                        }
                     }
                 }
             }
@@ -561,14 +620,12 @@ YUI.add('wegas-spreadsheet', function(Y) {
 
         // Affiche le montant donné 
         displayNumber: function(name, valeur, decimals){
-            // The computation of this lookup often generates a caught exception:
-            var celluleMontant = this.cb.one('input[name=' + name + ']');
-            
-            if (!celluleMontant) {
-                alert("Error: cannot find a cell with name=" + name);
+            var cell = this.cb.one('[name="' + name + '"]');
+            if (!cell) {
+                Y.Wegas.Panel.alert("Error: cannot find a cell with name " + name);
                 return;
             }
-            celluleMontant.set('value', (valeur !== undefined) ? I18n.formatNumber(valeur, { decimalPlaces: decimals }) : '');
+            cell.set('value', (valeur !== undefined) ? I18n.formatNumber(valeur, { decimalPlaces: decimals }) : '');
             this.evalFormulas();
         },
         
@@ -618,7 +675,6 @@ YUI.add('wegas-spreadsheet', function(Y) {
         },
 
         markAsFinished: function() {
-            
             this.cb.one('button.yui3-button').hide();
             this.cb.all(DOT_NUMBERINPUT_CSS).setAttribute('readonly', 'readonly');
             this.cb.all(DOT_CHECKBOX_CSS).setAttribute('readonly', 'readonly');
@@ -648,7 +704,7 @@ YUI.add('wegas-spreadsheet', function(Y) {
                 type: "object",
                 view: {
                     type: "variableselect",
-                    label: "HTML table (structure of the spreadsheet, read-only)",
+                    label: "Source table (HTML structure of the spreadsheet, read-only)",
                     classFilter: "TextDescriptor"
                 }
             },
@@ -658,7 +714,7 @@ YUI.add('wegas-spreadsheet', function(Y) {
                 type: "object",
                 view: {
                     type: "variableselect",
-                    label: "Where inputs will be stored",
+                    label: "Answers (object where player inputs will be stored)",
                     classFilter: "ObjectDescriptor"
                 }
             },
@@ -668,7 +724,8 @@ YUI.add('wegas-spreadsheet', function(Y) {
                 type: "object",
                 view: {
                     type: "variableselect",
-                    label: "Answer keys for automatic correction (read-only)",
+                    label: "Answer keys (for automatic correction, optional, read-only)",
+                    description: "Answer keys must be stored in the descriptor properties.",
                     classFilter: "ObjectDescriptor"
                 }
             }

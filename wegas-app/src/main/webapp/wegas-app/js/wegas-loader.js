@@ -477,7 +477,8 @@ YUI().use(function(Y) {
             },
             "wegas-spreadsheet": {
                 path: "js/widget/wegas-spreadsheet-min.js",
-                requires: ["wegas-spreadsheetcss", "wegas-mcq-viewcss", "wegas-panel"],
+                requires: ["wegas-spreadsheetcss", "wegas-mcq-viewcss", "wegas-panel", 
+                    "wegas-i18n-global", "wegas-button"],
                 ws_provides: "Spreadsheet"
             },
             "wegas-spreadsheetcss": {
