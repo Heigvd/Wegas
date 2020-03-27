@@ -166,7 +166,7 @@ const SELECTED_STYLE_WIDTH = 4;
 const headerStyle = css({
   borderLeft: `${SELECTED_STYLE_WIDTH}px solid transparent`,
 });
-const nodeContentStyle = css({
+export const nodeContentStyle = css({
   cursor: 'pointer',
   marginLeft: '5px',
   marginRight: '5px',
@@ -211,7 +211,7 @@ function CTree(
     const Title = asyncSFC(async () => {
       const icon = getIcon(variable!);
       return (
-        <>
+        <span className={nodeContentStyle}>
           <IconComp icon={withDefault(icon, 'question')} />
           {entityIs(variable, 'EvaluationDescriptorContainer') &&
           props.subPath &&
@@ -220,7 +220,7 @@ function CTree(
               ? 'Feedback'
               : 'Feedback comment'
             : editorLabel(variable)}
-        </>
+        </span>
       );
     });
     if (!match) {
@@ -259,9 +259,7 @@ function CTree(
               );
             }}
           >
-            <span className={nodeContentStyle}>
-              <Title />
-            </span>
+            <Title />
             {entityIs(variable, 'ListDescriptor') ||
             entityIs(variable, 'QuestionDescriptor') ||
             entityIs(variable, 'WhQuestionDescriptor') ? (
@@ -281,7 +279,7 @@ function CTree(
                 variable={variable}
                 localDispatch={props.localDispatch}
                 focusTab={focusTab}
-                path={props.subPath![0] as "feedback" | "fbComments"}
+                path={props.subPath![0] as 'feedback' | 'fbComments'}
               />
             ) : null}
           </span>

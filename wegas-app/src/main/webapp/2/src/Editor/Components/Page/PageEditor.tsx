@@ -25,7 +25,8 @@ import { noop } from 'lodash-es';
 import { themeVar } from '../../../Components/Theme';
 // import pageState, { PageState } from '../../../data/Reducer/pageState';
 // import pageState from '../../../data/Reducer/pageState';
-// import { PagesLayout } from './PagesLayout';
+import { PagesLayout } from './PagesLayout';
+import { wlog } from '../../../Helper/wegaslog';
 
 const innerButtonStyle = css({
   margin: '2px auto 2px auto',
@@ -127,7 +128,6 @@ const selectedPage = (pagesState: PagesState): WegasComponent =>
   pagesState.pages[pagesState.selectedPage].page;
 
 export default function PageEditor() {
-  const gameModelId = GameModel.selectCurrent().id!;
   const [modalState, setModalState] = React.useState<ModalState>({
     type: 'close',
   });
@@ -145,32 +145,42 @@ export default function PageEditor() {
   // const selectedPage: string | undefined =
   //   pagesState.pages[String(pagesState.selectedPage)];
 
-  const loadIndex = React.useCallback(
-    (gameModelId, firstTime: boolean = false) => {
-        // getIndex to make sure index exists
-        PageAPI.getIndex(gameModelId).then(index => {
-          PageAPI.getAll(gameModelId).then(pages => {
-            setPagesState(ops => ({
-              defaultPage: index.defaultPageId,
-              selectedPage: firstTime ? index.defaultPageId : ops.defaultPage,
-              pages: returnPages(pages, index.root),
-            }));
-          });
-        });
-    },
-    [],
-  );
+  const onNewIndexItem = (type: PageIndexItem['@class']) => (
+    path: string[],
+    name: string,
+  ) => {
+    PageAPI.newIndexItem(
+      path,
+      {
+        '@class': type,
+        name: name,
+      } as PageIndexItem,
+      defaultPage,
+    ).then(res => wlog(res));
+  };
+
+  const onDeleteIndexItem = (path: string[]) => {
+    PageAPI.deleteIndexItem(path).then(res => wlog(res));
+  };
+
+  const loadIndex = React.useCallback((firstTime: boolean = false) => {
+    // getIndex to make sure index exists
+    PageAPI.getIndex().then(index => {
+      PageAPI.getAll().then(pages => {
+        setPagesState(ops => ({
+          defaultPage: index.defaultPageId,
+          selectedPage: firstTime ? index.defaultPageId : ops.defaultPage,
+          pages: returnPages(pages, index.root),
+        }));
+      });
+    });
+  }, []);
 
   const patchPage = React.useCallback(
     (page: WegasComponent, callback?: (res: WegasComponent) => void) => {
       setModalState({ type: 'save', label: savingProgressStatus });
       const diff = compare(selectedPage(pagesState), page);
-      PageAPI.patch(
-        gameModelId,
-        JSON.stringify(diff),
-        pagesState.selectedPage,
-        true,
-      )
+      PageAPI.patch(JSON.stringify(diff), pagesState.selectedPage, true)
         .then(res => {
           setModalState({ type: 'save', label: savingDoneStatus });
           if (callback) {
@@ -187,7 +197,7 @@ export default function PageEditor() {
           }),
         );
     },
-    [gameModelId, pagesState],
+    [pagesState],
   );
 
   const findComponent = React.useCallback(
@@ -297,8 +307,8 @@ export default function PageEditor() {
   );
 
   React.useEffect(() => {
-    loadIndex(gameModelId, true);
-  }, [loadIndex, gameModelId]);
+    loadIndex(true);
+  }, [loadIndex]);
 
   return (
     <Toolbar>
@@ -318,7 +328,6 @@ export default function PageEditor() {
                   if (success) {
                     if (modalState.type === 'newpage') {
                       PageAPI.newIndexItem(
-                        gameModelId,
                         [],
                         {
                           '@class': 'Page',
@@ -373,9 +382,7 @@ export default function PageEditor() {
                       icon="trash"
                       onAction={success => {
                         if (success) {
-                          PageAPI.deletePage(gameModelId, k).then(() =>
-                            loadIndex(gameModelId),
-                          );
+                          PageAPI.deletePage(k).then(() => loadIndex());
                         }
                       }}
                     />
@@ -386,9 +393,7 @@ export default function PageEditor() {
                           : 'star'
                       }
                       onClick={() => {
-                        PageAPI.setDefaultPage(gameModelId, k).then(() =>
-                          loadIndex(gameModelId),
-                        );
+                        PageAPI.setDefaultPage(k).then(() => loadIndex());
                       }}
                     />
                   </span>
@@ -451,11 +456,22 @@ export default function PageEditor() {
       </Toolbar.Header>
       <Toolbar.Content>
         <ReflexContainer orientation="vertical" className={splitter}>
-          {/* <ReflexElement flex={pagesState.editedPath ? 0.3 : 0.125}>
+          <ReflexElement flex={pagesState.editedPath ? 0.3 : 0.125}>
             LAYOUT
-            <PagesLayout />
+            <PagesLayout
+              indexItemControls={{
+                onNewPage: onNewIndexItem('Page'),
+                onNewFolder: onNewIndexItem('Folder'),
+                onMoveIndexItem: () => wlog('To implement'),
+                onDeleteIndexItem,
+              }}
+              componentControls={{
+                onNewComponent: () => wlog('To implement'),
+                onDeletComponent: () => wlog('To implement'),
+              }}
+            />
           </ReflexElement>
-          <ReflexSplitter /> */}
+          <ReflexSplitter />
           {srcMode && (
             <ReflexElement>
               <JSONandJSEditor
