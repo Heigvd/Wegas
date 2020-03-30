@@ -26,9 +26,7 @@ YUI.add('wegas-surveylistener', function(Y) {
             this.handlers.push(Y.Wegas.Facade.Variable.after("delete", this.onDeletedDescriptor, this));
             // Get updates about all existing surveys:
             Y.Array.each(Y.Wegas.Facade.Variable.cache.findAll("@class", "SurveyDescriptor"),
-                function(sd) {
-                    this.registerSurvey(sd);
-                }, this);
+                this.registerSurvey, this);
             // Once host app is rendered, check if we should display a survey:
             this.afterHostEvent("render", this.checkSurveys);
         },
