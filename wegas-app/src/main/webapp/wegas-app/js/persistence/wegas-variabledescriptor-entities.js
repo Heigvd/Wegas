@@ -125,7 +125,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         },
         {
             label: 'Peer Review',
-            value: 'Peer Review Descriptor'
+            value: 'PeerReviewDescriptor'
         },
         {
             label: 'Survey',
@@ -329,7 +329,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                 label: "team members"
                             },
                             {
-                                value: 'GameScope',
+                                value: 'GameModelScope',
                                 label: 'everybody'
                             }
                         ]

@@ -311,13 +311,28 @@ YUI.add("wegas-i18n", function(Y) {
                         if (lang) {
                             langs = [lang];
                         } else {
-                            langs = [];
+                            langs = [{
+                                    code: forcedLang,
+                                    ghost: true
+                                }];
                         }
                     } else {
                         if (lang) {
                             i = langs.indexOf(lang);
                             langs.splice(i, 1);
                             langs.unshift(lang);
+                        }
+
+                        for (var trLang in translations) {
+                            // take ghost languages into account
+                            if (!langs.find(function(item) {
+                                return item.code === trLang;
+                            })) {
+                                langs.push({
+                                    code: trLang,
+                                    lang: "Ghost-" + trLang
+                                });
+                            }
                         }
                     }
                     for (i in langs) {

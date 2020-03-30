@@ -67,6 +67,14 @@ import org.slf4j.LoggerFactory;
     query = "SELECT a FROM GameModel a WHERE a.status = :status AND a.type = :type ORDER BY a.name ASC"
 )
 @NamedQuery(
+    name = "GameModel.findByTypesAndStatuses",
+    query = "SELECT a FROM GameModel a WHERE a.status IN :statuses AND a.type in :types ORDER BY a.name ASC"
+)
+@NamedQuery(
+    name = "GameModel.findIdsByGameId",
+    query = "SELECT g.gameModel.id FROM Game g WHERE g.id IN :gameIds"
+)
+@NamedQuery(
     name = "GameModel.findDistinctLogIds",
     query = "SELECT DISTINCT(gm.properties.logID) FROM GameModel gm"
 )

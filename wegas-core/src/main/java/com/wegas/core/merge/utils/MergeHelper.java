@@ -38,9 +38,9 @@ public class MergeHelper {
     public interface MergeableVisitor {
 
         /**
-         * Is target protected ?
-         * to be protected, the target must belongs to a protectedGameModel (i.e. a scenario which depends on a model)
-         * and must stand in a protected scope according to the current protection level and its inherited visiility
+         * Is target protected ? to be protected, the target must belongs to a protectedGameModel
+         * (i.e. a scenario which depends on a model) and must stand in a protected scope according
+         * to the current protection level and its inherited visibility
          *
          * @param target
          * @param protectionLevel
@@ -48,7 +48,8 @@ public class MergeHelper {
          * @return
          */
         default boolean isProtected(Mergeable target, ProtectionLevel protectionLevel) {
-            return target.belongsToProtectedGameModel() && Helper.isProtected(protectionLevel, target.getInheritedVisibility());
+            return target.belongsToProtectedGameModel()
+                && Helper.isProtected(protectionLevel, target.getCLosestVisibility());
         }
 
         /**
@@ -94,7 +95,8 @@ public class MergeHelper {
      * @param target
      * @param reference
      * @param protectionLevel
-     * @param forceRecursion  do not follow includeByDefault=false properted unless forceRecursion is true
+     * @param forceRecursion  do not follow includeByDefault=false properted unless forceRecursion
+     *                        is true
      * @param visitor
      * @param level
      * @param f

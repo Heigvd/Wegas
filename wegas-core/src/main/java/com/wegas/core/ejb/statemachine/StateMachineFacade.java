@@ -179,8 +179,8 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                     } else {
                         try {
                             logger.trace("Eval the condition \"{}\"", transition.getTriggerCondition().getContent());
-                            validTransition = (Boolean) scriptManager.eval(player, transition, sm);
-                            //validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition(), sm);
+                            //validTransition = (Boolean) scriptManager.eval(player, transition, sm);
+                            validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition(), sm);
                             logger.trace("Eval result: {}", validTransition);
                         } catch (EJBException ex) {
                             logger.error("Transition eval exception: FSM {}:{}:{}", sm.getName(), sm.getId(), transition.getTriggerCondition().getContent());
