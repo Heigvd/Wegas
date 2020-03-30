@@ -47,7 +47,9 @@ var surveyXapi = (function() {
      * @param {string} inputname
      */
     function numberInput(value, survname, inputname) {
-        var statement = surveyXapi.statement('answered', 'survey', survname + '/number/' + inputname + '/value/' + value);
+        var statement = surveyXapi.statement('answered', 'survey', survname + '/number/' + inputname);
+        statement.setResult(xapi.result(value));
+        return statement;
         return statement;
     }
 
