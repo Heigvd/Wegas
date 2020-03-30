@@ -129,7 +129,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         },
         {
             label: 'Survey',
-            value: 'Survey Descriptor'
+            value: 'SurveyDescriptor'
         },
         {
             label: 'Object',
