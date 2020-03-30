@@ -18,7 +18,7 @@ YUI.add('wegas-surveylistener', function(Y) {
         initializer: function() {
             this.handlers = [];
             // Mapping of survey descr id -> survey inst update handler.
-            this.knownSurveys = {};
+            this.knownSurveysHandlers = {};
             this.currentSurvey = null;
             // Get updates about any surveys included dynamically in the game:
             this.handlers.push(Y.Wegas.Facade.Variable.after("updatedDescriptor", this.onUpdatedDescriptor, this));
