@@ -4,7 +4,6 @@ import { ThemeProvider } from '../../../Components/Theme';
 import { TextLoader } from '../../../Components/Loader';
 import { PageDeserializer } from '../../../Components/PageComponents/tools/PageDeserializer';
 import { PageAPI } from '../../../API/pages.api';
-import { GameModel } from '../../../data/selectors';
 import { useWebsocket } from '../../../API/websocket';
 
 interface PageLoaderProps {
@@ -36,13 +35,13 @@ interface PageIdLoaderProps {
 export function PageIdLoader({ selectedPageId }: PageIdLoaderProps) {
   const [selectedPage, setSelectedPage] = React.useState<WegasComponent>();
   React.useEffect(() => {
-    PageAPI.get(GameModel.selectCurrent().id!, selectedPageId).then(res => {
+    PageAPI.get(selectedPageId).then(res => {
       setSelectedPage(Object.values(res)[0]);
     });
   }, [selectedPageId]);
 
   useWebsocket('PageUpdate', () =>
-    PageAPI.get(GameModel.selectCurrent().id!, selectedPageId).then(res => {
+    PageAPI.get(selectedPageId).then(res => {
       setSelectedPage(Object.values(res)[0]);
     }),
   );

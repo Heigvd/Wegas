@@ -26,6 +26,7 @@ interface ConfirmButtonProps {
   defaultConfirm?: boolean;
   dontResetOnBlur?: boolean;
   disableBorders?: DisableBorders;
+  disabled?: boolean;
 }
 
 export function ConfirmButton(props: ConfirmButtonProps /*& IconButtonProps*/) {
@@ -57,6 +58,7 @@ export function ConfirmButton(props: ConfirmButtonProps /*& IconButtonProps*/) {
           onClick={onClick}
           disableBorders={props.disableBorders}
           tooltip={props.tooltip}
+          disabled={props.disabled}
         />
       )}
       {props.icon && (
@@ -64,6 +66,7 @@ export function ConfirmButton(props: ConfirmButtonProps /*& IconButtonProps*/) {
           icon={props.icon}
           onClick={onClick}
           tooltip={props.tooltip}
+          disabled={props.disabled}
         />
       )}
     </>
@@ -79,6 +82,7 @@ export function ConfirmButton(props: ConfirmButtonProps /*& IconButtonProps*/) {
           props.onAction && props.onAction(true);
           setConfirmation(props.defaultConfirm);
         }}
+        disabled={props.disabled}
       />
       <Button
         label="Cancel"
@@ -89,6 +93,7 @@ export function ConfirmButton(props: ConfirmButtonProps /*& IconButtonProps*/) {
           props.onAction && props.onAction(false);
           setConfirmation(props.defaultConfirm);
         }}
+        disabled={props.disabled}
       />
     </div>
   );

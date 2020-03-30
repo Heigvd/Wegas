@@ -1,7 +1,5 @@
 import * as React from 'react';
 import Select from './Select';
-import { GameModel } from '../../../data/selectors';
-import { PageAPI } from '../../../API/pages.api';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonView } from './commonView';
 import { LabeledView } from './labeled';
@@ -9,8 +7,9 @@ import { IconButton } from '../../../Components/Inputs/Button/IconButton';
 import { scriptEditStyle } from './Script/Script';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
-import { omit } from 'lodash-es';
-import { returnPages, computePageLabel } from '../Page/PageEditor';
+import { useStore } from '../../../data/store';
+import { TreeSelect } from '../Tree/TreeSelect';
+import { indexToTree, isPageItem } from '../../../Helper/pages';
 
 export interface PageSelectProps extends WidgetProps.BaseProps {
   view: CommonView & LabeledView;
@@ -19,17 +18,9 @@ export interface PageSelectProps extends WidgetProps.BaseProps {
 }
 
 export default function PageSelect(props: PageSelectProps) {
-  const [pages, setPages] = React.useState<PagesWithName>({});
   const [pageValue, setPageValue] = React.useState('');
   const [srcMode, setSrcMode] = React.useState(false);
-
-  React.useEffect(() => {
-    const gameModelId = GameModel.selectCurrent().id!;
-    PageAPI.getAll(gameModelId).then(pages => {
-      const index = pages['index'];
-      setPages(() => returnPages(pages, index.root));
-    });
-  });
+  const index = useStore(s => s.pages.index);
 
   React.useEffect(() => {
     if (props.value === undefined) {
@@ -80,18 +71,25 @@ export default function PageSelect(props: PageSelectProps) {
           />
         </div>
       ) : (
-        <Select
-          {...omit(props, ['onChange', 'value'])}
-          onChange={onPageChange}
-          value={pageValue}
-          view={{
-            ...props.view,
-            choices: Object.entries(pages).map(([k, p]) => ({
-              label: computePageLabel(k, p.name),
-              value: k,
-            })),
-          }}
-        />
+        <>
+          {/* <StringInput value={getPageIndexItem(index,pageValue)?.name || "Unknown page"} /> */}
+          <TreeSelect
+            items={indexToTree(index)}
+            onSelect={item => isPageItem(item) && onPageChange(item.id)}
+          />
+        </>
+        // <Select
+        //   {...omit(props, ['onChange', 'value'])}
+        //   onChange={onPageChange}
+        //   value={pageValue}
+        //   view={{
+        //     ...props.view,
+        //     choices: Object.entries(pages).map(([k, p]) => ({
+        //       label: computePageLabel(k, p.name),
+        //       value: k,
+        //     })),
+        //   }}
+        // />
       )}
     </>
   );

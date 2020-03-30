@@ -13,7 +13,7 @@ export interface Item<T> {
 interface TreeSelectProps<T> {
   items: Item<T>[];
   selected?: T;
-  onSelect: (item: T) => void;
+  onSelect?: (item: T) => void;
 }
 
 export function TreeSelect<T>({

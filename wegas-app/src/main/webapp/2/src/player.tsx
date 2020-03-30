@@ -8,7 +8,6 @@ import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
 import { ThemeProvider } from './Components/Theme';
 import { PageIdLoader } from './Editor/Components/Page/PageLoader';
 import { PageAPI } from './API/pages.api';
-import { GameModel } from './data/selectors';
 import 'emotion';
 import { useWebsocket } from './API/websocket';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
@@ -19,13 +18,13 @@ function PlayerPageLoader() {
   const [selectedPageId, setSelectedPageId] = React.useState<string>();
 
   React.useEffect(() => {
-    PageAPI.getIndex(GameModel.selectCurrent().id!).then(index => {
+    PageAPI.getIndex().then(index => {
       setSelectedPageId(index.defaultPageId);
     });
   }, []);
 
   useWebsocket('PageUpdate', () =>
-    PageAPI.getIndex(GameModel.selectCurrent().id!).then(index => {
+    PageAPI.getIndex().then(index => {
       setSelectedPageId(index.defaultPageId);
     }),
   );

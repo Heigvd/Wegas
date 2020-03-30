@@ -9,20 +9,22 @@ import {
 } from './DropZone';
 import { FontAwesome } from '../FontAwesome';
 import { DefaultDndProvider } from '../../../../Components/Contexts/DefaultDndProvider';
+import { flex, grow, flexRow, flexColumn } from '../../../../css/classes';
 
 function noop() {}
 
-interface DropResult {
-  id: {};
+export interface DropResult<T = {}> {
+  id: T;
   source: {
-    parent?: {};
+    parent?: T;
     index: number;
   };
   target: {
-    parent?: {};
+    parent?: T;
     index: number;
   };
 }
+
 interface ContainerProps {
   onDropResult?: (result: DropResult) => void;
   parent?: {};
@@ -178,18 +180,22 @@ class TreeNode extends React.Component<
       ? connectDragSource(
           <div
             ref={n => (this.root = n)}
-            className={cx({
-              [isDraggingStyle]: isDragging ? isDragging : false,
-            })}
+            className={cx(
+              {
+                [isDraggingStyle]: isDragging ? isDragging : false,
+              },
+              flex,
+              flexColumn,
+            )}
           >
             <DropZone id={parent} index={index!} where={'AUTO'}>
               {({ isOver, boundingRect, where, separator }) => (
-                <div>
+                <div className={cx(flex, flexColumn)}>
                   {isOver && where === 'BEFORE' && (
                     <DropPreview boundingRect={boundingRect} />
                   )}
                   {separator(
-                    <div>
+                    <div className={cx(flex, grow, flexRow)}>
                       <span className={toggle} onClick={this.toggleExpand}>
                         {isNode && (
                           <FontAwesome

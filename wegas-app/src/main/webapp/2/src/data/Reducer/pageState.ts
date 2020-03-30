@@ -3,10 +3,9 @@ import { ActionType, StateActions, ActionCreator } from '../actions';
 import { PageAPI } from '../../API/pages.api';
 import { ThunkResult } from '../store';
 import { Reducer } from 'redux';
-
-// export interface PageState {
-//   [id: string]: Readonly<AllPages>;
-// }
+import { Page } from '../selectors';
+import { compare } from 'fast-json-patch';
+import { getItemFromPath, isPageItem } from '../../Helper/pages';
 
 export type PageState = Readonly<AllPages>;
 
@@ -15,8 +14,8 @@ const pageState: Reducer<Readonly<PageState>> = u(
     switch (action.type) {
       case ActionType.PAGE_FETCH:
         return { ...state, ...action.payload.pages };
-      // case ActionType.PAGE_INDEX:
-      //   return {...state, ...action.payload};
+      case ActionType.PAGE_INDEX:
+        return { ...state, ...action.payload } as PageState;
     }
   },
   {},
@@ -25,93 +24,144 @@ export default pageState;
 
 // Actions
 
-export function getDefault(): ThunkResult<Promise<StateActions<'PAGE_FETCH'>>> {
-  return function(dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
-    return PageAPI.getDefault(gameModelId).then(pages =>
-      dispatch(ActionCreator.PAGE_FETCH({ pages })),
-    );
+export function getDefault(): ThunkResult<
+  Promise<StateActions<'PAGE_FETCH' | 'PAGE_ERROR'>>
+> {
+  return function(dispatch) {
+    return PageAPI.getDefault()
+      .then(pages => dispatch(ActionCreator.PAGE_FETCH({ pages })))
+      .catch((res: Response) =>
+        dispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),
+      );
+  };
+}
+export function setDefault(
+  pageId: string,
+): ThunkResult<Promise<StateActions<'PAGE_INDEX' | 'PAGE_ERROR'>>> {
+  return function(dispatch) {
+    return PageAPI.setDefaultPage(pageId)
+      .then(index => dispatch(ActionCreator.PAGE_INDEX({ index })))
+      .catch((res: Response) =>
+        dispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),
+      );
   };
 }
 export function get(
   id: string,
-): ThunkResult<Promise<StateActions<'PAGE_FETCH'>>> {
-  return function(dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
-    return PageAPI.get(gameModelId, id).then(pages =>
-      dispatch(ActionCreator.PAGE_FETCH({ pages })),
-    );
+): ThunkResult<Promise<StateActions<'PAGE_FETCH' | 'PAGE_ERROR'>>> {
+  return function(dispatch) {
+    return PageAPI.get(id)
+      .then(pages => dispatch(ActionCreator.PAGE_FETCH({ pages })))
+      .catch((res: Response) =>
+        dispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),
+      );
   };
 }
-export function getAll(): ThunkResult<Promise<StateActions<'PAGE_FETCH'>>> {
-  return function(dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
-    return PageAPI.getAll(gameModelId).then(pages =>
-      dispatch(ActionCreator.PAGE_FETCH({ pages })),
-    );
+export function getAll(): ThunkResult<
+  Promise<StateActions<'PAGE_FETCH' | 'PAGE_ERROR'>>
+> {
+  return function(dispatch) {
+    // Getting the index to force building it in case of old scenario
+    return PageAPI.getIndex()
+      .then(index => {
+        dispatch(ActionCreator.PAGE_INDEX({ index }));
+        return PageAPI.getAll().then(pages =>
+          dispatch(ActionCreator.PAGE_FETCH({ pages })),
+        );
+      })
+      .catch((res: Response) =>
+        dispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),
+      );
   };
 }
-export function createPage(
+
+export function createItem(
   folderPath: string[],
   newItem: PageIndexItem,
   pageContent?: WegasComponent,
-): ThunkResult<Promise<StateActions<'PAGE_FETCH'>>> {
-  return function(dispatch, getState) {
-    const gameModelId = getState().global.currentGameModelId;
-    return PageAPI.newIndexItem(
-      gameModelId,
-      folderPath,
-      newItem,
-      pageContent,
-    ).then(pages => dispatch(ActionCreator.PAGE_FETCH({ pages })));
+): ThunkResult<Promise<StateActions<'PAGE_INDEX' | 'PAGE_ERROR'>>> {
+  return function(dispatch) {
+    return PageAPI.newIndexItem(folderPath, newItem, pageContent)
+      .then(index => {
+        const item = getItemFromPath(index, [...folderPath, newItem.name]);
+        if (isPageItem(item)) {
+          dispatch(get(item.id!));
+        }
+        return dispatch(ActionCreator.PAGE_INDEX({ index }));
+      })
+      .catch((res: Response) => {
+        return dispatch(ActionCreator.PAGE_ERROR({ error: res.statusText }));
+      });
   };
 }
-// export function deletePage(
-//   id: string,
-// ): ThunkResult<Promise<StateActions<'PAGE_INDEX'>>> {
-//   return function(dispatch, getState) {
-//     const gameModelId = getState().global.currentGameModelId;
-//     return PageAPI.deletePage(gameModelId, id).then(pages =>
-//       dispatch(ActionCreator.PAGE_INDEX(pages)),
-//     );
-//   };
-// }
-// export function patch(
-//   id: string,
-//   page: Page,
-// ): ThunkResult<Promise<StateActions<'PAGE_FETCH'>>> {
-//   return function(dispatch, getState) {
-//     const gameModelId = getState().global.currentGameModelId;
-//     const oldPage = Page.select(id);
-//     if (oldPage === undefined) {
-//       return Promise.resolve(ActionCreator.PAGE_FETCH({ pages: {} }));
-//     }
-//     const diff = compare(oldPage, page);
-//     // Handle moving a page differently
-//     const moving = diff.findIndex(
-//       op => op.path === '/@index' && op.op === 'replace',
-//     );
-//     let movOp: ReplaceOperation<number> | undefined;
-//     if (moving > -1) {
-//       movOp = diff.splice(moving, 1)[0] as ReplaceOperation<number>;
-//     }
-//     if (diff.length > 0) {
-//       return PageAPI.patch(gameModelId, JSON.stringify(diff), id).then(
-//         pages => {
-//           const ret = dispatch(ActionCreator.PAGE_FETCH({ pages }));
-//           if (movOp !== undefined) {
-//             PageAPI.move(gameModelId, movOp.value, id).then(index => {
-//               dispatch(ActionCreator.PAGE_INDEX(index));
-//             });
-//           }
-//           return ret;
-//         },
-//       );
-//     } else if (movOp !== undefined) {
-//       PageAPI.move(gameModelId, movOp.value, id).then(index => {
-//         dispatch(ActionCreator.PAGE_INDEX(index));
-//       });
-//     }
-//     return Promise.resolve(ActionCreator.PAGE_FETCH({ pages: {} }));
-//   };
-// }
+
+export function deleteIndexItem(
+  itemPath: string[],
+): ThunkResult<Promise<StateActions<'PAGE_INDEX' | 'PAGE_ERROR'>>> {
+  return function(dispatch) {
+    return PageAPI.deleteIndexItem(itemPath)
+      .then(index => dispatch(ActionCreator.PAGE_INDEX({ index })))
+      .catch((res: Response) =>
+        dispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),
+      );
+  };
+}
+
+export function updateIndexItem(
+  itemPath: string[],
+  item: PageIndexItem,
+): ThunkResult<Promise<StateActions<'PAGE_INDEX' | 'PAGE_ERROR'>>> {
+  return function(dispatch) {
+    return PageAPI.updateIndexItem(itemPath, item)
+      .then(index => dispatch(ActionCreator.PAGE_INDEX({ index })))
+      .catch((res: Response) =>
+        dispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),
+      );
+  };
+}
+
+export function moveIndexItem(
+  itemPath: string[],
+  folderPath: string[],
+  pos?: number,
+): ThunkResult<Promise<StateActions<'PAGE_INDEX' | 'PAGE_ERROR'>>> {
+  return function(dispatch) {
+    return PageAPI.moveIndexItem(itemPath, folderPath, pos)
+      .then(index => dispatch(ActionCreator.PAGE_INDEX({ index })))
+      .catch((res: Response) =>
+        dispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),
+      );
+  };
+}
+
+export function deletePage(
+  id: string,
+): ThunkResult<Promise<StateActions<'PAGE_INDEX' | 'PAGE_ERROR'>>> {
+  return function(dispatch) {
+    return PageAPI.deletePage(id)
+      .then(index => dispatch(ActionCreator.PAGE_INDEX({ index })))
+      .catch((res: Response) =>
+        dispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),
+      );
+  };
+}
+
+export function patch(
+  id: string,
+  page: WegasComponent,
+): ThunkResult<Promise<StateActions<'PAGE_FETCH' | 'PAGE_ERROR'>>> {
+  return function(dispatch) {
+    const oldPage = Page.select(id);
+    if (oldPage === undefined) {
+      return Promise.resolve(
+        ActionCreator.PAGE_ERROR({ error: `Page ${id} not found` }),
+      );
+    }
+    const diff = compare(oldPage, page);
+    return PageAPI.patch(JSON.stringify(diff), id, true)
+      .then(pages => dispatch(ActionCreator.PAGE_FETCH({ pages })))
+      .catch((res: Response) =>
+        dispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),
+      );
+  };
+}

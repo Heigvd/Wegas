@@ -31,8 +31,6 @@ interface Pages {
   [id: string]: WegasComponent;
 }
 
-type AllPages = Pages & { index: PageIndex };
-
 interface PageWithName {
   name: string;
   page: WegasComponent;
@@ -41,3 +39,7 @@ interface PageWithName {
 interface PagesWithName {
   [id: string]: PageWithName;
 }
+
+type AllPages = Pages & {
+  index: PageIndex;
+};

@@ -1,9 +1,14 @@
 import { rest } from './rest';
 import { GameModel } from '../data/selectors';
+import { PageState } from '../data/Reducer/pageState';
 
 const PAGE_BASE = (gameModelId?: number) =>
   `GameModel/${
-    gameModelId === undefined ? GameModel.selectCurrent().id! : gameModelId
+    gameModelId === undefined
+      ? GameModel != null
+        ? GameModel.selectCurrent().id!
+        : CurrentGM.id!
+      : gameModelId
   }/Page/`;
 
 async function extractPage(res: Response): Promise<Pages> {
@@ -13,17 +18,6 @@ async function extractPage(res: Response): Promise<Pages> {
     return { [pageHeader]: j };
   }
   return j;
-}
-
-export function isPageItem(
-  pageItemIndex?: PageIndexItem,
-): pageItemIndex is PageIndexPage {
-  return pageItemIndex != null && pageItemIndex['@class'] === 'Page';
-}
-export function isFolderItem(
-  pageItemIndex?: PageIndexItem,
-): pageItemIndex is PageIndexFolder {
-  return pageItemIndex != null && pageItemIndex['@class'] === 'Folder';
 }
 
 /**
@@ -46,15 +40,12 @@ export const PageAPIFactory = (gameModelId?: number) => {
       return rest(PAGE_BASE(gameModelId) + 'Page/' + pageId).then(res => {
         return extractPage(res);
       });
-      // .catch(res => {
-      //   throw res as Response;
-      // });
     },
     /**
      * fetch a page
      * @param pageId optional pageId
      */
-    getAll(): Promise<AllPages> {
+    getAll(): Promise<PageState> {
       return rest(PAGE_BASE(gameModelId)).then(res => {
         return res.json();
       });
@@ -176,7 +167,7 @@ export const PageAPIFactory = (gameModelId?: number) => {
      * Delete a page or all page
      * @param id optional id to delete. delete all page if omitted
      */
-    deletePage(id: string = ''): Promise<PageIndex> {
+    deletePage(id: string): Promise<PageIndex> {
       return rest(PAGE_BASE(gameModelId) + 'Page/' + id, {
         method: 'DELETE',
       }).then(res => res.json());

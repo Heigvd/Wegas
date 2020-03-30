@@ -4,7 +4,6 @@ import reducers, { State } from './Reducer/reducers';
 import { Actions } from '.';
 import { StateActions } from './actions';
 import { createStoreConnector } from './connectStore';
-// import { Page } from './selectors';
 import '../API/websocket';
 
 // Used by redux dev tool extension
@@ -17,15 +16,9 @@ export const store = createStore(
   ),
 );
 function storeInit() {
-  // store.dispatch(update([CurrentGM]));
   store.dispatch(Actions.VariableDescriptorActions.getAll());
   store.dispatch(Actions.VariableInstanceActions.getAll());
-  // store.dispatch(Actions.PageActions.getDefault()).then(() => {
-  //   const defaultId = Page.selectDefaultId();
-  //   if (defaultId) {
-  //     store.dispatch(Actions.EditorActions.pageLoadId(defaultId));
-  //   }
-  // });
+  store.dispatch(Actions.PageActions.getAll());
   store.dispatch(Actions.GameActions.getGame());
   store.dispatch(Actions.TeamActions.getTeams());
 }

@@ -81,17 +81,19 @@ export const ActionCreator = {
     updatedEntities: NormalizedData;
     events: WegasEvents[];
   }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
-  PAGE_EDIT_MODE: (data: boolean) =>
-    createAction(ActionType.PAGE_EDIT_MODE, data),
-  PAGE_LOAD_ID: (data?: string) => createAction(ActionType.PAGE_LOAD_ID, data),
+  // PAGE_EDIT_MODE: (data: boolean) =>
+  //   createAction(ActionType.PAGE_EDIT_MODE, data),
+  // PAGE_LOAD_ID: (data?: string) => createAction(ActionType.PAGE_LOAD_ID, data),
   PAGE_INDEX: (data: { index: PageIndex }) =>
     createAction(ActionType.PAGE_INDEX, data),
-  PAGE_SRC_MODE: (data: boolean) =>
-    createAction(ActionType.PAGE_SRC_MODE, data),
-  PAGE_EDIT: (data: { page: string; path: string[] }) =>
-    createAction(ActionType.PAGE_EDIT, data),
+  // PAGE_SRC_MODE: (data: boolean) =>
+  //   createAction(ActionType.PAGE_SRC_MODE, data),
+  // PAGE_EDIT: (data: { page: string; path: string[] }) =>
+  //   createAction(ActionType.PAGE_EDIT, data),
   PAGE_FETCH: (data: { pages: Pages }) =>
     createAction(ActionType.PAGE_FETCH, data),
+  PAGE_ERROR: (data: { error: string }) =>
+    createAction(ActionType.PAGE_ERROR, data),
   SEARCH_CLEAR: () => createAction(ActionType.SEARCH_CLEAR, {}),
   SEARCH_ONGOING: () => createAction(ActionType.SEARCH_ONGOING, {}),
   SEARCH_GLOBAL: (data: { search: string; result: number[] }) =>

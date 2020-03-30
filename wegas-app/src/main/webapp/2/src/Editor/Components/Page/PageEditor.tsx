@@ -3,7 +3,6 @@ import { Toolbar } from '../../../Components/Toolbar';
 import { ConfirmButton } from '../../../Components/Inputs/Button/ConfirmButton';
 import { Menu } from '../../../Components/Menu';
 import { PageAPI } from '../../../API/pages.api';
-import { GameModel } from '../../../data/selectors';
 import {
   JSONandJSEditor,
   OnSaveStatus,
@@ -27,6 +26,9 @@ import { themeVar } from '../../../Components/Theme';
 // import pageState from '../../../data/Reducer/pageState';
 import { PagesLayout } from './PagesLayout';
 import { wlog } from '../../../Helper/wegaslog';
+import { store } from '../../../data/store';
+import { Actions } from '../../../data';
+import pageState from '../../../data/Reducer/pageState';
 
 const innerButtonStyle = css({
   margin: '2px auto 2px auto',
@@ -142,26 +144,8 @@ export default function PageEditor() {
   const [showControls, setShowControls] = React.useState(true);
 
   const components = usePageComponentStore(s => s);
-  // const selectedPage: string | undefined =
-  //   pagesState.pages[String(pagesState.selectedPage)];
 
-  const onNewIndexItem = (type: PageIndexItem['@class']) => (
-    path: string[],
-    name: string,
-  ) => {
-    PageAPI.newIndexItem(
-      path,
-      {
-        '@class': type,
-        name: name,
-      } as PageIndexItem,
-      defaultPage,
-    ).then(res => wlog(res));
-  };
-
-  const onDeleteIndexItem = (path: string[]) => {
-    PageAPI.deleteIndexItem(path).then(res => wlog(res));
-  };
+  const { dispatch } = store;
 
   const loadIndex = React.useCallback((firstTime: boolean = false) => {
     // getIndex to make sure index exists
@@ -313,106 +297,6 @@ export default function PageEditor() {
   return (
     <Toolbar>
       <Toolbar.Header>
-        <div>
-          {modalState.type === 'newpage' || modalState.type === 'editpage' ? (
-            <TextPrompt
-              placeholder="Page name"
-              defaultFocus
-              onAction={(success, value) => {
-                if (value === '') {
-                  setModalState({
-                    type: 'error',
-                    label: 'The page must have a name',
-                  });
-                } else {
-                  if (success) {
-                    if (modalState.type === 'newpage') {
-                      PageAPI.newIndexItem(
-                        [],
-                        {
-                          '@class': 'Page',
-                          name: value,
-                        },
-                        defaultPage,
-                      ).then(res => {
-                        setPagesState(pages => ({ ...pages, ...res }));
-                        setModalState({ type: 'close' });
-                      });
-                    } else {
-                      patchPage(selectedPage(pagesState), () => {
-                        setModalState({ type: 'close' });
-                      });
-                    }
-                  }
-                }
-              }}
-              onBlur={() => setModalState({ type: 'close' })}
-              applyOnEnter
-            />
-          ) : (
-            !srcMode && (
-              <>
-                <IconButton
-                  icon="plus"
-                  tooltip="Add a new page"
-                  onClick={() => {
-                    setModalState({ type: 'newpage' });
-                  }}
-                />
-                {selectedPage !== undefined && (
-                  <IconButton
-                    icon="edit"
-                    tooltip="Edit page name"
-                    onClick={() => {
-                      setModalState({ type: 'editpage' });
-                    }}
-                  />
-                )}
-              </>
-            )
-          )}
-          <Menu
-            label={pagesState.pages[pagesState.selectedPage].name}
-            items={Object.keys(pagesState.pages).map((k: string) => {
-              return {
-                label: (
-                  <span>
-                    {computePageLabel(k, pagesState.pages[k].name)}
-                    <ConfirmButton
-                      icon="trash"
-                      onAction={success => {
-                        if (success) {
-                          PageAPI.deletePage(k).then(() => loadIndex());
-                        }
-                      }}
-                    />
-                    <IconButton
-                      icon={
-                        k === pagesState.defaultPage
-                          ? { icon: 'star', color: themeVar.successColor }
-                          : 'star'
-                      }
-                      onClick={() => {
-                        PageAPI.setDefaultPage(k).then(() => loadIndex());
-                      }}
-                    />
-                  </span>
-                ),
-                id: k,
-              };
-            })}
-            onSelect={({ id }) => {
-              setPagesState(s => ({ ...s, selectedPage: id }));
-            }}
-          />
-          {modalState.type === 'error' && (
-            <MessageString
-              type={modalState.type}
-              value={modalState.label}
-              duration={3000}
-            />
-          )}
-        </div>
         <div style={{ margin: 'auto' }}>
           {editMode && (
             <>
@@ -456,18 +340,15 @@ export default function PageEditor() {
       </Toolbar.Header>
       <Toolbar.Content>
         <ReflexContainer orientation="vertical" className={splitter}>
-          <ReflexElement flex={pagesState.editedPath ? 0.3 : 0.125}>
-            LAYOUT
+          <ReflexElement flex={0.3}>
             <PagesLayout
-              indexItemControls={{
-                onNewPage: onNewIndexItem('Page'),
-                onNewFolder: onNewIndexItem('Folder'),
-                onMoveIndexItem: () => wlog('To implement'),
-                onDeleteIndexItem,
-              }}
+              selectedPageId={pagesState.selectedPage}
+              onPageClick={pageId =>
+                setPagesState(ops => ({ ...ops, selectedPage: pageId }))
+              }
               componentControls={{
                 onNewComponent: () => wlog('To implement'),
-                onDeletComponent: () => wlog('To implement'),
+                onDeleteComponent: () => wlog('To implement'),
               }}
             />
           </ReflexElement>
