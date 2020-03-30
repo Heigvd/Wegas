@@ -89,9 +89,15 @@ var surveyXapi = (function() {
     return {
         statement: statement,
         post: post,
-        textInput: textInput,
-        numberInput: numberInput,
-        choiceInput: choiceInput,
+        textInput: function(value, survname, inputname){
+           return buildInputStatemeent(value, 'text', survname, inputname);
+        },
+        numberInput: function(value, survname, inputname){
+           return buildInputStatemeent(value, 'number', survname, inputname);
+        },,
+        choiceInput: function(value, survname, inputname){
+           return buildInputStatemeent(value, 'choice', survname, inputname);
+        },,
         surveyCompleted: surveyCompleted,
         surveyInitialized: surveyInitialized,
         testLib: testLib
