@@ -426,7 +426,7 @@ interface ComponentControls {
 
 interface PagesLayoutProps {
   onPageClick: (selectedPageId: string) => void;
-  selectedPageId: string;
+  selectedPageId?: string;
   componentControls: ComponentControls;
 }
 

@@ -5,12 +5,18 @@ import { TextLoader } from '../../../Components/Loader';
 import { PageDeserializer } from '../../../Components/PageComponents/tools/PageDeserializer';
 import { PageAPI } from '../../../API/pages.api';
 import { useWebsocket } from '../../../API/websocket';
+import { useStore } from '../../../data/store';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 
 interface PageLoaderProps {
-  selectedPage?: WegasComponent;
+  selectedPageId?: string;
 }
 
-export function PageLoader({ selectedPage }: PageLoaderProps) {
+export function PageLoader({ selectedPageId }: PageLoaderProps) {
+  const selectedPage = useStore(
+    s => (selectedPageId ? s.pages[selectedPageId] : undefined),
+    deepDifferent,
+  );
   return (
     <DefaultDndProvider>
       <ThemeProvider contextName="player">

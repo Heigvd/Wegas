@@ -1,15 +1,7 @@
 import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
-import { ConfirmButton } from '../../../Components/Inputs/Button/ConfirmButton';
-import { Menu } from '../../../Components/Menu';
-import { PageAPI } from '../../../API/pages.api';
-import {
-  JSONandJSEditor,
-  OnSaveStatus,
-} from '../ScriptEditors/JSONandJSEditor';
-import { IconButton } from '../../../Components/Inputs/Button/IconButton';
-import { TextPrompt } from '../TextPrompt';
-import { compare, deepClone } from 'fast-json-patch';
+import { JSONandJSEditor } from '../ScriptEditors/JSONandJSEditor';
+import { deepClone } from 'fast-json-patch';
 import { ComponentPalette, DnDComponent } from './ComponentPalette';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import { ReflexElement, ReflexContainer, ReflexSplitter } from 'react-reflex';
@@ -17,18 +9,14 @@ import { splitter } from '../LinearTabLayout/LinearLayout';
 import ComponentEditor from './ComponentEditor';
 import { PageLoader } from './PageLoader';
 import { Button } from '../../../Components/Inputs/Button/Button';
-import { MessageString } from '../MessageString';
 import { Toggler } from '../../../Components/Inputs/Button/Toggler';
 import { css } from 'emotion';
 import { noop } from 'lodash-es';
-import { themeVar } from '../../../Components/Theme';
-// import pageState, { PageState } from '../../../data/Reducer/pageState';
-// import pageState from '../../../data/Reducer/pageState';
 import { PagesLayout } from './PagesLayout';
 import { wlog } from '../../../Helper/wegaslog';
-import { store } from '../../../data/store';
+import { store, useStore } from '../../../data/store';
 import { Actions } from '../../../data';
-import pageState from '../../../data/Reducer/pageState';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 
 const innerButtonStyle = css({
   margin: '2px auto 2px auto',
@@ -55,56 +43,36 @@ export const pageCTX = React.createContext<PageContext>({
   onUpdate: noop,
 });
 
-const defaultPage = {
-  type: 'List',
-  props: {
-    children: [],
-    style: {
-      width: '100%',
-      height: '100%',
-    },
-  },
-};
+// interface PageModalState {
+//   type: 'newpage' | 'editpage' | 'close';
+// }
+// interface ErrorModalState {
+//   type: 'error';
+//   label: string;
+// }
+// interface SaveModalState {
+//   type: 'save';
+//   label: OnSaveStatus;
+// }
+// type ModalState = PageModalState | ErrorModalState | SaveModalState;
 
-const loadingPage = {
-  type: 'HTML',
-  props: {
-    text: 'Loading pages...',
-  },
-};
+// const savingProgressStatus: OnSaveStatus = {
+//   status: 'warning',
+//   text: 'Saving page in progress',
+// };
 
-interface PageModalState {
-  type: 'newpage' | 'editpage' | 'close';
-}
-interface ErrorModalState {
-  type: 'error';
-  label: string;
-}
-interface SaveModalState {
-  type: 'save';
-  label: OnSaveStatus;
-}
-type ModalState = PageModalState | ErrorModalState | SaveModalState;
+// const savingDoneStatus: OnSaveStatus = {
+//   status: 'succes',
+//   text: 'The page has been saved',
+// };
 
-const savingProgressStatus: OnSaveStatus = {
-  status: 'warning',
-  text: 'Saving page in progress',
-};
-
-const savingDoneStatus: OnSaveStatus = {
-  status: 'succes',
-  text: 'The page has been saved',
-};
-
-const savingErrorStatus: OnSaveStatus = {
-  status: 'error',
-  text: 'Error : The page has not been saved',
-};
+// const savingErrorStatus: OnSaveStatus = {
+//   status: 'error',
+//   text: 'Error : The page has not been saved',
+// };
 
 interface PagesState {
-  defaultPage: string;
-  selectedPage: string;
-  pages: PagesWithName;
+  selectedPageId?: string;
   editedPath?: string[];
 }
 
@@ -126,68 +94,44 @@ export const returnPages = (
   return { [item.id!]: { name: item.name, page: pages[item.id!] } };
 };
 
-const selectedPage = (pagesState: PagesState): WegasComponent =>
-  pagesState.pages[pagesState.selectedPage].page;
-
 export default function PageEditor() {
-  const [modalState, setModalState] = React.useState<ModalState>({
-    type: 'close',
-  });
-  const [pagesState, setPagesState] = React.useState<PagesState>({
-    defaultPage: '0',
-    selectedPage: '0',
-    pages: { '0': { name: 'Loading page', page: loadingPage } },
-  });
+  const [{ selectedPageId, editedPath }, setPageEditorState] = React.useState<
+    PagesState
+  >({});
   const [srcMode, setSrcMode] = React.useState<boolean>(false);
   const [editMode, setEditMode] = React.useState(false);
   const [showBorders, setShowBorders] = React.useState(false);
   const [showControls, setShowControls] = React.useState(true);
 
   const components = usePageComponentStore(s => s);
+  const { selectedPage, defaultPageId } = useStore(
+    s => ({
+      selectedPage: selectedPageId ? s.pages[selectedPageId] : undefined,
+      defaultPageId: s.pages.index ? s.pages.index.defaultPageId : undefined,
+    }),
+    deepDifferent,
+  );
+
+  React.useEffect(() => {
+    if (selectedPageId == null && defaultPageId != null) {
+      setPageEditorState(os => ({ ...os, selectedPageId: defaultPageId }));
+    }
+  }, [defaultPageId, selectedPageId]);
 
   const { dispatch } = store;
 
-  const loadIndex = React.useCallback((firstTime: boolean = false) => {
-    // getIndex to make sure index exists
-    PageAPI.getIndex().then(index => {
-      PageAPI.getAll().then(pages => {
-        setPagesState(ops => ({
-          defaultPage: index.defaultPageId,
-          selectedPage: firstTime ? index.defaultPageId : ops.defaultPage,
-          pages: returnPages(pages, index.root),
-        }));
-      });
-    });
-  }, []);
-
   const patchPage = React.useCallback(
-    (page: WegasComponent, callback?: (res: WegasComponent) => void) => {
-      setModalState({ type: 'save', label: savingProgressStatus });
-      const diff = compare(selectedPage(pagesState), page);
-      PageAPI.patch(JSON.stringify(diff), pagesState.selectedPage, true)
-        .then(res => {
-          setModalState({ type: 'save', label: savingDoneStatus });
-          if (callback) {
-            callback(res);
-          }
-        })
-        .catch(e =>
-          setModalState({
-            type: 'save',
-            label: {
-              ...savingErrorStatus,
-              text: savingErrorStatus.text + '(' + e + ')',
-            },
-          }),
-        );
+    (page: WegasComponent) => {
+      selectedPageId &&
+        dispatch(Actions.PageActions.patch(selectedPageId, page));
     },
-    [pagesState],
+    [dispatch, selectedPageId],
   );
 
   const findComponent = React.useCallback(
     (path: string[]) => {
       const browsePath = [...path];
-      const newPage = deepClone(selectedPage(pagesState)) as WegasComponent;
+      const newPage = deepClone(selectedPage) as WegasComponent;
       let parent: WegasComponent | undefined = undefined;
       let component: WegasComponent = newPage;
       while (browsePath.length > 0) {
@@ -201,11 +145,11 @@ export default function PageEditor() {
       }
       return { newPage, component, parent };
     },
-    [pagesState],
+    [selectedPage],
   );
 
   const onEdit = React.useCallback(
-    (path?: string[]) => setPagesState(o => ({ ...o, editedPath: path })),
+    (path?: string[]) => setPageEditorState(o => ({ ...o, editedPath: path })),
     [],
   );
 
@@ -238,7 +182,7 @@ export default function PageEditor() {
 
   const onDelete = React.useCallback(
     (path: string[]) => {
-      const newPage = deepClone(selectedPage(pagesState)) as WegasComponent;
+      const newPage = deepClone(selectedPage) as WegasComponent;
       let parent: WegasComponent = newPage;
       const browsePath = [...path];
       while (browsePath.length > 0) {
@@ -253,12 +197,12 @@ export default function PageEditor() {
         browsePath.splice(0, 1);
       }
     },
-    [pagesState, patchPage],
+    [patchPage, selectedPage],
   );
 
   const onUpdate = React.useCallback(
     (value: WegasComponent, componentPath?: string[], patch?: boolean) => {
-      const path = componentPath ? componentPath : pagesState.editedPath;
+      const path = componentPath ? componentPath : editedPath;
       if (path) {
         const { newPage, parent } = findComponent(path);
         if (parent) {
@@ -287,12 +231,8 @@ export default function PageEditor() {
         }
       }
     },
-    [patchPage, pagesState.editedPath, findComponent],
+    [patchPage, editedPath, findComponent],
   );
-
-  React.useEffect(() => {
-    loadIndex(true);
-  }, [loadIndex]);
 
   return (
     <Toolbar>
@@ -342,9 +282,9 @@ export default function PageEditor() {
         <ReflexContainer orientation="vertical" className={splitter}>
           <ReflexElement flex={0.3}>
             <PagesLayout
-              selectedPageId={pagesState.selectedPage}
+              selectedPageId={selectedPageId}
               onPageClick={pageId =>
-                setPagesState(ops => ({ ...ops, selectedPage: pageId }))
+                setPageEditorState(ops => ({ ...ops, selectedPageId: pageId }))
               }
               componentControls={{
                 onNewComponent: () => wlog('To implement'),
@@ -357,32 +297,36 @@ export default function PageEditor() {
             <ReflexElement>
               <JSONandJSEditor
                 content={JSON.stringify(selectedPage, null, 2)}
-                status={
-                  modalState.type === 'save' ? modalState.label : undefined
-                }
-                onSave={content =>
-                  patchPage(selectedPage(pagesState), JSON.parse(content))
-                }
+                // status={
+                //   modalState.type === 'save' ? modalState.label : undefined
+                // }
+                onSave={content => {
+                  try {
+                    patchPage(JSON.parse(content));
+                  } catch (e) {
+                    return { status: 'error', text: e };
+                  }
+                }}
               />
             </ReflexElement>
           )}
           {!srcMode && editMode && (
-            <ReflexElement
-              flex={editMode ? (pagesState.editedPath ? 0.3 : 0.125) : 0}
-            >
+            <ReflexElement flex={editMode ? (editedPath ? 0.3 : 0.125) : 0}>
               <div style={{ float: 'left' }}>
-                LAYOUT
                 <ComponentPalette />
               </div>
-              {pagesState.editedPath && (
+              {editedPath && (
                 <ComponentEditor
-                  entity={findComponent(pagesState.editedPath).component}
+                  entity={findComponent(editedPath).component}
                   update={onUpdate}
                   actions={[
                     {
                       label: 'Close',
                       action: () =>
-                        setPagesState(o => ({ ...o, editedPath: undefined })),
+                        setPageEditorState(o => ({
+                          ...o,
+                          editedPath: undefined,
+                        })),
                     },
                   ]}
                 />
@@ -403,11 +347,7 @@ export default function PageEditor() {
                   onUpdate,
                 }}
               >
-                {pagesState.selectedPage ? (
-                  <PageLoader selectedPage={selectedPage(pagesState)} />
-                ) : (
-                  'Loading pages...'
-                )}
+                <PageLoader selectedPageId={selectedPageId} />
               </pageCTX.Provider>
             </ReflexElement>
           )}

@@ -9,7 +9,7 @@ import { getItemFromPath, isPageItem } from '../../Helper/pages';
 
 export type PageState = Readonly<AllPages>;
 
-const pageState: Reducer<Readonly<PageState>> = u(
+const pageState: Reducer<PageState> = u(
   (state: PageState, action: StateActions) => {
     switch (action.type) {
       case ActionType.PAGE_FETCH:
@@ -24,9 +24,7 @@ export default pageState;
 
 // Actions
 
-export function getDefault(): ThunkResult<
-  Promise<StateActions<'PAGE_FETCH' | 'PAGE_ERROR'>>
-> {
+export function getDefault(): ThunkResult {
   return function(dispatch) {
     return PageAPI.getDefault()
       .then(pages => dispatch(ActionCreator.PAGE_FETCH({ pages })))
@@ -35,9 +33,7 @@ export function getDefault(): ThunkResult<
       );
   };
 }
-export function setDefault(
-  pageId: string,
-): ThunkResult<Promise<StateActions<'PAGE_INDEX' | 'PAGE_ERROR'>>> {
+export function setDefault(pageId: string): ThunkResult {
   return function(dispatch) {
     return PageAPI.setDefaultPage(pageId)
       .then(index => dispatch(ActionCreator.PAGE_INDEX({ index })))
@@ -46,9 +42,7 @@ export function setDefault(
       );
   };
 }
-export function get(
-  id: string,
-): ThunkResult<Promise<StateActions<'PAGE_FETCH' | 'PAGE_ERROR'>>> {
+export function get(id: string): ThunkResult {
   return function(dispatch) {
     return PageAPI.get(id)
       .then(pages => dispatch(ActionCreator.PAGE_FETCH({ pages })))
@@ -57,9 +51,7 @@ export function get(
       );
   };
 }
-export function getAll(): ThunkResult<
-  Promise<StateActions<'PAGE_FETCH' | 'PAGE_ERROR'>>
-> {
+export function getAll(): ThunkResult {
   return function(dispatch) {
     // Getting the index to force building it in case of old scenario
     return PageAPI.getIndex()
@@ -79,7 +71,7 @@ export function createItem(
   folderPath: string[],
   newItem: PageIndexItem,
   pageContent?: WegasComponent,
-): ThunkResult<Promise<StateActions<'PAGE_INDEX' | 'PAGE_ERROR'>>> {
+): ThunkResult {
   return function(dispatch) {
     return PageAPI.newIndexItem(folderPath, newItem, pageContent)
       .then(index => {
@@ -95,9 +87,7 @@ export function createItem(
   };
 }
 
-export function deleteIndexItem(
-  itemPath: string[],
-): ThunkResult<Promise<StateActions<'PAGE_INDEX' | 'PAGE_ERROR'>>> {
+export function deleteIndexItem(itemPath: string[]): ThunkResult {
   return function(dispatch) {
     return PageAPI.deleteIndexItem(itemPath)
       .then(index => dispatch(ActionCreator.PAGE_INDEX({ index })))
@@ -110,7 +100,7 @@ export function deleteIndexItem(
 export function updateIndexItem(
   itemPath: string[],
   item: PageIndexItem,
-): ThunkResult<Promise<StateActions<'PAGE_INDEX' | 'PAGE_ERROR'>>> {
+): ThunkResult {
   return function(dispatch) {
     return PageAPI.updateIndexItem(itemPath, item)
       .then(index => dispatch(ActionCreator.PAGE_INDEX({ index })))
@@ -124,7 +114,7 @@ export function moveIndexItem(
   itemPath: string[],
   folderPath: string[],
   pos?: number,
-): ThunkResult<Promise<StateActions<'PAGE_INDEX' | 'PAGE_ERROR'>>> {
+): ThunkResult {
   return function(dispatch) {
     return PageAPI.moveIndexItem(itemPath, folderPath, pos)
       .then(index => dispatch(ActionCreator.PAGE_INDEX({ index })))
@@ -134,9 +124,7 @@ export function moveIndexItem(
   };
 }
 
-export function deletePage(
-  id: string,
-): ThunkResult<Promise<StateActions<'PAGE_INDEX' | 'PAGE_ERROR'>>> {
+export function deletePage(id: string): ThunkResult {
   return function(dispatch) {
     return PageAPI.deletePage(id)
       .then(index => dispatch(ActionCreator.PAGE_INDEX({ index })))
@@ -146,10 +134,7 @@ export function deletePage(
   };
 }
 
-export function patch(
-  id: string,
-  page: WegasComponent,
-): ThunkResult<Promise<StateActions<'PAGE_FETCH' | 'PAGE_ERROR'>>> {
+export function patch(id: string, page: WegasComponent): ThunkResult {
   return function(dispatch) {
     const oldPage = Page.select(id);
     if (oldPage === undefined) {

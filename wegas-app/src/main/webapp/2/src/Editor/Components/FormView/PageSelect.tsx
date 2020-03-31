@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Select from './Select';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonView } from './commonView';
 import { LabeledView } from './labeled';
@@ -73,10 +72,14 @@ export default function PageSelect(props: PageSelectProps) {
       ) : (
         <>
           {/* <StringInput value={getPageIndexItem(index,pageValue)?.name || "Unknown page"} /> */}
-          <TreeSelect
-            items={indexToTree(index)}
-            onSelect={item => isPageItem(item) && onPageChange(item.id)}
-          />
+          {index ? (
+            <TreeSelect
+              items={indexToTree(index)}
+              onSelect={item => isPageItem(item) && onPageChange(item.id)}
+            />
+          ) : (
+            <pre>Loading page index</pre>
+          )}
         </>
         // <Select
         //   {...omit(props, ['onChange', 'value'])}
