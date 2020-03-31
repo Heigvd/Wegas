@@ -94,10 +94,10 @@ var surveyXapi = (function() {
         },
         numberInput: function(value, survname, inputname){
            return buildInputStatemeent(value, 'number', survname, inputname);
-        },,
+        },
         choiceInput: function(value, survname, inputname){
            return buildInputStatemeent(value, 'choice', survname, inputname);
-        },,
+        },
         surveyCompleted: surveyCompleted,
         surveyInitialized: surveyInitialized,
         testLib: testLib
