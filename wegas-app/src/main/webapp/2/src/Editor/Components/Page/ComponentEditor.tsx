@@ -70,7 +70,7 @@ export default function ComponentEditor({
   actions,
 }: ComponentEditorProps) {
   const schema = usePageComponentStore(
-    s => s[entity ? entity.type : 'List'].getSchema(),
+    s => (entity && s[entity.type] ? s[entity.type].getSchema() : undefined),
     deepDifferent,
   );
   if (entity === undefined || schema === undefined) {

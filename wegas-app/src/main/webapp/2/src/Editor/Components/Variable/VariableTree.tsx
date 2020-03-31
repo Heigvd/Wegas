@@ -34,6 +34,7 @@ import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { Edition } from '../../../data/Reducer/globalState';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { mainLayoutId } from '../Layout';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -245,9 +246,9 @@ function CTree(
                   entityIs(variable, 'FSMDescriptor') ||
                   entityIs(variable, 'DialogueDescriptor')
                 ) {
-                  focusTab('StateMachine');
+                  focusTab('StateMachine', mainLayoutId);
                 }
-                focusTab('Editor');
+                focusTab('Editor', mainLayoutId);
               }
               getEntityActions(variable!).then(({ edit }) =>
                 dispatch(
@@ -266,19 +267,19 @@ function CTree(
               <AddMenuParent
                 variable={variable}
                 localDispatch={props.localDispatch}
-                focusTab={focusTab}
+                focusTab={tabId => focusTab(tabId, mainLayoutId)}
               />
             ) : entityIs(variable, 'ChoiceDescriptor') ? (
               <AddMenuChoice
                 variable={variable}
                 localDispatch={props.localDispatch}
-                focusTab={focusTab}
+                focusTab={tabId => focusTab(tabId, mainLayoutId)}
               />
             ) : entityIs(variable, 'EvaluationDescriptorContainer') ? (
               <AddMenuFeedback
                 variable={variable}
                 localDispatch={props.localDispatch}
-                focusTab={focusTab}
+                focusTab={tabId => focusTab(tabId, mainLayoutId)}
                 path={props.subPath![0] as 'feedback' | 'fbComments'}
               />
             ) : null}

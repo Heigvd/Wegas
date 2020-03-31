@@ -4,19 +4,20 @@ import { JSONandJSEditor } from '../ScriptEditors/JSONandJSEditor';
 import { deepClone } from 'fast-json-patch';
 import { ComponentPalette, DnDComponent } from './ComponentPalette';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
-import { ReflexElement, ReflexContainer, ReflexSplitter } from 'react-reflex';
-import { splitter } from '../LinearTabLayout/LinearLayout';
+import { MainLinearLayout } from '../LinearTabLayout/LinearLayout';
 import ComponentEditor from './ComponentEditor';
 import { PageLoader } from './PageLoader';
 import { Button } from '../../../Components/Inputs/Button/Button';
 import { Toggler } from '../../../Components/Inputs/Button/Toggler';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { noop } from 'lodash-es';
 import { PagesLayout } from './PagesLayout';
 import { wlog } from '../../../Helper/wegaslog';
 import { store, useStore } from '../../../data/store';
 import { Actions } from '../../../data';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { themeVar } from '../../../Components/Theme';
+import { flex, grow } from '../../../css/classes';
 
 const innerButtonStyle = css({
   margin: '2px auto 2px auto',
@@ -71,10 +72,25 @@ export const pageCTX = React.createContext<PageContext>({
 //   text: 'Error : The page has not been saved',
 // };
 
-interface PagesState {
+interface PageEditorState {
   selectedPageId?: string;
   editedPath?: string[];
 }
+
+interface PageEditorContext extends PageEditorState {
+  loading: boolean;
+  selectedPage?: WegasComponent;
+  findComponent?: (
+    path: string[],
+  ) => {
+    newPage: WegasComponent;
+    component?: WegasComponent;
+    parent?: WegasComponent;
+  };
+}
+export const pageEditorCTX = React.createContext<PageEditorContext>({
+  loading: false,
+});
 
 export const computePageLabel = (id: string, pageName?: string | null) =>
   pageName ? `${pageName} (${id})` : id;
@@ -94,27 +110,34 @@ export const returnPages = (
   return { [item.id!]: { name: item.name, page: pages[item.id!] } };
 };
 
+export const pageLayoutId = 'PageEditorLayout';
+
 export default function PageEditor() {
   const [{ selectedPageId, editedPath }, setPageEditorState] = React.useState<
-    PagesState
+    PageEditorState
   >({});
-  const [srcMode, setSrcMode] = React.useState<boolean>(false);
   const [editMode, setEditMode] = React.useState(false);
   const [showBorders, setShowBorders] = React.useState(false);
   const [showControls, setShowControls] = React.useState(true);
 
   const components = usePageComponentStore(s => s);
-  const { selectedPage, defaultPageId } = useStore(
+  const { selectedPage, defaultPageId, loading } = useStore(
     s => ({
       selectedPage: selectedPageId ? s.pages[selectedPageId] : undefined,
       defaultPageId: s.pages.index ? s.pages.index.defaultPageId : undefined,
+      loading: selectedPageId == null || s.pages.index == null,
     }),
     deepDifferent,
   );
+  const focusTab = React.useRef<(tabId: string, layoutId: string) => void>();
 
   React.useEffect(() => {
     if (selectedPageId == null && defaultPageId != null) {
-      setPageEditorState(os => ({ ...os, selectedPageId: defaultPageId }));
+      setPageEditorState(os => ({
+        ...os,
+        selectedPageId: defaultPageId,
+        loading: defaultPageId == null,
+      }));
     }
   }, [defaultPageId, selectedPageId]);
 
@@ -129,7 +152,13 @@ export default function PageEditor() {
   );
 
   const findComponent = React.useCallback(
-    (path: string[]) => {
+    (
+      path: string[],
+    ): {
+      newPage: WegasComponent;
+      component?: WegasComponent;
+      parent?: WegasComponent;
+    } => {
       const browsePath = [...path];
       const newPage = deepClone(selectedPage) as WegasComponent;
       let parent: WegasComponent | undefined = undefined;
@@ -148,10 +177,12 @@ export default function PageEditor() {
     [selectedPage],
   );
 
-  const onEdit = React.useCallback(
-    (path?: string[]) => setPageEditorState(o => ({ ...o, editedPath: path })),
-    [],
-  );
+  const onEdit = React.useCallback((path?: string[]) => {
+    if (path != null) {
+      focusTab.current && focusTab.current('ComponentEditor', pageLayoutId);
+    }
+    setPageEditorState(o => ({ ...o, editedPath: path }));
+  }, []);
 
   const onDrop = React.useCallback(
     (dndComponent: DnDComponent, path: string[], index?: number) => {
@@ -234,125 +265,181 @@ export default function PageEditor() {
     [patchPage, editedPath, findComponent],
   );
 
-  return (
-    <Toolbar>
-      <Toolbar.Header>
-        <div style={{ margin: 'auto' }}>
-          {editMode && (
-            <>
-              <Button
-                label={'Toggle controls'}
-                disableBorders={{ right: true }}
-              >
-                <div className={innerButtonStyle}>
-                  <Toggler
-                    checked={showControls}
-                    onClick={() => setShowControls(c => !c)}
-                  />
-                </div>
-              </Button>
-              <Button label={'Toggle borders'} disableBorders={{ left: true }}>
-                <div className={innerButtonStyle}>
-                  <Toggler
-                    checked={showBorders}
-                    onClick={() => setShowBorders(b => !b)}
-                  />
-                </div>
-              </Button>
-            </>
-          )}
-        </div>
-        {!srcMode && (
-          <Button
-            label={editMode ? 'View mode' : 'Edit mode'}
-            onClick={() => setEditMode(!editMode)}
-            disableBorders={{ right: true }}
+  const availableLayoutTabs = {
+    Layout: (
+      <pageEditorCTX.Consumer>
+        {({ selectedPageId }) => (
+          <PagesLayout
+            selectedPageId={selectedPageId}
+            onPageClick={pageId =>
+              setPageEditorState(ops => ({
+                ...ops,
+                selectedPageId: pageId,
+                editedPath: undefined,
+              }))
+            }
+            componentControls={{
+              onNewComponent: () => wlog('To implement'),
+              onDeleteComponent: () => wlog('To implement'),
+            }}
           />
         )}
-        <Button
-          label={srcMode ? 'Preview mode' : 'Source code mode'}
-          onClick={() => {
-            setSrcMode(src => !src);
-            setEditMode(false);
-          }}
-          disableBorders={{ left: !srcMode }}
-        />
-      </Toolbar.Header>
-      <Toolbar.Content>
-        <ReflexContainer orientation="vertical" className={splitter}>
-          <ReflexElement flex={0.3}>
-            <PagesLayout
-              selectedPageId={selectedPageId}
-              onPageClick={pageId =>
-                setPageEditorState(ops => ({ ...ops, selectedPageId: pageId }))
-              }
-              componentControls={{
-                onNewComponent: () => wlog('To implement'),
-                onDeleteComponent: () => wlog('To implement'),
+      </pageEditorCTX.Consumer>
+    ),
+    Components: <ComponentPalette />,
+    PageDisplay: (
+      <pageEditorCTX.Consumer>
+        {({ selectedPageId, loading }) => (
+          <pageCTX.Consumer>
+            {({ editMode, showControls, showBorders }) =>
+              loading ? (
+                <pre>Loading the pages</pre>
+              ) : (
+                <Toolbar>
+                  <Toolbar.Header>
+                    <div style={{ margin: 'auto' }}>
+                      {editMode && (
+                        <Button
+                          label={'Toggle controls'}
+                          disableBorders={{ right: true }}
+                        >
+                          <div className={innerButtonStyle}>
+                            <Toggler
+                              checked={showControls}
+                              onClick={() => setShowControls(c => !c)}
+                            />
+                          </div>
+                        </Button>
+                      )}
+                      <Button
+                        label={'Toggle edit mode'}
+                        disableBorders={{ right: editMode, left: editMode }}
+                      >
+                        <div className={innerButtonStyle}>
+                          <Toggler
+                            checked={editMode}
+                            onClick={() => setEditMode(!editMode)}
+                          />
+                        </div>
+                      </Button>
+                      {editMode && (
+                        <Button
+                          label={'Toggle borders'}
+                          disableBorders={{ left: true }}
+                        >
+                          <div className={innerButtonStyle}>
+                            <Toggler
+                              checked={showBorders}
+                              onClick={() => setShowBorders(b => !b)}
+                            />
+                          </div>
+                        </Button>
+                      )}
+                    </div>
+                  </Toolbar.Header>
+                  <Toolbar.Content>
+                    <PageLoader selectedPageId={selectedPageId} />
+                  </Toolbar.Content>
+                </Toolbar>
+              )
+            }
+          </pageCTX.Consumer>
+        )}
+      </pageEditorCTX.Consumer>
+    ),
+    SourceEditor: (
+      <pageEditorCTX.Consumer>
+        {({ selectedPage, loading }) =>
+          loading ? (
+            <pre>Loading the pages</pre>
+          ) : (
+            <JSONandJSEditor
+              content={JSON.stringify(selectedPage, null, 2)}
+              // status={
+              //   modalState.type === 'save' ? modalState.label : undefined
+              // }
+              onSave={content => {
+                try {
+                  patchPage(JSON.parse(content));
+                } catch (e) {
+                  return { status: 'error', text: e };
+                }
               }}
             />
-          </ReflexElement>
-          <ReflexSplitter />
-          {srcMode && (
-            <ReflexElement>
-              <JSONandJSEditor
-                content={JSON.stringify(selectedPage, null, 2)}
-                // status={
-                //   modalState.type === 'save' ? modalState.label : undefined
-                // }
-                onSave={content => {
-                  try {
-                    patchPage(JSON.parse(content));
-                  } catch (e) {
-                    return { status: 'error', text: e };
-                  }
-                }}
-              />
-            </ReflexElement>
-          )}
-          {!srcMode && editMode && (
-            <ReflexElement flex={editMode ? (editedPath ? 0.3 : 0.125) : 0}>
-              <div style={{ float: 'left' }}>
-                <ComponentPalette />
-              </div>
-              {editedPath && (
+          )
+        }
+      </pageEditorCTX.Consumer>
+    ),
+    ComponentEditor: (
+      <pageEditorCTX.Consumer>
+        {({ editedPath, findComponent }) => (
+          <pageCTX.Consumer>
+            {({ onUpdate }) =>
+              editedPath && (
                 <ComponentEditor
-                  entity={findComponent(editedPath).component}
+                  entity={findComponent && findComponent(editedPath).component}
                   update={onUpdate}
-                  actions={[
-                    {
-                      label: 'Close',
-                      action: () =>
-                        setPageEditorState(o => ({
-                          ...o,
-                          editedPath: undefined,
-                        })),
-                    },
-                  ]}
+                  // actions={[
+                  //   {
+                  //     label: 'Close',
+                  //     action: () =>
+                  //       setPageEditorState(o => ({
+                  //         ...o,
+                  //         editedPath: undefined,
+                  //       })),
+                  //   },
+                  // ]}
                 />
-              )}
-            </ReflexElement>
-          )}
-          {!srcMode && editMode && <ReflexSplitter />}
-          {!srcMode && (
-            <ReflexElement style={{ display: 'flex' }}>
-              <pageCTX.Provider
-                value={{
-                  editMode,
-                  showControls,
-                  showBorders,
-                  onDrop,
-                  onDelete,
-                  onEdit,
-                  onUpdate,
-                }}
-              >
-                <PageLoader selectedPageId={selectedPageId} />
-              </pageCTX.Provider>
-            </ReflexElement>
-          )}
-        </ReflexContainer>
-      </Toolbar.Content>
-    </Toolbar>
+              )
+            }
+          </pageCTX.Consumer>
+        )}
+      </pageEditorCTX.Consumer>
+    ),
+  };
+
+  return (
+    <div
+      className={cx(
+        flex,
+        grow,
+        css({
+          borderStyle: 'solid',
+          borderColor: themeVar.primaryDarkerColor,
+          margin: '2px',
+        }),
+      )}
+    >
+      <pageEditorCTX.Provider
+        value={{
+          selectedPageId,
+          selectedPage,
+          editedPath,
+          loading,
+          findComponent,
+        }}
+      >
+        <pageCTX.Provider
+          value={{
+            editMode,
+            showControls,
+            showBorders,
+            onDrop,
+            onDelete,
+            onEdit,
+            onUpdate,
+          }}
+        >
+          <MainLinearLayout
+            tabs={availableLayoutTabs}
+            layout={[[['Layout'], ['Components']], ['PageDisplay']]}
+            layoutId={pageLayoutId}
+            onFocusTab={ft => {
+              focusTab.current = ft;
+            }}
+          />
+        </pageCTX.Provider>
+      </pageEditorCTX.Provider>
+    </div>
   );
 }

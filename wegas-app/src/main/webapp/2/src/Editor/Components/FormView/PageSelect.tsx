@@ -8,7 +8,12 @@ import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 import { useStore } from '../../../data/store';
 import { TreeSelect } from '../Tree/TreeSelect';
-import { indexToTree, isPageItem } from '../../../Helper/pages';
+import {
+  indexToTree,
+  isPageItem,
+  getPageIndexItem,
+} from '../../../Helper/pages';
+import { useScript } from '../../../Components/Hooks/useScript';
 
 export interface PageSelectProps extends WidgetProps.BaseProps {
   view: CommonView & LabeledView;
@@ -17,9 +22,10 @@ export interface PageSelectProps extends WidgetProps.BaseProps {
 }
 
 export default function PageSelect(props: PageSelectProps) {
-  const [pageValue, setPageValue] = React.useState('');
+  const [pageValue, setPageValue] = React.useState<string>('');
   const [srcMode, setSrcMode] = React.useState(false);
   const index = useStore(s => s.pages.index);
+  const pageId = useScript<string>(pageValue);
 
   React.useEffect(() => {
     if (props.value === undefined) {
@@ -49,7 +55,8 @@ export default function PageSelect(props: PageSelectProps) {
           <WegasScriptEditor
             value={props.value ? props.value.content : ''}
             returnType={['string']}
-            onChange={value =>
+            onChange={setPageValue}
+            onSave={value =>
               props.onChange(
                 props.value
                   ? { ...props.value, content: value }
@@ -72,27 +79,12 @@ export default function PageSelect(props: PageSelectProps) {
       ) : (
         <>
           {/* <StringInput value={getPageIndexItem(index,pageValue)?.name || "Unknown page"} /> */}
-          {index ? (
-            <TreeSelect
-              items={indexToTree(index)}
-              onSelect={item => isPageItem(item) && onPageChange(item.id)}
-            />
-          ) : (
-            <pre>Loading page index</pre>
-          )}
+          <TreeSelect
+            items={indexToTree(index)}
+            onSelect={item => isPageItem(item) && onPageChange(item.id)}
+            selected={getPageIndexItem(index, pageId)}
+          />
         </>
-        // <Select
-        //   {...omit(props, ['onChange', 'value'])}
-        //   onChange={onPageChange}
-        //   value={pageValue}
-        //   view={{
-        //     ...props.view,
-        //     choices: Object.entries(pages).map(([k, p]) => ({
-        //       label: computePageLabel(k, p.name),
-        //       value: k,
-        //     })),
-        //   }}
-        // />
       )}
     </>
   );
