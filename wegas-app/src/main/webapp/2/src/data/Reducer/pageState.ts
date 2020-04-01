@@ -134,19 +134,91 @@ export function deletePage(id: string): ThunkResult {
   };
 }
 
+function patcher(
+  id: string,
+  page: WegasComponent,
+  callbackFN: (
+    status:
+      | { type: 'PAGE_NOT_FOUND' }
+      | { type: 'API_ERROR'; res: Response }
+      | { type: 'PATCH_WORKED'; pages: Pages },
+  ) => void,
+) {
+  const oldPage = Page.select(id);
+  if (oldPage === undefined) {
+    return callbackFN({ type: 'PAGE_NOT_FOUND' });
+  }
+  const diff = compare(oldPage, page);
+  return PageAPI.patch(JSON.stringify(diff), id, true)
+    .then(pages => callbackFN({ type: 'PATCH_WORKED', pages }))
+    .catch((res: Response) => callbackFN({ type: 'API_ERROR', res }));
+}
+
 export function patch(id: string, page: WegasComponent): ThunkResult {
   return function(dispatch) {
-    const oldPage = Page.select(id);
-    if (oldPage === undefined) {
-      return Promise.resolve(
-        ActionCreator.PAGE_ERROR({ error: `Page ${id} not found` }),
-      );
-    }
-    const diff = compare(oldPage, page);
-    return PageAPI.patch(JSON.stringify(diff), id, true)
-      .then(pages => dispatch(ActionCreator.PAGE_FETCH({ pages })))
-      .catch((res: Response) =>
-        dispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),
-      );
+    return patcher(id, page, response => {
+      switch (response.type) {
+        case 'PAGE_NOT_FOUND':
+          return dispatch(
+            ActionCreator.PAGE_ERROR({ error: `Page ${id} not found` }),
+          );
+        case 'PATCH_WORKED':
+          return dispatch(ActionCreator.PAGE_FETCH({ pages: response.pages }));
+        case 'API_ERROR':
+          return dispatch(
+            ActionCreator.PAGE_ERROR({ error: response.res.statusText }),
+          );
+      }
+    });
+    //   const oldPage = Page.select(id);
+    //   if (oldPage === undefined) {
+    //   return dispatch(
+    //     ActionCreator.PAGE_ERROR({ error: `Page ${id} not found` }),
+    //   );
+    // }
+    //   const diff = compare(oldPage, page);
+    //   return PageAPI.patch(JSON.stringify(diff), id, true)
+    //     .then(pages => dispatch(ActionCreator.PAGE_FETCH({ pages })))
+    //     .catch((res: Response) =>
+    //       dispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),
+    //     );
+    // };
   };
+
+  /**
+   * It's basicly a synchronize double patch to avoid page commit failure
+   */
+  // export function moveComponent(
+  //   sourcePageId: string,
+  //   destPageId: string,
+  //   sourcePage: WegasComponent,
+  //   destPage: WegasComponent,
+  // ): ThunkResult {
+  //   return function(dispatch) {
+  //     const oldPage = Page.select(id);
+  //     if (oldPage === undefined) {
+  //       return dispatch(
+  //         ActionCreator.PAGE_ERROR({ error: `Page ${id} not found` }),
+  //       );
+  //     }
+  //     const diff = compare(oldPage, page);
+  //     return PageAPI.patch(JSON.stringify(diff), id, true)
+  //       .then(pages => dispatch(ActionCreator.PAGE_FETCH({ pages })))
+  //       .catch((res: Response) =>
+  //         dispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),
+  //       );
+
+  //     const { component } = findComponent(sourcePage, sourcePath);
+  //     if (component) {
+  //       dispatc;
+  //       createComponent(
+  //         destPageId,
+  //         destPage,
+  //         destPath,
+  //         component.type,
+  //         component.props,
+  //       );
+  //       deleteComponent(sourcePageId, sourcePage, sourcePath);
+  //     }
+  //   };
 }

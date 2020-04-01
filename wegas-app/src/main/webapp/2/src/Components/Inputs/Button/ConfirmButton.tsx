@@ -27,6 +27,7 @@ interface ConfirmButtonProps {
   dontResetOnBlur?: boolean;
   disableBorders?: DisableBorders;
   disabled?: boolean;
+  className?: string;
 }
 
 export function ConfirmButton(props: ConfirmButtonProps /*& IconButtonProps*/) {
@@ -51,7 +52,7 @@ export function ConfirmButton(props: ConfirmButtonProps /*& IconButtonProps*/) {
   );
 
   return !confirmation ? (
-    <>
+    <div className={props.className}>
       {props.label && (
         <Button
           label={props.label}
@@ -69,9 +70,12 @@ export function ConfirmButton(props: ConfirmButtonProps /*& IconButtonProps*/) {
           disabled={props.disabled}
         />
       )}
-    </>
+    </div>
   ) : (
-    <div ref={confirmButton} className={buttonZone(props.disableBorders)}>
+    <div
+      ref={confirmButton}
+      className={buttonZone(props.disableBorders) + ' ' + props.className}
+    >
       <Button
         label="Accept"
         noHover

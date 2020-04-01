@@ -1,10 +1,16 @@
 import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Container, Node, DropResult } from '../Views/TreeView';
-import { flex, flexColumn, grow, expand } from '../../../css/classes';
+import {
+  flex,
+  flexColumn,
+  grow,
+  expand,
+  itemCenter,
+} from '../../../css/classes';
 import { cx, css } from 'emotion';
-import { FontAwesome, IconComp, Icon } from '../Views/FontAwesome';
-import { nodeContentStyle } from '../Variable/VariableTree';
+import { FontAwesome, IconComp, Icon, Icons } from '../Views/FontAwesome';
+import { nodeContentStyle, TREEVIEW_ITEM_TYPE } from '../Variable/VariableTree';
 import { omit } from 'lodash-es';
 import { Menu } from '../../../Components/Menu';
 import { TextPrompt } from '../TextPrompt';
@@ -22,8 +28,29 @@ const bulletCSS = {
   width: '1em',
 };
 
-const titleLabelStyle = css({
-  flex: '0 0 auto',
+const controlsClassName = 'page-index-item-controls';
+
+const pageLayoutItemType = 'PAGE_LAYOUT_ITEM';
+const pageLayoutComponentType = 'PAGE_LAYOUT_COMPONENT';
+
+const titleStyle = css({
+  borderStyle: 'solid',
+  borderColor: 'transparent',
+  borderRadius: themeVar.borderRadius,
+  [`&>.${controlsClassName}`]: {
+    visibility: 'hidden',
+  },
+  [`:hover>.${controlsClassName}`]: {
+    visibility: 'visible',
+  },
+});
+
+const selectedIndexItem = css({
+  borderColor: themeVar.primaryDarkerColor,
+});
+
+const selectedComponent = css({
+  borderColor: themeVar.primaryLighterColor,
 });
 
 const defaultPage = {
@@ -52,7 +79,8 @@ interface IndexNodeId {
 
 interface ComponentNodeId {
   pageId: string;
-  componentPath?: number[];
+  page: WegasComponent;
+  componentPath: number[];
 }
 
 type NodeId = IndexNodeId | ComponentNodeId;
@@ -63,14 +91,18 @@ function isComponentNodeId(nodeId: NodeId): nodeId is ComponentNodeId {
 
 interface IndexItemAdderProps {
   path: string[];
+  className?: string;
+  tooltip?: string;
 }
 
-function IndexItemAdder({ path }: IndexItemAdderProps) {
+// TODO : Generalize the 2 following component (TextPrompter)
+
+function IndexItemAdder({ path, className, tooltip }: IndexItemAdderProps) {
   const [modalState, setModalState] = React.useState<LayoutModalStates>();
   const { dispatch } = store;
 
   return (
-    <>
+    <div className={className} title={tooltip}>
       <Menu
         icon="plus"
         items={[
@@ -151,24 +183,28 @@ function IndexItemAdder({ path }: IndexItemAdderProps) {
           onLabelVanish={() => setModalState(undefined)}
         />
       )}
-    </>
+    </div>
   );
 }
 
-interface IndexItemModiferProps {
-  path: string[];
+interface IndexItemModiferProps extends IndexItemAdderProps {
   indexItem: PageIndexItem;
 }
 
-function IndexItemModifer({ path, indexItem }: IndexItemModiferProps) {
+function IndexItemModifer({
+  path,
+  indexItem,
+  className,
+  tooltip,
+}: IndexItemModiferProps) {
   const [modalState, setModalState] = React.useState<LayoutModalStates>();
   const { dispatch } = store;
 
   return (
-    <>
+    <div className={className} title={tooltip}>
       <IconButton
         icon="edit"
-        tooltip="Edit item name"
+        tooltip={`Edit ${isPageItem(indexItem) ? 'page' : 'folder'} name`}
         onClick={() => {
           setModalState({ type: 'editpage' });
         }}
@@ -176,13 +212,15 @@ function IndexItemModifer({ path, indexItem }: IndexItemModiferProps) {
       {modalState && modalState.type === 'editpage' && (
         <>
           <TextPrompt
-            placeholder="Item name"
+            placeholder={`${isPageItem(indexItem) ? 'Page' : 'Folder'} name`}
             defaultFocus
             onAction={(success, value) => {
               if (value === '') {
                 setModalState({
                   type: 'error',
-                  label: 'The item must have a name',
+                  label: `The ${
+                    isPageItem(indexItem) ? 'page' : 'folder'
+                  } must have a name`,
                 });
               } else {
                 if (success) {
@@ -209,7 +247,7 @@ function IndexItemModifer({ path, indexItem }: IndexItemModiferProps) {
           onLabelVanish={() => setModalState(undefined)}
         />
       )}
-    </>
+    </div>
   );
 }
 
@@ -219,41 +257,119 @@ const compToKey = (component: WegasComponent) =>
     props: omit(component.props, 'children'),
   });
 
+interface LayoutNodeTitleProps {
+  icon: Icons;
+  title: string;
+  tooltip?: string;
+  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  className?: string;
+  classSelector?: string[];
+}
+
+function LayoutNodeTitle({
+  icon,
+  title,
+  tooltip,
+  onClick,
+  className,
+  classSelector,
+  children,
+}: React.PropsWithChildren<LayoutNodeTitleProps>) {
+  return (
+    <div
+      onClick={onClick}
+      className={
+        cx(nodeContentStyle, titleStyle, flex, grow, itemCenter, className) +
+        ' ' +
+        (classSelector ? classSelector.join(' ') : '')
+      }
+      title={tooltip}
+    >
+      <IconComp icon={icon} style={bulletCSS} />
+      <div className={grow}>{title}</div>
+      {children}
+    </div>
+  );
+}
+
 interface WegasComponentNodeProps {
   component: WegasComponent;
   nodeProps: () => {};
   pageId: string;
+  selectedPageId?: string;
   componentPath: number[];
+  selectedComponentPath?: number[];
+  componentControls: ComponentControls;
 }
 
 function WegasComponentNode({
   component,
   nodeProps,
   pageId,
+  selectedPageId,
   componentPath,
+  selectedComponentPath,
+  componentControls,
 }: WegasComponentNodeProps) {
+  const { onDelete, onEdit } = componentControls;
+
+  const page = useStore(s => s.pages[pageId], deepDifferent);
+
   const Title = () => {
     const registeredComponent = usePageComponentStore(s => s[component.type]);
+
     let icon: Icon;
     if (registeredComponent != null) {
       icon = registeredComponent.getIcon();
     } else {
       icon = 'exclamation-triangle';
     }
+
+    let title = component.type;
+    if ('name' in component.props) {
+      title += ` ${component.props.name}`;
+    }
+
     return (
-      <div
-        className={cx(nodeContentStyle, flex, grow)}
-        title={registeredComponent == null ? 'Unknown component' : undefined}
+      <LayoutNodeTitle
+        icon={icon}
+        title={title + ' ' + JSON.stringify(componentPath)}
+        tooltip={registeredComponent == null ? 'Unknown component' : undefined}
+        onClick={() => onEdit(pageId, componentPath)}
+        className={cx({
+          [selectedComponent]:
+            pageId === selectedPageId &&
+            JSON.stringify(componentPath) ===
+              JSON.stringify(selectedComponentPath),
+        })}
       >
-        <IconComp icon={icon} style={bulletCSS} />
-        {component.type}
-        {'name' in component.props ? ` : ${component.props.name}` : ''}
-      </div>
+        <ConfirmButton
+          icon="trash"
+          onAction={success => success && onDelete(pageId, page, componentPath)}
+          disabled={componentPath.length === 0}
+          tooltip={
+            componentPath.length === 0
+              ? 'The first component of a page connot be deleted'
+              : 'Delete the component'
+          }
+          className={controlsClassName}
+        />
+      </LayoutNodeTitle>
     );
   };
 
+  const id: ComponentNodeId = { pageId, page, componentPath };
+
   return (
-    <Node {...nodeProps()} header={<Title />} id={{ pageId, componentPath }}>
+    <Node
+      {...nodeProps()}
+      header={<Title />}
+      id={id}
+      dragId={pageLayoutComponentType}
+      dropIds={[pageLayoutComponentType, TREEVIEW_ITEM_TYPE]}
+      dragDisabled={componentPath.length === 0}
+      dropDisabled={componentPath.length === 0}
+    >
       {({ nodeProps }) =>
         component.props?.children?.map((childComponent, i) => (
           <WegasComponentNode
@@ -261,7 +377,10 @@ function WegasComponentNode({
             nodeProps={nodeProps}
             component={childComponent}
             pageId={pageId}
+            selectedPageId={selectedPageId}
             componentPath={[...componentPath, i]}
+            selectedComponentPath={selectedComponentPath}
+            componentControls={componentControls}
           />
         )) || null
       }
@@ -282,6 +401,7 @@ function PageIndexItemNode({
   defaultPageId,
   nodeProps,
   selectedPageId,
+  selectedComponentPath,
   onPageClick,
   componentControls,
 }: PagesLayoutNodeProps): JSX.Element | null {
@@ -300,95 +420,111 @@ function PageIndexItemNode({
     return {};
   }, deepDifferent);
 
-  const Title = () => (
-    <div
-      className={cx(nodeContentStyle, flex, grow, {
-        [css({ backgroundColor: themeVar.primaryHoverColor })]:
+  const Title = (
+    <LayoutNodeTitle
+      icon={isPageItem(indexItem) ? 'file' : 'folder'}
+      title={indexItem.name + (isPageItem(indexItem) ? ` ${indexItem.id}` : '')}
+      onClick={() => isPageItem(indexItem) && onPageClick(indexItem.id!)}
+      className={cx({
+        [selectedIndexItem]:
           isPageItem(indexItem) && indexItem.id === selectedPageId,
       })}
-      onClick={() => isPageItem(indexItem) && onPageClick(indexItem.id!)}
     >
-      <FontAwesome
-        icon={isPageItem(indexItem) ? 'file' : 'folder'}
-        style={bulletCSS}
-      />
-      <>
-        <div className={cx(titleLabelStyle, grow)}>{indexItem.name}</div>
-        {isFolderItem(indexItem) && <IndexItemAdder path={newPath} />}
-        {isPageItem(indexItem) && (
-          <>
-            <IconButton
-              icon={
-                indexItem.id === defaultPageId
-                  ? { icon: 'star', color: themeVar.successColor }
-                  : 'star'
-              }
-              onClick={() => {
-                dispatch(Actions.PageActions.setDefault(indexItem.id!));
-              }}
-              tooltip="Default page"
-            />
-            <IconButton
-              icon={
-                indexItem.scenaristPage
-                  ? { icon: 'magic', color: themeVar.successColor }
-                  : 'magic'
-              }
-              onClick={() => {
-                dispatch(
-                  Actions.PageActions.updateIndexItem(newPath, {
-                    ...indexItem,
-                    scenaristPage: !indexItem.scenaristPage,
-                  }),
-                );
-              }}
-              tooltip="Scenarist page"
-            />
-            <IconButton
-              icon={
-                indexItem.trainerPage
-                  ? { icon: 'chalkboard-teacher', color: themeVar.successColor }
-                  : 'chalkboard-teacher'
-              }
-              onClick={() => {
-                dispatch(
-                  Actions.PageActions.updateIndexItem(newPath, {
-                    ...indexItem,
-                    trainerPage: !indexItem.trainerPage,
-                  }),
-                );
-              }}
-              tooltip="Trainer page"
-            />
-          </>
-        )}
-        <IndexItemModifer path={newPath} indexItem={indexItem} />
-        <ConfirmButton
-          icon="trash"
-          onAction={success =>
-            success && dispatch(Actions.PageActions.deleteIndexItem(newPath))
-          }
-          disabled={folderIsNotEmpty}
-          tooltip={
-            folderIsNotEmpty
-              ? 'The folder must be empty to delete it'
-              : undefined
-          }
+      {isFolderItem(indexItem) && (
+        <IndexItemAdder
+          path={newPath}
+          className={controlsClassName}
+          tooltip="Add new page or folder"
         />
-      </>
-    </div>
+      )}
+      {isPageItem(indexItem) && (
+        <>
+          <IconButton
+            icon={
+              indexItem.id === defaultPageId
+                ? { icon: 'star', color: themeVar.successColor }
+                : 'star'
+            }
+            onClick={() => {
+              dispatch(Actions.PageActions.setDefault(indexItem.id!));
+            }}
+            tooltip="Default page"
+            className={cx({
+              [controlsClassName]: indexItem.id !== defaultPageId,
+            })}
+          />
+          <IconButton
+            icon={
+              indexItem.scenaristPage
+                ? { icon: 'magic', color: themeVar.successColor }
+                : 'magic'
+            }
+            onClick={() => {
+              dispatch(
+                Actions.PageActions.updateIndexItem(newPath, {
+                  ...indexItem,
+                  scenaristPage: !indexItem.scenaristPage,
+                }),
+              );
+            }}
+            tooltip="Scenarist page"
+            className={controlsClassName}
+          />
+          <IconButton
+            icon={
+              indexItem.trainerPage
+                ? { icon: 'chalkboard-teacher', color: themeVar.successColor }
+                : 'chalkboard-teacher'
+            }
+            onClick={() => {
+              dispatch(
+                Actions.PageActions.updateIndexItem(newPath, {
+                  ...indexItem,
+                  trainerPage: !indexItem.trainerPage,
+                }),
+              );
+            }}
+            tooltip="Trainer page"
+            className={controlsClassName}
+          />
+        </>
+      )}
+      <IndexItemModifer
+        path={newPath}
+        indexItem={indexItem}
+        className={controlsClassName}
+      />
+      <ConfirmButton
+        icon="trash"
+        onAction={success =>
+          success && dispatch(Actions.PageActions.deleteIndexItem(newPath))
+        }
+        disabled={folderIsNotEmpty}
+        tooltip={
+          folderIsNotEmpty
+            ? 'The folder must be empty to delete it'
+            : `Delete the ${isPageItem(indexItem) ? 'page' : 'folder'}`
+        }
+        className={controlsClassName}
+      />
+    </LayoutNodeTitle>
   );
+
+  const id: IndexNodeId = { pagePath: newPath };
 
   return isPageItem(indexItem) ? (
     page ? (
-      <Node {...nodeProps()} header={<Title />} id={{ pagePath: newPath }}>
+      <Node {...nodeProps()} header={Title} id={id} dragId={pageLayoutItemType}>
         {({ nodeProps }) => [
           <WegasComponentNode
             key={indexItem.name + 'FIRSTCOMPONENT'}
             nodeProps={nodeProps}
             component={page}
             pageId={indexItem.id!}
+            selectedPageId={selectedPageId}
             componentPath={[]}
+            selectedComponentPath={selectedComponentPath}
+            componentControls={componentControls}
           />,
         ]}
       </Node>
@@ -396,7 +532,7 @@ function PageIndexItemNode({
       <span>Loading ...</span>
     )
   ) : (
-    <Node {...nodeProps()} header={<Title />} id={{ pagePath: newPath }}>
+    <Node {...nodeProps()} header={Title} id={id} dragId={pageLayoutItemType}>
       {({ nodeProps }) =>
         indexItem.items.map(v => (
           <PageIndexItemNode
@@ -416,23 +552,40 @@ function PageIndexItemNode({
 }
 
 interface ComponentControls {
-  onNewComponent: (
-    pagePath: string,
+  onNew: (
+    pageId: string,
+    page: WegasComponent,
     componentPath: number[],
     componentType: string,
   ) => void;
-  onDeleteComponent: (pagePath: string[], compoentPath: string[]) => void;
+  onDelete: (
+    pageId: string,
+    page: WegasComponent,
+    compoentPath: number[],
+  ) => void;
+  onEdit: (pageId: string, compoentPath: number[]) => void;
+  onMove: (
+    sourcePageId: string,
+    destPageId: string,
+    sourcePage: WegasComponent,
+    destPage: WegasComponent,
+    sourcePath: number[],
+    destPath: number[],
+  ) => void;
 }
 
 interface PagesLayoutProps {
   onPageClick: (selectedPageId: string) => void;
   selectedPageId?: string;
+  selectedComponentPath?: number[];
   componentControls: ComponentControls;
 }
 
 export function PagesLayout(props: PagesLayoutProps) {
   const index = useStore(s => s.pages.index, deepDifferent);
   const { dispatch } = store;
+  const { componentControls } = props;
+  const { onMove } = componentControls;
 
   return (
     <Toolbar className={expand}>
@@ -461,7 +614,14 @@ export function PagesLayout(props: PagesLayoutProps) {
               isComponentNodeId(id) &&
               isComponentNodeId(computedTargetParent)
             ) {
-              // TODO : Implement moving component from page to page
+              onMove(
+                id.pageId,
+                computedTargetParent.pageId,
+                id.page,
+                computedTargetParent.page,
+                id.componentPath,
+                computedTargetParent.componentPath,
+              );
             }
           }}
         >

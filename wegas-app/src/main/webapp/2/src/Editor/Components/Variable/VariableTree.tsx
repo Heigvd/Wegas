@@ -175,6 +175,9 @@ export const nodeContentStyle = css({
     backgroundColor: themeVar.primaryHoverColor,
   },
 });
+
+export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_DRAG_ITEM';
+
 interface CTreeProps {
   variableId: number;
   subPath?: string[];
@@ -229,6 +232,7 @@ function CTree(
     }
     return (
       <Node
+        dragId={TREEVIEW_ITEM_TYPE}
         {...props.nodeProps()}
         header={
           <span

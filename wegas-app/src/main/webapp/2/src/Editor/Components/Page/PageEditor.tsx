@@ -12,7 +12,6 @@ import { Toggler } from '../../../Components/Inputs/Button/Toggler';
 import { css, cx } from 'emotion';
 import { noop } from 'lodash-es';
 import { PagesLayout } from './PagesLayout';
-import { wlog } from '../../../Helper/wegaslog';
 import { store, useStore } from '../../../data/store';
 import { Actions } from '../../../data';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
@@ -28,10 +27,10 @@ interface PageContext {
   editMode: boolean;
   showBorders: boolean;
   showControls: boolean;
-  onDrop: (dndComponent: DnDComponent, path: string[], index?: number) => void;
-  onDelete: (path: string[]) => void;
-  onEdit: (path: string[]) => void;
-  onUpdate: (value: WegasComponent, path?: string[], patch?: boolean) => void;
+  onDrop: (dndComponent: DnDComponent, path: number[], index?: number) => void;
+  onDelete: (path: number[]) => void;
+  onEdit: (path: number[]) => void;
+  onUpdate: (value: WegasComponent, path?: number[], patch?: boolean) => void;
 }
 
 export const pageCTX = React.createContext<PageContext>({
@@ -74,19 +73,19 @@ export const pageCTX = React.createContext<PageContext>({
 
 interface PageEditorState {
   selectedPageId?: string;
-  editedPath?: string[];
+  editedPath?: number[];
 }
 
 interface PageEditorContext extends PageEditorState {
   loading: boolean;
   selectedPage?: WegasComponent;
-  findComponent?: (
-    path: string[],
-  ) => {
-    newPage: WegasComponent;
-    component?: WegasComponent;
-    parent?: WegasComponent;
-  };
+  // findComponent?: (
+  //   path: string[],
+  // ) => {
+  //   newPage: WegasComponent;
+  //   component?: WegasComponent;
+  //   parent?: WegasComponent;
+  // };
 }
 export const pageEditorCTX = React.createContext<PageEditorContext>({
   loading: false,
@@ -108,6 +107,133 @@ export const returnPages = (
     };
   }
   return { [item.id!]: { name: item.name, page: pages[item.id!] } };
+};
+
+const findComponent = (
+  page: WegasComponent,
+  path: number[],
+): {
+  newPage: WegasComponent;
+  component?: WegasComponent;
+  parent?: WegasComponent;
+} => {
+  const browsePath = [...path];
+  const newPage = deepClone(page) as WegasComponent;
+  let parent: WegasComponent | undefined = undefined;
+  let component: WegasComponent = newPage;
+  while (browsePath.length > 0) {
+    if (component.props.children) {
+      parent = component;
+      component = component.props.children[browsePath[0]];
+      browsePath.splice(0, 1);
+    } else {
+      return { newPage };
+    }
+  }
+  return { newPage, component, parent };
+};
+
+const patchPage = (selectedPageId: string, page: WegasComponent) =>
+  store.dispatch(Actions.PageActions.patch(selectedPageId, page));
+
+const createComponent = (
+  selectedPageId: string,
+  page: WegasComponent,
+  path: number[],
+  componentType: string,
+  componentProps?: WegasComponent['props'],
+  index?: number,
+) => {
+  const { newPage, component } = findComponent(page, path);
+  if (component) {
+    if (component.props.children === undefined) {
+      component.props.children = [];
+    }
+    const children = component.props.children;
+    const droppedComp: WegasComponent = {
+      type: componentType,
+      props: componentProps || {},
+    };
+    if (index !== undefined) {
+      children.splice(index, 0, droppedComp);
+    } else {
+      children.push(droppedComp);
+    }
+    path.push(index ? index : 0);
+    patchPage(selectedPageId, newPage);
+  }
+};
+
+const deleteComponent = (
+  selectedPageId: string,
+  page: WegasComponent,
+  path: number[],
+) => {
+  const newPage = deepClone(page) as WegasComponent;
+  let parent: WegasComponent = newPage;
+  const browsePath = [...path];
+  while (browsePath.length > 0) {
+    if (parent.props.children) {
+      if (browsePath.length == 1) {
+        parent.props.children.splice(browsePath[0], 1);
+        patchPage(selectedPageId, newPage);
+        return;
+      }
+      parent = parent.props.children[browsePath[0]];
+    }
+    browsePath.splice(0, 1);
+  }
+};
+
+const updateComponent = (
+  selectedPageId: string,
+  page: WegasComponent,
+  value: WegasComponent,
+  path: number[],
+  patch?: boolean,
+) => {
+  const { newPage, parent } = findComponent(page, path);
+  if (parent) {
+    if (parent.props.children && path) {
+      let comp = value;
+      if (patch) {
+        const oldComp = parent.props.children[path[path.length - 1]];
+        comp = {
+          ...oldComp,
+          props: {
+            ...oldComp.props,
+            ...value.props,
+          },
+        };
+      }
+      parent.props.children.splice(Number(path[path.length - 1]), 1, comp);
+      patchPage(selectedPageId, newPage);
+    }
+  } else {
+    patchPage(selectedPageId, value);
+  }
+};
+
+const moveComponent = (
+  sourcePageId: string,
+  destPageId: string,
+  sourcePage: WegasComponent,
+  destPage: WegasComponent,
+  sourcePath: number[],
+  destPath: number[],
+) => {
+  const { component } = findComponent(sourcePage, sourcePath);
+  if (component) {
+    // TODO : Create a page action to manage synchronously the move of a component
+    createComponent(
+      destPageId,
+      destPage,
+      destPath,
+      component.type,
+      component.props,
+    );
+    deleteComponent(sourcePageId, sourcePage, sourcePath);
+  }
 };
 
 export const pageLayoutId = 'PageEditorLayout';
@@ -141,261 +267,203 @@ export default function PageEditor() {
     }
   }, [defaultPageId, selectedPageId]);
 
-  const { dispatch } = store;
-
-  const patchPage = React.useCallback(
-    (page: WegasComponent) => {
-      selectedPageId &&
-        dispatch(Actions.PageActions.patch(selectedPageId, page));
-    },
-    [dispatch, selectedPageId],
-  );
-
-  const findComponent = React.useCallback(
-    (
-      path: string[],
-    ): {
-      newPage: WegasComponent;
-      component?: WegasComponent;
-      parent?: WegasComponent;
-    } => {
-      const browsePath = [...path];
-      const newPage = deepClone(selectedPage) as WegasComponent;
-      let parent: WegasComponent | undefined = undefined;
-      let component: WegasComponent = newPage;
-      while (browsePath.length > 0) {
-        if (component.props.children) {
-          parent = component;
-          component = component.props.children[Number(browsePath[0])];
-          browsePath.splice(0, 1);
-        } else {
-          return { newPage };
-        }
+  const onEdit = React.useCallback(
+    (selectedPageId?: string, path?: number[]) => {
+      if (path != null) {
+        focusTab.current && focusTab.current('Editor', pageLayoutId);
       }
-      return { newPage, component, parent };
+      setPageEditorState(o => ({ ...o, editedPath: path, selectedPageId }));
     },
-    [selectedPage],
+    [],
   );
-
-  const onEdit = React.useCallback((path?: string[]) => {
-    if (path != null) {
-      focusTab.current && focusTab.current('ComponentEditor', pageLayoutId);
-    }
-    setPageEditorState(o => ({ ...o, editedPath: path }));
-  }, []);
 
   const onDrop = React.useCallback(
-    (dndComponent: DnDComponent, path: string[], index?: number) => {
-      const { newPage, component } = findComponent(path);
-      if (component) {
-        if (component.props.children === undefined) {
-          component.props.children = [];
-        }
-        const children = component.props.children;
-        const droppedComp: WegasComponent = {
-          type: dndComponent.componentName,
-          props: components[
-            dndComponent.componentName
-          ].getComputedPropsFromVariable(),
-        };
-        if (index !== undefined) {
-          children.splice(index, 0, droppedComp);
-        } else {
-          children.push(droppedComp);
-        }
-        path.push(`${index ? index : 0}`);
-        onEdit(path);
-        patchPage(newPage);
+    (dndComponent: DnDComponent, path: number[], index?: number) => {
+      if (selectedPageId != null && selectedPage != null) {
+        createComponent(
+          selectedPageId,
+          selectedPage,
+          path,
+          dndComponent.componentName,
+          components[dndComponent.componentName].getComputedPropsFromVariable(),
+          index,
+        );
+        onEdit(selectedPageId, path);
       }
     },
-    [components, patchPage, onEdit, findComponent],
+    [components, onEdit, selectedPage, selectedPageId],
   );
 
   const onDelete = React.useCallback(
-    (path: string[]) => {
-      const newPage = deepClone(selectedPage) as WegasComponent;
-      let parent: WegasComponent = newPage;
-      const browsePath = [...path];
-      while (browsePath.length > 0) {
-        if (parent.props.children) {
-          if (browsePath.length == 1) {
-            parent.props.children.splice(Number(browsePath[0]), 1);
-            patchPage(newPage);
-            return;
-          }
-          parent = parent.props.children[Number(browsePath[0])];
-        }
-        browsePath.splice(0, 1);
+    (path: number[]) => {
+      if (selectedPageId && selectedPage) {
+        deleteComponent(selectedPageId, selectedPage, path);
       }
     },
-    [patchPage, selectedPage],
+    [selectedPage, selectedPageId],
   );
 
   const onUpdate = React.useCallback(
-    (value: WegasComponent, componentPath?: string[], patch?: boolean) => {
+    (value: WegasComponent, componentPath?: number[], patch?: boolean) => {
       const path = componentPath ? componentPath : editedPath;
-      if (path) {
-        const { newPage, parent } = findComponent(path);
-        if (parent) {
-          if (parent.props.children && path) {
-            let comp = value;
-            if (patch) {
-              const oldComp =
-                parent.props.children[Number(path[path.length - 1])];
-              comp = {
-                ...oldComp,
-                props: {
-                  ...oldComp.props,
-                  ...value.props,
-                },
-              };
-            }
-            parent.props.children.splice(
-              Number(path[path.length - 1]),
-              1,
-              comp,
-            );
-            patchPage(newPage);
-          }
-        } else {
-          patchPage(value as WegasComponent);
-        }
+      if (selectedPageId != null && selectedPage != null && path != null) {
+        updateComponent(selectedPageId, selectedPage, value, path, patch);
       }
     },
-    [patchPage, editedPath, findComponent],
+    [editedPath, selectedPage, selectedPageId],
   );
 
-  const availableLayoutTabs = {
-    Layout: (
-      <pageEditorCTX.Consumer>
-        {({ selectedPageId }) => (
-          <PagesLayout
-            selectedPageId={selectedPageId}
-            onPageClick={pageId =>
-              setPageEditorState(ops => ({
-                ...ops,
-                selectedPageId: pageId,
-                editedPath: undefined,
-              }))
-            }
-            componentControls={{
-              onNewComponent: () => wlog('To implement'),
-              onDeleteComponent: () => wlog('To implement'),
-            }}
-          />
-        )}
-      </pageEditorCTX.Consumer>
-    ),
-    Components: <ComponentPalette />,
-    PageDisplay: (
-      <pageEditorCTX.Consumer>
-        {({ selectedPageId, loading }) => (
-          <pageCTX.Consumer>
-            {({ editMode, showControls, showBorders }) =>
-              loading ? (
-                <pre>Loading the pages</pre>
-              ) : (
-                <Toolbar>
-                  <Toolbar.Header>
-                    <div style={{ margin: 'auto' }}>
-                      {editMode && (
-                        <Button
-                          label={'Toggle controls'}
-                          disableBorders={{ right: true }}
-                        >
-                          <div className={innerButtonStyle}>
-                            <Toggler
-                              checked={showControls}
-                              onClick={() => setShowControls(c => !c)}
-                            />
-                          </div>
-                        </Button>
-                      )}
+  const Layout = (
+    <pageEditorCTX.Consumer>
+      {({ selectedPageId, editedPath }) => (
+        <PagesLayout
+          selectedPageId={selectedPageId}
+          selectedComponentPath={editedPath}
+          onPageClick={pageId =>
+            setPageEditorState(ops => ({
+              ...ops,
+              selectedPageId: pageId,
+              editedPath: undefined,
+            }))
+          }
+          componentControls={{
+            onNew: (pageId, page, path, type) =>
+              createComponent(
+                pageId,
+                page,
+                path,
+                type,
+                components[type]?.getComputedPropsFromVariable(),
+              ),
+            onDelete: deleteComponent,
+            onEdit: onEdit,
+            onMove: moveComponent,
+          }}
+        />
+      )}
+    </pageEditorCTX.Consumer>
+  );
+
+  const PageDisplay = (
+    <pageEditorCTX.Consumer>
+      {({ selectedPageId, loading }) => (
+        <pageCTX.Consumer>
+          {({ editMode, showControls, showBorders }) =>
+            loading ? (
+              <pre>Loading the pages</pre>
+            ) : (
+              <Toolbar>
+                <Toolbar.Header>
+                  <div style={{ margin: 'auto' }}>
+                    {editMode && (
                       <Button
-                        label={'Toggle edit mode'}
-                        disableBorders={{ right: editMode, left: editMode }}
+                        label={'Toggle controls'}
+                        disableBorders={{ right: true }}
                       >
                         <div className={innerButtonStyle}>
                           <Toggler
-                            checked={editMode}
-                            onClick={() => setEditMode(!editMode)}
+                            checked={showControls}
+                            onClick={() => setShowControls(c => !c)}
                           />
                         </div>
                       </Button>
-                      {editMode && (
-                        <Button
-                          label={'Toggle borders'}
-                          disableBorders={{ left: true }}
-                        >
-                          <div className={innerButtonStyle}>
-                            <Toggler
-                              checked={showBorders}
-                              onClick={() => setShowBorders(b => !b)}
-                            />
-                          </div>
-                        </Button>
-                      )}
-                    </div>
-                  </Toolbar.Header>
-                  <Toolbar.Content>
-                    <PageLoader selectedPageId={selectedPageId} />
-                  </Toolbar.Content>
-                </Toolbar>
-              )
-            }
-          </pageCTX.Consumer>
-        )}
-      </pageEditorCTX.Consumer>
-    ),
-    SourceEditor: (
-      <pageEditorCTX.Consumer>
-        {({ selectedPage, loading }) =>
-          loading ? (
-            <pre>Loading the pages</pre>
-          ) : (
-            <JSONandJSEditor
-              content={JSON.stringify(selectedPage, null, 2)}
-              // status={
-              //   modalState.type === 'save' ? modalState.label : undefined
-              // }
-              onSave={content => {
-                try {
-                  patchPage(JSON.parse(content));
-                } catch (e) {
-                  return { status: 'error', text: e };
+                    )}
+                    <Button
+                      label={'Toggle edit mode'}
+                      disableBorders={{ right: editMode, left: editMode }}
+                    >
+                      <div className={innerButtonStyle}>
+                        <Toggler
+                          checked={editMode}
+                          onClick={() => setEditMode(!editMode)}
+                        />
+                      </div>
+                    </Button>
+                    {editMode && (
+                      <Button
+                        label={'Toggle borders'}
+                        disableBorders={{ left: true }}
+                      >
+                        <div className={innerButtonStyle}>
+                          <Toggler
+                            checked={showBorders}
+                            onClick={() => setShowBorders(b => !b)}
+                          />
+                        </div>
+                      </Button>
+                    )}
+                  </div>
+                </Toolbar.Header>
+                <Toolbar.Content>
+                  <PageLoader selectedPageId={selectedPageId} />
+                </Toolbar.Content>
+              </Toolbar>
+            )
+          }
+        </pageCTX.Consumer>
+      )}
+    </pageEditorCTX.Consumer>
+  );
+
+  const SourceEditor = (
+    <pageEditorCTX.Consumer>
+      {({ selectedPageId, selectedPage, loading }) =>
+        loading ? (
+          <pre>Loading the pages</pre>
+        ) : (
+          <JSONandJSEditor
+            content={JSON.stringify(selectedPage, null, 2)}
+            onSave={content => {
+              try {
+                if (selectedPageId) {
+                  patchPage(selectedPageId, JSON.parse(content));
+                } else {
+                  throw Error('No selected page');
                 }
-              }}
-            />
-          )
-        }
-      </pageEditorCTX.Consumer>
-    ),
-    ComponentEditor: (
-      <pageEditorCTX.Consumer>
-        {({ editedPath, findComponent }) => (
-          <pageCTX.Consumer>
-            {({ onUpdate }) =>
-              editedPath && (
-                <ComponentEditor
-                  entity={findComponent && findComponent(editedPath).component}
-                  update={onUpdate}
-                  // actions={[
-                  //   {
-                  //     label: 'Close',
-                  //     action: () =>
-                  //       setPageEditorState(o => ({
-                  //         ...o,
-                  //         editedPath: undefined,
-                  //       })),
-                  //   },
-                  // ]}
-                />
-              )
-            }
-          </pageCTX.Consumer>
-        )}
-      </pageEditorCTX.Consumer>
-    ),
+              } catch (e) {
+                return { status: 'error', text: e };
+              }
+            }}
+          />
+        )
+      }
+    </pageEditorCTX.Consumer>
+  );
+
+  const Editor = (
+    <pageEditorCTX.Consumer>
+      {({ editedPath, selectedPage }) => (
+        <pageCTX.Consumer>
+          {({ onUpdate, onDelete }) =>
+            !editedPath ? (
+              <pre>No component selected yet</pre>
+            ) : !selectedPage ? (
+              <pre>No page selected yet</pre>
+            ) : (
+              <ComponentEditor
+                entity={findComponent(selectedPage, editedPath).component}
+                update={onUpdate}
+                actions={[
+                  {
+                    label: 'Delete',
+                    action: () => onDelete(editedPath),
+                    confirm: true,
+                  },
+                ]}
+              />
+            )
+          }
+        </pageCTX.Consumer>
+      )}
+    </pageEditorCTX.Consumer>
+  );
+
+  const availableLayoutTabs = {
+    Layout,
+    Components: <ComponentPalette />,
+    PageDisplay,
+    SourceEditor,
+    Editor,
   };
 
   return (
@@ -406,7 +474,8 @@ export default function PageEditor() {
         css({
           borderStyle: 'solid',
           borderColor: themeVar.primaryDarkerColor,
-          margin: '2px',
+          margin: '1px',
+          marginTop: '0px',
         }),
       )}
     >
@@ -416,7 +485,6 @@ export default function PageEditor() {
           selectedPage,
           editedPath,
           loading,
-          findComponent,
         }}
       >
         <pageCTX.Provider
@@ -426,7 +494,7 @@ export default function PageEditor() {
             showBorders,
             onDrop,
             onDelete,
-            onEdit,
+            onEdit: path => onEdit(selectedPageId, path),
             onUpdate,
           }}
         >

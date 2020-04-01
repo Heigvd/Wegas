@@ -3,7 +3,7 @@ import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
 import { defaultPadding, expand, noOverflow } from '../../css/classes';
 import './FormView';
-import { Button } from '../../Components/Inputs/Button/Button';
+import { Button, ButtonProps } from '../../Components/Inputs/Button/Button';
 import { ConfirmButton } from '../../Components/Inputs/Button/ConfirmButton';
 
 interface EditorProps<T> {
@@ -12,6 +12,7 @@ interface EditorProps<T> {
   actions: {
     action: (entity: T, path?: (string | number)[]) => void;
     label: React.ReactNode;
+    confirm?: boolean;
   }[];
   path?: (string | number)[];
   config?: Schema;
@@ -88,16 +89,27 @@ export class Form<T> extends React.Component<
             }}
           />
           {this.props.actions.map((a, i) => {
-            return (
-              <Button
-                label={a.label}
+            const btnProps: ButtonProps = {
+              label: a.label,
+              tabIndex: 1,
+              disableBorders: {
+                left: true,
+                right: i !== this.props.actions.length - 1,
+              },
+            };
+            return a.confirm ? (
+              <ConfirmButton
+                {...btnProps}
                 key={i}
-                tabIndex={1}
+                onAction={succes =>
+                  succes && a.action(this.state.val, this.props.path)
+                }
+              />
+            ) : (
+              <Button
+                {...btnProps}
+                key={i}
                 onClick={() => a.action(this.state.val, this.props.path)}
-                disableBorders={{
-                  left: true,
-                  right: i !== this.props.actions.length - 1,
-                }}
               />
             );
           })}

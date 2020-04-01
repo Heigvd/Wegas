@@ -18,6 +18,7 @@ export interface EditorAction<T extends IAbstractEntity> {
     [id: string]: {
       label: React.ReactNode;
       action: actionFn<T>;
+      confirm?: boolean;
     };
   };
 }
@@ -338,7 +339,7 @@ export function editVariable(
         : {
             more: {
               delete: {
-                label: 'delete',
+                label: 'Delete',
                 action: (entity: IVariableDescriptor, path?: string[]) => {
                   dispatch(
                     Actions.VariableDescriptorActions.deleteDescriptor(
@@ -347,9 +348,10 @@ export function editVariable(
                     ),
                   );
                 },
+                confirm: true,
               },
               findUsage: {
-                label: 'findUsage',
+                label: 'Find usage',
                 action: (entity: IVariableDescriptor) => {
                   if (entityIsPersisted(entity)) {
                     dispatch(Actions.EditorActions.searchUsage(entity));

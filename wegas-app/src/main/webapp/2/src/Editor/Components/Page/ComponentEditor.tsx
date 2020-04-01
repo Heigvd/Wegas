@@ -14,6 +14,7 @@ interface EditorProps<T = WegasComponent['props']> {
   actions?: {
     label: React.ReactNode;
     action: (entity: T, path?: (string | number)[]) => void;
+    confirm?: boolean;
   }[];
   path?: (string | number)[];
   error?: {
