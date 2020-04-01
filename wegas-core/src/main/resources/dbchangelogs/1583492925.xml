@@ -2,7 +2,7 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
     <changeSet author="maxence" id="1583492938469-1">
         <addColumn tableName="abstractaccount">
-            <column defaultValue="PLAIN" name="currentauth" type="varchar(24)"/>
+            <column name="currentauth" type="varchar(24)"/>
         </addColumn>
     </changeSet>
     <changeSet author="maxence" id="1583492938469-2">
@@ -13,6 +13,7 @@
     <changeSet author="maxence" id="1583492938469-3">
         <update tableName="abstractaccount">
             <column name="currentauth" value='PLAIN'></column>
+            <where>dtype = 'JpaAccount'</where>
         </update>
     </changeSet>
 
@@ -29,6 +30,35 @@
     <changeSet author="maxence" id="1583492938469-6">
         <update tableName="shadow">
             <column name="hashmethod" value='SHA_256'></column>
+        </update>
+    </changeSet>
+    <changeSet author="maxence" id="1583492938469-7">
+        <addColumn tableName="abstractaccount">
+            <column name="newsalt" type="varchar(255)"/>
+        </addColumn>
+        <addColumn tableName="abstractaccount">
+            <column name="salt" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="maxence" id="1583492938469-8">
+        <sql>
+            -- clear username of JpaAccount if it equals email address
+            UPDATE abstractaccount aa 
+            SET username = '' 
+            FROM accountdetails ad 
+            WHERE details_id = ad.id 
+            AND  aa.username = ad.email
+            AND dtype = 'JpaAccount' ;
+        </sql>
+    </changeSet>
+
+    <changeSet author="maxence" id="1583492938469-9">
+        <!-- -->
+        <update tableName="abstractaccount">
+            <column name="nextauth" value='SHA_256'></column>
+            <column name="newsalt" valueComputed='MD5(random()::text)'></column>
+            <where>currentauth='PLAIN' AND dtype = 'JpaAccount'</where>
         </update>
     </changeSet>
 </databaseChangeLog>

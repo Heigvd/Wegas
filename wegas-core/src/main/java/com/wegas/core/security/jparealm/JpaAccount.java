@@ -18,8 +18,6 @@ import com.wegas.core.security.util.JpaAuthentication;
 import javax.persistence.*;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
-import org.apache.shiro.crypto.hash.Sha256Hash;
-import org.apache.shiro.util.SimpleByteSource;
 
 /**
  * Simple class that represents any User domain entity in any application.
@@ -41,20 +39,36 @@ public class JpaAccount extends AbstractAccount {
     @WegasEntityProperty(ignoreNull = true)
     private String password;
 
+    /**
+     * Salt used by the client to hash its password. This is not the salt used to store the password
+     * in the database. The client hash its salted password using the
+     * {@link  #currentAuth mandatory hash method}. Then, this hash is salted and hashed again by
+     * {@link Shadow}
+     */
+    @WegasEntityProperty(ignoreNull = true, initOnly = true)
+    private String salt;
+
+    /**
+     * if defined, this salt must be used to salt the password hashed with
+     * {@link #nextAuth optional hash method}
+     */
+    @WegasEntityProperty(ignoreNull = true, initOnly = true)
+    private String newSalt;
+
     @Column(columnDefinition = "boolean default false")
     private Boolean verified = false;
 
     /**
      *
      */
-    @Column(length = 24, columnDefinition = "character varying(24) default 'PLAIN'::character varying")
+    @Column(length = 24)
     @Enumerated(value = EnumType.STRING)
     private HashMethod currentAuth;
 
     /**
      *
      */
-    @Column(length = 24, columnDefinition = "character varying(24)")
+    @Column(length = 24)
     @Enumerated(value = EnumType.STRING)
     private HashMethod nextAuth;
 
@@ -68,6 +82,7 @@ public class JpaAccount extends AbstractAccount {
             this.setShadow(new Shadow());
         }
         if (this.password == null || this.password.isEmpty()) {
+            org.apache.shiro.authc.credential.HashedCredentialsMatcher oo;
             RandomNumberGenerator rng = new SecureRandomNumberGenerator();
             this.password = rng.nextBytes().toString().substring(0, 7);
         }
@@ -77,19 +92,19 @@ public class JpaAccount extends AbstractAccount {
      *
      */
     public void shadowPasword() {
-        if (!Helper.isNullOrEmpty(this.password)){
+        if (!Helper.isNullOrEmpty(this.password)) {
             Shadow shadow = this.getShadow();
 
             HashMethod hashMethod = shadow.getHashMethod();
             HashMethod nextHashMethod = shadow.getNextHashMethod();
-            
-            if (nextHashMethod != null){
+
+            if (nextHashMethod != null) {
                 hashMethod = nextHashMethod;
                 shadow.setNextHashMethod(null);
                 shadow.setHashMethod(hashMethod);
             }
-            
-            if (hashMethod == null){
+
+            if (hashMethod == null) {
                 hashMethod = HashMethod.SHA_256;
                 shadow.setHashMethod(HashMethod.SHA_256);
             }
@@ -117,6 +132,22 @@ public class JpaAccount extends AbstractAccount {
         if (!Helper.isNullOrEmpty(password) && this.getShadow() != null) {
             this.shadowPasword();
         }
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
+    public String getNewSalt() {
+        return newSalt;
+    }
+
+    public void setNewSalt(String newSalt) {
+        this.newSalt = newSalt;
     }
 
     @Override
@@ -148,6 +179,19 @@ public class JpaAccount extends AbstractAccount {
 
     @Override
     public AuthenticationMethod getAuthenticationMethod() {
-        return new JpaAuthentication(this.currentAuth, this.nextAuth);
+        return new JpaAuthentication(this.currentAuth,
+            this.nextAuth, this.salt, this.newSalt);
+    }
+
+    public void migrateToNextAuthMethod() {
+        if (this.nextAuth != null) {
+            this.setCurrentAuth(nextAuth);
+            this.setNextAuth(null);
+
+            if (!Helper.isNullOrEmpty(newSalt)) {
+                this.salt = this.newSalt;
+                this.newSalt = null;
+            }
+        }
     }
 }

@@ -87,9 +87,12 @@ public class WegasRESTClient {
         AuthenticationMethod authMethod = getDefaultAuthenticationMethod();
 
         String effectivePassword;
+        String salt = null;
 
         if (authMethod instanceof JpaAuthentication) {
-            effectivePassword = ((JpaAuthentication) authMethod).getMandatoryMethod().hash(password, "");
+            JpaAuthentication authM = (JpaAuthentication) authMethod;
+            salt = authM.getSalt();
+            effectivePassword = authM.getMandatoryMethod().hash(password, authM.getSalt());
         } else {
             effectivePassword = password;
         }
@@ -99,6 +102,7 @@ public class WegasRESTClient {
         ja.setFirstname(email);
         ja.setLastname(email);
         ja.setPassword(effectivePassword);
+        ja.setSalt(salt);
 
         ja.setDetails(new AccountDetails());
         ja.getDetails().setEmail(email);
@@ -117,8 +121,10 @@ public class WegasRESTClient {
         TestAuthenticationInformation authInfo = new TestAuthenticationInformation();
         authInfo.setAgreed(Boolean.TRUE);
         authInfo.setLogin(username);
-        authInfo.setHashMethod(HashMethod.PLAIN);
-        authInfo.getHashes().put(HashMethod.PLAIN, password);
+        /**
+         * always use plain text here. Hashes will be computed on TestAuthenticationInformation
+         */
+        authInfo.getHashes().add(password);
         authInfo.setRemember(true);
 
         return authInfo;
@@ -199,7 +205,7 @@ public class WegasRESTClient {
     }
 
     public String get(String url) throws IOException {
-        logger.info("GET" + " " + url);
+        logger.info("GET" + " " + baseURL + url);
         HttpUriRequest get = new HttpGet(baseURL + url);
         setHeaders(get);
 
@@ -268,7 +274,7 @@ public class WegasRESTClient {
     }
 
     public String delete(String url) throws IOException {
-        logger.info("DELETE " + url);
+        logger.info("DELETE " + baseURL + url);
         HttpUriRequest delete = new HttpDelete(baseURL + url);
         setHeaders(delete);
 
@@ -383,21 +389,22 @@ public class WegasRESTClient {
         public AuthenticationInformation instantiate(JpaAuthentication authMethod) {
             AuthenticationInformation credentials = new AuthenticationInformation();
 
+            String plainPassword = this.getHashes().get(0);
+
             credentials.setAgreed(this.isAgreed());
             credentials.setLogin(this.getLogin());
             credentials.setRemember(this.isRemember());
 
-            credentials.setHashMethod(authMethod.getMandatoryMethod());
-
-            credentials.getHashes().put(
-                authMethod.getMandatoryMethod(),
-                authMethod.getMandatoryMethod().hash(this.getHashes().get(HashMethod.PLAIN), "")
+            credentials.getHashes().add(
+                authMethod.getMandatoryMethod().hash(plainPassword,
+                    Helper.coalesce(authMethod.getSalt()))
             );
 
             if (authMethod.getOptionalMethod() != null) {
-                credentials.getHashes().put(
-                    authMethod.getOptionalMethod(),
-                    authMethod.getOptionalMethod().hash(this.getHashes().get(HashMethod.PLAIN), "")
+                credentials.getHashes().add(
+                    authMethod.getOptionalMethod().hash(plainPassword,
+                        Helper.coalesce(authMethod.getNewSalt(), authMethod.getSalt())
+                    )
                 );
             }
 

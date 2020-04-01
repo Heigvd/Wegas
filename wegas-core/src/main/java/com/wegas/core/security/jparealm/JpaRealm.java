@@ -13,7 +13,7 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.persistence.Permission;
-import java.util.Date;
+import com.wegas.core.security.util.JpaAuthenticationInfo;
 import javax.ejb.EJBException;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -47,16 +47,21 @@ public class JpaRealm extends AuthorizingRealm {
             requestManager.su();
             JpaAccount account = accountFacade.findJpaByEmail(token.getUsername());
 
-            SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getShadow().getPasswordHex(), getName());
-            info.setCredentialsSalt(new SimpleByteSource(account.getShadow().getSalt()));
+            JpaAuthenticationInfo info = new JpaAuthenticationInfo(account.getId(),
+                account.getShadow().getPasswordHex(),
+                new SimpleByteSource(account.getShadow().getSalt()),
+                getName(), account.getShadow().getHashMethod());
             return info;
 
         } catch (WegasNoResultException e) {
             // Could not find correponding mail,
             try {
                 JpaAccount account = accountFacade.findJpaByUsername(token.getUsername());// try with the username
-                SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getShadow().getPasswordHex(), getName());
-                info.setCredentialsSalt(new SimpleByteSource(account.getShadow().getSalt()));
+
+                JpaAuthenticationInfo info = new JpaAuthenticationInfo(account.getId(),
+                    account.getShadow().getPasswordHex(),
+                    new SimpleByteSource(account.getShadow().getSalt()),
+                    getName(), account.getShadow().getHashMethod());
                 return info;
 
             } catch (WegasNoResultException ex) {

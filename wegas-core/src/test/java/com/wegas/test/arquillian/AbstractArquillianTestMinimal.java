@@ -226,8 +226,8 @@ public abstract class AbstractArquillianTestMinimal {
                 + "INSERT INTO permission (id, permissions, role_id) VALUES (3, 'User:*:*', 1);"
                 + "INSERT INTO users (id) VALUES (1);"
                 + "INSERT INTO accountdetails (id, email, checkuniqueness) VALUES (1, 'root@localhost', true);"
-                + "INSERT INTO shadow (id, passwordhex, salt) VALUES (1, 'eb86410aa029d4f7b85c1b4c3c0a25736f9ae4806bd75d456a333d83b648f2ee', '69066d73c2d03f85c5a8d3e39a2f184f');"
-                + "INSERT INTO abstractaccount (id, username, emaildomain, dtype, user_id, shadow_id, details_id) VALUES (1, 'root', 'localhost', 'JpaAccount', 1, 1, 1);"
+                + "INSERT INTO shadow (id, hashmethod, passwordhex, salt) VALUES (1, 'SHA_256', 'eb86410aa029d4f7b85c1b4c3c0a25736f9ae4806bd75d456a333d83b648f2ee', '69066d73c2d03f85c5a8d3e39a2f184f');"
+                + "INSERT INTO abstractaccount (id, username, emaildomain, currentauth, dtype, user_id, shadow_id, details_id) VALUES (1, 'root', 'localhost', 'PLAIN', 'JpaAccount', 1, 1, 1);"
                 + "INSERT INTO users_roles (user_id, role_id) VALUES (1, 1);"
                 + "UPDATE sequence SET seq_count=seq_count+50 WHERE seq_name = 'SEQ_GEN';"
                 + "CREATE INDEX IF NOT EXISTS index_accountdetails_email ON accountdetails (email) WHERE (checkuniqueness AND email IS NOT NULL AND email NOT LIKE '');"
@@ -322,16 +322,17 @@ public abstract class AbstractArquillianTestMinimal {
                 AuthenticationInformation info = new AuthenticationInformation();
                 info.setAgreed(Boolean.TRUE);
                 info.setLogin(user.getUsername());
-                info.setHashMethod(jpaAuth.getMandatoryMethod());
 
-                info.addHash(jpaAuth.getMandatoryMethod(), user.getPassword());
-                info.addHash(jpaAuth.getOptionalMethod(), user.getPassword());
+                info.addHash(jpaAuth.getMandatoryMethod(), user.getPassword(),
+                    Helper.coalesce(jpaAuth.getSalt()));
+
+                info.addHash(jpaAuth.getOptionalMethod(), user.getPassword(),
+                    Helper.coalesce(jpaAuth.getNewSalt(), jpaAuth.getSalt()));
 
                 info.setRemember(true);
 
                 userFacade.authenticate(info);
 
-                
                 // is that really useful to login again ?
                 /*String hash = info.getHashes().get(
                     jpaAuth.getOptionalMethod() != null
@@ -339,8 +340,7 @@ public abstract class AbstractArquillianTestMinimal {
                 );
                 requestManager.login(subject, new UsernamePasswordToken(user.getUsername(),
                     info.getHashes().get(hash)));
-                */
-                
+                 */
                 requestManager.setPlayer(null);
             } else {
                 throw WegasErrorMessage.error("Not a JPA Account");
@@ -363,10 +363,14 @@ public abstract class AbstractArquillianTestMinimal {
     public WegasUser signup(String email, String password) {
         logout();
         JpaAuthentication authMethod = userFacade.getDefaultAuthMethod();
-        authMethod.getMandatoryMethod().hash(password, "");
+
+        String hash = authMethod.getMandatoryMethod().hash(password,
+            Helper.coalesce(authMethod.getSalt()));
+
         JpaAccount ja = new JpaAccount();
         ja.setEmail(email);
-        ja.setPassword(password);
+        ja.setSalt(authMethod.getSalt());
+        ja.setPassword(hash);
         try {
             User signup = userFacade.signup(ja);
             return new WegasUser(signup, email, password);

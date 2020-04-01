@@ -170,7 +170,8 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     public JpaAuthentication getDefaultAuthMethod() {
-        return new JpaAuthentication(HashMethod.PLAIN, null);
+        return new JpaAuthentication(HashMethod.SHA_256, null,
+            Helper.generateSalt(), null);
     }
 
     /**
@@ -214,7 +215,7 @@ public class UserFacade extends BaseFacade<User> {
         }
 
         //if (!currentUser.isAuthenticated()) {
-        String password = authInfo.getHashes().get(authInfo.getHashMethod());
+        String password = authInfo.getHashes().get(0);
         UsernamePasswordToken token = new UsernamePasswordToken(authInfo.getLogin(), password);
         token.setRememberMe(authInfo.isRemember());
         try {
@@ -228,18 +229,15 @@ public class UserFacade extends BaseFacade<User> {
                 if (jpaAccount.getShadow().getNextHashMethod() != null) {
                     // shadow asks to use a new hash method
                     // initialize newHash to trigger password update
-                    newHash = jpaAccount.getPassword();
+                    newHash = password;
                 }
 
-                if (!authInfo.getHashes().isEmpty()) {
-                    HashMethod nextAuth = jpaAccount.getNextAuth();
-                    // client send extra hashes, let's switch to the new method
-                    if (authInfo.getHashes().containsKey(jpaAccount.getNextAuth())) {
-                        // migrate to next auth method silently
-                        newHash = authInfo.getHashes().get(nextAuth);
-                        jpaAccount.setCurrentAuth(nextAuth);
-                        jpaAccount.setNextAuth(null);
-                    }
+                HashMethod nextAuth = jpaAccount.getNextAuth();
+                if (nextAuth != null && authInfo.getHashes().size() > 1) {
+                    // client sent extra hashes, let's switch to the new method
+                    // migrate to next auth method silently
+                    newHash = authInfo.getHashes().get(1);
+                    jpaAccount.migrateToNextAuthMethod();
                 }
 
                 if (newHash != null) {

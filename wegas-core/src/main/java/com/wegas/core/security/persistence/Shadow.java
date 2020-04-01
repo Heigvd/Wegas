@@ -8,6 +8,7 @@
 package com.wegas.core.security.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
@@ -15,8 +16,6 @@ import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
 import javax.persistence.*;
-import org.apache.shiro.crypto.RandomNumberGenerator;
-import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 
 /**
  * Shadow storage for sensitive information linked to AbstractAccounts. It means: <ul>
@@ -85,8 +84,7 @@ public class Shadow extends AbstractEntity {
     }
 
     public void generateNewSalt() {
-        RandomNumberGenerator rng = new SecureRandomNumberGenerator();
-        this.setSalt(rng.nextBytes().toHex());
+        this.setSalt(Helper.generateSalt());
     }
 
     /**

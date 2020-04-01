@@ -1189,6 +1189,20 @@ YUI.add('wegas-entity', function(Y) {
             hash: {
                 transient: true
             },
+            salt: {
+                type: STRING,
+                optional: true,
+                view: {
+                    type: 'hidden'
+                }
+            },
+            newSalt: {
+                type: STRING,
+                optional: true,
+                view: {
+                    type: 'hidden'
+                }
+            },
             password: {
                 type: STRING,
                 optional: true,

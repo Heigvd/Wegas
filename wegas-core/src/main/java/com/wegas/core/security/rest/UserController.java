@@ -29,7 +29,6 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.core.security.util.AuthenticationMethod;
-import com.wegas.core.security.util.HashMethod;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -388,7 +387,7 @@ public class UserController {
         @Context HttpServletRequest request
     ) throws ServletException, IOException, URISyntaxException {
         return userFacade.authenticateFromToken(authInfo.getLogin(), 
-            authInfo.getHashes().get(HashMethod.PLAIN));
+            authInfo.getHashes().get(0));
     }
 
     /**
@@ -424,11 +423,11 @@ public class UserController {
     @Deprecated
     public void teacherGuestLogin(AuthenticationInformation authInfo) {
         User user = userFacade.guestLogin();
-        try {
-            user.addRole(roleFacade.findByName("Scenarist"));
-        } catch (WegasNoResultException ex) {
-            throw WegasErrorMessage.error("Teacher mode is not available");
-        }
+//        try {
+            //user.addRole(roleFacade.findByName("Scenarist"));
+//        } catch (WegasNoResultException ex) {
+//            throw WegasErrorMessage.error("Teacher mode is not available");
+//        }
     }
 
     /**

@@ -28,6 +28,20 @@ angular.module('wegas.service.auth', [
                     if (data) {
                         var acct = data.accounts[0],
                             isLocal = (acct["@class"] === "JpaAccount");
+
+                        // build a common name to be displayed
+                        var commonName = ((acct.firstname || "") + " " + (acct.lastname || "")).trim();
+
+                        if (commonName) {
+                            // first or last name: append username if any
+                            if (acct.username) {
+                                commonName += " (" + acct.username + ")";
+                            }
+                        } else {
+                            // no first nor last name: use username or email
+                            commonName += acct.username || acct.email;
+                        }
+
                         authenticatedUser = {
                             id: data.id,
                             accountId: acct.id,
@@ -45,7 +59,8 @@ angular.module('wegas.service.auth', [
                             hasAgreed: !!acct.agreedTime,
                             isLocalAccount: isLocal,
                             isVerified: acct.verified,
-                            homeOrg: acct.homeOrg || ""
+                            homeOrg: acct.homeOrg || "",
+                            commonName: commonName
                         };
                         if (authenticatedUser.isGuest) {
                             authenticatedUser.hasAgreed = true; // Don't ask guests to agree to our terms
@@ -76,7 +91,7 @@ angular.module('wegas.service.auth', [
             };
 
         /**
-         * 
+         *
          * @param {type} string
          * @returns {Array}
          */
@@ -132,7 +147,7 @@ angular.module('wegas.service.auth', [
                     array.push(0x80 | (char & 0x3F));
                 } else {
                     // 24bits on four bytes
-                    // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx 
+                    // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
                     array.push(0xF0 | (char >> 18));
                     array.push(0x80 | (char >> 12 & 0x3F));
                     array.push(0x80 | (char >> 6 & 0x3F));
@@ -147,37 +162,49 @@ angular.module('wegas.service.auth', [
          * digest the value with the given algorithm
          * @param {type} algorithm one of PLAIN (return the value as-is), SHA-256, SHA-384, SHA-512
          * @param {type} data the value to hash
-         * @returns {Promise} 
+         * @returns {Promise
          */
-        var digest = function(algorithm, data) {
-            // encode as (utf-8) Uint8Array
-            if (!algorithm) {
-                return new Promise(function(resolve) {
-                    resolve(null);
-                });
-            } else if (algorithm === 'PLAIN') {
-                return new Promise(function(resolve) {
-                    resolve(data);
+        service.digest = function(algorithm, data) {
+            var deferred = $q.defer();
+
+            // Check that the browser provides the necessary cryptographic functions.
+            // This is also used to prevent using internet explorer
+            if (typeof crypto === 'undefined') {
+                $translate('DEPRECATED-BROWSER').then(function(message) {
+                    deferred.reject(Responses.danger(message, false));
                 });
             } else {
-                var msgUint8 =
-                    (typeof (TextEncoder) !== 'undefined' ?
-                        new TextEncoder().encode(data)
-                        : strToUtf8Array(data));
-                return crypto.subtle.digest(algorithm.replace(/_/g, "-"), msgUint8)
-                    .then(function(hashBuffer) {
-                        var hashArray = Array.from(new Uint8Array(hashBuffer));
-                        return hashArray.map(function(b) {
-                            return b.toString(16).padStart(2, '0');
-                        }).join(''); // convert bytes to hex string
-                    });
+                // encode as (utf-8) Uint8Array
+                if (!algorithm) {
+                    deferred.resolve(null);
+                } else if (algorithm === 'PLAIN') {
+                    deferred.resolve(data);
+                } else {
+                    var msgUint8 =
+                        (typeof (TextEncoder) !== 'undefined' ? // eg edge <= 44
+                            new TextEncoder().encode(data)
+                            : strToUtf8Array(data));
+                    crypto.subtle.digest(algorithm.replace(/_/g, "-"), msgUint8)
+                        .then(function(hashBuffer) {
+                            var hashArray = Array.from(new Uint8Array(hashBuffer));
+                            deferred.resolve(hashArray.map(function(b) {
+                                return b.toString(16).padStart(2, '0');
+                            }).join('')); // convert bytes to hex string
+                        });
+                }
             }
+            return deferred.promise;
         };
 
-        var digestAll = function(data, methods) {
-            return methods.map(function(method) {
-                return digest(method, data);
-            })
+        /**
+         *
+         * @param {Array} data  array of {data, method}
+         * @returns {Promise[]}
+         */
+        var digestAll = function(data) {
+            return data.map(function(item) {
+                return service.digest(item.method, item.data);
+            });
         }
 
         service.getLocalAuthenticatedUser = function() {
@@ -207,27 +234,33 @@ angular.module('wegas.service.auth', [
         service.login = function(login, password, agreed) {
             var deferred = $q.defer(),
                 url = "rest/User/Authenticate";
+            // how to salt and hash ? ask the server
             $http.get(window.ServiceURL + "rest/User/AuthMethod/" + login).success(function(data) {
                 var jpaAuths = data.filter(function(method) {
                     return method["@class"] === "JpaAuthentication"
                 });
                 if (jpaAuths.length) {
-                    Promise.all(digestAll(password, [
-                        jpaAuths[0].mandatoryMethod,
-                        jpaAuths[0].optionalMethod
+                    var ja = jpaAuths[0];
+
+                    var salt = ja.salt || "";
+                    var nextSalt = ja.newSalt || salt;
+
+                    $q.all(digestAll([
+                        {
+                            // always use the current salt for the mandatory method
+                            data: salt + password,
+                            method: ja.mandatoryMethod
+                        }, {
+                            // use the next salt for the optional one (or current if no next is defined)
+                            data: nextSalt + password,
+                            method: ja.optionalMethod
+                        }
                     ])).then(
                         function(digestedPasswords) {
-                            var extraHashes = {
-                            };
-                            extraHashes[jpaAuths[0].mandatoryMethod] = digestedPasswords[0];
-                            if (jpaAuths[0].optionalMethod) {
-                                extraHashes[jpaAuths[0].optionalMethod] = digestedPasswords[1];
-                            }
                             $http.post(window.ServiceURL + url, {
                                 "@class": "AuthenticationInformation",
                                 "login": login,
-                                "hashMethod": jpaAuths[0].mandatoryMethod,
-                                "hashes": extraHashes,
+                                "hashes": digestedPasswords,
                                 "remember": true,
                                 "agreed": agreed === true
                             }, {
@@ -274,6 +307,9 @@ angular.module('wegas.service.auth', [
                                     });
                                 }
                             });
+                        },
+                        function (payload){
+                            deferred.resolve(payload);
                         });
                 } else {
                     $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function(message) {
@@ -296,10 +332,7 @@ angular.module('wegas.service.auth', [
             $http.post(window.ServiceURL + url, {
                 "@class": "AuthenticationInformation",
                 "login": email,
-                "hashMethod": "PLAIN",
-                "hashes": {
-                    "PLAIN": token
-                },
+                "hashes": [token],
                 "remember": false,
                 "agreed": false
             }).success(function() {
@@ -334,12 +367,14 @@ angular.module('wegas.service.auth', [
             $http.get(window.ServiceURL + "rest/User/DefaultAuthMethod")
                 .success(function(authMethod) {
                     var hashMethod = authMethod.mandatoryMethod;
+                    var salt = authMethod.salt || "";
 
-                    digest(hashMethod, password).then(function(digestedPassword) {
+                    service.digest(hashMethod, salt + password).then(function(digestedPassword) {
                         $http.post(window.ServiceURL + url, {
                             "@class": "JpaAccount",
                             "email": email,
                             "username": username,
+                            "salt": salt,
                             "password": digestedPassword,
                             "firstname": firstname,
                             "lastname": lastname,
@@ -411,8 +446,8 @@ angular.module('wegas.service.auth', [
                 if (noUser === null) {
                     $http.post(window.ServiceURL + url, {
                         "@class": "AuthenticationInformation",
-                        "login": "",
-                        "password": "",
+//                        "login": "",
+//                        "password": "",
                         "remember": true
                     }, {
                         "headers": {

@@ -15,6 +15,7 @@ angular.module('public.login', [])
     .controller('PublicLoginCtrl',
         function PublicLoginCtrl($scope, Flash, Auth, $state, $q, $http, $translate, TeamsModel, SessionsModel, ScenariosModel, $timeout, $rootScope, WegasTranslations) {
             "use strict";
+            $scope.deprecatedBrowser = typeof crypto === 'undefined';
             $scope.showAaiLogin = false; // Default value in case of misconfiguration
             $scope.aaiLoginUrl = "";
             var config = localStorage.getObject("wegas-config");

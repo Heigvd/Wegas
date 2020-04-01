@@ -9,32 +9,56 @@ package com.wegas.core.security.util;
 
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.crypto.hash.Sha512Hash;
-import org.apache.shiro.util.SimpleByteSource;
 
 /**
+ * Hash method supported by Wegas
  *
  * @author maxence
  */
 public enum HashMethod {
 
     PLAIN {
+
+        /**
+         * {@inheritDoc }
+         */
         @Override
-        public String hash(String value, String salt) {
-            return value;
+        public String hash(Object value, Object salt) {
+            if (salt == null) {
+                return value.toString();
+            } else {
+                return salt.toString() + value;
+            }
         }
     },
     SHA_256 {
+
+        /**
+         * {@inheritDoc }
+         */
         @Override
-        public String hash(String value, String salt) {
-            return new Sha256Hash(value, new SimpleByteSource(salt).getBytes()).toHex();
+        public String hash(Object value, Object salt) {
+            return new Sha256Hash(value, salt).toHex();
         }
     },
     SHA_512 {
+
+        /**
+         * {@inheritDoc }
+         */
         @Override
-        public String hash(String value, String salt) {
-            return new Sha512Hash(value, new SimpleByteSource(salt).getBytes()).toHex();
+        public String hash(Object value, Object salt) {
+            return new Sha512Hash(value, salt).toHex();
         }
     };
 
-    public abstract String hash(String value, String salt);
+    /**
+     * compute digest from value. If given, the value is prefixed with the salt.
+     *
+     * @param value the value to hash
+     * @param salt  optional salt
+     *
+     * @return digested salted value
+     */
+    public abstract String hash(Object value, Object salt);
 }

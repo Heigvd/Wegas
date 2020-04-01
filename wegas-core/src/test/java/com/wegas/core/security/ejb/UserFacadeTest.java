@@ -268,5 +268,8 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
 
         Assert.assertNotEquals("Hash has not been updated", previousHash, newHash);
         Assert.assertNotEquals("Salt has not been updated", previousSalt, newSalt);
+
+        login(user);
+
     }
 }

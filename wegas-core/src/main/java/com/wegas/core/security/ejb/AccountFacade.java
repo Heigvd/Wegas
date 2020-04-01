@@ -129,7 +129,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
-     * Remvoe an account
+     * Remove an account
      *
      * @param entity account to remove
      */
@@ -484,6 +484,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         if (find instanceof JpaAccount){
             JpaAccount account = (JpaAccount) find;
             account.setNextAuth(nextAuth);
+            account.setNewSalt(Helper.generateSalt());
         }
     }
 
