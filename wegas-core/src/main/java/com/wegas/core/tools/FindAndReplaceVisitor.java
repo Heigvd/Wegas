@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  *
@@ -47,11 +48,16 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
 
     private final DiffRowGenerator generator;
     private final StringBuilder output;
+
     private final Pattern pattern;
+    private final Pattern htmlEscapedPattern;
+
     private final List<String> pages = new ArrayList<>();
     private final List<GameModelContent> contents = new ArrayList<>();
     private final FindAndReplacePayload payload;
     private int flags = Pattern.UNICODE_CASE | Pattern.UNICODE_CHARACTER_CLASS;
+
+    private final String htmlEspacedReplace;
 
     public FindAndReplaceVisitor(FindAndReplacePayload payload) {
         this.payload = payload;
@@ -61,7 +67,14 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
         if (!payload.isRegex()) {
             flags |= Pattern.LITERAL;
         }
+
         this.pattern = Pattern.compile(payload.getFind(), flags);
+
+        this.htmlEscapedPattern = Pattern.compile(
+            StringEscapeUtils.escapeHtml4(payload.getFind()), flags);
+
+        this.htmlEspacedReplace = StringEscapeUtils.escapeHtml4(payload.getReplace());
+
         this.output = new StringBuilder();
         this.generator = DiffRowGenerator.create().showInlineDiffs(true).inlineDiffByWord(true).mergeOriginalRevised(true).build();
     }
@@ -74,8 +87,14 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
      */
     public String replace(String content) {
         if (!Helper.isNullOrEmpty(content)) {
+            // first, find & replace with unicode text
             Matcher matcher = pattern.matcher(content);
             String newContent = matcher.replaceAll(payload.getReplace());
+
+            // then find & replace with html encoding
+            Matcher htmlMatcher = htmlEscapedPattern.matcher(newContent);
+            newContent = htmlMatcher.replaceAll(htmlEspacedReplace);
+
             if (!content.equals(newContent)) {
                 return newContent;
             }
