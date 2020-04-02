@@ -495,12 +495,15 @@ public class Xapi implements XapiI {
 
     @Asynchronous
     public void asyncPost(List<Object> statements) {
-        logger.trace("XAPI Tx Commit");
+        //logger.trace("XAPI Tx Commit");
         try {
             StatementClient client = getClient();
 
             long start = System.currentTimeMillis();
+            logger.info("xAPI start async post batch");
             for (Object o : statements) {
+                long subStart = System.currentTimeMillis();
+                logger.info("xAPI async post {}", o);
                 if (o instanceof Statement) {
                     try {
                         client.postStatement((Statement) o);
@@ -516,8 +519,9 @@ public class Xapi implements XapiI {
                         logger.error("XapiTx postStatements on commit error: {}", ex);
                     }
                 }
+                logger.info("xAPI post duration: {}", System.currentTimeMillis() - subStart);
             }
-            logger.trace("xAPI post duration: {}", System.currentTimeMillis() - start);
+            logger.info("xAPI post batch duration: {}", System.currentTimeMillis() - start);
             statements.clear();
         } catch (MalformedURLException ex) {
         }
