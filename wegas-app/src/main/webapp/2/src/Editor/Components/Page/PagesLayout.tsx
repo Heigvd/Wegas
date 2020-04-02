@@ -23,6 +23,7 @@ import { MessageString } from '../MessageString';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import { IconButton } from '../../../Components/Inputs/Button/IconButton';
 import { themeVar } from '../../../Components/Theme';
+import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
 
 const bulletCSS = {
   width: '1em',
@@ -89,13 +90,16 @@ function isComponentNodeId(nodeId: NodeId): nodeId is ComponentNodeId {
   return 'pageId' in nodeId;
 }
 
-interface IndexItemAdderProps {
-  path: string[];
+interface LayoutButtonProps {
   className?: string;
   tooltip?: string;
 }
 
-// TODO : Generalize the 2 following component (TextPrompter)
+// TODO : Generalize the 2 following component ( (IndexItemAdder,IndexItemModifer) => TextPrompter)
+
+interface IndexItemAdderProps extends LayoutButtonProps {
+  path: string[];
+}
 
 function IndexItemAdder({ path, className, tooltip }: IndexItemAdderProps) {
   const [modalState, setModalState] = React.useState<LayoutModalStates>();
@@ -251,6 +255,26 @@ function IndexItemModifer({
   );
 }
 
+interface ComponentAdderProps extends LayoutButtonProps {
+  onSelect: (componentType: string) => void;
+}
+
+function ComponentAdder({ className, tooltip, onSelect }: ComponentAdderProps) {
+  const components = usePageComponentStore(s => s);
+  return (
+    <div className={className} title={tooltip}>
+      <Menu
+        icon="plus"
+        items={Object.values(components).map(v => ({
+          label: v.getName(),
+          id: v.getName(),
+        }))}
+        onSelect={({ id }) => onSelect(id)}
+      />
+    </div>
+  );
+}
+
 const compToKey = (component: WegasComponent) =>
   JSON.stringify({
     type: component.type,
@@ -260,6 +284,7 @@ const compToKey = (component: WegasComponent) =>
 interface LayoutNodeTitleProps {
   icon: Icons;
   title: string;
+  advancedTitle?: string;
   tooltip?: string;
   onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   className?: string;
@@ -269,12 +294,19 @@ interface LayoutNodeTitleProps {
 function LayoutNodeTitle({
   icon,
   title,
+  advancedTitle,
   tooltip,
   onClick,
   className,
   classSelector,
   children,
 }: React.PropsWithChildren<LayoutNodeTitleProps>) {
+  const { currentFeatures } = React.useContext(featuresCTX);
+  const newTitle =
+    currentFeatures.includes('ADVANCED') && advancedTitle != null
+      ? advancedTitle
+      : title;
+
   return (
     <div
       onClick={onClick}
@@ -286,7 +318,7 @@ function LayoutNodeTitle({
       title={tooltip}
     >
       <IconComp icon={icon} style={bulletCSS} />
-      <div className={grow}>{title}</div>
+      <div className={grow}>{newTitle}</div>
       {children}
     </div>
   );
@@ -311,7 +343,7 @@ function WegasComponentNode({
   selectedComponentPath,
   componentControls,
 }: WegasComponentNodeProps) {
-  const { onDelete, onEdit } = componentControls;
+  const { onDelete, onEdit, onNew } = componentControls;
 
   const page = useStore(s => s.pages[pageId], deepDifferent);
 
@@ -333,7 +365,8 @@ function WegasComponentNode({
     return (
       <LayoutNodeTitle
         icon={icon}
-        title={title + ' ' + JSON.stringify(componentPath)}
+        title={title}
+        advancedTitle={title + ' ' + JSON.stringify(componentPath)}
         tooltip={registeredComponent == null ? 'Unknown component' : undefined}
         onClick={() => onEdit(pageId, componentPath)}
         className={cx({
@@ -343,6 +376,15 @@ function WegasComponentNode({
               JSON.stringify(selectedComponentPath),
         })}
       >
+        {component.props?.children && (
+          <ComponentAdder
+            tooltip="Add a component"
+            onSelect={componentType =>
+              onNew(pageId, page, componentPath, componentType)
+            }
+            className={controlsClassName}
+          />
+        )}
         <ConfirmButton
           icon="trash"
           onAction={success => success && onDelete(pageId, page, componentPath)}
@@ -423,7 +465,10 @@ function PageIndexItemNode({
   const Title = (
     <LayoutNodeTitle
       icon={isPageItem(indexItem) ? 'file' : 'folder'}
-      title={indexItem.name + (isPageItem(indexItem) ? ` ${indexItem.id}` : '')}
+      title={indexItem.name}
+      advancedTitle={
+        indexItem.name + (isPageItem(indexItem) ? ` ${indexItem.id}` : '')
+      }
       onClick={() => isPageItem(indexItem) && onPageClick(indexItem.id!)}
       className={cx({
         [selectedIndexItem]:

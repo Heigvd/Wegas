@@ -149,6 +149,7 @@ class TreeNode extends React.Component<
   { expanded: boolean; DropZone: ReturnType<typeof DropZoneFactory> }
 > {
   root: HTMLDivElement | null = null;
+  timer: number | undefined = undefined;
   constructor(props: ConnectedNodeProps) {
     super(props);
     this.state = {
@@ -178,6 +179,17 @@ class TreeNode extends React.Component<
       this.setState(os => ({ ...os, expanded: Boolean(this.props.expanded) }));
     }
     return true;
+  }
+  expandOnDrag(over: boolean) {
+    if (over) {
+      this.timer = window.setTimeout(
+        () => this.setState(s => ({ ...s, expanded: true })),
+        1000,
+      );
+    } else {
+      clearTimeout(this.timer);
+      this.timer = undefined;
+    }
   }
   toggleExpand() {
     this.setState({
@@ -228,29 +240,32 @@ class TreeNode extends React.Component<
             )}
           >
             <DropZone id={parent} index={index!} where={'AUTO'}>
-              {({ isOver, boundingRect, where, separator }) => (
-                <div className={cx(flex, flexColumn)}>
-                  {isOver && where === 'BEFORE' && (
-                    <DropPreview boundingRect={boundingRect} />
-                  )}
-                  {separator(
-                    <div className={cx(flex, grow, flexRow, itemCenter)}>
-                      <span className={toggle} onClick={this.toggleExpand}>
-                        {isNode && (
-                          <FontAwesome
-                            icon={expanded ? 'caret-down' : 'caret-right'}
-                          />
-                        )}
-                      </span>
-                      {header}
-                    </div>,
-                  )}
-                  {cont}
-                  {isOver && where === 'AFTER' && (
-                    <DropPreview boundingRect={boundingRect} />
-                  )}
-                </div>
-              )}
+              {({ isOver, boundingRect, where, separator }) => {
+                this.expandOnDrag(isOver);
+                return (
+                  <div className={cx(flex, flexColumn)}>
+                    {isOver && where === 'BEFORE' && (
+                      <DropPreview boundingRect={boundingRect} />
+                    )}
+                    {separator(
+                      <div className={cx(flex, grow, flexRow, itemCenter)}>
+                        <span className={toggle} onClick={this.toggleExpand}>
+                          {isNode && (
+                            <FontAwesome
+                              icon={expanded ? 'caret-down' : 'caret-right'}
+                            />
+                          )}
+                        </span>
+                        {header}
+                      </div>,
+                    )}
+                    {cont}
+                    {isOver && where === 'AFTER' && (
+                      <DropPreview boundingRect={boundingRect} />
+                    )}
+                  </div>
+                );
+              }}
             </DropZone>
           </div>,
         )

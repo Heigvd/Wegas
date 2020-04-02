@@ -43,34 +43,6 @@ export const pageCTX = React.createContext<PageContext>({
   onUpdate: noop,
 });
 
-// interface PageModalState {
-//   type: 'newpage' | 'editpage' | 'close';
-// }
-// interface ErrorModalState {
-//   type: 'error';
-//   label: string;
-// }
-// interface SaveModalState {
-//   type: 'save';
-//   label: OnSaveStatus;
-// }
-// type ModalState = PageModalState | ErrorModalState | SaveModalState;
-
-// const savingProgressStatus: OnSaveStatus = {
-//   status: 'warning',
-//   text: 'Saving page in progress',
-// };
-
-// const savingDoneStatus: OnSaveStatus = {
-//   status: 'succes',
-//   text: 'The page has been saved',
-// };
-
-// const savingErrorStatus: OnSaveStatus = {
-//   status: 'error',
-//   text: 'Error : The page has not been saved',
-// };
-
 interface PageEditorState {
   selectedPageId?: string;
   editedPath?: number[];
@@ -79,13 +51,6 @@ interface PageEditorState {
 interface PageEditorContext extends PageEditorState {
   loading: boolean;
   selectedPage?: WegasComponent;
-  // findComponent?: (
-  //   path: string[],
-  // ) => {
-  //   newPage: WegasComponent;
-  //   component?: WegasComponent;
-  //   parent?: WegasComponent;
-  // };
 }
 export const pageEditorCTX = React.createContext<PageEditorContext>({
   loading: false,
@@ -143,7 +108,8 @@ const createComponent = (
   componentProps?: WegasComponent['props'],
   index?: number,
 ) => {
-  const { newPage, component } = findComponent(page, path);
+  const newPath = [...path];
+  const { newPage, component } = findComponent(page, newPath);
   if (component) {
     if (component.props.children === undefined) {
       component.props.children = [];
@@ -158,8 +124,8 @@ const createComponent = (
     } else {
       children.push(droppedComp);
     }
-    path.push(index ? index : 0);
-    return newPage;
+    newPath.push(index ? index : children.length - 1);
+    return { newPage, newPath };
   }
 };
 
@@ -207,28 +173,6 @@ const updateComponent = (
   }
 };
 
-// const moveComponent = (
-//   sourcePageId: string,
-//   destPageId: string,
-//   sourcePage: WegasComponent,
-//   destPage: WegasComponent,
-//   sourcePath: number[],
-//   destPath: number[],
-// ) => {
-//   const { component } = findComponent(sourcePage, sourcePath);
-//   if (component) {
-//     // TODO : Create a page action to manage synchronously the move of a component
-//     createComponent(
-//       destPageId,
-//       destPage,
-//       destPath,
-//       component.type,
-//       component.props,
-//     );
-//     deleteComponent(sourcePageId, sourcePage, sourcePath);
-//   }
-// };
-
 export const pageLayoutId = 'PageEditorLayout';
 
 export default function PageEditor() {
@@ -273,15 +217,15 @@ export default function PageEditor() {
   const onDrop = React.useCallback(
     (dndComponent: DnDComponent, path: number[], index?: number) => {
       if (selectedPageId != null && selectedPage != null) {
-        const newPage = createComponent(
+        const newComponent = createComponent(
           selectedPage,
           path,
           dndComponent.componentName,
           components[dndComponent.componentName].getComputedPropsFromVariable(),
           index,
         );
-        if (newPage) {
-          patchPage(selectedPageId, newPage);
+        if (newComponent) {
+          patchPage(selectedPageId, newComponent.newPage);
           onEdit(selectedPageId, path);
         }
       }
@@ -316,17 +260,18 @@ export default function PageEditor() {
 
   const onNewLayoutComponent = React.useCallback(
     (pageId, page, path, type) => {
-      const newPage = createComponent(
+      const newComponent = createComponent(
         page,
         path,
         type,
         components[type]?.getComputedPropsFromVariable(),
       );
-      if (newPage) {
-        patchPage(pageId, newPage);
+      if (newComponent) {
+        patchPage(pageId, newComponent.newPage);
+        onEdit(pageId, newComponent.newPath);
       }
     },
-    [components],
+    [components, onEdit],
   );
 
   const onDeleteLayoutComponent = React.useCallback(
@@ -374,7 +319,7 @@ export default function PageEditor() {
               if (sourcePageId !== destPageId) {
                 patchPage(sourcePageId, newSourcePage);
               }
-              patchPage(destPageId, newDestPage);
+              patchPage(destPageId, newDestPage.newPage);
             }
           }
         }
