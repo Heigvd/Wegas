@@ -67,6 +67,14 @@ public class SurveyInstance extends VariableInstance {
     }
 
     /**
+     * @param statusName the string representation of the status to set
+     */
+    public void setStatusFromString(String statusName) {
+        SurveyStatus newState = SurveyStatus.valueOf(statusName);
+        this.status = newState;
+    }
+
+    /**
      * @return the active
      */
     public Boolean getActive() {

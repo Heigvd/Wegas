@@ -33,7 +33,7 @@ var SurveyHelper = (function() {
     function request(SurveyDescriptorName) {
         var sd = Variable.find(gameModel, SurveyDescriptorName),
             inst = sd.getInstance();
-        inst.setRequested(true);
+        inst.setStatusFromString("REQUESTED");
     }
     
     
@@ -113,6 +113,9 @@ var SurveyHelper = (function() {
 
             survStatus = survInst.getStatus().toString();
             survActive = survInst.getActive();
+
+var s = survInst.getStatus();
+print("XXXX s: " + s);
 
             if (team.getPlayers().size() > 0) {
                 aPlayer = survInst.getOwner().getAnyLivePlayer();

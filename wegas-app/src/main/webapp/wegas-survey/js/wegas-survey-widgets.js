@@ -2108,7 +2108,9 @@ YUI.add("wegas-survey-widgets", function(Y) {
             refreshButton.addClass("fa-spin");
             
             cb.one(".status-line .status").setContent(this.statusToString(survData));
-            if (survData.active === true) {
+            if (survData.active === true &&
+                (survData.status === ORCHESTRATION_PROGRESS.NOT_STARTED ||
+                 survData.status === ORCHESTRATION_PROGRESS.REQUESTED)) {
                 cb.one(".request-survey").show();
             } else {
                 cb.one(".request-survey").hide();
