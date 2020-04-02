@@ -30,39 +30,17 @@ var surveyXapi = (function() {
     }
 
     /**
-     * @param {string} html
-     * @param {string} survname
-     * @param {string} inputname
-     */
-    function textInput(html, survname, inputname) {
-        var statement = surveyXapi.statement('answered', 'survey', survname + '/text/' + inputname);
-        var result = xapi.result(html);
-        statement.setResult(result);
-        return statement;
-    }
-
-    /**
      * @param {string} value
+     * @param {string} kind 
      * @param {string} survname
      * @param {string} inputname
      */
-    function numberInput(value, survname, inputname) {
-        var statement = surveyXapi.statement('answered', 'survey', survname + '/number/' + inputname);
+    function buildInputStatement(value, kind, survname, inputname) {
+        var statement = surveyXapi.statement('answered', 'survey', survname + '/' + kind + '/' + inputname);
         statement.setResult(xapi.result(value));
         return statement;
-        return statement;
     }
-
-    /**
-     * @param {string} value
-     * @param {string} survname
-     * @param {string} inputname
-     */
-    function choiceInput(value, survname, inputname) {
-        var statement = surveyXapi.statement('answered', 'survey', survname + '/choice/' + inputname + '/value/' + value);
-        return statement;
-    }
-
+    
     /**
      * @param {string} survname
      */
@@ -90,14 +68,14 @@ var surveyXapi = (function() {
         statement: statement,
         post: post,
         textInput: function(value, survname, inputname){
-           return buildInputStatemeent(value, 'text', survname, inputname);
+           return buildInputStatement(value, 'text', survname, inputname);
         },
         numberInput: function(value, survname, inputname){
-           return buildInputStatemeent(value, 'number', survname, inputname);
-        },,
+           return buildInputStatement(value, 'number', survname, inputname);
+        },
         choiceInput: function(value, survname, inputname){
-           return buildInputStatemeent(value, 'choice', survname, inputname);
-        },,
+           return buildInputStatement(value, 'choice', survname, inputname);
+        },
         surveyCompleted: surveyCompleted,
         surveyInitialized: surveyInitialized,
         testLib: testLib

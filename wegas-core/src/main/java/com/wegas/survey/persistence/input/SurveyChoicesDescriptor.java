@@ -48,7 +48,7 @@ public class SurveyChoicesDescriptor
     /**
      * List of allowed choices
      */
-    @OneToMany(mappedBy = "parentChoice", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "parentSurveyChoice", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonDeserialize(using = EnumItem.ListDeserializer.class)
     @WegasEntityProperty(
             optional = false, nullable= false, proposal = EmptyArray.class,
@@ -153,7 +153,7 @@ public class SurveyChoicesDescriptor
    
     @Override
     public void registerItem(EnumItem item) {
-        item.setParentChoice(this);
+        item.setParentSurveyChoice(this);
         if (item.getLabel() != null && this.getSection() != null){
             item.getLabel().setParentDescriptor(this.getSection());
         }

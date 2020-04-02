@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
-    <changeSet author="jarle" id="1574090984-8">
+    <changeSet author="jarle" id="1574090984-9">
         
         
         <createTable tableName="surveydescriptor">
@@ -23,10 +23,7 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="surveyinstance_pkey"/>
             </column>
             <column name="active" type="bool"/>
-            <column name="requested" type="bool"/>
-            <column name="started" type="bool"/>
-            <column name="validated" type="bool"/>
-            <column name="closed" type="bool"/>
+            <column name="status" type="text"/>
         </createTable>
         
         
@@ -149,21 +146,21 @@
         <addForeignKeyConstraint baseColumnNames="unit_id" baseTableName="surveynumberdescriptor" constraintName="fk_surveynumberdescriptor_unit_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="translatablecontent"/>
     </changeSet>
     
-    <changeSet author="jarle" id="1574090984001-1">
+    <changeSet author="jarle" id="1574090984001-2">
         <addColumn tableName="enumitem">
-            <column name="parentchoice_id" type="int8"/>
+            <column name="parentsurveychoice_id" type="int8"/>
         </addColumn>
 
-        <createIndex indexName="index_enumitem_parentchoice_id" tableName="enumitem">
-            <column name="parentchoice_id"/>
+        <createIndex indexName="index_enumitem_parentsurveychoice_id" tableName="enumitem">
+            <column name="parentsurveychoice_id"/>
         </createIndex>
     
-        <addForeignKeyConstraint baseColumnNames="parentchoice_id" baseTableName="enumitem" constraintName="fk_enumitem_parentchoice_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor"/>
+        <addForeignKeyConstraint baseColumnNames="parentsurveychoice_id" baseTableName="enumitem" constraintName="fk_enumitem_parentsurveychoice_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="variabledescriptor"/>
     </changeSet>
 
-    <changeSet author="jarle" id="1574090984002-2">
+    <changeSet author="jarle" id="1574090984002-3">
         <dropUniqueConstraint constraintName="unq_enumitem_0" tableName="enumitem"/>
-        <addUniqueConstraint columnNames="parentchoice_id, parentevaluation_id, parentstring_id, name" constraintName="unq_enumitem_0" tableName="enumitem"/>
+        <addUniqueConstraint columnNames="parentsurveychoice_id, parentevaluation_id, parentstring_id, name" constraintName="unq_enumitem_0" tableName="enumitem"/>
     </changeSet>
 
 </databaseChangeLog>

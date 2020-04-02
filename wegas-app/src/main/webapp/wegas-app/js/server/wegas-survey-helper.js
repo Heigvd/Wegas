@@ -21,12 +21,11 @@ var SurveyHelper = (function() {
 
     // Increasing order of progress:
     var ORCHESTRATION_PROGRESS = {
-        INACTIVE: 0,
-        IDLE: 1,
-        REQUESTED: 2,
-        STARTED: 3,
-        VALIDATED: 4,
-        CLOSED: 5
+        NOT_STARTED: 0,
+        REQUESTED: 1,
+        ONGOING: 2,
+        COMPLETED: 3,
+        CLOSED: 4
     };
 
     // Function for requesting the start of a survey.
@@ -37,35 +36,6 @@ var SurveyHelper = (function() {
         inst.setRequested(true);
     }
     
-/*
-    function request(SurveyDescriptorName) {
-        var sd = Variable.find(gameModel, SurveyDescriptorName),
-            survInsts = Variable.getInstances(sd),
-            game = self.getGame(), teams = game.getTeams(),
-            t, team, teamId, survInst, aPlayer;
-
-        for (t = 0; t < teams.size(); t += 1) {
-            team = teams.get(t);
-            teamId = new Long(team.getId());
-            survInst = survInsts[team];
-
-            if (team.getPlayers().size() > 0) {
-                aPlayer = survInst.getOwner().getAnyLivePlayer();
-            } else {
-                aPlayer = null;
-            }
-            if (aPlayer === null) { // || (survInsts.length > 1 && aPlayer.getTeam() instanceof  com.wegas.core.persistence.game.DebugTeam) ) {
-                // Skip Debug & empty Teams
-                continue;
-            }
-        
-            if (survInst.getActive()) {
-                survInst.setRequested(true);
-                return SurveyHelper.summarize(SurveyDescriptorName);
-            }
-        }
-    }
-*/
     
     function summarize(SurveyDescriptorName) {
         var sd = Variable.find(gameModel, SurveyDescriptorName),
@@ -75,21 +45,27 @@ var SurveyHelper = (function() {
             nbTeams = teams.size(),
             t, teamId, team,
             aPlayer, survInsts, survInst, data, replied,
-            playerStatus = ORCHESTRATION_PROGRESS.INACTIVE,
-            globalStatus = ORCHESTRATION_PROGRESS.CLOSED,
+            survActive,
+            survStatus = "NOT_STARTED",
+            playerStatus = ORCHESTRATION_PROGRESS[survStatus],
+            globalSurvActive = false,
+            globalSurvStatus = "CLOSED",
+            globalStatus = ORCHESTRATION_PROGRESS[globalSurvStatus],
             i, j,
             
                     
             monitoring = {
                 id: sdId,
                 name: SurveyDescriptorName,
-                status: ORCHESTRATION_PROGRESS.IDLE,
+                active: false,
+                status: globalSurvStatus,
                 nbInputs: 0,
                 data: {
                     /*
                     teamId: {
                         name: "team name",
-                        status: ORCHESTRATION_PROGRESS.IDLE,
+                        active: false,
+                        status: ORCHESTRATION_PROGRESS.NOT_STARTED,
                         replied: 0
                     }
                     */
@@ -115,7 +91,7 @@ var SurveyHelper = (function() {
 
         // Empty surveys are to be treated as inactive ones:
         if (inputDescriptors.length === 0) {
-            monitoring.status = ORCHESTRATION_PROGRESS.INACTIVE;
+            monitoring.active = false;
             return JSON.stringify(monitoring);
         }
 
@@ -135,13 +111,16 @@ var SurveyHelper = (function() {
             teamId = new Long(team.getId());
             survInst = survInsts[team];
 
+            survStatus = survInst.getStatus().toString();
+            survActive = survInst.getActive();
+
             if (team.getPlayers().size() > 0) {
                 aPlayer = survInst.getOwner().getAnyLivePlayer();
             } else {
                 aPlayer = null;
             }
             if (aPlayer === null) {
-                // Skip Debug & empty Teams
+                // Skip empty Teams
                 continue;
             }
 
@@ -149,28 +128,20 @@ var SurveyHelper = (function() {
             if (isDebugTeam && nbTeams > 1) {
                 continue;
             }
-
-            if (survInst.getClosed()) {
-                playerStatus = ORCHESTRATION_PROGRESS.CLOSED;
-            } else if (survInst.getValidated()) {
-                playerStatus = ORCHESTRATION_PROGRESS.VALIDATED;
-            } else if (survInst.getStarted()) {
-                playerStatus = ORCHESTRATION_PROGRESS.STARTED;
-            } else if (survInst.getRequested()) {
-                playerStatus = ORCHESTRATION_PROGRESS.REQUESTED;
-            } else if (survInst.getActive()) {
-                playerStatus = ORCHESTRATION_PROGRESS.IDLE;
-            } else {
-                playerStatus = ORCHESTRATION_PROGRESS.INACTIVE;
-            }
-
-            // Global status is the least advanced of all individual statuses:
-            if (globalStatus > playerStatus) {
+            
+            playerStatus = ORCHESTRATION_PROGRESS[survStatus];
+           
+            // Global status is the least advanced of all individual statuses (unless inactive):
+            if (survActive && globalStatus > playerStatus) {
                 globalStatus = playerStatus;
+                globalSurvStatus = survStatus;
+            }
+            if (survActive) {
+                globalSurvActive = true;
             }
             
             // Count number of replied inputDescriptors for this team/player
-            if (playerStatus >= ORCHESTRATION_PROGRESS.STARTED) {
+            if (playerStatus >= ORCHESTRATION_PROGRESS.ONGOING) {
                 replied = 0;
                 for (var id in teamsInputs) {
                     var currInput = teamsInputs[id][team];
@@ -184,7 +155,8 @@ var SurveyHelper = (function() {
             
             data = {
                 name: team.getName(),
-                status: playerStatus,
+                active: survActive,
+                status: survStatus,
                 replied: replied
             };
             
@@ -192,7 +164,8 @@ var SurveyHelper = (function() {
             
         }
 
-        monitoring.status = globalStatus;
+        monitoring.active = globalSurvActive;
+        monitoring.status = globalSurvStatus;
         
         return JSON.stringify(monitoring);
     }

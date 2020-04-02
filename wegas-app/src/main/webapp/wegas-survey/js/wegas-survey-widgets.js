@@ -24,24 +24,23 @@ YUI.add("wegas-survey-widgets", function(Y) {
         SURVEY_STATUS = {
             EMPTY: 0,       // An empty survey is not displayable
             INACTIVE: 1,    // Blocked by the scenario
-            STARTED: 2,     // The survey widget is instantiated (and displayed)
+            ONGOING: 2,     // The survey widget is instantiated (and displayed)
             ALL_REPLIED: 3, // The survey has been fully replied, but not yet validated
-            VALIDATED: 4    // The survey has been fully replied and validated
+            COMPLETED: 4    // The survey has been fully replied and validated
         },
         SURVEY_DISPLAY = {
             SURVEY_HEAD: 0, // Display initial description
             SECTION_HEAD: 1,// In one section/page mode, also includes all inputs of the section
             INPUT: 2,       // Display one input (in one input/page mode)
-            VALIDATED: 3    // Survey validated, display final text (acknowledgements)
+            COMPLETED: 3    // Survey validated, display final text (acknowledgements)
         },
         // In increasing order of progress, status received from server-side script wegas-survey-helper:
         ORCHESTRATION_PROGRESS = {
-            INACTIVE: 0,
-            IDLE: 1,
-            REQUESTED: 2,
-            STARTED: 3,
-            VALIDATED: 4,
-            CLOSED: 5
+            NOT_STARTED: "NOT_STARTED",
+            REQUESTED: "REQUESTED",
+            ONGOING: "ONGOING",
+            COMPLETED: "COMPLETED",
+            CLOSED: "CLOSED"
         };
 
 
@@ -131,12 +130,14 @@ YUI.add("wegas-survey-widgets", function(Y) {
             this.monolithicLayout = false;
             this.inputCache = {};
 
-            if (this.surveyInstance.get("validated")) {
-                this.surveyStatus = SURVEY_STATUS.VALIDATED;
-                this.surveyDisplay = SURVEY_DISPLAY.VALIDATED;
+            var surveyStatus = this.surveyInstance.get("status");
+            if (surveyStatus === ORCHESTRATION_PROGRESS.COMPLETED ||
+                surveyStatus === ORCHESTRATION_PROGRESS.CLOSED) {
+                this.surveyStatus = SURVEY_STATUS.COMPLETED;
+                this.surveyDisplay = SURVEY_DISPLAY.COMPLETED;
                 return;
             } else {
-                this.surveyStatus = SURVEY_STATUS.STARTED;
+                this.surveyStatus = SURVEY_STATUS.ONGOING;
                 // This is the normal case, in case of page reload, it may be adjusted below:
                 this.surveyDisplay = SURVEY_DISPLAY.SURVEY_HEAD;
             }
@@ -321,9 +322,9 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     break;
                 case "SurveyInstance":
                     // Update the "validated" status of the survey:
-                    if (entity.get("validated") === true) {
-                        this.surveyStatus = SURVEY_STATUS.VALIDATED;
-                        this.surveyDisplay = SURVEY_DISPLAY.VALIDATED;
+                    if (entity.get("status") === ORCHESTRATION_PROGRESS.COMPLETED) {
+                        this.surveyStatus = SURVEY_STATUS.COMPLETED;
+                        this.surveyDisplay = SURVEY_DISPLAY.COMPLETED;
                     }
                     try {
                         this.syncUI();
@@ -388,8 +389,15 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 },
                 this.get("survey.evaluated").get("name")
             );
-            // Set the survey's "started" attribute to true:
-            this.sendSurveyStatusChange({started: true});
+        
+            var survStatus =
+                    this.get("survey.evaluated") && 
+                    this.get("survey.evaluated").getInstance().get("status");
+            // Set the survey's status to "ongoing" now that it's being displayed:
+            if (survStatus === ORCHESTRATION_PROGRESS.NOT_STARTED ||
+                survStatus === ORCHESTRATION_PROGRESS.REQUESTED) {
+                this.sendSurveyStatusChange(ORCHESTRATION_PROGRESS.ONGOING);
+            }
             
             var cb = this.get(CONTENTBOX);
 
@@ -439,7 +447,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
             this.removeChildren();
             
             if (this.surveyStatus === SURVEY_STATUS.EMPTY ||
-                this.surveyStatus === SURVEY_STATUS.VALIDATED ||
+                this.surveyStatus === SURVEY_STATUS.COMPLETED ||
                 this.surveyStatus === SURVEY_STATUS.INACTIVE) {
                 var descrField = cb.one(".description").show();
                 switch (this.surveyStatus) {
@@ -451,7 +459,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                         descrField.setContent(
                             I18n.t("survey.errors.inactive"));
                         break;
-                    case SURVEY_STATUS.VALIDATED:
+                    case SURVEY_STATUS.COMPLETED:
                         var descriptionEnd = I18n.t(this.survey.get("descriptionEnd")),
                             finalWords = descriptionEnd ? descriptionEnd : I18n.t("survey.global.defaultFinalWords");
                         descrField.setContent(finalWords);
@@ -471,7 +479,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 // All inputs are answered, but the survey is not yet validated:
                 // display the last input with a validation button.
                 this.currentInputId = this.lastInputId;
-                this.survey = SURVEY_DISPLAY.INPUT;
+                this.surveyDisplay = SURVEY_DISPLAY.INPUT;
             }
             
             var currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId),
@@ -602,7 +610,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                             this.advanceToNextSection();
                         }
                         break;
-                    case SURVEY_DISPLAY.VALIDATED:
+                    case SURVEY_DISPLAY.COMPLETED:
                         alert("internal error in nextClicked()");
                         break;
                 }
@@ -616,7 +624,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                         this.advanceToNextSection();
                         break;
                     case SURVEY_DISPLAY.INPUT:
-                    case SURVEY_DISPLAY.VALIDATED:
+                    case SURVEY_DISPLAY.COMPLETED:
                         alert("internal error in nextClicked()");
                         break;
                 }
@@ -657,7 +665,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                             }
                         }
                         break;
-                    case SURVEY_DISPLAY.VALIDATED:
+                    case SURVEY_DISPLAY.COMPLETED:
                         alert("internal error in backClicked()");
                         break;
                 }
@@ -678,7 +686,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                         break;
                     case SURVEY_DISPLAY.SURVEY_HEAD:
                     case SURVEY_DISPLAY.INPUT:
-                    case SURVEY_DISPLAY.VALIDATED:
+                    case SURVEY_DISPLAY.COMPLETED:
                         alert("internal error in nextClicked()");
                         break;
                 }
@@ -697,8 +705,8 @@ YUI.add("wegas-survey-widgets", function(Y) {
         },
         
         closeClicked: function() {
-            // The survey listener will be notified of the "closed" attribute:
-            this.sendSurveyStatusChange({ closed: true }, Y.bind(function(e) {
+            // The survey listener will be notified of the "closed" status:
+            this.sendSurveyStatusChange(ORCHESTRATION_PROGRESS.CLOSED, Y.bind(function(e) {
                 this.destroy();
             }, this));
         },
@@ -869,18 +877,10 @@ YUI.add("wegas-survey-widgets", function(Y) {
         },
         
         // Sends an update to the survey instance.
-        // Object parameter surveyCfg contains the requested attribute updates.
-        sendSurveyStatusChange: function(surveyCfg, cb) {
+        sendSurveyStatusChange: function(surveyStatus, cb) {
             var desc = this.get("survey.evaluated"),
                 inst = desc.getInstance();
-            for (var i in surveyCfg) {
-                if (inst.get(i) !== undefined) {
-                    inst.set(i, surveyCfg[i]);
-                } else {
-                    alert("sendSurveyStatusChange: unknown attribute '" + i + "'");
-                    return;
-                }
-            }
+            inst.set("status", surveyStatus);
 
             var config = {
                 request: "/" + desc.get("id") + "/VariableInstance/" + inst.get("id"),
@@ -895,7 +895,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     }, this),
                     failure: Y.bind(function(e) {
                         cb && cb.call(this, e);
-                        this.showMessage("error", "Something went wrong: sendSurveyStatusChange");
+                        this.showMessage("error", "Something went wrong in sendSurveyStatusChange");
                     }, this)
                 }
             };
@@ -935,16 +935,16 @@ YUI.add("wegas-survey-widgets", function(Y) {
         validate: function() {
             var desc = this.get("survey.evaluated"),
                 inst = desc.getInstance();
-            if (inst.get("validated") === false ) {
+            if (inst.get("status") !== ORCHESTRATION_PROGRESS.COMPLETED) {
                 var unreplied = this.getFirstUnrepliedInput();
                 if (!unreplied) {
                     Wegas.Panel.confirm(I18n.tCap("survey.global.confirmation"), Y.bind(function() {
                         Wegas.Panel.confirmPlayerAction(Y.bind(function(e) {
                                 this._validated = true;
-                                this.sendSurveyStatusChange({ validated: true }, Y.bind(function(e) {
+                                this.sendSurveyStatusChange(ORCHESTRATION_PROGRESS.COMPLETED, Y.bind(function(e) {
                                     if (!e.error) {
-                                        this.surveyStatus = SURVEY_STATUS.VALIDATED;
-                                        this.surveyDisplay = SURVEY_DISPLAY.VALIDATED;
+                                        this.surveyStatus = SURVEY_STATUS.COMPLETED;
+                                        this.surveyDisplay = SURVEY_DISPLAY.COMPLETED;
                                         this.syncUI();
                                     }
                                 }, this));
@@ -2075,22 +2075,24 @@ YUI.add("wegas-survey-widgets", function(Y) {
             }
         },
         
-        statusToString: function(status) {
-            switch (status) {
-                case ORCHESTRATION_PROGRESS.INACTIVE: 
-                    return I18n.t("survey.errors.inactive");
-                case ORCHESTRATION_PROGRESS.IDLE:
-                    return I18n.t("survey.orchestrator.notStarted");
-                case ORCHESTRATION_PROGRESS.REQUESTED:
-                    return I18n.t("survey.orchestrator.requested");
-                case ORCHESTRATION_PROGRESS.STARTED:
-                    return I18n.t("survey.orchestrator.started");
-                case ORCHESTRATION_PROGRESS.VALIDATED:
-                    return I18n.t("survey.orchestrator.validated");
-                case ORCHESTRATION_PROGRESS.CLOSED:
-                    return I18n.t("survey.orchestrator.closed");
-                default:
-                    return "Internal error";
+        statusToString: function(survey) {
+            if (!survey.active) {
+                return I18n.t("survey.errors.inactive")
+            } else {
+                switch (survey.status) {
+                    case ORCHESTRATION_PROGRESS.NOT_STARTED:
+                        return I18n.t("survey.orchestrator.notStarted");
+                    case ORCHESTRATION_PROGRESS.REQUESTED:
+                        return I18n.t("survey.orchestrator.requested");
+                    case ORCHESTRATION_PROGRESS.ONGOING:
+                        return I18n.t("survey.orchestrator.ongoing");
+                    case ORCHESTRATION_PROGRESS.COMPLETED:
+                        return I18n.t("survey.orchestrator.completed");
+                    case ORCHESTRATION_PROGRESS.CLOSED:
+                        return I18n.t("survey.orchestrator.closed");
+                    default:
+                        return "Internal error";
+                }
             }
         },
         
@@ -2105,15 +2107,15 @@ YUI.add("wegas-survey-widgets", function(Y) {
             
             refreshButton.addClass("fa-spin");
             
-            cb.one(".status-line .status").setContent(this.statusToString(survData.status));
-            if (survData.status === ORCHESTRATION_PROGRESS.IDLE) {
+            cb.one(".status-line .status").setContent(this.statusToString(survData));
+            if (survData.active === true) {
                 cb.one(".request-survey").show();
             } else {
                 cb.one(".request-survey").hide();
             }
             
             if (survData.status === ORCHESTRATION_PROGRESS.REQUESTED ||
-                survData.status === ORCHESTRATION_PROGRESS.STARTED) {
+                survData.status === ORCHESTRATION_PROGRESS.ONGOING) {
                 teamsTable.push(
                     '<table class="teams-table"><thead><tr><td>' +
                     I18n.t("survey.orchestrator.teamOrPlayer") +
@@ -2129,7 +2131,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                         '<tr><td class="name">' +
                         data.name +
                         '</td><td class="status">' +
-                        this.statusToString(data.status) +
+                        this.statusToString(data) +
                         '</td><td class="replied">' +
                         data.replied + ofInputs +
                         '</td></tr>');

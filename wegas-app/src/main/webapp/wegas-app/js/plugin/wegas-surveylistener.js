@@ -18,7 +18,7 @@ YUI.add('wegas-surveylistener', function(Y) {
         initializer: function() {
             this.handlers = [];
             // Mapping of survey descr id -> survey inst update handler.
-            this.knownSurveysHandlers = {};
+            this.knownSurveyHandlers = {};
             this.currentSurvey = null;
             // Get updates about any surveys included dynamically in the game:
             this.handlers.push(Y.Wegas.Facade.Variable.after("updatedDescriptor", this.onUpdatedDescriptor, this));
@@ -46,7 +46,7 @@ YUI.add('wegas-surveylistener', function(Y) {
         // Check if we should display one of the known surveys:
         checkSurveys: function() {
             if (!this.currentSurvey) {
-                for (var id in this.knownSurveys) {
+                for (var id in this.knownSurveyHandlers) {
                     var inst = Y.Wegas.Facade.Variable.cache.findById(id).getInstance();
                     if (inst.get("active") &&
                         inst.get("requested") &&
@@ -62,11 +62,11 @@ YUI.add('wegas-surveylistener', function(Y) {
         registerSurvey: function(sd) {
             var descrId = sd.get("id"),
                 instId = sd.getInstance().get("id");
-            if (this.knownSurveys[descrId]) {
+            if (this.knownSurveyHandlers[descrId]) {
                 // Updates for an already known descriptor:
-                this.knownSurveys[descrId].detach();
+                this.knownSurveyHandlers[descrId].detach();
             }
-            this.knownSurveys[descrId] = 
+            this.knownSurveyHandlers[descrId] = 
                 Y.Wegas.Facade.Instance.after(instId + ":updatedInstance", this.onUpdatedInstance, this);
         },
 
@@ -76,9 +76,9 @@ YUI.add('wegas-surveylistener', function(Y) {
             if (this.currentSurvey && this.currentSurvey.get("id") === instId) {
                 this.retireSurvey();
             }
-            if (this.knownSurveys[descrId]) {
-                this.knownSurveys[descrId].detach();
-                delete this.knownSurveys[descrId];
+            if (this.knownSurveyHandlers[descrId]) {
+                this.knownSurveyHandlers[descrId].detach();
+                delete this.knownSurveyHandlers[descrId];
             }
         },
 
@@ -103,8 +103,8 @@ YUI.add('wegas-surveylistener', function(Y) {
             for (id in this.handlers) {
                 this.handlers[id].detach();
             }
-            for (id in this.knownSurveys){
-                this.knownSurveys[id].detach();
+            for (id in this.knownSurveyHandlers){
+                this.knownSurveyHandlers[id].detach();
             }
             this.retireSurvey();
         },

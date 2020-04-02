@@ -13,7 +13,6 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -24,6 +23,7 @@ import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.View.Hidden;
 import com.wegas.editor.View.I18nHtmlView;
 import com.wegas.survey.persistence.input.SurveySectionDescriptor;
+import com.wegas.survey.persistence.SurveyInstance.SurveyStatus;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -88,7 +88,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     }
     
     /**
-     * @return the items (i.e. sections)
+     * @return the items (i.e. the sections)
      */
     @Override
     @JsonView(Views.ExportI.class)
@@ -99,6 +99,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     /**
      * @param items the items (i.e. sections) to set
      */
+    @Override
     public void setItems(List<SurveySectionDescriptor> items) {
         this.items = items;
         for (SurveySectionDescriptor ssd : items) {
@@ -165,25 +166,6 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     
     
 // ~~~~~~ Sugar for scripts ~~~~~~~~
-    /**
-     *
-     * @param p
-     * @param value
-     */
-    public void setActive(Player p, boolean value) {
-        this.getInstance(p).setActive(value);
-    }
-
-    /**
-     *
-     * @param p
-     *
-     * @return the player instance active status
-     */
-    @Scriptable
-    public boolean isActive(Player p) {
-        return this.getInstance(p).getActive();
-    }
 
     /**
      *
@@ -191,7 +173,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      */
     @Scriptable
     public void activate(Player p) {
-        this.setActive(p, true);
+        this.getInstance(p).setActive(true);
     }
 
     /**
@@ -200,7 +182,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      */
     @Scriptable
     public void deactivate(Player p) {
-        this.setActive(p, false);
+        this.getInstance(p).setActive(false);
     }
 
     /**
@@ -209,7 +191,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      */
     @Scriptable
     public void request(Player p) {
-        this.getInstance(p).setRequested(true);
+        this.getInstance(p).setStatus(SurveyStatus.REQUESTED);
     }
 
     /**
@@ -217,8 +199,8 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      * @param p
      */
     @Scriptable
-    public void validate(Player p) {
-        this.getInstance(p).setValidated(true);
+    public void complete(Player p) {
+        this.getInstance(p).setStatus(SurveyStatus.COMPLETED);
     }
 
     /**
@@ -227,42 +209,30 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      */
     @Scriptable
     public void close(Player p) {
-        this.getInstance(p).setClosed(true);
-    }
-
-    /**
-     * Validate the survey.
-     * One can no longer answer a validated survey.
-     *
-     * @param p
-     * @param value
-     */
-    @Scriptable(label = "validate")
-    public void setValidated(Player p, @Param(proposal = ValueGenerators.True.class) boolean value) {
-        this.getInstance(p).setValidated(value);
+        this.getInstance(p).setStatus(SurveyStatus.CLOSED);
     }
 
     /**
      *
      * @param p
      *
-     * @return true if the player has already validated the survey
+     * @return true if the player's survey is active
      */
-    @Scriptable(label = "has been validated")
-    public boolean isValidated(Player p) {
-        return this.getInstance(p).getValidated();
+    @Scriptable(label = "is active")
+    public boolean isActive(Player p) {
+        return this.getInstance(p).getActive();
     }
 
     /**
-     * {@link #isValidated ...}
+     * {@link #isActive ...}
      *
      * @param p
      *
-     * @return true if the player has not yet validated the survey
+     * @return true if the player's survey is not active
      */
-    @Scriptable(label = "has not been validated")
-    public boolean isNotValidated(Player p) {
-        return !this.getInstance(p).getValidated();
+    @Scriptable(label = "is not active")
+    public boolean isNotActive(Player p) {
+        return this.getInstance(p).getActive() == false;
     }
 
     /**
@@ -271,9 +241,9 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      *
      * @return true if the player has already started the survey
      */
-    @Scriptable(label = "is started")
-    public boolean isStarted(Player p) {
-        return this.getInstance(p).getStarted();
+    @Scriptable(label = "is ongoing")
+    public boolean isOngoing(Player p) {
+        return this.getInstance(p).getStatus() == SurveyStatus.ONGOING;
     }
 
     /**
@@ -283,9 +253,32 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      *
      * @return true if the player has not yet started the survey
      */
-    @Scriptable(label = "is not started")
-    public boolean isNotStarted(Player p) {
-        return !this.getInstance(p).getStarted();
+    @Scriptable(label = "is not ongoing")
+    public boolean isNotOngoing(Player p) {
+        return this.getInstance(p).getStatus() != SurveyStatus.ONGOING;
+    }
+
+    /**
+     *
+     * @param p
+     *
+     * @return true if the player has already completed the survey
+     */
+    @Scriptable(label = "has been completed")
+    public boolean isCompleted(Player p) {
+        return this.getInstance(p).getStatus() == SurveyStatus.COMPLETED;
+    }
+
+    /**
+     * {@link #isCompleted ...}
+     *
+     * @param p
+     *
+     * @return true if the player has not yet completed the survey
+     */
+    @Scriptable(label = "has not been completed")
+    public boolean isNotCompleted(Player p) {
+        return this.getInstance(p).getStatus() != SurveyStatus.COMPLETED;
     }
 
     /**
@@ -296,7 +289,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      */
     @Scriptable(label = "is closed")
     public boolean isClosed(Player p) {
-        return this.getInstance(p).getClosed();
+        return this.getInstance(p).getStatus() == SurveyStatus.CLOSED;
     }
 
     /**
@@ -308,7 +301,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      */
     @Scriptable(label = "is not closed")
     public boolean isNotClosed(Player p) {
-        return !this.getInstance(p).getClosed();
+        return this.getInstance(p).getStatus() != SurveyStatus.CLOSED;
     }
     
 

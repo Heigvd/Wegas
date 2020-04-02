@@ -52,13 +52,13 @@ import javax.persistence.UniqueConstraint;
 @Entity
 @Table(
         uniqueConstraints = {
-            @UniqueConstraint(columnNames = {"parentevaluation_id", "parentstring_id", "parentchoice_id","name"})
+            @UniqueConstraint(columnNames = {"parentevaluation_id", "parentstring_id", "parentsurveychoice_id","name"})
         },
         indexes = {
             @Index(columnList = "label_id"),
             @Index(columnList = "parentevaluation_id"),
             @Index(columnList = "parentstring_id"),
-            @Index(columnList = "parentchoice_id")
+            @Index(columnList = "parentsurveychoice_id")
         }
 )
 public class EnumItem extends AbstractEntity implements LabelledEntity, Orderable {
@@ -75,7 +75,7 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
 
     @ManyToOne
     @JsonIgnore
-    private SurveyChoicesDescriptor parentChoice;
+    private SurveyChoicesDescriptor parentSurveyChoice;
 
     @Id
     @GeneratedValue
@@ -157,7 +157,7 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
         if (this.parentEvaluation != null) {
             // set other parents to null
             this.setParentString(null);
-            this.setParentChoice(null);
+            this.setParentSurveyChoice(null);
             if (this.parentEvaluation.getContainer() != null && this.getLabel() != null) {
                 this.getLabel().setParentDescriptor(parentEvaluation.getContainer().getParent());
             }
@@ -172,25 +172,25 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
         this.parentString = parentString;
         if (this.parentString != null) {
             this.setParentEvaluation(null);
-            this.setParentChoice(null);
+            this.setParentSurveyChoice(null);
             if (this.getLabel() != null) {
                 this.getLabel().setParentDescriptor(parentString);
             }
         }
     }
     
-    public SurveyChoicesDescriptor getParentChoice() {
-        return parentChoice;
+    public SurveyChoicesDescriptor getParentSurveyChoice() {
+        return parentSurveyChoice;
     }
 
-    public void setParentChoice(SurveyChoicesDescriptor parentChoice) {
-        this.parentChoice = parentChoice;
-        if (this.parentChoice != null) {
+    public void setParentSurveyChoice(SurveyChoicesDescriptor parentSurveyChoice) {
+        this.parentSurveyChoice = parentSurveyChoice;
+        if (this.parentSurveyChoice != null) {
             // set other parents to null
             this.setParentString(null);
             this.setParentEvaluation(null);
             if (this.getLabel() != null) {
-                this.getLabel().setParentDescriptor(parentChoice);
+                this.getLabel().setParentDescriptor(parentSurveyChoice);
             }
         }
     }
@@ -202,7 +202,7 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
         } else if (this.getParentEvaluation() != null) {
             return getParentEvaluation();
         } else {
-            return getParentChoice();
+            return getParentSurveyChoice();
         }
     }
 
@@ -212,8 +212,8 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
             return parentEvaluation.getRequieredReadPermission();
         } else if (this.parentString != null) {
             return parentString.getRequieredReadPermission();
-        } else if (this.parentChoice != null) {
-            return parentChoice.getRequieredReadPermission();
+        } else if (this.parentSurveyChoice != null) {
+            return parentSurveyChoice.getRequieredReadPermission();
         }
 
         return null;
@@ -225,8 +225,8 @@ public class EnumItem extends AbstractEntity implements LabelledEntity, Orderabl
             return parentEvaluation.getRequieredUpdatePermission();
         } else if (this.parentString != null) {
             return parentString.getRequieredUpdatePermission();
-        } else if (this.parentChoice != null) {
-            return parentChoice.getRequieredUpdatePermission();
+        } else if (this.parentSurveyChoice != null) {
+            return parentSurveyChoice.getRequieredUpdatePermission();
         }
 
         return null;

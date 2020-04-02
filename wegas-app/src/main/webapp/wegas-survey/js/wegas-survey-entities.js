@@ -17,6 +17,7 @@ YUI.add('wegas-survey-entities', function(Y) {
         SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
         HTML = "html", SCRIPT = "script", NUMBER = "number",
         NULLSTRING = ["null", STRING],
+        STATUS_NOT_STARTED  ="NOT_STARTED",
         Wegas = Y.Wegas, persistence = Wegas.persistence,
         VERSION_ATTR_DEF,
         SELFARG,
@@ -43,12 +44,6 @@ YUI.add('wegas-survey-entities', function(Y) {
      * SurveyDescriptor mapper
      */
     persistence.SurveyDescriptor = Y.Base.create("SurveyDescriptor", persistence.VariableDescriptor, [persistence.VariableContainer], {
-        /*
-        hasReplies: function() {
-            var instance = this.getInstance();
-            return instance.get("replied").length > 0;
-        },
-        */
         getIconCss: function() {
             return 'fa fa-bar-chart fa-1';
         }
@@ -111,7 +106,7 @@ YUI.add('wegas-survey-entities', function(Y) {
                     refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     parentId: IDATTRDEF,
                     parentType: {
-                        type: "string",
+                        type: STRING,
                         view: {type: HIDDEN}
                     },
                     active: {
@@ -121,24 +116,9 @@ YUI.add('wegas-survey-entities', function(Y) {
                             label: 'Active from start'
                         }
                     },
-                    requested: {
-                        type: BOOLEAN,
-                        value: false,
-                        view: {type: HIDDEN}
-                    },
-                    started: {
-                        type: BOOLEAN,
-                        value: false,
-                        view: {type: HIDDEN}
-                    },
-                    validated: {
-                        type: BOOLEAN,
-                        value: false,
-                        view: {type: HIDDEN}
-                    },
-                    closed: {
-                        type: BOOLEAN,
-                        value: false,
+                    status: {
+                        type: STRING,
+                        value: STATUS_NOT_STARTED,
                         view: {type: HIDDEN}
                     }
                 },
@@ -175,7 +155,7 @@ YUI.add('wegas-survey-entities', function(Y) {
         },
 
         /**
-         * Defines methods available in wysiwyge script editor
+         * Defines methods available in wysiwyg script editor
          */
         METHODS: {
             activate: {
@@ -185,31 +165,40 @@ YUI.add('wegas-survey-entities', function(Y) {
                 label: "deactivate",
                 arguments: [SELFARG]
             },
-            setValidated: {
-                label: 'validate',
-                arguments: [
-                    SELFARG,
-                    {
-                        type: BOOLEAN,
-                        value: true,
-                        required: true
-                    }
-                ]
-            },
-            isValidated: {
-                label: "has been validated",
+            isActive: {
+                label: "is active",
                 returns: BOOLEAN,
                 arguments: [SELFARG]
             },
-            isNotValidated: {
-                label: "has not been validated",
+            isNotActive: {
+                label: "is active",
                 returns: BOOLEAN,
                 arguments: [SELFARG]
             },
             request: {
                 arguments: [SELFARG]
             },
-            validate: {
+            isOngoing: {
+                label: "is ongoing",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
+            },
+            isNotOngoing: {
+                label: "is not ongoing",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
+            },
+            complete: {
+                arguments: [SELFARG]
+            },
+            isCompleted: {
+                label: "has been completed",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
+            },
+            isNotCompleted: {
+                label: "has not been completed",
+                returns: BOOLEAN,
                 arguments: [SELFARG]
             },
             close: {
@@ -225,21 +214,6 @@ YUI.add('wegas-survey-entities', function(Y) {
                 returns: BOOLEAN,
                 arguments: [SELFARG]
             },
-            isStarted: {
-                label: "is started",
-                returns: BOOLEAN,
-                arguments: [SELFARG]
-            },
-            isNotStarted: {
-                label: "is not started",
-                returns: BOOLEAN,
-                arguments: [SELFARG]
-            },
-            isActive: {
-                label: "is active",
-                returns: BOOLEAN,
-                arguments: [SELFARG]
-            }
         }
     });
     /**
@@ -255,21 +229,10 @@ YUI.add('wegas-survey-entities', function(Y) {
                 value: true,
                 type: BOOLEAN
             },
-            requested: {
-                value: false,
-                type: BOOLEAN
-            },
-            started: {
-                value: false,
-                type: BOOLEAN
-            },
-            validated: {
-                value: false,
-                type: BOOLEAN
-            },
-            closed: {
-                value: false,
-                type: BOOLEAN
+            status: {
+                type: STRING,
+                value: STATUS_NOT_STARTED,
+                view: {type: HIDDEN}
             }
         }
     });
@@ -296,7 +259,6 @@ YUI.add('wegas-survey-entities', function(Y) {
                     className: 'wegas-advanced-feature',
                     label: 'Script alias',
                     description: "Internal name",
-                    //type: HIDDEN
                 }
             },
             label: Y.Wegas.Helper.getTranslationAttr({
@@ -348,7 +310,7 @@ YUI.add('wegas-survey-entities', function(Y) {
                     refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     parentId: IDATTRDEF,
                     parentType: {
-                        type: "string",
+                        type: STRING,
                         view: {type: HIDDEN}
                     },
                     active: {
@@ -497,7 +459,7 @@ YUI.add('wegas-survey-entities', function(Y) {
                     refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     parentId: IDATTRDEF,
                     parentType: {
-                        type: "string",
+                        type: STRING,
                         view: {type: HIDDEN}
                     },
                     isReplied: {
@@ -612,7 +574,7 @@ YUI.add('wegas-survey-entities', function(Y) {
                     refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     parentId: IDATTRDEF,
                     parentType: {
-                        type: "string",
+                        type: STRING,
                         view: {type: HIDDEN}
                     },
                     isReplied: {
@@ -670,7 +632,7 @@ YUI.add('wegas-survey-entities', function(Y) {
                         refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                         parentId: IDATTRDEF,
                         parentType: {
-                            type: "string",
+                            type: STRING,
                             view: {type: HIDDEN}
                         },
                         name: {
@@ -757,7 +719,7 @@ YUI.add('wegas-survey-entities', function(Y) {
                     refId: Wegas.persistence.Entity.ATTRS_DEF.REF_ID,
                     parentId: IDATTRDEF,
                     parentType: {
-                        type: "string",
+                        type: STRING,
                         view: {type: HIDDEN}
                     },
                     isReplied: {
@@ -777,6 +739,7 @@ YUI.add('wegas-survey-entities', function(Y) {
             }
         }
     });
+    
     
     /**
      * SurveyInputInstance
