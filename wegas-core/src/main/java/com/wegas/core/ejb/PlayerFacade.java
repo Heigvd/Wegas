@@ -22,6 +22,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.scope.AbstractScope.ScopeType;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.ejb.UserFacade;
@@ -89,17 +90,16 @@ public class PlayerFacade extends BaseFacade<Player> {
      * Create a player linked to the user identified by userId(may be null) and join the team
      * identified by teamId.
      * <p>
-     * This method run within a new transaction, meaning the returned player has
-     * already been persisted and committed to database. Since it way done with its own
-     * entity manager, only the id of the new player is return to force caller to
-     * fetch it from its own entity manager;
+     * This method run within a new transaction, meaning the returned player has already been
+     * persisted and committed to database. Since it way done with its own entity manager, only the
+     * id of the new player is return to force caller to fetch it from its own entity manager;
      * <p>
-     * This new player is not usable since its variablesInstances are create asynchronously.
-     * Caller should call {@link PopulatorScheduler#scheduleCreation()} to make sure
-     * its variables will be created in the near future
+     * This new player is not usable since its variablesInstances are create asynchronously. Caller
+     * should call {@link PopulatorScheduler#scheduleCreation()} to make sure its variables will be
+     * created in the near future
      *
-     * @param teamId     id of the team to join
-     * @param userId     id the user to create a player for, may be null
+     * @param teamId    id of the team to join
+     * @param userId    id the user to create a player for, may be null
      * @param languages
      *
      * @return brand new player id
@@ -256,12 +256,13 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     * Get all PlayerScoped variableinstances a player has access to.
-     * Including:
+     * Get all PlayerScoped variableinstances a player has access to. Including:
      * <ul>
      * <li> its own PlayerScoped instances</li>
-     * <li> PlayedScoped instances owned by any of its team partner if the instance broadcast scope is set to TeamScope</li>
-     * <li> PlayedScoped instances owned by any player is the game if the instance broadcast scope is set to GameScope</li>
+     * <li> PlayedScoped instances owned by any of its team partner if the instance broadcast scope
+     * is set to TeamScope</li>
+     * <li> PlayedScoped instances owned by any player is the game if the instance broadcast scope
+     * is set to GameScope</li>
      * </ul>
      *
      * @param player the player to fetch instances for
@@ -272,22 +273,22 @@ public class PlayerFacade extends BaseFacade<Player> {
         List<VariableInstance> result = new ArrayList<>();
 
         TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
-                "VariableInstance.findPlayerInstance", VariableInstance.class);
+            "VariableInstance.findPlayerInstance", VariableInstance.class);
 
         for (VariableInstance instance : player.getPrivateInstances()) {
             PlayerScope scope = instance.getPlayerScope();
             query.setParameter("scopeId", scope.getId());
-            if (scope.getBroadcastScope().equals(PlayerScope.class.getSimpleName())) {
+            if (scope.getBroadcastScope() == ScopeType.PlayerScope) {
                 // Only owners has access to their variable
                 result.add(instance);
-            } else if (scope.getBroadcastScope().equals("GameScope")) {
+            } else if (scope.getBroadcastScope() == ScopeType.GameModelScope) {
                 // Current player has access to all instances in the game
                 for (Player p : player.getGame().getLivePlayers()) {
                     query.setParameter("playerId", p.getId());
                     VariableInstance vi = query.getSingleResult();
                     result.add(vi);
                 }
-            } else if (scope.getBroadcastScope().equals(TeamScope.class.getSimpleName())) {
+            } else if (scope.getBroadcastScope() == ScopeType.TeamScope) {
                 //Player has access to all instances within their game
                 for (Player p : player.getTeam().getLivePlayers()) {
                     query.setParameter("playerId", p.getId());
@@ -300,11 +301,11 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     * Get all TeamScoped variableinstances a team has access to.
-     * Including:
+     * Get all TeamScoped variableinstances a team has access to. Including:
      * <ul>
      * <li> the team own TeamScoped instances</li>
-     * <li> other TeamScoped instances owned by any other team is the game if the instance broadcast scope is set to GameScope</li>
+     * <li> other TeamScoped instances owned by any other team is the game if the instance broadcast
+     * scope is set to GameScope</li>
      * </ul>
      *
      * @param team the team to fetch instances for
@@ -315,12 +316,12 @@ public class PlayerFacade extends BaseFacade<Player> {
         List<VariableInstance> result = new ArrayList<>();
 
         TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
-                "VariableInstance.findTeamInstance", VariableInstance.class);
+            "VariableInstance.findTeamInstance", VariableInstance.class);
 
         for (VariableInstance instance : team.getPrivateInstances()) {
             TeamScope scope = instance.getTeamScope();
             query.setParameter("scopeId", scope.getId());
-            if (scope.getBroadcastScope().equals("GameScope")) {
+            if (scope.getBroadcastScope() == ScopeType.GameModelScope) {
                 //current player has access to all instance in the game
                 for (Team t : team.getGame().getTeams()) {
                     if (t.getStatus().equals(Status.LIVE)) {
@@ -340,8 +341,7 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     * Get all GameModelScoped variableinstances a gameModel owns
-     * Including:
+     * Get all GameModelScoped variableinstances a gameModel owns Including:
      * <ul>
      * <li> the gameModel own GameModelScoped instances</li>
      * </ul>
@@ -355,8 +355,8 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     * Get all instances a player as access to, including those from others owners
-     * with a less specific broadcast scope
+     * Get all instances a player as access to, including those from others owners with a less
+     * specific broadcast scope
      *
      * @param playerId the player to get instances for
      *
@@ -450,8 +450,8 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     * Returns the first available player in the target gameModel.
-     * A player of any DebugTeam or any player from any team of a DebugGame
+     * Returns the first available player in the target gameModel. A player of any DebugTeam or any
+     * player from any team of a DebugGame
      *
      *
      * @param gameModelId
@@ -471,8 +471,8 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     * The first test player found.
-     * A player of any DebugTeam or any player from any team of a DebugGame
+     * The first test player found. A player of any DebugTeam or any player from any team of a
+     * DebugGame
      *
      * @param game
      *

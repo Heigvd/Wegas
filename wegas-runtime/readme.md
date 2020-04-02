@@ -6,14 +6,14 @@
 
 #### Install
 ```shell
-docker run -d -p 5432:5432 --name wegas_postgres -d postgres:11-alpine 
+docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=<YOUR_PASSWORD> --name wegas_postgres -d postgres:11-alpine 
 ```
 
 #### Configure
 ```shell
 echo "CREATE USER \"user\" WITH PASSWORD '1234' SUPERUSER;
 CREATE DATABASE \"wegas_dev\" OWNER \"user\";
-CREATE DATABASE \"wegas_test\" OWNER \"user\";" | sudo -u postgres psql
+CREATE DATABASE \"wegas_test\" OWNER \"user\";" |  docker exec -it wegas_postgres psql -U postgres
 ```
 
 ### Jackrabbit backend (MongoDB)

@@ -40,6 +40,12 @@ public class TeamScope extends AbstractScope<Team> {
         return this.getVariableInstance(player.getTeam());
     }
 
+    @Override
+    public ScopeType getScopeType() {
+        return ScopeType.TeamScope;
+    }
+
+
     /**
      * Get the team's instance
      *

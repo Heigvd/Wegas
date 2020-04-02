@@ -49,10 +49,26 @@ import javax.validation.constraints.Pattern;
         @Index(columnList = "createdby_id")
     }
 )
-@NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC")
-@NamedQuery(name = "Game.findIdById", query = "SELECT DISTINCT g.id FROM Game g WHERE g.id = :gameId")
-@NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token")
-@NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
+@NamedQuery(
+    name = "Game.findByStatus",
+    query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"
+)
+@NamedQuery(
+    name = "Game.findByStatuses",
+    query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status IN :statuses ORDER BY g.createdTime ASC"
+)
+@NamedQuery(
+    name = "Game.findIdById",
+    query = "SELECT DISTINCT g.id FROM Game g WHERE g.id = :gameId"
+)
+@NamedQuery(
+    name = "Game.findByToken",
+    query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"
+)
+@NamedQuery(
+    name = "Game.findByNameLike",
+    query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name"
+)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Game extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, NamedEntity {
 
@@ -267,7 +283,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
         } else {
             for (Team t : this.getTeams()) {
                 Player testPlayer = t.getTestPlayer();
-                if (testPlayer != null){
+                if (testPlayer != null) {
                     return testPlayer;
                 }
             }

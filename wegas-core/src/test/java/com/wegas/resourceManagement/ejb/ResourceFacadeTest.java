@@ -408,7 +408,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         /*
          * Delete task2
          */
-variableDescriptorFacade.remove(task2.getId());
+        variableDescriptorFacade.remove(task2.getId());
 
 
         /*
