@@ -308,7 +308,7 @@ public class UserFacade extends BaseFacade<User> {
         requestManager.clearPermissions();
         Subject subject = SecurityUtils.getSubject();
         if (subject.isRunAs()) {
-            subject.releaseRunAs();
+            requestManager.releaseRunAs();
         } else {
             this.touchLastSeenAt(requestManager.getCurrentUser());
             // flush to db before logout !

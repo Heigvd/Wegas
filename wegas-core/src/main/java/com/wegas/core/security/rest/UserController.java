@@ -452,7 +452,7 @@ public class UserController {
     @Path("Be/{accountId: [1-9][0-9]*}")
     @RequiresRoles("Administrator")
     public void runAs(@PathParam("accountId") Long accountId) {
-        requestManager.su(accountId);
+        requestManager.runAs(accountId);
     }
 
     @GET
