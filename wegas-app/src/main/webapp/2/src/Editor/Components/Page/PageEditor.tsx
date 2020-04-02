@@ -137,7 +137,6 @@ const patchPage = (selectedPageId: string, page: WegasComponent) =>
   store.dispatch(Actions.PageActions.patch(selectedPageId, page));
 
 const createComponent = (
-  selectedPageId: string,
   page: WegasComponent,
   path: number[],
   componentType: string,
@@ -160,15 +159,11 @@ const createComponent = (
       children.push(droppedComp);
     }
     path.push(index ? index : 0);
-    patchPage(selectedPageId, newPage);
+    return newPage;
   }
 };
 
-const deleteComponent = (
-  selectedPageId: string,
-  page: WegasComponent,
-  path: number[],
-) => {
+const deleteComponent = (page: WegasComponent, path: number[]) => {
   const newPage = deepClone(page) as WegasComponent;
   let parent: WegasComponent = newPage;
   const browsePath = [...path];
@@ -176,8 +171,7 @@ const deleteComponent = (
     if (parent.props.children) {
       if (browsePath.length == 1) {
         parent.props.children.splice(browsePath[0], 1);
-        patchPage(selectedPageId, newPage);
-        return;
+        return newPage;
       }
       parent = parent.props.children[browsePath[0]];
     }
@@ -186,7 +180,6 @@ const deleteComponent = (
 };
 
 const updateComponent = (
-  selectedPageId: string,
   page: WegasComponent,
   value: WegasComponent,
   path: number[],
@@ -207,34 +200,34 @@ const updateComponent = (
         };
       }
       parent.props.children.splice(Number(path[path.length - 1]), 1, comp);
-      patchPage(selectedPageId, newPage);
+      return newPage;
     }
   } else {
-    patchPage(selectedPageId, value);
+    return value;
   }
 };
 
-const moveComponent = (
-  sourcePageId: string,
-  destPageId: string,
-  sourcePage: WegasComponent,
-  destPage: WegasComponent,
-  sourcePath: number[],
-  destPath: number[],
-) => {
-  const { component } = findComponent(sourcePage, sourcePath);
-  if (component) {
-    // TODO : Create a page action to manage synchronously the move of a component
-    createComponent(
-      destPageId,
-      destPage,
-      destPath,
-      component.type,
-      component.props,
-    );
-    deleteComponent(sourcePageId, sourcePage, sourcePath);
-  }
-};
+// const moveComponent = (
+//   sourcePageId: string,
+//   destPageId: string,
+//   sourcePage: WegasComponent,
+//   destPage: WegasComponent,
+//   sourcePath: number[],
+//   destPath: number[],
+// ) => {
+//   const { component } = findComponent(sourcePage, sourcePath);
+//   if (component) {
+//     // TODO : Create a page action to manage synchronously the move of a component
+//     createComponent(
+//       destPageId,
+//       destPage,
+//       destPath,
+//       component.type,
+//       component.props,
+//     );
+//     deleteComponent(sourcePageId, sourcePage, sourcePath);
+//   }
+// };
 
 export const pageLayoutId = 'PageEditorLayout';
 
@@ -280,15 +273,17 @@ export default function PageEditor() {
   const onDrop = React.useCallback(
     (dndComponent: DnDComponent, path: number[], index?: number) => {
       if (selectedPageId != null && selectedPage != null) {
-        createComponent(
-          selectedPageId,
+        const newPage = createComponent(
           selectedPage,
           path,
           dndComponent.componentName,
           components[dndComponent.componentName].getComputedPropsFromVariable(),
           index,
         );
-        onEdit(selectedPageId, path);
+        if (newPage) {
+          patchPage(selectedPageId, newPage);
+          onEdit(selectedPageId, path);
+        }
       }
     },
     [components, onEdit, selectedPage, selectedPageId],
@@ -297,7 +292,10 @@ export default function PageEditor() {
   const onDelete = React.useCallback(
     (path: number[]) => {
       if (selectedPageId && selectedPage) {
-        deleteComponent(selectedPageId, selectedPage, path);
+        const newPage = deleteComponent(selectedPage, path);
+        if (newPage) {
+          patchPage(selectedPageId, newPage);
+        }
       }
     },
     [selectedPage, selectedPageId],
@@ -307,10 +305,82 @@ export default function PageEditor() {
     (value: WegasComponent, componentPath?: number[], patch?: boolean) => {
       const path = componentPath ? componentPath : editedPath;
       if (selectedPageId != null && selectedPage != null && path != null) {
-        updateComponent(selectedPageId, selectedPage, value, path, patch);
+        const newPage = updateComponent(selectedPage, value, path, patch);
+        if (newPage) {
+          patchPage(selectedPageId, newPage);
+        }
       }
     },
     [editedPath, selectedPage, selectedPageId],
+  );
+
+  const onNewLayoutComponent = React.useCallback(
+    (pageId, page, path, type) => {
+      const newPage = createComponent(
+        page,
+        path,
+        type,
+        components[type]?.getComputedPropsFromVariable(),
+      );
+      if (newPage) {
+        patchPage(pageId, newPage);
+      }
+    },
+    [components],
+  );
+
+  const onDeleteLayoutComponent = React.useCallback(
+    (pageId: string, page: WegasComponent, path: number[]) => {
+      const newPage = deleteComponent(page, path);
+      if (newPage) {
+        patchPage(pageId, newPage);
+      }
+    },
+    [],
+  );
+
+  const onMoveLayoutComponent = React.useCallback(
+    (
+      sourcePageId: string,
+      destPageId: string,
+      sourcePage: WegasComponent,
+      destPage: WegasComponent,
+      sourcePath: number[],
+      destPath: number[],
+      destIndex: number,
+    ) => {
+      const samePage = sourcePageId === destPageId;
+      const sameContainerPath =
+        JSON.stringify(sourcePath.slice(0, -1)) === JSON.stringify(destPath);
+      const sourceIndex: number | undefined = sourcePath.slice(-1)[0];
+      const samePosition = sourceIndex === destIndex;
+
+      // Don't do anything if the result is the same than before
+      if (!(samePage && sameContainerPath && samePosition)) {
+        const { component } = findComponent(sourcePage, sourcePath);
+        if (component) {
+          const newSourcePage = deleteComponent(sourcePage, sourcePath);
+          // Don't do anything if the path to the source element points to nothing (should never happen)
+          if (newSourcePage != null) {
+            const newDestPage = createComponent(
+              samePage ? newSourcePage : destPage,
+              destPath,
+              component.type,
+              component.props,
+              destIndex,
+            );
+            // Don't modify the source page if it's the same than the destination page
+            if (newDestPage != null) {
+              if (sourcePageId !== destPageId) {
+                patchPage(sourcePageId, newSourcePage);
+              }
+              patchPage(destPageId, newDestPage);
+            }
+          }
+        }
+      }
+    },
+    [],
   );
 
   const Layout = (
@@ -327,17 +397,11 @@ export default function PageEditor() {
             }))
           }
           componentControls={{
-            onNew: (pageId, page, path, type) =>
-              createComponent(
-                pageId,
-                page,
-                path,
-                type,
-                components[type]?.getComputedPropsFromVariable(),
-              ),
-            onDelete: deleteComponent,
+            onNew: onNewLayoutComponent,
+            onDelete: onDeleteLayoutComponent,
             onEdit: onEdit,
-            onMove: moveComponent,
+            // onMove: () => wlog('Not implemented yet'),
+            onMove: onMoveLayoutComponent,
           }}
         />
       )}

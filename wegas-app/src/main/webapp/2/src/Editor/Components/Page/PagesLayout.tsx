@@ -571,6 +571,7 @@ interface ComponentControls {
     destPage: WegasComponent,
     sourcePath: number[],
     destPath: number[],
+    destIndex: number,
   ) => void;
 }
 
@@ -621,6 +622,7 @@ export function PagesLayout(props: PagesLayoutProps) {
                 computedTargetParent.page,
                 id.componentPath,
                 computedTargetParent.componentPath,
+                target.index,
               );
             }
           }}
