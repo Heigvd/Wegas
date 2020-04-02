@@ -25,12 +25,7 @@ import javax.persistence.*;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@JsonSubTypes(value = {
-    @JsonSubTypes.Type(value = SurveyTextInstance.class),
-    @JsonSubTypes.Type(value = SurveyChoicesInstance.class),
-    @JsonSubTypes.Type(value = SurveyNumberInstance.class)
-})
-public abstract class SurveyInputInstance
+public class SurveyInputInstance
         extends VariableInstance /* AbstractEntity */ {
 
     private static final long serialVersionUID = 1L;
