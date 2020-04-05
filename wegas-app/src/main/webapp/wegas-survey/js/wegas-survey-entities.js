@@ -234,7 +234,6 @@ YUI.add('wegas-survey-entities', function(Y) {
             return "fa fa-map";
         }
     }, {
-        EDITORNAME: "Section",
         ATTRS: {
             "@class": {
                 value: "SurveySectionDescriptor"
@@ -466,7 +465,6 @@ YUI.add('wegas-survey-entities', function(Y) {
             return 'fa wegas-icon-numberdescriptor';
         }
     }, {
-        EDITORNAME: 'Number',
         ATTRS: {
             "@class": {
                 value: "SurveyNumberDescriptor"
