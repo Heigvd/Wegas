@@ -54,7 +54,7 @@ public class SurveyChoicesDescriptor
             optional = false, nullable= false, proposal = EmptyArray.class,
             view = @View(label = "Choices", value = ArrayView.HighlightAndSortable.class))
     private List<EnumItem> choices = new ArrayList<>();
-
+   
     /**
      * Maximum number of allowed values a user can select
      */
@@ -62,12 +62,12 @@ public class SurveyChoicesDescriptor
         view = @View(
             label = "Maximum selectable",
             layout = CommonView.LAYOUT.shortInline,
-            value = NumberView.WithInfinityPlaceholder.class,
+            value = NumberView.WithOnePlaceholder.class,
             index = 1
         ))
     @Errored(QuestionDescriptor.CheckPositiveness.class)
     @Visible(StringDescriptor.IsEnumeration.class)
-    private Integer maxSelectable;
+    private Integer maxSelectable = 1;
 
     
     /**

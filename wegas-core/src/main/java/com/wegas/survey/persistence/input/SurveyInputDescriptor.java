@@ -12,6 +12,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.GameModel;
@@ -20,6 +21,7 @@ import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators;
+import static java.lang.Boolean.TRUE;
 import com.wegas.editor.View.I18nHtmlView;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import java.util.Collection;
@@ -50,9 +52,10 @@ import javax.persistence.*;
     @JsonSubTypes.Type(value = SurveyNumberDescriptor.class)
 })
 public abstract class SurveyInputDescriptor
-        extends VariableDescriptor<SurveyInputInstance> /* AbstractEntity implements LabelledEntity */ {
+        extends VariableDescriptor<SurveyInputInstance> {
 
     private static final long serialVersionUID = 1L;
+    private static final String mustBeInsideSection = "A SurveyInputDescriptor can only exist inside a SurveySectionDescriptor";
 
     /**
      * To order questions/inputs
@@ -74,6 +77,14 @@ public abstract class SurveyInputDescriptor
             ))
     protected TranslatableContent description;
 
+    /**
+     * Tells if a reply to this input/question is compulsory
+     */
+    @Column(columnDefinition = "boolean default true")
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = ValueGenerators.True.class,
+            view = @View(label = "Reply is compulsory"))
+    private Boolean isCompulsory = TRUE;
    
     /**
      * Parent section of this input:
@@ -142,6 +153,13 @@ public abstract class SurveyInputDescriptor
         }
     }
 
+    public Boolean getIsCompulsory() {
+        return isCompulsory;
+    }
+    
+    public void setIsCompulsory(Boolean isCompulsory) {
+        this.isCompulsory = isCompulsory;
+    }
     
     /**
      * @return the section that contains this question/input
@@ -213,7 +231,8 @@ public abstract class SurveyInputDescriptor
     public void setRoot(GameModel rootGameModel) {
         super.setRoot(rootGameModel);
         if (this.getRoot() != null) {
-            this.setSection(null);
+            throw new WegasConflictException(mustBeInsideSection);
+            //this.setSection(null);
         }
     }
 
@@ -221,7 +240,8 @@ public abstract class SurveyInputDescriptor
     public void setParentList(ListDescriptor parentList) {
         super.setParentList(parentList);
         if (this.getParentList() != null) {
-            this.setSection(null);
+            throw new WegasConflictException(mustBeInsideSection);
+            //this.setSection(null);
         }
     }
 
@@ -229,7 +249,8 @@ public abstract class SurveyInputDescriptor
     public void setParentWh(WhQuestionDescriptor parentWh) {
         super.setParentWh(parentWh);
         if (this.getParentWh() != null) {
-            this.setSection(null);
+            throw new WegasConflictException(mustBeInsideSection);
+            //this.setSection(null);
         }
     }
 

@@ -112,6 +112,13 @@
     min-height: 1px;
 }
 
+.wegas-survey-input-label.wegas-compulsory-input:after {
+    content: '(*)';
+    margin-left: 7px;
+    font-size: 12px;
+    vertical-align: bottom;
+}
+
 .wegas-survey-widget .section .content{
     background-color: #eeeeee12;
     height: auto;

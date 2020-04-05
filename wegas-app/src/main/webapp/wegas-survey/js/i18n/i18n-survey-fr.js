@@ -27,6 +27,8 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
                 defaultInitialWords: "Merci de prendre le temps de répondre à ce questionnaire.<br>Cliquer sur \"Suivant\" pour commencer.",
                 defaultFinalWords: "Ce questionnaire est terminé.<br>Merci de votre participation.",
                 defaultSectionIntro: "Vous commencez une nouvelle partie du questionnaire.<br>Cliquer sur \"Suivant\" pour continuer.",
+                replyCompulsory: "Réponse obligatoire",
+                replyOptional: "Réponse facultative"
             },
             errors: {
                 inactive: "Ce questionnaire est actuellement vide ou inactif.",
@@ -48,7 +50,8 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
                 requestButton: "Lancer le questionnaire",
                 teamOrPlayer: "Équipe/Joueur",
                 teamStatus: "Statut",
-                teamReplies: "Réponses",
+                teamRepliesCompulsory: "Réponses obligatoires",
+                teamRepliesOptional: "Réponses facultatives",
                 noLogId: "Aucun \"Log ID\" n'a été fixé pour cette partie.<br>Les réponses au questionnaire ne seront pas sauvegardées !<br>Veuillez contacter l'administrateur de la plateforme (AlbaSim).",
             }
 

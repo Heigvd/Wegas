@@ -9,7 +9,6 @@ package com.wegas.survey.persistence.input;
 
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators;
 import com.wegas.editor.View.Hidden;
@@ -25,8 +24,7 @@ import javax.persistence.*;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class SurveyInputInstance
-        extends VariableInstance /* AbstractEntity */ {
+public class SurveyInputInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
     

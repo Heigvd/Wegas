@@ -68,6 +68,16 @@ YUI.add("wegas-survey-widgets", function(Y) {
     })();
 
 
+    function displayInputLabel(desc, labelField, text) {
+        labelField.setContent(text);
+        if (desc.get("isCompulsory")) {
+            labelField.addClass("wegas-compulsory-input");
+            labelField.setAttribute('title', I18n.t('survey.global.replyCompulsory'));
+        } else {
+            labelField.addClass("wegas-optional-input");
+        }
+    }
+
     /**
      * @name Y.Wegas.SurveyWidget
      * @extends Y.Widget
@@ -310,9 +320,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 clazz = entity.get("@class");
                 
             switch (clazz) {
-                case "SurveyNumberInstance":
-                case "SurveyTextInstance":
-                case "SurveyChoicesInstance":
+                case "SurveyInputInstance":
                     // Update the isReplied status of all displayed inputs:
                     try {
                         this.syncUI();
@@ -344,8 +352,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
          * @returns {undefined}
          */
         addInput: function(descr, container, mode) {
-            var inputInstance = descr.getInstance(),
-                klass = inputInstance.get("@class"),
+            var klass = descr.get("@class"),
                 widget,
                 readonly = mode === "read",
                 number = this.inputCache[descr.get("id")].number,
@@ -359,16 +366,16 @@ YUI.add("wegas-survey-widgets", function(Y) {
 
             if (mode === "write" || mode === "read") {
                 switch (klass) {
-                    case "SurveyNumberInstance":
+                    case "SurveyNumberDescriptor":
                         widget = new Wegas.SurveyNumberInput(cfg).render(container);
                         break;
-                    case "SurveyTextInstance":
+                    case "SurveyTextDescriptor":
                         cfg.readonly = {
                             "content": "return " + readonly + ";"
                         };
                         widget = new Wegas.SurveyTextInput(cfg).render(container);
                         break;
-                    case "SurveyChoicesInstance":
+                    case "SurveyChoicesDescriptor":
                         widget = new Wegas.SurveyChoicesInput(cfg).render(container);
                         break;
                 }
@@ -842,6 +849,9 @@ YUI.add("wegas-survey-widgets", function(Y) {
 
             if (this.validateButton) {
                 this.validateButton.destroy();
+                this.nextButton.destroy();
+                this.backButton.destroy();
+                this.closeButton.destroy();
             }
         },
         sendReplyRequest: function(inputId, cb) {
@@ -912,14 +922,19 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 });
             }
         },
+        // Returns, if applicable, a message indicating the first unreplied, active and compulsory input.
         getFirstUnrepliedInput: function() {
             var inputNumber = 0;
             for (var s in this.activeSections) {
                 var sectionInputs = this.activeSections[s].get("items");
                 for (var i in sectionInputs) {
+                    var input = sectionInputs[i],
+                        inst = input.getInstance();
+                    if (inst.get("active") === false) {
+                        continue;
+                    }
                     inputNumber++;
-                    var input = sectionInputs[i];
-                    if (input.getInstance().get("isReplied") === false) {
+                    if (inst.get("isReplied") === false && input.get("isCompulsory") === true) {
                         var msg = inputNumber + ". " + I18n.t(input.get("label"));
                         if (this.activeSections.length > 1) {
                             msg += "<br>(" + I18n.t(this.activeSections[s].get("label")) + ")";
@@ -1044,12 +1059,13 @@ YUI.add("wegas-survey-widgets", function(Y) {
             var desc = this.get("input"),
                 CB = this.get("contentBox"),
                 label = I18n.t(desc.get("label")),
+                labelField = CB.one(".wegas-survey-input-label"),
                 number = this.get("number") !== '' && label ? this.get("number") + ". " : "",
                 unit = desc.get("unit"),
                 min, max, isScale, value;
             value = this.getCachedValue();
             
-            CB.one(".wegas-survey-input-label").setContent(number + label);
+            displayInputLabel(desc, labelField, number + label);
             CB.one(".wegas-survey-input-desc").setContent(I18n.t(desc.get("description")));
             if (unit) {
                 CB.one(".wegas-survey-number-unit").setContent(I18n.t(unit));
@@ -1283,9 +1299,10 @@ YUI.add("wegas-survey-widgets", function(Y) {
             var desc = this.get("input"),
                 CB = this.get("contentBox"),
                 label = I18n.t(desc.get("label")),
+                labelField = CB.one(".wegas-survey-input-label"),
                 number = this.get("number") !== '' && label ? this.get("number") + ". " : "";
-
-            CB.one(".wegas-survey-input-label").setContent(number + label);
+            
+            displayInputLabel(desc, labelField, number + label);
             CB.one(".wegas-survey-input-desc").setContent(I18n.t(desc.get("description")));
             this._initialContent = this.getCachedValue();
 
@@ -1485,6 +1502,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
             var desc = this.get("input"),
                 CB = this.get("contentBox"),
                 label = I18n.t(desc.get("label")),
+                labelField = CB.one(".wegas-survey-input-label"),
                 number = this.get("number") !== '' && label ? this.get("number") + ". " : "",
                 choices = desc.get("choices"), 
                 frag = [], i, value;
@@ -1492,7 +1510,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
             this.isScale = desc.get("isScale");
             this.isSlider = this.isScale && desc.get("isSlider");
 
-            CB.one(".wegas-survey-input-label").setContent(number + label);
+            displayInputLabel(desc, labelField, number + label);
             CB.one(".wegas-survey-input-desc").setContent(I18n.t(desc.get("description")));
 
             if (!this.get("readonly")) {
@@ -1621,8 +1639,8 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     } else {
                         values = JSON.parse(value);
                     }
-                    var numSelectable = desc.get("maxSelectable");
-                    var maxReached = values.length >= numSelectable;
+                    var numSelectable = desc.get("maxSelectable") || 1,
+                        maxReached = values.length >= numSelectable;
 
                     if (!this.isSlider) {
                         select = CB.one('.wegas-string-input-checkboxes');
@@ -2077,7 +2095,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
         
         statusToString: function(survey) {
             if (!survey.active) {
-                return I18n.t("survey.errors.inactive")
+                return I18n.t("survey.errors.inactive");
             } else {
                 switch (survey.status) {
                     case ORCHESTRATION_PROGRESS.NOT_STARTED:
@@ -2101,7 +2119,6 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 teamsTable = [],
                 nbTeams = 0,
                 survData = this._monitoredData[survId],
-                ofInputs = ' / ' + survData.nbInputs,
                 cb = this.get(CONTENTBOX).one('.selected-survey[data-id="' + survId + '"]'),
                 refreshButton = this.managedSurveys[survId].refreshButton.get("contentBox").one("i");
             
@@ -2109,22 +2126,22 @@ YUI.add("wegas-survey-widgets", function(Y) {
             
             cb.one(".status-line .status").setContent(this.statusToString(survData));
             if (survData.active === true &&
-                (survData.status === ORCHESTRATION_PROGRESS.NOT_STARTED ||
-                 survData.status === ORCHESTRATION_PROGRESS.REQUESTED)) {
+                survData.status === ORCHESTRATION_PROGRESS.NOT_STARTED) {
                 cb.one(".request-survey").show();
             } else {
                 cb.one(".request-survey").hide();
             }
             
-            if (survData.status === ORCHESTRATION_PROGRESS.REQUESTED ||
-                survData.status === ORCHESTRATION_PROGRESS.ONGOING) {
+            if (survData.status !== ORCHESTRATION_PROGRESS.NOT_STARTED) {
                 teamsTable.push(
                     '<table class="teams-table"><thead><tr><td>' +
                     I18n.t("survey.orchestrator.teamOrPlayer") +
                     '</td><td>' +
                     I18n.t("survey.orchestrator.teamStatus") +
                     '</td><td>' +
-                    I18n.t("survey.orchestrator.teamReplies") +
+                    I18n.t("survey.orchestrator.teamRepliesCompulsory") +
+                    '</td><td>' +
+                    I18n.t("survey.orchestrator.teamRepliesOptional") +
                     '</td></tr></thead><tbody>');
                 for (team in survData.data) {
                     var data = survData.data[team];
@@ -2135,7 +2152,9 @@ YUI.add("wegas-survey-widgets", function(Y) {
                         '</td><td class="status">' +
                         this.statusToString(data) +
                         '</td><td class="replied">' +
-                        data.replied + ofInputs +
+                        data.replied + ' / ' + data.activeInputs +
+                        '</td><td class="repliedOptional">' +
+                        data.optionalReplied + ' / ' + data.activeOptionalInputs +
                         '</td></tr>');
                 }
                 if (nbTeams) {

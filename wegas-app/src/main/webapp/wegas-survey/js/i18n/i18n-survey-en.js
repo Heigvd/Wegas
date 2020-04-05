@@ -28,6 +28,8 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 defaultInitialWords: "Thank you for taking the time to answer this survey.<br>Click \"Next\" to start.",
                 defaultFinalWords: "This survey is over.<br>Thank you for your participation.",
                 defaultSectionIntro: "You are now starting a new part of the survey.<br>Click \"Next\" to proceed.",
+                replyCompulsory: "Compulsory reply",
+                replyOptional: "Optional reply"
             },
             errors: {
                 inactive: "This survey is currently empty or inactive.",
@@ -49,7 +51,8 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 requestButton: "Start survey",
                 teamOrPlayer: "Team/Player",
                 teamStatus: "Status",
-                teamReplies: "Replies",
+                teamRepliesCompulsory: "Compulsory Replies",
+                teamRepliesOptional: "Optional Replies",
                 noLogId: "No \"Log ID\" has been set for this session.<br>Replies to the survey will not be saved!<br>Please contact the platform administrator (AlbaSim).",
             }
         }

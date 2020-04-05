@@ -41,11 +41,8 @@ import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
 import com.wegas.survey.persistence.SurveyInstance;
-import com.wegas.survey.persistence.input.SurveyInputInstance;
 import com.wegas.survey.persistence.input.SurveySectionInstance;
-import com.wegas.survey.persistence.input.SurveyTextInstance;
-import com.wegas.survey.persistence.input.SurveyNumberInstance;
-import com.wegas.survey.persistence.input.SurveyChoicesInstance;
+import com.wegas.survey.persistence.input.SurveyInputInstance;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -123,9 +120,6 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "SurveyInstance", value = SurveyInstance.class),
     @JsonSubTypes.Type(name = "SurveySectionInstance", value = SurveySectionInstance.class),
     @JsonSubTypes.Type(name = "SurveyInputInstance", value = SurveyInputInstance.class),
-    @JsonSubTypes.Type(name = "SurveyTextInstance", value = SurveyTextInstance.class),
-    @JsonSubTypes.Type(name = "SurveyNumberInstance", value = SurveyNumberInstance.class),
-    @JsonSubTypes.Type(name = "SurveyChoicesInstance", value = SurveyChoicesInstance.class),
     @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
 })
 @OptimisticLocking(cascade = true)

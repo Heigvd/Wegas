@@ -44,7 +44,8 @@ var SurveyHelper = (function() {
             teams = game.getTeams(),
             nbTeams = teams.size(),
             t, teamId, team,
-            aPlayer, survInsts, survInst, data, replied,
+            aPlayer, survInsts, survInst, data, replied, optionalReplied,
+            activeInputs, activeOptionalInputs,
             survActive,
             survStatus = "NOT_STARTED",
             playerStatus = ORCHESTRATION_PROGRESS[survStatus],
@@ -82,6 +83,7 @@ var SurveyHelper = (function() {
         for (i = 0; i < sections.length; i++) {
             var currSct = sections[i],
                 inputList = Java.from(currSct.getItems());
+            // @TODO check if each section instance is currently active !
             for (j = 0; j < inputList.length; j++) {
                 inputDescriptors.push(inputList[j]);
             }
@@ -105,7 +107,7 @@ var SurveyHelper = (function() {
         }
 
         survInsts = Variable.getInstances(sd);
-
+        
         for (t = 0; t < nbTeams; t += 1) {
             team = teams.get(t);
             teamId = new Long(team.getId());
@@ -113,9 +115,6 @@ var SurveyHelper = (function() {
 
             survStatus = survInst.getStatus().toString();
             survActive = survInst.getActive();
-
-var s = survInst.getStatus();
-print("XXXX s: " + s);
 
             if (team.getPlayers().size() > 0) {
                 aPlayer = survInst.getOwner().getAnyLivePlayer();
@@ -143,24 +142,42 @@ print("XXXX s: " + s);
                 globalSurvActive = true;
             }
             
-            // Count number of replied inputDescriptors for this team/player
+            // Count number of replied and active inputs for this team/player
+            replied = 0;
+            optionalReplied = 0;
+            activeInputs = 0;
+            activeOptionalInputs = 0;
             if (playerStatus >= ORCHESTRATION_PROGRESS.ONGOING) {
-                replied = 0;
                 for (var id in teamsInputs) {
-                    var currInput = teamsInputs[id][team];
+                    var currInput = teamsInputs[id][team],
+                        descr = currInput.getDescriptor(),
+                        compulsory = descr.getIsCompulsory();
+
                     if (currInput.getIsReplied()) {
-                        replied++;
+                        if (compulsory) {
+                            replied++;
+                        } else {
+                            optionalReplied++;
+                        }
+                    }
+                    if (currInput.getActive()) {
+                        if (compulsory) {
+                            activeInputs++;
+                        } else {
+                            activeOptionalInputs++;
+                        }
                     }
                 }
-            } else {
-                replied = 0;
             }
             
             data = {
                 name: team.getName(),
                 active: survActive,
                 status: survStatus,
-                replied: replied
+                replied: replied,
+                activeInputs: activeInputs,
+                optionalReplied: optionalReplied,
+                activeOptionalInputs: activeOptionalInputs
             };
             
             monitoring.data[teamId] = data;

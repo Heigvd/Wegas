@@ -53,20 +53,6 @@ YUI.add('wegas-survey-entities', function(Y) {
                 type: STRING,
                 value: "SurveyDescriptor"
             },
-            name: {
-                type: STRING,
-                view: {
-                    className: 'wegas-advanced-feature',
-                    label: 'Script alias',
-                    description: "Internal name"
-                }
-            },
-            label: Y.Wegas.Helper.getTranslationAttr({
-                label: "Label",
-                index: -1,
-                description: "Displayed to players",
-                type: STRING
-            }),
             description: Y.Wegas.Helper.getTranslationAttr({
                 type: HTML,
                 label: "Introductory description"
@@ -213,7 +199,7 @@ YUI.add('wegas-survey-entities', function(Y) {
                 label: "has not been closed",
                 returns: BOOLEAN,
                 arguments: [SELFARG]
-            },
+            }
         }
     });
     /**
@@ -253,22 +239,14 @@ YUI.add('wegas-survey-entities', function(Y) {
             "@class": {
                 value: "SurveySectionDescriptor"
             },
-            name: {
-                type: STRING,
-                view: {
-                    className: 'wegas-advanced-feature',
-                    label: 'Script alias',
-                    description: "Internal name",
-                }
-            },
             label: Y.Wegas.Helper.getTranslationAttr({
-                label: "Label",
+                label: "Label (leave empty to skip section introduction)",
                 index: -1,
                 description: "Displayed to players",
                 type: STRING
             }),
             description: Y.Wegas.Helper.getTranslationAttr({
-                label: "Description section",
+                label: "Introductory text (leave empty to skip section introduction)",
                 index: 1,
                 type: HTML
             }),
@@ -399,20 +377,6 @@ YUI.add('wegas-survey-entities', function(Y) {
             "@class": {
                 value: "SurveyInputDescriptor"
             },
-            name: {
-                type: STRING,
-                view: {
-                    className: 'wegas-advanced-feature',
-                    label: 'Script alias',
-                    description: "Internal name"
-                }
-            },
-            label: Y.Wegas.Helper.getTranslationAttr({
-                label: "Label",
-                index: -1,
-                description: "Displayed to players",
-                type: STRING
-            }),
             index: {
                 type: NUMBER,
                 view: {
@@ -424,7 +388,14 @@ YUI.add('wegas-survey-entities', function(Y) {
                 label: "Description",
                 type: HTML,
                 index: 2
-            })
+            }),
+            isCompulsory: {
+                type: BOOLEAN,
+                value: true,
+                view: {
+                    label: 'Reply is compulsory'
+                }
+            }
         }
     });
     
@@ -449,7 +420,7 @@ YUI.add('wegas-survey-entities', function(Y) {
                 properties: {
                     "@class": {
                         type: STRING,
-                        value: "SurveyTextInstance",
+                        value: "SurveyInputInstance",
                         view: {
                             type: HIDDEN
                         }
@@ -564,7 +535,7 @@ YUI.add('wegas-survey-entities', function(Y) {
                 properties: {
                     "@class": {
                         type: STRING,
-                        value: "SurveyNumberInstance",
+                        value: "SurveyInputInstance",
                         view: {
                             type: HIDDEN
                         }
@@ -648,7 +619,7 @@ YUI.add('wegas-survey-entities', function(Y) {
                             },
                             view: {
                                 label: 'Value',
-                                description: "The reported, language-independent value (text or number)"
+                                description: "The language-independent value (text or number) written to the logs"
                             }
                         },
                         label: Y.Wegas.Helper.getTranslationAttr({
@@ -667,11 +638,19 @@ YUI.add('wegas-survey-entities', function(Y) {
                 }
             },
             maxSelectable: {
-                type: NUMBER,
+                type: ['null', NUMBER],
                 value: 1,
                 index: 11,
+                errored: function(val, formVal) {
+                    var errors = [];
+                    if (typeof val === 'number' && val < 1) {
+                        errors.push(['Max. selectable must be greater or equal to 1.']);
+                    }
+                    return errors.join(', ');
+                },
                 view: {
                     label: "Max. selectable items",
+                    placeholder: "1"
                 }
             },
             isScale: {
@@ -680,7 +659,7 @@ YUI.add('wegas-survey-entities', function(Y) {
                 index: 12,
                 errored: function(val, formVal) {
                     var errors = [];
-                    if (val && (formVal.maxSelectable !== 1)) {
+                    if (val && (typeof formVal.maxSelectable === 'number' && formVal.maxSelectable !== 1)) {
                         errors.push(['Max. selectable must be equal to 1 for the scale to work.']);
                     }
                     if (val && (!formVal.choices || formVal.choices.length < 2)) {
@@ -709,7 +688,7 @@ YUI.add('wegas-survey-entities', function(Y) {
                 properties: {
                     "@class": {
                         type: STRING,
-                        value: "SurveyChoicesInstance",
+                        value: "SurveyInputInstance",
                         view: {
                             type: HIDDEN
                         }
@@ -763,32 +742,5 @@ YUI.add('wegas-survey-entities', function(Y) {
         }
     });
     
-    persistence.SurveyNumberInstance = Y.Base.create("SurveyNumberInstance", persistence.SurveyInputInstance, [], {
-    }, {
-        ATTRS: {
-            "@class": {
-                value: "SurveyNumberInstance"
-            }
-        }
-    });
-
-    persistence.SurveyTextInstance = Y.Base.create("SurveyTextInstance", persistence.SurveyInputInstance, [], {
-    }, {
-        ATTRS: {
-            "@class": {
-                value: "SurveyTextInstance"
-            }
-        }
-    });
-
-    persistence.SurveyChoicesInstance = Y.Base.create("SurveyChoicesInstance", persistence.SurveyInputInstance, [], {
-    }, {
-        ATTRS: {
-            "@class": {
-                value: "SurveyChoicesInstance"
-            }
-        }
-    });
-   
 });
 
