@@ -78,7 +78,7 @@ export const optionsSchema = {
     [
       {
         label: 'Layout',
-        // value: { prop: 'layout' },
+        value: { prop: 'layout' },
         items: [
           {
             label: 'Order',

@@ -229,6 +229,7 @@ interface DropArrayProps<T> {
   disabled?: boolean;
   readOnly?: boolean;
   unsortable?: boolean;
+  filterRemovable?: boolean[];
 }
 
 export function DragDropArray<T>({
@@ -246,6 +247,7 @@ export function DragDropArray<T>({
   readOnly,
   children,
   unsortable,
+  filterRemovable,
 }: React.PropsWithChildren<DropArrayProps<T>>) {
   const valueLength = Array.isArray(array) ? array.length : 0;
   return (
@@ -275,7 +277,10 @@ export function DragDropArray<T>({
           <ArrayItem
             index={i}
             onChildRemove={
-              minItems < valueLength && !disabled && !readOnly
+              minItems < valueLength &&
+              !disabled &&
+              !readOnly &&
+              (!filterRemovable || filterRemovable[i])
                 ? onChildRemove
                 : undefined
             }

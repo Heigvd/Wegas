@@ -21,8 +21,8 @@ interface SchemaPropsTesterState {
   code: object;
   select: string;
   undefSelect?: string;
-  simpleHashList: {};
-  customizedHashList: {};
+  // simpleHashList: {};
+  // customizedHashList: {};
   customizedMultilevelHashList: {};
 }
 
@@ -43,23 +43,23 @@ const testSchema = {
     'Option 2',
     'Option 3',
   ]),
-  simpleHashList: schemaProps.hashlist('Simple hashlist', true),
-  customizedHashList: schemaProps.hashlist('Customized hashlist', true, [
-    {
-      label: 'Attribute1',
-      value: {
-        prop: 'Attribute1',
-        schema: schemaProps.select('Attribute1', true, ['1', '2', '3']),
-      },
-    },
-    {
-      label: 'Attribute2',
-      value: {
-        prop: 'Attribute2',
-        schema: schemaProps.select('Attribute2', true, ['A', 'B', 'C']),
-      },
-    },
-  ]),
+  // simpleHashList: schemaProps.hashlist('Simple hashlist', true),
+  // customizedHashList: schemaProps.hashlist('Customized hashlist', true, [
+  //   {
+  //     label: 'Attribute1',
+  //     value: {
+  //       prop: 'Attribute1',
+  //       schema: schemaProps.select('Attribute1', true, ['1', '2', '3']),
+  //     },
+  //   },
+  //   {
+  //     label: 'Attribute2',
+  //     value: {
+  //       prop: 'Attribute2',
+  //       schema: schemaProps.select('Attribute2', true, ['A', 'B', 'C']),
+  //     },
+  //   },
+  // ]),
   customizedMultilevelHashList: schemaProps.hashlist(
     'Customized multilevel hashlist',
     true,
@@ -73,9 +73,9 @@ const testSchema = {
       },
       {
         label: 'Next level',
-        // value: {
-        //   prop: 'nextlevel',
-        // },
+        value: {
+          prop: 'nextlevel',
+        },
         items: [
           {
             label: 'Next level attribute 1',
@@ -122,9 +122,11 @@ export default function SchemaPropsTester() {
     code: {},
     select: 'Option 1',
     undefSelect: undefined,
-    simpleHashList: {},
-    customizedHashList: {},
-    customizedMultilevelHashList: {},
+    // simpleHashList: {},
+    // customizedHashList: {},
+    customizedMultilevelHashList: {
+      nextlevel: { 'Next level attribute 1': '2' },
+    },
   });
   const [errors, setErrors] = React.useState<ValidationError[]>([]);
 

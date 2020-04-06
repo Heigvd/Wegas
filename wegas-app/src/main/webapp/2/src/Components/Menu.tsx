@@ -168,6 +168,7 @@ export function Menu<T, MItem extends MenuItem<T>>({
                             onClick: stopPropagation,
                           })
                         : undefined)}
+                      className={item.className}
                     >
                       <Menu
                         onSelect={(v, e) => {
@@ -195,6 +196,7 @@ export function Menu<T, MItem extends MenuItem<T>>({
                           onClick: stopPropagation,
                         })
                       : undefined)}
+                    className={item.className}
                   >
                     {item.label}
                   </div>

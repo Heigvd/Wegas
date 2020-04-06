@@ -1,10 +1,10 @@
 import { wlog } from './wegaslog';
+import { cloneDeep } from 'lodash-es';
 
 /**
  * Inspired from :
  * https://stackoverflow.com/questions/5306680/move-an-array-element-from-one-array-position-to-another
  * */
-
 export function array_move<T>(
   arr: T[] | undefined,
   old_index: number,
@@ -25,4 +25,84 @@ export function array_move<T>(
     newArr.splice(newI, 0, newArr.splice(old_index, 1)[0]);
     return newArr;
   }
+}
+
+/**
+ * getEntry - get an entry of object from and array of keys. Allows to go deep in an object without the use of brackets [][][]
+ * @returns the value at of the searched entry or undefined
+ * @param object any object
+ * @param keyPath an array of keys to acces entry
+ * @param lookupKey if the searched object is made from intermediate objects, allows to look up in the intermediate object.
+ */
+export function getEntry(
+  object: any,
+  keyPath: string[],
+  lookupKey?: string,
+): any {
+  if (keyPath.length === 0) {
+    return undefined;
+  }
+  const newKeys = [...keyPath];
+  let entry: any = object;
+  while (newKeys.length > 0) {
+    const key = newKeys.shift();
+    if (
+      key == null ||
+      entry == null ||
+      typeof entry !== 'object' ||
+      !(key in entry)
+    ) {
+      return undefined;
+    } else {
+      entry = lookupKey != null ? entry[key][lookupKey] : entry[key];
+    }
+  }
+  return entry;
+}
+
+/**
+ * setEntry - allows to set and object entry deep inside the object without the use of brackets [][][]7
+ * @returns a new object with the created/modified entry or undefined (no keys or noOverride used and key allready taken)
+ * @param object any object
+ * @param value any value to insert
+ * @param keyPath an array of keys to acces entry
+ * @param defaultObjectItem an object that describes the entry pattern and a lookup key to find the next entry
+ * @param noOverride if set to true, en entry that already contains something will not be overriden
+ */
+export function setEntry<T, I>(
+  object: T,
+  value: I,
+  keyPath: string[],
+  defaultObjectItem?: { defaultObject: I; lookupKey: keyof I },
+  noOverride: boolean = false,
+): T | undefined {
+  const newKeys = [...keyPath];
+  const newObject = cloneDeep(object);
+  let entry: any = newObject;
+  while (newKeys.length > 0) {
+    const key = newKeys.shift();
+    if (key == null || entry == null || typeof entry !== 'object') {
+      return undefined;
+    } else if (newKeys.length > 0) {
+      if (
+        !noOverride &&
+        (typeof entry[key] !== 'object' ||
+          (defaultObjectItem && !(defaultObjectItem.lookupKey in entry[key])))
+      ) {
+        entry[key] = defaultObjectItem
+          ? {
+              ...defaultObjectItem.defaultObject,
+              [defaultObjectItem.lookupKey]: {},
+            }
+          : {};
+      }
+      entry = defaultObjectItem
+        ? entry[key][defaultObjectItem.lookupKey]
+        : entry[key];
+    } else {
+      entry[key] = value;
+      return newObject;
+    }
+  }
+  return undefined;
 }
