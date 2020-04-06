@@ -23,7 +23,7 @@ interface SchemaPropsTesterState {
   undefSelect?: string;
   simpleHashList: {};
   customizedHashList: {};
-  customizedMultilevelHashList: {};
+  // customizedMultilevelHashList: {};
 }
 
 const testSchema = {
@@ -60,56 +60,56 @@ const testSchema = {
       },
     },
   ]),
-  customizedMultilevelHashList: schemaProps.hashlist(
-    'Customized multilevel hashlist',
-    true,
-    [
-      {
-        label: 'Attribute1',
-        value: {
-          prop: 'Attribute1',
-          schema: schemaProps.select('Attribute1', true, ['1', '2', '3']),
-        },
-      },
-      {
-        label: 'Next level',
-        value: {
-          prop: 'nextlevel',
-        },
-        items: [
-          {
-            label: 'Next level attribute 1',
-            value: {
-              prop: 'Next level attribute 1',
-              schema: schemaProps.select('Next level attribute1', true, [
-                '1',
-                '2',
-                '3',
-              ]),
-            },
-          },
-          {
-            label: 'Next level attribute 2',
-            value: {
-              prop: 'Next level attribute 2',
-              schema: schemaProps.select('Next level attribute 2', true, [
-                'A',
-                'B',
-                'C',
-              ]),
-            },
-          },
-        ],
-      },
-      {
-        label: 'Attribute2',
-        value: {
-          prop: 'Attribute2',
-          schema: schemaProps.select('Attribute2', true, ['A', 'B', 'C']),
-        },
-      },
-    ],
-  ),
+  // customizedMultilevelHashList: schemaProps.hashlist(
+  //   'Customized multilevel hashlist',
+  //   true,
+  //   [
+  //     {
+  //       label: 'Attribute1',
+  //       value: {
+  //         prop: 'Attribute1',
+  //         schema: schemaProps.select('Attribute1', true, ['1', '2', '3']),
+  //       },
+  //     },
+  //     {
+  //       label: 'Next level',
+  //       value: {
+  //         prop: 'nextlevel',
+  //       },
+  //       items: [
+  //         {
+  //           label: 'Next level attribute 1',
+  //           value: {
+  //             prop: 'Next level attribute 1',
+  //             schema: schemaProps.select('Next level attribute1', true, [
+  //               '1',
+  //               '2',
+  //               '3',
+  //             ]),
+  //           },
+  //         },
+  //         {
+  //           label: 'Next level attribute 2',
+  //           value: {
+  //             prop: 'Next level attribute 2',
+  //             schema: schemaProps.select('Next level attribute 2', true, [
+  //               'A',
+  //               'B',
+  //               'C',
+  //             ]),
+  //           },
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       label: 'Attribute2',
+  //       value: {
+  //         prop: 'Attribute2',
+  //         schema: schemaProps.select('Attribute2', true, ['A', 'B', 'C']),
+  //       },
+  //     },
+  //   ],
+  // ),
 };
 
 export default function SchemaPropsTester() {
@@ -124,7 +124,7 @@ export default function SchemaPropsTester() {
     undefSelect: undefined,
     simpleHashList: {},
     customizedHashList: {},
-    customizedMultilevelHashList: {},
+    // customizedMultilevelHashList: {},
   });
   const [errors, setErrors] = React.useState<ValidationError[]>([]);
 
