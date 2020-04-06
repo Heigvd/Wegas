@@ -25,11 +25,8 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 unavailableValue: "(Anonymous reply)",
                 statusSaving: "Saving...",
                 statusSaved: "Saved",
-                defaultInitialWords: "Thank you for taking the time to answer this survey.<br>Click \"Next\" to start.",
-                defaultFinalWords: "This survey is over.<br>Thank you for your participation.",
-                defaultSectionIntro: "You are now starting a new part of the survey.<br>Click \"Next\" to proceed.",
-                replyCompulsory: "Compulsory reply",
-                replyOptional: "Optional reply"
+                replyCompulsory: "(compulsory reply)",
+                replyOptional: "(optional reply)"
             },
             errors: {
                 inactive: "This survey is currently empty or inactive.",

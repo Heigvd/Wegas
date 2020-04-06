@@ -24,11 +24,8 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
                 unavailableValue: "(Réponse anonyme)",
                 statusSaving: "Sauvegarde...",
                 statusSaved: "Enregistré",
-                defaultInitialWords: "Merci de prendre le temps de répondre à ce questionnaire.<br>Cliquer sur \"Suivant\" pour commencer.",
-                defaultFinalWords: "Ce questionnaire est terminé.<br>Merci de votre participation.",
-                defaultSectionIntro: "Vous commencez une nouvelle partie du questionnaire.<br>Cliquer sur \"Suivant\" pour continuer.",
-                replyCompulsory: "Réponse obligatoire",
-                replyOptional: "Réponse facultative"
+                replyCompulsory: "(réponse obligatoire)",
+                replyOptional: "(réponse facultative)"
             },
             errors: {
                 inactive: "Ce questionnaire est actuellement vide ou inactif.",

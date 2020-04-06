@@ -56,7 +56,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                             Y.log("xAPI library is visible");
                         },
                         failure: function(e) {
-                            Y.Wegas.Panel.alert("For logging with xAPI,<br>please include server script : \"wegas-app/js/server/\"");
+                            Y.Wegas.Panel.alert("For logging with xAPI,<br>please include server script in game settings: \"wegas-app/js/server/\"");
                         }
                     }
                 }
@@ -72,9 +72,10 @@ YUI.add("wegas-survey-widgets", function(Y) {
         labelField.setContent(text);
         if (desc.get("isCompulsory")) {
             labelField.addClass("wegas-compulsory-input");
-            labelField.setAttribute('title', I18n.t('survey.global.replyCompulsory'));
+            labelField.setAttribute('data-optionalornot', I18n.t('survey.global.replyCompulsory'));
         } else {
             labelField.addClass("wegas-optional-input");
+            labelField.setAttribute('data-optionalornot', I18n.t('survey.global.replyOptional'));
         }
     }
 
@@ -155,7 +156,8 @@ YUI.add("wegas-survey-widgets", function(Y) {
             var activeSections = this.survey.get("items"),
                 nbReplied = 0,
                 nbUnreplied = 0,
-                input, inputId;
+                input, inputId, inputNumber,
+                prevSection = null;
             for (var s in activeSections) {
                 var currSection = activeSections[s],
                     sectionInputs = currSection.get("items");
@@ -164,8 +166,18 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     activeSections[s] = null;
                     continue;
                 }
-                var inputNumber = 0,
-                    previousId = null,
+                // Skip display of section header if it has no title/label nor description:
+                var label = I18n.t(currSection.get("label")),
+                    desc = I18n.t(currSection.get("description"));
+                if (!label && !desc){
+                    currSection.silent = true;
+                }
+                // Merge numbering of consecutive silent sections:
+                if (!(prevSection && prevSection.silent && currSection.silent)) {
+                    inputNumber = 0;
+                }
+                
+                var previousId = null,
                     previousInput = null,
                     firstSectionInputId = null,
                     // Local copy of all inputs including the replies:
@@ -221,6 +233,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     currSection.firstInputId = firstSectionInputId;
                     currSection.lastInputId = this.lastInputId;
                 }
+                prevSection = currSection;
             }
 
             this.activeSections = activeSections.filter(function (el) {
@@ -230,19 +243,18 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 this.surveyStatus = SURVEY_STATUS.EMPTY;
                 return;
             } else {
-                if (this.activeSections.length === 1) {
-                        if (this.oneQuestionPerPage) {
-                            // Skip display of the unique section if it has no title/label nor description:
-                            var cs = this.activeSections[0],
-                                label = I18n.t(cs.get("label")),
-                                desc = I18n.t(cs.get("description"));
-                            if (!label && !desc){
-                                this.silentSection = true;
-                            }
-                        } else {
-                            // Enforce monolithic layout if only one active section and one section/page mode:
-                            this.monolithicLayout = true;
+                if (! this.oneQuestionPerPage) {
+                    var allSilent = true;
+                    for (var sct in this.activeSections) {
+                        if (this.activeSections[sct].silent === false) {
+                            allSilent = false;
+                            break;
                         }
+                    }
+                    if (this.activeSections.length === 1 || allSilent === true) {
+                        // Enforce monolithic layout if only one active section and one section/page mode:
+                        this.monolithicLayout = true;
+                    }
                 }
             }
             if (nbReplied > 0) {
@@ -495,16 +507,21 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 sectionInputs = currentSection.activeInputs,
                 sectionBox = cb.one(".section");
         
+            if (this.monolithicLayout) {
+                this.progressBarBackground.hide();
+            } else {
+                this.progressBarBackground.show();
+            }
+            
             if (this.monolithicLayout ||
                 this.surveyDisplay === SURVEY_DISPLAY.SURVEY_HEAD) {
-                var description = I18n.t(this.survey.get("description")),
-                    introText = description ? description : I18n.t("survey.global.defaultInitialWords");
-                cb.one(".description").show().setContent(introText);
+                var description = I18n.t(this.survey.get("description"));
+                cb.one(".description").show().setContent(description);
             } else {
                 cb.one(".description").hide();
             }
 
-            if (!this.silentSection) {
+            if (!currentSection.silent) {
                 sectionBox.one(".section-header").show();
                 if (this.monolithicLayout ||
                     this.surveyDisplay === SURVEY_DISPLAY.SECTION_HEAD ||
@@ -514,9 +531,8 @@ YUI.add("wegas-survey-widgets", function(Y) {
 
                 if (this.monolithicLayout ||
                     this.surveyDisplay === SURVEY_DISPLAY.SECTION_HEAD) {
-                    var sectionIntro = I18n.t(currentSection.get("description")),
-                        sectionIntroText = sectionIntro ? sectionIntro : I18n.t("survey.global.defaultSectionIntro");
-                    sectionBox.one(".section-description").show().setContent(sectionIntroText);
+                    var sectionIntro = I18n.t(currentSection.get("description"));
+                    sectionBox.one(".section-description").show().setContent(sectionIntro);
                 } else {
                     sectionBox.one(".section-description").hide();
                 }
@@ -540,9 +556,23 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 if (this.oneQuestionPerPage) {
                     this.addInput(currentInput, container, "write");
                 } else {
-                    for (var input in sectionInputs) {
+                    var input = currentSection.firstInputId;
+                    while (input !== null) {
                         currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(input);
                         this.addInput(currentInput, container, "write");
+                        input = sectionInputs[input].nextId;
+                        // Shall we merge two silent sections ?
+                        if (input === null && currentSection.silent) {
+                            // Find next section:
+                            var sectionIndex = this._findById(this.activeSections, currentSectionId),
+                                nextSection = this.activeSections[sectionIndex+1];
+                            if (nextSection && nextSection.silent) {
+                                currentSection = nextSection;
+                                currentSectionId = currentSection.get("id");
+                                input = currentSection.firstInputId;
+                                sectionInputs = currentSection.activeInputs;
+                            }
+                        }
                     }
                 }
             }
@@ -596,11 +626,14 @@ YUI.add("wegas-survey-widgets", function(Y) {
         
         // Advances to the next question or section by updating "this.currentInputId"
         nextClicked: function() {
-            var currentInputElem = this.inputCache[this.currentInputId];
+            var currentInputElem = this.inputCache[this.currentInputId],
+                currentInput, currentSection;
             if (this.oneQuestionPerPage) {
                 switch (this.surveyDisplay) {
                     case SURVEY_DISPLAY.SURVEY_HEAD:
-                        if (this.silentSection) {
+                        currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
+                        currentSection = this.getSectionOfInputObj(currentInput);
+                        if (currentSection.silent) {
                             this.surveyDisplay = SURVEY_DISPLAY.INPUT;
                         } else {
                             this.surveyDisplay = SURVEY_DISPLAY.SECTION_HEAD;
@@ -613,8 +646,14 @@ YUI.add("wegas-survey-widgets", function(Y) {
                         if (currentInputElem.nextId) {
                             this.currentInputId = currentInputElem.nextId;
                         } else {
-                            this.surveyDisplay = SURVEY_DISPLAY.SECTION_HEAD;
                             this.advanceToNextSection();
+                            currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
+                            currentSection = this.getSectionOfInputObj(currentInput);
+                            if (currentSection.silent) {
+                                this.surveyDisplay = SURVEY_DISPLAY.INPUT;
+                            } else {
+                                this.surveyDisplay = SURVEY_DISPLAY.SECTION_HEAD;
+                            }
                         }
                         break;
                     case SURVEY_DISPLAY.COMPLETED:
@@ -627,8 +666,18 @@ YUI.add("wegas-survey-widgets", function(Y) {
                         this.surveyDisplay = SURVEY_DISPLAY.SECTION_HEAD;
                         break;
                     case SURVEY_DISPLAY.SECTION_HEAD:
-                        // We will not arrive here in monolithicLayout mode.
-                        this.advanceToNextSection();
+                        currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
+                        currentSection = this.getSectionOfInputObj(currentInput);
+                        if (currentSection.silent) {
+                            // Jump over concatenated silent sections:
+                            do {
+                                this.advanceToNextSection();
+                                currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
+                                currentSection = this.getSectionOfInputObj(currentInput);
+                            } while (currentSection && currentSection.silent);
+                        } else {
+                            this.advanceToNextSection();
+                        }
                         break;
                     case SURVEY_DISPLAY.INPUT:
                     case SURVEY_DISPLAY.COMPLETED:
@@ -641,7 +690,8 @@ YUI.add("wegas-survey-widgets", function(Y) {
         
         // Goes back to the previous question or section by updating "this.currentInputId"
         backClicked: function() {
-            var currentInputElem = this.inputCache[this.currentInputId];
+            var currentInputElem = this.inputCache[this.currentInputId],
+                currentInput, currentSection, currentSectionId;
             if (this.oneQuestionPerPage) {
                 switch (this.surveyDisplay) {
                     case SURVEY_DISPLAY.SURVEY_HEAD:
@@ -649,8 +699,8 @@ YUI.add("wegas-survey-widgets", function(Y) {
                         break;
                     case SURVEY_DISPLAY.SECTION_HEAD:
                         // Find last input of previous section:
-                        var currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId),
-                            currentSectionId = this.getSectionOfInputObj(currentInput).get("id");
+                        currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
+                        currentSectionId = this.getSectionOfInputObj(currentInput).get("id");
                         if (currentSectionId !== this.firstSection.get("id")) {
                             this.surveyDisplay = SURVEY_DISPLAY.INPUT;
                             // Find previous section:
@@ -665,8 +715,19 @@ YUI.add("wegas-survey-widgets", function(Y) {
                         if (currentInputElem.backId) {
                             this.currentInputId = currentInputElem.backId;
                         } else {
-                            if (this.silentSection) {
-                                this.surveyDisplay = SURVEY_DISPLAY.SURVEY_HEAD;
+                            currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
+                            currentSection = this.getSectionOfInputObj(currentInput);
+                            currentSectionId = currentSection.get("id");
+                            if (currentSection.silent) {
+                                if (currentSectionId !== this.firstSection.get("id")) {
+                                    this.surveyDisplay = SURVEY_DISPLAY.INPUT;
+                                    // Find previous section:
+                                    var sectionIndex = this._findById(this.activeSections, currentSectionId),
+                                        prevSection = this.activeSections[sectionIndex-1];
+                                    this.currentInputId = prevSection.lastInputId;
+                                } else {
+                                    this.surveyDisplay = SURVEY_DISPLAY.SURVEY_HEAD;
+                                }
                             } else {
                                 this.surveyDisplay = SURVEY_DISPLAY.SECTION_HEAD;
                             }
@@ -679,16 +740,28 @@ YUI.add("wegas-survey-widgets", function(Y) {
             } else { // One section/page mode:
                 switch (this.surveyDisplay) {
                     case SURVEY_DISPLAY.SECTION_HEAD:
-                        // We should not arrive here in monolithicLayout mode.
-                        // Go back to the previous section
-                        var currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId),
-                            currentSectionId = this.getSectionOfInputObj(currentInput).get("id");
-                        if (currentSectionId !== this.firstSection.get("id")) {
-                            var sectionIndex = this._findById(this.activeSections, currentSectionId),
-                                prevSection = this.activeSections[sectionIndex-1];
-                            this.currentInputId = prevSection.firstInputId;
-                        } else {
+                        currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
+                        currentSection = this.getSectionOfInputObj(currentInput);
+                        currentSectionId = currentSection.get("id");
+                        if (currentSectionId === this.firstSection.get("id")) {
+                            // If we are at the first section, just show survey header/introduction
                             this.surveyDisplay = SURVEY_DISPLAY.SURVEY_HEAD;
+                        } else {
+                            // We are not at the start: go back to the previous section, skipping concatenated ones:
+                            var sectionIndex = this._findById(this.activeSections, currentSectionId),
+                                prevSection = this.activeSections[sectionIndex-1],
+                                prevSectionInputId;
+                            if (prevSection.silent) {
+                                do {
+                                    prevSectionInputId = currentSection.firstInputId;
+                                    sectionIndex = this._findById(this.activeSections, currentSection.get("id"));
+                                    prevSection = this.activeSections[sectionIndex-1];
+                                    currentSection = prevSection;
+                                } while(currentSection && currentSection.silent);
+                                this.currentInputId = prevSectionInputId;
+                            } else {
+                                this.currentInputId = prevSection.firstInputId;
+                            }
                         }
                         break;
                     case SURVEY_DISPLAY.SURVEY_HEAD:
@@ -936,7 +1009,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     inputNumber++;
                     if (inst.get("isReplied") === false && input.get("isCompulsory") === true) {
                         var msg = inputNumber + ". " + I18n.t(input.get("label"));
-                        if (this.activeSections.length > 1) {
+                        if (this.activeSections.length > 1 && I18n.t(this.activeSections[s].get("label"))) {
                             msg += "<br>(" + I18n.t(this.activeSections[s].get("label")) + ")";
                         }
                         return msg;
@@ -1895,6 +1968,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
             this._monitoredData = {};
             this.datatables = {};
             this._freeForAll = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll");
+            xAPI.testXapi();
         },
         // Adds the given survey descriptor to the list of known surveys
         registerSurvey: function(sd) {
@@ -1933,7 +2007,6 @@ YUI.add("wegas-survey-widgets", function(Y) {
             var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
             if (!logId) {
                 var msg = I18n.t("survey.orchestrator.noLogId");
-                //Y.Wegas.Panel.alert(msg);
                 this.get("contentBox").one(".warning").setContent(msg);
             } else {
                 Y.log("Log ID = " + logId);
@@ -1967,7 +2040,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                         },
                         failure: function(e) {
                             if (e && e.response && e.response.results && e.response.results.message && e.response.results.message.indexOf("undefined in SurveyHelper")) {
-                                ctx.showMessage("error", "Please include server script : \"wegas-survey/server/\"");
+                                ctx.showMessage("error", "Please include server script : \"wegas-app/js/server/\"");
                             }
                         }
                     }
