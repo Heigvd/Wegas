@@ -149,6 +149,9 @@ public class WegasRESTClient {
     public void login(TestAuthenticationInformation authInfo) throws IOException {
         JpaAuthentication authMethod = this.getAuthenticationMethod(authInfo.getLogin());
         if (authMethod != null) {
+            if (cookie != null){
+                this.logout();
+            }
 
             AuthenticationInformation credentials = authInfo.instantiate(authMethod);
             HttpResponse loginResponse = this._post("/rest/User/Authenticate", credentials);
@@ -167,6 +170,11 @@ public class WegasRESTClient {
         } else {
             throw WegasErrorMessage.error("No authentication method");
         }
+    }
+
+    public void logout() throws IOException {
+            this.get("/rest/User/Logout");
+            this.cookie = null;
     }
 
     private void setHeaders(HttpMessage msg) {
