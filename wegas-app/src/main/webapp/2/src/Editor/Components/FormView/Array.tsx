@@ -44,7 +44,7 @@ const handleStyle = css({
 });
 
 interface AdderProps<T> {
-  onChildAdd: (value?: SelectedMenuItem<T>) => void;
+  onChildAdd: (value?: SelectedMenuItem<T, MenuItem<T>>) => void;
   choices?: MenuItem<T>[];
   id?: string;
   tooltip?: string;
@@ -219,7 +219,7 @@ interface DropArrayProps<T> {
   array?: {}[];
   onMove?: (array?: {}[]) => void;
   onChildRemove?: (index: number) => void;
-  onChildAdd?: (value?: SelectedMenuItem<T>) => void;
+  onChildAdd?: (value?: SelectedMenuItem<T, MenuItem<T>>) => void;
   choices?: MenuItem<T>[];
   tooltip?: string;
   label?: React.ReactNode;

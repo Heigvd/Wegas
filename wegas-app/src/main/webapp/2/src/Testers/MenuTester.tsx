@@ -1,10 +1,14 @@
 import * as React from 'react';
 import { expandBoth, flex, flexColumn } from '../css/classes';
 import { cx } from 'emotion';
-import { Menu } from '../Components/Menu';
+import { Menu, SelectedMenuItem, MenuItem } from '../Components/Menu';
+
+type MenuTesterItemValue = { prop: string; schema: { name: string } };
 
 export default function MenuTester() {
-  const [selected, setSelected] = React.useState();
+  const [selected, setSelected] = React.useState<
+    SelectedMenuItem<MenuTesterItemValue, MenuItem<MenuTesterItemValue>>
+  >();
 
   return (
     <div className={cx(flex, expandBoth, flexColumn)}>

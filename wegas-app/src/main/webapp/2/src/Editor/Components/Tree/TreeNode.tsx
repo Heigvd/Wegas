@@ -92,7 +92,7 @@ function update<T>(
   };
 }
 interface TreeNodeProps<T> extends Item<T> {
-  value: T;
+  value?: T;
   expanded?: boolean;
   selected?: T;
   match?: boolean;
@@ -122,7 +122,7 @@ export default function TreeNode<T>(props: TreeNodeProps<T>): JSX.Element {
   }
 
   function handleSelect() {
-    if (selectable) {
+    if (selectable && value != null) {
       onSelect(value);
     }
   }

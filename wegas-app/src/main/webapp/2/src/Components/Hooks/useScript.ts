@@ -26,13 +26,17 @@ interface GlobalClasses {
   Classes: GlobalClassesClass;
 }
 
-const sandbox = document.createElement('iframe');
-// This is used to prevent unwanted modification from scripts.
-// One can still access main window from the sandbox (window.top) and modify it from there. (Break it)
-sandbox.setAttribute('sandbox', 'allow-same-origin');
-sandbox.style.display = 'none';
-document.body.appendChild(sandbox);
-const globals = (sandbox.contentWindow as unknown) as GlobalClasses;
+export function createSandbox<T = unknown>() {
+  const sandbox = document.createElement('iframe');
+  // This is used to prevent unwanted modification from scripts.
+  // One can still access main window from the sandbox (window.top) and modify it from there. (Break it)
+  sandbox.setAttribute('sandbox', 'allow-same-origin');
+  sandbox.style.display = 'none';
+  document.body.appendChild(sandbox);
+  return { sandbox, globals: (sandbox.contentWindow as unknown) as T };
+}
+
+const { sandbox, globals } = createSandbox<GlobalClasses>();
 
 export function useGlobals() {
   // Hooks

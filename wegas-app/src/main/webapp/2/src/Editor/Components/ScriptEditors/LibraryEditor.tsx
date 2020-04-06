@@ -589,14 +589,14 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
               }
               items={Object.keys(librariesState.libraries).map(
                 (name: string) => ({
-                  id: name,
+                  value: name,
                   label: name,
                 }),
               )}
-              onSelect={({ id }) =>
+              onSelect={({ value }) =>
                 dispatchStateAction({
                   type: 'SelectLibrary',
-                  name: id,
+                  name: value,
                 })
               }
             />
@@ -605,13 +605,13 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
               items={visibilities
                 .filter(v => isVisibilityAllowed(librariesState, v))
                 .map(v => ({
-                  id: v,
+                  value: v,
                   label: v,
                 }))}
-              onSelect={({ id }) =>
+              onSelect={({ value }) =>
                 dispatchStateAction({
                   type: 'SetLibraryVisibility',
-                  visibility: id as IVisibility,
+                  visibility: value as IVisibility,
                 })
               }
             />

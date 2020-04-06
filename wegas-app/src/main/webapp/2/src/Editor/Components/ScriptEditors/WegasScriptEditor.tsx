@@ -76,6 +76,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     onBlur,
     onSave,
     resizable,
+    extraLibs: newExtraLibs,
   } = props;
   const language = props.language ? props.language : 'typescript';
   let editorLock: ((editor: MonacoSCodeEditor) => void) | undefined = undefined;
@@ -167,6 +168,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   );
 
   const extraLibs: MonacoDefinitionsLibraries[] = [
+    ...(newExtraLibs || []),
     ...useGlobalLibs(),
     { name: 'defaultLib:lib.d.ts', content: libes5 },
   ];

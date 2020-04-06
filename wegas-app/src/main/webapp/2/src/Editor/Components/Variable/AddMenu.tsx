@@ -3,12 +3,14 @@ import produce from 'immer';
 import { Actions } from '../../../data';
 import { getIcon, getLabel, getChildren } from '../../editionConfig';
 import { StoreDispatch, store } from '../../../data/store';
-import { Menu, MenuProps } from '../../../Components/Menu';
+import { Menu, MenuProps, MenuItem } from '../../../Components/Menu';
 import { withDefault, IconComp } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { VariableDescriptor } from '../../../data/selectors';
 
-function buildMenuItems(variable: IAbstractEntity) {
+function buildMenuItems(
+  variable: IAbstractEntity,
+): Promise<MenuItem<string>[]> {
   return getChildren(variable).then(children => {
     return children.map(i => {
       const Label = asyncSFC(async () => {
@@ -30,13 +32,7 @@ function buildMenuItems(variable: IAbstractEntity) {
 
 interface AddMenuProps {
   localDispatch?: StoreDispatch;
-  onSelect?: MenuProps<
-    string,
-    {
-      label: JSX.Element;
-      value: string;
-    }
-  >['onSelect'];
+  onSelect?: MenuProps<string, MenuItem<string>>['onSelect'];
   focusTab?: (tab: string) => void;
 }
 

@@ -10,14 +10,14 @@ import {
 } from '../../../Components/PageComponents/tools/schemaProps';
 import { LabeledView, Labeled } from './labeled';
 import { DragDropArray } from './Array';
-import { Item } from '../Tree/TreeSelect';
+import { MenuItem } from '../../../Components/Menu';
 
 interface ImprovedObjectValue {
   value: string;
   index: number;
 }
 
-export type HashListChoices = Item<{
+export type HashListChoices = MenuItem<{
   prop: string;
   schema: SchemaPropsSchemas;
 }>[];
@@ -116,7 +116,7 @@ function HashListView({
   value,
   schema,
 }: HashListViewProps) {
-  const { label, readOnly, disabled, description, tooltip } = view;
+  const { label, readOnly, disabled, description, tooltip, choices } = view;
   const { patternProperties } = schema;
 
   const onChange = React.useCallback(
@@ -131,14 +131,14 @@ function HashListView({
     setValue(normalizeValues(nv || {}));
   });
 
-  const choices = patternProperties
-    ? Object.keys(patternProperties)
-        .filter(k => !Object.keys(currentValue).includes(k))
-        .map(k => ({
-          label: k,
-          value: k,
-        }))
-    : undefined;
+  // const choices = patternProperties
+  //   ? Object.keys(patternProperties)
+  //       .filter(k => !Object.keys(currentValue).includes(k))
+  //       .map(k => ({
+  //         label: k,
+  //         value: k,
+  //       }))
+  //   : undefined;
   // const entrySchema = choices
 
   return (
@@ -149,9 +149,13 @@ function HashListView({
             choices={choices}
             onChildAdd={choice => {
               const index = Object.keys(currentValue).length;
+              debugger;
               onChange({
                 ...currentValue,
-                [choice ? String(choice) : `key${index}`]: { index, value: '' },
+                [choice ? choice.value.prop : `key${index}`]: {
+                  index,
+                  value: '',
+                },
               });
             }}
             onChildRemove={i => {

@@ -10,20 +10,27 @@ import { Item } from '../Editor/Components/Tree/TreeSelect';
 
 export interface MenuItem<T> extends Item<T> {
   disabled?: true;
+  items?: MenuItem<T>[];
 }
 
-export interface SelectedMenuItem<T> extends MenuItem<T> {
+// export interface SelectedMenuItem<T> extends MenuItem<T> {
+//   path: number[];
+//   value: T;
+// }
+
+export type SelectedMenuItem<T, MItem extends MenuItem<T>> = MItem & {
   path: number[];
-}
+  value: Exclude<MItem['value'], undefined>;
+};
 
-export interface MenuProps<I, T extends MenuItem<I> = MenuItem<I>> {
+export interface MenuProps<T, MItem extends MenuItem<T>> {
   id?: string;
   onSelect: (
-    item: T & SelectedMenuItem<I>,
+    item: SelectedMenuItem<T, MItem>,
     keyEvent: ModifierKeysEvent,
   ) => void;
   onOpen?: () => void;
-  items: readonly T[];
+  items: readonly MItem[];
   label?: React.ReactNode;
   path?: number[];
   icon?: IconName;
@@ -73,7 +80,7 @@ function stopPropagation(ev: React.MouseEvent<HTMLElement>) {
   ev.stopPropagation();
 }
 
-export function Menu<I, T extends MenuItem<I> = MenuItem<I>>({
+export function Menu<T, MItem extends MenuItem<T>>({
   id,
   onOpen,
   onSelect,
@@ -85,7 +92,7 @@ export function Menu<I, T extends MenuItem<I> = MenuItem<I>>({
   containerClassName,
   buttonClassName,
   listClassName,
-}: MenuProps<I, T>) {
+}: MenuProps<T, MItem>) {
   const realDirection = direction ? direction : 'down';
   const keyboardEvents = useKeyboard();
 
@@ -102,7 +109,17 @@ export function Menu<I, T extends MenuItem<I> = MenuItem<I>>({
   return (
     <Downshift
       onStateChange={onStateChange}
-      onSelect={i => onSelect({ ...i, path: path || [] }, keyboardEvents)}
+      onSelect={(i: MItem) =>
+        i.value != null &&
+        onSelect(
+          {
+            ...i,
+            value: i.value as Exclude<MItem['value'], undefined>,
+            path: path || [],
+          },
+          keyboardEvents,
+        )
+      }
       itemToString={emtpyStr}
     >
       {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
@@ -139,7 +156,7 @@ export function Menu<I, T extends MenuItem<I> = MenuItem<I>>({
                 }
               }}
             >
-              {items.map((item: T, index: number) => {
+              {items.map((item: MenuItem<T>, index: number) => {
                 const newPath = [...(path ? path : []), index];
                 if (Array.isArray(item.items)) {
                   return (
@@ -155,9 +172,12 @@ export function Menu<I, T extends MenuItem<I> = MenuItem<I>>({
                       <Menu
                         onSelect={(v, e) => {
                           closeMenu();
-                          onSelect(v, e);
+                          onSelect(
+                            v as Parameters<MenuProps<T, MItem>['onSelect']>[0],
+                            e,
+                          );
                         }}
-                        items={item.items as T[]}
+                        items={item.items}
                         direction="right"
                         label={item.label}
                         path={newPath}

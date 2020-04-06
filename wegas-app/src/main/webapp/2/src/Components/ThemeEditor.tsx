@@ -154,10 +154,10 @@ export default function ThemeEditor() {
             <Menu
               label={currentModifiedTheme}
               items={Object.keys(themeState.themes).map(k => ({
-                id: k,
+                value: k,
                 label: k,
               }))}
-              onSelect={({ id }) => setModifiedTheme(id)}
+              onSelect={({ value }) => setModifiedTheme(value)}
             />
             <ConfirmButton
               icon="trash"
@@ -191,7 +191,7 @@ export default function ThemeEditor() {
               label={'Contexts'}
               items={Object.keys(themeState.selectedTheme).map(
                 (k: keyof typeof themeState.selectedTheme) => ({
-                  id: k,
+                  value: k,
                   label: (
                     <>
                       <span
@@ -200,10 +200,10 @@ export default function ThemeEditor() {
                       <Menu
                         label={themeState.selectedTheme[k]}
                         items={Object.keys(themeState.themes).map(k => ({
-                          id: k,
+                          value: k,
                           label: k,
                         }))}
-                        onSelect={({ id }) => setSelectedTheme(id, k)}
+                        onSelect={({ value }) => setSelectedTheme(value, k)}
                       />
                     </>
                   ),
@@ -217,7 +217,7 @@ export default function ThemeEditor() {
           label={'Theme editor content'}
           items={Object.keys(themeState.themes[currentModifiedTheme]).map(
             (k: keyof Theme) => ({
-              id: k,
+              value: k,
               label: (
                 <>
                   <input
@@ -233,7 +233,7 @@ export default function ThemeEditor() {
               ),
             }),
           )}
-          onSelect={({ id: k }) =>
+          onSelect={({ value: k }) =>
             setSelectedSection(o => ({ ...o, [k]: !o[k] }))
           }
         />

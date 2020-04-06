@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { schemaProps } from '../PageComponents/tools/schemaProps';
 
 export const alignItemsValues = [
   'stretch',

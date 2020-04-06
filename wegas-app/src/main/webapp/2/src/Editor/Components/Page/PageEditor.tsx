@@ -421,11 +421,11 @@ export default function PageEditor() {
                     />
                   </div>
                 ),
-                id: k,
+                value: k,
               };
             })}
-            onSelect={({ id }) => {
-              setPagesState(s => ({ ...s, selectedPage: id }));
+            onSelect={({ value }) => {
+              setPagesState(s => ({ ...s, selectedPage: value }));
             }}
           />
           {modalState.type === 'error' && (
