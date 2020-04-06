@@ -176,6 +176,8 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
     public void testIdleGuestRemoval() {
         int nbUser = userFacade.findAll().size();
 
+        logout();
+
         userFacade.guestLogin();
         Assert.assertEquals(nbUser + 1, userFacade.findAll().size());
 

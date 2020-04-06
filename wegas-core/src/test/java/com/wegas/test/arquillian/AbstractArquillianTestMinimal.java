@@ -386,6 +386,8 @@ public abstract class AbstractArquillianTestMinimal {
     public WegasUser guestLogin() {
         /*AuthenticationInformation authInfo = new AuthenticationInformation();
         authInfo.setRemember(true);*/
+
+        userFacade.logout();
         return WegasUser.createGuest(userFacade);
     }
 

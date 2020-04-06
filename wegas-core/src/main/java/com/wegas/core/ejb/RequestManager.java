@@ -1958,7 +1958,7 @@ public class RequestManager implements RequestManagerI {
         Subject subject = SecurityUtils.getSubject();
 
         if (subject.getPrincipal() != null) {
-            logger.info("SU: User {} RunAs {}", subject.getPrincipal(), accountId);
+            logger.info("RunAs: User {} RunAs {}", subject.getPrincipal(), accountId);
             if (this.isAdmin()) {
                 // The subject exists and is an authenticated admin
                 // -> Shiro runAs
@@ -1980,7 +1980,7 @@ public class RequestManager implements RequestManagerI {
         Subject subject = SecurityUtils.getSubject();
 
         if (subject.isRunAs()) {
-            logger.info("Su-Exit: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
+            logger.info("RunAs-Release: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
             subject.releaseRunAs();
             this.clearCurrents();
         }
@@ -2062,6 +2062,9 @@ public class RequestManager implements RequestManagerI {
     }
 
     public Subject login(Subject subject, AuthenticationToken token) {
+        if (subject.isAuthenticated()){
+            throw WegasErrorMessage.error("You are already logged in! Please logout first");
+        }
         subject.login(token);
         // clear current info
         this.clearCurrents();
