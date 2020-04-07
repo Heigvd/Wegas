@@ -15,12 +15,13 @@ export const FILE_EDIT = 'FILE/EDIT';
 export const VARIABLE_CREATE = 'VARIABLE/CREATE';
 export const CLOSE_EDITOR = 'EDITOR/CLOSE';
 
-export const PAGE_EDIT_MODE = 'PAGE/EDIT_MODE';
-export const PAGE_SRC_MODE = 'PAGE/SRC_MODE';
-export const PAGE_LOAD_ID = 'PAGE/LOAD_ID';
+// export const PAGE_EDIT_MODE = 'PAGE/EDIT_MODE';
+// export const PAGE_SRC_MODE = 'PAGE/SRC_MODE';
+// export const PAGE_LOAD_ID = 'PAGE/LOAD_ID';
 export const PAGE_INDEX = 'PAGE/INDEX';
-export const PAGE_EDIT = 'PAGE/EDIT';
+// export const PAGE_EDIT = 'PAGE/EDIT';
 export const PAGE_FETCH = 'PAGE/FETCH';
+export const PAGE_ERROR = 'PAGE/ERROR';
 
 export const SEARCH_USAGE = 'SEARCH/USAGE';
 export const SEARCH_GLOBAL = 'SEARCH/GLOBAL';

@@ -12,6 +12,7 @@ import { withDefault, IconComp } from './Views/FontAwesome';
 import { css } from 'emotion';
 import { entityIs } from '../../data/entities';
 import { focusTabContext } from './LinearTabLayout/LinearLayout';
+import { mainLayoutId } from './Layout';
 
 interface SearchPanelProps {
   search: State['global']['search'];
@@ -41,7 +42,7 @@ function SearchResult({
       className={resultStyle}
       onClick={() => {
         if (entityIs(variable, 'AbstractStateMachineDescriptor')) {
-          focusTab('StateMachine');
+          focusTab('StateMachine', mainLayoutId);
         }
         onClick();
       }}

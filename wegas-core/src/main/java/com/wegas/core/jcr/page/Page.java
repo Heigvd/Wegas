@@ -98,6 +98,7 @@ public class Page {
         return content;
     }
 
+    @Deprecated
     public JsonNode getContentWithMeta() {
         ObjectNode content = this.content.deepCopy();
         content.put("@name", this.name);
@@ -105,6 +106,7 @@ public class Page {
         return content;
     }
 
+    @Deprecated
     public JsonObject getJsonBContentWithMeta() throws JsonProcessingException {
         String strContent = getMapper().writeValueAsString(this.content);
         JsonObject jsonbContent;
@@ -148,7 +150,6 @@ public class Page {
     /**
      * @param content
      *
-     * @throws IOException
      */
     @JsonIgnore
     public final void setContent(String content) {
@@ -178,6 +179,7 @@ public class Page {
      *
      */
     @JsonIgnore
+    @Deprecated
     private void extractAttrs() {
         JsonNode node;
         node = this.content.path("@name");
@@ -210,6 +212,7 @@ public class Page {
      *
      * @return some extracted node as text
      */
+    @Deprecated
     public String extract(String jsonPath) {
         JsonNode node = this.content;
         final String[] xpaths = jsonPath.trim().split("\\.|\\[|\\]");

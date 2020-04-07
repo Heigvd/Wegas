@@ -21,6 +21,7 @@ export interface EditorProps<T> {
   actions?: {
     label: React.ReactNode;
     action: (entity: T, path?: (string | number)[]) => void;
+    confirm?: boolean;
   }[];
   path?: (string | number)[];
   getConfig(entity: T): Promise<Schema<AvailableViews>>;
@@ -213,14 +214,12 @@ async function WindowedEditor<T extends IMergeable>({
       <Form
         entity={pathEntity}
         update={update != null ? updatePath : update}
-        actions={actions.map(({ label, action }) => {
-          return {
-            label,
-            action: function(e: T) {
-              action(deepUpdate(entity, path, e) as T, path);
-            },
-          };
-        })}
+        actions={actions.map(action => ({
+          ...action,
+          action: function(e: T) {
+            action.action(deepUpdate(entity, path, e) as T, path);
+          },
+        }))}
         path={path}
         schema={overrideSchema(
           entity,

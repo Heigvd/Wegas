@@ -67,7 +67,6 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                 Plugin.EditEntityAction.destroyEditionTab();
                 var widget = this.get('widget'),
                     showForm,
-                    PAGE_META = '@pageMeta',
                     formCfg = widget.getFormCfg(),
                     menuItems = Y.Array.filter(widget.getMenuCfg().slice(0), function(i) {
 
@@ -92,6 +91,10 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                     type: "array",
                     view: {type: "hidden"}
                 };
+                if (widget.isRoot()){
+                    // can not duplicate or delete root
+                    menuItems.splice(menuItems.length -2, 2);
+                }
                 showForm = Y.bind(function(cfg) {
                     var form = Plugin.EditEntityAction.showEditForm(widget, Y.bind(function(val, entity) {
                         Plugin.EditEntityAction.showEditFormOverlay();
@@ -99,13 +102,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                             plugins = {},
                             pls, plugin, cfg,
                             oldCfg = entity.get('root').toObject();
-                        /* Retrieve page's name if it has one */
-                        if (val.hasOwnProperty(PAGE_META)) {
-                            PAGEDATASOURCE.editMeta(entity.get('@pageId'), val[PAGE_META], function() {
-                                PAGEDATASOURCE.fire('pageUpdated');
-                            });
-                            delete val[PAGE_META];
-                        }
+
                         entity.setAttrs(val);
                         for (i = 0; i < val.plugins.length; i += 1) {
                             plugin = Y.Plugin[Y.Wegas.Plugin.getPluginFromName(val.plugins[i].fn)];
@@ -147,52 +144,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                     form.toolbar.add(menuItems);
                 }, this);
 
-                /* Inject page's name */
-                if (widget.get('root') === widget) {
-                    PAGEDATASOURCE.getMeta(widget.get('@pageId'), function(meta) {
-
-                        if (meta) {
-                            formCfg.properties[PAGE_META] = {
-                                type: 'object',
-                                index: -5,
-                                value: {},
-                                properties: {
-                                    id: {
-                                        type: 'string',
-                                        value: meta.id,
-                                        view: {
-                                            label: 'Page id',
-                                            type: 'uneditable'
-                                        }
-                                    }, name: {
-                                        value: meta.name,
-                                        type: 'string',
-                                        view: {
-                                            label: 'Page name'
-                                        }
-                                    }, index: {
-                                        value: meta.index,
-                                        type: 'number',
-                                        view: {
-                                            type: 'hidden'
-                                        }
-                                    }
-                                }
-                            };
-                            // Also update the widget to prevent false update notifications:
-                            widget.set(PAGE_META,
-                                {
-                                    id: meta.id,
-                                    name: meta.name,
-                                    index: meta.index
-                                }
-                            );
-                        }
-                        showForm(formCfg);
-                    });
-                } else {
-                    showForm(formCfg);
-                }
+                showForm(formCfg);
 
                 this.highlight(widget, true);
             }, this));

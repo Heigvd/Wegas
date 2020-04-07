@@ -6,7 +6,7 @@ import { DropAction } from './DnDTabLayout';
 import { hidden, flex } from '../../../css/classes';
 import { dropZoneFocus } from '../../../Components/Contexts/DefaultDndProvider';
 
-export const dndAcceptType = 'DnDTab';
+// export const dndAcceptType = 'DnDTab';
 
 const dropZone = cx(dropZoneFocus, css({ width: '50px' }));
 
@@ -73,6 +73,10 @@ interface DragTabProps extends TabProps {
    * onDrag - the function to be called when a drag event occures
    */
   onDrag?: (label: string) => void;
+  /**
+   * layoutId - The token that filter the drop actions
+   */
+  layoutId: string;
 }
 
 interface DnDItem {
@@ -85,7 +89,7 @@ export function DragTab(props: DragTabProps) {
   const [, drag] = useDrag<DnDItem, unknown, unknown>({
     item: {
       label: props.label,
-      type: dndAcceptType,
+      type: props.layoutId,
       children: props.children,
     },
     begin: () => props.onDrag && props.onDrag(props.label),
@@ -119,11 +123,15 @@ export interface DropTabProps extends TabProps {
      */
     overviewNode: React.ReactNode;
   };
+  /**
+   * layoutId - The token that filter the drop actions
+   */
+  layoutId: string;
 }
 
 export function DropTab(props: DropTabProps) {
   const [dropTabProps, dropTab] = useDrop({
-    accept: dndAcceptType,
+    accept: props.layoutId,
     canDrop: () => true,
     drop: props.onDrop,
     collect: (mon: DropTargetMonitor) => ({

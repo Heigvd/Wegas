@@ -8,12 +8,16 @@
 package com.wegas.core.jcr.page;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.AlphanumericComparator;
+import com.wegas.core.Helper;
 import com.wegas.core.jcr.jta.JTARepositoryConnector;
 import java.util.*;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +27,8 @@ import org.slf4j.LoggerFactory;
 public class Pages extends JTARepositoryConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Pages.class);
+
+    private static ObjectMapper mapper = null;
 
     @JsonIgnore
     private final PageConnector connector;
@@ -51,17 +57,64 @@ public class Pages extends JTARepositoryConnector {
      *
      * @throws RepositoryException
      */
-    public List<HashMap<String, String>> getIndex() throws RepositoryException {
-        final List<HashMap<String, String>> index = new LinkedList<>();
-
-        for (Page page : this.getPages()){
-            final HashMap<String, String> entry = new HashMap<>();
-            entry.put("id", page.getId());
-            entry.put("name", page.getName());
-            entry.put("index", page.getIndex().toString());
-            index.add(entry);
+    public PageIndex getIndex() throws RepositoryException {
+        Page indexPage = this.getPage("index");
+        if (indexPage == null) {
+            this.saveIndex(new PageIndex());
+            indexPage = this.getPage("index");
         }
+
+        PageIndex index;
+        try {
+            index = getMapper().treeToValue(indexPage.getContent(),
+                PageIndex.class);
+        } catch (JsonProcessingException ex) {
+            index = new PageIndex();
+        }
+
+        List<Page> orphans = new ArrayList<>();
+
+        LinkedList<Page> pages = this.getPages();
+
+        for (Page page : pages) {
+            String id = page.getId();
+            if (!"index".equals(id)
+                && !index.hasPage(page.getId())) {
+                orphans.add(page);
+            }
+        }
+
+        boolean upToDate = true;
+
+        if (!orphans.isEmpty()) {
+            // Migrate indexless pages
+            upToDate = false;
+            Collections.sort(orphans, (Page o1, Page o2) -> o1.getIndex().compareTo(o2.getIndex()));
+            for (Page orphan : orphans) {
+                index.getRoot().getItems().add(
+                    new PageIndex.Page(
+                        orphan.getId(),
+                        orphan.getName() != null ? orphan.getName() : "Untitled"
+                    ));
+                this.clearMeta(orphan);
+            }
+        }
+
+        if (Helper.isNullOrEmpty(index.getDefaultPageId())) {
+            upToDate = false;
+            index.resetDefaultPage();
+        }
+
+        if (!upToDate) {
+            // save updated index
+            this.saveIndex(index);
+        }
+
         return index;
+    }
+
+    public void saveIndex(PageIndex index) throws RepositoryException {
+        this.store(new Page("index", getMapper().valueToTree(index)));
     }
 
     public Boolean pageExist(String id) throws RepositoryException {
@@ -81,7 +134,7 @@ public class Pages extends JTARepositoryConnector {
             Node n = (Node) it.next();
             Page p = new Page(n);
             //pageMap.put(p.getId().toString(),  p.getContent());
-            ret.put(p.getId(), p.getContentWithMeta());
+            ret.put(p.getId(), p.getContent());
         }
         //this.connector.close();
 
@@ -127,7 +180,7 @@ public class Pages extends JTARepositoryConnector {
      */
     public void setMeta(Page page) throws RepositoryException {
         Node n = this.connector.getChild(page.getId());
-        if (page.getName() != null) {
+        if (!Helper.isNullOrEmpty(page.getName())) {
             n.setProperty(Page.NAME_KEY, page.getName());
         }
         if (page.getIndex() != null) {
@@ -140,8 +193,12 @@ public class Pages extends JTARepositoryConnector {
      *
      * @throws RepositoryException
      */
-    public void deletePage(String pageId) throws RepositoryException {
+    public PageIndex deletePage(String pageId) throws RepositoryException, JsonProcessingException {
         this.connector.deleteChild(pageId);
+        PageIndex index = this.getIndex();
+        index.deletePage(pageId);
+        this.saveIndex(index);
+        return index;
     }
 
     /**
@@ -185,6 +242,7 @@ public class Pages extends JTARepositoryConnector {
      *
      * @throws RepositoryException
      */
+    @Deprecated
     public void move(final String pageId, final int pos) throws RepositoryException {
         Page page;
         int oldPos = -1;
@@ -216,6 +274,19 @@ public class Pages extends JTARepositoryConnector {
         }
     }
 
+    private void removeNodeProperty(Node n, String property) throws RepositoryException {
+        if (n.hasProperty(property)) {
+            Property p = n.getProperty(property);
+            p.remove();
+        }
+    }
+
+    private void clearMeta(Page page) throws RepositoryException {
+        Node n = this.connector.addChild(page.getId());
+        this.removeNodeProperty(n, Page.INDEX_KEY);
+        this.removeNodeProperty(n, Page.NAME_KEY);
+    }
+
     private LinkedList<Page> getPages() throws RepositoryException {
         final NodeIterator nodeIterator = this.connector.listChildren();
         final LinkedList<Page> pages = new LinkedList<>();
@@ -228,24 +299,15 @@ public class Pages extends JTARepositoryConnector {
         return pages;
     }
 
-    /**
-     * Return the first page or null is there is no pages
-     *
-     * @return
-     *
-     * @throws RepositoryException
-     */
-    public Page getDefaultPage() throws RepositoryException {
-        final NodeIterator query = this.connector.query("Select * FROM [nt:base] as n WHERE ISDESCENDANTNODE('"
-                + this.connector.getRootPath() + "') order by n.index, localname(n)", 1);
-        if (query.hasNext()) {
-            return new Page(query.nextNode());
-        }
-        return null;
-    }
-
     @Override
     public String toString() {
         return "Pages(" + connector.getRootPath() + ")";
+    }
+
+    private static synchronized ObjectMapper getMapper() {
+        if (Pages.mapper == null) {
+            Pages.mapper = new ObjectMapper();
+        }
+        return Pages.mapper;
     }
 }
