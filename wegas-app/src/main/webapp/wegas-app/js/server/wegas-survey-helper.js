@@ -82,10 +82,20 @@ var SurveyHelper = (function() {
         // Collect all input descriptors in order to get their instances
         for (i = 0; i < sections.length; i++) {
             var currSct = sections[i],
-                inputList = Java.from(currSct.getItems());
-            // @TODO check if each section instance is currently active !
-            for (j = 0; j < inputList.length; j++) {
-                inputDescriptors.push(inputList[j]);
+                inputList = Java.from(currSct.getItems()),
+                sctInsts = Variable.getInstances(currSct),
+                sctInst;
+            // Check for each team/user if each section instance is currently active
+            // @TODO this needs to be revised to make a different count for each team/user !
+            for (t = 0; t < 1 /* nbTeams */; t += 1) {
+                team = teams.get(t);
+                teamId = new Long(team.getId());
+                sctInst = sctInsts[team];
+                if (sctInst.getActive()) {
+                    for (j = 0; j < inputList.length; j++) {
+                        inputDescriptors.push(inputList[j]);
+                    }
+                }
             }
         }
 

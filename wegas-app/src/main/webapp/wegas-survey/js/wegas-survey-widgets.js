@@ -107,7 +107,6 @@ YUI.add("wegas-survey-widgets", function(Y) {
             + "</div>",
         initializer: function() {
             this.handlers = {};
-            this.locks = {};
             this.childWidgets = [];
             xAPI.testXapi();
         },
@@ -169,9 +168,8 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 // Skip display of section header if it has no title/label nor description:
                 var label = I18n.t(currSection.get("label")),
                     desc = I18n.t(currSection.get("description"));
-                if (!label && !desc){
-                    currSection.silent = true;
-                }
+                currSection.silent = !label && !desc;
+
                 // Merge numbering of consecutive silent sections:
                 if (!(prevSection && prevSection.silent && currSection.silent)) {
                     inputNumber = 0;
@@ -246,13 +244,13 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 if (! this.oneQuestionPerPage) {
                     var allSilent = true;
                     for (var sct in this.activeSections) {
-                        if (this.activeSections[sct].silent === false) {
+                        if (this.activeSections[sct].silent !== true) {
                             allSilent = false;
                             break;
                         }
                     }
                     if (this.activeSections.length === 1 || allSilent === true) {
-                        // Enforce monolithic layout if only one active section and one section/page mode:
+                        // Enforce monolithic layout if only one section is active and one section/page mode:
                         this.monolithicLayout = true;
                     }
                 }
@@ -479,9 +477,8 @@ YUI.add("wegas-survey-widgets", function(Y) {
                             I18n.t("survey.errors.inactive"));
                         break;
                     case SURVEY_STATUS.COMPLETED:
-                        var descriptionEnd = I18n.t(this.survey.get("descriptionEnd")),
-                            finalWords = descriptionEnd ? descriptionEnd : I18n.t("survey.global.defaultFinalWords");
-                        descrField.setContent(finalWords);
+                        var descriptionEnd = I18n.t(this.survey.get("descriptionEnd"));
+                        descrField.setContent(descriptionEnd);
                         if (this.get("displayCloseButton")) {
                             this.closeButton.show();
                         }
@@ -626,6 +623,8 @@ YUI.add("wegas-survey-widgets", function(Y) {
         
         // Advances to the next question or section by updating "this.currentInputId"
         nextClicked: function() {
+            this.saveCurrentInputs();
+            
             var currentInputElem = this.inputCache[this.currentInputId],
                 currentInput, currentSection;
             if (this.oneQuestionPerPage) {
@@ -690,6 +689,8 @@ YUI.add("wegas-survey-widgets", function(Y) {
         
         // Goes back to the previous question or section by updating "this.currentInputId"
         backClicked: function() {
+            this.saveCurrentInputs();
+
             var currentInputElem = this.inputCache[this.currentInputId],
                 currentInput, currentSection, currentSectionId;
             if (this.oneQuestionPerPage) {
@@ -767,7 +768,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     case SURVEY_DISPLAY.SURVEY_HEAD:
                     case SURVEY_DISPLAY.INPUT:
                     case SURVEY_DISPLAY.COMPLETED:
-                        alert("internal error in nextClicked()");
+                        alert("internal error in backClicked()");
                         break;
                 }
             }
@@ -809,10 +810,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 this.closeButton.on("click", this.closeClicked, this);
             }
 
-            //this.handlers.beforeAnswerSave = this.before("*:save", this.onSave, this);
             this.handlers.afterAnswerSave = this.after("*:saved", this.onSaved, this);
-            this.handlers.editing = this.on("*:editing", this.onEdit, this);
-            this.handlers.revert = this.on("*:revert", this.onRevert, this);
             this.handlers.updateInst = Y.Wegas.Facade.Instance.after("*:updatedInstance", this.onUpdatedInstance, this);
             this.handlers.updateDesc = Y.Wegas.Facade.Variable.after("updatedDescriptor", this.onUpdatedDescriptor, this);
             this.handlers.addChild = this.on("addChild", function(e) {
@@ -825,45 +823,20 @@ YUI.add("wegas-survey-widgets", function(Y) {
             }, this);
 
         },
-        setStatus: function(status) {
-            this.get("contentBox").one(".save-status").setContent(status);
-
-            if (this.statusTimer) {
-                this.statusTimer.cancel();
-            }
-            this.statusTimer = Y.later(3000, this, function() {
-                this.get("contentBox").one(".save-status").setContent("");
-            });
-        },
         onSaved: function(e) {
-            //this.validateButton.set("disabled", true);
-            delete this.locks[e.id];
-            if (this.timer) {
-                this.timer.cancel();
-            }
             var inst = Y.Wegas.Facade.VariableDescriptor.cache.findById(e.id).getInstance(),
                 wasReplied = inst.get("isReplied");
             inst.set("isReplied", true);
             this.updateProgressBar();
             
-            this.timer = Y.later(500, this, function() {
-                var id;
-                for (id in this.locks) {
-                    if (this.locks.hasOwnProperty(id) && this.locks[id]) {
-                        // at least one input is being edited -> do not save yet
-                        // but wait for edition end
-                        return;
-                    }
+            // Only save once the fact that this input has been replied:
+            if (wasReplied === false){
+                this.save(e.id);
+                this.nbUnreplied--;
+                if (this.nbUnreplied <= 0) {
+                    this.validateButton.get(CONTENTBOX).addClass("ready");
                 }
-                // Only save once the fact that this input has been replied:
-                if (wasReplied === false){
-                    this.save(e.id);
-                    this.nbUnreplied--;
-                    if (this.nbUnreplied <= 0) {
-                        this.validateButton.get(CONTENTBOX).addClass("ready");
-                    }
-                }
-            });
+            }          
         },
         updateProgressBar: function() {
             var sum = 0;
@@ -887,14 +860,6 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 this.progressBar.setContent('');
             }
         },
-        onEdit: function(e) {
-            this.locks[e.id] = true;
-            this.setStatus(I18n.t("survey.global.statusSaving") + " <i class=\"fa fa-1x fa-spinner fa-spin\"></i>");
-            //this.validateButton.set("disabled", true);
-        },
-        onRevert: function(e) {
-            delete this.locks[e.id];
-        },
         removeChildren: function() {
             for (var c in this.childWidgets) {
                 this.childWidgets[c].destroy();
@@ -904,12 +869,6 @@ YUI.add("wegas-survey-widgets", function(Y) {
         
         destructor: function() {
             this.set("predestroyed", true);
-            if (this.timer) {
-                this.timer.cancel();
-                this.save();
-            }
-
-            this.statusTimer && this.statusTimer.cancel();
 
             var id;
             for (id in this.handlers) {
@@ -942,7 +901,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
             var config = {
                 request: "/" + inputId + "/VariableInstance/" + inst.get("id"),
                 cfg: {
-                    updateCache: false, // the instance will never get modified again
+                    updateCache: true,
                     method: "put",
                     data: inst
                 },
@@ -989,10 +948,15 @@ YUI.add("wegas-survey-widgets", function(Y) {
             if (!this._validated) {
                 this.sendReplyRequest(inputId, function(e) {
                     if (!this.get("destroyed")) {
-                        this.validateButton.set("disabled", false);
-                        this.setStatus(I18n.t("survey.global.statusSaved"));
                     }
                 });
+            }
+        },
+        // Saves all currently displayed inputs. To be called when navigating or validating
+        saveCurrentInputs: function() {
+            for (var cw in this.childWidgets) {
+                var curr = this.childWidgets[cw];
+                curr.logValue();
             }
         },
         // Returns, if applicable, a message indicating the first unreplied, active and compulsory input.
@@ -1018,9 +982,11 @@ YUI.add("wegas-survey-widgets", function(Y) {
             }
             return null;
         },
-        // Final validation of the survey
+        // Final validation of the survey by the player.
         // Checks that it has not already been validated and that all inputs have been replied.
         validate: function() {
+            this.saveCurrentInputs();
+            
             var desc = this.get("survey.evaluated"),
                 inst = desc.getInstance();
             if (inst.get("status") !== ORCHESTRATION_PROGRESS.COMPLETED) {
@@ -1112,13 +1078,6 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 emitFacade: true
             });
             this.publish("saved", {
-                emitFacade: true
-            });
-            this.publish("editing", {
-                emitFacade: true
-            });
-            /* to be fired if content is edited and canceled in a shot */
-            this.publish("revert", {
                 emitFacade: true
             });
         },
@@ -1219,7 +1178,6 @@ YUI.add("wegas-survey-widgets", function(Y) {
             if (input) {
                 this.handlers.push(input.on("keyup", this.updateSlider, this));
             }
-            this.on("save", this._save);
             
             this.handlers.updateDesc = Y.Wegas.Facade.Variable.after("updatedDescriptor", function(e) {
                 var me = this.get("input");
@@ -1235,6 +1193,9 @@ YUI.add("wegas-survey-widgets", function(Y) {
 
         },
         _save: function(e) {
+            // @TODO clean up, never called
+            return;
+            
             this.setCachedValue(e.value);
             Y.Wegas.Facade.Variable.script.remoteFnEval(
                 function(value, survname, inputname) {
@@ -1245,6 +1206,22 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 this.get("input").get("name")
             );
             this.fire("saved", {id: e.id, value: e.value});
+        },
+        logValue:function() {
+            // @TODO check if current value already logged
+            var value = this.getCachedValue(),
+                hasValue = !Number.isNaN(value) && value !== null;
+            if (hasValue) {
+                Y.Wegas.Facade.Variable.script.remoteFnEval(
+                    function(value, survname, inputname) {
+                        surveyXapi.post(surveyXapi.numberInput(value, survname, inputname));
+                    },
+                    value,
+                    this.surveyName,
+                    this.get("input").get("name")
+                );
+                this.fire("saved", {id: this.inputId, value: value});
+            }
         },
         destructor: function() {
             this.timer && this.timer.cancel();
@@ -1257,7 +1234,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 value = +rawValue;
 
             if (isNaN(value)) {
-                this.showMessage("error", I18n.t("errors.nan", {value: rawValue}));
+                this.showError(I18n.t("errors.nan", {value: rawValue}));
                 return false;
             } else {
                 var hasMinLimit = desc.get("minValue") !== null,
@@ -1266,24 +1243,19 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     max = hasMaxLimit ? desc.get("maxValue") : Infinity;
                 if ((value < min) || (value > max)) {
                     if (hasMinLimit && hasMaxLimit) {
-                        this.showMessage("error", I18n.t("survey.errors.outOfBounds", {min: min, max: max}));
+                        this.showError(I18n.t("survey.errors.outOfBounds", {min: min, max: max}));
                     } else if (hasMinLimit) {
-                        this.showMessage("error", I18n.t("survey.errors.notGreaterThanMin", {min: min}));
+                        this.showError(I18n.t("survey.errors.notGreaterThanMin", {min: min}));
                     } else if (hasMaxLimit) {
-                        this.showMessage("error", I18n.t("survey.errors.notLessThanMax", {max: max}));
+                        this.showError(I18n.t("survey.errors.notLessThanMax", {max: max}));
                     }
                     return false;
                 }
             }
-
+            this.showError('');
             this.setCachedValue(value);
-            if (value === this._initialValue) {
-                !this._quiet && this.fire("revert", {"id": this.inputId, "value": value});
-            } else {
-                !this._quiet && this.fire("save", {"id": this.inputId, "value": value});
-            }
+            
             this._quiet = false;
-
             return true;
         },
         updateInput: function(e) {
@@ -1302,7 +1274,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
             var input = this.get(CONTENTBOX).one(".wegas-survey-number-instance-input"),
                 value = input.get("value");
 
-            this.fire("editing", {"id": this.inputId, "value": value});
+            //this.fire("editing", {"id": this.inputId, "value": value});
 
             if (this.timer) {
                 this.timer.cancel();
@@ -1317,6 +1289,18 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     }
                 }
             });
+        },
+        showError: function(msg){
+            var errorField = this.get(CONTENTBOX).one(".wegas-survey-input-status");
+            if (msg) {
+                errorField.setContent(msg);
+                errorField.addClass("input-error");
+            } else {
+                errorField.setContent('');
+                errorField.removeClass("input-error");                
+            }
+            errorField.removeClass("input-isreplied");
+            errorField.removeClass("input-isreplied-novalue");
         }
     }, {
         EDITORNAME: "Number input",
@@ -1395,6 +1379,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
             };
         },
         bindUI: function() {
+            // Required for getting updates through this._save() :
             Y.Wegas.SurveyTextInput.superclass.bindUI.apply(this);
             
             this.handlers.updateDesc = Y.Wegas.Facade.Variable.after("updatedDescriptor", function(e) {
@@ -1407,6 +1392,10 @@ YUI.add("wegas-survey-widgets", function(Y) {
             }, this);
         },
         _save: function(e) {
+            // @TODO: clean up
+            this.setCachedValue(e.value);
+            return;
+            
             var cb = this.get("contentBox"),
                 value = e.value;
             if (!this._quiet) {
@@ -1429,6 +1418,26 @@ YUI.add("wegas-survey-widgets", function(Y) {
 
             cb.removeClass("loading");
         },
+        logValue:function() {
+            var value = this.getCachedValue(),
+                hasValue = value !== this._initialContent;
+            if (hasValue) {
+                this._initialContent = value;
+                // Reduce saved text inputs to pure text without HTML
+                value = Y.Wegas.Helper.stripHtml(value.replace(/(\r\n|\n\r|\r|\n)/g, " ")).replace(/"/g, "\\\"");
+                
+                Y.Wegas.Facade.Variable.script.remoteFnEval(
+                    function(value, survname, inputname) {
+                        surveyXapi.post(surveyXapi.textInput(value, survname, inputname));
+                    },
+                    value,
+                    this.surveyName,
+                    this.get("input").get("name")
+                );
+                this.fireSaved(value);
+            }
+        },
+        // Required by Wegas.TextInput :
         fireEditing: function(content) {
             var payload = this.getPayload();
 
@@ -1437,42 +1446,36 @@ YUI.add("wegas-survey-widgets", function(Y) {
             this.fire('editing', payload);
         },
         syncUI: function(quiet) {
-            var value;
-            value = this.getCachedValue();
+            var value = this.getCachedValue();
             this._quiet = quiet;
 
             if (value !== this._initialContent && this.getCurrentValue() === this._initialContent) {
                 // Do setup as soon as the real editor is rendered (i.e. when this.editor is defined)
-                Y.later(100, this, function() {
-                    if (this.editor) {
-                        var content = this.getInitialContent();
-                        this.currentValue = content;
-                        this.editor.setContent(content);
-                        var //cb = this.get(CONTENTBOX),
-                            status = this.get("boundingBox").one(".wegas-survey-input-status"),
-                            hasValue = (value !== null && value !== '');
-                        if (this.get("input").getInstance().get("isReplied")) {
-                            status.addClass('input-isreplied');
-                            if (!hasValue) {
-                                status.addClass('input-isreplied-novalue');
-                                status.setContent(I18n.t("survey.global.unavailableValue"));
-                            }
-                        } else {
-                            status.addClass('input-unreplied');
+                if (this.editor) {
+                    var content = this.getInitialContent();
+                    this.currentValue = content;
+                    this.editor.setContent(content);
+                    var //cb = this.get(CONTENTBOX),
+                        status = this.get("boundingBox").one(".wegas-survey-input-status"),
+                        hasValue = (value !== null && value !== '');
+                    if (this.get("input").getInstance().get("isReplied")) {
+                        status.addClass('input-isreplied');
+                        if (!hasValue) {
+                            status.addClass('input-isreplied-novalue');
+                            status.setContent(I18n.t("survey.global.unavailableValue"));
                         }
-
                     } else {
-                        Y.later(100, this, this.syncUI);
+                        status.addClass('input-unreplied');
                     }
-                    this._quiet = false;
-                });
+                } else {
+                    Y.later(1000, this, this.syncUI);
+                }
             } else {
-                this._quiet = false;
-                if (!this.get("readonly.evaluated")) {
+                if (!this.get("readonly.evaluated") && this.editor) {
                     this.setCachedValue(this.editor.getContent());
                 }
             }
-            
+            this._quiet = false;
             
         },
         destructor: function() {
@@ -1495,6 +1498,10 @@ YUI.add("wegas-survey-widgets", function(Y) {
             },
             showSaveButton: {
                 type: "boolean",
+                value: false
+            },
+            selfSaving: {
+                type: 'boolean',
                 value: false
             },
             inlineEditorMode: {
@@ -1537,13 +1544,6 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 emitFacade: true
             });
             this.publish("saved", {
-                emitFacade: true
-            });
-            this.publish("editing", {
-                emitFacade: true
-            });
-            /* to be fired if content is edited and canceled in a shot */
-            this.publish("revert", {
                 emitFacade: true
             });
         },
@@ -1675,7 +1675,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
             }
         },
         syncUI: function(quiet) {
-            var desc, CB, value, select, option, values;
+            var desc, CB, value, select, values;
             this._quiet = quiet;
             CB = this.get("contentBox");
             desc = this.get("input");
@@ -1744,7 +1744,9 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 this.handlers.push(CB.delegate('key', this.updateFromUl, 'up:13,32', 'li', this));
                 this.handlers.push(CB.delegate('click', this.updateFromUl, 'li', this));
             }
-            this.on('save', this._save);
+            
+            // @TODO delete
+            //this.on('save', this._save);
             
             if (this.isSlider) {
                 var ctx = this;
@@ -1847,7 +1849,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
         },
         updateValue: function(value) {
             var desc = this.get("input"),
-                numSelectable, iValue, logValue, values,
+                numSelectable, iValue, values,
 
                 allowedValues = desc.get('choices');
             if (allowedValues && allowedValues.length > 0) {
@@ -1887,22 +1889,24 @@ YUI.add("wegas-survey-widgets", function(Y) {
                             values.push(value);
                         }
                     }
-                    logValue = value = JSON.stringify(values);
+                    value = JSON.stringify(values);
                 } else {
-                    // For xApi keep a simple value (no array) when only one item is selectable:
-                    logValue = value;
                     // Only one value -> replace
                     value = JSON.stringify([value]);
                 }
             }
 
-            this.setCachedValue(value);
-            !this._quiet && this.fire("save", {id: this.inputId, value: logValue});
+            if (!this._quiet) {
+                this.setCachedValue(value);
+            }
             Y.log("Selected value(s): " + value);
             this.syncUI(true);
             return true;
         },
         _save: function(e) {
+            // @TODO never called, clean up
+            return;
+            
             var value = Y.Wegas.Helper.stripHtml(e.value.replace(/"/g, "\\\""));
             Y.Wegas.Facade.Variable.script.remoteFnEval(
                 function(value, survname, inputname) {
@@ -1913,8 +1917,22 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 this.get("input").get("name")
             );
             this.fire("saved", {id: e.id, value: value});
+        },
+        logValue:function() {
+            var value = this.getCachedValue();
+            if (value && value !== this._initialValue) {
+                value = Y.Wegas.Helper.stripHtml(value.replace(/"/g, "\\\""));
+                Y.Wegas.Facade.Variable.script.remoteFnEval(
+                    function(value, survname, inputname) {
+                        surveyXapi.post(surveyXapi.choiceInput(value, survname, inputname));
+                    },
+                    value,
+                    this.surveyName,
+                    this.get("input").get("name")
+                );
+                this.fire("saved", {id: this.inputId, value: value});
+            }
         }
-
     }, {
         EDITORNAME: "Choice input",
         ATTRS: {
