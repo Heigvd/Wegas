@@ -152,7 +152,7 @@
 
 .wegas-survey-widget .wegas-survey-input-status.input-error {
     text-align: left;
-    color: red;
+    color: #cc0000;
     font-weight: bold;
 }
 

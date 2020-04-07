@@ -494,8 +494,14 @@ YUI.add("wegas-survey-widgets", function(Y) {
             if (!this.currentInputId && this.surveyStatus === SURVEY_STATUS.ALL_REPLIED) {
                 // All inputs are answered, but the survey is not yet validated:
                 // display the last input with a validation button.
-                this.currentInputId = this.lastInputId;
-                this.surveyDisplay = SURVEY_DISPLAY.INPUT;
+                if (this.oneQuestionPerPage) {
+                    this.currentInputId = this.lastInputId;
+                    this.surveyDisplay = SURVEY_DISPLAY.INPUT;
+                } else {
+                    this.currentInputId = this.lastInputId;
+                    this.surveyDisplay = SURVEY_DISPLAY.SECTION_HEAD;
+                    this.backToPreviousSectionByPage();
+                }
             }
             
             var currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId),
@@ -741,29 +747,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
             } else { // One section/page mode:
                 switch (this.surveyDisplay) {
                     case SURVEY_DISPLAY.SECTION_HEAD:
-                        currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
-                        currentSection = this.getSectionOfInputObj(currentInput);
-                        currentSectionId = currentSection.get("id");
-                        if (currentSectionId === this.firstSection.get("id")) {
-                            // If we are at the first section, just show survey header/introduction
-                            this.surveyDisplay = SURVEY_DISPLAY.SURVEY_HEAD;
-                        } else {
-                            // We are not at the start: go back to the previous section, skipping concatenated ones:
-                            var sectionIndex = this._findById(this.activeSections, currentSectionId),
-                                prevSection = this.activeSections[sectionIndex-1],
-                                prevSectionInputId;
-                            if (prevSection.silent) {
-                                do {
-                                    prevSectionInputId = currentSection.firstInputId;
-                                    sectionIndex = this._findById(this.activeSections, currentSection.get("id"));
-                                    prevSection = this.activeSections[sectionIndex-1];
-                                    currentSection = prevSection;
-                                } while(currentSection && currentSection.silent);
-                                this.currentInputId = prevSectionInputId;
-                            } else {
-                                this.currentInputId = prevSection.firstInputId;
-                            }
-                        }
+                        this.backToPreviousSectionByPage();
                         break;
                     case SURVEY_DISPLAY.SURVEY_HEAD:
                     case SURVEY_DISPLAY.INPUT:
@@ -773,6 +757,34 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 }
             }
             this.syncUI();
+        },
+        // Sets this.currentInputId to the top of the previous section 
+        // (or even further back if silent sections are concatenated).
+        backToPreviousSectionByPage: function() {
+            var currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId),
+            currentSection = this.getSectionOfInputObj(currentInput),
+            currentSectionId = currentSection.get("id");
+            if (currentSectionId === this.firstSection.get("id")) {
+                // If we are at the first section, just show survey header/introduction
+                this.surveyDisplay = SURVEY_DISPLAY.SURVEY_HEAD;
+            } else {
+                // We are not at the start: go back to the previous section, skipping concatenated ones:
+                var sectionIndex = this._findById(this.activeSections, currentSectionId),
+                    prevSection = this.activeSections[sectionIndex-1],
+                    prevSectionInputId;
+                if (prevSection.silent) {
+                    do {
+                        prevSectionInputId = currentSection.firstInputId;
+                        sectionIndex = this._findById(this.activeSections, currentSection.get("id"));
+                        prevSection = this.activeSections[sectionIndex-1];
+                        currentSection = prevSection;
+                    } while(currentSection && currentSection.silent);
+                    this.currentInputId = prevSectionInputId;
+                } else {
+                    this.currentInputId = prevSection.firstInputId;
+                }
+            }
+
         },
         // Returns the index of the array element having the given id, or -1 if not found.
         _findById: function(arr, id) {
@@ -956,7 +968,11 @@ YUI.add("wegas-survey-widgets", function(Y) {
         saveCurrentInputs: function() {
             for (var cw in this.childWidgets) {
                 var curr = this.childWidgets[cw];
-                curr.logValue();
+                try {
+                    curr.logValue();
+                } catch(e) {
+                    Y.log("SurveyWidget: logValue failed.");
+                }
             }
         },
         // Returns, if applicable, a message indicating the first unreplied, active and compulsory input.
@@ -1068,11 +1084,13 @@ YUI.add("wegas-survey-widgets", function(Y) {
             this.handlers = [];
             this.xSlider = null;
             this.inputId = this.get("input").get("id");
-            this._initialValue = NaN;
             this.surveyName = this.get("input").getParent().getParent().get("name");
-            if (this.get("input").getInstance().get("isReplied") === false) {
+            this._initialValue = this.getCachedValue();
+            if (this.get("input").getInstance().get("isReplied") === false ||
+                this._initialValue === null) {
                 // Initialize with more appropriate value
                 this.setCachedValue(NaN);
+                this._initialValue = NaN;
             }
             this.publish("save", {
                 emitFacade: true
@@ -1192,25 +1210,9 @@ YUI.add("wegas-survey-widgets", function(Y) {
             }, this);
 
         },
-        _save: function(e) {
-            // @TODO clean up, never called
-            return;
-            
-            this.setCachedValue(e.value);
-            Y.Wegas.Facade.Variable.script.remoteFnEval(
-                function(value, survname, inputname) {
-                    surveyXapi.post(surveyXapi.numberInput(value, survname, inputname));
-                },
-                e.value,
-                this.surveyName,
-                this.get("input").get("name")
-            );
-            this.fire("saved", {id: e.id, value: e.value});
-        },
         logValue:function() {
-            // @TODO check if current value already logged
             var value = this.getCachedValue(),
-                hasValue = !Number.isNaN(value) && value !== null;
+                hasValue = !Number.isNaN(value) && value !== this._initialValue;
             if (hasValue) {
                 Y.Wegas.Facade.Variable.script.remoteFnEval(
                     function(value, survname, inputname) {
@@ -1221,6 +1223,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     this.get("input").get("name")
                 );
                 this.fire("saved", {id: this.inputId, value: value});
+                this._initialValue = value;
             }
         },
         destructor: function() {
@@ -1338,7 +1341,6 @@ YUI.add("wegas-survey-widgets", function(Y) {
             "</div>",
         initializer: function() {
             this.inputId = this.get("input").get("id");
-            this._initialValue = '';
             this.surveyName = this.get("input").getParent().getParent().get("name");
             if (this.get("input").getInstance().get("isReplied") === false ||
                 this.getCachedValue() === null) {
@@ -1392,55 +1394,31 @@ YUI.add("wegas-survey-widgets", function(Y) {
             }, this);
         },
         _save: function(e) {
-            // @TODO: clean up
             this.setCachedValue(e.value);
-            return;
-            
-            var cb = this.get("contentBox"),
-                value = e.value;
-            if (!this._quiet) {
-                this._initialContent = value;
-                this.setCachedValue(value);
-                if (e.target instanceof Y.Wegas.SurveyTextInput) {
-                    // Reduce saved text inputs to pure text without HTML
-                    value = Y.Wegas.Helper.stripHtml(value.replace(/(\r\n|\n\r|\r|\n)/g, " ")).replace(/"/g, "\\\"");
-                }
-                Y.Wegas.Facade.Variable.script.remoteFnEval(
-                    function(value, survname, inputname) {
-                        surveyXapi.post(surveyXapi.textInput(value, survname, inputname));
-                    },
-                    value,
-                    this.surveyName,
-                    this.get("input").get("name")
-                );
-                this.fireSaved(value);
-            }
-
-            cb.removeClass("loading");
         },
         logValue:function() {
             var value = this.getCachedValue(),
+                cleanValue,
                 hasValue = value !== this._initialContent;
             if (hasValue) {
-                this._initialContent = value;
                 // Reduce saved text inputs to pure text without HTML
-                value = Y.Wegas.Helper.stripHtml(value.replace(/(\r\n|\n\r|\r|\n)/g, " ")).replace(/"/g, "\\\"");
+                cleanValue = Y.Wegas.Helper.stripHtml(value.replace(/(\r\n|\n\r|\r|\n)/g, " ")).replace(/"/g, "\\\"");
                 
                 Y.Wegas.Facade.Variable.script.remoteFnEval(
                     function(value, survname, inputname) {
                         surveyXapi.post(surveyXapi.textInput(value, survname, inputname));
                     },
-                    value,
+                    cleanValue,
                     this.surveyName,
                     this.get("input").get("name")
                 );
-                this.fireSaved(value);
+                this.fireSaved(cleanValue);
+                this._initialContent = value;
             }
         },
-        // Required by Wegas.TextInput :
+        // Method required by Wegas.TextInput :
         fireEditing: function(content) {
             var payload = this.getPayload();
-
             var input = this.get("input").toObject();
             input.value = content;
             this.fire('editing', payload);
@@ -1538,8 +1516,14 @@ YUI.add("wegas-survey-widgets", function(Y) {
             this.handlers = [];
             var desc = this.get("input");
             this.inputId = desc.get("id");
-            this._initialValue = undefined;
             this.surveyName = this.get("input").getParent().getParent().get("name");
+            this._initialValue = this.getCachedValue();
+            if (this.get("input").getInstance().get("isReplied") === false ||
+                this._initialValue === null) {
+                // Initialize with specific value
+                this.setCachedValue('');
+                this._initialValue = '';
+            }
             this.publish("save", {
                 emitFacade: true
             });
@@ -1700,7 +1684,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     value = "<i>" + I18n.t("survey.editor.noValueProvided") + '</i>';
                 }
                 CB.one(".wegas-survey-choicesinput-content").setContent(value);
-            } else if (value !== this._initialValue) {
+            } else if (hasValue) {
                 var choices = desc.get("choices");
                 if (choices && choices.length > 0) {
                     if (!value) {
@@ -1725,9 +1709,6 @@ YUI.add("wegas-survey-widgets", function(Y) {
                         }
                     }
                 }
-            } else {
-                // no-update case, fetch effective value from "select"
-                this.setCachedValue(this.getCurrentValue());
             }
             this._quiet = false;
         },
@@ -1744,9 +1725,6 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 this.handlers.push(CB.delegate('key', this.updateFromUl, 'up:13,32', 'li', this));
                 this.handlers.push(CB.delegate('click', this.updateFromUl, 'li', this));
             }
-            
-            // @TODO delete
-            //this.on('save', this._save);
             
             if (this.isSlider) {
                 var ctx = this;
@@ -1903,34 +1881,22 @@ YUI.add("wegas-survey-widgets", function(Y) {
             this.syncUI(true);
             return true;
         },
-        _save: function(e) {
-            // @TODO never called, clean up
-            return;
-            
-            var value = Y.Wegas.Helper.stripHtml(e.value.replace(/"/g, "\\\""));
-            Y.Wegas.Facade.Variable.script.remoteFnEval(
-                function(value, survname, inputname) {
-                    surveyXapi.post(surveyXapi.choiceInput(value, survname, inputname));
-                },
-                value,
-                this.surveyName,
-                this.get("input").get("name")
-            );
-            this.fire("saved", {id: e.id, value: value});
-        },
         logValue:function() {
-            var value = this.getCachedValue();
-            if (value && value !== this._initialValue) {
-                value = Y.Wegas.Helper.stripHtml(value.replace(/"/g, "\\\""));
+            var value = this.getCachedValue(),
+                cleanValue,
+                hasValue = typeof value === 'string' && value !== this._initialValue;
+            if (hasValue) {
+                cleanValue = Y.Wegas.Helper.stripHtml(value.replace(/"/g, "\\\""));
                 Y.Wegas.Facade.Variable.script.remoteFnEval(
                     function(value, survname, inputname) {
                         surveyXapi.post(surveyXapi.choiceInput(value, survname, inputname));
                     },
-                    value,
+                    cleanValue,
                     this.surveyName,
                     this.get("input").get("name")
                 );
-                this.fire("saved", {id: this.inputId, value: value});
+                this.fire("saved", {id: this.inputId, value: cleanValue});
+                this._initialValue = value;
             }
         }
     }, {
