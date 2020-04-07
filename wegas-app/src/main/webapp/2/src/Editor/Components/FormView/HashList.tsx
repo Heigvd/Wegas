@@ -239,11 +239,13 @@ function EntriesView({
           .sort(([, a], [, b]) => sortValues(a, b))
           .map(([k, v], i) => {
             let schema: SchemaPropsSchemas | undefined;
+            let label: React.ReactNode | undefined;
             let newChoices: HashListChoices | undefined;
             if (choices) {
               const choice: HashListChoice | undefined = choices.find(
                 c => c.value.prop === k,
               );
+              label = choice?.label;
               if (choice && choice.value && isHashListValue(choice.value)) {
                 schema = choice.value.schema;
               } else {
@@ -277,10 +279,18 @@ function EntriesView({
             } else {
               return (
                 <EntriesView
+                  labelNode={label}
                   currentValue={v.value}
-                  onChange={value =>
-                    onChange({ ...currentValue, [k]: { ...v, value } })
-                  }
+                  onChange={value => {
+                    let newValue: ImprovedValues;
+                    const nestedValue = { ...v, value };
+                    if (Object.keys(nestedValue.value).length > 0) {
+                      newValue = { ...currentValue, [k]: nestedValue };
+                    } else {
+                      newValue = omit(currentValue, k);
+                    }
+                    onChange(newValue);
+                  }}
                   view={{
                     ...view,
                     choices: newChoices,

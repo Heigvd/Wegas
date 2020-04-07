@@ -407,10 +407,10 @@ export const schemaProps = {
     layout?: SchemaLayout,
     borderTop?: boolean,
   ) => ({
-    additionalProperties: {
-      required: false,
-      type: 'string',
-    },
+    // additionalProperties: {
+    //   required: false,
+    //   type: 'string',
+    // },
     required,
     type: 'object',
     value,
