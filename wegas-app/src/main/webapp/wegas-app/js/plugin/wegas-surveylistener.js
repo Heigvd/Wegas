@@ -12,7 +12,16 @@
 YUI.add('wegas-surveylistener', function(Y) {
     "use strict";
 
-    var SurveyListener, Plugin = Y.Plugin;
+    var SurveyListener, Plugin = Y.Plugin,
+        // In increasing order of progress, status of a given survey:
+        ORCHESTRATION_PROGRESS = {
+            NOT_STARTED: "NOT_STARTED",
+            REQUESTED: "REQUESTED",
+            ONGOING: "ONGOING",
+            COMPLETED: "COMPLETED",
+            CLOSED: "CLOSED"
+        };
+        
 
     SurveyListener = Y.Base.create("wegas-surveylistener", Plugin.Base, [], {
         initializer: function() {
@@ -47,10 +56,12 @@ YUI.add('wegas-surveylistener', function(Y) {
         checkSurveys: function() {
             if (!this.currentSurvey) {
                 for (var id in this.knownSurveyHandlers) {
-                    var inst = Y.Wegas.Facade.Variable.cache.findById(id).getInstance();
+                    var inst = Y.Wegas.Facade.Variable.cache.findById(id).getInstance(),
+                        status = inst.get("status");
                     if (inst.get("active") &&
-                        inst.get("requested") &&
-                        inst.get("validated") === false) {
+                        status === ORCHESTRATION_PROGRESS.REQUESTED ||
+                        status === ORCHESTRATION_PROGRESS.ONGOING ||
+                        status === ORCHESTRATION_PROGRESS.COMPLETED) {
                         this.showSurvey(inst);
                         return;
                     }
@@ -83,18 +94,17 @@ YUI.add('wegas-surveylistener', function(Y) {
         },
 
         onUpdatedInstance: function(e) {
-            var entity = e.entity;
-            if (entity.get("closed")) {
+            var entity = e.entity,
+                status = entity.get("status");
+            if (status === ORCHESTRATION_PROGRESS.CLOSED) {
                 if (this.currentSurvey && this.currentSurvey.get("id") === entity.get("id")) {
                     this.retireSurvey();
                     this.checkSurveys();
                 }
-            } else if (entity.get("validated")) {
-                // do nothing
-            } else if (entity.get("started")) {
-                // do nothing
-            } else if (entity.get("requested")) {
+            } else if (status === ORCHESTRATION_PROGRESS.REQUESTED) {
                 this.showSurvey(entity);
+            } else {
+                // do nothing
             }
         },
         
@@ -131,7 +141,10 @@ YUI.add('wegas-surveylistener', function(Y) {
                     Y.log("Survey request ignored, another one is already active");
                     return;
                 }
-                if (inst.get("active") && inst.get("validated") === false) {
+                var status = inst.get("status");
+                if (inst.get("active") &&
+                    status !== ORCHESTRATION_PROGRESS.NOT_STARTED &&
+                    status !== ORCHESTRATION_PROGRESS.CLOSED) {
                     ctx.currentSurvey = inst;
                     var cfg, container, wrapper;
                     container = Y.one(".wegas-playerview .wegas-pageloader-content").addClass("wegas-survey-ontop");
