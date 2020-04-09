@@ -140,6 +140,12 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         nodeClass: "wegas-editor-resultitem",
                         parentNode: "wegas-editor-questionitem"
                     }, {
+                        nodeClass: "wegas-editor-surveysection",
+                        parentNode: "wegas-editor-survey"
+                    }, {
+                        nodeClass: "wegas-editor-surveyinput",
+                        parentNode: "wegas-editor-surveysection"
+                    }, {
                         nodeClass: "wegas-editor-evaluation",
                         parentNode: "wegas-editor-evaluationcontainer"
                     }]
@@ -507,6 +513,51 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         //rightWidget: Y.Node.create(EDITBUTTONTPL),
                         iconCSS: "fa fa-users fa-1",
                         cssClass: "wegas-editor-listitem wegas-editor-review " + advancedClass
+                    };
+                case 'SurveyTextDescriptor':
+                case 'SurveyNumberDescriptor':
+                case 'SurveyChoicesDescriptor':
+                    return {
+                        type: 'TreeNode',
+                        label: text,
+                        children: (!collapsed) ? this.genScopeTreeViewElements(entity) : [],
+                        data: {
+                            entity: entity
+                        },
+                        collapsed: collapsed,
+                        selected: selected,
+                        iconCSS: entity.getIconCss(),
+                        cssClass: "wegas-editor-surveyinput wegas-treeview-advanced-children " + advancedClass
+                    };
+                case 'SurveyDescriptor':
+                    return {
+                        type: 'TreeNode',
+                        label: text,
+                        /*tooltip: tooltip,*/
+                        children: this.genTreeViewElements(entity.get("items")),
+                        childrenShortcut: true,
+                        data: {
+                            entity: entity
+                        },
+                        collapsed: collapsed,
+                        selected: selected,
+                        iconCSS: "fa fa-bar-chart fa-1",
+                        cssClass: "wegas-editor-listitem wegas-editor-survey " + advancedClass
+                    };
+                case 'SurveySectionDescriptor':
+                    return {
+                        type: 'TreeNode',
+                        label: text,
+                        /*tooltip: tooltip,*/
+                        children: this.genTreeViewElements(entity.get("items")),
+                        childrenShortcut: true,
+                        data: {
+                            entity: entity
+                        },
+                        collapsed: collapsed,
+                        selected: selected,
+                        iconCSS: "fa fa-map fa-1",
+                        cssClass: "wegas-editor-surveysection " + advancedClass
                     };
                 default:
                     return {
