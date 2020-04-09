@@ -1,0 +1,517 @@
+/*
+* Wegas
+* http://wegas.albasim.ch
+*
+* Copyright (c) 2020  School of Business and Engineering Vaud, Comem, MEI
+* Licensed under the MIT License
+*/
+
+.wegas-survey-page,
+.wegas-survey-container {
+    background: #7AA1C3;
+    height: 100%;
+}
+
+.wegas-survey-overlay {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.wegas-survey-ontop > *:not(.wegas-survey-overlay) {
+    display: none !important;
+}
+
+.wegas-survey-widget {
+    font-family: "Open Sans";
+    color: white;
+    margin: 5px auto;
+    padding-bottom: 20px;
+    max-width: 95%;
+    min-width: 600px;
+    width: max-content;
+}
+
+.wegas-survey-widget .title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+.wegas-survey-widget .description {
+    margin: 20px auto 25px;
+    width: max-content;
+}
+
+.wegas-survey-widget .section {
+    width: 100%;
+    min-width: 600px;
+    margin: auto;
+}
+
+.wegas-survey-widget .section .section-header {
+    background-color: #618fb8;
+    border-radius: 4px;
+    box-shadow: 0 0 2px #dce6ef;
+}
+
+.wegas-survey-widget .section .section-title-bar,
+.wegas-survey-widget .section .section-description {
+    padding-top: 5px;
+}
+
+.wegas-survey-widget .section-title-bar {
+    width: 100%;
+}
+
+.wegas-survey-widget .save-status {
+    font-style: italic;
+    opacity: 0.75;
+    float: right;
+}
+
+.wegas-survey-widget .section-title {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-bottom: 5px;
+    width: 100%;
+    padding: 5px;
+}
+
+.wegas-survey-widget .section-title-bar .save-status {
+    float: right;
+    margin-right: 6px;
+}
+
+.wegas-survey-widget .section-description {
+    margin: 0 auto 10px;
+    padding: 5px;
+}
+
+.wegas-survey-widget .container {
+    margin-bottom: 20px;
+}
+
+.wegas-survey-widget .wegas-survey-input {
+    margin-bottom: 20px;
+}
+
+.wegas-survey-widget .wegas-survey-input-desc {
+    margin: 8px auto 15px;
+    opacity: 0.8;
+    text-align: left;
+}
+
+.wegas-survey-widget .section .content > div {
+    margin: 10px;
+}
+
+.wegas-survey-input-label {
+    font-weight: 600;
+    text-align: left;
+    min-height: 1px;
+}
+
+/*
+.wegas-survey-input-label.wegas-compulsory-input:after {
+    content: '(*)';
+    margin-left: 7px;
+    font-size: 12px;
+    vertical-align: bottom;
+}
+*/
+
+.wegas-survey-input-label.wegas-optional-input:after {
+    content: attr(data-optionalornot);
+    font-size: 12px;
+    font-weight: normal;
+    font-style: italic;
+    margin-left: 4px;
+}
+
+.wegas-survey-widget .section .content{
+    background-color: #eeeeee12;
+    height: auto;
+    width: auto;
+    border-radius: 4px;
+    box-shadow: 0 0 2px #ddd;
+}
+
+.wegas-survey-widget .wegas-survey-input-content {
+    height: auto;
+    width: auto;
+}
+
+.wegas-survey-widget .wegas-survey-input-status {
+    opacity: 0.8;
+    text-align: right;
+    font-style: italic;
+    min-height: 6px;
+    margin-right: -8px;
+}
+
+.wegas-survey-widget .wegas-survey-input-status.input-error {
+    text-align: left;
+    color: #cc0000;
+    font-weight: bold;
+}
+
+.wegas-survey-widget .wegas-survey-input-status.input-isreplied:after {
+    content: "\f00c";
+    font-family: "FontAwesome";
+    padding-left: 4px;
+    color: #009900;
+    opacity: 1;
+    font-size: 20px;
+    font-style: normal;
+    text-shadow: 0 0 1px yellow;
+}
+
+.wegas-survey-widget .navigation-buttons {
+    margin-top: 30px;
+}
+
+.wegas-survey-widget .navigation-buttons button {
+    border-radius: 3px;
+    background: hsla(0, 0% , 100%, 0.3);
+    text-align: center;
+    border: 1px solid hsla(0, 0%, 100%, 0.2);
+    color: white;
+}
+
+.wegas-survey-widget .navigation-buttons button:hover {
+    background: hsla(0, 0% , 100%, 0.6);
+    color: #666;
+    box-shadow: 0 0 1px white;
+}
+
+.wegas-survey-widget .navigation-buttons .validate,
+.wegas-survey-widget .navigation-buttons .close {
+    float: right;
+}
+
+.wegas-survey-widget .navigation-buttons .validate button:before {
+    content: "\f00c";
+    font-family: "FontAwesome";
+    padding-left: 2px;
+    padding-right: 4px;
+}
+
+.wegas-survey-widget .navigation-buttons .close button:before {
+    content: "\f00d";
+    font-family: "FontAwesome";
+    padding-left: 2px;
+    padding-right: 4px;
+    color: red;
+}
+
+.wegas-survey-widget .navigation-buttons .validate button.ready {
+    background-color: #199b27;
+    border: 1px solid hsla(0, 0%, 100%, 0.5);
+}
+
+.wegas-survey-widget .navigation-buttons .validate button.ready:hover {
+    color: white;
+    background-color: green;
+}
+
+.wegas-survey-widget .navigation-buttons .back {
+    float: left;
+}
+
+.wegas-survey-widget .navigation-buttons .back button:before {
+    content: '«';
+    padding-right: 5px;
+}
+
+.wegas-survey-widget .navigation-buttons .next {
+    float: right;
+}
+
+.wegas-survey-widget .navigation-buttons .next button:after {
+    content: '»';
+    padding-left: 5px;
+}
+
+
+/*****  Number input  *****/
+
+.wegas-survey-widget .wegas-survey-number-instance-input {
+    width: 50px;
+    text-align: center;
+}
+
+.wegas-survey-widget .wegas-survey-number-unit {
+    padding-left: 5px;
+}
+
+.wegas-survey-widget .wegas-survey-number-instance-slider:not(:empty) {
+    padding-top: 20px;
+    text-align: center;
+}
+
+.wegas-survey-widget .small-range-grade .wegas-survey-number-instance-input-container,
+.wegas-survey-widget .wegas-survey-number-instance-slider:not(:empty) + .wegas-survey-number-instance-input-container {
+    display: none;
+}
+
+.yui3-skin-sam .wegas-survey-widget .yui3-slider-x .yui3-slider-rail,
+.yui3-skin-sam .wegas-survey-widget .yui3-slider-x .yui3-slider-rail-cap-left,
+.yui3-skin-sam .wegas-survey-widget .yui3-slider-x .yui3-slider-rail-cap-right {
+    background-image: url(../../lib/yui3/build/slider-base/assets/skins/sam/rail-x-lines.png);
+}
+
+.yui3-skin-sam .wegas-survey-widget  .yui3-slider-x .yui3-slider-rail-cap-left:after,
+.yui3-skin-sam .wegas-survey-widget  .yui3-slider-x .yui3-slider-rail-cap-right:after {
+    content: attr(data-value);
+    position:absolute;
+    top: -10px;
+    font-family: monospace;
+    font-size: 7pt;
+    text-align: center;
+    width:20px;
+}
+
+.yui3-skin-sam .small-range-grade .yui3-slider-x .yui3-slider-rail:after {
+    content: attr(data-value);
+    font-family: monospace;
+    font-size: 7pt;
+    position: absolute;
+    left: 160px;
+    top: 2px;
+    padding: 1px;
+    border-bottom: 1px solid #aaa;
+}
+
+.yui3-skin-sam .wegas-survey-widget .yui3-slider-x .yui3-slider-rail-cap-right:after {
+    right: 0px;
+}
+
+/*******  Text inputs   *******/
+
+.yui3-skin-sam .wegas-survey-widget .wegas-text-input-editor {
+    background: white;
+    color: black;
+    padding: 4px;
+}
+
+/* Workaround for a bug in TinyMCE: */
+.yui3-skin-sam .mce-tinymce-inline.mce-panel.mce-floatpanel {
+    display: none;
+}
+
+.yui3-skin-sam .wegas-survey-widget .wegas-survey-textevalinput .wegas-survey-input-content {
+    border: 1px solid #ddd;
+    margin-top: 6px;
+}
+
+/****   Choices (i.e. String constants)   ****/
+
+.yui3-skin-sam .wegas-survey-widget .wegas-survey-choicesinput-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.yui3-skin-sam .wegas-survey-widget .wegas-survey-choicesinput-widget .wegas-string-input-checkboxes.inline {
+    display: inline-block;
+}
+
+.yui3-skin-sam .wegas-survey-widget .wegas-survey-choicesinput-widget .wegas-string-input-checkboxes li {
+    background: hsla(0, 0% , 100%, 0.3);
+    text-align: center;
+    border: 1px solid hsla(0, 0%, 100%, 0.2);
+    white-space: nowrap;
+    transition: none;
+}
+
+.yui3-skin-sam .wegas-survey-widget .wegas-survey-choicesinput-widget .wegas-string-input-checkboxes.inline li.selected:before{
+    position: absolute;
+    color: #009900;
+    margin: 2px 0px 0 -9px;
+    font-size: 17px;
+}
+
+.yui3-skin-sam .wegas-survey-widget .wegas-survey-choicesinput-content .label {
+    display: inline-block;
+    line-height: 22px;
+    vertical-align: top;
+    font-weight: bold;
+}
+
+.yui3-skin-sam .wegas-survey-widget .wegas-survey-choicesinput-widget .wegas-string-input-checkboxes li.selected,
+.yui3-skin-sam .wegas-survey-widget .wegas-survey-choicesinput-widget .wegas-string-input-checkboxes li:hover {
+    background: hsla(0, 0% , 100%, 0.6);
+    color: #666;
+    box-shadow: 0 0 1px white;
+}
+
+.yui3-skin-sam .wegas-survey-widget .wegas-survey-choicesinput-widget .wegas-string-input-checkboxes li.selected {
+    font-weight: bold;
+}
+
+.yui3-skin-sam .wegas-survey-widget .wegas-survey-choicesinput-widget .wegas-string-input-checkboxes li.checkbox {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    padding: 0;
+    margin: 0;
+    box-shadow: 0 0 0px 1px #618fb8;
+}
+
+.yui3-skin-sam .wegas-survey-widget .wegas-survey-choicesinput-widget .wegas-string-input-checkboxes li.checkbox:not(:last-of-type) {
+    margin: 0 15px 0 0;
+}
+
+.yui3-skin-sam .wegas-survey-widget .wegas-survey-choicesinput-widget .choices-slider-container {
+    display: flex;
+    align-items: center;
+    margin: auto;
+    justify-content: center;
+    width: auto;
+}
+
+.yui3-skin-sam .wegas-survey-widget .wegas-survey-choicesinput-content .label {
+    width: min-content;
+    max-width: 200px;
+}
+
+.yui3-skin-sam .wegas-survey-widget .wegas-survey-choicesinput-widget .slider-input {
+    margin: auto 25px;
+}
+
+.yui3-skin-sam .wegas-survey-widget .wegas-survey-choicesinput-widget .choices-slider {
+    width: 200px;
+}
+
+/**** Progress bar ****/
+
+.yui3-skin-sam .wegas-survey-widget .progress-bar-background {
+    margin-bottom: 20px;
+    width: 100%;
+    background-color: rgba(238, 238, 238, 0.5);
+    color: black;
+    height: 15px;
+    border: 0px none;
+    border-radius: 4px;
+    text-align: center;
+    position: relative;
+    font-size: 11px;
+    line-height: 15px;
+}
+
+.yui3-skin-sam .wegas-survey-widget .progress-bar {
+    height: 15px;
+    border: 0px none;
+    background: linear-gradient(0deg, rgba(0,153,0,1) 0%, rgba(0,180,0,1) 50%, rgba(0,153,0,1) 100%);
+    color: white;
+    border-radius: 4px;
+    float: left;
+}
+
+.yui3-skin-sam .wegas-survey-widget .progress-value {
+    position: absolute;
+}
+
+.wegas-react-form-content span.fa-bars {
+    margin-right: 15px;
+}
+
+
+/***** Dashboard orchestrator *****/
+.wegas-survey-orchestrator {
+    margin: 10px;
+}
+
+.wegas-survey-orchestrator .warning:not(:empty) {
+    font-weight: bold;
+    color: red;
+    border: 3px ridge red;
+    width: max-content;
+    padding: 10px;
+}
+
+.wegas-survey-orchestrator .selected-survey-list {
+    border-top: 1px solid gray;
+    margin-top: 5px;
+}
+
+.wegas-survey-orchestrator .selected-survey {
+    margin: 10px 0;
+    padding: 10px;
+    border: 2px ridge #adceeb;
+}
+
+.wegas-survey-orchestrator .selected-survey .survey-header .survey-title {
+    display: inline-block;
+    max-width: calc(100% - 90px);
+    font-size: 150%;
+    font-weight: bold;
+}
+
+.wegas-survey-orchestrator .selected-survey .survey-refresh {
+    float: right;
+    margin-right: 10px;
+}
+
+.wegas-survey-orchestrator .selected-survey .survey-refresh button {
+    border-radius: 4px;
+    border: 1px solid lightgray;
+}
+
+.wegas-survey-orchestrator .selected-survey .status-line {
+    line-height: 2;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.wegas-survey-orchestrator .selected-survey .request-survey {
+    margin-left: 10px;
+}
+
+.wegas-survey-orchestrator .selected-survey .request-survey:before {
+    content: "\f04b";
+    font-family: "FontAwesome";
+    padding-left: 2px;
+    padding-right: 6px;
+    color: #009900;
+}
+
+.wegas-survey-orchestrator .selected-survey .request-survey:hover {
+    background-image: linear-gradient(transparent,rgba(0,0,0,0.05) 40%,rgba(0,0,0,0.15));
+}
+
+.wegas-survey-orchestrator .selected-survey .teams-table {
+    display: inline-table;
+    border: 2px inset #adceeb;
+    min-width: 300px;
+}
+
+.wegas-survey-orchestrator .selected-survey .teams-table thead {
+    font-weight: bold;
+    font-style: italic;
+}
+
+.wegas-survey-orchestrator .selected-survey .teams-table thead tr {
+    height: 30px;
+}
+
+.wegas-survey-orchestrator .selected-survey .teams-table td {
+    padding: 4px 8px;
+    text-align: center;
+    border: 1px solid #DDD;
+}
+
+.wegas-survey-orchestrator .selected-survey .teams-table .name {
+}
+
+.wegas-survey-orchestrator .selected-survey .monitoring .menu {
+    margin-left: 8px;
+    font-size: 18px;
+    color: #5b9dd7;
+}
+
+.wegas-survey-orchestrator .selected-survey .monitoring .menu:hover {
+    cursor: pointer;
+}
