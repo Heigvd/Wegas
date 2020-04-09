@@ -1889,6 +1889,7 @@ YUI.add('wegas-datasource', function(Y) {
                 if (this.arePagesHardcoded()) {
                     this.getPage("index", Y.bind(function(index) {
                         if (index) {
+                            this.index = index;
                             callback(index);
                         } else {
                             // no hardcoded index
@@ -1912,14 +1913,16 @@ YUI.add('wegas-datasource', function(Y) {
                                 }
                             }
 
+                            this.index = index;
                             callback(index);
                         }
                     }, this));
                 } else {
                     if (callback instanceof Function) {
-                        cfg.on.success = function(e) {
-                            callback(e.response.results);
-                        };
+                        cfg.on.success = Y.bind(function(e) {
+                            this.index = e.response.results;
+                            callback(this.index);
+                        }, this);
                     }
                     // @FIXME: let some time for servers to sync.
                     Y.later(1000, this, this.sendRequest, cfg);

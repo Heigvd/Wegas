@@ -479,8 +479,10 @@ public class WebsocketFacade {
 
     public void pageUpdate(Long gameModelId, String pageId, String socketId) {
         if (pusher != null) {
-            GameModel gameModel = gameModelFacade.find(gameModelId);
-            pusher.trigger(gameModel.getChannel(), "PageUpdate", pageId, socketId);
+            if (!pageId.equals("index")) {
+                GameModel gameModel = gameModelFacade.find(gameModelId);
+                pusher.trigger(gameModel.getChannel(), "PageUpdate", pageId, socketId);
+            }
         }
     }
 

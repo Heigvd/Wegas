@@ -144,8 +144,8 @@ public class ModelFacade {
     }
 
     /**
-     * Clear non-modelable content.
-     * Some entities do not well support model extraction process. Thus, those should be wiped out from the newly extracted model
+     * Clear non-modelable content. Some entities do not well support model extraction process.
+     * Thus, those should be wiped out from the newly extracted model
      */
     private static class ClearModel implements MergeableVisitor {
 
@@ -184,8 +184,8 @@ public class ModelFacade {
     }
 
     /**
-     * Some entities deserve a special treatment before their integration in a model cluster.
-     * Target is the scenario to integrate. reference #1 is the model
+     * Some entities deserve a special treatment before their integration in a model cluster. Target
+     * is the scenario to integrate. reference #1 is the model
      * <ul>
      * <li>set all descriptor, gamemodelcontents and languages as private.</li>
      * <li>clear state machine states for each fsm which exists in the model</li>
@@ -211,7 +211,7 @@ public class ModelFacade {
             }
 
             if (target instanceof StateMachineDescriptor && references.length > 0 && references[0] instanceof StateMachineDescriptor
-                    && target instanceof TriggerDescriptor == false) {
+                && target instanceof TriggerDescriptor == false) {
                 StateMachineDescriptor inScenario = (StateMachineDescriptor) target;
                 StateMachineDescriptor inModel = (StateMachineDescriptor) target;
 
@@ -240,15 +240,19 @@ public class ModelFacade {
     }
 
     /**
-     * Create a gameModel which contains only the content which is shared among all gameModels
-     * The structure, as well as gameModel properties, will be the same as the first scenario in the list
-     * The returned scenario is not persisted. Caller may personalize the model (changing descriptors visibility).
+     * Create a gameModel which contains only the content which is shared among all gameModels The
+     * structure, as well as gameModel properties, will be the same as the first scenario in the
+     * list The returned scenario is not persisted. Caller may personalize the model (changing
+     * descriptors visibility).
      * <p>
-     * To eventually create and persist the model, method {@link #createModel(com.wegas.core.persistence.game.GameModel, java.util.List)  createModel} must be called
+     * To eventually create and persist the model, method
+     * {@link #createModel(com.wegas.core.persistence.game.GameModel, java.util.List)  createModel}
+     * must be called
      *
      *
      * @param modelName name of the new model
-     * @param scenarios list of gameModel to model, the first acts as reference for descriptors structure
+     * @param scenarios list of gameModel to model, the first acts as reference for descriptors
+     *                  structure
      *
      * @return a game model which contains what all given scenario have in common
      */
@@ -628,10 +632,8 @@ public class ModelFacade {
     }
 
     /**
-     * Normalise Languages
-     * * * * * * * * * * * * * * * * * * * * *
-     * Reset refId (same code, same refId) for each code which exists in the model
-     * Assert same name, same code
+     * Normalise Languages * * * * * * * * * * * * * * * * * * * * Reset refId (same code, same
+     * refId) for each code which exists in the model Assert same name, same code
      */
     private void processLanguages(GameModel model, List<GameModel> scenarios) {
 
@@ -663,14 +665,14 @@ public class ModelFacade {
                     } else {
                         // same code, different name
                         errors.add("GameModel " + gameModel + " " + gml.getCode() + " has the wrong name of "
-                                + gml.getLang() + " rather than " + codeToLangName.get(gml.getCode()) + "!");
+                            + gml.getLang() + " rather than " + codeToLangName.get(gml.getCode()) + "!");
                     }
                 } else {
                     // code not found, but name exists !
                     if (langNameToCode.get(gml.getLang()) != null) {
                         errors.add("GameModel " + gameModel + " " + gml.getLang() + " has the wrong code of "
-                                + gml.getCode() + " rather than " + langNameToCode.get(gml.getLang()) + "!");
-                    }else {
+                            + gml.getCode() + " rather than " + langNameToCode.get(gml.getLang()) + "!");
+                    } else {
                         gml.forceRefId(null);
                         gml.assertRefId();
                     }
@@ -696,9 +698,9 @@ public class ModelFacade {
 
     public void fixVariableTree(Long modelId, List<Long> scenarios) throws RepositoryException {
         fixVariableTree(gameModelFacade.find(modelId),
-                scenarios.stream()
-                        .map(id -> gameModelFacade.find(id))
-                        .collect(Collectors.toList())
+            scenarios.stream()
+                .map(id -> gameModelFacade.find(id))
+                .collect(Collectors.toList())
         );
     }
 
@@ -845,11 +847,11 @@ public class ModelFacade {
     }
 
     /**
-     * EclipseLink seems to do strange things when the first level cache is very full, like re-creating existing variables,
-     * or throwing erratic OptimisticLockException.
+     * EclipseLink seems to do strange things when the first level cache is very full, like
+     * re-creating existing variables, or throwing erratic OptimisticLockException.
      * <p>
-     * Clearing this cache prevent such a behaviour but such an operation must be used carefully because
-     * all not-flushed entities will be detached after that.
+     * Clearing this cache prevent such a behaviour but such an operation must be used carefully
+     * because all not-flushed entities will be detached after that.
      *
      * @param modelId
      * @param referenceId
@@ -881,12 +883,11 @@ public class ModelFacade {
         logger.debug(Helper.printGameModel(scenario));
 
         /**
-         * This flush is required by several EntityRevivedEvent listener,
-         * which operate some SQL queries (which didn't return anything before
-         * entities have been flushed to database
+         * This flush is required by several EntityRevivedEvent listener, which operate some SQL
+         * queries (which didn't return anything before entities have been flushed to database
          * <p>
-         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
-         * it will not return any result if this flush not occurs
+         * for instance, reviving a taskDescriptor needs to fetch others tasks by name, it will not
+         * return any result if this flush not occurs
          */
         variableDescriptorFacade.flush();
 
@@ -937,9 +938,8 @@ public class ModelFacade {
                     }
 
                     /**
-                     * make sure refids match.
-                     * Create missing descriptors
-                     * move descriptor to correct location
+                     * make sure refids match. Create missing descriptors move descriptor to correct
+                     * location
                      */
                     fixVariableTree(model, scenarios);
 
@@ -1220,8 +1220,8 @@ public class ModelFacade {
                                 GameModelLanguage byName = scenario.getLanguageByName(newLang.getLang());
                                 if (byName != null && !byName.equals(byCode)) {
                                     throw WegasErrorMessage.error("Language with same name (\"" + newLang.getLang()
-                                            + "\") already exists, but its code (\""
-                                            + byName.getCode() + "\") does not match the one from the model (\"" + newLang.getCode() + "\")");
+                                        + "\") already exists, but its code (\""
+                                        + byName.getCode() + "\") does not match the one from the model (\"" + newLang.getCode() + "\")");
                                 }
                             }
 
