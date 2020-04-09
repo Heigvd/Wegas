@@ -15,6 +15,7 @@ import {
   childHighlightCSS,
   EditorHandleProps,
 } from '../tools/EditableComponent';
+import 'react-reflex/styles.css';
 
 const componentType = 'LinearLayout';
 
@@ -25,7 +26,7 @@ interface PlayerLinearLayoutProps extends LinearLayoutProps {
   /**
    * allowResize - let the splitter for users to change the display
    */
-  allowResize?: boolean;
+  allowUserResize?: boolean;
   /**
    * containersSizeRatio - allows to fix a specific size ratio for each element in the layout
    */
@@ -61,7 +62,7 @@ function PlayerLinearLayout(props: PlayerLinearLayoutProps) {
     if (
       i > 0 &&
       ((editMode && i !== props.children.length - 1) ||
-        (childProps.allowResize && !editMode))
+        (childProps.allowUserResize && !editMode))
     ) {
       children.push(
         <ReflexSplitter key={`SPLITTER${i / (editMode ? 2 : 1)}`} />,
@@ -94,6 +95,7 @@ function PlayerLinearLayout(props: PlayerLinearLayoutProps) {
             );
         }}
         className={cx(showBorders && css(childHighlightCSS))}
+        style={{ overflow: 'visible' }}
       >
         {/* We need to group every 2 elements in edit mode because drop zones are added */}
         {props.children[i]}
@@ -116,25 +118,6 @@ function PlayerLinearLayout(props: PlayerLinearLayoutProps) {
   };
 
   return (
-    // <div
-    //   className={cx(showLayout && layoutHighlightStyle, flex, grow)}
-    //   style={{ width: '100%' }}
-    // >
-    //   <div
-    //     style={{
-    //       display: props.horizontal ? 'block' : 'inline-flex',
-    //       width: '100%',
-    //       height: '100%',
-    //     }}
-    //   >
-    //     <EditHandle
-    //       togglerProps={{
-    //         onChange: setShowLayout,
-    //         value: showLayout,
-    //         hint: 'Highlight list borders (only during edition mode)',
-    //       }}
-    //       vertical={!props.horizontal}
-    //     />
     <ComponentContainer
       flexProps={flexProps}
       showBorders={showLayout}
@@ -149,8 +132,6 @@ function PlayerLinearLayout(props: PlayerLinearLayoutProps) {
         {children}
       </ReflexContainer>
     </ComponentContainer>
-    //   </div>
-    // </div>
   );
 }
 
@@ -164,7 +145,7 @@ registerComponent(
       className: schemaProps.string('ClassName', false),
       horizontal: schemaProps.boolean('Horizontal', false),
       containersSizeRatio: schemaProps.hidden(false, 'object'),
-      allowResize: schemaProps.boolean('Splitter', false),
+      allowUserResize: schemaProps.boolean('Splitter', false),
     },
     [],
     () => ({ children: [] }),

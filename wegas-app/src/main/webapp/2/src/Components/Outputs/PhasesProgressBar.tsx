@@ -70,9 +70,11 @@ function drawBar(
 
   for (let i = 0; i < phases; i++) {
     if (i > 0) {
-      content.push(<InterPhaseComponent value={value} phase={i} />);
+      content.push(
+        <InterPhaseComponent value={value} phase={i} key={'INTER' + i} />,
+      );
     }
-    content.push(<PhaseComponent value={value} phase={i} />);
+    content.push(<PhaseComponent value={value} phase={i} key={'PHASE' + i} />);
   }
   return <div className={cx(flex, flexDistribute, itemCenter)}>{content}</div>;
 }

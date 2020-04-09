@@ -6,7 +6,7 @@ import {
   dndComponnent,
   useComponentDrag,
 } from '../../../Editor/Components/Page/ComponentPalette';
-import { useDrop, DropTargetMonitor } from 'react-dnd';
+import { useDrop, DropTargetMonitor, DragElementWrapper } from 'react-dnd';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { themeVar } from '../../Theme';
 import { flex, flexRow, textCenter } from '../../../css/classes';
@@ -17,6 +17,7 @@ import { FlexItemProps, FlexItem } from '../../Layouts/FlexList';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import { useDebounce } from '../../Hooks/useDebounce';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
+import { wlog } from '../../../Helper/wegaslog';
 
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
@@ -61,13 +62,13 @@ const handleContentStyle = css({
     background: themeVar.primaryHoverColor,
     borderTopLeftRadius: themeVar.borderRadius,
     borderTopRightRadius: themeVar.borderRadius,
-    opacity: 0.0,
-    transition: 'visibility 0.5s, opacity 0.5s',
+    // opacity: 0.0,
+    // transition: 'visibility 0.5s, opacity 0.5s',
   },
-  ':hover>.wegas-component-handle-title': {
-    opacity: 1,
-    transition: 'opacity 0s',
-  },
+  // ':hover>.wegas-component-handle-title': {
+  //   opacity: 1,
+  //   transition: 'opacity 0s',
+  // },
   '&>.wegas-component-handle-content': {
     background: themeVar.primaryHoverColor,
     borderRadius: themeVar.borderRadius,
@@ -137,6 +138,12 @@ const visitPath = (path: string[], callback: (path: string[]) => void) => {
   } while (purePath.length > 0);
 };
 
+const checkIfInsideRectangle = (
+  A: { x: number; y: number },
+  C: { x: number; y: number },
+  Ptest: { x: number; y: number },
+) => Ptest.x >= A.x && Ptest.x <= C.x && Ptest.y >= A.y && Ptest.y <= C.y;
+
 function Nothing() {
   return null;
 }
@@ -148,6 +155,30 @@ const defaultMandatoryProps: PageComponentMandatoryProps = {
 };
 
 export const defaultMandatoryKeys = Object.keys(defaultMandatoryProps);
+
+function useDndComponentDrop(
+  onDrop?: (dndComponnent: DnDComponent) => void,
+): [
+  {
+    isOverCurrent: boolean;
+    canDrop: boolean;
+    item: DnDComponent | null;
+  },
+  DragElementWrapper<any>,
+] {
+  const [dropZoneProps, dropZone] = useDrop({
+    accept: dndComponnent,
+    canDrop: () => true,
+    drop: onDrop,
+    collect: (mon: DropTargetMonitor) => ({
+      isOverCurrent: mon.isOver({ shallow: true }),
+      canDrop: mon.canDrop(),
+      item: mon.getItem() as DnDComponent | null,
+    }),
+  });
+  const delayedCanDrop = useDebounce(dropZoneProps.canDrop, 100);
+  return [{ ...dropZoneProps, canDrop: delayedCanDrop }, dropZone];
+}
 
 export interface ComponentContainerProps
   extends Omit<PageComponentMandatoryProps, 'ComponentContainer'> {
@@ -222,28 +253,75 @@ export function ComponentEditorContainer({
         onMouseEnter={() => {
           const computedHandles: JSX.Element[] = [];
           const currentHandle = handles[flattenPath(path)];
-          if (currentHandle.dom.current) {
+          if (currentHandle?.dom.current) {
             const {
               x: cx,
               y: cy,
+              width: cw,
+              height: ch,
             } = currentHandle.dom.current.getBoundingClientRect();
+            const [A1, /*B1,*/ C1 /*D1*/] = [
+              { x: cx, y: cy },
+              // { x: cx, y: cy + ch },
+              { x: cx + cw, y: cy + ch },
+              // { x: cx + cw, y: cy },
+            ];
             computedHandles.push(currentHandle.jsx);
             const trimmedPath = path.slice(0, -1);
             visitPath(trimmedPath, visitedPath => {
               const component = handles[flattenPath(visitedPath)];
-              if (component.dom.current) {
-                const { x, y } = component.dom.current.getBoundingClientRect();
-                if (x === cx && y === cy) {
+              if (component?.dom.current) {
+                const {
+                  x,
+                  y,
+                  width: w,
+                  height: h,
+                } = component.dom.current.getBoundingClientRect();
+                const [A2, B2, C2, D2] = [
+                  { x: x, y: y },
+                  { x: x, y: y + h },
+                  { x: x + w, y: y + h },
+                  { x: x + w, y: y },
+                ];
+                // const [A1in, B1in, C1in, D1in] = [
+                //   checkIfInsideRectangle(A2, C2, A1),
+                //   checkIfInsideRectangle(A2, C2, B1),
+                //   checkIfInsideRectangle(A2, C2, C1),
+                //   checkIfInsideRectangle(A2, C2, D1),
+                // ];
+                const [A2in, B2in, C2in, D2in] = [
+                  checkIfInsideRectangle(A1, C1, A2),
+                  checkIfInsideRectangle(A1, C1, B2),
+                  checkIfInsideRectangle(A1, C1, C2),
+                  checkIfInsideRectangle(A1, C1, D2),
+                ];
+                if (
+                  // A1in ||
+                  // B1in ||
+                  // C1in ||
+                  // D1in ||
+                  A2in ||
+                  B2in ||
+                  C2in ||
+                  D2in
+                ) {
                   computedHandles.splice(0, 0, component.jsx);
                 }
               }
             });
           }
+          wlog(computedHandles);
           setStackedHandles(computedHandles);
         }}
         onMouseLeave={() => setStackedHandles(undefined)}
       >
-        {stackedHandles ? stackedHandles : <HandleContent ref={handleRef} />}
+        {stackedHandles ? (
+          stackedHandles.map((v, i) => (
+            <React.Fragment key={i}>{v}</React.Fragment>
+          ))
+        ) : (
+          <HandleContent ref={handleRef} />
+        )}
       </div>
     ) : null;
   }
@@ -254,14 +332,15 @@ export function ComponentEditorContainer({
     showBorders,
     isLayout,
   }: React.PropsWithChildren<ComponentContainerProps>) {
+    const [{ canDrop }] = useDndComponentDrop();
     return (
       <FlexItem
         {...flexProps}
         className={cx(
           handleControlStyle,
           {
-            [childHighlightStyle]: showBorders,
-            [layoutHighlightStyle]: showBorders,
+            [childHighlightStyle]: showBorders || canDrop,
+            [layoutHighlightStyle]: showBorders || canDrop,
             [expandEditStyle]:
               editMode && showControls && isLayout && path.length === 0,
           },
@@ -281,26 +360,12 @@ interface ComponentDropZoneProps {
 }
 
 function ComponentDropZone({ onDrop }: ComponentDropZoneProps) {
-  const [dropZoneProps, dropZone] = useDrop({
-    accept: dndComponnent,
-    canDrop: () => true,
-    drop: onDrop,
-    collect: (mon: DropTargetMonitor) => ({
-      isOverCurrent: mon.isOver({ shallow: true }),
-      canDrop: mon.canDrop(),
-      item: mon.getItem() as DnDComponent | null,
-    }),
-  });
-  const show = useDebounce(dropZoneProps.canDrop, 100);
-
+  const [{ canDrop, isOverCurrent }, dropZone] = useDndComponentDrop(onDrop);
   return (
     <>
-      {show && (
+      {canDrop && (
         <div className={editItemStyle}>
-          <div
-            ref={dropZone}
-            className={dropZoneClass(dropZoneProps.isOverCurrent)}
-          >
+          <div ref={dropZone} className={dropZoneClass(isOverCurrent)}>
             Drop component here
           </div>
         </div>

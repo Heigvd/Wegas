@@ -127,6 +127,7 @@ registerComponent(
           },
         },
       ]),
+      children: schemaProps.hidden(false),
     },
     ['ISListDescriptor'],
     (val?: Readonly<ISListDescriptor>) =>

@@ -5,15 +5,16 @@ import { css } from 'emotion';
 import { themeVar } from '../Theme';
 
 export const dropZoneFocusCss = {
-  background: "repeating-Linear-gradient( 45deg, #fff, #fff 10px, #eee 10px, #eee 20px);",
+  background:
+    'repeating-Linear-gradient( 45deg, #fff, #fff 10px, #eee 10px, #eee 20px);',
   zIndex: 1000,
 };
 
 export const dropZoneFocus = css(dropZoneFocusCss);
 
 export const dropZoneHover = css({
-  ...dropZoneFocusCss,
   backgroundColor: themeVar.successColor,
+  zIndex: 1000,
 });
 
 export const dropZoneClass = (over?: boolean) =>
