@@ -25,15 +25,14 @@ export const FILE_BASE = (gameModelId?: number) =>
  * Returns url to read a file
  * @param absolutePath the absolute path of the file to read
  */
-export const fileURL = (absolutePath: string) => {
-  return (
-    API_ENDPOINT +
-    FILE_BASE(GameModel.selectCurrent().id!) +
-    'read' +
-    absolutePath
-  );
+export const fileURL = (absolutePath: string, gameModelId?: number) => {
+  return API_ENDPOINT + FILE_BASE(gameModelId) + 'read' + absolutePath;
 };
 
+/**
+ * FileAPIFactory - generates en object containing methods to manage files
+ * @param gameModelId
+ */
 export const FileAPIFactory = (gameModelId?: number) => {
   return {
     /**

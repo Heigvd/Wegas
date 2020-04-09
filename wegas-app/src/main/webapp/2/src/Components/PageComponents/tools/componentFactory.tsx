@@ -120,7 +120,7 @@ export interface PageComponentMandatoryProps {
   /**
    * path - the location of the component in the page
    */
-  path?: string[];
+  path?: number[];
 }
 
 export function pageComponentFactory<

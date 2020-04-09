@@ -11,7 +11,6 @@ import { wlog } from '../../../Helper/wegaslog';
 import 'react-reflex/styles.css';
 import { flex, noOverflow, grow } from '../../../css/classes';
 import { themeVar } from '../../../Components/Theme';
-import { availableLayoutTabs } from '../Layout';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
@@ -27,8 +26,8 @@ export const splitter = css({
 });
 
 export const focusTabContext = React.createContext<
-  (id: keyof typeof availableLayoutTabs) => void
->(() => {});
+  (id: string, layoutId: string) => void
+>(() => undefined);
 
 type LayoutType = 'ReflexLayoutNode' | 'TabLayoutNode';
 
@@ -483,7 +482,7 @@ type TabLayoutsAction<T extends ComponentMap> =
 /**
  * setLayout is the reducer function for layout disposition management
  */
-const setLayout = <T extends ManagedLayoutMap>(
+const setLayout = (layoutAccept: string) => <T extends ManagedLayoutMap>(
   layouts: T,
   action: TabLayoutsAction<T['layoutMap']>,
 ) =>
@@ -688,7 +687,7 @@ const setLayout = <T extends ManagedLayoutMap>(
     }
     // Saving layout in local storage
     window.localStorage.setItem(
-      'DnDGridLayoutData',
+      `DnDGridLayoutData\\${layoutAccept}`,
       JSON.stringify(newLayouts),
     );
     return newLayouts;
@@ -752,19 +751,31 @@ interface LinearLayoutProps<T extends ComponentMap> {
    * If a layout is saved in the browser, this won't be taken in account unless the saved layout is reset
    */
   layout?: LayoutItems<T>;
+  /**
+   * layoutId - The token that filter the drop actions
+   */
+  layoutId: string;
+  /**
+   * onFocusTab - Allows to pass back the focusTab function without using a context
+   */
+  onFocusTab?: (focusTab: (tabId: string, layoutId: string) => void) => void;
 }
 
 /**
  * MainLinearLayout is a component that allows to chose the position and size of its children
  */
-function MainLinearLayout<T extends ComponentMap>(props: LinearLayoutProps<T>) {
+export function MainLinearLayout<T extends ComponentMap>(
+  props: LinearLayoutProps<T>,
+) {
   const tabs = React.useRef<ComponentMap>(props.tabs ? props.tabs : {});
-  const savedLayoutJSON = window.localStorage.getItem('DnDGridLayoutData');
+  const savedLayoutJSON = window.localStorage.getItem(
+    `DnDGridLayoutData\\${props.layoutId}`,
+  );
   const savedLayout = savedLayoutJSON
     ? (JSON.parse(savedLayoutJSON) as ManagedLayoutMap)
     : null;
   const [layout, dispatchLayout] = React.useReducer(
-    setLayout,
+    setLayout(props.layoutId),
     savedLayout && !layoutTabMissing(savedLayout.layoutMap, tabs.current)
       ? savedLayout
       : reduceChildren(props.layout),
@@ -811,6 +822,19 @@ function MainLinearLayout<T extends ComponentMap>(props: LinearLayoutProps<T>) {
       tabKey: tabKey,
     });
 
+  const focusTab = React.useCallback(
+    (id: string, layoutId: string) => {
+      if (props.layoutId === layoutId) {
+        dispatchLayout({ type: 'EXTERNALSELECT', tabKey: id });
+      }
+    },
+    [props.layoutId],
+  );
+
+  React.useEffect(() => {
+    props.onFocusTab && props.onFocusTab(focusTab);
+  }, [props, focusTab]);
+
   /**
    * renderLayouts is a recursvie function that renders the linearLayout.
    * This function creates a reflexLayout or a tabLayout component depending on the layout type
@@ -836,6 +860,7 @@ function MainLinearLayout<T extends ComponentMap>(props: LinearLayoutProps<T>) {
               onNewTab={onNewTab(currentLayoutKey)}
               defaultActiveLabel={currentLayout.defaultActive}
               onSelect={onSelect}
+              layoutId={props.layoutId}
             />
           );
         }
@@ -881,12 +906,9 @@ function MainLinearLayout<T extends ComponentMap>(props: LinearLayoutProps<T>) {
       }
     }
   };
+
   return (
-    <focusTabContext.Provider
-      value={(id: keyof typeof availableLayoutTabs) => {
-        dispatchLayout({ type: 'EXTERNALSELECT', tabKey: id });
-      }}
-    >
+    <focusTabContext.Provider value={focusTab}>
       <ReparentableRoot>
         <div className={cx(flex, grow)}>{renderLayouts()}</div>
       </ReparentableRoot>
