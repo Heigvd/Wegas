@@ -104,6 +104,8 @@ YUI.add('wegas-app', function(Y) {
                         while ((event = events.shift()) !== undefined) {
                             event.detach();
                         }
+                        this.plug(Y.Plugin.SurveyListener);
+
                         this.plug(Y.Plugin.LockManager);
                         this.plug(Y.Plugin.IdleMonitor);
                         this.idlemonitor.on("idle", Y.bind(this.goIdle, this));
@@ -254,6 +256,20 @@ YUI.add('wegas-app', function(Y) {
                             });
 
                         }, this);
+
+                    // @TODO Until a survey import feature is available, restrict the survey tab
+                    // to admins and games already containing at least one survey:
+                    var isCurrentUserAdmin = !!Y.Wegas.Facade.User.cache.get("currentUser").get("roles").find(function(role) {
+                        return role.get("name") === "Administrator";
+                    })
+                    if (isCurrentUserAdmin || Y.Wegas.Facade.Variable.cache.find("@class", "SurveyDescriptor")) {
+                        extraTabs._addTab({
+                            label: I18n.t("global.survey"),
+                            children: [{
+                                    "type": "SurveyOrchestrator"
+                                }]
+                        });
+                    }
                 }
 
                 Y.one("body").on("key", function(e) { // detect ctrl+§ key

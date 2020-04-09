@@ -319,7 +319,7 @@ public class MergeHelper {
                     } catch (Exception ex) {
                         logger.error(ex.toString());
                         Helper.printWegasStackTrace(ex);
-                        throw new WegasErrorMessage("error", "Invocation Failure: should never appends: " + ex);
+                        throw new WegasErrorMessage("error", "Invocation Failure: should never happen: " + ex);
                     }
                 }
 
