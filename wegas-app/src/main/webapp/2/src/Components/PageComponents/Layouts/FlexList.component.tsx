@@ -36,6 +36,10 @@ interface PlayerFlexListProps extends FlexListCompoentProps {
    * name - the name of the component
    */
   name?: string;
+  /**
+   * children - the array containing the child components
+   */
+  children: WegasComponent[];
 }
 
 function PlayerFlexList(props: PlayerFlexListProps) {
@@ -134,7 +138,10 @@ registerComponent(
       val
         ? {
             // children:val.itemsIds.map(id=>componentsStore.getComponentByType(VariableDescriptor.select(id)))
+            children: [],
           }
-        : {},
+        : {
+            children: [],
+          },
   ),
 );

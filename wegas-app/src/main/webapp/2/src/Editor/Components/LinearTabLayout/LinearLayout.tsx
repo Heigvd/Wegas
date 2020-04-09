@@ -20,9 +20,11 @@ export const splitter = css({
   },
   '&.reflex-container.vertical > .reflex-splitter': {
     width: '5px',
+    height: 'auto',
   },
   '&.reflex-container.horizontal > .reflex-splitter': {
     height: '5px',
+    width: 'auto',
   },
 });
 

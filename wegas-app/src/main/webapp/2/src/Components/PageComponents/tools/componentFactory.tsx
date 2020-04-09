@@ -15,9 +15,7 @@ import { SchemaPropsSchemas } from './schemaProps';
 import { pick, omit } from 'lodash-es';
 import { flexItemDefaultKeys } from '../../Layouts/FlexList';
 
-export interface PageComponent<
-  P = { [name: string]: unknown } & { children?: WegasComponent[] }
-> {
+export interface PageComponent<P extends {} = {}> {
   getComponent: (
     uneditable?: boolean,
   ) => React.FunctionComponent<P & PageComponentProps>;
@@ -31,7 +29,9 @@ export interface PageComponent<
   /**
    * gives a computed list of props from variable, if the variable is undefined, gives default props
    */
-  getComputedPropsFromVariable: (variable?: WegasScriptEditorReturnType) => P;
+  getComputedPropsFromVariable: (
+    variable?: WegasScriptEditorReturnType,
+  ) => Omit<P, keyof PageComponentMandatoryProps>;
 }
 
 interface PageComponentsState {
@@ -113,8 +113,10 @@ export function pageComponentFactory<
   schema: { [prop: string]: SchemaPropsSchemas },
   allowedVariables: T[],
   getComputedPropsFromVariable: (variable?: V) => R,
-) {
-  function generateComponent(uneditable?: boolean) {
+): PageComponent<P> {
+  function generateComponent(
+    uneditable?: boolean,
+  ): React.FunctionComponent<P & PageComponentProps> {
     const Editable: React.FunctionComponent<P & PageComponentProps> = props => (
       <EditableComponent
         {...props}

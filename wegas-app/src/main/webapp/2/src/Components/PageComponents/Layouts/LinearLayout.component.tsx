@@ -35,6 +35,10 @@ interface PlayerLinearLayoutProps extends LinearLayoutProps {
    * name - the name of the component
    */
   name?: string;
+  /**
+   * children - the array containing the child components
+   */
+  children: WegasComponent[];
 }
 
 function PlayerLinearLayout(props: PlayerLinearLayoutProps) {
@@ -135,19 +139,19 @@ function PlayerLinearLayout(props: PlayerLinearLayoutProps) {
   );
 }
 
-registerComponent(
-  pageComponentFactory(
-    PlayerLinearLayout,
-    componentType,
-    'bars',
-    {
-      name: schemaProps.string('Name', false),
-      className: schemaProps.string('ClassName', false),
-      horizontal: schemaProps.boolean('Horizontal', false),
-      containersSizeRatio: schemaProps.hidden(false, 'object'),
-      allowUserResize: schemaProps.boolean('Splitter', false),
-    },
-    [],
-    () => ({ children: [] }),
-  ),
+const test = pageComponentFactory(
+  PlayerLinearLayout,
+  componentType,
+  'bars',
+  {
+    name: schemaProps.string('Name', false),
+    className: schemaProps.string('ClassName', false),
+    horizontal: schemaProps.boolean('Horizontal', false),
+    containersSizeRatio: schemaProps.hidden(false, 'object'),
+    allowUserResize: schemaProps.boolean('Splitter', false),
+  },
+  [],
+  () => ({ children: [] }),
 );
+
+registerComponent(test);
