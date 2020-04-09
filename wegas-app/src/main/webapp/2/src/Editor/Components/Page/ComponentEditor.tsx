@@ -84,35 +84,40 @@ export const optionsSchema = {
             label: 'Order',
             value: {
               prop: 'order',
-              schema: schemaProps.number('Order', false),
+              schema: schemaProps.number('Order', true, 0),
             },
           },
           {
             label: 'Align Self',
             value: {
               prop: 'alignSelf',
-              schema: schemaProps.select('Align self', false, alignSelfValues),
+              schema: schemaProps.select(
+                'Align self',
+                true,
+                alignSelfValues,
+                'auto',
+              ),
             },
           },
           {
             label: 'Flex grow',
             value: {
               prop: 'flexGrow',
-              schema: schemaProps.number('Flex grow', false),
+              schema: schemaProps.number('Flex grow', true, 0),
             },
           },
           {
             label: 'Flex shrink',
             value: {
               prop: 'flexShrink',
-              schema: schemaProps.number('Flex shrink', false),
+              schema: schemaProps.number('Flex shrink', true, 1),
             },
           },
           {
             label: 'Flex basis',
             value: {
               prop: 'flexBasis',
-              schema: schemaProps.string('Flex basis', false),
+              schema: schemaProps.string('Flex basis', true, 'auto'),
             },
           },
         ],

@@ -11,6 +11,7 @@ import { themeVar } from '../Components/Theme';
 
 //It's really important to import index.ts in order to have the widjets allready registered before using Form
 import '../Editor/Components/FormView';
+import { optionsSchema } from '../Editor/Components/Page/ComponentEditor';
 
 interface SchemaPropsTesterState {
   hidden: string[];
@@ -21,8 +22,8 @@ interface SchemaPropsTesterState {
   code: object;
   select: string;
   undefSelect?: string;
-  simpleHashList: {};
-  customizedHashList: {};
+  // simpleHashList: {};
+  // customizedHashList: {};
   customizedMultilevelHashList: {};
 }
 
@@ -38,78 +39,79 @@ const testSchema = {
     'Option 2',
     'Option 3',
   ]),
-  undefSelect: schemaProps.select('Undefined select', false, [
-    'Option 1',
-    'Option 2',
-    'Option 3',
-  ]),
-  simpleHashList: schemaProps.hashlist('Simple hashlist', true),
-  customizedHashList: schemaProps.hashlist('Customized hashlist', true, [
-    {
-      label: 'Attribute1',
-      value: {
-        prop: 'Attribute1',
-        schema: schemaProps.select('Attribute1', true, ['1', '2', '3']),
-      },
-    },
-    {
-      label: 'Attribute2',
-      value: {
-        prop: 'Attribute2',
-        schema: schemaProps.select('Attribute2', true, ['A', 'B', 'C']),
-      },
-    },
-  ]),
-  customizedMultilevelHashList: schemaProps.hashlist(
-    'Customized multilevel hashlist',
-    true,
-    [
-      {
-        label: 'Attribute1',
-        value: {
-          prop: 'Attribute1',
-          schema: schemaProps.select('Attribute1', true, ['1', '2', '3']),
-        },
-      },
-      {
-        label: 'Next level',
-        value: {
-          prop: 'nextlevel',
-        },
-        items: [
-          {
-            label: 'Next level attribute 1',
-            value: {
-              prop: 'Next level attribute 1',
-              schema: schemaProps.select('Next level attribute1', true, [
-                '1',
-                '2',
-                '3',
-              ]),
-            },
-          },
-          {
-            label: 'Next level attribute 2',
-            value: {
-              prop: 'Next level attribute 2',
-              schema: schemaProps.select('Next level attribute 2', true, [
-                'A',
-                'B',
-                'C',
-              ]),
-            },
-          },
-        ],
-      },
-      {
-        label: 'Attribute2',
-        value: {
-          prop: 'Attribute2',
-          schema: schemaProps.select('Attribute2', true, ['A', 'B', 'C']),
-        },
-      },
-    ],
-  ),
+  // undefSelect: schemaProps.select('Undefined select', false, [
+  //   'Option 1',
+  //   'Option 2',
+  //   'Option 3',
+  // ]),
+  // simpleHashList: schemaProps.hashlist('Simple hashlist', true),
+  // customizedHashList: schemaProps.hashlist('Customized hashlist', true, [
+  //   {
+  //     label: 'Attribute1',
+  //     value: {
+  //       prop: 'Attribute1',
+  //       schema: schemaProps.select('Attribute1', true, ['1', '2', '3']),
+  //     },
+  //   },
+  //   {
+  //     label: 'Attribute2',
+  //     value: {
+  //       prop: 'Attribute2',
+  //       schema: schemaProps.select('Attribute2', true, ['A', 'B', 'C']),
+  //     },
+  //   },
+  // ]),
+  customizedMultilevelHashList: optionsSchema.options,
+  // schemaProps.hashlist(
+  //   'Customized multilevel hashlist',
+  //   true,
+  //   [
+  //     {
+  //       label: 'Attribute1',
+  //       value: {
+  //         prop: 'Attribute1',
+  //         schema: schemaProps.select('Attribute1', true, ['1', '2', '3']),
+  //       },
+  //     },
+  //     {
+  //       label: 'Next level',
+  //       value: {
+  //         prop: 'nextlevel',
+  //       },
+  //       items: [
+  //         {
+  //           label: 'Next level attribute 1',
+  //           value: {
+  //             prop: 'Next level attribute 1',
+  //             schema: schemaProps.select('Next level attribute1', true, [
+  //               '1',
+  //               '2',
+  //               '3',
+  //             ]),
+  //           },
+  //         },
+  //         {
+  //           label: 'Next level attribute 2',
+  //           value: {
+  //             prop: 'Next level attribute 2',
+  //             schema: schemaProps.select('Next level attribute 2', true, [
+  //               'A',
+  //               'B',
+  //               'C',
+  //             ]),
+  //           },
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       label: 'Attribute2',
+  //       value: {
+  //         prop: 'Attribute2',
+  //         schema: schemaProps.select('Attribute2', true, ['A', 'B', 'C']),
+  //       },
+  //     },
+  //   ],
+  // ),
 };
 
 export default function SchemaPropsTester() {
@@ -122,8 +124,8 @@ export default function SchemaPropsTester() {
     code: {},
     select: 'Option 1',
     undefSelect: undefined,
-    simpleHashList: {},
-    customizedHashList: {},
+    // simpleHashList: {},
+    // customizedHashList: {},
     customizedMultilevelHashList: {
       nextlevel: { 'Next level attribute 1': '2' },
     },

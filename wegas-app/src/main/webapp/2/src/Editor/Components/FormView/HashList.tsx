@@ -12,10 +12,9 @@ import { LabeledView, Labeled } from './labeled';
 import { DragDropArray } from './Array';
 import { MenuItem } from '../../../Components/Menu';
 import { setEntry, getEntry } from '../../../Helper/tools';
-import { hidden } from '../../../css/classes';
 
 interface ObjectValues {
-  [key: string]: string | ObjectValues;
+  [key: string]: string | number | ObjectValues;
 }
 
 interface ImprovedObjectValue {
@@ -51,11 +50,10 @@ type HashListViewBag = CommonView &
     tooltip?: string;
     choices?: HashListChoices;
   };
-export type HashListViewProps = WidgetProps.ObjectProps<HashListViewBag>;
 
 interface EntryViewProps<T> {
   prop: string;
-  value: T;
+  value: T | undefined;
   onChange: (key: string, value: T) => void;
   schema?: SchemaPropsSchemas;
 }
@@ -93,7 +91,11 @@ export function EntryView<T>({
             : schemaProps.string(
                 'Value',
                 true,
-                typeof value === 'string' ? value : JSON.stringify(value),
+                value === undefined
+                  ? ''
+                  : typeof value === 'string'
+                  ? value
+                  : JSON.stringify(value),
                 'DEFAULT',
                 undefined,
                 'shortInline',
@@ -115,7 +117,7 @@ const normalizeValues = (nv: object) => (ov?: ImprovedValues): ImprovedValues =>
         value:
           typeof v === 'object'
             ? normalizeValues(v)(
-                ov == null || ov[k] == null || typeof ov[k].value === 'string'
+                ov == null || ov[k] == null
                   ? undefined
                   : (ov[k].value as ImprovedValues),
               )
@@ -130,7 +132,7 @@ const extractValues = (values: ImprovedValues): ObjectValues =>
   Object.entries(values || {}).reduce(
     (o, [k, v]) => ({
       ...o,
-      [k]: typeof v.value === 'string' ? v.value : extractValues(v.value),
+      [k]: typeof v.value !== 'object' ? v.value : extractValues(v.value),
     }),
     {},
   );
@@ -138,14 +140,17 @@ const extractValues = (values: ImprovedValues): ObjectValues =>
 const sortValues = (a: ImprovedObjectValue, b: ImprovedObjectValue) =>
   a.index - b.index;
 
-const getKeyPath = (path: number[], choices: HashListChoices): string[] => {
+const getKeyPath = (
+  path: number[],
+  choices: HashListChoices,
+): string[] | undefined => {
   const newPath = [...path];
   const keyPath: string[] = [];
   let choice: HashListChoices | undefined = cloneDeep(choices);
   while (newPath.length > 0) {
     const key = newPath.shift();
-    if (choice == null || key == null || choices[key] == null) {
-      return keyPath;
+    if (choice == null || key == null || choice[key] == null) {
+      return;
     } else {
       keyPath.push(choice[key].value.prop);
       choice = choice[key].items;
@@ -156,20 +161,22 @@ const getKeyPath = (path: number[], choices: HashListChoices): string[] => {
 
 interface EntriesViewProps {
   currentValue: ImprovedValues;
+  onNewEntry?: (value: ImprovedValues) => void;
   onChange: (value: ImprovedValues) => void;
   inputId?: string;
   labelNode?: React.ReactNode;
   view: HashListViewBag;
-  first?: boolean;
+  allowedChoices?: HashListChoices;
 }
 
 function EntriesView({
   currentValue,
+  onNewEntry,
   onChange: onChangeOutside,
   inputId,
   labelNode,
   view,
-  first,
+  allowedChoices,
 }: EntriesViewProps) {
   const { readOnly, disabled, tooltip, choices } = view;
 
@@ -182,37 +189,37 @@ function EntriesView({
 
   return (
     <DragDropArray
-      choices={choices}
+      choices={allowedChoices}
       onChildAdd={
-        first
+        allowedChoices
           ? choice => {
               const index = Object.keys(currentValue).length;
-
               if (choice && choices) {
-                const keyPath = [
-                  ...getKeyPath(choice.path, choices),
-                  choice.value.prop,
-                ];
-                const newValue = setEntry(
-                  currentValue,
-                  { index: 0, value: '' },
-                  keyPath,
-                  {
-                    defaultObject: { value: '', index: 0 },
-                    lookupKey: 'value',
-                  },
-                );
-                if (newValue != null) {
-                  onChange(newValue);
+                const choiceKeyPath = getKeyPath(choice.path, choices);
+                if (choiceKeyPath != null) {
+                  const keyPath = [...choiceKeyPath, choice.value.prop];
+                  const newValue = setEntry(
+                    currentValue,
+                    { index: 0, value: undefined },
+                    keyPath,
+                    {
+                      defaultObject: { index: 0, value: '' },
+                      lookupKey: 'value',
+                    },
+                  );
+                  if (newValue != null) {
+                    onNewEntry && onNewEntry(newValue);
+                  }
+                } else {
+                  onNewEntry &&
+                    onNewEntry({
+                      ...currentValue,
+                      [`key${index}`]: {
+                        index,
+                        value: '',
+                      },
+                    });
                 }
-              } else {
-                onChange({
-                  ...currentValue,
-                  [`key${index}`]: {
-                    index,
-                    value: '',
-                  },
-                });
               }
             }
           : undefined
@@ -252,8 +259,7 @@ function EntriesView({
                 newChoices = choice?.items;
               }
             }
-
-            if (typeof v.value === 'string') {
+            if (typeof v.value !== 'object') {
               return (
                 <EntryView
                   key={i}
@@ -304,6 +310,30 @@ function EntriesView({
   );
 }
 
+const visitChoices = (
+  choices: HashListChoices,
+  visitorFn: (
+    choice: HashListChoice,
+    path: number[],
+  ) => HashListChoice | undefined,
+  path: number[] = [],
+): HashListChoices =>
+  choices
+    .map((c, i) => {
+      const visitedChoice = visitorFn(c, [...path, i]);
+      return visitedChoice
+        ? {
+            ...visitorFn(c, [...path, i]),
+            items: c.items
+              ? visitChoices(c.items, visitorFn, [...path, i])
+              : undefined,
+          }
+        : undefined;
+    })
+    .filter(c => c != undefined) as HashListChoices;
+
+export type HashListViewProps = WidgetProps.ObjectProps<HashListViewBag>;
+
 function HashListView({
   errorMessage,
   view,
@@ -325,32 +355,22 @@ function HashListView({
     setValue(normalizeValues(nv || {}));
   });
 
-  const visitChoices = (
-    choices: HashListChoices,
-    visitorFn: (choice: HashListChoice, path: number[]) => HashListChoice,
-    path: number[] = [],
-  ): HashListChoices =>
-    choices.map((c, i) => ({
-      ...visitorFn(c, [...path, i]),
-      items: c.items
-        ? visitChoices(c.items, visitorFn, [...path, i])
-        : undefined,
-    }));
-
-  const choices = view.choices
+  const allowedChoices = view.choices
     ? visitChoices(view.choices, (choice, path) => {
         if (view.choices) {
           const keyPath = getKeyPath(path, view.choices);
-          const newValue: ImprovedObjectValue = getEntry(
-            currentValue,
-            keyPath,
-            'value',
-          );
-          if (newValue != null && choice.items == null) {
-            return { ...choice, className: hidden };
+          if (keyPath != null) {
+            const newValue: ImprovedObjectValue = getEntry(
+              currentValue,
+              keyPath,
+              'value',
+            );
+            if (newValue != null && choice.items == null) {
+              return undefined;
+            }
           }
         }
-        return { ...choice, className: undefined };
+        return choice;
       })
     : undefined;
 
@@ -359,12 +379,13 @@ function HashListView({
       <Labeled label={label} description={description}>
         {({ inputId, labelNode }) => (
           <EntriesView
-            view={{ ...view, choices }}
+            view={view}
+            allowedChoices={allowedChoices}
             currentValue={currentValue}
+            onNewEntry={(value: ImprovedValues) => setValue(value)}
             onChange={onChange}
             inputId={inputId}
             labelNode={labelNode}
-            first
           />
         )}
       </Labeled>

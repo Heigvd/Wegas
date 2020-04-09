@@ -22,52 +22,36 @@ type FlexBasis = typeof flexBasisValues[number] | string;
 
 export interface FlexItemProps {
   /**
-   * layout : the layout CSS properties
+   * options : the layout item  options
    */
-  layout?: {
+  options?: {
     /**
-     * order - the order of the current item
+     * layout : the layout CSS properties
      */
-    order?: number;
-    /**
-     * alignSelf - justifies the items perpendicularly to the flex direction
-     */
-    alignSelf?: AlignSelf;
-    /**
-     * flexGrow - size factor of the item in the list
-     */
-    flexGrow?: number;
-    /**
-     * flexShrink - size factor of the item in the list
-     * Important : initial value is 1
-     */
-    flexShrink?: number;
-    /**
-     * flexBasis - the initial size of the item, can be set like any css size value (%,px,em,...) or with the string "content"
-     */
-    flexBasis?: FlexBasis;
+    layout?: {
+      /**
+       * order - the order of the current item
+       */
+      order?: number;
+      /**
+       * alignSelf - justifies the items perpendicularly to the flex direction
+       */
+      alignSelf?: AlignSelf;
+      /**
+       * flexGrow - size factor of the item in the list
+       */
+      flexGrow?: number;
+      /**
+       * flexShrink - size factor of the item in the list
+       * Important : initial value is 1
+       */
+      flexShrink?: number;
+      /**
+       * flexBasis - the initial size of the item, can be set like any css size value (%,px,em,...) or with the string "content"
+       */
+      flexBasis?: FlexBasis;
+    };
   };
-  /**
-   * order - the order of the current item
-   */
-  order?: number;
-  /**
-   * alignSelf - justifies the items perpendicularly to the flex direction
-   */
-  alignSelf?: AlignSelf;
-  /**
-   * flexGrow - size factor of the item in the list
-   */
-  flexGrow?: number;
-  /**
-   * flexShrink - size factor of the item in the list
-   * Important : initial value is 1
-   */
-  flexShrink?: number;
-  /**
-   * flexBasis - the initial size of the item, can be set like any css size value (%,px,em,...) or with the string "content"
-   */
-  flexBasis?: FlexBasis;
   /**
    * className - the class to apply to the item
    */
@@ -79,18 +63,15 @@ export interface FlexItemProps {
 }
 
 export const flexItemDefaultProps: FlexItemProps = {
-  layout: {
-    order: 0,
-    alignSelf: alignSelfValues[0],
-    flexGrow: 0,
-    flexShrink: 1,
-    flexBasis: flexBasisValues[0],
+  options: {
+    layout: {
+      order: 0,
+      alignSelf: alignSelfValues[0],
+      flexGrow: 0,
+      flexShrink: 1,
+      flexBasis: flexBasisValues[0],
+    },
   },
-  order: 0,
-  alignSelf: alignSelfValues[0],
-  flexGrow: 0,
-  flexShrink: 1,
-  flexBasis: flexBasisValues[0],
   className: undefined,
   style: undefined,
 };
@@ -98,17 +79,19 @@ export const flexItemDefaultProps: FlexItemProps = {
 export const flexItemDefaultKeys = Object.keys(flexItemDefaultProps);
 
 export function FlexItem({
-  layout,
+  options,
   className,
   children,
   style,
 }: React.PropsWithChildren<FlexItemProps>) {
-  const { order, alignSelf, flexGrow, flexShrink, flexBasis } = layout || {};
+  const { order, alignSelf, flexGrow, flexShrink, flexBasis } =
+    options?.layout || {};
   return (
     <div
       className={className}
       style={{
         position: 'relative',
+        textAlign: 'center',
         order,
         alignSelf,
         flexGrow,

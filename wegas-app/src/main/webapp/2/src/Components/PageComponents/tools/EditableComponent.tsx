@@ -336,16 +336,14 @@ export function ComponentEditorContainer({
     return (
       <FlexItem
         {...flexProps}
-        className={cx(
-          handleControlStyle,
-          {
+        className={
+          cx(handleControlStyle, {
             [childHighlightStyle]: showBorders || canDrop,
             [layoutHighlightStyle]: showBorders || canDrop,
             [expandEditStyle]:
               editMode && showControls && isLayout && path.length === 0,
-          },
-          flexProps.className,
-        )}
+          }) + flexProps.className
+        }
         style={flexProps.style}
       >
         {path.length > 0 && <EditHandle {...handleProps} />}
