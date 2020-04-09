@@ -1012,6 +1012,12 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }
             return taskDs;
         },
+        containsTask: function(taskDescriptor){
+            var needle = taskDescriptor.get("name");
+            return !!this.get("taskNames").find(function(taskName){
+                return taskName === needle;
+            });
+        },
         /**
          * Get active tasks
          * @returns {Array} Active tasks only

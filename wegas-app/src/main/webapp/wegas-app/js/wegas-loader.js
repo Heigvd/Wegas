@@ -50,7 +50,7 @@ YUI().use(function(Y) {
             "wegas-app": {
                 requires: ["base", "plugin", "array-extras", "timers",
                     "wegas-alerts", "wegas-helper", "wegas-entity", "wegas-datasource", "font-awesome", "template-micro",
-                    "wegas-i18n", "wegas-keyframescss", "wegas-lockmanager"]
+                    "wegas-i18n", "wegas-keyframescss", "wegas-lockmanager", "wegas-surveylistener"]
             },
             "wegas-alerts": {
                 requires: ["widget"]
@@ -215,6 +215,10 @@ YUI().use(function(Y) {
                 path: "js/plugin/wegas-popuplistener-min.js",
                 ws_provides: "PopupListener",
                 requires: "wegas-panel"
+            },
+            "wegas-surveylistener": {
+                path: "js/plugin/wegas-surveylistener-min.js",
+                ws_provides: "SurveyListener",
             },
             "wegas-resizelistener": {
                 path: "js/plugin/wegas-resizelistener-min.js",
@@ -1018,6 +1022,50 @@ YUI().use(function(Y) {
             },
             "wegas-i18n-review": {
                 path: 'js/i18n/i18n-review-min.js',
+                requires: ['wegas-i18n', 'wegas-i18n-global']
+            }
+        }
+    });
+    /**
+     * Survey
+     */
+    YUI.addGroup("wegas-survey", {
+        base: './wegas-survey/',
+        root: '/wegas-survey/',
+        modules: {
+            "wegas-survey-css": {
+                type: CSS
+            },
+            "wegas-survey-entities": {
+                requires: "wegas-entity",
+                ws_provides: ["SurveyDescriptor", "SurveyInstance", "SurveySectionDescriptor", 
+                    "SurveySectionInstance", "SurveyInputDescriptor", "SurveyInputInstance",
+                    "SurveyNumberDescriptor", "SurveyTextDescriptor", "SurveyChoicesDescriptor"]
+            },
+            "wegas-survey-widgets": {
+                requires: ["wegas-survey-css",
+                    "wegas-survey-entities",
+                    "wegas-i18n-survey",
+                    "slider",
+                    "wegas-text-input"],
+                ws_provides: [
+                    "SurveyOrchestrator",
+                    "SurveyWidget",
+                    "SurveyNumberInput",
+                    "SurveyTextInput",
+                    "SurveyChoicesInput"]
+            },
+            "wegas-i18n-survey-de": {
+                path: 'js/i18n/i18n-survey-de-min.js'
+            },
+            "wegas-i18n-survey-fr": {
+                path: 'js/i18n/i18n-survey-fr-min.js'
+            },
+            "wegas-i18n-survey-en": {
+                path: 'js/i18n/i18n-survey-en-min.js'
+            },
+            "wegas-i18n-survey": {
+                path: 'js/i18n/i18n-survey-min.js',
                 requires: ['wegas-i18n', 'wegas-i18n-global']
             }
         }
