@@ -7,6 +7,7 @@
  */
 package com.wegas.core.jcr.jta;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.wegas.core.ejb.GameModelFacade;
@@ -45,7 +46,7 @@ public class JCRTestFacade implements Serializable {
     @Inject
     private GameModelFacade gameModelFacade;
 
-    public void addPageAndRename(Long gameModelId, String pageName, String pageId, String varName) throws RepositoryException {
+    public void addPageAndRename(Long gameModelId, String pageName, String pageId, String varName) throws RepositoryException, JsonProcessingException {
         this.addAPage(gameModelId, pageName, pageId);
         this.renameAllVariables(gameModelId, varName);
     }
@@ -81,7 +82,7 @@ public class JCRTestFacade implements Serializable {
         logger.error("All done");
     }
 
-    public void addAPage(Long gameModelId, String name, String id) throws RepositoryException {
+    public void addAPage(Long gameModelId, String name, String id) throws RepositoryException, JsonProcessingException {
         GameModel gameModel = gameModelFacade.find(gameModelId);
 
         JsonNodeFactory factory = new JsonNodeFactory(false);

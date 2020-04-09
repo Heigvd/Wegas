@@ -61,12 +61,12 @@ YUI.add("treeview-sortable", function(Y) {
             return Y.Array.reduce(groups, false, function(prev, next) {
                     if (next.parentNode instanceof Array) {
                         return prev || Y.Array.reduce(next.parentNode, false, function(last, curr) {
-                                return last || node.get(BOUNDINGBOX).hasClass(next.nodeClass) &&
-                                               target.get(BOUNDINGBOX).hasClass(curr);
+                                return last || node.get(BOUNDINGBOX).hasClass(next.nodeClass)
+                                               && target && target.get(BOUNDINGBOX).hasClass(curr);
                             });
                     } else {
-                        return prev || node.get(BOUNDINGBOX).hasClass(next.nodeClass) &&
-                                       target.get(BOUNDINGBOX).hasClass(next.parentNode);
+                        return prev || node.get(BOUNDINGBOX).hasClass(next.nodeClass)
+                                       && target && target.get(BOUNDINGBOX).hasClass(next.parentNode);
                     }
                 }) && cfg.validator(node, target);
         }

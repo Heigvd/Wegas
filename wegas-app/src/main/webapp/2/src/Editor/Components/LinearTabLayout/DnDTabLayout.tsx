@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useDrop, DropTargetMonitor } from 'react-dnd';
-import { Tab, dndAcceptType, DragTab, DropTab } from './DnDTabs';
+import { Tab, DragTab, DropTab } from './DnDTabs';
 import { IconButton } from '../../../Components/Inputs/Button/IconButton';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Menu } from '../../../Components/Menu';
@@ -22,7 +22,7 @@ import {
 
 const activeButton = cx(
   css({
-  color: themeVar.primaryDarkerTextColor,
+    color: themeVar.primaryDarkerTextColor,
   }),
   button,
 );
@@ -33,7 +33,8 @@ const listStyle = css({
 });
 
 const dropZoneFocus = css({
-  background: "repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, #eeeeee80 10px, #eeeeee80 20px);",
+  background:
+    'repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, #eeeeee80 10px, #eeeeee80 20px);',
   zIndex: 1000,
 });
 
@@ -90,9 +91,9 @@ export type DropAction = (item: { label: string; type: string }) => void;
  * @param action - the action to do when an element is dropped
  *
  */
-export const dropSpecsFactory = (action: DropAction) => {
+export const dropSpecsFactory = (action: DropAction, layoutAccept: string) => {
   return {
-    accept: dndAcceptType,
+    accept: layoutAccept,
     canDrop: () => true,
     drop: action,
     collect: (mon: DropTargetMonitor) => ({
@@ -139,6 +140,10 @@ interface TabLayoutProps {
    * onNewTab - The function to call when a new tab is requested
    */
   onNewTab: (label: string) => void;
+  /**
+   * layoutId - The token that filter the drop actions
+   */
+  layoutId: string;
 }
 
 /**
@@ -154,6 +159,7 @@ export function DnDTabLayout({
   onDropTab,
   onDeleteTab,
   onNewTab,
+  layoutId,
 }: TabLayoutProps) {
   React.useEffect(() => {
     if (
@@ -166,16 +172,20 @@ export function DnDTabLayout({
   }, [components, defaultActiveLabel, onSelect]);
 
   // DnD hooks (for dropping tabs on the side of the layout)
-  const [dropLeftProps, dropLeft] = useDrop(dropSpecsFactory(onDrop('LEFT')));
-  const [dropRightProps, dropRight] = useDrop(
-    dropSpecsFactory(onDrop('RIGHT')),
+  const [dropLeftProps, dropLeft] = useDrop(
+    dropSpecsFactory(onDrop('LEFT'), layoutId),
   );
-  const [dropTopProps, dropTop] = useDrop(dropSpecsFactory(onDrop('TOP')));
+  const [dropRightProps, dropRight] = useDrop(
+    dropSpecsFactory(onDrop('RIGHT'), layoutId),
+  );
+  const [dropTopProps, dropTop] = useDrop(
+    dropSpecsFactory(onDrop('TOP'), layoutId),
+  );
   const [dropBottomProps, dropBottom] = useDrop(
-    dropSpecsFactory(onDrop('BOTTOM')),
+    dropSpecsFactory(onDrop('BOTTOM'), layoutId),
   );
   const [dropTabsProps, dropTabs] = useDrop({
-    accept: dndAcceptType,
+    accept: layoutId,
     canDrop: () => true,
     collect: (mon: DropTargetMonitor) => ({
       isOver: mon.isOver(),
@@ -203,6 +213,7 @@ export function DnDTabLayout({
             position: 'left',
             overviewNode: <div className={dropTabZone}></div>,
           }}
+          layoutId={layoutId}
         >
           <DragTab
             key={label}
@@ -211,6 +222,7 @@ export function DnDTabLayout({
             onClick={() => {
               onSelect && onSelect(label);
             }}
+            layoutId={layoutId}
           >
             <span className={grow}>
               {label}
@@ -246,25 +258,25 @@ export function DnDTabLayout({
     <Toolbar vertical={vertical} className={relative}>
       <Toolbar.Header>
         <div ref={dropTabs} className={cx(flex, grow, autoScroll)}>
-            {renderTabs()}
-            {selectItems && Object.keys(selectItems).length > 0 && (
-              <Tab key={'-1'}>
-                <Menu
-                  items={Object.keys(selectItems).map(label => ({
-                    label: label,
-                    value: label,
-                  }))}
-                  icon="plus"
-                  onSelect={i => {
-                    onSelect && onSelect(i.value);
-                    onNewTab(String(i.value));
-                  }}
+          {renderTabs()}
+          {selectItems && Object.keys(selectItems).length > 0 && (
+            <Tab key={'-1'}>
+              <Menu
+                items={Object.keys(selectItems).map(label => ({
+                  label: label,
+                  value: label,
+                }))}
+                icon="plus"
+                onSelect={i => {
+                  onSelect && onSelect(i.value);
+                  onNewTab(String(i.value));
+                }}
                 buttonClassName={button}
-                  listClassName={listStyle}
-                />
-              </Tab>
-            )}
-          </div>
+                listClassName={listStyle}
+              />
+            </Tab>
+          )}
+        </div>
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, relative)}>
         <div className={cx(expand, hideOverflow)}>

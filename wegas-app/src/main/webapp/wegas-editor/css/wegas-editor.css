@@ -1580,3 +1580,9 @@
     background-color: #fdb8c0;
     text-decoration: line-through;
 }
+
+
+.wegas-focused-widget {
+    box-shadow: inset 0px 0px 0px 2px #6aacf1;
+    background: repeating-Linear-gradient( 45deg, #ffffff00, #ffffff00 5px, #eeeeee80 5px, #eeeeee80 10px);
+}

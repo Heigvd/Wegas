@@ -40,17 +40,22 @@ export const icons = Object.values(fas).reduce(
   {},
 );
 
-function isProps(icon: Icons): icon is Props {
+export function isProps(icon: Icons): icon is Props {
   return !Array.isArray(icon) && typeof icon === 'object' && 'icon' in icon;
 }
 
-function isIconString(icon: Icons): icon is IconString {
+export function isIconString(icon: Icons): icon is IconString {
   return !Array.isArray(icon) && typeof icon === 'object' && 'value' in icon;
 }
 
-function IconDisplay({ icon }: { icon: Icon }) {
+interface IconDisplayProps {
+  icon: Icon;
+  style?: React.CSSProperties;
+}
+
+function IconDisplay({ icon, style }: IconDisplayProps) {
   return isProps(icon) ? (
-    <FontAwesome fixedWidth {...icon} />
+    <FontAwesome fixedWidth {...icon} style={style} />
   ) : isIconString(icon) ? (
     <div
       className="fa-layers svg-inline--fa fa-w-16 fa-fw"
@@ -59,22 +64,31 @@ function IconDisplay({ icon }: { icon: Icon }) {
         verticalAlign: 'middle',
       }}
     >
-      <div style={omit(icon, 'value')}>{icon.value}</div>
+      <div style={{ ...omit(icon, 'value'), ...style }}>{icon.value}</div>
     </div>
   ) : (
-    <FontAwesome fixedWidth icon={icon} />
+    <FontAwesome fixedWidth icon={icon} style={style} />
   );
 }
 
-export function IconComp({ icon }: { icon: Icons }) {
+interface IconCompProps {
+  icon: Icons;
+  style?: React.CSSProperties;
+}
+
+export function IconComp({ icon, style }: IconCompProps) {
   return Array.isArray(icon) ? (
     <span className="fa-layers fa-fw">
       {icon.map((ic: Icon, i) => (
-        <IconDisplay key={JSON.stringify(ic) + String(i)} icon={ic} />
+        <IconDisplay
+          key={JSON.stringify(ic) + String(i)}
+          icon={ic}
+          style={style}
+        />
       ))}
     </span>
   ) : (
-    <IconDisplay icon={icon} />
+    <IconDisplay icon={icon} style={style} />
   );
 }
 
