@@ -363,7 +363,7 @@ YUI.add('wegas-text-input', function(Y) {
             } else {
                 this.showLiveOverlay();
             }
-            this.waitLiveLock = Y.later(1000, this, function() {
+            this.waitLiveLock = Y.later(1250, this, function() {
                 this.waitLiveLock = null;
                 this.hideLiveOverlay();
                 this.setStatus("");
@@ -426,14 +426,52 @@ YUI.add('wegas-text-input', function(Y) {
 
             this.fire('editing', payload);
 
+            // live update: 
+            //   1) send one liveUpdate ASAP
+            //   2) send one liveUpdate each second until user stop editing
+            this.queueLiveEdition(payload.descriptor.get("scopeType"),
+                textInstance.scopeKey, textInstance);
+
+        },
+        processQueuedLiveEdition: function() {
+            if (this.queuedLiveEdition) {
+                // content has been updated since last update
+                this.fireLiveEdition();
+            } else {
+                this.liveTimer = null;
+            }
+        },
+        queueLiveEdition: function(scopeType, scopeKey, payload) {
+            this.queuedLiveEdition = {
+                scopeType: scopeType,
+                scopeKey: scopeKey,
+                textInstance: payload
+            };
+
+            if (!this.liveTimer) {
+                // no timer -> send LiveUpdate ASAP
+                this.fireLiveEdition();
+                // then, send one Live update each 500ms
+            }
+        },
+        fireLiveEdition: function() {
+
+            var scopeType = this.queuedLiveEdition.scopeType;
+            var scopeKey = this.queuedLiveEdition.scopeKey;
+            var textInstance = this.queuedLiveEdition.textInstance;
+
+            this.queuedLiveEdition = undefined;
+
             Y.Wegas.Facade.GameModel.sendRequest({
-                request: "/LiveEdition/private-" + payload.descriptor.get("scopeType")
-                    .replace("Scope", "-" + textInstance.scopeKey),
+                request: "/LiveEdition/private-" + scopeType
+                    .replace("Scope", "-" + scopeKey),
                 cfg: {
                     method: 'POST',
                     data: textInstance
                 }
             });
+
+            this.liveTimer = Y.later(1000, this, this.processQueuedLiveEdition);
         },
         fireStopEditing: function(content) {
             this.fire('stopEditing', this.getPayload(content));
@@ -1189,7 +1227,7 @@ YUI.add('wegas-text-input', function(Y) {
             input = CB.one('input');
             if (input) {
                 //this.handlers.push(input.on("blur", this.updateFromInput, this));
-                this.handlers.push( input.on('valuechange', this.keyUp, this));
+                this.handlers.push(input.on('valuechange', this.keyUp, this));
             }
             select = CB.one('select');
             if (select) {
@@ -1206,7 +1244,7 @@ YUI.add('wegas-text-input', function(Y) {
 
             var sortable = this.getSortable() && !this.get('readonly.evaluated');
 
-            if (sortable && this.get('clickSelect')){
+            if (sortable && this.get('clickSelect')) {
                 var selectedsContainer = CB.one(".selecteds");
                 var unselectedsContainer = CB.one(".unselecteds");
                 var constrain = CB.one(".wegas-input-text");

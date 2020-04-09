@@ -43,6 +43,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.shiro.crypto.RandomNumberGenerator;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
@@ -661,6 +663,11 @@ public class Helper {
                 .limit(length)
                 .collect(StringBuilder::new, (sb, i) -> sb.append((char) i), StringBuilder::append)
                 .toString();
+    }
+
+    public static String generateSalt() {
+        RandomNumberGenerator rng = new SecureRandomNumberGenerator();
+        return rng.nextBytes().toHex();
     }
 
     /**

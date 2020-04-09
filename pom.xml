@@ -94,7 +94,7 @@
         <wegas.clientErrorLogging>false</wegas.clientErrorLogging>
         <wegas.useYUICDN>false</wegas.useYUICDN>
 
-        <shiro.version>1.5.0</shiro.version>
+        <shiro.version>1.5.2</shiro.version>
         <jdk.version>1.8</jdk.version>
         <payara.version>5.201</payara.version>
         <payara.micro.version>5.201.albasim-p1</payara.micro.version>

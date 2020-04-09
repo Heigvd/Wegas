@@ -11,7 +11,8 @@ import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.security.persistence.AbstractAccount;
-import com.wegas.core.security.persistence.AccountDetails;
+import com.wegas.core.security.util.AaiAuthentication;
+import com.wegas.core.security.util.AuthenticationMethod;
 import com.wegas.editor.View.StringView;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -95,5 +96,10 @@ public class AaiAccount extends AbstractAccount {
 
     public void setVerified(Boolean verified) {
         // nothing to do, but define such a sette make Jackson happy
+    }
+
+    @Override
+    public AuthenticationMethod getAuthenticationMethod() {
+        return new AaiAuthentication();
     }
 }
