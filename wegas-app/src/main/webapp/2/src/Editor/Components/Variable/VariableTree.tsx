@@ -34,6 +34,7 @@ import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { Edition } from '../../../data/Reducer/globalState';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { mainLayoutId } from '../Layout';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -136,11 +137,7 @@ function isMatch(variableId: number, search: string): boolean {
   if (variable == null) {
     return false;
   }
-  if (
-    editorLabel(variable)
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  ) {
+  if (editorLabel(variable).toLowerCase().includes(search.toLowerCase())) {
     return true;
   }
   if (varIsList(variable)) {
@@ -166,7 +163,7 @@ const SELECTED_STYLE_WIDTH = 4;
 const headerStyle = css({
   borderLeft: `${SELECTED_STYLE_WIDTH}px solid transparent`,
 });
-const nodeContentStyle = css({
+export const nodeContentStyle = css({
   cursor: 'pointer',
   marginLeft: '5px',
   marginRight: '5px',
@@ -174,6 +171,9 @@ const nodeContentStyle = css({
     backgroundColor: themeVar.primaryHoverColor,
   },
 });
+
+export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_DRAG_ITEM';
+
 interface CTreeProps {
   variableId: number;
   subPath?: string[];
@@ -211,7 +211,7 @@ function CTree(
     const Title = asyncSFC(async () => {
       const icon = getIcon(variable!);
       return (
-        <>
+        <span className={nodeContentStyle}>
           <IconComp icon={withDefault(icon, 'question')} />
           {entityIs(variable, 'EvaluationDescriptorContainer') &&
           props.subPath &&
@@ -220,7 +220,7 @@ function CTree(
               ? 'Feedback'
               : 'Feedback comment'
             : editorLabel(variable)}
-        </>
+        </span>
       );
     });
     if (!match) {
@@ -228,6 +228,7 @@ function CTree(
     }
     return (
       <Node
+        dragId={TREEVIEW_ITEM_TYPE}
         {...props.nodeProps()}
         header={
           <span
@@ -245,9 +246,9 @@ function CTree(
                   entityIs(variable, 'FSMDescriptor') ||
                   entityIs(variable, 'DialogueDescriptor')
                 ) {
-                  focusTab('StateMachine');
+                  focusTab('StateMachine', mainLayoutId);
                 }
-                focusTab('Editor');
+                focusTab('Editor', mainLayoutId);
               }
               getEntityActions(variable!).then(({ edit }) =>
                 dispatch(
@@ -259,28 +260,26 @@ function CTree(
               );
             }}
           >
-            <span className={nodeContentStyle}>
-              <Title />
-            </span>
+            <Title />
             {entityIs(variable, 'ListDescriptor') ||
             entityIs(variable, 'QuestionDescriptor') ||
             entityIs(variable, 'WhQuestionDescriptor') ? (
               <AddMenuParent
                 variable={variable}
                 localDispatch={props.localDispatch}
-                focusTab={focusTab}
+                focusTab={tabId => focusTab(tabId, mainLayoutId)}
               />
             ) : entityIs(variable, 'ChoiceDescriptor') ? (
               <AddMenuChoice
                 variable={variable}
                 localDispatch={props.localDispatch}
-                focusTab={focusTab}
+                focusTab={tabId => focusTab(tabId, mainLayoutId)}
               />
             ) : entityIs(variable, 'EvaluationDescriptorContainer') ? (
               <AddMenuFeedback
                 variable={variable}
                 localDispatch={props.localDispatch}
-                focusTab={focusTab}
+                focusTab={tabId => focusTab(tabId, mainLayoutId)}
                 path={props.subPath![0] as 'feedback' | 'fbComments'}
               />
             ) : null}

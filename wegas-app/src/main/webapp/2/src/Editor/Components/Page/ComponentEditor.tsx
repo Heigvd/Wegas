@@ -20,6 +20,7 @@ interface EditorProps<T = WegasComponent['props']> {
   actions?: {
     label: React.ReactNode;
     action: (entity: T, path?: (string | number)[]) => void;
+    confirm?: boolean;
   }[];
   path?: (string | number)[];
   error?: {
@@ -147,7 +148,10 @@ export default function ComponentEditor({
   isFlexItem,
 }: ComponentEditorProps) {
   const schema = usePageComponentStore(s => {
-    const baseSchema = s[entity ? entity.type : 'List'].getSchema();
+    const baseSchema =
+      entity && s[entity.type]
+        ? s[entity.type].getSchema()
+        : { description: 'Unknown schema', properties: {} };
     if (isFlexItem) {
       const firstPropView: SchemaPropsSchemas & {
         view?: SchemaPropsSchemas['view'] & { borderTop?: boolean };

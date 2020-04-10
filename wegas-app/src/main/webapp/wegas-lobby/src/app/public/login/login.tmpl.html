@@ -48,7 +48,10 @@
         <a class="button button--success-reverse transparent" ui-sref="wegas.public.signup" style="margin: 15px auto -10px; color: white; font-weight: normal;"><i class="fa fa-plus-circle same-color-larger">&nbsp;</i> {{'CREATE-ACCOUNT-BTN' | translate}}</a>
     </div>
 </form>
-<div ng-if="showAaiLogin" style="margin: 50px auto 0; text-align: center;">
+<div ng-if="deprecatedBrowser" style="margin: 50px auto 0; text-align: center;">
+    <center><i><a href="http://www.browsehappy.com/">{{ 'DEPRECATED-BROWSER' | translate }}</a></i></center>
+</div>
+<div ng-if="showAaiLogin && !deprecatedBrowser" style="margin: 50px auto 0; text-align: center;">
     <a class="view__aai-login" href="{{aaiLoginUrl}}">
         AAI <b>Login</b>
     </a>

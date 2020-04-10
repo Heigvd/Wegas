@@ -199,6 +199,40 @@ YUI.add('wegas-app', function(Y) {
                 }, this);
 
                 if (extraTabs) {
+
+                    Y.Wegas.Facade.Page.cache.getIndex(function(index) {
+                        var items = [index.root];
+
+                        while (items.length) {
+                            var item = items.shift();
+
+                            if (item["@class"] === "Folder") {
+                                items = items.concat(item.items);
+                            } else if (item["@class"] === "Page") {
+                                var target = [];
+                                if (item.trainerPage) {
+                                    target.push("host");
+                                }
+
+                                if (item.scenaristPage) {
+                                    target.push("edit");
+                                }
+                                if (target.length) {
+
+                                    extraTabs._addTab({
+                                        label: item.name,
+                                        targetMode: target,
+                                        children: [{
+                                                type: "PageLoader",
+                                                pageLoaderId: "extraTab_" + item.id,
+                                                defaultPageId: item.id
+                                            }]
+                                    });
+                                }
+                            }
+                        }
+                    });
+
                     if (gm.get("properties").get("val").logID) {
                         extraTabs._addTab({
                             label: I18n.t("global.statistics"),

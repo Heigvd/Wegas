@@ -24,7 +24,7 @@ const paletteStyle = css({
 export interface DnDComponent {
   componentName: string;
   type: typeof dndComponnent;
-  path?: string[];
+  path?: number[];
 }
 
 interface ComponentElementProps {
@@ -33,7 +33,7 @@ interface ComponentElementProps {
 
 export const dndComponnent: 'dndComponnent' = 'dndComponnent';
 
-export function useComponentDrag(componentName: string, path?: string[]) {
+export function useComponentDrag(componentName: string, path?: number[]) {
   return useDrag<DnDComponent, unknown, unknown>({
     item: {
       componentName,

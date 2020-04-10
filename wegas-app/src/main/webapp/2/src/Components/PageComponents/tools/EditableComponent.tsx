@@ -97,7 +97,7 @@ const editItemStyle = css({
 
 interface ComponentEditorContainerProps {
   type: string;
-  path: string[];
+  path: number[];
 }
 
 export interface EditorHandleProps {
@@ -118,10 +118,10 @@ export interface PageComponentMandatoryProps extends FlexItemProps {
   /**
    * path - the location of the component in the page
    */
-  path?: string[];
+  path?: number[];
 }
 
-const flattenPath = (path: string[]) => {
+const flattenPath = (path: number[]) => {
   const purePath = [...path];
   let flatPath = '';
   while (purePath.length) {
@@ -130,7 +130,7 @@ const flattenPath = (path: string[]) => {
   return flatPath === '' ? '/' : flatPath;
 };
 
-const visitPath = (path: string[], callback: (path: string[]) => void) => {
+const visitPath = (path: number[], callback: (path: number[]) => void) => {
   const purePath = [...path];
   do {
     callback(purePath);
@@ -374,7 +374,7 @@ function ComponentDropZone({ onDrop }: ComponentDropZoneProps) {
 
 export interface PageComponentProps {
   children?: JSX.Element[];
-  path: string[];
+  path: number[];
 }
 
 interface EditableComponentProps {
@@ -385,7 +385,7 @@ interface EditableComponentProps {
     showBorders: boolean,
   ) => React.ReactElement | null;
   wegasChildren?: JSX.Element[];
-  path: string[];
+  path: number[];
   uneditable?: boolean;
 }
 

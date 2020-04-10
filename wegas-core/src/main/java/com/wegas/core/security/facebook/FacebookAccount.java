@@ -8,6 +8,7 @@
 package com.wegas.core.security.facebook;
 
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.util.AuthenticationMethod;
 import javax.persistence.Entity;
 
 /**
@@ -22,5 +23,10 @@ public class FacebookAccount extends AbstractAccount {
     @Override
     public Boolean isVerified() {
         return false;
+    }
+
+    @Override
+    public AuthenticationMethod getAuthenticationMethod() {
+        return null;
     }
 }

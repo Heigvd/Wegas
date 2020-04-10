@@ -4,7 +4,7 @@ import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 
 interface PageDeserializerProps {
   json: WegasComponent;
-  path?: string[];
+  path?: number[];
   uneditable?: boolean;
 }
 
@@ -27,7 +27,7 @@ export function PageDeserializer({
             <PageDeserializer
               key={i}
               json={cjson}
-              path={realPath.concat([String(i)])}
+              path={realPath.concat([i])}
               uneditable={uneditable}
             />
           )),

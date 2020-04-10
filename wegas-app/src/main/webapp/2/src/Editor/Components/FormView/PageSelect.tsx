@@ -1,7 +1,4 @@
 import * as React from 'react';
-import Select from './Select';
-import { GameModel } from '../../../data/selectors';
-import { PageAPI } from '../../../API/pages.api';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonView } from './commonView';
 import { LabeledView } from './labeled';
@@ -9,8 +6,15 @@ import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { scriptEditStyle } from './Script/Script';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
-import { omit } from 'lodash-es';
 import { createScript } from '../../../Helper/wegasEntites';
+import { useStore } from '../../../data/store';
+import { TreeSelect } from '../Tree/TreeSelect';
+import {
+  indexToTree,
+  isPageItem,
+  getPageIndexItem,
+} from '../../../Helper/pages';
+import { useScript } from '../../../Components/Hooks/useScript';
 
 export interface PageSelectProps extends WidgetProps.BaseProps {
   view: CommonView & LabeledView;
@@ -19,24 +23,10 @@ export interface PageSelectProps extends WidgetProps.BaseProps {
 }
 
 export default function PageSelect(props: PageSelectProps) {
-  const [pages, setPages] = React.useState<Pages>({});
-  const [pageValue, setPageValue] = React.useState('');
+  const [pageValue, setPageValue] = React.useState<string>('');
   const [srcMode, setSrcMode] = React.useState(false);
-
-  React.useEffect(() => {
-    const gameModelId = GameModel.selectCurrent().id!;
-    PageAPI.getIndex(gameModelId).then(res => {
-      let pages: Pages = {};
-      res.forEach((index, _i, indexes) => {
-        PageAPI.get(gameModelId, index.id, true).then(res => {
-          pages = { ...pages, ...res };
-          if (Object.keys(pages).length === indexes.length) {
-            setPages(pages);
-          }
-        });
-      });
-    });
-  }, []);
+  const index = useStore(s => s.pages.index);
+  const pageId = useScript<string>(pageValue);
 
   React.useEffect(() => {
     if (props.value === undefined) {
@@ -64,7 +54,8 @@ export default function PageSelect(props: PageSelectProps) {
           <WegasScriptEditor
             value={props.value ? props.value.content : ''}
             returnType={['string']}
-            onChange={value =>
+            onChange={setPageValue}
+            onSave={value =>
               props.onChange(
                 props.value
                   ? { ...props.value, content: value }
@@ -81,30 +72,15 @@ export default function PageSelect(props: PageSelectProps) {
           />
         </div>
       ) : (
-        <Select
-          {...omit(props, ['onChange', 'value'])}
-          onChange={onPageChange}
-          value={pageValue}
-          view={{
-            ...props.view,
-            choices: Object.keys(pages)
-              .filter(k => pages[k] !== undefined)
-              .map(k => ({ label: pages[k]['@name'] || String(k), value: k })),
-          }}
-        />
+        <>
+          {/* <StringInput value={getPageIndexItem(index,pageValue)?.name || "Unknown page"} /> */}
+          <TreeSelect
+            items={indexToTree(index)}
+            onSelect={item => isPageItem(item) && onPageChange(item.id)}
+            selected={getPageIndexItem(index, pageId)}
+          />
+        </>
       )}
     </>
   );
-
-  // return (
-  //   <Select
-  //     {...props}
-  //     view={{
-  //       ...props.view,
-  //       choices: Object.keys(pages)
-  //         .filter(k => pages[k] !== undefined)
-  //         .map(k => ({ label: pages[k]['@name'] || String(k), value: k })),
-  //     }}
-  //   />
-  // );
 }

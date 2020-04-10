@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useDrop, DropTargetMonitor } from 'react-dnd';
-import { Tab, dndAcceptType, DragTab, DropTab } from './DnDTabs';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { Tab, DragTab, DropTab } from './DnDTabs';
 import { Toolbar } from '../../../Components/Toolbar';
 import { Menu } from '../../../Components/Menu';
 import { Reparentable } from '../Reparentable';
@@ -19,6 +18,7 @@ import {
   autoScroll,
   button,
 } from '../../../css/classes';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 
 const activeButton = cx(
   css({
@@ -91,9 +91,9 @@ export type DropAction = (item: { label: string; type: string }) => void;
  * @param action - the action to do when an element is dropped
  *
  */
-export const dropSpecsFactory = (action: DropAction) => {
+export const dropSpecsFactory = (action: DropAction, layoutAccept: string) => {
   return {
-    accept: dndAcceptType,
+    accept: layoutAccept,
     canDrop: () => true,
     drop: action,
     collect: (mon: DropTargetMonitor) => ({
@@ -140,6 +140,10 @@ interface TabLayoutProps {
    * onNewTab - The function to call when a new tab is requested
    */
   onNewTab: (label: string) => void;
+  /**
+   * layoutId - The token that filter the drop actions
+   */
+  layoutId: string;
 }
 
 /**
@@ -155,6 +159,7 @@ export function DnDTabLayout({
   onDropTab,
   onDeleteTab,
   onNewTab,
+  layoutId,
 }: TabLayoutProps) {
   React.useEffect(() => {
     if (
@@ -167,16 +172,20 @@ export function DnDTabLayout({
   }, [components, defaultActiveLabel, onSelect]);
 
   // DnD hooks (for dropping tabs on the side of the layout)
-  const [dropLeftProps, dropLeft] = useDrop(dropSpecsFactory(onDrop('LEFT')));
-  const [dropRightProps, dropRight] = useDrop(
-    dropSpecsFactory(onDrop('RIGHT')),
+  const [dropLeftProps, dropLeft] = useDrop(
+    dropSpecsFactory(onDrop('LEFT'), layoutId),
   );
-  const [dropTopProps, dropTop] = useDrop(dropSpecsFactory(onDrop('TOP')));
+  const [dropRightProps, dropRight] = useDrop(
+    dropSpecsFactory(onDrop('RIGHT'), layoutId),
+  );
+  const [dropTopProps, dropTop] = useDrop(
+    dropSpecsFactory(onDrop('TOP'), layoutId),
+  );
   const [dropBottomProps, dropBottom] = useDrop(
-    dropSpecsFactory(onDrop('BOTTOM')),
+    dropSpecsFactory(onDrop('BOTTOM'), layoutId),
   );
   const [dropTabsProps, dropTabs] = useDrop({
-    accept: dndAcceptType,
+    accept: layoutId,
     canDrop: () => true,
     collect: (mon: DropTargetMonitor) => ({
       isOver: mon.isOver(),
@@ -204,6 +213,7 @@ export function DnDTabLayout({
             position: 'left',
             overviewNode: <div className={dropTabZone}></div>,
           }}
+          layoutId={layoutId}
         >
           <DragTab
             key={label}
@@ -212,6 +222,7 @@ export function DnDTabLayout({
             onClick={() => {
               onSelect && onSelect(label);
             }}
+            layoutId={layoutId}
           >
             <span className={grow}>
               {label}

@@ -21,6 +21,7 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.HashMethod;
 import java.util.*;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
@@ -76,7 +77,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     @Override
     public AbstractAccount update(final Long entityId, final AbstractAccount account) {
         if (!(account instanceof AaiAccount)) {
-            if (account.getUsername() != null && !account.getUsername().equals("")) {// If the provided username is not null
+            if (!Helper.isNullOrEmpty(account.getUsername())) {
                 try {
                     AbstractAccount a = this.findByUsername(account.getUsername());
                     if (!a.getId().equals(account.getId())) {                       // and we can find an account with the username which is not the one we are editing,
@@ -94,31 +95,33 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         }
 
         AbstractAccount oAccount = super.update(entityId, account);
+        if (oAccount != null) {
 
-        if (oAccount instanceof JpaAccount) {
-            JpaAccount jpaAccount = (JpaAccount) oAccount;
-            if (!Helper.isNullOrEmpty(jpaAccount.getPassword())) {
-                jpaAccount.shadowPasword();
-            }
-        }
-
-        oAccount.shadowEmail();
-
-        /*
-         * Only an administrator can modify memberships
-         */
-        if (requestManager.isAdmin()) {
-            // Only if given account contains roles by itself
-            if (account.getDeserialisedRoles() != null) {
-                Set<Role> revivedRoles = new HashSet<>();
-                for (Role r : account.getDeserialisedRoles()) {
-                    try {
-                        revivedRoles.add(roleFacade.find(r.getId()));
-                    } catch (EJBException e) {
-                        // not able to revive this role
-                    }
+            if (oAccount instanceof JpaAccount) {
+                JpaAccount jpaAccount = (JpaAccount) oAccount;
+                if (!Helper.isNullOrEmpty(jpaAccount.getPassword())) {
+                    jpaAccount.shadowPasword();
                 }
-                oAccount.getUser().setRoles(revivedRoles);
+            }
+
+            oAccount.shadowEmail();
+
+            /*
+             * Only an administrator can modify memberships
+             */
+            if (requestManager.isAdmin()) {
+                // Only if given account contains roles by itself
+                if (account.getDeserialisedRoles() != null) {
+                    Set<Role> revivedRoles = new HashSet<>();
+                    for (Role r : account.getDeserialisedRoles()) {
+                        try {
+                            revivedRoles.add(roleFacade.find(r.getId()));
+                        } catch (EJBException e) {
+                            // not able to revive this role
+                        }
+                    }
+                    oAccount.getUser().setRoles(revivedRoles);
+                }
             }
         }
 
@@ -126,7 +129,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
-     * Remvoe an account
+     * Remove an account
      *
      * @param entity account to remove
      */
@@ -235,6 +238,20 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         } catch (NoResultException ex) {
             throw new WegasNoResultException(ex);
         }
+    }
+
+    /**
+     * @param name
+     *
+     * @return all accounts which match the given name
+     *
+     */
+    public List<AbstractAccount> findAllByEmailOrUsername(String name) {
+        TypedQuery<AbstractAccount> query = getEntityManager()
+            .createNamedQuery("AbstractAccount.findByEmailOrUserName",
+                AbstractAccount.class);
+        query.setParameter("name", name);
+        return query.getResultList();
     }
 
     /**
@@ -388,7 +405,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         Predicate anyRolePredicate = cb.or(anyRoleFilter.toArray(new Predicate[anyRoleFilter.size()]));
 
         cq.where(cb.and(anyRolePredicate, tokenPredicate));
-        
+
         cq.distinct(true);
 
         TypedQuery<AbstractAccount> q = getEntityManager().createQuery(cq);
@@ -461,6 +478,25 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         }
         return accounts;
     }
+
+    public void setNextAuth(Long accountId, HashMethod nextAuth){
+        AbstractAccount find = this.find(accountId);
+        if (find instanceof JpaAccount){
+            JpaAccount account = (JpaAccount) find;
+            account.setNextAuth(nextAuth);
+            account.setNewSalt(Helper.generateSalt());
+        }
+    }
+
+    public void setNextShadowHashMethod(Long accountId, HashMethod nextHashMethod){
+        AbstractAccount find = this.find(accountId);
+        if (find instanceof JpaAccount){
+            JpaAccount account = (JpaAccount) find;
+            account.getShadow().setNextHashMethod(nextHashMethod);
+        }
+    }
+
+
 
     /**
      * @return Looked-up EJB

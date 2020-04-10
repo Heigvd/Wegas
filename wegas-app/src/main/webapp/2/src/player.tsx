@@ -6,30 +6,36 @@ import { LanguagesProvider } from './Components/Contexts/LanguagesProvider';
 import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
 import { ThemeProvider } from './Components/Theme';
-import { PageLoader } from './Editor/Components/Page/PageLoader';
+import { PageIdLoader } from './Editor/Components/Page/PageLoader';
 import { PageAPI } from './API/pages.api';
-import { GameModel } from './data/selectors';
-import { useWebsocket } from './API/websocket';
 import 'emotion';
-import { importComponents } from './Components/PageComponents/tools/componentFactory';
+import { useWebsocket } from './API/websocket';
+import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
 
-importComponents();
+importPageComponents();
 
 function PlayerPageLoader() {
-  const [selectedPage, setSelectedPage] = React.useState<Page>();
-  if (selectedPage === undefined) {
-    PageAPI.get(GameModel.selectCurrent().id!, '1', true).then(res => {
-      setSelectedPage(Object.values(res)[0]);
+  const [selectedPageId, setSelectedPageId] = React.useState<string>();
+
+  React.useEffect(() => {
+    PageAPI.getIndex().then(index => {
+      setSelectedPageId(index.defaultPageId);
     });
-  }
+  }, []);
+
   useWebsocket('PageUpdate', () =>
-    PageAPI.get(GameModel.selectCurrent().id!, '1', true).then(res => {
-      setSelectedPage(Object.values(res)[0]);
+    PageAPI.getIndex().then(index => {
+      setSelectedPageId(index.defaultPageId);
     }),
   );
+
   return (
     <ThemeProvider contextName="player">
-      {selectedPage && <PageLoader selectedPage={selectedPage} />}
+      {selectedPageId ? (
+        <PageIdLoader selectedPageId={selectedPageId} />
+      ) : (
+        <pre>No given pageId</pre>
+      )}
     </ThemeProvider>
   );
 }

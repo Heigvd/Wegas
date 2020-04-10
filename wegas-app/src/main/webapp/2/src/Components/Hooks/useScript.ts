@@ -175,9 +175,8 @@ export function clientScriptEval<ReturnValue>(script: string) {
  */
 export function useScript<ReturnValue>(script: string) {
   useGlobals();
-  const fn = React.useCallback(
-    () => clientScriptEval<ReturnValue>(script), // 'undefined' so that an empty script don't return '"use strict"'
-    [script],
-  );
+  const fn = React.useCallback(() => clientScriptEval<ReturnValue>(script), [
+    script,
+  ]);
   return useStore(fn);
 }

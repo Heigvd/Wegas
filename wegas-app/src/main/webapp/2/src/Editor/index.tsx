@@ -9,9 +9,9 @@ import { ClassesProvider } from '../Components/Contexts/ClassesProvider';
 import { FeaturesProvider } from '../Components/Contexts/FeaturesProvider';
 import { ThemeProvider } from '../Components/Theme';
 import '../data/store';
-import { importComponents } from '../Components/PageComponents/tools/componentFactory';
+import { importPageComponents } from '../Components/PageComponents/tools/componentFactory';
 
-importComponents();
+importPageComponents();
 
 function mount() {
   render(
