@@ -9,9 +9,11 @@ import { schemaProps } from '../tools/schemaProps';
 import { PageComponentMandatoryProps } from '../tools/EditableComponent';
 
 function PlayerText(props: TextProps & PageComponentMandatoryProps) {
-  const { ComponentContainer, childProps, flexProps } = extractProps(props);
+  const { ComponentContainer, childProps, containerProps } = extractProps(
+    props,
+  );
   return (
-    <ComponentContainer flexProps={flexProps}>
+    <ComponentContainer {...containerProps}>
       <Text {...childProps} />
     </ComponentContainer>
   );

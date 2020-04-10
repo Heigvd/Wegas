@@ -14,13 +14,15 @@ interface PlayerPageLoaderProps extends PageComponentMandatoryProps {
 }
 
 function PlayerPageLoader(props: PlayerPageLoaderProps) {
-  const { ComponentContainer, childProps, flexProps } = extractProps(props);
+  const { ComponentContainer, childProps, containerProps } = extractProps(
+    props,
+  );
   const { selectedPageId } = childProps;
   const pageId = useScript(
     childProps.selectedPageId ? childProps.selectedPageId.content : '',
   ) as string;
   return (
-    <ComponentContainer flexProps={flexProps}>
+    <ComponentContainer {...containerProps}>
       {selectedPageId === undefined ? (
         <pre>Unknown pageid</pre>
       ) : (

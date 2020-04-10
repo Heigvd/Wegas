@@ -38,7 +38,9 @@ interface PlayerBooleanProps extends PageComponentMandatoryProps {
 function PlayerBoolean(
   props: PlayerBooleanProps & PageComponentMandatoryProps,
 ) {
-  const { ComponentContainer, childProps, flexProps } = extractProps(props);
+  const { ComponentContainer, childProps, containerProps } = extractProps(
+    props,
+  );
   const { content, instance, notFound } = useComponentScript<
     IBooleanDescriptor
   >(childProps.script);
@@ -46,7 +48,7 @@ function PlayerBoolean(
   const BooleanComponent = childProps.type === 'toggler' ? Toggler : CheckBox;
 
   return (
-    <ComponentContainer flexProps={flexProps}>
+    <ComponentContainer {...containerProps}>
       {notFound ? (
         <pre>Not found: {content}</pre>
       ) : (

@@ -21,7 +21,9 @@ interface PhasesProgressBarProps extends PageComponentMandatoryProps {
 }
 
 function PlayerPhasesProgressBar(props: PhasesProgressBarProps) {
-  const { ComponentContainer, childProps, flexProps } = extractProps(props);
+  const { ComponentContainer, childProps, containerProps } = extractProps(
+    props,
+  );
   const {
     content: phaseContent,
     instance: phaseInstance,
@@ -34,7 +36,7 @@ function PlayerPhasesProgressBar(props: PhasesProgressBarProps) {
   } = useComponentScript<INumberDescriptor>(childProps.phases);
 
   return (
-    <ComponentContainer flexProps={flexProps}>
+    <ComponentContainer {...containerProps}>
       {phaseNotFound ? (
         <pre>Not found: {phaseContent}</pre>
       ) : phasesNotFound ? (

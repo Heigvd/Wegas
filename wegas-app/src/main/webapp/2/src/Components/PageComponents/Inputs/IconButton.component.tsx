@@ -17,9 +17,11 @@ interface PlayerIconButtonProps extends PlayerButtonProps {
 }
 
 function PlayerIconButton(props: PlayerIconButtonProps) {
-  const { ComponentContainer, childProps, flexProps } = extractProps(props);
+  const { ComponentContainer, childProps, containerProps } = extractProps(
+    props,
+  );
   return (
-    <ComponentContainer flexProps={flexProps}>
+    <ComponentContainer {...containerProps}>
       <IconButton {...childProps} />
     </ComponentContainer>
   );

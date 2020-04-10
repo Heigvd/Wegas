@@ -19,9 +19,11 @@ export interface PlayerButtonProps extends PageComponentMandatoryProps {
 const PlayerButton: React.FunctionComponent<PlayerButtonProps> = (
   props: PlayerButtonProps,
 ) => {
-  const { ComponentContainer, childProps, flexProps } = extractProps(props);
+  const { ComponentContainer, childProps, containerProps } = extractProps(
+    props,
+  );
   return (
-    <ComponentContainer flexProps={flexProps}>
+    <ComponentContainer {...containerProps}>
       <Button
         label={childProps.label}
         onClick={() =>

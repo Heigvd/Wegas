@@ -36,12 +36,14 @@ interface PlayerNumberSliderProps extends PageComponentMandatoryProps {
 }
 
 function PlayerNumberSlider(props: PlayerNumberSliderProps) {
-  const { ComponentContainer, childProps, flexProps } = extractProps(props);
+  const { ComponentContainer, childProps, containerProps } = extractProps(
+    props,
+  );
   const { content, descriptor, instance, notFound } = useComponentScript<
     INumberDescriptor
   >(childProps.script);
   return (
-    <ComponentContainer flexProps={flexProps}>
+    <ComponentContainer {...containerProps}>
       {notFound ? (
         <pre>Not found: {content}</pre>
       ) : (

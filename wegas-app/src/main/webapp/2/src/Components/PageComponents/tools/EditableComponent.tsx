@@ -9,22 +9,18 @@ import {
 import { useDrop, DropTargetMonitor, DragElementWrapper } from 'react-dnd';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { themeVar } from '../../Theme';
-import {
-  flex,
-  flexRow,
-  textCenter,
-  hidden,
-  flexColumn,
-  hiddenImportant,
-} from '../../../css/classes';
+import { flex, flexRow, textCenter, flexColumn } from '../../../css/classes';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { TogglerProps } from '../../Inputs/Boolean/Toggler';
-import { FlexItemProps, FlexItem } from '../../Layouts/FlexList';
+import {
+  FlexItemProps,
+  FlexItem,
+  FlexItemFlexProps,
+} from '../../Layouts/FlexList';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import { useDebounce } from '../../Hooks/useDebounce';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
-import { wlog } from '../../../Helper/wegaslog';
 
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
@@ -199,10 +195,30 @@ function useDndComponentDrop(
 
 export interface ComponentContainerProps
   extends Omit<PageComponentMandatoryProps, 'ComponentContainer'> {
-  flexProps: FlexItemProps;
+  options?: {
+    layout?: FlexItemFlexProps;
+  };
   handleProps?: EditorHandleProps;
-  isLayout?: boolean;
+  /**
+   * className - the class to apply to the item
+   */
+  className?: string;
+  /**
+   * style - the style to apply to the item (always prefer className over style to avoid messing with original behaviour of the item)
+   */
+  style?: React.CSSProperties;
 }
+
+const defaultComponentContainerProps: ComponentContainerProps = {
+  options: { layout: {} },
+  handleProps: {},
+  className: '',
+  style: {},
+};
+
+export const componentContainerWegasPropsKeys = Object.keys(
+  defaultComponentContainerProps,
+);
 
 export function ComponentEditorContainer({
   type,
@@ -344,24 +360,24 @@ export function ComponentEditorContainer({
   }
   return function ComponentContainer({
     children,
-    flexProps,
+    options,
     handleProps,
     showBorders,
-    isLayout,
+    className,
+    style,
   }: React.PropsWithChildren<ComponentContainerProps>) {
     const [{ canDrop }] = useDndComponentDrop();
+
     return (
       <FlexItem
-        {...flexProps}
+        {...options?.layout}
         className={
           cx(handleControlStyle, {
             [childHighlightStyle]: showBorders || canDrop,
             [layoutHighlightStyle]: showBorders || canDrop,
-            [expandEditStyle]:
-              editMode && showControls && isLayout && path.length === 0,
-          }) + (flexProps.className ? ' ' + flexProps.className : '')
+          }) + (className ? ' ' + className : '')
         }
-        style={flexProps.style}
+        style={style}
       >
         {path.length > 0 && <EditHandle {...handleProps} />}
         <ErrorBoundary>{children}</ErrorBoundary>

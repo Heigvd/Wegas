@@ -36,7 +36,7 @@ function PlayerFlexList(props: PlayerFlexListProps) {
     ComponentContainer,
     showBorders,
     childProps,
-    flexProps,
+    containerProps,
   } = extractProps(props);
 
   const [showLayout, setShowLayout] = React.useState(
@@ -58,10 +58,9 @@ function PlayerFlexList(props: PlayerFlexListProps) {
   };
   return (
     <ComponentContainer
-      flexProps={flexProps}
+      {...containerProps}
       handleProps={handleProps}
       showBorders={showLayout}
-      isLayout
     >
       <FlexList {...childProps} />
     </ComponentContainer>

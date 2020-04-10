@@ -20,38 +20,31 @@ export const flexBasisValues = [
 ] as const;
 type FlexBasis = typeof flexBasisValues[number] | string;
 
-export interface FlexItemProps {
+export interface FlexItemFlexProps {
   /**
-   * options : the layout item  options
+   * order - the order of the current item
    */
-  options?: {
-    /**
-     * layout : the layout CSS properties
-     */
-    layout?: {
-      /**
-       * order - the order of the current item
-       */
-      order?: number;
-      /**
-       * alignSelf - justifies the items perpendicularly to the flex direction
-       */
-      alignSelf?: AlignSelf;
-      /**
-       * flexGrow - size factor of the item in the list
-       */
-      flexGrow?: number;
-      /**
-       * flexShrink - size factor of the item in the list
-       * Important : initial value is 1
-       */
-      flexShrink?: number;
-      /**
-       * flexBasis - the initial size of the item, can be set like any css size value (%,px,em,...) or with the string "content"
-       */
-      flexBasis?: FlexBasis;
-    };
-  };
+  order?: number;
+  /**
+   * alignSelf - justifies the items perpendicularly to the flex direction
+   */
+  alignSelf?: AlignSelf;
+  /**
+   * flexGrow - size factor of the item in the list
+   */
+  flexGrow?: number;
+  /**
+   * flexShrink - size factor of the item in the list
+   * Important : initial value is 1
+   */
+  flexShrink?: number;
+  /**
+   * flexBasis - the initial size of the item, can be set like any css size value (%,px,em,...) or with the string "content"
+   */
+  flexBasis?: FlexBasis;
+}
+
+export interface FlexItemProps extends FlexItemFlexProps {
   /**
    * className - the class to apply to the item
    */
@@ -62,30 +55,16 @@ export interface FlexItemProps {
   style?: React.CSSProperties;
 }
 
-export const flexItemDefaultProps: FlexItemProps = {
-  options: {
-    layout: {
-      order: 0,
-      alignSelf: alignSelfValues[0],
-      flexGrow: 0,
-      flexShrink: 1,
-      flexBasis: flexBasisValues[0],
-    },
-  },
-  className: undefined,
-  style: undefined,
-};
-
-export const flexItemDefaultKeys = Object.keys(flexItemDefaultProps);
-
 export function FlexItem({
-  options,
+  order,
+  alignSelf,
+  flexGrow,
+  flexShrink,
+  flexBasis,
   className,
   children,
   style,
 }: React.PropsWithChildren<FlexItemProps>) {
-  const { order, alignSelf, flexGrow, flexShrink, flexBasis } =
-    options?.layout || {};
   return (
     <div
       className={className}

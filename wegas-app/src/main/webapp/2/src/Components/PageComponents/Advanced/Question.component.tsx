@@ -17,13 +17,15 @@ interface QuestionDisplayProps extends PageComponentMandatoryProps {
 }
 
 function QuestionDisplay(props: QuestionDisplayProps) {
-  const { ComponentContainer, childProps, flexProps } = extractProps(props);
+  const { ComponentContainer, childProps, containerProps } = extractProps(
+    props,
+  );
   const { content, descriptor, notFound } = useComponentScript<
     IQuestionDescriptor
   >(childProps.script);
 
   return (
-    <ComponentContainer flexProps={flexProps}>
+    <ComponentContainer {...containerProps}>
       {notFound ? (
         <pre>Not found: {content}</pre>
       ) : (

@@ -9,11 +9,11 @@ import {
   PageComponentProps,
   PageComponentMandatoryProps,
   defaultMandatoryKeys,
+  componentContainerWegasPropsKeys,
 } from './EditableComponent';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 import { SchemaPropsSchemas } from './schemaProps';
 import { pick, omit } from 'lodash-es';
-import { flexItemDefaultKeys } from '../../Layouts/FlexList';
 
 export interface PageComponent<P extends {} = {}> {
   getComponent: (
@@ -204,10 +204,10 @@ export function extractProps<T>(props: PageComponentMandatoryProps & T) {
     ComponentContainer: props.ComponentContainer,
     showBorders: props.showBorders,
     path: props.path,
-    flexProps: pick(props, flexItemDefaultKeys),
+    containerProps: pick(props, componentContainerWegasPropsKeys),
     childProps: omit(props, [
       ...defaultMandatoryKeys,
-      ...flexItemDefaultKeys,
+      ...componentContainerWegasPropsKeys,
     ]) as T,
   };
 }

@@ -9,6 +9,7 @@ import { useStore } from '../../../data/store';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { css, cx } from 'emotion';
 import { pageCTX } from './PageEditor';
+import { flex } from '../../../css/classes';
 
 const editStyle = css({
   borderStyle: 'solid',
@@ -30,10 +31,7 @@ export function PageLoader({ selectedPageId }: PageLoaderProps) {
     <DefaultDndProvider>
       <ThemeProvider contextName="player">
         <React.Suspense fallback={<TextLoader text="Building World!" />}>
-          <div
-            style={{ display: 'flex', height: '100%' }}
-            className={cx({ [editStyle]: editMode })}
-          >
+          <div className={cx(flex, { [editStyle]: editMode })}>
             {selectedPage ? (
               <PageDeserializer json={selectedPage} />
             ) : (

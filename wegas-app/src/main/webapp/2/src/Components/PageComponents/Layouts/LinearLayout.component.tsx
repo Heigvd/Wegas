@@ -46,7 +46,7 @@ function PlayerLinearLayout(props: PlayerLinearLayoutProps) {
     ComponentContainer,
     showBorders,
     childProps,
-    flexProps,
+    containerProps,
     path,
   } = extractProps(props);
 
@@ -123,10 +123,9 @@ function PlayerLinearLayout(props: PlayerLinearLayoutProps) {
 
   return (
     <ComponentContainer
-      flexProps={flexProps}
+      {...containerProps}
       showBorders={showLayout}
       handleProps={handleProps}
-      isLayout
     >
       <ReflexContainer
         className={splitter}

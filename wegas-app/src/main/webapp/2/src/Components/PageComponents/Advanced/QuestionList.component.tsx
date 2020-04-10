@@ -13,9 +13,11 @@ interface QuestionListDisplayProps extends PageComponentMandatoryProps {
 }
 
 function QuestionListDisplay(props: QuestionListDisplayProps) {
-  const { ComponentContainer, childProps, flexProps } = extractProps(props);
+  const { ComponentContainer, childProps, containerProps } = extractProps(
+    props,
+  );
   return (
-    <ComponentContainer flexProps={flexProps}>
+    <ComponentContainer {...containerProps}>
       {childProps.questionList === undefined ? (
         <pre>No selected list</pre>
       ) : (

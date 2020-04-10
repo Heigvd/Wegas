@@ -21,14 +21,14 @@ const Example: React.FunctionComponent<ExampleProps> = (
     ComponentContainer,
     showBorders,
     childProps,
-    flexProps,
+    containerProps,
   } = extractProps(props);
   const { content, instance, notFound } = useComponentScript<
     INumberDescriptor | ITextDescriptor
   >(childProps.script);
 
   return (
-    <ComponentContainer flexProps={flexProps} showBorders={showBorders}>
+    <ComponentContainer {...containerProps} showBorders={showBorders}>
       {notFound ? (
         <pre>Not found: {content}</pre>
       ) : (
