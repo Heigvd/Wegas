@@ -21,7 +21,6 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 close: "Umfrage schliessen",
                 confirmation: "Einmal validiert,<br>können Sie Ihre Antworte nicht mehr ändern.<br>Sind Sie sicher, dass Sie fortfahren wollen?",
                 save: "Speichern",
-                incomplete: "Einige Fragen sind noch nicht beantwortet worden.<br>Bitte füllen Sie die Umfrage aus.",
                 unavailableValue: "(anonyme Antwort)",
                 statusSaving: "Speicherung...",
                 statusSaved: "Gespeichert",
@@ -31,6 +30,7 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
             errors: {
                 inactive: "Diese Umfrage ist derzeit leer oder inaktiv.",
                 incomplete: "Einige Fragen sind noch nicht beantwortet worden.<br>Bitte beantworten Sie die Frage<br>{{question}}",
+                returnToQuestion: "Zurück zu dieser Frage",
                 empty: "Diese Umfrage enthält derzeit keine Fragen.",
                 outOfBounds: "Diese Frage erwartet eine Wert zwischen {{min}} und {{max}}.",
                 notGreaterThanMin: "Diese Frage erwartet eine Zahl grösser oder gleich {{min}}.",

@@ -491,6 +491,14 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 return;
             }
             
+            if (this.oneQuestionPerPage) {
+                container.removeClass("one-section-per-page");
+                container.addClass("one-question-per-page");
+            } else {
+                container.addClass("one-section-per-page");
+                container.removeClass("one-question-per-page");
+            }
+            
             if (!this.currentInputId && this.surveyStatus === SURVEY_STATUS.ALL_REPLIED) {
                 // All inputs are answered, but the survey is not yet validated:
                 // display the last input with a validation button.
@@ -559,6 +567,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 if (this.oneQuestionPerPage) {
                     this.addInput(currentInput, container, "write");
                 } else {
+                    // One section/page mode: display from first input of section
                     var input = currentSection.firstInputId;
                     while (input !== null) {
                         currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(input);
@@ -975,24 +984,25 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 }
             }
         },
-        // Returns, if applicable, a message indicating the first unreplied, active and compulsory input.
+        // Returns, if applicable, a reference to the first unreplied, active and compulsory input.
+        // Returns { input: input, msg: error message }
         getFirstUnrepliedInput: function() {
-            var inputNumber = 0;
             for (var s in this.activeSections) {
-                var sectionInputs = this.activeSections[s].get("items");
+                var currSection = this.activeSections[s],
+                    sectionInputs = currSection.get("items");
                 for (var i in sectionInputs) {
                     var input = sectionInputs[i],
                         inst = input.getInstance();
                     if (inst.get("active") === false) {
                         continue;
                     }
-                    inputNumber++;
                     if (inst.get("isReplied") === false && input.get("isCompulsory") === true) {
-                        var msg = inputNumber + ". " + I18n.t(input.get("label"));
-                        if (this.activeSections.length > 1 && I18n.t(this.activeSections[s].get("label"))) {
-                            msg += "<br>(" + I18n.t(this.activeSections[s].get("label")) + ")";
+                        var inputNumber = currSection.activeInputs[input.get("id")].number,
+                            msg = inputNumber + ". " + I18n.t(input.get("label"));
+                        if (this.activeSections.length > 1 && I18n.t(currSection.get("label"))) {
+                            msg += "<br>(" + I18n.t(currSection.get("label")) + ")";
                         }
-                        return msg;
+                        return { input: input, msg: msg };
                     }
                 }
             }
@@ -1028,9 +1038,41 @@ YUI.add("wegas-survey-widgets", function(Y) {
                         }, this));
                     }, this));
                 } else {
-                    this.showMessage("error", I18n.t("survey.errors.incomplete", {question: "<i><b>" + unreplied + "</b></i>"}));
+                    var ctx = this;
+                    this.alert(
+                        I18n.t("survey.errors.incomplete", {question: "<i><b>" + unreplied.msg + "</b></i>"}),
+                        function(){
+                            ctx.currentInputId = unreplied.input.get("id");
+                            ctx.syncUI();
+                        },
+                        I18n.t("survey.errors.returnToQuestion")
+                    );
                 }
             }
+        },
+        // Overload Wegas.Panel.alert in order to add a custom cssClass.
+        alert: function(msg, okCb, okLabel, additionalClass, modal) {
+            modal = modal === undefined || modal;
+            var classes = "wegas-survey-panel " + (additionalClass ? additionalClass : "");
+
+            var panel = new Y.Wegas.Panel({
+                content: msg,
+                modal: modal,
+                width: 450,
+                buttons: {
+                    footer: [{
+                            label: okLabel || I18n.t('global.ok') || 'OK',
+                            action: function() {
+                                panel.exit();
+                                okCb && okCb();
+                            }
+                        }]
+                }
+            }).render();
+
+            panel.get("contentBox").addClass(classes);
+            panel.plug(Y.Plugin.DraggablePanel, {});
+            return panel;
         }
     }, {
         EDITORNAME: 'Survey',
@@ -1543,7 +1585,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
         getCustomItem: function() {
             return this.get("surveyWidget").getCustomItemOfInput(this.inputId);
         },
-        _equalizeWidths: function(elemList) {
+        getMaxWidth: function(elemList) {
             if (elemList.size() > 1) {
                 var max = 0,
                     widths = elemList.getComputedStyle("width"),
@@ -1552,7 +1594,26 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     w = Number.parseInt(widths[i]);
                     max = Math.max(w, max);
                 }
-                elemList.setStyle("min-width", max + "px");
+                return max;
+            } else {
+                return 0;
+            }
+        },
+        equalizeWidths: function(elemList) {
+            if (elemList.size() > 1) {
+                var max = this.getMaxWidth(elemList);
+                if (max > 0) {
+                    elemList.setStyle("min-width", max + "px");
+                } else {
+                    Y.later(500, this,
+                        function() {
+                            max = this.getMaxWidth(elemList);
+                            if (max > 0) {
+                                elemList.setStyle("min-width", max + "px");
+                            }
+                        }
+                    );
+                }
             }
         },
         renderUI: function() {
@@ -1639,9 +1700,9 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 
                 CB.one(".wegas-survey-choicesinput-content").setContent(frag.join(""));
                 if (!this.isScale) {
-                    this._equalizeWidths(CB.all("li"));
+                    this.equalizeWidths(CB.all("li"));
                 }
-                this._equalizeWidths(CB.all(".label"));
+                this.equalizeWidths(CB.all(".label"));
             }
         },
         getCurrentValue: function() {
@@ -1762,10 +1823,10 @@ YUI.add("wegas-survey-widgets", function(Y) {
                         // Code borrowed from wegas-inputex-rte.js:
                         currString = currString
                                 .replace(
-                                    new RegExp("((src|href)=\"[^\"]*/rest/File/GameModelId/[^\"]*/read([^\"]*)\")", "gi"),
+                                    new RegExp("((src|href)=\"[^\"]*/rest/File/GameModelId/[^\"]*/read/([^\"]*)\")", "gi"),
                                     "data-file=\"$3\"") // Replace absolute path with injector style path
                                 .replace(
-                                    new RegExp("((src|href)=\"[^\"]*/rest/GameModel/[^\"]*/File/read([^\"]*)\")", "gi"),
+                                    new RegExp("((src|href)=\"[^\"]*/rest/GameModel/[^\"]*/File/read/([^\"]*)\")", "gi"),
                                     "data-file=\"$3\""); // Replace absolute path with injector style path)
                         translations[lang].set("translation", currString);
                         edited = true;
