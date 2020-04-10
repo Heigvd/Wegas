@@ -9,7 +9,14 @@ import {
 import { useDrop, DropTargetMonitor, DragElementWrapper } from 'react-dnd';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { themeVar } from '../../Theme';
-import { flex, flexRow, textCenter } from '../../../css/classes';
+import {
+  flex,
+  flexRow,
+  textCenter,
+  hidden,
+  flexColumn,
+  hiddenImportant,
+} from '../../../css/classes';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { TogglerProps } from '../../Inputs/Boolean/Toggler';
@@ -40,46 +47,52 @@ const handleControlStyle = css({
   '&>.wegas-component-handle': {
     visibility: 'hidden',
     opacity: 0.0,
-    transition: 'visibility 0.5s, opacity 0.5s',
+    transition: 'all 0.5s',
   },
   ':hover>.wegas-component-handle': {
-    visibility: 'visible',
+    visibility: 'unset',
     opacity: 0.8,
-    transition: 'opacity 0s',
+    transition: 'all 0s',
   },
 });
 
 const handleContentStyle = css({
   borderRadius: themeVar.borderRadius,
   borderStyle: 'solid',
-  borderColor: 'transparent',
-  transition: 'border-color 0.5s',
-  ':hover': {
-    borderColor: themeVar.primaryLighterColor,
-    transition: 'border-color 0s',
-  },
-  '&>.wegas-component-handle-title': {
-    background: themeVar.primaryHoverColor,
-    borderTopLeftRadius: themeVar.borderRadius,
-    borderTopRightRadius: themeVar.borderRadius,
-    // opacity: 0.0,
-    // transition: 'visibility 0.5s, opacity 0.5s',
-  },
+  borderColor: themeVar.primaryLighterColor,
+  backgroundColor: themeVar.primaryHoverColor,
+  // borderColor: 'transparent',
+  // transition: 'border-color 0.5s',
+  // opacity: 0.0,
+  // transition: 'opacity 0.5s',
+  // ':hover': {
+  //   // borderColor: themeVar.primaryLighterColor,
+  //   // transition: 'border-color 0s',
+  //   opacity: 0.8,
+  //   transition: 'opacity 0s',
+  // },
+  // '&>.wegas-component-handle-title': {
+  //   background: themeVar.primaryHoverColor,
+  //   borderTopLeftRadius: themeVar.borderRadius,
+  //   borderTopRightRadius: themeVar.borderRadius,
+  //   opacity: 0.0,
+  //   transition: 'visibility 0.5s, opacity 0.5s',
+  // },
   // ':hover>.wegas-component-handle-title': {
   //   opacity: 1,
   //   transition: 'opacity 0s',
   // },
-  '&>.wegas-component-handle-content': {
-    background: themeVar.primaryHoverColor,
-    borderRadius: themeVar.borderRadius,
-    borderTopLeftRadius: themeVar.borderRadius,
-    transition: 'border-top-left-radius 0.5s, border-top-right-radius 0.5s',
-  },
-  ':hover>.wegas-component-handle-content': {
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
-    transition: 'border-top-left-radius 0s, border-top-right-radius 0s',
-  },
+  // '&>.wegas-component-handle-content': {
+  //   background: themeVar.primaryHoverColor,
+  //   borderRadius: themeVar.borderRadius,
+  //   borderTopLeftRadius: themeVar.borderRadius,
+  //   transition: 'border-top-left-radius 0.5s, border-top-right-radius 0.5s',
+  // },
+  // ':hover>.wegas-component-handle-content': {
+  //   borderTopLeftRadius: 0,
+  //   borderTopRightRadius: 0,
+  //   transition: 'border-top-left-radius 0s, border-top-right-radius 0s',
+  // },
 });
 
 export const expandEditStyle = css({
@@ -93,6 +106,10 @@ const editItemStyle = css({
   marginLeft: '10px',
   width: '100px',
   height: '100px',
+});
+
+export const opaciSchnaps = css({
+  opacity: '0 !important',
 });
 
 interface ComponentEditorContainerProps {
@@ -209,11 +226,7 @@ export function ComponentEditorContainer({
 
     const HandleContent = React.forwardRef<HTMLDivElement>((_, ref) => {
       return (
-        <div
-          style={{ display: 'flex', flexDirection: 'column' }}
-          ref={ref}
-          className={handleContentStyle}
-        >
+        <div ref={ref} className={cx(flex, flexColumn, handleContentStyle)}>
           <div
             style={{ fontSize: '10px' }}
             className={
@@ -260,11 +273,11 @@ export function ComponentEditorContainer({
               width: cw,
               height: ch,
             } = currentHandle.dom.current.getBoundingClientRect();
-            const [A1, /*B1,*/ C1 /*D1*/] = [
+            const [A1, B1, C1, D1] = [
               { x: cx, y: cy },
-              // { x: cx, y: cy + ch },
+              { x: cx, y: cy + ch },
               { x: cx + cw, y: cy + ch },
-              // { x: cx + cw, y: cy },
+              { x: cx + cw, y: cy },
             ];
             computedHandles.push(currentHandle.jsx);
             const trimmedPath = path.slice(0, -1);
@@ -283,12 +296,12 @@ export function ComponentEditorContainer({
                   { x: x + w, y: y + h },
                   { x: x + w, y: y },
                 ];
-                // const [A1in, B1in, C1in, D1in] = [
-                //   checkIfInsideRectangle(A2, C2, A1),
-                //   checkIfInsideRectangle(A2, C2, B1),
-                //   checkIfInsideRectangle(A2, C2, C1),
-                //   checkIfInsideRectangle(A2, C2, D1),
-                // ];
+                const [A1in, B1in, C1in, D1in] = [
+                  checkIfInsideRectangle(A2, C2, A1),
+                  checkIfInsideRectangle(A2, C2, B1),
+                  checkIfInsideRectangle(A2, C2, C1),
+                  checkIfInsideRectangle(A2, C2, D1),
+                ];
                 const [A2in, B2in, C2in, D2in] = [
                   checkIfInsideRectangle(A1, C1, A2),
                   checkIfInsideRectangle(A1, C1, B2),
@@ -296,21 +309,25 @@ export function ComponentEditorContainer({
                   checkIfInsideRectangle(A1, C1, D2),
                 ];
                 if (
-                  // A1in ||
-                  // B1in ||
-                  // C1in ||
-                  // D1in ||
+                  A1in ||
+                  B1in ||
+                  C1in ||
+                  D1in ||
                   A2in ||
                   B2in ||
                   C2in ||
                   D2in
                 ) {
+                  component.dom.current.className += ' ' + opaciSchnaps;
                   computedHandles.splice(0, 0, component.jsx);
+                } else {
+                  component.dom.current.className = component.dom.current.className
+                    .replace(new RegExp(opaciSchnaps, 'g'), '')
+                    .trim();
                 }
               }
             });
           }
-          wlog(computedHandles);
           setStackedHandles(computedHandles);
         }}
         onMouseLeave={() => setStackedHandles(undefined)}
@@ -342,7 +359,7 @@ export function ComponentEditorContainer({
             [layoutHighlightStyle]: showBorders || canDrop,
             [expandEditStyle]:
               editMode && showControls && isLayout && path.length === 0,
-          }) + flexProps.className
+          }) + (flexProps.className ? ' ' + flexProps.className : '')
         }
         style={flexProps.style}
       >

@@ -74,7 +74,10 @@ export function ConfirmButton(props: ConfirmButtonProps /*& IconButtonProps*/) {
   ) : (
     <div
       ref={confirmButton}
-      className={buttonZone(props.disableBorders) + ' ' + props.className}
+      className={
+        buttonZone(props.disableBorders) +
+        (props.className ? ' ' + props.className : '')
+      }
     >
       <Button
         label="Accept"

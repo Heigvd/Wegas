@@ -11,6 +11,9 @@ export const block = css({
 export const hidden = css({
   display: 'none',
 });
+export const hiddenImportant = css({
+  display: 'none !important',
+});
 
 // Layout constraints
 export const relative = css({

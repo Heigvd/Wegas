@@ -5,7 +5,6 @@ import {
   extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { css } from 'emotion';
 import {
   FlexListProps,
   FlexList,
@@ -19,16 +18,6 @@ import {
   EditorHandleProps,
   PageComponentMandatoryProps,
 } from '../tools/EditableComponent';
-
-export const hoverElement = css({
-  backgroundColor: 'red',
-  ':hover': {
-    backgroundColor: 'green',
-    '&>wegas-component-handle': {
-      opacity: 0.5,
-    },
-  },
-});
 
 type FlexListCompoentProps = FlexListProps & PageComponentMandatoryProps;
 interface PlayerFlexListProps extends FlexListCompoentProps {
