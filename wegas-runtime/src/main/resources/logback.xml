@@ -29,6 +29,8 @@
     <logger name="org.eclipse.persistence.logging.sql" level="WARN" />
     <logger name="org.eclipse.persistence.logging.default" level="ERROR" />
 
+    <logger name="com.wegas.log.xapi.Xapi" level="INFO"/>
+
     <root level="WARN">
         <appender-ref ref="STDOUT" />
     </root>

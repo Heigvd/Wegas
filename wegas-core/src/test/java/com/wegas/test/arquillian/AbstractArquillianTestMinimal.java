@@ -31,12 +31,16 @@ import com.wegas.core.security.persistence.AccountDetails;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
+import com.wegas.core.security.util.AuthenticationMethod;
+import com.wegas.core.security.util.HashMethod;
+import com.wegas.core.security.util.JpaAuthentication;
 import com.wegas.test.TestHelper;
 import com.wegas.test.WegasFactory;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.logging.Level;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
@@ -186,7 +190,6 @@ public abstract class AbstractArquillianTestMinimal {
         env.init();
 
         //SecurityUtils.setSecurityManager(env.getSecurityManager());
-
         SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
         TestHelper.emptyDBTables();
 
@@ -215,43 +218,43 @@ public abstract class AbstractArquillianTestMinimal {
         try (Connection connection = ds.getConnection("user", "1234");
             Statement statement = connection.createStatement()) {
             String setupQuery = ""
-                    + "INSERT INTO roles (id, name, description) VALUES (1, 'Administrator', '');"
-                    + "INSERT INTO roles (id, name, description) VALUES (2, 'Scenarist', '');"
-                    + "INSERT INTO roles (id, name, description) VALUES (3, 'Trainer', '');"
-                    + "INSERT INTO permission (id, permissions, role_id) VALUES (1, 'GameModel:*:*', 1);"
-                    + "INSERT INTO permission (id, permissions, role_id) VALUES (2, 'Game:*:*', 1);"
-                    + "INSERT INTO permission (id, permissions, role_id) VALUES (3, 'User:*:*', 1);"
-                    + "INSERT INTO users (id) VALUES (1);"
-                    + "INSERT INTO accountdetails (id, email, checkuniqueness) VALUES (1, 'root@localhost', true);"
-                    + "INSERT INTO shadow (id, passwordhex, salt) VALUES (1, 'eb86410aa029d4f7b85c1b4c3c0a25736f9ae4806bd75d456a333d83b648f2ee', '69066d73c2d03f85c5a8d3e39a2f184f');"
-                    + "INSERT INTO abstractaccount (id, username, emaildomain, dtype, user_id, shadow_id, details_id) VALUES (1, 'root', 'localhost', 'JpaAccount', 1, 1, 1);"
-                    + "INSERT INTO users_roles (user_id, role_id) VALUES (1, 1);"
-                    + "UPDATE sequence SET seq_count=seq_count+50 WHERE seq_name = 'SEQ_GEN';"
-                    + "CREATE INDEX IF NOT EXISTS index_accountdetails_email ON accountdetails (email) WHERE (checkuniqueness AND email IS NOT NULL AND email NOT LIKE '');"
-                    + "CREATE INDEX IF NOT EXISTS index_abstractaccount_username ON abstractaccount (username) WHERE (dtype = 'JpaAccount' AND username IS NOT NULL AND username NOT LIKE '');"
-                    + "CREATE INDEX IF NOT EXISTS index_abstractaccount_persistentid ON abstractaccount (persistentid) WHERE (dtype = 'AaiAccount');"
-                    + "CREATE INDEX IF NOT EXISTS index_listDesc_allowedType ON listdescriptor_allowedtypes (listdescriptor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_numberinstance_history_numberinstance_id ON numberinstance_history (numberinstance_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_objectdescriptor_properties_objectdescriptor_id ON objectdescriptor_properties (objectdescriptor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_objectinstance_properties_objectinstance_id ON objectinstance_properties (objectinstance_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_resourcedescriptor_properties_resourcedescriptor_id ON resourcedescriptor_properties (resourcedescriptor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_resourceinstance_properties_resourceinstance_id ON resourceinstance_properties (resourceinstance_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_pred ON taskdescriptor_taskdescriptor (predecessor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_task ON taskdescriptor_taskdescriptor (taskdescriptor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_users_roles_role_id ON users_roles (role_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_users_roles_user_id ON users_roles (user_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_taskinstance_plannification_taskinstance_id ON taskinstance_plannification (taskinstance_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_taskinstance_properties_taskinstance_id ON taskinstance_properties (taskinstance_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_properties_taskdescriptor_id ON taskdescriptor_properties (taskdescriptor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_transitionhistory_statemachineinstance_id ON transitionhistory (statemachineinstance_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_iteration_id on iteration_taskinstance (iteration_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_id on iteration_taskinstance (taskinstance_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_mcqresult_name_choicedescriptor_id on mcqresult (name,choicedescriptor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_questiondescriptor_pictures_questiondescriptor_id on questiondescriptor_pictures (questiondescriptor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_result_files_result_id on result_files (result_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_taskdescriptor_id_predecessor_id on taskdescriptor_taskdescriptor (taskdescriptor_id,predecessor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_users_roles_roles_id_user_id on users_roles (role_id,user_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_game_toen ON game (token) WHERE (status = 'LIVE' OR status = 'BIN');";
+                + "INSERT INTO roles (id, name, description) VALUES (1, 'Administrator', '');"
+                + "INSERT INTO roles (id, name, description) VALUES (2, 'Scenarist', '');"
+                + "INSERT INTO roles (id, name, description) VALUES (3, 'Trainer', '');"
+                + "INSERT INTO permission (id, permissions, role_id) VALUES (1, 'GameModel:*:*', 1);"
+                + "INSERT INTO permission (id, permissions, role_id) VALUES (2, 'Game:*:*', 1);"
+                + "INSERT INTO permission (id, permissions, role_id) VALUES (3, 'User:*:*', 1);"
+                + "INSERT INTO users (id) VALUES (1);"
+                + "INSERT INTO accountdetails (id, email, checkuniqueness) VALUES (1, 'root@localhost', true);"
+                + "INSERT INTO shadow (id, hashmethod, passwordhex, salt) VALUES (1, 'SHA_256', 'eb86410aa029d4f7b85c1b4c3c0a25736f9ae4806bd75d456a333d83b648f2ee', '69066d73c2d03f85c5a8d3e39a2f184f');"
+                + "INSERT INTO abstractaccount (id, username, emaildomain, currentauth, dtype, user_id, shadow_id, details_id) VALUES (1, 'root', 'localhost', 'PLAIN', 'JpaAccount', 1, 1, 1);"
+                + "INSERT INTO users_roles (user_id, role_id) VALUES (1, 1);"
+                + "UPDATE sequence SET seq_count=seq_count+50 WHERE seq_name = 'SEQ_GEN';"
+                + "CREATE INDEX IF NOT EXISTS index_accountdetails_email ON accountdetails (email) WHERE (checkuniqueness AND email IS NOT NULL AND email NOT LIKE '');"
+                + "CREATE INDEX IF NOT EXISTS index_abstractaccount_username ON abstractaccount (username) WHERE (dtype = 'JpaAccount' AND username IS NOT NULL AND username NOT LIKE '');"
+                + "CREATE INDEX IF NOT EXISTS index_abstractaccount_persistentid ON abstractaccount (persistentid) WHERE (dtype = 'AaiAccount');"
+                + "CREATE INDEX IF NOT EXISTS index_listDesc_allowedType ON listdescriptor_allowedtypes (listdescriptor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_numberinstance_history_numberinstance_id ON numberinstance_history (numberinstance_id);"
+                + "CREATE INDEX IF NOT EXISTS index_objectdescriptor_properties_objectdescriptor_id ON objectdescriptor_properties (objectdescriptor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_objectinstance_properties_objectinstance_id ON objectinstance_properties (objectinstance_id);"
+                + "CREATE INDEX IF NOT EXISTS index_resourcedescriptor_properties_resourcedescriptor_id ON resourcedescriptor_properties (resourcedescriptor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_resourceinstance_properties_resourceinstance_id ON resourceinstance_properties (resourceinstance_id);"
+                + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_pred ON taskdescriptor_taskdescriptor (predecessor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_task ON taskdescriptor_taskdescriptor (taskdescriptor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_users_roles_role_id ON users_roles (role_id);"
+                + "CREATE INDEX IF NOT EXISTS index_users_roles_user_id ON users_roles (user_id);"
+                + "CREATE INDEX IF NOT EXISTS index_taskinstance_plannification_taskinstance_id ON taskinstance_plannification (taskinstance_id);"
+                + "CREATE INDEX IF NOT EXISTS index_taskinstance_properties_taskinstance_id ON taskinstance_properties (taskinstance_id);"
+                + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_properties_taskdescriptor_id ON taskdescriptor_properties (taskdescriptor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_transitionhistory_statemachineinstance_id ON transitionhistory (statemachineinstance_id);"
+                + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_iteration_id on iteration_taskinstance (iteration_id);"
+                + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_id on iteration_taskinstance (taskinstance_id);"
+                + "CREATE INDEX IF NOT EXISTS index_mcqresult_name_choicedescriptor_id on mcqresult (name,choicedescriptor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_questiondescriptor_pictures_questiondescriptor_id on questiondescriptor_pictures (questiondescriptor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_result_files_result_id on result_files (result_id);"
+                + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_taskdescriptor_id_predecessor_id on taskdescriptor_taskdescriptor (taskdescriptor_id,predecessor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_users_roles_roles_id_user_id on users_roles (role_id,user_id);"
+                + "CREATE INDEX IF NOT EXISTS index_game_toen ON game (token) WHERE (status = 'LIVE' OR status = 'BIN');";
 
             statement.execute(setupQuery);
         } catch (SQLException ex) {
@@ -305,16 +308,43 @@ public abstract class AbstractArquillianTestMinimal {
             requestManager.login(subject, guestToken);
         } else {
             userFacade.logout();
-            AuthenticationInformation info = new AuthenticationInformation();
-            info.setAgreed(Boolean.TRUE);
-            info.setLogin(user.getUsername());
-            info.setPassword(user.getPassword());
-            info.setRemember(true);
 
-            userFacade.authenticate(info);
+            List<AuthenticationMethod> authMethods = userFacade.getAuthMethods(user.getUsername());
+            JpaAuthentication jpaAuth = null;
+            for (AuthenticationMethod m : authMethods) {
+                if (m instanceof JpaAuthentication) {
+                    jpaAuth = (JpaAuthentication) m;
+                    break;
+                }
+            }
+            if (jpaAuth != null) {
 
-            requestManager.login(subject, new UsernamePasswordToken(user.getUsername(), user.getPassword()));
-            requestManager.setPlayer(null);
+                AuthenticationInformation info = new AuthenticationInformation();
+                info.setAgreed(Boolean.TRUE);
+                info.setLogin(user.getUsername());
+
+                info.addHash(jpaAuth.getMandatoryMethod(), user.getPassword(),
+                    Helper.coalesce(jpaAuth.getSalt()));
+
+                info.addHash(jpaAuth.getOptionalMethod(), user.getPassword(),
+                    Helper.coalesce(jpaAuth.getNewSalt(), jpaAuth.getSalt()));
+
+                info.setRemember(true);
+
+                userFacade.authenticate(info);
+
+                // is that really useful to login again ?
+                /*String hash = info.getHashes().get(
+                    jpaAuth.getOptionalMethod() != null
+                    ? jpaAuth.getOptionalMethod() : jpaAuth.getMandatoryMethod()
+                );
+                requestManager.login(subject, new UsernamePasswordToken(user.getUsername(),
+                    info.getHashes().get(hash)));
+                 */
+                requestManager.setPlayer(null);
+            } else {
+                throw WegasErrorMessage.error("Not a JPA Account");
+            }
         }
 
         User currentUser = userFacade.getCurrentUser();
@@ -332,9 +362,15 @@ public abstract class AbstractArquillianTestMinimal {
 
     public WegasUser signup(String email, String password) {
         logout();
+        JpaAuthentication authMethod = userFacade.getDefaultAuthMethod();
+
+        String hash = authMethod.getMandatoryMethod().hash(password,
+            Helper.coalesce(authMethod.getSalt()));
+
         JpaAccount ja = new JpaAccount();
         ja.setEmail(email);
-        ja.setPassword(password);
+        ja.setSalt(authMethod.getSalt());
+        ja.setPassword(hash);
         try {
             User signup = userFacade.signup(ja);
             return new WegasUser(signup, email, password);
@@ -350,6 +386,8 @@ public abstract class AbstractArquillianTestMinimal {
     public WegasUser guestLogin() {
         /*AuthenticationInformation authInfo = new AuthenticationInformation();
         authInfo.setRemember(true);*/
+
+        userFacade.logout();
         return WegasUser.createGuest(userFacade);
     }
 

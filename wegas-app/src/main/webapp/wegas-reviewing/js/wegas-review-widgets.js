@@ -1864,15 +1864,55 @@ YUI.add("wegas-review-widgets", function(Y) {
             var evaluation = this.get("evaluation").toObject();
             evaluation.value = content;
 
+            this.fire('editing', payload);
+
+            // live update: 
+            //   1) send one liveUpdate ASAP
+            //   2) send one liveUpdate each second until user stop editing
+            this.queueLiveEdition(prd.get("scopeType"),
+                pri.get("scopeKey"), evaluation);
+
+        },
+        processQueuedLiveEdition: function() {
+            if (this.queuedLiveEdition) {
+                // content has been updated since last update
+                this.fireLiveEdition();
+            } else {
+                this.liveTimer = null;
+            }
+        },
+        queueLiveEdition: function(scopeType, scopeKey, payload) {
+            this.queuedLiveEdition = {
+                scopeType: scopeType,
+                scopeKey: scopeKey,
+                evaluation: payload
+            };
+
+            if (!this.liveTimer) {
+                // no timer -> send LiveUpdate ASAP
+                this.fireLiveEdition();
+                // then, send one Live update each 500ms
+            }
+        },
+        fireLiveEdition: function() {
+
+            var scopeType = this.queuedLiveEdition.scopeType;
+            var scopeKey = this.queuedLiveEdition.scopeKey;
+            var evaluation = this.queuedLiveEdition.evaluation;
+
+            this.queuedLiveEdition = undefined;
+
             Y.Wegas.Facade.GameModel.sendRequest({
-                request: "/LiveEdition/private-" + prd.get("scopeType")
-                    .replace("Scope", "-" + pri.get("scopeKey")),
+                request: "/LiveEdition/private-" + scopeType
+                    .replace("Scope", "-" + scopeKey),
                 cfg: {
                     method: 'POST',
                     data: evaluation
                 }
             });
-            this.fire('editing', payload);
+
+
+            this.liveTimer = Y.later(1000, this, this.processQueuedLiveEdition);
         },
         syncUI: function(quiet) {
             var evl, value;

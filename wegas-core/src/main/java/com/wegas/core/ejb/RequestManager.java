@@ -207,7 +207,7 @@ public class RequestManager implements RequestManagerI {
      */
     private Long currentPrincipal;
 
-    private Subject previousSubject;
+    private Deque<Subject> previousSubjects = new LinkedList<>();
 
     /**
      * Request identifier
@@ -1948,39 +1948,64 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Log-in with a different account
+     * Current subject runAs another user. Effect is platform wide. It will impact all requests made
+     * by the first subject until it explicitly logout.
      *
-     * @param accountId account id to login as
-     *
-     * @return new currentUser
+     * @see #su(java.lang.Long) for a request scope version
+     * @return
      */
-    public User su(Long accountId) {
-        try {
-            Subject subject = SecurityUtils.getSubject();
+    public User runAs(Long accountId) {
+        Subject subject = SecurityUtils.getSubject();
 
-            if (subject.getPrincipal() != null) {
-                logger.info("SU: User {} SU to {}", subject.getPrincipal(), accountId);
-                //if (this.isAdmin()) {
+        if (subject.getPrincipal() != null) {
+            logger.info("RunAs: User {} RunAs {}", subject.getPrincipal(), accountId);
+            if (this.isAdmin()) {
                 // The subject exists and is an authenticated admin
                 // -> Shiro runAs
                 //subject.checkRole("Administrator");
                 if (subject.isRunAs()) {
                     subject.releaseRunAs();
                 }
+
                 SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
 
                 subject.runAs(newSubject);
                 this.clearCurrents();
-                return this.getCurrentUser();
-                //} else {
-                //    throw WegasErrorMessage.error("Su is forbidden !");
-                //}
-            } else {
-                this.previousSubject = subject;
-
             }
+        }
+        return this.getCurrentUser();
+    }
+
+    public User releaseRunAs() {
+        Subject subject = SecurityUtils.getSubject();
+
+        if (subject.isRunAs()) {
+            logger.info("RunAs-Release: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
+            subject.releaseRunAs();
+            this.clearCurrents();
+        }
+
+        return this.getCurrentUser();
+    }
+
+    /**
+     * Switch to another account. This is scoped to the current request only.
+     *
+     * @see #runAs(java.lang.Long)
+     *
+     * @param accountId account id to login as
+     *
+     * @return new currentUser
+     */
+    public User su(Long accountId) {
+        Subject previous = null;
+
+        try {
+            Subject subject = SecurityUtils.getSubject();
+            previous = subject;
         } catch (UnavailableSecurityManagerException | IllegalStateException | NullPointerException ex) {
-            // runAs faild
+            // No security manager yet (startup actions)
+            // craft one
             Helper.printWegasStackTrace(ex);
 
             // The subject does not exists -> create from strach and bind
@@ -1990,14 +2015,19 @@ public class RequestManager implements RequestManagerI {
             realms.add(new GuestRealm());
 
             SecurityUtils.setSecurityManager(new DefaultSecurityManager(realms));
-
         }
+
+        this.previousSubjects.add(previous);
+
         Subject.Builder b = new Subject.Builder();
         SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
         b.authenticated(true).principals(newSubject);
 
         Subject buildSubject = b.buildSubject();
-        logger.info("SU: No-User SU to {}, {}", buildSubject.getPrincipal(), Thread.currentThread());
+
+        logger.info("SU: User {} SU to {}, {}",
+            previous != null ? previous.getPrincipal() : "No-User",
+            buildSubject.getPrincipal(), Thread.currentThread());
 
         ThreadContext.bind(buildSubject);
 
@@ -2010,18 +2040,17 @@ public class RequestManager implements RequestManagerI {
     public void releaseSu() {
         try {
             Subject subject = SecurityUtils.getSubject();
-            if (subject.isRunAs()) {
-                logger.info("Su-Exit: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
-                subject.releaseRunAs();
-                this.clearCurrents();
-            } else {
-                logger.info("Su-Exit LOGOUT");
-                this.logout(subject);
-                if (this.previousSubject != null) {
-                    ThreadContext.bind(previousSubject);
-                    this.previousSubject = null;
-                }
+            Subject previous = null;
+
+            this.logout(subject);
+
+            if (!this.previousSubjects.isEmpty()) {
+                previous = this.previousSubjects.removeLast();
+                ThreadContext.bind(previous);
             }
+
+            logger.info("Su-Exit -> {}",
+                previous != null ? previous.getPrincipal() : "LOGOUT");
             this.getCurrentUser();
         } catch (Exception ex) {
             logger.error("EX: ", ex);
@@ -2033,6 +2062,9 @@ public class RequestManager implements RequestManagerI {
     }
 
     public Subject login(Subject subject, AuthenticationToken token) {
+        if (subject.isAuthenticated()){
+            throw WegasErrorMessage.error("You are already logged in! Please logout first");
+        }
         subject.login(token);
         // clear current info
         this.clearCurrents();

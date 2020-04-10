@@ -157,7 +157,7 @@ public class Xapi implements XapiI {
             stmt.setContext(this.genContext());
             xapiTx.post(stmt);
         } else {
-            logger.info("Failed to persist an xapi statement, invalid context\n{}", serialize(stmt));
+            logger.debug("Failed to persist an xapi statement, invalid context\n{}", serialize(stmt));
         }
     }
 
@@ -170,7 +170,7 @@ public class Xapi implements XapiI {
             xapiTx.post(new ArrayList<>(stmts));
         } else {
             for (Statement s : stmts) {
-                logger.info("Failed to persist an xapi statement, invalid context\n{}", serialize(s));
+                logger.debug("Failed to persist an xapi statement, invalid context\n{}", serialize(s));
             }
         }
     }
@@ -197,7 +197,7 @@ public class Xapi implements XapiI {
         if (isValid()) {
             post(this.build(verb, activity, result));
         } else {
-            logger.warn("Failed to persist an xapi statement, invalid context\n{}", verb, activity, result);
+            logger.debug("Failed to persist an xapi statement, invalid context\n{}", verb, activity, result);
         }
     }
 
@@ -495,12 +495,15 @@ public class Xapi implements XapiI {
 
     @Asynchronous
     public void asyncPost(List<Object> statements) {
-        logger.trace("XAPI Tx Commit");
+        //logger.debug("XAPI Tx Commit");
         try {
             StatementClient client = getClient();
 
             long start = System.currentTimeMillis();
+            logger.info("xAPI start async post batch");
             for (Object o : statements) {
+                long subStart = System.currentTimeMillis();
+                logger.info("xAPI async post {}", o);
                 if (o instanceof Statement) {
                     try {
                         client.postStatement((Statement) o);
@@ -516,8 +519,9 @@ public class Xapi implements XapiI {
                         logger.error("XapiTx postStatements on commit error: {}", ex);
                     }
                 }
+                logger.info("xAPI post duration: {}", System.currentTimeMillis() - subStart);
             }
-            logger.trace("xAPI post duration: {}", System.currentTimeMillis() - start);
+            logger.info("xAPI post batch duration: {}", System.currentTimeMillis() - start);
             statements.clear();
         } catch (MalformedURLException ex) {
         }

@@ -118,6 +118,9 @@
     font-style: normal;
     max-height: 50px;
     overflow: hidden;
+}
+.yui3-treenode-content-header:not(.no-transition),
+.yui3-treeleaf-content-header:not(.no-transition) {
     transition: max-height 0.15s, padding 0.15s;
     -o-transition: max-height 0.15s, padding 0.15s;
     -moz-transition: max-height 0.15s, padding 0.15s;

@@ -8,6 +8,7 @@
 package com.wegas.core.security.guest;
 
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.util.AuthenticationMethod;
 import javax.persistence.*;
 
 /**
@@ -31,5 +32,10 @@ public class GuestJpaAccount extends AbstractAccount {
     @Override
     public Boolean isVerified() {
         return false;
+    }
+
+    @Override
+    public AuthenticationMethod getAuthenticationMethod() {
+        return null;
     }
 }
