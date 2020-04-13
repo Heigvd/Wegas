@@ -7,11 +7,8 @@ import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { BaseView, Schema } from 'jsoninput/typings/types';
 import { MessageString } from '../MessageString';
 // import { flexItemSchema } from '../../../Components/Layouts/FlexList';
-import {
-  SchemaPropsSchemas,
-  schemaProps,
-} from '../../../Components/PageComponents/tools/schemaProps';
-import { alignSelfValues } from '../../../Components/Layouts/FlexList';
+import { SchemaPropsSchemas } from '../../../Components/PageComponents/tools/schemaProps';
+import { optionsSchema } from '../../../Components/PageComponents/tools/EditableComponent';
 
 interface EditorProps<T = WegasComponent['props']> {
   entity: T;
@@ -71,75 +68,6 @@ export interface ComponentEditorProps {
   actions?: EditorProps['actions'];
   isFlexItem?: boolean;
 }
-
-export const optionsSchema = {
-  options: schemaProps.hashlist(
-    'Options',
-    false,
-    [
-      {
-        label: 'Layout',
-        value: { prop: 'layout' },
-        items: [
-          {
-            label: 'Order',
-            value: {
-              prop: 'order',
-              schema: schemaProps.number('Order', true, 0),
-            },
-          },
-          {
-            label: 'Align Self',
-            value: {
-              prop: 'alignSelf',
-              schema: schemaProps.select(
-                'Align self',
-                true,
-                alignSelfValues,
-                'auto',
-              ),
-            },
-          },
-          {
-            label: 'Flex grow',
-            value: {
-              prop: 'flexGrow',
-              schema: schemaProps.number('Flex grow', true, 0),
-            },
-          },
-          {
-            label: 'Flex shrink',
-            value: {
-              prop: 'flexShrink',
-              schema: schemaProps.number('Flex shrink', true, 1),
-            },
-          },
-          {
-            label: 'Flex basis',
-            value: {
-              prop: 'flexBasis',
-              schema: schemaProps.string('Flex basis', true, 'auto'),
-            },
-          },
-        ],
-      },
-    ],
-    undefined,
-    undefined,
-    1001,
-  ),
-  className: schemaProps.string(
-    'Classes',
-    false,
-    undefined,
-    undefined,
-    1001,
-    undefined,
-    true,
-  ),
-  style: schemaProps.code('Style', false, 'JSON', undefined, 'ADVANCED', 1002),
-  children: schemaProps.hidden(false, 'array', 1003),
-};
 
 export default function ComponentEditor({
   entity,

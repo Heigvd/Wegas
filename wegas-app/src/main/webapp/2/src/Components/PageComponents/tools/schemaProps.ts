@@ -36,7 +36,7 @@ export interface SelectItem {
   value: {};
 }
 
-export const schemaProps = {
+const simpleSchemaProps = {
   hidden: (
     required: boolean = true,
     type: TYPESTRING | TYPESTRING[] = 'array',
@@ -426,8 +426,45 @@ export const schemaProps = {
   }),
 };
 
-export type SchemaPropsValues = keyof typeof schemaProps;
+type SimpleSchemaPropsValues = keyof typeof simpleSchemaProps;
 
-export type SchemaPropsSchemas = ReturnType<
-  typeof schemaProps[SchemaPropsValues]
+type SimpleSchemaPropsSchemas = ReturnType<
+  typeof simpleSchemaProps[SimpleSchemaPropsValues]
 >;
+
+const objectSchemaProps = {
+  object: (
+    label?: string,
+    properties: { [key: string]: SimpleSchemaPropsSchemas } = {},
+    required: boolean = true,
+    value: object = {},
+    featureLevel: FeatureLevel = 'DEFAULT',
+    index: number = 0,
+    layout?: SchemaLayout,
+    borderTop?: boolean,
+  ) => ({
+    description: 'com.wegas.core.persistence.variable.primitive.NumberInstance',
+    properties,
+    value,
+    // protectionLevel: "INTERNAL"
+    required,
+    type: 'object',
+    view: { featureLevel, index, label, layout, borderTop },
+  }),
+};
+
+type ObjectSchemaPropsValues = keyof typeof objectSchemaProps;
+
+type ObjectSchemaPropsSchemas = ReturnType<
+  typeof objectSchemaProps[ObjectSchemaPropsValues]
+>;
+
+export const schemaProps = { ...simpleSchemaProps, ...objectSchemaProps };
+
+export type SchemaPropsValues =
+  | SimpleSchemaPropsValues
+  | ObjectSchemaPropsValues;
+
+export type SchemaPropsSchemas =
+  | SimpleSchemaPropsSchemas
+  | ObjectSchemaPropsSchemas;

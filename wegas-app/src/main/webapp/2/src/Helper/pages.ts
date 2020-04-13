@@ -35,13 +35,20 @@ export function getItemFromPath(
 
 export function getPageIndexItemFromFolder(
   folder: PageIndexFolder,
-  id: string,
+  id?: string,
 ): PageIndexPage | undefined {
-  for (const item of folder.items) {
-    if (isPageItem(item) && item.id === id) {
-      return item;
-    } else if (isFolderItem(item)) {
-      return getPageIndexItemFromFolder(item, id);
+  if (id == null) {
+    return undefined;
+  } else {
+    for (const item of folder.items) {
+      if (isPageItem(item) && item.id === id) {
+        return item;
+      } else if (isFolderItem(item)) {
+        const pageItem = getPageIndexItemFromFolder(item, id);
+        if (pageItem != null) {
+          return pageItem;
+        }
+      }
     }
   }
 }

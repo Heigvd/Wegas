@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { HashListChoices } from '../../Editor/Components/FormView/HashList';
+import { schemaProps } from '../PageComponents/tools/schemaProps';
 
 export const alignItemsValues = [
   'stretch',
@@ -43,6 +45,44 @@ export interface FlexItemFlexProps {
    */
   flexBasis?: FlexBasis;
 }
+
+export const layoutChoices: HashListChoices = [
+  {
+    label: 'Order',
+    value: {
+      prop: 'order',
+      schema: schemaProps.number('Order', true, 0),
+    },
+  },
+  {
+    label: 'Align Self',
+    value: {
+      prop: 'alignSelf',
+      schema: schemaProps.select('Align self', true, alignSelfValues, 'auto'),
+    },
+  },
+  {
+    label: 'Flex grow',
+    value: {
+      prop: 'flexGrow',
+      schema: schemaProps.number('Flex grow', true, 0),
+    },
+  },
+  {
+    label: 'Flex shrink',
+    value: {
+      prop: 'flexShrink',
+      schema: schemaProps.number('Flex shrink', true, 1),
+    },
+  },
+  {
+    label: 'Flex basis',
+    value: {
+      prop: 'flexBasis',
+      schema: schemaProps.string('Flex basis', true, 'auto'),
+    },
+  },
+];
 
 export interface FlexItemProps extends FlexItemFlexProps {
   /**

@@ -26,6 +26,10 @@ interface HashListProp {
   prop: string;
 }
 
+// interface HashListValueSchema {
+//   [key: string]: SchemaPropsSchemas;
+// }
+
 interface HashListValue {
   prop: string;
   schema: SchemaPropsSchemas;
@@ -43,6 +47,14 @@ type HashListChoice = MenuItem<HashListItem> & {
 };
 
 export type HashListChoices = HashListChoice[];
+
+function isIntermediateKey(
+  key?: string,
+  choices?: HashListChoices,
+): [boolean, HashListChoices | undefined] {
+  const choice = choices?.find(c => c.value.prop === key);
+  return [key != null && choice != null && choice.items != null, choice?.items];
+}
 
 type HashListViewBag = CommonView &
   LabeledView & {
@@ -109,34 +121,43 @@ export function EntryView<T>({
 }
 
 type ImprovedValues = { [prop: string]: ImprovedObjectValue };
-const normalizeValues = (nv: object) => (ov?: ImprovedValues): ImprovedValues =>
-  Object.entries(nv).reduce(
-    (o, [k, v], i) => ({
+const normalizeValues = (nv: object, choices?: HashListChoices) => (
+  ov?: ImprovedValues,
+): ImprovedValues =>
+  Object.entries(nv).reduce((o, [k, v], i) => {
+    const [isIntermediate, itemChoices] = isIntermediateKey(k, choices);
+    return {
       ...o,
       [k]: {
-        value:
-          typeof v === 'object'
-            ? normalizeValues(v)(
-                ov == null || ov[k] == null
-                  ? undefined
-                  : (ov[k].value as ImprovedValues),
-              )
-            : v,
+        value: isIntermediate
+          ? normalizeValues(
+              v,
+              itemChoices,
+            )(
+              ov == null || ov[k] == null
+                ? undefined
+                : (ov[k].value as ImprovedValues),
+            )
+          : v,
         index: ov != null && ov[k] != null ? ov[k].index : i,
       },
-    }),
-    {},
-  );
+    };
+  }, {});
 
-const extractValues = (values: ImprovedValues): ObjectValues =>
-  Object.entries(values || {}).reduce(
-    (o, [k, v]) => ({
+const extractValues = (
+  values: ImprovedValues,
+  choices?: HashListChoices,
+): ObjectValues =>
+  Object.entries(values || {}).reduce((o, [k, v]) => {
+    const [isIntermediate, itemChoices] = isIntermediateKey(k, choices);
+    return {
       ...o,
-      [k]: typeof v.value !== 'object' ? v.value : extractValues(v.value),
-    }),
-    {},
-  );
-
+      [k]:
+        isIntermediate && typeof v.value === 'object'
+          ? extractValues(v.value, itemChoices)
+          : v.value,
+    };
+  }, {});
 const sortValues = (a: ImprovedObjectValue, b: ImprovedObjectValue) =>
   a.index - b.index;
 
@@ -167,6 +188,7 @@ interface EntriesViewProps {
   labelNode?: React.ReactNode;
   view: HashListViewBag;
   allowedChoices?: HashListChoices;
+  allowChildAdd?: boolean;
 }
 
 function EntriesView({
@@ -177,6 +199,7 @@ function EntriesView({
   labelNode,
   view,
   allowedChoices,
+  allowChildAdd,
 }: EntriesViewProps) {
   const { readOnly, disabled, tooltip, choices } = view;
 
@@ -191,7 +214,7 @@ function EntriesView({
     <DragDropArray
       choices={allowedChoices}
       onChildAdd={
-        allowedChoices
+        allowChildAdd
           ? choice => {
               const index = Object.keys(currentValue).length;
               if (choice && choices) {
@@ -210,16 +233,16 @@ function EntriesView({
                   if (newValue != null) {
                     onNewEntry && onNewEntry(newValue);
                   }
-                } else {
-                  onNewEntry &&
-                    onNewEntry({
-                      ...currentValue,
-                      [`key${index}`]: {
-                        index,
-                        value: '',
-                      },
-                    });
                 }
+              } else {
+                onNewEntry &&
+                  onNewEntry({
+                    ...currentValue,
+                    [`key${index}`]: {
+                      index,
+                      value: '',
+                    },
+                  });
               }
             }
           : undefined
@@ -237,9 +260,9 @@ function EntriesView({
       inputId={inputId}
       label={labelNode}
       tooltip={tooltip}
-      filterRemovable={Object.values(currentValue)
-        .sort((a, b) => sortValues(a, b))
-        .map(v => typeof v.value === 'string')}
+      filterRemovable={Object.entries(currentValue)
+        .sort(([, a], [, b]) => sortValues(a, b))
+        .map(([k]) => !isIntermediateKey(k, choices)[0])}
     >
       {currentValue &&
         Object.entries(currentValue)
@@ -247,7 +270,7 @@ function EntriesView({
           .map(([k, v], i) => {
             let schema: SchemaPropsSchemas | undefined;
             let label: React.ReactNode | undefined;
-            let newChoices: HashListChoices | undefined;
+            // let newChoices: HashListChoices | undefined;
             if (choices) {
               const choice: HashListChoice | undefined = choices.find(
                 c => c.value.prop === k,
@@ -255,11 +278,32 @@ function EntriesView({
               label = choice?.label;
               if (choice && choice.value && isHashListValue(choice.value)) {
                 schema = choice.value.schema;
-              } else {
-                newChoices = choice?.items;
               }
             }
-            if (typeof v.value !== 'object') {
+            const [isIntermediate, itemChoices] = isIntermediateKey(k, choices);
+            if (isIntermediate && typeof v.value === 'object') {
+              return (
+                <EntriesView
+                  labelNode={label}
+                  currentValue={v.value}
+                  onChange={value => {
+                    let newValue: ImprovedValues;
+                    const nestedValue = { ...v, value };
+                    if (Object.keys(nestedValue.value).length > 0) {
+                      newValue = { ...currentValue, [k]: nestedValue };
+                    } else {
+                      newValue = omit(currentValue, k);
+                    }
+                    onChange(newValue);
+                  }}
+                  view={{
+                    ...view,
+                    choices: itemChoices,
+                  }}
+                  key={i}
+                />
+              );
+            } else {
               return (
                 <EntryView
                   key={i}
@@ -280,28 +324,6 @@ function EntriesView({
                     onChange(newValue);
                   }}
                   schema={schema}
-                />
-              );
-            } else {
-              return (
-                <EntriesView
-                  labelNode={label}
-                  currentValue={v.value}
-                  onChange={value => {
-                    let newValue: ImprovedValues;
-                    const nestedValue = { ...v, value };
-                    if (Object.keys(nestedValue.value).length > 0) {
-                      newValue = { ...currentValue, [k]: nestedValue };
-                    } else {
-                      newValue = omit(currentValue, k);
-                    }
-                    onChange(newValue);
-                  }}
-                  view={{
-                    ...view,
-                    choices: newChoices,
-                  }}
-                  key={i}
                 />
               );
             }
@@ -340,19 +362,19 @@ function HashListView({
   onChange: onChangeOutside,
   value,
 }: HashListViewProps) {
-  const { label, description } = view;
+  const { label, description, choices } = view;
 
   const onChange = React.useCallback(
     (value?: ImprovedValues) => {
       setValue(value || {});
-      onChangeOutside(extractValues(value || {}));
+      onChangeOutside(extractValues(value || {}, choices));
     },
-    [onChangeOutside],
+    [onChangeOutside, choices],
   );
 
   const [currentValue, setValue] = React.useState<ImprovedValues>({});
   useDeepChanges(value, nv => {
-    setValue(normalizeValues(nv || {}));
+    setValue(normalizeValues(nv || {}, choices));
   });
 
   const allowedChoices = view.choices
@@ -386,6 +408,7 @@ function HashListView({
             onChange={onChange}
             inputId={inputId}
             labelNode={labelNode}
+            allowChildAdd
           />
         )}
       </Labeled>

@@ -17,10 +17,13 @@ import {
   FlexItemProps,
   FlexItem,
   FlexItemFlexProps,
+  layoutChoices,
 } from '../../Layouts/FlexList';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import { useDebounce } from '../../Hooks/useDebounce';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
+import { schemaProps } from './schemaProps';
+import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
@@ -193,10 +196,63 @@ function useDndComponentDrop(
   return [{ ...dropZoneProps, canDrop: delayedCanDrop }, dropZone];
 }
 
+interface WegasComponentActions {
+  openPage?: {
+    pageLoaderName: string;
+    pageId: IScript;
+    priority?: number;
+  };
+  openUrl?: {
+    url: string;
+    priority?: number;
+  };
+  openFile?: {
+    fileId: string;
+    priority?: number;
+  };
+  impactVariable?: {
+    impact: IScript;
+    priority?: number;
+  };
+  confirmClick?: boolean;
+  localScriptEval?: {
+    script: IScript;
+    priority?: number;
+  };
+  openPopupPage?: {
+    pageLoaderName: string;
+    pageId: IScript;
+    priority?: number;
+  };
+  playSound?: {
+    fileId: string;
+    priority?: number;
+  };
+  printVariable?: {
+    variable: IScript;
+    priority?: number;
+  };
+}
+
+const actionsChoices: HashListChoices = [
+  {
+    label: 'Open Page',
+    value: {
+      prop: 'openPage',
+      schema: schemaProps.object('Open Page', {
+        pageLoaderName: schemaProps.string('Page loader', true),
+        pageId: schemaProps.pageSelect('Page', true),
+        priority: schemaProps.number('Priority', false),
+      }),
+    },
+  },
+];
+
 export interface ComponentContainerProps
   extends Omit<PageComponentMandatoryProps, 'ComponentContainer'> {
   options?: {
     layout?: FlexItemFlexProps;
+    actions?: WegasComponentActions;
   };
   handleProps?: EditorHandleProps;
   /**
@@ -461,3 +517,36 @@ export function EditableComponent({
     showBorders && !uneditable,
   );
 }
+
+export const optionsSchema = {
+  options: schemaProps.hashlist(
+    'Options',
+    false,
+    [
+      {
+        label: 'Layout',
+        value: { prop: 'layout' },
+        items: layoutChoices,
+      },
+      {
+        label: 'Actions',
+        value: { prop: 'actions' },
+        items: actionsChoices,
+      },
+    ],
+    undefined,
+    undefined,
+    1001,
+  ),
+  className: schemaProps.string(
+    'Classes',
+    false,
+    undefined,
+    undefined,
+    1001,
+    undefined,
+    true,
+  ),
+  style: schemaProps.code('Style', false, 'JSON', undefined, 'ADVANCED', 1002),
+  children: schemaProps.hidden(false, 'array', 1003),
+};

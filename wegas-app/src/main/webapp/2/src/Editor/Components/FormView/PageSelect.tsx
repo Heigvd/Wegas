@@ -8,19 +8,24 @@ import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 import { createScript } from '../../../Helper/wegasEntites';
 import { useStore } from '../../../data/store';
-import { TreeSelect } from '../Tree/TreeSelect';
 import {
   indexToTree,
   isPageItem,
   getPageIndexItem,
 } from '../../../Helper/pages';
 import { useScript } from '../../../Components/Hooks/useScript';
+import { Menu } from '../../../Components/Menu';
 
 export interface PageSelectProps extends WidgetProps.BaseProps {
   view: CommonView & LabeledView;
   value?: IScript;
   onChange: (code: IScript) => void;
 }
+
+const updateScript = (scriptContent: string, currentScript?: IScript) =>
+  currentScript
+    ? { ...currentScript, content: scriptContent }
+    : createScript(scriptContent, 'TypeScript');
 
 export default function PageSelect(props: PageSelectProps) {
   const [pageValue, setPageValue] = React.useState<string>('');
@@ -38,10 +43,9 @@ export default function PageSelect(props: PageSelectProps) {
 
   const onPageChange = React.useCallback(
     (value?: string) => {
-      const content = value ? value : '';
-      props.onChange(
-        props.value ? { ...props.value, content } : createScript(content),
-      );
+      const content = updateScript(JSON.stringify(value || ''), props.value);
+      setPageValue(content.content);
+      props.onChange(content);
     },
     [props],
   );
@@ -52,7 +56,7 @@ export default function PageSelect(props: PageSelectProps) {
       {srcMode ? (
         <div className={scriptEditStyle}>
           <WegasScriptEditor
-            value={props.value ? props.value.content : ''}
+            value={pageValue}
             returnType={['string']}
             onChange={setPageValue}
             onSave={value =>
@@ -65,7 +69,7 @@ export default function PageSelect(props: PageSelectProps) {
             language={
               props.value
                 ? (props.value.language.toLowerCase() as SrcEditorLanguages)
-                : 'javascript'
+                : 'typescript'
             }
             minimap={false}
             noGutter={true}
@@ -73,11 +77,12 @@ export default function PageSelect(props: PageSelectProps) {
         </div>
       ) : (
         <>
-          {/* <StringInput value={getPageIndexItem(index,pageValue)?.name || "Unknown page"} /> */}
-          <TreeSelect
+          <Menu
             items={indexToTree(index)}
-            onSelect={item => isPageItem(item) && onPageChange(item.id)}
-            selected={getPageIndexItem(index, pageId)}
+            onSelect={item => {
+              isPageItem(item.value) && onPageChange(item.value.id);
+            }}
+            label={getPageIndexItem(index, pageId)?.name || 'Unknown page'}
           />
         </>
       )}

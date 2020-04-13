@@ -8,24 +8,10 @@ import { MessageString } from '../Editor/Components/MessageString';
 import { schemaProps } from '../Components/PageComponents/tools/schemaProps';
 import { createScript } from '../Helper/wegasEntites';
 import { themeVar } from '../Components/Theme';
+import { optionsSchema } from '../Components/PageComponents/tools/EditableComponent';
 
 //It's really important to import index.ts in order to have the widjets allready registered before using Form
 import '../Editor/Components/FormView';
-import { optionsSchema } from '../Editor/Components/Page/ComponentEditor';
-
-interface SchemaPropsTesterState {
-  hidden: string[];
-  boolean: boolean;
-  number: number;
-  string: string;
-  script: IScript;
-  code: object;
-  select: string;
-  undefSelect?: string;
-  // simpleHashList: {};
-  // customizedHashList: {};
-  customizedMultilevelHashList: {};
-}
 
 const testSchema = {
   hidden: schemaProps.hidden(),
@@ -39,28 +25,28 @@ const testSchema = {
     'Option 2',
     'Option 3',
   ]),
-  // undefSelect: schemaProps.select('Undefined select', false, [
-  //   'Option 1',
-  //   'Option 2',
-  //   'Option 3',
-  // ]),
-  // simpleHashList: schemaProps.hashlist('Simple hashlist', true),
-  // customizedHashList: schemaProps.hashlist('Customized hashlist', true, [
-  //   {
-  //     label: 'Attribute1',
-  //     value: {
-  //       prop: 'Attribute1',
-  //       schema: schemaProps.select('Attribute1', true, ['1', '2', '3']),
-  //     },
-  //   },
-  //   {
-  //     label: 'Attribute2',
-  //     value: {
-  //       prop: 'Attribute2',
-  //       schema: schemaProps.select('Attribute2', true, ['A', 'B', 'C']),
-  //     },
-  //   },
-  // ]),
+  undefSelect: schemaProps.select('Undefined select', false, [
+    'Option 1',
+    'Option 2',
+    'Option 3',
+  ]),
+  simpleHashList: schemaProps.hashlist('Simple hashlist', true),
+  customizedHashList: schemaProps.hashlist('Customized hashlist', true, [
+    {
+      label: 'Attribute1',
+      value: {
+        prop: 'Attribute1',
+        schema: schemaProps.select('Attribute1', true, ['1', '2', '3']),
+      },
+    },
+    {
+      label: 'Attribute2',
+      value: {
+        prop: 'Attribute2',
+        schema: schemaProps.select('Attribute2', true, ['A', 'B', 'C']),
+      },
+    },
+  ]),
   customizedMultilevelHashList: optionsSchema.options,
   // schemaProps.hashlist(
   //   'Customized multilevel hashlist',
@@ -114,6 +100,20 @@ const testSchema = {
   // ),
 };
 
+interface SchemaPropsTesterState {
+  hidden: string[];
+  boolean: boolean;
+  number: number;
+  string: string;
+  script: IScript;
+  code: object;
+  select: string;
+  undefSelect?: string;
+  simpleHashList: {};
+  customizedHashList: {};
+  customizedMultilevelHashList: {};
+}
+
 export default function SchemaPropsTester() {
   const [values, setValues] = React.useState<SchemaPropsTesterState>({
     hidden: ['hidden'],
@@ -124,11 +124,13 @@ export default function SchemaPropsTester() {
     code: {},
     select: 'Option 1',
     undefSelect: undefined,
-    // simpleHashList: {},
-    // customizedHashList: {},
-    customizedMultilevelHashList: {
-      nextlevel: { 'Next level attribute 1': '2' },
-    },
+    simpleHashList: {},
+    customizedHashList: {},
+    // customizedMultilevelHashList: {},
+    customizedMultilevelHashList: { layout: { order: 1234567 } },
+    // customizedMultilevelHashList: {
+    //   nextlevel: { 'Next level attribute 1': '2' },
+    // },
   });
   const [errors, setErrors] = React.useState<ValidationError[]>([]);
 
