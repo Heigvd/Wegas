@@ -1999,6 +1999,9 @@ YUI.add("wegas-survey-widgets", function(Y) {
             "    </div>" +
             "    <div class=\"warning\"></div>" +
             "    <div class=\"survey-mixer\">" +
+            "        <div class=\"search-external-surveys\">Search for surveys in other games</div>" +
+            "        <div class=\"external-surveys-title\" style=\"display:none;\">Surveys found in other games<div class=\"close\">X</div></div>" +
+            "        <div class=\"external-surveys-list\"></div>" +
             "    </div>" +
             "    <div class=\"selected-survey-list\">" +
             "    </div>" +
@@ -2049,19 +2052,25 @@ YUI.add("wegas-survey-widgets", function(Y) {
             }            
         },
         renderUI: function() {
-            var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
+            var cb = this.get(CONTENTBOX),
+                logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
             if (!logId) {
                 var msg = I18n.t("survey.orchestrator.noLogId");
                 this.get("contentBox").one(".warning").setContent(msg);
             } else {
                 Y.log("Log ID = " + logId);
             }
-            // Get updates about all existing surveys and list them:
+            // Get updates about all internal surveys and list them:
             Y.Array.each(Y.Wegas.Facade.Variable.cache.findAll("@class", "SurveyDescriptor"),
                 function(sd) {
                     this.registerSurvey(sd);
                     this.selectSurvey(sd);
                 }, this);
+            // Prepare area for searching for and importing external surveys:
+            this.searchExternalButton = new Y.Button({
+                label: "<i class=\"fa fa-search\"></i>",
+                visible: true
+            }).render(cb.one(".search-external-surveys"));
         },
         _getMonitoredData: function(survId) {
             var survDescr = Y.Wegas.Facade.Variable.cache.findById(survId);
@@ -2098,14 +2107,17 @@ YUI.add("wegas-survey-widgets", function(Y) {
          * @description bind function to events.
          */
         bindUI: function() {
+            var cb = this.get(CONTENTBOX);
             this.handlers.push(Y.Wegas.Facade.Variable.after("updatedDescriptor", this.onUpdatedDescriptor, this));
             this.handlers.push(Y.Wegas.Facade.Variable.after("added", this.onAddedDescriptor, this));
             this.handlers.push(Y.Wegas.Facade.Variable.after("delete", this.onDeletedDescriptor, this));
+            
+            this.handlers.push(cb.one(".search-external-surveys").on("click", this.onSearchExternal, this));
+            this.handlers.push(cb.one(".external-surveys-title .close").on("click", this.closeExternalSurveys, this));
 
-            this.get(CONTENTBOX)
-                .delegate("click", this.onRequest, ".selected-survey .request-survey", this);
-
-            this.get(CONTENTBOX).delegate("click", this.refresh, ".selected-survey .survey-header .survey-refresh", this);
+            cb.delegate("click", this.onRequest, ".selected-survey .request-survey", this);
+            cb.delegate("click", this.refresh, ".selected-survey .survey-header .survey-refresh", this);
+            cb.delegate("click", this.importSurvey, ".external-surveys-list .importable-variable", this);
         },
         
         onUpdatedDescriptor: function(e) {
@@ -2148,6 +2160,116 @@ YUI.add("wegas-survey-widgets", function(Y) {
             this.syncUI(survId);            
         },
 
+        getFriendlyVarName: function(v) {
+            var name = '',
+                label = I18n.t(v.get("label"));
+            if (v.get("editorTag")) {
+                name += v.get("editorTag");
+            }
+            if (name && label) {
+                name += ' - ';
+            }
+            if (label) {
+                name += label;
+            }
+            if (!name) {
+                name = v.get("name");
+            }
+            return name;
+        },
+        
+        // Called via on click
+        importSurvey: function(e) {
+            // /rest/GameModel/<gameModelId>/VariableDescriptor/CherryPick/<variableDescriptorId>/<newScopeType>
+            var data = e.target.getData(),
+                gmId = data.gamemodelid,
+                varId = data.varid,
+                newscope = null, // data.newscope,
+                config = {
+                    request: '/' + gmId + "/VariableDescriptor/CherryPick/" + varId + (newscope ? '/' + newscope : ''),
+                    cfg: {
+                        updateCache: true,
+                        method: "POST"
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            alert("ok");
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            this.showMessage("error", "Something went wrong: importSurvey");
+                        }, this)
+                }
+            };
+            Y.Wegas.Facade.GameModel.sendRequest(config);
+        },
+        
+        closeExternalSurveys: function() {
+            var cb = this.get(CONTENTBOX);
+            cb.one(".external-surveys-list").setHTML('');
+            cb.one(".search-external-surveys").show();
+            cb.one(".external-surveys-title").hide();
+        },
+        
+        listExternalSurveys: function(e) {
+            var varSets = e.response && e.response.entities,
+                currGameId = Y.Wegas.Facade.Game.cache.getCurrentGame().get("id"),
+                currGameModelId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"),
+                currVarSet, vs, currGameModel, currGame, variables, v, currVar,
+                txt = '';
+            for (vs in varSets){
+                currVarSet = varSets[vs].get("val");
+                currGameModel = currVarSet.gameModel;
+                currGame = currVarSet.game;
+                variables = currVarSet.variables;
+                if (currGameModel.get("type") === "PLAY" ) {   // It's a session, not a scenario
+                    if (currGame.get("id") === currGameId) {
+                        continue;
+                    }
+                    txt += '<div class="game-name">' + currGame.get("name") + ' &nbsp;(session of scenario ' + currGameModel.get("name") + '):</div>';
+                } else {
+                    if (currGameModel.get("id") === currGameModelId) {
+                        continue;
+                    }
+                    txt += '<div class="game-name">' + currGameModel.get("name") + '</div>';
+                }
+                for (v in variables) {
+                    currVar = variables[v];
+                    txt += 
+                        '<div class="importable-variable" data-varid="' + currVar.get("id") + 
+                        '" data-gamemodelid="' + currGameModelId + //currGameModel.get("id") + 
+                        '" data-newscope="TeamScope">' +
+                        this.getFriendlyVarName(currVar) +
+                        '</div>';
+                }
+            }
+            if (!txt) {
+                txt = "no surveys found";
+            }
+            var cb = this.get(CONTENTBOX);
+            cb.one(".external-surveys-list").setHTML(txt);
+            cb.one(".search-external-surveys").hide();
+            cb.one(".external-surveys-title").show();
+        },
+        
+        onSearchExternal: function() {
+            // /rest/Public/GameModel/VariableDescriptor/FetchWriteablePickable/<variableClassName>
+            var config = {
+                    request: "/VariableDescriptor/FetchWriteablePickable/com.wegas.survey.persistence.SurveyDescriptor",
+                    cfg: {
+                        updateCache: true,
+                        method: "GET"
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            this.listExternalSurveys(e);
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            this.showMessage("error", "Something went wrong: FetchWriteablePickable");
+                        }, this)
+                }
+            };
+            Y.Wegas.Facade.GameModel.sendRequest(config);
+        },
         /**
          * @function
          * @private

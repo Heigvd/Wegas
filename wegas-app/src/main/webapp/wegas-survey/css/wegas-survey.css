@@ -454,6 +454,56 @@
     padding: 10px;
 }
 
+.wegas-survey-orchestrator .survey-mixer {
+    border: 2px ridge #adceeb;
+    padding: 10px;
+    margin: 10px auto;
+}
+
+.wegas-survey-orchestrator .search-external-surveys button {
+    border-radius: 50%;
+    margin-left: 5px;
+    border: 1px solid lightgray;
+    width: 30px;
+    height: 30px;
+}
+
+.wegas-survey-orchestrator .external-surveys-title {
+    font-weight: bold;
+    font-size: 150%;
+}
+
+.wegas-survey-orchestrator .external-surveys-title .close {
+    float: right;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 50%;
+    padding: 4px;
+}
+
+.wegas-survey-orchestrator .external-surveys-title .close:hover {
+    background: #ddd;
+}
+
+.wegas-survey-orchestrator .external-surveys-list:not(:empty) {
+    margin-bottom: 20px;
+}
+
+.wegas-survey-orchestrator .external-surveys-list .game-name {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.wegas-survey-orchestrator .external-surveys-list .importable-variable {
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.wegas-survey-orchestrator .external-surveys-list .importable-variable:hover {
+    text-decoration: underline;
+}
+
 .wegas-survey-orchestrator .selected-survey-list {
     border-top: 1px solid gray;
     margin-top: 5px;
