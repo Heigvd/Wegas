@@ -14,6 +14,7 @@ export interface StringInputProps
       LabeledView
   > {
   value?: string | number;
+  onChange: (value: string) => void;
 }
 
 export default function StringInput({

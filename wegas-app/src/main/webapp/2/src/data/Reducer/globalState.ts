@@ -332,7 +332,7 @@ export function editVariable(
   config?: Schema<AvailableViews>,
   actions?: EditorAction<IVariableDescriptor>,
 ): ThunkResult {
-  return function(dispatch) {
+  return function (dispatch) {
     const currentActions: EditorAction<IVariableDescriptor> =
       actions != null
         ? actions
@@ -381,7 +381,7 @@ export function editStateMachine(
   path: string[] = [],
   config?: Schema<AvailableViews>,
 ): ThunkResult {
-  return function(dispatch) {
+  return function (dispatch) {
     dispatch(
       ActionCreator.FSM_EDIT({
         entity,
@@ -554,7 +554,7 @@ export function searchClear() {
  * @param value the text to search for
  */
 export function searchGlobal(value: string): ThunkResult {
-  return function(dispatch) {
+  return function (dispatch) {
     dispatch(ActionCreator.SEARCH_ONGOING());
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.contains(gameModelId, value)
@@ -572,7 +572,7 @@ export function searchUsage(
   variable: IVariableDescriptor & { id: number },
 ): ThunkResult {
   const search = `Variable.find(gameModel, "${variable.name}")`;
-  return function(dispatch) {
+  return function (dispatch) {
     store.dispatch(ActionCreator.SEARCH_ONGOING());
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.contains(gameModelId, search)

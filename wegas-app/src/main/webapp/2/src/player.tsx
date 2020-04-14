@@ -6,11 +6,11 @@ import { LanguagesProvider } from './Components/Contexts/LanguagesProvider';
 import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
 import { ThemeProvider } from './Components/Theme';
-import { PageIdLoader } from './Editor/Components/Page/PageLoader';
 import { PageAPI } from './API/pages.api';
 import 'emotion';
 import { useWebsocket } from './API/websocket';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
+import { PageLoader } from './Editor/Components/Page/PageLoader';
 
 importPageComponents();
 
@@ -31,11 +31,7 @@ function PlayerPageLoader() {
 
   return (
     <ThemeProvider contextName="player">
-      {selectedPageId ? (
-        <PageIdLoader selectedPageId={selectedPageId} />
-      ) : (
-        <pre>No given pageId</pre>
-      )}
+      <PageLoader selectedPageId={selectedPageId} />
     </ThemeProvider>
   );
 }

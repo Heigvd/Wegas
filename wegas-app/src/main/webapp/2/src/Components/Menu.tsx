@@ -123,7 +123,7 @@ export function Menu<T, MItem extends MenuItem<T>>({
       itemToString={emtpyStr}
     >
       {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
-        <div id={id} className={cx(container, containerClassName)}>
+        <div id={id} className={container + ' ' + containerClassName || ''}>
           <div className={itemStyle} onClick={() => toggleMenu()}>
             <IconButton
               label={label}
@@ -139,11 +139,14 @@ export function Menu<T, MItem extends MenuItem<T>>({
 
           {isOpen && (
             <div
-              className={cx(
-                DIR[realDirection],
-                listClassName,
-                css({ background: themeVar.backgroundColor }),
-              )}
+              className={
+                cx(
+                  DIR[realDirection],
+                  css({ background: themeVar.backgroundColor }),
+                ) +
+                  ' ' +
+                  listClassName || ''
+              }
               ref={n => {
                 if (
                   n != null &&

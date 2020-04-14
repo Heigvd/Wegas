@@ -26,6 +26,8 @@ import { VariableInput } from './Script/VariableInput';
 import PageSelect from './PageSelect';
 import StatementView from './Script/Expressions/ExpressionEditor';
 import HashListView from './HashList';
+import PageLoaderSelect from './PageLoaderSelect';
+import FileSelector from './FileSelector';
 
 export const DEFINED_VIEWS = {
   hidden,
@@ -40,6 +42,7 @@ export const DEFINED_VIEWS = {
   array: ArrayWidget,
   select: Select,
   pageselect: PageSelect,
+  pagesloaderselect: PageLoaderSelect,
   html: LabeledHTMLEditor,
   i18nhtml: translatable(LabeledHTMLEditor),
   script: Script,
@@ -54,6 +57,7 @@ export const DEFINED_VIEWS = {
   listchildren: ListChildrenSelectView,
   listchildrennull: ListChildrenNullSelectView,
   treeselect: TreeVSelect,
+  file: FileSelector,
 };
 setDefaultWidgets(DEFINED_VIEWS);
 

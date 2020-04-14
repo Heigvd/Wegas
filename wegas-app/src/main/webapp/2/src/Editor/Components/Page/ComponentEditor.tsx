@@ -66,29 +66,25 @@ export interface ComponentEditorProps {
   entity?: WegasComponent;
   update?: (variable: WegasComponent) => void;
   actions?: EditorProps['actions'];
-  isFlexItem?: boolean;
 }
 
 export default function ComponentEditor({
   entity,
   update,
   actions,
-  isFlexItem,
 }: ComponentEditorProps) {
   const schema = usePageComponentStore(s => {
     const baseSchema =
       entity && s[entity.type]
         ? s[entity.type].getSchema()
         : { description: 'Unknown schema', properties: {} };
-    if (isFlexItem) {
-      const firstPropView: SchemaPropsSchemas & {
-        view?: SchemaPropsSchemas['view'] & { borderTop?: boolean };
-      } = optionsSchema.options;
-      if (firstPropView.view) {
-        firstPropView.view['borderTop'] = true;
-      }
-      baseSchema.properties = { ...baseSchema.properties, ...optionsSchema };
+    const firstPropView: SchemaPropsSchemas & {
+      view?: SchemaPropsSchemas['view'] & { borderTop?: boolean };
+    } = optionsSchema.options;
+    if (firstPropView.view) {
+      firstPropView.view['borderTop'] = true;
     }
+    baseSchema.properties = { ...baseSchema.properties, ...optionsSchema };
     return baseSchema as Schema<BaseView>;
   }, deepDifferent);
   if (entity === undefined || schema === undefined) {

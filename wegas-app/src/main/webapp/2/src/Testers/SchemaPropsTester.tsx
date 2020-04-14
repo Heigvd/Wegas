@@ -48,56 +48,11 @@ const testSchema = {
     },
   ]),
   customizedMultilevelHashList: optionsSchema.options,
-  // schemaProps.hashlist(
-  //   'Customized multilevel hashlist',
-  //   true,
-  //   [
-  //     {
-  //       label: 'Attribute1',
-  //       value: {
-  //         prop: 'Attribute1',
-  //         schema: schemaProps.select('Attribute1', true, ['1', '2', '3']),
-  //       },
-  //     },
-  //     {
-  //       label: 'Next level',
-  //       value: {
-  //         prop: 'nextlevel',
-  //       },
-  //       items: [
-  //         {
-  //           label: 'Next level attribute 1',
-  //           value: {
-  //             prop: 'Next level attribute 1',
-  //             schema: schemaProps.select('Next level attribute1', true, [
-  //               '1',
-  //               '2',
-  //               '3',
-  //             ]),
-  //           },
-  //         },
-  //         {
-  //           label: 'Next level attribute 2',
-  //           value: {
-  //             prop: 'Next level attribute 2',
-  //             schema: schemaProps.select('Next level attribute 2', true, [
-  //               'A',
-  //               'B',
-  //               'C',
-  //             ]),
-  //           },
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       label: 'Attribute2',
-  //       value: {
-  //         prop: 'Attribute2',
-  //         schema: schemaProps.select('Attribute2', true, ['A', 'B', 'C']),
-  //       },
-  //     },
-  //   ],
-  // ),
+  file: schemaProps.file('File', true),
+  greyFilterfile: schemaProps.file('Filtered audio file', true, 'FILE', {
+    filterType: 'grey',
+    fileType: 'audio',
+  }),
 };
 
 interface SchemaPropsTesterState {
@@ -112,6 +67,8 @@ interface SchemaPropsTesterState {
   simpleHashList: {};
   customizedHashList: {};
   customizedMultilevelHashList: {};
+  file?: IAbstractContentDescriptor;
+  greyFilterfile?: IAbstractContentDescriptor;
 }
 
 export default function SchemaPropsTester() {
@@ -131,6 +88,8 @@ export default function SchemaPropsTester() {
     // customizedMultilevelHashList: {
     //   nextlevel: { 'Next level attribute 1': '2' },
     // },
+    file: undefined,
+    greyFilterfile: undefined,
   });
   const [errors, setErrors] = React.useState<ValidationError[]>([]);
 

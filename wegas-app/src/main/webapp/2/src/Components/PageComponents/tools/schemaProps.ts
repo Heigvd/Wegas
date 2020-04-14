@@ -22,6 +22,10 @@ import { IArrayProps } from '../../../Editor/Components/FormView/Array';
 import { StatementViewProps } from '../../../Editor/Components/FormView/Script/Expressions/ExpressionEditor';
 import { createScript } from '../../../Helper/wegasEntites';
 import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
+import {
+  FileFilter,
+  FilePickingType,
+} from '../../../Editor/Components/FileBrowser/FileBrowser';
 
 type TypedProps<T extends { view: {} }> = Schema<
   T['view'] & {
@@ -265,6 +269,28 @@ const simpleSchemaProps = {
       },
     };
   },
+  pageLoaderSelect: (
+    label?: string,
+    required: boolean = true,
+    featureLevel: FeatureLevel = 'DEFAULT',
+    index: number = 0,
+    layout?: SchemaLayout,
+    borderTop?: boolean,
+  ): TypedProps<PageSelectProps> => {
+    return {
+      required,
+      type: 'object',
+      index,
+      view: {
+        borderTop,
+        index,
+        featureLevel,
+        label,
+        type: 'pagesloaderselect',
+        layout,
+      },
+    };
+  },
   variable: (
     label?: string,
     required: boolean = true,
@@ -407,10 +433,6 @@ const simpleSchemaProps = {
     layout?: SchemaLayout,
     borderTop?: boolean,
   ) => ({
-    // additionalProperties: {
-    //   required: false,
-    //   type: 'string',
-    // },
     required,
     type: 'object',
     value,
@@ -420,6 +442,31 @@ const simpleSchemaProps = {
       index,
       label,
       type: 'hashlist',
+      layout,
+      borderTop,
+    },
+  }),
+  file: (
+    label?: string,
+    required: boolean = true,
+    pick: FilePickingType = 'FILE',
+    filter?: FileFilter,
+    value?: IAbstractContentDescriptor,
+    featureLevel: FeatureLevel = 'DEFAULT',
+    index: number = 0,
+    layout?: SchemaLayout,
+    borderTop?: boolean,
+  ) => ({
+    required,
+    type: 'object',
+    value,
+    view: {
+      pick,
+      filter,
+      featureLevel,
+      index,
+      label,
+      type: 'file',
       layout,
       borderTop,
     },

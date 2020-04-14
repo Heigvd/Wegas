@@ -13,6 +13,30 @@ export function isFolderItem(
   return pageItemIndex != null && pageItemIndex['@class'] === 'Folder';
 }
 
+export function isPageIndex(
+  page?: PageIndex | WegasComponent,
+): page is PageIndex {
+  return (
+    page != null &&
+    'root' in page &&
+    isFolderItem(page.root) &&
+    'defaultPageId' in page &&
+    typeof page.defaultPageId === 'string'
+  );
+}
+
+export function isWegasComponent(
+  page?: PageIndex | WegasComponent,
+): page is WegasComponent {
+  return (
+    page != null &&
+    'type' in page &&
+    typeof page.type === 'string' &&
+    'props' in page &&
+    typeof page.props === 'object'
+  );
+}
+
 export function getItemFromPath(
   index: PageIndex,
   path: string[],
@@ -80,5 +104,55 @@ export function indexToTree(index: PageIndex): Item<PageIndexItem>[] {
     isPageItem(item) && item.id === index.defaultPageId
       ? css({ color: themeVar.primaryDarkerColor })
       : undefined,
+  );
+}
+
+export function visitComponents(
+  component: WegasComponent,
+  callbackFN: (component: WegasComponent) => void,
+): void {
+  callbackFN(component);
+  const children = component.props?.children;
+  if (children) {
+    for (const child of children) {
+      visitComponents(child, callbackFN);
+    }
+  }
+}
+
+export function findComponent(
+  components: WegasComponent[],
+  findFn: (component: WegasComponent) => boolean,
+): WegasComponent | undefined {
+  for (const component of components) {
+    if (findFn(component)) {
+      return component;
+    } else if (component.props.items) {
+      const foundComponent = findComponent(component.props.items, findFn);
+      if (foundComponent) {
+        return foundComponent;
+      }
+    }
+  }
+}
+
+export const PAGE_LOADER_COMPONENT_TYPE = 'PageLoader';
+
+export interface PageLoaderComponentProps {
+  name: string;
+  selectedPageId?: IScript;
+}
+
+export type PageLoaderComponent = WegasComponent & {
+  props: WegasComponent['props'] & PageLoaderComponentProps;
+};
+
+export function isPageLoaderComponent(
+  component?: WegasComponent,
+): component is PageLoaderComponent {
+  return (
+    component != null &&
+    component.type === PAGE_LOADER_COMPONENT_TYPE &&
+    'selectedPageId' in component.props
   );
 }

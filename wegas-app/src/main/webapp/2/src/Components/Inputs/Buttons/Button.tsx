@@ -69,7 +69,7 @@ const buttonStyle = (
 
 export interface CommonButtonProps {
   label?: React.ReactNode;
-  onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onClick?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   disabled?: boolean;
   tabIndex?: number;
   tooltip?: string;

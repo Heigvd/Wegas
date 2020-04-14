@@ -2,17 +2,18 @@ import * as React from 'react';
 import { Schema } from 'jsoninput';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
 import { entityIs } from '../../../data/entities';
+import { LabeledView } from './labeled';
 
 interface TranslatableProps {
   value?: ITranslatableContent;
   onChange: (value: ITranslatableContent) => void;
-  view: Schema['view'] & { label?: string };
+  view: Schema['view'] & { label?: React.ReactNode };
 }
 
 interface EndProps {
   value?: string | number;
   onChange: (value: string) => void;
-  view: { label?: JSX.Element; [prop: string]: unknown };
+  view: LabeledView;
 }
 
 export function createTranslation(lang: string, value?: string): ITranslation {

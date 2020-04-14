@@ -24,6 +24,13 @@ import { useDebounce } from '../../Hooks/useDebounce';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { schemaProps } from './schemaProps';
 import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
+import { wlog } from '../../../Helper/wegaslog';
+import { fileURL, generateAbsolutePath } from '../../../API/files.api';
+import { store } from '../../../data/store';
+import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
+import { Player } from '../../../data/selectors';
+import { omit } from 'lodash-es';
+import { clientScriptEval } from '../../Hooks/useScript';
 
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
@@ -196,42 +203,107 @@ function useDndComponentDrop(
   return [{ ...dropZoneProps, canDrop: delayedCanDrop }, dropZone];
 }
 
+interface WegasComponentOptionsAction {
+  priority?: number;
+}
+
+interface OpenPageAction {
+  pageLoaderName: string;
+  pageId: IScript;
+}
+interface OpenURLAction {
+  url: string;
+}
+interface OpenFileAction {
+  fileDescriptor: IFileDescriptor;
+}
+interface ImpactVariableAction {
+  impact: IScript;
+}
+interface LoaclScriptEvalAction {
+  script: IScript;
+}
+interface OpenPopupPageAction {
+  pageLoaderName: string;
+  pageId: IScript;
+}
+interface PlaySoundAction {
+  fileDescriptor: IFileDescriptor;
+}
+interface PrintVariableAction {
+  variable: IScript;
+}
+
 interface WegasComponentActions {
-  openPage?: {
-    pageLoaderName: string;
-    pageId: IScript;
-    priority?: number;
-  };
-  openUrl?: {
-    url: string;
-    priority?: number;
-  };
-  openFile?: {
-    fileId: string;
-    priority?: number;
-  };
-  impactVariable?: {
-    impact: IScript;
-    priority?: number;
-  };
+  openPage: (props: OpenPageAction) => void;
+  openUrl: (props: OpenURLAction) => void;
+  openFile: (props: OpenFileAction) => void;
+  impactVariable: (props: ImpactVariableAction) => void;
+  localScriptEval: (props: LoaclScriptEvalAction) => void;
+  openPopupPage: (props: OpenPopupPageAction) => void;
+  playSound: (props: PlaySoundAction) => void;
+  printVariable: (props: PrintVariableAction) => void;
+}
+
+const wegasComponentActions: WegasComponentActions = {
+  openPage: props => {
+    //TODO : Discuss that with Maxence
+    wlog(
+      'Need to change page state? What to priorize, initial script or click',
+    );
+    wlog(props);
+  },
+  openUrl: props => {
+    window.open(props.url);
+  },
+  openFile: props => {
+    const win = window.open(
+      fileURL(generateAbsolutePath(props.fileDescriptor)),
+      '_blank',
+    );
+    win!.focus();
+  },
+  impactVariable: props => {
+    try {
+      store.dispatch(runScript(props.impact, Player.selectCurrent()));
+    } catch (error) {
+      wlog(error);
+    }
+  },
+  localScriptEval: props => {
+    clientScriptEval(props.script.content);
+  },
+  openPopupPage: props => {
+    //TODO : Discuss that with Maxence
+    wlog('Need to implement a popup modal. Or is it allready here?');
+    wlog(props);
+  },
+  playSound: props => {
+    const audio = new Audio(
+      fileURL(generateAbsolutePath(props.fileDescriptor)),
+    );
+    audio.play();
+  },
+  printVariable: props => {
+    //TODO : Discuss that with Maxence
+    wlog('Not implemented yet');
+    wlog(props);
+  },
+};
+
+interface WegasComponentOptionsActions {
+  openPage?: OpenPageAction & WegasComponentOptionsAction;
+  openUrl?: OpenURLAction & WegasComponentOptionsAction;
+  openFile?: OpenFileAction & WegasComponentOptionsAction;
+  impactVariable?: ImpactVariableAction & WegasComponentOptionsAction;
+  localScriptEval?: LoaclScriptEvalAction & WegasComponentOptionsAction;
+  openPopupPage?: OpenPopupPageAction & WegasComponentOptionsAction;
+  playSound?: PlaySoundAction & WegasComponentOptionsAction;
+  printVariable?: PrintVariableAction & WegasComponentOptionsAction;
+}
+
+interface WegasComponentActionsProperties {
   confirmClick?: boolean;
-  localScriptEval?: {
-    script: IScript;
-    priority?: number;
-  };
-  openPopupPage?: {
-    pageLoaderName: string;
-    pageId: IScript;
-    priority?: number;
-  };
-  playSound?: {
-    fileId: string;
-    priority?: number;
-  };
-  printVariable?: {
-    variable: IScript;
-    priority?: number;
-  };
 }
 
 const actionsChoices: HashListChoices = [
@@ -240,8 +312,28 @@ const actionsChoices: HashListChoices = [
     value: {
       prop: 'openPage',
       schema: schemaProps.object('Open Page', {
-        pageLoaderName: schemaProps.string('Page loader', true),
+        pageLoaderName: schemaProps.pageLoaderSelect('Page loader', true),
         pageId: schemaProps.pageSelect('Page', true),
+        priority: schemaProps.number('Priority', false),
+      }),
+    },
+  },
+  {
+    label: 'Open Url',
+    value: {
+      prop: 'openUrl',
+      schema: schemaProps.object('Open Url', {
+        url: schemaProps.string('Url', true),
+        priority: schemaProps.number('Priority', false),
+      }),
+    },
+  },
+  {
+    label: 'Open File',
+    value: {
+      prop: 'openFile',
+      schema: schemaProps.object('Open File', {
+        fileDescriptor: schemaProps.file('File', true),
         priority: schemaProps.number('Priority', false),
       }),
     },
@@ -252,7 +344,7 @@ export interface ComponentContainerProps
   extends Omit<PageComponentMandatoryProps, 'ComponentContainer'> {
   options?: {
     layout?: FlexItemFlexProps;
-    actions?: WegasComponentActions;
+    actions?: WegasComponentOptionsActions & WegasComponentActionsProperties;
   };
   handleProps?: EditorHandleProps;
   /**
@@ -266,7 +358,7 @@ export interface ComponentContainerProps
 }
 
 const defaultComponentContainerProps: ComponentContainerProps = {
-  options: { layout: {} },
+  options: { layout: {}, actions: {} },
   handleProps: {},
   className: '',
   style: {},
@@ -434,6 +526,31 @@ export function ComponentEditorContainer({
           }) + (className ? ' ' + className : '')
         }
         style={style}
+        onClick={() => {
+          if (options && options.actions) {
+            // TODO : Find a better way to do that than a modal!!!
+            // eslint-disable-next-line no-alert
+            if (!options.actions.confirmClick || confirm('Are you sure?')) {
+              Object.entries(
+                omit(
+                  options.actions,
+                  'confirmClick',
+                ) as WegasComponentOptionsActions,
+              )
+                .sort(
+                  (
+                    [, v1]: [string, WegasComponentOptionsAction],
+                    [, v2]: [string, WegasComponentOptionsAction],
+                  ) =>
+                    (v1.priority ? v1.priority : 0) -
+                    (v2.priority ? v2.priority : 0),
+                )
+                .forEach(([k, v]) =>
+                  wegasComponentActions[k as keyof WegasComponentActions](v),
+                );
+            }
+          }
+        }}
       >
         {path.length > 0 && <EditHandle {...handleProps} />}
         <ErrorBoundary>{children}</ErrorBoundary>

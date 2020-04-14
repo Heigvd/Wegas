@@ -86,6 +86,10 @@ export const layoutChoices: HashListChoices = [
 
 export interface FlexItemProps extends FlexItemFlexProps {
   /**
+   * onClick - triggers when the component is clicked
+   */
+  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  /**
    * className - the class to apply to the item
    */
   className?: string;
@@ -101,14 +105,17 @@ export function FlexItem({
   flexGrow,
   flexShrink,
   flexBasis,
+  onClick,
   className,
-  children,
   style,
+  children,
 }: React.PropsWithChildren<FlexItemProps>) {
   return (
     <div
+      onClick={onClick}
       className={className}
       style={{
+        cursor: onClick ? 'pointer' : 'initial',
         position: 'relative',
         textAlign: 'center',
         order,

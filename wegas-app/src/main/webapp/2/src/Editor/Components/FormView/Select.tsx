@@ -90,67 +90,13 @@ interface SelectorProps {
   readOnly?: boolean;
 }
 
-// function OpenSelector({
-//   choices,
-//   id,
-//   value,
-//   onChange,
-//   readOnly,
-// }: SelectorProps) {
-//   const SelectorState;
-
-//   return (
-//     <div
-//       onBlur={ev => {
-//         const me = ev.currentTarget;
-//         requestAnimationFrame(() => {
-//           if (!me.contains(document.activeElement)) {
-//             this.setState({
-//               searching: false,
-//             });
-//           }
-//         });
-//       }}
-//     >
-//       {labelNode}
-//       <SimpleInput
-//         id={inputId}
-//         value={
-//           this.state.searching
-//             ? this.state.search || ''
-//             : labelForValue(allItems, this.props.value)
-//         }
-//         onChange={v =>
-//           this.setState({
-//             search: String(v),
-//           })
-//         }
-//         onFocus={this.inputFocus}
-//         readOnly={this.props.view.readOnly}
-//       />
-//       {this.state.searching && (
-//         <div className={treeCss}>
-//           <SearchableItems
-//             match={(item, s) => {
-//               return item.label.toLowerCase().includes(s.toLowerCase());
-//             }}
-//             search={this.state.search}
-//             items={allItems}
-//             render={({ items }) => (
-//               <TreeSelect
-//                 selected={this.props.value}
-//                 items={items}
-//                 onSelect={this.handleOnSelect}
-//               />
-//             )}
-//           />
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-function Selector({ choices, id, value, onChange, readOnly }: SelectorProps) {
+export function Selector({
+  choices,
+  id,
+  value,
+  onChange,
+  readOnly,
+}: SelectorProps) {
   return choices.length > 1 ? (
     <select
       id={id}

@@ -11,7 +11,7 @@ export interface IconButtonProps extends CommonButtonProps {
   onMouseMove?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   pressed?: boolean;
   prefixedLabel?: boolean;
-  ref?: React.ClassAttributes<HTMLButtonElement>['ref'];
+  // ref?: React.ClassAttributes<HTMLButtonElement>['ref'];
 }
 const defaultActiveStyle = css({ color: themeVar.primaryDarkerColor });
 
