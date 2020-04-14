@@ -124,6 +124,14 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
         }
     }
 
+    @Override
+    public void setGameModel(GameModel gm) {
+        super.setGameModel(gm);
+        for (SurveyInputDescriptor ssd : this.getItems()) {
+            ssd.setGameModel(gm);
+        }
+    }
+
     public int getIndex() {
         return index != null ? index : 0;
     }
