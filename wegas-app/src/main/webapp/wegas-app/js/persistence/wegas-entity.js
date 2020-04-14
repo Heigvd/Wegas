@@ -827,6 +827,15 @@ YUI.add('wegas-entity', function(Y) {
                     label: 'Type'
                 }
             },
+            status: {
+                type: ["null", STRING],
+                view: {
+                    type: 'string',
+                    readOnly: true,
+                    className: 'wegas-internal-feature',
+                    label: 'Status'
+                }
+            },
             createdTime: {
                 transient: true
             },
