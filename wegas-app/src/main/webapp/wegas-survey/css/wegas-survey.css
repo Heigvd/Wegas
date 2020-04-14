@@ -93,7 +93,7 @@
 }
 
 .wegas-survey-widget .wegas-survey-input {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .wegas-survey-widget .wegas-survey-input-desc {
@@ -102,8 +102,11 @@
     text-align: left;
 }
 
-.wegas-survey-widget .section .content > div {
-    margin: 10px;
+.wegas-survey-widget .section .content > .wegas-survey-input {
+    padding: 10px;
+    border: 1px solid #a7c1d7;
+    border-radius: 4px;
+    margin: 3px 0px;
 }
 
 .wegas-survey-input-label {
@@ -134,7 +137,10 @@
     height: auto;
     width: auto;
     border-radius: 4px;
-    box-shadow: 0 0 2px #ddd;
+}
+
+.wegas-survey-widget .section .content.one-question-per-page {
+    /*box-shadow: 0 0 2px #ddd;*/
 }
 
 .wegas-survey-widget .wegas-survey-input-content {
@@ -147,7 +153,7 @@
     text-align: right;
     font-style: italic;
     min-height: 6px;
-    margin-right: -8px;
+    margin-top: 8px;
 }
 
 .wegas-survey-widget .wegas-survey-input-status.input-error {
@@ -159,7 +165,7 @@
 .wegas-survey-widget .wegas-survey-input-status.input-isreplied:after {
     content: "\f00c";
     font-family: "FontAwesome";
-    padding-left: 4px;
+    padding-left: 6px;
     color: #009900;
     opacity: 1;
     font-size: 20px;
@@ -233,6 +239,22 @@
     padding-left: 5px;
 }
 
+.yui3-skin-sam .wegas-survey-panel {
+    min-width: 450px;
+    background: white;
+    color: black;
+}
+
+.yui3-skin-sam .wegas-survey-panel .yui3-widget-ft {
+    margin-top: 15px;
+}
+
+.yui3-skin-sam .wegas-survey-panel .yui3-widget-ft button:after {
+    content: '\f148';
+    padding-left: 7px;
+    font-size: 16px;
+    font-family: FontAwesome;
+}
 
 /*****  Number input  *****/
 

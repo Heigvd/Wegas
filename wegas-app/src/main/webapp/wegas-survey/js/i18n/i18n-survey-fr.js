@@ -30,6 +30,7 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
             errors: {
                 inactive: "Ce questionnaire est actuellement vide ou inactif.",
                 incomplete: "Certaines questions n'ont pas encore reçu de réponse.<br>Merci de reprendre à la question<br>{{question}}",
+                returnToQuestion: "Retourner à cette question",
                 empty: "Ce questionnaire ne contient aucune question.",
                 outOfBounds: "Cette question attend un nombre entre {{min}} et {{max}}.",
                 notGreaterThanMin: "Cette question attend un nombre supérieur ou égal à {{min}}.",

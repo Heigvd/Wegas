@@ -623,7 +623,7 @@ YUI.add('wegas-survey-entities', function(Y) {
                         label: Y.Wegas.Helper.getTranslationAttr({
                             label: "Label",
                             index: -1,
-                            description: "Displayed to players. To show images stored in the \"Files\" area, follow this scheme: <img data-file=\"filename.png\">",
+                            description: "Displayed to players. To show images stored in the \"Files\" area, follow this scheme: <img data-file=\"/filename.png\">",
                             type: STRING
                         })
                     }

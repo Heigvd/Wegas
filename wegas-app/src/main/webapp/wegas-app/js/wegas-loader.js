@@ -1047,7 +1047,8 @@ YUI().use(function(Y) {
                     "wegas-survey-entities",
                     "wegas-i18n-survey",
                     "slider",
-                    "wegas-text-input"],
+                    "wegas-text-input",
+                    "wegas-panel"],
                 ws_provides: [
                     "SurveyOrchestrator",
                     "SurveyWidget",
