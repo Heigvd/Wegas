@@ -7,6 +7,7 @@
  */
 package com.wegas.survey.persistence.input;
 
+import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -245,30 +247,48 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
         }
     }
 
-    /*
-    public static class SurveySectionDescriptorMergeCallback implements WegasCallback {
 
-        @Override
-        public void postUpdate(IMergeable entity, Object ref, Object identifier) {
-            if (entity instanceof SurveySectionDescriptor) {
-                SurveySectionDescriptor ssd = (SurveySectionDescriptor) entity;
-                // set names and labels unique
-                Helper.setNameAndLabelForLabelledEntityList(ssd.getItems(), "items", ssd.getGameModel());
-            }
-        }
+    
+    // ~~~~~~ Sugar for scripts ~~~~~~~~
 
+    /**
+     *
+     * @param p
+     */
+    @Scriptable
+    public void activate(Player p) {
+        this.getInstance(p).setActive(true);
     }
 
-    public static class SurveyInputMergeCallback implements WegasCallback {
-
-        @Override
-        public Object remove(Object entity, IMergeable container, Object identifier) {
-            if (entity instanceof SurveyInputDescriptor) {
-                SurveyInputDescriptor inputToRemove = (SurveyInputDescriptor) entity;
-                inputToRemove.updateCacheOnDelete(inputToRemove.getSection().beans);
-            }
-            return null;
-        }
+    /**
+     *
+     * @param p
+     */
+    @Scriptable
+    public void deactivate(Player p) {
+        this.getInstance(p).setActive(false);
     }
-    */
+
+    /**
+     *
+     * @param p
+     *
+     * @return true if the player's survey is active
+     */
+    @Scriptable(label = "is active")
+    public boolean isActive(Player p) {
+        return this.getInstance(p).getActive();
+    }
+
+    /**
+     * {@link #isActive ...}
+     *
+     * @param p
+     *
+     * @return true if the player's survey is not active
+     */
+    @Scriptable(label = "is not active")
+    public boolean isNotActive(Player p) {
+        return this.getInstance(p).getActive() == false;
+    }
 }
