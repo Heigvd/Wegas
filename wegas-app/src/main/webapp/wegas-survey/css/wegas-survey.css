@@ -498,11 +498,6 @@
     cursor: pointer;
 }
 
-.wegas-survey-orchestrator .external-surveys-list .importable-variable:not(.disabled):hover {
-    text-decoration: underline;
-    cursor: default;
-}
-
 .wegas-survey-orchestrator .selected-survey-list {
     border-top: 1px solid gray;
     margin-top: 5px;
@@ -595,10 +590,13 @@
     background: transparent;
     border: none;
     box-shadow: none;
-    margin: 10px auto 10px 32px;
+    margin: 5px auto 5px 15px;
     color: #666;
 }
 
+.wegas-survey-orchestrator .toggle-button:hover {
+    color: black;
+}
 
 .wegas-survey-orchestrator .selected .checkbox {
     background: none;
@@ -616,15 +614,19 @@
     font-weight: 600;
     color: #000;
 }
-.game-properties .checkbox:before {
+.wegas-survey-orchestrator .checkbox:before {
     display: block;
     position: absolute;
     top: 3px;
-    left: 0px;
+    left: 3px;
     content: "";
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     background: none;
-    border: outset 2px #666;
+    border: 2px outset #666;
     border-radius: 4px;
+}
+
+.wegas-survey-orchestrator .toggle-button:hover .checkbox:before {
+    border-color: black;
 }

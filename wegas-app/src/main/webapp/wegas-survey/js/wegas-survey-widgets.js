@@ -2136,7 +2136,9 @@ YUI.add("wegas-survey-widgets", function(Y) {
 
             cb.delegate("click", this.onRequest, ".selected-survey .request-survey", this);
             cb.delegate("click", this.refresh, ".selected-survey .survey-header .survey-refresh", this);
-            cb.delegate("click", this.importSurvey, ".external-surveys-list .importable-variable", this);
+            cb.delegate("click", function(e) {
+                e.target.ancestor().toggleClass("selected");
+            }, ".external-surveys-list .importable-variable button", this);
         },
         
         onUpdatedDescriptor: function(e) {
@@ -2265,19 +2267,20 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     currVar = variables[v];
                     var isTaken = this.isExistingSurveyName(currVar.get("name"));
                     txt += 
-                        '<div class="importable-variable' + (isTaken ? ' disabled':'') +
+                        '<div class="importable-variable' +
                         '" data-varid="' + currVar.get("id") + 
                         '" data-gamemodelid="' + currGameModelId + 
                         '" data-newscope="TeamScope">' +
-                        '<span class="checkbox-container"></span>' +
-                        this.getFriendlyVarName(currVar) +
-                        (isTaken ?
-                            ' &nbsp;(' + I18n.t("survey.orchestrator.nameTaken", {name: currVar.get("name")}) + ')' :
-                            '') +
                         '</div>';
-                    if (!isTaken) {
-                        checkboxes.push(currVar.get("id"));
-                    }
+                    checkboxes.push(
+                        {
+                            id: currVar.get("id"),
+                            label: this.getFriendlyVarName(currVar) +
+                                (isTaken ?
+                                    ' &nbsp;(' + I18n.t("survey.orchestrator.nameTaken", {name: currVar.get("name")}) + ')' :
+                                ''),
+                            disabled: isTaken
+                        });
                 }
             }
             if (!txt) {
@@ -2289,11 +2292,12 @@ YUI.add("wegas-survey-widgets", function(Y) {
             cb.one(".external-surveys-title").show();
             for (var c in checkboxes) {
                 var currCbx = checkboxes[c],
-                    currSpan = cb.one(".importable-variable[data-varid=" + currCbx + "] .checkbox-container"),
-                    currButton = new Y.Button({
+                    currSpan = cb.one(".importable-variable[data-varid=" + currCbx.id + "]"),
+                    currButton = new Y.Wegas.Button({
                         cssClass: 'toggle-button',
-                        label: '<span class="checkbox"></span>',
-                        visible: true
+                        label: '<span class="checkbox">' + currCbx.label + '</span>',
+                        visible: true,
+                        disabled: currCbx.disabled
                     }).render(currSpan);
             }
         },
