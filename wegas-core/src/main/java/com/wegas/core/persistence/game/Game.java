@@ -13,6 +13,7 @@ import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
@@ -226,7 +227,8 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
         this.getGameTeams().setTeams(teams);
     }
 
-    @JsonIgnore
+    @WegasExtraProperty(optional = false, nullable = false, view = @View(label = "Status", value = Hidden.class))
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public Status getStatus() {
         return status;
     }
