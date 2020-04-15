@@ -5,7 +5,6 @@ import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { Menu, MenuItem, SelectedMenuItem } from '../../../Components/Menu';
 import { CommonViewContainer, CommonView } from './commonView';
 import { Labeled, LabeledView } from './labeled';
-import { themeVar } from '../../../Components/Theme';
 import { useDrag, useDrop } from 'react-dnd';
 import { dropZoneFocusCss } from '../../../Components/Contexts/DefaultDndProvider';
 import { array_move } from '../../../Helper/tools';
@@ -21,7 +20,7 @@ const transparentStyle = css({
 
 const listElementContainerStyle = css({
   display: 'flex',
-  backgroundColor: themeVar.primaryHoverColor,
+  backgroundColor: '#d5e6f9',
   padding: '4px',
   marginTop: '4px',
 });

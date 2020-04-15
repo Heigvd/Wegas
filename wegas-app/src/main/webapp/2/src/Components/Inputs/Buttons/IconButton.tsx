@@ -33,9 +33,13 @@ export const shapeStyle = (noHover?: boolean) =>
     },
   });
 
+const noClickStyle = css({
+  cursor: 'inherit',
+});
+
 const disabledStyle = css({
   color: themeVar.disabledColor,
-  cursor: 'not-allowed',
+  cursor: 'initial',
   ':hover,:focus': {
     color: themeVar.disabledColor,
   },
@@ -90,6 +94,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
         className={cx(
           shapeStyle(noHover),
           {
+            [noClickStyle]: !onClick && !onMouseDown && !onMouseUp,
             [disabledStyle]: Boolean(disabled),
             [defaultActiveStyle]: Boolean(pressed),
           },

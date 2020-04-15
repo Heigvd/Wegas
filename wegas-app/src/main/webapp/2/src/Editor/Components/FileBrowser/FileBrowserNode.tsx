@@ -166,6 +166,7 @@ export interface FileBrowserNodeProps {
   localDispatch?: StoreDispatch;
   pick?: FilePickingType;
   filter?: FileFilter;
+  className?: string;
 }
 
 export function FileBrowserNode({
@@ -180,6 +181,7 @@ export function FileBrowserNode({
   localDispatch,
   pick,
   filter,
+  className,
 }: FileBrowserNodeProps) {
   const [open, setOpen] = React.useState(
     defaultOpen ||
@@ -410,6 +412,11 @@ export function FileBrowserNode({
     }
   }, [dropZoneProps, currentFile]);
 
+  const pickApproved =
+    !pick ||
+    pick === 'BOTH' ||
+    (pick === 'FOLDER' && isDirectory(currentFile)) ||
+    (pick === 'FILE' && !isDirectory(currentFile));
   const typeFilterApproved =
     !filter || currentFile.mimeType.includes(filter.fileType);
   const greyFiltered =
@@ -417,8 +424,13 @@ export function FileBrowserNode({
     filter &&
     !currentFile.mimeType.includes(filter.fileType);
 
+  //TODO : Improve node layout using flex only
+
   return !filter || filter.filterType !== 'hide' || typeFilterApproved ? (
-    <div ref={dropZone} className={cx(flex, grow)}>
+    <div
+      ref={dropZone}
+      className={cx(flex, grow) + (className ? ' ' + className : '')}
+    >
       {!pick && (
         <input
           ref={uploader}
@@ -460,7 +472,7 @@ export function FileBrowserNode({
             [globalSelection]: isSelected(currentFile, selectedGlobalPaths),
           })}
           onClick={(e: ModifierKeysEvent) => {
-            if (typeFilterApproved) {
+            if (typeFilterApproved && pickApproved) {
               onFileClick(currentFile, setCurrentFile);
               if (!pick) {
                 const dispatch =
@@ -471,8 +483,7 @@ export function FileBrowserNode({
           }}
         >
           <IconButton
-            //TODO : DO SOMETHING CLEVER HERE
-            disabled={typeFilterApproved}
+            disabled={greyFiltered}
             icon={getIconForFileType(currentFile.mimeType)}
           />
           <div className={grow}>{currentFile.name}</div>

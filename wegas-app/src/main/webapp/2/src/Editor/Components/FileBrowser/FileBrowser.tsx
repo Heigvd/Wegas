@@ -7,6 +7,17 @@ import { StoreDispatch, useStore } from '../../../data/store';
 import { grow } from '../../../css/classes';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { MessageString } from '../MessageString';
+import { css } from 'emotion';
+import { themeVar } from '../../../Components/Theme';
+
+const fileBrowserStyle = css({
+  backgroundColor: themeVar.backgroundColor,
+  paddingRight: '5px',
+  borderColor: themeVar.primaryLighterColor,
+  borderRadius: themeVar.borderRadius,
+  borderWidth: '2px',
+  borderStyle: 'inset',
+});
 
 export type FilePickingType = 'FILE' | 'FOLDER' | 'BOTH' | undefined;
 export type FileType = 'directory' | 'audio' | 'video' | 'image';
@@ -67,6 +78,7 @@ export function FileBrowser({
           localDispatch={localDispatch}
           pick={pick}
           filter={filter}
+          className={fileBrowserStyle}
         />
       </div>
     </DefaultDndProvider>

@@ -45,6 +45,7 @@ const buttonStyle = (
   disabled?: boolean,
   noHover?: boolean,
   disableBorders?: DisableBorders,
+  noClick?: boolean,
 ) =>
   css({
     backgroundColor: disabled
@@ -57,7 +58,7 @@ const buttonStyle = (
     paddingRight: '5px',
     paddingTop: '2px',
     paddingBottom: '2px',
-    cursor: disabled ? 'default' : 'pointer',
+    cursor: disabled ? 'initial' : noClick ? 'inherit' : 'pointer',
     ':hover':
       disabled || noHover
         ? undefined
@@ -99,7 +100,12 @@ export function Button({
   return (
     <button
       id={id}
-      className={cx(buttonStyle(disabled, noHover, disableBorders), className)}
+      className={cx(
+        buttonStyle(disabled, noHover, disableBorders, onClick == null) +
+          className
+          ? ' ' + className
+          : '',
+      )}
       onClick={onClick}
       disabled={disabled}
       tabIndex={tabIndex}

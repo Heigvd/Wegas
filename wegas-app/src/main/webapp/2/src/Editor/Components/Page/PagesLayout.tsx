@@ -55,9 +55,12 @@ const selectedComponent = css({
 });
 
 const defaultPage = {
-  type: 'List',
+  type: 'FlexList',
   props: {
     children: [],
+    listLayout: {
+      flexDirection: 'column',
+    },
     style: {
       width: '100%',
       height: '100%',
@@ -117,7 +120,7 @@ function IndexItemAdder({ path, className, tooltip }: IndexItemAdderProps) {
                 New page
               </div>
             ),
-            id: 'newpage' as LayoutModalStates['type'],
+            value: 'newpage' as LayoutModalStates['type'],
           },
           {
             label: (
@@ -126,10 +129,12 @@ function IndexItemAdder({ path, className, tooltip }: IndexItemAdderProps) {
                 New folder
               </div>
             ),
-            id: 'newfolder' as LayoutModalStates['type'],
+            value: 'newfolder' as LayoutModalStates['type'],
           },
         ]}
-        onSelect={({ id }) => setModalState({ type: id } as PageModalState)}
+        onSelect={({ value }) => {
+          setModalState({ type: value } as PageModalState);
+        }}
       />
       {modalState &&
         (modalState.type === 'newpage' || modalState.type === 'newfolder') && (

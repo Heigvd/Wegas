@@ -152,9 +152,30 @@ export function Menu<T, MItem extends MenuItem<T>>({
                   n != null &&
                   n.style.getPropertyValue('position') !== 'fixed'
                 ) {
-                  const { left, top } = n.getBoundingClientRect();
-                  n.style.setProperty('left', `${left}px`);
-                  n.style.setProperty('top', `${top}px`);
+                  const {
+                    left,
+                    top,
+                    width,
+                    height,
+                  } = n.getBoundingClientRect();
+                  const { innerWidth, innerHeight } = window;
+                  const {
+                    width: pWidth,
+                    height: pHeight,
+                  } = n.parentElement!.getBoundingClientRect();
+                  let finalLeft = left;
+                  let finalTop = top;
+
+                  // Out of window check (right and bottom)
+                  if (left + width > innerWidth) {
+                    finalLeft -= pWidth + width;
+                  }
+                  if (top + height > innerHeight) {
+                    finalTop -= pHeight + height;
+                  }
+
+                  n.style.setProperty('left', `${finalLeft}px`);
+                  n.style.setProperty('top', `${finalTop}px`);
                   n.style.setProperty('position', 'fixed');
                 }
               }}

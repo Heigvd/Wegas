@@ -189,10 +189,10 @@ export interface FlexListProps {
    * style - the style to apply to the list (always prefer className over style to avoid messing with original behaviour of the list)
    */
   style?: React.CSSProperties;
-  /**
-   * children - the items in the list
-   */
-  children?: FlexItemProps[];
+  // /**
+  //  * children - the items in the list
+  //  */
+  // children?: FlexItemProps[];
 }
 /**
  * Flex list.

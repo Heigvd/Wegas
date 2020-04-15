@@ -9,7 +9,13 @@ import {
 import { useDrop, DropTargetMonitor, DragElementWrapper } from 'react-dnd';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { themeVar } from '../../Theme';
-import { flex, flexRow, textCenter, flexColumn } from '../../../css/classes';
+import {
+  flex,
+  flexRow,
+  textCenter,
+  flexColumn,
+  grow,
+} from '../../../css/classes';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { TogglerProps } from '../../Inputs/Boolean/Toggler';
@@ -114,6 +120,13 @@ const editItemStyle = css({
   height: '100px',
 });
 
+const emptyListStyle = css({
+  display: 'list-item',
+  textAlign: 'center',
+  borderStyle: 'solid',
+  borderWidth: '1px',
+});
+
 export const opaciSchnaps = css({
   opacity: '0 !important',
 });
@@ -179,7 +192,7 @@ const defaultMandatoryProps: PageComponentMandatoryProps = {
 
 export const defaultMandatoryKeys = Object.keys(defaultMandatoryProps);
 
-function useDndComponentDrop(
+export function useDndComponentDrop(
   onDrop?: (dndComponnent: DnDComponent) => void,
 ): [
   {
@@ -224,7 +237,6 @@ interface LoaclScriptEvalAction {
   script: IScript;
 }
 interface OpenPopupPageAction {
-  pageLoaderName: string;
   pageId: IScript;
 }
 interface PlaySoundAction {
@@ -334,6 +346,59 @@ const actionsChoices: HashListChoices = [
       prop: 'openFile',
       schema: schemaProps.object('Open File', {
         fileDescriptor: schemaProps.file('File', true),
+        priority: schemaProps.number('Priority', false),
+      }),
+    },
+  },
+  {
+    label: 'Impact variable',
+    value: {
+      prop: 'impactVariable',
+      schema: schemaProps.object('Impact variable', {
+        impact: schemaProps.script('Impact', true),
+        priority: schemaProps.number('Priority', false),
+      }),
+    },
+  },
+  {
+    label: 'Local script eval',
+    value: {
+      prop: 'localScriptEval',
+      schema: schemaProps.object('Local script eval', {
+        script: schemaProps.script('Local script', true, 'SET', 'TypeScript'),
+        priority: schemaProps.number('Priority', false),
+      }),
+    },
+  },
+  {
+    label: 'Open popup page',
+    value: {
+      prop: 'openPopupPage',
+      schema: schemaProps.object('Open popup page', {
+        pageId: schemaProps.pageSelect('Page', true),
+        priority: schemaProps.number('Priority', false),
+      }),
+    },
+  },
+  {
+    label: 'Play sound',
+    value: {
+      prop: 'playSound',
+      schema: schemaProps.object('Play sound', {
+        fileDescriptor: schemaProps.file('File', true, 'FILE', {
+          filterType: 'grey',
+          fileType: 'audio',
+        }),
+        priority: schemaProps.number('Priority', false),
+      }),
+    },
+  },
+  {
+    label: 'Print variable',
+    value: {
+      prop: 'printVariable',
+      schema: schemaProps.object('Print variable', {
+        fileDescriptor: schemaProps.variable('Variable', true),
         priority: schemaProps.number('Priority', false),
       }),
     },
@@ -515,14 +580,12 @@ export function ComponentEditorContainer({
     style,
   }: React.PropsWithChildren<ComponentContainerProps>) {
     const [{ canDrop }] = useDndComponentDrop();
-
     return (
       <FlexItem
         {...options?.layout}
         className={
           cx(handleControlStyle, {
             [childHighlightStyle]: showBorders || canDrop,
-            [layoutHighlightStyle]: showBorders || canDrop,
           }) + (className ? ' ' + className : '')
         }
         style={style}
@@ -561,21 +624,20 @@ export function ComponentEditorContainer({
 
 interface ComponentDropZoneProps {
   onDrop?: (dndComponnent: DnDComponent) => void;
+  emptyList?: boolean;
 }
 
-function ComponentDropZone({ onDrop }: ComponentDropZoneProps) {
+function ComponentDropZone({ onDrop, emptyList }: ComponentDropZoneProps) {
   const [{ canDrop, isOverCurrent }, dropZone] = useDndComponentDrop(onDrop);
-  return (
-    <>
-      {canDrop && (
-        <div className={editItemStyle}>
-          <div ref={dropZone} className={dropZoneClass(isOverCurrent)}>
-            Drop component here
-          </div>
-        </div>
-      )}
-    </>
-  );
+  return canDrop ? (
+    <div className={editItemStyle}>
+      <div ref={dropZone} className={dropZoneClass(isOverCurrent)}>
+        Drop component here
+      </div>
+    </div>
+  ) : emptyList ? (
+    <div className={cx(emptyListStyle, grow)}>The list is empty</div>
+  ) : null;
 }
 
 export interface PageComponentProps {
@@ -620,6 +682,7 @@ export function EditableComponent({
             <ComponentDropZone
               key={'FIRST'}
               onDrop={c => onDrop && onDrop(c, path, 0)}
+              emptyList={wegasChildren.length === 0}
             />,
           ],
         )
