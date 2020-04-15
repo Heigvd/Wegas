@@ -39,7 +39,10 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
             },
             orchestrator: {
                 globalTitle: "Survey orchestration",
-                surveyTitle: "Dashboard for survey \"{{surveyName}}\"",
+                searchExternalSurveys: "Search for surveys in other games",
+                externalSurveysTitle: "Surveys you can import from other games",
+                sessionOfScenario: "session of scenario",
+                nameTaken: "a variable in this game already has the same internal name \"{{name}}\"",
                 currentStatus: "Current status: ",
                 notStarted: "Not yet started",
                 requested: "Start requested",

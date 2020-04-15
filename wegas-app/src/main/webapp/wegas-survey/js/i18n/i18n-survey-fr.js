@@ -38,7 +38,10 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
             },
             orchestrator: {
                 globalTitle: "Orchestration des questionnaires",
-                surveyTitle: "Tableau de bord du questionnaire \"{{surveyName}}\"",
+                searchExternalSurveys: "Chercher des questionnaires dans d'autres jeux",
+                externalSurveysTitle: "Questionnaires importables depuis d'autres jeux",
+                sessionOfScenario: "partie issue du scénario",
+                nameTaken: "une variable dans ce jeu a déjà le même nom interne \"{{name}}\"",
                 currentStatus: "Statut actuel: ",
                 notStarted: "Pas encore démarré",
                 requested: "Démarrage demandé",
