@@ -447,7 +447,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @WegasExtraProperty(
         optional = true, nullable = false,
         view = @View(
-            label = "Type",
+            label = "Status",
             readOnly = true,
             value = StringView.class
         )
