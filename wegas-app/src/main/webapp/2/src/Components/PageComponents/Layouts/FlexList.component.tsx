@@ -17,7 +17,6 @@ import {
 import {
   EditorHandleProps,
   PageComponentMandatoryProps,
-  useDndComponentDrop,
   layoutHighlightStyle,
 } from '../tools/EditableComponent';
 import { cx } from 'emotion';
@@ -42,9 +41,10 @@ function PlayerFlexList(props: PlayerFlexListProps) {
     containerProps,
   } = extractProps(props);
 
-  const [{ canDrop }] = useDndComponentDrop();
+  // const { editMode } = React.useContext(pageCTX);
+  // const [{ canDrop }] = useDndComponentDrop();
 
-  const [showLayout, setShowLayout] = React.useState(showBorders || canDrop);
+  const [showLayout, setShowLayout] = React.useState(showBorders);
   React.useEffect(() => {
     if (showBorders !== undefined) {
       setShowLayout(showBorders);
@@ -63,12 +63,12 @@ function PlayerFlexList(props: PlayerFlexListProps) {
     <ComponentContainer
       {...containerProps}
       handleProps={handleProps}
-      showBorders={showLayout || canDrop}
+      showBorders={showLayout /*|| (editMode && canDrop)*/}
     >
       <FlexList
         {...childProps}
         className={cx(childProps.className, {
-          [layoutHighlightStyle]: showLayout || canDrop,
+          [layoutHighlightStyle]: showLayout /*|| (editMode && canDrop)*/,
         })}
       />
     </ComponentContainer>

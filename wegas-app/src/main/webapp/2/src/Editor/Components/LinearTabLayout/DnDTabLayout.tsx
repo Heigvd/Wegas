@@ -278,14 +278,14 @@ export function DnDTabLayout({
           )}
         </div>
       </Toolbar.Header>
-      <Toolbar.Content className={cx(flex, relative)}>
+      <Toolbar.Content className={relative}>
         <div className={cx(expandBoth, hideOverflow)}>
           <div className={cx(autoScroll, absoute, expandBoth, flex)}>
             {defaultActiveLabel && (
               <Reparentable
                 id={defaultActiveLabel}
-                innerClassName={cx(flex, grow)}
-                outerClassName={cx(flex, grow)}
+                innerClassName={cx(flex, expandBoth)}
+                outerClassName={expandBoth}
               >
                 <React.Suspense fallback={<div>Loading...</div>}>
                   {components[defaultActiveLabel]}

@@ -15,6 +15,7 @@ import {
   textCenter,
   flexColumn,
   grow,
+  flexDistribute,
 } from '../../../css/classes';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
@@ -50,6 +51,7 @@ export const childHighlightCSS = {
   borderColor: themeVar.searchColor,
 };
 
+// export const childHighlightStyle = css(childHighlightCSS);
 export const childHighlightStyle = css({
   '&>*>*': childHighlightCSS,
 });
@@ -114,14 +116,14 @@ export const expandEditStyle = css({
 });
 
 const editItemStyle = css({
-  display: 'list-item',
+  // display: 'list-item',
   marginLeft: '10px',
   width: '100px',
   height: '100px',
 });
 
 const emptyListStyle = css({
-  display: 'list-item',
+  // display: 'list-item',
   textAlign: 'center',
   borderStyle: 'solid',
   borderWidth: '1px',
@@ -212,7 +214,7 @@ export function useDndComponentDrop(
       item: mon.getItem() as DnDComponent | null,
     }),
   });
-  const delayedCanDrop = useDebounce(dropZoneProps.canDrop, 100);
+  const delayedCanDrop = useDebounce(dropZoneProps.canDrop, 10);
   return [{ ...dropZoneProps, canDrop: delayedCanDrop }, dropZone];
 }
 
@@ -365,7 +367,7 @@ const actionsChoices: HashListChoices = [
     value: {
       prop: 'localScriptEval',
       schema: schemaProps.object('Local script eval', {
-        script: schemaProps.script('Local script', true, 'SET', 'TypeScript'),
+        script: schemaProps.code('Local script', true, 'TypeScript'),
         priority: schemaProps.number('Priority', false),
       }),
     },
@@ -579,13 +581,17 @@ export function ComponentEditorContainer({
     className,
     style,
   }: React.PropsWithChildren<ComponentContainerProps>) {
+    const { editMode } = React.useContext(pageCTX);
     const [{ canDrop }] = useDndComponentDrop();
+    const displayBorders = showBorders || (editMode && canDrop);
+
     return (
       <FlexItem
         {...options?.layout}
         className={
           cx(handleControlStyle, {
-            [childHighlightStyle]: showBorders || canDrop,
+            [layoutHighlightStyle]: displayBorders,
+            [childHighlightStyle]: displayBorders,
           }) + (className ? ' ' + className : '')
         }
         style={style}
@@ -624,19 +630,23 @@ export function ComponentEditorContainer({
 
 interface ComponentDropZoneProps {
   onDrop?: (dndComponnent: DnDComponent) => void;
-  emptyList?: boolean;
 }
 
-function ComponentDropZone({ onDrop, emptyList }: ComponentDropZoneProps) {
+function ComponentDropZone({ onDrop }: ComponentDropZoneProps) {
   const [{ canDrop, isOverCurrent }, dropZone] = useDndComponentDrop(onDrop);
   return canDrop ? (
-    <div className={editItemStyle}>
-      <div ref={dropZone} className={dropZoneClass(isOverCurrent)}>
-        Drop component here
-      </div>
+    <div
+      ref={dropZone}
+      className={cx(
+        dropZoneClass(isOverCurrent),
+        editItemStyle,
+        flex,
+        flexColumn,
+        flexDistribute,
+      )}
+    >
+      <div>Drop component here</div>
     </div>
-  ) : emptyList ? (
-    <div className={cx(emptyListStyle, grow)}>The list is empty</div>
   ) : null;
 }
 
@@ -679,11 +689,16 @@ export function EditableComponent({
             />,
           ],
           [
-            <ComponentDropZone
-              key={'FIRST'}
-              onDrop={c => onDrop && onDrop(c, path, 0)}
-              emptyList={wegasChildren.length === 0}
-            />,
+            wegasChildren.length === 0 ? (
+              <div className={cx(emptyListStyle, grow)}>
+                The layout is empty
+              </div>
+            ) : (
+              <ComponentDropZone
+                key={'FIRST'}
+                onDrop={c => onDrop && onDrop(c, path, 0)}
+              />
+            ),
           ],
         )
       : wegasChildren;

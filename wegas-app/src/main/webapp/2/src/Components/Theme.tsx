@@ -323,8 +323,10 @@ export function ThemeProvider({
     <div
       ref={themeRoot}
       className={css({
-        width: '100%',
-        height: '100%',
+        // width: '100%',
+        // height: '100%',
+        // overflow: 'auto',
+        flex: '1 1 auto',
         backgroundColor: currentValues.backgroundColor,
         color: textColor,
         '--primary-color': currentValues.primaryColor,

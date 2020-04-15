@@ -14,9 +14,10 @@ import { store, useStore } from '../../../data/store';
 import { Actions } from '../../../data';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { themeVar } from '../../../Components/Theme';
-import { flex, grow } from '../../../css/classes';
+import { flex, grow, expandBoth } from '../../../css/classes';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
+import { useDndComponentDrop } from '../../../Components/PageComponents/tools/EditableComponent';
 
 const innerButtonStyle = css({
   margin: '2px auto 2px auto',
@@ -187,7 +188,7 @@ export default function PageEditor() {
   const [showBorders, setShowBorders] = React.useState(false);
   const handles = React.useRef({});
   const [showControls, setShowControls] = React.useState(true);
-
+  const [{ canDrop }] = useDndComponentDrop();
   const components = usePageComponentStore(s => s);
   const { selectedPage, defaultPageId, loading } = useStore(
     s => ({
@@ -197,6 +198,7 @@ export default function PageEditor() {
     }),
     deepDifferent,
   );
+
   const focusTab = React.useRef<(tabId: string, layoutId: string) => void>();
 
   React.useEffect(() => {
@@ -366,7 +368,7 @@ export default function PageEditor() {
             loading ? (
               <pre>Loading the pages</pre>
             ) : (
-              <Toolbar>
+              <Toolbar className={expandBoth + ' PAGE-DISPLAY'}>
                 <Toolbar.Header>
                   <div style={{ margin: 'auto' }}>
                     {editMode && (
@@ -482,16 +484,18 @@ export default function PageEditor() {
 
   return (
     <div
-      className={cx(
-        flex,
-        grow,
-        css({
-          borderStyle: 'solid',
-          borderColor: themeVar.primaryDarkerColor,
-          margin: '1px',
-          marginTop: '0px',
-        }),
-      )}
+      className={
+        cx(
+          flex,
+          grow,
+          css({
+            borderStyle: 'solid',
+            borderColor: themeVar.primaryDarkerColor,
+            margin: '1px',
+            marginTop: '0px',
+          }),
+        ) + ' PAGE-EDITOR'
+      }
     >
       <pageEditorCTX.Provider
         value={{
@@ -505,7 +509,7 @@ export default function PageEditor() {
           value={{
             editMode,
             showControls,
-            showBorders,
+            showBorders: showBorders || (editMode && canDrop),
             handles: handles.current,
             onDrop,
             onDelete,

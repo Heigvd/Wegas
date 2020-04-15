@@ -1,11 +1,7 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
+import { flex, grow } from '../css/classes';
 
-const flex = css({
-  display: 'flex',
-  // flexDirection: 'column',
-  width: '100%',
-});
 const vertical = css(flex, {
   flexDirection: 'row',
 });
@@ -36,7 +32,7 @@ export const Toolbar = Object.assign(
       <div
         className={cx(
           {
-            [cx(horizontal, flex)]: !props.vertical,
+            [cx(horizontal, flex, grow)]: !props.vertical,
             [vertical]: Boolean(props.vertical),
           },
           props.className,
