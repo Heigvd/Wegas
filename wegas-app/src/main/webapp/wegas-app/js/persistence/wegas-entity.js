@@ -920,6 +920,9 @@ YUI.add('wegas-entity', function(Y) {
                 access: {
                     type: STRING
                 },
+                status: {
+                    type: STRING
+                },
                 token: {
                     type: STRING
                 },

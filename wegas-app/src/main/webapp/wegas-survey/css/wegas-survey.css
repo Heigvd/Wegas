@@ -468,29 +468,50 @@
     height: 30px;
 }
 
-.wegas-survey-orchestrator .external-surveys-title {
+.wegas-survey-orchestrator .external-surveys-titlebar .title {
     font-weight: bold;
     font-size: 150%;
+    display: inline-block;
 }
 
-.wegas-survey-orchestrator .external-surveys-title .close {
+.wegas-survey-orchestrator .external-surveys-titlebar .close {
     float: right;
     font-size: 14px;
     border: 1px solid lightgray;
 }
 
 .wegas-survey-orchestrator .external-surveys-list:not(:empty) {
-    margin-bottom: 20px;
+    margin-top: 15px;
+}
+
+.wegas-survey-orchestrator .external-surveys-list .do-import {
+    text-align: right;
+}
+
+.wegas-survey-orchestrator .external-surveys-list .do-import button {
+    border: 1px solid lightgray;
+    border-radius: 4px;
+}
+
+.wegas-survey-orchestrator .external-surveys-list .do-import button:after {
+    content: '\f090';
+    font-family: FontAwesome;
+    display: inline-block;
+    font-size: 16px;
+    transform: rotate(90deg);
+    margin-left: 6px;
 }
 
 .wegas-survey-orchestrator .external-surveys-list .game-name {
-    margin-top: 10px;
+    margin-top: 20px;
     font-weight: bold;
+    width: max-content;
 }
 
-.wegas-survey-orchestrator .external-surveys-list .scenario-of-session {
+.wegas-survey-orchestrator .external-surveys-list .game-details {
     font-weight: normal;
     margin-left: 6px;
+    color: #666;
 }
 
 .wegas-survey-orchestrator .external-surveys-list .importable-variable {
@@ -596,6 +617,9 @@
 
 .wegas-survey-orchestrator .toggle-button:hover {
     color: black;
+    background: #eaf3fa;
+    box-shadow: 0px 2px 3px #eaf3fa;
+    border-radius: 2px;
 }
 
 .wegas-survey-orchestrator .selected .checkbox {
@@ -613,15 +637,16 @@
     content: '\2714';
     font-weight: 600;
     color: #000;
+    line-height: 1;
 }
 .wegas-survey-orchestrator .checkbox:before {
     display: block;
     position: absolute;
-    top: 3px;
-    left: 3px;
+    top: 4px;
+    left: 4px;
     content: "";
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     background: none;
     border: 2px outset #666;
     border-radius: 4px;

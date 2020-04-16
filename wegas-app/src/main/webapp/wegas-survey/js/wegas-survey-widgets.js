@@ -2004,7 +2004,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
             "    <div class=\"warning\"></div>" +
             "    <div class=\"survey-mixer\">" +
             "        <div class=\"search-external-surveys\">" + I18n.t("survey.orchestrator.searchExternalSurveys") + "</div>" +
-            "        <div class=\"external-surveys-title\" style=\"display:none;\">" + I18n.t("survey.orchestrator.externalSurveysTitle") + "<div class=\"close\"></div></div>" +
+            "        <div class=\"external-surveys-titlebar\" style=\"display:none;\"><div class=\"title\">" + I18n.t("survey.orchestrator.externalSurveysTitle") + "</div><div class=\"close\"></div></div>" +
             "        <div class=\"external-surveys-list\"></div>" +
             "    </div>" +
             "    <div class=\"selected-survey-list\">" +
@@ -2089,7 +2089,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
             this.closeSearchButton = new Y.Button({
                 label: "<i class=\"fa fa-times\"></i>",
                 visible: true
-            }).render(cb.one(".external-surveys-title .close"));
+            }).render(cb.one(".external-surveys-titlebar .close"));
         },
         _getMonitoredData: function(survId) {
             var survDescr = Y.Wegas.Facade.Variable.cache.findById(survId);
@@ -2132,13 +2132,12 @@ YUI.add("wegas-survey-widgets", function(Y) {
             this.handlers.push(Y.Wegas.Facade.Variable.after("delete", this.onDeletedDescriptor, this));
             
             this.handlers.push(cb.one(".search-external-surveys").on("click", this.onSearchExternal, this));
-            this.handlers.push(cb.one(".external-surveys-title .close").on("click", this.closeExternalSurveys, this));
+            this.handlers.push(cb.one(".external-surveys-titlebar .close").on("click", this.closeExternalSurveys, this));
 
             cb.delegate("click", this.onRequest, ".selected-survey .request-survey", this);
             cb.delegate("click", this.refresh, ".selected-survey .survey-header .survey-refresh", this);
-            cb.delegate("click", function(e) {
-                e.target.ancestor().toggleClass("selected");
-            }, ".external-surveys-list .importable-variable button", this);
+            cb.delegate("click", this.checkImportableSurvey, ".external-surveys-list .importable-variable button", this);
+            cb.delegate("click", this.importCheckedSurveys, ".external-surveys-list .do-import", this);
         },
         
         onUpdatedDescriptor: function(e) {
@@ -2202,12 +2201,12 @@ YUI.add("wegas-survey-widgets", function(Y) {
         },
         
         // Called via on click
-        importSurvey: function(e) {
+        importSurvey: function(button) {
             // /rest/GameModel/<gameModelId>/VariableDescriptor/CherryPick/<variableDescriptorId>/<newScopeType>
-            var data = e.target.getData(),
+            var data = button.get(CONTENTBOX).getData(),
                 gmId = data.gamemodelid,
                 varId = data.varid,
-                newscope = data.newscope,
+                newscope = data.scope,
                 config = {
                     request: '/' + gmId + "/VariableDescriptor/CherryPick/" + varId + (newscope ? '/' + newscope : ''),
                     cfg: {
@@ -2216,65 +2215,119 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     },
                     on: {
                         success: Y.bind(function(e) {
-                            alert("ok");
+                            //alert("ok");
+                            button.disable();
                         }, this),
                         failure: Y.bind(function(e) {
-                            this.showMessage("error", "Something went wrong: importSurvey");
+                            this.showMessage("error", "Something went wrong in importSurvey");
                         }, this)
                 }
             };
             Y.Wegas.Facade.GameModel.sendRequest(config);
         },
         
+        importCheckedSurveys: function() {
+            if (this.checkboxes) {
+                for (var c in this.checkboxes) {
+                    if (this.checkboxes[c].button.get(CONTENTBOX).hasClass("selected")) {
+                        this.importSurvey(this.checkboxes[c].button);
+                    }
+                }
+            }
+        },
+        
+        checkImportableSurvey: function(e) {
+            var button = e.target.ancestor();
+            if (button.hasClass("yui3-button-disabled") === false) {
+                button.toggleClass("selected");
+                if (this.get(CONTENTBOX).all(".importable-variable .selected").size() > 0) {
+                    this.doImportButton.enable();
+                } else {
+                    this.doImportButton.disable();
+                }
+            }
+        },
+        
         closeExternalSurveys: function() {
             var cb = this.get(CONTENTBOX);
             cb.one(".external-surveys-list").setHTML('');
             cb.one(".search-external-surveys").show();
-            cb.one(".external-surveys-title").hide();
+            cb.one(".external-surveys-titlebar").hide();
+            if (this.checkboxes) {
+                for (var c in this.checkboxes) {
+                    this.checkboxes[c].button.destroy();
+                }
+            }
+            if (this.doImportButton) {
+                this.doImportButton.destroy();
+            }
+        },
+        
+        // Filters out non-live games and gamemodels from the given parameter.
+        // Also filters out references to the current game.
+        filterExternalSurveys: function(varSets) {
+            var currGameId = Y.Wegas.Facade.Game.cache.getCurrentGame().get("id"),
+                currGameModelId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"),
+                res = [],
+                vs, currVarSet, currGameModel, currGame, isSession;
+            for (vs in varSets){
+                currVarSet = varSets[vs].get("val");
+                currGameModel = currVarSet.gameModel;
+                isSession = currGameModel.get("type") === "PLAY";
+                if (isSession) {
+                    currGame = currVarSet.game;
+                    if (currGame.get("id") !== currGameId &&
+                        currGame.get("status") === "LIVE") {
+                        res.push(currVarSet);
+                    }
+                } else {
+                    if (currGameModel.get("id") !== currGameModelId &&
+                        currGameModel.get("status") === "LIVE") {
+                        res.push(currVarSet);
+                    }
+                }
+            }
+            return res;
         },
         
         listExternalSurveys: function(e) {
-            var varSets = e.response && e.response.entities,
-                currGameId = Y.Wegas.Facade.Game.cache.getCurrentGame().get("id"),
+            var entities = e.response && e.response.entities,
                 currGameModelId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"),
                 currVarSet, vs, currGameModel, currGame, variables, v, currVar,
-                isSession,
-                sessionOfScenario = I18n.t("survey.orchestrator.sessionOfScenario"),
+                isSession, lastModifiedDate,
+                sessionOfScenario = ', ' + I18n.t("survey.orchestrator.sessionOfScenario") + ' "',
+                lastModifiedOn = I18n.t("survey.orchestrator.lastModifiedOn") + ' ',
+                typeScenario = 'scenario',
                 txt = '',
-                checkboxes = [];
+                checkboxes = [],
+                varSets = this.filterExternalSurveys(entities),
+                nbEntries = 0;
             for (vs in varSets){
-                currVarSet = varSets[vs].get("val");
+                currVarSet = varSets[vs];
                 currGameModel = currVarSet.gameModel;
                 currGame = currVarSet.game;
                 variables = currVarSet.variables;
                 isSession = currGameModel.get("type") === "PLAY";
-                if (currGameModel.get("status") !== "LIVE") {
-                    continue;
-                }
                 if (isSession) {
-                    if (currGame.get("id") === currGameId) {
-                        continue;
-                    }
+                    lastModifiedDate = new Date(currGame.get("updatedTime")).toLocaleString('en-GB');
                     txt += '<div class="game-name">' + currGame.get("name") +
-                        '<span class="scenario-of-session">(' + sessionOfScenario + ' "' + currGameModel.get("name") + '"):</span></div>';
+                        '<span class="game-details">(' + lastModifiedOn + lastModifiedDate + sessionOfScenario + currGameModel.get("name") + '")</span></div>';
                 } else {
-                    if (currGameModel.get("id") === currGameModelId) {
-                        continue;
-                    }
-                    txt += '<div class="game-name">' + currGameModel.get("name") + '</div>';
+                    txt += '<div class="game-name">' + currGameModel.get("name") +
+                        '<span class="game-details">(' + typeScenario + ')</span></div>';
                 }
                 for (v in variables) {
                     currVar = variables[v];
                     var isTaken = this.isExistingSurveyName(currVar.get("name"));
                     txt += 
-                        '<div class="importable-variable' +
-                        '" data-varid="' + currVar.get("id") + 
-                        '" data-gamemodelid="' + currGameModelId + 
-                        '" data-newscope="TeamScope">' +
-                        '</div>';
+                        '<div class="importable-variable" data-varid="' +
+                        currVar.get("id") + 
+                        '"></div>';
                     checkboxes.push(
                         {
                             id: currVar.get("id"),
+                            gamemodelid: currGameModelId,
+                            scope: 'TeamScope',
                             label: this.getFriendlyVarName(currVar) +
                                 (isTaken ?
                                     ' &nbsp;(' + I18n.t("survey.orchestrator.nameTaken", {name: currVar.get("name")}) + ')' :
@@ -2282,23 +2335,46 @@ YUI.add("wegas-survey-widgets", function(Y) {
                             disabled: isTaken
                         });
                 }
+                // @TODO Implement some kind of filtering/pagination for administrators:
+                if (++nbEntries >= 20) {
+                    txt += '<b>Listing interrupted after 20 entries</b>';
+                    break;
+                }
             }
             if (!txt) {
                 txt = "no surveys found";
+            } else {
+                txt += '<div class="do-import"></div>';
             }
             var cb = this.get(CONTENTBOX);
             cb.one(".external-surveys-list").setHTML(txt);
             cb.one(".search-external-surveys").hide();
-            cb.one(".external-surveys-title").show();
+            cb.one(".external-surveys-titlebar .title").setHTML(I18n.t("survey.orchestrator.externalSurveysTitleNumber", {number: varSets.length}) + ':');
+            cb.one(".external-surveys-titlebar").show();
             for (var c in checkboxes) {
                 var currCbx = checkboxes[c],
-                    currSpan = cb.one(".importable-variable[data-varid=" + currCbx.id + "]"),
-                    currButton = new Y.Wegas.Button({
-                        cssClass: 'toggle-button',
-                        label: '<span class="checkbox">' + currCbx.label + '</span>',
-                        visible: true,
-                        disabled: currCbx.disabled
-                    }).render(currSpan);
+                    currSpan = cb.one(".importable-variable[data-varid=" + currCbx.id + "]");
+                currCbx.button = new Y.Wegas.Button({
+                    cssClass: 'toggle-button',
+                    label: '<span class="checkbox">' + currCbx.label + '</span>',
+                    visible: true,
+                    disabled: currCbx.disabled
+                }).render(currSpan);
+                currCbx.button.get(CONTENTBOX).setData({
+                    varid: currCbx.id,
+                    gamemodelid: currCbx.gamemodelid,
+                    scope: currCbx.scope
+                });
+            }
+            this.checkboxes = checkboxes;
+            if (checkboxes.length !== 0) {
+                var btnSpan = cb.one(".external-surveys-list .do-import");
+                this.doImportButton = new Y.Wegas.Button({
+                    //cssClass: 'toggle-button',
+                    label: 'Import selected surveys',
+                    visible: true,
+                    disabled: true // Disabled until a variable is selected
+                }).render(btnSpan);
             }
         },
         
