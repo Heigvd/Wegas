@@ -35,6 +35,8 @@ function PlayerPageLoader(props: PlayerPageLoaderProps) {
           editMode: false,
           showControls: false,
           showBorders: false,
+          isDragging: false,
+          setIsDragging: () => {},
           handles: {},
           onDrop: () => {},
           onDelete: () => {},

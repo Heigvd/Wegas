@@ -4,7 +4,14 @@ import { flex, flexWrap, button } from '../../../css/classes';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import { themeVar } from '../../../Components/Theme';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
-import { useDrag } from 'react-dnd';
+import {
+  useDrag,
+  DragElementWrapper,
+  DragSourceOptions,
+  DragPreviewOptions,
+} from 'react-dnd';
+import { pageCTX } from './PageEditor';
+import { useDeepChanges } from '../../../Components/Hooks/useDeepChanges';
 
 const componentStyle = css({
   padding: '10px',
@@ -33,22 +40,38 @@ interface ComponentElementProps {
 
 export const dndComponnent: 'dndComponnent' = 'dndComponnent';
 
-export function useComponentDrag(componentName: string, path?: number[]) {
-  return useDrag<DnDComponent, unknown, unknown>({
+export interface DragMonitor {
+  handlerId: string | symbol | null;
+  isDragging: boolean;
+}
+
+export function useComponentDrag(
+  componentName: string,
+  path?: number[],
+): [
+  DragMonitor,
+  DragElementWrapper<DragSourceOptions>,
+  DragElementWrapper<DragPreviewOptions>,
+] {
+  return useDrag({
     item: {
       componentName,
       type: dndComponnent,
       path,
     },
     collect: monitor => ({
+      handlerId: monitor.getHandlerId(),
       isDragging: !!monitor.isDragging(),
     }),
   });
 }
 
 function ComponentElement({ componentName }: ComponentElementProps) {
-  const [, drag] = useComponentDrag(componentName);
+  const { setIsDragging } = React.useContext(pageCTX);
   const component = usePageComponentStore(s => s[componentName]);
+  const [dragMonitor, drag] = useComponentDrag(componentName);
+  useDeepChanges(dragMonitor, setIsDragging);
+
   return (
     <div ref={drag} className={componentStyle}>
       {component ? (

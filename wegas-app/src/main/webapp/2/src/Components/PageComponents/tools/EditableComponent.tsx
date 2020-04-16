@@ -1,13 +1,21 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { css, cx, keyframes } from 'emotion';
 import { dropZoneClass } from '../../Contexts/DefaultDndProvider';
 import {
   DnDComponent,
   dndComponnent,
   useComponentDrag,
 } from '../../../Editor/Components/Page/ComponentPalette';
-import { useDrop, DropTargetMonitor, DragElementWrapper } from 'react-dnd';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import {
+  useDrop,
+  DropTargetMonitor,
+  DragElementWrapper,
+  DragPreviewImage,
+} from 'react-dnd';
+import {
+  pageCTX,
+  PageContext,
+} from '../../../Editor/Components/Page/PageEditor';
 import { themeVar } from '../../Theme';
 import {
   flex,
@@ -37,7 +45,8 @@ import { store } from '../../../data/store';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
 import { omit } from 'lodash-es';
-import { clientScriptEval } from '../../Hooks/useScript';
+import { clientScriptEval, useScript } from '../../Hooks/useScript';
+import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
@@ -51,7 +60,6 @@ export const childHighlightCSS = {
   borderColor: themeVar.searchColor,
 };
 
-// export const childHighlightStyle = css(childHighlightCSS);
 export const childHighlightStyle = css({
   '&>*>*': childHighlightCSS,
 });
@@ -75,38 +83,6 @@ const handleContentStyle = css({
   borderStyle: 'solid',
   borderColor: themeVar.primaryLighterColor,
   backgroundColor: themeVar.primaryHoverColor,
-  // borderColor: 'transparent',
-  // transition: 'border-color 0.5s',
-  // opacity: 0.0,
-  // transition: 'opacity 0.5s',
-  // ':hover': {
-  //   // borderColor: themeVar.primaryLighterColor,
-  //   // transition: 'border-color 0s',
-  //   opacity: 0.8,
-  //   transition: 'opacity 0s',
-  // },
-  // '&>.wegas-component-handle-title': {
-  //   background: themeVar.primaryHoverColor,
-  //   borderTopLeftRadius: themeVar.borderRadius,
-  //   borderTopRightRadius: themeVar.borderRadius,
-  //   opacity: 0.0,
-  //   transition: 'visibility 0.5s, opacity 0.5s',
-  // },
-  // ':hover>.wegas-component-handle-title': {
-  //   opacity: 1,
-  //   transition: 'opacity 0s',
-  // },
-  // '&>.wegas-component-handle-content': {
-  //   background: themeVar.primaryHoverColor,
-  //   borderRadius: themeVar.borderRadius,
-  //   borderTopLeftRadius: themeVar.borderRadius,
-  //   transition: 'border-top-left-radius 0.5s, border-top-right-radius 0.5s',
-  // },
-  // ':hover>.wegas-component-handle-content': {
-  //   borderTopLeftRadius: 0,
-  //   borderTopRightRadius: 0,
-  //   transition: 'border-top-left-radius 0s, border-top-right-radius 0s',
-  // },
 });
 
 export const expandEditStyle = css({
@@ -117,9 +93,9 @@ export const expandEditStyle = css({
 
 const editItemStyle = css({
   // display: 'list-item',
-  marginLeft: '10px',
-  width: '100px',
-  height: '100px',
+  //marginLeft: '10px',
+  width: '50px',
+  height: '50px',
 });
 
 const emptyListStyle = css({
@@ -132,11 +108,6 @@ const emptyListStyle = css({
 export const opaciSchnaps = css({
   opacity: '0 !important',
 });
-
-interface ComponentEditorContainerProps {
-  type: string;
-  path: number[];
-}
 
 export interface EditorHandleProps {
   componentName?: string;
@@ -198,23 +169,25 @@ export function useDndComponentDrop(
   onDrop?: (dndComponnent: DnDComponent) => void,
 ): [
   {
+    isOver: boolean;
     isOverCurrent: boolean;
     canDrop: boolean;
     item: DnDComponent | null;
   },
-  DragElementWrapper<any>,
+  DragElementWrapper<{}>,
 ] {
   const [dropZoneProps, dropZone] = useDrop({
     accept: dndComponnent,
     canDrop: () => true,
     drop: onDrop,
     collect: (mon: DropTargetMonitor) => ({
+      isOver: mon.isOver({ shallow: false }),
       isOverCurrent: mon.isOver({ shallow: true }),
       canDrop: mon.canDrop(),
       item: mon.getItem() as DnDComponent | null,
     }),
   });
-  const delayedCanDrop = useDebounce(dropZoneProps.canDrop, 10);
+  const delayedCanDrop = useDebounce(dropZoneProps.canDrop, 100);
   return [{ ...dropZoneProps, canDrop: delayedCanDrop }, dropZone];
 }
 
@@ -236,7 +209,7 @@ interface ImpactVariableAction {
   impact: IScript;
 }
 interface LoaclScriptEvalAction {
-  script: IScript;
+  script: string;
 }
 interface OpenPopupPageAction {
   pageId: IScript;
@@ -245,65 +218,8 @@ interface PlaySoundAction {
   fileDescriptor: IFileDescriptor;
 }
 interface PrintVariableAction {
-  variable: IScript;
+  variableName: string;
 }
-
-interface WegasComponentActions {
-  openPage: (props: OpenPageAction) => void;
-  openUrl: (props: OpenURLAction) => void;
-  openFile: (props: OpenFileAction) => void;
-  impactVariable: (props: ImpactVariableAction) => void;
-  localScriptEval: (props: LoaclScriptEvalAction) => void;
-  openPopupPage: (props: OpenPopupPageAction) => void;
-  playSound: (props: PlaySoundAction) => void;
-  printVariable: (props: PrintVariableAction) => void;
-}
-
-const wegasComponentActions: WegasComponentActions = {
-  openPage: props => {
-    //TODO : Discuss that with Maxence
-    wlog(
-      'Need to change page state? What to priorize, initial script or click',
-    );
-    wlog(props);
-  },
-  openUrl: props => {
-    window.open(props.url);
-  },
-  openFile: props => {
-    const win = window.open(
-      fileURL(generateAbsolutePath(props.fileDescriptor)),
-      '_blank',
-    );
-    win!.focus();
-  },
-  impactVariable: props => {
-    try {
-      store.dispatch(runScript(props.impact, Player.selectCurrent()));
-    } catch (error) {
-      wlog(error);
-    }
-  },
-  localScriptEval: props => {
-    clientScriptEval(props.script.content);
-  },
-  openPopupPage: props => {
-    //TODO : Discuss that with Maxence
-    wlog('Need to implement a popup modal. Or is it allready here?');
-    wlog(props);
-  },
-  playSound: props => {
-    const audio = new Audio(
-      fileURL(generateAbsolutePath(props.fileDescriptor)),
-    );
-    audio.play();
-  },
-  printVariable: props => {
-    //TODO : Discuss that with Maxence
-    wlog('Not implemented yet');
-    wlog(props);
-  },
-};
 
 interface WegasComponentOptionsActions {
   openPage?: OpenPageAction & WegasComponentOptionsAction;
@@ -317,9 +233,8 @@ interface WegasComponentOptionsActions {
 }
 
 interface WegasComponentActionsProperties {
-  confirmClick?: boolean;
+  confirmClick?: string;
 }
-
 const actionsChoices: HashListChoices = [
   {
     label: 'Open Page',
@@ -400,18 +315,163 @@ const actionsChoices: HashListChoices = [
     value: {
       prop: 'printVariable',
       schema: schemaProps.object('Print variable', {
-        fileDescriptor: schemaProps.variable('Variable', true),
+        variableName: schemaProps.variable('Variable', true),
         priority: schemaProps.number('Priority', false),
       }),
     },
   },
+  {
+    label: 'Confirm click',
+    value: {
+      prop: 'confirmClick',
+      schema: schemaProps.string('Confirmation message', true, 'Are you sure?'),
+    },
+  },
 ];
+
+interface WegasComponentActions {
+  openPage: (props: OpenPageAction) => void;
+  openUrl: (props: OpenURLAction) => void;
+  openFile: (props: OpenFileAction) => void;
+  impactVariable: (props: ImpactVariableAction) => void;
+  localScriptEval: (props: LoaclScriptEvalAction) => void;
+  openPopupPage: (props: OpenPopupPageAction) => void;
+  playSound: (props: PlaySoundAction) => void;
+  printVariable: (props: PrintVariableAction) => void;
+}
+
+const wegasComponentActions: WegasComponentActions = {
+  openPage: props => {
+    //TODO : Discuss that with Maxence
+    wlog(
+      'Need to change page state? What to priorize, initial script or click',
+    );
+    wlog(props);
+  },
+  openUrl: props => {
+    window.open(props.url);
+  },
+  openFile: props => {
+    const win = window.open(
+      fileURL(generateAbsolutePath(props.fileDescriptor)),
+      '_blank',
+    );
+    win!.focus();
+  },
+  impactVariable: props => {
+    try {
+      store.dispatch(runScript(props.impact, Player.selectCurrent()));
+    } catch (error) {
+      wlog(error);
+    }
+  },
+  localScriptEval: props => {
+    clientScriptEval(props.script);
+  },
+  openPopupPage: props => {
+    //TODO : Discuss that with Maxence
+    wlog('Need to implement a popup modal. Or is it allready here?');
+    wlog(props);
+  },
+  playSound: props => {
+    const audio = new Audio(
+      fileURL(generateAbsolutePath(props.fileDescriptor)),
+    );
+    // We may register the sound component here and add another action for sound control (play, pause, volume, etc...)
+    audio.play();
+  },
+  printVariable: props => {
+    //TODO : Discuss that with Maxence
+    wlog('Not implemented yet');
+    wlog(findByName(props.variableName));
+  },
+};
+
+interface NotificationUpgrade {
+  showScript: IScript;
+  blinkScript: IScript;
+  messageScript: string;
+}
+
+interface WegasComponentUpgrades {
+  notification: NotificationUpgrade;
+}
+
+const upgradeChoices: HashListChoices = [
+  {
+    label: 'Notification',
+    value: {
+      prop: 'notification',
+      schema: schemaProps.object('Notification', {
+        showScript: schemaProps.script(
+          'Show',
+          false,
+          'GET',
+          'TypeScript',
+          'true',
+        ),
+        blinkScript: schemaProps.script(
+          'Blink',
+          false,
+          'GET',
+          'TypeScript',
+          'false',
+        ),
+        messageScript: schemaProps.code('Message', false, 'TypeScript'),
+      }),
+    },
+  },
+];
+
+const notificationStyle = css({
+  position: 'absolute',
+  color: themeVar.primaryLighterTextColor,
+  backgroundColor: themeVar.warningColor,
+  borderRadius: '50%',
+  padding: '0px 5px 0px 5px',
+});
+
+const blinkAnimation = keyframes(`
+50%{color: ${themeVar.warningColor};}
+`);
+
+const blinkStyle = css(`
+  animation: ${blinkAnimation} 0.7s step-end infinite;
+`);
+
+function NotificationComponent({
+  showScript,
+  blinkScript,
+  messageScript,
+}: NotificationUpgrade) {
+  // const container = React.useRef<HTMLDivElement>(null);
+  const show = useScript<boolean>(showScript.content);
+  const blink = useScript<boolean>(blinkScript.content);
+  const message = useScript<string>(messageScript);
+
+  return show ? (
+    <div
+      ref={container => {
+        if (container) {
+          const { width, height } = container.getBoundingClientRect();
+          const top = -(width / 4) - 1;
+          const right = -(height / 4) - 1;
+          container.className += ' ' + css({ top, right });
+        }
+      }}
+      className={cx(notificationStyle, { [blinkStyle]: blink })}
+    >
+      {message}
+    </div>
+  ) : null;
+}
 
 export interface ComponentContainerProps
   extends Omit<PageComponentMandatoryProps, 'ComponentContainer'> {
   options?: {
     layout?: FlexItemFlexProps;
     actions?: WegasComponentOptionsActions & WegasComponentActionsProperties;
+    upgrades?: WegasComponentUpgrades;
   };
   handleProps?: EditorHandleProps;
   /**
@@ -425,7 +485,7 @@ export interface ComponentContainerProps
 }
 
 const defaultComponentContainerProps: ComponentContainerProps = {
-  options: { layout: {}, actions: {} },
+  options: {},
   handleProps: {},
   className: '',
   style: {},
@@ -435,29 +495,42 @@ export const componentContainerWegasPropsKeys = Object.keys(
   defaultComponentContainerProps,
 );
 
-export function ComponentEditorContainer({
-  type,
-  path,
-}: ComponentEditorContainerProps) {
+export function useComponentEditorContainer(
+  type: string,
+  path: number[],
+  pageContext: PageContext,
+  containerRef?: DragElementWrapper<{}>,
+) {
   const {
     editMode,
     showControls,
+    // setIsDragging,
     handles,
     onEdit,
     onDelete,
-  } = React.useContext(pageCTX);
+  } = pageContext;
+  const [, /*{ isDragging }*/ drag, preview] = useComponentDrag(type, path);
+  // useDeepChanges(dragMonitor, setIsDragging);
+  // useIsDragging(dragMonitor);
+  // wlog(dragMonitor);
+  // setIsDragging(isDragging);
+
   function EditHandle({
     componentName,
     className,
     togglerProps,
   }: EditorHandleProps) {
     const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
-    const [, drag] = useComponentDrag(type, path);
     const handleRef = React.createRef<HTMLDivElement>();
 
     const HandleContent = React.forwardRef<HTMLDivElement>((_, ref) => {
       return (
-        <div ref={ref} className={cx(flex, flexColumn, handleContentStyle)}>
+        <div
+          ref={ref}
+          className={cx(flex, flexColumn, handleContentStyle)}
+          //Avoiding the container actions to trigger when using handle
+          onClick={event => event.stopPropagation()}
+        >
           <div
             style={{ fontSize: '10px' }}
             className={
@@ -573,6 +646,7 @@ export function ComponentEditorContainer({
       </div>
     ) : null;
   }
+
   return function ComponentContainer({
     children,
     options,
@@ -581,49 +655,62 @@ export function ComponentEditorContainer({
     className,
     style,
   }: React.PropsWithChildren<ComponentContainerProps>) {
-    const { editMode } = React.useContext(pageCTX);
-    const [{ canDrop }] = useDndComponentDrop();
-    const displayBorders = showBorders || (editMode && canDrop);
+    // const { editMode } = React.useContext(pageCTX);
+    // const [{ canDrop }] = useDndComponentDrop();
+    // const displayBorders = showBorders || (editMode && canDrop);
 
     return (
-      <FlexItem
-        {...options?.layout}
-        className={
-          cx(handleControlStyle, {
-            [layoutHighlightStyle]: displayBorders,
-            [childHighlightStyle]: displayBorders,
-          }) + (className ? ' ' + className : '')
-        }
-        style={style}
-        onClick={() => {
-          if (options && options.actions) {
-            // TODO : Find a better way to do that than a modal!!!
-            // eslint-disable-next-line no-alert
-            if (!options.actions.confirmClick || confirm('Are you sure?')) {
-              Object.entries(
-                omit(
-                  options.actions,
-                  'confirmClick',
-                ) as WegasComponentOptionsActions,
-              )
-                .sort(
-                  (
-                    [, v1]: [string, WegasComponentOptionsAction],
-                    [, v2]: [string, WegasComponentOptionsAction],
-                  ) =>
-                    (v1.priority ? v1.priority : 0) -
-                    (v2.priority ? v2.priority : 0),
-                )
-                .forEach(([k, v]) =>
-                  wegasComponentActions[k as keyof WegasComponentActions](v),
-                );
-            }
+      <>
+        <DragPreviewImage
+          connect={preview}
+          src={require('../../../pictures/react.png').default}
+        />
+        <FlexItem
+          ref={containerRef}
+          {...options?.layout}
+          className={
+            cx(handleControlStyle, {
+              [layoutHighlightStyle]: showBorders,
+              [childHighlightStyle]: showBorders,
+            }) + (className ? ' ' + className : '')
           }
-        }}
-      >
-        {path.length > 0 && <EditHandle {...handleProps} />}
-        <ErrorBoundary>{children}</ErrorBoundary>
-      </FlexItem>
+          style={style}
+          onClick={() => {
+            if (options && options.actions) {
+              if (
+                !options.actions.confirmClick ||
+                // TODO : Find a better way to do that than a modal!!!
+                // eslint-disable-next-line no-alert
+                confirm(options.actions.confirmClick)
+              ) {
+                Object.entries(
+                  omit(
+                    options.actions,
+                    'confirmClick',
+                  ) as WegasComponentOptionsActions,
+                )
+                  .sort(
+                    (
+                      [, v1]: [string, WegasComponentOptionsAction],
+                      [, v2]: [string, WegasComponentOptionsAction],
+                    ) =>
+                      (v1.priority ? v1.priority : 0) -
+                      (v2.priority ? v2.priority : 0),
+                  )
+                  .forEach(([k, v]) =>
+                    wegasComponentActions[k as keyof WegasComponentActions](v),
+                  );
+              }
+            }
+          }}
+        >
+          {path.length > 0 && <EditHandle {...handleProps} />}
+          <ErrorBoundary>{children}</ErrorBoundary>
+          {options?.upgrades?.notification && (
+            <NotificationComponent {...options.upgrades.notification} />
+          )}
+        </FlexItem>
+      </>
     );
   };
 }
@@ -633,8 +720,8 @@ interface ComponentDropZoneProps {
 }
 
 function ComponentDropZone({ onDrop }: ComponentDropZoneProps) {
-  const [{ canDrop, isOverCurrent }, dropZone] = useDndComponentDrop(onDrop);
-  return canDrop ? (
+  const [{ isOverCurrent }, dropZone] = useDndComponentDrop(onDrop);
+  return (
     <div
       ref={dropZone}
       className={cx(
@@ -647,7 +734,7 @@ function ComponentDropZone({ onDrop }: ComponentDropZoneProps) {
     >
       <div>Drop component here</div>
     </div>
-  ) : null;
+  );
 }
 
 export interface PageComponentProps {
@@ -674,41 +761,52 @@ export function EditableComponent({
   path,
   uneditable,
 }: EditableComponentProps) {
-  const { editMode: edit, onDrop, showBorders } = React.useContext(pageCTX);
+  const pageContext = React.useContext(pageCTX);
+
+  const ComponentContainer = useComponentEditorContainer(
+    componentName,
+    path,
+    pageContext,
+    // dropZone,
+  );
+
+  const { editMode: edit, onDrop, showBorders, isDragging } = pageContext;
   const editMode = edit && !uneditable;
   let content: JSX.Element[] = [];
   if (wegasChildren !== undefined) {
-    content = editMode
-      ? wegasChildren.reduce(
-          (o, c, i) => [
-            ...o,
-            c,
-            <ComponentDropZone
-              key={i + 'AFTER'}
-              onDrop={c => onDrop && onDrop(c, path, i + 1)}
-            />,
-          ],
-          [
-            wegasChildren.length === 0 ? (
-              <div className={cx(emptyListStyle, grow)}>
-                The layout is empty
-              </div>
-            ) : (
-              <ComponentDropZone
-                key={'FIRST'}
-                onDrop={c => onDrop && onDrop(c, path, 0)}
-              />
-            ),
-          ],
-        )
-      : wegasChildren;
+    if (editMode && isDragging) {
+      content = wegasChildren.reduce(
+        (o, c, i) => [
+          ...o,
+          c,
+          <ComponentDropZone
+            key={i + 'AFTER'}
+            onDrop={c => onDrop && onDrop(c, path, i + 1)}
+          />,
+        ],
+        [
+          <ComponentDropZone
+            key="FIRST"
+            onDrop={c => onDrop && onDrop(c, path, 0)}
+          />,
+        ],
+      );
+    } else if (editMode && wegasChildren.length === 0) {
+      content = [
+        <div key="NO-CHILD" className={cx(emptyListStyle, grow)}>
+          The layout is empty
+        </div>,
+      ];
+    } else {
+      content = wegasChildren;
+    }
   }
+
+  wlog({ isDragging, size: content.length });
 
   return children(
     content,
-    uneditable
-      ? () => null
-      : ComponentEditorContainer({ type: componentName, path }),
+    uneditable ? () => null : ComponentContainer,
     showBorders && !uneditable,
   );
 }
@@ -727,6 +825,11 @@ export const optionsSchema = {
         label: 'Actions',
         value: { prop: 'actions' },
         items: actionsChoices,
+      },
+      {
+        label: 'Upgrades',
+        value: { prop: 'upgrades' },
+        items: upgradeChoices,
       },
     ],
     undefined,

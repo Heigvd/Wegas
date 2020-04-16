@@ -2,7 +2,11 @@ import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
 import { JSONandJSEditor } from '../ScriptEditors/JSONandJSEditor';
 import { deepClone } from 'fast-json-patch';
-import { ComponentPalette, DnDComponent } from './ComponentPalette';
+import {
+  ComponentPalette,
+  DnDComponent,
+  DragMonitor,
+} from './ComponentPalette';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import { MainLinearLayout } from '../LinearTabLayout/LinearLayout';
 import ComponentEditor from './ComponentEditor';
@@ -17,17 +21,17 @@ import { themeVar } from '../../../Components/Theme';
 import { flex, grow, expandBoth } from '../../../css/classes';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
-import { useDndComponentDrop } from '../../../Components/PageComponents/tools/EditableComponent';
-
 const innerButtonStyle = css({
   margin: '2px auto 2px auto',
   width: 'fit-content',
 });
 
-interface PageContext {
+export interface PageContext {
   editMode: boolean;
   showBorders: boolean;
   showControls: boolean;
+  isDragging: boolean;
+  setIsDragging: (dragMonitor: DragMonitor) => void;
   handles: {
     [path: string]: { jsx: JSX.Element; dom: React.RefObject<HTMLDivElement> };
   };
@@ -41,6 +45,8 @@ export const pageCTX = React.createContext<PageContext>({
   editMode: false,
   showBorders: false,
   showControls: true,
+  isDragging: false,
+  setIsDragging: noop,
   handles: {},
   onDrop: noop,
   onEdit: noop,
@@ -181,14 +187,19 @@ const updateComponent = (
 export const pageLayoutId = 'PageEditorLayout';
 
 export default function PageEditor() {
+  const handles = React.useRef({});
+  const focusTab = React.useRef<(tabId: string, layoutId: string) => void>();
   const [{ selectedPageId, editedPath }, setPageEditorState] = React.useState<
     PageEditorState
   >({});
+
   const [editMode, setEditMode] = React.useState(false);
   const [showBorders, setShowBorders] = React.useState(false);
-  const handles = React.useRef({});
   const [showControls, setShowControls] = React.useState(true);
-  const [{ canDrop }] = useDndComponentDrop();
+  const [isDragging, setIsDragging] = React.useState<
+    Record<string | symbol, boolean>
+  >({});
+
   const components = usePageComponentStore(s => s);
   const { selectedPage, defaultPageId, loading } = useStore(
     s => ({
@@ -199,7 +210,10 @@ export default function PageEditor() {
     deepDifferent,
   );
 
-  const focusTab = React.useRef<(tabId: string, layoutId: string) => void>();
+  const isAnythingDragged = Object.values(isDragging).reduce(
+    (o, v) => o || v,
+    false,
+  );
 
   React.useEffect(() => {
     if (selectedPageId == null && defaultPageId != null) {
@@ -509,7 +523,11 @@ export default function PageEditor() {
           value={{
             editMode,
             showControls,
-            showBorders: showBorders || (editMode && canDrop),
+            showBorders: showBorders || (editMode && isAnythingDragged),
+            isDragging: isAnythingDragged,
+            setIsDragging: ({ handlerId, isDragging }: DragMonitor) =>
+              handlerId != null &&
+              setIsDragging(oid => ({ ...oid, [handlerId]: isDragging })),
             handles: handles.current,
             onDrop,
             onDelete,

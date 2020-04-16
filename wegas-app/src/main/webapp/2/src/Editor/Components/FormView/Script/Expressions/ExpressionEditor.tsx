@@ -65,9 +65,9 @@ export function ExpressionEditor({
   mode,
   onChange,
 }: ExpressionEditorProps) {
-  const [error, setError] = React.useState();
+  const [error, setError] = React.useState<string>();
   const [srcMode, setSrcMode] = React.useState(false);
-  const [newSrc, setNewSrc] = React.useState();
+  const [newSrc, setNewSrc] = React.useState<string>();
   const [formState, setFormState] = React.useState<ExpressionEditorState>({});
 
   // Getting variables id

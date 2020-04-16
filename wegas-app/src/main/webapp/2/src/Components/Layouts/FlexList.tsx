@@ -99,19 +99,38 @@ export interface FlexItemProps extends FlexItemFlexProps {
   style?: React.CSSProperties;
 }
 
-export function FlexItem({
-  order,
-  alignSelf,
-  flexGrow,
-  flexShrink,
-  flexBasis,
-  onClick,
-  className,
-  style,
-  children,
-}: React.PropsWithChildren<FlexItemProps>) {
-  return (
+export const FlexItem = React.forwardRef<
+  HTMLDivElement,
+  React.PropsWithChildren<FlexItemProps>
+>(
+  (
+    {
+      order,
+      alignSelf,
+      flexGrow,
+      flexShrink,
+      flexBasis,
+      onClick,
+      className,
+      style,
+      children,
+    },
+    ref,
+  ) => (
+    // export function FlexItem({
+    //   order,
+    //   alignSelf,
+    //   flexGrow,
+    //   flexShrink,
+    //   flexBasis,
+    //   onClick,
+    //   className,
+    //   style,
+    //   children,
+    // }: React.PropsWithChildren<FlexItemProps>) {
+    //   return (
     <div
+      ref={ref}
       onClick={onClick}
       className={className}
       style={{
@@ -128,8 +147,10 @@ export function FlexItem({
     >
       {children}
     </div>
-  );
-}
+  ),
+);
+//   );
+// }
 
 export const flexDirectionValues = [
   'row',
