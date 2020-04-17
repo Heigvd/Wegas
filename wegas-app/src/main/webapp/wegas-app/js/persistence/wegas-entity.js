@@ -942,6 +942,15 @@ YUI.add('wegas-entity', function(Y) {
                         });
                         return count;
                     }
+                },
+                status: {
+                    type: ["null", STRING],
+                    view: {
+                        type: 'string',
+                        readOnly: true,
+                        className: 'wegas-internal-feature',
+                        label: 'Status'
+                    }
                 }
             }
         });
