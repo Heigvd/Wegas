@@ -632,10 +632,10 @@ public class ModelFacade {
     }
 
     /**
-     * Normalise Languages * * * * * * * * * * * * * * * * * * * * Reset refId (same code, same
-     * refId) for each code which exists in the model Assert same name, same code
+     * Normalise Languages. Reset refId (same code, same refId) for each code which exists in the
+     * model Assert same name, same code
      */
-    private void processLanguages(GameModel model, List<GameModel> scenarios) {
+    public void processLanguages(GameModel model, List<GameModel> scenarios) {
 
         Map<String, String> codeToLangName = new HashMap<>();
         Map<String, String> langNameToCode = new HashMap<>();
@@ -723,126 +723,140 @@ public class ModelFacade {
         }
     }
 
+    /**
+     * Modify scenarios variable structure to match the one of the given model.
+     * <p>
+     * First step ensures all variable with the same name (scriptAlias) have the same refId. Second
+     * step.
+     * <p>
+     * Second ensure scenarios have the same variable tree structure by creating missing directories
+     * and/or moving existing variables.
+     *
+     * @param model
+     * @param scenarios
+     *
+     * @throws RepositoryException
+     */
     public void fixVariableTree(GameModel model, List<GameModel> scenarios) throws RepositoryException {
         if (model != null) {
-            if (model.isModel()) {
+//            if (model.isModel()) {
+            // force all refIds
+            for (GameModel scenario : scenarios) {
+                if (scenario.isScenario()) {
+                    scenario.forceRefId(model.getRefId());
 
-                // force all refIds
-                for (GameModel scenario : scenarios) {
-                    if (scenario.isScenario()) {
-                        scenario.forceRefId(model.getRefId());
-
-                        for (VariableDescriptor modelVd : model.getVariableDescriptors()) {
-                            try {
-                                // make sure corresponding descriptors share the same refId
-
-                                String name = modelVd.getName();
-                                VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
-
-                                MergeHelper.resetRefIds(vd, modelVd, false);
-                                this.resetVariableDescriptorInstanceRefIds(vd, modelVd, false);
-                            } catch (WegasNoResultException ex) {
-                                // just skip
-                            }
-                        }
-                    }
-                }
-
-                Map<VariableDescriptor, VariableDescriptor> toMove = new HashMap<>();
-                Map<GameModel, List<VariableDescriptor>> toCreate = new HashMap<>();
-
-                logger.info("Assert variables structure match structure in the model and override refIds");
-                for (VariableDescriptor modelVd : model.getVariableDescriptors()) {
-                    // iterate over all model's descriptors
-                    String modelParentRef = this.getParentRef(modelVd);
-                    String name = modelVd.getName();
-
-                    for (GameModel scenario : scenarios) {
+                    for (VariableDescriptor modelVd : model.getVariableDescriptors()) {
                         try {
-                            // get corresponding descriptor in the scenrio
+                            // make sure corresponding descriptors share the same refId
+
+                            String name = modelVd.getName();
                             VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
 
-                            String parentRef = this.getParentRef(vd);
-                            if (!parentRef.equals(modelParentRef)) {
-                                logger.info("Descriptor {} will be moved from {} to {}", vd, buildPath(vd.getParent()), buildPath(modelVd.getParent()));
-                                // Parents differs
-                                toMove.put(vd, modelVd);  //key : the descriptor to move; value: corresponding descriptor within the model
-                            }
+                            MergeHelper.resetRefIds(vd, modelVd, false);
+                            this.resetVariableDescriptorInstanceRefIds(vd, modelVd, false);
                         } catch (WegasNoResultException ex) {
-                            // corresponding descriptor not found -> it has to be created
-                            logger.info("Descriptor {} will be created in {} at {}", modelVd, scenario, buildPath(modelVd.getParent()));
-                            if (modelVd instanceof DescriptorListI) {
-                                toCreate.putIfAbsent(scenario, new ArrayList<>());
-                                toCreate.get(scenario).add(modelVd);
-                            }
+                            // just skip
                         }
                     }
                 }
+            }
 
-                // Create missing descriptors (DescriptorListI) to ensure all scenarios have the correct struct
-                for (GameModel scenario : toCreate.keySet()) {
-                    List<VariableDescriptor> vdToCreate = toCreate.get(scenario);
+            Map<VariableDescriptor, VariableDescriptor> toMove = new HashMap<>();
+            Map<GameModel, List<VariableDescriptor>> toCreate = new HashMap<>();
 
-                    logger.info("Create missing descriptor for {}", scenario);
-                    boolean toRelease = false;
-                    if (scenario.isProtected()) {
-                        toRelease = true;
-                        scenario.setOnGoingPropagation(Boolean.TRUE);
+            logger.info("Assert variables structure match structure in the model and override refIds");
+            for (VariableDescriptor modelVd : model.getVariableDescriptors()) {
+                // iterate over all model's descriptors
+                String modelParentRef = this.getParentRef(modelVd);
+                String name = modelVd.getName();
+
+                for (GameModel scenario : scenarios) {
+                    try {
+                        // get corresponding descriptor in the scenrio
+                        VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
+
+                        String parentRef = this.getParentRef(vd);
+                        if (!parentRef.equals(modelParentRef)) {
+                            logger.info("Descriptor {} will be moved from {} to {}", vd, buildPath(vd.getParent()), buildPath(modelVd.getParent()));
+                            // Parents differs
+                            toMove.put(vd, modelVd);  //key : the descriptor to move; value: corresponding descriptor within the model
+                        }
+                    } catch (WegasNoResultException ex) {
+                        // corresponding descriptor not found -> it has to be created
+                        // but, in this step we only care about directories
+                        logger.info("Descriptor {} will be created in {} at {}", modelVd, scenario, buildPath(modelVd.getParent()));
+                        if (modelVd instanceof DescriptorListI) {
+                            toCreate.putIfAbsent(scenario, new ArrayList<>());
+                            toCreate.get(scenario).add(modelVd);
+                        }
                     }
-                    boolean restart;
-                    do {
-                        restart = false;
-                        for (Iterator<VariableDescriptor> it = vdToCreate.iterator(); it.hasNext();) {
-                            VariableDescriptor vd = it.next();
+                }
+            }
 
-                            try {
-                                logger.info(" - missing descriptor is {}", vd);
-                                DescriptorListI modelParent = vd.getParent();
-                                if (modelParent instanceof VariableDescriptor) {
-                                    String parentName = ((VariableDescriptor) modelParent).getName();
-                                    try {
-                                        VariableDescriptor parent = variableDescriptorFacade.find(scenario, parentName);
-                                        VariableDescriptor clone;
-                                        clone = (VariableDescriptor) vd.shallowClone();
-                                        variableDescriptorFacade.createChild(scenario, (DescriptorListI<VariableDescriptor>) parent, clone, false);
+            // Create missing descriptors (DescriptorListI) to ensure all scenarios have the correct struct
+            for (GameModel scenario : toCreate.keySet()) {
+                List<VariableDescriptor> vdToCreate = toCreate.get(scenario);
 
-                                        logger.info(" CREATE AT as {} child", parent);
-                                        it.remove();
-                                        restart = true;
-                                    } catch (WegasNoResultException ex) {
-                                        logger.info(" PARENT {} NOT FOUND -> POSTPONE", modelParent);
-                                    }
-                                } else {
-                                    logger.info(" CREATE AT ROOL LEVEL");
-                                    VariableDescriptor clone = (VariableDescriptor) vd.shallowClone();
-                                    variableDescriptorFacade.createChild(scenario, scenario, clone, false);
-                                    clone.setName(vd.getName()); // force the new variable name
+                logger.info("Create missing descriptor for {}", scenario);
+                boolean toRelease = false;
+                if (scenario.isProtected()) {
+                    toRelease = true;
+                    scenario.setOnGoingPropagation(Boolean.TRUE);
+                }
+                boolean restart;
+                do {
+                    restart = false;
+                    for (Iterator<VariableDescriptor> it = vdToCreate.iterator(); it.hasNext();) {
+                        VariableDescriptor vd = it.next();
+
+                        try {
+                            logger.info(" - missing descriptor is {}", vd);
+                            DescriptorListI modelParent = vd.getParent();
+                            if (modelParent instanceof VariableDescriptor) {
+                                String parentName = ((VariableDescriptor) modelParent).getName();
+                                try {
+                                    VariableDescriptor parent = variableDescriptorFacade.find(scenario, parentName);
+                                    VariableDescriptor clone;
+                                    clone = (VariableDescriptor) vd.shallowClone();
+                                    variableDescriptorFacade.createChild(scenario, (DescriptorListI<VariableDescriptor>) parent, clone, false);
+
+                                    logger.info(" CREATE AT as {} child", parent);
                                     it.remove();
                                     restart = true;
+                                } catch (WegasNoResultException ex) {
+                                    logger.info(" PARENT {} NOT FOUND -> POSTPONE", modelParent);
                                 }
-                            } catch (CloneNotSupportedException ex) {
-                                logger.error("Error while cloning {}", vd);
+                            } else {
+                                logger.info(" CREATE AT ROOL LEVEL");
+                                VariableDescriptor clone = (VariableDescriptor) vd.shallowClone();
+                                variableDescriptorFacade.createChild(scenario, scenario, clone, false);
+                                clone.setName(vd.getName()); // force the new variable name
+                                it.remove();
+                                restart = true;
                             }
+                        } catch (CloneNotSupportedException ex) {
+                            logger.error("Error while cloning {}", vd);
                         }
-
-                    } while (restart);
-
-                    if (toRelease) {
-                        scenario.setOnGoingPropagation(Boolean.FALSE);
                     }
-                }
 
-                logger.info("Move misplaced descriptors");
-                for (Entry<VariableDescriptor, VariableDescriptor> entry : toMove.entrySet()) {
-                    logger.info("Process : {}", entry);
-                    //key : the descriptor to move; value: corresponding descriptor within the model
-                    this.move(entry.getKey(), entry.getValue());
-                }
+                } while (restart);
 
-            } else {
-                // model is not a model
-                throw WegasErrorMessage.error("Model is not a Model");
+                if (toRelease) {
+                    scenario.setOnGoingPropagation(Boolean.FALSE);
+                }
             }
+
+            logger.info("Move misplaced descriptors");
+            for (Entry<VariableDescriptor, VariableDescriptor> entry : toMove.entrySet()) {
+                logger.info("Process : {}", entry);
+                //key : the descriptor to move; value: corresponding descriptor within the model
+                this.move(entry.getKey(), entry.getValue());
+            }
+
+//            } else {
+//                // model is not a model
+//                throw WegasErrorMessage.error("Model is not a Model");
+//            }
         }
     }
 

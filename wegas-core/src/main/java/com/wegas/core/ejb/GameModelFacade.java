@@ -215,6 +215,33 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     }
 
     /**
+     * Patch gameModel with newVersion. TODO: patch files as well
+     *
+     * @param gameModel  the gameModel to patch
+     * @param newVersion the new version
+     *
+     * @return
+     */
+    public GameModel patch(GameModel gameModel, GameModel newVersion) throws RepositoryException {
+        List<GameModel> toPatch = new ArrayList<>();
+        toPatch.add(gameModel);
+
+        newVersion.setName(gameModel.getName());
+        newVersion.setComments(gameModel.getComments());
+
+        modelFacade.processLanguages(newVersion, toPatch);
+        // ensure variable tree is up to date with newVersion's
+        modelFacade.fixVariableTree(newVersion, toPatch);
+        // merge recusrsively and bypass visibility restriction
+        gameModel.deepMergeForce(newVersion);
+
+        // revive descriptor & propagate default instances
+        variableDescriptorFacade.reviveItems(gameModel, gameModel, false);
+
+        return gameModel;
+    }
+
+    /**
      * @param gameModel
      * @param context
      * @param create
@@ -475,6 +502,41 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
             ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, wt);
         }
+    }
+
+    /**
+     * Extract gameModel from a WGZ export.
+     *
+     * @param zip a WGZ archive
+     *
+     * @return the (unpersisted) gameModel
+     *
+     * @throws IOException
+     * @throws RepositoryException
+     */
+    public GameModel extractGameModelFromWGZ(ZipInputStream zip) throws IOException, RepositoryException {
+        ZipEntry entry;
+        GameModel gameModel = null;
+        InputStream filesStream = null;
+        InputStream gameModelStream = null;
+
+        while ((entry = zip.getNextEntry()) != null) {
+            if (entry.getName().equals("gamemodel.json")) {
+                gameModelStream = IOUtils.toBufferedInputStream(zip);
+            } else if (entry.getName().equals("files.xml")) {
+                filesStream = IOUtils.toBufferedInputStream(zip);
+            } else {
+                throw new WegasIncompatibleType("Invalid zip entry " + entry.getName());
+            }
+        }
+
+        if (gameModelStream != null && filesStream != null) {
+            gameModel = JacksonMapperProvider.getMapper().readValue(gameModelStream, GameModel.class);
+//            ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, WorkspaceType.FILES);
+//            connector.importXML(filesStream);
+        }
+
+        return gameModel;
     }
 
     public GameModel unzip(ZipInputStream zip) throws IOException, RepositoryException {

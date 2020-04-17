@@ -68,7 +68,7 @@ angular
             }
         };
     })
-    .directive('scenaristHistoryActions', function(ScenariosModel) {
+    .directive('scenaristHistoryActions', function(ScenariosModel, Auth) {
         "use strict";
         return {
             templateUrl: 'app/private/scenarist/history/directives.tmpl/actions.html',
@@ -77,6 +77,10 @@ angular
             },
             require: "^scenaristHistoryIndex",
             link: function($scope, element, attrs, parentCtrl) {
+                Auth.getAuthenticatedUser().then(function(user) {
+                    $scope.user = user;
+                });
+
                 $scope.addVersion = function() {
                     parentCtrl.addVersion();
                 };
@@ -107,6 +111,54 @@ angular
                 });
 
 
+            }
+        };
+    })
+    .directive('scenaristHistoryPatchDiff', function(ScenariosModel) {
+        "use strict";
+        return {
+            scope: {
+                scenario: "="
+            },
+            link: function(scope, element, attrs) {
+                scope.$watch("scenario", function(n, o) {
+                    element.bind('change', function() {
+                        if (n) {
+                            ScenariosModel.diffFromFile(n, element[0].files[0])
+                                .then(function(response) {
+                                    element[0].value = '';
+                                    if (response.flash) {
+                                        response.flash();
+                                    } else if (typeof response  === "string"){
+                                        // perché non vieni a casa a mangiare gli spaghetti?
+                                        scope.$parent.$parent.$parent.$parent.diff = response;
+                                        scope.$parent.$parent.diffDone = true
+                                    }
+                                });
+                        }
+                    });
+                });
+            }
+        };
+    })
+    .directive('scenaristHistoryPatch', function(ScenariosModel) {
+        "use strict";
+        return {
+            scope: {
+                scenario: "="
+            },
+            link: function(scope, element, attrs) {
+                scope.$watch("scenario", function(n, o) {
+                    element.bind('change', function() {
+                        if (n) {
+                            ScenariosModel.patchFromFile(n,
+                                element[0].files[0]).then(function(response) {
+                                response.flash();
+                                element[0].value = '';
+                            });
+                        }
+                    });
+                });
             }
         };
     })

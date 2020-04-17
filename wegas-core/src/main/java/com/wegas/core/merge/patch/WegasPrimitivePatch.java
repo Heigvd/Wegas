@@ -178,7 +178,7 @@ public final class WegasPrimitivePatch extends WegasPatch {
     }
 
     @Override
-    protected PatchDiff buildDiff() {
+    protected PatchDiff buildDiff(boolean bypassVisibility) {
         if (Objects.equals(fromValue, toValue)
             || identifier.equals("version")
             || identifier.equals("refId")) {

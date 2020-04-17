@@ -672,10 +672,10 @@ public final class WegasEntityPatch extends WegasPatch {
     }
 
     @Override
-    protected PatchDiff buildDiff() {
+    protected PatchDiff buildDiff(boolean bypassVisibility) {
 
         if (this.toEntity instanceof ModelScoped) {
-            if (((ModelScoped) this.toEntity).getVisibility().equals(ModelScoped.Visibility.PRIVATE)) {
+            if (!bypassVisibility && ((ModelScoped) this.toEntity).getVisibility().equals(ModelScoped.Visibility.PRIVATE)) {
                 return null;
             }
         }
@@ -683,7 +683,7 @@ public final class WegasEntityPatch extends WegasPatch {
         List<PatchDiff> subs = new ArrayList<>();
 
         for (WegasPatch patch : patches) {
-            PatchDiff sub = patch.buildDiff();
+            PatchDiff sub = patch.buildDiff(bypassVisibility);
             if (sub != null) {
                 subs.add(sub);
             }

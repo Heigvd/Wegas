@@ -416,7 +416,7 @@ angular.module('wegas.models.scenarios', [])
                         var cacheName = gameModel.type + ':' + gameModel.status;
                         cacheScenario(cacheName, gameModel);
                         var pCache = scenarios.cache["perm:" + cacheName];
-                        if (pCache){
+                        if (pCache) {
                             // grant all right
                             pCache.data[gameModel.id] = ["*"];
                         }
@@ -564,6 +564,82 @@ angular.module('wegas.models.scenarios', [])
                         deferred.resolve(Responses.danger(message, false));
                     });
                 }
+                return deferred.promise;
+            };
+
+            function generateDiffOutput(diff) {
+
+                if (diff.diffs || diff.changes && diff.changes.length) {
+                    var output = "<div class='diff'>";
+                    if (diff.title) {
+                        output += "<span class='diff-title'>" + diff.title + "</span>";
+                    }
+
+                    if (diff.diffs) {
+                        for (var i in diff.diffs) {
+                            output += generateDiffOutput(diff.diffs[i]);
+                        }
+                    }
+
+                    if (diff.changes) {
+                        for (var i = 0; i < diff.changes.length; i++) {
+                            var change = diff.changes[i];
+                            if (change.lineNumber || change.content) {
+                                output += "<div class='change'>";
+                                if (diff.changes.length > 1) {
+                                    output += "<span class='line-number'>" + change.lineNumber + "</span>";
+                                }
+                                output += "<pre class='line-change change-tag-" + change.tag + "'>" + change.content + "</pre>";
+                                output += "</div>";
+                            } else {
+                                output += "<div class='side2side-change'>";
+                                output += "<pre class='old'>" + change.oldValue + "</pre>";
+                                output += "<pre class='new'>" + change.newValue + "</pre>";
+                                output += "</div>";
+                            }
+                        }
+                    }
+                    output += "</div>";
+                    return output;
+                }
+                return "";
+            }
+
+            model.diffFromFile = function(scenario, file) {
+                var deferred = $q.defer(),
+                    url = "rest/Lobby/GameModel/" + scenario.id + "/PatchDiff",
+                    fd = new FormData();
+
+                fd.append('file', file);
+                $http.put(ServiceURL + url, fd, {
+                    transformRequest: angular.identity,
+                    headers: {
+                        "managed-mode": true,
+                        "Content-Type": undefined
+                    }
+                })
+                    .success(function(data) {
+                        var html = generateDiffOutput(data.updatedEntities[0]);
+                        deferred.resolve(html);
+                        //createSuccess(deferred))
+                    })
+                    .error(createError(deferred));
+                return deferred.promise;
+            };
+
+            model.patchFromFile = function(scenario, file) {
+                var deferred = $q.defer(),
+                    url = "rest/Lobby/GameModel/" + scenario.id + "/Patch",
+                    fd = new FormData();
+
+                fd.append('file', file);
+                $http.put(ServiceURL + url, fd, {
+                    transformRequest: angular.identity,
+                    headers: {
+                        "managed-mode": true,
+                        "Content-Type": undefined
+                    }
+                }).success(createSuccess(deferred)).error(createError(deferred));
                 return deferred.promise;
             };
 
