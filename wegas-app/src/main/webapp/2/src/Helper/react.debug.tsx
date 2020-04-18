@@ -25,7 +25,7 @@ type ComparaisonTypes = 'SIMPLE' | 'SHALLOW' | 'DEEP';
 
 // COMPARAISON FUNCTIONS
 function simpleCheck(a: unknown, b: unknown) {
-  return a === b;
+  return a !== b;
 }
 function shallowCheck(a: unknown, b: unknown, verbose?: boolean) {
   if (typeof a !== typeof b) {
@@ -52,7 +52,7 @@ function shallowCheck(a: unknown, b: unknown, verbose?: boolean) {
 }
 function deepCheck(a: unknown, b: unknown, verbose?: boolean) {
   try {
-    return JSON.stringify(a) === JSON.stringify(b);
+    return JSON.stringify(a) !== JSON.stringify(b);
   } catch (e) {
     verbose && console.log(e);
     return false;
