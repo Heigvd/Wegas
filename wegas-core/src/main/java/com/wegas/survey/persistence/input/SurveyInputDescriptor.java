@@ -7,6 +7,7 @@
  */
 package com.wegas.survey.persistence.input;
 
+import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -16,6 +17,7 @@ import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -254,4 +256,47 @@ public abstract class SurveyInputDescriptor
         }
     }
 
+    
+    // ~~~~~~ Sugar for scripts ~~~~~~~~
+
+    /**
+     *
+     * @param p
+     */
+    @Scriptable
+    public void activate(Player p) {
+        this.getInstance(p).setActive(true);
+    }
+
+    /**
+     *
+     * @param p
+     */
+    @Scriptable
+    public void deactivate(Player p) {
+        this.getInstance(p).setActive(false);
+    }
+
+    /**
+     *
+     * @param p
+     *
+     * @return true if the player's survey is active
+     */
+    @Scriptable(label = "is active")
+    public boolean isActive(Player p) {
+        return this.getInstance(p).getActive();
+    }
+
+    /**
+     * {@link #isActive ...}
+     *
+     * @param p
+     *
+     * @return true if the player's survey is not active
+     */
+    @Scriptable(label = "is not active")
+    public boolean isNotActive(Player p) {
+        return this.getInstance(p).getActive() == false;
+    }
 }

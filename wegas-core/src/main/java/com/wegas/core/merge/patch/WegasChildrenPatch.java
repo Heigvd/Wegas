@@ -402,11 +402,11 @@ public final class WegasChildrenPatch extends WegasPatch {
         return sb;
     }
 
-    protected PatchDiff buildDiff() {
+    protected PatchDiff buildDiff(boolean bypassVisibility) {
         List<PatchDiff> subs = new ArrayList<>();
 
         for (WegasPatch patch : patches) {
-            PatchDiff sub = patch.buildDiff();
+            PatchDiff sub = patch.buildDiff(bypassVisibility);
             if (sub != null) {
                 subs.add(sub);
             }
