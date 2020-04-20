@@ -21,6 +21,7 @@ import { themeVar } from '../../../Components/Theme';
 import { flex, grow, expandBoth } from '../../../css/classes';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
+import { wlog } from '../../../Helper/wegaslog';
 const innerButtonStyle = css({
   margin: '2px auto 2px auto',
   width: 'fit-content',
@@ -31,6 +32,7 @@ export interface PageContext {
   showBorders: boolean;
   showControls: boolean;
   isDragging: boolean;
+  pageIdPath: string[];
   setIsDragging: (dragMonitor: DragMonitor) => void;
   handles: {
     [path: string]: { jsx: JSX.Element; dom: React.RefObject<HTMLDivElement> };
@@ -41,18 +43,21 @@ export interface PageContext {
   onUpdate: (value: WegasComponent, path?: number[], patch?: boolean) => void;
 }
 
-export const pageCTX = React.createContext<PageContext>({
+const defaultPageCTX = {
   editMode: false,
   showBorders: false,
   showControls: true,
   isDragging: false,
+  pageIdPath: [],
   setIsDragging: noop,
   handles: {},
   onDrop: noop,
   onEdit: noop,
   onDelete: noop,
   onUpdate: noop,
-});
+};
+
+export const pageCTX = React.createContext<PageContext>(defaultPageCTX);
 
 interface PageEditorState {
   selectedPageId?: string;
@@ -525,6 +530,11 @@ export default function PageEditor() {
             showControls,
             showBorders: showBorders || (editMode && isAnythingDragged),
             isDragging: isAnythingDragged,
+            pageIdPath: selectedPageId
+              ? [selectedPageId]
+              : defaultPageId
+              ? [defaultPageId]
+              : [],
             setIsDragging: ({ handlerId, isDragging }: DragMonitor) =>
               handlerId != null &&
               setIsDragging(oid => ({ ...oid, [handlerId]: isDragging })),

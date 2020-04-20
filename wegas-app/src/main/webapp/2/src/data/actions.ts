@@ -55,6 +55,8 @@ export const ActionCreator = {
     schemaFN?: CustomSchemaFN;
     simpleFilter?: WegasClassNames;
   }) => createAction(ActionType.EDITOR_SET_VARIABLE_SCHEMA, data),
+  EDITOR_REGISTER_PAGE_LOADER: (data: { name: string; pageId: IScript }) =>
+    createAction(ActionType.EDITOR_REGISTER_PAGE_LOADER, data),
   // EDITOR_SET_VARIABLE_METHOD: (data: ClientMethodPayload) =>
   // createAction(ActionType.EDITOR_SET_SERVER_METHOD, data),
   VARIABLE_EDIT: variableEditAction(ActionType.VARIABLE_EDIT),

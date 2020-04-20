@@ -48,6 +48,7 @@ import { omit } from 'lodash-es';
 import { clientScriptEval, useScript } from '../../Hooks/useScript';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { LockAPI } from '../../../API/lock.api';
+import { ActionCreator } from '../../../data/actions';
 
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
@@ -197,7 +198,7 @@ interface WegasComponentOptionsAction {
 }
 
 interface OpenPageAction {
-  pageLoaderName: string;
+  pageLoaderName: IScript;
   pageId: IScript;
 }
 interface OpenURLAction {
@@ -350,12 +351,13 @@ interface WegasComponentActions {
 }
 
 const wegasComponentActions: WegasComponentActions = {
-  openPage: props => {
-    //TODO : Discuss that with Maxence
-    wlog(
-      'Need to change page state? What to priorize, initial script or click',
+  openPage: ({ pageLoaderName, pageId }) => {
+    store.dispatch(
+      ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
+        name: clientScriptEval<string>(pageLoaderName.content),
+        pageId,
+      }),
     );
-    wlog(props);
   },
   openUrl: props => {
     window.open(props.url);

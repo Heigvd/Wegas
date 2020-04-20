@@ -140,7 +140,7 @@ export const PAGE_LOADER_COMPONENT_TYPE = 'PageLoader';
 
 export interface PageLoaderComponentProps {
   name: string;
-  selectedPageId?: IScript;
+  initialSelectedPageId: IScript;
 }
 
 export type PageLoaderComponent = WegasComponent & {

@@ -17,7 +17,7 @@ export function deepDifferent<T>(a: T, b: T) {
   } else if (a == null || b == null) {
     return true;
   }
-  return !(JSON.stringify(a) === JSON.stringify(b));
+  return JSON.stringify(a) !== JSON.stringify(b);
 }
 
 type StoreType<S, A extends AnyAction> = Store<Readonly<S>, AnyAction> & {

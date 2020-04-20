@@ -94,6 +94,7 @@ export interface GlobalState extends EditingState {
       [name: string]: CustomSchemaFN;
     };
   };
+  pageLoaders: { [name: string]: IScript };
 }
 
 /**
@@ -290,6 +291,14 @@ const global: Reducer<Readonly<GlobalState>> = u(
         //         case ActionType.EDITOR_SET_VARIABLE_METHOD: {
         // return}
       }
+      case ActionType.EDITOR_REGISTER_PAGE_LOADER: {
+        debugger;
+        state.pageLoaders = {
+          ...state.pageLoaders,
+          [action.payload.name]: action.payload.pageId,
+        };
+        return;
+      }
       default:
         state.events = eventManagement(state, action);
         state.editing = editorManagement(state, action);
@@ -314,6 +323,7 @@ const global: Reducer<Readonly<GlobalState>> = u(
       unfiltered: [],
       views: {},
     },
+    pageLoaders: {},
   } as GlobalState,
 );
 export default global;
@@ -635,4 +645,13 @@ export function setSchema(
     schemaFN,
     simpleFilter,
   });
+}
+
+/**
+ * registerPageLoader - stores a script that returns a page id for every page loaders
+ * @param name
+ * @param pageId
+ */
+export function registerPageLoader(name: string, pageId: IScript) {
+  return ActionCreator.EDITOR_REGISTER_PAGE_LOADER({ name, pageId });
 }
