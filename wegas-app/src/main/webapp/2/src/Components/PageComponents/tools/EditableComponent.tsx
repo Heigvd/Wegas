@@ -47,6 +47,7 @@ import { Player } from '../../../data/selectors';
 import { omit } from 'lodash-es';
 import { clientScriptEval, useScript } from '../../Hooks/useScript';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
+import { LockAPI } from '../../../API/lock.api';
 
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
@@ -234,6 +235,7 @@ interface WegasComponentOptionsActions {
 
 interface WegasComponentActionsProperties {
   confirmClick?: string;
+  lock?: string;
 }
 const actionsChoices: HashListChoices = [
   {
@@ -327,6 +329,13 @@ const actionsChoices: HashListChoices = [
       schema: schemaProps.string('Confirmation message', true, 'Are you sure?'),
     },
   },
+  {
+    label: 'Lock',
+    value: {
+      prop: 'lock',
+      schema: schemaProps.string('Lock', true),
+    },
+  },
 ];
 
 interface WegasComponentActions {
@@ -394,10 +403,18 @@ interface NotificationUpgrade {
 }
 
 interface WegasComponentUpgrades {
+  tooltip: string;
   notification: NotificationUpgrade;
 }
 
 const upgradeChoices: HashListChoices = [
+  {
+    label: 'Tooltip',
+    value: {
+      prop: 'tooltip',
+      schema: schemaProps.string('Tooltip'),
+    },
+  },
   {
     label: 'Notification',
     value: {
@@ -683,10 +700,22 @@ export function useComponentEditorContainer(
                 // eslint-disable-next-line no-alert
                 confirm(options.actions.confirmClick)
               ) {
+                if (options.actions?.lock) {
+                  LockAPI.lockPlayer(options.actions?.lock)
+                    .then(res => {
+                      wlog(res);
+                      debugger;
+                    })
+                    .catch(res => {
+                      wlog(res);
+                      debugger;
+                    });
+                }
                 Object.entries(
                   omit(
                     options.actions,
                     'confirmClick',
+                    'lock',
                   ) as WegasComponentOptionsActions,
                 )
                   .sort(
@@ -703,6 +732,7 @@ export function useComponentEditorContainer(
               }
             }
           }}
+          tooltip={options?.upgrades?.tooltip}
         >
           {path.length > 0 && <EditHandle {...handleProps} />}
           <ErrorBoundary>{children}</ErrorBoundary>
@@ -801,8 +831,6 @@ export function EditableComponent({
       content = wegasChildren;
     }
   }
-
-  wlog({ isDragging, size: content.length });
 
   return children(
     content,

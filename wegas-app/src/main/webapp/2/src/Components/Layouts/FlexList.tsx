@@ -97,6 +97,10 @@ export interface FlexItemProps extends FlexItemFlexProps {
    * style - the style to apply to the item (always prefer className over style to avoid messing with original behaviour of the item)
    */
   style?: React.CSSProperties;
+  /**
+   * tooltip - A text that appear when the cursor is over the component
+   */
+  tooltip?: string;
 }
 
 export const FlexItem = React.forwardRef<
@@ -113,22 +117,11 @@ export const FlexItem = React.forwardRef<
       onClick,
       className,
       style,
+      tooltip,
       children,
     },
     ref,
   ) => (
-    // export function FlexItem({
-    //   order,
-    //   alignSelf,
-    //   flexGrow,
-    //   flexShrink,
-    //   flexBasis,
-    //   onClick,
-    //   className,
-    //   style,
-    //   children,
-    // }: React.PropsWithChildren<FlexItemProps>) {
-    //   return (
     <div
       ref={ref}
       onClick={onClick}
@@ -144,6 +137,7 @@ export const FlexItem = React.forwardRef<
         flexBasis,
         ...style,
       }}
+      title={tooltip}
     >
       {children}
     </div>
