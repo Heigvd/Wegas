@@ -291,14 +291,12 @@ const global: Reducer<Readonly<GlobalState>> = u(
         //         case ActionType.EDITOR_SET_VARIABLE_METHOD: {
         // return}
       }
-      case ActionType.EDITOR_REGISTER_PAGE_LOADER: {
-        debugger;
+      case ActionType.EDITOR_REGISTER_PAGE_LOADER:
         state.pageLoaders = {
           ...state.pageLoaders,
           [action.payload.name]: action.payload.pageId,
         };
         return;
-      }
       default:
         state.events = eventManagement(state, action);
         state.editing = editorManagement(state, action);
