@@ -62,19 +62,51 @@ export const childHighlightCSS = {
   borderColor: themeVar.searchColor,
 };
 
-export const childHighlightStyle = css({
+const childHighlightStyle = css({
   '&>*>*': childHighlightCSS,
+});
+
+const dropzoneBackground: (
+  angle?: number,
+  color?: string,
+) => React.CSSProperties = (angle = 0, color = themeVar.primaryHoverColor) => ({
+  backgroundImage: `linear-gradient(${
+    (225 + angle) % 360
+  }deg, transparent, ${color} 10px, transparent 5px), linear-gradient(${
+    (315 + angle) % 360
+  }deg, transparent, ${color} 10px, transparent 5px)`,
+  backgroundPositionY: '15px',
+  backgroundSize: '40px 40px',
+  zIndex: 1000,
+});
+const childDropzoneHorizontalStyle = css({
+  '&>*>*>.component-dropzone': {
+    maxWidth: '30px',
+    width: '30%',
+    height: '100%',
+    ...dropzoneBackground(),
+  },
+  '&>*>*>.component-dropzone-last': {
+    right: 0,
+    ...dropzoneBackground(180),
+  },
+});
+
+const childDropzoneVerticalStyle = css({
+  '&>*>*>.component-dropzone': {
+    maxHeight: '30px',
+    width: '100%',
+    height: '30%',
+    ...dropzoneBackground(90),
+  },
+  '&>*>*>.component-dropzone-last': {
+    bottom: 0,
+    ...dropzoneBackground(270),
+  },
 });
 
 const handleControlStyle = css({
   textAlign: 'center',
-  transition: 'all 0.5s',
-  ':hover': {
-    borderStyle: 'solid',
-    borderWidth: '1px',
-    borderColor: themeVar.primaryHoverColor,
-    transition: 'all 0s',
-  },
   '&>.wegas-component-handle': {
     visibility: 'hidden',
     opacity: 0.0,
@@ -83,6 +115,16 @@ const handleControlStyle = css({
   ':hover>.wegas-component-handle': {
     visibility: 'unset',
     opacity: 0.8,
+    transition: 'all 0s',
+  },
+});
+
+const handleControlHoverStyle = css({
+  transition: 'all 0.5s',
+  ':hover': {
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    borderColor: themeVar.primaryHoverColor,
     transition: 'all 0s',
   },
 });
@@ -100,13 +142,7 @@ export const expandEditStyle = css({
   borderColor: themeVar.disabledColor,
 });
 
-const editItemStyle = css({
-  width: '50px',
-  height: '50px',
-});
-
 const emptyListStyle = css({
-  // display: 'list-item',
   textAlign: 'center',
   borderStyle: 'solid',
   borderWidth: '1px',
@@ -115,6 +151,26 @@ const emptyListStyle = css({
 export const opaciSchnaps = css({
   opacity: '0 !important',
 });
+
+// const dropZoneStyle = css({
+//   maxWidth: '30px',
+//   width: '30%',
+//   height: '100%',
+// });
+
+// const dropZoneHorizontalStyle = css({
+//   position: 'absolute',
+//   maxWidth: '30px',
+//   width: '30%',
+//   height: '100%',
+// });
+
+// const dropZoneVerticalStyle = css({
+//   position: 'absolute',
+//   maxWidth: '30px',
+//   width: '30%',
+//   height: '100%',
+// });
 
 export interface EditorHandleProps {
   componentName?: string;
@@ -456,11 +512,11 @@ const notificationStyle = css({
 });
 
 const blinkAnimation = keyframes(`
-50%{color: ${themeVar.warningColor};}
+50%{opacity: 0.0;}
 `);
 
 const blinkStyle = css(`
-  animation: ${blinkAnimation} 0.7s step-end infinite;
+  animation: ${blinkAnimation} 1.0s linear infinite;
 `);
 
 function NotificationComponent({
@@ -480,7 +536,8 @@ function NotificationComponent({
           const { width, height } = container.getBoundingClientRect();
           const top = -(width / 4) - 1;
           const right = -(height / 4) - 1;
-          container.className += ' ' + css({ top, right });
+          container.style.setProperty('right', `${right}px`);
+          container.style.setProperty('top', `${top}px`);
         }
       }}
       className={cx(notificationStyle, { [blinkStyle]: blink })}
@@ -497,6 +554,13 @@ export interface ComponentContainerProps
     actions?: WegasComponentOptionsActions & WegasComponentActionsProperties;
     upgrades?: WegasComponentUpgrades;
   };
+  /**
+   * vertical - the component orientation
+   */
+  vertical?: boolean;
+  /**
+   * handleProps - optional props for the edit handle
+   */
   handleProps?: EditorHandleProps;
   /**
    * className - the class to apply to the item
@@ -513,6 +577,7 @@ const defaultComponentContainerProps: ComponentContainerProps = {
   handleProps: {},
   className: '',
   style: {},
+  vertical: false,
 };
 
 export const componentContainerWegasPropsKeys = Object.keys(
@@ -522,20 +587,20 @@ export const componentContainerWegasPropsKeys = Object.keys(
 export function useComponentEditorContainer(
   type: string,
   path: number[],
-  pageContext: PageContext,
-  containerRef?: DragElementWrapper<{}>,
+  // pageContext: PageContext,
 ) {
-  const {
-    editMode,
-    showControls,
-    // setIsDragging,
-    // isStacking,
-    // setIsStacking,
-    handles,
-    onEdit,
-    onDelete,
-  } = pageContext;
-  const [, drag, preview] = useComponentDrag(type, path);
+  // const {
+  //   editMode,
+  //   showControls,
+  //   // setIsDragging,
+  //   // isStacking,
+  //   // setIsStacking,
+  //   isDragging,
+  //   handles,
+  //   onEdit,
+  //   onDelete,
+  //   onDrop,
+  // } = pageContext;
 
   function EditHandle({
     componentName,
@@ -544,8 +609,16 @@ export function useComponentEditorContainer(
   }: EditorHandleProps) {
     const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
     const handleRef = React.createRef<HTMLDivElement>();
+    const {
+      onEdit,
+      onDelete,
+      handles,
+      editMode,
+      showControls,
+    } = React.useContext(pageCTX);
 
     const HandleContent = React.forwardRef<HTMLDivElement>((_, ref) => {
+      const [, drag, preview] = useComponentDrag(type, path);
       return (
         <div
           ref={ref}
@@ -680,20 +753,31 @@ export function useComponentEditorContainer(
     showBorders,
     className,
     style,
+    vertical,
   }: React.PropsWithChildren<ComponentContainerProps>) {
+    const { onDrop, editMode, isDragging } = React.useContext(pageCTX);
+    const containerPath = [...path];
+    const itemPath = containerPath.pop();
+    const isNotFirstComponent = path.length > 0;
+
+    const [{ isOver }, dropZone] = useDndComponentDrop();
+
     return (
       <>
-        <DragPreviewImage
+        {/* <DragPreviewImage
           connect={preview}
           src={require('../../../pictures/react.png').default}
-        />
+        /> */}
         <FlexItem
-          ref={containerRef}
+          ref={dropZone}
           {...options?.layout}
           className={
-            cx(handleControlStyle, {
+            cx(handleControlStyle, flex, {
               [layoutHighlightStyle]: showBorders,
               [childHighlightStyle]: showBorders,
+              [handleControlHoverStyle]: editMode,
+              [childDropzoneHorizontalStyle]: !vertical,
+              [childDropzoneVerticalStyle]: vertical,
             }) + (className ? ' ' + className : '')
           }
           style={style}
@@ -739,10 +823,33 @@ export function useComponentEditorContainer(
           }}
           tooltip={options?.upgrades?.tooltip}
         >
+          {editMode && isNotFirstComponent && (
+            <ComponentDropZone
+              onDrop={dndComponent =>
+                onDrop(dndComponent, containerPath, itemPath)
+              }
+              // show={isOver}
+              show
+            />
+          )}
           {path.length > 0 && <EditHandle {...handleProps} />}
           <ErrorBoundary>{children}</ErrorBoundary>
           {options?.upgrades?.notification && (
             <NotificationComponent {...options.upgrades.notification} />
+          )}
+          {editMode && isNotFirstComponent && (
+            <ComponentDropZone
+              onDrop={dndComponent =>
+                onDrop(
+                  dndComponent,
+                  containerPath,
+                  itemPath != null ? itemPath + 1 : itemPath,
+                )
+              }
+              // show={isOver}
+              show
+              last
+            />
           )}
         </FlexItem>
       </>
@@ -752,23 +859,24 @@ export function useComponentEditorContainer(
 
 interface ComponentDropZoneProps {
   onDrop?: (dndComponnent: DnDComponent) => void;
+  show?: boolean;
+  last?: boolean;
 }
 
-function ComponentDropZone({ onDrop }: ComponentDropZoneProps) {
+function ComponentDropZone({ onDrop, show, last }: ComponentDropZoneProps) {
   const [{ isOverCurrent }, dropZone] = useDndComponentDrop(onDrop);
   return (
     <div
       ref={dropZone}
-      className={cx(
-        dropZoneClass(isOverCurrent),
-        editItemStyle,
-        flex,
-        flexColumn,
-        flexDistribute,
-      )}
-    >
-      <div>Drop component here</div>
-    </div>
+      className={
+        // dropZoneClass(isOverCurrent) +
+        ' component-dropzone' + (last ? ' component-dropzone-last' : '')
+      }
+      style={{
+        visibility: show ? 'visible' : 'collapse',
+        position: 'absolute',
+      }}
+    />
   );
 }
 
@@ -796,36 +904,13 @@ export function EditableComponent({
   path,
   uneditable,
 }: EditableComponentProps) {
-  const pageContext = React.useContext(pageCTX);
+  const { editMode: edit, showBorders } = React.useContext(pageCTX);
+  const ComponentContainer = useComponentEditorContainer(componentName, path);
 
-  const ComponentContainer = useComponentEditorContainer(
-    componentName,
-    path,
-    pageContext,
-  );
-
-  const { editMode: edit, onDrop, showBorders, isDragging } = pageContext;
   const editMode = edit && !uneditable;
   let content: JSX.Element[] = [];
   if (wegasChildren !== undefined) {
-    if (editMode && isDragging) {
-      content = wegasChildren.reduce(
-        (o, c, i) => [
-          ...o,
-          c,
-          <ComponentDropZone
-            key={i + 'AFTER'}
-            onDrop={c => onDrop && onDrop(c, path, i + 1)}
-          />,
-        ],
-        [
-          <ComponentDropZone
-            key="FIRST"
-            onDrop={c => onDrop && onDrop(c, path, 0)}
-          />,
-        ],
-      );
-    } else if (editMode && wegasChildren.length === 0) {
+    if (editMode && wegasChildren.length === 0) {
       content = [
         <div key="NO-CHILD" className={cx(emptyListStyle, grow)}>
           The layout is empty

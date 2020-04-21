@@ -4,9 +4,14 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { css } from 'emotion';
 import { themeVar } from '../Theme';
 
+// export const dropZoneFocusCss = {
+//   background:
+//     'repeating-Linear-gradient( 45deg, #fff, #fff 10px, #eee 10px, #eee 20px);',
+//   zIndex: 1000,
+// };
+
 export const dropZoneFocusCss = {
-  background:
-    'repeating-Linear-gradient( 45deg, #fff, #fff 10px, #eee 10px, #eee 20px);',
+  background: `repeating-Linear-gradient( 45deg, transparent, transparent 10px, ${themeVar.primaryHoverColor} 10px, ${themeVar.primaryHoverColor} 20px);`,
   zIndex: 1000,
 };
 

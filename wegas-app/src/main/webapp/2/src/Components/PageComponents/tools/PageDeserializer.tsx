@@ -27,7 +27,7 @@ export function PageDeserializer({
             <PageDeserializer
               key={i}
               json={cjson}
-              path={realPath.concat([i])}
+              path={[...realPath, i]}
               uneditable={uneditable}
             />
           )),

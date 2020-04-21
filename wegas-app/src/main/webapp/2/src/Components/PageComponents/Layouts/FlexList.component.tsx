@@ -64,6 +64,11 @@ function PlayerFlexList(props: PlayerFlexListProps) {
       {...containerProps}
       handleProps={handleProps}
       showBorders={showLayout /*|| (editMode && canDrop)*/}
+      vertical={
+        childProps.listLayout &&
+        (childProps.listLayout.flexDirection === 'column' ||
+          childProps.listLayout.flexDirection === 'column-reverse')
+      }
     >
       <FlexList
         {...childProps}

@@ -527,7 +527,7 @@ export default function PageEditor() {
           value={{
             editMode,
             showControls,
-            showBorders: showBorders || (editMode && isAnythingDragged),
+            showBorders: showBorders /*|| (editMode && isAnythingDragged)*/,
             isDragging: isAnythingDragged,
             pageIdPath: selectedPageId
               ? [selectedPageId]
