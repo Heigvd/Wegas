@@ -21,7 +21,6 @@ import { themeVar } from '../../../Components/Theme';
 import { flex, grow, expandBoth } from '../../../css/classes';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
-import { wlog } from '../../../Helper/wegaslog';
 const innerButtonStyle = css({
   margin: '2px auto 2px auto',
   width: 'fit-content',
@@ -43,7 +42,7 @@ export interface PageContext {
   onUpdate: (value: WegasComponent, path?: number[], patch?: boolean) => void;
 }
 
-const defaultPageCTX = {
+const defaultPageCTX: PageContext = {
   editMode: false,
   showBorders: false,
   showControls: true,

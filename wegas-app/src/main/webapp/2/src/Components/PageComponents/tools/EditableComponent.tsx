@@ -47,7 +47,7 @@ import { Player } from '../../../data/selectors';
 import { omit } from 'lodash-es';
 import { clientScriptEval, useScript } from '../../Hooks/useScript';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
-import { LockAPI } from '../../../API/lock.api';
+// import { LockAPI } from '../../../API/lock.api';
 import { ActionCreator } from '../../../data/actions';
 
 export const layoutHighlightStyle = css({
@@ -68,6 +68,13 @@ export const childHighlightStyle = css({
 
 const handleControlStyle = css({
   textAlign: 'center',
+  transition: 'all 0.5s',
+  ':hover': {
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    borderColor: themeVar.primaryHoverColor,
+    transition: 'all 0s',
+  },
   '&>.wegas-component-handle': {
     visibility: 'hidden',
     opacity: 0.0,
@@ -94,8 +101,6 @@ export const expandEditStyle = css({
 });
 
 const editItemStyle = css({
-  // display: 'list-item',
-  //marginLeft: '10px',
   width: '50px',
   height: '50px',
 });
@@ -524,15 +529,13 @@ export function useComponentEditorContainer(
     editMode,
     showControls,
     // setIsDragging,
+    // isStacking,
+    // setIsStacking,
     handles,
     onEdit,
     onDelete,
   } = pageContext;
-  const [, /*{ isDragging }*/ drag, preview] = useComponentDrag(type, path);
-  // useDeepChanges(dragMonitor, setIsDragging);
-  // useIsDragging(dragMonitor);
-  // wlog(dragMonitor);
-  // setIsDragging(isDragging);
+  const [, drag, preview] = useComponentDrag(type, path);
 
   function EditHandle({
     componentName,
@@ -581,12 +584,14 @@ export function useComponentEditorContainer(
     return editMode && showControls ? (
       <div
         style={{
+          zIndex: 1000,
           position: 'absolute',
           top: '-30px',
           left: '-30px',
         }}
         className={'wegas-component-handle ' + (className ? className : '')}
-        onMouseEnter={() => {
+        onMouseEnter={e => {
+          e.stopPropagation();
           const computedHandles: JSX.Element[] = [];
           const currentHandle = handles[flattenPath(path)];
           if (currentHandle?.dom.current) {
@@ -653,9 +658,11 @@ export function useComponentEditorContainer(
           }
           setStackedHandles(computedHandles);
         }}
-        onMouseLeave={() => setStackedHandles(undefined)}
+        onMouseLeave={() => {
+          setStackedHandles(undefined);
+        }}
       >
-        {stackedHandles ? (
+        {stackedHandles && stackedHandles.length > 0 ? (
           stackedHandles.map((v, i) => (
             <React.Fragment key={i}>{v}</React.Fragment>
           ))
@@ -674,10 +681,6 @@ export function useComponentEditorContainer(
     className,
     style,
   }: React.PropsWithChildren<ComponentContainerProps>) {
-    // const { editMode } = React.useContext(pageCTX);
-    // const [{ canDrop }] = useDndComponentDrop();
-    // const displayBorders = showBorders || (editMode && canDrop);
-
     return (
       <>
         <DragPreviewImage
@@ -703,15 +706,15 @@ export function useComponentEditorContainer(
                 confirm(options.actions.confirmClick)
               ) {
                 if (options.actions?.lock) {
-                  LockAPI.lockPlayer(options.actions?.lock)
-                    .then(res => {
-                      wlog(res);
-                      debugger;
-                    })
-                    .catch(res => {
-                      wlog(res);
-                      debugger;
-                    });
+                  // LockAPI.lockPlayer(options.actions?.lock)
+                  //   .then(res => {
+                  //     wlog(res);
+                  //     debugger;
+                  //   })
+                  //   .catch(res => {
+                  //     wlog(res);
+                  //     debugger;
+                  //   });
                 }
                 Object.entries(
                   omit(
@@ -799,7 +802,6 @@ export function EditableComponent({
     componentName,
     path,
     pageContext,
-    // dropZone,
   );
 
   const { editMode: edit, onDrop, showBorders, isDragging } = pageContext;

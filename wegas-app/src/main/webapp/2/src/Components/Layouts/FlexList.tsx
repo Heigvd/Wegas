@@ -90,6 +90,14 @@ export interface FlexItemProps extends FlexItemFlexProps {
    */
   onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   /**
+   * onMouseEnter - triggers when the mouse enters the component
+   */
+  onMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  /**
+   * onMouseLeave - triggers when the mouse leaves the component
+   */
+  onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  /**
    * className - the class to apply to the item
    */
   className?: string;
@@ -115,6 +123,8 @@ export const FlexItem = React.forwardRef<
       flexShrink,
       flexBasis,
       onClick,
+      onMouseEnter,
+      onMouseLeave,
       className,
       style,
       tooltip,
@@ -125,6 +135,8 @@ export const FlexItem = React.forwardRef<
     <div
       ref={ref}
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className={className}
       style={{
         cursor: onClick ? 'pointer' : 'initial',

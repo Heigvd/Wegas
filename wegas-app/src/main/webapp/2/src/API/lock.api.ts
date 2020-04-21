@@ -3,27 +3,16 @@ import { rest } from './rest';
 /*
 GET     /Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}{sep: /?}Game/{gameId : ([1-9][0-9]*)?}{sep2: /?}Team/{teamId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/Locks
 GET     /Wegas/rest/Utils/Locks
-GET     /Wegas/rest/Utils/ReleaseLock/{token: .*}/{audience: .*}
 */
 
 // "/Team/" + Y.Wegas.Facade.Game.get("currentTeamId") + "/Player/" + Y.Wegas.Facade.Game.get("currentPlayerId") + "/Locks"
-
-const GAMEMODEL_BASE = (gameModelId?: number) =>
-  `GameModel/${
-    gameModelId === undefined
-      ? GameModel != null
-        ? GameModel.selectCurrent().id!
-        : CurrentGM.id!
-      : gameModelId
-  }/`;
 
 export const LockAPIFactory = (gameModelId?: number) => {
   return {
     /**
      * get default page
      */
-    lockPlayer(
-      token: string,
+    getLocks(
       gameId?: number,
       teamId?: number,
       playerId?: number,
