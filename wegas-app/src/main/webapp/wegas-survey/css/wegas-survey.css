@@ -460,7 +460,13 @@
     margin: 10px auto;
 }
 
-.wegas-survey-orchestrator .search-external-surveys button {
+.wegas-survey-orchestrator .survey-mixer .close {
+    float: right;
+    font-size: 14px;
+    border: 1px solid lightgray;
+}
+
+.wegas-survey-orchestrator .survey-mixer .search-external-surveys button {
     border-radius: 50%;
     margin-left: 5px;
     border: 1px solid lightgray;
@@ -468,32 +474,39 @@
     height: 30px;
 }
 
-.wegas-survey-orchestrator .external-surveys-titlebar .title {
+.wegas-survey-orchestrator .survey-mixer .external-surveys .title {
+    margin-top: 20px;
+    margin-bottom: 0;
+}
+
+.wegas-survey-orchestrator .survey-mixer .external-surveys .title.standard {
+    margin-top: 0px;
+}
+
+.wegas-survey-orchestrator .survey-mixer .title {
     font-weight: bold;
     font-size: 150%;
     display: inline-block;
+    margin-bottom: 15px;
 }
 
-.wegas-survey-orchestrator .external-surveys-titlebar .close {
-    float: right;
-    font-size: 14px;
-    border: 1px solid lightgray;
+.wegas-survey-orchestrator .survey-mixer .external-surveys .list:not(:empty) {
+    margin-left: 15px;
+    text-align: left;
+    color: #666;
 }
 
-.wegas-survey-orchestrator .external-surveys-list:not(:empty) {
-    margin-top: 15px;
-}
-
-.wegas-survey-orchestrator .external-surveys-list .do-import {
+.wegas-survey-orchestrator .survey-mixer .do-import {
     text-align: right;
 }
 
-.wegas-survey-orchestrator .external-surveys-list .do-import button {
+.wegas-survey-orchestrator .survey-mixer .do-import button {
     border: 1px solid lightgray;
     border-radius: 4px;
+    color: black;
 }
 
-.wegas-survey-orchestrator .external-surveys-list .do-import button:after {
+.wegas-survey-orchestrator .survey-mixer .do-import button:after {
     content: '\f090';
     font-family: FontAwesome;
     display: inline-block;
@@ -503,45 +516,43 @@
     color: #009900;
 }
 
-.wegas-survey-orchestrator .external-surveys-list .game-name {
+.wegas-survey-orchestrator .survey-mixer .external-surveys .list .game-name {
     margin-top: 20px;
     font-weight: bold;
     width: max-content;
+    color: black;
 }
 
-.wegas-survey-orchestrator .external-surveys-list .game-details {
+.wegas-survey-orchestrator .survey-mixer .external-surveys .list .game-details {
     font-weight: normal;
     margin-left: 6px;
     color: #666;
 }
 
-.wegas-survey-orchestrator .external-surveys-list .importable-variable {
+.wegas-survey-orchestrator .survey-mixer .external-surveys .list .importable-variable {
     margin-left: 10px;
     cursor: pointer;
 }
 
-.wegas-survey-orchestrator .external-surveys-list .import-success {
+.wegas-survey-orchestrator .survey-mixer .import-monitoring .import-success {
     color: #009900;
 }
 
-.wegas-survey-orchestrator .external-surveys-list .import-success:before {
+.wegas-survey-orchestrator .survey-mixer .import-monitoring .import-success:before {
     content: '✔';
     margin: 0 6px;
 }
 
-.wegas-survey-orchestrator .external-surveys-list .import-failure {
+.wegas-survey-orchestrator .survey-mixer .import-monitoring .import-failure {
     color: red;
 }
 
-.wegas-survey-orchestrator .external-surveys-list .import-failure:before {
+.wegas-survey-orchestrator .survey-mixer .import-monitoring .import-failure:before {
     content: '✘';
     margin: 0 6px;
 }
 
-.wegas-survey-orchestrator .external-surveys-list .import-terminated {
-    margin-top: 10px;
-    font-weight: bold;
-}
+
 
 .wegas-survey-orchestrator .selected-survey-list {
     border-top: 1px solid gray;
