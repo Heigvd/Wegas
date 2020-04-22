@@ -4,18 +4,15 @@
     <parent>
         <artifactId>wegas-project</artifactId>
         <groupId>com.wegas</groupId>
-        <version>4.0-SNAPSHOT</version>
+        <version>4.1-SNAPSHOT</version>
     </parent>
 
     <groupId>com.wegas</groupId>
     <artifactId>wenerator-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>4.0-SNAPSHOT</version>
+    <version>4.1-SNAPSHOT</version>
 
     <name>wenerator-maven-plugin Maven Plugin</name>
-
-    <!-- FIXME change it to the project's website 
-    <url>http://www.example.com</url>-->
 
     <prerequisites>
         <maven>${maven.version}</maven>
@@ -23,8 +20,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>${jdk.version}</maven.compiler.source>
+        <maven.compiler.target>${jdk.version}</maven.compiler.target>
         <maven.version>3.5.2</maven.version>
         <jackson.scope>compile</jackson.scope>
         <eclipselink.scope>compile</eclipselink.scope>
@@ -102,7 +99,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -175,6 +171,15 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -182,6 +182,8 @@ public abstract class AbstractArquillianTestMinimal {
      */
     @Before
     public void init() {
+        logger.info("Start TEST {}", testName.getMethodName());
+
         this.startTime = System.currentTimeMillis();
 
         Ini ini = Ini.fromResourcePath("classpath:shiro.ini");

@@ -9,7 +9,7 @@
 
     <groupId>com.wegas</groupId>
     <artifactId>wegas-project</artifactId>
-    <version>4.0-SNAPSHOT</version>
+    <version>4.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>wegas-core</module>
@@ -84,7 +84,7 @@
     <properties>
         <maven.build.timestamp.format>MMddHHmm</maven.build.timestamp.format>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
-        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
+        <!--<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <build.optimize>false</build.optimize>
 
@@ -94,10 +94,11 @@
         <wegas.clientErrorLogging>false</wegas.clientErrorLogging>
         <wegas.useYUICDN>false</wegas.useYUICDN>
 
+        <jdk.version>11</jdk.version>
+
         <jakarta.version>8.0.0</jakarta.version>
 
         <shiro.version>1.5.2</shiro.version>
-        <jdk.version>1.8</jdk.version>
         <payara.version>5.201</payara.version>
         <payara.micro.version>5.201.albasim-p1</payara.micro.version>
         <payara-api.version>5.201</payara-api.version>
@@ -527,9 +528,9 @@
                         <optimize>${build.optimize}</optimize>
                         <source>${jdk.version}</source>
                         <target>${jdk.version}</target>
-                        <compilerArguments>
+                        <!--<compilerArgumentslive:.cid.f66c55a116cd64c2>
                             <endorseddirs>${endorsed.dir}</endorseddirs>
-                        </compilerArguments>
+                        </compilerArguments>-->
                         <showDeprecation>true</showDeprecation>
                         <encoding>${project.build.sourceEncoding}</encoding>
                     </configuration>
@@ -635,7 +636,7 @@
                     <configuration>
                         <!-- There is an issue with cobertura and jdk7,
                         that forces us to run  in compatiblity mode.-->
-                        <argLine>-Xms800m -Xmx800m ${jacoco.surefireArgLine}</argLine>
+                        <argLine>-Xms800m -Xmx800m ${jacoco.surefireArgLine} --add-modules java.se --add-opens=java.base/jdk.internal.loader=ALL-UNNAMED --add-opens=jdk.management/com.sun.management.internal=ALL-UNNAMED --add-exports=java.base/jdk.internal.ref=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.jar=ALL-UNNAMED --add-opens=java.naming/javax.naming.spi=ALL-UNNAMED --add-opens=java.logging/java.util.logging=ALL-UNNAMED --add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED --add-opens=java.management/sun.management=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED</argLine>
                         <forkCount>1</forkCount>
                         <reuseForks>true</reuseForks>
                         <classpathDependencyExcludes>
@@ -795,8 +796,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
                 </configuration>
             </plugin>
 
@@ -975,6 +976,7 @@
     </reporting>
 
     <repositories>
+        <!-- Try Maven central first, not last, which happens when omitted here -->
         <repository>
             <snapshots>
                 <enabled>false</enabled>

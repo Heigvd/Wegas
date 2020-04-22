@@ -5,7 +5,7 @@
     <parent>
         <artifactId>wegas-project</artifactId>
         <groupId>com.wegas</groupId>
-        <version>4.0-SNAPSHOT</version>
+        <version>4.1-SNAPSHOT</version>
     </parent>
 
     <groupId>com.wegas</groupId>
@@ -382,8 +382,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
                     <!-- Using nashorn internal -->
                     <parameters>true</parameters>
                     <compilerArgument>-XDignore.symbol.file</compilerArgument>

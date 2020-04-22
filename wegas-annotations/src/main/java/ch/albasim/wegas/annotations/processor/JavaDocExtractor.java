@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
@@ -34,7 +33,7 @@ import javax.tools.StandardLocation;
     "ch.albasim.wegas.annotations.WegasExtraProperty",
     "ch.albasim.wegas.annotations.Scriptable"
 })*/
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_11)
 public class JavaDocExtractor extends AbstractProcessor {
 
     private Map<String, ClassDoc> data = new HashMap<>();
