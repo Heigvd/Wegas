@@ -22,14 +22,16 @@ const innerButtonStyle = css({
   width: 'fit-content',
 });
 
+export interface Handles {
+  [path: string]: { jsx: JSX.Element; dom: React.RefObject<HTMLDivElement> };
+}
+
 export interface PageContext {
   editMode: boolean;
   showBorders: boolean;
   showControls: boolean;
   pageIdPath: string[];
-  handles: {
-    [path: string]: { jsx: JSX.Element; dom: React.RefObject<HTMLDivElement> };
-  };
+  handles: Handles;
   onDrop: (dndComponent: DnDComponent, path: number[], index?: number) => void;
   onDelete: (path: number[]) => void;
   onEdit: (path: number[]) => void;

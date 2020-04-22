@@ -7,7 +7,7 @@ import {
   useComponentDrag,
 } from '../../../Editor/Components/Page/ComponentPalette';
 import { useDrop, DropTargetMonitor, DragElementWrapper } from 'react-dnd';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import { pageCTX, Handles } from '../../../Editor/Components/Page/PageEditor';
 import { themeVar } from '../../Theme';
 import {
   flex,
@@ -88,7 +88,7 @@ const handleControlStyle = css({
   ':hover>.wegas-component-handle': {
     visibility: 'unset',
     opacity: 0.8,
-    transition: 'all 0s',
+    transition: 'all 0.5s',
   },
 });
 
@@ -109,46 +109,17 @@ const handleContentStyle = css({
   backgroundColor: themeVar.primaryHoverColor,
 });
 
-export const expandEditStyle = css({
-  borderStyle: 'solid',
-  borderWidth: '30px',
-  borderColor: themeVar.disabledColor,
-});
-
 const emptyListStyle = css({
   textAlign: 'center',
   borderStyle: 'solid',
   borderWidth: '1px',
 });
 
-export const opaciSchnaps = css({
-  opacity: '0 !important',
-});
-
-// const dropZoneStyle = css({
-//   maxWidth: '30px',
-//   width: '30%',
-//   height: '100%',
-// });
-
-// const dropZoneHorizontalStyle = css({
-//   position: 'absolute',
-//   maxWidth: '30px',
-//   width: '30%',
-//   height: '100%',
-// });
-
-// const dropZoneVerticalStyle = css({
-//   position: 'absolute',
-//   maxWidth: '30px',
-//   width: '30%',
-//   height: '100%',
-// });
-
 export interface EditorHandleProps {
   componentName?: string;
   className?: string;
   togglerProps?: TogglerProps;
+  stackedHandles?: JSX.Element[];
 }
 
 export interface PageComponentMandatoryProps extends FlexItemProps {
@@ -201,7 +172,7 @@ const defaultMandatoryProps: PageComponentMandatoryProps = {
 
 export const defaultMandatoryKeys = Object.keys(defaultMandatoryProps);
 
-export function useDndComponentDrop(
+function useDndComponentDrop(
   onDrop?: (dndComponnent: DnDComponent) => void,
 ): [
   {
@@ -520,6 +491,63 @@ function NotificationComponent({
   ) : null;
 }
 
+function computeHandles(handles: Handles, path: number[]) {
+  const computedHandles: JSX.Element[] = [];
+  const currentHandle = handles[flattenPath(path)];
+  if (currentHandle?.dom.current) {
+    const {
+      x: cx,
+      y: cy,
+      width: cw,
+      height: ch,
+    } = currentHandle.dom.current.getBoundingClientRect();
+    const [A1, B1, C1, D1] = [
+      { x: cx, y: cy },
+      { x: cx, y: cy + ch },
+      { x: cx + cw, y: cy + ch },
+      { x: cx + cw, y: cy },
+    ];
+    computedHandles.push(currentHandle.jsx);
+    const trimmedPath = path.slice(0, -1);
+    visitPath(trimmedPath, visitedPath => {
+      const component = handles[flattenPath(visitedPath)];
+      if (component?.dom.current) {
+        const {
+          x,
+          y,
+          width: w,
+          height: h,
+        } = component.dom.current.getBoundingClientRect();
+        const [A2, B2, C2, D2] = [
+          { x: x, y: y },
+          { x: x, y: y + h },
+          { x: x + w, y: y + h },
+          { x: x + w, y: y },
+        ];
+        const [A1in, B1in, C1in, D1in] = [
+          checkIfInsideRectangle(A2, C2, A1),
+          checkIfInsideRectangle(A2, C2, B1),
+          checkIfInsideRectangle(A2, C2, C1),
+          checkIfInsideRectangle(A2, C2, D1),
+        ];
+        const [A2in, B2in, C2in, D2in] = [
+          checkIfInsideRectangle(A1, C1, A2),
+          checkIfInsideRectangle(A1, C1, B2),
+          checkIfInsideRectangle(A1, C1, C2),
+          checkIfInsideRectangle(A1, C1, D2),
+        ];
+        if (A1in || B1in || C1in || D1in || A2in || B2in || C2in || D2in) {
+          component.dom.current.style.setProperty('opacity', '0.0');
+          computedHandles.splice(0, 0, component.jsx);
+        } else {
+          component.dom.current.style.setProperty('opacity', null);
+        }
+      }
+    });
+  }
+  return computedHandles;
+}
+
 export interface ComponentContainerProps
   extends Omit<PageComponentMandatoryProps, 'ComponentContainer'> {
   options?: {
@@ -562,8 +590,8 @@ export function useComponentEditorContainer(type: string, path: number[]) {
     componentName,
     className,
     togglerProps,
+    stackedHandles,
   }: EditorHandleProps) {
-    const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
     const handleRef = React.createRef<HTMLDivElement>();
     const {
       onEdit,
@@ -608,8 +636,8 @@ export function useComponentEditorContainer(type: string, path: number[]) {
         </div>
       );
     });
-
     handles[flattenPath(path)] = { jsx: <HandleContent />, dom: handleRef };
+
     return editMode && showControls ? (
       <div
         style={{
@@ -619,77 +647,6 @@ export function useComponentEditorContainer(type: string, path: number[]) {
           left: '-30px',
         }}
         className={'wegas-component-handle ' + (className ? className : '')}
-        onMouseEnter={e => {
-          e.stopPropagation();
-          const computedHandles: JSX.Element[] = [];
-          const currentHandle = handles[flattenPath(path)];
-          if (currentHandle?.dom.current) {
-            const {
-              x: cx,
-              y: cy,
-              width: cw,
-              height: ch,
-            } = currentHandle.dom.current.getBoundingClientRect();
-            const [A1, B1, C1, D1] = [
-              { x: cx, y: cy },
-              { x: cx, y: cy + ch },
-              { x: cx + cw, y: cy + ch },
-              { x: cx + cw, y: cy },
-            ];
-            computedHandles.push(currentHandle.jsx);
-            const trimmedPath = path.slice(0, -1);
-            visitPath(trimmedPath, visitedPath => {
-              const component = handles[flattenPath(visitedPath)];
-              if (component?.dom.current) {
-                const {
-                  x,
-                  y,
-                  width: w,
-                  height: h,
-                } = component.dom.current.getBoundingClientRect();
-                const [A2, B2, C2, D2] = [
-                  { x: x, y: y },
-                  { x: x, y: y + h },
-                  { x: x + w, y: y + h },
-                  { x: x + w, y: y },
-                ];
-                const [A1in, B1in, C1in, D1in] = [
-                  checkIfInsideRectangle(A2, C2, A1),
-                  checkIfInsideRectangle(A2, C2, B1),
-                  checkIfInsideRectangle(A2, C2, C1),
-                  checkIfInsideRectangle(A2, C2, D1),
-                ];
-                const [A2in, B2in, C2in, D2in] = [
-                  checkIfInsideRectangle(A1, C1, A2),
-                  checkIfInsideRectangle(A1, C1, B2),
-                  checkIfInsideRectangle(A1, C1, C2),
-                  checkIfInsideRectangle(A1, C1, D2),
-                ];
-                if (
-                  A1in ||
-                  B1in ||
-                  C1in ||
-                  D1in ||
-                  A2in ||
-                  B2in ||
-                  C2in ||
-                  D2in
-                ) {
-                  component.dom.current.className += ' ' + opaciSchnaps;
-                  computedHandles.splice(0, 0, component.jsx);
-                } else {
-                  component.dom.current.className = component.dom.current.className
-                    .replace(new RegExp(opaciSchnaps, 'g'), '')
-                    .trim();
-                }
-              }
-            });
-          }
-          setStackedHandles(computedHandles);
-        }}
-        onMouseLeave={() => {
-          setStackedHandles(undefined);
-        }}
       >
         {stackedHandles && stackedHandles.length > 0 ? (
           stackedHandles.map((v, i) => (
@@ -711,12 +668,14 @@ export function useComponentEditorContainer(type: string, path: number[]) {
     style,
     vertical,
   }: React.PropsWithChildren<ComponentContainerProps>) {
-    const { onDrop, editMode } = React.useContext(pageCTX);
+    const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
+    const { onDrop, editMode, handles } = React.useContext(pageCTX);
+    const [{ isOver }, dropZone] = useDndComponentDrop();
+
     const containerPath = [...path];
     const itemPath = containerPath.pop();
     const isNotFirstComponent = path.length > 0;
-
-    const [{ isOver }, dropZone] = useDndComponentDrop();
+    const editable = editMode && isNotFirstComponent;
 
     return (
       <FlexItem
@@ -772,6 +731,19 @@ export function useComponentEditorContainer(type: string, path: number[]) {
             }
           }
         }}
+        onMouseOver={e => {
+          if (editable) {
+            e.stopPropagation();
+            if (!stackedHandles) {
+              setStackedHandles(() => computeHandles(handles, path));
+            }
+          }
+        }}
+        onMouseLeave={() => {
+          if (editable) {
+            setStackedHandles(undefined);
+          }
+        }}
         tooltip={options?.upgrades?.tooltip}
       >
         {editMode && isNotFirstComponent && (
@@ -780,10 +752,11 @@ export function useComponentEditorContainer(type: string, path: number[]) {
               onDrop(dndComponent, containerPath, itemPath)
             }
             show={isOver}
-            // show
           />
         )}
-        {path.length > 0 && <EditHandle {...handleProps} />}
+        {path.length > 0 && (
+          <EditHandle {...handleProps} stackedHandles={stackedHandles} />
+        )}
         <ErrorBoundary>{children}</ErrorBoundary>
         {options?.upgrades?.notification && (
           <NotificationComponent {...options.upgrades.notification} />
@@ -798,7 +771,6 @@ export function useComponentEditorContainer(type: string, path: number[]) {
               )
             }
             show={isOver}
-            // show
             last
           />
         )}

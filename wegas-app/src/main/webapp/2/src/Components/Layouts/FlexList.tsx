@@ -90,6 +90,14 @@ export interface FlexItemProps extends FlexItemFlexProps {
    */
   onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   /**
+   * onMouseOver - triggers when the mouse goes over the component
+   */
+  onMouseOver?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  /**
+   * onMouseOut - triggers when the mouse is not more over the element
+   */
+  onMouseOut?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  /**
    * onMouseEnter - triggers when the mouse enters the component
    */
   onMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
@@ -123,6 +131,8 @@ export const FlexItem = React.forwardRef<
       flexShrink,
       flexBasis,
       onClick,
+      onMouseOver,
+      onMouseOut,
       onMouseEnter,
       onMouseLeave,
       className,
@@ -135,6 +145,8 @@ export const FlexItem = React.forwardRef<
     <div
       ref={ref}
       onClick={onClick}
+      onMouseOver={onMouseOver}
+      onMouseOut={onMouseOut}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       className={className}
