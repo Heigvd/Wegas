@@ -6,16 +6,8 @@ import {
   dndComponnent,
   useComponentDrag,
 } from '../../../Editor/Components/Page/ComponentPalette';
-import {
-  useDrop,
-  DropTargetMonitor,
-  DragElementWrapper,
-  DragPreviewImage,
-} from 'react-dnd';
-import {
-  pageCTX,
-  PageContext,
-} from '../../../Editor/Components/Page/PageEditor';
+import { useDrop, DropTargetMonitor, DragElementWrapper } from 'react-dnd';
+import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { themeVar } from '../../Theme';
 import {
   flex,
@@ -23,7 +15,6 @@ import {
   textCenter,
   flexColumn,
   grow,
-  flexDistribute,
 } from '../../../css/classes';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
@@ -47,7 +38,6 @@ import { Player } from '../../../data/selectors';
 import { omit } from 'lodash-es';
 import { clientScriptEval, useScript } from '../../Hooks/useScript';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
-// import { LockAPI } from '../../../API/lock.api';
 import { ActionCreator } from '../../../data/actions';
 
 export const layoutHighlightStyle = css({
@@ -66,29 +56,14 @@ const childHighlightStyle = css({
   '&>*>*': childHighlightCSS,
 });
 
-const dropzoneBackground: (
-  angle?: number,
-  color?: string,
-) => React.CSSProperties = (angle = 0, color = themeVar.primaryHoverColor) => ({
-  backgroundImage: `linear-gradient(${
-    (225 + angle) % 360
-  }deg, transparent, ${color} 10px, transparent 5px), linear-gradient(${
-    (315 + angle) % 360
-  }deg, transparent, ${color} 10px, transparent 5px)`,
-  backgroundPositionY: '15px',
-  backgroundSize: '40px 40px',
-  zIndex: 1000,
-});
 const childDropzoneHorizontalStyle = css({
   '&>*>*>.component-dropzone': {
     maxWidth: '30px',
     width: '30%',
     height: '100%',
-    ...dropzoneBackground(),
   },
   '&>*>*>.component-dropzone-last': {
     right: 0,
-    ...dropzoneBackground(180),
   },
 });
 
@@ -97,11 +72,9 @@ const childDropzoneVerticalStyle = css({
     maxHeight: '30px',
     width: '100%',
     height: '30%',
-    ...dropzoneBackground(90),
   },
   '&>*>*>.component-dropzone-last': {
     bottom: 0,
-    ...dropzoneBackground(270),
   },
 });
 
@@ -584,24 +557,7 @@ export const componentContainerWegasPropsKeys = Object.keys(
   defaultComponentContainerProps,
 );
 
-export function useComponentEditorContainer(
-  type: string,
-  path: number[],
-  // pageContext: PageContext,
-) {
-  // const {
-  //   editMode,
-  //   showControls,
-  //   // setIsDragging,
-  //   // isStacking,
-  //   // setIsStacking,
-  //   isDragging,
-  //   handles,
-  //   onEdit,
-  //   onDelete,
-  //   onDrop,
-  // } = pageContext;
-
+export function useComponentEditorContainer(type: string, path: number[]) {
   function EditHandle({
     componentName,
     className,
@@ -618,7 +574,7 @@ export function useComponentEditorContainer(
     } = React.useContext(pageCTX);
 
     const HandleContent = React.forwardRef<HTMLDivElement>((_, ref) => {
-      const [, drag, preview] = useComponentDrag(type, path);
+      const [, drag] = useComponentDrag(type, path);
       return (
         <div
           ref={ref}
@@ -755,7 +711,7 @@ export function useComponentEditorContainer(
     style,
     vertical,
   }: React.PropsWithChildren<ComponentContainerProps>) {
-    const { onDrop, editMode, isDragging } = React.useContext(pageCTX);
+    const { onDrop, editMode } = React.useContext(pageCTX);
     const containerPath = [...path];
     const itemPath = containerPath.pop();
     const isNotFirstComponent = path.length > 0;
@@ -763,96 +719,90 @@ export function useComponentEditorContainer(
     const [{ isOver }, dropZone] = useDndComponentDrop();
 
     return (
-      <>
-        {/* <DragPreviewImage
-          connect={preview}
-          src={require('../../../pictures/react.png').default}
-        /> */}
-        <FlexItem
-          ref={dropZone}
-          {...options?.layout}
-          className={
-            cx(handleControlStyle, flex, {
-              [layoutHighlightStyle]: showBorders,
-              [childHighlightStyle]: showBorders,
-              [handleControlHoverStyle]: editMode,
-              [childDropzoneHorizontalStyle]: !vertical,
-              [childDropzoneVerticalStyle]: vertical,
-            }) + (className ? ' ' + className : '')
-          }
-          style={style}
-          onClick={() => {
-            if (options && options.actions) {
-              if (
-                !options.actions.confirmClick ||
-                // TODO : Find a better way to do that than a modal!!!
-                // eslint-disable-next-line no-alert
-                confirm(options.actions.confirmClick)
-              ) {
-                if (options.actions?.lock) {
-                  // LockAPI.lockPlayer(options.actions?.lock)
-                  //   .then(res => {
-                  //     wlog(res);
-                  //     debugger;
-                  //   })
-                  //   .catch(res => {
-                  //     wlog(res);
-                  //     debugger;
-                  //   });
-                }
-                Object.entries(
-                  omit(
-                    options.actions,
-                    'confirmClick',
-                    'lock',
-                  ) as WegasComponentOptionsActions,
-                )
-                  .sort(
-                    (
-                      [, v1]: [string, WegasComponentOptionsAction],
-                      [, v2]: [string, WegasComponentOptionsAction],
-                    ) =>
-                      (v1.priority ? v1.priority : 0) -
-                      (v2.priority ? v2.priority : 0),
-                  )
-                  .forEach(([k, v]) =>
-                    wegasComponentActions[k as keyof WegasComponentActions](v),
-                  );
+      <FlexItem
+        ref={dropZone}
+        {...options?.layout}
+        className={
+          cx(handleControlStyle, flex, {
+            [layoutHighlightStyle]: showBorders,
+            [childHighlightStyle]: showBorders,
+            [handleControlHoverStyle]: editMode,
+            [childDropzoneHorizontalStyle]: !vertical,
+            [childDropzoneVerticalStyle]: vertical,
+          }) + (className ? ' ' + className : '')
+        }
+        style={style}
+        onClick={() => {
+          if (options && options.actions) {
+            if (
+              !options.actions.confirmClick ||
+              // TODO : Find a better way to do that than a modal!!!
+              // eslint-disable-next-line no-alert
+              confirm(options.actions.confirmClick)
+            ) {
+              if (options.actions?.lock) {
+                // LockAPI.lockPlayer(options.actions?.lock)
+                //   .then(res => {
+                //     wlog(res);
+                //     debugger;
+                //   })
+                //   .catch(res => {
+                //     wlog(res);
+                //     debugger;
+                //   });
               }
+              Object.entries(
+                omit(
+                  options.actions,
+                  'confirmClick',
+                  'lock',
+                ) as WegasComponentOptionsActions,
+              )
+                .sort(
+                  (
+                    [, v1]: [string, WegasComponentOptionsAction],
+                    [, v2]: [string, WegasComponentOptionsAction],
+                  ) =>
+                    (v1.priority ? v1.priority : 0) -
+                    (v2.priority ? v2.priority : 0),
+                )
+                .forEach(([k, v]) =>
+                  wegasComponentActions[k as keyof WegasComponentActions](v),
+                );
             }
-          }}
-          tooltip={options?.upgrades?.tooltip}
-        >
-          {editMode && isNotFirstComponent && (
-            <ComponentDropZone
-              onDrop={dndComponent =>
-                onDrop(dndComponent, containerPath, itemPath)
-              }
-              // show={isOver}
-              show
-            />
-          )}
-          {path.length > 0 && <EditHandle {...handleProps} />}
-          <ErrorBoundary>{children}</ErrorBoundary>
-          {options?.upgrades?.notification && (
-            <NotificationComponent {...options.upgrades.notification} />
-          )}
-          {editMode && isNotFirstComponent && (
-            <ComponentDropZone
-              onDrop={dndComponent =>
-                onDrop(
-                  dndComponent,
-                  containerPath,
-                  itemPath != null ? itemPath + 1 : itemPath,
-                )
-              }
-              // show={isOver}
-              show
-              last
-            />
-          )}
-        </FlexItem>
-      </>
+          }
+        }}
+        tooltip={options?.upgrades?.tooltip}
+      >
+        {editMode && isNotFirstComponent && (
+          <ComponentDropZone
+            onDrop={dndComponent =>
+              onDrop(dndComponent, containerPath, itemPath)
+            }
+            show={isOver}
+            // show
+          />
+        )}
+        {path.length > 0 && <EditHandle {...handleProps} />}
+        <ErrorBoundary>{children}</ErrorBoundary>
+        {options?.upgrades?.notification && (
+          <NotificationComponent {...options.upgrades.notification} />
+        )}
+        {editMode && isNotFirstComponent && (
+          <ComponentDropZone
+            onDrop={dndComponent =>
+              onDrop(
+                dndComponent,
+                containerPath,
+                itemPath != null ? itemPath + 1 : itemPath,
+              )
+            }
+            show={isOver}
+            // show
+            last
+          />
+        )}
+      </FlexItem>
     );
   };
 }
@@ -869,8 +819,9 @@ function ComponentDropZone({ onDrop, show, last }: ComponentDropZoneProps) {
     <div
       ref={dropZone}
       className={
-        // dropZoneClass(isOverCurrent) +
-        ' component-dropzone' + (last ? ' component-dropzone-last' : '')
+        dropZoneClass(isOverCurrent) +
+        ' component-dropzone' +
+        (last ? ' component-dropzone-last' : '')
       }
       style={{
         visibility: show ? 'visible' : 'collapse',

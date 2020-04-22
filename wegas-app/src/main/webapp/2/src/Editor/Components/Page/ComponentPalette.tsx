@@ -10,8 +10,6 @@ import {
   DragSourceOptions,
   DragPreviewOptions,
 } from 'react-dnd';
-import { pageCTX } from './PageEditor';
-import { useDeepChanges } from '../../../Components/Hooks/useDeepChanges';
 
 const componentStyle = css({
   padding: '10px',
@@ -67,15 +65,14 @@ export function useComponentDrag(
 }
 
 function ComponentElement({ componentName }: ComponentElementProps) {
-  const { setIsDragging } = React.useContext(pageCTX);
   const component = usePageComponentStore(s => s[componentName]);
-  const [dragMonitor, drag] = useComponentDrag(componentName);
-  useDeepChanges(dragMonitor, setIsDragging);
+  const [, drag, preview] = useComponentDrag(componentName);
 
   return (
     <div ref={drag} className={componentStyle}>
       {component ? (
         <IconButton
+          ref={preview}
           icon={component.getIcon()}
           className={cx(button, css({ width: '25px', height: '25px' }))}
           tooltip={componentName}

@@ -2,11 +2,7 @@ import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
 import { JSONandJSEditor } from '../ScriptEditors/JSONandJSEditor';
 import { deepClone } from 'fast-json-patch';
-import {
-  ComponentPalette,
-  DnDComponent,
-  DragMonitor,
-} from './ComponentPalette';
+import { ComponentPalette, DnDComponent } from './ComponentPalette';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import { MainLinearLayout } from '../LinearTabLayout/LinearLayout';
 import ComponentEditor from './ComponentEditor';
@@ -30,9 +26,7 @@ export interface PageContext {
   editMode: boolean;
   showBorders: boolean;
   showControls: boolean;
-  isDragging: boolean;
   pageIdPath: string[];
-  setIsDragging: (dragMonitor: DragMonitor) => void;
   handles: {
     [path: string]: { jsx: JSX.Element; dom: React.RefObject<HTMLDivElement> };
   };
@@ -46,9 +40,7 @@ const defaultPageCTX: PageContext = {
   editMode: false,
   showBorders: false,
   showControls: true,
-  isDragging: false,
   pageIdPath: [],
-  setIsDragging: noop,
   handles: {},
   onDrop: noop,
   onEdit: noop,
@@ -200,9 +192,6 @@ export default function PageEditor() {
   const [editMode, setEditMode] = React.useState(false);
   const [showBorders, setShowBorders] = React.useState(false);
   const [showControls, setShowControls] = React.useState(true);
-  const [isDragging, setIsDragging] = React.useState<
-    Record<string | symbol, boolean>
-  >({});
 
   const components = usePageComponentStore(s => s);
   const { selectedPage, defaultPageId, loading } = useStore(
@@ -212,11 +201,6 @@ export default function PageEditor() {
       loading: selectedPageId == null || s.pages.index == null,
     }),
     deepDifferent,
-  );
-
-  const isAnythingDragged = Object.values(isDragging).reduce(
-    (o, v) => o || v,
-    false,
   );
 
   React.useEffect(() => {
@@ -239,23 +223,83 @@ export default function PageEditor() {
     [],
   );
 
-  const onDrop = React.useCallback(
-    (dndComponent: DnDComponent, path: number[], index?: number) => {
-      if (selectedPageId != null && selectedPage != null) {
-        const newComponent = createComponent(
-          selectedPage,
-          path,
-          dndComponent.componentName,
-          components[dndComponent.componentName].getComputedPropsFromVariable(),
-          index,
-        );
-        if (newComponent) {
-          patchPage(selectedPageId, newComponent.newPage);
-          onEdit(selectedPageId, path);
+  const onMoveLayoutComponent = React.useCallback(
+    (
+      sourcePageId: string,
+      destPageId: string,
+      sourcePage: WegasComponent,
+      destPage: WegasComponent,
+      sourcePath: number[],
+      destPath: number[],
+      destIndex: number,
+    ) => {
+      const samePage = sourcePageId === destPageId;
+      const sameContainerPath =
+        JSON.stringify(sourcePath.slice(0, -1)) === JSON.stringify(destPath);
+      const sourceIndex: number | undefined = sourcePath.slice(-1)[0];
+      const samePosition = sourceIndex === destIndex;
+
+      // Don't do anything if the result is the same than before
+      if (!(samePage && sameContainerPath && samePosition)) {
+        const { component } = findComponent(sourcePage, sourcePath);
+        if (component) {
+          const newSourcePage = deleteComponent(sourcePage, sourcePath);
+          // Don't do anything if the path to the source element points to nothing (should never happen)
+          if (newSourcePage != null) {
+            const newDestPage = createComponent(
+              samePage ? newSourcePage : destPage,
+              destPath,
+              component.type,
+              component.props,
+              destIndex,
+            );
+            // Don't modify the source page if it's the same than the destination page
+            if (newDestPage != null) {
+              if (sourcePageId !== destPageId) {
+                patchPage(sourcePageId, newSourcePage);
+              }
+              patchPage(destPageId, newDestPage.newPage);
+            }
+          }
         }
       }
     },
-    [components, onEdit, selectedPage, selectedPageId],
+    [],
+  );
+
+  const onDrop = React.useCallback(
+    (dndComponent: DnDComponent, path: number[], index?: number) => {
+      if (selectedPageId != null && selectedPage != null) {
+        if (dndComponent.path == null) {
+          const newComponent = createComponent(
+            selectedPage,
+            path,
+            dndComponent.componentName,
+            components[
+              dndComponent.componentName
+            ].getComputedPropsFromVariable(),
+            index,
+          );
+          if (newComponent) {
+            patchPage(selectedPageId, newComponent.newPage);
+            onEdit(selectedPageId, newComponent.newPath);
+          }
+        } else {
+          const newIndex = index ? index : 0;
+          onMoveLayoutComponent(
+            selectedPageId,
+            selectedPageId,
+            selectedPage,
+            selectedPage,
+            dndComponent.path,
+            path,
+            newIndex,
+          );
+          onEdit(selectedPageId, [...path, newIndex]);
+        }
+      }
+    },
+    [components, selectedPage, selectedPageId, onEdit, onMoveLayoutComponent],
   );
 
   const onDelete = React.useCallback(
@@ -308,51 +352,6 @@ export default function PageEditor() {
     },
     [],
   );
-
-  const onMoveLayoutComponent = React.useCallback(
-    (
-      sourcePageId: string,
-      destPageId: string,
-      sourcePage: WegasComponent,
-      destPage: WegasComponent,
-      sourcePath: number[],
-      destPath: number[],
-      destIndex: number,
-    ) => {
-      const samePage = sourcePageId === destPageId;
-      const sameContainerPath =
-        JSON.stringify(sourcePath.slice(0, -1)) === JSON.stringify(destPath);
-      const sourceIndex: number | undefined = sourcePath.slice(-1)[0];
-      const samePosition = sourceIndex === destIndex;
-
-      // Don't do anything if the result is the same than before
-      if (!(samePage && sameContainerPath && samePosition)) {
-        const { component } = findComponent(sourcePage, sourcePath);
-        if (component) {
-          const newSourcePage = deleteComponent(sourcePage, sourcePath);
-          // Don't do anything if the path to the source element points to nothing (should never happen)
-          if (newSourcePage != null) {
-            const newDestPage = createComponent(
-              samePage ? newSourcePage : destPage,
-              destPath,
-              component.type,
-              component.props,
-              destIndex,
-            );
-            // Don't modify the source page if it's the same than the destination page
-            if (newDestPage != null) {
-              if (sourcePageId !== destPageId) {
-                patchPage(sourcePageId, newSourcePage);
-              }
-              patchPage(destPageId, newDestPage.newPage);
-            }
-          }
-        }
-      }
-    },
-    [],
-  );
-
   const Layout = (
     <pageEditorCTX.Consumer>
       {({ selectedPageId, editedPath }) => (
@@ -528,15 +527,11 @@ export default function PageEditor() {
             editMode,
             showControls,
             showBorders: showBorders /*|| (editMode && isAnythingDragged)*/,
-            isDragging: isAnythingDragged,
             pageIdPath: selectedPageId
               ? [selectedPageId]
               : defaultPageId
               ? [defaultPageId]
               : [],
-            setIsDragging: ({ handlerId, isDragging }: DragMonitor) =>
-              handlerId != null &&
-              setIsDragging(oid => ({ ...oid, [handlerId]: isDragging })),
             handles: handles.current,
             onDrop,
             onDelete,
