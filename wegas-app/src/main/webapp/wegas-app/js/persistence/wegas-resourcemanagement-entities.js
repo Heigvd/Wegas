@@ -519,24 +519,27 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }, this);
             return data;
         },
-        getEditorLabel: function() {
-            var trLabel = this.getLabel(),
+        getLabelWithIndex: function() {
+            var trLabel = this.getLabel() || "",
                 index = this.get("index");
             if (index) {
-                index += ". ";
+                return index + ". " + trLabel
             } else {
-                index = "";
+                return trLabel;
             }
+        },
+        getEditorLabel: function() {
+            var trLabel = this.getLabelWithIndex();
             var toDisplay;
 
             if (!this.get("editorTag") && !trLabel) {
                 toDisplay = this.get("name");
             } else if (!this.get("editorTag")) {
-                toDisplay = index + trLabel;
+                toDisplay = trLabel;
             } else if (!trLabel) {
                 toDisplay = this.get("editorTag");
             } else {
-                toDisplay = this.get("editorTag") + " - " + index + trLabel;
+                toDisplay = this.get("editorTag") + " - " + trLabel;
             }
 
             if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL"
@@ -1012,9 +1015,9 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }
             return taskDs;
         },
-        containsTask: function(taskDescriptor){
+        containsTask: function(taskDescriptor) {
             var needle = taskDescriptor.get("name");
-            return !!this.get("taskNames").find(function(taskName){
+            return !!this.get("taskNames").find(function(taskName) {
                 return taskName === needle;
             });
         },
