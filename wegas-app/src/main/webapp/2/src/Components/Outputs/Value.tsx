@@ -3,15 +3,14 @@ import { titleStyle } from '../../Editor/Components/FormView/labeled';
 import { cx } from 'emotion';
 import { flexRow, flex } from '../../css/classes';
 
-export interface ValueProps {
+export interface ValueProps extends ClassAndStyle {
   value: string | number | object;
   label?: string;
-  className?: string;
 }
 
-export function Value({ value, label, className }: ValueProps) {
+export function Value({ value, label, className, style }: ValueProps) {
   return (
-    <div className={cx(flex, flexRow)}>
+    <div className={cx(flex, flexRow)} style={style}>
       {label && (
         <label className={titleStyle} htmlFor={label} title={label}>
           <span style={{ display: 'inline-flex' }}>{label} : </span>

@@ -10,6 +10,7 @@ import {
 } from './Button';
 import { themeVar } from '../../Theme';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
+import { classNameOrEmpty } from '../../../Helper/className';
 
 const buttonZone = (disableBorders?: DisableBorders) =>
   css({
@@ -108,7 +109,7 @@ export function ConfirmButton({
       ref={confirmButton}
       tabIndex={tabIndex}
       id={id}
-      className={className ? className : buttonZone(disableBorders)}
+      className={buttonZone(disableBorders) + classNameOrEmpty(className)}
     >
       <Button
         label="Accept"

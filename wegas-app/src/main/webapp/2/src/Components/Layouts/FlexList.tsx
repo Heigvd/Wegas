@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { HashListChoices } from '../../Editor/Components/FormView/HashList';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
+import { cx } from 'emotion';
+import { flex, grow } from '../../css/classes';
+import { classNameOrEmpty } from '../../Helper/className';
 
 export const alignItemsValues = [
   'stretch',
@@ -84,7 +87,7 @@ export const layoutChoices: HashListChoices = [
   },
 ];
 
-export interface FlexItemProps extends FlexItemFlexProps {
+export interface FlexItemProps extends ClassAndStyle {
   /**
    * onClick - triggers when the component is clicked
    */
@@ -106,14 +109,6 @@ export interface FlexItemProps extends FlexItemFlexProps {
    */
   onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   /**
-   * className - the class to apply to the item
-   */
-  className?: string;
-  /**
-   * style - the style to apply to the item (always prefer className over style to avoid messing with original behaviour of the item)
-   */
-  style?: React.CSSProperties;
-  /**
    * tooltip - A text that appear when the cursor is over the component
    */
   tooltip?: string;
@@ -121,7 +116,7 @@ export interface FlexItemProps extends FlexItemFlexProps {
 
 export const FlexItem = React.forwardRef<
   HTMLDivElement,
-  React.PropsWithChildren<FlexItemProps>
+  React.PropsWithChildren<FlexItemProps & FlexItemFlexProps>
 >(
   (
     {
@@ -194,7 +189,7 @@ type JustifyContent = typeof justifyContentValues[number];
 export const alignContentValues = ['stretch', ...justifyContentValues] as const;
 type AlignContent = typeof alignContentValues[number];
 
-export interface FlexListProps {
+export interface FlexListProps extends ClassAndStyle {
   /**
    * layout : the layout CSS properties
    */
@@ -220,18 +215,6 @@ export interface FlexListProps {
      */
     alignContent?: AlignContent;
   };
-  /**
-   * className - the class to apply to the list
-   */
-  className?: string;
-  /**
-   * style - the style to apply to the list (always prefer className over style to avoid messing with original behaviour of the list)
-   */
-  style?: React.CSSProperties;
-  // /**
-  //  * children - the items in the list
-  //  */
-  // children?: FlexItemProps[];
 }
 /**
  * Flex list.
@@ -246,9 +229,8 @@ export function FlexList({
     listLayout || {};
   return (
     <div
-      className={className}
+      className={cx(flex, grow) + classNameOrEmpty(className)}
       style={{
-        display: 'flex',
         flexDirection,
         flexWrap,
         justifyContent,

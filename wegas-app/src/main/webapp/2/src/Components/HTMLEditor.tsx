@@ -51,7 +51,7 @@ interface ExtraButtons {
   [name: string]: ExtraButton;
 }
 
-interface HTMLEditorProps {
+interface HTMLEditorProps extends ClassAndStyle {
   /**
    * value - content to inject in the editor
    */
@@ -65,10 +65,6 @@ interface HTMLEditorProps {
    */
   onChange?: (content: string) => void;
   /**
-   * className - classes to apply to the element
-   */
-  className?: string;
-  /**
    * id - the id of the main container
    */
   id?: string;
@@ -81,6 +77,7 @@ export default function HTMLEditor({
   onSave,
   onChange,
   className,
+  style,
   id,
 }: HTMLEditorProps) {
   const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>(
@@ -159,7 +156,7 @@ export default function HTMLEditor({
           })),
         },
       ],
-      setup: function(editor: TinyMCEEditor) {
+      setup: function (editor: TinyMCEEditor) {
         let formatter: TinyMCEEditorFormatter | undefined;
         editor.on('init', () => {
           formatter = editor.formatter;
@@ -184,7 +181,7 @@ export default function HTMLEditor({
                 },
               });
             },
-            onSetup: function(buttonApi) {
+            onSetup: function (buttonApi) {
               // Getting the class of the current token to define button state
               const editorEventCallback = (
                 eventApi: TinyMCENodeChangeEvent,
@@ -225,7 +222,7 @@ export default function HTMLEditor({
   const toolBarId = 'externalEditorToolbar' + String(HTMLEditorID++);
 
   return (
-    <div className={className} id={id}>
+    <div className={className} style={style} id={id}>
       <div style={{ visibility: fileBrowsing.fn ? 'hidden' : 'visible' }}>
         <div id={toolBarId} className={toolbar}>
           {!editorFocus && (

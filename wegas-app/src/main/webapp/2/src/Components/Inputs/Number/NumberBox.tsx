@@ -6,6 +6,7 @@ import { flex } from '../../../css/classes';
 import { CheckMinMax } from './numberComponentHelper';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
+import { classNameOrEmpty } from '../../../Helper/className';
 
 const numberSquareStyle = css({
   borderColor: themeVar.disabledColor,
@@ -33,7 +34,7 @@ const disabledNumberSquareStyle = css({
   backgroundColor: themeVar.disabledColor,
 });
 
-interface NumberSquareProps {
+interface NumberSquareProps extends ClassAndStyle {
   value?: number | string;
   onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   active?: boolean;
@@ -41,7 +42,6 @@ interface NumberSquareProps {
   readOnly?: boolean;
   hideValue?: boolean;
   activeClassName?: string;
-  className?: string;
 }
 
 function NumberSquare({
@@ -53,15 +53,19 @@ function NumberSquare({
   hideValue,
   activeClassName,
   className,
+  style,
 }: NumberSquareProps) {
   return (
     <div
       onClick={e => !disabled && !readOnly && onClick && onClick(e)}
-      className={cx(numberSquareStyle, className, {
-        [activeClassName ? activeClassName : activeNumberSquareStyle]: active,
-        [clickableNumberSquareStyle]: !disabled && !readOnly,
-        [disabledNumberSquareStyle]: disabled && active,
-      })}
+      className={
+        cx(numberSquareStyle, {
+          [activeClassName ? activeClassName : activeNumberSquareStyle]: active,
+          [clickableNumberSquareStyle]: !disabled && !readOnly,
+          [disabledNumberSquareStyle]: disabled && active,
+        }) + classNameOrEmpty(className)
+      }
+      style={style}
     >
       {hideValue ? null : value}
     </div>
@@ -137,7 +141,7 @@ export function NumberBox({
   }
 
   return (
-    <div id={id} className={className ? className : flex}>
+    <div id={id} className={flex + classNameOrEmpty(className)}>
       {label && <Value value={label} />}
       <CheckMinMax
         min={computedMinValue}

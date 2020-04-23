@@ -126,13 +126,15 @@ function PlayerLinearLayout(props: PlayerLinearLayoutProps) {
       {...containerProps}
       showBorders={showLayout}
       handleProps={handleProps}
+      vertical={!childProps.horizontal}
     >
       <ReflexContainer
         className={splitter}
         // Orientation is inverted to keep same logic in TabLayoutNode and ReflexLayoutNode (vertical==true : v, vertical==false : >)
         orientation={childProps.horizontal ? 'vertical' : 'horizontal'}
       >
-        {children}
+        {/* {children} */}
+        {props.children}
       </ReflexContainer>
     </ComponentContainer>
   );
@@ -151,6 +153,7 @@ const test = pageComponentFactory(
   },
   [],
   () => ({ children: [] }),
+  'LINEAR',
 );
 
 registerComponent(test);

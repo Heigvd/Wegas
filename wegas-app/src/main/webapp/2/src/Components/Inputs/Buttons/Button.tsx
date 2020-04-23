@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { css } from 'emotion';
 import { CSSProperties } from 'react';
 import { themeVar } from '../../Theme';
+import { classNameOrEmpty } from '../../../Helper/className';
 
 export interface DisableBorders {
   top?: boolean;
@@ -68,7 +69,7 @@ const buttonStyle = (
           },
   });
 
-export interface CommonButtonProps {
+export interface CommonButtonProps extends ClassAndStyle {
   label?: React.ReactNode;
   onClick?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   disabled?: boolean;
@@ -76,7 +77,6 @@ export interface CommonButtonProps {
   tooltip?: string;
   noHover?: boolean;
   type?: 'submit' | 'reset' | 'button';
-  className?: string;
   id?: string;
 }
 
@@ -91,6 +91,7 @@ export function Button({
   noHover,
   disableBorders,
   className,
+  style,
   children,
   tabIndex,
   tooltip,
@@ -100,12 +101,11 @@ export function Button({
   return (
     <button
       id={id}
-      className={cx(
+      className={
         buttonStyle(disabled, noHover, disableBorders, onClick == null) +
-          className
-          ? ' ' + className
-          : '',
-      )}
+        classNameOrEmpty(className)
+      }
+      style={style}
       onClick={onClick}
       disabled={disabled}
       tabIndex={tabIndex}

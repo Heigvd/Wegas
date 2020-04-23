@@ -2,6 +2,7 @@ import * as React from 'react';
 import { debounce } from 'lodash-es';
 
 import { inputStyle } from './inputStyles';
+import { classNameOrEmpty } from '../../Helper/className';
 
 function undefToEmpty(val?: string | number) {
   if (val == null) {
@@ -12,7 +13,7 @@ function undefToEmpty(val?: string | number) {
   return val;
 }
 
-export interface InputProps<T> {
+export interface InputProps<T> extends ClassAndStyle {
   /**
    * value - the value to input
    */
@@ -37,10 +38,6 @@ export interface InputProps<T> {
    * id - the id of the input
    */
   id?: string;
-  /**
-   * className - the class to apply on the input
-   */
-  className?: string;
 }
 
 export interface SimpleInputProps extends InputProps<string | number> {
@@ -74,6 +71,7 @@ export function SimpleInput({
   autoComplete,
   id,
   className,
+  style,
   onFocus,
 }: SimpleInputProps) {
   const [currentValue, setCurrentValue] = React.useState(value);
@@ -106,7 +104,8 @@ export function SimpleInput({
   if (typeof rows === 'number') {
     return (
       <textarea
-        className={className ? className : inputStyle}
+        className={inputStyle + classNameOrEmpty(className)}
+        style={style}
         id={id}
         value={undefToEmpty(currentValue)}
         rows={rows}
@@ -123,7 +122,7 @@ export function SimpleInput({
   return (
     <input
       type="text"
-      className={className ? className : inputStyle}
+      className={inputStyle + classNameOrEmpty(className)}
       id={id}
       value={undefToEmpty(currentValue)}
       onChange={onInputChange}

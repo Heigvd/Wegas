@@ -18,6 +18,7 @@ import { editFile } from '../../../data/Reducer/globalState';
 import { flex, grow, hidden, block } from '../../../css/classes';
 import { MessageString } from '../MessageString';
 import { FilePickingType, FileFilter } from './FileBrowser';
+import { classNameOrEmpty } from '../../../Helper/className';
 
 const clickableStyle = css({
   cursor: 'pointer',
@@ -151,7 +152,7 @@ type ModalState =
   | ModalStateDelete
   | ModalStateChangeType;
 
-export interface FileBrowserNodeProps {
+export interface FileBrowserNodeProps extends ClassAndStyle {
   defaultFile: IAbstractContentDescriptor;
   selectedLocalPaths?: string[];
   selectedGlobalPaths?: string[];
@@ -166,7 +167,6 @@ export interface FileBrowserNodeProps {
   localDispatch?: StoreDispatch;
   pick?: FilePickingType;
   filter?: FileFilter;
-  className?: string;
 }
 
 export function FileBrowserNode({
@@ -182,6 +182,7 @@ export function FileBrowserNode({
   pick,
   filter,
   className,
+  style,
 }: FileBrowserNodeProps) {
   const [open, setOpen] = React.useState(
     defaultOpen ||
@@ -429,7 +430,8 @@ export function FileBrowserNode({
   return !filter || filter.filterType !== 'hide' || typeFilterApproved ? (
     <div
       ref={dropZone}
-      className={cx(flex, grow) + (className ? ' ' + className : '')}
+      className={cx(flex, grow) + classNameOrEmpty(className)}
+      style={style}
     >
       {!pick && (
         <input

@@ -30,7 +30,7 @@ interface PlayerFlexListProps extends FlexListCompoentProps {
   /**
    * children - the array containing the child components
    */
-  children: WegasComponent[];
+  children: React.ReactNode[];
 }
 
 function PlayerFlexList(props: PlayerFlexListProps) {
@@ -40,9 +40,6 @@ function PlayerFlexList(props: PlayerFlexListProps) {
     childProps,
     containerProps,
   } = extractProps(props);
-
-  // const { editMode } = React.useContext(pageCTX);
-  // const [{ canDrop }] = useDndComponentDrop();
 
   const [showLayout, setShowLayout] = React.useState(showBorders);
   React.useEffect(() => {
@@ -144,5 +141,6 @@ registerComponent(
         : {
             children: [],
           },
+    'FLEX',
   ),
 );

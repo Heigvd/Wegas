@@ -193,6 +193,7 @@ export function Menu<T, MItem extends MenuItem<T>>({
                           })
                         : undefined)}
                       className={item.className}
+                      style={item.style}
                     >
                       <Menu
                         onSelect={(v, e) => {

@@ -9,6 +9,7 @@ import { useDrag, useDrop } from 'react-dnd';
 import { dropZoneFocusCss } from '../../../Components/Contexts/DefaultDndProvider';
 import { array_move } from '../../../Helper/tools';
 import { Item } from '../Tree/TreeSelect';
+import { classNameOrEmpty } from '../../../Helper/className';
 
 const transparentStyle = css({
   opacity: 0,
@@ -78,7 +79,7 @@ interface DnDArrayDragMonitor {
   dragStyle: React.CSSProperties;
 }
 
-interface ArrayItemProps {
+interface ArrayItemProps extends ClassAndStyle {
   /**
    * index - The index of the item in the array
    */
@@ -91,14 +92,6 @@ interface ArrayItemProps {
    * unmovable - if set, the item could not be moved to another and the move handle won't be displayed
    */
   unmovable?: boolean;
-  /**
-   * className - the classes of the element
-   */
-  className?: string;
-  /**
-   * style - the classes of the element
-   */
-  style?: React.CSSProperties;
 }
 
 const dndItemType = 'ArrayItem';
@@ -129,7 +122,7 @@ function ArrayItem({
   return (
     <div
       ref={preview}
-      className={cx(listElementContainerStyle, className)}
+      className={cx(listElementContainerStyle) + classNameOrEmpty(className)}
       style={{ ...style, ...dragStyle }}
     >
       <div className={listElementStyle}>{children}</div>
@@ -156,19 +149,11 @@ interface DnDArrayDropMonitor {
   canDrop?: boolean;
 }
 
-interface ArrayDropzoneProps {
+interface ArrayDropzoneProps extends ClassAndStyle {
   /**
    * onDrop - the function that is called when an item is dropped
    */
   onDrop: (index: number) => void;
-  /**
-   * className - the classes of the element
-   */
-  className?: string;
-  /**
-   * style - the classes of the element
-   */
-  style?: React.CSSProperties;
 }
 
 function ArrayDropzone({ onDrop, className, style }: ArrayDropzoneProps) {
@@ -188,7 +173,7 @@ function ArrayDropzone({ onDrop, className, style }: ArrayDropzoneProps) {
 
   return (
     <div
-      className={cx(dropZoneStyle, className)}
+      className={cx(dropZoneStyle) + classNameOrEmpty(className)}
       style={{
         minHeight: isOverCurrent ? '50px' : canDrop ? '10px' : '0px',
         ...style,

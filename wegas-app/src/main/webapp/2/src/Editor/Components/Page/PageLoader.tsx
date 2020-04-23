@@ -8,6 +8,7 @@ import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { css, cx } from 'emotion';
 import { pageCTX } from './PageEditor';
 import { flex } from '../../../css/classes';
+import { wlog } from '../../../Helper/wegaslog';
 
 const editStyle = css({
   borderStyle: 'solid',
@@ -25,6 +26,11 @@ export function PageLoader({ selectedPageId }: PageLoaderProps) {
     deepDifferent,
   );
   const { editMode } = React.useContext(pageCTX);
+
+  React.useEffect(() => {
+    wlog('mounted');
+  });
+
   return (
     <DefaultDndProvider>
       <ThemeProvider contextName="player">

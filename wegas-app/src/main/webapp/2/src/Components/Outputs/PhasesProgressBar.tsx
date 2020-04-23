@@ -12,6 +12,7 @@ import { Value } from './Value';
 import { cx, css } from 'emotion';
 import { IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { themeVar } from '../Theme';
+import { classNameOrEmpty } from '../../Helper/className';
 
 const phasePathStyle = css({
   height: '0.5em',
@@ -76,10 +77,12 @@ function drawBar(
     }
     content.push(<PhaseComponent value={value} phase={i} key={'PHASE' + i} />);
   }
-  return <div className={cx(flex, flexDistribute, itemCenter)}>{content}</div>;
+  return (
+    <div className={cx(flex, grow, flexDistribute, itemCenter)}>{content}</div>
+  );
 }
 
-export interface PhasesProgressBarProps {
+export interface PhasesProgressBarProps extends ClassAndStyle {
   /**
    * value - the current value of the progess bar
    */
@@ -96,10 +99,6 @@ export interface PhasesProgressBarProps {
    * displayValue - should the current value be displayed with the gauge
    */
   displayValue?: boolean;
-  /**
-   * className - the classes to apply on the componnent
-   */
-  className?: string;
 }
 
 interface CustomPhasesProgressBarProps extends PhasesProgressBarProps {
@@ -113,11 +112,18 @@ export function CustomPhasesProgressBar({
   label,
   displayValue,
   className,
+  style,
   PhaseComponent,
   InterPhaseComponent,
 }: CustomPhasesProgressBarProps) {
   return (
-    <div className={cx(textCenter, centeredContent, flexColumn, className)}>
+    <div
+      className={
+        cx(textCenter, centeredContent, flexColumn, grow) +
+        classNameOrEmpty(className)
+      }
+      style={style}
+    >
       {label && <Value className={grow} value={label} />}
       {drawBar(value, phases, PhaseComponent, InterPhaseComponent)}
       {displayValue && <Value className={grow} value={value} />}

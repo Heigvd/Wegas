@@ -2,12 +2,11 @@ import * as React from 'react';
 import TreeNode, { treeHeadStyle } from './TreeNode';
 import HandleUpDown from './HandleUpDown';
 
-export interface Item<T> {
+export interface Item<T> extends ClassAndStyle {
   label: React.ReactNode;
   value?: T;
   selectable?: boolean;
   items?: Item<T>[];
-  className?: string;
 }
 
 interface TreeSelectProps<T> {

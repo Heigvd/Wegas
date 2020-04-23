@@ -24,6 +24,7 @@ import { usePageComponentStore } from '../../../Components/PageComponents/tools/
 import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
 import { themeVar } from '../../../Components/Theme';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { classNameOrEmpty } from '../../../Helper/className';
 
 const bulletCSS = {
   width: '1em',
@@ -93,8 +94,7 @@ function isComponentNodeId(nodeId: NodeId): nodeId is ComponentNodeId {
   return 'pageId' in nodeId;
 }
 
-interface LayoutButtonProps {
-  className?: string;
+interface LayoutButtonProps extends ClassAndStyle {
   tooltip?: string;
 }
 
@@ -104,12 +104,17 @@ interface IndexItemAdderProps extends LayoutButtonProps {
   path: string[];
 }
 
-function IndexItemAdder({ path, className, tooltip }: IndexItemAdderProps) {
+function IndexItemAdder({
+  path,
+  className,
+  style,
+  tooltip,
+}: IndexItemAdderProps) {
   const [modalState, setModalState] = React.useState<LayoutModalStates>();
   const { dispatch } = store;
 
   return (
-    <div className={className} title={tooltip}>
+    <div className={className} style={style} title={tooltip}>
       <Menu
         icon="plus"
         items={[
@@ -286,13 +291,12 @@ const compToKey = (component: WegasComponent) =>
     props: omit(component.props, 'children'),
   });
 
-interface LayoutNodeTitleProps {
+interface LayoutNodeTitleProps extends ClassAndStyle {
   icon: Icons;
   title: string;
   advancedTitle?: string;
   tooltip?: string;
   onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  className?: string;
   classSelector?: string[];
 }
 
@@ -303,7 +307,7 @@ function LayoutNodeTitle({
   tooltip,
   onClick,
   className,
-  classSelector,
+  style,
   children,
 }: React.PropsWithChildren<LayoutNodeTitleProps>) {
   const { currentFeatures } = React.useContext(featuresCTX);
@@ -316,10 +320,10 @@ function LayoutNodeTitle({
     <div
       onClick={onClick}
       className={
-        cx(nodeContentStyle, titleStyle, flex, grow, itemCenter, className) +
-        ' ' +
-        (classSelector ? classSelector.join(' ') : '')
+        cx(nodeContentStyle, titleStyle, flex, grow, itemCenter) +
+        classNameOrEmpty(className)
       }
+      style={style}
       title={tooltip}
     >
       <IconComp icon={icon} style={bulletCSS} />

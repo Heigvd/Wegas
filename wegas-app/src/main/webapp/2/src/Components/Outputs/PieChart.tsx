@@ -792,7 +792,7 @@ const setPieChartState = (
     }
   });
 
-export interface PieChartProps {
+export interface PieChartProps extends ClassAndStyle {
   /**
    * minAngle - the angle of the pie chart (0 is left, 90 is top, 180 is right, 270 is bottom)
    */
@@ -825,10 +825,6 @@ export interface PieChartProps {
    * blur - blur the color sections
    */
   blur?: boolean;
-  /**
-   * className - the class of the div around the pie chart
-   */
-  className?: string;
 }
 
 export function PieChart({
@@ -841,6 +837,7 @@ export function PieChart({
   holeRatio = 0.5,
   explodeRatio = 0,
   className,
+  style,
 }: PieChartProps) {
   const [
     {
@@ -948,7 +945,7 @@ export function PieChart({
 
   const circular = computedMaxAngle - computedMinAngle === 360;
   return (
-    <div className={className}>
+    <div className={className} style={style}>
       <svg viewBox={`0 0 ${chartSizes.width} ${chartSizes.height}`}>
         {blur && <defs>{gradient.gradients}</defs>}
         {blur

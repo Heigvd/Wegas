@@ -39,6 +39,8 @@ import { omit } from 'lodash-es';
 import { clientScriptEval, useScript } from '../../Hooks/useScript';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { ActionCreator } from '../../../data/actions';
+import { ReflexElement } from 'react-reflex';
+import { classNameOrEmpty } from '../../../Helper/className';
 
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
@@ -83,22 +85,22 @@ const handleControlStyle = css({
   '&>.wegas-component-handle': {
     visibility: 'hidden',
     opacity: 0.0,
-    transition: 'all 0.5s',
+    // transition: 'all 0.5s',
   },
   ':hover>.wegas-component-handle': {
     visibility: 'unset',
     opacity: 0.8,
-    transition: 'all 0.5s',
+    // transition: 'all 0.5s',
   },
 });
 
 const handleControlHoverStyle = css({
-  transition: 'all 0.5s',
+  // transition: 'all 0.5s',
   ':hover': {
     borderStyle: 'solid',
     borderWidth: '1px',
     borderColor: themeVar.primaryHoverColor,
-    transition: 'all 0s',
+    // transition: 'all 0s',
   },
 });
 
@@ -115,9 +117,8 @@ const emptyListStyle = css({
   borderWidth: '1px',
 });
 
-export interface EditorHandleProps {
+export interface EditorHandleProps extends ClassAndStyle {
   componentName?: string;
-  className?: string;
   togglerProps?: TogglerProps;
   stackedHandles?: JSX.Element[];
 }
@@ -549,7 +550,10 @@ function computeHandles(handles: Handles, path: number[]) {
 }
 
 export interface ComponentContainerProps
-  extends Omit<PageComponentMandatoryProps, 'ComponentContainer'> {
+  extends Omit<
+    PageComponentMandatoryProps & ClassAndStyle,
+    'ComponentContainer'
+  > {
   options?: {
     layout?: FlexItemFlexProps;
     actions?: WegasComponentOptionsActions & WegasComponentActionsProperties;
@@ -563,14 +567,6 @@ export interface ComponentContainerProps
    * handleProps - optional props for the edit handle
    */
   handleProps?: EditorHandleProps;
-  /**
-   * className - the class to apply to the item
-   */
-  className?: string;
-  /**
-   * style - the style to apply to the item (always prefer className over style to avoid messing with original behaviour of the item)
-   */
-  style?: React.CSSProperties;
 }
 
 const defaultComponentContainerProps: ComponentContainerProps = {
@@ -585,10 +581,15 @@ export const componentContainerWegasPropsKeys = Object.keys(
   defaultComponentContainerProps,
 );
 
-export function useComponentEditorContainer(type: string, path: number[]) {
+export function useComponentEditorContainer(
+  type: string,
+  path: number[],
+  childrenType: ContainerTypes,
+) {
   function EditHandle({
     componentName,
     className,
+    style,
     togglerProps,
     stackedHandles,
   }: EditorHandleProps) {
@@ -645,8 +646,9 @@ export function useComponentEditorContainer(type: string, path: number[]) {
           position: 'absolute',
           top: '-30px',
           left: '-30px',
+          ...style,
         }}
-        className={'wegas-component-handle ' + (className ? className : '')}
+        className={'wegas-component-handle' + classNameOrEmpty(className)}
       >
         {stackedHandles && stackedHandles.length > 0 ? (
           stackedHandles.map((v, i) => (
@@ -657,6 +659,10 @@ export function useComponentEditorContainer(type: string, path: number[]) {
         )}
       </div>
     ) : null;
+  }
+
+  function AbsoluteItem({ children }: React.PropsWithChildren<{}>) {
+    return <div style={{ position: 'absolute' }}>{children}</div>;
   }
 
   return function ComponentContainer({
@@ -677,8 +683,22 @@ export function useComponentEditorContainer(type: string, path: number[]) {
     const isNotFirstComponent = path.length > 0;
     const editable = editMode && isNotFirstComponent;
 
+    let Container;
+
+    switch (childrenType) {
+      case 'FLEX':
+        Container = FlexItem;
+        break;
+      case 'LINEAR':
+        Container = ReflexElement;
+        break;
+      case 'ABSOLUTE':
+      default:
+        Container = AbsoluteItem;
+    }
+
     return (
-      <FlexItem
+      <Container
         ref={dropZone}
         {...options?.layout}
         className={
@@ -688,7 +708,7 @@ export function useComponentEditorContainer(type: string, path: number[]) {
             [handleControlHoverStyle]: editMode,
             [childDropzoneHorizontalStyle]: !vertical,
             [childDropzoneVerticalStyle]: vertical,
-          }) + (className ? ' ' + className : '')
+          }) + classNameOrEmpty(className)
         }
         style={style}
         onClick={() => {
@@ -746,7 +766,7 @@ export function useComponentEditorContainer(type: string, path: number[]) {
         }}
         tooltip={options?.upgrades?.tooltip}
       >
-        {editMode && isNotFirstComponent && (
+        {editable && (
           <ComponentDropZone
             onDrop={dndComponent =>
               onDrop(dndComponent, containerPath, itemPath)
@@ -754,7 +774,7 @@ export function useComponentEditorContainer(type: string, path: number[]) {
             show={isOver}
           />
         )}
-        {path.length > 0 && (
+        {editable && (
           <EditHandle {...handleProps} stackedHandles={stackedHandles} />
         )}
         <ErrorBoundary>{children}</ErrorBoundary>
@@ -774,8 +794,108 @@ export function useComponentEditorContainer(type: string, path: number[]) {
             last
           />
         )}
-      </FlexItem>
+      </Container>
     );
+
+    // return (
+    //   <FlexItem
+    //     ref={dropZone}
+    //     {...options?.layout}
+    //     className={
+    //       cx(handleControlStyle, flex, {
+    //         [layoutHighlightStyle]: showBorders,
+    //         [childHighlightStyle]: showBorders,
+    //         [handleControlHoverStyle]: editMode,
+    //         [childDropzoneHorizontalStyle]: !vertical,
+    //         [childDropzoneVerticalStyle]: vertical,
+    //       }) + (className ? ' ' + className : '')
+    //     }
+    //     style={style}
+    //     onClick={() => {
+    //       if (options && options.actions) {
+    //         if (
+    //           !options.actions.confirmClick ||
+    //           // TODO : Find a better way to do that than a modal!!!
+    //           // eslint-disable-next-line no-alert
+    //           confirm(options.actions.confirmClick)
+    //         ) {
+    //           if (options.actions?.lock) {
+    //             // LockAPI.lockPlayer(options.actions?.lock)
+    //             //   .then(res => {
+    //             //     wlog(res);
+    //             //     debugger;
+    //             //   })
+    //             //   .catch(res => {
+    //             //     wlog(res);
+    //             //     debugger;
+    //             //   });
+    //           }
+    //           Object.entries(
+    //             omit(
+    //               options.actions,
+    //               'confirmClick',
+    //               'lock',
+    //             ) as WegasComponentOptionsActions,
+    //           )
+    //             .sort(
+    //               (
+    //                 [, v1]: [string, WegasComponentOptionsAction],
+    //                 [, v2]: [string, WegasComponentOptionsAction],
+    //               ) =>
+    //                 (v1.priority ? v1.priority : 0) -
+    //                 (v2.priority ? v2.priority : 0),
+    //             )
+    //             .forEach(([k, v]) =>
+    //               wegasComponentActions[k as keyof WegasComponentActions](v),
+    //             );
+    //         }
+    //       }
+    //     }}
+    //     onMouseOver={e => {
+    //       if (editable) {
+    //         e.stopPropagation();
+    //         if (!stackedHandles) {
+    //           setStackedHandles(() => computeHandles(handles, path));
+    //         }
+    //       }
+    //     }}
+    //     onMouseLeave={() => {
+    //       if (editable) {
+    //         setStackedHandles(undefined);
+    //       }
+    //     }}
+    //     tooltip={options?.upgrades?.tooltip}
+    //   >
+    //     {editable && (
+    //       <ComponentDropZone
+    //         onDrop={dndComponent =>
+    //           onDrop(dndComponent, containerPath, itemPath)
+    //         }
+    //         show={isOver}
+    //       />
+    //     )}
+    //     {editable && (
+    //       <EditHandle {...handleProps} stackedHandles={stackedHandles} />
+    //     )}
+    //     <ErrorBoundary>{children}</ErrorBoundary>
+    //     {options?.upgrades?.notification && (
+    //       <NotificationComponent {...options.upgrades.notification} />
+    //     )}
+    //     {editMode && isNotFirstComponent && (
+    //       <ComponentDropZone
+    //         onDrop={dndComponent =>
+    //           onDrop(
+    //             dndComponent,
+    //             containerPath,
+    //             itemPath != null ? itemPath + 1 : itemPath,
+    //           )
+    //         }
+    //         show={isOver}
+    //         last
+    //       />
+    //     )}
+    //   </FlexItem>
+    // );
   };
 }
 
@@ -803,9 +923,18 @@ function ComponentDropZone({ onDrop, show, last }: ComponentDropZoneProps) {
   );
 }
 
+export type ContainerTypes = 'FLEX' | 'LINEAR' | 'ABSOLUTE' | undefined;
+
 export interface PageComponentProps {
   children?: JSX.Element[];
+  /**
+   * path - the path of the current component
+   */
   path: number[];
+  /**
+   * containerType - if the component is a container, gives its type
+   */
+  childrenType: ContainerTypes;
 }
 
 interface EditableComponentProps {
@@ -818,6 +947,7 @@ interface EditableComponentProps {
   wegasChildren?: JSX.Element[];
   path: number[];
   uneditable?: boolean;
+  childrenType: ContainerTypes;
 }
 
 export function EditableComponent({
@@ -826,9 +956,14 @@ export function EditableComponent({
   wegasChildren,
   path,
   uneditable,
+  childrenType,
 }: EditableComponentProps) {
   const { editMode: edit, showBorders } = React.useContext(pageCTX);
-  const ComponentContainer = useComponentEditorContainer(componentName, path);
+  const ComponentContainer = useComponentEditorContainer(
+    componentName,
+    path,
+    childrenType,
+  );
 
   const editMode = edit && !uneditable;
   let content: JSX.Element[] = [];

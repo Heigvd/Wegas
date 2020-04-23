@@ -5,6 +5,7 @@ import { themeVar } from '../../Theme';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 import { DisableBorders, disableBordersCSS, Button } from '../Buttons/Button';
 import { IconButton } from '../Buttons/IconButton';
+import { classNameOrEmpty } from '../../../Helper/className';
 
 const buttonZone = (disableBorders?: DisableBorders) =>
   css({
@@ -17,7 +18,7 @@ const buttonZone = (disableBorders?: DisableBorders) =>
     width: 'max-content',
   });
 
-interface ConfirmButtonProps {
+interface ConfirmButtonProps extends ClassAndStyle {
   label?: React.ReactNode;
   icon?: Icon;
   tooltip?: string;
@@ -27,7 +28,6 @@ interface ConfirmButtonProps {
   dontResetOnBlur?: boolean;
   disableBorders?: DisableBorders;
   disabled?: boolean;
-  className?: string;
 }
 
 export function ConfirmButton(props: ConfirmButtonProps /*& IconButtonProps*/) {
@@ -52,7 +52,7 @@ export function ConfirmButton(props: ConfirmButtonProps /*& IconButtonProps*/) {
   );
 
   return !confirmation ? (
-    <div className={props.className}>
+    <div className={props.className} style={props.style}>
       {props.label && (
         <Button
           label={props.label}
@@ -75,8 +75,7 @@ export function ConfirmButton(props: ConfirmButtonProps /*& IconButtonProps*/) {
     <div
       ref={confirmButton}
       className={
-        buttonZone(props.disableBorders) +
-        (props.className ? ' ' + props.className : '')
+        buttonZone(props.disableBorders) + classNameOrEmpty(props.className)
       }
     >
       <Button

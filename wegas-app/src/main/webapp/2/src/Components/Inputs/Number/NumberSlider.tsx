@@ -7,6 +7,7 @@ import { themeVar } from '../../Theme';
 import { Value } from '../../Outputs/Value';
 import { InputProps } from '../SimpleInput';
 import { NumberInput } from './NumberInput';
+import { classNameOrEmpty } from '../../../Helper/className';
 
 const valueDisplayStyle = css({
   textAlign: 'center',
@@ -154,7 +155,7 @@ export function NumberSlider({
   };
 
   return (
-    <div id={id} className={className ? className : textCenter}>
+    <div id={id} className={textCenter + classNameOrEmpty(className)}>
       {label && <Value value={label} />}
       <CheckMinMax min={min} max={max} value={internalValue} />
       <Info />

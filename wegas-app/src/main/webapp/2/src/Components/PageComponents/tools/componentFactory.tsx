@@ -10,6 +10,7 @@ import {
   PageComponentMandatoryProps,
   defaultMandatoryKeys,
   componentContainerWegasPropsKeys,
+  ContainerTypes,
 } from './EditableComponent';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 import { SchemaPropsSchemas } from './schemaProps';
@@ -19,6 +20,7 @@ export interface PageComponent<P extends {} = {}> {
   getComponent: (
     uneditable?: boolean,
   ) => React.FunctionComponent<P & PageComponentProps>;
+  getContainerType: () => ContainerTypes;
   getName: () => string;
   getIcon: () => Icon;
   getSchema: () => {
@@ -127,6 +129,7 @@ export function pageComponentFactory<
   schema: { [prop: string]: SchemaPropsSchemas },
   allowedVariables: T[],
   getComputedPropsFromVariable: (variable?: V) => R,
+  containerType?: ContainerTypes,
 ): PageComponent<P> {
   function generateComponent(
     uneditable?: boolean,
@@ -152,6 +155,7 @@ export function pageComponentFactory<
   }
   return {
     getComponent: (uneditable?: boolean) => generateComponent(uneditable),
+    getContainerType: () => containerType,
     getIcon: () => icon,
     getName: () => componentName,
     getSchema: () => ({
