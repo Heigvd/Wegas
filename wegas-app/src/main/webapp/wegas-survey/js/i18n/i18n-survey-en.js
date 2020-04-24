@@ -62,6 +62,7 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 teamRepliesCompulsory: "Compulsory Replies",
                 teamRepliesOptional: "Optional Replies",
                 noLogId: "No \"Log ID\" has been set for this session.<br>Replies to the survey will not be saved!<br>Please contact the platform administrator (AlbaSim).",
+                teamGamePlayerScope: "Cannot display status of individual survey inside game played in teams"
             }
         }
     });

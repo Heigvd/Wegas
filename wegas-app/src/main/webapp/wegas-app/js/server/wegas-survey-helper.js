@@ -43,6 +43,9 @@ var SurveyHelper = (function() {
             game = self.getGame(),
             teams = game.getTeams(),
             nbTeams = teams.size(),
+            isTeamGame = !gameModel.getProperties().getFreeForAll(),
+            isPlayerScopeSurvey = (sd.getScopeType().toString() === "PlayerScope" ),
+            cannotReport = isPlayerScopeSurvey && isTeamGame,
             t, teamId, team,
             aPlayer, survInsts, survInst, data, replied, optionalReplied,
             activeInputs, activeOptionalInputs,
@@ -73,6 +76,12 @@ var SurveyHelper = (function() {
                 }
             };
 
+        if (cannotReport) {
+            monitoring.active = false;
+            monitoring.status = "NOT_STARTED";
+            monitoring.error = "TeamGamePlayerScope";
+            return JSON.stringify(monitoring);
+        }
 
         var sections = Java.from(sd.getItems()),
             inputDescriptors = [],
@@ -90,8 +99,9 @@ var SurveyHelper = (function() {
             for (t = 0; t < 1 /* nbTeams */; t += 1) {
                 team = teams.get(t);
                 teamId = new Long(team.getId());
+                // This yields null when isPlayerScopeSurvey && isTeamGame are true:
                 sctInst = sctInsts[team];
-                if (sctInst.getActive()) {
+                if (sctInst && sctInst.getActive()) {
                     for (j = 0; j < inputList.length; j++) {
                         inputDescriptors.push(inputList[j]);
                     }

@@ -72,19 +72,20 @@ YUI.add('wegas-surveylistener', function(Y) {
         // Register a survey descriptor in order to monitor updates to its instance
         registerSurvey: function(sd) {
             var descrId = sd.get("id"),
-                instId = sd.getInstance().get("id");
+                inst = sd.getInstance();
             if (this.knownSurveyHandlers[descrId]) {
                 // Updates for an already known descriptor:
                 this.knownSurveyHandlers[descrId].detach();
             }
-            this.knownSurveyHandlers[descrId] = 
-                Y.Wegas.Facade.Instance.after(instId + ":updatedInstance", this.onUpdatedInstance, this);
+            if (inst) {
+                this.knownSurveyHandlers[descrId] = 
+                    Y.Wegas.Facade.Instance.after(inst.get("id") + ":updatedInstance", this.onUpdatedInstance, this);
+            }
         },
 
         deregisterSurvey: function(sd) {
-            var descrId = sd.get("id"),
-                instId = sd.getInstance().get("id");
-            if (this.currentSurvey && this.currentSurvey.get("id") === instId) {
+            var descrId = sd.get("id");
+            if (this.currentSurvey && this.currentSurvey.get("parentId") === descrId) {
                 this.retireSurvey();
             }
             if (this.knownSurveyHandlers[descrId]) {

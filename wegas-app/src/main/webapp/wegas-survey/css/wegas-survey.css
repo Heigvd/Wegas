@@ -534,6 +534,16 @@
     cursor: pointer;
 }
 
+.wegas-survey-orchestrator .survey-mixer .external-surveys .list .importable-variable .scope-toggle {
+    margin-left: 45px;
+}
+
+.wegas-survey-orchestrator .survey-mixer .external-surveys .list .importable-variable .survey-comments {
+    font-size: 12px;
+    padding: 1px 8px;
+    color: #6666aa;
+}
+
 .wegas-survey-orchestrator .survey-mixer .import-monitoring .import-success {
     color: #009900;
 }
@@ -673,6 +683,7 @@
     font-weight: 600;
     color: #009900;
     line-height: 1;
+    font-style: normal;
 }
 
 .wegas-survey-orchestrator .checkbox:before {

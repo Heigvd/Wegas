@@ -60,7 +60,8 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 teamStatus: "Stand",
                 teamRepliesCompulsory: "Erforderliche Antworte",
                 teamRepliesOptional: "Optionale Antworte",
-                noLogId: "Für diese Sitzung wurde keine \"Log-ID\" festgelegt.<br>Antworten auf die Umfrage werden nicht gespeichert!<br>Bitte kontaktieren Sie den Plattform-Administrator (AlbaSim)."
+                noLogId: "Für diese Sitzung wurde keine \"Log-ID\" festgelegt.<br>Antworten auf die Umfrage werden nicht gespeichert!<br>Bitte kontaktieren Sie den Plattform-Administrator (AlbaSim).",
+                teamGamePlayerScope: "Kann den Status einer Umfrage nicht anzeigen, die innerhalb eines Spiels in Teams individuell zu beantworten ist"
             }
         }
     });

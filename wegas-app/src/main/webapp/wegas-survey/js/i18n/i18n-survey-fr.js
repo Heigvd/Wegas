@@ -61,6 +61,7 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
                 teamRepliesCompulsory: "Réponses obligatoires",
                 teamRepliesOptional: "Réponses facultatives",
                 noLogId: "Aucun \"Log ID\" n'a été fixé pour cette partie.<br>Les réponses au questionnaire ne seront pas sauvegardées !<br>Veuillez contacter l'administrateur de la plateforme (AlbaSim).",
+                teamGamePlayerScope: "Impossible de montrer le statut d'un questionnaire individuel à l'intérieur d'un jeu joué par équipes"
             }
 
         }
