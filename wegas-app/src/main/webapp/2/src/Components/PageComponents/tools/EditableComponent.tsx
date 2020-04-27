@@ -39,8 +39,8 @@ import { omit } from 'lodash-es';
 import { clientScriptEval, useScript } from '../../Hooks/useScript';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { ActionCreator } from '../../../data/actions';
-import { ReflexElement } from 'react-reflex';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { Content, Splitter } from '../../Layouts/FonkyFlex';
 
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
@@ -585,6 +585,7 @@ export function useComponentEditorContainer(
   type: string,
   path: number[],
   childrenType: ContainerTypes,
+  last?: boolean,
 ) {
   function EditHandle({
     componentName,
@@ -641,11 +642,32 @@ export function useComponentEditorContainer(
 
     return editMode && showControls ? (
       <div
+        ref={e => {
+          if (e != null) {
+            const div = e as HTMLDivElement;
+            const parent = div.parentElement as HTMLElement;
+            if (parent.style.getPropertyValue('overflow') !== 'visible') {
+              div.style.setProperty('position', 'fixed');
+              div.style.setProperty(
+                'top',
+                String(parent.getBoundingClientRect().top - 30) + 'px',
+              );
+              div.style.setProperty(
+                'left',
+                String(parent.getBoundingClientRect().left - 30) + 'px',
+              );
+            } else {
+              div.style.setProperty('position', 'absolute');
+              div.style.setProperty('top', '-30px');
+              div.style.setProperty('left', '-30px');
+            }
+          }
+        }}
         style={{
           zIndex: 1000,
-          position: 'absolute',
-          top: '-30px',
-          left: '-30px',
+          // position: 'absolute',
+          // top: '-30px',
+          // left: '-30px',
           ...style,
         }}
         className={'wegas-component-handle' + classNameOrEmpty(className)}
@@ -686,115 +708,119 @@ export function useComponentEditorContainer(
     let Container;
 
     switch (childrenType) {
-      case 'FLEX':
-        Container = FlexItem;
-        break;
       case 'LINEAR':
-        Container = ReflexElement;
+        Container = Content;
         break;
       case 'ABSOLUTE':
-      default:
         Container = AbsoluteItem;
+        break;
+      case 'FLEX':
+      default:
+        Container = FlexItem;
+        break;
     }
 
     return (
-      <Container
-        ref={dropZone}
-        {...options?.layout}
-        className={
-          cx(handleControlStyle, flex, {
-            [layoutHighlightStyle]: showBorders,
-            [childHighlightStyle]: showBorders,
-            [handleControlHoverStyle]: editMode,
-            [childDropzoneHorizontalStyle]: !vertical,
-            [childDropzoneVerticalStyle]: vertical,
-          }) + classNameOrEmpty(className)
-        }
-        style={style}
-        onClick={() => {
-          if (options && options.actions) {
-            if (
-              !options.actions.confirmClick ||
-              // TODO : Find a better way to do that than a modal!!!
-              // eslint-disable-next-line no-alert
-              confirm(options.actions.confirmClick)
-            ) {
-              if (options.actions?.lock) {
-                // LockAPI.lockPlayer(options.actions?.lock)
-                //   .then(res => {
-                //     wlog(res);
-                //     debugger;
-                //   })
-                //   .catch(res => {
-                //     wlog(res);
-                //     debugger;
-                //   });
-              }
-              Object.entries(
-                omit(
-                  options.actions,
-                  'confirmClick',
-                  'lock',
-                ) as WegasComponentOptionsActions,
-              )
-                .sort(
-                  (
-                    [, v1]: [string, WegasComponentOptionsAction],
-                    [, v2]: [string, WegasComponentOptionsAction],
-                  ) =>
-                    (v1.priority ? v1.priority : 0) -
-                    (v2.priority ? v2.priority : 0),
+      <>
+        <Container
+          ref={dropZone}
+          {...options?.layout}
+          className={
+            cx(handleControlStyle, flex, {
+              [layoutHighlightStyle]: showBorders,
+              [childHighlightStyle]: showBorders,
+              [handleControlHoverStyle]: editMode,
+              [childDropzoneHorizontalStyle]: !vertical,
+              [childDropzoneVerticalStyle]: vertical,
+            }) + classNameOrEmpty(className)
+          }
+          style={style}
+          onClick={() => {
+            if (options && options.actions) {
+              if (
+                !options.actions.confirmClick ||
+                // TODO : Find a better way to do that than a modal!!!
+                // eslint-disable-next-line no-alert
+                confirm(options.actions.confirmClick)
+              ) {
+                if (options.actions?.lock) {
+                  // LockAPI.lockPlayer(options.actions?.lock)
+                  //   .then(res => {
+                  //     wlog(res);
+                  //     debugger;
+                  //   })
+                  //   .catch(res => {
+                  //     wlog(res);
+                  //     debugger;
+                  //   });
+                }
+                Object.entries(
+                  omit(
+                    options.actions,
+                    'confirmClick',
+                    'lock',
+                  ) as WegasComponentOptionsActions,
                 )
-                .forEach(([k, v]) =>
-                  wegasComponentActions[k as keyof WegasComponentActions](v),
-                );
+                  .sort(
+                    (
+                      [, v1]: [string, WegasComponentOptionsAction],
+                      [, v2]: [string, WegasComponentOptionsAction],
+                    ) =>
+                      (v1.priority ? v1.priority : 0) -
+                      (v2.priority ? v2.priority : 0),
+                  )
+                  .forEach(([k, v]) =>
+                    wegasComponentActions[k as keyof WegasComponentActions](v),
+                  );
+              }
             }
-          }
-        }}
-        onMouseOver={e => {
-          if (editable) {
-            e.stopPropagation();
-            if (!stackedHandles) {
-              setStackedHandles(() => computeHandles(handles, path));
+          }}
+          onMouseOver={e => {
+            if (editable) {
+              e.stopPropagation();
+              if (!stackedHandles) {
+                setStackedHandles(() => computeHandles(handles, path));
+              }
             }
-          }
-        }}
-        onMouseLeave={() => {
-          if (editable) {
-            setStackedHandles(undefined);
-          }
-        }}
-        tooltip={options?.upgrades?.tooltip}
-      >
-        {editable && (
-          <ComponentDropZone
-            onDrop={dndComponent =>
-              onDrop(dndComponent, containerPath, itemPath)
+          }}
+          onMouseLeave={() => {
+            if (editable) {
+              setStackedHandles(undefined);
             }
-            show={isOver}
-          />
-        )}
-        {editable && (
-          <EditHandle {...handleProps} stackedHandles={stackedHandles} />
-        )}
-        <ErrorBoundary>{children}</ErrorBoundary>
-        {options?.upgrades?.notification && (
-          <NotificationComponent {...options.upgrades.notification} />
-        )}
-        {editMode && isNotFirstComponent && (
-          <ComponentDropZone
-            onDrop={dndComponent =>
-              onDrop(
-                dndComponent,
-                containerPath,
-                itemPath != null ? itemPath + 1 : itemPath,
-              )
-            }
-            show={isOver}
-            last
-          />
-        )}
-      </Container>
+          }}
+          tooltip={options?.upgrades?.tooltip}
+        >
+          {editable && (
+            <ComponentDropZone
+              onDrop={dndComponent =>
+                onDrop(dndComponent, containerPath, itemPath)
+              }
+              show={isOver}
+            />
+          )}
+          {editable && (
+            <EditHandle {...handleProps} stackedHandles={stackedHandles} />
+          )}
+          <ErrorBoundary>{children}</ErrorBoundary>
+          {options?.upgrades?.notification && (
+            <NotificationComponent {...options.upgrades.notification} />
+          )}
+          {editMode && isNotFirstComponent && (
+            <ComponentDropZone
+              onDrop={dndComponent =>
+                onDrop(
+                  dndComponent,
+                  containerPath,
+                  itemPath != null ? itemPath + 1 : itemPath,
+                )
+              }
+              show={isOver}
+              last
+            />
+          )}
+        </Container>
+        {childrenType === 'LINEAR' && !last && <Splitter />}
+      </>
     );
 
     // return (
@@ -935,6 +961,10 @@ export interface PageComponentProps {
    * containerType - if the component is a container, gives its type
    */
   childrenType: ContainerTypes;
+  /**
+   * last - is this component the last of the list
+   */
+  last?: boolean;
 }
 
 interface EditableComponentProps {
@@ -946,6 +976,7 @@ interface EditableComponentProps {
   ) => React.ReactElement | null;
   wegasChildren?: JSX.Element[];
   path: number[];
+  last?: boolean;
   uneditable?: boolean;
   childrenType: ContainerTypes;
 }
@@ -955,6 +986,7 @@ export function EditableComponent({
   children,
   wegasChildren,
   path,
+  last,
   uneditable,
   childrenType,
 }: EditableComponentProps) {
@@ -963,6 +995,7 @@ export function EditableComponent({
     componentName,
     path,
     childrenType,
+    last,
   );
 
   const editMode = edit && !uneditable;

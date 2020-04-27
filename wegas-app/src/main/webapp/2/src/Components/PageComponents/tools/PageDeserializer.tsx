@@ -8,6 +8,7 @@ interface PageDeserializerProps {
   path?: number[];
   uneditable?: boolean;
   childrenType?: ContainerTypes;
+  last?: boolean;
 }
 
 export function PageDeserializer({
@@ -15,6 +16,7 @@ export function PageDeserializer({
   path,
   uneditable,
   childrenType,
+  last,
 }: PageDeserializerProps): JSX.Element {
   const realPath = path ? path : [];
   const { children = [], ...restProps } = (json && json.props) || {};
@@ -25,6 +27,7 @@ export function PageDeserializer({
       {component.getComponent(uneditable)({
         childrenType,
         path: realPath,
+        last: last,
         ...restProps,
         children: children.map((cjson, i) => (
           <PageDeserializer
@@ -33,6 +36,7 @@ export function PageDeserializer({
             path={[...realPath, i]}
             uneditable={uneditable}
             childrenType={component.getContainerType()}
+            last={i === children.length - 1}
           />
         )),
       })}

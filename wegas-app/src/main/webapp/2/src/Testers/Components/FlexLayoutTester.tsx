@@ -1,40 +1,42 @@
 import * as React from 'react';
-import { useFlexLayout } from '../../Components/Layouts/FlexLayout';
 import { cx, css } from 'emotion';
 import { flex, flexColumn, grow } from '../../css/classes';
+import {
+  Container,
+  Content,
+  Splitter,
+} from '../../Components/Layouts/FonkyFlex';
 
 export default function FlexLayoutTester() {
-  const HorizontalFlexLayout = useFlexLayout(false);
-  const VerticalFlexLayout = useFlexLayout(true);
-
-  // debugger;
-
   return (
-    <div className={cx(flex, flexColumn, css({ width: '100px' }))}>
+    <div
+      className={cx(flex, flexColumn, css({ width: '100%', height: '500px' }))}
+    >
       <div className={grow}>
-        <HorizontalFlexLayout>
-          <HorizontalFlexLayout.Content>
-            Horizontal 1
-          </HorizontalFlexLayout.Content>
-          <HorizontalFlexLayout.Splitter />
-          <HorizontalFlexLayout.Content>
-            Horizontal 2
-          </HorizontalFlexLayout.Content>
-          <HorizontalFlexLayout.Splitter />
-          <HorizontalFlexLayout.Content>
-            Horizontal 3
-          </HorizontalFlexLayout.Content>
-        </HorizontalFlexLayout>
+        <Container>
+          <Content>Horizontal 1</Content>
+          <Splitter />
+          <Content>Horizontal 2</Content>
+          <Splitter />
+          <Content>Horizontal 3</Content>
+        </Container>
+      </div>
+      <div className={grow}>
+        <Container>
+          <Content>Horizontal Nosplitter 1</Content>
+          <Content>Horizontal Nosplitter 2</Content>
+          <Content>Horizontal Nosplitter 3</Content>
+        </Container>
       </div>
       <div className={grow}>
         Vertical
-        <VerticalFlexLayout>
-          <VerticalFlexLayout.Content>Vertical 1</VerticalFlexLayout.Content>
-          <VerticalFlexLayout.Splitter />
-          <VerticalFlexLayout.Content>Vertical 2</VerticalFlexLayout.Content>
-          <VerticalFlexLayout.Splitter />
-          <VerticalFlexLayout.Content>Vertical 3</VerticalFlexLayout.Content>
-        </VerticalFlexLayout>
+        <Container vertical>
+          <Content>Vertical 1</Content>
+          <Splitter />
+          <Content>Vertical 2</Content>
+          <Splitter />
+          <Content>Vertical 3</Content>
+        </Container>
       </div>
     </div>
   );

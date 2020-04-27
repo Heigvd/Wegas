@@ -6,18 +6,16 @@ import {
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
-import { ReflexContainer, ReflexSplitter, ReflexElement } from 'react-reflex';
 import { splitter } from '../../../Editor/Components/LinearTabLayout/LinearLayout';
-import { cx, css } from 'emotion';
 import { OrientedLayoutProps } from '../../Layouts/List';
 import {
   PageComponentMandatoryProps,
-  childHighlightCSS,
   EditorHandleProps,
 } from '../tools/EditableComponent';
 import 'react-reflex/styles.css';
+import { Container } from '../../Layouts/FonkyFlex';
 
-const componentType = 'LinearLayout';
+const CONTENT_TYPE = 'LinearLayout';
 
 type LinearLayoutProps = OrientedLayoutProps<WegasComponent> &
   PageComponentMandatoryProps;
@@ -30,7 +28,7 @@ interface PlayerLinearLayoutProps extends LinearLayoutProps {
   /**
    * containersSizeRatio - allows to fix a specific size ratio for each element in the layout
    */
-  containersSizeRatio?: { [containerId: string]: number };
+  flexValues?: number[];
   /**
    * name - the name of the component
    */
@@ -59,58 +57,6 @@ function PlayerLinearLayout(props: PlayerLinearLayoutProps) {
     }
   }, [showBorders]);
   const { editMode, onUpdate } = React.useContext(pageCTX);
-  const children: JSX.Element[] = [];
-
-  // The mapping is done outside from the return to avoid grouping ReflexSplitter and ReflexElement in fragment (avoid bug)
-  for (let i = 0; i < props.children.length; editMode ? (i += 2) : (i += 1)) {
-    if (
-      i > 0 &&
-      ((editMode && i !== props.children.length - 1) ||
-        (childProps.allowUserResize && !editMode))
-    ) {
-      children.push(
-        <ReflexSplitter key={`SPLITTER${i / (editMode ? 2 : 1)}`} />,
-      );
-    }
-    children.push(
-      <ReflexElement
-        key={`ELEMENT${i}`}
-        flex={
-          props.containersSizeRatio
-            ? props.containersSizeRatio[Math.floor(i / (editMode ? 2 : 1))]
-            : 1000
-        }
-        onStopResize={args => {
-          editMode &&
-            onUpdate(
-              {
-                type: componentType,
-                props: {
-                  flexValues: {
-                    ...(props.containersSizeRatio
-                      ? props.containersSizeRatio
-                      : {}),
-                    [Math.floor(i / 2)]: args.component.props.flex,
-                  },
-                },
-              },
-              path,
-              true,
-            );
-        }}
-        className={cx(showBorders && css(childHighlightCSS))}
-        style={{ overflow: 'visible' }}
-      >
-        {/* We need to group every 2 elements in edit mode because drop zones are added */}
-        {props.children[i]}
-        {editMode && props.children[i + 1]}
-        {editMode && i === props.children.length - 3 && props.children[i + 2]}
-      </ReflexElement>,
-    );
-    if (i === props.children.length - 3) {
-      i += 1;
-    }
-  }
 
   const handleProps: EditorHandleProps = {
     componentName: childProps.name,
@@ -128,21 +74,34 @@ function PlayerLinearLayout(props: PlayerLinearLayoutProps) {
       handleProps={handleProps}
       vertical={!childProps.horizontal}
     >
-      <ReflexContainer
+      <Container
         className={splitter}
-        // Orientation is inverted to keep same logic in TabLayoutNode and ReflexLayoutNode (vertical==true : v, vertical==false : >)
-        orientation={childProps.horizontal ? 'vertical' : 'horizontal'}
+        vertical={!childProps.horizontal}
+        flexValues={childProps.flexValues}
+        noCheck
+        onStopResize={(_splitterId, flexValues) => {
+          editMode &&
+            onUpdate(
+              {
+                type: CONTENT_TYPE,
+                props: {
+                  flexValues: flexValues,
+                },
+              },
+              path,
+              true,
+            );
+        }}
       >
-        {/* {children} */}
-        {props.children}
-      </ReflexContainer>
+        {childProps.children}
+      </Container>
     </ComponentContainer>
   );
 }
 
 const test = pageComponentFactory(
   PlayerLinearLayout,
-  componentType,
+  CONTENT_TYPE,
   'bars',
   {
     name: schemaProps.string('Name', false),
