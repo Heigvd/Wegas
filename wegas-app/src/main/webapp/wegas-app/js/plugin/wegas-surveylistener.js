@@ -135,10 +135,14 @@ YUI.add('wegas-surveylistener', function(Y) {
         
         // Displays the given survey which has been "requested"
         showSurvey: function(inst) {
-            var ctx = this;
+            var ctx = this,
+                container = Y.one(".wegas-playerview .wegas-pageloader-content");
+            if (!container) {
+                // We are not in a playerview:
+                return;
+            }
             Y.use(["wegas-survey-widgets", "wegas-popuplistener"], function(Y) {
                 if (ctx.currentSurvey) {
-                    // Ignore this survey, since there's already another one being displayed.
                     Y.log("Survey request ignored, another one is already active");
                     return;
                 }
@@ -147,8 +151,8 @@ YUI.add('wegas-surveylistener', function(Y) {
                     status !== ORCHESTRATION_PROGRESS.NOT_STARTED &&
                     status !== ORCHESTRATION_PROGRESS.CLOSED) {
                     ctx.currentSurvey = inst;
-                    var cfg, container, wrapper;
-                    container = Y.one(".wegas-playerview .wegas-pageloader-content").addClass("wegas-survey-ontop");
+                    var cfg, wrapper;
+                    container.addClass("wegas-survey-ontop");
                     container.insert('<div class="wegas-survey-overlay wegas-survey-page"></div>', 0);
                     wrapper = container.one(".wegas-survey-overlay");
                     cfg = {

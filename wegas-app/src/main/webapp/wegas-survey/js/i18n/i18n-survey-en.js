@@ -50,19 +50,21 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 doImport: "Import selected surveys",
                 importing: "Importing surveys",
                 importTerminated: "Overview of imported surveys",
+                playedIndividually: "to be answered individually by each player",
                 currentStatus: "Current status: ",
                 notStarted: "Not yet started",
                 requested: "Start requested",
                 ongoing: "Ongoing",
                 completed: "Completed",
                 closed: "Closed",
-                requestButton: "Start survey",
+                requestImmediatelyButton: "Start survey immediately",
                 teamOrPlayer: "Team/Player",
+                team: "Team",
+                player: "Player",
                 teamStatus: "Status",
                 teamRepliesCompulsory: "Compulsory Replies",
                 teamRepliesOptional: "Optional Replies",
-                noLogId: "No \"Log ID\" has been set for this session.<br>Replies to the survey will not be saved!<br>Please contact the platform administrator (AlbaSim).",
-                teamGamePlayerScope: "Cannot display status of individual survey inside game played in teams"
+                noLogId: "No \"Log ID\" has been set for this session.<br>Replies to the survey will not be saved!<br>Please contact the platform administrator (AlbaSim)."
             }
         }
     });

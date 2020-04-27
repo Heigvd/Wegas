@@ -910,7 +910,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
         },
         sendReplyRequest: function(inputId, cb) {
             if (inputId === undefined) {
-                // @TODO: this happens when destroying the widget
+                // This happens when destroying the widget
                 return;
             }
 
@@ -2166,7 +2166,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     survDescr = this.listedSurveys[survId],
                     comments;
                     if (survDescr.comments) {
-                        // Preserve line breaks:
+                        // Preserve line breaks in HTML output:
                         comments = survDescr.comments.replace(/\n/g, '<br>');
                     } else {
                         comments = "No information provided";
@@ -2193,7 +2193,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 // @TODO distinguish between known and actually managed surveys
                 this.selectSurvey(entity);
                 this.syncUI();
-                // In case we are inside the editor, notify the variable-treeview.
+                // In case we are inside the editor, try to notify the variable-treeview.
                 // @TODO a bug prevents full update in Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("items")
                 Y.Wegas.Facade.Variable.fire("rootUpdate");
             }
@@ -2579,6 +2579,15 @@ YUI.add("wegas-survey-widgets", function(Y) {
             };
             Y.Wegas.Facade.GameModel.sendRequest(config);
         },
+        
+        getSurveyTitle: function(survDescr) {
+            var title = I18n.t(survDescr.get("label"));
+            if (survDescr.get("scopeType") === "PlayerScope") {
+                return title + '<span class="title-annotation">(' + I18n.t("survey.orchestrator.playedIndividually") + ')</span>';
+            } else {
+                return title;
+            }
+        },
         /**
          * @function
          * @private
@@ -2613,7 +2622,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                                          I18n.t("survey.orchestrator.currentStatus") +
                             "            <span class=\"status\">status</span>" +
                             "            <button class=\"request-survey\" data-id=\"" + survId + "\">" + 
-                                             I18n.t("survey.orchestrator.requestButton") + 
+                                             I18n.t("survey.orchestrator.requestImmediatelyButton") + 
                             "            </button>" +
                             "        </div>" +
                             "    </div>" +
@@ -2630,12 +2639,12 @@ YUI.add("wegas-survey-widgets", function(Y) {
                         currSurv.refreshButton.get(CONTENTBOX).setAttribute("data-id", survId);
 
                         newSurvey.one(".survey-header .survey-title")
-                            .setContent(I18n.t(survDescr.get("label")));
+                            .setContent(this.getSurveyTitle(survDescr));
                     
                     } else {
                         // Just update the survey title :
                         var currSurvey = cb.one('.selected-survey-list [data-id="' + survId + '"] .survey-header .survey-title');
-                        currSurvey.setContent(I18n.t(survDescr.get("label")));
+                        currSurvey.setContent(this.getSurveyTitle(survDescr));
                     }
                     this._getMonitoredData(survId);
                 }
@@ -2644,11 +2653,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
         
         statusToString: function(survey) {
             if (survey.error) {
-                if (survey.error === "TeamGamePlayerScope") {
-                    return I18n.t("survey.orchestrator.teamGamePlayerScope");
-                } else {
-                    return "Internal error";
-                }
+                return "Internal error: " + survey.error;
             }
             if (!survey.active) {
                 return I18n.t("survey.errors.inactive");
@@ -2676,7 +2681,8 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 nbTeams = 0,
                 survData = this._monitoredData[survId],
                 cb = this.get(CONTENTBOX).one('.selected-survey[data-id="' + survId + '"]'),
-                refreshButton = this.managedSurveys[survId].refreshButton.get("contentBox").one("i");
+                refreshButton = this.managedSurveys[survId].refreshButton.get("contentBox").one("i"),
+                prevTeamId = -1;
             
             refreshButton.addClass("fa-spin");
             
@@ -2691,7 +2697,12 @@ YUI.add("wegas-survey-widgets", function(Y) {
             if (survData.status !== ORCHESTRATION_PROGRESS.NOT_STARTED) {
                 teamsTable.push(
                     '<table class="teams-table"><thead><tr><td>' +
-                    I18n.t("survey.orchestrator.teamOrPlayer") +
+                    (survData.isPlayerScope ?
+                        I18n.t("survey.orchestrator.team") +
+                        '</td><td>' +
+                        I18n.t("survey.orchestrator.player") :
+                        I18n.t("survey.orchestrator.teamOrPlayer")
+                    ) +
                     '</td><td>' +
                     I18n.t("survey.orchestrator.teamStatus") +
                     '</td><td>' +
@@ -2700,17 +2711,37 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     I18n.t("survey.orchestrator.teamRepliesOptional") +
                     '</td></tr></thead><tbody>');
                 for (team in survData.data) {
-                    var data = survData.data[team];
+                    var teamData = survData.data[team];
                     nbTeams++;
+                    if (survData.isPlayerScope) {
+                        // All members of a same team are expected to come sequentially:
+                        if (teamData.teamId !== prevTeamId) {
+                            teamsTable.push(
+                                '<tr class="newteam"><td class="teamname" rowspan="' + teamData.teamSize + '">' +
+                                teamData.name +
+                                '</td>'
+                            );
+                        } else {
+                            teamsTable.push('<tr>');
+                        }
+                        teamsTable.push(
+                            '<td class="playername">' +
+                            teamData.playerName
+                        );
+                        prevTeamId = teamData.teamId;
+                    } else {
+                        teamsTable.push(
+                            '<tr><td class="teamname">' +
+                            teamData.name
+                        );
+                    }
                     teamsTable.push(
-                        '<tr><td class="name">' +
-                        data.name +
                         '</td><td class="status">' +
-                        this.statusToString(data) +
+                        this.statusToString(teamData) +
                         '</td><td class="replied">' +
-                        data.replied + ' / ' + data.activeInputs +
+                        teamData.replied + ' / ' + teamData.activeInputs +
                         '</td><td class="repliedOptional">' +
-                        data.optionalReplied + ' / ' + data.activeOptionalInputs +
+                        teamData.optionalReplied + ' / ' + teamData.activeOptionalInputs +
                         '</td></tr>');
                 }
                 if (nbTeams) {
@@ -2767,9 +2798,11 @@ YUI.add("wegas-survey-widgets", function(Y) {
             var ctx = this;
             Y.use(["wegas-dashboard-modals"], function(Y) {
                 var survId = e.target.getData()["id"],
-                    survName = Y.Wegas.Facade.Variable.cache.findById(survId).get("name"),
+                    survDescr = Y.Wegas.Facade.Variable.cache.findById(survId),
+                    survName = survDescr.get("name"),
                     script = "SurveyHelper.request('" + survName + "')",
-                    // Hack to impact all teams:
+                    survScope = survDescr.get("scopeType"),
+                    // Hack to impact all teams instead of just one team:
                     team = Y.Wegas.Facade.Game.cache.getCurrentGame(),
                     player = Y.Wegas.Facade.Game.cache.getCurrentPlayer();
                 if (!team.get("players")) {
@@ -2782,7 +2815,8 @@ YUI.add("wegas-survey-widgets", function(Y) {
                             "Do you really want to launch this survey?",
                             script
                         ]],
-                    "showAdvancedImpacts": false
+                    "showAdvancedImpacts": false,
+                    "scopeType": survScope
                 }).render();
                 // Catch refresh signal generated when the modal is closed:
                 var handler = Y.on("dashboard:refresh", function() {

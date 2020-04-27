@@ -21,11 +21,31 @@ var SurveyHelper = (function() {
 
     // Increasing order of progress:
     var ORCHESTRATION_PROGRESS = {
-        NOT_STARTED: 0,
-        REQUESTED: 1,
-        ONGOING: 2,
-        COMPLETED: 3,
-        CLOSED: 4
+        NOT_STARTED:
+            { 
+                id: 0,
+                name: "NOT_STARTED"
+            },
+        REQUESTED: 
+            {
+                id: 1,
+                name: "REQUESTED"
+            },
+        ONGOING:
+            {
+                id: 2,
+                name: "ONGOING"
+            },
+        COMPLETED:
+            {
+                id: 3,
+                name: "COMPLETED"
+            },
+        CLOSED:
+            {
+                id: 4,
+                name: "CLOSED"
+            }
     };
 
     // Function for requesting the start of a survey.
@@ -33,7 +53,7 @@ var SurveyHelper = (function() {
     function request(SurveyDescriptorName) {
         var sd = Variable.find(gameModel, SurveyDescriptorName),
             inst = sd.getInstance();
-        inst.setStatusFromString("REQUESTED");
+        inst.setStatusFromString(ORCHESTRATION_PROGRESS.REQUESTED.name);
     }
     
     
@@ -47,14 +67,16 @@ var SurveyHelper = (function() {
             isPlayerScopeSurvey = (sd.getScopeType().toString() === "PlayerScope" ),
             cannotReport = isPlayerScopeSurvey && isTeamGame,
             t, teamId, team,
+            players, nbPlayers, playerId, p, nbIterations,
             aPlayer, survInsts, survInst, data, replied, optionalReplied,
             activeInputs, activeOptionalInputs,
             survActive,
-            survStatus = "NOT_STARTED",
-            playerStatus = ORCHESTRATION_PROGRESS[survStatus],
+            survStatus = ORCHESTRATION_PROGRESS.NOT_STARTED.name,
+            playerStatus = ORCHESTRATION_PROGRESS[survStatus].id,
             globalSurvActive = false,
-            globalSurvStatus = "CLOSED",
-            globalStatus = ORCHESTRATION_PROGRESS[globalSurvStatus],
+            globalSurvStatus = ORCHESTRATION_PROGRESS.CLOSED.name,
+            globalStatus = ORCHESTRATION_PROGRESS[globalSurvStatus].id,
+            hasOngoing = false,
             i, j,
             
                     
@@ -69,19 +91,12 @@ var SurveyHelper = (function() {
                     teamId: {
                         name: "team name",
                         active: false,
-                        status: ORCHESTRATION_PROGRESS.NOT_STARTED,
+                        status: ORCHESTRATION_PROGRESS.NOT_STARTED.name,
                         replied: 0
                     }
                     */
                 }
             };
-
-        if (cannotReport) {
-            monitoring.active = false;
-            monitoring.status = "NOT_STARTED";
-            monitoring.error = "TeamGamePlayerScope";
-            return JSON.stringify(monitoring);
-        }
 
         var sections = Java.from(sd.getItems()),
             inputDescriptors = [],
@@ -100,10 +115,26 @@ var SurveyHelper = (function() {
                 team = teams.get(t);
                 teamId = new Long(team.getId());
                 // This yields null when isPlayerScopeSurvey && isTeamGame are true:
-                sctInst = sctInsts[team];
-                if (sctInst && sctInst.getActive()) {
-                    for (j = 0; j < inputList.length; j++) {
-                        inputDescriptors.push(inputList[j]);
+                if (isPlayerScopeSurvey) {
+                    var players = team.getPlayers(),
+                        nbPlayers = players.size(),
+                        player, playerId, p;
+                    for (p = 0; p < 1 /* nbPlayers */; p += 1) {
+                        player = players.get(p);
+                        playerId = new Long(player.getId());
+                        sctInst = sctInsts[player];
+                        if (sctInst && sctInst.getActive()) {
+                            for (j = 0; j < inputList.length; j++) {
+                                inputDescriptors.push(inputList[j]);
+                            }
+                        }
+                    }
+                } else {
+                    sctInst = sctInsts[team];
+                    if (sctInst && sctInst.getActive()) {
+                        for (j = 0; j < inputList.length; j++) {
+                            inputDescriptors.push(inputList[j]);
+                        }
                     }
                 }
             }
@@ -131,81 +162,111 @@ var SurveyHelper = (function() {
         for (t = 0; t < nbTeams; t += 1) {
             team = teams.get(t);
             teamId = new Long(team.getId());
-            survInst = survInsts[team];
-
-            survStatus = survInst.getStatus().toString();
-            survActive = survInst.getActive();
-
-            if (team.getPlayers().size() > 0) {
-                aPlayer = survInst.getOwner().getAnyLivePlayer();
-            } else {
-                aPlayer = null;
-            }
-            if (aPlayer === null) {
-                // Skip empty Teams
-                continue;
-            }
-
-            isDebugTeam = aPlayer.getTeam() instanceof com.wegas.core.persistence.game.DebugTeam;
-            if (isDebugTeam && nbTeams > 1) {
-                continue;
-            }
-            
-            playerStatus = ORCHESTRATION_PROGRESS[survStatus];
+            players = team.getPlayers();
+            nbPlayers = players.size();
            
-            // Global status is the least advanced of all individual statuses (unless inactive):
-            if (survActive && globalStatus > playerStatus) {
-                globalStatus = playerStatus;
-                globalSurvStatus = survStatus;
-            }
-            if (survActive) {
-                globalSurvActive = true;
+            if (!isPlayerScopeSurvey) {
+                survInst = survInsts[team];
+                nbIterations = 1;
+                if (nbPlayers > 0) {
+                    aPlayer = survInst.getOwner().getAnyLivePlayer();
+                } else {
+                    aPlayer = null;
+                }
+                if (aPlayer === null) {
+                    // Skip empty Teams
+                    continue;
+                }
+            } else {
+                nbIterations = nbPlayers;
             }
             
-            // Count number of replied and active inputs for this team/player
-            replied = 0;
-            optionalReplied = 0;
-            activeInputs = 0;
-            activeOptionalInputs = 0;
-            if (playerStatus >= ORCHESTRATION_PROGRESS.ONGOING) {
-                for (var id in teamsInputs) {
-                    var currInput = teamsInputs[id][team],
-                        descr = currInput.getDescriptor(),
-                        compulsory = descr.getIsCompulsory();
+            for (p = 0; p < nbIterations; p += 1) {
+                if (isPlayerScopeSurvey) {
+                    aPlayer = players.get(p);
+                    playerId = new Long(aPlayer.getId());
+                    survInst = survInsts[aPlayer];
+                }
 
-                    if (currInput.getIsReplied()) {
-                        if (compulsory) {
-                            replied++;
-                        } else {
-                            optionalReplied++;
+                isDebugTeam = aPlayer.getTeam() instanceof com.wegas.core.persistence.game.DebugTeam;
+                if (isDebugTeam && nbTeams > 1) {
+                    continue;
+                }
+
+                survStatus = survInst.getStatus().toString();
+                survActive = survInst.getActive();
+                playerStatus = ORCHESTRATION_PROGRESS[survStatus].id;
+                if (playerStatus >= ORCHESTRATION_PROGRESS.ONGOING.id) {
+                    hasOngoing = true;
+                }
+                // Global status is in principle the least advanced of all individual statuses (unless inactive, not started):
+                if (survActive && globalStatus > playerStatus) {
+                    globalStatus = playerStatus;
+                    globalSurvStatus = survStatus;
+                }
+                if (survActive) {
+                    globalSurvActive = true;
+                }
+
+                // Count number of replied and active inputs for this team/player
+                replied = 0;
+                optionalReplied = 0;
+                activeInputs = 0;
+                activeOptionalInputs = 0;
+                if (playerStatus >= ORCHESTRATION_PROGRESS.ONGOING.id) {
+                    for (var id in teamsInputs) {
+                        var currInput = isPlayerScopeSurvey ? teamsInputs[id][aPlayer] : teamsInputs[id][team],
+                            descr = currInput.getDescriptor(),
+                            compulsory = descr.getIsCompulsory();
+
+                        if (currInput.getIsReplied()) {
+                            if (compulsory) {
+                                replied++;
+                            } else {
+                                optionalReplied++;
+                            }
                         }
-                    }
-                    if (currInput.getActive()) {
-                        if (compulsory) {
-                            activeInputs++;
-                        } else {
-                            activeOptionalInputs++;
+                        if (currInput.getActive()) {
+                            if (compulsory) {
+                                activeInputs++;
+                            } else {
+                                activeOptionalInputs++;
+                            }
                         }
                     }
                 }
+
+                data = {
+                    name: team.getName(),
+                    teamId: teamId,
+                    teamSize: nbPlayers,
+                    playerName: aPlayer.getName(),
+                    active: survActive,
+                    status: survStatus,
+                    replied: replied,
+                    activeInputs: activeInputs,
+                    optionalReplied: optionalReplied,
+                    activeOptionalInputs: activeOptionalInputs
+                };
+
+                if (isPlayerScopeSurvey) {
+                    monitoring.data[playerId] = data;
+                } else {
+                    monitoring.data[teamId] = data;
+                }
             }
-            
-            data = {
-                name: team.getName(),
-                active: survActive,
-                status: survStatus,
-                replied: replied,
-                activeInputs: activeInputs,
-                optionalReplied: optionalReplied,
-                activeOptionalInputs: activeOptionalInputs
-            };
-            
-            monitoring.data[teamId] = data;
-            
         }
 
+        // Return global status ONGOING in some hybrid situations:
+        if (globalStatus < ORCHESTRATION_PROGRESS.ONGOING.id) {
+        } else {
+        }
+        if (globalStatus < ORCHESTRATION_PROGRESS.ONGOING.id && hasOngoing) {
+            globalSurvStatus = ORCHESTRATION_PROGRESS.ONGOING.name;
+        }
         monitoring.active = globalSurvActive;
         monitoring.status = globalSurvStatus;
+        monitoring.isPlayerScope = isPlayerScopeSurvey;
         
         return JSON.stringify(monitoring);
     }

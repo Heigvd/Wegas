@@ -49,19 +49,21 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 doImport: "Ausgewählte Umfragen importieren",
                 importing: "Import im Gange",
                 importTerminated: "Übersicht der Importe",
+                playedIndividually: "von jedem Spieler individuell zu beantworten",
                 currentStatus: "Aktueller Stand: ",
                 notStarted: "Noch nicht gestartet",
                 requested: "Start angefordert",
                 ongoing: "Laufend",
                 completed: "Bestätigt",
                 closed: "Geschlossen",
-                requestButton: "Umfrage starten",
+                requestImmediatelyButton: "Umfrage sofort starten",
                 teamOrPlayer: "Team/Spieler",
+                team: "Team",
+                player: "Spieler",
                 teamStatus: "Stand",
                 teamRepliesCompulsory: "Erforderliche Antworte",
                 teamRepliesOptional: "Optionale Antworte",
-                noLogId: "Für diese Sitzung wurde keine \"Log-ID\" festgelegt.<br>Antworten auf die Umfrage werden nicht gespeichert!<br>Bitte kontaktieren Sie den Plattform-Administrator (AlbaSim).",
-                teamGamePlayerScope: "Kann den Status einer Umfrage nicht anzeigen, die innerhalb eines Spiels in Teams individuell zu beantworten ist"
+                noLogId: "Für diese Sitzung wurde keine \"Log-ID\" festgelegt.<br>Antworten auf die Umfrage werden nicht gespeichert!<br>Bitte kontaktieren Sie den Plattform-Administrator (AlbaSim)."
             }
         }
     });
