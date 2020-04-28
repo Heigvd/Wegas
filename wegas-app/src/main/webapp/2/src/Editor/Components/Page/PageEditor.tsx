@@ -27,12 +27,19 @@ export interface Handles {
   [path: string]: { jsx: JSX.Element; dom: React.RefObject<HTMLDivElement> };
 }
 
+export interface FocusedComponent {
+  pageId: string;
+  componentPath: number[];
+}
+
 export interface PageContext {
   editMode: boolean;
   showBorders: boolean;
   showControls: boolean;
   pageIdPath: string[];
   handles: Handles;
+  focusedComponent?: FocusedComponent;
+  focusComponent: (component?: FocusedComponent) => void;
   onDrop: (
     dndComponent: DnDComponent,
     path: number[],
@@ -50,6 +57,8 @@ const defaultPageCTX: PageContext = {
   showControls: true,
   pageIdPath: [],
   handles: {},
+  focusedComponent: undefined,
+  focusComponent: noop,
   onDrop: noop,
   onEdit: noop,
   onDelete: noop,
@@ -200,6 +209,7 @@ export default function PageEditor() {
   const [editMode, setEditMode] = React.useState(false);
   const [showBorders, setShowBorders] = React.useState(false);
   const [showControls, setShowControls] = React.useState(true);
+  const [focusedComponent, focusComponent] = React.useState<FocusedComponent>();
 
   const components = usePageComponentStore(s => s);
   const { selectedPage, defaultPageId, loading } = useStore(
@@ -242,14 +252,20 @@ export default function PageEditor() {
       destIndex: number,
       props?: WegasComponent['props'],
     ) => {
+      const moveInsideItself = destPath.join().indexOf(sourcePath.join()) === 0;
       const samePage = sourcePageId === destPageId;
       const sameContainerPath =
         JSON.stringify(sourcePath.slice(0, -1)) === JSON.stringify(destPath);
       const sourceIndex: number | undefined = sourcePath.slice(-1)[0];
       const samePosition = sourceIndex === destIndex;
 
-      // Don't do anything if the result is the same than before
-      if (!(samePage && sameContainerPath && samePosition && props == null)) {
+      // Don't do anything if the result is the same than before or if the user tries to put a container in itself
+      if (
+        !(
+          moveInsideItself ||
+          (samePage && sameContainerPath && samePosition && props == null)
+        )
+      ) {
         const { component } = findComponent(sourcePage, sourcePath);
         if (component) {
           const newSourcePage = deleteComponent(sourcePage, sourcePath);
@@ -370,28 +386,21 @@ export default function PageEditor() {
     [],
   );
   const Layout = (
-    <pageEditorCTX.Consumer>
-      {({ selectedPageId, editedPath }) => (
-        <PagesLayout
-          selectedPageId={selectedPageId}
-          selectedComponentPath={editedPath}
-          onPageClick={pageId =>
-            setPageEditorState(ops => ({
-              ...ops,
-              selectedPageId: pageId,
-              editedPath: undefined,
-            }))
-          }
-          componentControls={{
-            onNew: onNewLayoutComponent,
-            onDelete: onDeleteLayoutComponent,
-            onEdit: onEdit,
-            // onMove: () => wlog('Not implemented yet'),
-            onMove: onMoveLayoutComponent,
-          }}
-        />
-      )}
-    </pageEditorCTX.Consumer>
+    <PagesLayout
+      onPageClick={pageId =>
+        setPageEditorState(ops => ({
+          ...ops,
+          selectedPageId: pageId,
+          editedPath: undefined,
+        }))
+      }
+      componentControls={{
+        onNew: onNewLayoutComponent,
+        onDelete: onDeleteLayoutComponent,
+        onEdit: onEdit,
+        onMove: onMoveLayoutComponent,
+      }}
+    />
   );
 
   const PageDisplay = (
@@ -551,6 +560,8 @@ export default function PageEditor() {
               ? [defaultPageId]
               : [],
             handles: handles.current,
+            focusedComponent,
+            focusComponent,
             onDrop,
             onDelete,
             onEdit: path => onEdit(selectedPageId, path),

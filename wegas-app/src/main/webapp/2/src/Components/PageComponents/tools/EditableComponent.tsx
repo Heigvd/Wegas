@@ -96,13 +96,14 @@ const handleControlStyle = css({
   },
 });
 
+const componentBorderCss = {
+  borderStyle: 'solid',
+  borderWidth: '1px',
+  borderColor: themeVar.primaryHoverColor,
+};
+const focusedComponentStyle = css(componentBorderCss);
 const handleControlHoverStyle = css({
-  ':hover': {
-    borderStyle: 'solid',
-    borderWidth: '1px',
-    borderColor: themeVar.primaryHoverColor,
-    // transition: 'all 0s',
-  },
+  ':hover': componentBorderCss,
 });
 
 const handleContentStyle = css({
@@ -611,19 +612,26 @@ const absolutelayoutChoices: HashListChoices = [
     items: [
       {
         label: 'Left',
-        value: { prop: 'left', schema: schemaProps.string('Left') },
+        value: { prop: 'left', schema: schemaProps.number('Left') },
       },
       {
         label: 'Right',
-        value: { prop: 'right', schema: schemaProps.string('Right') },
+        value: { prop: 'right', schema: schemaProps.number('Right') },
       },
       {
         label: 'Top',
-        value: { prop: 'top', schema: schemaProps.string('Top') },
+        value: { prop: 'top', schema: schemaProps.number('Top') },
       },
       {
         label: 'Bottom',
-        value: { prop: 'bottom', schema: schemaProps.string('Bottom') },
+        value: { prop: 'bottom', schema: schemaProps.number('Bottom') },
+      },
+      {
+        label: 'Foreground index',
+        value: {
+          prop: 'zIndex',
+          schema: schemaProps.number('Foreground index'),
+        },
       },
     ],
   },
@@ -633,11 +641,11 @@ const absolutelayoutChoices: HashListChoices = [
     items: [
       {
         label: 'Width',
-        value: { prop: 'width', schema: schemaProps.string('Width') },
+        value: { prop: 'width', schema: schemaProps.number('Width') },
       },
       {
         label: 'Height',
-        value: { prop: 'height', schema: schemaProps.string('Height') },
+        value: { prop: 'height', schema: schemaProps.number('Height') },
       },
     ],
   },
@@ -777,7 +785,14 @@ export function useComponentEditorContainer(
   }: React.PropsWithChildren<ComponentContainerProps>) {
     const container = React.useRef<HTMLDivElement>();
     const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
-    const { onDrop, editMode, handles } = React.useContext(pageCTX);
+    const {
+      onDrop,
+      editMode,
+      handles,
+      focusedComponent,
+      focusComponent,
+      pageIdPath,
+    } = React.useContext(pageCTX);
     const [{ isOver }, dropZone] = useDndComponentDrop();
 
     const containerPath = [...path];
@@ -800,6 +815,12 @@ export function useComponentEditorContainer(
         break;
     }
 
+    const isFocused =
+      editMode &&
+      focusedComponent &&
+      focusedComponent.pageId === pageIdPath.slice(0, 1)[0] &&
+      JSON.stringify(focusedComponent.componentPath) === JSON.stringify(path);
+
     return (
       <>
         <Container
@@ -815,6 +836,7 @@ export function useComponentEditorContainer(
               [layoutHighlightStyle]: showBorders,
               [childHighlightStyle]: showBorders,
               [handleControlHoverStyle]: editMode,
+              [focusedComponentStyle]: isFocused,
               [childDropzoneHorizontalStyle]: !vertical,
               [childDropzoneVerticalStyle]: vertical,
             }) + classNameOrEmpty(className)
@@ -892,7 +914,7 @@ export function useComponentEditorContainer(
                   };
 
                   const [relX, relY] = [absX - srcX, absY - srcY];
-                  // debugger;
+
                   onDrop(dndComponent, path, undefined, {
                     options: {
                       layout: { position: { left: relX, top: relY } },
