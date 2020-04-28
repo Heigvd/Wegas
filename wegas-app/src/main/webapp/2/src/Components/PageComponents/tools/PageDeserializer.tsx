@@ -22,14 +22,25 @@ export function PageDeserializer({
   const { children = [], ...restProps } = (json && json.props) || {};
   const component = usePageComponentStore(s => s[(json && json.type) || '']);
 
-  return component ? (
+  if (json == null) {
+    return <pre>Unknown page</pre>;
+  }
+  if (!component) {
+    return <div>{`Unknown component : ${json.type}`}</div>;
+  }
+
+  const Component = component.getComponent(uneditable);
+
+  return (
     <ErrorBoundary>
-      {component.getComponent(uneditable)({
-        childrenType,
-        path: realPath,
-        last: last,
-        ...restProps,
-        children: children.map((cjson, i) => (
+      <Component
+        path={realPath}
+        last={last}
+        containerType={component.getContainerType()}
+        childrenType={childrenType}
+        {...restProps}
+      >
+        {children.map((cjson, i) => (
           <PageDeserializer
             key={i}
             json={cjson}
@@ -38,12 +49,8 @@ export function PageDeserializer({
             childrenType={component.getContainerType()}
             last={i === children.length - 1}
           />
-        )),
-      })}
+        ))}
+      </Component>
     </ErrorBoundary>
-  ) : json == null ? (
-    <div>Unknown page</div>
-  ) : (
-    <div>{`Unknown component : ${json.type}`}</div>
   );
 }

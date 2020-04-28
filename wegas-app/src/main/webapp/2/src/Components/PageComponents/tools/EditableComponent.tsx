@@ -19,12 +19,7 @@ import {
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { TogglerProps } from '../../Inputs/Boolean/Toggler';
-import {
-  FlexItemProps,
-  FlexItem,
-  FlexItemFlexProps,
-  layoutChoices,
-} from '../../Layouts/FlexList';
+import { FlexItem, flexlayoutChoices } from '../../Layouts/FlexList';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import { useDebounce } from '../../Hooks/useDebounce';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
@@ -58,18 +53,27 @@ const childHighlightStyle = css({
   '&>*>*': childHighlightCSS,
 });
 
+const childDropZoneIntoCSS = {
+  '&>*>*>.component-dropzone-into': {
+    width: '100%',
+    height: '100%',
+  },
+};
+
 const childDropzoneHorizontalStyle = css({
+  ...childDropZoneIntoCSS,
   '&>*>*>.component-dropzone': {
     maxWidth: '30px',
     width: '30%',
     height: '100%',
   },
-  '&>*>*>.component-dropzone-last': {
+  '&>*>*>.component-dropzone-after': {
     right: 0,
   },
 });
 
 const childDropzoneVerticalStyle = css({
+  ...childDropZoneIntoCSS,
   '&>*>*>.component-dropzone': {
     maxHeight: '30px',
     width: '100%',
@@ -85,17 +89,14 @@ const handleControlStyle = css({
   '&>.wegas-component-handle': {
     visibility: 'hidden',
     opacity: 0.0,
-    // transition: 'all 0.5s',
   },
   ':hover>.wegas-component-handle': {
     visibility: 'unset',
     opacity: 0.8,
-    // transition: 'all 0.5s',
   },
 });
 
 const handleControlHoverStyle = css({
-  // transition: 'all 0.5s',
   ':hover': {
     borderStyle: 'solid',
     borderWidth: '1px',
@@ -123,7 +124,7 @@ export interface EditorHandleProps extends ClassAndStyle {
   stackedHandles?: JSX.Element[];
 }
 
-export interface PageComponentMandatoryProps extends FlexItemProps {
+export interface PageComponentMandatoryProps extends WegasComponentItemProps {
   /**
    * ComponentContainer - the container that must surround any component
    */
@@ -174,7 +175,7 @@ const defaultMandatoryProps: PageComponentMandatoryProps = {
 export const defaultMandatoryKeys = Object.keys(defaultMandatoryProps);
 
 function useDndComponentDrop(
-  onDrop?: (dndComponnent: DnDComponent) => void,
+  onDrop?: (dndComponnent: DnDComponent, dndMonitor: DropTargetMonitor) => void,
 ): [
   {
     isOver: boolean;
@@ -549,15 +550,105 @@ function computeHandles(handles: Handles, path: number[]) {
   return computedHandles;
 }
 
+export interface WegasComponentItemProps extends ClassAndStyle {
+  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  onMouseOver?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  tooltip?: string;
+}
+
+interface AbsoluteItemProps
+  extends React.PropsWithChildren<WegasComponentItemProps> {
+  layout?: {
+    position?: {
+      left?: string;
+      right?: string;
+      top?: string;
+      bottom?: string;
+    };
+    size?: {
+      width?: string;
+      height?: string;
+    };
+  };
+}
+
+const AbsoluteItem = React.forwardRef<HTMLDivElement, AbsoluteItemProps>(
+  (
+    {
+      layout,
+      tooltip,
+      style,
+      className,
+      onClick,
+      onMouseOver,
+      onMouseLeave,
+      children,
+    },
+    ref,
+  ) => {
+    const { position = {}, size = {} } = layout || {};
+    return (
+      <div
+        ref={ref}
+        style={{ position: 'absolute', ...position, ...size, ...style }}
+        title={tooltip}
+        onClick={onClick}
+        onMouseOver={onMouseOver}
+        onMouseLeave={onMouseLeave}
+        className={className}
+      >
+        {children}
+      </div>
+    );
+  },
+);
+
+const absolutelayoutChoices: HashListChoices = [
+  {
+    label: 'Position',
+    value: { prop: 'position' },
+    items: [
+      {
+        label: 'Left',
+        value: { prop: 'left', schema: schemaProps.string('Left') },
+      },
+      {
+        label: 'Right',
+        value: { prop: 'right', schema: schemaProps.string('Right') },
+      },
+      {
+        label: 'Top',
+        value: { prop: 'top', schema: schemaProps.string('Top') },
+      },
+      {
+        label: 'Bottom',
+        value: { prop: 'bottom', schema: schemaProps.string('Bottom') },
+      },
+    ],
+  },
+  {
+    label: 'Size',
+    value: { prop: 'size' },
+    items: [
+      {
+        label: 'Width',
+        value: { prop: 'width', schema: schemaProps.string('Width') },
+      },
+      {
+        label: 'Height',
+        value: { prop: 'height', schema: schemaProps.string('Height') },
+      },
+    ],
+  },
+];
+
 export interface ComponentContainerProps
-  extends Omit<
-    PageComponentMandatoryProps & ClassAndStyle,
-    'ComponentContainer'
-  > {
+  extends Omit<PageComponentMandatoryProps, 'ComponentContainer'> {
   options?: {
-    layout?: FlexItemFlexProps;
     actions?: WegasComponentOptionsActions & WegasComponentActionsProperties;
     upgrades?: WegasComponentUpgrades;
+    [options: string]: unknown;
   };
   /**
    * vertical - the component orientation
@@ -584,6 +675,7 @@ export const componentContainerWegasPropsKeys = Object.keys(
 export function useComponentEditorContainer(
   type: string,
   path: number[],
+  containerType: ContainerTypes,
   childrenType: ContainerTypes,
   last?: boolean,
 ) {
@@ -646,28 +738,19 @@ export function useComponentEditorContainer(
           if (e != null) {
             const div = e as HTMLDivElement;
             const parent = div.parentElement as HTMLElement;
-            if (parent.style.getPropertyValue('overflow') !== 'visible') {
-              div.style.setProperty('position', 'fixed');
-              div.style.setProperty(
-                'top',
-                String(parent.getBoundingClientRect().top - 30) + 'px',
-              );
-              div.style.setProperty(
-                'left',
-                String(parent.getBoundingClientRect().left - 30) + 'px',
-              );
-            } else {
-              div.style.setProperty('position', 'absolute');
-              div.style.setProperty('top', '-30px');
-              div.style.setProperty('left', '-30px');
-            }
+            div.style.setProperty('position', 'fixed');
+            div.style.setProperty(
+              'top',
+              String(parent.getBoundingClientRect().top - 30) + 'px',
+            );
+            div.style.setProperty(
+              'left',
+              String(parent.getBoundingClientRect().left - 30) + 'px',
+            );
           }
         }}
         style={{
           zIndex: 1000,
-          // position: 'absolute',
-          // top: '-30px',
-          // left: '-30px',
           ...style,
         }}
         className={'wegas-component-handle' + classNameOrEmpty(className)}
@@ -683,10 +766,6 @@ export function useComponentEditorContainer(
     ) : null;
   }
 
-  function AbsoluteItem({ children }: React.PropsWithChildren<{}>) {
-    return <div style={{ position: 'absolute' }}>{children}</div>;
-  }
-
   return function ComponentContainer({
     children,
     options,
@@ -696,6 +775,7 @@ export function useComponentEditorContainer(
     style,
     vertical,
   }: React.PropsWithChildren<ComponentContainerProps>) {
+    const container = React.useRef<HTMLDivElement>();
     const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
     const { onDrop, editMode, handles } = React.useContext(pageCTX);
     const [{ isOver }, dropZone] = useDndComponentDrop();
@@ -723,8 +803,13 @@ export function useComponentEditorContainer(
     return (
       <>
         <Container
-          ref={dropZone}
-          {...options?.layout}
+          ref={ref => {
+            dropZone(ref);
+            if (ref != null) {
+              container.current = ref;
+            }
+          }}
+          {...omit(options, ['actions', 'upgrades'])}
           className={
             cx(handleControlStyle, flex, {
               [layoutHighlightStyle]: showBorders,
@@ -734,7 +819,7 @@ export function useComponentEditorContainer(
               [childDropzoneVerticalStyle]: vertical,
             }) + classNameOrEmpty(className)
           }
-          style={style}
+          style={{ cursor: options?.actions ? 'pointer' : 'initial', ...style }}
           onClick={() => {
             if (options && options.actions) {
               if (
@@ -790,12 +875,42 @@ export function useComponentEditorContainer(
           }}
           tooltip={options?.upgrades?.tooltip}
         >
-          {editable && (
+          {editable && containerType === 'ABSOLUTE' && (
+            <ComponentDropZone
+              onDrop={(dndComponent, dndMonitor) => {
+                if (container.current) {
+                  const { x: absX, y: absY } = dndMonitor.getClientOffset() || {
+                    x: 0,
+                    y: 0,
+                  };
+                  const {
+                    left: srcX,
+                    top: srcY,
+                  } = container.current.getBoundingClientRect() || {
+                    x: 0,
+                    y: 0,
+                  };
+
+                  const [relX, relY] = [absX - srcX, absY - srcY];
+                  // debugger;
+                  onDrop(dndComponent, path, undefined, {
+                    options: {
+                      layout: { position: { left: relX, top: relY } },
+                    },
+                  });
+                }
+              }}
+              show={isOver}
+              dropPosition="INTO"
+            />
+          )}
+          {editable && childrenType !== 'ABSOLUTE' && (
             <ComponentDropZone
               onDrop={dndComponent =>
                 onDrop(dndComponent, containerPath, itemPath)
               }
               show={isOver}
+              dropPosition="BEFORE"
             />
           )}
           {editable && (
@@ -805,7 +920,7 @@ export function useComponentEditorContainer(
           {options?.upgrades?.notification && (
             <NotificationComponent {...options.upgrades.notification} />
           )}
-          {editMode && isNotFirstComponent && (
+          {editable && childrenType !== 'ABSOLUTE' && (
             <ComponentDropZone
               onDrop={dndComponent =>
                 onDrop(
@@ -815,131 +930,37 @@ export function useComponentEditorContainer(
                 )
               }
               show={isOver}
-              last
+              dropPosition="AFTER"
             />
           )}
         </Container>
         {childrenType === 'LINEAR' && !last && <Splitter />}
       </>
     );
-
-    // return (
-    //   <FlexItem
-    //     ref={dropZone}
-    //     {...options?.layout}
-    //     className={
-    //       cx(handleControlStyle, flex, {
-    //         [layoutHighlightStyle]: showBorders,
-    //         [childHighlightStyle]: showBorders,
-    //         [handleControlHoverStyle]: editMode,
-    //         [childDropzoneHorizontalStyle]: !vertical,
-    //         [childDropzoneVerticalStyle]: vertical,
-    //       }) + (className ? ' ' + className : '')
-    //     }
-    //     style={style}
-    //     onClick={() => {
-    //       if (options && options.actions) {
-    //         if (
-    //           !options.actions.confirmClick ||
-    //           // TODO : Find a better way to do that than a modal!!!
-    //           // eslint-disable-next-line no-alert
-    //           confirm(options.actions.confirmClick)
-    //         ) {
-    //           if (options.actions?.lock) {
-    //             // LockAPI.lockPlayer(options.actions?.lock)
-    //             //   .then(res => {
-    //             //     wlog(res);
-    //             //     debugger;
-    //             //   })
-    //             //   .catch(res => {
-    //             //     wlog(res);
-    //             //     debugger;
-    //             //   });
-    //           }
-    //           Object.entries(
-    //             omit(
-    //               options.actions,
-    //               'confirmClick',
-    //               'lock',
-    //             ) as WegasComponentOptionsActions,
-    //           )
-    //             .sort(
-    //               (
-    //                 [, v1]: [string, WegasComponentOptionsAction],
-    //                 [, v2]: [string, WegasComponentOptionsAction],
-    //               ) =>
-    //                 (v1.priority ? v1.priority : 0) -
-    //                 (v2.priority ? v2.priority : 0),
-    //             )
-    //             .forEach(([k, v]) =>
-    //               wegasComponentActions[k as keyof WegasComponentActions](v),
-    //             );
-    //         }
-    //       }
-    //     }}
-    //     onMouseOver={e => {
-    //       if (editable) {
-    //         e.stopPropagation();
-    //         if (!stackedHandles) {
-    //           setStackedHandles(() => computeHandles(handles, path));
-    //         }
-    //       }
-    //     }}
-    //     onMouseLeave={() => {
-    //       if (editable) {
-    //         setStackedHandles(undefined);
-    //       }
-    //     }}
-    //     tooltip={options?.upgrades?.tooltip}
-    //   >
-    //     {editable && (
-    //       <ComponentDropZone
-    //         onDrop={dndComponent =>
-    //           onDrop(dndComponent, containerPath, itemPath)
-    //         }
-    //         show={isOver}
-    //       />
-    //     )}
-    //     {editable && (
-    //       <EditHandle {...handleProps} stackedHandles={stackedHandles} />
-    //     )}
-    //     <ErrorBoundary>{children}</ErrorBoundary>
-    //     {options?.upgrades?.notification && (
-    //       <NotificationComponent {...options.upgrades.notification} />
-    //     )}
-    //     {editMode && isNotFirstComponent && (
-    //       <ComponentDropZone
-    //         onDrop={dndComponent =>
-    //           onDrop(
-    //             dndComponent,
-    //             containerPath,
-    //             itemPath != null ? itemPath + 1 : itemPath,
-    //           )
-    //         }
-    //         show={isOver}
-    //         last
-    //       />
-    //     )}
-    //   </FlexItem>
-    // );
   };
 }
 
 interface ComponentDropZoneProps {
-  onDrop?: (dndComponnent: DnDComponent) => void;
+  onDrop?: (dndComponnent: DnDComponent, dndMonitor: DropTargetMonitor) => void;
   show?: boolean;
-  last?: boolean;
+  dropPosition: 'BEFORE' | 'AFTER' | 'INTO';
 }
 
-function ComponentDropZone({ onDrop, show, last }: ComponentDropZoneProps) {
+function ComponentDropZone({
+  onDrop,
+  show,
+  dropPosition,
+}: ComponentDropZoneProps) {
   const [{ isOverCurrent }, dropZone] = useDndComponentDrop(onDrop);
   return (
     <div
       ref={dropZone}
       className={
         dropZoneClass(isOverCurrent) +
-        ' component-dropzone' +
-        (last ? ' component-dropzone-last' : '')
+        (dropPosition === 'INTO'
+          ? ' component-dropzone-into'
+          : ' component-dropzone') +
+        (dropPosition === 'AFTER' ? ' component-dropzone-after' : '')
       }
       style={{
         visibility: show ? 'visible' : 'collapse',
@@ -958,9 +979,13 @@ export interface PageComponentProps {
    */
   path: number[];
   /**
-   * containerType - if the component is a container, gives its type
+   * childrenType - if the component is a container's item, gives its container type
    */
   childrenType: ContainerTypes;
+  /**
+   * containerType - if the component is a container, gives its type
+   */
+  containerType: ContainerTypes;
   /**
    * last - is this component the last of the list
    */
@@ -978,6 +1003,7 @@ interface EditableComponentProps {
   path: number[];
   last?: boolean;
   uneditable?: boolean;
+  containerType: ContainerTypes;
   childrenType: ContainerTypes;
 }
 
@@ -988,12 +1014,14 @@ export function EditableComponent({
   path,
   last,
   uneditable,
+  containerType,
   childrenType,
 }: EditableComponentProps) {
   const { editMode: edit, showBorders } = React.useContext(pageCTX);
   const ComponentContainer = useComponentEditorContainer(
     componentName,
     path,
+    containerType,
     childrenType,
     last,
   );
@@ -1019,16 +1047,44 @@ export function EditableComponent({
   );
 }
 
-export const optionsSchema = {
+const layoutChoices = {
+  FLEX: [
+    {
+      label: 'Layout',
+      value: { prop: 'layout' },
+      items: flexlayoutChoices,
+    },
+  ],
+  LINEAR: [],
+  ABSOLUTE: [
+    {
+      label: 'Layout',
+      value: { prop: 'layout' },
+      items: absolutelayoutChoices,
+    },
+  ],
+};
+
+export const wegasComponentCommonSchema = {
+  className: schemaProps.string(
+    'Classes',
+    false,
+    undefined,
+    undefined,
+    1001,
+    undefined,
+    true,
+  ),
+  style: schemaProps.code('Style', false, 'JSON', undefined, 'ADVANCED', 1002),
+  children: schemaProps.hidden(false, 'array', 1003),
+};
+
+export const wegasComponentOptionsSchema = (containerType: ContainerTypes) => ({
   options: schemaProps.hashlist(
     'Options',
     false,
     [
-      {
-        label: 'Layout',
-        value: { prop: 'layout' },
-        items: layoutChoices,
-      },
+      ...(containerType ? layoutChoices[containerType] : []),
       {
         label: 'Actions',
         value: { prop: 'actions' },
@@ -1043,16 +1099,7 @@ export const optionsSchema = {
     undefined,
     undefined,
     1001,
-  ),
-  className: schemaProps.string(
-    'Classes',
-    false,
-    undefined,
-    undefined,
-    1001,
     undefined,
     true,
   ),
-  style: schemaProps.code('Style', false, 'JSON', undefined, 'ADVANCED', 1002),
-  children: schemaProps.hidden(false, 'array', 1003),
-};
+});

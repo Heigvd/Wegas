@@ -41,7 +41,7 @@ function isHashListValue(item: HashListItem): item is HashListValue {
   return 'schema' in item && item.schema != null;
 }
 
-type HashListChoice = MenuItem<HashListItem> & {
+export type HashListChoice = MenuItem<HashListItem> & {
   value: HashListItem;
   items?: HashListChoices;
 };

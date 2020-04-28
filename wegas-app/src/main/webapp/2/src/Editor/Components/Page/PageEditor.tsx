@@ -17,6 +17,7 @@ import { themeVar } from '../../../Components/Theme';
 import { flex, grow, expandBoth } from '../../../css/classes';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
+import { mergeDeep } from '../../../Helper/tools';
 const innerButtonStyle = css({
   margin: '2px auto 2px auto',
   width: 'fit-content',
@@ -32,7 +33,12 @@ export interface PageContext {
   showControls: boolean;
   pageIdPath: string[];
   handles: Handles;
-  onDrop: (dndComponent: DnDComponent, path: number[], index?: number) => void;
+  onDrop: (
+    dndComponent: DnDComponent,
+    path: number[],
+    index?: number,
+    props?: WegasComponent['props'],
+  ) => void;
   onDelete: (path: number[]) => void;
   onEdit: (path: number[]) => void;
   onUpdate: (value: WegasComponent, path?: number[], patch?: boolean) => void;
@@ -234,6 +240,7 @@ export default function PageEditor() {
       sourcePath: number[],
       destPath: number[],
       destIndex: number,
+      props?: WegasComponent['props'],
     ) => {
       const samePage = sourcePageId === destPageId;
       const sameContainerPath =
@@ -242,7 +249,7 @@ export default function PageEditor() {
       const samePosition = sourceIndex === destIndex;
 
       // Don't do anything if the result is the same than before
-      if (!(samePage && sameContainerPath && samePosition)) {
+      if (!(samePage && sameContainerPath && samePosition && props == null)) {
         const { component } = findComponent(sourcePage, sourcePath);
         if (component) {
           const newSourcePage = deleteComponent(sourcePage, sourcePath);
@@ -252,7 +259,7 @@ export default function PageEditor() {
               samePage ? newSourcePage : destPage,
               destPath,
               component.type,
-              component.props,
+              props ? mergeDeep(component.props, props) : component.props,
               destIndex,
             );
             // Don't modify the source page if it's the same than the destination page
@@ -270,16 +277,23 @@ export default function PageEditor() {
   );
 
   const onDrop = React.useCallback(
-    (dndComponent: DnDComponent, path: number[], index?: number) => {
+    (
+      dndComponent: DnDComponent,
+      path: number[],
+      index?: number,
+      props?: WegasComponent['props'],
+    ) => {
       if (selectedPageId != null && selectedPage != null) {
         if (dndComponent.path == null) {
           const newComponent = createComponent(
             selectedPage,
             path,
             dndComponent.componentName,
-            components[
-              dndComponent.componentName
-            ].getComputedPropsFromVariable(),
+            props
+              ? props
+              : components[
+                  dndComponent.componentName
+                ].getComputedPropsFromVariable(),
             index,
           );
           if (newComponent) {
@@ -296,6 +310,7 @@ export default function PageEditor() {
             dndComponent.path,
             path,
             newIndex,
+            props,
           );
           onEdit(selectedPageId, [...path, newIndex]);
         }
@@ -477,6 +492,7 @@ export default function PageEditor() {
             ) : (
               <ComponentEditor
                 entity={findComponent(selectedPage, editedPath).component}
+                parent={findComponent(selectedPage, editedPath).parent}
                 update={onUpdate}
                 actions={[
                   {

@@ -4,6 +4,7 @@ import { schemaProps } from '../PageComponents/tools/schemaProps';
 import { cx } from 'emotion';
 import { flex, grow } from '../../css/classes';
 import { classNameOrEmpty } from '../../Helper/className';
+import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
 
 export const alignItemsValues = [
   'stretch',
@@ -49,7 +50,7 @@ export interface FlexItemFlexProps {
   flexBasis?: FlexBasis;
 }
 
-export const layoutChoices: HashListChoices = [
+export const flexlayoutChoices: HashListChoices = [
   {
     label: 'Order',
     value: {
@@ -87,15 +88,11 @@ export const layoutChoices: HashListChoices = [
   },
 ];
 
-export interface FlexItemProps extends ClassAndStyle {
+export interface FlexItemProps extends WegasComponentItemProps {
   /**
-   * onClick - triggers when the component is clicked
+   * layout : props relative to the flex environement
    */
-  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  /**
-   * onMouseOver - triggers when the mouse goes over the component
-   */
-  onMouseOver?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  layout?: FlexItemFlexProps;
   /**
    * onMouseOut - triggers when the mouse is not more over the element
    */
@@ -104,27 +101,12 @@ export interface FlexItemProps extends ClassAndStyle {
    * onMouseEnter - triggers when the mouse enters the component
    */
   onMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  /**
-   * onMouseLeave - triggers when the mouse leaves the component
-   */
-  onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  /**
-   * tooltip - A text that appear when the cursor is over the component
-   */
-  tooltip?: string;
 }
 
-export const FlexItem = React.forwardRef<
-  HTMLDivElement,
-  React.PropsWithChildren<FlexItemProps & FlexItemFlexProps>
->(
+export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
   (
     {
-      order,
-      alignSelf,
-      flexGrow,
-      flexShrink,
-      flexBasis,
+      layout,
       onClick,
       onMouseOver,
       onMouseOut,
@@ -146,14 +128,9 @@ export const FlexItem = React.forwardRef<
       onMouseLeave={onMouseLeave}
       className={className}
       style={{
-        cursor: onClick ? 'pointer' : 'initial',
         position: 'relative',
         textAlign: 'center',
-        order,
-        alignSelf,
-        flexGrow,
-        flexShrink,
-        flexBasis,
+        ...layout,
         ...style,
       }}
       title={tooltip}
@@ -193,7 +170,7 @@ export interface FlexListProps extends ClassAndStyle {
   /**
    * layout : the layout CSS properties
    */
-  listLayout?: {
+  layout?: {
     /**
      * flexDirection - the flex direction
      */
@@ -220,13 +197,13 @@ export interface FlexListProps extends ClassAndStyle {
  * Flex list.
  */
 export function FlexList({
-  listLayout,
+  layout,
   className,
   style,
   children,
 }: React.PropsWithChildren<FlexListProps>) {
   const { flexDirection, flexWrap, justifyContent, alignItems, alignContent } =
-    listLayout || {};
+    layout || {};
   return (
     <div
       className={cx(flex, grow) + classNameOrEmpty(className)}

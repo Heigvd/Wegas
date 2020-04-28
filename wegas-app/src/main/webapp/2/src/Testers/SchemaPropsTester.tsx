@@ -8,10 +8,10 @@ import { MessageString } from '../Editor/Components/MessageString';
 import { schemaProps } from '../Components/PageComponents/tools/schemaProps';
 import { createScript } from '../Helper/wegasEntites';
 import { themeVar } from '../Components/Theme';
-import { optionsSchema } from '../Components/PageComponents/tools/EditableComponent';
 
 //It's really important to import index.ts in order to have the widjets allready registered before using Form
 import '../Editor/Components/FormView';
+import { wegasComponentOptionsSchema } from '../Components/PageComponents/tools/EditableComponent';
 
 const testSchema = {
   hidden: schemaProps.hidden(),
@@ -47,7 +47,7 @@ const testSchema = {
       },
     },
   ]),
-  customizedMultilevelHashList: optionsSchema.options,
+  customizedMultilevelHashList: wegasComponentOptionsSchema('FLEX').options,
   file: schemaProps.file('File', true),
   greyFilterfile: schemaProps.file('Filtered audio file', true, 'FILE', {
     filterType: 'grey',

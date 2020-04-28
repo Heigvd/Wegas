@@ -6,9 +6,10 @@ import { cx } from 'emotion';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { BaseView, Schema } from 'jsoninput/typings/types';
 import { MessageString } from '../MessageString';
-// import { flexItemSchema } from '../../../Components/Layouts/FlexList';
-import { SchemaPropsSchemas } from '../../../Components/PageComponents/tools/schemaProps';
-import { optionsSchema } from '../../../Components/PageComponents/tools/EditableComponent';
+import {
+  wegasComponentCommonSchema,
+  wegasComponentOptionsSchema,
+} from '../../../Components/PageComponents/tools/EditableComponent';
 
 interface EditorProps<T = WegasComponent['props']> {
   entity: T;
@@ -64,12 +65,14 @@ const AsyncComponentForm = asyncSFC<EditorProps>(
 
 export interface ComponentEditorProps {
   entity?: WegasComponent;
+  parent?: WegasComponent;
   update?: (variable: WegasComponent) => void;
   actions?: EditorProps['actions'];
 }
 
 export default function ComponentEditor({
   entity,
+  parent,
   update,
   actions,
 }: ComponentEditorProps) {
@@ -78,13 +81,14 @@ export default function ComponentEditor({
       entity && s[entity.type]
         ? s[entity.type].getSchema()
         : { description: 'Unknown schema', properties: {} };
-    const firstPropView: SchemaPropsSchemas & {
-      view?: SchemaPropsSchemas['view'] & { borderTop?: boolean };
-    } = optionsSchema.options;
-    if (firstPropView.view) {
-      firstPropView.view['borderTop'] = true;
-    }
-    baseSchema.properties = { ...baseSchema.properties, ...optionsSchema };
+
+    baseSchema.properties = {
+      ...baseSchema.properties,
+      ...wegasComponentCommonSchema,
+      ...wegasComponentOptionsSchema(
+        parent ? s[parent.type].getContainerType() : undefined,
+      ),
+    };
     return baseSchema as Schema<BaseView>;
   }, deepDifferent);
   if (entity === undefined || schema === undefined) {

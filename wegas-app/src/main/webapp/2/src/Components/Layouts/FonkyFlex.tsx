@@ -3,6 +3,7 @@ import { cx, css } from 'emotion';
 import { classNameOrEmpty } from '../../Helper/className';
 import { flex, flexColumn, flexRow, expandBoth } from '../../css/classes';
 import { themeVar } from '../Theme';
+import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
 
 const SPLITTER_SELECTOR = 'fonkyflex-splitter';
 const CONTENT_SELECTOR = 'fonkyflex-content';
@@ -70,12 +71,8 @@ interface SplitterProps extends ClassAndStyle {
   notDraggable?: boolean;
 }
 
-interface ContentProps extends ClassAndStyle {
+interface ContentProps extends WegasComponentItemProps {
   flexInit?: number;
-  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  onMouseOver?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  tooltip?: string;
 }
 
 export function Container({
@@ -190,14 +187,9 @@ export function Container({
         const { target } = e;
         const divTarget = target as HTMLDivElement;
         if (
-          // container.current &&
+          typeof divTarget.className === 'string' &&
           divTarget.className.includes(SPLITTER_SELECTOR)
         ) {
-          // for (let i = 0; i < container.current.childNodes.length; ++i) {
-          //   if (container.current.childNodes[i] === divTarget) {
-          //   }
-          // }
-
           mouseDownTarget.current = divTarget;
           const splitterIndex = flexChildren.current.findIndex(
             c => c === divTarget,
@@ -215,6 +207,7 @@ export function Container({
         const { clientX, clientY } = e;
         if (
           mouseDownTarget.current &&
+          typeof mouseDownTarget.current.className === 'string' &&
           !mouseDownTarget.current.className.includes(NODRAG_SELECTOR)
         ) {
           const target = mouseDownTarget.current;

@@ -6,15 +6,6 @@ import {
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import {
-  FlexListProps,
-  FlexList,
-  flexDirectionValues,
-  flexWrapValues,
-  justifyContentValues,
-  alignItemsValues,
-  alignContentValues,
-} from '../../Layouts/FlexList';
-import {
   EditorHandleProps,
   PageComponentMandatoryProps,
   layoutHighlightStyle,
@@ -22,9 +13,7 @@ import {
 import { cx } from 'emotion';
 import { classNameOrEmpty } from '../../../Helper/className';
 
-interface PlayerFlexListProps
-  extends FlexListProps,
-    PageComponentMandatoryProps {
+interface AbsoluteLayoutProps extends PageComponentMandatoryProps {
   /**
    * name - the name of the component
    */
@@ -35,7 +24,7 @@ interface PlayerFlexListProps
   children: React.ReactNode[];
 }
 
-function PlayerFlexList(props: PlayerFlexListProps) {
+function PlayerFlexList(props: AbsoluteLayoutProps) {
   const {
     ComponentContainer,
     showBorders,
@@ -55,7 +44,7 @@ function PlayerFlexList(props: PlayerFlexListProps) {
     togglerProps: {
       onChange: setShowLayout,
       value: showLayout,
-      hint: 'Highlight list borders (only during edition mode)',
+      hint: 'Highlight layout borders (only during edition mode)',
     },
   };
   return (
@@ -63,20 +52,16 @@ function PlayerFlexList(props: PlayerFlexListProps) {
       {...containerProps}
       handleProps={handleProps}
       showBorders={showLayout}
-      vertical={
-        childProps.layout &&
-        (childProps.layout.flexDirection === 'column' ||
-          childProps.layout.flexDirection === 'column-reverse')
-      }
     >
-      <FlexList
-        {...childProps}
+      <div
         className={
           cx({
             [layoutHighlightStyle]: showLayout,
           }) + classNameOrEmpty(childProps.className)
         }
-      />
+      >
+        {childProps.children}
+      </div>
     </ComponentContainer>
   );
 }
@@ -84,55 +69,10 @@ function PlayerFlexList(props: PlayerFlexListProps) {
 registerComponent(
   pageComponentFactory(
     PlayerFlexList,
-    'FlexList',
+    'AbsoluteLayout',
     'bars',
     {
       name: schemaProps.string('Name', false),
-      layout: schemaProps.hashlist('List layout properties', false, [
-        {
-          label: 'Direction',
-          value: {
-            prop: 'flexDirection',
-            schema: schemaProps.select('Direction', false, flexDirectionValues),
-          },
-        },
-        {
-          label: 'Wrap',
-          value: {
-            prop: 'flexWrap',
-            schema: schemaProps.select('Wrap', false, flexWrapValues, 'string'),
-          },
-        },
-        {
-          label: 'Justify content',
-          value: {
-            prop: 'justifyContent',
-            schema: schemaProps.select(
-              'Justify content',
-              false,
-              justifyContentValues,
-            ),
-          },
-        },
-        {
-          label: 'Align items',
-          value: {
-            prop: 'alignItems',
-            schema: schemaProps.select('Align items', false, alignItemsValues),
-          },
-        },
-        {
-          label: 'Align content',
-          value: {
-            prop: 'alignContent',
-            schema: schemaProps.select(
-              'Align content',
-              false,
-              alignContentValues,
-            ),
-          },
-        },
-      ]),
       children: schemaProps.hidden(false),
     },
     ['ISListDescriptor'],
@@ -145,6 +85,6 @@ registerComponent(
         : {
             children: [],
           },
-    'FLEX',
+    'ABSOLUTE',
   ),
 );
