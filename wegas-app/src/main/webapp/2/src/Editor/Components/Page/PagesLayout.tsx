@@ -64,7 +64,7 @@ const defaultPage = {
   type: 'FlexList',
   props: {
     children: [],
-    listLayout: {
+    layout: {
       flexDirection: 'column',
     },
     style: {
@@ -330,7 +330,7 @@ function LayoutNodeTitle({
       : title;
 
   const isFocused =
-    editMode &&
+    // editMode &&
     focusedComponent &&
     focusedComponent.pageId === pageId &&
     JSON.stringify(focusedComponent.componentPath) ===
@@ -345,13 +345,13 @@ function LayoutNodeTitle({
         }) + classNameOrEmpty(className)
       }
       onMouseOver={e => {
-        if (editMode && pageId != null && componentPath != null) {
+        if (/*editMode &&*/ pageId != null && componentPath != null) {
           e.stopPropagation();
           focusComponent({ pageId, componentPath });
         }
       }}
       onMouseOut={e => {
-        if (editMode && pageId != null && componentPath != null) {
+        if (/*editMode && */ pageId != null && componentPath != null) {
           e.stopPropagation();
           focusComponent(undefined);
         }
@@ -460,62 +460,6 @@ function WegasComponentNode({
   componentControls,
 }: WegasComponentNodeProps) {
   const page = useStore(s => s.pages[pageId], deepDifferent);
-
-  // debugger;
-  // const Title = () => {
-  //   const registeredComponent = usePageComponentStore(s => s[component.type]);
-
-  //   let icon: Icon;
-  //   if (registeredComponent != null) {
-  //     icon = registeredComponent.getIcon();
-  //   } else {
-  //     icon = 'exclamation-triangle';
-  //   }
-
-  //   let title = component.type;
-  //   if ('name' in component.props) {
-  //     title += ` ${component.props.name}`;
-  //   }
-
-  //   return (
-  //     <LayoutNodeTitle
-  //       icon={icon}
-  //       pageId={pageId}
-  //       componentPath={componentPath}
-  //       title={title}
-  //       advancedTitle={title + ' ' + JSON.stringify(componentPath)}
-  //       tooltip={registeredComponent == null ? 'Unknown component' : undefined}
-  //       onClick={() => onEdit(pageId, componentPath)}
-  //       className={cx({
-  //         [selectedComponentStyle]:
-  //           pageId === selectedPageId &&
-  //           JSON.stringify(componentPath) ===
-  //             JSON.stringify(selectedComponentPath),
-  //       })}
-  //     >
-  //       {component.props?.children && (
-  //         <ComponentAdder
-  //           tooltip="Add a component"
-  //           onSelect={componentType =>
-  //             onNew(pageId, page, componentPath, componentType)
-  //           }
-  //           className={controlsClassName}
-  //         />
-  //       )}
-  //       <ConfirmButton
-  //         icon="trash"
-  //         onAction={success => success && onDelete(pageId, page, componentPath)}
-  //         disabled={componentPath.length === 0}
-  //         tooltip={
-  //           componentPath.length === 0
-  //             ? 'The first component of a page connot be deleted'
-  //             : 'Delete the component'
-  //         }
-  //         className={controlsClassName}
-  //       />
-  //     </LayoutNodeTitle>
-  //   );
-  // };
 
   const id: ComponentNodeId = { pageId, page, componentPath };
 

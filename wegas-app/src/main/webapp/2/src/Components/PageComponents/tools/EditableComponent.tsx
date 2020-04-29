@@ -789,8 +789,8 @@ export function useComponentEditorContainer(
       onDrop,
       editMode,
       handles,
-      focusedComponent,
-      focusComponent,
+      // focusedComponent,
+      // focusComponent,
       pageIdPath,
     } = React.useContext(pageCTX);
     const [{ isOver }, dropZone] = useDndComponentDrop();
@@ -815,11 +815,11 @@ export function useComponentEditorContainer(
         break;
     }
 
-    const isFocused =
-      editMode &&
-      focusedComponent &&
-      focusedComponent.pageId === pageIdPath.slice(0, 1)[0] &&
-      JSON.stringify(focusedComponent.componentPath) === JSON.stringify(path);
+    // const isFocused =
+    //   editMode &&
+    //   focusedComponent &&
+    //   focusedComponent.pageId === pageIdPath.slice(0, 1)[0] &&
+    //   JSON.stringify(focusedComponent.componentPath) === JSON.stringify(path);
 
     return (
       <>
@@ -836,7 +836,7 @@ export function useComponentEditorContainer(
               [layoutHighlightStyle]: showBorders,
               [childHighlightStyle]: showBorders,
               [handleControlHoverStyle]: editMode,
-              [focusedComponentStyle]: isFocused,
+              // [focusedComponentStyle]: isFocused,
               [childDropzoneHorizontalStyle]: !vertical,
               [childDropzoneVerticalStyle]: vertical,
             }) + classNameOrEmpty(className)
