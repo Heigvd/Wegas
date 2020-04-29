@@ -159,7 +159,10 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      */
     public VariableInstance getVariableInstance(Team team) {
         for (Player p : team.getPlayers()) {
-            return this.getVariableInstance(p);
+            VariableInstance variableInstance = this.getVariableInstance(p);
+            if (variableInstance !=null){
+                return variableInstance;
+            }
         }
         return null;
     }
@@ -176,7 +179,10 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      */
     public VariableInstance getVariableInstance(Game game) {
         for (Team t : game.getTeams()) {
-            return this.getVariableInstance(t);
+            VariableInstance vi = this.getVariableInstance(t);
+            if (vi != null){
+                return vi;
+            }
         }
         return null;
     }
@@ -193,7 +199,10 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      */
     public VariableInstance getVariableInstance(GameModel gm) {
         for (Game g : gm.getGames()) {
-            return this.getVariableInstance(g);
+            VariableInstance vi = this.getVariableInstance(g);
+            if (vi != null){
+                return vi;
+            }
         }
         return null;
     }

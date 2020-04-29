@@ -55,15 +55,6 @@ public class PeerReviewController {
     @Inject
     private PlayerFacade playerFacade;
 
-    @Inject
-    private VariableDescriptorFacade variableDescriptorFacade;
-
-    /**
-     * Inject Variable Instance Facade
-     */
-    @Inject
-    private VariableInstanceFacade instanceFacade;
-
     /**
      * Return the VariableInstance to review, according to given peer review
      * descriptor and given review

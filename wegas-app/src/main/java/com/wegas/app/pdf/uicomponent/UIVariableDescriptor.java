@@ -347,7 +347,7 @@ public class UIVariableDescriptor extends UIComponentBase {
 
             if (editorMode) {
                 if (task.getIndex() != null) {
-                    UIHelper.printProperty(context, writer, UIHelper.TEXT_INDEX, task.getIndex().toString());
+                    UIHelper.printProperty(context, writer, UIHelper.TEXT_INDEX, task.getIndex());
                 }
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getActive());
             }

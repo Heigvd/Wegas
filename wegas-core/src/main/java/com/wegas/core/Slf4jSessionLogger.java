@@ -61,11 +61,11 @@ import org.slf4j.LoggerFactory;
  * siguiente correspondencia:
  * </p>
  * <ul>
- * <li>ALL,FINER,FINEST -> TRACE
- * <li>FINE -> DEBUG
- * <li>CONFIG,INFO -> INFO
- * <li>WARNING -> WARN
- * <li>SEVERE -> ERROR
+ * <li>ALL,FINER,FINEST -&gt; TRACE
+ * <li>FINE -&gt; DEBUG
+ * <li>CONFIG,INFO -&gt; INFO
+ * <li>WARNING -&gt; WARN
+ * <li>SEVERE -&gt; ERROR
  * </ul>
  * </p>
  * <p>

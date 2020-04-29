@@ -12,11 +12,8 @@ import com.wegas.app.jsf.controllers.utils.HttpParam;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.persistence.game.DebugTeam;
-import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -27,7 +24,7 @@ import javax.inject.Named;
  *
  * Controls player access to games
  *
- * @author Maxence Laurent <maxence.laurent> <gmail.com>
+ * @author Maxence
  */
 @Named("printController")
 @RequestScoped

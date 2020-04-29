@@ -9,7 +9,7 @@ package com.wegas.core.exception.internal;
 
 /**
  * Such an exception MUST be internally treated
- * 
+ *
  * @author Maxence Laurent <maxence.laurent at gmail.com>
  */
 public abstract class WegasInternalException extends Exception {
@@ -20,10 +20,10 @@ public abstract class WegasInternalException extends Exception {
     public WegasInternalException() {
     }
 
-    public WegasInternalException (final Throwable t){
+    public WegasInternalException(final Throwable t) {
         super(t);
     }
-    
+
     /**
      *
      * @param message

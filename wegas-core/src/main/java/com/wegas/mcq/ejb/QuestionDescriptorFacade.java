@@ -740,18 +740,24 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             // Test if the current choice has been selected, i.e. there is a reply for it.
             ChoiceInstance choiceInstance = choice.getInstance(player);
 
-            boolean found = false;
-            for (Reply r : choiceInstance.getReplies()) {
+            List<Reply> choiceReplies = choiceInstance.getReplies();
+
+            if (choiceReplies.size() > 1) {
+                logger.error("validateQuestion() too many replies in the choice {}", choiceInstance);
+                // TODO should throw error ?
+            }
+
+            if (choiceReplies.size() > 0) {
+                Reply r = choiceReplies.get(0);
+
                 if (!r.getIgnored()) {
                     // It's been selected: validate the reply (which executes the impact)
                     this.validateReply(player, r);
                 } else {
                     logger.error("validateQuestion() invoked on a Question where ignored replies are already persisted");
+                    // TODO should throw error ?
                 }
-                found = true;
-                break;
-            }
-            if (!found) {
+            } else {
                 Reply ignoredReply = ignoreChoice(choice.getId(), player);
                 this.validateReply(player, ignoredReply);
             }

@@ -411,9 +411,9 @@ public abstract class AbstractArquillianTestMinimal {
             return guest;
         }
 
-        User user;
-        String username;
-        String password;
+        private User user;
+        private String username;
+        private String password;
         boolean guest;
 
         public WegasUser(User user, String username, String password) {

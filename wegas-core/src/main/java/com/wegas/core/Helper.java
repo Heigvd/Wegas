@@ -567,10 +567,10 @@ public class Helper {
     /**
      * Convert camelCase to human readable string.
      * <ul>
-     * <li>PDFFile -> PDF file</li>
-     * <li>99Files -> 99 files</li>
-     * <li>SomeFiles -> some files</li>
-     * <li>SomePDFFiles -> some PDF files</li>
+     * <li>PDFFile -&gt; PDF file</li>
+     * <li>99Files -&gt; 99 files</li>
+     * <li>SomeFiles -&gt; some files</li>
+     * <li>SomePDFFiles -&gt; some PDF files</li>
      * </ul>
      *
      * @param camelCased

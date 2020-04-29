@@ -273,7 +273,10 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     @Override
     public Player getAnyLivePlayer() {
         for (Team t : this.getTeams()) {
-            return t.getAnyLivePlayer();
+            Player p = t.getAnyLivePlayer();
+            if (p != null) {
+                return t.getAnyLivePlayer();
+            }
         }
         return null;
     }

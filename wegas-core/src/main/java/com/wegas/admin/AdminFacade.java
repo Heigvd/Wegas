@@ -169,8 +169,8 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
 
     /**
      * delete games once the bin have been emptied. Note that only games
-     * which are marked as {@link Status#PROCESSED} will be destroyed.
-     * {@link Status#TODO} and {@link Status#CHARGED} ones will not be destroyed
+     * which are marked as {@link GameAdmin.Status#PROCESSED} will be destroyed.
+     * {@link GameAdmin.Status#TODO} and {@link GameAdmin.Status#CHARGED} ones will not be destroyed
      * <p>
      * This task is scheduled each Sunday at 1:30 am
      */

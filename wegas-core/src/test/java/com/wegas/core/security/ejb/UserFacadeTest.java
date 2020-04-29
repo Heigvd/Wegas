@@ -14,7 +14,6 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
-import com.wegas.core.security.util.AuthenticationMethod;
 import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.JpaAuthentication;
 import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
@@ -273,5 +272,13 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
 
         login(user);
 
+    }
+
+    @Test(expected = WegasErrorMessage.class)
+    public void testWrongPassword() {
+        WegasUser dumb = this.signup("dumb@local", "abce123");
+        dumb.getPassword();
+        WegasUser dumber = new WegasUser(dumb.getUser(), "dumb@local", "123abcde");
+        this.login(dumber);
     }
 }
