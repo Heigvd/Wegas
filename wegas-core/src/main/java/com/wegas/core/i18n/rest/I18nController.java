@@ -8,6 +8,7 @@
 package com.wegas.core.i18n.rest;
 
 import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.exception.internal.WegasNashornException;
 import com.wegas.core.i18n.deepl.Deepl;
 import com.wegas.core.i18n.deepl.DeeplTranslations;
 import com.wegas.core.i18n.deepl.DeeplTranslations.DeeplTranslation;
@@ -22,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.script.ScriptException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -59,7 +59,7 @@ public class I18nController {
     @POST
     @Path("Lang")
     public GameModel createLanguage(@PathParam("gameModelId") Long gameModelId,
-            GameModelLanguage language) {
+        GameModelLanguage language) {
         logger.trace("POST new language {} for gameModel #{}", language, gameModelId);
         return i18nFacade.createLanguage(gameModelId, language.getCode(), language.getLang());
     }
@@ -67,7 +67,7 @@ public class I18nController {
     @PUT
     @Path("Lang")
     public GameModelLanguage updateLanguage(@PathParam("gameModelId") Long gameModelId,
-            GameModelLanguage language) {
+        GameModelLanguage language) {
         logger.trace("UPDATE language {} for gameModel #{}", language, gameModelId);
         return i18nFacade.updateLanguage(language);
     }
@@ -75,7 +75,7 @@ public class I18nController {
     @PUT
     @Path("Langs")
     public List<GameModelLanguage> updateLanguages(@PathParam("gameModelId") Long gameModelId,
-            List<GameModelLanguage> languages) {
+        List<GameModelLanguage> languages) {
         logger.trace("UPDATE languages {} for gameModel #{}", languages, gameModelId);
 
         List<GameModelLanguage> updated = new ArrayList<>();
@@ -97,7 +97,7 @@ public class I18nController {
     @PUT
     @Path("Lang/{langId: [1-9][0-9]*}/Up")
     public GameModel updateLanguage(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("langId") Long langId) {
+        @PathParam("langId") Long langId) {
         return i18nFacade.moveLanguageUp(gameModelId, langId);
     }
 
@@ -110,14 +110,13 @@ public class I18nController {
 
     @PUT
     @Path("Tr/{mode : [A-Z_]+}")
-    public AbstractEntity update(@PathParam("mode") UpdateType mode, I18nUpdate i18nUpdate)
-            throws ScriptException {
+    public AbstractEntity update(@PathParam("mode") UpdateType mode, I18nUpdate i18nUpdate) throws WegasNashornException {
         return i18nFacade.update(i18nUpdate, mode);
     }
 
     @PUT
     @Path("BatchUpdate")
-    public List<AbstractEntity> batchUpdate(List<I18nUpdate> i18nUpdates) throws ScriptException {
+    public List<AbstractEntity> batchUpdate(List<I18nUpdate> i18nUpdates) throws WegasNashornException  {
         return i18nFacade.batchUpdate(i18nUpdates, UpdateType.MINOR);
     }
 
@@ -128,14 +127,14 @@ public class I18nController {
     @Path("deepl/translate")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public DeeplTranslations deepLMockTranslate(@FormParam("text") List<String> texts,
-            @FormParam("source_lang") Deepl.Language sourceLang,
-            @FormParam("target_lang") Deepl.Language targetLang,
-            @FormParam("tag_handling") String tagHandling,
-            @FormParam("non_splitting_tags") String nonSplittingTags,
-            @FormParam("ignore_tags") String ignoreTags,
-            @FormParam("split_sentences") String splitSentences,
-            @FormParam("preserve_formatting") String preserveFormatting,
-            @FormParam("auth_key") String auth_key) {
+        @FormParam("source_lang") Deepl.Language sourceLang,
+        @FormParam("target_lang") Deepl.Language targetLang,
+        @FormParam("tag_handling") String tagHandling,
+        @FormParam("non_splitting_tags") String nonSplittingTags,
+        @FormParam("ignore_tags") String ignoreTags,
+        @FormParam("split_sentences") String splitSentences,
+        @FormParam("preserve_formatting") String preserveFormatting,
+        @FormParam("auth_key") String auth_key) {
 
         DeeplTranslations deeplTranslations = new DeeplTranslations();
         List<DeeplTranslations.DeeplTranslation> translations = new ArrayList<>();
@@ -181,8 +180,8 @@ public class I18nController {
     @Path("InitLanguage/{source: [a-zA-Z]+}/{target: [a-zA-Z]+}")
     @RequiresRoles("Administrator")
     public GameModel initLanguageTranslations(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("target") String targetLangCode,
-            @PathParam("source") String sourceLangCode) throws ScriptException {
+        @PathParam("target") String targetLangCode,
+        @PathParam("source") String sourceLangCode) throws WegasNashornException {
 
         return i18nFacade.initLanguage(gameModelId, sourceLangCode, targetLangCode);
     }
@@ -191,29 +190,27 @@ public class I18nController {
     @Path("CopyLanguage/{source: [a-zA-Z]+}/{target: [a-zA-Z]+}")
     @RequiresRoles("Administrator")
     public GameModel copyLanguageTranslations(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("target") String targetLangCode,
-            @PathParam("source") String sourceLangCode) throws ScriptException {
+        @PathParam("target") String targetLangCode,
+        @PathParam("source") String sourceLangCode) throws WegasNashornException {
 
         return i18nFacade.copyLanguage(gameModelId, sourceLangCode, targetLangCode);
     }
-
 
     @PUT
     @Path("Clear/{lang: [a-zA-Z]+}/{mode: (All|Outdated)}")
     @RequiresRoles("Administrator")
     public GameModel clearLanguageTranslations(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("lang") String langCode,
-            @PathParam("mode") String mode) throws ScriptException {
+        @PathParam("lang") String langCode,
+        @PathParam("mode") String mode) throws WegasNashornException {
 
         return i18nFacade.clearLanguage(gameModelId, langCode, mode);
     }
-
 
     @PUT
     @Path("Translate/{source: [a-zA-Z]+}/{target: [a-zA-Z]+}")
     @Consumes(MediaType.TEXT_PLAIN)
     public DeeplTranslation translate(@PathParam("target") String targetLangCode,
-            @PathParam("source") String sourceLangCode, String text) throws UnsupportedEncodingException {
+        @PathParam("source") String sourceLangCode, String text) throws UnsupportedEncodingException {
 
         return i18nFacade.translate(sourceLangCode, targetLangCode, text).getTranslations().get(0);
     }
@@ -229,7 +226,7 @@ public class I18nController {
     @GET
     @Path("Usage")
     public DeeplUsage usage(@PathParam("target") String targetLangCode,
-            @PathParam("source") String sourceLangCode, String text) {
+        @PathParam("source") String sourceLangCode, String text) {
         return i18nFacade.usage();
     }
 
@@ -242,7 +239,7 @@ public class I18nController {
     @Path("EditableLanguages")
     public List<String> getWriteableLanguages(@PathParam("gameModelId") Long gameModelId) {
         return i18nFacade.getEditableLanguages(gameModelId);
-   }
+    }
 
     @GET
     @Path("AvailableLanguages")

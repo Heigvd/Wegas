@@ -1077,8 +1077,7 @@ public class UpdateController {
                 GameModelLanguage sourceLang = source.getLanguageByCode(codeToCopy);
                 if (sourceLang != null) {
                     MergeHelper.visitMergeable(target, Boolean.TRUE,
-                        new ImportTranslationsVisitor(codeRef, codeToCopy,
-                            i18nFacade), source);
+                        new ImportTranslationsVisitor(codeRef, codeToCopy), source);
                     return "Done";
                 } else {
                     return "Source does not contains the lang to copy !";

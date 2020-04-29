@@ -2,6 +2,7 @@ package com.wegas.core.ejb.nashorn;
 
 // !!! This is what jdk9+ version could be
 import com.wegas.core.exception.client.WegasRuntimeException;
+import com.wegas.core.i18n.tools.I18nHelper;
 
 import java.util.Set;
 import jdk.nashorn.api.tree.BlockTree;
@@ -15,7 +16,10 @@ import jdk.nashorn.api.tree.FunctionCallTree;
 import jdk.nashorn.api.tree.FunctionDeclarationTree;
 import jdk.nashorn.api.tree.FunctionExpressionTree;
 import jdk.nashorn.api.tree.IdentifierTree;
+import jdk.nashorn.api.tree.LiteralTree;
+import jdk.nashorn.api.tree.ObjectLiteralTree;
 import jdk.nashorn.api.tree.Parser;
+import jdk.nashorn.api.tree.PropertyTree;
 import jdk.nashorn.api.tree.SimpleTreeVisitorES5_1;
 import jdk.nashorn.api.tree.StatementTree;
 import jdk.nashorn.api.tree.WhileLoopTree;
@@ -50,6 +54,40 @@ public class JSTool {
         node.accept(visitor, null);
         // inject at start to avoid rewrite from the code.
         return injection + visitor.getResult();
+    }
+
+    /**
+     * Get the given property of the given object.
+     *
+     * @param node object AST
+     * @param key  property name
+     *
+     * @return the property tree which match the key or null
+     */
+    public static PropertyTree getProperty(ObjectLiteralTree node, String key) {
+        if (key != null) {
+            for (PropertyTree p : node.getProperties()) {
+                if (key.equals(readStringLiteral(p.getKey()))) {
+                    return p;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Read tree as StringLiteral or return null.
+     *
+     * @param node the AST expression
+     *
+     * @return the string value or null
+     */
+    public static String readStringLiteral(ExpressionTree node) {
+        if (node instanceof LiteralTree) {
+            return ((LiteralTree) node).getValue().toString();
+        } else {
+            return null;
+        }
     }
 
     private static class Visitor extends SimpleTreeVisitorES5_1<Void, Void> {

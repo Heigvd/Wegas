@@ -9,7 +9,7 @@ package com.wegas.core.i18n.tools;
 
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.wegas.core.Helper;
-import com.wegas.core.i18n.ejb.I18nFacade;
+import com.wegas.core.exception.internal.WegasNashornException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.merge.utils.MergeHelper.MergeableVisitor;
@@ -19,7 +19,6 @@ import com.wegas.core.persistence.game.Script;
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
-import javax.script.ScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,12 +32,10 @@ public class ImportTranslationsVisitor implements MergeableVisitor {
 
     private final String refLanguageCode;
     private final String languageCode;
-    private final I18nFacade i18nFacade;
 
-    public ImportTranslationsVisitor(String refLanguageCode, String languageCode, I18nFacade i18nFacade) {
+    public ImportTranslationsVisitor(String refLanguageCode, String languageCode) {
         this.languageCode = languageCode;
         this.refLanguageCode = refLanguageCode;
-        this.i18nFacade = i18nFacade;
     }
 
     /**
@@ -54,8 +51,8 @@ public class ImportTranslationsVisitor implements MergeableVisitor {
         try {
             String newScript = target.getContent();
 
-            List<TranslatableContent> targetTrs = i18nFacade.getInScriptTranslations(newScript);
-            List<TranslatableContent> sourceTrs = i18nFacade.getInScriptTranslations(source.getContent());
+            List<TranslatableContent> targetTrs = I18nHelper.getTranslatableContents(newScript);
+            List<TranslatableContent> sourceTrs = I18nHelper.getTranslatableContents(source.getContent());
 
             if (targetTrs.size() == sourceTrs.size()) {
                 for (int i = 0; i < targetTrs.size(); i++) {
@@ -76,17 +73,20 @@ public class ImportTranslationsVisitor implements MergeableVisitor {
                             status = translation.getStatus();
                         }
 
-                        newScript = i18nFacade.updateScriptWithNewTranslation(newScript, i,
+                        newScript = I18nHelper.updateScriptWithNewTranslation(newScript, i,
                             languageCode, translation.getTranslation(), status);
                     }
                 }
                 target.setContent(newScript);
             }
-        } catch (ScriptException ex) {
-            logger.error("Ouille ouille ouille: {}", ex);
+        } catch (WegasNashornException ex) {
+            logger.error("Fails to parse script: {}", ex);
         }
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @Override
     public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level,
         WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable references[]) {

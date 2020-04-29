@@ -42,7 +42,6 @@ import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.ManagedResponse;
 import com.wegas.core.rest.util.Views;
-import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
@@ -215,23 +214,18 @@ public class SerializationTest {
         team1.setGame(game);
         game.addTeam(team1);
 
-        FacebookAccount fbAccount = new FacebookAccount();
         GuestJpaAccount guAccount = new GuestJpaAccount();
         JpaAccount jpaAccount = new JpaAccount();
 
-        User fbUser = new User(fbAccount);
         User guUser = new User(guAccount);
         User jpaUser = new User(jpaAccount);
 
-        Player fbPlayer = new Player();
         Player guPlayer = new Player();
         Player jpaPlayer = new Player();
 
-        team1.addPlayer(fbPlayer);
         team1.addPlayer(guPlayer);
         team1.addPlayer(jpaPlayer);
 
-        fbUser.getPlayers().add(fbPlayer);
         guUser.getPlayers().add(guPlayer);
         jpaUser.getPlayers().add(jpaPlayer);
 
@@ -243,7 +237,6 @@ public class SerializationTest {
                 "@class", "Game");
         assertPropertyEquals(mapper.writeValueAsString(team1), "@class", "Team");
 
-        assertPropertyEquals(mapper.writeValueAsString(fbAccount), "@class", "FacebookAccount");
         assertPropertyEquals(mapper.writeValueAsString(guAccount), "@class", "GuestJpaAccount");
         assertPropertyEquals(mapper.writeValueAsString(jpaAccount), "@class", "JpaAccount");
 

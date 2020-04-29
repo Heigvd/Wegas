@@ -44,15 +44,13 @@ public class JSToolTest {
     //@Test
     public void testLambda() {
         String code = "var fn = (x) => (function(){while(1){}})();";
-        String  expected =";";
+        String expected = ";";
 
         String sanitize = JSTool.sanitize(code, "nop();");
 
         System.out.println(sanitize);
         assertEquals(expected, sanitize);
     }
-
-
 
     @Test
     public void testInjection3() {
@@ -64,7 +62,6 @@ public class JSToolTest {
         System.out.println(sanitize);
         assertEquals(expected, sanitize);
     }
-
 
     @Test
     public void testRecursion() {

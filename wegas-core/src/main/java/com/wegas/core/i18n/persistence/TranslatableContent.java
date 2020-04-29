@@ -389,7 +389,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         return trC;
     }
 
-    public TranslatableContent clone() {
+    public TranslatableContent createCopy() {
         TranslatableContent trC = new TranslatableContent();
         for (Translation t : this.getRawTranslations()) {
             trC.getRawTranslations().add(
@@ -460,7 +460,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
                 for (String code : langs) {
                     Object member = trs.getMember(code);
                     if (member instanceof String) {
-                        trContent.updateTranslation(code, (String) trs.getMember(code));
+                        trContent.updateTranslation(code, (String) member);
                     } else if (member instanceof ScriptObjectMirror) {
                         String tr = (String) ((ScriptObjectMirror) member).getMember("translation");
                         String status = (String) ((ScriptObjectMirror) member).getMember("status");

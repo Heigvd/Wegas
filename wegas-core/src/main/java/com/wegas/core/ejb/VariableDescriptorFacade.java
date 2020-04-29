@@ -540,14 +540,14 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     public VariableDescriptor convertToStaticText(VariableDescriptor vd) {
 
         if (vd != null) {
-            TranslatableContent label = vd.getLabel().clone();
+            TranslatableContent label = vd.getLabel().createCopy();
             TranslatableContent value = null;
             if (vd instanceof TextDescriptor) {
                 TextInstance ti = (TextInstance) vd.getDefaultInstance();
-                value = ti.getTrValue().clone();
+                value = ti.getTrValue().createCopy();
             } else if (vd instanceof StringDescriptor) {
                 StringInstance si = (StringInstance) vd.getDefaultInstance();
-                value = si.getTrValue().clone();
+                value = si.getTrValue().createCopy();
             }
 
             if (value != null) {
@@ -583,10 +583,10 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     public VariableDescriptor convertToText(VariableDescriptor vd) {
 
         if (vd != null) {
-            TranslatableContent label = vd.getLabel().clone();
+            TranslatableContent label = vd.getLabel().createCopy();
             TranslatableContent value = null;
             if (vd instanceof StaticTextDescriptor) {
-                value = ((StaticTextDescriptor) vd).getText().clone();
+                value = ((StaticTextDescriptor) vd).getText().createCopy();
                 if (value != null) {
                     TextDescriptor text = new TextDescriptor();
                     text.setDefaultInstance(new TextInstance());
