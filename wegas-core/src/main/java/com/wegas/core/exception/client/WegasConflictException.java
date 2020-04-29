@@ -22,7 +22,7 @@ public class WegasConflictException extends WegasRuntimeException {
     public WegasConflictException() {
         super();
     }
-    
+
     public WegasConflictException(Throwable t) {
         super(t);
     }
