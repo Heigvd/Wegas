@@ -99,7 +99,16 @@ public class Deepl {
         /**
          * Russian
          */
-        RU;
+        RU,
+        /**
+         * Japanese
+         */
+        JA,
+        /**
+         * Chinese
+         */
+        ZH;
+
     }
 
     /**
