@@ -40,7 +40,7 @@ public @interface Scriptable {
      */
     ReturnType returnType() default ReturnType.AUTO;
 
-    public static enum ReturnType {
+    enum ReturnType {
         /**
          * Getter or setter, depending on effective method return type
          */

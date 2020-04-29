@@ -9,14 +9,14 @@ public class CommonView extends BaseView {
     private int index;
     private FEATURE_LEVEL featureLevel;
 
-    public static enum LAYOUT {
+    public enum LAYOUT {
         none,
         inline,
         shortInline,
         extraShortInline;
     }
 
-    public static enum FEATURE_LEVEL {
+    public enum FEATURE_LEVEL {
         DEFAULT,
         ADVANCED,
         INTERNAL;

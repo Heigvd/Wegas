@@ -57,21 +57,21 @@ public @interface WegasEntityProperty {
      *
      * @return true to prevent overwriting non-null values
      */
-    public boolean initOnly() default false;
+    boolean initOnly() default false;
 
     /**
      * Is the property optional ?
      *
      * @return true if the property can be omitted
      */
-    public boolean optional() default true;
+    boolean optional() default true;
 
     /**
      * Can the property be null ?
      *
      * @return true if the property can be set to null
      */
-    public boolean nullable() default true;
+    boolean nullable() default true;
 
     /**
      * postUpdate, preDestroy, postPersist callback
@@ -86,15 +86,15 @@ public @interface WegasEntityProperty {
      *
      * @return list of visibility for which OVERRIDE mode is allowed to be propagated
      */
-    //public ModelScoped.Visibility[] cascadeOverride() default {ModelScoped.Visibility.INTERNAL, ModelScoped.Visibility.PROTECTED};
-    public ProtectionLevel protectionLevel() default ProtectionLevel.CASCADED;
+    // ModelScoped.Visibility[] cascadeOverride() default {ModelScoped.Visibility.INTERNAL, ModelScoped.Visibility.PROTECTED};
+    ProtectionLevel protectionLevel() default ProtectionLevel.CASCADED;
 
     /**
      * Indicate if this property is "searchable".
      *
      * @return is the property searchable ?
      */
-    public boolean searchable() default false;
+    boolean searchable() default false;
 
     /**
      * Editor's view.

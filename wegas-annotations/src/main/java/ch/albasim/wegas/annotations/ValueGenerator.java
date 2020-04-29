@@ -13,7 +13,7 @@ package ch.albasim.wegas.annotations;
  */
 public interface ValueGenerator {
 
-    public static class Undefined implements ValueGenerator {
+    class Undefined implements ValueGenerator {
 
         @Override
         public Object getValue() {
@@ -21,6 +21,6 @@ public interface ValueGenerator {
         }
     }
 
-    public Object getValue();
+    Object getValue();
 
 }
