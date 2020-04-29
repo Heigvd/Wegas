@@ -468,7 +468,7 @@
             </plugin>
         </plugins>
     </build>
-    <reporting>
+    <!--<reporting>
         <plugins>
             <plugin>
                 <groupId>nl.windgazer</groupId>
@@ -476,23 +476,22 @@
                 <version>2.3.2</version>
                 <configuration>
                     <template>jsdoc</template>
-                    <!-- Alternatives are not pre-installed for version 2.x-->
+                    < ! - - Alternatives are not pre-installed for version 2.x- - >
                     <directory>${project.build.directory}/site/jsdoc</directory>
                     <recurse>5</recurse>
                     <ext>js</ext>
                     <allfunctions>true</allfunctions>
                     <Allfunctions>false</Allfunctions>
                     <privateOption>false</privateOption>
-                    <!-- If you're using the maven default setup this alternative is sometimes required
-                    to make the plugin work: ${basedir}/src/main/webapp/ -->
+                    < ! - - If you're using the maven default setup this alternative is sometimes required
+                    to make the plugin work: ${basedir}/src/main/webapp/ - - >
                     <srcDir>${basedir}/src/main/webapp</srcDir>
-                    <exclude><!-- Since jsdoctk 2.3.2 -->
-                        <!--Multiple param entries allowed-->
+                    <exclude>< ! - - Since jsdoctk 2.3.2  - - >
+                        < ! - -Multiple param entries allowed - - >
                         <param>lib</param>
                     </exclude>
                 </configuration>
             </plugin>
-
         </plugins>
-    </reporting>
+    </reporting>-->
 </project>
