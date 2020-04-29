@@ -1496,6 +1496,15 @@
     display: none;
 }
 
+.wegas-editsurveymode .wegas-filter-input button,
+.wegas-editsurveymode .wegas-findbugs-button {
+    display: none;
+}
+
+.wegas-editsurveymode .wegas-button-toolbar {
+    float: right;
+}
+
 .wegas-i18n-activator .gm-language {
     height: 24px;
     padding: 4px;

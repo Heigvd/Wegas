@@ -38,6 +38,8 @@ YUI.add('wegas-surveylistener', function(Y) {
                 this.registerSurvey, this);
             // Once host app is rendered, check if we should display a survey:
             this.afterHostEvent("render", this.checkSurveys);
+            // This is for the Preview pane:
+            Y.SurveyListenerSingleton = this;
         },
         onUpdatedDescriptor: function(e) {
             var entity = e.entity;
