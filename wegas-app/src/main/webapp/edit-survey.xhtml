@@ -52,20 +52,30 @@
                 
                 function onUpdatedSurveyInstance(e) {
                     var entity = e.entity,
-                        status = entity.get("status"),
+                        newStatus = entity.get("status"),
                         panel;
-                    if (status === ORCHESTRATION_PROGRESS.CLOSED) {
-                        panel = Y.Wegas.Panel.alert("Restarting the survey for continued testing...");
+                    if (newStatus === ORCHESTRATION_PROGRESS.CLOSED) {
+                        panel = Y.Wegas.Panel.alert("Restarting the survey for you.<br>Please wait...");
                         // Wait until the current transaction is over:
                         Y.later(2000, this, function() {
-                            var script = "GameModelFacade.reset(self);";
-                            Y.Wegas.Facade.Variable.script.remoteEval(script);
-                            Y.later(2000, this, function() {
-                                //sendSurveyStatusChange(descr, ORCHESTRATION_PROGRESS.REQUESTED);
-                                panel && panel.destroy();
-                            });
+                            var script = "GameModelFacade.reset(self.getTeam());",
+                                cfg = {
+                                    on: {
+                                        success: Y.bind(function(e) {
+                                            Y.later(2000, this, function() {
+                                                panel && panel.destroy();
+                                            });
+                                        }, this),
+                                        failure: Y.bind(function(e) {
+                                            panel && panel.destroy();
+                                            Y.Wegas.Panel.alert("Something went wrong. Could not restart the survey.");
+                                        }, this)
+                                    }
+                                };
+                            Y.Wegas.Facade.Variable.script.remoteEval(script, cfg);
                         });
-                    } else if (status === ORCHESTRATION_PROGRESS.NOT_STARTED) {
+                    } else if (newStatus === ORCHESTRATION_PROGRESS.NOT_STARTED) {
+                        // Start survey after the current transaction is over:
                         Y.later(2000, this, function() {
                             sendSurveyStatusChange(descr, ORCHESTRATION_PROGRESS.REQUESTED);
                         });
@@ -102,7 +112,7 @@
                 
                 Y.use(["wegas-survey-widgets", "wegas-popuplistener"], function(Y) {
                     var status = inst.get("status");
-                    // Force start inside the editor:
+                    // We are loading the editor. Force start of survey if needed:
                     if (status === ORCHESTRATION_PROGRESS.NOT_STARTED ||
                         status === ORCHESTRATION_PROGRESS.CLOSED) {
                         sendSurveyStatusChange(descr, ORCHESTRATION_PROGRESS.REQUESTED);

@@ -1502,7 +1502,9 @@
 }
 
 .wegas-editsurveymode .wegas-button-toolbar {
-    float: right;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 .wegas-i18n-activator .gm-language {

@@ -37,11 +37,11 @@
                         "children": [
                             {
                                 "type": "Button",
-                                "label": "<i class=\"fa fa-repeat fa-rotate-180\" title=\"Restart survey\"></i>",
+                                "label": "<i class=\"fa fa-repeat fa-rotate-180\" title=\"Restart survey (only for you)\"></i>",
                                 "cssClass": "editor-restart-button",
                                 "plugins": [
                                     {
-                                        "fn": "ResetAction"
+                                        "fn": "ResetTeamAction"
                                     }
                                 ]
                             }
