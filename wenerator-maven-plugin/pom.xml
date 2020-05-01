@@ -12,7 +12,9 @@
     <packaging>maven-plugin</packaging>
     <version>4.1-SNAPSHOT</version>
 
-    <name>wenerator-maven-plugin Maven Plugin</name>
+    <name>Wenerator</name>
+
+    <description>Maven plugin to generate Typscript interfaces representing the wegas-core model and much more</description>
 
     <prerequisites>
         <maven>${maven.version}</maven>
