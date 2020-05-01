@@ -3,13 +3,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
-        <groupId>com.wegas</groupId>
+        <groupId>ch.albasim.wegas</groupId>
         <version>4.1-SNAPSHOT</version>
         <artifactId>wegas-project</artifactId>
     </parent>
     <name>wegas-resources</name>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.wegas</groupId>
+    <groupId>ch.albasim.wegas</groupId>
     <artifactId>wegas-resources</artifactId>
     <packaging>war</packaging>
     

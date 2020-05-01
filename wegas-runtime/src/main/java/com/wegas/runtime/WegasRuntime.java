@@ -123,6 +123,8 @@ public class WegasRuntime {
             st.execute("DROP SCHEMA public CASCADE;");
             st.execute("CREATE SCHEMA public;");
         } catch (SQLException ex) {
+            // fails tests ASAP
+            throw new RuntimeException(ex);
         }
     }
 

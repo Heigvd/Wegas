@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.wegas</groupId>
+        <groupId>ch.albasim.wegas</groupId>
         <artifactId>wegas-project</artifactId>
         <version>4.1-SNAPSHOT</version>
     </parent>
@@ -151,7 +151,6 @@
             <plugin> 
                 <groupId>org.apache.maven.plugins</groupId> 
                 <artifactId>maven-dependency-plugin</artifactId> 
-                <version>3.1.1</version> 
                 <executions> 
                     <execution> 
                         <phase>process-test-classes</phase>
@@ -186,7 +185,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.21.0</version>
                 <configuration>
                     <skipTests>${skip.surefire.tests}</skipTests>
                     <systemProperties>
@@ -197,7 +195,7 @@
                         <payara.bindHttpPort>28080</payara.bindHttpPort>
                         <payara.clusterEnabled>true</payara.clusterEnabled>
                         <!-- want to debug ? add next line to cmdOptions and inpect the log to find
-                             the HTTP port to connect to -->
+                        the HTTP port to connect to -->
                         <!-- -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n -->
                         <payara.cmdOptions>-Dwegas.http.threads=9 -Dwegas.db.name=wegas_test -Djcr.repository.URI= -Dwegas.db.host=localhost -Dwegas.nb_populators=3 -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager -Declipselink.cache.coordination.channel=WegasLocalTest </payara.cmdOptions>
                         <payara.extraMicroOptions>--port 28080 --addlibs ${project.basedir}/target/extra-libs --domainconfig ${project.basedir}/src/main/resources/domain.xml --logproperties ${project.basedir}/../wegas-core/src/test/resources/logging.properties --interfaces 127.0.0.1</payara.extraMicroOptions>
@@ -207,11 +205,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>${jdk.version}</source>
-                    <target>${jdk.version}</target>
-                </configuration>
             </plugin>
 
             <plugin>

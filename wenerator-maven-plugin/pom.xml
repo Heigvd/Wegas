@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>wegas-project</artifactId>
-        <groupId>com.wegas</groupId>
+        <groupId>ch.albasim.wegas</groupId>
         <version>4.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.wegas</groupId>
+    <groupId>ch.albasim.wegas</groupId>
     <artifactId>wenerator-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
     <version>4.1-SNAPSHOT</version>

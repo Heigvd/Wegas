@@ -3,19 +3,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
+        <groupId>ch.albasim.wegas</groupId>
         <artifactId>wegas-project</artifactId>
-        <groupId>com.wegas</groupId>
         <version>4.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.wegas</groupId>
+    <groupId>ch.albasim.wegas</groupId>
     <artifactId>wegas-core</artifactId>
     <packaging>jar</packaging>
     <name>wegas-core</name>
 
     <dependencies>
         <dependency>
-            <groupId>com.wegas</groupId>
+            <groupId>ch.albasim.wegas</groupId>
             <artifactId>wegas-annotations</artifactId>
             <version>${project.version}</version>
             <type>jar</type>
@@ -346,8 +346,8 @@
                             <effort>Max</effort>
                             <threshold>Low</threshold>
                             <failOnError>true</failOnError>
-                            <includeFilterFile>${project.basedir}/../spotbugs-security-include.xml</includeFilterFile>
-                            <excludeFilterFile>${project.basedir}/../spotbugs-security-exclude.xml</excludeFilterFile>
+                            <includeFilterFile>wegas/spotbugs/security-include.xml</includeFilterFile>
+                            <excludeFilterFile>wegas/spotbugs/security-exclude.xml</excludeFilterFile>
                             <spotbugsXmlOutputFilename>spotbugsSecurityXml.xml</spotbugsXmlOutputFilename>
                             <plugins>
                                 <plugin>
@@ -359,7 +359,13 @@
                         </configuration>
                     </execution>
                 </executions>
-
+                <dependencies>
+                    <dependency>
+                        <groupId>ch.albasim.wegas</groupId>
+                        <artifactId>build-tools</artifactId>
+                        <version>1.0</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
             <plugin>

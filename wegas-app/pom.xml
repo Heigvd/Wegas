@@ -3,13 +3,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
-        <groupId>com.wegas</groupId>
+        <groupId>ch.albasim.wegas</groupId>
         <artifactId>wegas-project</artifactId>
         <version>4.1-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.wegas</groupId>
+    <groupId>ch.albasim.wegas</groupId>
     <artifactId>wegas-app</artifactId>
     <packaging>war</packaging>
     <name>wegas-app</name>
@@ -267,7 +267,7 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.wegas</groupId>
+                <groupId>ch.albasim.wegas</groupId>
                 <artifactId>wenerator-maven-plugin</artifactId>
                 <version>${project.version}</version>
                 <executions>
@@ -452,20 +452,15 @@
                 </configuration>
             </plugin>
 
-            <plugin>
+            <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>${jdk.version}</source>
-                    <target>${jdk.version}</target>
-                </configuration>
-            </plugin>
+            </plugin>-->
 
-            <plugin>
+            <!--<plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
     <!--<reporting>
