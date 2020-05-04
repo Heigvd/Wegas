@@ -15,13 +15,16 @@ import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.persistence.Permission;
 import java.util.Date;
 import javax.ejb.EJBException;
-import org.apache.shiro.authc.*;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.SimpleByteSource;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -30,8 +33,6 @@ import org.slf4j.LoggerFactory;
  * @author Maxence
  */
 public class JpaTokenRealm extends AuthorizingRealm {
-
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(JpaTokenRealm.class);
 
     /**
      *
@@ -61,7 +62,7 @@ public class JpaTokenRealm extends AuthorizingRealm {
                     return info;
                 }
             }
-        } catch (WegasNoResultException e) {
+        } catch (WegasNoResultException e) {// NOPMD
         }
         return null;
     }

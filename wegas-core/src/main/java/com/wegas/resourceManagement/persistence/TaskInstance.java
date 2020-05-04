@@ -20,8 +20,8 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyMap;
 import com.wegas.editor.ValueGenerators.True;
-import com.wegas.editor.View.ArrayView;
-import com.wegas.editor.View.Hidden;
+import com.wegas.editor.view.ArrayView;
+import com.wegas.editor.view.Hidden;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -320,9 +320,9 @@ public class TaskInstance extends VariableInstance implements Propertable {
         IterationFacade iteF = beans.getIterationFacade();
 
         for (Iteration iteration : this.getIterations()) {
-            iteration = iteF.find(iteration.getId());
-            if (iteration != null) {
-                iteration.removeTask(this);
+            Iteration find = iteF.find(iteration.getId());
+            if (find != null) {
+                find.removeTask(this);
             }
         }
         this.setIterations(new ArrayList<>());

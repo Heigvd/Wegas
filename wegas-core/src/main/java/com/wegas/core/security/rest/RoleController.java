@@ -10,7 +10,6 @@ package com.wegas.core.security.rest;
 import com.wegas.core.rest.AbstractRestController;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.persistence.Role;
-import java.util.Collection;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -39,13 +38,6 @@ public class RoleController extends AbstractRestController<RoleFacade, Role> {
      */
     @Inject
     private RoleFacade roleFacade;
-
-    @Override
-    //@Secured                            // fixme Temporarly allowed, should be restricted as soon as "share" widget id refactored
-    //@RequiresPermissions("User:Edit")
-    public Collection<Role> index() {
-        return super.index();
-    }
 
     /**
      * Retrieve a specific game model

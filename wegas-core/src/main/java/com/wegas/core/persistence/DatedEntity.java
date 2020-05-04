@@ -15,5 +15,5 @@ import java.util.Date;
  */
 public interface DatedEntity {
 
-    public Date getCreatedTime();
+    Date getCreatedTime();
 }

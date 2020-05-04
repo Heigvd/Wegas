@@ -22,5 +22,5 @@ public interface VariableInstanceFacadeI {
      *
      * @return
      */
-    public VariableInstance find(Long id);
+    VariableInstance find(Long id);
 }

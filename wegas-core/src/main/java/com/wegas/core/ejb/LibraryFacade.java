@@ -31,12 +31,6 @@ public class LibraryFacade {
     @Inject
     private GameModelFacade gameModelFacade;
 
-    @Inject
-    private WebsocketFacade websocketFacade;
-
-    @Inject
-    private RequestManager requestManager;
-
     private List<GameModelContent> getLibrary(Long gameModelId, String name) {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
@@ -120,8 +114,8 @@ public class LibraryFacade {
         GameModel gameModel = gameModelFacade.find(gameModelId);
 
         GameModelContent gameModelContent = gameModel.getGameModelContent(lib, key);
-        content.setContentKey(gameModelContent.getContentKey());
         if (gameModelContent != null) {
+            content.setContentKey(gameModelContent.getContentKey());
             gameModelContent.merge(content);
             //gameModelContent.setContent(content.getContent());
             //gameModelContent.setVersion(content.getVersion());

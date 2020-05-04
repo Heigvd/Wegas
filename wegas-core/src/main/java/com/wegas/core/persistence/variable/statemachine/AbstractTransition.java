@@ -24,11 +24,24 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyScript;
 import com.wegas.editor.ValueGenerators.Zero;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.ScriptView;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.NumberView;
+import com.wegas.editor.view.ScriptView;
 import java.util.Collection;
-import javax.persistence.*;
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)

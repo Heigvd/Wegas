@@ -18,10 +18,16 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyMap;
-import com.wegas.editor.View.Hidden;
+import com.wegas.editor.view.Hidden;
 import java.util.*;
 import java.util.Map.Entry;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)

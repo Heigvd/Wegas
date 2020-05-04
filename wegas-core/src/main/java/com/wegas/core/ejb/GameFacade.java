@@ -15,8 +15,15 @@ import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.persistence.game.*;
+import com.wegas.core.persistence.game.DebugGame;
+import com.wegas.core.persistence.game.DebugTeam;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelLanguage;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable.Status;
+import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
@@ -572,7 +579,7 @@ public class GameFacade extends BaseFacade<Game> {
         }
 
         g.addTeam(t);
-        g = this.find(gameId);
+        //g = this.find(gameId);
         t.setCreatedBy(userFacade.getCurrentUser());
         //this.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
         getEntityManager().persist(t);

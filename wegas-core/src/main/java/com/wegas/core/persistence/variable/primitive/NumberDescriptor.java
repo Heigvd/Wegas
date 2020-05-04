@@ -26,12 +26,10 @@ import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.ValueGenerators.Twenty;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.NumberView;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.NumberView;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -42,7 +40,6 @@ import org.slf4j.LoggerFactory;
 public class NumberDescriptor extends VariableDescriptor<NumberInstance> implements PrimitiveDescriptorI<Double> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(NumberDescriptor.class);
     /**
      *
      */

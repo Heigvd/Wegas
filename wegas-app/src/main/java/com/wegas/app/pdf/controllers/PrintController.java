@@ -7,7 +7,7 @@
  */
 package com.wegas.app.pdf.controllers;
 
-import com.wegas.app.jsf.controllers.*;
+import com.wegas.app.jsf.controllers.ErrorController;
 import com.wegas.app.jsf.controllers.utils.HttpParam;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
@@ -57,13 +57,15 @@ public class PrintController {
     /**
      * CASE #1 export based on a specific user
      */
-    @Inject @HttpParam("id")
+    @Inject
+    @HttpParam("id")
     private Long playerId;
 
     /**
      * CASE# 2 export from scenarist/trainer lobby: fetch default user
      */
-    @Inject @HttpParam
+    @Inject
+    @HttpParam
     private Long gameModelId;
 
     /**
@@ -107,6 +109,7 @@ public class PrintController {
 
     /**
      * Get the gameModel linked to the currentPlayer
+     *
      * @return get the current gameModel
      */
     public GameModel getGameModel() {
@@ -118,10 +121,8 @@ public class PrintController {
      */
     @PostConstruct
     public void init() {
-        String permissionToCheck = null;
-
-        // Case #1: print against a specific user 
-        if (this.playerId != null) {
+        // Case #1: print against a specific user
+        if ((this.playerId != null)) {
             currentPlayer = playerFacade.find(this.playerId);
         }
 
@@ -129,7 +130,7 @@ public class PrintController {
         if (this.gameModelId != null) {
             GameModel gameModel = gameModelFacade.find(this.gameModelId);
             if (gameModel != null) {
-                if (gameModel.isScenario() || gameModel.isModel()){
+                if (gameModel.isScenario() || gameModel.isModel()) {
                     // use the debug player from the debug game
                     currentPlayer = gameModel.getTestPlayer();
                 } else {

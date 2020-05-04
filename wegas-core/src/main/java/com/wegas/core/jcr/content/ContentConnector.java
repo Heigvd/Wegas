@@ -18,12 +18,20 @@ import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
-import javax.jcr.*;
+import javax.jcr.ImportUUIDBehavior;
+import javax.jcr.NamespaceException;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +53,7 @@ public class ContentConnector extends JTARepositoryConnector {
     private String workspaceRoot;
     private final WorkspaceType workspaceType;
 
-    public static enum WorkspaceType {
+    public enum WorkspaceType {
         FILES,
         HISTORY
     }
@@ -183,10 +191,16 @@ public class ContentConnector extends JTARepositoryConnector {
     protected InputStream getData(String absolutePath, long from, int len) throws RepositoryException, IOException {
         InputStream data = this.getData(absolutePath);
         byte[] bytes = new byte[len];
-        data.skip(from);
-        data.read(bytes, 0, len);
-
-        return new ByteArrayInputStream(bytes);
+        long skip = data.skip(from);
+        if (skip != from) {
+            logger.error("Could not skip as much bytes...");
+        }
+        int read = data.read(bytes, 0, len);
+        if (read < len) {
+            return new ByteArrayInputStream(bytes, 0, read);
+        } else {
+            return new ByteArrayInputStream(bytes);
+        }
     }
 
     /**
@@ -372,8 +386,8 @@ public class ContentConnector extends JTARepositoryConnector {
     }
 
     /**
-     * Compress directory and children to ZipOutputStream. Warning: metadatas
-     * are not included due to zip limitation
+     * Compress directory and children to ZipOutputStream. Warning: metadatas are not included due
+     * to zip limitation
      *
      * @param out  a ZipOutputStream to write files to
      * @param path root path to compress
@@ -466,11 +480,13 @@ public class ContentConnector extends JTARepositoryConnector {
      * @throws RepositoryException
      */
     private void initializeNamespaces() throws RepositoryException {
-        for (String prefix : WFSConfig.namespaces.keySet()) {
+        for (Map.Entry<String, String> entry : WFSConfig.namespaces.entrySet()) {
+            String prefix = entry.getKey();
+            String ns = entry.getValue();
             try {
                 session.getWorkspace().getNamespaceRegistry().getURI(prefix);
             } catch (NamespaceException e) {
-                session.getWorkspace().getNamespaceRegistry().registerNamespace(prefix, WFSConfig.namespaces.get(prefix));
+                session.getWorkspace().getNamespaceRegistry().registerNamespace(prefix, ns);
             }
         }
     }

@@ -16,7 +16,7 @@ import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.utils.StringInstanceCustomizer;
-import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.view.I18nHtmlView;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -25,8 +25,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import jdk.nashorn.api.scripting.JSObject;
 import org.eclipse.persistence.annotations.Customizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -40,7 +38,7 @@ public class TextInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = LoggerFactory.getLogger(TextInstance.class);
+    //private static final Logger logger = LoggerFactory.getLogger(TextInstance.class);
 
     /**
      *
@@ -122,7 +120,6 @@ public class TextInstance extends VariableInstance {
      */
     @JsonProperty
     public void setValue(String value, String lang) {
-        VariableDescriptor desc = this.findDescriptor();
         this.setTrValue(TranslatableContent.merger(this.getTrValue(), TranslatableContent.build(lang, value)));
     }
 }

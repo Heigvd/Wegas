@@ -26,7 +26,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.View.StringView;
+import com.wegas.editor.view.StringView;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import java.io.IOException;
 import java.io.Serializable;

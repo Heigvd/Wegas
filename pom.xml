@@ -68,6 +68,9 @@
         <contributor>
             <name>XaviJunior</name>
         </contributor>
+        <contributor>
+            <name>Gérald Eberle</name>
+        </contributor>
     </contributors>
 
     <scm>
@@ -89,7 +92,7 @@
     <licenses>
         <license>
             <name>MIT License</name>
-            <url>http://opensource.org/licenses/MIT</url>
+            <url>https://opensource.org/licenses/mit-license.php</url>
         </license>
     </licenses>
 
@@ -564,7 +567,28 @@
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
                     <version>4.0.0</version>
-
+                    <configuration>
+                        <effort>Max</effort>
+                        <threshold>Low</threshold>
+                        <failOnError>true</failOnError>
+                        <includeFilterFile>wegas/spotbugs/security-include.xml</includeFilterFile>
+                        <excludeFilterFile>wegas/spotbugs/security-exclude.xml</excludeFilterFile>
+                        <spotbugsXmlOutputFilename>spotbugsSecurityXml.xml</spotbugsXmlOutputFilename>
+                        <plugins>
+                            <plugin>
+                                <groupId>com.h3xstream.findsecbugs</groupId>
+                                <artifactId>findsecbugs-plugin</artifactId>
+                                <version>1.9.0</version>
+                            </plugin>
+                        </plugins>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>ch.albasim.wegas</groupId>
+                            <artifactId>build-tools</artifactId>
+                            <version>1.0</version>
+                        </dependency>
+                    </dependencies>
                     <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
                     <!--
                     <dependencies>
@@ -646,11 +670,7 @@
                     <artifactId>maven-source-plugin</artifactId>
                     <version>3.2.1</version>
                 </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-project-info-reports-plugin</artifactId>
-                    <version>3.0.0</version>
-                </plugin>
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
@@ -691,6 +711,19 @@
                         </classpathDependencyExcludes>
                     </configuration>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-report-plugin</artifactId>
+                    <version>3.0.0-M4</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
@@ -744,6 +777,23 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-pmd-plugin</artifactId>
                     <version>3.13.0</version>
+                    <configuration>
+                        <printFailingErrors>true</printFailingErrors>
+                        <failurePriority>5</failurePriority>
+                        <rulesets>
+                            <rulset>wegas/pmd/default-ruleset.xml</rulset>
+                        </rulesets>
+                        <excludeRoots>
+                            <excludeRoot>target/generated-sources/plugin</excludeRoot>
+                        </excludeRoots>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>ch.albasim.wegas</groupId>
+                            <artifactId>build-tools</artifactId>
+                            <version>1.0</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
 
                 <plugin>
@@ -756,6 +806,23 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <version>3.1.1</version>
+                    <configuration>
+                        <configLocation>wegas/checkstyle/wegas_checks.xml</configLocation>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>ch.albasim.wegas</groupId>
+                            <artifactId>build-tools</artifactId>
+                            <version>1.0</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jxr-plugin</artifactId>
+                    <version>3.0.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -775,16 +842,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <configuration>
-                    <printFailingErrors>true</printFailingErrors>
-                    <failurePriority>5</failurePriority>
-                    <rulesets>
-                        <rulset>wegas/pmd/default-ruleset.xml</rulset>
-                    </rulesets>
-                    <excludeRoots>
-                        <excludeRoot>target/generated-sources/plugin</excludeRoot>
-                    </excludeRoots>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -792,16 +849,14 @@
                         </goals>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>ch.albasim.wegas</groupId>
-                        <artifactId>build-tools</artifactId>
-                        <version>1.0</version>
-                    </dependency>
-                </dependencies>
             </plugin>
 
-            <!-- Site -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+            </plugin>
+
+            <!-- Site  -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
@@ -815,11 +870,11 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <!--                    <locales>en,fr</locales>-->
                     <outputDirectory>${project.build.directory}/site</outputDirectory>
                     <skipDeploy>true</skipDeploy>
                     <generateReports>true</generateReports>
                 </configuration>
+
             </plugin>
 
             <!-- -->
@@ -848,6 +903,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.0.0</version>
                 <configuration>
                     <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
                     <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
@@ -871,6 +927,12 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.9.0</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
 
@@ -887,14 +949,29 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
+                <!--<configuration>-->
+                <!--<effort>Max</effort>-->
+                <!--<threshold>Low</threshold>-->
+                <!--<failOnError>true</failOnError>-->
+                <!--<includeFilterFile>wegas/spotbugs/security-include.xml</includeFilterFile>-->
+                <!--<excludeFilterFile>wegas/spotbugs/security-exclude.xml</excludeFilterFile>-->
+                <!--<spotbugsXmlOutputFilename>spotbugsSecurityXml.xml</spotbugsXmlOutputFilename>-->
+                <!--<plugins>-->
+                <!--<plugin>-->
+                <!--<groupId>com.h3xstream.findsecbugs</groupId>-->
+                <!--<artifactId>findsecbugs-plugin</artifactId>-->
+                <!--<version>1.9.0</version>-->
+                <!--</plugin>-->
+                <!--</plugins>-->
+                <!--</configuration>-->
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
+
                 <configuration>
-                    <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
-                    <configLocation>sun_checks.xml</configLocation>
+                    <configLocation>wegas/checkstyle/wegas_checks.xml</configLocation>
                 </configuration>
             </plugin>
 

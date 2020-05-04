@@ -22,14 +22,26 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.ValueGenerators.Zero;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.StringView;
-import com.wegas.editor.View.VisibilitySelectView;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.NumberView;
+import com.wegas.editor.view.StringView;
+import com.wegas.editor.view.VisibilitySelectView;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 /**
  *

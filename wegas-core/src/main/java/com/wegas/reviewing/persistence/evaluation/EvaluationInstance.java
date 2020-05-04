@@ -20,11 +20,19 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.View.Hidden;
+import com.wegas.editor.view.Hidden;
 import com.wegas.reviewing.ejb.ReviewingFacade;
 import com.wegas.reviewing.persistence.Review;
 import java.util.Collection;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Evaluation instance is the abstract parent of different kind of evaluation.

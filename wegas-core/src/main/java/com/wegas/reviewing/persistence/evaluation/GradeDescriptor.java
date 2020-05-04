@@ -12,7 +12,7 @@ import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
-import com.wegas.editor.View.NumberView;
+import com.wegas.editor.view.NumberView;
 import javax.persistence.Entity;
 
 /**

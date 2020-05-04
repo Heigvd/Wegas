@@ -16,19 +16,34 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.JSONSchema.ListOfTasksSchema;
+import com.wegas.editor.jsonschema.ListOfTasksSchema;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.Hidden;
+import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 /**
  * PMG Related !
@@ -494,15 +509,15 @@ public class Iteration extends AbstractEntity implements DatedEntity {
         BurndownInstance theBdI = this.getBurndownInstance();
 
         if (theBdI != null) {
-            theBdI = (BurndownInstance) beans.getVariableInstanceFacade().find(theBdI.getId());
-            if (theBdI != null) {
-                theBdI.getIterations().remove(this);
+            VariableInstance instance = beans.getVariableInstanceFacade().find(theBdI.getId());
+            if (instance instanceof BurndownInstance){
+                ((BurndownInstance) instance).getIterations().remove(this);
             }
         }
         for (TaskInstance task : this.getTasks()) {
-            task = (TaskInstance) beans.getVariableInstanceFacade().find(task.getId());
-            if (task != null) {
-                task.getIterations().remove(this);
+            VariableInstance instance = beans.getVariableInstanceFacade().find(task.getId());
+            if (instance instanceof TaskInstance) {
+                ((TaskInstance)instance).getIterations().remove(this);
             }
         }
         this.setTasks(new ArrayList<>());

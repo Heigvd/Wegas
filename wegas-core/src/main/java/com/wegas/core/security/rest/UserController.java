@@ -10,19 +10,25 @@ package com.wegas.core.security.rest;
 import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
-import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.DatedEntity;
-import com.wegas.core.persistence.game.*;
+import com.wegas.core.persistence.game.DebugGame;
+import com.wegas.core.persistence.game.DebugTeam;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Email;
-import com.wegas.core.security.aai.*;
+import com.wegas.core.security.aai.AaiAccount;
+import com.wegas.core.security.aai.AaiConfigInfo;
+import com.wegas.core.security.aai.AaiLoginResponse;
+import com.wegas.core.security.aai.AaiToken;
+import com.wegas.core.security.aai.AaiUserDetails;
 import com.wegas.core.security.ejb.AccountFacade;
-import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
@@ -38,7 +44,14 @@ import javax.mail.internet.AddressException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -73,12 +86,6 @@ public class UserController {
      *
      */
     @Inject
-    private RoleFacade roleFacade;
-
-    /**
-     *
-     */
-    @Inject
     private AccountFacade accountFacade;
 
     /**
@@ -86,9 +93,6 @@ public class UserController {
      */
     @Inject
     private GameFacade gameFacade;
-
-    @Inject
-    private GameModelFacade gameModelFacade;
 
     /**
      *
@@ -422,7 +426,7 @@ public class UserController {
     @Path("TeacherGuestLogin")
     @Deprecated
     public void teacherGuestLogin(AuthenticationInformation authInfo) {
-        User user = userFacade.guestLogin();
+        userFacade.guestLogin();
 //        try {
             //user.addRole(roleFacade.findByName("Scenarist"));
 //        } catch (WegasNoResultException ex) {
@@ -482,7 +486,6 @@ public class UserController {
             error = WegasErrorMessage.error("This e-mail address is not valid", "CREATE-ACCOUNT-INVALID-EMAIL");
             return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
         } catch (WegasConflictException ex) {
-            String msg;
             switch (ex.getMessage()) {
                 case "email":
                     error = WegasErrorMessage.error("This email address is already taken", "CREATE-ACCOUNT-TAKEN-EMAIL");

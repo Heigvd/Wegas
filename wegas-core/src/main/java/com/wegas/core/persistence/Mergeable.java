@@ -22,8 +22,8 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
-import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.StringView;
+import com.wegas.editor.view.NumberView;
+import com.wegas.editor.view.StringView;
 
 /**
  *
@@ -40,7 +40,7 @@ public interface Mergeable extends IMergeable {
 
     void setRefId(String refId);
 
-    public static String getJSONClassName(Class<?> klass) {
+    static String getJSONClassName(Class<?> klass) {
         JsonTypeName annotation = klass.getAnnotation(JsonTypeName.class);
 
         if (annotation != null) {
@@ -62,12 +62,12 @@ public interface Mergeable extends IMergeable {
     )
     @JsonProperty("@class")
     //@JsonProperty(value = "@class", access = JsonProperty.Access.READ_ONLY)
-    default public String getJSONClassName() {
+    default String getJSONClassName() {
         return Mergeable.getJSONClassName(this.getClass());
     }
 
     @JsonProperty("@class")
-    default public void setJSONClassName(String atClass) {
+    default void setJSONClassName(String atClass) {
         // no-op
     }
 

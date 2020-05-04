@@ -164,6 +164,7 @@ public class UserFacade extends BaseFacade<User> {
 
                 return user;
             } catch (AuthenticationException aex) {
+                logger.error("Fails to log in with token {}", token);
             }
         }
         throw WegasErrorMessage.error("Email/token combination not found");
@@ -246,10 +247,9 @@ public class UserFacade extends BaseFacade<User> {
                 }
             }
 
-            if (authInfo.isAgreed()) {
-                if (account instanceof JpaAccount) { // why JpaAccount only ?
-                    ((JpaAccount) account).setAgreedTime(new Date());
-                }
+            if (authInfo.isAgreed() && account instanceof JpaAccount) { // why JpaAccount only ?
+                account.setAgreedTime(new Date());
+                ((JpaAccount) account).setAgreedTime(new Date());
             }
 
             User user = this.getCurrentUser();
@@ -375,7 +375,7 @@ public class UserFacade extends BaseFacade<User> {
         User u = null;
         try {
             u = accountFacade.findByUsername(username).getUser();
-        } catch (WegasNoResultException e) {
+        } catch (WegasNoResultException e) { // NOPMD
         }
         return u;
     }
@@ -390,6 +390,7 @@ public class UserFacade extends BaseFacade<User> {
         try {
             u = accountFacade.findByPersistentId(persistentId).getUser();
         } catch (WegasNoResultException e) {
+            logger.error("User does not exists");
         }
         return u;
     }
@@ -513,10 +514,8 @@ public class UserFacade extends BaseFacade<User> {
 
             for (Permission permission : unRole.getPermissions()) {
                 String splitedPermission[] = permission.getValue().split(":");
-                if (splitedPermission.length >= 3) {
-                    if (splitedPermission[2].equals(instance)) {
-                        permissions.add(permission.getValue());
-                    }
+                if (splitedPermission.length >= 3 && splitedPermission[2].equals(instance)) {
+                    permissions.add(permission.getValue());
                 }
             }
             allRoles.add(role);
@@ -735,9 +734,12 @@ public class UserFacade extends BaseFacade<User> {
      * @param gameId
      */
     public void addTrainerToGame(Long trainerId, Long gameId) {
+        // load the game to make sure it exists
         Game game = gameFacade.find(gameId);
-        User user = this.find(trainerId);
-        this.addUserPermission(user, "Game:View,Edit:g" + gameId);
+        if (game != null) {
+            User user = this.find(trainerId);
+            this.addUserPermission(user, "Game:View,Edit:g" + gameId);
+        }
     }
 
     public void removeTrainer(Long gameId, User trainer) {
@@ -843,40 +845,37 @@ public class UserFacade extends BaseFacade<User> {
     private void sendEmailWithDisposableToken(HttpServletRequest request, JpaAccount account,
         String subject, String text, String path, long tokenValidityDuration) {
         User currentUser = requestManager.getCurrentUser();
-        if (currentUser != null) {
+        if (currentUser != null && account != null) {
+            try {
+                EMailFacade emailFacade = new EMailFacade();
+                String token = generateToken(24);
 
-            if (account != null && account instanceof JpaAccount) {
-                try {
-                    EMailFacade emailFacade = new EMailFacade();
-                    String token = generateToken(24);
+                Long expirationDate = (new Date()).getTime() + tokenValidityDuration * 60 * 1000;
 
-                    Long expirationDate = (new Date()).getTime() + tokenValidityDuration * 60 * 1000;
+                String hashToken = expirationDate + ":" + hashToken(token, account);
+                account.getShadow().setToken(hashToken);
 
-                    String hashToken = expirationDate + ":" + hashToken(token, account);
-                    account.getShadow().setToken(hashToken);
+                String theLink = Helper.getPublicBaseUrl(request)
+                    + "/#/" + path + "/" + account.getDetails().getEmail() + "/" + token;
 
-                    String theLink = Helper.getPublicBaseUrl(request)
-                        + "/#/" + path + "/" + account.getDetails().getEmail() + "/" + token;
-
-                    if (text.contains("{{link}}")) {
-                        text = text.replace("{{link}}", theLink);
-                    } else {
-                        text = text + "<br /><a href='" + theLink + "'>" + path.toUpperCase() + "</a>";
-                    }
-
-                    String body = "Hi " + account.getFirstname() + " " + account.getLastname() + ", "
-                        + "<br />"
-                        + "<br />"
-                        + text;
-
-                    String from = "noreply@" + Helper.getWegasProperty("mail.default_domain");
-                    emailFacade.send(account.getDetails().getEmail(), from, null, subject,
-                        body,
-                        Message.RecipientType.TO,
-                        "text/html; charset=utf-8", true);
-                } catch (MessagingException ex) {
-                    logger.error("Error while sending validation email to {}", account.getDetails().getEmail());
+                if (text.contains("{{link}}")) {
+                    text = text.replace("{{link}}", theLink);
+                } else {
+                    text = text + "<br /><a href='" + theLink + "'>" + path.toUpperCase() + "</a>";
                 }
+
+                String body = "Hi " + account.getFirstname() + " " + account.getLastname() + ", "
+                    + "<br />"
+                    + "<br />"
+                    + text;
+
+                String from = "noreply@" + Helper.getWegasProperty("mail.default_domain");
+                emailFacade.send(account.getDetails().getEmail(), from, null, subject,
+                    body,
+                    Message.RecipientType.TO,
+                    "text/html; charset=utf-8", true);
+            } catch (MessagingException ex) {
+                logger.error("Error while sending validation email to {}", account.getDetails().getEmail());
             }
         }
     }

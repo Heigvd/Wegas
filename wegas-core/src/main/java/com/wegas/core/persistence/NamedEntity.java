@@ -20,11 +20,11 @@ public interface NamedEntity {
      *
      * @return the entity name
      */
-    public abstract String getName();
+    String getName();
 
     /**
      *
      * @param name
      */
-    public abstract void setName(String name);
+    void setName(String name);
 }

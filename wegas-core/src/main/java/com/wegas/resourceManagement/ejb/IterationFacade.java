@@ -27,8 +27,6 @@ import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -37,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class IterationFacade extends BaseFacade<Iteration> implements IterationFacadeI {
 
-    static final private Logger logger = LoggerFactory.getLogger(IterationFacade.class);
+    //static final private Logger logger = LoggerFactory.getLogger(IterationFacade.class);
 
     /**
      *

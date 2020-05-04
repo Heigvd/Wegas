@@ -73,7 +73,7 @@ public class ImpactPrinter {
                     break;
             }
             // if current char is '\' mark next char escaped (unless the '\' itself is escaped)
-            escaped = (!escaped && c == '\\');
+            escaped = !escaped && c == '\\';
         }
         instructions.add(b.toString());
         return instructions;
@@ -131,7 +131,7 @@ public class ImpactPrinter {
             if (matcher.matches()) {
                 //String group = matcher.group(0);
                 String variableAlias = matcher.group(1);
-                String shortcut = matcher.group(2);
+                //String shortcut = matcher.group(2);
                 String operator = matcher.group(3);
                 String value = matcher.group(4);
 

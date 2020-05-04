@@ -9,7 +9,18 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.Delay;
 import com.wegas.core.Helper;
-import com.wegas.core.api.*;
+import com.wegas.core.api.DelayedScriptEventFacadeI;
+import com.wegas.core.api.GameModelFacadeI;
+import com.wegas.core.api.I18nFacadeI;
+import com.wegas.core.api.IterationFacadeI;
+import com.wegas.core.api.QuestionDescriptorFacadeI;
+import com.wegas.core.api.RequestManagerI;
+import com.wegas.core.api.ResourceFacadeI;
+import com.wegas.core.api.ReviewingFacadeI;
+import com.wegas.core.api.ScriptEventFacadeI;
+import com.wegas.core.api.StateMachineFacadeI;
+import com.wegas.core.api.VariableDescriptorFacadeI;
+import com.wegas.core.api.VariableInstanceFacadeI;
 import com.wegas.core.ejb.nashorn.JSTool;
 import com.wegas.core.ejb.nashorn.JavaObjectInvocationHandler;
 import com.wegas.core.ejb.nashorn.NHClassFilter;
@@ -21,10 +32,15 @@ import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.*;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelContent;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable;
+import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.statemachine.AbstractTransition;
-import com.wegas.log.xapi.*;
+import com.wegas.log.xapi.Xapi;
+import com.wegas.log.xapi.XapiI;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
@@ -610,7 +626,7 @@ public class ScriptFacade extends WegasAbstractFacade {
         scriptCopy.setLanguage(script.getLanguage());
         scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put(JSTool.JS_TOOL_INSTANCE_NAME,
             new JSTool.JSToolInstance());
-        try (final Delay delay = new Delay(SCRIPT_DELAY, timeoutExecutorService)) {
+        try (Delay delay = new Delay(SCRIPT_DELAY, timeoutExecutorService)) {
             scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put("$$internal$delay", delay);
             return this.eval(scriptCopy, new HashMap<>());
         } catch (WegasScriptException e) {
@@ -634,17 +650,11 @@ public class ScriptFacade extends WegasAbstractFacade {
         if (scripts.isEmpty()) {
             return null;
         }
-        while (scripts.remove(null)) {
-        }                                                                        //remove null scripts
         StringBuilder buf = new StringBuilder();
-        for (Script s : scripts) {                                              // Evaluate each script
-            try {
-                buf.append(s.getContent());
-                buf.append(";");
-            } catch (NullPointerException ex) {
-                //script does not exist
+        for (Script s : scripts) { // concatenate all scripts
+            if (s != null && !Helper.isNullOrEmpty(s.getContent())) {
+                buf.append(s.getContent()).append(";").append(System.lineSeparator());
             }
-            //result = engine.eval(s.getContent());
         }
         return this.eval(player, new Script(buf.toString()), arguments);
     }

@@ -8,8 +8,13 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.jcr.content.*;
+import com.wegas.core.jcr.content.AbstractContentDescriptor;
+import com.wegas.core.jcr.content.ContentComparator;
+import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
+import com.wegas.core.jcr.content.DescriptorFactory;
+import com.wegas.core.jcr.content.DirectoryDescriptor;
+import com.wegas.core.jcr.content.FileDescriptor;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
@@ -28,7 +33,6 @@ import javax.jcr.LoginException;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.ws.rs.core.Response;
-import org.apache.jackrabbit.oak.namepath.impl.NamePathMapperImpl;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -312,8 +316,6 @@ public class JCRFacade {
      * @throws RepositoryException
      */
     public DirectoryDescriptor createDirectory(GameModel gameModel, WorkspaceType wType, String name, String path, String note, String description) throws RepositoryException {
-
-        NamePathMapperImpl npm;
         //logger.debug("Directory name: {}", name);
         assertFilenameIsValid(name);
 

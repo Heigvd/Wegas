@@ -8,12 +8,15 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.JCRFacade;
 import com.wegas.core.ejb.ModelFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.jcr.content.AbstractContentDescriptor;
+import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
@@ -23,11 +26,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
@@ -327,8 +336,7 @@ public class VariableDescriptorController {
 
     /**
      * Import a variable from the source gameModel and import it within the target gameModel. Such
-     * an import is recursive and all referenced files are {@link JCRFacade#importFile(com.wegas.core.jcr.content.AbstractContentDescriptor,
-     * com.wegas.core.jcr.content.ContentConnector)  imported} too.
+     * an import is recursive and all referenced files are {@link JCRFacade#importFile(AbstractContentDescriptor, ContentConnector) imported} too.
      * <p>
      * Such imported files may be renamed to avoid overriding preexisting files.
      * <p>

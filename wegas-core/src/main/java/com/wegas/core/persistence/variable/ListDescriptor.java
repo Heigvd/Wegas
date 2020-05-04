@@ -17,20 +17,23 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.annotations.WegasEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
-import com.wegas.editor.JSONSchema.JSONArray;
-import com.wegas.editor.JSONSchema.JSONString;
+import com.wegas.editor.jsonschema.JSONArray;
+import com.wegas.editor.jsonschema.JSONString;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.EntityArrayFiledSelect;
-import com.wegas.editor.View.ListChildrenTypeNullView;
-import com.wegas.editor.View.ListChildrenTypeView;
+import com.wegas.editor.view.ListChildrenTypeNullView;
+import com.wegas.editor.view.ListChildrenTypeView;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 
 /**
  *
@@ -43,7 +46,6 @@ import org.slf4j.LoggerFactory;
 public class ListDescriptor extends VariableDescriptor<ListInstance> implements DescriptorListI<VariableDescriptor> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(ListDescriptor.class);
     /**
      *
      */

@@ -11,8 +11,6 @@ import com.wegas.core.ejb.BaseFacade;
 import com.wegas.messaging.persistence.Message;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -21,7 +19,6 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class MessageFacade extends BaseFacade<Message> {
 
-    final static private Logger logger = LoggerFactory.getLogger(MessageFacade.class);
 
     /**
      *

@@ -12,7 +12,8 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.JCRFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.jcr.content.*;
+import com.wegas.core.jcr.content.AbstractContentDescriptor;
+import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
@@ -27,9 +28,13 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import org.slf4j.LoggerFactory;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -37,11 +42,6 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @Path("GameModel/{gameModelId : ([1-9][0-9]*)?}/History")
 public class HistoryController {
-
-    /**
-     *
-     */
-    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(HistoryController.class);
 
     static final long CHUNK_SIZE = 2 * 1024 * 1024; // 2MB
 
@@ -78,14 +78,13 @@ public class HistoryController {
      *
      * @return the destroyed element or HTTP not modified
      *
-     * @throws WegasErrorMessage when deleting a non empty directory without
-     *                           force=true
+     * @throws WegasErrorMessage when deleting a non empty directory without force=true
      */
     @DELETE
     @Path("{absolutePath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
     public Object delete(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("absolutePath") String absolutePath) {
+        @PathParam("absolutePath") String absolutePath) {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
@@ -104,7 +103,7 @@ public class HistoryController {
     @Path("/CreateVersion")
     public void createVersion(@PathParam("gameModelId") Long gameModelId) throws RepositoryException, IOException {
         String name = new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date())
-                + " by " + userFacade.getCurrentUser().getName();
+            + " by " + userFacade.getCurrentUser().getName();
 
         this.createVersion(gameModelId, name);
     }
@@ -120,18 +119,19 @@ public class HistoryController {
     @POST
     @Path("CreateVersion/{version: .*}")
     public void createVersion(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("version") String name) throws RepositoryException, IOException {
+        @PathParam("version") String oName) throws RepositoryException, IOException {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
+        String name = oName;
 
-        if (!name.endsWith(".json")) {
-            name = name + ".json";
+        if (!oName.endsWith(".json")) {
+            name += oName + ".json";
         }
 
         jcrFacade.createFile(gameModel, ContentConnector.WorkspaceType.HISTORY, name, "/",
-                "application/octet-stream", null, null,
-                new ByteArrayInputStream(gameModelFacade.find(gameModelId).toJson(Views.Export.class).getBytes("UTF-8")), false);
+            "application/octet-stream", null, null,
+            new ByteArrayInputStream(gameModelFacade.find(gameModelId).toJson(Views.Export.class).getBytes("UTF-8")), false);
     }
 
     /**
@@ -147,7 +147,7 @@ public class HistoryController {
     @GET
     @Path("Restore/{path: .*}")
     public GameModel restoreVersion(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("path") String path) throws IOException {
+        @PathParam("path") String path) throws IOException {
 
         return this.createFromVersion(gameModelId, path);
     }
@@ -164,7 +164,7 @@ public class HistoryController {
     @GET
     @Path("CreateFromVersion/{path: .*}")
     public GameModel createFromVersion(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("path") String path) throws IOException {
+        @PathParam("path") String path) throws IOException {
 
         GameModel original = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(original);

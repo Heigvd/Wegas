@@ -25,5 +25,5 @@ import javax.inject.Qualifier;
 public @interface HttpParam {
 
     @Nonbinding
-    public String value() default "";
+    String value() default "";
 }

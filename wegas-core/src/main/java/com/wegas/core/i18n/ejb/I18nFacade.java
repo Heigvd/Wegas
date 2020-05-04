@@ -7,15 +7,12 @@
  */
 package com.wegas.core.i18n.ejb;
 
-import com.wegas.core.i18n.tools.TranslationExtractor;
-import com.wegas.core.i18n.tools.TranslationsPrinter;
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.wegas.core.Helper;
 import com.wegas.core.api.I18nFacadeI;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.WegasAbstractFacade;
-import com.wegas.core.i18n.tools.I18nHelper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNashornException;
@@ -31,6 +28,9 @@ import com.wegas.core.i18n.rest.ScriptUpdate;
 import com.wegas.core.i18n.rest.TranslationUpdate;
 import com.wegas.core.i18n.tools.FishedTranslation;
 import com.wegas.core.i18n.tools.FoundTranslation;
+import com.wegas.core.i18n.tools.I18nHelper;
+import com.wegas.core.i18n.tools.TranslationExtractor;
+import com.wegas.core.i18n.tools.TranslationsPrinter;
 import com.wegas.core.merge.utils.MergeHelper;
 import com.wegas.core.merge.utils.MergeHelper.MergeableVisitor;
 import com.wegas.core.merge.utils.WegasEntitiesHelper;
@@ -89,7 +89,7 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
     /**
      * Type of Update. This type indicates how to handle status of translations.
      */
-    public static enum UpdateType {
+    public enum UpdateType {
         /**
          * Do not change any statuses
          */
@@ -135,11 +135,9 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
         List<GameModelLanguage> languages = gameModel.getLanguages();
         GameModelLanguage lang = this.findGameModelLanguage(languageId);
         int indexOf = languages.indexOf(lang);
-        if (indexOf > 0) {
-            if (languages.remove(lang)) {
-                languages.add(indexOf - 1, lang);
-                gameModel.setLanguages(languages);
-            }
+        if (indexOf > 0 && languages.remove(lang)) {
+            languages.add(indexOf - 1, lang);
+            gameModel.setLanguages(languages);
         }
         return gameModel;
     }
@@ -434,11 +432,9 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
                     // translation belongs to a  readonly variable descriptor
                     return content;
                 }
-            } else if (content.getParentInstance() != null) {
-                if (content.getInheritedVisibility() == ModelScoped.Visibility.INTERNAL) {
-                    // translation belongs to a readonly variableInstance
-                    return content;
-                }
+            } else if (content.getParentInstance() != null && content.getInheritedVisibility() == ModelScoped.Visibility.INTERNAL) {
+                // translation belongs to a readonly variableInstance
+                return content;
             }
         }
 
@@ -546,12 +542,11 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
      * Update the whole script identified in the scriptUpdate.
      *
      * @param scriptUpdate
-     * @param type
      *
      * @return the parent which owns the script
      *         ({@link #getParent(com.wegas.core.i18n.rest.ScriptUpdate)})
      */
-    private AbstractEntity scriptUpdate(ScriptUpdate scriptUpdate, UpdateType type) {
+    private AbstractEntity scriptUpdate(ScriptUpdate scriptUpdate) {
         AbstractEntity theParent = this.getParent(scriptUpdate);
         if (theParent != null) {
             VariableDescriptor toReturn = this.getParentVariableDescriptor(theParent);
@@ -609,12 +604,11 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
         } else if (update instanceof InScriptUpdate) {
             return this.inScriptUpdate((InScriptUpdate) update, eType);
         } else if (update instanceof ScriptUpdate) {
-            return this.scriptUpdate((ScriptUpdate) update, eType);
+            return this.scriptUpdate((ScriptUpdate) update);
         } else {
             throw WegasErrorMessage.error("Unknown Update Type: " + update);
         }
     }
-
 
     /**
      * Load the gameModel and print all translations to logger
@@ -829,7 +823,6 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
         }
     }
 
-
     /**
      * Erase translation within the given entity.
      *
@@ -849,7 +842,6 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
         MergeHelper.visitMergeable(target, Boolean.TRUE, eraser);
 
     }
-
 
     /**
      * Copy translation from one language to another. This method will not override any

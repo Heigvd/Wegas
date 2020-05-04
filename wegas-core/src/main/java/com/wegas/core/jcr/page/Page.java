@@ -157,7 +157,7 @@ public class Page {
             this.content = getMapper().readTree(content);
             this.extractAttrs();
         } catch (IOException e) {
-
+            logger.warn("Fails to set page content {}", e);
         }
     }
 

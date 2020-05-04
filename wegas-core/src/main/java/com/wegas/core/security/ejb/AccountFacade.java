@@ -76,16 +76,14 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      */
     @Override
     public AbstractAccount update(final Long entityId, final AbstractAccount account) {
-        if (!(account instanceof AaiAccount)) {
-            if (!Helper.isNullOrEmpty(account.getUsername())) {
-                try {
-                    AbstractAccount a = this.findByUsername(account.getUsername());
-                    if (!a.getId().equals(account.getId())) {                       // and we can find an account with the username which is not the one we are editing,
-                        throw WegasErrorMessage.error("This username is already in use");// throw an exception
-                    }
-                } catch (WegasNoResultException e) {
-                    // GOTCHA no username could be found, do not use
+        if (!(account instanceof AaiAccount) && !Helper.isNullOrEmpty(account.getUsername())) {
+            try {
+                AbstractAccount a = this.findByUsername(account.getUsername());
+                if (!a.getId().equals(account.getId())) {                       // and we can find an account with the username which is not the one we are editing,
+                    throw WegasErrorMessage.error("This username is already in use");// throw an exception
                 }
+            } catch (WegasNoResultException e) { //NOPMD
+                // GOTCHA no username could be found, do not use
             }
         }
 
@@ -108,20 +106,19 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
             /*
              * Only an administrator can modify memberships
+             * And only if given account contains roles by itself
              */
-            if (requestManager.isAdmin()) {
-                // Only if given account contains roles by itself
-                if (account.getDeserialisedRoles() != null) {
-                    Set<Role> revivedRoles = new HashSet<>();
-                    for (Role r : account.getDeserialisedRoles()) {
-                        try {
-                            revivedRoles.add(roleFacade.find(r.getId()));
-                        } catch (EJBException e) {
-                            // not able to revive this role
-                        }
+            if (requestManager.isAdmin() && account.getDeserialisedRoles() != null) {
+                Set<Role> revivedRoles = new HashSet<>();
+                for (Role r : account.getDeserialisedRoles()) {
+                    try {
+                        revivedRoles.add(roleFacade.find(r.getId()));
+                    } catch (EJBException e) {
+                        // not able to revive this role
+                        logger.error("Fails to add role {} to {}", r, account);
                     }
-                    oAccount.getUser().setRoles(revivedRoles);
                 }
+                oAccount.getUser().setRoles(revivedRoles);
             }
         }
 
@@ -309,6 +306,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             }
         } catch (WegasNoResultException ex) {
             // Ignore
+            logger.error("AAIAccount does not exist");
         }
     }
 
@@ -479,24 +477,22 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         return accounts;
     }
 
-    public void setNextAuth(Long accountId, HashMethod nextAuth){
+    public void setNextAuth(Long accountId, HashMethod nextAuth) {
         AbstractAccount find = this.find(accountId);
-        if (find instanceof JpaAccount){
+        if (find instanceof JpaAccount) {
             JpaAccount account = (JpaAccount) find;
             account.setNextAuth(nextAuth);
             account.setNewSalt(Helper.generateSalt());
         }
     }
 
-    public void setNextShadowHashMethod(Long accountId, HashMethod nextHashMethod){
+    public void setNextShadowHashMethod(Long accountId, HashMethod nextHashMethod) {
         AbstractAccount find = this.find(accountId);
-        if (find instanceof JpaAccount){
+        if (find instanceof JpaAccount) {
             JpaAccount account = (JpaAccount) find;
             account.getShadow().setNextHashMethod(nextHashMethod);
         }
     }
-
-
 
     /**
      * @return Looked-up EJB

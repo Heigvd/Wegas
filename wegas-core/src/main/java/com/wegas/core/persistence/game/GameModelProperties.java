@@ -17,11 +17,11 @@ import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.ValueGenerators.False;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.SelectView.FreeForAllSelector;
-import com.wegas.editor.View.StringView;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.SelectView.FreeForAllSelector;
+import com.wegas.editor.view.StringView;
 import java.io.Serializable;
-import javax.persistence.*;
+import javax.persistence.Embeddable;
 
 /**
  *

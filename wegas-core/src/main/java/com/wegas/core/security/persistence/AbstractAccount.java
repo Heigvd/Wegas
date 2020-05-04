@@ -10,7 +10,12 @@ package com.wegas.core.security.persistence;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
@@ -23,9 +28,26 @@ import com.wegas.core.security.util.AuthenticationMethod;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.NumberView;
-import java.util.*;
-import javax.persistence.*;
+import com.wegas.editor.view.NumberView;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import javax.persistence.Cacheable;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -42,7 +64,7 @@ import javax.persistence.*;
  @Index(columnList = "email", unique = true)
  })*/
 @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND a.username = :username")
-@NamedQuery(name = "AbstractAccount.findByEmailOrUserName", 
+@NamedQuery(name = "AbstractAccount.findByEmailOrUserName",
     query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.details.email) LIKE LOWER(:name) OR LOWER(a.username) LIKE LOWER(:name)")
 @NamedQuery(name = "AbstractAccount.findByEmail", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.details.email) LIKE LOWER(:email)")
 @NamedQuery(name = "AbstractAccount.findByFullName", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.firstname) LIKE LOWER(:firstname) AND LOWER(a.lastname) LIKE LOWER(:lastname)")
@@ -50,7 +72,7 @@ import javax.persistence.*;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "AaiAccount", value = AaiAccount.class),
     @JsonSubTypes.Type(name = "GuestJpaAccount", value = GuestJpaAccount.class),
-    @JsonSubTypes.Type(name = "JpaAccount", value = com.wegas.core.security.jparealm.JpaAccount.class)
+    @JsonSubTypes.Type(name = "JpaAccount", value = JpaAccount.class)
 })
 @JsonIgnoreProperties({"passwordConfirm"})
 @Table(indexes = {
@@ -332,13 +354,11 @@ public abstract class AbstractAccount extends AbstractEntity {
     }
 
     public void shadowEmail() {
-        if (this.email != null && !this.email.isEmpty()) {
-            if (!this.email.equals(this.getDetails().getEmail())) {
-                this.getDetails().setEmail(this.email);
-                this.setEmailDomain(Helper.getDomainFromEmailAddress(email));
-                if (this instanceof JpaAccount) {
-                    ((JpaAccount) this).setVerified(false);
-                }
+        if (this.email != null && !this.email.isEmpty() && !this.email.equals(this.getDetails().getEmail())) {
+            this.getDetails().setEmail(this.email);
+            this.setEmailDomain(Helper.getDomainFromEmailAddress(email));
+            if (this instanceof JpaAccount) {
+                ((JpaAccount) this).setVerified(false);
             }
         }
         this.email = null;
@@ -387,7 +407,6 @@ public abstract class AbstractAccount extends AbstractEntity {
     public String getHash() {
         if (getDetails() != null && getDetails().getEmail() != null) {
             return Helper.md5Hex(getDetails().getEmail());
-
         } else {
             return Helper.md5Hex("default");
         }

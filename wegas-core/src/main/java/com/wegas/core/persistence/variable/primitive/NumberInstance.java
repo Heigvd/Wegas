@@ -34,8 +34,6 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.Transient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -48,8 +46,6 @@ import org.slf4j.LoggerFactory;
 public class NumberInstance extends VariableInstance implements AcceptInjection {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Logger logger = LoggerFactory.getLogger(NumberInstance.class);
 
     @JsonIgnore
     @Transient

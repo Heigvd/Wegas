@@ -67,6 +67,8 @@ import org.slf4j.LoggerFactory;
 @Produces(MediaType.APPLICATION_JSON)
 public class UtilsController {
 
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UtilsController.class);
+
     private static final String TRAVIS_URL = "https://api.travis-ci.org";
 
     @Inject
@@ -236,7 +238,7 @@ public class UtilsController {
             response.getEntity().writeTo(baos);
             String strResponse = baos.toString("UTF-8");
 
-            try ( JsonReader reader = Json.createReader(new StringReader(strResponse))) {
+            try (JsonReader reader = Json.createReader(new StringReader(strResponse))) {
                 JsonObject r = reader.readObject();
                 JsonArray builds = r.getJsonArray("builds");
 
@@ -249,7 +251,10 @@ public class UtilsController {
                     }
                 }
             }
-        } catch (URISyntaxException | IOException ex) {
+        } catch (URISyntaxException ex) {
+            logger.error("Please review Travis URL: {}", TRAVIS_URL);
+        } catch (IOException ex) {
+            logger.error("Error while reading Travis response");
         }
         return -1;
     }
@@ -398,7 +403,7 @@ public class UtilsController {
 
         private String name;
         private Map<String, TreeNode> children = new HashMap<>();
-        private ch.qos.logback.classic.Logger logger;
+        private Logger logger;
 
         public TreeNode(String name) {
             this.name = name;
@@ -467,7 +472,7 @@ public class UtilsController {
         TreeNode root = new TreeNode(null);
 
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-        for (ch.qos.logback.classic.Logger logger : lc.getLoggerList()) {
+        for (Logger logger : lc.getLoggerList()) {
             String name = logger.getName();
             if (name.startsWith("com.wegas")) {
                 TreeNode leaf = root.getOrCreateLeaf(name);
@@ -479,25 +484,25 @@ public class UtilsController {
 
         sb.append("<style>");
         sb.append("ul, li {\n"
-                + "      padding-left: 5px;\n"
-                + "  }\n"
-                + "\n"
-                + "li .level.direct {\n"
-                + "    text-decoration: underline;"
-                + "}\n"
-                + ".header:hover {background-color: #cecece}\n"
-                + "li .level.current {\n"
-                + "    font-weight: bold;"
-                + "}"
-                + "li .level {\n"
-                + "    margin-left : 10px;\n"
-                + "    cursor: pointer;"
-                + "}\n"
-                + "\n"
-                + ".levels {\n"
-                + "    left: 375px;\n"
-                + "    position: absolute;\n"
-                + "}");
+            + "      padding-left: 5px;\n"
+            + "  }\n"
+            + "\n"
+            + "li .level.direct {\n"
+            + "    text-decoration: underline;"
+            + "}\n"
+            + ".header:hover {background-color: #cecece}\n"
+            + "li .level.current {\n"
+            + "    font-weight: bold;"
+            + "}"
+            + "li .level {\n"
+            + "    margin-left : 10px;\n"
+            + "    cursor: pointer;"
+            + "}\n"
+            + "\n"
+            + ".levels {\n"
+            + "    left: 375px;\n"
+            + "    position: absolute;\n"
+            + "}");
         sb.append("</style>");
 
         sb.append("<ul>");
@@ -506,14 +511,14 @@ public class UtilsController {
 
         sb.append("<script>");
         sb.append("document.body.onclick= function(e){\n"
-                + "   e=window.event? event.srcElement: e.target;\n"
-                + "   if(e.className && e.className.indexOf('level')!=-1){\n"
-                + "		var logger = e.getAttribute(\"data-logger\");\n"
-                + " 		var level = e.getAttribute(\"data-level\");\n"
-                + "        fetch(\"SetLoggerLevel/\" + logger + \"/\" + level, {credentials: \"same-origin\"}).then(function(){window.location.reload();});\n"
-                + "   }\n"
-                + "\n"
-                + "}");
+            + "   e=window.event? event.srcElement: e.target;\n"
+            + "   if(e.className && e.className.indexOf('level')!=-1){\n"
+            + "		var logger = e.getAttribute(\"data-logger\");\n"
+            + " 		var level = e.getAttribute(\"data-level\");\n"
+            + "        fetch(\"SetLoggerLevel/\" + logger + \"/\" + level, {credentials: \"same-origin\"}).then(function(){window.location.reload();});\n"
+            + "   }\n"
+            + "\n"
+            + "}");
         sb.append("</script>");
 
         return sb.toString();
@@ -529,24 +534,24 @@ public class UtilsController {
 
         sb.append("<style>");
         sb.append("ul, li {\n"
-                + "      padding-left: 5px;\n"
-                + "  }\n"
-                + "\n"
-                + "li .level.direct {\n"
-                + "    text-decoration: underline;"
-                + "}"
-                + "li .level.current {\n"
-                + "    font-weight: bold;"
-                + "}"
-                + "li .level {\n"
-                + "    margin-left : 10px;\n"
-                + "    cursor: pointer;"
-                + "}\n"
-                + "\n"
-                + ".levels {\n"
-                + "    left: 300px;\n"
-                + "    position: absolute;\n"
-                + "}");
+            + "      padding-left: 5px;\n"
+            + "  }\n"
+            + "\n"
+            + "li .level.direct {\n"
+            + "    text-decoration: underline;"
+            + "}"
+            + "li .level.current {\n"
+            + "    font-weight: bold;"
+            + "}"
+            + "li .level {\n"
+            + "    margin-left : 10px;\n"
+            + "    cursor: pointer;"
+            + "}\n"
+            + "\n"
+            + ".levels {\n"
+            + "    left: 300px;\n"
+            + "    position: absolute;\n"
+            + "}");
         sb.append("</style>");
 
         sb.append("<h1>Locks</h1>");
@@ -575,14 +580,14 @@ public class UtilsController {
 
         sb.append("<script>");
         sb.append("document.body.onclick= function(e){\n"
-                + "   e=window.event? event.srcElement: e.target;\n"
-                + "   if(e.className && e.className.indexOf('lock')!=-1){\n"
-                + "		var audience = e.getAttribute(\"data-audience\");\n"
-                + " 		var token = e.getAttribute(\"data-token\");\n"
-                + "        fetch(\"ReleaseLock/\" + token + \"/\" + audience, {credentials: \"same-origin\"}).then(function(){window.location.reload();});\n"
-                + "   }\n"
-                + "\n"
-                + "}");
+            + "   e=window.event? event.srcElement: e.target;\n"
+            + "   if(e.className && e.className.indexOf('lock')!=-1){\n"
+            + "		var audience = e.getAttribute(\"data-audience\");\n"
+            + " 		var token = e.getAttribute(\"data-token\");\n"
+            + "        fetch(\"ReleaseLock/\" + token + \"/\" + audience, {credentials: \"same-origin\"}).then(function(){window.location.reload();});\n"
+            + "   }\n"
+            + "\n"
+            + "}");
         sb.append("</script>");
 
         return sb.toString();
@@ -597,7 +602,6 @@ public class UtilsController {
         return "ok";
     }
 
-
     /**
      * Request all cluster instances to clear JPA l2 cache
      */
@@ -606,8 +610,6 @@ public class UtilsController {
     public void jcrGC() {
         jcrConnector.revisionGC();
     }
-
-
 
     /**
      * Returns the current time according to the server.

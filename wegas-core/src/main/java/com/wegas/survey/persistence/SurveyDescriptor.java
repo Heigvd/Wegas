@@ -20,8 +20,8 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.I18nHtmlView;
 import com.wegas.survey.persistence.input.SurveySectionDescriptor;
 import com.wegas.survey.persistence.SurveyInstance.SurveyStatus;
 import java.util.ArrayList;
@@ -33,8 +33,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Descriptor of the Survey variable<br>
@@ -54,7 +52,6 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
         implements DescriptorListI<SurveySectionDescriptor> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(SurveyDescriptor.class);
 
 
     @OneToOne(cascade = CascadeType.ALL)

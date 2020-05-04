@@ -105,10 +105,8 @@ public class ImportTranslationsVisitor implements MergeableVisitor {
                 Translation refTrRef = trContentRef.getTranslation(refLanguageCode);
                 String newStatus = "";
 
-                if (refTargetTr != null && refTrRef != null) {
-                    if (!Objects.equals(refTargetTr.getTranslation(), refTrRef.getTranslation())) {
-                        newStatus = "outdated";
-                    }
+                if (refTargetTr != null && refTrRef != null && !Objects.equals(refTargetTr.getTranslation(), refTrRef.getTranslation())) {
+                    newStatus = "outdated";
                 }
                 if (Helper.isNullOrEmpty(newStatus)) {
                     newStatus = trToCopy.getStatus();

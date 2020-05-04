@@ -17,8 +17,6 @@ public class PusherChannelExistenceWebhook {
 
     private String name;
 
-    private Long time_ms;
-
     public PusherChannelExistenceWebhook() {
     }
 

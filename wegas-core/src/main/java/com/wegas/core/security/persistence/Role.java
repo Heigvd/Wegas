@@ -16,7 +16,7 @@ import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
-import com.wegas.editor.View.Textarea;
+import com.wegas.editor.view.Textarea;
 import java.util.*;
 import javax.persistence.Basic;
 import javax.persistence.Cacheable;

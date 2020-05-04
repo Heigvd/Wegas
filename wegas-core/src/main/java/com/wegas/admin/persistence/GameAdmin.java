@@ -26,7 +26,22 @@ import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.JsonbException;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Lob;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -48,6 +63,7 @@ import javax.persistence.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GameAdmin extends AbstractEntity {
 
+    private static final Logger logger = LoggerFactory.getLogger(GameAdmin.class);
     private static final long serialVersionUID = 1L;
 
     private static Jsonb jsonb = null;
@@ -225,7 +241,7 @@ public class GameAdmin extends AbstractEntity {
                     try {
                         teams.add(getJsonb().toJson(gaTeam));
                     } catch (JsonbException e) {
-                        e.printStackTrace();
+                        logger.error("JsonB exception: {}", e);
                     }
                 }
             }
@@ -327,7 +343,7 @@ public class GameAdmin extends AbstractEntity {
      *
      * @
      */
-    public static enum Status {
+    public enum Status {
         /**
          * Initial status, not yet processed
          */

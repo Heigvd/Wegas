@@ -12,7 +12,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.editor.View.TimestampView;
+import com.wegas.editor.view.TimestampView;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,11 +34,11 @@ public class FileDescriptor extends AbstractContentDescriptor {
     private static final long serialVersionUID = 5695858459529162019L;
 
     @WegasEntityProperty(includeByDefault = false,
-            view = @View(
-                    readOnly = true,
-                    label = "Last Modified",
-                    value = TimestampView.class
-            )
+        view = @View(
+            readOnly = true,
+            label = "Last Modified",
+            value = TimestampView.class
+        )
     )
     private Calendar dataLastModified;
 
@@ -49,11 +49,12 @@ public class FileDescriptor extends AbstractContentDescriptor {
     private Long bytes;
 
     /**
-     * Some ghost field (since not yet possible to define a WegasEntityProperty without a corresponding field)
+     * Some ghost field (since not yet possible to define a WegasEntityProperty without a
+     * corresponding field)
      */
     @JsonIgnore
     @WegasEntityProperty(includeByDefault = false, notSerialized = true)
-    private FileContent data; // TODO -> allow to define such a transient field withen the WegasEntity class anotation extraProperties = {@WegasEntityProperty + name}
+    private FileContent data; // HACK -> allow to define such a transient field withen the WegasEntity class anotation extraProperties = {@WegasEntityProperty + name} // NOPMD
 
     /**
      * @param absolutePath
@@ -131,8 +132,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     * Attach this fileDescriptor to the content repository and writes
-     * parameters to it.
+     * Attach this fileDescriptor to the content repository and writes parameters to it.
      *
      * @param data     The InputStream to store
      * @param mimeType The data type
@@ -166,8 +166,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     * Attach this fileDescriptor to the content repository and writes
-     * parameters to it.
+     * Attach this fileDescriptor to the content repository and writes parameters to it.
      *
      * @param data     The String to store as data
      * @param mimeType The data type
@@ -190,6 +189,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
         try {
             getConnector().setLastModified(fileSystemAbsolutePath, dataLastModified);
         } catch (RepositoryException ex) {
+            logger.error("Repository error: {}", ex);
         }
     }
 

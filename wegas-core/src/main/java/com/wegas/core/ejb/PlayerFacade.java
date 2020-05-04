@@ -478,10 +478,8 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     private Player findDebugPlayerByGame(Game game) {
         for (Team t : game.getTeams()) {
-            if (t instanceof DebugTeam || game instanceof DebugGame) {
-                if (t.getPlayers().size() > 0) {
-                    return t.getPlayers().get(0);
-                }
+            if ((t instanceof DebugTeam || game instanceof DebugGame) && !t.getPlayers().isEmpty()) {
+                return t.getPlayers().get(0);
             }
         }
         return null;

@@ -13,7 +13,6 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Game.Status;
 import com.wegas.core.persistence.game.GameModel;
 import java.util.ArrayList;
 import java.util.Collection;

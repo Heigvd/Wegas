@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.util.AaiAuthentication;
 import com.wegas.core.security.util.AuthenticationMethod;
-import com.wegas.editor.View.StringView;
+import com.wegas.editor.view.StringView;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;

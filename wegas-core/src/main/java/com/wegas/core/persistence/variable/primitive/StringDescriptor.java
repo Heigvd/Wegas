@@ -27,17 +27,16 @@ import com.wegas.core.persistence.annotations.WegasRefs;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.editor.JSONSchema.JSONArray;
-import com.wegas.editor.JSONSchema.JSONString;
+import com.wegas.editor.jsonschema.JSONArray;
+import com.wegas.editor.jsonschema.JSONString;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.One;
 import com.wegas.editor.ValueGenerators.False;
-import com.wegas.editor.View.ArrayView;
-import com.wegas.editor.View.EntityArrayFiledSelect;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.I18nHtmlView;
-import com.wegas.editor.View.I18nStringView;
-import com.wegas.editor.View.NumberView;
+import com.wegas.editor.view.ArrayView;
+import com.wegas.editor.view.EntityArrayFiledSelect;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.I18nStringView;
+import com.wegas.editor.view.NumberView;
 import com.wegas.editor.Visible;
 import com.wegas.mcq.persistence.QuestionDescriptor.CheckPositiveness;
 import edu.emory.mathcs.backport.java.util.Arrays;
@@ -49,8 +48,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import jdk.nashorn.api.scripting.JSObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -65,7 +62,6 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
     implements PrimitiveDescriptorI<String>, Enumeration {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(StringDescriptor.class);
     /**
      *
      */

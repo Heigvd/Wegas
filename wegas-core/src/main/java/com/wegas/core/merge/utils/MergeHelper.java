@@ -64,7 +64,7 @@ public class MergeHelper {
          *
          * @return return false to stop visiting this branch, true to continue
          */
-        public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references);
+        boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references);
 
         /**
          * Visit ea property
@@ -79,7 +79,7 @@ public class MergeHelper {
          *                        cases
          * @param references      others properties visited in parallel
          */
-        default public void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references) {
+        default void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references) {
         }
     }
 

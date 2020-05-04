@@ -29,8 +29,22 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.CacheControl;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -95,7 +109,7 @@ public class FileController {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{force: (force/)?}upload{directory : .*?}")
     public Response upload(@PathParam("gameModelId") Long gameModelId,
-            @FormDataParam("name") String name,
+            @FormDataParam("name") String oName,
             @FormDataParam("note") String note,
             @FormDataParam("description") String description,
             @PathParam("directory") String path,
@@ -108,6 +122,7 @@ public class FileController {
 
         logger.debug("File name: {}", details.getContentDisposition().getFileName());
         final Boolean override = !force.equals("");
+        String name = oName;
         if (name == null) {
             byte[] bytes = details.getContentDisposition().getFileName().getBytes(StandardCharsets.ISO_8859_1);
             name = new String(bytes, StandardCharsets.UTF_8);

@@ -130,11 +130,15 @@ public class ProjectedStatement {
     }
 
     public Date getTimestamp() {
-        return timestamp;
+        return timestamp != null ? new Date(timestamp.getTime()) : null;
     }
 
     public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
+        if (timestamp != null) {
+            this.timestamp = new Date(timestamp.getTime());
+        } else {
+            this.timestamp = null;
+        }
     }
 
     public String getVerb() {
@@ -163,16 +167,16 @@ public class ProjectedStatement {
 
     public static void writeCSVHeaders(StringBuilder sb, String sep) {
         sb.append("timestamp").append(sep)
-                .append("actor").append(sep)
-                .append("team").append(sep)
-                .append("game").append(sep)
-                .append("verb").append(sep)
-                .append("object id").append(sep)
-                .append("object type").append(sep)
-                .append("object description").append(sep)
-                .append("success").append(sep)
-                .append("completion").append(sep)
-                .append("result").append(System.lineSeparator());
+            .append("actor").append(sep)
+            .append("team").append(sep)
+            .append("game").append(sep)
+            .append("verb").append(sep)
+            .append("object id").append(sep)
+            .append("object type").append(sep)
+            .append("object description").append(sep)
+            .append("success").append(sep)
+            .append("completion").append(sep)
+            .append("result").append(System.lineSeparator());
     }
 
     private String escape(Object v) {
@@ -186,16 +190,16 @@ public class ProjectedStatement {
     @Deprecated
     public void writeCSVRecord(StringBuilder sb, String sep) {
         sb.append(escape(timestamp)).append(sep)
-                .append(escape(actor)).append(sep)
-                .append(escape(team)).append(sep)
-                .append(escape(game)).append(sep)
-                .append(escape(verb)).append(sep)
-                .append(escape(objectId)).append(sep)
-                .append(escape(objectType)).append(sep)
-                .append(escape(objectDesc)).append(sep)
-                .append(escape(success)).append(sep)
-                .append(escape(completion)).append(sep)
-                .append(escape(result)).append(System.lineSeparator());
+            .append(escape(actor)).append(sep)
+            .append(escape(team)).append(sep)
+            .append(escape(game)).append(sep)
+            .append(escape(verb)).append(sep)
+            .append(escape(objectId)).append(sep)
+            .append(escape(objectType)).append(sep)
+            .append(escape(objectDesc)).append(sep)
+            .append(escape(success)).append(sep)
+            .append(escape(completion)).append(sep)
+            .append(escape(result)).append(System.lineSeparator());
     }
 
     public static void writeXSLXHeaders(XlsxSpreadsheet xlsx, CellStyle style) {
@@ -225,6 +229,6 @@ public class ProjectedStatement {
         xlsx.addValue(escape(objectDesc), style);
         xlsx.addValue(escape(success), style);
         xlsx.addValue(escape(completion), style);
-        xlsx.addValue(escape(result), style);;
+        xlsx.addValue(escape(result), style);
     }
 }

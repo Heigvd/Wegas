@@ -11,9 +11,7 @@ import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators;
-import javax.persistence.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.persistence.Entity;
 
 /**
  * Dummy instance for SurveySectionDescriptor.
@@ -23,7 +21,6 @@ import org.slf4j.LoggerFactory;
 public class SurveySectionInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(SurveySectionInstance.class);
 
     @WegasEntityProperty(
         optional = false, nullable = false, proposal = ValueGenerators.True.class,

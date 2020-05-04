@@ -13,7 +13,7 @@ package com.wegas.core.persistence.game;
  */
 public interface Populatable {
 
-    public enum Status {
+    enum Status {
         WAITING,
         RESCHEDULED,
         PROCESSING,

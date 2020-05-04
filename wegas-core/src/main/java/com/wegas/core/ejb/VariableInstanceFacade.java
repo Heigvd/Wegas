@@ -14,7 +14,6 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
@@ -23,8 +22,6 @@ import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
-import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.resourceManagement.ejb.IterationFacade;
@@ -76,14 +73,6 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
      */
     @Inject
     private TeamFacade teamFacade;
-    /**
-     *
-     */
-    @Inject
-    private GameFacade gameFacade;
-
-    @Inject
-    private UserFacade userFacade;
 
     @Inject
     private ResourceFacade resourceFacade;
@@ -98,18 +87,6 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
 
     @Inject
     private ScriptEventFacade scriptEvent;
-
-    private Beanjection beans = null;
-
-    private Beanjection getBeans() {
-        if (beans == null) {
-            logger.error("INIT BEANS");
-            beans = new Beanjection(this, variableDescriptorFacade,
-                    resourceFacade, iterationFacade,
-                    reviewingFacade, userFacade, teamFacade, questionDescriptorFacade);
-        }
-        return beans;
-    }
 
     /**
      *

@@ -15,11 +15,16 @@ import com.wegas.core.persistence.game.Team;
 import java.util.Collection;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,7 +36,6 @@ import org.slf4j.LoggerFactory;
 @Produces(MediaType.APPLICATION_JSON)
 public class TeamController {
 
-    private static final Logger logger = LoggerFactory.getLogger(TeamController.class);
     /**
      *
      */
@@ -81,10 +85,10 @@ public class TeamController {
         Response r = Response.status(Response.Status.CONFLICT).build();
         Game g = gameFacade.find(gameId);
         if (g.getAccess() == Game.GameAccess.OPEN) {
-            entity = this.teamFacade.create(gameId, entity);
-            teamFacade.detach(entity);
-            entity = teamFacade.find(entity.getId());
-            r = Response.status(Response.Status.CREATED).entity(entity).build();
+            Team team = this.teamFacade.create(gameId, entity);
+            teamFacade.detach(team);
+            team = teamFacade.find(entity.getId());
+            r = Response.status(Response.Status.CREATED).entity(team).build();
         }
         return r;
     }

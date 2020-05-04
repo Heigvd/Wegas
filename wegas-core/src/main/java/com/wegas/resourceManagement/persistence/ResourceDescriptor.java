@@ -20,7 +20,7 @@ import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.EmptyMap;
-import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.view.I18nHtmlView;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -92,8 +92,8 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      *
      * @param p
      */
-    public void getConfidence(Player p) {
-        this.getInstance(p).getConfidence();
+    public int getConfidence(Player p) {
+        return this.getInstance(p).getConfidence();
     }
 
     /**
@@ -202,8 +202,10 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
         @Param(view = @View(label = "Key")) String key,
         @Param(view = @View(label = "Value")) String value) {
         try {
-            this.getInstance(p).setProperty(key, "" + (Float.parseFloat(this.getInstance(p).getProperty(key)) + Float.parseFloat(value)));
+            Double newValue = Double.parseDouble(this.getInstance(p).getProperty(key)) + Double.parseDouble(value);
+            this.getInstance(p).setProperty(key, newValue.toString());
         } catch (NumberFormatException e) {
+            logger.error("Try to add NaN");
             // do nothing...
         }
     }
@@ -268,7 +270,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      * @param value
      */
     public void setSalary(Player p, Integer value) {
-        this.getInstance(p).setProperty("salary", "" + value);
+        this.getInstance(p).setProperty("salary", value.toString());
     }
 
     /**
@@ -278,8 +280,8 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      */
     public void addAtSalary(Player p, Integer value) {
         ResourceInstance instance = this.getInstance(p);
-        int newVal = Integer.parseInt(instance.getProperty("salary")) + value;
-        instance.setProperty("salary", "" + newVal);
+        Integer newVal = Integer.parseInt(instance.getProperty("salary")) + value;
+        instance.setProperty("salary", newVal.toString());
     }
 
     /**
@@ -296,7 +298,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      * @param value
      */
     public void setExperience(Player p, Integer value) {
-        this.getInstance(p).setProperty("experience", "" + value);
+        this.getInstance(p).setProperty("experience", value.toString());
     }
 
     /**
@@ -306,8 +308,8 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      */
     public void addAtExperience(Player p, Integer value) {
         ResourceInstance instance = this.getInstance(p);
-        int newVal = Integer.parseInt(instance.getProperty("experience")) + value;
-        instance.setProperty("experience", "" + newVal);
+        Integer newVal = Integer.parseInt(instance.getProperty("experience")) + value;
+        instance.setProperty("experience", newVal.toString());
     }
 
     /**
@@ -324,7 +326,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      * @param value
      */
     public void setLeadershipLevel(Player p, Integer value) {
-        this.getInstance(p).setProperty("leadershipLevel", "" + value);
+        this.getInstance(p).setProperty("leadershipLevel", value.toString());
     }
 
     /**
@@ -334,8 +336,8 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      */
     public void addAtLeadershipLevel(Player p, Integer value) {
         ResourceInstance instance = this.getInstance(p);
-        int newVal = Integer.parseInt(instance.getProperty("leadershipLevel")) + value;
-        instance.setProperty("leadershipLevel", "" + newVal);
+        Integer newVal = Integer.parseInt(instance.getProperty("leadershipLevel")) + value;
+        instance.setProperty("leadershipLevel", newVal.toString());
     }
 
     /**

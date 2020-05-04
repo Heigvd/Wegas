@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.SelectView.ScriptLanguageSelector;
+import com.wegas.editor.view.SelectView.ScriptLanguageSelector;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

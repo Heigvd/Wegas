@@ -13,10 +13,20 @@ import java.util.Collection;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -27,9 +37,10 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 @RequiresRoles("Administrator")
 public class AdminRestController {
 
+    private static final Logger logger = LoggerFactory.getLogger(AdminRestController.class);
+
     @Inject
     private AdminFacade adminFacade;
-
 
     @POST
     @Path("GamesByIds")
@@ -38,8 +49,8 @@ public class AdminRestController {
         return adminFacade.getByIds(ids);
     }
 
-    @Path("Game")
     @GET
+    @Path("Game")
     public Collection<GameAdmin> get(@QueryParam("type") String type) {
         if (type == null) {
             return adminFacade.findAll();
@@ -50,6 +61,7 @@ public class AdminRestController {
                 try {
                     statuses.add(GameAdmin.Status.valueOf(types[i].toUpperCase()));
                 } catch (IllegalArgumentException ex) {
+                    logger.error("Status not found: {}", ex);
                     //type not found
                 }
             }
@@ -57,8 +69,8 @@ public class AdminRestController {
         }
     }
 
-    @Path("Game/Done")
     @GET
+    @Path("Game/Done")
     public Collection<GameAdmin> getDone() {
         return adminFacade.findDone();
     }
@@ -84,8 +96,8 @@ public class AdminRestController {
     }
 
     /**
-     * Return of the list of all the GameAdmin linked to a game which will be
-     * destroyed at next {@link AdminFacade#deleteGames()} schedule
+     * Return of the list of all the GameAdmin linked to a game which will be destroyed at next
+     * {@link AdminFacade#deleteGames()} schedule
      *
      * @return list of adminGame
      */

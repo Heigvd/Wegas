@@ -18,7 +18,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.StringView;
+import com.wegas.editor.view.StringView;
 import java.util.Collection;
 import java.util.Objects;
 import javax.persistence.Basic;

@@ -10,13 +10,12 @@ package com.wegas.core.persistence.variable.scope;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import javax.persistence.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.persistence.Entity;
 
 /**
  *
@@ -26,7 +25,6 @@ import org.slf4j.LoggerFactory;
 public class TeamScope extends AbstractScope<Team> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(TeamScope.class.getName());
 
     /**
      * Return a instance which is accessible by the player
@@ -44,7 +42,6 @@ public class TeamScope extends AbstractScope<Team> {
     public ScopeType getScopeType() {
         return ScopeType.TeamScope;
     }
-
 
     /**
      * Get the team's instance
@@ -93,13 +90,14 @@ public class TeamScope extends AbstractScope<Team> {
     @Override
     public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         //logger.info("Propagating default instance for VariableDescriptor: {}", this.getVariableDescriptor());
-        if (context instanceof Player) {
+        /*if (context instanceof Player) {
             // No need to propagate since the team already exists
-        } else if (context instanceof Team) {
+        } */
+        if (context instanceof Team) {
             propagate((Team) context, create);
         } else if (context instanceof Game) {
             propagate((Game) context, create);
-        } else {
+        } else if (context == null || context instanceof GameModel) {
             propagate(getVariableDescriptor().getGameModel(), create);
         }
     }

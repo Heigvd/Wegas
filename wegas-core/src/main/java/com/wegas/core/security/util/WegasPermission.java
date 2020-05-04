@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.util;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -16,7 +17,7 @@ import java.util.Collection;
  */
 public abstract class WegasPermission {
 
-    public static final Collection<WegasPermission> FORBIDDEN = new ArrayList<>();
+    public static final Collection<WegasPermission> FORBIDDEN = Collections.unmodifiableList(new ArrayList<>());
 
     public static Collection<WegasPermission> getAsCollection(WegasPermission... permissions) {
         Collection<WegasPermission> list = new ArrayList<>(permissions.length);

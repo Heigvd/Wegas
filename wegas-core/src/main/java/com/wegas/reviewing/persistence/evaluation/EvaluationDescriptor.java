@@ -22,12 +22,22 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
-import com.wegas.editor.ValueGenerators.One;
-import com.wegas.editor.View.I18nHtmlView;
-import com.wegas.editor.View.I18nStringView;
+import com.wegas.editor.view.I18nHtmlView;
+import com.wegas.editor.view.I18nStringView;
 import java.util.Collection;
 import java.util.List;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 /**
  *

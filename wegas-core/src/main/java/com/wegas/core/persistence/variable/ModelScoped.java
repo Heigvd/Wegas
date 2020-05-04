@@ -23,7 +23,7 @@ public interface ModelScoped {
     /**
      * INTERNAL -> TO BE RENAMED PROTECTED INHERITED PRIVATE
      */
-    public static enum Visibility {
+     enum Visibility {
         /**
          * <ul>
          * <li>propagated: true</li>
@@ -62,7 +62,7 @@ public interface ModelScoped {
 
     void setVisibility(Visibility visibility);
 
-    public static class BelongsToModel extends Or {
+    class BelongsToModel extends Or {
 
         public BelongsToModel() {
             super(

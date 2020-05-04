@@ -43,7 +43,7 @@ public class PopulatorScheduler {
     private static boolean async = true;
     private static boolean broadcast = true;
 
-    protected static enum PopulatingCommand {
+    protected enum PopulatingCommand {
         START_ONE,
         START_ALL,
         STOP_ALL,
@@ -86,7 +86,7 @@ public class PopulatorScheduler {
                 try {
                     logger.info("Wait to re-sycn call");
                     Integer get = scheduleCreation.get();
-                    logger.info ("re-sync done {}", get);
+                    logger.info("re-sync done {}", get);
                 } catch (Exception ex) {
                     logger.error("Synchronous Creation Error: ", ex);
                 }
@@ -165,6 +165,7 @@ public class PopulatorScheduler {
                 Integer get = future.get();
                 logger.info(" * Got {}", get);
             } catch (Exception ex) {
+                logger.error("Error while waiting populator: {} ", ex);
             }
         }
     }
@@ -183,6 +184,7 @@ public class PopulatorScheduler {
                 Integer get = future.get();
                 logger.info(" * Got {}", get);
             } catch (Exception ex) {
+                logger.error("Error while waiting populator: {} ", ex);
             }
         }
 

@@ -15,8 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.naming.NamingException;
 import org.apache.shiro.cache.CacheException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,8 +23,6 @@ import org.slf4j.LoggerFactory;
 public class ShiroCacheImplementation implements org.apache.shiro.cache.Cache {
 
     private static final String MAP_NAME = "hz_shiro_sessions";
-
-    private static final Logger logger = LoggerFactory.getLogger(ShiroCacheImplementation.class);
 
     /**
      * Since there is no CDI context here, we cannot @Inject HazelcastInstance or @Inject

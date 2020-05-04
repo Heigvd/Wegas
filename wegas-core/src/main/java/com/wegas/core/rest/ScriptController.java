@@ -22,7 +22,6 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.security.ejb.UserFacade;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
@@ -30,7 +29,12 @@ import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,11 +56,6 @@ public class ScriptController {
      */
     @Inject
     private ScriptFacade scriptFacade;
-    /**
-     *
-     */
-    @Inject
-    private UserFacade userFacade;
     /**
      *
      */
@@ -83,9 +82,6 @@ public class ScriptController {
     @Inject
     private ScriptCheck scriptCheck;
 
-    @Inject
-    private PlayerFacade playerFacade;
-
     /**
      *
      * @param gameModelId
@@ -97,10 +93,10 @@ public class ScriptController {
      */
     @POST
     @Path("Run/{playerId : [1-9][0-9]*}{sep: /?}{variableDescriptorId : ([1-9][0-9]*)?}")
-public Object run(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("playerId") Long playerId,
-            @PathParam("variableDescriptorId") Long variableDescritptorId,
-            Script script) {
+    public Object run(@PathParam("gameModelId") Long gameModelId,
+        @PathParam("playerId") Long playerId,
+        @PathParam("variableDescriptorId") Long variableDescritptorId,
+        Script script) {
 
         VariableDescriptor context;
         if (variableDescritptorId != null && variableDescritptorId > 0) {
@@ -125,8 +121,8 @@ public Object run(@PathParam("gameModelId") Long gameModelId,
     @POST
     @Path("Multirun{sep: /?}{variableDescriptorId : ([1-9][0-9]*)?}")
     public List<Object> multirun(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("variableDescriptorId") Long variableDescritptorId,
-            HashMap<String, Object> multiplayerScripts) throws WegasScriptException {
+        @PathParam("variableDescriptorId") Long variableDescritptorId,
+        HashMap<String, Object> multiplayerScripts) throws WegasScriptException {
 
         Script script = new Script();
         ArrayList<Integer> playerIdList = (ArrayList<Integer>) multiplayerScripts.get("playerIdList");
@@ -158,8 +154,7 @@ public Object run(@PathParam("gameModelId") Long gameModelId,
      *
      * @param gameModelId the given gameModel's id
      *
-     * @return Map containing errored VariableDescriptor'id and associated error
-     *         informations
+     * @return Map containing errored VariableDescriptor'id and associated error informations
      */
     @GET
     @Path("Test")

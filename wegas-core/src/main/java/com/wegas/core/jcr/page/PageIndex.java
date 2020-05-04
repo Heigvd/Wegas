@@ -147,13 +147,17 @@ public class PageIndex {
     }
 
     public void deleteFolder(Folder folder, boolean force) {
-        if (folder != null && (folder.getItems().isEmpty() || force)) {
-            Folder parent = this.findParent(folder);
-            parent.getItems().remove(folder);
-        } else {
-            throw WegasErrorMessage.error("Failed to remove '" + folder.getName() + "':Directory not empty");
-        }
+        if (folder != null) {
+            if (folder.getItems().isEmpty() || force) {
 
+                Folder parent = this.findParent(folder);
+                parent.getItems().remove(folder);
+            } else {
+                throw WegasErrorMessage.error("Failed to remove '" + folder.getName() + "':Directory not empty");
+            }
+        } else {
+            throw WegasErrorMessage.error("Can not remove null folder");
+        }
     }
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
@@ -163,11 +167,11 @@ public class PageIndex {
         @JsonSubTypes.Type(name = "Page", value = Page.class),
         @JsonSubTypes.Type(name = "Folder", value = Folder.class)
     })
-    public static interface IndexItem {
+    public interface IndexItem {
 
-        public String getId();
+        String getId();
 
-        public void setName(String newName);
+        void setName(String newName);
     }
 
     @JsonTypeName("Page")

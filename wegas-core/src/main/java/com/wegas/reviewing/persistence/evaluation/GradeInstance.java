@@ -50,8 +50,8 @@ public class GradeInstance extends EvaluationInstance {
     public void setValue(Double value) {
         if (value != null && !Double.isNaN(value) && this.getDescriptor() != null && this.getDescriptor() instanceof GradeDescriptor) {
             GradeDescriptor desc = (GradeDescriptor) this.getDescriptor();
-            if ((desc.getMaxValue() != null && value > desc.getMaxValue())
-                    || (desc.getMinValue() != null && value < desc.getMinValue())) {
+            if (desc.getMaxValue() != null && value > desc.getMaxValue()
+                || (desc.getMinValue() != null && value < desc.getMinValue())) {
                 throw new WegasOutOfBoundException(desc.getMinValue().doubleValue(), desc.getMaxValue().doubleValue(), value, desc.getName(), desc.getName());
             }
         }

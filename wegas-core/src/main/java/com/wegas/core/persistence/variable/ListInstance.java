@@ -8,8 +8,6 @@
 package com.wegas.core.persistence.variable;
 
 import javax.persistence.Entity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -19,7 +17,6 @@ import org.slf4j.LoggerFactory;
 public class ListInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(ListInstance.class);
 
     /**
      *

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.View.FlatVariableSelectView.TaskFlatSelector;
+import com.wegas.editor.view.FlatVariableSelectView.TaskFlatSelector;
 import java.util.Collection;
 import javax.persistence.Transient;
 

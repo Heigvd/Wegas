@@ -25,22 +25,38 @@ import com.wegas.core.persistence.annotations.WegasConditions.Not;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.EmptyScript;
 import com.wegas.editor.ValueGenerators.Zero;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.I18nHtmlView;
-import com.wegas.editor.View.I18nStringView;
-import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.ScriptView;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.I18nHtmlView;
+import com.wegas.editor.view.I18nStringView;
+import com.wegas.editor.view.NumberView;
+import com.wegas.editor.view.ScriptView;
 import com.wegas.editor.Visible;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -412,9 +428,9 @@ public class Result extends AbstractEntity implements LabelledEntity {
         // clear currentResult
         for (ChoiceInstance cInstance : choiceInstances) {
             if (cInstance != null) {
-                cInstance = (ChoiceInstance) vif.find(cInstance.getId());
-                if (cInstance != null) {
-                    cInstance.setCurrentResult(null);
+                VariableInstance instance  = vif.find(cInstance.getId());
+                if (instance instanceof ChoiceInstance) {
+                    ((ChoiceInstance) instance).setCurrentResult(null);
                 }
             }
         }

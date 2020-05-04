@@ -127,7 +127,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
     }
 
     /**
-     * Test () ->+1 (+5) ->+2 (+10)
+     * Test () ->gt; +1 (+5) ->gt;+2 (+10)
      *
      * @throws NamingException
      */

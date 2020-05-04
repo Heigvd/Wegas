@@ -92,13 +92,13 @@ public class WegasEntityPermission extends WegasPermission {
         return true;
     }
 
-    public static enum Level {
+    public enum Level {
         READ,
         WRITE,
         TRANSLATE
     };
 
-    public static enum EntityType {
+    public enum EntityType {
         GAMEMODEL,
         GAME,
         TEAM,

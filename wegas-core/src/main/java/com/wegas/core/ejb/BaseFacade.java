@@ -14,8 +14,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,8 +25,6 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public abstract class BaseFacade<T extends AbstractEntity> extends WegasAbstractFacade implements AbstractFacade<T> {
-
-    private static final Logger logger = LoggerFactory.getLogger(BaseFacade.class);
 
     /**
      * the Class the facade manage

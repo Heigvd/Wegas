@@ -30,9 +30,6 @@ import org.slf4j.LoggerFactory;
 public class MultipleResultTest extends AbstractArquillianTest {
 
     @Inject
-    private QuestionDescriptorFacade questionDescriptorFacade;
-
-    @Inject
     private Answerer answerer;
 
     private static final Logger logger = LoggerFactory.getLogger(MultipleResultTest.class);

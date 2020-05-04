@@ -8,7 +8,6 @@
 package com.wegas.core.api;
 
 import com.wegas.core.exception.client.WegasRuntimeException;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade.ReplyValidate;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade.WhValidate;
@@ -170,7 +169,7 @@ public interface QuestionDescriptorFacadeI {
      *
      * @return the validated reply
      */
-    public Reply validateReply(Long playerId, Long replyVariableInstanceId);
+    Reply validateReply(Long playerId, Long replyVariableInstanceId);
 
     /**
      * @param player

@@ -27,7 +27,7 @@ import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
-import com.wegas.editor.View.I18nStringView;
+import com.wegas.editor.view.I18nStringView;
 import com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor;
 import com.wegas.survey.persistence.input.SurveyChoicesDescriptor;
 import java.io.IOException;

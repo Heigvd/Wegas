@@ -10,12 +10,13 @@ package com.wegas.core.persistence.variable.statemachine;
 import ch.albasim.wegas.annotations.View;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.editor.JSONSchema.JSONObject;
+import com.wegas.editor.jsonschema.JSONObject;
 import com.wegas.editor.Schema;
-import com.wegas.editor.View.Hidden;
+import com.wegas.editor.view.Hidden;
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)

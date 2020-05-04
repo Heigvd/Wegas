@@ -13,10 +13,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 /**
+ * A assignment links a ResourceInstance to a TaskInstance. It indicate such a resource will work on
+ * the task
  *
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
@@ -118,15 +128,15 @@ public class Assignment extends AbstractAssignement implements NamedEntity {
         ResourceInstance theResource = this.getResourceInstance();
 
         if (theTask != null) {
-            theTask = ((TaskInstance) beans.getVariableInstanceFacade().find(theTask.getId()));
-            if (theTask != null) {
-                theTask.getAssignments().remove(this);
+            VariableInstance find = beans.getVariableInstanceFacade().find(theTask.getId());
+            if (find instanceof TaskInstance) {
+                ((TaskInstance) find).getAssignments().remove(this);
             }
         }
         if (theResource != null) {
-            theResource = ((ResourceInstance) beans.getVariableInstanceFacade().find(theResource.getId()));
-            if (theResource != null) {
-                theResource.getAssignments().remove(this);
+            VariableInstance find = beans.getVariableInstanceFacade().find(theResource.getId());
+            if (find instanceof ResourceInstance) {
+                ((ResourceInstance) find).getAssignments().remove(this);
             }
         }
     }

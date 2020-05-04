@@ -11,7 +11,6 @@ import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.wegas.core.AlphanumericComparator;
 import com.wegas.core.Helper;
 import com.wegas.core.api.VariableDescriptorFacadeI;
-import com.wegas.core.tools.FindAndReplaceVisitor;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
@@ -51,13 +50,11 @@ import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
 import com.wegas.core.persistence.variable.statemachine.DialogueState;
 import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
 import com.wegas.core.tools.FindAndReplacePayload;
-import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.core.tools.FindAndReplaceVisitor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
-import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.reviewing.ejb.ReviewingFacade;
@@ -80,7 +77,6 @@ import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -110,16 +106,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     private ResourceFacade resourceFacade;
 
     @Inject
-    private IterationFacade iterationFacade;
-
-    @Inject
     private ReviewingFacade reviewingFacade;
-
-    @Inject
-    private UserFacade userFacade;
-
-    @Inject
-    private TeamFacade teamFacade;
 
     @Inject
     private GameFacade gameFacade;
@@ -129,20 +116,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
     @Inject
     private JCRFacade jcrFacade;
-
-    private QuestionDescriptorFacade questionDescriptorFacade;
-
-    private Beanjection beans = null;
-
-    private Beanjection getBeans() {
-        if (beans == null) {
-            logger.error("INIT BEANS");
-            beans = new Beanjection(variableInstanceFacade, this,
-                resourceFacade, iterationFacade,
-                reviewingFacade, userFacade, teamFacade, questionDescriptorFacade);
-        }
-        return beans;
-    }
 
     /**
      *
@@ -518,7 +491,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
     private VariableDescriptor changeScopeRecursively(VariableDescriptor vd,
         AbstractScope.ScopeType newScopeType) {
-        if (!vd.getScope().getClass().getSimpleName().equals(newScopeType)) {
+        if (!vd.getScope().getScopeType().equals(newScopeType)) {
             this.updateScope(vd,
                 AbstractScope.build(newScopeType,
                     newScopeType));
@@ -620,7 +593,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
     @Override
     public void remove(VariableDescriptor entity) {
-        GameModel root = entity.getRoot();
         this.preDestroy(entity.getGameModel(), entity);
         entity.getParent().remove(entity);
 

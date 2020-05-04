@@ -173,7 +173,7 @@ public class WegasFieldProperties {
      * CHILDREN: a list or a map of children
      * PROPERTY: any other value (eg primitive types)
      */
-    public static enum FieldType {
+    public enum FieldType {
         PROPERTY,
         CHILD,
         CHILDREN

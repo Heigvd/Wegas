@@ -9,7 +9,6 @@ package com.wegas.core.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelCheck;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
@@ -24,7 +23,14 @@ import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.tools.ImportTranslationsVisitor;
 import com.wegas.core.merge.utils.MergeHelper;
-import com.wegas.core.persistence.game.*;
+import com.wegas.core.persistence.game.DebugGame;
+import com.wegas.core.persistence.game.DebugTeam;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelLanguage;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ListInstance;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -103,9 +109,6 @@ public class UpdateController {
 
     @Inject
     private GameModelFacade gameModelFacade;
-
-    @Inject
-    private GameFacade gameFacade;
 
     @Inject
     private ResourceFacade resourceFacade;
@@ -382,6 +385,8 @@ public class UpdateController {
         return rtsUpdateScope(find);
     }
      */
+
+    @SuppressWarnings("PMD")
     private String newScope(GameModel gameModel, VariableDescriptor vd) {
         StringBuilder sb = new StringBuilder();
         try {
@@ -769,7 +774,8 @@ public class UpdateController {
         try {
             VariableDescriptor project = descriptorFacade.find(pmg, "projet");
             project.setName("project");
-        } catch (WegasNoResultException ex) {
+        } catch (WegasNoResultException ex) {// NOPMD
+            // expected behaviour
         }
 
         sb.append(this.processChildren(pmg, "questions", "questionsPhase", 4));
@@ -1141,10 +1147,7 @@ public class UpdateController {
         Map<GameModel, Map<VariableDescriptor, List<VariableInstance>>> map = findDuplicates();
         EntityManager em = getEntityManager();
 
-        for (Entry<GameModel, Map<VariableDescriptor, List<VariableInstance>>> gmEntry : map.entrySet()) {
-            GameModel gm = gmEntry.getKey();
-            Map<VariableDescriptor, List<VariableInstance>> descs = gmEntry.getValue();
-
+        for (Map<VariableDescriptor, List<VariableInstance>> descs : map.values()){
             for (Entry<VariableDescriptor, List<VariableInstance>> vdEntry : descs.entrySet()) {
                 VariableDescriptor vd = vdEntry.getKey();
 

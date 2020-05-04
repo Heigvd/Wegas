@@ -424,7 +424,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <executions>
@@ -435,7 +435,7 @@
                         <phase>site</phase>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
 
             <!-- Dependencies -->
 

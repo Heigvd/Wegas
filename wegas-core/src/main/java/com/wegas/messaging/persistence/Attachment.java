@@ -23,7 +23,7 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.View.I18nFileView;
+import com.wegas.editor.view.I18nFileView;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;

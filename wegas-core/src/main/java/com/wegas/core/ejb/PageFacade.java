@@ -18,7 +18,6 @@ import com.wegas.core.jcr.page.PageIndex;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.game.GameModel;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,8 +26,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.json.JsonPatch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Maxence
@@ -45,8 +42,6 @@ public class PageFacade {
 
     @Inject
     private RequestManager requestManager;
-
-    static final private Logger logger = LoggerFactory.getLogger(PageFacade.class);
 
     /**
      * Get index of pages. Create and persist it if it does not exist yet
@@ -82,7 +77,7 @@ public class PageFacade {
 
     public PageIndex createIndexItem(GameModel gm, PageIndex.NewItemPayload payload)
         throws RepositoryException, JsonProcessingException {
-        Pages connector = this.jcrConnectorProvider.getPages(gm);
+        this.jcrConnectorProvider.getPages(gm); // open repository
         PageIndex pageIndex = getPageIndex(gm);
         PageIndex.IndexItem parent = pageIndex.findItem(payload.getPath());
         PageIndex.Folder folder;

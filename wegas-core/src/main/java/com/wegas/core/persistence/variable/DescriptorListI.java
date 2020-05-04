@@ -15,7 +15,7 @@ import com.wegas.core.persistence.WithId;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyArray;
-import com.wegas.editor.View.Hidden;
+import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +39,7 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
      * @return the gameModel owning this descriptor list
      */
     @JsonIgnore
-    public GameModel getGameModel();
+    GameModel getGameModel();
 
     /**
      * Return children ids
@@ -173,7 +173,7 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
 
 
     @JsonIgnore
-    default public List<VariableDescriptor> getOrderedVariableDesacriptors() {
+    default List<VariableDescriptor> getOrderedVariableDesacriptors() {
         final List<VariableDescriptor> acc = new ArrayList<>();
         for (VariableDescriptor vd : this.getItems()) {
             acc.add(vd);

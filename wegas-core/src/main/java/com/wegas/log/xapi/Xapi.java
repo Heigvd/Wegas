@@ -9,9 +9,7 @@ package com.wegas.log.xapi;
 
 import com.wegas.core.Helper;
 import com.wegas.core.XlsxSpreadsheet;
-import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
@@ -21,7 +19,6 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
-import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
@@ -35,7 +32,17 @@ import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade.ReplyValidate;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import gov.adlnet.xapi.client.StatementClient;
-import gov.adlnet.xapi.model.*;
+import gov.adlnet.xapi.model.Account;
+import gov.adlnet.xapi.model.Activity;
+import gov.adlnet.xapi.model.ActivityDefinition;
+import gov.adlnet.xapi.model.Agent;
+import gov.adlnet.xapi.model.Context;
+import gov.adlnet.xapi.model.ContextActivities;
+import gov.adlnet.xapi.model.Group;
+import gov.adlnet.xapi.model.IStatementObject;
+import gov.adlnet.xapi.model.Result;
+import gov.adlnet.xapi.model.Statement;
+import gov.adlnet.xapi.model.Verb;
 import gov.adlnet.xapi.util.Base64;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -74,12 +81,6 @@ public class Xapi implements XapiI {
 
     @Inject
     private RequestManager requestManager;
-
-    @Inject
-    private TeamFacade teamFacade;
-
-    @Inject
-    private GameFacade gameFacade;
 
     @Inject
     private UserFacade userFacade;
@@ -217,21 +218,16 @@ public class Xapi implements XapiI {
         }
 
         ContextActivities ctxActivities = new ContextActivities();
-        ctxActivities.setCategory(new ArrayList<Activity>() {
-            private static final long serialVersionUID = 1L;
 
-            {
-                add(new Activity(LOG_ID_PREFIX + logID));
-            }
-        });
-        ctxActivities.setGrouping(new ArrayList<Activity>() {
-            private static final long serialVersionUID = 1L;
+        ctxActivities.setCategory(new ArrayList<Activity>(List.of(
+            new Activity(LOG_ID_PREFIX + logID)
+        )));
 
-            {
-                add(new Activity("internal://wegas/team/" + String.valueOf(team.getId())));
-                add(new Activity("internal://wegas/game/" + String.valueOf(game.getId())));
-            }
-        });
+        ctxActivities.setCategory(new ArrayList<Activity>(List.of(
+            new Activity("internal://wegas/team/" + String.valueOf(team.getId())),
+            new Activity("internal://wegas/game/" + String.valueOf(game.getId()))
+        )));
+
         context.setContextActivities(ctxActivities);
         return context;
     }
@@ -303,9 +299,7 @@ public class Xapi implements XapiI {
             List<Statement> statements = new ArrayList<>();
 
             for (VariableDescriptor item : whDesc.getItems()) {
-                if (item instanceof NumberDescriptor) {
-                    // skip numbers
-                } else if (item instanceof StringDescriptor) {
+                if (item instanceof StringDescriptor) {
                     statements.add(
                         this.buildAuthorStringInstance((StringInstance) variableDescriptorFacade.getInstance(item, player)));
                 } else if (item instanceof TextDescriptor) {
@@ -315,6 +309,9 @@ public class Xapi implements XapiI {
                     statements.add(
                         this.buildAuthorBooleanInstance((BooleanInstance) variableDescriptorFacade.getInstance(item, player)));
                 }
+                /*else if (item instanceof NumberDescriptor) {
+                    // skip numbers as they as posted on their own
+                }*/
             }
             statements.add(this.build(Verbs.ANSWERED, "act:wegas/whQuestion/" + whDesc.getName()));
             this.post(statements);
@@ -524,6 +521,7 @@ public class Xapi implements XapiI {
             logger.info("xAPI post batch duration: {}", System.currentTimeMillis() - start);
             statements.clear();
         } catch (MalformedURLException ex) {
+            logger.error("Post Statements failed: {}", ex);
         }
     }
 

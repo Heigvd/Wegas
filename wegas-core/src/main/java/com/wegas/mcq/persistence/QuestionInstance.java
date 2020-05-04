@@ -17,7 +17,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.ValueGenerators.True;
-import com.wegas.editor.View.Hidden;
+import com.wegas.editor.view.Hidden;
 import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,24 +37,23 @@ public class QuestionInstance extends VariableInstance implements ReadableInstan
      *
      */
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = True.class,
-            view = @View(label = "Active"))
+        optional = false, nullable = false, proposal = True.class,
+        view = @View(label = "Active"))
     private Boolean active = true;
     /**
      *
      */
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = True.class,
-            view = @View(label = "Unread", value = Hidden.class))
+        optional = false, nullable = false, proposal = True.class,
+        view = @View(label = "Unread", value = Hidden.class))
     private Boolean unread = true;
     /**
-     * False until the user has clicked on the global question-wide "submit"
-     * button.
+     * False until the user has clicked on the global question-wide "submit" button.
      */
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = False.class,
-            view = @View(label = "Validated", value = Hidden.class))
+        optional = false, nullable = false, proposal = False.class,
+        view = @View(label = "Validated", value = Hidden.class))
     private Boolean validated = FALSE;
 
     /**
@@ -190,8 +189,8 @@ public class QuestionInstance extends VariableInstance implements ReadableInstan
         Integer maxReplies = qd.getMaxReplies();
         // the question must be selectable
         boolean selectable = (qd.getCbx() && !this.isValidated()) // a not yet validated cbx question
-                || maxReplies == null // OR number of answers is unlimited
-                || this.getReplies().size() < maxReplies; // OR maximum number not reached
+            || maxReplies == null // OR number of answers is unlimited
+            || this.getReplies().size() < maxReplies; // OR maximum number not reached
         if (selectable) {
             //and at least one choice should bee selectable too
             InstanceOwner owner = this.getOwner();

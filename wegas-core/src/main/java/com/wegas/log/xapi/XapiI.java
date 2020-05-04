@@ -7,7 +7,9 @@
  */
 package com.wegas.log.xapi;
 
-import gov.adlnet.xapi.model.*;
+import gov.adlnet.xapi.model.IStatementObject;
+import gov.adlnet.xapi.model.Result;
+import gov.adlnet.xapi.model.Statement;
 import java.util.List;
 import java.util.Map;
 

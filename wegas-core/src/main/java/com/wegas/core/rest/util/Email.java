@@ -10,6 +10,7 @@ package com.wegas.core.rest.util;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.persistence.game.Player;
+import java.util.Arrays;
 
 /**
  *
@@ -61,10 +62,14 @@ public class Email {
     }
 
     public Player[] getTo() {
-        return to;
+        if (to != null) {
+            return Arrays.copyOf(to, to.length);
+        } else {
+            return new Player[0];
+        }
     }
 
     public void setTo(Player[] to) {
-        this.to = to;
+        this.to = Arrays.copyOf(to, to.length);
     }
 }

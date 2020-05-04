@@ -16,16 +16,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author maxence
  */
 public class LifecycleCollector {
-
-    private static final Logger logger = LoggerFactory.getLogger(LifecycleCollector.class);
 
     Map<String, CollectedEntity> deleted = new HashMap<>();
     Map<String, CollectedEntity> created = new HashMap<>();
@@ -61,7 +57,7 @@ public class LifecycleCollector {
         } else if (orphans instanceof Map) {
             container.addAll((Map<Object, Object>) orphans);
         } else if (orphans instanceof Set) {
-            container.addAll((List<Object>) orphans);
+            container.addAll((Set<Object>) orphans);
         } else {
             throw WegasErrorMessage.error("Unknown Type: " + orphans);
         }
@@ -123,6 +119,14 @@ public class LifecycleCollector {
             return orphansList != null ? orphansList : orphansMap;
         }
 
+        private void addAll(Set<Object> set) {
+            // TODO: check if it's fine to convert sets to lists
+            if (this.orphansList == null) {
+                this.orphansList = new ArrayList<>();
+            }
+            this.orphansList.addAll(set);
+        }
+
         private void addAll(List<Object> list) {
             if (this.orphansList == null) {
                 this.orphansList = new ArrayList<>();
@@ -143,7 +147,7 @@ public class LifecycleCollector {
             } else if (orphansMap != null && !orphansMap.isEmpty()) {
                 return klass.isAssignableFrom(orphansMap.values().iterator().next().getClass());
             }
-            return null;
+            return false;
         }
 
         @Override
@@ -165,7 +169,7 @@ public class LifecycleCollector {
         List<WegasCallback> callbacks;
 
         public CollectedEntity(Mergeable entity, Mergeable payload, List<WegasCallback> callbacks,
-                Object parent, Object identifier) {
+            Object parent, Object identifier) {
             this.entity = entity;
             this.payload = payload;
             this.callbacks = callbacks;
@@ -214,7 +218,7 @@ public class LifecycleCollector {
         }
 
         @Override
-        public String toString(){
+        public String toString() {
             return parent + "::" + identifier + " -> " + entity;
         }
     }

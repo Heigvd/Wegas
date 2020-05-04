@@ -18,7 +18,6 @@ import java.util.List;
  */
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-
 public class GameAdminTeam {
 
     private String name;

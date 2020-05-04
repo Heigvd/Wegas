@@ -29,4 +29,12 @@ public class WegasAccessDenied extends WegasRuntimeException {
         this.mode = mode;
         this.user = user;
     }
+
+    public String toString() {
+        return (mode != null ? mode : "[n/a]")
+            + "Permission Denied for user "
+            + (user != null ? user : "[n/a]")
+            + " on "
+            + (entity != null ? entity : "[n/a]");
+    }
 }

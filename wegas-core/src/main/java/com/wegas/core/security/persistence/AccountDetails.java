@@ -14,7 +14,11 @@ import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 /**
  * Account details contains more sensitive information: <ul>

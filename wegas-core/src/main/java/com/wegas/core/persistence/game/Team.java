@@ -10,7 +10,12 @@ package com.wegas.core.persistence.game;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
@@ -22,8 +27,8 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.Textarea;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.Textarea;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -252,7 +257,6 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         return null;
     }
 
-
     @JsonIgnore
     @Override
     public Player getTestPlayer() {
@@ -363,7 +367,11 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     public Integer getDeclaredSize() {
-        return declaredSize == null ? 0 : declaredSize;
+        if (declaredSize != null) {
+            return declaredSize;
+        } else {
+            return null;
+        }
     }
 
     /**

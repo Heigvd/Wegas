@@ -11,12 +11,9 @@ import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Instance of the SurveyDescriptor variable:<br>
@@ -29,7 +26,6 @@ import org.slf4j.LoggerFactory;
 public class SurveyInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(SurveyInstance.class);
 
     public enum SurveyStatus {
         // NB: Changing the syntax of these keywords may invalidate database-persisted surveys.

@@ -9,7 +9,7 @@ package com.wegas.core.security.guest;
 
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.util.AuthenticationMethod;
-import javax.persistence.*;
+import javax.persistence.Entity;
 
 /**
  * Simple class that represents any User domain entity in any application.

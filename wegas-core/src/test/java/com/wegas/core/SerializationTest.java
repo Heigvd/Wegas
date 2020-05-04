@@ -348,8 +348,8 @@ public class SerializationTest {
         TaskInstance readTaskI = mapper.readValue(strTaskI, TaskInstance.class);
         TaskDescriptor readTaskD = mapper.readValue(strTaskD, TaskDescriptor.class);
 
-        assertEquals(propertyValue, readTaskI.getProperty("instanceProperty"));
-        assertEquals(propertyValue, readTaskD.getProperty("descriptorProperty"));
+        assertEquals("instance propertes does not match", propertyValue, readTaskI.getProperty("instanceProperty"));
+        assertEquals("desc property does not match", propertyValue, readTaskD.getProperty("descriptorProperty"));
 
         ResourceDescriptor resourceD = new ResourceDescriptor();
         resourceD.setName("resourceD");
@@ -398,7 +398,7 @@ public class SerializationTest {
         nd.getDefaultInstance().setValue(-10);
 
         String json = mapper.writeValueAsString(new WegasOutOfBoundException(nd.getMinValue(), nd.getMaxValue(), ns.getValue(), nd.getName(), nd.getLabel().translateOrEmpty(nd.getGameModel())));
-        System.out.println("WOOB: " + json);
+        logger.info("WOOB: {}", json);
         assertPropertyEquals(json, "@class", "WegasOutOfBoundException");
 
         json = mapper.writeValueAsString(WegasErrorMessage.error("This is an error"));
@@ -441,8 +441,7 @@ public class SerializationTest {
 
         String json = mapper.writeValueAsString(managedResponse);
 
-        System.out.println("JSON: " + json);
-
+        logger.info("JSON: {}", json);
     }
 
     @Test

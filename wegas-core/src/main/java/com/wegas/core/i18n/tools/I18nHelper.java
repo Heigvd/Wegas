@@ -240,7 +240,7 @@ public class I18nHelper {
         List<TranslatableContent> trs = new ArrayList<>();
 
         for (ObjectLiteralTree node : getTranslatableContentTrees(script)) {
-            if (node != null && node != null) {
+            if (node != null) {
                 trs.add(readTranslatableContent(node));
             } else {
                 trs.add(null);
@@ -318,12 +318,11 @@ public class I18nHelper {
     public static String updateCodeInScript(String script, String oldCode, String newCode) throws WegasNashornException {
         List<FishedTranslation> results = I18nHelper.getTranslations(script, oldCode);
 
-        if (results != null) {
+        if (!results.isEmpty()) {
             List<InScriptChange> changes = new ArrayList<>();
             for (FishedTranslation result : results) {
                 if (result instanceof FoundTranslation) {
                     FoundTranslation found = (FoundTranslation) result;
-                    found.getLangCodeStartPosition();
                     changes.add(new InScriptChange(
                         found.getLangCodeStartPosition(),
                         found.getLangCodeEndPosition(), newCode));
@@ -406,7 +405,6 @@ public class I18nHelper {
                     + "\"status\":\"" + (newTrStatus != null ? newTrStatus : "") + "\""
                     + "}";
 
-                theResult.getTranslationsStartPosition();
                 Integer startIndex = theResult.getTranslationsStartPosition();
 //                Integer endIndex = theResult.getTranslationsEndPosition();
 
@@ -415,9 +413,9 @@ public class I18nHelper {
                 sb.replace(startIndex + 1, startIndex + 1, "\"" + code.toUpperCase() + "\":" + translation + ",");
                 return assertScriptIsParsable(sb.toString());
 
-            } else if (result instanceof MissingTranslationContent) {
+            }/* else if (result instanceof MissingTranslationContent) {
                 // noop
-            }
+            }*/
         }
         return script;
     }

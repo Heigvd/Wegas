@@ -14,9 +14,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import javax.persistence.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.persistence.Entity;
 
 /**
  *
@@ -26,7 +24,6 @@ import org.slf4j.LoggerFactory;
 public class PlayerScope extends AbstractScope<Player> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(PlayerScope.class);
 
     /**
      * Get the instances which belongs to the player

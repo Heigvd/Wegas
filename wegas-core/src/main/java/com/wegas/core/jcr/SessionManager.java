@@ -11,7 +11,12 @@ import com.wegas.core.Helper;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.jcr.*;
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

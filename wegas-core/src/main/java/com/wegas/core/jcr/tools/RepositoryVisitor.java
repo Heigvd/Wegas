@@ -109,6 +109,7 @@ public abstract class RepositoryVisitor {
                         sb.append(data[i]).append(" ");
                     }
                 } catch (IOException ex) {
+                    logger.warn("Fails to read File {}", ex);
                 }
             }
             logger.trace("{}", sb);

@@ -45,28 +45,27 @@ public class DescriptorFactory {
                 } catch (RepositoryException ex) {
                     mimeType = "application/octet-stream";
                 }
-                switch (mimeType) {
-                    case DirectoryDescriptor.MIME_TYPE:
-                        abstractContentDescriptor = new DirectoryDescriptor(nodePath, contentConnector);
-                        break;
-                    default:
-                        Calendar date;
-                        try {
-                            Property dateProperty = node.getProperty(WFSConfig.WFS_LAST_MODIFIED);
-                            date = dateProperty.getDate();
-                        } catch (RepositoryException ex) {
-                            date = new GregorianCalendar(1970, 1, 1, 0, 0);
+                if (DirectoryDescriptor.MIME_TYPE.equals(mimeType)) {
+                    abstractContentDescriptor = new DirectoryDescriptor(nodePath, contentConnector);
+                } else {
+                    Calendar date;
+                    try {
+                        Property dateProperty = node.getProperty(WFSConfig.WFS_LAST_MODIFIED);
+                        date = dateProperty.getDate();
+                    } catch (RepositoryException ex) {
+                        date = new GregorianCalendar(1970, 1, 1, 0, 0);
+                    }
+                    long size = 0l;
+                    try {
+                        Property lengthProperty = node.getProperty(WFSConfig.WFS_DATA);
+                        if (lengthProperty != null) {
+                            size = lengthProperty.getBinary().getSize();
                         }
-                        long size = 0l;
-                        try {
-                            Property lengthProperty = node.getProperty(WFSConfig.WFS_DATA);
-                            if (lengthProperty != null) {
-                                size = lengthProperty.getBinary().getSize();
-                            }
-                        } catch (RepositoryException ex) {
-                        }
+                    } catch (RepositoryException ex) {
+                        logger.error("Unable to extract meta data: {}", ex);
+                    }
 
-                        abstractContentDescriptor = new FileDescriptor(nodePath, mimeType, date, size, contentConnector);
+                    abstractContentDescriptor = new FileDescriptor(nodePath, mimeType, date, size, contentConnector);
                 }
             }
             if (abstractContentDescriptor.exist()) {

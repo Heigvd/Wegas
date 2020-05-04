@@ -10,7 +10,6 @@ package com.wegas.core.tools;
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.difflib.algorithm.DiffException;
 import com.github.difflib.text.DiffRow;
 import com.github.difflib.text.DiffRowGenerator;
@@ -124,41 +123,32 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
 
     @Override
     public void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references) {
-        if (!this.isProtected(ancestors.peekFirst(), protectionLevel)) {
-            if (field != null) {
-                if (field.getAnnotation() != null) {
-                    if (field.getAnnotation().searchable()) {
-                        if (target instanceof String) {
-                            if (field.getType() == WegasFieldProperties.FieldType.PROPERTY) {
-                                String newContent = this.replace((String) target);
-                                if (newContent != null) {
-                                    this.genEntry(ancestors, target, field, (String) target, newContent);
-                                    if (!payload.isPretend()) {
-                                        try {
-                                            update(newContent, target, protectionLevel, level, field, ancestors, key, references);
-                                        } catch (Exception ex) {
-                                            output.append("<br/> ERROR: ").append(ex);
-                                        }
-                                    }
-                                }
-                            }
-                        } else if (target instanceof JsonNode) {
-                            if (field.getField().getName().equals("pages") && ancestors.peekFirst() instanceof GameModel) {
-                                JsonNode node = (ObjectNode) target;
-                                String content = node.toString();
-                                String newContent = this.replace(node.toString());
-                                if (newContent != null) {
-                                    this.genEntry(ancestors, null, field, content, newContent);
-                                    if (!payload.isPretend()) {
-                                        try {
-                                            JsonNode newNode = JacksonMapperProvider.getMapper().readTree(newContent);
-                                            update(newNode, target, protectionLevel, level, field, ancestors, key, references);
-                                        } catch (Exception ex) {
-                                            output.append("<br/> ERROR: ").append(ex);
-                                        }
-                                    }
-                                }
-                            }
+        if (!this.isProtected(ancestors.peekFirst(), protectionLevel)
+            && field != null && field.getAnnotation() != null && field.getAnnotation().searchable()) {
+            if (target instanceof String && field.getType() == WegasFieldProperties.FieldType.PROPERTY) {
+                String newContent = this.replace((String) target);
+                if (newContent != null) {
+                    this.genEntry(ancestors, target, field, (String) target, newContent);
+                    if (!payload.isPretend()) {
+                        try {
+                            update(newContent, target, field, ancestors, key);
+                        } catch (Exception ex) {
+                            output.append("<br/> ERROR: ").append(ex);
+                        }
+                    }
+                }
+            } else if (target instanceof JsonNode && field.getField().getName().equals("pages") && ancestors.peekFirst() instanceof GameModel) {
+                JsonNode node = (JsonNode) target;
+                String content = node.toString();
+                String newContent = this.replace(node.toString());
+                if (newContent != null) {
+                    this.genEntry(ancestors, null, field, content, newContent);
+                    if (!payload.isPretend()) {
+                        try {
+                            JsonNode newNode = JacksonMapperProvider.getMapper().readTree(newContent);
+                            update(newNode, target, field, ancestors, key);
+                        } catch (Exception ex) {
+                            output.append("<br/> ERROR: ").append(ex);
                         }
                     }
                 }
@@ -172,17 +162,15 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
      * @param newValue
      * @param target
      * @param protectionLevel
-     * @param level
      * @param field
      * @param ancestors
      * @param key
-     * @param references
      *
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
      */
-    private void update(Object newValue, Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    private void update(Object newValue, Object target, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         if (field.getType() == WegasFieldProperties.FieldType.CHILDREN) {
             Object get = field.getPropertyDescriptor().getReadMethod().invoke(ancestors.peekFirst());
             if (get instanceof Map) {

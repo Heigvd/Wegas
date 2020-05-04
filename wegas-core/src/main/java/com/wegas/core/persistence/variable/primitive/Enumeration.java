@@ -20,15 +20,15 @@ import java.util.List;
 public interface Enumeration {
 
     @JsonIgnore
-    public List<EnumItem> getEnumItems();
+    List<EnumItem> getEnumItems();
 
     @JsonIgnore
-    default public List<EnumItem> getSortedEnumItems() {
+    default List<EnumItem> getSortedEnumItems() {
         return Helper.copyAndSortModifiable(this.getEnumItems(), new EntityComparators.OrderComparator<>());
     }
 
 
-    default public EnumItem findItem(String itemName) {
+    default EnumItem findItem(String itemName) {
         if (itemName != null) {
             for (EnumItem category : this.getEnumItems()) {
                 if (itemName.equals(category.getName())) {
@@ -45,7 +45,7 @@ public interface Enumeration {
      * @param name name and default label of the new item
      * @param langCode
      */
-    default public void addEnumItem(String name, String langCode) {
+    default void addEnumItem(String name, String langCode) {
         if (this.findItem(name) == null) {
             EnumItem item = new EnumItem();
             item.setName(name);
@@ -60,7 +60,7 @@ public interface Enumeration {
     /**
      * @param item
      */
-    public void registerItem(EnumItem item);
+    void registerItem(EnumItem item);
 
     /**
      * remove an item from the enumeration
@@ -69,7 +69,7 @@ public interface Enumeration {
      *
      * @return the item which has been removed or null such an item does not exist
      */
-    default public EnumItem removeItem(String itemName) {
+    default EnumItem removeItem(String itemName) {
         EnumItem item = this.findItem(itemName);
         this.getEnumItems().remove(item);
         return item;

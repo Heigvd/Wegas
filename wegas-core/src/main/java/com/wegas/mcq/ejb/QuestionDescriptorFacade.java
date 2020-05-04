@@ -9,7 +9,12 @@ package com.wegas.mcq.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.api.QuestionDescriptorFacadeI;
-import com.wegas.core.ejb.*;
+import com.wegas.core.ejb.BaseFacade;
+import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.ScriptEventFacade;
+import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
@@ -24,7 +29,13 @@ import com.wegas.core.persistence.variable.primitive.PrimitiveDescriptorI;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.log.xapi.Xapi;
-import com.wegas.mcq.persistence.*;
+import com.wegas.mcq.persistence.ChoiceDescriptor;
+import com.wegas.mcq.persistence.ChoiceInstance;
+import com.wegas.mcq.persistence.QuestionDescriptor;
+import com.wegas.mcq.persistence.QuestionInstance;
+import com.wegas.mcq.persistence.ReadableInstance;
+import com.wegas.mcq.persistence.Reply;
+import com.wegas.mcq.persistence.Result;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import com.wegas.mcq.persistence.wh.WhQuestionInstance;
 import com.wegas.messaging.persistence.Message;
@@ -32,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -559,7 +569,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         try {
             scriptEvent.fire(player, "replyCancel", new ReplyValidate(r));// Throw an event
         } catch (WegasRuntimeException e) {
-            // GOTCHA no eventManager is instantiated
+            logger.trace("Fails to fire replyCancel event: {}", e);
         }
         return reply;
     }
@@ -576,7 +586,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         try {
             scriptEvent.fire(player, "replyCancel", new ReplyValidate(reply));// Throw an event
         } catch (WegasRuntimeException e) {
-            // GOTCHA no eventManager is instantiated
+            logger.trace("Fails to fire replyCancel event: {}", e);
         }
         return reply;
     }

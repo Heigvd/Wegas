@@ -16,8 +16,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -26,8 +24,6 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @LocalBean
 public class RoleFacade extends BaseFacade<Role> {
-
-    private static Logger logger = LoggerFactory.getLogger(RoleFacade.class);
 
     /**
      *

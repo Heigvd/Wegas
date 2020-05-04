@@ -7,7 +7,7 @@
  */
 package com.wegas.core.persistence.game;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
 
 /**
  *

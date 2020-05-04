@@ -21,7 +21,15 @@ import com.wegas.core.security.util.WegasPermission;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import java.io.Serializable;
 import java.util.Collection;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * PMG Related !
@@ -37,7 +45,7 @@ public class IterationEvent extends AbstractEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static enum EventType {
+    public enum EventType {
         ADD_TASK,
         REMOVE_TASK,
         START_TASK,
@@ -110,10 +118,8 @@ public class IterationEvent extends AbstractEntity implements Serializable {
     }
 
     public String getTaskName() {
-        if (taskName == null) {
-            if (this.getTaskInstance() != null) {
+        if (taskName == null && this.getTaskInstance() != null) {
                 return this.getTaskInstance().findDescriptor().getName();
-            }
         }
         return taskName;
     }

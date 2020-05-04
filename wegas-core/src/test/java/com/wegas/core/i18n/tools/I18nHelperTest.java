@@ -12,6 +12,8 @@ import com.wegas.core.i18n.persistence.TranslatableContent;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Test InScript translation helper methods
@@ -20,13 +22,15 @@ import org.junit.Test;
  */
 public class I18nHelperTest {
 
+    private static final Logger logger = LoggerFactory.getLogger(I18nHelperTest.class);
+
     @Test
     public void testI118nGetTranslatableContent() throws WegasNashornException {
         String script = "Variable.find(gameModel, \"managementApproval\").add(self, -10);\n"
             + "sendMessage({\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Boss\",\"status\":\"\"},\"FR\":{\"translation\":\"Grand Chef\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"Welcome\",\"status\":\"\"},\"FR\":{\"translation\":\"Salut !\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":\"<p>Welcome back, old fellow !</p>\",\"FR\":\"<p>Bon retour parmi nous, vieille branche</p>\"}}, []);";
 
         List<TranslatableContent> translatableContents = I18nHelper.getTranslatableContents(script);
-        System.out.println("TranslatableContent: " + translatableContents);
+        logger.info("TranslatableContent: {}", translatableContents);
     }
 
     @Test
@@ -35,7 +39,7 @@ public class I18nHelperTest {
             + "sendMessage({\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Boss\",\"status\":\"\"},\"FR\":{\"translation\":\"Grand Chef\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"Welcome\",\"status\":\"\"},\"FR\":{\"translation\":\"Salut !\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":\"<p>Welcome back, old fellow !</p>\",\"FR\":\"<p>Bon retour parmi nous, vieille branche</p>\"}}, []);";
 
         List<FishedTranslation> translations = I18nHelper.getTranslations(script, "EN");
-        System.out.println("EN Translation " + translations);
+        logger.info("En translation: {}", translations);
     }
 
     @Test
@@ -48,9 +52,9 @@ public class I18nHelperTest {
 
         String newScript = I18nHelper.updateCodeInScript(script, "FR", "FRENCH");
 
-        System.out.println("New     :" + newScript);
-        System.out.println("Expected:" + expected);
-        assertEquals(expected, newScript);
+        logger.info("New     : {}", newScript);
+        logger.info("Expected :{}", expected);
+        assertEquals("Fail to update language code", expected, newScript);
     }
 
     @Test
@@ -63,15 +67,15 @@ public class I18nHelperTest {
 
         String newScript = I18nHelper.updateStatusInScript(script, 1, "OUTDATED");
 
-        System.out.println("New     :" + newScript);
-        System.out.println("Expected:" + expected);
+        logger.info("New     : {}", newScript);
+        logger.info("Expected: {}", expected);
         assertEquals(expected, newScript);
     }
 
     @Test(expected = WegasNashornException.class)
     public void testSyntaxError() throws WegasNashornException {
         String script = "sendMessage({\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Boss\",\"status\":\"\"},\"FR\":{\"translation\":\"Grand Chef\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"Welcome\",\"status\":\"\"},\"FR\":{\"translation\":\"Salut !\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":\"<p>Welcome back, old fellow !</p>\",\"FR\":\"<p>Bon retour parmi nous, vieille branche</p>\"}}, [];";
-        List<TranslatableContent> translatableContents = I18nHelper.getTranslatableContents(script);
+        I18nHelper.getTranslatableContents(script);
     }
 
     @Test
@@ -79,12 +83,12 @@ public class I18nHelperTest {
         String script = "var tr = {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Boss\",\"status\":\"\"},\"FR\":{\"translation\":\"Thierry\",\"status\":\"outdated\"}}};";
 
         FoundTranslation translation = (FoundTranslation) I18nHelper.getTranslationLocation(script, 0, "EN");
-        System.out.println(script);
-        System.out.println("Translation: " + translation);
+        logger.info(script);
+        logger.info("Translation: {}", translation);
         String code = script.substring(translation.getLangCodeStartPosition(), translation.getLangCodeEndPosition());
         String translations = script.substring(translation.getValueStartPosition(), translation.getValueEndPosition());
-        System.out.println("Code: " + code);
-        System.out.println("Translations: " + translations);
+        logger.info("Code: {}", code);
+        logger.info("Translations: {}", translations);
     }
 
     @Test
@@ -92,7 +96,7 @@ public class I18nHelperTest {
         String script = "sendMessage({\"theMessage\": {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Boss\",\"status\":\"\"},\"FR\":{\"translation\":\"Grand Chef\",\"status\":\"\"}}}});";
 
         List<TranslatableContent> translatableContents = I18nHelper.getTranslatableContents(script);
-        System.out.println("TranslatableContent: " + translatableContents);
+        logger.info("TranslatableContent: {}", translatableContents);
         assertEquals(1, translatableContents.size());
     }
 

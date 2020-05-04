@@ -100,6 +100,7 @@ public class JackrabbitConnector implements Serializable {
     }
 
     @PreDestroy
+    @SuppressWarnings("PMD")
     private void preDestroy() {
         if (nodeStore != null) {
             nodeStore.dispose();

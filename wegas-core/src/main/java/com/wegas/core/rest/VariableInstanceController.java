@@ -8,18 +8,22 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.security.ejb.UserFacade;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -42,20 +46,12 @@ public class VariableInstanceController {
      */
     @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
-    /**
-     *
-     */
-    @Inject
-    private UserFacade userFacade;
 
     /**
      *
      */
     @Inject
     private PlayerFacade playerFacade;
-
-    @Inject
-    private RequestManager requestManager;
 
     /**
      *

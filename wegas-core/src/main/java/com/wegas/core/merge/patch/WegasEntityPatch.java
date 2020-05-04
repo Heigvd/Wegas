@@ -38,8 +38,8 @@ import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.editor.JSONSchema.WithVisible;
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -498,7 +498,6 @@ public final class WegasEntityPatch extends WegasPatch {
                             VariableDescriptor p = (VariableDescriptor) orphanParent;
                             if (deleted.containsKey(p.getRefId())) {
                                 // should restore p
-                                p.getName();
                                 DescriptorListI grandparent = p.getParent();
                                 try {
 
@@ -623,7 +622,7 @@ public final class WegasEntityPatch extends WegasPatch {
         return collector;
     }
 
-    private static final class PatchOrderComparator implements Comparator<WegasPatch> {
+    private static final class PatchOrderComparator implements Comparator<WegasPatch>, Serializable {
 
         @Override
         public int compare(WegasPatch o1, WegasPatch o2) {
@@ -674,10 +673,10 @@ public final class WegasEntityPatch extends WegasPatch {
     @Override
     protected PatchDiff buildDiff(boolean bypassVisibility) {
 
-        if (this.toEntity instanceof ModelScoped) {
-            if (!bypassVisibility && ((ModelScoped) this.toEntity).getVisibility().equals(ModelScoped.Visibility.PRIVATE)) {
-                return null;
-            }
+        if (this.toEntity instanceof ModelScoped
+            && !bypassVisibility
+            && ((ModelScoped) this.toEntity).getVisibility().equals(ModelScoped.Visibility.PRIVATE)) {
+            return null;
         }
 
         List<PatchDiff> subs = new ArrayList<>();

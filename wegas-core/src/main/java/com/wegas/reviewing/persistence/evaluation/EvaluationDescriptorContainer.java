@@ -19,15 +19,19 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
-import com.wegas.editor.View.Hidden;
+import com.wegas.editor.view.Hidden;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Simple wrapper to group several evaluation descriptor
@@ -41,7 +45,6 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = LoggerFactory.getLogger(EvaluationDescriptorContainer.class);
 
     @Id
     @GeneratedValue

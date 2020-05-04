@@ -7,7 +7,6 @@
  */
 package com.wegas.core.i18n.rest;
 
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.internal.WegasNashornException;
 import com.wegas.core.i18n.deepl.Deepl;
 import com.wegas.core.i18n.deepl.DeeplTranslations;
@@ -52,9 +51,6 @@ public class I18nController {
 
     @Inject
     private I18nFacade i18nFacade;
-
-    @Inject
-    private RequestManager requestManager;
 
     @POST
     @Path("Lang")

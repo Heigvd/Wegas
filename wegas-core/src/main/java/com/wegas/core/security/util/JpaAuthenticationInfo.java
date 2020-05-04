@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.util;
 
+import java.util.Objects;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.util.ByteSource;
 
@@ -32,5 +33,17 @@ public class JpaAuthenticationInfo extends SimpleAuthenticationInfo {
 
     public void setHashMethod(HashMethod hashMethod) {
         this.hashMethod = hashMethod;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = super.hashCode();
+        hash = 59 * hash + Objects.hashCode(this.hashMethod);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj) && ((JpaAuthenticationInfo) obj).getHashMethod() == this.hashMethod;
     }
 }

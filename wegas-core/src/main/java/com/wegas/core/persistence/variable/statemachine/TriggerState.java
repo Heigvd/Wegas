@@ -7,7 +7,8 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+
 
 /**
  * @author Maxence

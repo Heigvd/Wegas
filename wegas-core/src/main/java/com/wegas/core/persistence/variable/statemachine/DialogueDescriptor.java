@@ -9,14 +9,13 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import ch.albasim.wegas.annotations.View;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
-import com.wegas.editor.JSONSchema.JSONObject;
+import com.wegas.editor.jsonschema.JSONObject;
 import com.wegas.editor.Schema;
-import com.wegas.editor.View.Hidden;
+import com.wegas.editor.view.Hidden;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.Entity;

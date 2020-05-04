@@ -14,11 +14,14 @@ import java.util.Date;
 import java.util.Properties;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.mail.*;
+import javax.mail.Authenticator;
 import javax.mail.Message.RecipientType;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import org.slf4j.LoggerFactory;
 
 /*
  * @todo @important The mail should be sent in an async queue, so they don't
@@ -32,7 +35,6 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class EMailFacade {
 
-    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(EMailFacade.class);
 
     /**
      *

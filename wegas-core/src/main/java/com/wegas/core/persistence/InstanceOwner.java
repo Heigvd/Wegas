@@ -30,21 +30,21 @@ public interface InstanceOwner extends WithId {
      *
      * @return instance owner pusher channel
      */
-    public String getChannel();
+    String getChannel();
 
     /**
      * Fetch all players involved
      *
      * @return all players who have write access to the owner instances
      */
-    public List<Player> getPlayers();
+    List<Player> getPlayers();
 
     /**
      *
      * @return all LIVE players who have write access to the owner instances
      */
     @JsonIgnore
-    default public List<Player> getLivePlayers() {
+    default List<Player> getLivePlayers() {
         List<Player> players = this.getPlayers();
         List<Player> lives = new ArrayList<>(players.size());
         for (Player p : players) {
@@ -63,7 +63,7 @@ public interface InstanceOwner extends WithId {
      * @return a live player linked to the user or null
      */
     @JsonIgnore
-    public Player getUserLivePlayer(User user);
+    Player getUserLivePlayer(User user);
 
     /**
      *
@@ -71,7 +71,7 @@ public interface InstanceOwner extends WithId {
      *
      * @return
      */
-    default public Player getUserLivePlayerOrDebugPlayer(User user) {
+    default Player getUserLivePlayerOrDebugPlayer(User user) {
         Player p = this.getUserLivePlayer(user);
         if (p == null) {
             p = this.getGameModel().getTestPlayer();
@@ -86,10 +86,10 @@ public interface InstanceOwner extends WithId {
      * @return a (LIVE) player who have access to all owner's instances
      */
     @JsonIgnore
-    public Player getAnyLivePlayer();
+    Player getAnyLivePlayer();
 
     @JsonIgnore
-    public Player getTestPlayer();
+    Player getTestPlayer();
 
     /**
      * Return instances that belongs to this target only
@@ -97,7 +97,7 @@ public interface InstanceOwner extends WithId {
      * @return instances that belongs to this target only
      */
     @JsonIgnore
-    public List<VariableInstance> getPrivateInstances();
+    List<VariableInstance> getPrivateInstances();
 
     /**
      * return instances that belongs to this target and its children
@@ -105,7 +105,7 @@ public interface InstanceOwner extends WithId {
      * @return instances that belongs to this target and its children
      */
     @JsonIgnore
-    public List<VariableInstance> getAllInstances();
+    List<VariableInstance> getAllInstances();
 
     /**
      * The permission which require read right to this instanceOwner
@@ -113,7 +113,7 @@ public interface InstanceOwner extends WithId {
      * @return
      */
     @JsonIgnore
-    public WegasPermission getAssociatedReadPermission();
+    WegasPermission getAssociatedReadPermission();
 
     /**
      * The permission to grant to give write right to this instanceOwner
@@ -121,12 +121,12 @@ public interface InstanceOwner extends WithId {
      * @return
      */
     @JsonIgnore
-    public WegasPermission getAssociatedWritePermission();
+    WegasPermission getAssociatedWritePermission();
 
     /**
      * 
      * @return 
      */
     //@JsonIgnore /* Do not JsonIgnore here as Game must serialize the gameModel (Lobby case) */
-    public GameModel getGameModel();
+    GameModel getGameModel();
 }

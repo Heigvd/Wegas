@@ -11,9 +11,12 @@ import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators;
-import com.wegas.editor.View.Hidden;
+import com.wegas.editor.view.Hidden;
 import static java.lang.Boolean.FALSE;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
 /**
  *

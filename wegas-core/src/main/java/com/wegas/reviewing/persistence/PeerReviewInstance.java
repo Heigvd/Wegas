@@ -16,7 +16,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.ReviewingNotStarted;
-import com.wegas.editor.View.Hidden;
+import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

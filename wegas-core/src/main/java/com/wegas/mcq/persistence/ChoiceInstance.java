@@ -19,17 +19,23 @@ import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.True;
-import com.wegas.editor.View.EntityArrayFiledSelect;
-import com.wegas.editor.View.Hidden;
+import com.wegas.editor.view.EntityArrayFiledSelect;
+import com.wegas.editor.view.Hidden;
 import com.wegas.editor.Visible;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -44,7 +50,6 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = LoggerFactory.getLogger(ChoiceInstance.class);
 
     /**
      *

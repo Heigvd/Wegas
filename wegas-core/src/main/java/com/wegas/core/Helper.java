@@ -190,7 +190,7 @@ public class Helper {
         return "";
     }
 
-    public static enum NewNameStrategy {
+    public enum NewNameStrategy {
         ORDINAL,
         HASH
     };
@@ -368,8 +368,9 @@ public class Helper {
         }
 
         Map<String, Translation> translations = theLabel.getTranslations();
-        for (String code : translations.keySet()) {
-            Translation currentLabel = translations.get(code);
+        for (Entry<String, Translation> entry : translations.entrySet()) {
+            String code = entry.getKey();
+            Translation currentLabel = entry.getValue();
             if (!Helper.isNullOrEmpty(currentLabel.getTranslation())) {
                 theLabel.updateTranslation(code, findUniqueLabel(currentLabel.getTranslation(), mapUsedlabels.get(code)));
             }
@@ -730,12 +731,14 @@ public class Helper {
      *
      * @return the MD5 digest or null if the system does not support MD5 digest
      */
+    @Deprecated
     public static String md5Hex(String message) {
         try {
             MessageDigest md
                 = MessageDigest.getInstance("MD5");
             return hex(md.digest(message.getBytes("CP1252")));
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            logger.error("No Such Algorithm");
         }
         return null;
     }
@@ -806,17 +809,21 @@ public class Helper {
      */
     public static void recursiveDelete(File file) throws IOException {
         if (file.isDirectory()) {
-            if (file.list().length == 0) {
+            String[] files = file.list();
+            if (files ==null || files.length == 0) {
                 if (!file.delete()) {
                     logger.warn("Failed to delete file {}", file.getName());
                 }
             } else {
-                String files[] = file.list();
-                for (String f : files) {
-                    File fileToDel = new File(file, f);
-                    recursiveDelete(fileToDel);
+                files = file.list();
+                if (files != null) {
+                    for (String f : files) {
+                        File fileToDel = new File(file, f);
+                        recursiveDelete(fileToDel);
+                    }
                 }
-                if (file.list().length == 0) {
+                files = file.list();
+                if (files == null || files.length == 0) {
                     if (!file.delete()) {
                         logger.warn("Failed to delete file {}", file.getName());
                     }
@@ -925,12 +932,14 @@ public class Helper {
     public static String genRandomLetters(int length) {
         final String tokenElements = "abcdefghijklmnopqrstuvwxyz";
         final int digits = tokenElements.length();
-        length = Math.min(50, length); // max 50 length;
+
+        int count = Math.min(50, length); // max 50 length;
+
         StringBuilder sb = new StringBuilder();
-        int random = (int) (Math.random() * digits);
-        sb.append(tokenElements.charAt(random));
-        if (length > 1) {
-            sb.append(genRandomLetters(length - 1));
+        SecureRandom sr = new SecureRandom();
+
+        while (count-- > 0) {
+            sb.append(tokenElements.charAt(sr.nextInt(digits)));
         }
         return sb.toString();
     }

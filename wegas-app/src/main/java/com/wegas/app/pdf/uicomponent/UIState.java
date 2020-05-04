@@ -89,7 +89,7 @@ public class UIState extends UIComponentBase {
         Long id = (Long) getAttributes().get("stateID");
         editorMode = (Boolean) getAttributes().get("editorMode");
         this.player = (Player) getAttributes().get("player");
-        Boolean defaultValues = (Boolean) getAttributes().get("defaultValues");
+        //Boolean defaultValues = (Boolean) getAttributes().get("defaultValues");
 
         UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
         UIHelper.printText(context, writer, state.getClass().getSimpleName(), UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);

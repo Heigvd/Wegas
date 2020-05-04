@@ -15,16 +15,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.PassThruAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class AuthenticationFilter extends PassThruAuthenticationFilter {
-
-    private static Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 
     /**
      * Extend to authorize remembered login

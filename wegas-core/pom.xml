@@ -317,57 +317,6 @@
                 </executions>
             </plugin>
 
-            <!-- SpotBugs Static Analysis -->
-            <!-- make sure to execute spotbug before weaving -->
-            <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
-                <configuration>
-                    <!--<spotbugsXmlOutputFilename>spotbugsCoreGlobalXml.xml</spotbugsXmlOutputFilename>-->
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>spotbugs-default-check</id>
-                        <!--<phase>process-classes</phase>-->
-                        <!--<goals>-->
-                        <!--<goal>check</goal>-->
-                        <!--</goals>-->
-                        <configuration>
-                            <effort>Max</effort>
-                            <threshold>Low</threshold>
-                            <failOnError>false</failOnError>
-                            <spotbugsXmlOutputFilename>spotbugs.xml</spotbugsXmlOutputFilename>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>spotbugs-security-check</id>
-                        <!--<phase>process-classes</phase>-->
-                        <configuration>
-                            <effort>Max</effort>
-                            <threshold>Low</threshold>
-                            <failOnError>true</failOnError>
-                            <includeFilterFile>wegas/spotbugs/security-include.xml</includeFilterFile>
-                            <excludeFilterFile>wegas/spotbugs/security-exclude.xml</excludeFilterFile>
-                            <spotbugsXmlOutputFilename>spotbugsSecurityXml.xml</spotbugsXmlOutputFilename>
-                            <plugins>
-                                <plugin>
-                                    <groupId>com.h3xstream.findsecbugs</groupId>
-                                    <artifactId>findsecbugs-plugin</artifactId>
-                                    <version>1.9.0</version>
-                                </plugin>
-                            </plugins>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>ch.albasim.wegas</groupId>
-                        <artifactId>build-tools</artifactId>
-                        <version>1.0</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-
             <plugin>
                 <groupId>de.empulse.eclipselink</groupId>
                 <artifactId>staticweave-maven-plugin</artifactId>

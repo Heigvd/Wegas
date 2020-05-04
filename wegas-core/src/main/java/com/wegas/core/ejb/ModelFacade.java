@@ -33,6 +33,8 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.statemachine.AbstractState;
+import com.wegas.core.persistence.variable.statemachine.AbstractStateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
@@ -133,7 +135,7 @@ public class ModelFacade {
         return scenarios;
     }
 
-    private void resetVariableDescriptorInstanceRefIds(VariableDescriptor vd, VariableDescriptor ref, boolean clear) {
+    private void resetVariableDescriptorInstanceRefIds(VariableDescriptor vd, boolean clear) {
         VariableInstance defaultInstance = null;
         if (vd != null) {
             defaultInstance = vd.getDefaultInstance();
@@ -210,19 +212,19 @@ public class ModelFacade {
                 ((GameModelLanguage) target).setVisibility(ModelScoped.Visibility.PRIVATE);
             }
 
-            if (target instanceof StateMachineDescriptor && references.length > 0 && references[0] instanceof StateMachineDescriptor
-                && target instanceof TriggerDescriptor == false) {
-                StateMachineDescriptor inScenario = (StateMachineDescriptor) target;
-                StateMachineDescriptor inModel = (StateMachineDescriptor) target;
+            if (target instanceof AbstractStateMachineDescriptor && target instanceof TriggerDescriptor == false // all FSMs but triggers
+                && references.length > 0 && references[0] instanceof StateMachineDescriptor) {
+                AbstractStateMachineDescriptor inScenario = (AbstractStateMachineDescriptor) target;
+                AbstractStateMachineDescriptor inModel = (AbstractStateMachineDescriptor) target;
 
                 // the state machine exists in the model.
                 //inScenario.setStates(new HashMap<>());
-                Set<State> inModelStates = inModel.getInternalStates();
+                Set<? extends AbstractState> inModelStates = inModel.getInternalStates();
 
                 for (Iterator<State> it = inScenario.getInternalStates().iterator(); it.hasNext();) {
                     State state = it.next();
                     boolean found = false;
-                    for (State mState : inModelStates) {
+                    for (AbstractState mState : inModelStates) {
 
                         if (mState.getIndex().equals(state.getIndex())) {
                             state.getTransitions().clear();
@@ -269,16 +271,14 @@ public class ModelFacade {
                 // extract the first scenario to act as reference
 
                 // equiv to the model + original scenarios
-                List<GameModel> allGameModels = new ArrayList<>(scenarios);
-
+//                List<GameModel> allGameModels = new ArrayList<>(scenarios);
                 logger.info("Create model, based on first scenario");
                 GameModel srcModel = otherScenarios.remove(0);
                 model = (GameModel) srcModel.duplicate();
                 model.setName(modelName);
 
                 // add model in first position
-                allGameModels.add(0, model);
-
+//                allGameModels.add(0, model);
                 processLanguages(model, scenarios);
 
                 /**
@@ -428,7 +428,7 @@ public class ModelFacade {
                         try {
                             VariableDescriptor find = variableDescriptorFacade.find(other, vd.getName());
                             MergeHelper.resetRefIds(find, vd, false);
-                            this.resetVariableDescriptorInstanceRefIds(find, vd, false);
+                            this.resetVariableDescriptorInstanceRefIds(find, false);
 
                             // prevent modification until first model propagation
                             find.setVisibility(ModelScoped.Visibility.INTERNAL);
@@ -590,7 +590,7 @@ public class ModelFacade {
         // Since default instance and their children now have brand new refid,
         // make sure to propagate them to test player instances
         for (VariableDescriptor vd : scenario.getVariableDescriptors()) {
-            this.resetVariableDescriptorInstanceRefIds(vd, vd, true);
+            this.resetVariableDescriptorInstanceRefIds(vd, true);
         }
 
         scenario.setBasedOn(null);
@@ -620,13 +620,14 @@ public class ModelFacade {
                             variableDescriptorFacade.resetVisibility(vd, ModelScoped.Visibility.PRIVATE);
                             MergeHelper.resetRefIds(vd, null, Boolean.TRUE);
 
-                            this.resetVariableDescriptorInstanceRefIds(vd, vd, true);
-                        } catch (WegasNoResultException ex) {
+                            this.resetVariableDescriptorInstanceRefIds(vd, true);
+                        } catch (WegasNoResultException ex) { // NOPMD
                         }
                     }
                 }
 
-            } catch (WegasNoResultException ex) {
+            } catch (WegasNoResultException ex) { // NOPMD
+                // just skip
             }
         }
     }
@@ -753,8 +754,8 @@ public class ModelFacade {
                             VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
 
                             MergeHelper.resetRefIds(vd, modelVd, false);
-                            this.resetVariableDescriptorInstanceRefIds(vd, modelVd, false);
-                        } catch (WegasNoResultException ex) {
+                            this.resetVariableDescriptorInstanceRefIds(vd, false);
+                        } catch (WegasNoResultException ex) {// NOPMD
                             // just skip
                         }
                     }
@@ -794,8 +795,9 @@ public class ModelFacade {
             }
 
             // Create missing descriptors (DescriptorListI) to ensure all scenarios have the correct struct
-            for (GameModel scenario : toCreate.keySet()) {
-                List<VariableDescriptor> vdToCreate = toCreate.get(scenario);
+            for (Entry<GameModel, List<VariableDescriptor>> entry : toCreate.entrySet()) {
+                GameModel scenario = entry.getKey();
+                List<VariableDescriptor> vdToCreate = entry.getValue();
 
                 logger.info("Create missing descriptor for {}", scenario);
                 boolean toRelease = false;

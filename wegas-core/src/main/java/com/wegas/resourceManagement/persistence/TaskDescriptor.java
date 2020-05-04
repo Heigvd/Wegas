@@ -20,12 +20,11 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.editor.JSONSchema.ListOfTasksSchema;
+import com.wegas.editor.jsonschema.ListOfTasksSchema;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.EmptyMap;
-import com.wegas.editor.View.I18nHtmlView;
-import com.wegas.resourceManagement.ejb.IterationFacade;
+import com.wegas.editor.view.I18nHtmlView;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -289,6 +288,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
             // TODO: fire property change
             instance.setProperty(key, "" + newValue);
         } catch (NumberFormatException e) {
+            logger.error("addNumberToProperty: {}", e);
             // do nothing...
         }
     }
@@ -438,20 +438,19 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     @Override
     public void updateCacheOnDelete(Beanjection beans) {
         VariableDescriptorFacade vdf = beans.getVariableDescriptorFacade();
-        IterationFacade iteF = beans.getIterationFacade();
 
         for (TaskDescriptor theTask : this.dependencies) {
-            theTask = (TaskDescriptor) vdf.find(theTask.getId());
-            if (theTask != null) {
-                theTask.removePredecessor(this);
+            VariableDescriptor desc = vdf.find(theTask.getId());
+            if (desc instanceof TaskDescriptor) {
+                ((TaskDescriptor) desc).removePredecessor(this);
             }
         }
         this.dependencies = new ArrayList<>();
 
         for (TaskDescriptor theTask : this.predecessors) {
-            theTask = (TaskDescriptor) vdf.find(theTask.getId());
-            if (theTask != null) {
-                theTask.removeDependency(this);
+            VariableDescriptor desc = vdf.find(theTask.getId());
+            if (desc instanceof TaskDescriptor) {
+                ((TaskDescriptor) desc).removeDependency(this);
             }
         }
         this.setPredecessors(new ArrayList<>());

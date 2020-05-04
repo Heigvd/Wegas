@@ -46,7 +46,7 @@ public final class AaiConfigInfo {
         }
     }
 
-    public final static AaiConfigInfo getInstance() {
+    public static AaiConfigInfo getInstance() {
         if (AaiConfigInfo.instance == null) {
             setInstance();
         }

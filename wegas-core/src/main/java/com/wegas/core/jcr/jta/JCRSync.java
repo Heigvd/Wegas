@@ -39,8 +39,8 @@ public class JCRSync implements Synchronization {
     /**
      * At this point, the final state of the transaction in known.
      * <p>
-     * From this point, any committed changes will be available to other transactions,
-     * and any rolled back changes will be definitely loosed.
+     * From this point, any committed changes will be available to other transactions, and any
+     * rolled back changes will be definitely loosed.
      *
      *
      * @param status status of the current transaction, either STATUS_COMMITTED or STATUS_ROLLEDBACK

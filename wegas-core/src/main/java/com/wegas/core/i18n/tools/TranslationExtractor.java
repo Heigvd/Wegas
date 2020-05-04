@@ -72,19 +72,19 @@ public class TranslationExtractor implements MergeHelper.MergeableVisitor {
         if (target instanceof TranslatableContent) {
             TranslatableContent trTarget = (TranslatableContent) target;
             Translation source = trTarget.getTranslation(langCode);
-            if (source != null && !Helper.isNullOrEmpty(source.getTranslation())) {
-                if (!this.isProtected(trTarget, protectionLevel)) {
-                    if (Helper.isNullOrEmpty(refCode) // re required empty translation
-                        || trTarget.getTranslation(refCode) == null // requiered empty is null
-                        || Helper.isNullOrEmpty(trTarget.getTranslation(refCode).getTranslation())) {
-                        // exists but is empty
-                        TranslationUpdate trUpdate = new TranslationUpdate();
-                        trUpdate.setTrId(trTarget.getId());
-                        trUpdate.setCode(langCode);
-                        trUpdate.setValue(source.getTranslation());
-                        patchList.add(trUpdate);
-                    }
-                }
+            if (source != null
+                && !Helper.isNullOrEmpty(source.getTranslation())
+                && !this.isProtected(trTarget, protectionLevel)
+                && (Helper.isNullOrEmpty(refCode) // re required empty translation
+                || trTarget.getTranslation(refCode) == null // requiered empty is null
+                || Helper.isNullOrEmpty(trTarget.getTranslation(refCode).getTranslation()))) {
+
+                // exists but is empty
+                TranslationUpdate trUpdate = new TranslationUpdate();
+                trUpdate.setTrId(trTarget.getId());
+                trUpdate.setCode(langCode);
+                trUpdate.setValue(source.getTranslation());
+                patchList.add(trUpdate);
             }
             return false;
         } else if (target instanceof Script) {
@@ -135,6 +135,7 @@ public class TranslationExtractor implements MergeHelper.MergeableVisitor {
             }
             return false;
         }
+
         return true;
     }
 

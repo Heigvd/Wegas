@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -16,7 +17,7 @@ import java.util.Comparator;
  * @param <T> extends AbstractEntity
  */
 @Deprecated
-public class EntityIdComparator<T extends AbstractEntity> implements Comparator<T> {
+public class EntityIdComparator<T extends AbstractEntity> implements Comparator<T>, Serializable {
 
     @Override
     public int compare(T o1, T o2) {

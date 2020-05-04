@@ -16,7 +16,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,13 +48,13 @@ public class LearningLockerClient {
 
     private String host;
 
-    private static final String OBJECT_ID = "statement.object.id";
+    //private static final String OBJECT_ID = "statement.object.id";
     private static final String LOG_ID = "statement.context.contextActivities.category.id";
 
     /**
      *
-     * @param host XAPI-UI endpoint (e.g. "host.tld:3000")
-     * @param auth Authorization header token
+     * @param host           XAPI-UI endpoint (e.g. "host.tld:3000")
+     * @param auth           Authorization header token
      * @param sourceHomePage
      */
     public LearningLockerClient(String host, String auth, String sourceHomePage) {
@@ -93,11 +92,10 @@ public class LearningLockerClient {
         return new ObjectMapper();
     }
 
-    public static List l(Object... values) {
-        return Arrays.stream(values).collect(Collectors.toList());
-    }
-
     /**
+     * Transform list of key value into a Map.
+     * <p>
+     * One could use Map.of but such method is limited to 10 entries
      *
      * @param kvs list of key, value, key2, value2, ..., keyN, valueN
      *
@@ -131,7 +129,7 @@ public class LearningLockerClient {
 
         // make sure to fetch statement for correct source
         newPipeLine.add(m("$match", m("statement.actor.account.homePage", homePage)));
-        newPipeLine.addAll(l((Object[]) pipeline));
+        newPipeLine.addAll(List.of((Map<String, Object>[]) pipeline));
 
         params.add(new BasicNameValuePair("pipeline", mapper.writeValueAsString(newPipeLine)));
 
@@ -175,7 +173,7 @@ public class LearningLockerClient {
     }
 
     public static Map matchAll(Map... ands) {
-        return matchAll(l((Object[]) ands));
+        return matchAll(List.of((Map[]) ands));
     }
 
     public static Map matchAll(List<Map> ands) {
@@ -187,11 +185,11 @@ public class LearningLockerClient {
     }
 
     public static Map equals(Object key, Object value) {
-        return m("$eq", l(key, value));
+        return m("$eq", List.of(key, value));
     }
 
     public static Map and(Map... ands) {
-        return and(l((Object[]) ands));
+        return and(List.of((Map[]) ands));
     }
 
     public static Map and(List<Map> ands) {
@@ -199,7 +197,7 @@ public class LearningLockerClient {
     }
 
     public static Map or(Map... ors) {
-        return or(l((Object[]) ors));
+        return or(List.of((Map[]) ors));
     }
 
     public static Map or(List<Map> or) {
@@ -212,44 +210,44 @@ public class LearningLockerClient {
 
     public static Map lastPart(Object value, String delimiter) {
         return m("$arrayElemAt",
-                l(m("$split", l(value, delimiter)),
-                        -1
-                )
+            List.of(m("$split", List.of(value, delimiter)),
+                -1
+            )
         );
     }
 
     public static Map elemAt(Object value, int index) {
-        return m("$arrayElemAt", l(value, index)
+        return m("$arrayElemAt", List.of(value, index)
         );
     }
 
     public static Map getByAnyGamesFilter(List<Long> gameIds) {
         return or(gameIds.stream()
-                .map(id -> m("statement.context.contextActivities.grouping.id", "internal://wegas/game/" + id))
-                .collect(Collectors.toList())
+            .map(id -> m("statement.context.contextActivities.grouping.id", "internal://wegas/game/" + id))
+            .collect(Collectors.toList())
         );
     }
 
     public static Map getByAnyTeamsFilter(List<Long> teamIds) {
         return or(teamIds.stream()
-                .map(id -> m("statement.context.contextActivities.grouping.id", "internal://wegas/team/" + id))
-                .collect(Collectors.toList())
+            .map(id -> m("statement.context.contextActivities.grouping.id", "internal://wegas/team/" + id))
+            .collect(Collectors.toList())
         );
     }
 
     public static Map projectStatemenet() {
         return m("$project", m(
-                "_id", 0,
-                "actor", "$statement.actor.account.name",
-                "timestamp", "$statement.timestamp",
-                "verb", "$statement.verb.id",
-                "object_id", "$statement.object.id",
-                "object_type", "$statement.object.definition.type",
-                "object_desc", "$statement.object.definition.description",
-                "result", "$statement.result.response",
-                "success", "$statement.result.success",
-                "completion", "$statement.result.completion",
-                "grouping", "$statement.context.contextActivities.grouping.id"
+            "_id", 0,
+            "actor", "$statement.actor.account.name",
+            "timestamp", "$statement.timestamp",
+            "verb", "$statement.verb.id",
+            "object_id", "$statement.object.id",
+            "object_type", "$statement.object.definition.type",
+            "object_desc", "$statement.object.definition.description",
+            "result", "$statement.result.response",
+            "success", "$statement.result.success",
+            "completion", "$statement.result.completion",
+            "grouping", "$statement.context.contextActivities.grouping.id"
         ));
     }
 
@@ -262,11 +260,11 @@ public class LearningLockerClient {
      */
     public List<String> getAllLogIds() throws IOException {
         return ((List<Map<String, String>>) query(m("$project", m(
-                "logId", lastPart(elemAt("$" + LOG_ID, 0), "/")
+            "logId", lastPart(elemAt("$" + LOG_ID, 0), "/")
         )),
-                m("$group", m(
-                        "_id", "$logId"
-                ))
+            m("$group", m(
+                "_id", "$logId"
+            ))
         )).stream().map(m -> m.get("_id")).collect(Collectors.toList());
     }
 
@@ -281,22 +279,22 @@ public class LearningLockerClient {
      */
     public List<Long> getAllGamesByLogId(String logId) throws IOException {
         return ((List<Map<String, String>>) query(matchAll(equals(LOG_ID, Xapi.LOG_ID_PREFIX + logId)),
-                m("$group", m(
-                        "_id", "$statement.context.contextActivities.grouping.id"
-                )),
-                m("$project", m("_id", lastPart(elemAt(m("$filter",
-                        m("input", "$_id",
-                                "as", "item",
-                                "cond", equals(m("$substrCP", l("$$item", 0, 22)),
-                                        "internal://wegas/game/"
-                                )
-                        )
-                ), 0
-                ), "/")
-                )),
-                m("$group", m(
-                        "_id", "$_id"
-                ))
+            m("$group", m(
+                "_id", "$statement.context.contextActivities.grouping.id"
+            )),
+            m("$project", m("_id", lastPart(elemAt(m("$filter",
+                m("input", "$_id",
+                    "as", "item",
+                    "cond", equals(m("$substrCP", List.of("$$item", 0, 22)),
+                        "internal://wegas/game/"
+                    )
+                )
+            ), 0
+            ), "/")
+            )),
+            m("$group", m(
+                "_id", "$_id"
+            ))
         )).stream().map(id -> Long.parseLong(id.get("_id"))).collect(Collectors.toList());
     }
 
@@ -313,9 +311,9 @@ public class LearningLockerClient {
      */
     public List<ProjectedStatement> getStatements(String logId, List<Long> gameIds, String activityPattern) throws IOException {
 
-        List<Map> ands = l(
-                equals(LOG_ID, Xapi.LOG_ID_PREFIX + logId),
-                getByAnyGamesFilter(gameIds)
+        List<Map> ands = List.of(
+            equals(LOG_ID, Xapi.LOG_ID_PREFIX + logId),
+            getByAnyGamesFilter(gameIds)
         );
 
         if (!Helper.isNullOrEmpty(activityPattern)) {
@@ -323,15 +321,15 @@ public class LearningLockerClient {
         }
 
         return ((List<Map<String, Object>>) query(
-                matchAll(ands),
-                projectStatemenet()
+            matchAll(ands),
+            projectStatemenet()
         )).stream().map(ProjectedStatement::new).collect(Collectors.toList());
     }
 
     public List<ProjectedStatement> getStatementsByTeams(String logId, List<Long> teamsIds, String activityPattern) throws IOException {
-        List<Map> ands = l(
-                equals(LOG_ID, Xapi.LOG_ID_PREFIX + logId),
-                getByAnyTeamsFilter(teamsIds)
+        List<Map> ands = List.of(
+            equals(LOG_ID, Xapi.LOG_ID_PREFIX + logId),
+            getByAnyTeamsFilter(teamsIds)
         );
 
         if (!Helper.isNullOrEmpty(activityPattern)) {
@@ -339,8 +337,8 @@ public class LearningLockerClient {
         }
 
         return ((List<Map<String, Object>>) query(
-                matchAll(ands),
-                projectStatemenet()
+            matchAll(ands),
+            projectStatemenet()
         )).stream().map(ProjectedStatement::new).collect(Collectors.toList());
     }
 
@@ -357,22 +355,22 @@ public class LearningLockerClient {
      */
     public List<Map<String, String>> getQuestionReplies(String logId, List<Long> gameIds, String questionName) throws IOException {
         return query(matchAll(
-                equals(LOG_ID, Xapi.LOG_ID_PREFIX + logId),
-                getByAnyGamesFilter(gameIds),
-                regex("statement.object.id", "act:wegas/question/" + questionName + "/choice/.*")
+            equals(LOG_ID, Xapi.LOG_ID_PREFIX + logId),
+            getByAnyGamesFilter(gameIds),
+            regex("statement.object.id", "act:wegas/question/" + questionName + "/choice/.*")
         ),
-                m("$project", m(
-                        "_id", 0,
-                        "choice", lastPart("$statement.object.id", "/"),
-                        "result", "$statement.result.response"
-                ))
+            m("$project", m(
+                "_id", 0,
+                "choice", lastPart("$statement.object.id", "/"),
+                "result", "$statement.result.response"
+            ))
         );
     }
 
     public Map countResultsByActivity() {
         return m("$group",
-                m("_id", "$statement.object.id",
-                        "count", m("$sum", 1))
+            m("_id", "$statement.object.id",
+                "count", m("$sum", 1))
         );
     }
 
@@ -381,10 +379,10 @@ public class LearningLockerClient {
 
         if (gameIds != null && !gameIds.isEmpty()) {
             return query(
-                    matchAll(
-                            getByAnyGamesFilter(gameIds)
-                    ),
-                    group
+                matchAll(
+                    getByAnyGamesFilter(gameIds)
+                ),
+                group
             );
         } else {
             return query(group);
@@ -394,42 +392,42 @@ public class LearningLockerClient {
     public Map countResultsByTeamAndActivity() {
         // {   "$group"   : {   _id:{"group" : "$statement.context.contextActivities.grouping", "object": "$statement.object.id"}, "results": {"$push": "$statement.result"}      }  } ]   )
         return m("$group",
-                m("_id", m(
-                        "group", "$statement.context.contextActivities.grouping", // game & team
-                        "object", "$statement.object.id", // + activity id
-                        "result", "$statement.result" // + result
-                ),
-                        "results", m("$sum", "1") // get all results
-                )
+            m("_id", m(
+                "group", "$statement.context.contextActivities.grouping", // game & team
+                "object", "$statement.object.id", // + activity id
+                "result", "$statement.result" // + result
+            ),
+                "results", m("$sum", "1") // get all results
+            )
         );
     }
 
     public Map groupResultsByTeamAndActivity() {
         // {   "$group"   : {   _id:{"group" : "$statement.context.contextActivities.grouping", "object": "$statement.object.id"}, "results": {"$push": "$statement.result"}      }  } ]   )
         return m("$group",
-                m("_id", m(
-                        "group", "$statement.context.contextActivities.grouping", // game & team
-                        "object", "$statement.object.id" // + activity id
-                ),
-                        "results", m("$push", "$statement.result") // get all results
-                )
+            m("_id", m(
+                "group", "$statement.context.contextActivities.grouping", // game & team
+                "object", "$statement.object.id" // + activity id
+            ),
+                "results", m("$push", "$statement.result") // get all results
+            )
         );
     }
 
     public Map groupResultsByActivity() {
         return m("$group",
-                m("_id", "$statement.object.id",
-                        "results", m("$push", "$statement.result"))
+            m("_id", "$statement.object.id",
+                "results", m("$push", "$statement.result"))
         );
     }
 
     public List<Map<String, Object>> getActivityResult(List<Long> gameIds) throws IOException {
         if (gameIds != null && !gameIds.isEmpty()) {
             return query(
-                    matchAll(
-                            getByAnyGamesFilter(gameIds)
-                    ),
-                    groupResultsByActivity()
+                matchAll(
+                    getByAnyGamesFilter(gameIds)
+                ),
+                groupResultsByActivity()
             );
         } else {
             return query(groupResultsByActivity());

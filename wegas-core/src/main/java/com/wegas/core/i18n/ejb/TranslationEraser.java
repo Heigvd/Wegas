@@ -50,11 +50,10 @@ public class TranslationEraser implements MergeHelper.MergeableVisitor {
     public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
         if (target instanceof Translation) {
             Translation tr = (Translation) target;
-            if (!this.isProtected(tr.getTranslatableContent(), protectionLevel)) {
-                if (tr.getLang().equals(this.langCode) && (this.eraseAll || !Helper.isNullOrEmpty(tr.getStatus()))) {
-                    tr.setTranslation("");
-                    tr.setStatus("cleared");
-                }
+            if (!this.isProtected(tr.getTranslatableContent(), protectionLevel)
+                && tr.getLang().equals(this.langCode) && (this.eraseAll || !Helper.isNullOrEmpty(tr.getStatus()))) {
+                tr.setTranslation("");
+                tr.setStatus("cleared");
             }
             return false;
         } else if (target instanceof Script) {
@@ -66,10 +65,8 @@ public class TranslationEraser implements MergeHelper.MergeableVisitor {
                     for (int i = 0; i < trs.size(); i++) {
                         TranslatableContent trc = trs.get(i);
                         Translation translation = trc.getTranslation(langCode);
-                        if (translation != null) {
-                            if (this.eraseAll || !Helper.isNullOrEmpty(translation.getStatus())) {
-                                newScript = I18nHelper.updateScriptWithNewTranslation(newScript, i, this.langCode, "", "cleared");
-                            }
+                        if (translation != null && (this.eraseAll || !Helper.isNullOrEmpty(translation.getStatus()))) {
+                            newScript = I18nHelper.updateScriptWithNewTranslation(newScript, i, this.langCode, "", "cleared");
                         }
                     }
                     script.setContent(newScript);

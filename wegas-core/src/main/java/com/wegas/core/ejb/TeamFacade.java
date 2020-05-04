@@ -22,8 +22,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -31,8 +29,6 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @LocalBean
 public class TeamFacade extends BaseFacade<Team> {
-
-    private static final Logger logger = LoggerFactory.getLogger(TeamFacade.class);
 
     @Inject
     private PopulatorScheduler populatorScheduler;

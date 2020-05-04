@@ -18,7 +18,7 @@ import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.ValueGenerators.EmptyMap;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.HtmlView;
+import com.wegas.editor.view.HtmlView;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.ElementCollection;
@@ -166,6 +166,7 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
             instance.setProperty(key, "" + newValue);
         } catch (NumberFormatException e) {
             // do nothing...
+            logger.trace("Fails to add NaN ({}) to property {}", value, key);
         }
     }
 

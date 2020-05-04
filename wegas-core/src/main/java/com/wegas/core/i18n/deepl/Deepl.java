@@ -23,8 +23,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * DeepL Pro Client.
@@ -33,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Deepl {
 
-    private static final Logger logger = LoggerFactory.getLogger(Deepl.class);
+    //private static final Logger logger = LoggerFactory.getLogger(Deepl.class);
 
     /**
      * DeepL API URL
@@ -63,7 +61,7 @@ public class Deepl {
     /**
      * List of language supported by DeepL.
      */
-    public static enum Language {
+    public enum Language {
         /**
          * English
          */
@@ -198,16 +196,16 @@ public class Deepl {
 
         if (targetLang != null) {
             sb.append("&target_lang=").append(targetLang);
-        } else {
-            //TODO else : throw error
+        /*} else {
+            //TODO else : throw error*/
         }
 
         if (texts != null) {
             for (String text : texts) {
                 sb.append("&text=").append(URLEncoder.encode(text, "UTF-8"));
             }
-        } else {
-            //TODO else : throw error
+        /*} else {
+            //TODO else : throw error*/
         }
 
         /* hack <p></p> => <p>&nbsp;</p> */

@@ -19,7 +19,7 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyScript;
 import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.ValueGenerators.True;
-import com.wegas.editor.View.ScriptView;
+import com.wegas.editor.view.ScriptView;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;

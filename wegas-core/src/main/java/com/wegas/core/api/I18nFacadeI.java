@@ -15,5 +15,5 @@ import com.wegas.core.persistence.game.Player;
  */
 public interface I18nFacadeI {
 
-    public String interpolate(String str, Player player);
+    String interpolate(String str, Player player);
 }

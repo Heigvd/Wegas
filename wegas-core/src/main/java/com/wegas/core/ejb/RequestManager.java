@@ -20,7 +20,12 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.WithPermission;
-import com.wegas.core.persistence.game.*;
+import com.wegas.core.persistence.game.DebugGame;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelContent;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -461,10 +466,8 @@ public class RequestManager implements RequestManagerI {
         boolean add = true;
         if (container == destroyedEntities) {
             removeEntityFromContainer(updatedEntities, entity);
-        } else if (container == updatedEntities) {
-            if (destroyedEntities.contains(entity)) {
-                add = false;
-            }
+        } else if (container == updatedEntities && destroyedEntities.contains(entity)) {
+            add = false;
         }
 
         if (add) {
@@ -519,6 +522,7 @@ public class RequestManager implements RequestManagerI {
                     this.clearEffectivePermisssions();
                 }
             } catch (NullPointerException npe) {
+                logger.warn("NPE in getCurrnetUser()");
                 // thrown when ran withoud EJBcontext
             }
             return this.currentUser;
@@ -577,12 +581,10 @@ public class RequestManager implements RequestManagerI {
 
             // if currentPlayer is set, make sure it is member of the new current team.
             // set to null otherwise
-            if (currentPlayer != null) {
-                if (!team.equals(currentPlayer.getTeam())) {
-                    // current player is not a member of the current team
-                    this.setPlayer(null);
-                    // warning: setPlayer(null) will also set currentTeam to null
-                }
+            if (currentPlayer != null && !team.equals(currentPlayer.getTeam())) {
+                // current player is not a member of the current team
+                this.setPlayer(null);
+                // warning: setPlayer(null) will also set currentTeam to null
             }
 
             // if no current user, try to find one
@@ -685,15 +687,13 @@ public class RequestManager implements RequestManagerI {
         }
 
         for (AbstractEntity entity : destroyedEntities) {
-            if (entity instanceof Broadcastable) {
-                if (entity instanceof VariableDescriptor
-                    || entity instanceof VariableInstance
-                    || entity instanceof GameModel
-                    || entity instanceof Game
-                    || entity instanceof Player
-                    || entity instanceof Team) {
-                    removeAll(map, ((Broadcastable) entity).getEntities());
-                }
+            if (entity instanceof Broadcastable && (entity instanceof VariableDescriptor
+                || entity instanceof VariableInstance
+                || entity instanceof GameModel
+                || entity instanceof Game
+                || entity instanceof Player
+                || entity instanceof Team)) {
+                removeAll(map, ((Broadcastable) entity).getEntities());
             }
         }
         return map;
@@ -703,13 +703,12 @@ public class RequestManager implements RequestManagerI {
         Map<String, List<AbstractEntity>> map = new HashMap<>();
 
         for (AbstractEntity entity : destroyedEntities) {
-            if (entity instanceof Broadcastable) {
-                if (entity instanceof VariableDescriptor
-                    || entity instanceof VariableInstance
-                    || entity instanceof Game
-                    || entity instanceof GameModel) {
-                    addAll(map, ((Broadcastable) entity).getEntities());
-                }
+            if (entity instanceof Broadcastable
+                && (entity instanceof VariableDescriptor
+                || entity instanceof VariableInstance
+                || entity instanceof Game
+                || entity instanceof GameModel)) {
+                addAll(map, ((Broadcastable) entity).getEntities());
             }
         }
         return map;
@@ -1356,12 +1355,12 @@ public class RequestManager implements RequestManagerI {
 
             for (String p : perms) {
                 String[] split = p.split(":");
-                if (split.length == 3) {
-                    if (split[0].equals(pSplit[0])
-                        && (split[1].equals("*") || split[1].contains(pSplit[1])) // Not so happy with "contains" -> DO a f*ckin good regex to handle all cases
-                        && (split[2].equals("*") || split[2].equals(pSplit[2]))) {
-                        return true;
-                    }
+                if (split.length == 3
+                    // todo: Not so happy with those "contains" -> DO a f*ckin good regex to handle all cases
+                    && split[0].equals(pSplit[0])
+                    && (split[1].equals("*") || split[1].contains(pSplit[1]))
+                    && (split[2].equals("*") || split[2].equals(pSplit[2]))) {
+                    return true;
 
                 }
             }
@@ -1468,11 +1467,10 @@ public class RequestManager implements RequestManagerI {
              */
             for (Game game : gameModel.getGames()) {
                 // has permission to at least on game of the game model ?
-                if (game instanceof DebugGame == false) {
-                    // very old gamemodel owhn several game : in this case ignore debug one
-                    if (this.hasGamePermission(game, (thePerm.getLevel() != WegasEntityPermission.Level.READ))) {
-                        return true;
-                    }
+                if (game instanceof DebugGame == false
+                    && // very old gamemodel owns several games : in this case ignore debug one
+                    this.hasGamePermission(game, (thePerm.getLevel() != WegasEntityPermission.Level.READ))) {
+                    return true;
                 }
             }
             return false;
@@ -1631,7 +1629,7 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
-    /* private */ public void grant(WegasPermission perm) {
+    /* package */ public void grant(WegasPermission perm) {
         this.grantedPermissions.add(perm);
     }
 
@@ -2071,7 +2069,7 @@ public class RequestManager implements RequestManagerI {
     }
 
     public Subject login(Subject subject, AuthenticationToken token) {
-        if (subject.isAuthenticated()){
+        if (subject.isAuthenticated()) {
             throw WegasErrorMessage.error("You are already logged in! Please logout first");
         }
         subject.login(token);

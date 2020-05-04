@@ -7,7 +7,6 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.tools.FindAndReplacePayload;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.ModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
@@ -22,6 +21,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.tools.FindAndReplacePayload;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -36,7 +36,14 @@ import java.util.zip.ZipInputStream;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -45,8 +52,6 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -57,7 +62,6 @@ import org.slf4j.LoggerFactory;
 @Produces(MediaType.APPLICATION_JSON)
 public class GameModelController {
 
-    private static final Logger logger = LoggerFactory.getLogger(GameModelController.class);
     /**
      *
      */
@@ -381,13 +385,16 @@ public class GameModelController {
             }
         }
 
-        // preserve name and comments
-        newVersion.setComments(gameModel.getComments());
-        newVersion.setName(gameModel.getName());
+        if (newVersion != null) {
+            // preserve name and comments
+            newVersion.setComments(gameModel.getComments());
+            newVersion.setName(gameModel.getName());
 
-        WegasEntityPatch diff = new WegasEntityPatch(gameModel, newVersion, true);
-
-        return diff.diffForce();
+            WegasEntityPatch diff = new WegasEntityPatch(gameModel, newVersion, true);
+            return diff.diffForce();
+        } else {
+            return null;
+        }
     }
 
     /**

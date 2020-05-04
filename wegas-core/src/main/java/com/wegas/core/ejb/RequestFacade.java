@@ -53,9 +53,6 @@ public class RequestFacade {
     @Inject
     private StateMachineFacade stateMachineFacade;
 
-    @Inject
-    private JPACacheHelper jpaCacheHelper;
-
     /**
      *
      * @Inject
