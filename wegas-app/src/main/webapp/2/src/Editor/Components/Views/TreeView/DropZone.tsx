@@ -5,7 +5,6 @@ import {
   ConnectDropTarget,
   XYCoord,
   DropTargetMonitor,
-  useDrop,
 } from 'react-dnd';
 
 export type DropLocation = 'INSIDE' | 'AFTER' | 'BEFORE' | 'AUTO';
