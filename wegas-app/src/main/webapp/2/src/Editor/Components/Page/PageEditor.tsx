@@ -8,9 +8,9 @@ import { MainLinearLayout } from '../LinearTabLayout/LinearLayout';
 import ComponentEditor from './ComponentEditor';
 import { PageLoader } from './PageLoader';
 import { css, cx } from 'emotion';
-import { noop } from 'lodash-es';
+import { noop, omit } from 'lodash-es';
 import { PagesLayout } from './PagesLayout';
-import { store, useStore } from '../../../data/store';
+import { store, useStore, composeEnhancers } from '../../../data/store';
 import { Actions } from '../../../data';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { themeVar } from '../../../Components/Theme';
@@ -18,10 +18,60 @@ import { flex, grow, expandBoth } from '../../../css/classes';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { mergeDeep } from '../../../Helper/tools';
+import { wlog } from '../../../Helper/wegaslog';
+import { useComparator } from '../../../Helper/react.debug';
+import {
+  compose,
+  createStore,
+  combineReducers,
+  applyMiddleware,
+  Reducer,
+} from 'redux';
+import u from 'immer';
+import thunk, { ThunkMiddleware } from 'redux-thunk';
+import { createStoreConnector } from '../../../data/connectStore';
 const innerButtonStyle = css({
   margin: '2px auto 2px auto',
   width: 'fit-content',
 });
+
+const pagesActionCreator = {
+  COMPONENT_SET_FOCUSED: (data: FocusedComponent) => ({
+    type: 'COMPONENT_SET_FOCUSED',
+    payload: data,
+  }),
+};
+
+type PagesActions<
+  A extends keyof typeof pagesActionCreator = keyof typeof pagesActionCreator
+> = ReturnType<typeof pagesActionCreator[A]>;
+
+interface PagesState {
+  focusedComponent?: FocusedComponent;
+}
+
+const pagesStateReducer: Reducer<Readonly<PagesState>> = u(
+  (state: PagesState, action: PagesActions) => {
+    switch (action.type) {
+      case 'COMPONENT_SET_FOCUSED': {
+        return { ...state, focusedComponent: action.payload };
+      }
+    }
+    return state;
+  },
+  { focusedComponent: undefined },
+);
+
+export const pagesStateStore = createStore(
+  pagesStateReducer,
+  composeEnhancers(
+    applyMiddleware(thunk as ThunkMiddleware<PagesState, PagesActions>),
+  ),
+);
+
+export const { useStore: usePagesStateStore } = createStoreConnector(
+  pagesStateStore,
+);
 
 export interface Handles {
   [path: string]: { jsx: JSX.Element; dom: React.RefObject<HTMLDivElement> };
@@ -197,6 +247,200 @@ const updateComponent = (
   }
 };
 
+function Editor() {
+  return (
+    <pageEditorCTX.Consumer>
+      {({ editedPath, selectedPage }) => (
+        <pageCTX.Consumer>
+          {({ onUpdate, onDelete }) =>
+            !editedPath ? (
+              <pre>No component selected yet</pre>
+            ) : !selectedPage ? (
+              <pre>No page selected yet</pre>
+            ) : (
+              <ComponentEditor
+                entity={findComponent(selectedPage, editedPath).component}
+                parent={findComponent(selectedPage, editedPath).parent}
+                update={onUpdate}
+                actions={[
+                  {
+                    label: 'Delete',
+                    action: () => onDelete(editedPath),
+                    confirm: true,
+                  },
+                ]}
+              />
+            )
+          }
+        </pageCTX.Consumer>
+      )}
+    </pageEditorCTX.Consumer>
+  );
+}
+
+function SourceEditor() {
+  return (
+    <pageEditorCTX.Consumer>
+      {({ selectedPageId, selectedPage, loading }) =>
+        loading ? (
+          <pre>Loading the pages</pre>
+        ) : (
+          <JSONandJSEditor
+            content={JSON.stringify(selectedPage, null, 2)}
+            onSave={content => {
+              try {
+                if (selectedPageId) {
+                  patchPage(selectedPageId, JSON.parse(content));
+                } else {
+                  throw Error('No selected page');
+                }
+              } catch (e) {
+                return { status: 'error', text: e };
+              }
+            }}
+          />
+        )
+      }
+    </pageEditorCTX.Consumer>
+  );
+}
+
+interface PageDisplayProps {
+  setShowControls: React.Dispatch<React.SetStateAction<boolean>>;
+  setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowBorders: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function PageDisplay({
+  setShowBorders,
+  setEditMode,
+  setShowControls,
+}: PageDisplayProps) {
+  const { selectedPageId, loading } = React.useContext(pageEditorCTX);
+  const {
+    editMode,
+    showControls,
+    showBorders,
+    focusedComponent,
+  } = React.useContext(pageCTX);
+
+  // useComparator(
+  //   {
+  //     selectedPageId,
+  //     loading,
+  //     editMode,
+  //     showControls,
+  //     showBorders,
+  //     focusedComponent,
+  //   },
+  //   'DEEP',
+  // );
+
+  // React.useEffect(() => {
+  //   wlog('mounted');
+  //   return () => wlog('unmounted');
+  // });
+
+  if (loading) {
+    return <pre>Loading the pages</pre>;
+  }
+
+  return (
+    <Toolbar className={expandBoth + ' PAGE-DISPLAY'}>
+      <Toolbar.Header>
+        <div style={{ margin: 'auto' }}>
+          {editMode && (
+            <Button label={'Toggle controls'} disableBorders={{ right: true }}>
+              <div className={innerButtonStyle}>
+                <Toggler
+                  value={showControls}
+                  onChange={() => setShowControls(c => !c)}
+                />
+              </div>
+            </Button>
+          )}
+          <Button
+            label={'Toggle edit mode'}
+            disableBorders={{ right: editMode, left: editMode }}
+          >
+            <div className={innerButtonStyle}>
+              <Toggler
+                value={editMode}
+                onChange={() => setEditMode(!editMode)}
+              />
+            </div>
+          </Button>
+          {editMode && (
+            <Button label={'Toggle borders'} disableBorders={{ left: true }}>
+              <div className={innerButtonStyle}>
+                <Toggler
+                  value={showBorders}
+                  onChange={() => setShowBorders(b => !b)}
+                />
+              </div>
+            </Button>
+          )}
+        </div>
+      </Toolbar.Header>
+      <Toolbar.Content>
+        <PageLoader selectedPageId={selectedPageId} />
+      </Toolbar.Content>
+    </Toolbar>
+  );
+}
+
+interface LayoutProps {
+  setPageEditorState: React.Dispatch<React.SetStateAction<PageEditorState>>;
+  onMoveLayoutComponent: (
+    sourcePageId: string,
+    destPageId: string,
+    sourcePage: WegasComponent,
+    destPage: WegasComponent,
+    sourcePath: number[],
+    destPath: number[],
+    destIndex: number,
+    props?: WegasComponent['props'],
+  ) => void;
+  onNewLayoutComponent: (
+    pageId: string,
+    page: WegasComponent,
+    path: number[],
+    type: string,
+  ) => void;
+  onDeleteLayoutComponent: (
+    pageId: string,
+    page: WegasComponent,
+    path: number[],
+  ) => void;
+  onEdit: (selectedPageId?: string, path?: number[]) => void;
+}
+
+function Layout({
+  onDeleteLayoutComponent,
+  onEdit,
+  onMoveLayoutComponent,
+  onNewLayoutComponent,
+  setPageEditorState,
+}: LayoutProps) {
+  return (
+    <PagesLayout
+      onPageClick={pageId =>
+        setPageEditorState(ops => ({
+          ...ops,
+          selectedPageId: pageId,
+          editedPath: undefined,
+        }))
+      }
+      componentControls={{
+        onNew: onNewLayoutComponent,
+        onDelete: onDeleteLayoutComponent,
+        onEdit: onEdit,
+        onMove: onMoveLayoutComponent,
+      }}
+    />
+  );
+}
+
 export const pageLayoutId = 'PageEditorLayout';
 
 export default function PageEditor() {
@@ -210,6 +454,10 @@ export default function PageEditor() {
   const [showBorders, setShowBorders] = React.useState(false);
   const [showControls, setShowControls] = React.useState(true);
   const [focusedComponent, focusComponent] = React.useState<FocusedComponent>();
+
+  const [availableLayoutTabs, setAvailableLayoutTabs] = React.useState<{
+    [name: string]: JSX.Element;
+  }>({});
 
   const components = usePageComponentStore(s => s);
   const { selectedPage, defaultPageId, loading } = useStore(
@@ -385,148 +633,61 @@ export default function PageEditor() {
     },
     [],
   );
-  const Layout = (
-    <PagesLayout
-      onPageClick={pageId =>
-        setPageEditorState(ops => ({
-          ...ops,
-          selectedPageId: pageId,
-          editedPath: undefined,
-        }))
-      }
-      componentControls={{
-        onNew: onNewLayoutComponent,
-        onDelete: onDeleteLayoutComponent,
-        onEdit: onEdit,
-        onMove: onMoveLayoutComponent,
-      }}
-    />
-  );
 
-  const PageDisplay = (
-    <pageEditorCTX.Consumer>
-      {({ selectedPageId, loading }) => (
-        <pageCTX.Consumer>
-          {({ editMode, showControls, showBorders }) =>
-            loading ? (
-              <pre>Loading the pages</pre>
-            ) : (
-              <Toolbar className={expandBoth + ' PAGE-DISPLAY'}>
-                <Toolbar.Header>
-                  <div style={{ margin: 'auto' }}>
-                    {editMode && (
-                      <Button
-                        label={'Toggle controls'}
-                        disableBorders={{ right: true }}
-                      >
-                        <div className={innerButtonStyle}>
-                          <Toggler
-                            value={showControls}
-                            onChange={() => setShowControls(c => !c)}
-                          />
-                        </div>
-                      </Button>
-                    )}
-                    <Button
-                      label={'Toggle edit mode'}
-                      disableBorders={{ right: editMode, left: editMode }}
-                    >
-                      <div className={innerButtonStyle}>
-                        <Toggler
-                          value={editMode}
-                          onChange={() => setEditMode(!editMode)}
-                        />
-                      </div>
-                    </Button>
-                    {editMode && (
-                      <Button
-                        label={'Toggle borders'}
-                        disableBorders={{ left: true }}
-                      >
-                        <div className={innerButtonStyle}>
-                          <Toggler
-                            value={showBorders}
-                            onChange={() => setShowBorders(b => !b)}
-                          />
-                        </div>
-                      </Button>
-                    )}
-                  </div>
-                </Toolbar.Header>
-                <Toolbar.Content>
-                  <PageLoader selectedPageId={selectedPageId} />
-                </Toolbar.Content>
-              </Toolbar>
-            )
-          }
-        </pageCTX.Consumer>
-      )}
-    </pageEditorCTX.Consumer>
-  );
+  React.useEffect(() => {
+    wlog('RENEW LAYOUT');
+    setAvailableLayoutTabs({
+      Layout: (
+        <Layout
+          onDeleteLayoutComponent={onDeleteLayoutComponent}
+          onEdit={onEdit}
+          onMoveLayoutComponent={onMoveLayoutComponent}
+          onNewLayoutComponent={onNewLayoutComponent}
+          setPageEditorState={setPageEditorState}
+        />
+      ),
+      Components: <ComponentPalette />,
+      PageDisplay: (
+        <PageDisplay
+          setEditMode={setEditMode}
+          setShowBorders={setShowBorders}
+          setShowControls={setShowControls}
+        />
+      ),
+      SourceEditor: <SourceEditor />,
+      Editor: <Editor />,
+    });
+  }, [
+    onDeleteLayoutComponent,
+    onEdit,
+    onMoveLayoutComponent,
+    onNewLayoutComponent,
+  ]);
 
-  const SourceEditor = (
-    <pageEditorCTX.Consumer>
-      {({ selectedPageId, selectedPage, loading }) =>
-        loading ? (
-          <pre>Loading the pages</pre>
-        ) : (
-          <JSONandJSEditor
-            content={JSON.stringify(selectedPage, null, 2)}
-            onSave={content => {
-              try {
-                if (selectedPageId) {
-                  patchPage(selectedPageId, JSON.parse(content));
-                } else {
-                  throw Error('No selected page');
-                }
-              } catch (e) {
-                return { status: 'error', text: e };
-              }
-            }}
-          />
-        )
-      }
-    </pageEditorCTX.Consumer>
-  );
+  // const availableLayoutTabs = {
+  //   Layout,
+  //   Components: <ComponentPalette />,
+  //   PageDisplay: (
+  //     <PageDisplay
+  //       setEditMode={setEditMode}
+  //       setShowBorders={setShowBorders}
+  //       setShowControls={setShowControls}
+  //     />
+  //   ),
+  //   SourceEditor,
+  //   Editor,
+  // };
 
-  const Editor = (
-    <pageEditorCTX.Consumer>
-      {({ editedPath, selectedPage }) => (
-        <pageCTX.Consumer>
-          {({ onUpdate, onDelete }) =>
-            !editedPath ? (
-              <pre>No component selected yet</pre>
-            ) : !selectedPage ? (
-              <pre>No page selected yet</pre>
-            ) : (
-              <ComponentEditor
-                entity={findComponent(selectedPage, editedPath).component}
-                parent={findComponent(selectedPage, editedPath).parent}
-                update={onUpdate}
-                actions={[
-                  {
-                    label: 'Delete',
-                    action: () => onDelete(editedPath),
-                    confirm: true,
-                  },
-                ]}
-              />
-            )
-          }
-        </pageCTX.Consumer>
-      )}
-    </pageEditorCTX.Consumer>
-  );
+  // React.useEffect(() => {
+  //   wlog('mounted');
+  //   return () => wlog('unmounted');
+  // });
 
-  const availableLayoutTabs = {
-    Layout,
-    Components: <ComponentPalette />,
-    PageDisplay,
-    SourceEditor,
-    Editor,
-  };
+  // useComparator({ focusedComponent }, 'DEEP');
 
-  return (
+  return Object.keys(availableLayoutTabs).length === 0 ? (
+    <pre>Loading...</pre>
+  ) : (
     <div
       className={
         cx(

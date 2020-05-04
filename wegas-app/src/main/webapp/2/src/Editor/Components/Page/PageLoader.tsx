@@ -9,6 +9,7 @@ import { css, cx } from 'emotion';
 import { pageCTX } from './PageEditor';
 import { flex } from '../../../css/classes';
 import { wlog } from '../../../Helper/wegaslog';
+import { useComparator } from '../../../Helper/react.debug';
 
 const editStyle = css({
   borderStyle: 'solid',
@@ -27,9 +28,22 @@ export function PageLoader({ selectedPageId }: PageLoaderProps) {
   );
   const { editMode } = React.useContext(pageCTX);
 
-  React.useEffect(() => {
-    wlog('mounted');
-  });
+  // React.useEffect(() => {
+  //   wlog('mounted');
+  //   return () => wlog('unmounted');
+  // });
+
+  // React.useEffect(() => {
+  //   wlog('selectedPageId');
+  // }, [selectedPageId]);
+
+  // React.useEffect(() => {
+  //   wlog('selectedPage');
+  // }, [selectedPage]);
+
+  // React.useEffect(() => {
+  //   wlog('editMode');
+  // }, [editMode]);
 
   return (
     <DefaultDndProvider>

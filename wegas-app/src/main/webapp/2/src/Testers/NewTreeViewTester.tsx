@@ -1,14 +1,20 @@
 import * as React from 'react';
-import { Tree, TreeNode } from '../Editor/Components/Views/TreeView/TreeView';
+import {
+  Tree,
+  TreeNode,
+  DropResult,
+} from '../Editor/Components/Views/TreeView/TreeView';
 import { flexColumn, flex } from '../css/classes';
 import { cx } from 'emotion';
 
 const TREENODE_TEST_TYPE = 'TEST_TYPE';
 
 export default function NewTreeViewTester() {
+  const [dropResult, setDropResult] = React.useState<DropResult<string>>();
   return (
     <div className={cx(flex, flexColumn)}>
-      <Tree id={''} type={TREENODE_TEST_TYPE}>
+      <div>Drop result : {JSON.stringify(dropResult)}</div>
+      <Tree id={''} type={TREENODE_TEST_TYPE} onDrop={setDropResult}>
         {getParentProps => (
           <>
             <TreeNode {...getParentProps()} id="1" title="Stage 1">

@@ -15,7 +15,7 @@ import {
   alignContentValues,
 } from '../../Layouts/FlexList';
 import {
-  EditorHandleProps,
+  EditorHandleUserProps,
   PageComponentMandatoryProps,
   layoutHighlightStyle,
 } from '../tools/EditableComponent';
@@ -50,7 +50,7 @@ function PlayerFlexList(props: PlayerFlexListProps) {
     }
   }, [showBorders]);
 
-  const handleProps: EditorHandleProps = {
+  const handleProps: EditorHandleUserProps = {
     componentName: childProps.name,
     togglerProps: {
       onChange: setShowLayout,

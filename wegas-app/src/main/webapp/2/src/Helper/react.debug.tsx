@@ -124,9 +124,13 @@ export function useComparator(
   Object.keys(object).map((k: keyof object) => {
     const oldValue = state.current[k];
     const newValue = object[k];
-    if (!compFNSelection(compType)(oldValue, newValue)) {
+    if (compFNSelection(compType)(oldValue, newValue)) {
       wlog(
-        `Changes in ${k} : ${typeof newValue} \n----------------\nOLD : ${oldValue}\nNEW : ${newValue}`,
+        `Changes in ${k} : ${typeof newValue} \n----------------\nOLD : ${
+          compType === 'SIMPLE' ? oldValue : JSON.stringify(oldValue)
+        }\nNEW : ${
+          compType === 'SIMPLE' ? newValue : JSON.stringify(newValue)
+        }`,
       );
     }
   });

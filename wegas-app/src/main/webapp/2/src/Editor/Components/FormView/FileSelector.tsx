@@ -19,7 +19,6 @@ export interface PageSelectProps extends WidgetProps.BaseProps {
 
 export default function FileSelector(props: PageSelectProps) {
   const { errorMessage, view, value, onChange } = props;
-  wlog(view);
   return (
     <CommonViewContainer view={view} errorMessage={errorMessage}>
       <Labeled {...view}>

@@ -6,7 +6,7 @@ import {
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import {
-  EditorHandleProps,
+  EditorHandleUserProps,
   PageComponentMandatoryProps,
   layoutHighlightStyle,
 } from '../tools/EditableComponent';
@@ -39,7 +39,7 @@ function PlayerFlexList(props: AbsoluteLayoutProps) {
     }
   }, [showBorders]);
 
-  const handleProps: EditorHandleProps = {
+  const handleProps: EditorHandleUserProps = {
     componentName: childProps.name,
     togglerProps: {
       onChange: setShowLayout,

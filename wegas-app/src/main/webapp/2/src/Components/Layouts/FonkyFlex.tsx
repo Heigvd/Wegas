@@ -75,6 +75,8 @@ interface ContentProps extends WegasComponentItemProps {
   flexInit?: number;
 }
 
+// TODO : Rename with resize "something"
+
 export function Container({
   vertical,
   flexValues,

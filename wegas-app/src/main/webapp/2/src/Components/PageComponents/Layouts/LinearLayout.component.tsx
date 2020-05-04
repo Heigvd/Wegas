@@ -10,7 +10,7 @@ import { splitter } from '../../../Editor/Components/LinearTabLayout/LinearLayou
 import { OrientedLayoutProps } from '../../Layouts/List';
 import {
   PageComponentMandatoryProps,
-  EditorHandleProps,
+  EditorHandleUserProps,
 } from '../tools/EditableComponent';
 import 'react-reflex/styles.css';
 import { Container } from '../../Layouts/FonkyFlex';
@@ -58,7 +58,7 @@ function PlayerLinearLayout(props: PlayerLinearLayoutProps) {
   }, [showBorders]);
   const { editMode, onUpdate } = React.useContext(pageCTX);
 
-  const handleProps: EditorHandleProps = {
+  const handleProps: EditorHandleUserProps = {
     componentName: childProps.name,
     togglerProps: {
       onChange: setShowLayout,

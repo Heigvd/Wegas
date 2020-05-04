@@ -3,11 +3,17 @@ import { css, cx, keyframes } from 'emotion';
 import { dropZoneClass } from '../../Contexts/DefaultDndProvider';
 import {
   DnDComponent,
-  dndComponnent,
+  PAGEEDITOR_COMPONENT_TYPE,
   useComponentDrag,
 } from '../../../Editor/Components/Page/ComponentPalette';
 import { useDrop, DropTargetMonitor, DragElementWrapper } from 'react-dnd';
-import { pageCTX, Handles } from '../../../Editor/Components/Page/PageEditor';
+import {
+  pageCTX,
+  Handles,
+  PageContext,
+  usePagesStateStore,
+  pagesStateStore,
+} from '../../../Editor/Components/Page/PageEditor';
 import { themeVar } from '../../Theme';
 import {
   flex,
@@ -36,6 +42,7 @@ import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { ActionCreator } from '../../../data/actions';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { Content, Splitter } from '../../Layouts/FonkyFlex';
+import { deepDifferent } from '../../Hooks/storeHookFactory';
 
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
@@ -79,7 +86,7 @@ const childDropzoneVerticalStyle = css({
     width: '100%',
     height: '30%',
   },
-  '&>*>*>.component-dropzone-last': {
+  '&>*>*>.component-dropzone-after': {
     bottom: 0,
   },
 });
@@ -119,7 +126,7 @@ const emptyListStyle = css({
   borderWidth: '1px',
 });
 
-export interface EditorHandleProps extends ClassAndStyle {
+export interface EditorHandleUserProps extends ClassAndStyle {
   componentName?: string;
   togglerProps?: TogglerProps;
   stackedHandles?: JSX.Element[];
@@ -187,7 +194,7 @@ function useDndComponentDrop(
   DragElementWrapper<{}>,
 ] {
   const [dropZoneProps, dropZone] = useDrop({
-    accept: dndComponnent,
+    accept: PAGEEDITOR_COMPONENT_TYPE,
     canDrop: () => true,
     drop: onDrop,
     collect: (mon: DropTargetMonitor) => ({
@@ -665,7 +672,252 @@ export interface ComponentContainerProps
   /**
    * handleProps - optional props for the edit handle
    */
-  handleProps?: EditorHandleProps;
+  handleProps?: EditorHandleUserProps;
+}
+
+function ComponentContainer({
+  children,
+  options,
+  handleProps,
+  showBorders,
+  className,
+  style,
+  vertical,
+  path,
+  childrenType,
+  containerType,
+  componentName,
+  last,
+}: React.PropsWithChildren<
+  ComponentContainerProps & {
+    path: number[];
+    childrenType: ContainerTypes;
+    containerType: ContainerTypes;
+    componentName: string;
+    last?: boolean;
+  }
+>) {
+  const container = React.useRef<HTMLDivElement>();
+  const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
+  const {
+    onDrop,
+    editMode,
+    handles,
+    // focusedComponent,
+    // focusComponent,
+    pageIdPath,
+  } = React.useContext(pageCTX);
+  // const {
+  //   onDrop,
+  //   editMode,
+  //   handles,
+  // }: // focusedComponent,
+  // // focusComponent,
+  // // pageIdPath,
+  // { onDrop: PageContext['onDrop']; editMode: boolean; handles: Handles } = {
+  //   onDrop: () => {},
+  //   editMode: true,
+  //   handles: {},
+  // };
+  const [{ isOver }, dropZone] = useDndComponentDrop();
+
+  const containerPath = [...path];
+  const itemPath = containerPath.pop();
+  const isNotFirstComponent = path.length > 0;
+  const editable = editMode && isNotFirstComponent;
+
+  let Container;
+
+  switch (childrenType) {
+    case 'LINEAR':
+      Container = Content;
+      break;
+    case 'ABSOLUTE':
+      Container = AbsoluteItem;
+      break;
+    case 'FLEX':
+    default:
+      Container = FlexItem;
+      break;
+  }
+
+  const pageId = pageIdPath.slice(0, 1)[0];
+
+  const isFocused = usePagesStateStore(
+    ({ focusedComponent }) =>
+      editMode &&
+      focusedComponent &&
+      focusedComponent.pageId === pageId &&
+      JSON.stringify(focusedComponent.componentPath) === JSON.stringify(path),
+    deepDifferent,
+  );
+
+  // React.useEffect(() => {
+  //   wlog('MOUNT ' + componentName);
+  //   return () => wlog('UNMOUNT ' + componentName);
+  // });
+
+  // const isFocused =
+  //   editMode &&
+  //   focusedComponent &&
+  //   focusedComponent.pageId === pageId &&
+  //   JSON.stringify(focusedComponent.componentPath) === JSON.stringify(path);
+
+  // wlog('RENDER ' + type);
+
+  return (
+    <>
+      <Container
+        ref={ref => {
+          dropZone(ref);
+          if (ref != null) {
+            container.current = ref;
+          }
+        }}
+        {...omit(options, ['actions', 'upgrades'])}
+        className={
+          cx(handleControlStyle, flex, {
+            [layoutHighlightStyle]: showBorders,
+            [childHighlightStyle]: showBorders,
+            [handleControlHoverStyle]: editMode,
+            [focusedComponentStyle]: isFocused,
+            [childDropzoneHorizontalStyle]: !vertical,
+            [childDropzoneVerticalStyle]: vertical,
+          }) + classNameOrEmpty(className)
+        }
+        style={{
+          cursor: options?.actions ? 'pointer' : 'initial',
+          ...style,
+        }}
+        onClick={() => {
+          if (options && options.actions) {
+            if (
+              !options.actions.confirmClick ||
+              // TODO : Find a better way to do that than a modal!!!
+              // eslint-disable-next-line no-alert
+              confirm(options.actions.confirmClick)
+            ) {
+              if (options.actions?.lock) {
+                // LockAPI.lockPlayer(options.actions?.lock)
+                //   .then(res => {
+                //     wlog(res);
+                //     debugger;
+                //   })
+                //   .catch(res => {
+                //     wlog(res);
+                //     debugger;
+                //   });
+              }
+              Object.entries(
+                omit(
+                  options.actions,
+                  'confirmClick',
+                  'lock',
+                ) as WegasComponentOptionsActions,
+              )
+                .sort(
+                  (
+                    [, v1]: [string, WegasComponentOptionsAction],
+                    [, v2]: [string, WegasComponentOptionsAction],
+                  ) =>
+                    (v1.priority ? v1.priority : 0) -
+                    (v2.priority ? v2.priority : 0),
+                )
+                .forEach(([k, v]) =>
+                  wegasComponentActions[k as keyof WegasComponentActions](v),
+                );
+            }
+          }
+        }}
+        onMouseOver={e => {
+          if (editable) {
+            e.stopPropagation();
+            if (!stackedHandles) {
+              setStackedHandles(() => computeHandles(handles, path));
+            }
+            // focusComponent({ pageId: pageId, componentPath: path });
+            dispatch({
+              type: 'COMPONENT_SET_FOCUSED',
+              payload: { pageId: pageId, componentPath: path },
+            });
+          }
+        }}
+        onMouseLeave={() => {
+          if (editable) {
+            setStackedHandles(undefined);
+          }
+          // focusComponent(undefined);
+          dispatch({ type: 'COMPONENT_SET_FOCUSED', payload: undefined });
+        }}
+        tooltip={options?.upgrades?.tooltip}
+      >
+        {editable && containerType === 'ABSOLUTE' && (
+          <ComponentDropZone
+            onDrop={(dndComponent, dndMonitor) => {
+              if (container.current) {
+                const { x: absX, y: absY } = dndMonitor.getClientOffset() || {
+                  x: 0,
+                  y: 0,
+                };
+                const {
+                  left: srcX,
+                  top: srcY,
+                } = container.current.getBoundingClientRect() || {
+                  x: 0,
+                  y: 0,
+                };
+
+                const [relX, relY] = [absX - srcX, absY - srcY];
+
+                onDrop(dndComponent, path, undefined, {
+                  options: {
+                    layout: { position: { left: relX, top: relY } },
+                  },
+                });
+              }
+            }}
+            show={isOver}
+            dropPosition="INTO"
+          />
+        )}
+        {editable && childrenType !== 'ABSOLUTE' && (
+          <ComponentDropZone
+            onDrop={dndComponent =>
+              onDrop(dndComponent, containerPath, itemPath)
+            }
+            show={isOver}
+            dropPosition="BEFORE"
+          />
+        )}
+        {editable && (
+          <EditHandle
+            {...handleProps}
+            stackedHandles={stackedHandles}
+            type={componentName}
+            path={path}
+          />
+        )}
+        <ErrorBoundary>{children}</ErrorBoundary>
+        {options?.upgrades?.notification && (
+          <NotificationComponent {...options.upgrades.notification} />
+        )}
+        {editable && childrenType !== 'ABSOLUTE' && (
+          <ComponentDropZone
+            onDrop={dndComponent =>
+              onDrop(
+                dndComponent,
+                containerPath,
+                itemPath != null ? itemPath + 1 : itemPath,
+              )
+            }
+            show={isOver}
+            dropPosition="AFTER"
+          />
+        )}
+      </Container>
+      {childrenType === 'LINEAR' && !last && <Splitter />}
+    </>
+  );
 }
 
 const defaultComponentContainerProps: ComponentContainerProps = {
@@ -680,100 +932,137 @@ export const componentContainerWegasPropsKeys = Object.keys(
   defaultComponentContainerProps,
 );
 
-export function useComponentEditorContainer(
-  type: string,
-  path: number[],
-  containerType: ContainerTypes,
+const dispatch = pagesStateStore.dispatch;
+
+interface EditorHandleProps extends EditorHandleUserProps {
+  type: string;
+  path: number[];
+}
+
+function EditHandle({
+  componentName,
+  className,
+  style,
+  togglerProps,
+  stackedHandles,
+  type,
+  path,
+}: EditorHandleProps) {
+  const handleRef = React.createRef<HTMLDivElement>();
+  const {
+    onEdit,
+    onDelete,
+    handles,
+    editMode,
+    showControls,
+  } = React.useContext(pageCTX);
+
+  const HandleContent = React.forwardRef<HTMLDivElement>((_, ref) => {
+    const [, drag] = useComponentDrag(type, path);
+    return (
+      <div
+        ref={ref}
+        className={cx(flex, flexColumn, handleContentStyle)}
+        //Avoiding the container actions to trigger when using handle
+        onClick={event => event.stopPropagation()}
+      >
+        <div
+          style={{ fontSize: '10px' }}
+          className={
+            cx(flex, flexRow, textCenter) + ' wegas-component-handle-title'
+          }
+        >
+          {(componentName ? componentName + ' : ' : '') + type}
+        </div>
+        <div className={cx(flex, flexRow) + ' wegas-component-handle-content'}>
+          <IconButton icon="edit" onClick={() => onEdit(path)} />
+          <IconButton icon="arrows-alt" ref={drag} />
+          <ConfirmButton
+            icon="trash"
+            onAction={success => {
+              if (success) {
+                onDelete(path);
+              }
+            }}
+          />
+          {togglerProps && <CheckBox {...togglerProps} />}
+        </div>
+      </div>
+    );
+  });
+  handles[flattenPath(path)] = { jsx: <HandleContent />, dom: handleRef };
+
+  return editMode && showControls ? (
+    <div
+      ref={e => {
+        if (e != null) {
+          const div = e as HTMLDivElement;
+          const parent = div.parentElement as HTMLElement;
+          div.style.setProperty('position', 'fixed');
+          div.style.setProperty(
+            'top',
+            String(parent.getBoundingClientRect().top - 30) + 'px',
+          );
+          div.style.setProperty(
+            'left',
+            String(parent.getBoundingClientRect().left - 30) + 'px',
+          );
+        }
+      }}
+      style={{
+        zIndex: 1000,
+        ...style,
+      }}
+      className={'wegas-component-handle' + classNameOrEmpty(className)}
+    >
+      {stackedHandles && stackedHandles.length > 0 ? (
+        stackedHandles.map((v, i) => (
+          <React.Fragment key={i}>{v}</React.Fragment>
+        ))
+      ) : (
+        <HandleContent ref={handleRef} />
+      )}
+    </div>
+  ) : null;
+}
+
+interface ComponentDropZoneProps {
+  onDrop?: (dndComponnent: DnDComponent, dndMonitor: DropTargetMonitor) => void;
+  show?: boolean;
+  dropPosition: 'BEFORE' | 'AFTER' | 'INTO';
+}
+
+function ComponentDropZone({
+  onDrop,
+  show,
+  dropPosition,
+}: ComponentDropZoneProps) {
+  const [{ isOverCurrent }, dropZone] = useDndComponentDrop(onDrop);
+  return (
+    <div
+      ref={dropZone}
+      className={
+        dropZoneClass(isOverCurrent) +
+        (dropPosition === 'INTO'
+          ? ' component-dropzone-into'
+          : ' component-dropzone') +
+        (dropPosition === 'AFTER' ? ' component-dropzone-after' : '')
+      }
+      style={{
+        visibility: show ? 'visible' : 'collapse',
+        position: 'absolute',
+      }}
+    />
+  );
+}
+
+function componentContainerFactory(
   childrenType: ContainerTypes,
+  containerType: ContainerTypes,
+  componentName: string,
+  path: number[],
   last?: boolean,
 ) {
-  function EditHandle({
-    componentName,
-    className,
-    style,
-    togglerProps,
-    stackedHandles,
-  }: EditorHandleProps) {
-    const handleRef = React.createRef<HTMLDivElement>();
-    const {
-      onEdit,
-      onDelete,
-      handles,
-      editMode,
-      showControls,
-    } = React.useContext(pageCTX);
-
-    const HandleContent = React.forwardRef<HTMLDivElement>((_, ref) => {
-      const [, drag] = useComponentDrag(type, path);
-      return (
-        <div
-          ref={ref}
-          className={cx(flex, flexColumn, handleContentStyle)}
-          //Avoiding the container actions to trigger when using handle
-          onClick={event => event.stopPropagation()}
-        >
-          <div
-            style={{ fontSize: '10px' }}
-            className={
-              cx(flex, flexRow, textCenter) + ' wegas-component-handle-title'
-            }
-          >
-            {(componentName ? componentName + ' : ' : '') + type}
-          </div>
-          <div
-            className={cx(flex, flexRow) + ' wegas-component-handle-content'}
-          >
-            <IconButton icon="edit" onClick={() => onEdit(path)} />
-            <IconButton icon="arrows-alt" ref={drag} />
-            <ConfirmButton
-              icon="trash"
-              onAction={success => {
-                if (success) {
-                  onDelete(path);
-                }
-              }}
-            />
-            {togglerProps && <CheckBox {...togglerProps} />}
-          </div>
-        </div>
-      );
-    });
-    handles[flattenPath(path)] = { jsx: <HandleContent />, dom: handleRef };
-
-    return editMode && showControls ? (
-      <div
-        ref={e => {
-          if (e != null) {
-            const div = e as HTMLDivElement;
-            const parent = div.parentElement as HTMLElement;
-            div.style.setProperty('position', 'fixed');
-            div.style.setProperty(
-              'top',
-              String(parent.getBoundingClientRect().top - 30) + 'px',
-            );
-            div.style.setProperty(
-              'left',
-              String(parent.getBoundingClientRect().left - 30) + 'px',
-            );
-          }
-        }}
-        style={{
-          zIndex: 1000,
-          ...style,
-        }}
-        className={'wegas-component-handle' + classNameOrEmpty(className)}
-      >
-        {stackedHandles && stackedHandles.length > 0 ? (
-          stackedHandles.map((v, i) => (
-            <React.Fragment key={i}>{v}</React.Fragment>
-          ))
-        ) : (
-          <HandleContent ref={handleRef} />
-        )}
-      </div>
-    ) : null;
-  }
-
   return function ComponentContainer({
     children,
     options,
@@ -793,6 +1082,18 @@ export function useComponentEditorContainer(
       // focusComponent,
       pageIdPath,
     } = React.useContext(pageCTX);
+    // const {
+    //   onDrop,
+    //   editMode,
+    //   handles,
+    // }: // focusedComponent,
+    // // focusComponent,
+    // // pageIdPath,
+    // { onDrop: PageContext['onDrop']; editMode: boolean; handles: Handles } = {
+    //   onDrop: () => {},
+    //   editMode: true,
+    //   handles: {},
+    // };
     const [{ isOver }, dropZone] = useDndComponentDrop();
 
     const containerPath = [...path];
@@ -815,11 +1116,29 @@ export function useComponentEditorContainer(
         break;
     }
 
+    const pageId = pageIdPath.slice(0, 1)[0];
+
+    const isFocused = usePagesStateStore(
+      ({ focusedComponent }) =>
+        editMode &&
+        focusedComponent &&
+        focusedComponent.pageId === pageId &&
+        JSON.stringify(focusedComponent.componentPath) === JSON.stringify(path),
+      deepDifferent,
+    );
+
+    // React.useEffect(() => {
+    //   wlog('MOUNT ' + componentName);
+    //   return () => wlog('UNMOUNT ' + componentName);
+    // });
+
     // const isFocused =
     //   editMode &&
     //   focusedComponent &&
-    //   focusedComponent.pageId === pageIdPath.slice(0, 1)[0] &&
+    //   focusedComponent.pageId === pageId &&
     //   JSON.stringify(focusedComponent.componentPath) === JSON.stringify(path);
+
+    // wlog('RENDER ' + type);
 
     return (
       <>
@@ -836,12 +1155,15 @@ export function useComponentEditorContainer(
               [layoutHighlightStyle]: showBorders,
               [childHighlightStyle]: showBorders,
               [handleControlHoverStyle]: editMode,
-              // [focusedComponentStyle]: isFocused,
+              [focusedComponentStyle]: isFocused,
               [childDropzoneHorizontalStyle]: !vertical,
               [childDropzoneVerticalStyle]: vertical,
             }) + classNameOrEmpty(className)
           }
-          style={{ cursor: options?.actions ? 'pointer' : 'initial', ...style }}
+          style={{
+            cursor: options?.actions ? 'pointer' : 'initial',
+            ...style,
+          }}
           onClick={() => {
             if (options && options.actions) {
               if (
@@ -888,12 +1210,19 @@ export function useComponentEditorContainer(
               if (!stackedHandles) {
                 setStackedHandles(() => computeHandles(handles, path));
               }
+              // focusComponent({ pageId: pageId, componentPath: path });
+              dispatch({
+                type: 'COMPONENT_SET_FOCUSED',
+                payload: { pageId: pageId, componentPath: path },
+              });
             }
           }}
           onMouseLeave={() => {
             if (editable) {
               setStackedHandles(undefined);
             }
+            // focusComponent(undefined);
+            dispatch({ type: 'COMPONENT_SET_FOCUSED', payload: undefined });
           }}
           tooltip={options?.upgrades?.tooltip}
         >
@@ -936,7 +1265,12 @@ export function useComponentEditorContainer(
             />
           )}
           {editable && (
-            <EditHandle {...handleProps} stackedHandles={stackedHandles} />
+            <EditHandle
+              {...handleProps}
+              stackedHandles={stackedHandles}
+              type={componentName}
+              path={path}
+            />
           )}
           <ErrorBoundary>{children}</ErrorBoundary>
           {options?.upgrades?.notification && (
@@ -960,36 +1294,6 @@ export function useComponentEditorContainer(
       </>
     );
   };
-}
-
-interface ComponentDropZoneProps {
-  onDrop?: (dndComponnent: DnDComponent, dndMonitor: DropTargetMonitor) => void;
-  show?: boolean;
-  dropPosition: 'BEFORE' | 'AFTER' | 'INTO';
-}
-
-function ComponentDropZone({
-  onDrop,
-  show,
-  dropPosition,
-}: ComponentDropZoneProps) {
-  const [{ isOverCurrent }, dropZone] = useDndComponentDrop(onDrop);
-  return (
-    <div
-      ref={dropZone}
-      className={
-        dropZoneClass(isOverCurrent) +
-        (dropPosition === 'INTO'
-          ? ' component-dropzone-into'
-          : ' component-dropzone') +
-        (dropPosition === 'AFTER' ? ' component-dropzone-after' : '')
-      }
-      style={{
-        visibility: show ? 'visible' : 'collapse',
-        position: 'absolute',
-      }}
-    />
-  );
 }
 
 export type ContainerTypes = 'FLEX' | 'LINEAR' | 'ABSOLUTE' | undefined;
@@ -1040,12 +1344,28 @@ export function EditableComponent({
   childrenType,
 }: EditableComponentProps) {
   const { editMode: edit, showBorders } = React.useContext(pageCTX);
-  const ComponentContainer = useComponentEditorContainer(
-    componentName,
-    path,
-    containerType,
-    childrenType,
-    last,
+
+  const ComponentContainer = React.useMemo(
+    () =>
+      componentContainerFactory(
+        childrenType,
+        containerType,
+        componentName,
+        path,
+        last,
+      ),
+    [childrenType, containerType, last, path, componentName],
+  );
+  const ComponentContainer2 = React.useMemo(
+    () =>
+      componentContainerFactory(
+        childrenType,
+        containerType,
+        componentName,
+        path,
+        last,
+      ),
+    [childrenType, containerType, last, path, componentName],
   );
 
   const editMode = edit && !uneditable;
@@ -1062,9 +1382,24 @@ export function EditableComponent({
     }
   }
 
+  // return (
+  //   <ComponentContainer
+  //     childrenType={childrenType}
+  //     componentName={componentName}
+  //     containerType={containerType}
+  //     last={last}
+  //     path={path}
+  //     // options={}
+  //   >
+  //     {content}
+  //   </ComponentContainer>
+  // );
+
   return children(
     content,
-    uneditable ? () => null : ComponentContainer,
+    // uneditable ? () => null : ComponentContainer,
+    // ComponentContainer,
+    ComponentContainer2,
     showBorders && !uneditable,
   );
 }

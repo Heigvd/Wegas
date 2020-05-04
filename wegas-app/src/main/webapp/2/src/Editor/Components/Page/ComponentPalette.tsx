@@ -28,7 +28,7 @@ const paletteStyle = css({
 
 export interface DnDComponent {
   componentName: string;
-  type: typeof dndComponnent;
+  type: typeof PAGEEDITOR_COMPONENT_TYPE;
   path?: number[];
 }
 
@@ -36,7 +36,7 @@ interface ComponentElementProps {
   componentName: string;
 }
 
-export const dndComponnent: 'dndComponnent' = 'dndComponnent';
+export const PAGEEDITOR_COMPONENT_TYPE: 'dndComponnent' = 'dndComponnent';
 
 export interface DragMonitor {
   handlerId: string | symbol | null;
@@ -54,7 +54,7 @@ export function useComponentDrag(
   return useDrag({
     item: {
       componentName,
-      type: dndComponnent,
+      type: PAGEEDITOR_COMPONENT_TYPE,
       path,
     },
     collect: monitor => ({

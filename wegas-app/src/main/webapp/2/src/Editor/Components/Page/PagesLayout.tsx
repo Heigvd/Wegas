@@ -10,7 +10,10 @@ import {
 } from '../../../css/classes';
 import { cx, css } from 'emotion';
 import { FontAwesome, IconComp, Icon, Icons } from '../Views/FontAwesome';
-import { nodeContentStyle, TREEVIEW_ITEM_TYPE } from '../Variable/VariableTree';
+import {
+  nodeContentStyle,
+  TREEVIEW_ITEM_TYPE as TREEVIEW_INDEX_ITEM_TYPE,
+} from '../Variable/VariableTree';
 import { omit } from 'lodash-es';
 import { Menu } from '../../../Components/Menu';
 import { TextPrompt } from '../TextPrompt';
@@ -26,6 +29,8 @@ import { themeVar } from '../../../Components/Theme';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { pageCTX, pageEditorCTX } from './PageEditor';
+import { Tree, TreeNode, GetParentPropsFn } from '../Views/TreeView/TreeView';
+import { PAGEEDITOR_COMPONENT_TYPE } from './ComponentPalette';
 
 const bulletCSS = {
   width: '1em',
@@ -34,7 +39,7 @@ const bulletCSS = {
 const controlsClassName = 'page-index-item-controls';
 
 const pageLayoutItemType = 'PAGE_LAYOUT_ITEM';
-const pageLayoutComponentType = 'PAGE_LAYOUT_COMPONENT';
+const TREEVIEW_COMPONENT_TYPE = 'PAGE_LAYOUT_COMPONENT';
 
 const titleStyle = css({
   borderStyle: 'solid',
@@ -344,18 +349,18 @@ function LayoutNodeTitle({
           [focusedComponentStyle]: isFocused,
         }) + classNameOrEmpty(className)
       }
-      onMouseOver={e => {
-        if (/*editMode &&*/ pageId != null && componentPath != null) {
-          e.stopPropagation();
-          focusComponent({ pageId, componentPath });
-        }
-      }}
-      onMouseOut={e => {
-        if (/*editMode && */ pageId != null && componentPath != null) {
-          e.stopPropagation();
-          focusComponent(undefined);
-        }
-      }}
+      // onMouseOver={e => {
+      //   if (/*editMode &&*/ pageId != null && componentPath != null) {
+      //     e.stopPropagation();
+      //     focusComponent({ pageId, componentPath });
+      //   }
+      // }}
+      // onMouseOut={e => {
+      //   if (/*editMode && */ pageId != null && componentPath != null) {
+      //     e.stopPropagation();
+      //     focusComponent(undefined);
+      //   }
+      // }}
       style={style}
       title={tooltip}
     >
@@ -442,7 +447,7 @@ function WegasComponentTitle({
 
 interface WegasComponentNodeProps {
   component: WegasComponent;
-  nodeProps: () => {};
+  getParentProps: GetParentPropsFn<NodeId>;
   pageId: string;
   selectedPageId?: string;
   componentPath: number[];
@@ -452,7 +457,7 @@ interface WegasComponentNodeProps {
 
 function WegasComponentNode({
   component,
-  nodeProps,
+  getParentProps,
   pageId,
   selectedPageId,
   componentPath,
@@ -462,11 +467,12 @@ function WegasComponentNode({
   const page = useStore(s => s.pages[pageId], deepDifferent);
 
   const id: ComponentNodeId = { pageId, page, componentPath };
+  const parentProps = getParentProps();
 
   return (
-    <Node
-      {...nodeProps()}
-      header={
+    <TreeNode
+      {...parentProps}
+      title={
         <WegasComponentTitle
           component={component}
           componentControls={componentControls}
@@ -478,28 +484,94 @@ function WegasComponentNode({
         />
       }
       id={id}
-      dragId={pageLayoutComponentType}
-      dropIds={[pageLayoutComponentType, TREEVIEW_ITEM_TYPE]}
-      dragDisabled={componentPath.length === 0}
-      dropDisabled={componentPath.length === 0}
+      type={TREEVIEW_COMPONENT_TYPE}
+      acceptType={[
+        TREEVIEW_COMPONENT_TYPE,
+        TREEVIEW_INDEX_ITEM_TYPE,
+        // PAGEEDITOR_COMPONENT_TYPE,
+      ]}
+      noDrag={componentPath.length === 0}
+      noDrop={component.props?.children == null}
     >
-      {({ nodeProps }) =>
-        component.props?.children?.map((childComponent, i) => (
-          <WegasComponentNode
-            key={compToKey(childComponent)}
-            nodeProps={nodeProps}
-            component={childComponent}
-            pageId={pageId}
-            selectedPageId={selectedPageId}
-            componentPath={[...componentPath, i]}
-            selectedComponentPath={selectedComponentPath}
-            componentControls={componentControls}
-          />
-        )) || null
-      }
-    </Node>
+      {component.props?.children
+        ? getParentProps =>
+            component.props?.children?.map((childComponent, i) => (
+              <WegasComponentNode
+                key={compToKey(childComponent)}
+                getParentProps={getParentProps}
+                component={childComponent}
+                pageId={pageId}
+                selectedPageId={selectedPageId}
+                componentPath={[...componentPath, i]}
+                selectedComponentPath={selectedComponentPath}
+                componentControls={componentControls}
+              />
+            ))
+        : null}
+    </TreeNode>
   );
 }
+
+// interface WegasComponentNodeProps {
+//   component: WegasComponent;
+//   nodeProps: () => {};
+//   pageId: string;
+//   selectedPageId?: string;
+//   componentPath: number[];
+//   selectedComponentPath?: number[];
+//   componentControls: ComponentControls;
+// }
+
+// function WegasComponentNode({
+//   component,
+//   nodeProps,
+//   pageId,
+//   selectedPageId,
+//   componentPath,
+//   selectedComponentPath,
+//   componentControls,
+// }: WegasComponentNodeProps) {
+//   const page = useStore(s => s.pages[pageId], deepDifferent);
+
+//   const id: ComponentNodeId = { pageId, page, componentPath };
+
+//   return (
+//     <Node
+//       {...nodeProps()}
+//       header={
+//         <WegasComponentTitle
+//           component={component}
+//           componentControls={componentControls}
+//           componentPath={componentPath}
+//           page={page}
+//           pageId={pageId}
+//           selectedComponentPath={selectedComponentPath}
+//           selectedPageId={selectedPageId}
+//         />
+//       }
+//       id={id}
+//       dragId={pageLayoutComponentType}
+//       dropIds={[pageLayoutComponentType, TREEVIEW_ITEM_TYPE]}
+//       dragDisabled={componentPath.length === 0}
+//       dropDisabled={componentPath.length === 0}
+//     >
+//       {({ nodeProps }) =>
+//         component.props?.children?.map((childComponent, i) => (
+//           <WegasComponentNode
+//             key={compToKey(childComponent)}
+//             nodeProps={nodeProps}
+//             component={childComponent}
+//             pageId={pageId}
+//             selectedPageId={selectedPageId}
+//             componentPath={[...componentPath, i]}
+//             selectedComponentPath={selectedComponentPath}
+//             componentControls={componentControls}
+//           />
+//         )) || null
+//       }
+//     </Node>
+//   );
+// }
 
 interface PageIndexTitleProps {
   newPath: string[];
@@ -617,14 +689,14 @@ interface PagesLayoutNodeProps extends PagesLayoutProps {
   indexItem: PageIndexItem;
   path: string[];
   defaultPageId: string;
-  nodeProps: () => {};
+  getParentProps: GetParentPropsFn<NodeId>;
 }
 
 function PageIndexItemNode({
   indexItem,
   path,
   defaultPageId,
-  nodeProps,
+  getParentProps,
   onPageClick,
   componentControls,
 }: PagesLayoutNodeProps): JSX.Element | null {
@@ -641,11 +713,13 @@ function PageIndexItemNode({
   ];
   const id: IndexNodeId = { pagePath: newPath };
 
+  const parentProps = getParentProps();
+
   return isPageItem(indexItem) ? (
     page ? (
-      <Node
-        {...nodeProps()}
-        header={
+      <TreeNode
+        {...parentProps}
+        title={
           <PageIndexTitle
             newPath={newPath}
             indexItem={indexItem}
@@ -654,28 +728,28 @@ function PageIndexItemNode({
           />
         }
         id={id}
-        dragId={pageLayoutItemType}
+        type={pageLayoutItemType}
       >
-        {({ nodeProps }) => [
+        {getParentProps => (
           <WegasComponentNode
             key={indexItem.name + 'FIRSTCOMPONENT'}
-            nodeProps={nodeProps}
+            getParentProps={getParentProps}
             component={page}
             pageId={indexItem.id!}
             selectedPageId={selectedPageId}
             componentPath={[]}
             selectedComponentPath={editedPath}
             componentControls={componentControls}
-          />,
-        ]}
-      </Node>
+          />
+        )}
+      </TreeNode>
     ) : (
       <span>Loading ...</span>
     )
   ) : (
-    <Node
-      {...nodeProps()}
-      header={
+    <TreeNode
+      {...parentProps}
+      title={
         <PageIndexTitle
           newPath={newPath}
           indexItem={indexItem}
@@ -684,12 +758,12 @@ function PageIndexItemNode({
         />
       }
       id={id}
-      dragId={pageLayoutItemType}
+      type={pageLayoutItemType}
     >
-      {({ nodeProps }) =>
+      {getParentProps =>
         indexItem.items.map(v => (
           <PageIndexItemNode
-            nodeProps={nodeProps}
+            getParentProps={getParentProps}
             key={v.name}
             indexItem={v}
             path={newPath}
@@ -699,9 +773,99 @@ function PageIndexItemNode({
           />
         ))
       }
-    </Node>
+    </TreeNode>
   );
 }
+
+// interface PagesLayoutNodeProps extends PagesLayoutProps {
+//   indexItem: PageIndexItem;
+//   path: string[];
+//   defaultPageId: string;
+//   nodeProps: () => {};
+// }
+
+// function PageIndexItemNode({
+//   indexItem,
+//   path,
+//   defaultPageId,
+//   nodeProps,
+//   onPageClick,
+//   componentControls,
+// }: PagesLayoutNodeProps): JSX.Element | null {
+//   const { selectedPageId, editedPath } = React.useContext(pageEditorCTX);
+//   const { page } = useStore(s => {
+//     if (isPageItem(indexItem)) {
+//       return { page: s.pages[indexItem.id!] };
+//     }
+//     return {};
+//   }, deepDifferent);
+//   const newPath = [
+//     ...path,
+//     isPageItem(indexItem) ? indexItem.id! : indexItem.name,
+//   ];
+//   const id: IndexNodeId = { pagePath: newPath };
+
+//   return isPageItem(indexItem) ? (
+//     page ? (
+//       <Node
+//         {...nodeProps()}
+//         header={
+//           <PageIndexTitle
+//             newPath={newPath}
+//             indexItem={indexItem}
+//             onPageClick={onPageClick}
+//             defaultPageId={defaultPageId}
+//           />
+//         }
+//         id={id}
+//         dragId={pageLayoutItemType}
+//       >
+//         {({ nodeProps }) => [
+//           <WegasComponentNode
+//             key={indexItem.name + 'FIRSTCOMPONENT'}
+//             nodeProps={nodeProps}
+//             component={page}
+//             pageId={indexItem.id!}
+//             selectedPageId={selectedPageId}
+//             componentPath={[]}
+//             selectedComponentPath={editedPath}
+//             componentControls={componentControls}
+//           />,
+//         ]}
+//       </Node>
+//     ) : (
+//       <span>Loading ...</span>
+//     )
+//   ) : (
+//     <Node
+//       {...nodeProps()}
+//       header={
+//         <PageIndexTitle
+//           newPath={newPath}
+//           indexItem={indexItem}
+//           onPageClick={onPageClick}
+//           defaultPageId={defaultPageId}
+//         />
+//       }
+//       id={id}
+//       dragId={pageLayoutItemType}
+//     >
+//       {({ nodeProps }) =>
+//         indexItem.items.map(v => (
+//           <PageIndexItemNode
+//             nodeProps={nodeProps}
+//             key={v.name}
+//             indexItem={v}
+//             path={newPath}
+//             componentControls={componentControls}
+//             defaultPageId={defaultPageId}
+//             onPageClick={onPageClick}
+//           />
+//         ))
+//       }
+//     </Node>
+//   );
+// }
 
 interface ComponentControls {
   onNew: (
@@ -744,7 +908,61 @@ export function PagesLayout(props: PagesLayoutProps) {
         <IndexItemAdder path={[]} />
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, grow)}>
-        <Container
+        <Tree<NodeId>
+          id={{ pagePath: [] }}
+          type="NODE"
+          onDrop={({ target, id }) => {
+            const computedTargetParent = target.parent
+              ? target.parent
+              : { pagePath: [] };
+
+            if (
+              !isComponentNodeId(id) &&
+              !isComponentNodeId(computedTargetParent)
+            ) {
+              dispatch(
+                Actions.PageActions.moveIndexItem(
+                  id.pagePath,
+                  computedTargetParent.pagePath,
+                  target.index,
+                ),
+              );
+            } else if (
+              isComponentNodeId(id) &&
+              isComponentNodeId(computedTargetParent)
+            ) {
+              onMove(
+                id.pageId,
+                computedTargetParent.pageId,
+                id.page,
+                computedTargetParent.page,
+                id.componentPath,
+                computedTargetParent.componentPath,
+                target.index || 0,
+              );
+            }
+          }}
+        >
+          {getParentProps => (
+            <div className={cx(flex, grow, flexColumn)}>
+              {index ? (
+                index.root.items.map(v => (
+                  <PageIndexItemNode
+                    getParentProps={getParentProps}
+                    key={v.name}
+                    indexItem={v}
+                    path={[]}
+                    defaultPageId={index.defaultPageId}
+                    {...props}
+                  />
+                ))
+              ) : (
+                <span>Loading ...</span>
+              )}
+            </div>
+          )}
+        </Tree>
+        {/* <Container
           onDropResult={({ target, id }: DropResult<NodeId>) => {
             const computedTargetParent = target.parent
               ? target.parent
@@ -795,7 +1013,7 @@ export function PagesLayout(props: PagesLayoutProps) {
               )}
             </div>
           )}
-        </Container>
+        </Container> */}
       </Toolbar.Content>
     </Toolbar>
   );
