@@ -8,9 +8,9 @@ import { MainLinearLayout } from '../LinearTabLayout/LinearLayout';
 import ComponentEditor from './ComponentEditor';
 import { PageLoader } from './PageLoader';
 import { css, cx } from 'emotion';
-import { noop, omit } from 'lodash-es';
+import { noop } from 'lodash-es';
 import { PagesLayout } from './PagesLayout';
-import { store, useStore, composeEnhancers } from '../../../data/store';
+import { store, useStore } from '../../../data/store';
 import { Actions } from '../../../data';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { themeVar } from '../../../Components/Theme';
@@ -18,60 +18,11 @@ import { flex, grow, expandBoth } from '../../../css/classes';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { mergeDeep } from '../../../Helper/tools';
-import { wlog } from '../../../Helper/wegaslog';
-import { useComparator } from '../../../Helper/react.debug';
-import {
-  compose,
-  createStore,
-  combineReducers,
-  applyMiddleware,
-  Reducer,
-} from 'redux';
-import u from 'immer';
-import thunk, { ThunkMiddleware } from 'redux-thunk';
-import { createStoreConnector } from '../../../data/connectStore';
+import { findComponent } from '../../../Helper/pages';
 const innerButtonStyle = css({
   margin: '2px auto 2px auto',
   width: 'fit-content',
 });
-
-const pagesActionCreator = {
-  COMPONENT_SET_FOCUSED: (data: FocusedComponent) => ({
-    type: 'COMPONENT_SET_FOCUSED',
-    payload: data,
-  }),
-};
-
-type PagesActions<
-  A extends keyof typeof pagesActionCreator = keyof typeof pagesActionCreator
-> = ReturnType<typeof pagesActionCreator[A]>;
-
-interface PagesState {
-  focusedComponent?: FocusedComponent;
-}
-
-const pagesStateReducer: Reducer<Readonly<PagesState>> = u(
-  (state: PagesState, action: PagesActions) => {
-    switch (action.type) {
-      case 'COMPONENT_SET_FOCUSED': {
-        return { ...state, focusedComponent: action.payload };
-      }
-    }
-    return state;
-  },
-  { focusedComponent: undefined },
-);
-
-export const pagesStateStore = createStore(
-  pagesStateReducer,
-  composeEnhancers(
-    applyMiddleware(thunk as ThunkMiddleware<PagesState, PagesActions>),
-  ),
-);
-
-export const { useStore: usePagesStateStore } = createStoreConnector(
-  pagesStateStore,
-);
 
 export interface Handles {
   [path: string]: { jsx: JSX.Element; dom: React.RefObject<HTMLDivElement> };
@@ -88,8 +39,6 @@ export interface PageContext {
   showControls: boolean;
   pageIdPath: string[];
   handles: Handles;
-  focusedComponent?: FocusedComponent;
-  focusComponent: (component?: FocusedComponent) => void;
   onDrop: (
     dndComponent: DnDComponent,
     path: number[],
@@ -107,8 +56,6 @@ const defaultPageCTX: PageContext = {
   showControls: true,
   pageIdPath: [],
   handles: {},
-  focusedComponent: undefined,
-  focusComponent: noop,
   onDrop: noop,
   onEdit: noop,
   onDelete: noop,
@@ -148,30 +95,6 @@ export const returnPages = (
   return { [item.id!]: { name: item.name, page: pages[item.id!] } };
 };
 
-const findComponent = (
-  page: WegasComponent,
-  path: number[],
-): {
-  newPage: WegasComponent;
-  component?: WegasComponent;
-  parent?: WegasComponent;
-} => {
-  const browsePath = [...path];
-  const newPage = deepClone(page) as WegasComponent;
-  let parent: WegasComponent | undefined = undefined;
-  let component: WegasComponent = newPage;
-  while (browsePath.length > 0) {
-    if (component.props.children) {
-      parent = component;
-      component = component.props.children[browsePath[0]];
-      browsePath.splice(0, 1);
-    } else {
-      return { newPage };
-    }
-  }
-  return { newPage, component, parent };
-};
-
 const patchPage = (selectedPageId: string, page: WegasComponent) =>
   store.dispatch(Actions.PageActions.patch(selectedPageId, page));
 
@@ -195,10 +118,15 @@ const createComponent = (
     };
     if (index !== undefined) {
       children.splice(index, 0, droppedComp);
+      if (index >= children.length) {
+        newPath.push(children.length - 1);
+      } else {
+        newPath.push(index);
+      }
     } else {
       children.push(droppedComp);
+      newPath.push(children.length - 1);
     }
-    newPath.push(index ? index : children.length - 1);
     return { newPage, newPath };
   }
 };
@@ -247,37 +175,6 @@ const updateComponent = (
   }
 };
 
-function Editor() {
-  return (
-    <pageEditorCTX.Consumer>
-      {({ editedPath, selectedPage }) => (
-        <pageCTX.Consumer>
-          {({ onUpdate, onDelete }) =>
-            !editedPath ? (
-              <pre>No component selected yet</pre>
-            ) : !selectedPage ? (
-              <pre>No page selected yet</pre>
-            ) : (
-              <ComponentEditor
-                entity={findComponent(selectedPage, editedPath).component}
-                parent={findComponent(selectedPage, editedPath).parent}
-                update={onUpdate}
-                actions={[
-                  {
-                    label: 'Delete',
-                    action: () => onDelete(editedPath),
-                    confirm: true,
-                  },
-                ]}
-              />
-            )
-          }
-        </pageCTX.Consumer>
-      )}
-    </pageEditorCTX.Consumer>
-  );
-}
-
 function SourceEditor() {
   return (
     <pageEditorCTX.Consumer>
@@ -317,29 +214,7 @@ function PageDisplay({
   setShowControls,
 }: PageDisplayProps) {
   const { selectedPageId, loading } = React.useContext(pageEditorCTX);
-  const {
-    editMode,
-    showControls,
-    showBorders,
-    focusedComponent,
-  } = React.useContext(pageCTX);
-
-  // useComparator(
-  //   {
-  //     selectedPageId,
-  //     loading,
-  //     editMode,
-  //     showControls,
-  //     showBorders,
-  //     focusedComponent,
-  //   },
-  //   'DEEP',
-  // );
-
-  // React.useEffect(() => {
-  //   wlog('mounted');
-  //   return () => wlog('unmounted');
-  // });
+  const { editMode, showControls, showBorders } = React.useContext(pageCTX);
 
   if (loading) {
     return <pre>Loading the pages</pre>;
@@ -453,7 +328,6 @@ export default function PageEditor() {
   const [editMode, setEditMode] = React.useState(false);
   const [showBorders, setShowBorders] = React.useState(false);
   const [showControls, setShowControls] = React.useState(true);
-  const [focusedComponent, focusComponent] = React.useState<FocusedComponent>();
 
   const [availableLayoutTabs, setAvailableLayoutTabs] = React.useState<{
     [name: string]: JSX.Element;
@@ -482,7 +356,7 @@ export default function PageEditor() {
   const onEdit = React.useCallback(
     (selectedPageId?: string, path?: number[]) => {
       if (path != null) {
-        focusTab.current && focusTab.current('Editor', pageLayoutId);
+        focusTab.current && focusTab.current('Component Editor', pageLayoutId);
       }
       setPageEditorState(o => ({ ...o, editedPath: path, selectedPageId }));
     },
@@ -532,12 +406,13 @@ export default function PageEditor() {
                 patchPage(sourcePageId, newSourcePage);
               }
               patchPage(destPageId, newDestPage.newPage);
+              onEdit(destPageId, newDestPage.newPath);
             }
           }
         }
       }
     },
-    [],
+    [onEdit],
   );
 
   const onDrop = React.useCallback(
@@ -576,7 +451,7 @@ export default function PageEditor() {
             newIndex,
             props,
           );
-          onEdit(selectedPageId, [...path, newIndex]);
+          // onEdit(selectedPageId, [...path, newIndex]);
         }
       }
     },
@@ -635,9 +510,8 @@ export default function PageEditor() {
   );
 
   React.useEffect(() => {
-    wlog('RENEW LAYOUT');
     setAvailableLayoutTabs({
-      Layout: (
+      'Pages Layout': (
         <Layout
           onDeleteLayoutComponent={onDeleteLayoutComponent}
           onEdit={onEdit}
@@ -646,16 +520,16 @@ export default function PageEditor() {
           setPageEditorState={setPageEditorState}
         />
       ),
-      Components: <ComponentPalette />,
-      PageDisplay: (
+      'Component Palette': <ComponentPalette />,
+      'Page Display': (
         <PageDisplay
           setEditMode={setEditMode}
           setShowBorders={setShowBorders}
           setShowControls={setShowControls}
         />
       ),
-      SourceEditor: <SourceEditor />,
-      Editor: <Editor />,
+      'Source Editor': <SourceEditor />,
+      'Component Editor': <ComponentEditor />,
     });
   }, [
     onDeleteLayoutComponent,
@@ -663,27 +537,6 @@ export default function PageEditor() {
     onMoveLayoutComponent,
     onNewLayoutComponent,
   ]);
-
-  // const availableLayoutTabs = {
-  //   Layout,
-  //   Components: <ComponentPalette />,
-  //   PageDisplay: (
-  //     <PageDisplay
-  //       setEditMode={setEditMode}
-  //       setShowBorders={setShowBorders}
-  //       setShowControls={setShowControls}
-  //     />
-  //   ),
-  //   SourceEditor,
-  //   Editor,
-  // };
-
-  // React.useEffect(() => {
-  //   wlog('mounted');
-  //   return () => wlog('unmounted');
-  // });
-
-  // useComparator({ focusedComponent }, 'DEEP');
 
   return Object.keys(availableLayoutTabs).length === 0 ? (
     <pre>Loading...</pre>
@@ -721,8 +574,6 @@ export default function PageEditor() {
               ? [defaultPageId]
               : [],
             handles: handles.current,
-            focusedComponent,
-            focusComponent,
             onDrop,
             onDelete,
             onEdit: path => onEdit(selectedPageId, path),
@@ -731,7 +582,10 @@ export default function PageEditor() {
         >
           <MainLinearLayout
             tabs={availableLayoutTabs}
-            layout={[[['Layout'], ['Components']], ['PageDisplay']]}
+            layout={[
+              [['Pages Layout'], ['Component Palette']],
+              ['Page Display'],
+            ]}
             layoutId={pageLayoutId}
             onFocusTab={ft => {
               focusTab.current = ft;

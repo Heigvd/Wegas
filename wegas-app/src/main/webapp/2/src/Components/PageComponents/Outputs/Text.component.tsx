@@ -3,20 +3,12 @@ import { Text, TextProps } from '../../Outputs/Text';
 import {
   registerComponent,
   pageComponentFactory,
-  extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { PageComponentMandatoryProps } from '../tools/EditableComponent';
+import { WegasComponentProps } from '../tools/EditableComponent';
 
-function PlayerText(props: TextProps & PageComponentMandatoryProps) {
-  const { ComponentContainer, childProps, containerProps } = extractProps(
-    props,
-  );
-  return (
-    <ComponentContainer {...containerProps}>
-      <Text {...childProps} />
-    </ComponentContainer>
-  );
+function PlayerText(props: TextProps & WegasComponentProps) {
+  return <Text {...props} />;
 }
 
 registerComponent(

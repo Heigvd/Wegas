@@ -10,6 +10,8 @@ import {
   wegasComponentCommonSchema,
   wegasComponentOptionsSchema,
 } from '../../../Components/PageComponents/tools/EditableComponent';
+import { pageEditorCTX, pageCTX } from './PageEditor';
+import { findComponent } from '../../../Helper/pages';
 
 interface EditorProps<T = WegasComponent['props']> {
   entity: T;
@@ -70,7 +72,7 @@ export interface ComponentEditorProps {
   actions?: EditorProps['actions'];
 }
 
-export default function ComponentEditor({
+export function ComponentEditor({
   entity,
   parent,
   update,
@@ -79,17 +81,19 @@ export default function ComponentEditor({
   const schema = usePageComponentStore(s => {
     const baseSchema =
       entity && s[entity.type]
-        ? s[entity.type].getSchema()
+        ? s[entity.type].schema
         : { description: 'Unknown schema', properties: {} };
 
-    baseSchema.properties = {
-      ...baseSchema.properties,
-      ...wegasComponentCommonSchema,
-      ...wegasComponentOptionsSchema(
-        parent ? s[parent.type].getContainerType() : undefined,
-      ),
-    };
-    return baseSchema as Schema<BaseView>;
+    return {
+      ...baseSchema,
+      properties: {
+        ...baseSchema.properties,
+        ...wegasComponentCommonSchema,
+        ...wegasComponentOptionsSchema(
+          parent ? s[parent.type].containerType : undefined,
+        ),
+      },
+    } as Schema<BaseView>;
   }, deepDifferent);
   if (entity === undefined || schema === undefined) {
     return null;
@@ -100,6 +104,38 @@ export default function ComponentEditor({
       schema={schema}
       update={value => update && update({ ...entity, props: value })}
       actions={actions}
+    />
+  );
+}
+
+export default function ConnectedComponentEditor() {
+  const { editedPath, selectedPage } = React.useContext(pageEditorCTX);
+  const { onUpdate, onDelete } = React.useContext(pageCTX);
+
+  if (!editedPath) {
+    return <pre>No component selected yet</pre>;
+  }
+  if (!selectedPage) {
+    return <pre>No page selected yet</pre>;
+  }
+  const { component, parent } = findComponent(selectedPage, editedPath);
+
+  if (!component) {
+    return <pre>Edited component not found in page</pre>;
+  }
+
+  return (
+    <ComponentEditor
+      entity={component}
+      parent={parent}
+      update={onUpdate}
+      actions={[
+        {
+          label: 'Delete',
+          action: () => onDelete(editedPath),
+          confirm: true,
+        },
+      ]}
     />
   );
 }

@@ -38,7 +38,7 @@ function shallowCheck(a: unknown, b: unknown, verbose?: boolean) {
   const A = a as Props;
   const B = b as Props;
   const keys = Object.keys(A);
-  if (!deepCheck(A, B, verbose)) {
+  if (deepCheck(A, B, verbose)) {
     verbose && console.log('Objects keys changed');
     return false;
   }

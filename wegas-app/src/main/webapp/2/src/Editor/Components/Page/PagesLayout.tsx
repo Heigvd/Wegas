@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
-import { Container, Node, DropResult } from '../Views/TreeView';
 import {
   flex,
   flexColumn,
@@ -28,9 +27,8 @@ import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
 import { themeVar } from '../../../Components/Theme';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { pageCTX, pageEditorCTX } from './PageEditor';
+import { pageEditorCTX } from './PageEditor';
 import { Tree, TreeNode, GetParentPropsFn } from '../Views/TreeView/TreeView';
-import { PAGEEDITOR_COMPONENT_TYPE } from './ComponentPalette';
 
 const bulletCSS = {
   width: '1em',
@@ -61,9 +59,9 @@ const selectedComponentStyle = css({
   borderColor: themeVar.primaryLighterColor,
 });
 
-const focusedComponentStyle = css({
-  backgroundColor: themeVar.primaryHoverColor,
-});
+// const focusedComponentStyle = css({
+//   backgroundColor: themeVar.primaryHoverColor,
+// });
 
 const defaultPage = {
   type: 'FlexList',
@@ -286,8 +284,8 @@ function ComponentAdder({ className, tooltip, onSelect }: ComponentAdderProps) {
       <Menu
         icon="plus"
         items={Object.values(components).map(v => ({
-          label: v.getName(),
-          id: v.getName(),
+          label: v.componentName,
+          id: v.componentName,
         }))}
         onSelect={({ id }) => onSelect(id)}
       />
@@ -314,8 +312,8 @@ interface LayoutNodeTitleProps extends ClassAndStyle {
 
 function LayoutNodeTitle({
   icon,
-  pageId,
-  componentPath,
+  // pageId,
+  // componentPath,
   title,
   advancedTitle,
   tooltip,
@@ -325,28 +323,28 @@ function LayoutNodeTitle({
   children,
 }: React.PropsWithChildren<LayoutNodeTitleProps>) {
   const { currentFeatures } = React.useContext(featuresCTX);
-  const { editMode, focusedComponent, focusComponent } = React.useContext(
-    pageCTX,
-  );
+  // const { editMode, focusedComponent, focusComponent } = React.useContext(
+  //   pageCTX,
+  // );
 
   const newTitle =
     currentFeatures.includes('ADVANCED') && advancedTitle != null
       ? advancedTitle
       : title;
 
-  const isFocused =
-    // editMode &&
-    focusedComponent &&
-    focusedComponent.pageId === pageId &&
-    JSON.stringify(focusedComponent.componentPath) ===
-      JSON.stringify(componentPath);
+  // const isFocused =
+  //   // editMode &&
+  //   focusedComponent &&
+  //   focusedComponent.pageId === pageId &&
+  //   JSON.stringify(focusedComponent.componentPath) ===
+  //     JSON.stringify(componentPath);
 
   return (
     <div
       onClick={onClick}
       className={
         cx(nodeContentStyle, titleStyle, flex, grow, itemCenter, {
-          [focusedComponentStyle]: isFocused,
+          // [focusedComponentStyle]: isFocused,
         }) + classNameOrEmpty(className)
       }
       // onMouseOver={e => {
@@ -395,7 +393,7 @@ function WegasComponentTitle({
 
   let icon: Icon;
   if (registeredComponent != null) {
-    icon = registeredComponent.getIcon();
+    icon = registeredComponent.icon;
   } else {
     icon = 'exclamation-triangle';
   }

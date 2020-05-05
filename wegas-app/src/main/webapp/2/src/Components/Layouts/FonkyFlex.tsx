@@ -58,7 +58,7 @@ function getFlexGrowValues(flexItems: HTMLDivElement[]): number[] {
   return flexItems.map(c => Number(c.style.getPropertyValue('flex-grow')));
 }
 
-interface ContainerProps extends ClassAndStyle {
+export interface ContainerProps extends ClassAndStyle {
   vertical?: boolean;
   flexValues?: number[];
   noCheck?: boolean;

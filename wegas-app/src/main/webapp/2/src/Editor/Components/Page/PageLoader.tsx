@@ -8,8 +8,6 @@ import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { css, cx } from 'emotion';
 import { pageCTX } from './PageEditor';
 import { flex } from '../../../css/classes';
-import { wlog } from '../../../Helper/wegaslog';
-import { useComparator } from '../../../Helper/react.debug';
 
 const editStyle = css({
   borderStyle: 'solid',
@@ -51,7 +49,8 @@ export function PageLoader({ selectedPageId }: PageLoaderProps) {
         <React.Suspense fallback={<TextLoader text="Building World!" />}>
           <div className={cx(flex, { [editStyle]: editMode })}>
             {selectedPage ? (
-              <PageDeserializer json={selectedPage} />
+              // <PageDeserializer json={selectedPage} />
+              <PageDeserializer pageId={selectedPageId} />
             ) : (
               <pre>{`The page is undefined`}</pre>
             )}

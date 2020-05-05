@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
   pageComponentFactory,
   registerComponent,
-  extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import {
@@ -14,21 +13,9 @@ import {
   alignItemsValues,
   alignContentValues,
 } from '../../Layouts/FlexList';
-import {
-  EditorHandleUserProps,
-  PageComponentMandatoryProps,
-  layoutHighlightStyle,
-} from '../tools/EditableComponent';
-import { cx } from 'emotion';
-import { classNameOrEmpty } from '../../../Helper/className';
+import { WegasComponentProps } from '../tools/EditableComponent';
 
-interface PlayerFlexListProps
-  extends FlexListProps,
-    PageComponentMandatoryProps {
-  /**
-   * name - the name of the component
-   */
-  name?: string;
+interface PlayerFlexListProps extends FlexListProps, WegasComponentProps {
   /**
    * children - the array containing the child components
    */
@@ -36,49 +23,7 @@ interface PlayerFlexListProps
 }
 
 function PlayerFlexList(props: PlayerFlexListProps) {
-  const {
-    ComponentContainer,
-    showBorders,
-    childProps,
-    containerProps,
-  } = extractProps(props);
-
-  const [showLayout, setShowLayout] = React.useState(showBorders);
-  React.useEffect(() => {
-    if (showBorders !== undefined) {
-      setShowLayout(showBorders);
-    }
-  }, [showBorders]);
-
-  const handleProps: EditorHandleUserProps = {
-    componentName: childProps.name,
-    togglerProps: {
-      onChange: setShowLayout,
-      value: showLayout,
-      hint: 'Highlight list borders (only during edition mode)',
-    },
-  };
-  return (
-    <ComponentContainer
-      {...containerProps}
-      handleProps={handleProps}
-      showBorders={showLayout}
-      vertical={
-        childProps.layout &&
-        (childProps.layout.flexDirection === 'column' ||
-          childProps.layout.flexDirection === 'column-reverse')
-      }
-    >
-      <FlexList
-        {...childProps}
-        className={
-          cx({
-            [layoutHighlightStyle]: showLayout,
-          }) + classNameOrEmpty(childProps.className)
-        }
-      />
-    </ComponentContainer>
-  );
+  return <FlexList {...props} />;
 }
 
 registerComponent(
@@ -87,7 +32,6 @@ registerComponent(
     'FlexList',
     'bars',
     {
-      name: schemaProps.string('Name', false),
       layout: schemaProps.hashlist('List layout properties', false, [
         {
           label: 'Direction',

@@ -2,36 +2,28 @@ import * as React from 'react';
 import {
   pageComponentFactory,
   registerComponent,
-  extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { ConnectedQuestionDisplay } from '../../AutoImport/Question/List';
-import { PageComponentMandatoryProps } from '../tools/EditableComponent';
 import { useComponentScript } from '../../Hooks/useComponentScript';
+import { WegasComponentProps } from '../tools/EditableComponent';
 
-interface QuestionDisplayProps extends PageComponentMandatoryProps {
+interface QuestionDisplayProps extends WegasComponentProps {
   /**
    * script - a script returning a QuestionDescriptor
    */
   script?: IScript;
 }
 
-function QuestionDisplay(props: QuestionDisplayProps) {
-  const { ComponentContainer, childProps, containerProps } = extractProps(
-    props,
-  );
+function QuestionDisplay({ script }: QuestionDisplayProps) {
   const { content, descriptor, notFound } = useComponentScript<
     IQuestionDescriptor
-  >(childProps.script);
+  >(script);
 
-  return (
-    <ComponentContainer {...containerProps}>
-      {notFound ? (
-        <pre>Not found: {content}</pre>
-      ) : (
-        <ConnectedQuestionDisplay entity={descriptor!} />
-      )}
-    </ComponentContainer>
+  return notFound ? (
+    <pre>Not found: {content}</pre>
+  ) : (
+    <ConnectedQuestionDisplay entity={descriptor!} />
   );
 }
 

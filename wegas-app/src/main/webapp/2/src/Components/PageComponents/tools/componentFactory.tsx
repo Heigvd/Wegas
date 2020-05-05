@@ -5,35 +5,29 @@ import { composeEnhancers } from '../../../data/store';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { useAnyStore } from '../../Hooks/storeHookFactory';
 import {
-  EditableComponent,
-  PageComponentProps,
-  PageComponentMandatoryProps,
-  defaultMandatoryKeys,
-  componentContainerWegasPropsKeys,
   ContainerTypes,
+  WegasComponentProps,
+  PageComponentProps,
 } from './EditableComponent';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 import { SchemaPropsSchemas } from './schemaProps';
-import { pick, omit } from 'lodash-es';
 
 export interface PageComponent<P extends {} = {}> {
-  getComponent: (
-    uneditable?: boolean,
-  ) => React.FunctionComponent<P & PageComponentProps>;
-  getContainerType: () => ContainerTypes;
-  getName: () => string;
-  getIcon: () => Icon;
-  getSchema: () => {
+  Component: React.FunctionComponent<P>;
+  containerType: ContainerTypes;
+  componentName: string;
+  icon: Icon;
+  schema: {
     description: string;
     properties: { [prop: string]: SchemaPropsSchemas };
   };
-  getAllowedVariables: () => (keyof WegasScriptEditorNameAndTypes)[];
+  allowedVariables: (keyof WegasScriptEditorNameAndTypes)[];
   /**
    * gives a computed list of props from variable, if the variable is undefined, gives default props
    */
   getComputedPropsFromVariable: (
     variable?: WegasScriptEditorReturnType,
-  ) => Omit<P, keyof PageComponentMandatoryProps>;
+  ) => Omit<P, keyof PageComponentProps>;
 }
 
 interface PageComponentsState {
@@ -118,12 +112,12 @@ export function usePageComponentStore<R>(
 }
 
 export function pageComponentFactory<
-  P extends PageComponentMandatoryProps,
+  P extends WegasComponentProps,
   T extends keyof WegasScriptEditorNameAndTypes,
   V extends Readonly<WegasScriptEditorNameAndTypes[T]>,
-  R extends Omit<P, keyof PageComponentMandatoryProps>
+  R extends Omit<P, keyof PageComponentProps>
 >(
-  component: React.FunctionComponent<P>,
+  WegasComponent: React.FunctionComponent<P>,
   componentName: string,
   icon: Icon,
   schema: { [prop: string]: SchemaPropsSchemas },
@@ -131,45 +125,23 @@ export function pageComponentFactory<
   getComputedPropsFromVariable: (variable?: V) => R,
   containerType?: ContainerTypes,
 ): PageComponent<P> {
-  function generateComponent(
-    uneditable?: boolean,
-  ): React.FunctionComponent<P & PageComponentProps> {
-    const Editable: React.FunctionComponent<P & PageComponentProps> = props => (
-      <EditableComponent
-        {...props}
-        componentName={componentName}
-        wegasChildren={props.children}
-        uneditable={uneditable}
-      >
-        {(content, ComponentContainer, showBorders) =>
-          component({
-            ...props,
-            children: content,
-            ComponentContainer,
-            showBorders,
-          })
-        }
-      </EditableComponent>
-    );
-    return Editable;
-  }
   return {
-    getComponent: (uneditable?: boolean) => generateComponent(uneditable),
-    getContainerType: () => containerType,
-    getIcon: () => icon,
-    getName: () => componentName,
-    getSchema: () => ({
+    Component: WegasComponent,
+    containerType,
+    icon,
+    componentName,
+    schema: {
       description: componentName,
       properties: schema,
-    }),
-    getAllowedVariables: () => allowedVariables,
+    },
+    allowedVariables,
     getComputedPropsFromVariable,
   };
 }
 
 export type PageComponentFactorySchemas = ReturnType<
   typeof pageComponentFactory
->['getSchema'];
+>['schema'];
 
 /**
  * Function that registers a component dynamically.
@@ -181,7 +153,10 @@ export const registerComponent: (
   component: PageComponent,
 ) => void = component => {
   componentsStore.dispatch(
-    PageComponentActionCreator.ADD_COMPONENT(component.getName(), component),
+    PageComponentActionCreator.ADD_COMPONENT(
+      component.componentName,
+      component,
+    ),
   );
 };
 
@@ -198,20 +173,3 @@ export const importComponents = () => {
   );
   componentModules.keys().map(k => componentModules(k));
 };
-
-/**
- * Extracts props from WegasComponent props
- * @param props
- */
-export function extractProps<T>(props: PageComponentMandatoryProps & T) {
-  return {
-    ComponentContainer: props.ComponentContainer,
-    showBorders: props.showBorders,
-    path: props.path,
-    containerProps: pick(props, componentContainerWegasPropsKeys),
-    childProps: omit(props, [
-      ...defaultMandatoryKeys,
-      ...componentContainerWegasPropsKeys,
-    ]) as T,
-  };
-}

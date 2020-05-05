@@ -1,6 +1,7 @@
 import { Item } from '../Editor/Components/Tree/TreeSelect';
 import { css } from 'emotion';
 import { themeVar } from '../Components/Theme';
+import { cloneDeep } from 'lodash-es';
 
 export function isPageItem(
   pageItemIndex?: PageIndexItem,
@@ -120,21 +121,29 @@ export function visitComponents(
   }
 }
 
-export function findComponent(
-  components: WegasComponent[],
-  findFn: (component: WegasComponent) => boolean,
-): WegasComponent | undefined {
-  for (const component of components) {
-    if (findFn(component)) {
-      return component;
-    } else if (component.props.items) {
-      const foundComponent = findComponent(component.props.items, findFn);
-      if (foundComponent) {
-        return foundComponent;
-      }
+export const findComponent = (
+  page: WegasComponent,
+  path: number[],
+): {
+  newPage: WegasComponent;
+  component?: WegasComponent;
+  parent?: WegasComponent;
+} => {
+  const browsePath = [...path];
+  const newPage = cloneDeep(page);
+  let parent: WegasComponent | undefined = undefined;
+  let component: WegasComponent = newPage;
+  while (browsePath.length > 0) {
+    if (component.props.children) {
+      parent = component;
+      component = component.props.children[browsePath[0]];
+      browsePath.splice(0, 1);
+    } else {
+      return { newPage };
     }
   }
-}
+  return { newPage, component, parent };
+};
 
 export const PAGE_LOADER_COMPONENT_TYPE = 'PageLoader';
 

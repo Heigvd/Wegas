@@ -73,7 +73,7 @@ function ComponentElement({ componentName }: ComponentElementProps) {
       {component ? (
         <IconButton
           ref={preview}
-          icon={component.getIcon()}
+          icon={component.icon}
           className={cx(button, css({ width: '25px', height: '25px' }))}
           tooltip={componentName}
           label={componentName}

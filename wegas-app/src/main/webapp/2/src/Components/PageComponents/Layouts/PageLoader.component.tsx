@@ -2,11 +2,9 @@ import * as React from 'react';
 import {
   pageComponentFactory,
   registerComponent,
-  extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { useScript } from '../../Hooks/useScript';
-import { PageComponentMandatoryProps } from '../tools/EditableComponent';
 import { PageLoader } from '../../../Editor/Components/Page/PageLoader';
 import {
   PageLoaderComponentProps,
@@ -17,22 +15,16 @@ import { useStore, store } from '../../../data/store';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { ActionCreator } from '../../../data/actions';
 import { createScript } from '../../../Helper/wegasEntites';
+import { WegasComponentProps } from '../tools/EditableComponent';
 
-type PlayerPageLoaderProps = PageComponentMandatoryProps &
-  PageLoaderComponentProps;
+type PlayerPageLoaderProps = WegasComponentProps & PageLoaderComponentProps;
 
 const defaultPageAsScript = () =>
   createScript(JSON.stringify(store.getState().pages.index.defaultPageId));
 
-function PlayerPageLoader(props: PlayerPageLoaderProps) {
-  const {
-    ComponentContainer,
-    childProps,
-    containerProps,
-    showBorders,
-  } = extractProps(props);
-  const { name, initialSelectedPageId = defaultPageAsScript() } = childProps;
-
+function PlayerPageLoader({
+  initialSelectedPageId = defaultPageAsScript(),
+}: PlayerPageLoaderProps) {
   let pageScript = useStore(s => s.global.pageLoaders[name], deepDifferent);
   const { pageIdPath } = React.useContext(pageCTX);
   if (!pageScript) {
@@ -46,28 +38,24 @@ function PlayerPageLoader(props: PlayerPageLoaderProps) {
   }
   const pageId = useScript(pageScript ? pageScript.content : '') as string;
 
-  return (
-    <ComponentContainer {...containerProps} showBorders={showBorders}>
-      {pageIdPath.includes(pageId) ? (
-        <pre>Page {pageId} recursion</pre>
-      ) : (
-        <pageCTX.Provider
-          value={{
-            editMode: false,
-            showControls: false,
-            showBorders: false,
-            pageIdPath: [...pageIdPath, pageId],
-            handles: {},
-            onDrop: () => {},
-            onDelete: () => {},
-            onEdit: () => {},
-            onUpdate: () => {},
-          }}
-        >
-          <PageLoader selectedPageId={pageId} />
-        </pageCTX.Provider>
-      )}
-    </ComponentContainer>
+  return pageIdPath.includes(pageId) ? (
+    <pre>Page {pageId} recursion</pre>
+  ) : (
+    <pageCTX.Provider
+      value={{
+        editMode: false,
+        showControls: false,
+        showBorders: false,
+        pageIdPath: [...pageIdPath, pageId],
+        handles: {},
+        onDrop: () => {},
+        onDelete: () => {},
+        onEdit: () => {},
+        onUpdate: () => {},
+      }}
+    >
+      <PageLoader selectedPageId={pageId} />
+    </pageCTX.Provider>
   );
 }
 
@@ -77,7 +65,6 @@ registerComponent(
     PAGE_LOADER_COMPONENT_TYPE,
     'window-maximize',
     {
-      name: schemaProps.string('Name', true),
       selectedPageId: schemaProps.pageSelect('Page', false),
     },
     [],

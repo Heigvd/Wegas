@@ -2,17 +2,16 @@ import * as React from 'react';
 import {
   registerComponent,
   pageComponentFactory,
-  extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { store } from '../../../data/store';
 import { Actions } from '../../../data';
 import { Toggler } from '../../Inputs/Boolean/Toggler';
 import { useComponentScript } from '../../Hooks/useComponentScript';
-import { PageComponentMandatoryProps } from '../tools/EditableComponent';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
+import { WegasComponentProps } from '../tools/EditableComponent';
 
-interface PlayerBooleanProps extends PageComponentMandatoryProps {
+interface PlayerBooleanProps extends WegasComponentProps {
   /**
    * script - the script that returns the variable to display and modify
    */
@@ -35,38 +34,35 @@ interface PlayerBooleanProps extends PageComponentMandatoryProps {
   disabled?: boolean;
 }
 
-function PlayerBoolean(
-  props: PlayerBooleanProps & PageComponentMandatoryProps,
-) {
-  const { ComponentContainer, childProps, containerProps } = extractProps(
-    props,
-  );
+function PlayerBoolean({
+  script,
+  type,
+  label,
+  disabled,
+  inactive,
+}: PlayerBooleanProps) {
   const { content, instance, notFound } = useComponentScript<
     IBooleanDescriptor
-  >(childProps.script);
+  >(script);
 
-  const BooleanComponent = childProps.type === 'toggler' ? Toggler : CheckBox;
+  const BooleanComponent = type === 'toggler' ? Toggler : CheckBox;
 
-  return (
-    <ComponentContainer {...containerProps}>
-      {notFound ? (
-        <pre>Not found: {content}</pre>
-      ) : (
-        <BooleanComponent
-          label={childProps.label}
-          value={instance!.value}
-          disabled={childProps.disabled}
-          readOnly={childProps.inactive}
-          onChange={v => {
-            store.dispatch(
-              Actions.VariableInstanceActions.runScript(
-                `${content}.setValue(self, ${v});`,
-              ),
-            );
-          }}
-        />
-      )}
-    </ComponentContainer>
+  return notFound ? (
+    <pre>Not found: {content}</pre>
+  ) : (
+    <BooleanComponent
+      label={label}
+      value={instance!.value}
+      disabled={disabled}
+      readOnly={inactive}
+      onChange={v => {
+        store.dispatch(
+          Actions.VariableInstanceActions.runScript(
+            `${content}.setValue(self, ${v});`,
+          ),
+        );
+      }}
+    />
   );
 }
 

@@ -4,35 +4,28 @@ import { store } from '../../../data/store';
 import {
   pageComponentFactory,
   registerComponent,
-  extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { Button } from '../../Inputs/Buttons/Button';
-import { PageComponentMandatoryProps } from '../tools/EditableComponent';
 import { createScript } from '../../../Helper/wegasEntites';
+import { WegasComponentProps } from '../tools/EditableComponent';
 
-export interface PlayerButtonProps extends PageComponentMandatoryProps {
+export interface PlayerButtonProps extends WegasComponentProps {
   label: string;
   action: IScript;
 }
 
-const PlayerButton: React.FunctionComponent<PlayerButtonProps> = (
-  props: PlayerButtonProps,
-) => {
-  const { ComponentContainer, childProps, containerProps } = extractProps(
-    props,
-  );
+const PlayerButton: React.FunctionComponent<PlayerButtonProps> = ({
+  label,
+  action,
+}: PlayerButtonProps) => {
   return (
-    <ComponentContainer {...containerProps}>
-      <Button
-        label={childProps.label}
-        onClick={() =>
-          store.dispatch(
-            Actions.VariableInstanceActions.runScript(childProps.action!),
-          )
-        }
-      />
-    </ComponentContainer>
+    <Button
+      label={label}
+      onClick={() =>
+        store.dispatch(Actions.VariableInstanceActions.runScript(action!))
+      }
+    />
   );
 };
 

@@ -2,68 +2,12 @@ import * as React from 'react';
 import {
   pageComponentFactory,
   registerComponent,
-  extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import {
-  EditorHandleUserProps,
-  PageComponentMandatoryProps,
-  layoutHighlightStyle,
-} from '../tools/EditableComponent';
-import { cx } from 'emotion';
-import { classNameOrEmpty } from '../../../Helper/className';
+import { WegasComponentProps } from '../tools/EditableComponent';
 
-interface AbsoluteLayoutProps extends PageComponentMandatoryProps {
-  /**
-   * name - the name of the component
-   */
-  name?: string;
-  /**
-   * children - the array containing the child components
-   */
-  children: React.ReactNode[];
-}
-
-function PlayerFlexList(props: AbsoluteLayoutProps) {
-  const {
-    ComponentContainer,
-    showBorders,
-    childProps,
-    containerProps,
-  } = extractProps(props);
-
-  const [showLayout, setShowLayout] = React.useState(showBorders);
-  React.useEffect(() => {
-    if (showBorders !== undefined) {
-      setShowLayout(showBorders);
-    }
-  }, [showBorders]);
-
-  const handleProps: EditorHandleUserProps = {
-    componentName: childProps.name,
-    togglerProps: {
-      onChange: setShowLayout,
-      value: showLayout,
-      hint: 'Highlight layout borders (only during edition mode)',
-    },
-  };
-  return (
-    <ComponentContainer
-      {...containerProps}
-      handleProps={handleProps}
-      showBorders={showLayout}
-    >
-      <div
-        className={
-          cx({
-            [layoutHighlightStyle]: showLayout,
-          }) + classNameOrEmpty(childProps.className)
-        }
-      >
-        {childProps.children}
-      </div>
-    </ComponentContainer>
-  );
+function PlayerFlexList({ className, children }: WegasComponentProps) {
+  return <div className={className}>{children}</div>;
 }
 
 registerComponent(

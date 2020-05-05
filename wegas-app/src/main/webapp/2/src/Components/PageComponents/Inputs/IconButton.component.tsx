@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
   pageComponentFactory,
   registerComponent,
-  extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
@@ -17,14 +16,7 @@ interface PlayerIconButtonProps extends PlayerButtonProps {
 }
 
 function PlayerIconButton(props: PlayerIconButtonProps) {
-  const { ComponentContainer, childProps, containerProps } = extractProps(
-    props,
-  );
-  return (
-    <ComponentContainer {...containerProps}>
-      <IconButton {...childProps} />
-    </ComponentContainer>
-  );
+  return <IconButton {...props} />;
 }
 
 registerComponent(

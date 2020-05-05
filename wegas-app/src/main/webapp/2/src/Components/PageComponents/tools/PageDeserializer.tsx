@@ -1,10 +1,32 @@
 import * as React from 'react';
 import { usePageComponentStore } from './componentFactory';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
-import { ContainerTypes } from './EditableComponent';
+import { ContainerTypes, ComponentContainer } from './EditableComponent';
+import { deepDifferent } from '../../Hooks/storeHookFactory';
+import { useStore } from '../../../data/store';
+import { cloneDeep } from 'lodash-es';
+
+function getComponentFromPath(page: WegasComponent, path: number[]) {
+  const newPath = [...path];
+  let component: WegasComponent = cloneDeep(page);
+  while (newPath.length > 0) {
+    const index = newPath.shift();
+    if (
+      index == null ||
+      component == null ||
+      component.props == null ||
+      component.props.children == null
+    ) {
+      return undefined;
+    } else {
+      component = component.props.children[index];
+    }
+  }
+  return component;
+}
 
 interface PageDeserializerProps {
-  json: WegasComponent;
+  pageId?: string;
   path?: number[];
   uneditable?: boolean;
   childrenType?: ContainerTypes;
@@ -12,45 +34,68 @@ interface PageDeserializerProps {
 }
 
 export function PageDeserializer({
-  json,
+  pageId,
   path,
   uneditable,
   childrenType,
   last,
 }: PageDeserializerProps): JSX.Element {
   const realPath = path ? path : [];
-  const { children = [], ...restProps } = (json && json.props) || {};
-  const component = usePageComponentStore(s => s[(json && json.type) || '']);
 
-  if (json == null) {
-    return <pre>Unknown page</pre>;
+  const wegasComponent = useStore(s => {
+    if (!pageId) {
+      return undefined;
+    }
+
+    const page = s.pages[pageId];
+    if (!page) {
+      return undefined;
+    }
+
+    return getComponentFromPath(page, realPath);
+  }, deepDifferent);
+
+  const { children = [], ...restProps } =
+    (wegasComponent && wegasComponent.props) || {};
+  const component = usePageComponentStore(
+    s => s[(wegasComponent && wegasComponent.type) || ''],
+    deepDifferent,
+  );
+
+  if (!wegasComponent) {
+    return <pre>JSON error in page</pre>;
   }
   if (!component) {
-    return <div>{`Unknown component : ${json.type}`}</div>;
+    return <div>{`Unknown component : ${wegasComponent.type}`}</div>;
   }
 
-  const Component = component.getComponent(uneditable);
+  const { Component, containerType, componentName } = component;
 
   return (
     <ErrorBoundary>
-      <Component
+      <ComponentContainer
         path={realPath}
         last={last}
-        containerType={component.getContainerType()}
+        componentType={componentName}
+        containerType={containerType}
         childrenType={childrenType}
         {...restProps}
       >
-        {children.map((cjson, i) => (
-          <PageDeserializer
-            key={i}
-            json={cjson}
-            path={[...realPath, i]}
-            uneditable={uneditable}
-            childrenType={component.getContainerType()}
-            last={i === children.length - 1}
-          />
-        ))}
-      </Component>
+        <Component {...restProps}>
+          {children.map((_, i) => {
+            return (
+              <PageDeserializer
+                key={JSON.stringify([...realPath, i])}
+                pageId={pageId}
+                path={[...realPath, i]}
+                uneditable={uneditable}
+                childrenType={component.containerType}
+                last={i === children.length - 1}
+              />
+            );
+          })}
+        </Component>
+      </ComponentContainer>
     </ErrorBoundary>
   );
 }

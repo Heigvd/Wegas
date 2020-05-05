@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
   registerComponent,
   pageComponentFactory,
-  extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import {
@@ -13,9 +12,9 @@ import {
 import { store } from '../../../data/store';
 import { Actions } from '../../../data';
 import { useComponentScript } from '../../Hooks/useComponentScript';
-import { PageComponentMandatoryProps } from '../tools/EditableComponent';
+import { WegasComponentProps } from '../tools/EditableComponent';
 
-interface PlayerNumberSliderProps extends PageComponentMandatoryProps {
+interface PlayerNumberSliderProps extends WegasComponentProps {
   /**
    * script - the script that returns the variable to display and modify
    */
@@ -36,34 +35,27 @@ interface PlayerNumberSliderProps extends PageComponentMandatoryProps {
 }
 
 function PlayerNumberSlider(props: PlayerNumberSliderProps) {
-  const { ComponentContainer, childProps, containerProps } = extractProps(
-    props,
-  );
   const { content, descriptor, instance, notFound } = useComponentScript<
     INumberDescriptor
-  >(childProps.script);
-  return (
-    <ComponentContainer {...containerProps}>
-      {notFound ? (
-        <pre>Not found: {content}</pre>
-      ) : (
-        <NumberSlider
-          {...childProps}
-          value={instance!.value}
-          onChange={(v, i) => {
-            if (i === 'DragEnd') {
-              store.dispatch(
-                Actions.VariableInstanceActions.runScript(
-                  `${content}.setValue(self, ${v});`,
-                ),
-              );
-            }
-          }}
-          min={descriptor!.minValue || 0}
-          max={descriptor!.maxValue || 1}
-        />
-      )}
-    </ComponentContainer>
+  >(props.script);
+  return notFound ? (
+    <pre>Not found: {content}</pre>
+  ) : (
+    <NumberSlider
+      {...props}
+      value={instance!.value}
+      onChange={(v, i) => {
+        if (i === 'DragEnd') {
+          store.dispatch(
+            Actions.VariableInstanceActions.runScript(
+              `${content}.setValue(self, ${v});`,
+            ),
+          );
+        }
+      }}
+      min={descriptor!.minValue || 0}
+      max={descriptor!.maxValue || 1}
+    />
   );
 }
 

@@ -2,14 +2,13 @@ import * as React from 'react';
 import {
   pageComponentFactory,
   registerComponent,
-  extractProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { StandardGauge } from '../../Outputs/StandardGauge';
-import { PageComponentMandatoryProps } from '../tools/EditableComponent';
+import { WegasComponentProps } from '../tools/EditableComponent';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 
-interface PlayerGaugeProps extends PageComponentMandatoryProps {
+interface PlayerGaugeProps extends WegasComponentProps {
   /**
    * script - the script that returns the variable to display and modify
    */
@@ -25,26 +24,19 @@ interface PlayerGaugeProps extends PageComponentMandatoryProps {
 }
 
 function PlayerGauge(props: PlayerGaugeProps) {
-  const { ComponentContainer, childProps, containerProps } = extractProps(
-    props,
-  );
   const { content, descriptor, instance, notFound } = useComponentScript<
     INumberDescriptor
   >(props.script);
-  return (
-    <ComponentContainer {...containerProps}>
-      {notFound ? (
-        <pre>Not found: {content}</pre>
-      ) : (
-        <StandardGauge
-          label={childProps.label}
-          followNeedle={childProps.followNeedle}
-          min={descriptor!.minValue || 0}
-          max={descriptor!.maxValue || 1}
-          value={instance!.value}
-        />
-      )}
-    </ComponentContainer>
+  return notFound ? (
+    <pre>Not found: {content}</pre>
+  ) : (
+    <StandardGauge
+      label={props.label}
+      followNeedle={props.followNeedle}
+      min={descriptor!.minValue || 0}
+      max={descriptor!.maxValue || 1}
+      value={instance!.value}
+    />
   );
 }
 

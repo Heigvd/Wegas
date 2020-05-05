@@ -8,7 +8,6 @@ import {
   FilePickingType,
 } from '../FileBrowser/FileBrowser';
 import { generateAbsolutePath } from '../../../API/files.api';
-import { wlog } from '../../../Helper/wegaslog';
 
 export interface PageSelectProps extends WidgetProps.BaseProps {
   view: CommonView &
