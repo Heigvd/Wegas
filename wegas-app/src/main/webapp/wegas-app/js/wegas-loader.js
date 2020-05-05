@@ -1195,6 +1195,7 @@ YUI().use(function(Y) {
                 path: "escodegen/escodegen-min.js"
             },
             tinymce: {
+                async: false,
                 path: "tinymce/tinymce.min.js"
                     //fullpath: "//unpkg.com/tinymce@4.9.5/tinymce.js"
             },
@@ -1216,8 +1217,10 @@ YUI().use(function(Y) {
                 fullpath: "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
             },
             "font-awesome": {
+                // https://fontawesome.com/v4.7.0/
                 type: CSS,
-                fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+                path: "font-awesome/4.7.0/css/font-awesome-min.css"
+                //fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
             },
             "roboto-font": {
                 type: CSS,
