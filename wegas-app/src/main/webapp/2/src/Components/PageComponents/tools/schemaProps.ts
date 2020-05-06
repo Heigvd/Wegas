@@ -436,6 +436,7 @@ const simpleSchemaProps = {
     required,
     type: 'object',
     value,
+    index,
     view: {
       choices,
       featureLevel,
@@ -460,6 +461,7 @@ const simpleSchemaProps = {
     required,
     type: 'object',
     value,
+    index,
     view: {
       pick,
       filter,
@@ -496,6 +498,7 @@ const objectSchemaProps = {
     // protectionLevel: "INTERNAL"
     required,
     type: 'object',
+    index,
     view: { featureLevel, index, label, layout, borderTop },
   }),
 };

@@ -11,7 +11,7 @@ import { themeVar } from '../Components/Theme';
 
 //It's really important to import index.ts in order to have the widjets allready registered before using Form
 import '../Editor/Components/FormView';
-import { wegasComponentOptionsSchema } from '../Components/PageComponents/tools/EditableComponent';
+import { wegasComponentOptionsSchema } from '../Components/PageComponents/tools/options';
 
 const testSchema = {
   hidden: schemaProps.hidden(),

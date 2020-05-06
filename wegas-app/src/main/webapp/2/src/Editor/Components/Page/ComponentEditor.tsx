@@ -6,12 +6,10 @@ import { cx } from 'emotion';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { BaseView, Schema } from 'jsoninput/typings/types';
 import { MessageString } from '../MessageString';
-import {
-  wegasComponentCommonSchema,
-  wegasComponentOptionsSchema,
-} from '../../../Components/PageComponents/tools/EditableComponent';
 import { pageEditorCTX, pageCTX } from './PageEditor';
 import { findComponent } from '../../../Helper/pages';
+import { wegasComponentOptionsSchema } from '../../../Components/PageComponents/tools/options';
+import { wegasComponentCommonSchema } from '../../../Components/PageComponents/tools/EditableComponent';
 
 interface EditorProps<T = WegasComponent['props']> {
   entity: T;

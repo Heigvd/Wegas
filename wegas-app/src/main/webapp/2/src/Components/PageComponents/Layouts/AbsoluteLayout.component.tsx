@@ -1,18 +1,13 @@
-import * as React from 'react';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { WegasComponentProps } from '../tools/EditableComponent';
-
-function PlayerFlexList({ className, children }: WegasComponentProps) {
-  return <div className={className}>{children}</div>;
-}
+import { AbsoluteLayout } from '../../Layouts/Absolute';
 
 registerComponent(
   pageComponentFactory(
-    PlayerFlexList,
+    AbsoluteLayout,
     'AbsoluteLayout',
     'bars',
     {

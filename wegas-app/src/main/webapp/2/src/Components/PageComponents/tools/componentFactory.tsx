@@ -13,7 +13,7 @@ import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 import { SchemaPropsSchemas } from './schemaProps';
 
 export interface PageComponent<P extends {} = {}> {
-  Component: React.FunctionComponent<P>;
+  WegasComponent: React.FunctionComponent<P>;
   containerType: ContainerTypes;
   componentName: string;
   icon: Icon;
@@ -126,7 +126,7 @@ export function pageComponentFactory<
   containerType?: ContainerTypes,
 ): PageComponent<P> {
   return {
-    Component: WegasComponent,
+    WegasComponent,
     containerType,
     icon,
     componentName,

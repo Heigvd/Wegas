@@ -69,7 +69,7 @@ export function PageDeserializer({
     return <div>{`Unknown component : ${wegasComponent.type}`}</div>;
   }
 
-  const { Component, containerType, componentName } = component;
+  const { WegasComponent, containerType, componentName } = component;
 
   return (
     <ErrorBoundary>
@@ -81,7 +81,7 @@ export function PageDeserializer({
         childrenType={childrenType}
         {...restProps}
       >
-        <Component {...restProps}>
+        <WegasComponent {...restProps}>
           {children.map((_, i) => {
             return (
               <PageDeserializer
@@ -94,7 +94,7 @@ export function PageDeserializer({
               />
             );
           })}
-        </Component>
+        </WegasComponent>
       </ComponentContainer>
     </ErrorBoundary>
   );

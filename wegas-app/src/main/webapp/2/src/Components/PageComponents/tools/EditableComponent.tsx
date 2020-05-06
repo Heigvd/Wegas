@@ -1,40 +1,36 @@
 import * as React from 'react';
-import { css, cx, keyframes } from 'emotion';
+import { css, cx } from 'emotion';
 import { dropZoneClass } from '../../Contexts/DefaultDndProvider';
 import {
   DnDComponent,
   PAGEEDITOR_COMPONENT_TYPE,
-  useComponentDrag,
 } from '../../../Editor/Components/Page/ComponentPalette';
 import { useDrop, DropTargetMonitor, DragElementWrapper } from 'react-dnd';
 import { pageCTX, Handles } from '../../../Editor/Components/Page/PageEditor';
 import { themeVar } from '../../Theme';
-import { flex, flexRow, textCenter, flexColumn } from '../../../css/classes';
-import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
-import { IconButton } from '../../Inputs/Buttons/IconButton';
-import {
-  FlexItem,
-  flexlayoutChoices,
-  FlexListProps,
-} from '../../Layouts/FlexList';
+import { flex } from '../../../css/classes';
+import { FlexItem, FlexListProps } from '../../Layouts/FlexList';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import { useDebounce } from '../../Hooks/useDebounce';
-import { schemaProps } from './schemaProps';
-import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
-import { wlog } from '../../../Helper/wegaslog';
-import { fileURL, generateAbsolutePath } from '../../../API/files.api';
-import { store } from '../../../data/store';
-import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
-import { Player } from '../../../data/selectors';
 import { omit } from 'lodash-es';
-import { clientScriptEval, useScript } from '../../Hooks/useScript';
-import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
-import { ActionCreator } from '../../../data/actions';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { Content, Splitter, ContainerProps } from '../../Layouts/FonkyFlex';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { pagesStateStore, usePagesStateStore } from '../../../data/pageStore';
+import {
+  WegasComponentOptionsActions,
+  WegasComponentActionsProperties,
+  WegasComponentUpgrades,
+  wegasComponentActions,
+  WegasComponentActions,
+  WegasComponentOptionsAction,
+} from './options';
+import { AbsoluteItem } from '../../Layouts/Absolute';
+import { InfoBeam } from './InfoBeam';
+import { EditHandle } from './EditHandle';
+import { schemaProps } from './schemaProps';
 
+// Styles
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
   borderWidth: '2px',
@@ -104,28 +100,19 @@ const handleControlHoverStyle = css({
   ':hover': componentBorderCss,
 });
 
-const handleContentStyle = css({
-  borderRadius: themeVar.borderRadius,
-  borderStyle: 'solid',
-  borderColor: themeVar.primaryLighterColor,
-  backgroundColor: themeVar.primaryHoverColor,
-});
-
 // const emptyListStyle = css({
 //   textAlign: 'center',
 //   borderStyle: 'solid',
 //   borderWidth: '1px',
 // });
 
-const flattenPath = (path: number[]) => {
-  const purePath = [...path];
-  let flatPath = '';
-  while (purePath.length) {
-    flatPath = '/' + purePath.pop() + flatPath;
-  }
-  return flatPath === '' ? '/' : flatPath;
-};
+// Helper functions
 
+/**
+ * visitPath - this function will a tree following a path and trigger a callback at each node
+ * @param path - the path to visit
+ * @param callback - the callback to call
+ */
 const visitPath = (path: number[], callback: (path: number[]) => void) => {
   const purePath = [...path];
   do {
@@ -134,12 +121,22 @@ const visitPath = (path: number[], callback: (path: number[]) => void) => {
   } while (purePath.length > 0);
 };
 
+/**
+ * checkIfInsideRectangle - this function checks if a point is inside a rectangle
+ * @param A - The top-left point of the rectangle
+ * @param C - The bottom-right point of the rectangle
+ * @param Ptest - The point to test
+ */
 const checkIfInsideRectangle = (
   A: { x: number; y: number },
   C: { x: number; y: number },
   Ptest: { x: number; y: number },
 ) => Ptest.x >= A.x && Ptest.x <= C.x && Ptest.y >= A.y && Ptest.y <= C.y;
 
+/**
+ * useDndComponentDrop - it's a hook that normalize the usage of useDrop in the different dropable zone used in this file
+ * @param onDrop - the function to trigger when a drop occures
+ */
 function useDndComponentDrop(
   onDrop?: (dndComponnent: DnDComponent, dndMonitor: DropTargetMonitor) => void,
 ): [
@@ -166,297 +163,16 @@ function useDndComponentDrop(
   return [{ ...dropZoneProps, canDrop: delayedCanDrop }, dropZone];
 }
 
-interface WegasComponentOptionsAction {
-  priority?: number;
-}
-
-interface OpenPageAction {
-  pageLoaderName: IScript;
-  pageId: IScript;
-}
-interface OpenURLAction {
-  url: string;
-}
-interface OpenFileAction {
-  fileDescriptor: IFileDescriptor;
-}
-interface ImpactVariableAction {
-  impact: IScript;
-}
-interface LoaclScriptEvalAction {
-  script: string;
-}
-interface OpenPopupPageAction {
-  pageId: IScript;
-}
-interface PlaySoundAction {
-  fileDescriptor: IFileDescriptor;
-}
-interface PrintVariableAction {
-  variableName: string;
-}
-
-interface WegasComponentOptionsActions {
-  openPage?: OpenPageAction & WegasComponentOptionsAction;
-  openUrl?: OpenURLAction & WegasComponentOptionsAction;
-  openFile?: OpenFileAction & WegasComponentOptionsAction;
-  impactVariable?: ImpactVariableAction & WegasComponentOptionsAction;
-  localScriptEval?: LoaclScriptEvalAction & WegasComponentOptionsAction;
-  openPopupPage?: OpenPopupPageAction & WegasComponentOptionsAction;
-  playSound?: PlaySoundAction & WegasComponentOptionsAction;
-  printVariable?: PrintVariableAction & WegasComponentOptionsAction;
-}
-
-interface WegasComponentActionsProperties {
-  confirmClick?: string;
-  lock?: string;
-}
-const actionsChoices: HashListChoices = [
-  {
-    label: 'Open Page',
-    value: {
-      prop: 'openPage',
-      schema: schemaProps.object('Open Page', {
-        pageLoaderName: schemaProps.pageLoaderSelect('Page loader', true),
-        pageId: schemaProps.pageSelect('Page', true),
-        priority: schemaProps.number('Priority', false),
-      }),
-    },
-  },
-  {
-    label: 'Open Url',
-    value: {
-      prop: 'openUrl',
-      schema: schemaProps.object('Open Url', {
-        url: schemaProps.string('Url', true),
-        priority: schemaProps.number('Priority', false),
-      }),
-    },
-  },
-  {
-    label: 'Open File',
-    value: {
-      prop: 'openFile',
-      schema: schemaProps.object('Open File', {
-        fileDescriptor: schemaProps.file('File', true),
-        priority: schemaProps.number('Priority', false),
-      }),
-    },
-  },
-  {
-    label: 'Impact variable',
-    value: {
-      prop: 'impactVariable',
-      schema: schemaProps.object('Impact variable', {
-        impact: schemaProps.script('Impact', true),
-        priority: schemaProps.number('Priority', false),
-      }),
-    },
-  },
-  {
-    label: 'Local script eval',
-    value: {
-      prop: 'localScriptEval',
-      schema: schemaProps.object('Local script eval', {
-        script: schemaProps.code('Local script', true, 'TypeScript'),
-        priority: schemaProps.number('Priority', false),
-      }),
-    },
-  },
-  {
-    label: 'Open popup page',
-    value: {
-      prop: 'openPopupPage',
-      schema: schemaProps.object('Open popup page', {
-        pageId: schemaProps.pageSelect('Page', true),
-        priority: schemaProps.number('Priority', false),
-      }),
-    },
-  },
-  {
-    label: 'Play sound',
-    value: {
-      prop: 'playSound',
-      schema: schemaProps.object('Play sound', {
-        fileDescriptor: schemaProps.file('File', true, 'FILE', {
-          filterType: 'grey',
-          fileType: 'audio',
-        }),
-        priority: schemaProps.number('Priority', false),
-      }),
-    },
-  },
-  {
-    label: 'Print variable',
-    value: {
-      prop: 'printVariable',
-      schema: schemaProps.object('Print variable', {
-        variableName: schemaProps.variable('Variable', true),
-        priority: schemaProps.number('Priority', false),
-      }),
-    },
-  },
-  {
-    label: 'Confirm click',
-    value: {
-      prop: 'confirmClick',
-      schema: schemaProps.string('Confirmation message', true, 'Are you sure?'),
-    },
-  },
-  {
-    label: 'Lock',
-    value: {
-      prop: 'lock',
-      schema: schemaProps.string('Lock', true),
-    },
-  },
-];
-
-interface WegasComponentActions {
-  openPage: (props: OpenPageAction) => void;
-  openUrl: (props: OpenURLAction) => void;
-  openFile: (props: OpenFileAction) => void;
-  impactVariable: (props: ImpactVariableAction) => void;
-  localScriptEval: (props: LoaclScriptEvalAction) => void;
-  openPopupPage: (props: OpenPopupPageAction) => void;
-  playSound: (props: PlaySoundAction) => void;
-  printVariable: (props: PrintVariableAction) => void;
-}
-
-const wegasComponentActions: WegasComponentActions = {
-  openPage: ({ pageLoaderName, pageId }) => {
-    store.dispatch(
-      ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
-        name: clientScriptEval<string>(pageLoaderName.content),
-        pageId,
-      }),
-    );
-  },
-  openUrl: props => {
-    window.open(props.url);
-  },
-  openFile: props => {
-    const win = window.open(
-      fileURL(generateAbsolutePath(props.fileDescriptor)),
-      '_blank',
-    );
-    win!.focus();
-  },
-  impactVariable: props => {
-    try {
-      store.dispatch(runScript(props.impact, Player.selectCurrent()));
-    } catch (error) {
-      wlog(error);
-    }
-  },
-  localScriptEval: props => {
-    clientScriptEval(props.script);
-  },
-  openPopupPage: props => {
-    //TODO : Discuss that with Maxence
-    wlog('Need to implement a popup modal. Or is it allready here?');
-    wlog(props);
-  },
-  playSound: props => {
-    const audio = new Audio(
-      fileURL(generateAbsolutePath(props.fileDescriptor)),
-    );
-    // We may register the sound component here and add another action for sound control (play, pause, volume, etc...)
-    audio.play();
-  },
-  printVariable: props => {
-    //TODO : Discuss that with Maxence
-    wlog('Not implemented yet');
-    wlog(findByName(props.variableName));
-  },
-};
-
-interface InfoBeamUpgrade {
-  showScript: IScript;
-  blinkScript: IScript;
-  messageScript: string;
-}
-
-interface WegasComponentUpgrades {
-  tooltip: string;
-  infoBeam: InfoBeamUpgrade;
-}
-
-const upgradeChoices: HashListChoices = [
-  {
-    label: 'Tooltip',
-    value: {
-      prop: 'tooltip',
-      schema: schemaProps.string('Tooltip'),
-    },
-  },
-  {
-    label: 'Info Beam',
-    value: {
-      prop: 'infoBeam',
-      schema: schemaProps.object('Info Beam', {
-        showScript: schemaProps.script(
-          'Show',
-          false,
-          'GET',
-          'TypeScript',
-          'true',
-        ),
-        blinkScript: schemaProps.script(
-          'Blink',
-          false,
-          'GET',
-          'TypeScript',
-          'false',
-        ),
-        messageScript: schemaProps.code('Message', false, 'TypeScript'),
-      }),
-    },
-  },
-];
-
-const infoBeamStyle = css({
-  position: 'absolute',
-  color: themeVar.primaryLighterTextColor,
-  backgroundColor: themeVar.warningColor,
-  borderRadius: '50%',
-  padding: '0px 5px 0px 5px',
-});
-
-const blinkAnimation = keyframes(`
-50%{opacity: 0.0;}
-`);
-
-const blinkStyle = css(`
-  animation: ${blinkAnimation} 1.0s linear infinite;
-`);
-
-function InfoBeam({ showScript, blinkScript, messageScript }: InfoBeamUpgrade) {
-  const show = useScript<boolean>(showScript.content);
-  const blink = useScript<boolean>(blinkScript.content);
-  const message = useScript<string>(messageScript);
-
-  return show ? (
-    <div
-      ref={container => {
-        if (container) {
-          const { width, height } = container.getBoundingClientRect();
-          const top = -(width / 4) - 1;
-          const right = -(height / 4) - 1;
-          container.style.setProperty('right', `${right}px`);
-          container.style.setProperty('top', `${top}px`);
-        }
-      }}
-      className={cx(infoBeamStyle, { [blinkStyle]: blink })}
-    >
-      {message}
-    </div>
-  ) : null;
-}
-
+/**
+ * computeHandles - this functions look for every visible handles and stack them
+ * @param handles
+ * @param path
+ * @returns a list of handles that are overlapsing each others
+ * @affects this function also hide the handles that are overlapsing
+ */
 function computeHandles(handles: Handles, path: number[]) {
   const computedHandles: JSX.Element[] = [];
-  const currentHandle = handles[flattenPath(path)];
+  const currentHandle = handles[JSON.stringify(path)];
   if (currentHandle?.dom.current) {
     const {
       x: cx,
@@ -473,7 +189,7 @@ function computeHandles(handles: Handles, path: number[]) {
     computedHandles.push(currentHandle.jsx);
     const trimmedPath = path.slice(0, -1);
     visitPath(trimmedPath, visitedPath => {
-      const component = handles[flattenPath(visitedPath)];
+      const component = handles[JSON.stringify(visitedPath)];
       if (component?.dom.current) {
         const {
           x,
@@ -511,108 +227,78 @@ function computeHandles(handles: Handles, path: number[]) {
   return computedHandles;
 }
 
+// Components
+
+interface ComponentDropZoneProps {
+  /**
+   * onDrop - the called function when an authorized element is dropped on the zone
+   */
+  onDrop?: (dndComponnent: DnDComponent, dndMonitor: DropTargetMonitor) => void;
+  /**
+   * show - show the zone, hidden by default
+   */
+  show?: boolean;
+  /**
+   * dropPosition - defines the position of the dropzone in a component
+   * left or top for AFTER, right or bottom for BEFORE and over for INTO
+   */
+  dropPosition: 'BEFORE' | 'AFTER' | 'INTO';
+}
+
+function ComponentDropZone({
+  onDrop,
+  show,
+  dropPosition,
+}: ComponentDropZoneProps) {
+  const [{ isOverCurrent }, dropZone] = useDndComponentDrop(onDrop);
+  return (
+    <div
+      ref={dropZone}
+      className={
+        dropZoneClass(isOverCurrent) +
+        (dropPosition === 'INTO'
+          ? ' component-dropzone-into'
+          : ' component-dropzone') +
+        (dropPosition === 'AFTER' ? ' component-dropzone-after' : '')
+      }
+      style={{
+        visibility: show ? 'visible' : 'collapse',
+        position: 'absolute',
+      }}
+    />
+  );
+}
+
+/**
+ * WegasComponentItemProps - Required props for a layout item component
+ */
 export interface WegasComponentItemProps extends ClassAndStyle {
+  /**
+   * onClick - triggered when a click occures on the element
+   */
   onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  /**
+   * onMouseOver - triggered when the mouse is over the element
+   */
   onMouseOver?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  /**
+   * onMouseLeave - trigered when the mouse is no more over the element
+   */
   onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  /**
+   * tooltip - a descriptive text that apprear when the cursor is idle over the element
+   */
   tooltip?: string;
 }
 
-interface AbsoluteItemProps
-  extends React.PropsWithChildren<WegasComponentItemProps> {
-  layout?: {
-    position?: {
-      left?: string;
-      right?: string;
-      top?: string;
-      bottom?: string;
-    };
-    size?: {
-      width?: string;
-      height?: string;
-    };
-  };
-}
-
-const AbsoluteItem = React.forwardRef<HTMLDivElement, AbsoluteItemProps>(
-  (
-    {
-      layout,
-      tooltip,
-      style,
-      className,
-      onClick,
-      onMouseOver,
-      onMouseLeave,
-      children,
-    },
-    ref,
-  ) => {
-    const { position = {}, size = {} } = layout || {};
-    return (
-      <div
-        ref={ref}
-        style={{ position: 'absolute', ...position, ...size, ...style }}
-        title={tooltip}
-        onClick={onClick}
-        onMouseOver={onMouseOver}
-        onMouseLeave={onMouseLeave}
-        className={className}
-      >
-        {children}
-      </div>
-    );
-  },
-);
-
-const absolutelayoutChoices: HashListChoices = [
-  {
-    label: 'Position',
-    value: { prop: 'position' },
-    items: [
-      {
-        label: 'Left',
-        value: { prop: 'left', schema: schemaProps.number('Left') },
-      },
-      {
-        label: 'Right',
-        value: { prop: 'right', schema: schemaProps.number('Right') },
-      },
-      {
-        label: 'Top',
-        value: { prop: 'top', schema: schemaProps.number('Top') },
-      },
-      {
-        label: 'Bottom',
-        value: { prop: 'bottom', schema: schemaProps.number('Bottom') },
-      },
-      {
-        label: 'Foreground index',
-        value: {
-          prop: 'zIndex',
-          schema: schemaProps.number('Foreground index'),
-        },
-      },
-    ],
-  },
-  {
-    label: 'Size',
-    value: { prop: 'size' },
-    items: [
-      {
-        label: 'Width',
-        value: { prop: 'width', schema: schemaProps.number('Width') },
-      },
-      {
-        label: 'Height',
-        value: { prop: 'height', schema: schemaProps.number('Height') },
-      },
-    ],
-  },
-];
-
+/**
+ * ContainerTypes - the types of layouts that can be used in a page
+ */
 export type ContainerTypes = 'FLEX' | 'LINEAR' | 'ABSOLUTE' | undefined;
 
+/**
+ * PageComponentProps - The props that are needed by the ComponentContainer
+ */
 export interface PageComponentProps {
   /**
    * componentType - The type of component
@@ -636,6 +322,9 @@ export interface PageComponentProps {
   last?: boolean;
 }
 
+/**
+ * WegasComponentProps - Required props for a Wegas component
+ */
 export interface WegasComponentProps
   extends React.PropsWithChildren<ClassAndStyle>,
     PageComponentProps {
@@ -654,7 +343,34 @@ export interface WegasComponentProps
 }
 
 /**
- * Extracted props from used layouts (needed here to define orientation of the container)
+ * wegasComponentCommonSchema - defines the minimum schema for every WegasComponent
+ */
+export const wegasComponentCommonSchema = {
+  name: schemaProps.string('Name', false, undefined, undefined, -1),
+  className: schemaProps.string(
+    'Classes',
+    false,
+    undefined,
+    undefined,
+    1001,
+    undefined,
+    true,
+  ),
+  // style: schemaProps.code('Style', false, 'JSON', undefined, 'ADVANCED', 1002),
+  style: schemaProps.hashlist(
+    'Style',
+    false,
+    undefined,
+    undefined,
+    undefined,
+    1002,
+  ),
+  children: schemaProps.hidden(false, 'array', 1003),
+};
+
+/**
+ * ExtractedLayoutProps - Extracted props from currently layout containers
+ * Needed to define the orientation of the container
  */
 interface ExtractedLayoutProps {
   layout?: FlexListProps['layout'];
@@ -714,6 +430,7 @@ export function ComponentContainer({
   const itemPath = containerPath.pop();
   const isNotFirstComponent = path.length > 0;
   const editable = editMode && isNotFirstComponent;
+  const showLayout = showBorders && containerType != null;
 
   const Container = React.useMemo(() => {
     switch (childrenType) {
@@ -741,8 +458,8 @@ export function ComponentContainer({
         {...omit(options, ['actions', 'upgrades'])}
         className={
           cx(handleControlStyle, flex, {
-            [layoutHighlightStyle]: showBorders,
-            [childHighlightStyle]: showBorders,
+            [layoutHighlightStyle]: showLayout,
+            [childHighlightStyle]: showLayout,
             [handleControlHoverStyle]: editMode,
             [focusedComponentStyle]: isFocused,
             [childDropzoneHorizontalStyle]: !computedVertical,
@@ -799,7 +516,6 @@ export function ComponentContainer({
             if (!stackedHandles) {
               setStackedHandles(() => computeHandles(handles, path));
             }
-            // focusComponent({ pageId: pageId, componentPath: path });
             dispatch({
               type: 'COMPONENT_SET_FOCUSED',
               payload: { pageId: pageId, componentPath: path },
@@ -810,7 +526,6 @@ export function ComponentContainer({
           if (editable) {
             setStackedHandles(undefined);
           }
-          // focusComponent(undefined);
           dispatch({ type: 'COMPONENT_SET_FOCUSED', payload: undefined });
         }}
         tooltip={options?.upgrades?.tooltip}
@@ -855,7 +570,7 @@ export function ComponentContainer({
         )}
         {editable && (
           <EditHandle
-            componentName={name}
+            name={name}
             stackedHandles={stackedHandles}
             componentType={componentType}
             path={path}
@@ -883,190 +598,3 @@ export function ComponentContainer({
     </>
   );
 }
-
-interface EditorHandleProps {
-  componentName?: WegasComponentProps['name'];
-  componentType: WegasComponentProps['componentType'];
-  path: number[];
-  stackedHandles?: JSX.Element[];
-}
-
-function EditHandle({
-  componentName,
-  componentType,
-  path,
-  stackedHandles,
-}: EditorHandleProps) {
-  const handleRef = React.createRef<HTMLDivElement>();
-  const {
-    onEdit,
-    onDelete,
-    handles,
-    editMode,
-    showControls,
-  } = React.useContext(pageCTX);
-
-  const HandleContent = React.forwardRef<HTMLDivElement>((_, ref) => {
-    const [, drag] = useComponentDrag(componentType, path);
-    return (
-      <div
-        ref={ref}
-        className={cx(flex, flexColumn, handleContentStyle)}
-        //Avoiding the container actions to trigger when using handle
-        onClick={event => event.stopPropagation()}
-      >
-        <div
-          style={{ fontSize: '10px' }}
-          className={
-            cx(flex, flexRow, textCenter) + ' wegas-component-handle-title'
-          }
-        >
-          {(componentName ? componentName + ' : ' : '') + componentType}
-        </div>
-        <div className={cx(flex, flexRow) + ' wegas-component-handle-content'}>
-          <IconButton icon="edit" onClick={() => onEdit(path)} />
-          <IconButton icon="arrows-alt" ref={drag} />
-          <ConfirmButton
-            icon="trash"
-            onAction={success => {
-              if (success) {
-                onDelete(path);
-              }
-            }}
-          />
-        </div>
-      </div>
-    );
-  });
-  handles[flattenPath(path)] = { jsx: <HandleContent />, dom: handleRef };
-
-  return editMode && showControls ? (
-    <div
-      ref={e => {
-        if (e != null) {
-          const div = e as HTMLDivElement;
-          const parent = div.parentElement as HTMLElement;
-          div.style.setProperty('position', 'fixed');
-          div.style.setProperty(
-            'top',
-            String(parent.getBoundingClientRect().top - 30) + 'px',
-          );
-          div.style.setProperty(
-            'left',
-            String(parent.getBoundingClientRect().left - 30) + 'px',
-          );
-        }
-      }}
-      style={{
-        zIndex: 1000,
-      }}
-      className={'wegas-component-handle'}
-    >
-      {stackedHandles && stackedHandles.length > 0 ? (
-        stackedHandles.map((v, i) => (
-          <React.Fragment key={i}>{v}</React.Fragment>
-        ))
-      ) : (
-        <HandleContent ref={handleRef} />
-      )}
-    </div>
-  ) : null;
-}
-
-interface ComponentDropZoneProps {
-  /**
-   * onDrop - the called function when an authorized element is dropped on the zone
-   */
-  onDrop?: (dndComponnent: DnDComponent, dndMonitor: DropTargetMonitor) => void;
-  /**
-   * show - show the zone, hidden by default
-   */
-  show?: boolean;
-  /**
-   * dropPosition - defines the position of the dropzone in a component
-   * left or top for AFTER, right or bottom for BEFORE and over for INTO
-   */
-  dropPosition: 'BEFORE' | 'AFTER' | 'INTO';
-}
-
-function ComponentDropZone({
-  onDrop,
-  show,
-  dropPosition,
-}: ComponentDropZoneProps) {
-  const [{ isOverCurrent }, dropZone] = useDndComponentDrop(onDrop);
-  return (
-    <div
-      ref={dropZone}
-      className={
-        dropZoneClass(isOverCurrent) +
-        (dropPosition === 'INTO'
-          ? ' component-dropzone-into'
-          : ' component-dropzone') +
-        (dropPosition === 'AFTER' ? ' component-dropzone-after' : '')
-      }
-      style={{
-        visibility: show ? 'visible' : 'collapse',
-        position: 'absolute',
-      }}
-    />
-  );
-}
-
-const layoutChoices = {
-  FLEX: [
-    {
-      label: 'Layout',
-      value: { prop: 'layout' },
-      items: flexlayoutChoices,
-    },
-  ],
-  LINEAR: [],
-  ABSOLUTE: [
-    {
-      label: 'Layout',
-      value: { prop: 'layout' },
-      items: absolutelayoutChoices,
-    },
-  ],
-};
-
-export const wegasComponentCommonSchema = {
-  name: schemaProps.string('Name', false, undefined, undefined, -1),
-  className: schemaProps.string(
-    'Classes',
-    false,
-    undefined,
-    undefined,
-    1001,
-    undefined,
-    true,
-  ),
-  style: schemaProps.code('Style', false, 'JSON', undefined, 'ADVANCED', 1002),
-  children: schemaProps.hidden(false, 'array', 1003),
-};
-
-export const wegasComponentOptionsSchema = (containerType: ContainerTypes) => ({
-  options: schemaProps.hashlist(
-    'Options',
-    false,
-    [
-      ...(containerType ? layoutChoices[containerType] : []),
-      {
-        label: 'Actions',
-        value: { prop: 'actions' },
-        items: actionsChoices,
-      },
-      {
-        label: 'Upgrades',
-        value: { prop: 'upgrades' },
-        items: upgradeChoices,
-      },
-    ],
-    undefined,
-    undefined,
-    1001,
-    undefined,
-    true,
-  ),
-});
