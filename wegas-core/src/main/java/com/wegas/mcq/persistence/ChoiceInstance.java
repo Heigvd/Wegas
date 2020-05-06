@@ -19,9 +19,9 @@ import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.True;
+import com.wegas.editor.Visible;
 import com.wegas.editor.view.EntityArrayFiledSelect;
 import com.wegas.editor.view.Hidden;
-import com.wegas.editor.Visible;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -260,7 +260,7 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
         this.setReplies(ListUtils.cloneAdd(this.getReplies(), reply));
     }
 
-    void removeReply(Reply reply) {
+    /* package */ void removeReply(Reply reply) {
         this.replies.remove(reply);
     }
 

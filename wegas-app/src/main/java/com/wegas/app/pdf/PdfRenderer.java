@@ -412,10 +412,10 @@ public class PdfRenderer implements Filter {
                 return "";
             }
             StringBuilder sb = new StringBuilder();
-            sb.append(cookies[0].getName()).append("=").append(cookies[0].getValue());
+            sb.append(cookies[0].getName()).append('=').append(cookies[0].getValue());
             int i;
             for (i = 1; i < cookies.length; i++) {
-                sb.append(token).append(cookies[i].getName()).append("=").append(cookies[i].getValue());
+                sb.append(token).append(cookies[i].getName()).append('=').append(cookies[i].getValue());
             }
             return sb.toString();
         }

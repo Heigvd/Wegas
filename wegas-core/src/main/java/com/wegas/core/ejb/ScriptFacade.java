@@ -91,12 +91,6 @@ public class ScriptFacade extends WegasAbstractFacade {
 
     private static class CachedScript {
 
-        public CachedScript(CompiledScript script, String name, String version, String language) {
-            this.name = name;
-            this.script = script;
-            this.version = version;
-            this.language = language;
-        }
         private CompiledScript script;
 
         private String version;
@@ -104,6 +98,13 @@ public class ScriptFacade extends WegasAbstractFacade {
         private String language;
 
         private String name;
+
+        public CachedScript(CompiledScript script, String name, String version, String language) {
+            this.name = name;
+            this.script = script;
+            this.version = version;
+            this.language = language;
+        }
     }
 
     /**

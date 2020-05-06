@@ -105,6 +105,7 @@ public class GameAdmin extends AbstractEntity {
     private Integer prevTeamCount;
 
     public GameAdmin() {
+        // empty constructor
     }
 
     public GameAdmin(Game game) {

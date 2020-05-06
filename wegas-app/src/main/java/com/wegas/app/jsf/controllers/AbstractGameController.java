@@ -111,7 +111,7 @@ public class AbstractGameController implements Serializable {
                             "url(" + context.getContextPath()
                             + dir + "$1)");                                     //Regexp to avoid rewriting protocol guess they contain ':' (http: data:)
                 }
-                acc.append(content).append("\n");
+                acc.append(content).append('\n');
             } catch (NullPointerException e) {
                 logger.error("Resource not found : {}", fileName);
             }

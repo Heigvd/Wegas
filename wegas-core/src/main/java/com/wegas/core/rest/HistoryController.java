@@ -126,7 +126,7 @@ public class HistoryController {
         String name = oName;
 
         if (!oName.endsWith(".json")) {
-            name += oName + ".json";
+            name += ".json";
         }
 
         jcrFacade.createFile(gameModel, ContentConnector.WorkspaceType.HISTORY, name, "/",

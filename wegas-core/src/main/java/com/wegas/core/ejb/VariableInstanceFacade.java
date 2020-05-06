@@ -83,7 +83,8 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
     @Inject
     private ReviewingFacade reviewingFacade;
 
-    @Inject QuestionDescriptorFacade questionDescriptorFacade;
+    @Inject
+    private QuestionDescriptorFacade questionDescriptorFacade;
 
     @Inject
     private ScriptEventFacade scriptEvent;
@@ -96,7 +97,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
      * @return variableDescriptor instance owned by player
      */
     public VariableInstance find(Long variableDescriptorId,
-            Player player) {
+        Player player) {
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
         return vd.getInstance(player);
     }
@@ -104,7 +105,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
     public VariableInstance getTeamInstance(TeamScope scope, Team team) {
         try {
             TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
-                    "VariableInstance.findTeamInstance", VariableInstance.class);
+                "VariableInstance.findTeamInstance", VariableInstance.class);
             query.setParameter("scopeId", scope.getId());
             query.setParameter("teamId", team.getId());
             return query.getSingleResult();
@@ -116,7 +117,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
     public VariableInstance getPlayerInstance(PlayerScope scope, Player player) {
         try {
             TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
-                    "VariableInstance.findPlayerInstance", VariableInstance.class);
+                "VariableInstance.findPlayerInstance", VariableInstance.class);
             query.setParameter("scopeId", scope.getId());
             query.setParameter("playerId", player.getId());
             return query.getSingleResult();
@@ -169,7 +170,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
     public Map<Player, VariableInstance> getAllPlayerInstances(PlayerScope scope) {
         Map<Player, VariableInstance> instances = new HashMap<>();
         TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
-                "VariableInstance.findAllPlayerInstances", VariableInstance.class);
+            "VariableInstance.findAllPlayerInstances", VariableInstance.class);
         query.setParameter("scopeId", scope.getId());
 
         List<VariableInstance> resultList = query.getResultList();
@@ -182,7 +183,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
     public Map<Team, VariableInstance> getAllTeamInstances(TeamScope scope) {
         Map<Team, VariableInstance> instances = new HashMap<>();
         TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
-                "VariableInstance.findAllTeamInstances", VariableInstance.class);
+            "VariableInstance.findAllTeamInstances", VariableInstance.class);
         query.setParameter("scopeId", scope.getId());
 
         List<VariableInstance> resultList = query.getResultList();
@@ -200,15 +201,14 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
      * @return variableDescriptor instance owned by player
      */
     public VariableInstance find(Long variableDescriptorId,
-            Long playerId) {
+        Long playerId) {
         return this.find(variableDescriptorId, playerFacade.find(playerId));
     }
 
     /**
-     * Get all players owning the given entity. For a player scoped entity,
-     * there will be only one player, for a team scopes one, all players from
-     * the team. A game scoped instance will returns every players and the game
-     * and a gameModel scoped, every players known in the gameModel
+     * Get all players owning the given entity. For a player scoped entity, there will be only one
+     * player, for a team scopes one, all players from the team. A game scoped instance will returns
+     * every players and the game and a gameModel scoped, every players known in the gameModel
      *
      * @param instance
      *
@@ -257,9 +257,8 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
      *
      * @return the team the instance belongs to
      *
-     * @throws UnsupportedOperationException when instance is a default
-     *                                       instance, a gameModel scoped or
-     *                                       game scoped one
+     * @throws UnsupportedOperationException when instance is a default instance, a gameModel scoped
+     *                                       or game scoped one
      */
     public Team findTeam(VariableInstance instance) {
         if (instance.getScope() instanceof PlayerScope) {
@@ -297,7 +296,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
      * @return up to date instance
      */
     public VariableInstance update(Long variableDescriptorId,
-            Long playerId, VariableInstance variableInstance) {
+        Long playerId, VariableInstance variableInstance) {
 
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
         VariableInstance vi = vd.getScope().getVariableInstance(playerFacade.find(playerId));

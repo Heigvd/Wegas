@@ -55,7 +55,7 @@ public class StatisticController {
     private GameFacade gameFacade;
 
     @Inject
-    Xapi xapi;
+    private Xapi xapi;
 
     private List<Long> readIds(String ids) {
         if (ids != null) {

@@ -553,7 +553,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public Reply TX_selectAndValidateChoice(Long choiceId, Long playerId) {
+    public Reply selectAndValidateChoiceTx(Long choiceId, Long playerId) {
         return this.selectAndValidateChoice(choiceId, playerId);
     }
 

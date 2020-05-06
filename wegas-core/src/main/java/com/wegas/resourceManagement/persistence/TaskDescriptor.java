@@ -20,10 +20,10 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.editor.jsonschema.ListOfTasksSchema;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.EmptyMap;
+import com.wegas.editor.jsonschema.ListOfTasksSchema;
 import com.wegas.editor.view.I18nHtmlView;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -284,9 +284,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
         try {
             TaskInstance instance = this.getInstance(p);
             double oldValue = instance.getPropertyD(key);
-            double newValue = oldValue + Double.parseDouble(value);
+            Double newValue = oldValue + Double.parseDouble(value);
             // TODO: fire property change
-            instance.setProperty(key, "" + newValue);
+            instance.setProperty(key, newValue.toString());
         } catch (NumberFormatException e) {
             logger.error("addNumberToProperty: {}", e);
             // do nothing...
@@ -475,10 +475,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     }
 
     public void setActivities(List<Activity> iterations) {
-
+        // backward compatibility
     }
 
     public void setAssignments(List<Assignment> iterations) {
-
+        // backward compatibility
     }
 }

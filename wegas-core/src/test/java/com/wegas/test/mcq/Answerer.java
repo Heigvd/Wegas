@@ -13,10 +13,10 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 /**
+ * TODO refactor/remove/moveToTest as this is only used by one test
  *
  * @author maxence
  */
-
 @Stateless
 @LocalBean
 public class Answerer {
@@ -24,7 +24,7 @@ public class Answerer {
     @Inject
     private QuestionDescriptorFacade questionDescriptorFacade;
 
-    public void selectAndValidateChoice(Long choiceId, Long playerId){
-        questionDescriptorFacade.TX_selectAndValidateChoice(choiceId, playerId);
+    public void selectAndValidateChoice(Long choiceId, Long playerId) {
+        questionDescriptorFacade.selectAndValidateChoiceTx(choiceId, playerId);
     }
 }

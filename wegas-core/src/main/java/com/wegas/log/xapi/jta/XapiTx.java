@@ -108,8 +108,9 @@ public class XapiTx implements Serializable {
 
     /**
      * make sure changes from all opened repositories are "committable" or throw something bad
+     * @throws WegasErrorMessage if commit will not be possible
      */
-    protected void prepare() throws RuntimeException {
+    protected void prepare() {
         if (!statements.isEmpty() && isLoggingEnabled()) {
             // checkink connection may be  very slow
             long start = System.currentTimeMillis();

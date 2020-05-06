@@ -1,3 +1,4 @@
+
 package com.wegas.editor.jsonschema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -12,22 +13,6 @@ public abstract class JSONType extends JSONExtendedSchema {
 
     private final boolean nullable;
 
-    @JsonIgnore
-    abstract String getType();
-
-    @JsonProperty("type")
-    public Object getEffectiveTypes() {
-
-        if (this.nullable) {
-            List<String> types = new ArrayList<>();
-            types.add(this.getType());
-            types.add("null");
-            return types;
-        }
-
-        return this.getType();
-    }
-
     private Object value;
 
     @JsonProperty("enum")
@@ -40,6 +25,22 @@ public abstract class JSONType extends JSONExtendedSchema {
 
     protected JSONType(boolean nullable) {
         this.nullable = nullable;
+    }
+
+    @JsonIgnore
+    public abstract String getType();
+
+    @JsonProperty("type")
+    public Object getEffectiveTypes() {
+
+        if (this.nullable) {
+            List<String> types = new ArrayList<>();
+            types.add(this.getType());
+            types.add("null");
+            return types;
+        }
+
+        return this.getType();
     }
 
     /**

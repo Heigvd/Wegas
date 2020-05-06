@@ -37,6 +37,7 @@ public class ProjectedStatement {
     private Boolean completion;
 
     public ProjectedStatement() {
+        // some empty statement
     }
 
     public ProjectedStatement(Map<String, Object> object) {

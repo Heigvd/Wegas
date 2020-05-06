@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE })
 @Inherited
 @Repeatable(Schemas.class)
-public @interface Schema {
+    public @interface Schema {
     Class<? extends JSONSchema> value();
 
     String property();

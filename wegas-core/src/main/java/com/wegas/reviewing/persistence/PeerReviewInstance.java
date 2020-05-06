@@ -170,7 +170,7 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
      * Skip this {@link #getRequieredUpdatePermission() } implementation.
      * call super one.
      */
-    private Collection<WegasPermission> super_getRequieredUpdatePermission() {
+    private Collection<WegasPermission> getSuperRequieredUpdatePermission() {
         return super.getRequieredUpdatePermission();
     }
 
@@ -180,13 +180,13 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
         for (Review r : getReviewed()) {
             // when they'er reviewing, reviewers also have right to write (optmisticlock = cascade on variableinstance !)
             if (r.getInitialReviewState().equals(Review.ReviewState.DISPATCHED)) {
-                ps.addAll(r.getReviewer().super_getRequieredUpdatePermission()); // avoid infinite loop
+                ps.addAll(r.getReviewer().getSuperRequieredUpdatePermission()); // avoid infinite loop
             }
         }
         for (Review r : getToReview()) {
             // when they'er commenting the feedback, authors also have right to write (optmisticlock = cascade on variableinstance !)
             if (r.getInitialReviewState().equals(Review.ReviewState.NOTIFIED)) {
-                ps.addAll(r.getAuthor().super_getRequieredUpdatePermission()); // avoid infinite loop
+                ps.addAll(r.getAuthor().getSuperRequieredUpdatePermission()); // avoid infinite loop
             }
         }
         return ps;

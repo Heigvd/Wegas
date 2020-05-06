@@ -72,13 +72,6 @@ public class Xapi implements XapiI {
 
     public static final String LOG_ID_PREFIX = "internal://wegas/log-id/";
 
-    public static final class Verbs {
-
-        public static final String AUTHORED = "http://activitystrea.ms/schema/1.0/author";
-        public static final String ANSWERED = "http://adlnet.gov/expapi/verbs/answered";
-
-    }
-
     @Inject
     private RequestManager requestManager;
 
@@ -90,6 +83,13 @@ public class Xapi implements XapiI {
 
     @Inject
     private XapiTx xapiTx;
+
+    public static final class Verbs {
+
+        public static final String AUTHORED = "http://activitystrea.ms/schema/1.0/author";
+        public static final String ANSWERED = "http://adlnet.gov/expapi/verbs/answered";
+
+    }
 
     private LearningLockerClient getLearningLockerClient() {
         return new LearningLockerClient(Helper.getWegasProperty("xapi.ll.host"),
@@ -224,8 +224,8 @@ public class Xapi implements XapiI {
         )));
 
         ctxActivities.setCategory(new ArrayList<Activity>(List.of(
-            new Activity("internal://wegas/team/" + String.valueOf(team.getId())),
-            new Activity("internal://wegas/game/" + String.valueOf(game.getId()))
+            new Activity("internal://wegas/team/" + team.getId()),
+            new Activity("internal://wegas/game/" + game.getId())
         )));
 
         context.setContextActivities(ctxActivities);
@@ -524,5 +524,4 @@ public class Xapi implements XapiI {
             logger.error("Post Statements failed: {}", ex);
         }
     }
-
 }

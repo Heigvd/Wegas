@@ -255,6 +255,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
         }
     }
 
+    // as someone said on December 18, 2012:
     //Methods below are temporary ; only for CEP-Game
     /**
      *

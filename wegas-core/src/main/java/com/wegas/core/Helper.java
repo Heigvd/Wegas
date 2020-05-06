@@ -33,7 +33,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.mail.internet.AddressException;
@@ -69,6 +68,10 @@ public class Helper {
     public static final String TEAM_CHANNEL_PREFIX = "private-Team-";
     public static final String GAME_CHANNEL_PREFIX = "private-Game-";
     public static final String GAMEMODEL_CHANNEL_PREFIX = "private-GameModel-";
+
+    private Helper() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
 
     /**
      * @param <T>
@@ -190,8 +193,17 @@ public class Helper {
         return "";
     }
 
+    /**
+     * How to generate new name
+     */
     public enum NewNameStrategy {
+        /**
+         * Add incremented suffix
+         */
         ORDINAL,
+        /**
+         * Generate brand new random name
+         */
         HASH
     };
 
@@ -214,21 +226,22 @@ public class Helper {
         String preSuff, String postSuff,
         NewNameStrategy strategy) {
 
-        String pattern = "(.+)" + Pattern.quote(preSuff);
+        StringBuilder patternB = new StringBuilder();
+        patternB.append("(.+)").append(Pattern.quote(preSuff));
 
         switch (strategy) {
             case HASH:
-                pattern += "(\\p{Alnum}+)";
+                patternB.append("(\\p{Alnum}+)");
                 break;
             case ORDINAL:
             default:
-                pattern += "(\\d+)";
+                patternB.append("(\\d+)");
                 break;
         }
-        pattern += Pattern.quote(postSuff);
+        patternB.append(Pattern.quote(postSuff));
 
         if (usedNames != null) {
-            Pattern p = Pattern.compile(pattern);
+            Pattern p = Pattern.compile(patternB.toString());
             Matcher matcher = p.matcher(name);
 
             String suff;
@@ -255,7 +268,7 @@ public class Helper {
 
     private static String genNewSuffix(String suffix, NewNameStrategy strategy) {
         if (NewNameStrategy.ORDINAL.equals(strategy)) {
-            return "" + (Integer.parseInt(suffix, 10) + 1);
+            return Integer.toString(Integer.parseInt(suffix, 10) + 1, 10);
         } else {
             return Helper.genToken(6);
         }
@@ -518,6 +531,13 @@ public class Helper {
         return replaceSpecialCharacters(camelCasify(s));
     }
 
+    /**
+     * Remove all common diacritic marks.
+     *
+     * @param s the string to clean
+     *
+     * @return the cleaned string
+     */
     public static String replaceSpecialCharacters(String s) {
         s = s.replaceAll(" ", "_");
 
@@ -810,7 +830,7 @@ public class Helper {
     public static void recursiveDelete(File file) throws IOException {
         if (file.isDirectory()) {
             String[] files = file.list();
-            if (files ==null || files.length == 0) {
+            if (files == null || files.length == 0) {
                 if (!file.delete()) {
                     logger.warn("Failed to delete file {}", file.getName());
                 }
@@ -938,7 +958,8 @@ public class Helper {
         StringBuilder sb = new StringBuilder();
         SecureRandom sr = new SecureRandom();
 
-        while (count-- > 0) {
+        while (count > 0) {
+            count--;
             sb.append(tokenElements.charAt(sr.nextInt(digits)));
         }
         return sb.toString();
@@ -983,8 +1004,6 @@ public class Helper {
      */
     public static class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
-        ConcurrentHashMap<K, V> yaja;
-
         private int cacheSize;
 
         /**
@@ -1026,14 +1045,14 @@ public class Helper {
     }
 
     private static void newLine(StringBuilder sb, int ident) {
-        sb.append("\n");
+        sb.append('\n');
         Helper.indent(sb, ident);
     }
 
     private static void printDescriptors(GameModel gameModel, List<VariableDescriptor> list, StringBuilder sb, int level) {
         for (VariableDescriptor vd : list) {
             newLine(sb, level);
-            sb.append(vd).append("(").append(gameModel.getVariableDescriptors().contains(vd)).append(" -> ").append(vd.getDefaultInstance());
+            sb.append(vd).append('(').append(gameModel.getVariableDescriptors().contains(vd)).append(" -> ").append(vd.getDefaultInstance());
             if (vd instanceof DescriptorListI) {
                 printDescriptors(gameModel, ((DescriptorListI) vd).getItems(), sb, level + 1);
             }

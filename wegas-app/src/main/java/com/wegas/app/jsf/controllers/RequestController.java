@@ -148,7 +148,7 @@ public class RequestController implements Serializable {
      */
     public String getCurrentUserId() {
         try {
-            return "" + this.getCurrentUser().getId();
+            return this.getCurrentUser().getId().toString();
         } catch (WegasNotFoundException e) {
             return "0";
         }
