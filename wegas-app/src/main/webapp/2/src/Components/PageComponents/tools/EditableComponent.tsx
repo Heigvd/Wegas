@@ -22,7 +22,7 @@ const editItemStyle = css({
 
 interface ComponentEditorHandleProps {
   name: string;
-  path: string[];
+  path: number[];
 }
 
 export interface EditorHandleProps {
@@ -122,7 +122,7 @@ interface EditableComponentProps {
     showBorders: boolean,
   ) => React.ReactElement | null;
   wegasChildren?: WegasComponent[];
-  path: string[];
+  path: number[];
   uneditable?: boolean;
 }
 

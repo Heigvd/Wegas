@@ -18,6 +18,7 @@ export interface EditorAction<T extends IAbstractEntity> {
     [id: string]: {
       label: React.ReactNode;
       action: actionFn<T>;
+      confirm?: boolean;
     };
   };
 }
@@ -60,8 +61,9 @@ export interface GlobalState extends EditingState {
   currentTeamId: number;
   currentUser: Readonly<IUser>;
   currentPageId?: string;
-  pageEdit: Readonly<boolean>;
-  pageSrc: Readonly<boolean>;
+  // pageEdit: Readonly<boolean>;
+  // pageSrc: Readonly<boolean>;
+  pageError?: Readonly<string>;
   search:
     | {
         type: 'GLOBAL';
@@ -187,33 +189,36 @@ export const editorManagement = (
 const global: Reducer<Readonly<GlobalState>> = u(
   (state: GlobalState, action: StateActions) => {
     switch (action.type) {
-      case ActionType.PAGE_EDIT:
-        state.editing = {
-          type: 'Component',
-          page: action.payload.page,
-          path: action.payload.path,
-          actions: {},
-        };
-        return;
-      case ActionType.PAGE_LOAD_ID:
-        state.currentPageId = action.payload;
-        return;
-      case ActionType.PAGE_INDEX:
-        // if current page doesn't exist
-        if (!action.payload.some(meta => meta.id === state.currentPageId)) {
-          if (action.payload.length > 0) {
-            // there is at lease 1 page
-            state.currentPageId = action.payload[0].id;
-          } else {
-            state.currentPageId = undefined;
-          }
-        }
-        return;
-      case ActionType.PAGE_SRC_MODE:
-        state.pageSrc = action.payload;
-        return;
-      case ActionType.PAGE_EDIT_MODE:
-        state.pageEdit = action.payload;
+      // case ActionType.PAGE_EDIT:
+      //   state.editing = {
+      //     type: 'Component',
+      //     page: action.payload.page,
+      //     path: action.payload.path,
+      //     actions: {},
+      //   };
+      //   return;
+      // case ActionType.PAGE_LOAD_ID:
+      //   state.currentPageId = action.payload;
+      //   return;
+      // case ActionType.PAGE_INDEX:
+      //   // if current page doesn't exist
+      //   if (!action.payload.some(meta => meta.id === state.currentPageId)) {
+      //     if (action.payload.length > 0) {
+      //       // there is at lease 1 page
+      //       state.currentPageId = action.payload[0].id;
+      //     } else {
+      //       state.currentPageId = undefined;
+      //     }
+      //   }
+      //   return;
+      // case ActionType.PAGE_SRC_MODE:
+      //   state.pageSrc = action.payload;
+      //   return;
+      // case ActionType.PAGE_EDIT_MODE:
+      //   state.pageEdit = action.payload;
+      //   return;
+      case ActionType.PAGE_ERROR:
+        state.pageError = action.payload.error;
         return;
       case ActionType.SEARCH_CLEAR:
         state.search = { type: 'NONE' };
@@ -299,8 +304,8 @@ const global: Reducer<Readonly<GlobalState>> = u(
     currentUser: CurrentUser,
     pusherStatus: { status: 'disconnected' },
     search: { type: 'NONE' },
-    pageEdit: false,
-    pageSrc: false,
+    // pageEdit: false,
+    // pageSrc: false,
     events: [],
     clientMethods: {},
     serverMethods: {},
@@ -334,7 +339,7 @@ export function editVariable(
         : {
             more: {
               delete: {
-                label: 'delete',
+                label: 'Delete',
                 action: (entity: IVariableDescriptor, path?: string[]) => {
                   dispatch(
                     Actions.VariableDescriptorActions.deleteDescriptor(
@@ -343,9 +348,10 @@ export function editVariable(
                     ),
                   );
                 },
+                confirm: true,
               },
               findUsage: {
-                label: 'findUsage',
+                label: 'Find usage',
                 action: (entity: IVariableDescriptor) => {
                   if (entityIsPersisted(entity)) {
                     dispatch(Actions.EditorActions.searchUsage(entity));
@@ -447,9 +453,9 @@ export function createVariable(
   });
 }
 
-export function editComponent(page: string, path: string[]) {
-  return ActionCreator.PAGE_EDIT({ page, path });
-}
+// export function editComponent(page: string, path: string[]) {
+//   return ActionCreator.PAGE_EDIT({ page, path });
+// }
 /**
  * Save the content from the editor
  *
@@ -493,33 +499,33 @@ export function saveEditor(value: IAbstractEntity): ThunkResult {
     }
   };
 }
-/**
- * Set or unset page edit mode
- *
- * @export
- * @param {boolean} payload set it or not.
- */
-export function pageEditMode(payload: boolean) {
-  return ActionCreator.PAGE_EDIT_MODE(payload);
-}
-/**
- * Set or unset page edit mode
- *
- * @export
- * @param {boolean} payload set it or not.
- */
-export function pageLoadId(payload?: string) {
-  return ActionCreator.PAGE_LOAD_ID(payload);
-}
-/**
- * Set or unset page src mode
- *
- * @export
- * @param payload set it or not
- */
-export function pageSrcMode(payload: boolean) {
-  return ActionCreator.PAGE_SRC_MODE(payload);
-}
+// /**
+//  * Set or unset page edit mode
+//  *
+//  * @export
+//  * @param {boolean} payload set it or not.
+//  */
+// export function pageEditMode(payload: boolean) {
+//   return ActionCreator.PAGE_EDIT_MODE(payload);
+// }
+// /**
+//  * Set or unset page edit mode
+//  *
+//  * @export
+//  * @param {boolean} payload set it or not.
+//  */
+// export function pageLoadId(payload?: string) {
+//   return ActionCreator.PAGE_LOAD_ID(payload);
+// }
+// /**
+//  * Set or unset page src mode
+//  *
+//  * @export
+//  * @param payload set it or not
+//  */
+// export function pageSrcMode(payload: boolean) {
+//   return ActionCreator.PAGE_SRC_MODE(payload);
+// }
 
 export function updatePusherStatus(status: string, socket_id: string) {
   return ActionCreator.PUSHER_SOCKET({ socket_id, status });

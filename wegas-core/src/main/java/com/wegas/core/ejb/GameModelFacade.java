@@ -9,6 +9,7 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.tools.FindAndReplaceVisitor;
 import ch.albasim.wegas.annotations.ProtectionLevel;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.wegas.core.Helper;
 import com.wegas.core.api.GameModelFacadeI;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
@@ -212,6 +213,33 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         variableDescriptorFacade.reviveItems(entity, entity, true); // brand new GameModel -> revive all descriptor
         createdGameModelEvent.fire(new EntityCreated<>(entity));
+    }
+
+    /**
+     * Patch gameModel with newVersion. TODO: patch files as well
+     *
+     * @param gameModel  the gameModel to patch
+     * @param newVersion the new version
+     *
+     * @return
+     */
+    public GameModel patch(GameModel gameModel, GameModel newVersion) throws RepositoryException {
+        List<GameModel> toPatch = new ArrayList<>();
+        toPatch.add(gameModel);
+
+        newVersion.setName(gameModel.getName());
+        newVersion.setComments(gameModel.getComments());
+
+        modelFacade.processLanguages(newVersion, toPatch);
+        // ensure variable tree is up to date with newVersion's
+        modelFacade.fixVariableTree(newVersion, toPatch);
+        // merge recusrsively and bypass visibility restriction
+        gameModel.deepMergeForce(newVersion);
+
+        // revive descriptor & propagate default instances
+        variableDescriptorFacade.reviveItems(gameModel, gameModel, false);
+
+        return gameModel;
     }
 
     /**
@@ -477,6 +505,41 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         }
     }
 
+    /**
+     * Extract gameModel from a WGZ export.
+     *
+     * @param zip a WGZ archive
+     *
+     * @return the (unpersisted) gameModel
+     *
+     * @throws IOException
+     * @throws RepositoryException
+     */
+    public GameModel extractGameModelFromWGZ(ZipInputStream zip) throws IOException, RepositoryException {
+        ZipEntry entry;
+        GameModel gameModel = null;
+        InputStream filesStream = null;
+        InputStream gameModelStream = null;
+
+        while ((entry = zip.getNextEntry()) != null) {
+            if (entry.getName().equals("gamemodel.json")) {
+                gameModelStream = IOUtils.toBufferedInputStream(zip);
+            } else if (entry.getName().equals("files.xml")) {
+                filesStream = IOUtils.toBufferedInputStream(zip);
+            } else {
+                throw new WegasIncompatibleType("Invalid zip entry " + entry.getName());
+            }
+        }
+
+        if (gameModelStream != null && filesStream != null) {
+            gameModel = JacksonMapperProvider.getMapper().readValue(gameModelStream, GameModel.class);
+//            ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, WorkspaceType.FILES);
+//            connector.importXML(filesStream);
+        }
+
+        return gameModel;
+    }
+
     public GameModel unzip(ZipInputStream zip) throws IOException, RepositoryException {
         ZipEntry entry;
         GameModel gameModel = null;
@@ -598,6 +661,14 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     public GameModel duplicate(final Long entityId) throws CloneNotSupportedException {
         final GameModel srcGameModel = this.find(entityId);
         if (srcGameModel != null) {
+            if (!srcGameModel.getPages().isEmpty()) {
+                // make sure to have an up-to-date page index before the copy
+                try {
+                    pageFacade.getPageIndex(srcGameModel);
+                } catch (RepositoryException | JsonProcessingException ex) {
+                    logger.warn("Unable to getIndex");
+                }
+            }
             return (GameModel) srcGameModel.duplicate();
         }
         return null;

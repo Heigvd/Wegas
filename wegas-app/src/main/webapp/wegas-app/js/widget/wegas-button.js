@@ -208,6 +208,9 @@ YUI.add('wegas-button', function(Y) {
                 WhQuestionDescriptor: function(descriptor, instance, resolve) {
                     resolve((instance.get('active') && !instance.get("validated") ? 1 : 0));
                 },
+                SurveyDescriptor: function(descriptor, instance, resolve) {
+                    resolve((instance.get('active') && !instance.get("validated") ? 1 : 0));
+                },
                 PeerReviewDescriptor: function(descriptor, instance, resolve) {
                     var i, j, k,
                         types = ['toReview', 'reviewed'],

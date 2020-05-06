@@ -13,6 +13,7 @@ import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.AuthenticationMethod;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -83,6 +84,25 @@ public class AccountController {
     }
 
     /**
+     *
+     * Retrieve authentication for a specific account
+     *
+     * @param entityId
+     *
+     * @return authentication method in use for this account
+     *
+     */
+    @GET
+    @Path("{entityId : [1-9][0-9]*}/AuthenticationMethod")
+    public AuthenticationMethod getAuthenticationMethod(@PathParam("entityId") Long entityId) {
+        AbstractAccount a = accountFacade.find(entityId);
+        if (!userFacade.getCurrentUser().equals(a.getUser())) {
+            SecurityUtils.getSubject().checkPermission("User:Edit");
+        }
+        return a.getAuthenticationMethod();
+    }
+
+    /**
      * Update an account
      *
      * @param accountId
@@ -90,14 +110,13 @@ public class AccountController {
      *
      * @return up-to-date account
      *
-     * @throws AuthorizationException if currentUser cannot edit users or
-     *                                targeted account does not belongs to
-     *                                current user
+     * @throws AuthorizationException if currentUser cannot edit users or targeted account does not
+     *                                belongs to current user
      */
     @PUT
     @Path("{accountId: [1-9][0-9]*}")
     public AbstractAccount update(@PathParam("accountId") Long accountId,
-            AbstractAccount entity) {
+        AbstractAccount entity) {
         return accountFacade.update(accountId, entity);
     }
 
@@ -122,8 +141,8 @@ public class AccountController {
     }
 
     /**
-     * Get all account linked to team's players Account email addresses will be
-     * altered (by hiding some parts) so they can be publicly displayed
+     * Get all account linked to team's players Account email addresses will be altered (by hiding
+     * some parts) so they can be publicly displayed
      *
      * @param teamId id of the team we want players from
      *
@@ -142,9 +161,8 @@ public class AccountController {
      *
      * @return up-to-date account
      *
-     * @throws AuthorizationException if currentUser cannot edit users or
-     *                                targeted account does not belongs to
-     *                                current user
+     * @throws AuthorizationException if currentUser cannot edit users or targeted account does not
+     *                                belongs to current user
      */
     @POST
     @Path("SetAgreed/{accountId: [1-9][0-9]*}")

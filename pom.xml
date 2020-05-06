@@ -94,19 +94,21 @@
         <wegas.clientErrorLogging>false</wegas.clientErrorLogging>
         <wegas.useYUICDN>false</wegas.useYUICDN>
 
-        <shiro.version>1.5.0</shiro.version>
+        <jakarta.version>8.0.0</jakarta.version>
+
+        <shiro.version>1.5.2</shiro.version>
         <jdk.version>1.8</jdk.version>
-        <payara.version>5.194</payara.version>
-        <payara.micro.version>5.194.albasim-p1</payara.micro.version>
-        <payara-api.version>5.194</payara-api.version>
+        <payara.version>5.201</payara.version>
+        <payara.micro.version>5.201.albasim-p1</payara.micro.version>
+        <payara-api.version>5.201</payara-api.version>
         <junit.version>4.12</junit.version>
         <arquillian.version>1.4.1.Final</arquillian.version>
         <exec.plugin.version>1.2</exec.plugin.version>
 
-        <jackson.version>2.10.0</jackson.version>
+        <jackson.version>2.10.2</jackson.version>
         <jackson.scope>provided</jackson.scope>
 
-        <jersey.version>2.29.payara-p5</jersey.version>
+        <jersey.version>2.30.payara-p1</jersey.version>
 
         <eclipselink.scope>provided</eclipselink.scope>
         <eclipselink.version>2.7.4</eclipselink.version>
@@ -392,7 +394,7 @@
             <dependency>
                 <groupId>javax.cache</groupId>
                 <artifactId>cache-api</artifactId>
-                <version>1.1.0</version>
+                <version>1.1.1</version>
                 <type>jar</type>
                 <scope>provided</scope>
             </dependency>
@@ -419,7 +421,7 @@
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-common</artifactId>
-                <version>2.28</version>
+                <version>2.30</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -431,13 +433,13 @@
             <dependency>
                 <groupId>com.hazelcast</groupId>
                 <artifactId>hazelcast</artifactId>
-                <version>3.12</version>
+                <version>3.12.6</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>javax</groupId>
-                <artifactId>javaee-api</artifactId>
-                <version>8.0.1</version>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-api</artifactId>
+                <version>${jakarta.version}</version>
                 <scope>provided</scope>
             </dependency>
 

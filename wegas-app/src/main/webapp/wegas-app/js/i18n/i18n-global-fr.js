@@ -29,6 +29,7 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
             logout: "déconnexion",
             statistics: "Statistiques",
             peerReview: "Eval. croisées",
+            survey: "Questionnaire",
             backToMenu: "retour au menu",
             mcqBackToMenu: "retour à la liste de questions",
             ok: "OK",

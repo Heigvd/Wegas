@@ -52,12 +52,6 @@ angular.module('private.directives', [])
                     });
                 };
 
-                scope.verifyEmail = function() {
-                    Auth.requestEmailValidation().then(function(response) {
-                        response.flash();
-                    });
-                };
-
                 scope.editProfile = function() {
                     // Decide which controller to display in background
                     var profileState;

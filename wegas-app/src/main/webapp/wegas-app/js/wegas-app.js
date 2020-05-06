@@ -104,6 +104,8 @@ YUI.add('wegas-app', function(Y) {
                         while ((event = events.shift()) !== undefined) {
                             event.detach();
                         }
+                        this.plug(Y.Plugin.SurveyListener);
+
                         this.plug(Y.Plugin.LockManager);
                         this.plug(Y.Plugin.IdleMonitor);
                         this.idlemonitor.on("idle", Y.bind(this.goIdle, this));
@@ -197,6 +199,40 @@ YUI.add('wegas-app', function(Y) {
                 }, this);
 
                 if (extraTabs) {
+
+                    Y.Wegas.Facade.Page.cache.getIndex(function(index) {
+                        var items = [index.root];
+
+                        while (items.length) {
+                            var item = items.shift();
+
+                            if (item["@class"] === "Folder") {
+                                items = items.concat(item.items);
+                            } else if (item["@class"] === "Page") {
+                                var target = [];
+                                if (item.trainerPage) {
+                                    target.push("host");
+                                }
+
+                                if (item.scenaristPage) {
+                                    target.push("edit");
+                                }
+                                if (target.length) {
+
+                                    extraTabs._addTab({
+                                        label: item.name,
+                                        targetMode: target,
+                                        children: [{
+                                                type: "PageLoader",
+                                                pageLoaderId: "extraTab_" + item.id,
+                                                defaultPageId: item.id
+                                            }]
+                                    });
+                                }
+                            }
+                        }
+                    });
+
                     if (gm.get("properties").get("val").logID) {
                         extraTabs._addTab({
                             label: I18n.t("global.statistics"),
@@ -220,6 +256,20 @@ YUI.add('wegas-app', function(Y) {
                             });
 
                         }, this);
+
+                    // @TODO Until a survey import feature is available, restrict the survey tab
+                    // to admins and games already containing at least one survey:
+                    var isCurrentUserAdmin = !!Y.Wegas.Facade.User.cache.get("currentUser").get("roles").find(function(role) {
+                        return role.get("name") === "Administrator";
+                    })
+                    if (isCurrentUserAdmin || Y.Wegas.Facade.Variable.cache.find("@class", "SurveyDescriptor")) {
+                        extraTabs._addTab({
+                            label: I18n.t("global.survey"),
+                            children: [{
+                                    "type": "SurveyOrchestrator"
+                                }]
+                        });
+                    }
                 }
 
                 Y.one("body").on("key", function(e) { // detect ctrl+§ key

@@ -14,6 +14,7 @@ import com.wegas.core.persistence.game.GameModelProperties;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
+import com.wegas.survey.persistence.SurveyInstance;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -134,6 +135,14 @@ public class ValueGenerators {
         @Override
         public PeerReviewDescriptor.ReviewingState getValue() {
             return PeerReviewDescriptor.ReviewingState.NOT_STARTED;
+        }
+    }
+
+    public static class SurveyNotStarted implements ValueGenerator {
+
+        @Override
+        public SurveyInstance.SurveyStatus getValue() {
+            return SurveyInstance.SurveyStatus.NOT_STARTED;
         }
     }
 

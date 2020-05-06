@@ -172,6 +172,11 @@ angular.module('wegas.service.wegasTranslations', [])
                         }
                     ],
                     'translations': {
+                        //warning
+                        'DEPRECATED-BROWSER': {
+                            'en': 'You are using an outdated and unsupported browser. Please upgrade your browser to log in',
+                            'fr': 'Vous utilisez un navigateur obsolète. Veuillez le mettre à jour pour pouvoir vous connecter',
+                        },
                         // Commons
                         'WEGAS-KEYWORD-AND': {
                             'en': 'and',
@@ -307,8 +312,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Veuillez entrer votre adresse e-mail"
                         },
                         'CREATE-ACCOUNT-FLASH-WRONG-EMAIL-IN-USERNAME': {
-                            'en': "All e-mail addresses must be identical",
-                            'fr': "Toutes les adresses e-mail doivent être identiques"
+                            'en': "A username can not contain the '@' character",
+                            'fr': "Le nom d'utilisateur ne peux pas contenir de '@'"
                         },
                         'CREATE-ACCOUNT-FLASH-WRONG-USERNAME': {
                             'en': "A username is required",
@@ -1206,8 +1211,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Confirmer le mot de passe"
                         },
                         'PRIVATE-PROFILE-INPUT-PLACEHOLDER-USERNAME': {
-                            'en': "Please enter your username",
-                            'fr': "Veuillez entrer votre nom d'utilisateur"
+                            'en': "Please enter a username (optional)",
+                            'fr': "Veuillez entrer un nom d'utilisateur (facultatif)"
                         },
                         'PRIVATE-PROFILE-INPUT-PLACEHOLDER-FIRSTNAME': {
                             'en': "Please enter your first name",
@@ -1790,6 +1795,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "This will generate a new " + keywords.scenario.singular.en + " based on this one.",
                             'fr': "Cette action génère un nouveau " + keywords.scenario.singular.fr +
                                 " basé sur celui-ci"
+                        },
+                        'SCENARIST-MODALE-VERSIONS-DIFF-BTN': {
+                            'en': "Diff",
+                            'fr': "Diff"
+                        },
+                        'SCENARIST-MODALE-VERSIONS-PATCH-BTN': {
+                            'en': "Patch",
+                            'fr': "Patch"
                         },
                         'SCENARIST-MODALE-VERSIONS-PDF-BTN': {
                             'en': "PDF",

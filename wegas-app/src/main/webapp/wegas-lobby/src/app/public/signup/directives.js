@@ -40,15 +40,15 @@ angular.module('public.signup.directives', [])
             language: "",
             agree: ""
         };
-        // Returns true if either (1) username does not look like an e-mail address or (2) username is an e-mail and is identical to the e-mail address field.
-        // Returns false otherwise.
-        ctrl.checkEmailInUsername = function() {
+        /**
+         * Assert the user's username is valid.
+         * returns false if the username looks like a e-mail address
+         *
+         * @returns {Boolean} if the user is valid or not
+         */
+        ctrl.isUsernameValid = function() {
             var username = ctrl.newUser.username.trim();
-            if (username.indexOf('@') != -1) {
-                return (username == ctrl.newUser.email.trim());
-            } else {
-                return true;
-            }
+            return !username || username.indexOf('@') < 0;
         };
 
         function highlightField(fieldName) {
@@ -75,98 +75,88 @@ angular.module('public.signup.directives', [])
         }
 
         ctrl.signup = function() {
-            if (isValueValid(ctrl.newUser.username, 1)) {
-                if (isValueValid(ctrl.newUser.email, 1)) {
-                    if (ctrl.checkEmailInUsername()) {
-                        if (isValueValid(ctrl.newUser.p1, 3)) {
-                            if (ctrl.newUser.p1 === ctrl.newUser.p2) {
-                                if (isValueValid(ctrl.newUser.firstname, 1) && isValueValid(ctrl.newUser.lastname, 1)) {
-                                    if (ctrl.newUser.agree) {
+            if (isValueValid(ctrl.newUser.email, 1)) {
+                if (ctrl.isUsernameValid()) {
+                    if (isValueValid(ctrl.newUser.p1, 3)) {
+                        if (ctrl.newUser.p1 === ctrl.newUser.p2) {
+                            if (isValueValid(ctrl.newUser.firstname, 1) && isValueValid(ctrl.newUser.lastname, 1)) {
+                                if (ctrl.newUser.agree) {
 
-                                        Auth.signup(ctrl.newUser.email,
-                                            ctrl.newUser.username,
-                                            ctrl.newUser.p1,
-                                            ctrl.newUser.firstname,
-                                            ctrl.newUser.lastname,
-                                            ctrl.newUser.agree).then(function(response) {
-                                            if (response.isErroneous()) {
-                                                response.flash();
-                                                var msg = response.custom.messageId;
-                                                if (msg.indexOf("EMAIL") >= 0) {
-                                                    highlightField('email');
-                                                } else if (msg.indexOf("USERNAME") >= 0) {
-                                                    highlightField('username');
-                                                }
-                                            } else {
-
-
-
-                                                // Automatic login after successful registration:
-                                                Auth.login(ctrl.newUser.username, ctrl.newUser.p1).then(function(response2) {
-                                                    var redirect;
-                                                    if (response2.isErroneous()) {
-                                                        response2.flash();
-                                                    } else {
-                                                        $scope.username = $scope.p1 = "";
-                                                        // clear cache after a Login. We do not want to have previous user's cache
-                                                        TeamsModel.clearCache();
-                                                        SessionsModel.clearCache();
-                                                        ScenariosModel.clearCache();
-
-
-                                                            // Pre-load teams into local cache to speed up first login:
-                                                            TeamsModel.getTeams().then(function() {
-                                                                // Don't leave this page until the cache is pre-populated:
-                                                                $scope.close();
-                                                            });
-                                                            // Browser redirect is done in signup.js
-                                                        }
-                                                    
-                                                });
+                                    Auth.signup(ctrl.newUser.email,
+                                        ctrl.newUser.username,
+                                        ctrl.newUser.p1,
+                                        ctrl.newUser.firstname,
+                                        ctrl.newUser.lastname,
+                                        ctrl.newUser.agree).then(function(response) {
+                                        if (response.isErroneous()) {
+                                            response.flash();
+                                            var msg = response.custom.messageId;
+                                            if (msg.indexOf("EMAIL") >= 0) {
+                                                highlightField('email');
+                                            } else if (msg.indexOf("USERNAME") >= 0) {
+                                                highlightField('username');
                                             }
-                                        });
-                                    } else {
-                                        $translate('CREATE-ACCOUNT-FLASH-MUST-AGREE').then(function(message) {
-                                            Flash.danger(message);
-                                        });
-                                        highlightText('agreeLabel');
-                                    }
+                                        } else {
+                                            // Automatic login after successful registration:
+                                            Auth.login(ctrl.newUser.email, ctrl.newUser.p1).then(function(response2) {
+                                                var redirect;
+                                                if (response2.isErroneous()) {
+                                                    response2.flash();
+                                                } else {
+                                                    $scope.username = $scope.p1 = "";
+                                                    // clear cache after a Login. We do not want to have previous user's cache
+                                                    TeamsModel.clearCache();
+                                                    SessionsModel.clearCache();
+                                                    ScenariosModel.clearCache();
+
+
+                                                    // Pre-load teams into local cache to speed up first login:
+                                                    TeamsModel.getTeams().then(function() {
+                                                        // Don't leave this page until the cache is pre-populated:
+                                                        $scope.close();
+                                                    });
+                                                    // Browser redirect is done in signup.js
+                                                }
+
+                                            });
+                                        }
+                                    });
                                 } else {
-                                    if (ctrl.newUser.firstname && ctrl.newUser.firstname.length > 0)
-                                        highlightField('lastname');
-                                    else
-                                        highlightField('firstname');
-                                    $translate('CREATE-ACCOUNT-FLASH-WRONG-NAME').then(function(message) {
+                                    $translate('CREATE-ACCOUNT-FLASH-MUST-AGREE').then(function(message) {
                                         Flash.danger(message);
                                     });
+                                    highlightText('agreeLabel');
                                 }
                             } else {
-                                highlightField('password2');
-                                $translate('CREATE-ACCOUNT-FLASH-WRONG-PASS2').then(function(message) {
+                                if (ctrl.newUser.firstname && ctrl.newUser.firstname.length > 0)
+                                    highlightField('lastname');
+                                else
+                                    highlightField('firstname');
+                                $translate('CREATE-ACCOUNT-FLASH-WRONG-NAME').then(function(message) {
                                     Flash.danger(message);
                                 });
                             }
                         } else {
-                            highlightField('password1');
-                            $translate('CREATE-ACCOUNT-FLASH-WRONG-PASS').then(function(message) {
+                            highlightField('password2');
+                            $translate('CREATE-ACCOUNT-FLASH-WRONG-PASS2').then(function(message) {
                                 Flash.danger(message);
                             });
                         }
                     } else {
-                        highlightField('username');
-                        $translate('CREATE-ACCOUNT-FLASH-WRONG-EMAIL-IN-USERNAME').then(function(message) {
+                        highlightField('password1');
+                        $translate('CREATE-ACCOUNT-FLASH-WRONG-PASS').then(function(message) {
                             Flash.danger(message);
                         });
                     }
                 } else {
-                    highlightField('email');
-                    $translate('CREATE-ACCOUNT-FLASH-WRONG-EMAIL').then(function(message) {
+                    highlightField('username');
+                    $translate('CREATE-ACCOUNT-FLASH-WRONG-EMAIL-IN-USERNAME').then(function(message) {
                         Flash.danger(message);
                     });
                 }
             } else {
-                highlightField('username');
-                $translate('CREATE-ACCOUNT-FLASH-WRONG-USERNAME').then(function(message) {
+                highlightField('email');
+                $translate('CREATE-ACCOUNT-FLASH-WRONG-EMAIL').then(function(message) {
                     Flash.danger(message);
                 });
             }

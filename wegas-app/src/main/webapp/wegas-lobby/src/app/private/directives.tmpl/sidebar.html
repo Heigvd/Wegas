@@ -69,14 +69,7 @@
             <a ng-click="editProfile()"
                class="button button--default-reverse button--user-fa button-without-label"
                title="{{'PRIVATE-WS-PROFILE-BTN'| translate}}"><span
-                    class="button__label">{{ user.username}}</span></a>
-        </li>
-        <li ng-if="user.isLocalAccount && !user.isVerified" class="action">
-            <a ng-click="verifyEmail()"
-               class="button button--default-reverse button--exclamation button-without-label"
-               title="{{'PRIVATE-WS-VERIFY-TOOLTIP'| translate}}">
-                <span class="button__label">{{'PRIVATE-WS-VERIFY-BTN'| translate}}</span>
-            </a>
+                    class="button__label">{{ user.commonName }}</span></a>
         </li>
         <li ng-if="user.isGuest" class="action" style="cursor: default">
             <a class="button button--default-reverse button--user-fa button-without-label unclickable">
