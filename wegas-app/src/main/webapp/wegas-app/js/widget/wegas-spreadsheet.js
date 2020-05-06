@@ -214,52 +214,34 @@ YUI.add('wegas-spreadsheet', function(Y) {
             return ref && !!ref.match(/\$[A-Z][1-9][0-9]?/)
         },
         
-        // Returns the list of cells from reference x1 to x2 if x1 and x2 are on the same column or same row.
+        // Returns the list of cells from reference x1 to x2
         getRange: function(x1, x2) {
-            var col1 = x1.charAt(1),
-                row1 = x1.substr(2),
-                col2 = x2.charAt(1),
-                row2 = x2.substr(2);
-            if (col1 !== col2 &&
-                row1 !== row2) {
-                return [];
-            }
+            var x1ColCode = x1.charCodeAt(1),
+                x1Row = +x1.substr(2),
+                x2ColCode = x2.charCodeAt(1),
+                x2Row = +x2.substr(2),
+                colCode1 = Math.min(x1ColCode, x2ColCode),
+                row1 = Math.min(x1Row, x2Row),
+                colCode2 = Math.max(x1ColCode, x2ColCode),
+                row2 = Math.max(x1Row, x2Row);
+
             var res = [],
                 cellRef,
                 cell;
-            if (col1 === col2) {
-                // Iterate on the rows of this column:
-                var limit = +row2;
-                for (var r = +row1; r <= limit; r++) {
-                    cellRef = "$" + col1 + r;
+            
+            for (var colCode = colCode1; colCode <= colCode2; colCode++) {
+                for (var row = row1; row <= row2; row++) {
+                    cellRef = "$" + String.fromCharCode(colCode) + row;
+
                     cell = document.getElementsByName(cellRef);
                     if (cell && cell[0]) {
                         var c = cell[0];
-                        if (c.nodeName === "TD" && c.innerText.trim() === "") {
-                            // Skip empty cells
-                            continue;
+                        if (c.nodeName !== "TD" || c.innerText.trim() !== "") {
+                            // only collect non-empty cells
+                            res.push(cell[0]);
                         }
-                        res.push(cell[0]);
-                    } else {
-                        continue;
                     }
-                }
-            } else if (row1 === row2) {
-                // Iterate on the columns of this row:
-                var limit = col2.charCodeAt(0);
-                for (var c = col1.charCodeAt(0); c <= limit; r++) {
-                    cellRef = "$" + String.fromCharCode(r) + row1;
-                    cell = document.getElementsByName(cellRef);
-                    if (cell && cell[0]) {
-                        var c = cell[0];
-                        if (c.nodeName === "TD" && c.innerText.trim() === "") {
-                            // Skip empty cells
-                            continue;
-                        }
-                        res.push(cell[0]);
-                    } else {
-                        continue;
-                    }
+
                 }
             }
             return res;
