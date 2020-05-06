@@ -108,12 +108,12 @@
     border: 2px solid red !important;
 }
 
-.wegas-spreadsheet-help {
+.yui3-skin-sam .wegas-panel-content.wegas-spreadsheet-help {
     user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
-    background: rgba(110, 110, 110, 0.97) !important;
+    background: rgba(110, 110, 110, 0.97);
 }
 
 .wegas-spreadsheet-help .yui3-widget-bd {
@@ -181,4 +181,3 @@
     border-bottom: 2px solid #333;
     padding-left: 8px;
 }
-
