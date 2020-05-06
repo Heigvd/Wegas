@@ -267,9 +267,10 @@ YUI.add('wegas-spreadsheet', function(Y) {
                         }
                     }
                     // Handle =ReadNumber(decimals)
-                    if (contents.length > 13 && contents.indexOf("=READNUMBER(") === 0 && contents.charAt(contents.length-1) === ")") {
-                        args = contents.substring(12, contents.length-1);
-                        decimals = +args;
+                    var matcher;
+                    if ((matcher = contents.match(/=READNUMBER\((\d+)\)/))) {
+                        // Handle =ReadNumber(decimals)
+                        decimals = +matcher[1];
                         output += 
                                 '<input type="text" class="' + NUMBERINPUT_CSS +
                                 '" name="' + cellName + 
