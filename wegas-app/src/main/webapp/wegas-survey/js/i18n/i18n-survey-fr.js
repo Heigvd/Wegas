@@ -38,7 +38,7 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
             },
             orchestrator: {
                 globalTitle: "Orchestration des questionnaires",
-                searchExternalSurveys: "Chercher des questionnaires dans d'autres jeux",
+                searchExternalSurveys: "Chercher tous les questionnaires",
                 standardSurveysTitle: "Questionnaires standard",
                 externalSurveysTitle: "Vos questionnaires",
                 noSurveyFound: "Aucun questionnaire trouvé",
@@ -56,7 +56,8 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
                 ongoing: "En cours",
                 completed: "Terminé",
                 closed: "Fermé",
-                requestImmediatelyButton: "Lancer le questionnaire immédiatement",
+                editButton: "Editer",
+                requestImmediatelyButton: "Lancer immédiatement",
                 teamOrPlayer: "Équipe/Joueur",
                 team: "Équipe",
                 player: "Joueur",

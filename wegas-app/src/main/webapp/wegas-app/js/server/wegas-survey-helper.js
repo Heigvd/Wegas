@@ -56,8 +56,8 @@ var SurveyHelper = (function() {
         inst.setStatusFromString(ORCHESTRATION_PROGRESS.REQUESTED.name);
     }
     
-    
-    function summarize(SurveyDescriptorName) {
+    // Param getDebugTeam should be true only when invoked from editor.
+    function summarize(SurveyDescriptorName, getDebugTeam) {
         var sd = Variable.find(gameModel, SurveyDescriptorName),
             sdId = sd.getId(),
             game = self.getGame(),
@@ -65,7 +65,6 @@ var SurveyHelper = (function() {
             nbTeams = teams.size(),
             isTeamGame = !gameModel.getProperties().getFreeForAll(),
             isPlayerScopeSurvey = (sd.getScopeType().toString() === "PlayerScope" ),
-            cannotReport = isPlayerScopeSurvey && isTeamGame,
             t, teamId, team,
             players, nbPlayers, playerId, p, nbIterations,
             aPlayer, survInsts, survInst, data, replied, optionalReplied,
@@ -77,10 +76,9 @@ var SurveyHelper = (function() {
             globalSurvStatus = ORCHESTRATION_PROGRESS.CLOSED.name,
             globalStatus = ORCHESTRATION_PROGRESS[globalSurvStatus].id,
             hasOngoing = false,
-            i, j,
-            
-                    
-            monitoring = {
+            i, j;
+                                
+            var monitoring = {
                 id: sdId,
                 name: SurveyDescriptorName,
                 active: false,
@@ -148,7 +146,6 @@ var SurveyHelper = (function() {
             return JSON.stringify(monitoring);
         }
 
-
         // Get all input instances for all teams/players:
         for (i = 0; i < inputDescriptors.length; i++) {
             var currInput = inputDescriptors[i],
@@ -189,7 +186,7 @@ var SurveyHelper = (function() {
                 }
 
                 isDebugTeam = aPlayer.getTeam() instanceof com.wegas.core.persistence.game.DebugTeam;
-                if (isDebugTeam && nbTeams > 1) {
+                if (isDebugTeam && (nbTeams > 1 || !getDebugTeam)) {
                     continue;
                 }
 
@@ -258,9 +255,6 @@ var SurveyHelper = (function() {
         }
 
         // Return global status ONGOING in some hybrid situations:
-        if (globalStatus < ORCHESTRATION_PROGRESS.ONGOING.id) {
-        } else {
-        }
         if (globalStatus < ORCHESTRATION_PROGRESS.ONGOING.id && hasOngoing) {
             globalSurvStatus = ORCHESTRATION_PROGRESS.ONGOING.name;
         }

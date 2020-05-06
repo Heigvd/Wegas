@@ -1052,11 +1052,19 @@ YUI().use(function(Y) {
                     "wegas-tooltip",
                     "wegas-injector"],
                 ws_provides: [
-                    "SurveyOrchestrator",
                     "SurveyWidget",
                     "SurveyNumberInput",
                     "SurveyTextInput",
                     "SurveyChoicesInput"]
+            },
+            "wegas-survey-orchestrator": {
+                requires: ["wegas-survey-css",
+                    "wegas-survey-entities",
+                    "wegas-i18n-survey",
+                    "wegas-panel",
+                    "wegas-tooltip",
+                    "wegas-injector"],
+                ws_provides: "SurveyOrchestrator"
             },
             "wegas-i18n-survey-de": {
                 path: 'js/i18n/i18n-survey-de-min.js'

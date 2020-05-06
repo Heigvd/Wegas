@@ -1507,6 +1507,14 @@
     right: 0;
 }
 
+.wegas-editsurveymode .yui3-tab#Attributes .yui3-tab-remove {
+    display: none;
+}
+
+.wegas-editsurveymode.wegas-readonly-editmode .wegas-react-form .wegas-toolbar button {
+    display: none;
+}
+
 .wegas-i18n-activator .gm-language {
     height: 24px;
     padding: 4px;

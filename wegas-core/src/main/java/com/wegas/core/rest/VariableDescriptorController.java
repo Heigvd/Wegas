@@ -187,7 +187,7 @@ public class VariableDescriptorController {
 
     @PUT
     @Path("{id: [1-9][0-9]*}/changeScope/{scopeType: GameModelScope|TeamScope|PlayerScope}")
-    public VariableDescriptor changeScopeRecursivly(@PathParam("id") Long vdId,
+    public VariableDescriptor changeScopeRecursively(@PathParam("id") Long vdId,
         @PathParam("scopeType") AbstractScope.ScopeType scopeType) {
         return variableDescriptorFacade.changeScopeRecursively(vdId, scopeType);
     }

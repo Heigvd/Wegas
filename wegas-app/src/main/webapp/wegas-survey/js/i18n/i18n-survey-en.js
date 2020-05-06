@@ -39,7 +39,7 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
             },
             orchestrator: {
                 globalTitle: "Survey orchestration",
-                searchExternalSurveys: "Search for importable surveys",
+                searchExternalSurveys: "Find all surveys",
                 standardSurveysTitle: "Standard Surveys",
                 externalSurveysTitle: "Your own surveys",
                 noSurveyFound: "No surveys found",
@@ -57,7 +57,8 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 ongoing: "Ongoing",
                 completed: "Completed",
                 closed: "Closed",
-                requestImmediatelyButton: "Start survey immediately",
+                editButton: "Edit",
+                requestImmediatelyButton: "Launch now",
                 teamOrPlayer: "Team/Player",
                 team: "Team",
                 player: "Player",

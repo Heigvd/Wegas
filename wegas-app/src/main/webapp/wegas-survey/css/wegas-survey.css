@@ -605,8 +605,17 @@
     font-weight: bold;
 }
 
+.wegas-survey-orchestrator .selected-survey .edit-survey,
 .wegas-survey-orchestrator .selected-survey .request-survey {
     margin-left: 10px;
+}
+
+.wegas-survey-orchestrator .selected-survey .edit-survey:before {
+    content: "\f0d0";
+    font-family: "FontAwesome";
+    padding-left: 2px;
+    padding-right: 6px;
+    color: blue;
 }
 
 .wegas-survey-orchestrator .selected-survey .request-survey:before {

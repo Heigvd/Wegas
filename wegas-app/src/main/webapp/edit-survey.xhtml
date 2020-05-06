@@ -27,20 +27,24 @@
             });
 
             Y.Wegas.app.once("render", function() {
-                var gameModel = Y.Wegas.Facade.Game.cache.getCurrentGame();
-                /* Prepare Preview of the given survey. */
-                /* Code adapted from wegas-surveylistener.showSurvey(): */
+                var gameModel = Y.Wegas.Facade.Game.cache.getCurrentGame(),
+                    isReadOnly = "#{param['readonly']}";
+
+                if (isReadOnly.toLowerCase() === "true"){
+                    Y.one("body").addClass("wegas-readonly-editmode");
+                }
+
+                // Prepare Preview of the given survey:
                 if (!YUI_config.Wegas.dataSelector) {
                     return;
                 }
                 var descr = Y.Wegas.Facade.Variable.cache.findById(YUI_config.Wegas.dataSelector.val),
                     inst = descr.getInstance(),
-                    container = Y.one(".wegas-playerview .wegas-pageloader-content"),
-                    ctx = this;
+                    container = Y.one(".wegas-playerview .wegas-pageloader-content");
                 if (!inst || !container) {
                     return;
                 }
-                
+
                 // In increasing order of progress, status of a given survey:
                 var ORCHESTRATION_PROGRESS = {
                     NOT_STARTED: "NOT_STARTED",
@@ -119,8 +123,36 @@
                     }
                 });
             });
-            
-            //]]></ui:define></script>
+        
+            // Update editor title:
+            Y.Wegas.app.after("render", function() {
+                if (!YUI_config.Wegas.dataSelector) {
+                    return;
+                }
+                
+                function getFriendlyVarName(v) {
+                    var name = '',
+                        label = I18n.t(v.get("label"));
+                    if (v.get("editorTag")) {
+                        name += v.get("editorTag");
+                    }
+                    if (name && label) {
+                        name += ' - ';
+                    }
+                    if (label) {
+                        name += label;
+                    }
+                    if (!name) {
+                        name = v.get("name");
+                    }
+                    return name;
+                }
+
+                var descr = Y.Wegas.Facade.Variable.cache.findById(YUI_config.Wegas.dataSelector.val);
+                Y.all(".wegas-title").setContent(getFriendlyVarName(descr));
+            });
+
+        //]]></ui:define></script>
 
     </ui:composition>
 </html>
