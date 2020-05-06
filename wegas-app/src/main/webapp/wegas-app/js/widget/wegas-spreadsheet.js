@@ -285,19 +285,14 @@ YUI.add('wegas-spreadsheet', function(Y) {
                                 '" name="' + cellName + 
                                 '">';
                     // Cells without input (constant content or formula)
-                    } else {
+} else if (contents.indexOf("=SUM(") === 0) {
                         // =Sum(from, to, decimals)
-                        if (contents.length > 6 && contents.indexOf("=SUM(") === 0 && contents.charAt(contents.length-1) === ")") {
-                            args = contents.substring(5, contents.length-1).split(',');
-                            if (args.length !== 3) {
-                                Y.Wegas.Panel.alert("Formula in " + cellName + ": 3 arguments expected");
-                                continue;
-                            }
-                            var arg0 = args[0],
-                                arg1 = args[1],
-                                arg2 = args[2];
-                            if (! this.isCellRef(arg0) ||
-                                ! this.isCellRef(arg1) ||
+                        if ((matcher = contents.match(/=SUM\(\s*(\$[A-Z][1-9][0-9]?)\s*,\s*(\$[A-Z][1-9][0-9]?)\s*,\s*(\d+)\s*\)/))) {
+                            var arg0 = matcher[1],
+                                arg1 = matcher[2],
+                                arg2 = matcher[3];
+                            if (!this.isCellRef(arg0) ||
+                                !this.isCellRef(arg1) ||
                                 isNaN(arg2)) {
                                 Y.Wegas.Panel.alert("Error in formula arguments in " + cellName);
                                 continue;
@@ -305,7 +300,7 @@ YUI.add('wegas-spreadsheet', function(Y) {
                             arg2 = +arg2;
                             this.formulas.push({
                                 cellName: cellName,
-                                cell: undefined,  // To be updated at first use
+                                cell: undefined, // To be updated at first use
                                 formula: contents,
                                 op: "SUM",
                                 from: arg0,
@@ -313,15 +308,18 @@ YUI.add('wegas-spreadsheet', function(Y) {
                                 decimals: arg2
                             });
                             output +=
-                                '<span class="formula no-input" title="sum(' + 
-                                arg0 + ":" + arg1 + ')" data-decimals="' + String(arg2) + 
-                                '" name="' + cellName + '"></span>';                                
+                                '<span class="formula no-input" title="sum(' +
+                                arg0 + ":" + arg1 + ')" data-decimals="' + String(arg2) +
+                                '" name="' + cellName + '"></span>';
+
                         } else {
-                            // This cell has plain constant contents
-                            output += cell.innerHTML;
-                            cell.setAttribute("name", cellName);
-                            cell.className = cell.className + " no-input";
+                            Y.Wegas.Panel.alert("Formula in " + cellName + ": 3 arguments expected");
                         }
+                    } else {
+                        // This cell has plain constant contents
+                        output += cell.innerHTML;
+                        cell.setAttribute("name", cellName);
+                        cell.className = cell.className + " no-input";
                     }
                     
                     if (cellparts.length === 2) {
