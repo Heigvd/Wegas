@@ -114,6 +114,8 @@ export const ActionCreator = {
     createAction(ActionType.TEAM_FETCH_ALL, data),
   GAME_FETCH: (data: { game: IGame }) =>
     createAction(ActionType.GAME_FETCH, data),
+  LOCK_SET: (data: { token: string; locked: boolean }) =>
+    createAction(ActionType.LOCK_SET, data),
 };
 
 export type StateActions<

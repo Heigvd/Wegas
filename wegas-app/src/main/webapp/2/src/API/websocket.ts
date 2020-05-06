@@ -122,6 +122,12 @@ interface ICustomEventData {
   events: any[];
 }
 
+export interface LockEventData {
+  '@class': 'LockEvent';
+  token: string;
+  status: 'lock' | 'unlock';
+}
+
 /**
  *
  *
@@ -228,8 +234,7 @@ class WebSocketListener {
         store.dispatch(Actions.PageActions.get(data as string));
         return;
       case 'LockEvent':
-        wlog(data);
-        debugger;
+        store.dispatch(Actions.EditorActions.setLock(data as LockEventData));
         return;
       default:
         if (!eventFound) {

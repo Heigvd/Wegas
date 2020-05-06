@@ -37,3 +37,5 @@ export const LANGUAGE_EDIT = 'LANGUAGE/EDIT';
 export const TEAM_FETCH_ALL = 'TEAM/FETCH/ALL';
 
 export const GAME_FETCH = 'GAME/FETCH';
+
+export const LOCK_SET = 'LOCK/SET';

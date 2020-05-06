@@ -25,7 +25,7 @@ export default pageState;
 // Actions
 
 export function getDefault(): ThunkResult {
-  return function(dispatch) {
+  return function (dispatch) {
     return PageAPI.getDefault()
       .then(pages => dispatch(ActionCreator.PAGE_FETCH({ pages })))
       .catch((res: Response) =>
@@ -34,7 +34,7 @@ export function getDefault(): ThunkResult {
   };
 }
 export function setDefault(pageId: string): ThunkResult {
-  return function(dispatch) {
+  return function (dispatch) {
     return PageAPI.setDefaultPage(pageId)
       .then(index => dispatch(ActionCreator.PAGE_INDEX({ index })))
       .catch((res: Response) =>
@@ -43,7 +43,7 @@ export function setDefault(pageId: string): ThunkResult {
   };
 }
 export function get(id: string): ThunkResult {
-  return function(dispatch) {
+  return function (dispatch) {
     return PageAPI.get(id)
       .then(pages => dispatch(ActionCreator.PAGE_FETCH({ pages })))
       .catch((res: Response) =>
@@ -52,7 +52,7 @@ export function get(id: string): ThunkResult {
   };
 }
 export function getAll(): ThunkResult {
-  return function(dispatch) {
+  return function (dispatch) {
     // Getting the index to force building it in case of old scenario
     return PageAPI.getIndex()
       .then(index => {
@@ -72,7 +72,7 @@ export function createItem(
   newItem: PageIndexItem,
   pageContent?: WegasComponent,
 ): ThunkResult {
-  return function(dispatch) {
+  return function (dispatch) {
     return PageAPI.newIndexItem(folderPath, newItem, pageContent)
       .then(index => {
         const item = getItemFromPath(index, [...folderPath, newItem.name]);
@@ -88,7 +88,7 @@ export function createItem(
 }
 
 export function deleteIndexItem(itemPath: string[]): ThunkResult {
-  return function(dispatch) {
+  return function (dispatch) {
     return PageAPI.deleteIndexItem(itemPath)
       .then(index => dispatch(ActionCreator.PAGE_INDEX({ index })))
       .catch((res: Response) =>
@@ -101,7 +101,7 @@ export function updateIndexItem(
   itemPath: string[],
   item: PageIndexItem,
 ): ThunkResult {
-  return function(dispatch) {
+  return function (dispatch) {
     return PageAPI.updateIndexItem(itemPath, item)
       .then(index => dispatch(ActionCreator.PAGE_INDEX({ index })))
       .catch((res: Response) =>
@@ -115,7 +115,7 @@ export function moveIndexItem(
   folderPath: string[],
   pos?: number,
 ): ThunkResult {
-  return function(dispatch) {
+  return function (dispatch) {
     return PageAPI.moveIndexItem(itemPath, folderPath, pos)
       .then(index => dispatch(ActionCreator.PAGE_INDEX({ index })))
       .catch((res: Response) =>
@@ -125,7 +125,7 @@ export function moveIndexItem(
 }
 
 export function deletePage(id: string): ThunkResult {
-  return function(dispatch) {
+  return function (dispatch) {
     return PageAPI.deletePage(id)
       .then(index => dispatch(ActionCreator.PAGE_INDEX({ index })))
       .catch((res: Response) =>
@@ -135,7 +135,7 @@ export function deletePage(id: string): ThunkResult {
 }
 
 export function patch(id: string, page: WegasComponent): ThunkResult {
-  return function(dispatch) {
+  return function (dispatch) {
     const oldPage = Page.select(id);
     if (oldPage === undefined) {
       return dispatch(
@@ -150,42 +150,3 @@ export function patch(id: string, page: WegasComponent): ThunkResult {
       );
   };
 }
-
-// function patcher(
-//   id: string,
-//   page: WegasComponent,
-//   callbackFN: (
-//     status:
-//       | { type: 'PAGE_NOT_FOUND' }
-//       | { type: 'API_ERROR'; res: Response }
-//       | { type: 'PATCH_WORKED'; pages: Pages },
-//   ) => void,
-// ) {
-//   const oldPage = Page.select(id);
-//   if (oldPage === undefined) {
-//     return callbackFN({ type: 'PAGE_NOT_FOUND' });
-//   }
-//   const diff = compare(oldPage, page);
-//   return PageAPI.patch(JSON.stringify(diff), id, true)
-//     .then(pages => callbackFN({ type: 'PATCH_WORKED', pages }))
-//     .catch((res: Response) => callbackFN({ type: 'API_ERROR', res }));
-// }
-
-// export function patch(id: string, page: WegasComponent): ThunkResult {
-//   return function(dispatch) {
-//     return patcher(id, page, response => {
-//       switch (response.type) {
-//         case 'PAGE_NOT_FOUND':
-//           return dispatch(
-//             ActionCreator.PAGE_ERROR({ error: `Page ${id} not found` }),
-//           );
-//         case 'PATCH_WORKED':
-//           return dispatch(ActionCreator.PAGE_FETCH({ pages: response.pages }));
-//         case 'API_ERROR':
-//           return dispatch(
-//             ActionCreator.PAGE_ERROR({ error: response.res.statusText }),
-//           );
-//       }
-//     });
-//   }
-// }

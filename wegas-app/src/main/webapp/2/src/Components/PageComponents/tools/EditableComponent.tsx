@@ -29,6 +29,7 @@ import { AbsoluteItem } from '../../Layouts/Absolute';
 import { InfoBeam } from './InfoBeam';
 import { EditHandle } from './EditHandle';
 import { schemaProps } from './schemaProps';
+import { useStore } from '../../../data/store';
 
 // Styles
 export const layoutHighlightStyle = css({
@@ -88,6 +89,11 @@ const handleControlStyle = css({
     visibility: 'unset',
     opacity: 0.8,
   },
+});
+
+const lockedStyle = css({
+  opacity: 0.5,
+  backgroundColor: themeVar.disabledColor,
 });
 
 const componentBorderCss = {
@@ -408,6 +414,12 @@ export function ComponentContainer({
     showBorders,
   } = React.useContext(pageCTX);
 
+  const locked = useStore(
+    s =>
+      options?.actions?.lock != null &&
+      s.global.locks[options.actions.lock] === true,
+  );
+
   const isFocused = usePagesStateStore(
     ({ focusedComponent }) =>
       (editMode &&
@@ -464,6 +476,7 @@ export function ComponentContainer({
             [focusedComponentStyle]: isFocused,
             [childDropzoneHorizontalStyle]: !computedVertical,
             [childDropzoneVerticalStyle]: computedVertical,
+            [lockedStyle]: locked,
           }) + classNameOrEmpty(className)
         }
         style={{
@@ -471,24 +484,13 @@ export function ComponentContainer({
           ...style,
         }}
         onClick={() => {
-          if (options && options.actions) {
+          if (!locked && options && options.actions) {
             if (
               !options.actions.confirmClick ||
               // TODO : Find a better way to do that than a modal!!!
               // eslint-disable-next-line no-alert
               confirm(options.actions.confirmClick)
             ) {
-              if (options.actions?.lock) {
-                // LockAPI.lockPlayer(options.actions?.lock)
-                //   .then(res => {
-                //     wlog(res);
-                //     debugger;
-                //   })
-                //   .catch(res => {
-                //     wlog(res);
-                //     debugger;
-                //   });
-              }
               Object.entries(
                 omit(
                   options.actions,

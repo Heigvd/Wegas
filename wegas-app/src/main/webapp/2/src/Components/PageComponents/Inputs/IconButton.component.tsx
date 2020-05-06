@@ -9,6 +9,8 @@ import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { icons } from '../../../Editor/Components/Views/FontAwesome';
 import { PlayerButtonProps, buttonSchema } from './Button.component';
 import { createScript } from '../../../Helper/wegasEntites';
+import { store } from '../../../data/store';
+import { Actions } from '../../../data';
 
 interface PlayerIconButtonProps extends PlayerButtonProps {
   icon: IconName;
@@ -16,7 +18,14 @@ interface PlayerIconButtonProps extends PlayerButtonProps {
 }
 
 function PlayerIconButton(props: PlayerIconButtonProps) {
-  return <IconButton {...props} />;
+  return (
+    <IconButton
+      {...props}
+      onClick={() =>
+        store.dispatch(Actions.VariableInstanceActions.runScript(props.action!))
+      }
+    />
+  );
 }
 
 registerComponent(
