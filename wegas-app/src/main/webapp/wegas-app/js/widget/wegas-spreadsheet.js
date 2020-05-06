@@ -211,21 +211,7 @@ YUI.add('wegas-spreadsheet', function(Y) {
         // Returns true if the given string is a valid cell reference (e.g. $A1)
         // Columns are in the range [A..Z] and rows in the range [1..99].
         isCellRef: function(ref) {
-            if (ref.length < 3 ||
-                ref.length > 4 ||
-                ref.charAt(0) !== '$' ||
-                ref.charAt(1) < 'A' ||
-                ref.charAt(1) > 'Z' ||
-                ref.charAt(2) < '0' ||
-                ref.charAt(2) > '9') {
-                return false;
-            }
-            if (ref.length === 4 && (
-                ref.charAt(3) < '0' ||
-                ref.charAt(3) > '9')) {
-                return false;
-            }
-            return true;
+            return ref && !!ref.match(/\$[A-Z][1-9][0-9]?/)
         },
         
         // Returns the list of cells from reference x1 to x2 if x1 and x2 are on the same column or same row.
