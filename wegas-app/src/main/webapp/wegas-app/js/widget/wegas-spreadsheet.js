@@ -96,7 +96,7 @@ YUI.add('wegas-spreadsheet', function(Y) {
             this.handlers = {};
             this.finished = false;
             this.persistenceBuffer = "";
-            this.isScenaristMode = (window.location.pathname.indexOf(GAME_EDITOR_PATH) >= 0),
+            this.isScenaristMode = !!Y.one('body.wegas-editmode'),
 
             this.source = this.get("source.evaluated");
             if (this.source) {
@@ -211,69 +211,37 @@ YUI.add('wegas-spreadsheet', function(Y) {
         // Returns true if the given string is a valid cell reference (e.g. $A1)
         // Columns are in the range [A..Z] and rows in the range [1..99].
         isCellRef: function(ref) {
-            if (ref.length < 3 ||
-                ref.length > 4 ||
-                ref.charAt(0) !== '$' ||
-                ref.charAt(1) < 'A' ||
-                ref.charAt(1) > 'Z' ||
-                ref.charAt(2) < '0' ||
-                ref.charAt(2) > '9') {
-                return false;
-            }
-            if (ref.length === 4 && (
-                ref.charAt(3) < '0' ||
-                ref.charAt(3) > '9')) {
-                return false;
-            }
-            return true;
+            return ref && !!ref.match(/\$[A-Z][1-9][0-9]?/)
         },
         
-        // Returns the list of cells from reference x1 to x2 if x1 and x2 are on the same column or same row.
+        // Returns the list of cells from reference x1 to x2
         getRange: function(x1, x2) {
-            var col1 = x1.charAt(1),
-                row1 = x1.substr(2),
-                col2 = x2.charAt(1),
-                row2 = x2.substr(2);
-            if (col1 !== col2 &&
-                row1 !== row2) {
-                return [];
-            }
+            var x1ColCode = x1.charCodeAt(1),
+                x1Row = +x1.substr(2),
+                x2ColCode = x2.charCodeAt(1),
+                x2Row = +x2.substr(2),
+                colCode1 = Math.min(x1ColCode, x2ColCode),
+                row1 = Math.min(x1Row, x2Row),
+                colCode2 = Math.max(x1ColCode, x2ColCode),
+                row2 = Math.max(x1Row, x2Row);
+
             var res = [],
                 cellRef,
                 cell;
-            if (col1 === col2) {
-                // Iterate on the rows of this column:
-                var limit = +row2;
-                for (var r = +row1; r <= limit; r++) {
-                    cellRef = "$" + col1 + r;
+            
+            for (var colCode = colCode1; colCode <= colCode2; colCode++) {
+                for (var row = row1; row <= row2; row++) {
+                    cellRef = "$" + String.fromCharCode(colCode) + row;
+
                     cell = document.getElementsByName(cellRef);
                     if (cell && cell[0]) {
                         var c = cell[0];
-                        if (c.nodeName === "TD" && c.innerText.trim() === "") {
-                            // Skip empty cells
-                            continue;
+                        if (c.nodeName !== "TD" || c.innerText.trim() !== "") {
+                            // only collect non-empty cells
+                            res.push(cell[0]);
                         }
-                        res.push(cell[0]);
-                    } else {
-                        continue;
                     }
-                }
-            } else if (row1 === row2) {
-                // Iterate on the columns of this row:
-                var limit = col2.charCodeAt(0);
-                for (var c = col1.charCodeAt(0); c <= limit; r++) {
-                    cellRef = "$" + String.fromCharCode(r) + row1;
-                    cell = document.getElementsByName(cellRef);
-                    if (cell && cell[0]) {
-                        var c = cell[0];
-                        if (c.nodeName === "TD" && c.innerText.trim() === "") {
-                            // Skip empty cells
-                            continue;
-                        }
-                        res.push(cell[0]);
-                    } else {
-                        continue;
-                    }
+
                 }
             }
             return res;
@@ -299,9 +267,10 @@ YUI.add('wegas-spreadsheet', function(Y) {
                         }
                     }
                     // Handle =ReadNumber(decimals)
-                    if (contents.length > 13 && contents.indexOf("=READNUMBER(") === 0 && contents.charAt(contents.length-1) === ")") {
-                        args = contents.substring(12, contents.length-1);
-                        decimals = +args;
+                    var matcher;
+                    if ((matcher = contents.match(/=READNUMBER\((\d+)\)/))) {
+                        // Handle =ReadNumber(decimals)
+                        decimals = +matcher[1];
                         output += 
                                 '<input type="text" class="' + NUMBERINPUT_CSS +
                                 '" name="' + cellName + 
@@ -316,19 +285,14 @@ YUI.add('wegas-spreadsheet', function(Y) {
                                 '" name="' + cellName + 
                                 '">';
                     // Cells without input (constant content or formula)
-                    } else {
+} else if (contents.indexOf("=SUM(") === 0) {
                         // =Sum(from, to, decimals)
-                        if (contents.length > 6 && contents.indexOf("=SUM(") === 0 && contents.charAt(contents.length-1) === ")") {
-                            args = contents.substring(5, contents.length-1).split(',');
-                            if (args.length !== 3) {
-                                Y.Wegas.Panel.alert("Formula in " + cellName + ": 3 arguments expected");
-                                continue;
-                            }
-                            var arg0 = args[0],
-                                arg1 = args[1],
-                                arg2 = args[2];
-                            if (! this.isCellRef(arg0) ||
-                                ! this.isCellRef(arg1) ||
+                        if ((matcher = contents.match(/=SUM\(\s*(\$[A-Z][1-9][0-9]?)\s*,\s*(\$[A-Z][1-9][0-9]?)\s*,\s*(\d+)\s*\)/))) {
+                            var arg0 = matcher[1],
+                                arg1 = matcher[2],
+                                arg2 = matcher[3];
+                            if (!this.isCellRef(arg0) ||
+                                !this.isCellRef(arg1) ||
                                 isNaN(arg2)) {
                                 Y.Wegas.Panel.alert("Error in formula arguments in " + cellName);
                                 continue;
@@ -336,7 +300,7 @@ YUI.add('wegas-spreadsheet', function(Y) {
                             arg2 = +arg2;
                             this.formulas.push({
                                 cellName: cellName,
-                                cell: undefined,  // To be updated at first use
+                                cell: undefined, // To be updated at first use
                                 formula: contents,
                                 op: "SUM",
                                 from: arg0,
@@ -344,15 +308,18 @@ YUI.add('wegas-spreadsheet', function(Y) {
                                 decimals: arg2
                             });
                             output +=
-                                '<span class="formula no-input" title="sum(' + 
-                                arg0 + ":" + arg1 + ')" data-decimals="' + String(arg2) + 
-                                '" name="' + cellName + '"></span>';                                
+                                '<span class="formula no-input" title="sum(' +
+                                arg0 + ":" + arg1 + ')" data-decimals="' + String(arg2) +
+                                '" name="' + cellName + '"></span>';
+
                         } else {
-                            // This cell has plain constant contents
-                            output += cell.innerHTML;
-                            cell.setAttribute("name", cellName);
-                            cell.className = cell.className + " no-input";
+                            Y.Wegas.Panel.alert("Formula in " + cellName + ": 3 arguments expected");
                         }
+                    } else {
+                        // This cell has plain constant contents
+                        output += cell.innerHTML;
+                        cell.setAttribute("name", cellName);
+                        cell.className = cell.className + " no-input";
                     }
                     
                     if (cellparts.length === 2) {

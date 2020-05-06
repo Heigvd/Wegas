@@ -468,7 +468,7 @@ YUI.add("wegas-i18n", function(Y) {
                 }
                 
                 if (format && typeof format === "object") {
-                    formatConfig = Y.mix(format, formatConfig);
+                    formatConfig = Y.mix(Y.mix({}, format), formatConfig);
                 }
 
             }
