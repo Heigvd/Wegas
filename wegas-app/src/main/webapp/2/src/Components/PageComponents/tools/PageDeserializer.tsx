@@ -1,12 +1,6 @@
 import * as React from 'react';
 import { usePageComponentStore } from './componentFactory';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
-// import { css } from 'emotion';
-
-// const pageStyle = css({
-//   width: 'max-content',
-//   height: 'max-content',
-// });
 
 interface PageDeserializerProps {
   json: WegasComponent;

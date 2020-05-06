@@ -27,7 +27,7 @@ angular
                             }
                         });
                     } else {
-                        $translate('COMMONS-USERS-LOAD-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-USERS-LOAD-FLASH-ERROR').then(function(message) {
                             Flash.danger(message);
                         });
                     }
@@ -35,17 +35,19 @@ angular
 
                 ctrl.updateInformations = function() {
                     UsersModel.updateUser($scope.user.account).then(function(response) {
-                        if (response) response.flash();
+                        if (response) {
+                            response.flash();
+                        }
                         $scope.user.password = '';
                         $scope.user.password2 = '';
 
                         if (!response || !response.isErroneous()) {
-                            if ($scope.oldUsername !== $scope.user.account.username){
+                            if ($scope.oldUsername !== $scope.user.account.username) {
                                 // Make sure the username is updated everywhere on the screen:
                                 $scope.close();
                                 $timeout(function() {
                                     location.reload();
-                                },500);
+                                }, 500);
                             } else {
                                 $scope.close();
                             }
@@ -53,6 +55,12 @@ angular
                     });
                 };
                 $scope.updateInformations = ctrl.updateInformations;
+
+                $scope.verifyEmail = function() {
+                    Auth.requestEmailValidation().then(function(response) {
+                        response.flash();
+                    });
+                };
             }
         };
     })

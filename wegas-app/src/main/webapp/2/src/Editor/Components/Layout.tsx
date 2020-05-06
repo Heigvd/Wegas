@@ -39,6 +39,8 @@ export const availableLayoutTabs = {
   PageEditor: <PageEditor />,
 };
 
+export const mainLayoutId = 'MainEditorLayout';
+
 export default class AppLayout extends React.Component<
   {},
   { editable: boolean }
@@ -60,6 +62,7 @@ export default class AppLayout extends React.Component<
             [['PlayLocal'], [['StateMachine'], ['Files']]],
             ['Editor'],
           ]}
+          layoutId={mainLayoutId}
         />
       </div>
     );

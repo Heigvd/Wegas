@@ -9,15 +9,9 @@ import { ClassesProvider } from '../Components/Contexts/ClassesProvider';
 import { FeaturesProvider } from '../Components/Contexts/FeaturesProvider';
 import { ThemeProvider } from '../Components/Theme';
 import '../data/store';
+import { importPageComponents } from '../Components/PageComponents/tools/componentFactory';
 
-// Importing all the files containing ".component." to allow component registration without explicit import
-const componentModules = require.context(
-  '../',
-  true,
-  /\.component\./,
-  'lazy-once',
-);
-componentModules.keys().map(k => componentModules(k));
+importPageComponents();
 
 function mount() {
   render(

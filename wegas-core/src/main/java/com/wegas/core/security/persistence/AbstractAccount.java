@@ -20,6 +20,7 @@ import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.util.AuthenticationMethod;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
@@ -42,6 +43,8 @@ import javax.persistence.*;
  @Index(columnList = "email", unique = true)
  })*/
 @NamedQuery(name = "AbstractAccount.findByUsername", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND a.username = :username")
+@NamedQuery(name = "AbstractAccount.findByEmailOrUserName", 
+    query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.details.email) LIKE LOWER(:name) OR LOWER(a.username) LIKE LOWER(:name)")
 @NamedQuery(name = "AbstractAccount.findByEmail", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.details.email) LIKE LOWER(:email)")
 @NamedQuery(name = "AbstractAccount.findByFullName", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount AND LOWER(a.firstname) LIKE LOWER(:firstname) AND LOWER(a.lastname) LIKE LOWER(:lastname)")
 @NamedQuery(name = "AbstractAccount.findAllNonGuests", query = "SELECT a FROM AbstractAccount a WHERE TYPE(a) != GuestJpaAccount")
@@ -403,6 +406,9 @@ public abstract class AbstractAccount extends AbstractEntity {
     public void setAgreedTime(Date agreedTime) {
         this.agreedTime = agreedTime != null ? new Date(agreedTime.getTime()) : null;
     }
+
+    @JsonIgnore
+    public abstract AuthenticationMethod getAuthenticationMethod();
 
     @Override
     public Collection<WegasPermission> getRequieredCreatePermission() {

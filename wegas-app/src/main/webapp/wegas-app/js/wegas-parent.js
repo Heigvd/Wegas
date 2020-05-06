@@ -453,6 +453,15 @@ YUI.add("wegas-parent", function(Y) {
                                                                         ]
                                                                     }
                                                                 }]
+                                                        }, {
+                                                            type: BUTTON,
+                                                            label: "Survey",
+                                                            plugins: [{
+                                                                    fn: "AddChildWidgetAction",
+                                                                    cfg: {
+                                                                        childType: "SurveyWidget"
+                                                                    }
+                                                                }]
                                                         }
                                                     ]
                                                 }

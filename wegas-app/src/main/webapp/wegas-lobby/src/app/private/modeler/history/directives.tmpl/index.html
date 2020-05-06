@@ -6,6 +6,9 @@
   </a>
 </div>
 
-<div class="modal__content modal__content--nav-off" modeler-history-list></div>
+<div ng-if="!diff" class="modal__content modal__content--nav-off" modeler-history-list></div>
 
-<div class="modal__tools" modeler-history-actions model="modelerHistoryIndexCtrl.model"></div>
+<div ng-if='diff' class="modal__content modal__content--nav-off" ng-bind-html="diff">
+</div>
+
+<div class="modal__tools flex" modeler-history-actions model="modelerHistoryIndexCtrl.model"></div>

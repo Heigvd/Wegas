@@ -9,7 +9,6 @@ import {
 
 export type DropLocation = 'INSIDE' | 'AFTER' | 'BEFORE' | 'AUTO';
 
-export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_DRAG_ITEM';
 export interface ItemDescription {
   id: {};
   parent?: {};
@@ -83,6 +82,7 @@ function outcome(
   };
 }
 interface DropZoneProps {
+  // accept: Parameters<typeof useDrop>[0]['accept'];
   id?: {};
   where: DropLocation;
   index: number;
@@ -141,31 +141,70 @@ class DropZoneContainer extends React.Component<
       : null;
   }
 }
-export const DropZone = DropTarget<DropZoneProps>(
-  TREEVIEW_ITEM_TYPE,
-  {
-    drop(props, monitor, component) {
-      if (monitor!.didDrop()) {
-        return;
-      }
-      const item = monitor!.getItem() as ItemDescription;
-      return outcome(props, item, monitor!, component!);
+
+// TODO : QUICKLY, use hooks to avoid rerendering!!!
+export const DropZoneFactory = (
+  accept: Parameters<typeof DropTarget>[0],
+  dropDisabled?: boolean,
+) =>
+  DropTarget<DropZoneProps>(
+    accept,
+    {
+      drop(props, monitor, component) {
+        if (monitor!.didDrop()) {
+          return;
+        }
+        const item = monitor!.getItem() as ItemDescription;
+        return outcome(props, item, monitor!, component!);
+      },
+      hover(props, monitor, component) {
+        if (
+          dropDisabled ||
+          !monitor!.isOver({ shallow: true }) ||
+          !monitor!.canDrop()
+        ) {
+          return;
+        }
+        const item = monitor!.getItem() as ItemDescription;
+        component!.setState({
+          where: outcome(props, item, monitor!, component!).where,
+        });
+      },
     },
-    hover(props, monitor, component) {
-      if (!monitor!.isOver({ shallow: true }) || !monitor!.canDrop()) {
-        return;
-      }
-      const item = monitor!.getItem() as ItemDescription;
-      component!.setState({
-        where: outcome(props, item, monitor!, component!).where,
-      });
+    function(connect, monitor) {
+      return {
+        connectDropTarget: connect.dropTarget(),
+        isOver: monitor.isOver({ shallow: true }),
+        item: monitor.getItem() as ItemDescription,
+      };
     },
-  },
-  function(connect, monitor) {
-    return {
-      connectDropTarget: connect.dropTarget(),
-      isOver: monitor.isOver({ shallow: true }),
-      item: monitor.getItem() as ItemDescription,
-    };
-  },
-)(DropZoneContainer);
+  )(DropZoneContainer);
+
+// function DropZone(props: DropZoneProps) {
+
+//   const { accept } = props;
+
+//   const [dropZoneProps, dropZone] = useDrop({
+//     accept,
+//     canDrop: () => true,
+//     drop: (component, monitor) => {
+//       if (monitor!.didDrop()) {
+//         return;
+//       }
+//       const item = monitor!.getItem() as ItemDescription;
+//       return outcome(props, item, monitor!, component!);
+//     },
+//     collect: (mon: DropTargetMonitor) => ({
+//       isOverCurrent: mon.isOver({ shallow: true }),
+//       canDrop: mon.canDrop(),
+//       item: mon.getItem() as DnDComponent | null,
+//     }),
+//   });
+//   return (
+//     <DropZoneContainer {...props}>
+//       {(test)=><div>
+
+//         </div>}
+//     </DropZoneContainer>
+//   );
+// }

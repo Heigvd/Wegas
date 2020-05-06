@@ -77,9 +77,9 @@ angular.module('private.admin', [
             link: function(scope, element, attrs) {
                 var ctrl = scope.adminCtrl;
                 element.bind('change', function() {
-                    ctrl.loading = true;
+                    ctrl.uploading = true;
                     ScenariosModel.createFromJSON(element[0].files[0]).then(function(response) {
-                        ctrl.loading = false;
+                        ctrl.uploading = false;
                         response.flash();
                         element[0].value = '';
                     });

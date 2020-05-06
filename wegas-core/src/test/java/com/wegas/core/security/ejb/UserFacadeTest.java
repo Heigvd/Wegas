@@ -14,6 +14,9 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.AuthenticationMethod;
+import com.wegas.core.security.util.HashMethod;
+import com.wegas.core.security.util.JpaAuthentication;
 import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
 import java.util.Calendar;
 import java.util.List;
@@ -161,7 +164,7 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
     }
 
     @Test(expected = WegasConflictException.class)
-    public void testDuplicateUsername(){
+    public void testDuplicateUsername() {
         // first sign up is fine
         this.signup("user_1234@local");
 
@@ -172,6 +175,8 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
     @Test
     public void testIdleGuestRemoval() {
         int nbUser = userFacade.findAll().size();
+
+        logout();
 
         userFacade.guestLogin();
         Assert.assertEquals(nbUser + 1, userFacade.findAll().size());
@@ -189,5 +194,84 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
         ejbTimerFacade.removeIdleGuests();
 
         Assert.assertEquals(nbUser, userFacade.findAll().size());
+    }
+
+    private void assertAuthMethodMatch(JpaAuthentication expected, JpaAuthentication actual) {
+        Assert.assertEquals("Mandatory methods do not match", expected.getMandatoryMethod(), actual.getMandatoryMethod());
+        Assert.assertEquals("Optional methods do not match", expected.getOptionalMethod(), actual.getOptionalMethod());
+    }
+
+    @Test
+    public void testHashMethodMigration() {
+        WegasUser user = this.signup("userHashTest@test", "myPasswordIsSecure");
+
+        login(admin);
+
+        // assert new account use the default authentication method
+        JpaAccount account = ((JpaAccount) user.getUser().getMainAccount());
+        assertAuthMethodMatch(userFacade.getDefaultAuthMethod(), (JpaAuthentication) account.getAuthenticationMethod());
+
+        String previousHash = account.getShadow().getPasswordHex();
+        String previousSalt = account.getShadow().getSalt();
+
+        login(user);
+
+        login(admin);
+
+        // migrate to new method
+        accountFacade.setNextAuth(account.getId(), HashMethod.SHA_256);
+        // do the change by authenticating the user
+        login(user);
+
+        // check hash has been updated
+        login(admin);
+
+        account = (JpaAccount) accountFacade.find(account.getId());
+        String newHash = account.getShadow().getPasswordHex();
+        String newSalt = account.getShadow().getSalt();
+
+        Assert.assertNotEquals("Hash has not been updated", previousHash, newHash);
+        Assert.assertNotEquals("Salt has not been updated", previousSalt, newSalt);
+
+        logout();
+
+        login(u);
+
+        login(admin);
+
+        // migrate to new method
+        previousHash = newHash;
+        previousSalt = newSalt;
+        accountFacade.setNextAuth(account.getId(), HashMethod.SHA_256);
+        // do the change by authenticating the user
+        login(user);
+
+        // check hash has been updated
+        login(admin);
+
+        account = (JpaAccount) accountFacade.find(account.getId());
+        newHash = account.getShadow().getPasswordHex();
+        newSalt = account.getShadow().getSalt();
+
+        Assert.assertNotEquals("Hash has not been updated", previousHash, newHash);
+        Assert.assertNotEquals("Salt has not been updated", previousSalt, newSalt);
+
+        // well, client to server hash method works fine, let's change internal hash method
+        accountFacade.setNextShadowHashMethod(account.getId(),
+            HashMethod.SHA_512);
+        login(user);
+
+        // check hash has been updated
+        login(admin);
+
+        account = (JpaAccount) accountFacade.find(account.getId());
+        newHash = account.getShadow().getPasswordHex();
+        newSalt = account.getShadow().getSalt();
+
+        Assert.assertNotEquals("Hash has not been updated", previousHash, newHash);
+        Assert.assertNotEquals("Salt has not been updated", previousSalt, newSalt);
+
+        login(user);
+
     }
 }
