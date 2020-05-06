@@ -96,7 +96,7 @@ YUI.add('wegas-spreadsheet', function(Y) {
             this.handlers = {};
             this.finished = false;
             this.persistenceBuffer = "";
-            this.isScenaristMode = (window.location.pathname.indexOf(GAME_EDITOR_PATH) >= 0),
+            this.isScenaristMode = !!Y.one('body.wegas-editmode'),
 
             this.source = this.get("source.evaluated");
             if (this.source) {
