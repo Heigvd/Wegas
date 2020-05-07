@@ -95,7 +95,7 @@
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
-        
+
 
         <dependency>
             <groupId>net.sourceforge.htmlunit</groupId>
@@ -143,16 +143,21 @@
             <version>1.1</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
     </dependencies>
 
-    <build> 
-        <plugins> 
-            <!-- Download and copy Payara Micro artefact --> 
-            <plugin> 
-                <groupId>org.apache.maven.plugins</groupId> 
-                <artifactId>maven-dependency-plugin</artifactId> 
-                <executions> 
-                    <execution> 
+    <build>
+        <plugins>
+            <!-- Download and copy Payara Micro artefact -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
                         <phase>process-test-classes</phase>
                         <goals>
                             <goal>copy</goal>

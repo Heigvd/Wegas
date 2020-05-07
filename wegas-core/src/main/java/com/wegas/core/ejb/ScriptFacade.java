@@ -45,17 +45,18 @@ import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.reviewing.ejb.ReviewingFacade;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -74,6 +75,11 @@ import org.slf4j.LoggerFactory;
 public class ScriptFacade extends WegasAbstractFacade {
 
     private static final Logger logger = LoggerFactory.getLogger(ScriptFacade.class);
+
+    /**
+     * Stops script after a given delay. (ms)
+     */
+    private static final long SCRIPT_DELAY = 1000L;
 
     /**
      * name
@@ -397,40 +403,42 @@ public class ScriptFacade extends WegasAbstractFacade {
         String cacheFileName;
         String version;
 
-        for (File f : getJavaScriptsRecursively(root, scriptURI.split(";"))) {
-            cacheFileName = "hard:" + f.getPath();
-            version = Long.toString(f.lastModified());
+        try {
+            for (Path path : getJavaScriptsRecursively(root, scriptURI.split(";"))) {
+                cacheFileName = "hard:" + path;
+                version = Long.toString(Files.getLastModifiedTime(path).toMillis());
 
-            CachedScript cached = staticCache.get(cacheFileName);
+                CachedScript cached = staticCache.get(cacheFileName);
 
-            if (cached == null) {
-                // since putIfAbsent is synchronised, check existence first to reduce locking
-                cached = staticCache.putIfAbsentAndGet(cacheFileName, new CachedScript(null, cacheFileName, version, "JavaScript"));
-            }
+                if (cached == null) {
+                    // since putIfAbsent is synchronised, check existence first to reduce locking
+                    cached = staticCache.putIfAbsentAndGet(cacheFileName, new CachedScript(null, cacheFileName, version, "JavaScript"));
+                }
 
-            if (cached.version == null
-                || !cached.version.equals(version)
-                || cached.script == null) {
+                if (cached.version == null
+                    || !cached.version.equals(version)
+                    || cached.script == null) {
 
-                try (FileInputStream fis = new FileInputStream(f); InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8)) {
-                    cached.script = this.compile(isr);
-                    cached.version = version;
-                } catch (IOException e) {
-                    logger.warn("File {} was not found", f.getPath());
-                } catch (ScriptException ex) {
-                    throw new WegasScriptException(f.getPath(), ex.getLineNumber(), ex.getMessage());
+                    try (BufferedReader reader = Files.newBufferedReader(path)) {
+                        cached.script = this.compile(reader);
+                        cached.version = version;
+                    } catch (ScriptException ex) {
+                        throw new WegasScriptException(path.toString(), ex.getLineNumber(), ex.getMessage());
+                    }
+                }
+
+                try {
+                    ctx.setAttribute(ScriptEngine.FILENAME, "Static Scripts " + path, ScriptContext.ENGINE_SCOPE);
+                    cached.script.eval(ctx);
+                    logger.info("File {} successfully injected", path);
+                } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
+                    throw new WegasScriptException(scriptURI, ex.getLineNumber(), ex.getMessage());
+                } catch (RuntimeException ex) { // Unwrapped Java exception (Java -> JS -> Java -> throw)
+                    throw new WegasScriptException(scriptURI, ex.getMessage());
                 }
             }
-
-            try {
-                ctx.setAttribute(ScriptEngine.FILENAME, "Static Scripts " + f.getPath(), ScriptContext.ENGINE_SCOPE);
-                cached.script.eval(ctx);
-                logger.info("File {} successfully injected", f);
-            } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
-                throw new WegasScriptException(scriptURI, ex.getLineNumber(), ex.getMessage());
-            } catch (RuntimeException ex) { // Unwrapped Java exception (Java -> JS -> Java -> throw)
-                throw new WegasScriptException(scriptURI, ex.getMessage());
-            }
+        } catch (IOException ex) {
+            logger.warn("Unable to read hard coded server scripts");
         }
     }
 
@@ -548,63 +556,51 @@ public class ScriptFacade extends WegasAbstractFacade {
      *
      * @return javascript file collection
      */
-    private Collection<File> getJavaScriptsRecursively(String root, String[] files) {
-        List<File> queue = new LinkedList<>();
-        List<File> result = new LinkedList<>();
+    private Collection<Path> getJavaScriptsRecursively(String root, String[] files) throws IOException {
+        List<Path> queue = new LinkedList<>();
 
         for (String file : files) {
-            File f = new File(root + "/" + file);
-            // Put directories in the recurse queue and files in result list
-            // this test may look redundant with the one done bellow... but...
-            // actually, it ensures a -min.js script given by the user is never ignored
-            if (f.isDirectory()) {
-                queue.add(f);
-            } else {
-                result.add(f);
-            }
+            queue.add(Paths.get(root, file));
         }
 
-        while (!queue.isEmpty()) {
-            File current = queue.remove(0);
+        List<Path> result = new LinkedList<>();
 
-            if (!Files.isSymbolicLink(current.toPath()) && current.canRead()) {
-                if (current.isDirectory()) {
-                    File[] listFiles = current.listFiles();
-                    if (listFiles == null) {
-                        break;
-                    } else {
-                        queue.addAll(Arrays.asList(listFiles));
+        while (!queue.isEmpty()) {
+            Path current = queue.remove(0);
+            if (!Files.isSymbolicLink(current) && Files.isReadable(current)) {
+                if (Files.isDirectory(current)) {
+                    try (Stream<Path> children = Files.list(current)) {
+                        // queue children
+                        children.collect(Collectors.toCollection(() -> queue));
                     }
-                } else if (current.isFile()
-                    && current.getName().endsWith(".js") // Is a javascript
-                    && !isMinifedDuplicata(current)) { // avoid minified version when original exists
+                } else if (Files.isRegularFile(current)
+                    && current.toString().endsWith(".js")) {
+                    // collect all .js
                     result.add(current);
                 }
             }
         }
-        return result;
+
+        // at this point, result may contains plain and minified versions of the very same script
+        return result.stream().filter(p -> shouldKeep(p, result)).collect(Collectors.toList());
     }
 
     /**
-     * check if the given file is a minified version of an existing one
+     * Keep all file but minified which have non-minified version in the list
      *
-     * @param file
+     * @param path
+     * @param paths
      *
-     * @return true if this file is a minified version of an existing script
+     * @return
      */
-    private boolean isMinifedDuplicata(File file) {
-        if (file.getName().endsWith("-min.js")) {
-            String siblingPath = file.getPath().replaceAll("-min.js$", ".js");
-            File f = new File(siblingPath);
-            return f.exists();
+    private static boolean shouldKeep(Path path, List<Path> paths) {
+        String toString = path.toString();
+        if (toString.endsWith("-min.js")) {
+            String nonMin = toString.replaceAll("-min.js$", ".js");
+            return !paths.stream().anyMatch(p -> nonMin.equals(p.toString()));
         }
-        return false;
+        return true;
     }
-
-    /**
-     * Stops script after a given delay. (ms)
-     */
-    private static final long SCRIPT_DELAY = 1000L;
 
     /**
      * Runs a script with a delay ({@value #SCRIPT_DELAY} ms)

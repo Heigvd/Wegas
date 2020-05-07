@@ -15,11 +15,12 @@ import fish.payara.micro.BootstrapException;
 import fish.payara.micro.PayaraMicro;
 import fish.payara.micro.PayaraMicroRuntime;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -29,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PropertyResourceBundle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main class to run Wegas
@@ -36,6 +39,8 @@ import java.util.PropertyResourceBundle;
  * @author maxence
  */
 public class WegasRuntime {
+
+    private static final Logger logger = LoggerFactory.getLogger(WegasRuntime.class);
 
     private static final Map<String, String> env;
 
@@ -76,6 +81,7 @@ public class WegasRuntime {
     }
 
     public WegasRuntime() {
+        // ensure a default constructor exists
     }
 
     public PayaraMicroRuntime getPayara() {
@@ -115,16 +121,16 @@ public class WegasRuntime {
     }
 
     public static void resetDB(String dbName) {
-        final String DB_CON = "jdbc:postgresql://localhost:5432/" + dbName;
-        final String USER = "user";
-        final String PASSWORD = "1234";
-        try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD);
-                Statement st = connection.createStatement()) {
+        final String dbConn = "jdbc:postgresql://localhost:5432/" + dbName;
+        final String user = "user";
+        final String password = "1234";
+        try (Connection connection = DriverManager.getConnection(dbConn, user, password);
+            Statement st = connection.createStatement()) {
             st.execute("DROP SCHEMA public CASCADE;");
             st.execute("CREATE SCHEMA public;");
         } catch (SQLException ex) {
             // fails tests ASAP
-            throw new RuntimeException(ex);
+            throw new RuntimeException(ex); //NOPMD
         }
     }
 
@@ -137,8 +143,8 @@ public class WegasRuntime {
      */
     public static final void initEnv(Map<String, String> extraEnv) throws IOException {
 
-        try (FileInputStream fis = new FileInputStream(PROPERTIES_PATH)) {
-            PropertyResourceBundle properties = new PropertyResourceBundle(fis);
+        try (InputStream is = Files.newInputStream(Path.of(PROPERTIES_PATH))) {
+            PropertyResourceBundle properties = new PropertyResourceBundle(is);
             for (String k : properties.keySet()) {
                 env.put(k, properties.getString(k));
             }
@@ -173,19 +179,19 @@ public class WegasRuntime {
         File theWar = new File(warPath);
 
         PayaraMicroRuntime bootstrap = PayaraMicro.getInstance()
-                .setAlternateDomainXML(tmpDomainConfig)
-                .addDeploymentFile(theWar)
-                .setHttpAutoBind(true)
-                .setSslAutoBind(true)
-                .bootStrap();
+            .setAlternateDomainXML(tmpDomainConfig)
+            .addDeploymentFile(theWar)
+            .setHttpAutoBind(true)
+            .setSslAutoBind(true)
+            .bootStrap();
 
         String appName = bootstrap.getDeployedApplicationNames().iterator().next();
         Integer httpPort = bootstrap.getLocalDescriptor().getHttpPorts().get(0);
         String appUrl = bootstrap.getLocalDescriptor().getApplicationURLS().get(0).toString();
 
-        System.out.println("AppName: " + appName);
-        System.out.println("Port: " + httpPort);
-        System.out.println("URL: " + appUrl);
+        logger.info("AppName: {}", appName);
+        logger.info("Port: {}", httpPort);
+        logger.info("URL: {}", appUrl);
 
         wr.setAppName(appName);
         wr.setBaseUrl("http://localhost:" + httpPort + "/" + appName);
@@ -215,10 +221,10 @@ public class WegasRuntime {
                     Files.write(properties.toPath(), result);
 
                 } catch (PatchFailedException ex) {
-                    System.out.println("Failed to patch " + properties.getAbsolutePath() + "! Please edit it manually");
+                    logger.info("Failed to patch {}! Please edit it manually", properties.getAbsolutePath());
                     return;
                 } catch (DiffException ex) {
-                    System.out.println("Failed to diff " + properties.getAbsolutePath() + "! Please edit it manually");
+                    logger.info("Failed to diff {}! Please edit it manually", properties.getAbsolutePath());
                     return;
                 } finally {
                     Files.copy(defaultProperties.toPath(), oriDefaultProperties.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -230,32 +236,32 @@ public class WegasRuntime {
                 Files.copy(defaultProperties.toPath(), properties.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException ex) {
-            System.out.println("Failed to read some file: " + ex);
-            System.err.println("Abort");
+            logger.info("Failed to read some file: {}", ex);
+            logger.error("Abort");
             return;
         }
 
         WegasRuntime payara1 = WegasRuntime.boot(false);
 
         Runtime.getRuntime()
-                .addShutdownHook(new Thread() {
-                    @Override
-                    public void run() {
-                        System.out.println("Shutdown Hook");
-                        try {
-                            if (payara1 != null) {
-                                payara1.getPayara().shutdown();
-                            }
-
-                            //if (payara2 != null) {
-                            //payara2.getPayara().shutdown();
-                            //}
-                        } catch (BootstrapException ex) {
-                            System.out.println("Shutdown failed with " + ex);
+            .addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    logger.info("Shutdown Hook");
+                    try {
+                        if (payara1 != null) {
+                            payara1.getPayara().shutdown();
                         }
-                    }
-                });
 
-        System.out.println("Running");
+                        //if (payara2 != null) {
+                        //payara2.getPayara().shutdown();
+                        //}
+                    } catch (BootstrapException ex) {
+                        logger.info("Shutdown failed with {}", ex);
+                    }
+                }
+            });
+
+        logger.info("Running");
     }
 }

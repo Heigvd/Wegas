@@ -779,7 +779,7 @@
                     <version>3.13.0</version>
                     <configuration>
                         <printFailingErrors>true</printFailingErrors>
-                        <failurePriority>5</failurePriority>
+                        <failurePriority>2</failurePriority>
                         <rulesets>
                             <rulset>wegas/pmd/default-ruleset.xml</rulset>
                         </rulesets>

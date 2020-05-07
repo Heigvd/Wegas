@@ -86,7 +86,7 @@ public class ContentConnector extends JTARepositoryConnector {
 
         if (workspaceType == WorkspaceType.FILES) {
             this.workspaceRoot = WFSConfig.WFS_ROOT.apply(gameModelId);
-        } else if (workspaceType == WorkspaceType.FILES) {
+        } else if (workspaceType == WorkspaceType.HISTORY) {
             this.workspaceRoot = WFSConfig.HISTORY_ROOT.apply(gameModelId);
         }
 

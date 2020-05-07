@@ -188,7 +188,7 @@ public class Permission extends AbstractEntity {
                         if (gameModel != null) {
                             return gameModel.getRequieredUpdatePermission();
                         }*/
-                } else if ("GameModel".equals(split[0])) {
+                } else if ("Game".equals(split[0])) {
                     // One should have super right on the game the permission give access to
                     return WegasPermission.getAsCollection(Game.getAssociatedWritePermission(Long.parseLong(perm.replaceFirst("g", ""))));
                     /*Game game = GameFacade.lookup().find(Long.parseLong(perm.replaceFirst("g", "")));

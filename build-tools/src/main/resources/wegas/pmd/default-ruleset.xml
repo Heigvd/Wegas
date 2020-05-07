@@ -46,7 +46,7 @@ under the License.
     <rule ref="category/java/codestyle.xml/DontImportJavaLang"/>
     <rule ref="category/java/codestyle.xml/DuplicateImports"/>
     <rule ref="category/java/codestyle.xml/ExtendsObject"/>
-    <rule ref="category/java/codestyle.xml/FieldDeclarationsShouldBeAtStartOfClass" />
+    <!--<rule ref="category/java/codestyle.xml/FieldDeclarationsShouldBeAtStartOfClass" />-->
     <!--<rule ref="category/java/codestyle.xml/FieldNamingConventions" />-->
     <rule ref="category/java/codestyle.xml/ForLoopShouldBeWhileLoop"/>
     <rule ref="category/java/codestyle.xml/GenericsNaming" />
@@ -67,7 +67,7 @@ under the License.
     <rule ref="category/java/design.xml/AvoidThrowingRawExceptionTypes" />
     <rule ref="category/java/design.xml/AvoidUncheckedExceptionsInSignatures" />
     <rule ref="category/java/design.xml/CollapsibleIfStatements"/>
-    <rule ref="category/java/design.xml/DataClass" />
+    <!--<rule ref="category/java/design.xml/DataClass" />-->
     <rule ref="category/java/design.xml/DoNotExtendJavaLangError" />:w
     <rule ref="category/java/design.xml/ExceptionAsFlowControl" />
     <rule ref="category/java/design.xml/SimplifyConditional" />
@@ -123,7 +123,7 @@ under the License.
     <rule ref="category/java/performance.xml/BigIntegerInstantiation"/>
     <rule ref="category/java/performance.xml/BooleanInstantiation"/>
     <rule ref="category/java/performance.xml/ConsecutiveAppendsShouldReuse" />
-    <rule ref="category/java/performance.xml/ConsecutiveLiteralAppends" />
+    <!--<rule ref="category/java/performance.xml/ConsecutiveLiteralAppends" />-->
     <rule ref="category/java/performance.xml/InefficientEmptyStringCheck" />
     <rule ref="category/java/performance.xml/InefficientStringBuffering" />
     <rule ref="category/java/performance.xml/IntegerInstantiation" />

@@ -44,8 +44,8 @@ import com.wegas.editor.Visible;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -56,6 +56,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -574,9 +576,9 @@ public class SchemaGenerator extends AbstractMojo {
             return "\"" + e.getKey() + "\": " + e.getValue();
         }).collect(Collectors.joining(",\n")));
         sb.append("\n}");
-        File f = new File(outputTypings, "Inheritance.json");
-        try (FileWriter fw = new FileWriter(f)) {
-            fw.write(sb.toString());
+
+        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(outputTypings.getAbsolutePath(), "Inheritance.json"))){
+            writer.write(sb.toString());
         } catch (IOException ex) {
             throw new WegasWrappedException(ex);
         }
@@ -590,12 +592,10 @@ public class SchemaGenerator extends AbstractMojo {
             sb.append(typeDef).append("\n");
         });
 
-        File f = new File(outputTypings, fileName);
-
-        try (FileWriter fw = new FileWriter(f)) {
-            fw.write(sb.toString());
+        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(outputTypings.getAbsolutePath(), fileName))){
+            writer.write(sb.toString());
         } catch (IOException ex) {
-            getLog().error("Failed to write " + f.getAbsolutePath(), ex);
+            getLog().error("Failed to write " + fileName + " in " + outputTypings.getAbsolutePath(), ex);
         }
     }
 
@@ -943,17 +943,15 @@ public class SchemaGenerator extends AbstractMojo {
                     jsonBuiltFileNames.put(jsonFileName, wEF.getTheClass().getName());
 
                     if (!dryRun) {
-                        File f = new File(outputDirectory, jsonFileName);
-                        try (FileWriter fw = new FileWriter(f)) {
-                            fw.write(configToString(config, patches));
+                        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(outputDirectory.getAbsolutePath(), jsonFileName))){
+                            writer.write(configToString(config, patches));
                         } catch (IOException ex) {
-                            getLog().error("Failed to write " + f.getAbsolutePath(), ex);
+                            getLog().error("Failed to write " + jsonFileName + " in " + outputDirectory.getAbsolutePath(), ex);
                         }
-                        File f2 = new File(outputScriptables, classFileName);
-                        try (FileWriter fw = new FileWriter(f2)) {
-                            fw.write(getTsScriptableClass(c, allMethods));
+                        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(outputScriptables.getAbsolutePath(), classFileName))){
+                            writer.write(getTsScriptableClass(c, allMethods));
                         } catch (IOException ex) {
-                            getLog().error("Failed to write " + f.getAbsolutePath(), ex);
+                            getLog().error("Failed to write " + classFileName + " in " + outputScriptables.getAbsolutePath(), ex);
                         }
                     } else {
                         getLog().info(jsonFileName);

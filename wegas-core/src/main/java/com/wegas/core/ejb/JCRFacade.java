@@ -362,7 +362,7 @@ public class JCRFacade {
 
         ContentConnector connector = this.getContentConnector(gameModel, wType);
 
-        if (path.charAt(0) =='/'){
+        if (path.charAt(0) != '/'){
             path = "/" + path;
         }
         String[] segments = path.split("/");

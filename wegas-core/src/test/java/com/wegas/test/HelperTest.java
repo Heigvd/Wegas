@@ -8,6 +8,7 @@
 package com.wegas.test;
 
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import org.junit.*;
 import static org.junit.Assert.assertEquals;
 
@@ -49,7 +50,7 @@ public class HelperTest {
         try {
             Helper.encodeVariableName("");
         } catch (Throwable t) {
-            assertEquals(NullPointerException.class, t.getClass());
+            assertEquals(WegasErrorMessage.class, t.getClass());
         }
     }
 

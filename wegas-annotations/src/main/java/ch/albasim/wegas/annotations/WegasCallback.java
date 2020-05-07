@@ -24,7 +24,7 @@ public interface WegasCallback {
      * @param identifier entity identifier (map key or position in list)
      */
     default void add(Object child, IMergeable container, Object identifier) {
-
+        // default behaviour do not do anything
     }
 
     /**
@@ -35,7 +35,7 @@ public interface WegasCallback {
      * @param identifier
      */
     default void preUpdate(IMergeable entity, Object newValue, Object identifier) {
-
+        // default behaviour do not do anything
     }
 
     /**
@@ -46,7 +46,7 @@ public interface WegasCallback {
      * @param identifier
      */
     default void postUpdate(IMergeable entity, Object ref, Object identifier) {
-
+        // default behaviour do not do anything
     }
 
     /**
@@ -59,6 +59,7 @@ public interface WegasCallback {
      * @return child key (key for map and idx for list), null if nothing was removed
      */
     default Object remove(Object child, IMergeable container, Object identifier) {
+        // default behaviour do not do anything
         return null;
     }
 
@@ -69,7 +70,7 @@ public interface WegasCallback {
      * @param identifier
      */
     default void persist(IMergeable entity, Object identifier) {
-
+        // default behaviour do not do anything
     }
 
     /**
@@ -79,9 +80,10 @@ public interface WegasCallback {
      * @param identifier
      */
     default void destroy(IMergeable entity, Object identifier) {
-
+        // default behaviour do not do anything
     }
 
     default void registerOrphans(Object orphans) {
+        // default behaviour do not do anything
     }
 }
