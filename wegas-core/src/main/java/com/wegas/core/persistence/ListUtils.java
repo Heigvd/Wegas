@@ -15,6 +15,10 @@ import java.util.*;
  */
 public class ListUtils {
 
+    private ListUtils() {
+        // empty private constructor to prevent class initialisation
+    }
+
     /**
      * Callback to update JPA shared cache
      */
@@ -29,10 +33,12 @@ public class ListUtils {
 
         @Override
         public void addEntity(AbstractEntity entity) {
+            // default behaviour is noop
         }
 
         @Override
         public void removeEntity(AbstractEntity entity) {
+            // default behaviour is noop
         }
 
     }

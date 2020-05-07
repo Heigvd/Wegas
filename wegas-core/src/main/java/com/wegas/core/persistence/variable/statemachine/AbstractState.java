@@ -146,6 +146,7 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
      *
      */
     public AbstractState() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -185,6 +186,7 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
 
     /**
      * Kept for backward compatibility
+     *
      * @param editorPosition
      */
     public void setEditorPosition(Coordinate editorPosition) {
@@ -310,6 +312,7 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
         private static final long serialVersionUID = -6452488638539643500L;
 
         public ComparatorImpl() {
+            // ensure there is a default constructor
         }
 
         @Override

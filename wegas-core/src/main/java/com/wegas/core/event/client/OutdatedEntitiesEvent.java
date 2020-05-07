@@ -17,6 +17,10 @@ import java.util.List;
  */
 public class OutdatedEntitiesEvent extends ClientEvent {
 
+    private static final long serialVersionUID = 1L;
+
+    private List<OutdatedEntity> outdated = new ArrayList<>();
+
     public static class OutdatedEntity {
 
         private String type;
@@ -45,13 +49,11 @@ public class OutdatedEntitiesEvent extends ClientEvent {
 
     }
 
-    private static final long serialVersionUID = 1L;
-    private List<OutdatedEntity> outdated = new ArrayList<>();
-
     /**
      *
      */
     public OutdatedEntitiesEvent() {
+        // ensure to have an empty constructor
     }
 
     public OutdatedEntitiesEvent(List<AbstractEntity> entities) {

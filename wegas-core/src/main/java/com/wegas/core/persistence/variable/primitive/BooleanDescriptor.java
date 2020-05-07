@@ -26,6 +26,7 @@ public class BooleanDescriptor extends VariableDescriptor<BooleanInstance> imple
      *
      */
     public BooleanDescriptor() {
+        // ensure to have an empty constructor
     }
 
     /**

@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
+ * Replace the whole script
  *
  * @author maxence
  */
@@ -61,5 +62,7 @@ public class ScriptUpdate extends I18nUpdate {
 
     @Override
     public void setCode(String langCode) {
+        // this class is used to replace the while script, thus, the code is not required
+        // bad design...
     }
 }

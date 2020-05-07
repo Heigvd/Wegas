@@ -65,7 +65,7 @@ public class TranslationContentDeserializer extends StdDeserializer<Translatable
              */
             TranslatableContent trc = new TranslatableContent();
             String fieldName;
-            while ((fieldName = p.nextFieldName()) != null) {
+            while ((fieldName = p.nextFieldName()) != null) { // NOPMD
                 JsonToken nextToken = p.nextToken(); //consume value
                 //consume value
                 if (nextToken != JsonToken.VALUE_NULL) {
@@ -86,7 +86,7 @@ public class TranslationContentDeserializer extends StdDeserializer<Translatable
                             break;
                         case "translations":
                             String lang;
-                            while ((lang = p.nextFieldName()) != null) {
+                            while ((lang = p.nextFieldName()) != null) { // NOPMD
                                 JsonToken nextValue = p.nextValue();
                                 if (nextValue == JsonToken.VALUE_STRING) {
                                     String translation = p.getValueAsString();
@@ -96,7 +96,7 @@ public class TranslationContentDeserializer extends StdDeserializer<Translatable
                                     String trFieldName;
                                     String translation = "";
                                     String status = "";
-                                    while ((trFieldName = p.nextFieldName()) != null) {
+                                    while ((trFieldName = p.nextFieldName()) != null) { // NOPMD
                                         p.nextValue(); // consume value
                                         if (trFieldName.equals("translation")) {
                                             translation = p.getValueAsString();

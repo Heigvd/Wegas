@@ -18,9 +18,6 @@ public class RequestIdentifierGenerator {
 
     private long counter = 0;
 
-    public RequestIdentifierGenerator() {
-    }
-
     public String getUniqueIdentifier(){
         return Long.toString(counter++, 10);
     }

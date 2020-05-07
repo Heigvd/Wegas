@@ -29,6 +29,10 @@ public class SessionManager {
 
     private static final Logger logger = LoggerFactory.getLogger(SessionManager.class);
 
+    private SessionManager() {
+        // private constructor prevents initialisation
+    }
+
     /**
      * @return JCR session, logged as admin
      *
@@ -53,8 +57,8 @@ public class SessionManager {
 
     public static Node createPath(Session session, String absolutePath) throws RepositoryException {
         final List<String> path = Arrays.stream(absolutePath.split("/"))
-                .filter(p -> !p.equals(""))
-                .collect(Collectors.toList());
+            .filter(p -> !p.equals(""))
+            .collect(Collectors.toList());
         Node n = session.getRootNode();
         for (String p : path) {
             try {

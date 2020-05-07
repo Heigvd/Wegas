@@ -32,7 +32,7 @@ public class SurveySectionInstance extends VariableInstance {
      * Empty constructor
      */
     public SurveySectionInstance() {
-
+        // ensure there is an empty constructor
     }
 
     

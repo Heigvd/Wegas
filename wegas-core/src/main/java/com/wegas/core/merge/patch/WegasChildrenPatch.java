@@ -13,6 +13,7 @@ import ch.albasim.wegas.annotations.WegasCallback;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
+import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
@@ -41,7 +42,7 @@ public final class WegasChildrenPatch extends WegasPatch {
 
     private List<WegasPatch> patches;
 
-    WegasChildrenPatch(Object identifier, int order,
+    /* package */ WegasChildrenPatch(Object identifier, int order,
         WegasCallback userCallback, Mergeable referenceEntity,
         Method getter, Method setter,
         Object from, Object to,
@@ -129,7 +130,7 @@ public final class WegasChildrenPatch extends WegasPatch {
                         primitive = !Mergeable.class.isAssignableFrom(get.getClass());
                     }
                     if (primitive) {
-                        theMap.put("" + i + ":" + get, get);
+                        theMap.put(Integer.toString(i) + ":" + get, get);
                         // theMap.put(i, get);
                     } else {
                         Mergeable m = (Mergeable) get;
@@ -227,7 +228,7 @@ public final class WegasChildrenPatch extends WegasPatch {
 
                                     if (childrenList != null) {
                                         logger.info("Add child {}", child);
-                                        if (identifier != null && identifier instanceof Integer) {
+                                        if (identifier instanceof Integer) {
                                             childrenList.add((Integer) identifier, child);
                                         } else {
                                             childrenList.add(child);
@@ -349,9 +350,9 @@ public final class WegasChildrenPatch extends WegasPatch {
                             }
 
                             if (parentMode == PatchMode.DELETE
-                                && ((childrenList != null && childrenList.size() > 0)
-                                || (childrenMap != null && childrenMap.size() > 0)
-                                || (childrenSet != null && childrenSet.size() > 0))) {
+                                && ((childrenList != null && !childrenList.isEmpty())
+                                || (childrenMap != null && !childrenMap.isEmpty())
+                                || (childrenSet != null && !childrenSet.isEmpty()))) {
                                 // children
                                 logger.info("orphans: {}", children);
 
@@ -383,7 +384,7 @@ public final class WegasChildrenPatch extends WegasPatch {
             if (cause instanceof WegasRuntimeException) {
                 throw (WegasRuntimeException) cause;
             } else {
-                throw new RuntimeException(cause != null ? cause : ex);
+                throw new WegasWrappedException(cause != null ? cause : ex);
             }
         } finally {
             logger.unindent();

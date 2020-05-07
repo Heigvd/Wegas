@@ -18,6 +18,7 @@ public class PusherChannelExistenceWebhook {
     private String name;
 
     public PusherChannelExistenceWebhook() {
+        // ensure there is an empty constructor
     }
 
     public String getChannel() {

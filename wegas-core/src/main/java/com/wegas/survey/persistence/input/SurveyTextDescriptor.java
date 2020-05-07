@@ -19,9 +19,7 @@ public class SurveyTextDescriptor extends SurveyInputDescriptor {
 
     private static final long serialVersionUID = 1L;
 
-    
-    // Default constructor:
     public SurveyTextDescriptor() {
-
+        // ensure there is an empty constructor
     }
 }

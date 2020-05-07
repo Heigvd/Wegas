@@ -339,7 +339,7 @@ public class ModelFacade {
                  * Select variable descriptor to keep
                  */
                 logger.info("Process variables");
-                while (vdQueue.size() > 0) {
+                while (!vdQueue.isEmpty()) {
                     VariableDescriptor vd = vdQueue.remove(0);
                     logger.info(" Process {}", vd);
                     boolean exists = true;
@@ -482,8 +482,8 @@ public class ModelFacade {
                             item.setVisibility(ModelScoped.Visibility.INHERITED);
 
                             // Flush
-                            item.setContentToRepository();
-                            item.getContentFromRepository();
+                            item.saveContentToRepository();
+                            item.loadContentFromRepository();
 
                             if (item instanceof DirectoryDescriptor) {
                                 // directory exists in all scenarios: process children

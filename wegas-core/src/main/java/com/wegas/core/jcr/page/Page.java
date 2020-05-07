@@ -75,6 +75,7 @@ public class Page {
      *
      */
     public Page() {
+        // ensure to have an empty constructor
     }
 
     /**

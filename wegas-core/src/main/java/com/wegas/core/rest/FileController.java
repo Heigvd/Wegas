@@ -62,9 +62,7 @@ public class FileController {
     /**
      *
      */
-    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileController.class);
-
-    static final long CHUNK_SIZE = 2 * 1024 * 1024; // 2MB
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FileController.class);
 
     /**
      *
@@ -202,7 +200,7 @@ public class FileController {
                     if (ranges.length == 2) {
                         to = Long.parseLong(ranges[1]);
                     } else {
-                        //to = from + CHUNK_SIZE;
+                        //to = from + CHUNK_SIZE; // chunk_size was 2MB
                         to = length - 1;
                     }
                     if (to >= length) {
@@ -530,8 +528,8 @@ public class FileController {
             if (gameModel.isModel()) {
                 descriptor.setVisibility(tmpDescriptor.getVisibility());
             }
-            descriptor.setContentToRepository();
-            descriptor.getContentFromRepository();                              //Update
+            descriptor.saveContentToRepository();
+            descriptor.loadContentFromRepository();                              //Update
             return descriptor;
         } catch (RepositoryException ex) {
             logger.debug("File does not exist", ex);

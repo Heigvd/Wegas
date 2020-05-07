@@ -66,6 +66,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
      *
      */
     public AbstractStateMachineDescriptor() {
+        // ensure there is a default constructor
     }
 
     /**

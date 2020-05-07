@@ -170,7 +170,7 @@ public class UserController {
         }
         requestManager.assertGameTrainer(g);
 
-        List<String> emails = new ArrayList<String>();
+        List<String> emails = new ArrayList<>();
         for (Team t : g.getTeams()) {
             emails.addAll(collectEmails(t));
         }

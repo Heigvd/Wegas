@@ -18,9 +18,13 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-public class DescriptorFactory {
+public final class DescriptorFactory {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(DescriptorFactory.class);
+
+    private DescriptorFactory() {
+        // private constructor prevents initialisation
+    }
 
     /**
      * @param node
@@ -69,7 +73,7 @@ public class DescriptorFactory {
                 }
             }
             if (abstractContentDescriptor.exist()) {
-                abstractContentDescriptor.getContentFromRepository();
+                abstractContentDescriptor.loadContentFromRepository();
             }
         } catch (RepositoryException ex) {
             logger.error("WFS: node error (path:{}, type:{})", nodePath, mimeType);

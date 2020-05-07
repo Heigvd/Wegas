@@ -13,7 +13,7 @@ package com.wegas.core.exception.client;
  */
 public class WegasWrappedException extends WegasRuntimeException {
 
-    public WegasWrappedException(Exception ex){
+    public WegasWrappedException(Throwable ex){
         super(ex.getMessage(), ex);
     }
 }

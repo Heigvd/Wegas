@@ -43,8 +43,6 @@ import javax.ws.rs.core.MediaType;
 @Path("GameModel/{gameModelId : ([1-9][0-9]*)?}/History")
 public class HistoryController {
 
-    static final long CHUNK_SIZE = 2 * 1024 * 1024; // 2MB
-
     /**
      *
      */
@@ -126,7 +124,7 @@ public class HistoryController {
         String name = oName;
 
         if (!oName.endsWith(".json")) {
-            name += ".json";
+            name = name + ".json"; // NOPMD
         }
 
         jcrFacade.createFile(gameModel, ContentConnector.WorkspaceType.HISTORY, name, "/",

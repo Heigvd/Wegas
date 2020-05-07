@@ -46,7 +46,7 @@ public class LibraryFacade {
                 return gameModel.getCssLibraryList();
 
             default:
-                throw new RuntimeException("Unable to find associated library: " + name);
+                throw WegasErrorMessage.error("Unable to find associated library: " + name);
         }
     }
 

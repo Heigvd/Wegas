@@ -254,6 +254,7 @@ public abstract class AbstractAccount extends AbstractEntity {
     }
 
     public void setName(String name) {
+        // bad design as name is a computed property
     }
 
     /**
@@ -337,6 +338,7 @@ public abstract class AbstractAccount extends AbstractEntity {
      * @param permissions
      */
     public void setPermissions(List<Permission> permissions) {
+        // TODO clean backward compat scoriae
     }
 
     /**

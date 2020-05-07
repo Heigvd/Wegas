@@ -100,6 +100,7 @@ public abstract class EvaluationInstance extends AbstractEntity {
      * Simple constructor
      */
     public EvaluationInstance() {
+        // ensure there is an empty constructor
     }
 
     /**

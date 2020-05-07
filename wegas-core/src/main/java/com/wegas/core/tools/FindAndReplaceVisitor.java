@@ -170,7 +170,7 @@ public class FindAndReplaceVisitor implements MergeHelper.MergeableVisitor {
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
      */
-    private void update(Object newValue, Object target, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    private void update(Object newValue, Object target, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key) throws IllegalAccessException, InvocationTargetException {
         if (field.getType() == WegasFieldProperties.FieldType.CHILDREN) {
             Object get = field.getPropertyDescriptor().getReadMethod().invoke(ancestors.peekFirst());
             if (get instanceof Map) {

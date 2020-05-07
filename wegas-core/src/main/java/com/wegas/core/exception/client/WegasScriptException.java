@@ -20,6 +20,7 @@ public class WegasScriptException extends WegasRuntimeException {
      *
      */
     public WegasScriptException() {
+        // ensure there is a default constructor
     }
 
     /**

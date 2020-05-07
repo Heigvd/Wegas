@@ -261,7 +261,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      *
      * @param p
      */
-    public void getSalary(Player p) {
+    public void getSalary(Player p) { // NOPMD : backward compat
         this.getInstance(p).getProperty("salary");
     }
 
@@ -289,7 +289,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      *
      * @param p
      */
-    public void getExperience(Player p) {
+    public void getExperience(Player p) { // NOPMD : backward compat
         this.getInstance(p).getProperty("experience");
     }
 
@@ -317,7 +317,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> imp
      *
      * @param p
      */
-    public void getLeadershipLevel(Player p) {
+    public void getLeadershipLevel(Player p) { // NOPMD : backward compat
         this.getInstance(p).getProperty("leadershipLevel");
     }
 

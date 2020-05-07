@@ -24,6 +24,7 @@ public class EntityUpdatedEvent extends ClientEvent {
      *
      */
     public EntityUpdatedEvent() {
+        // ensure there is an empty constructor
     }
 
     /**

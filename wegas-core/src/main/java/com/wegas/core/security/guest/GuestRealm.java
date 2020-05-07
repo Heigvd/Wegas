@@ -41,7 +41,7 @@ public class GuestRealm extends AuthorizingRealm {
         Long accountId = (Long) authcToken.getPrincipal();
             AbstractAccount account = AccountFacade.lookup().find(accountId);
 
-            if (account != null && account instanceof GuestJpaAccount) {
+            if (account instanceof GuestJpaAccount) {
                 return new SimpleAuthenticationInfo(authcToken.getPrincipal(), "", this.getName());
             }
 

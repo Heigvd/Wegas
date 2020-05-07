@@ -22,8 +22,8 @@ import com.wegas.editor.ValueGenerators;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.view.Hidden;
 import com.wegas.editor.view.I18nHtmlView;
-import com.wegas.survey.persistence.input.SurveySectionDescriptor;
 import com.wegas.survey.persistence.SurveyInstance.SurveyStatus;
+import com.wegas.survey.persistence.input.SurveySectionDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -40,50 +40,46 @@ import javax.persistence.Table;
  * @author Jarle Hulaas
  * @see SurveyDescriptor
  */
-
 @Entity
 @Table(
-        indexes = {
-            @Index(columnList = "description_id"),
-            @Index(columnList = "descriptionend_id")
-        }
+    indexes = {
+        @Index(columnList = "description_id"),
+        @Index(columnList = "descriptionend_id")
+    }
 )
 public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
-        implements DescriptorListI<SurveySectionDescriptor> {
+    implements DescriptorListI<SurveySectionDescriptor> {
 
     private static final long serialVersionUID = 1L;
 
-
     @OneToOne(cascade = CascadeType.ALL)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Introductory description", value = I18nHtmlView.class))
+        optional = false, nullable = false, proposal = EmptyI18n.class,
+        view = @View(label = "Introductory description", value = I18nHtmlView.class))
     private TranslatableContent description;
 
-    
     @OneToOne(cascade = CascadeType.ALL)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Closing remarks", value = I18nHtmlView.class))
+        optional = false, nullable = false, proposal = EmptyI18n.class,
+        view = @View(label = "Closing remarks", value = I18nHtmlView.class))
     private TranslatableContent descriptionEnd;
 
     /**
      * List of sections inside this survey
      */
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL)
-    @JsonManagedReference(value="survey-sections")
+    @JsonManagedReference(value = "survey-sections")
     @OrderColumn(name = "index")
     //@JsonView(Views.EditorI.class)
     @WegasEntityProperty(includeByDefault = false,
-            optional = false, nullable = false, proposal = ValueGenerators.EmptyArray.class,
-            view = @View(value = Hidden.class, label = "Items"), notSerialized = true)
+        optional = false, nullable = false, proposal = ValueGenerators.EmptyArray.class,
+        view = @View(value = Hidden.class, label = "Items"), notSerialized = true)
     private List<SurveySectionDescriptor> items = new ArrayList<>();
 
-    
     public SurveyDescriptor() {
-
+        // ensure there is an empty constructor
     }
-    
+
     /**
      * @return the items (i.e. the sections)
      */
@@ -92,7 +88,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     public List<SurveySectionDescriptor> getItems() {
         return this.items;
     }
-    
+
     /**
      * @param items the items (i.e. sections) to set
      */
@@ -121,12 +117,11 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
         item.setSurvey(this);
     }
 
-
     @Override
     public void resetItemsField() {
         this.items = new ArrayList<>();
     }
-    
+
     /**
      * @return the description
      */
@@ -160,10 +155,8 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
             this.descriptionEnd.setParentDescriptor(this);
         }
     }
-    
-    
-// ~~~~~~ Sugar for scripts ~~~~~~~~
 
+// ~~~~~~ Sugar for scripts ~~~~~~~~
     /**
      *
      * @param p
@@ -300,6 +293,5 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     public boolean isNotClosed(Player p) {
         return this.getInstance(p).getStatus() != SurveyStatus.CLOSED;
     }
-    
 
 }

@@ -69,8 +69,8 @@ public class ContentConnector extends JTARepositoryConnector {
             return bytes + "B";
         }
         Integer exponent = (int) (Math.log(bytes) / Math.log(unit));
-        String prefix = ("KMGTPE").charAt(exponent - 1) + "";
-        return String.format("%.1f%sB", bytes / Math.pow(unit, exponent), prefix);
+        char prefix = ("KMGTPE").charAt(exponent - 1);
+        return String.format("%.1f%cB", bytes / Math.pow(unit, exponent), prefix);
     }
 
     /**
@@ -83,14 +83,13 @@ public class ContentConnector extends JTARepositoryConnector {
         this.gameModel = gameModel;
         this.gameModelId = gameModel.getId();
         this.workspaceType = workspaceType;
-        switch (workspaceType) {
-            case FILES:
-                this.workspaceRoot = WFSConfig.WFS_ROOT.apply(gameModelId);
-                break;
-            case HISTORY:
-                this.workspaceRoot = WFSConfig.HISTORY_ROOT.apply(gameModelId);
-                break;
+
+        if (workspaceType == WorkspaceType.FILES) {
+            this.workspaceRoot = WFSConfig.WFS_ROOT.apply(gameModelId);
+        } else if (workspaceType == WorkspaceType.FILES) {
+            this.workspaceRoot = WFSConfig.HISTORY_ROOT.apply(gameModelId);
         }
+
         this.session = SessionManager.getSession();
 
         if (!this.session.nodeExists(this.workspaceRoot)) {
@@ -435,7 +434,8 @@ public class ContentConnector extends JTARepositoryConnector {
     /**
      *
      */
-    public void _save() {
+    @Deprecated
+    public void internalSave() {
         if (session.isLive()) {
             try {
                 session.save();

@@ -34,6 +34,7 @@ public class BooleanInstance extends VariableInstance {
      *
      */
     public BooleanInstance() {
+        // ensure to have an empty constructor
     }
 
     /**

@@ -15,7 +15,6 @@ import java.util.List;
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 public class EntityDestroyedEvent extends ClientEvent {
-    
 
     private static final long serialVersionUID = 1L;
     private List<DestroyedEntity> destroyedEntities = new ArrayList<>();
@@ -24,6 +23,7 @@ public class EntityDestroyedEvent extends ClientEvent {
      *
      */
     public EntityDestroyedEvent() {
+        // ensure there is en empty constructor
     }
 
     /**

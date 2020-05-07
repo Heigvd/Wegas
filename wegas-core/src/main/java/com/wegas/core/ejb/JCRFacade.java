@@ -29,7 +29,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.ItemExistsException;
-import javax.jcr.LoginException;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.ws.rs.core.Response;
@@ -43,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public class JCRFacade {
 
     @Inject
-    JCRConnectorProvider jCRConnectorProvider;
+    private JCRConnectorProvider jCRConnectorProvider;
 
     @Inject
     private GameModelFacade gameModelFacade;
@@ -124,8 +123,6 @@ public class JCRFacade {
                 Collections.sort(ret, new ContentComparator());
                 return ret;
             }
-        } catch (LoginException ex) {
-            logger.error(null, ex);
         } catch (RepositoryException ex) {
             logger.error(null, ex);
         }
@@ -191,7 +188,7 @@ public class JCRFacade {
     }
 
     private void assertFilenameIsValid(String filename) {
-        List<String> errors = new LinkedList<String>();
+        List<String> errors = new LinkedList<>();
 
         // rewrite with a powerfil regex
         for (String c : FORBIDDEN_CHARS) {
@@ -203,12 +200,12 @@ public class JCRFacade {
         if (!errors.isEmpty()) {
             StringBuilder sb = new StringBuilder("Filename ").append(filename).append(" is not valid! Character");
             if (errors.size() > 1) {
-                sb.append("s");
+                sb.append('s');
             }
             for (int i = errors.size() - 1; i >= 0; i--) {
-                sb.append(" ").append(errors.get(i));
+                sb.append(' ').append(errors.get(i));
                 if (i > 1) {
-                    sb.append(",");
+                    sb.append(',');
                 } else if (i == 1) {
                     sb.append(" and");
                 }
@@ -365,7 +362,7 @@ public class JCRFacade {
 
         ContentConnector connector = this.getContentConnector(gameModel, wType);
 
-        if (!path.startsWith("/")) {
+        if (path.charAt(0) =='/'){
             path = "/" + path;
         }
         String[] segments = path.split("/");
@@ -577,7 +574,7 @@ public class JCRFacade {
         String basename;
         String extension;
 
-        int lastIndexOf = filename.lastIndexOf(".");
+        int lastIndexOf = filename.lastIndexOf('.');
         if (lastIndexOf > 0) {
             basename = filename.substring(0, lastIndexOf); // eg picture, a
             extension = filename.substring(lastIndexOf); // eg. .jpg, .txt

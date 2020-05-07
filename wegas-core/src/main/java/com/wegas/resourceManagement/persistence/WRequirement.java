@@ -138,6 +138,7 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
      *
      */
     public WRequirement() {
+        // useless but ensure there is an empty constructor
     }
 
     /**

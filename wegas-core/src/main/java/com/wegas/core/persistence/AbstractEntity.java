@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "VariableInstance", value = VariableInstance.class),
     @JsonSubTypes.Type(name = "EvaluationInstance", value = EvaluationInstance.class)
 })
-/**
+/*
  * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for some
  * object (eg ChoiceDescriptor and result). INVALIDATE_CHANGED_OBJECTS must be set to fix this
  * problem. 2018-04-05: revert to default since it seems the buggy behaviour no longer occurs
@@ -325,6 +325,7 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
      * @param beans facade wrapper
      */
     public void updateCacheOnDelete(Beanjection beans) {
+        // default behaviour is noop
     }
 
     /**

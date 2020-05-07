@@ -28,6 +28,7 @@ public class TransitionHistoryEntry implements Serializable, Orderable {
     private Integer order;
 
     public TransitionHistoryEntry() {
+        // ensure to have an empty constructor
     }
 
     public TransitionHistoryEntry(Long tansitionId, Integer order) {

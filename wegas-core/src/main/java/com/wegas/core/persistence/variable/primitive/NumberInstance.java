@@ -56,8 +56,8 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
      */
     @Column(name = "val")
     @WegasEntityProperty(
-            optional = false, nullable = false,
-            view = @View(label = "Value"))
+        optional = false, nullable = false,
+        view = @View(label = "Value"))
     @Errored(ValueLessThanMin.class)
     @Errored(ValueGreaterThanMax.class)
     private double value;
@@ -69,11 +69,11 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
     //@JsonView(Views.ExtendedI.class)
     //@OrderColumn
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(
             label = "History",
             featureLevel = CommonView.FEATURE_LEVEL.ADVANCED
-    ))
+        ))
     @Errored(ValueLessThanMin.class)
     private List<NumberHistoryEntry> history = new ArrayList<>();
 
@@ -81,6 +81,7 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
      *
      */
     public NumberInstance() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -186,7 +187,7 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
 
         public ValueGreaterThanMax() {
             super(new IsDefined(new Field(NumberDescriptor.class, "maxValue")),
-                    new GreaterThan(new Self(), new Field(NumberDescriptor.class, "maxValue"))
+                new GreaterThan(new Self(), new Field(NumberDescriptor.class, "maxValue"))
             );
         }
     }
@@ -195,7 +196,7 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
 
         public ValueLessThanMin() {
             super(new IsDefined(new Field(NumberDescriptor.class, "minValue")),
-                    new LessThan(new Self(), new Field(NumberDescriptor.class, "minValue"))
+                new LessThan(new Self(), new Field(NumberDescriptor.class, "minValue"))
             );
         }
     }

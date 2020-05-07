@@ -67,6 +67,7 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
      * @param itemsIds
      */
     default void setItemsIds(List<Long> itemsIds) {
+        // just do nothing: DO NOT OVERRIDE, NEVER!
     }
 
     /**

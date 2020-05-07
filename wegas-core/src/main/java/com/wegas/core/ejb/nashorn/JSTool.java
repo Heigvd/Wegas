@@ -1,3 +1,4 @@
+
 package com.wegas.core.ejb.nashorn;
 
 // !!! This is what jdk9+ version could be
@@ -25,6 +26,10 @@ import jdk.nashorn.api.tree.WhileLoopTree;
 public class JSTool {
 
     public final static String JS_TOOL_INSTANCE_NAME = "$$internal$$JSTool";
+
+    private JSTool() {
+        // private constructor prevents initialisation
+    }
 
     /**
      * Convert code in String form to it's AST from. Nashorn's AST
@@ -107,8 +112,8 @@ public class JSTool {
             this.injectionLength = injection.length();
         }
 
-        private Void visitExpressionTree(ExpressionTree tree, Void r){
-            if (tree !=null){
+        private Void visitExpressionTree(ExpressionTree tree, Void r) {
+            if (tree != null) {
                 return tree.accept(this, r);
             }
             return null;

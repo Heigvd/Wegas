@@ -33,6 +33,10 @@ import org.apache.commons.text.StringEscapeUtils;
  */
 public class I18nHelper {
 
+    private I18nHelper(){
+        // empty private constructor to prevent class initialisation
+    }
+
     /**
      * Extract properties from an ObjectLiteratlTree.
      *

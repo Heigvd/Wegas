@@ -80,6 +80,9 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
 
     private static final Logger logger = LoggerFactory.getLogger(I18nFacade.class);
 
+    private static final int TEXT_PER_REQUEST_LIMIT = 50; // up to 50 texts / request
+    private static final int DEEPL_SIZE_LIMIT = 30000; // maximim 30 kB / request
+
     @Inject
     private GameModelFacade gameModelFacade;
 
@@ -880,9 +883,6 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
 
         List<List<String>> listOfTexts = new ArrayList<>();
 
-        final int LIMIT = 50; // maximumt 50 texts / request
-        final int SIZE_LIMIT = 30000; // maximim 30 kB / request
-
         int currentSize = 0;
         List<String> texts = new ArrayList<>();
 
@@ -892,9 +892,9 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
 
             int size = update.getValue().getBytes(StandardCharsets.UTF_8).length;
 
-            if (currentSize + size > SIZE_LIMIT) {
+            if (currentSize + size > DEEPL_SIZE_LIMIT) {
                 // no place left for new text
-                if (texts.size() > 0) {
+                if (!texts.isEmpty()) {
                     // stack current texts
                     listOfTexts.add(texts);
                     texts = new ArrayList<>();
@@ -908,7 +908,7 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
                 currentSize += size;
                 i++;
 
-                if (texts.size() % LIMIT == 0) {
+                if (texts.size() % TEXT_PER_REQUEST_LIMIT == 0) {
                     listOfTexts.add(texts);
                     texts = new ArrayList<>();
                     currentSize = 0;
@@ -916,7 +916,7 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
             }
         }
 
-        if (texts.size() > 0) {
+        if (!texts.isEmpty()) {
             listOfTexts.add(texts);
         }
 

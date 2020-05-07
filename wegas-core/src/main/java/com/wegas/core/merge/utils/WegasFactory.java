@@ -18,8 +18,22 @@ import java.lang.reflect.InvocationTargetException;
  */
 public interface WegasFactory {
 
+    /**
+     *
+     * @param <T>
+     * @param gameModel
+     * @param originalObject
+     *
+     * @return
+     *
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws NoSuchMethodException
+     * @throws SecurityException
+     */
     <T> T newInstance(GameModel gameModel, T originalObject) throws
-            InstantiationException, IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException,
-            NoSuchMethodException, SecurityException;
+        InstantiationException, IllegalAccessException,
+        InvocationTargetException, NoSuchMethodException;
 }

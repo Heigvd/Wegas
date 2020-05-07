@@ -50,11 +50,6 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
     /**
      *
      */
-    public ResourceFacade() {
-    }
-    /**
-     *
-     */
     @Inject
     private PlayerFacade playerFacade;
     /**

@@ -32,7 +32,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * Transaction scoped JCR Connector provider which bounds JCR repositories to the current transaction
+ * Transaction scoped JCR Connector provider which bounds JCR repositories to the current
+ * transaction
  *
  * @author maxence
  */
@@ -79,7 +80,8 @@ public class JCRConnectorProviderTx implements Serializable {
     }
 
     /**
-     * As soon as this bean is construct, make sure there is a JCRSync bound to the current transaction
+     * As soon as this bean is construct, make sure there is a JCRSync bound to the current
+     * transaction
      */
     @PostConstruct
     public void construct() {
@@ -131,20 +133,20 @@ public class JCRConnectorProviderTx implements Serializable {
     }
 
     /**
-     * Get a managed connector. Setting TransactionAttributeType to MANDATORY compels to have an existing transaction to get a connector.
-     * If there is not transaction, an exception is thrown.
+     * Get a managed connector. Setting TransactionAttributeType to MANDATORY compels to have an
+     * existing transaction to get a connector. If there is not transaction, an exception is thrown.
      *
      * @param gameModel the gameModel
      * @param type      repository type
      *
      * @return a managed connector
      *
-     * @throws RepositoryException seems the data store is not available...
+     * @throws RepositoryException               seems the data store is not available...
      * @throws TransactionRequiredLocalException when there is no transaction context
      */
     @TransactionAttribute(TransactionAttributeType.MANDATORY)
     protected JTARepositoryConnector getConnector(GameModel gameModel, RepositoryType type)
-            throws RepositoryException, TransactionRequiredLocalException {
+        throws RepositoryException, TransactionRequiredLocalException {
         String key = type + "::" + gameModel.getId();
 
         if (!this.connectors.containsKey(key)) {
@@ -160,8 +162,10 @@ public class JCRConnectorProviderTx implements Serializable {
 
     /**
      * make sure changes from all opened repositories are "committable" or throw something bad
+     *
+     * @throws RuntimeException if unable to prepare the commit
      */
-    protected void prepare() throws RuntimeException {
+    protected void prepare() {
         boolean rollback = false;
         for (JTARepositoryConnector connector : connectors.values()) {
             logger.debug(" *** {} PREPARE", connector);

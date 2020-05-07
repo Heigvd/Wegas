@@ -23,6 +23,7 @@ public class ExceptionEvent extends ClientEvent {
      *
      */
     public ExceptionEvent() {
+        // ensure to have an empty constructor
     }
 
     /**

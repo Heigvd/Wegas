@@ -19,13 +19,12 @@ public class PusherWebhooks {
 
     private Long time_ms;
 
-    public PusherWebhooks() {
-    }
-
+    @SuppressWarnings("PMD")
     public Long getTime_ms() {
         return time_ms;
     }
 
+    @SuppressWarnings("PMD")
     public void setTime_ms(Long time_ms) {
         this.time_ms = time_ms;
     }

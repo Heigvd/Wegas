@@ -39,7 +39,7 @@ public class DownloadController {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Path("{filename}")
-    public static Response forward(@FormDataParam("ctype") String contentType, @PathParam("filename") String filename, @FormDataParam("data") final String data) {
+    public Response forward(@FormDataParam("ctype") String contentType, @PathParam("filename") String filename, @FormDataParam("data") final String data) {
         return Response.ok(new StreamingOutput() {
             @Override
             public void write(OutputStream out) throws IOException, WebApplicationException {

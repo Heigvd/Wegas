@@ -154,7 +154,7 @@ public class VariableInstanceController {
      */
     @POST
     @Path("user/{userId : [1-9][0-9]*}")
-    public VariableInstance setVariableInstance(
+    public VariableInstance updateVariableInstance(
             // @fixme Is this method still in use?
             @PathParam("gameModelId") Long gameModelId,
             @PathParam("variableDescriptorId") Long variableDescriptorId,

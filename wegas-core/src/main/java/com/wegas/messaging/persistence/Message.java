@@ -151,6 +151,7 @@ public class Message extends AbstractEntity implements DatedEntity {
      *
      */
     public Message() {
+        // useless but ensure there is an empty constructor
     }
 
     /*

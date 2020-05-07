@@ -59,6 +59,7 @@ public class Script implements Serializable, Mergeable {
      *
      */
     public Script() {
+        // ensure to have an empty constructor
     }
 
     /**

@@ -412,7 +412,7 @@ public abstract class WegasPatch {
     protected StringBuilder print(int ident) {
         StringBuilder sb = new StringBuilder();
         newLine(sb, ident);
-        sb.append("Patch ").append(this.getClass().getSimpleName()).append(" ").append(identifier);
+        sb.append("Patch ").append(this.getClass().getSimpleName()).append(' ').append(identifier);
         if (fieldCallback != null) {
             newLine(sb, ident + 1);
             sb.append("FieldCallback: ").append(fieldCallback);
@@ -436,7 +436,7 @@ public abstract class WegasPatch {
     }
 
     protected void newLine(StringBuilder sb, int ident) {
-        sb.append("\n");
+        sb.append(System.lineSeparator());
         this.indent(sb, ident);
     }
 

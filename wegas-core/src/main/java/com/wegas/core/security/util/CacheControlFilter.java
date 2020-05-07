@@ -31,10 +31,11 @@ import org.slf4j.LoggerFactory;
 @WebFilter(filterName = "CacheControlFilter", urlPatterns = {"/*"}, dispatcherTypes = {DispatcherType.REQUEST})
 public class CacheControlFilter implements Filter {
 
-    final Logger logger = LoggerFactory.getLogger(CacheControlFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(CacheControlFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        // noop
     }
 
     @Override
@@ -53,5 +54,6 @@ public class CacheControlFilter implements Filter {
 
     @Override
     public void destroy() {
+        // noop
     }
 }

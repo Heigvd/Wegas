@@ -29,10 +29,6 @@ public abstract class AbstractAssignement extends AbstractEntity {
 
     private static final long serialVersionUID = 324778908917012703L;
 
-    public AbstractAssignement() {
-        super();
-    }
-
     @Transient
     @WegasEntityProperty(
             optional =false, nullable =false,

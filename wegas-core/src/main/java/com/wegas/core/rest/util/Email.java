@@ -27,6 +27,7 @@ public class Email {
     private Player[] to;
 
     public Email() {
+        // useless but ensure there is an empty constructor
     }
 
     public String getSubject() {

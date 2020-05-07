@@ -69,7 +69,7 @@ public class PageController {
     @Inject
     private PageFacade pageFacade;
 
-    private void _assertPageIdValidity(String pageId, String[] restriction) {
+    private void assertPageIdValidityInternal(String pageId, String[] restriction) {
         for (String reserved : restriction) {
             if (pageId.equals(reserved)) {
                 throw WegasErrorMessage.error("Invalid page id \"" + pageId + "\"");
@@ -82,8 +82,8 @@ public class PageController {
             throw WegasErrorMessage.error("Page id cannot be empty");
         } else {
             String lowPageId = pageId.toLowerCase();
-            this._assertPageIdValidity(lowPageId, reservedPageId);
-            this._assertPageIdValidity(lowPageId, extraRestrictions);
+            this.assertPageIdValidityInternal(lowPageId, reservedPageId);
+            this.assertPageIdValidityInternal(lowPageId, extraRestrictions);
         }
     }
 
@@ -179,7 +179,7 @@ public class PageController {
     @PUT
     @Path("/Page/{pageId : [A-Za-z0-9]+}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response setPage(@PathParam("gameModelId") Long gameModelId,
+    public Response updatePage(@PathParam("gameModelId") Long gameModelId,
         @PathParam("pageId") String pageId,
         JsonNode content) throws RepositoryException, IOException {
 
@@ -258,7 +258,7 @@ public class PageController {
 
     @PUT
     @Path("/SetDefault/{pageId : [A-Za-z0-9]+}")
-    public Response setDefaultPage(@PathParam("gameModelId") Long gameModelId,
+    public Response changeDefaultPage(@PathParam("gameModelId") Long gameModelId,
         @PathParam("pageId") String pageId)
         throws RepositoryException, JsonProcessingException {
 

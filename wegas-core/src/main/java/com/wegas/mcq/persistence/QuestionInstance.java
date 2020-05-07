@@ -119,6 +119,7 @@ public class QuestionInstance extends VariableInstance implements ReadableInstan
     }
 
     public void setReplies(List<Reply> replies) {
+        // guess it is for backward compat ?
     }
 
     /**

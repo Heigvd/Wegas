@@ -134,7 +134,7 @@ public class RequestManager implements RequestManagerI {
     private TransactionSynchronizationRegistry txReg;
      */
     @Inject
-    ConcurrentHelper concurrentHelper;
+    private ConcurrentHelper concurrentHelper;
 
     /**
      * GameModelFacde instance
@@ -521,7 +521,7 @@ public class RequestManager implements RequestManagerI {
                     this.currentUser = userFacade.find(this.currentUser.getId());
                     this.clearEffectivePermisssions();
                 }
-            } catch (NullPointerException npe) {
+            } catch (NullPointerException npe) {// NOPMD We don't know where NPE came from.
                 logger.warn("NPE in getCurrnetUser()");
                 // thrown when ran withoud EJBcontext
             }
@@ -1167,7 +1167,7 @@ public class RequestManager implements RequestManagerI {
         this.pleaseClearCacheAtCompletion();
     }
 
-    void pleaseClearCacheAtCompletion() {
+    private void pleaseClearCacheAtCompletion() {
         this.clearCacheOnDestroy = true;
     }
 
@@ -1289,7 +1289,7 @@ public class RequestManager implements RequestManagerI {
         if (this.effectiveRoles == null) {
             User user = this.getCurrentUser();
             effectiveRoles = new HashSet<>();
-            //for (String p : userFacade.findRoles_native(user)) {
+            //for (String p : userFacade.findRolesNative(user)) {
             if (user != null) {
                 for (Role p : userFacade.findRolesTransactional(user.getId())) {
                     effectiveRoles.add(p.getName());
@@ -2010,7 +2010,7 @@ public class RequestManager implements RequestManagerI {
         try {
             Subject subject = SecurityUtils.getSubject();
             previous = subject;
-        } catch (UnavailableSecurityManagerException | IllegalStateException | NullPointerException ex) {
+        } catch (UnavailableSecurityManagerException | IllegalStateException | NullPointerException ex) { // NOPMD We don't know where NPE came from.
             // No security manager yet (startup actions)
             // craft one
             Helper.printWegasStackTrace(ex);

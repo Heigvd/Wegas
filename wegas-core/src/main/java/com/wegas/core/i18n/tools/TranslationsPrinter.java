@@ -72,7 +72,7 @@ public class TranslationsPrinter implements MergeHelper.MergeableVisitor {
         for (String code : languages) {
             String tr;
             Translation translation = trc.getTranslation(code);
-            line.append("[").append(code);
+            line.append('[').append(code);
             if (translation != null) {
                 if (Helper.isNullOrEmpty(translation.getStatus())) {
                     line.append("] ");
@@ -87,7 +87,7 @@ public class TranslationsPrinter implements MergeHelper.MergeableVisitor {
             line.append(tr);
             if (tr.length() < 30) {
                 for (int i = 0; i < 30 - tr.length(); i++) {
-                    line.append(" ");
+                    line.append(' ');
                 }
             }
             line.append("    ");

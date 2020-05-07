@@ -22,6 +22,7 @@ import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.game.Game.GameAccess;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
@@ -157,6 +158,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      *
      */
     public Team() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -471,11 +473,10 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
 
     @Override
     public Collection<WegasPermission> getRequieredCreatePermission() {
-        switch (this.getGame().getAccess()) {
-            case OPEN:
-                return null; // everybody can register en new team
-            default:
-                return WegasPermission.FORBIDDEN; // nobody can create
+        if (this.getGame().getAccess() == GameAccess.OPEN) {
+            return null; // everybody can register en new team
+        } else {
+            return WegasPermission.FORBIDDEN; // nobody can create
         }
     }
 

@@ -23,6 +23,10 @@ public class WegasEntitiesHelper {
      */
     private static final Map<Class<? extends Mergeable>, WegasEntityFields> iterators = new HashMap<>();
 
+    private WegasEntitiesHelper() {
+        // empty private constructor to prevent class initialisation
+    }
+
     /**
      * Get WegasEntityProperty fields descriptor for the given class
      *

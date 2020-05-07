@@ -104,6 +104,7 @@ public class Role extends AbstractEntity implements PermissionOwner {
      *
      */
     protected Role() {
+        // ensure there is a default constructor
     }
 
     /**

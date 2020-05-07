@@ -18,6 +18,7 @@ public abstract class WegasInternalException extends Exception {
      *
      */
     public WegasInternalException() {
+        // ensure there is a default constructor
     }
 
     public WegasInternalException(final Throwable t) {

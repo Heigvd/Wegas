@@ -111,6 +111,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      *
      */
     public StringDescriptor() {
+        // ensure to have an empty constructor
     }
 
     /**

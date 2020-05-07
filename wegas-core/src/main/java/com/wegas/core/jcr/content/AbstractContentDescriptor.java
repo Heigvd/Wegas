@@ -144,7 +144,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      * @param contentConnector
      */
     protected AbstractContentDescriptor(String name, String path, ContentConnector contentConnector) {
-        path = path.startsWith("/") ? path : "/" + path;
+        path = path.charAt(0) == '/' ? path : "/" + path;
         this.connector = contentConnector;
         this.name = name;
         this.path = path;
@@ -195,6 +195,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     @Override
     //@JsonIgnore
     public void setRefId(String refId) {
+        // unmodifiable refId
     }
 
     /**
@@ -350,8 +351,8 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     public void sync() throws RepositoryException {
         if (this.exist()) {                                                     //check existence then load it else create it
             try {
-                this.getContentFromRepository();
-            } catch (NullPointerException e) {
+                this.loadContentFromRepository();
+            } catch (NullPointerException e) { // NOPMD TODO: check NPE before, but we do not know what to check
                 if (!this.fileSystemAbsolutePath.equals("/")) {                 //Not a rootNode
                     throw e;
                 }
@@ -359,7 +360,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
             synched = true;
         } else {
             this.saveToRepository();
-            this.setContentToRepository();
+            this.saveContentToRepository();
             synched = true;
         }
     }
@@ -375,7 +376,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     public AbstractContentDescriptor addChild(AbstractContentDescriptor file) throws RepositoryException {
         Node parent = getConnector().getNode(fileSystemAbsolutePath);
         parent.addNode(file.getName());
-        file.setContentToRepository();
+        file.saveContentToRepository();
         return file;
     }
 
@@ -407,7 +408,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      * @throws RepositoryException
      */
     @JsonIgnore
-    public void getContentFromRepository() throws RepositoryException {
+    public void loadContentFromRepository() throws RepositoryException {
         ContentConnector myConnector = getConnector();
         this.mimeType = myConnector.getMimeType(fileSystemAbsolutePath);
         this.note = myConnector.getNote(fileSystemAbsolutePath);
@@ -425,7 +426,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      * @throws RepositoryException
      */
     @JsonIgnore
-    public void setContentToRepository() throws RepositoryException {
+    public void saveContentToRepository() throws RepositoryException {
         ContentConnector myConnector = getConnector();
 
         myConnector.setMimeType(fileSystemAbsolutePath, mimeType);
@@ -451,7 +452,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     @JsonIgnore
     protected ZipEntry getZipEntry() {
         String fullPath = this.getFullPath();
-        if (fullPath.startsWith("/")) { // ZIP entry shouldn't be absolute.
+        if (fullPath.charAt(0) == '/') { // ZIP entry shouldn't be absolute.
             fullPath = fullPath.replaceFirst("/", "");
         }
         return new ZipEntry(fullPath);
@@ -465,7 +466,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     @JsonIgnore
     private void parseAbsolutePath(String absolutePath) {
 //        absolutePath = absolutePath.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
-        if (!absolutePath.startsWith("/")) {
+        if (absolutePath.charAt(0) != '/') {
             absolutePath = "/" + absolutePath;
         }
         if (absolutePath.equals("/")) {

@@ -23,9 +23,9 @@ import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators;
-import static java.lang.Boolean.TRUE;
 import com.wegas.editor.view.I18nHtmlView;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
+import static java.lang.Boolean.TRUE;
 import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -38,24 +38,21 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-
 /**
  *
- * A survey input descriptor is the abstract parent of different kinds of
- * input descriptors.
+ * A survey input descriptor is the abstract parent of different kinds of input descriptors.
  *
  * @author Jarle Hulaas
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(
-        uniqueConstraints = {
-            @UniqueConstraint(columnNames = {"section_id", "name"})
-        },
-        indexes = {
-            @Index(columnList = "section_id"),
-            @Index(columnList = "description_id"),
-        }
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"section_id", "name"})
+    },
+    indexes = {
+        @Index(columnList = "section_id"),
+        @Index(columnList = "description_id"),}
 )
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(value = SurveyTextDescriptor.class),
@@ -63,7 +60,7 @@ import javax.persistence.UniqueConstraint;
     @JsonSubTypes.Type(value = SurveyNumberDescriptor.class)
 })
 public abstract class SurveyInputDescriptor
-        extends VariableDescriptor<SurveyInputInstance> {
+    extends VariableDescriptor<SurveyInputInstance> {
 
     private static final long serialVersionUID = 1L;
     private static final String mustBeInsideSection = "A SurveyInputDescriptor can only exist inside a SurveySectionDescriptor";
@@ -72,8 +69,8 @@ public abstract class SurveyInputDescriptor
      * To order questions/inputs
      */
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = ValueGenerators.One.class,
-            view = @View(label = "Index"))
+        optional = false, nullable = false, proposal = ValueGenerators.One.class,
+        view = @View(label = "Index"))
     protected Integer index;
 
     /**
@@ -81,11 +78,11 @@ public abstract class SurveyInputDescriptor
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = ValueGenerators.EmptyI18n.class,
-            view = @View(
-                    label = "Description",
-                    value = I18nHtmlView.class
-            ))
+        optional = false, nullable = false, proposal = ValueGenerators.EmptyI18n.class,
+        view = @View(
+            label = "Description",
+            value = I18nHtmlView.class
+        ))
     protected TranslatableContent description;
 
     /**
@@ -93,22 +90,22 @@ public abstract class SurveyInputDescriptor
      */
     @Column(columnDefinition = "boolean default true")
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = ValueGenerators.True.class,
-            view = @View(label = "Reply is compulsory"))
+        optional = false, nullable = false, proposal = ValueGenerators.True.class,
+        view = @View(label = "Reply is compulsory"))
     private Boolean isCompulsory = TRUE;
-   
+
     /**
      * Parent section of this input:
      */
     @ManyToOne
-    @JsonBackReference(value="input-section")
+    @JsonBackReference(value = "input-section")
     protected SurveySectionDescriptor section;
 
     /**
      * Basic constructor
      */
     public SurveyInputDescriptor() {
-
+        // ensure there is an empty constructor
     }
 
     /**
@@ -128,7 +125,6 @@ public abstract class SurveyInputDescriptor
         this.index = index;
     }
 
-    
     /**
      * Return the internal name of the question/input
      *
@@ -139,8 +135,7 @@ public abstract class SurveyInputDescriptor
     public String getName() {
         return this.name;
     }
-    */
-
+     */
     /**
      * Set the question/input internal name
      *
@@ -151,8 +146,7 @@ public abstract class SurveyInputDescriptor
     public void setName(String name) {
         this.name = name;
     }
-    */
-
+     */
     public TranslatableContent getDescription() {
         return description;
     }
@@ -167,11 +161,11 @@ public abstract class SurveyInputDescriptor
     public Boolean getIsCompulsory() {
         return isCompulsory;
     }
-    
+
     public void setIsCompulsory(Boolean isCompulsory) {
         this.isCompulsory = isCompulsory;
     }
-    
+
     /**
      * @return the section that contains this question/input
      */
@@ -197,10 +191,7 @@ public abstract class SurveyInputDescriptor
             this.setParentWh(null);
         }
     }
-    
-    
-    
-    
+
     @JsonIgnore
     @Override
     public DescriptorListI<? extends VariableDescriptor> getParentOrNull() {
@@ -221,7 +212,6 @@ public abstract class SurveyInputDescriptor
         }
     }
 
-    
     @Override
     public WithPermission getMergeableParent() {
         return getSection();
@@ -235,9 +225,8 @@ public abstract class SurveyInputDescriptor
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getMergeableParent().getRequieredReadPermission();
-    }    
-    
-    
+    }
+
     @Override
     public void setRoot(GameModel rootGameModel) {
         super.setRoot(rootGameModel);
@@ -265,9 +254,7 @@ public abstract class SurveyInputDescriptor
         }
     }
 
-    
     // ~~~~~~ Sugar for scripts ~~~~~~~~
-
     /**
      *
      * @param p

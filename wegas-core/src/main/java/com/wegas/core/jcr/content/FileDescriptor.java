@@ -206,20 +206,20 @@ public class FileDescriptor extends AbstractContentDescriptor {
      * @throws RepositoryException
      */
     @Override
-    public void getContentFromRepository() throws RepositoryException {
+    public void loadContentFromRepository() throws RepositoryException {
         if (this.getMimeType().equals(DirectoryDescriptor.MIME_TYPE) || this.fileSystemAbsolutePath.equals("/")) {
             //DirectorDescriptor
             throw new ClassCastException("Trying to retrieve a directory as a file");
         }
         this.dataLastModified = getConnector().getLastModified(fileSystemAbsolutePath);
         this.bytes = getConnector().getBytesSize(fileSystemAbsolutePath);
-        super.getContentFromRepository();
+        super.loadContentFromRepository();
     }
 
     @Override
-    public void setContentToRepository() throws RepositoryException {
+    public void saveContentToRepository() throws RepositoryException {
         getConnector().setLastModified(fileSystemAbsolutePath, dataLastModified);
-        super.setContentToRepository();
+        super.saveContentToRepository();
     }
 
     /**

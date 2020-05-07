@@ -116,6 +116,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
      *
      */
     public User() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -216,6 +217,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     }
 
     public void setName(String name) {
+        // hardcoded name
     }
 
     /**

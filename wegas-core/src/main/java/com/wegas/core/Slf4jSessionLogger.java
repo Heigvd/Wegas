@@ -95,8 +95,8 @@ public class Slf4jSessionLogger extends AbstractSessionLog {
 
         StringBuilder message = new StringBuilder();
 
-        message.append(getSupplementDetailString(entry));
-        message.append(formatMessage(entry));
+        message.append(getSupplementDetailString(entry))
+            .append(formatMessage(entry));
 
         switch (logLevel) {
             case TRACE:
@@ -205,7 +205,7 @@ public class Slf4jSessionLogger extends AbstractSessionLog {
      * Relación de los niveles de log de EclipseLink y los de SLF4J
      */
     private void initMapLevels() {
-        mapLevels = new HashMap<Integer, LogLevel>();
+        mapLevels = new HashMap<>();
 
         mapLevels.put(SessionLog.ALL, LogLevel.TRACE);
         mapLevels.put(SessionLog.FINEST, LogLevel.TRACE);

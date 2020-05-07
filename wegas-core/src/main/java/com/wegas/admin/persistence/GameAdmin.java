@@ -269,6 +269,7 @@ public class GameAdmin extends AbstractEntity {
     }
 
     public void setPlayers(List<String> players) {
+        // What's this for?
     }
 
     @PrePersist
@@ -340,9 +341,6 @@ public class GameAdmin extends AbstractEntity {
 
     /**
      * GameAdmin status
-     * {
-     *
-     * @
      */
     public enum Status {
         /**

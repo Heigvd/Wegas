@@ -644,7 +644,7 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public List<String> findRoles_native(User user) {
+    public List<String> findRolesNative(User user) {
         Query queryRoles = getEntityManager().createNamedQuery("Roles.findByUser_native", Role.class);
         queryRoles.setParameter(1, user.getId());
         return queryRoles.getResultList();
@@ -671,13 +671,13 @@ public class UserFacade extends BaseFacade<User> {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public List<String> findAllUserPermissions_NATIVEJPA(User user) {
+    public List<String> findAllUserPermissionsNativeJpa(User user) {
         Query query = getEntityManager().createNamedQuery("Permission.findByUser_native");
         query.setParameter(1, user.getId());
         return query.getResultList();
     }
 
-    public List<Permission> findAllUserPermissions_JPA(User user) {
+    public List<Permission> findAllUserPermissionsJpa(User user) {
         List<Permission> perms = new ArrayList<>();
 
         for (Role role : this.findRoles(user)) {
@@ -821,7 +821,7 @@ public class UserFacade extends BaseFacade<User> {
         if (currentUser != null) {
             AbstractAccount account = currentUser.getMainAccount();
 
-            if (account != null && account instanceof JpaAccount) {
+            if (account instanceof JpaAccount) {
                 this.sendEmailWithDisposableToken(request, (JpaAccount) account,
                     "[AlbaSim Wegas] Please validate your account",
                     "Click <a href='{{link}}'>here</a> to confirm your email address.<br /><br />"

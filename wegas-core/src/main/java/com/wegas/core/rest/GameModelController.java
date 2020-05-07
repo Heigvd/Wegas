@@ -154,7 +154,7 @@ public class GameModelController {
             if (list.size() == idList.size()) {
                 sb.append(", x");
             } else {
-                sb.append(",");
+                sb.append(',');
                 idList.stream().forEach(id -> sb.append(",").append(list.contains(id) ? "x" : ""));
             }
             sb.append(System.lineSeparator());
@@ -595,13 +595,10 @@ public class GameModelController {
     public GameModel delete(@PathParam("entityId") Long entityId) {
         SecurityUtils.getSubject().checkPermission("GameModel:Delete:gm" + entityId);
         GameModel entity = gameModelFacade.find(entityId);
-        switch (entity.getStatus()) {
-            case LIVE:
-                gameModelFacade.bin(entity);
-                break;
-            case BIN:
-                gameModelFacade.delete(entity);
-                break;
+        if (entity.getStatus() == GameModel.Status.LIVE) {
+            gameModelFacade.bin(entity);
+        } else if (entity.getStatus() == GameModel.Status.BIN) {
+            gameModelFacade.delete(entity);
         }
         // gameModelFacade.asyncRemove(entityId);
         return entity;

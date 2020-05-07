@@ -191,6 +191,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
      *
      */
     public Result() {
+        // useless but ensure there is an empty constructor
     }
 
     @Override

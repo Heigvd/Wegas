@@ -28,6 +28,7 @@ public class NumberHistoryEntry implements Serializable, Orderable {
     private Integer order;
 
     public NumberHistoryEntry() {
+        // ensure to have an empty constructor
     }
 
     public NumberHistoryEntry(Double value, int order) {

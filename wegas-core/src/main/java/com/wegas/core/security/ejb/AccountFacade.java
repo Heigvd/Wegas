@@ -360,7 +360,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         return q.getResultList();
     }
 
-    public List<AbstractAccount> findByNameEmailDomainOrUsername_withRoles(String input, List<String> roleNames) {
+    private List<AbstractAccount> findByNameEmailDomainOrUsernameWithRoles(String input, List<String> roleNames) {
         CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery<AbstractAccount> cq = cb.createQuery(AbstractAccount.class);
 
@@ -423,7 +423,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      *         member of at least one given role
      */
     public List<AbstractAccount> getAutoCompleteByRoles(String value, List<String> rolesList) {
-        return findByNameEmailDomainOrUsername_withRoles(value, rolesList);
+        return findByNameEmailDomainOrUsernameWithRoles(value, rolesList);
         /*List<String> roles = rolesList.get("rolesList");
 
         List<AbstractAccount> returnValue = new ArrayList<>();

@@ -150,9 +150,12 @@ public class LearningLockerClient {
      * @throws java.io.IOException
      */
     public List<Object> query(Map<String, Object>... pipeline) throws IOException {
-        String url = this.host + "/api/statements/aggregate";
+        StringBuffer sb = new StringBuffer();
+        sb.append(this.host)
+            .append("/api/statements/aggregate")
+            .append(getQueryString(pipeline));
 
-        url += getQueryString(pipeline);
+        String url = sb.toString();
 
         HttpGet get = new HttpGet(url);
         this.setHeaders(get);

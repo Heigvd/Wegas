@@ -104,6 +104,7 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
     private Integer currentResultIndex = null;
 
     public ChoiceInstance() {
+        // useless but ensure there is an empty constructor
     }
 
     /**

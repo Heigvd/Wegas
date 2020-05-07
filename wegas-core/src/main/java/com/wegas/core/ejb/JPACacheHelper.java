@@ -35,7 +35,7 @@ public class JPACacheHelper {
 
     @Inject
     @Outbound(eventName = JPACacheHelper.CLEAR_CACHE_EVENT_NAME, loopBack = true)
-    Event<String> messages;
+    private Event<String> messages;
 
     /**
      * Note: payload must be serialisable. (but using an ArrayList does not work...)

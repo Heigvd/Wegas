@@ -757,7 +757,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                 // TODO should throw error ?
             }
 
-            if (choiceReplies.size() > 0) {
+            if (!choiceReplies.isEmpty()) {
                 Reply r = choiceReplies.get(0);
 
                 if (!r.getIgnored()) {
@@ -839,15 +839,14 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             String description = whValidate.whDescriptor.getDescription().translateOrEmpty(gameModel, code);
 
             StringBuilder bd = new StringBuilder();
-            bd.append("<div class=\"whquestion-history\">");
-
-            bd.append("<div class=\"whquestion-label\">").append(title).append("</div>");
-            bd.append(description);
+            bd.append("<div class=\"whquestion-history\">")
+                .append("<div class=\"whquestion-label\">").append(title).append("</div>")
+                .append(description);
 
             for (VariableDescriptor item : whValidate.whDescriptor.getItems()) {
                 if (item instanceof PrimitiveDescriptorI) {
-                    bd.append("<div class=\"whview-history-answer\">");
-                    bd.append("<div class=\"whview-history-answer-title\">").
+                    bd.append("<div class=\"whview-history-answer\">")
+                        .append("<div class=\"whview-history-answer-title\">").
                         append(item.getLabel().translateOrEmpty(gameModel, code)).
                         append("</div>");
 

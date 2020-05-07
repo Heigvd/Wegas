@@ -173,7 +173,7 @@ public class AccountController {
      */
     @POST
     @Path("SetAgreed/{accountId: [1-9][0-9]*}")
-    public AbstractAccount setAgreedCurrentUser(@PathParam("accountId") Long accountId) {
+    public AbstractAccount updateAgreedCurrentUser(@PathParam("accountId") Long accountId) {
         AbstractAccount a = accountFacade.find(accountId);
         if (!userFacade.getCurrentUser().equals(a.getUser())) {
             SecurityUtils.getSubject().checkPermission("User:Edit");

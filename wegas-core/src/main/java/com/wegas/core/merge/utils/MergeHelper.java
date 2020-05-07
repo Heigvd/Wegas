@@ -35,6 +35,10 @@ public class MergeHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(MergeHelper.class);
 
+    private MergeHelper(){
+        // empty private constructor to prevent class initialisation
+    }
+
     public interface MergeableVisitor {
 
         /**
@@ -80,6 +84,7 @@ public class MergeHelper {
          * @param references      others properties visited in parallel
          */
         default void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references) {
+            // default behaviour is noop
         }
     }
 
@@ -276,7 +281,7 @@ public class MergeHelper {
                                                         ref = refMap.get(entry.getKey());
                                                     }
 
-                                                    if (ref != null && ref instanceof Mergeable) {
+                                                    if (ref instanceof Mergeable) {
                                                         mRefs[refIndex] = (Mergeable) ref;
                                                     } else {
                                                         mRefs[refIndex] = null;

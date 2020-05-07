@@ -181,6 +181,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      *
      */
     public Game() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -534,11 +535,11 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     public enum GameAccess {
 
         /**
-         *
+         * Player can join
          */
         OPEN,
         /**
-         *
+         * Player can not join
          */
         CLOSE
     }

@@ -51,6 +51,7 @@ public class TextInstance extends VariableInstance {
      *
      */
     public TextInstance() {
+        // ensure to have an empty constructor
     }
 
     /**

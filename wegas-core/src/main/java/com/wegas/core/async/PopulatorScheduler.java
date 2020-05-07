@@ -56,7 +56,7 @@ public class PopulatorScheduler {
 
     @Inject
     @Outbound(eventName = EVENT_NAME, loopBack = true)
-    Event<PopulatingCommand> events;
+    private Event<PopulatingCommand> events;
 
     @Resource
     private ManagedExecutorService managedExecutorService;

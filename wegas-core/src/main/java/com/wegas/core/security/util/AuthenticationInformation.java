@@ -29,6 +29,7 @@ public class AuthenticationInformation {
     private boolean agreed = false;
 
     public AuthenticationInformation() {
+        // ensure there is a default constructor
     }
 
     public String getLogin() {

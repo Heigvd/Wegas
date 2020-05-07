@@ -78,6 +78,7 @@ public class Occupation extends AbstractEntity implements NamedEntity {
      *
      */
     public Occupation() {
+        // useless but ensure there is an empty constructor
     }
 
     /**

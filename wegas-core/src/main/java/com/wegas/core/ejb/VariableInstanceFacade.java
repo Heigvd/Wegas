@@ -159,7 +159,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
         } else if (scope instanceof PlayerScope) {
             return this.getAllPlayerInstances((PlayerScope) scope);
         } else if (scope instanceof GameModelScope) {
-            HashMap<GameModel, VariableInstance> hashMap = new HashMap<GameModel, VariableInstance>();
+            HashMap<GameModel, VariableInstance> hashMap = new HashMap<>();
             hashMap.put(null, ((GameModelScope) scope).getVariableInstance());
             return hashMap;
         } else {

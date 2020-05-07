@@ -92,7 +92,7 @@ public abstract class RepositoryVisitor {
         public void visit(AbstractContentDescriptor node) {
             StringBuilder sb = new StringBuilder();
             indent(sb);
-            sb.append(node.getName()).append(" (").append(node.getFullPath()).append(")");
+            sb.append(node.getName()).append(" (").append(node.getFullPath()).append(')');
             if (bytesLimit > 0 && node instanceof FileDescriptor) {
                 FileDescriptor fd = (FileDescriptor) node;
                 byte[] data;
@@ -106,7 +106,7 @@ public abstract class RepositoryVisitor {
                     sb.append("Content (first bytes only): ");
 
                     for (int i = 0; i < bytesLimit && i < data.length; i++) {
-                        sb.append(data[i]).append(" ");
+                        sb.append(data[i]).append(' ');
                     }
                 } catch (IOException ex) {
                     logger.warn("Fails to read File {}", ex);

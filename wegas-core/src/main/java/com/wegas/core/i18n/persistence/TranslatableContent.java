@@ -208,9 +208,9 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
      */
     public Translation getTranslation(String code) {
         if (code != null) {
-            String CODE = code.toUpperCase();
+            String upperCode = code.toUpperCase();
             for (Translation tr : this.translations) {
-                if (CODE.equals(tr.getLang())) {
+                if (upperCode.equals(tr.getLang())) {
                     return tr;
                 }
             }

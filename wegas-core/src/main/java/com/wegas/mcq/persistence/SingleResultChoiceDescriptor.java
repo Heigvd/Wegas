@@ -10,8 +10,8 @@ package com.wegas.mcq.persistence;
 import ch.albasim.wegas.annotations.View;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.editor.jsonschema.JSONArray;
 import com.wegas.editor.Schema;
+import com.wegas.editor.jsonschema.JSONArray;
 import com.wegas.editor.view.ArrayView;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +29,8 @@ import javax.persistence.Table;
         value = SingleResultChoiceDescriptor.SingleResultProp.class,
         view = @View(label = "Result", value = ArrayView.Default.class))
 public class SingleResultChoiceDescriptor extends ChoiceDescriptor {
+
+    private static final long serialVersionUID = 1L;
 
     public static class SingleResultProp extends JSONArray {
 
@@ -54,8 +56,6 @@ public class SingleResultChoiceDescriptor extends ChoiceDescriptor {
             this.setValue(results);
         }
     }
-
-    private static final long serialVersionUID = 1L;
 
     /**
      * When a choice is created, automatically add a result.

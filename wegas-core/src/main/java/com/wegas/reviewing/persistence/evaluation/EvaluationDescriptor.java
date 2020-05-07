@@ -138,6 +138,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
      * Basic constructor
      */
     public EvaluationDescriptor() {
+        // ensure there is an empty constructor
     }
 
     /**

@@ -23,11 +23,11 @@ import java.util.Set;
  */
 public class LifecycleCollector {
 
-    Map<String, CollectedEntity> deleted = new HashMap<>();
-    Map<String, CollectedEntity> created = new HashMap<>();
+    private Map<String, CollectedEntity> deleted = new HashMap<>();
+    private Map<String, CollectedEntity> created = new HashMap<>();
 
-    //  PARENT         IDENTIFIER, ORPHANS
-    Map<Mergeable, Map<Object, OrphanContainer>> orphansMap = new HashMap<>();
+    //          PARENT         IDENTIFIER, ORPHANS
+    private Map<Mergeable, Map<Object, OrphanContainer>> orphansMap = new HashMap<>();
 
     public Map<String, CollectedEntity> getDeleted() {
         return deleted;
@@ -83,25 +83,25 @@ public class LifecycleCollector {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(System.lineSeparator());
-        sb.append("New Entities ").append(created.size()).append(":");
-        sb.append(System.lineSeparator());
+        sb.append(System.lineSeparator())
+            .append("New Entities ").append(created.size()).append(':')
+            .append(System.lineSeparator());
         for (Entry<String, CollectedEntity> entry : created.entrySet()) {
-            sb.append(" * ").append(entry.getKey()).append(" ->").append(entry);
-            sb.append(System.lineSeparator());
+            sb.append(" * ").append(entry.getKey()).append(" ->").append(entry)
+                .append(System.lineSeparator());
         }
 
-        sb.append("Destroyed Entities ").append(deleted.size()).append(":");
-        sb.append(System.lineSeparator());
+        sb.append("Destroyed Entities ").append(deleted.size()).append(':')
+            .append(System.lineSeparator());
         for (Entry<String, CollectedEntity> entry : deleted.entrySet()) {
-            sb.append(" * ").append(entry.getKey()).append(" ->").append(entry);
-            sb.append(System.lineSeparator());
+            sb.append(" * ").append(entry.getKey()).append(" ->").append(entry)
+                .append(System.lineSeparator());
         }
 
-        sb.append("Orphans Entities ").append(orphansMap.size()).append(":");
-        sb.append(System.lineSeparator());
+        sb.append("Orphans Entities ").append(orphansMap.size()).append(':')
+            .append(System.lineSeparator());
         for (Entry<Mergeable, Map<Object, OrphanContainer>> entry : orphansMap.entrySet()) {
-            sb.append(" Parent ").append(entry.getKey()).append(":").append(System.lineSeparator());
+            sb.append(" Parent ").append(entry.getKey()).append(':').append(System.lineSeparator());
             for (Entry<Object, OrphanContainer> entry2 : entry.getValue().entrySet()) {
                 sb.append("  * ").append(entry2.getKey()).append(" -> ").append(entry2.getValue()).append(System.lineSeparator());
             }
@@ -152,7 +152,7 @@ public class LifecycleCollector {
 
         @Override
         public String toString() {
-            return "" + (orphansList != null ? orphansList : orphansMap);
+            return (orphansList != null ? orphansList : orphansMap).toString();
         }
     }
 
@@ -166,7 +166,7 @@ public class LifecycleCollector {
 
         private Mergeable payload;
 
-        List<WegasCallback> callbacks;
+        private List<WegasCallback> callbacks;
 
         public CollectedEntity(Mergeable entity, Mergeable payload, List<WegasCallback> callbacks,
             Object parent, Object identifier) {

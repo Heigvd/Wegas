@@ -43,6 +43,7 @@ public class Beanjection implements Serializable {
     private QuestionDescriptorFacade questionDescriptorFacade;
 
     public Beanjection() {
+        // ensure to have an empty constructor
     }
 
     public Beanjection(VariableInstanceFacade variableInstanceFacade) {

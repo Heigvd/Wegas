@@ -93,7 +93,7 @@ public class UtilsController {
 
     @Inject
     @Outbound(eventName = SET_LEVEL_EVENT, loopBack = false)
-    Event<LoggerLevel> events;
+    private Event<LoggerLevel> events;
 
     public static class LoggerLevel implements Serializable {
 
@@ -304,20 +304,17 @@ public class UtilsController {
     public String getClusterInfo() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("<h1>WegasCluster</h1>");
-
-        sb.append("<h2>Hazelcast</h2>");
-
-        sb.append("<ul>");
+        sb.append("<h1>WegasCluster</h1>")
+            .append("<h2>Hazelcast</h2>")
+            .append("<ul>");
 
         for (Member m : hzInstance.getCluster().getMembers()) {
             sb.append("<li>").append(m.toString()).append("</li>");
         }
 
-        sb.append("</ul>");
-
-        sb.append("<h2>LocalList</h2>");
-        sb.append("<ul>");
+        sb.append("</ul>")
+            .append("<h2>LocalList</h2>")
+            .append("<ul>");
 
         for (String m : applicationLifecycle.getMembers()) {
             sb.append("<li>").append(m).append("</li>");
@@ -348,7 +345,7 @@ public class UtilsController {
     @GET
     @Path("SetPopulatingSynchronous")
     @RequiresRoles("Administrator")
-    public String setPopulatingSynchronous() {
+    public String turnPopulatingSynchronous() {
         populatorScheduler.setBroadcast(false);
         populatorScheduler.setAsync(false);
         return "Populating Process is now synchronous";
@@ -357,7 +354,7 @@ public class UtilsController {
     @GET
     @Path("SetPopulatingAsynchronous")
     @RequiresRoles("Administrator")
-    public String setPopulatingAsynchronous() {
+    public String turnPopulatingAsynchronous() {
         populatorScheduler.setBroadcast(true);
         populatorScheduler.setAsync(true);
         return "Populating Process is now asynchronous";
@@ -526,33 +523,32 @@ public class UtilsController {
         List<ConcurrentHelper.RefCounterLock> allLockedTokens = concurrentHelper.getAllLockedTokens();
         StringBuilder sb = new StringBuilder();
 
-        sb.append("<style>");
-        sb.append("ul, li {\n"
-            + "      padding-left: 5px;\n"
-            + "  }\n"
-            + "\n"
-            + "li .level.direct {\n"
-            + "    text-decoration: underline;"
-            + "}"
-            + "li .level.current {\n"
-            + "    font-weight: bold;"
-            + "}"
-            + "li .level {\n"
-            + "    margin-left : 10px;\n"
-            + "    cursor: pointer;"
-            + "}\n"
-            + "\n"
-            + ".levels {\n"
-            + "    left: 300px;\n"
-            + "    position: absolute;\n"
-            + "}");
-        sb.append("</style>");
-
-        sb.append("<h1>Locks</h1>");
-        sb.append("<h3>LocalLocks: effectiveToken</h3>");
-        sb.append(concurrentHelper.getMyLocks());
-        sb.append("<h3>Locks</h3>");
-        sb.append("<ul>");
+        sb.append("<style>")
+            .append("ul, li {\n"
+                + "      padding-left: 5px;\n"
+                + "  }\n"
+                + "\n"
+                + "li .level.direct {\n"
+                + "    text-decoration: underline;"
+                + "}"
+                + "li .level.current {\n"
+                + "    font-weight: bold;"
+                + "}"
+                + "li .level {\n"
+                + "    margin-left : 10px;\n"
+                + "    cursor: pointer;"
+                + "}\n"
+                + "\n"
+                + ".levels {\n"
+                + "    left: 300px;\n"
+                + "    position: absolute;\n"
+                + "}")
+            .append("</style>")
+            .append("<h1>Locks</h1>")
+            .append("<h3>LocalLocks: effectiveToken</h3>")
+            .append(concurrentHelper.getMyLocks())
+            .append("<h3>Locks</h3>")
+            .append("<ul>");
 
         for (ConcurrentHelper.RefCounterLock lock : allLockedTokens) {
             String effAudicence;
@@ -570,19 +566,18 @@ public class UtilsController {
             sb.append("</li>");
         }
 
-        sb.append("</ul>");
-
-        sb.append("<script>");
-        sb.append("document.body.onclick= function(e){\n"
-            + "   e=window.event? event.srcElement: e.target;\n"
-            + "   if(e.className && e.className.indexOf('lock')!=-1){\n"
-            + "		var audience = e.getAttribute(\"data-audience\");\n"
-            + " 		var token = e.getAttribute(\"data-token\");\n"
-            + "        fetch(\"ReleaseLock/\" + token + \"/\" + audience, {credentials: \"same-origin\"}).then(function(){window.location.reload();});\n"
-            + "   }\n"
-            + "\n"
-            + "}");
-        sb.append("</script>");
+        sb.append("</ul>")
+            .append("<script>")
+            .append("document.body.onclick= function(e){\n"
+                + "   e=window.event? event.srcElement: e.target;\n"
+                + "   if(e.className && e.className.indexOf('lock')!=-1){\n"
+                + "		var audience = e.getAttribute(\"data-audience\");\n"
+                + " 		var token = e.getAttribute(\"data-token\");\n"
+                + "        fetch(\"ReleaseLock/\" + token + \"/\" + audience, {credentials: \"same-origin\"}).then(function(){window.location.reload();});\n"
+                + "   }\n"
+                + "\n"
+                + "}")
+            .append("</script>");
 
         return sb.toString();
     }

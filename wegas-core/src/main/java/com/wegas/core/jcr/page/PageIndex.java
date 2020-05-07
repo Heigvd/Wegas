@@ -50,7 +50,7 @@ public class PageIndex {
         return this.findPage(pageId) != null;
     }
 
-    void resetDefaultPage() {
+    public void resetDefaultPage() {
         if (Helper.isNullOrEmpty(this.defaultPageId)) {
             List<Folder> folders = new ArrayList<>();
             folders.add(this.root);
@@ -183,6 +183,7 @@ public class PageIndex {
         private Boolean scenaristPage;
 
         public Page() {
+            // ensure to have an empty constructor
         }
 
         public Page(String id, String name) {

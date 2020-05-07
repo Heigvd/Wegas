@@ -22,6 +22,7 @@ public class CustomEvent extends ClientEvent {
      *
      */
     public CustomEvent() {
+        // ensure there is an empty constructor
     }
 
     /**

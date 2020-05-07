@@ -31,7 +31,7 @@ public class DynamicFilters implements DynamicFeature {
     private static final String private_cache = "private, ";
 
     @Context
-    HttpServletRequest httpRequestProxy;
+    private HttpServletRequest httpRequestProxy;
 
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext context) {

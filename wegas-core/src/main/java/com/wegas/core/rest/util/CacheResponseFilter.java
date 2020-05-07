@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CacheResponseFilter implements ContainerResponseFilter {
 
-    final Logger logger = LoggerFactory.getLogger(CacheResponseFilter.class);
+    private final static Logger logger = LoggerFactory.getLogger(CacheResponseFilter.class);
 
     /**
      *

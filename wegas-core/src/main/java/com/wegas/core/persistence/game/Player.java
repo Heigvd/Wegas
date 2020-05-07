@@ -181,6 +181,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      *
      */
     public Player() {
+        // ensure to have an empty constructor
     }
 
     /**

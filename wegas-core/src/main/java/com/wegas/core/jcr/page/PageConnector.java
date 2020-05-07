@@ -40,7 +40,7 @@ public class PageConnector extends JTARepositoryConnector {
      *
      * @throws RepositoryException
      */
-    PageConnector(Long gameModelId) throws RepositoryException {
+    /* package */ PageConnector(Long gameModelId) throws RepositoryException {
         this.session = SessionManager.getSession();
         this.gameModelId = gameModelId;
     }

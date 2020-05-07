@@ -639,8 +639,8 @@ public class GameFacade extends BaseFacade<Game> {
 
     private void loadOverviews(XlsxSpreadsheet xlsx, Game game, boolean includeTestPlayer) {
         Player p = game.getTestPlayer();
-        String script = ""
-            + "var result= [];"
+        String script
+            = "var result= [];"
             + "if (WegasDashboard){"
             + "  result = WegasDashboard.getAllOverviews(true);"
             + "}"

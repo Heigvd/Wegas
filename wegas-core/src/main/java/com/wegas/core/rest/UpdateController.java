@@ -217,7 +217,7 @@ public class UpdateController {
         script.setContent(s);
     }
 
-    private List<GameModel> findPMGs(boolean scenarioOnly) {
+    private List<GameModel> findpmgs(boolean scenarioOnly) {
         EntityManager em = this.getEntityManager();
         final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         final CriteriaQuery<GameModel> query = criteriaBuilder.createQuery(GameModel.class);
@@ -306,14 +306,14 @@ public class UpdateController {
     private String updateListDescriptorScope(GameModel gameModel) {
         Collection<VariableDescriptor> variableDescriptors = gameModel.getVariableDescriptors();
         StringBuilder sb = new StringBuilder();
-        sb.append("[");
+        sb.append('[');
 
         for (VariableDescriptor vd : variableDescriptors) {
             if (vd instanceof ListDescriptor) {
                 this.updateScope(vd);
             }
         }
-        sb.append("]");
+        sb.append(']');
 
         return sb.toString();
     }
@@ -355,14 +355,14 @@ public class UpdateController {
         this.updateListDescriptorScope(gameModel);
         StringBuilder sb = new StringBuilder();
         try {
-            sb.append("[");
+            sb.append('[');
 
             ListDescriptor etapes = (ListDescriptor) descriptorFacade.find(gameModel, "etapes");
             for (VariableDescriptor item : etapes.getItems()) {
                 this.updateScope(item);
             }
 
-            sb.append("]");
+            sb.append(']');
 
         } catch (WegasNoResultException ex) {
             java.util.logging.Logger.getLogger(UpdateController.class.getName()).log(Level.SEVERE, null, ex);
@@ -385,7 +385,6 @@ public class UpdateController {
         return rtsUpdateScope(find);
     }
      */
-
     @SuppressWarnings("PMD")
     private String newScope(GameModel gameModel, VariableDescriptor vd) {
         StringBuilder sb = new StringBuilder();
@@ -488,35 +487,35 @@ public class UpdateController {
     }
 
     /**
-     * Make sure all PMGshare the same structure. Make extractModel smarter
+     * Make sure all pmgshare the same structure. Make extractModel smarter
      *
      * @return some output
      */
     @GET
     @Path("LIST_PMG")
-    public String pmg_list() {
-        List<GameModel> PMGs = this.findPMGs(true);
+    public String pmgList() {
+        List<GameModel> pmgs = this.findpmgs(true);
         StringBuilder ret = new StringBuilder();
 
-        for (GameModel pmg : PMGs) {
-            ret.append(",").append(pmg.getId());
+        for (GameModel pmg : pmgs) {
+            ret.append(',').append(pmg.getId());
         }
         return ret.toString();
     }
 
     /**
-     * Make sure all PMGshare the same structure. Make extractModel smarter
+     * Make sure all pmgshare the same structure. Make extractModel smarter
      *
      * @return some output
      */
     @GET
     @Path("NORMALISE_PMG")
-    public String pmg_normalise() {
-        List<GameModel> PMGs = this.findPMGs(true);
+    public String pmgNormalise() {
+        List<GameModel> pmgs = this.findpmgs(true);
         StringBuilder ret = new StringBuilder();
 
         ret.append("<ul>");
-        for (GameModel pmg : PMGs) {
+        for (GameModel pmg : pmgs) {
             ret.append("<li>").append(pmg.getName()).append("</li>");
             ret.append(this.normalisePmg(pmg));
         }
@@ -526,19 +525,20 @@ public class UpdateController {
 
     @GET
     @Path("NORMALISE_PMG/{id: [1-9][0-9]*}")
-    public String pmg_normalise_one(@PathParam("id") Long id) {
+    public String pmgNormaliseOne(@PathParam("id") Long id) {
         GameModel pmg = gameModelFacade.find(id);
         StringBuilder ret = new StringBuilder();
 
-        ret.append("<ul>");
-        ret.append("<li>").append(pmg.getName()).append("</li>");
-        ret.append(this.normalisePmg(pmg));
-        ret.append("</ul>");
+        ret.append("<ul>")
+        .append("<li>").append(pmg.getName()).append("</li>")
+        .append(this.normalisePmg(pmg))
+        .append("</ul>");
+
         return ret.toString();
     }
 
     /**
-     * Make sure all PMGshare the same structure. Make extractModel smarter
+     * Make sure all pmgshare the same structure. Make extractModel smarter
      *
      * @return some output
      */
@@ -558,7 +558,7 @@ public class UpdateController {
 
             sb.append("<h3>GameModel: ").append(gm).append("</h3>");
             if (from != null && to == null) {
-                sb.append("Process from ").append(from.getCode()).append("/").append(from.getLang()).append(" to ").append(toCode);
+                sb.append("Process from ").append(from.getCode()).append('/').append(from.getLang()).append(" to ").append(toCode);
                 //i18nFacade.updateTranslationCode(gm, from, to);
             } else {
                 sb.append("Invalid codes");
@@ -592,7 +592,7 @@ public class UpdateController {
     }
 
     /**
-     * Make sure all PMGshare the same structure. Make extractModel smarter
+     * Make sure all pmgshare the same structure. Make extractModel smarter
      *
      * @return some output
      */
@@ -656,7 +656,7 @@ public class UpdateController {
         for (Entry<String, List<Long>> entry : map.entrySet()) {
             if (!entry.getValue().isEmpty()) {
                 sb.append("<h2>").append(entry.getKey()).append("</h2>");
-                sb.append(",").append(entry.getValue().toString());
+                sb.append(',').append(entry.getValue().toString());
             }
         }
         return sb;
@@ -664,17 +664,17 @@ public class UpdateController {
 
     @GET
     @Path("PMG_CHECK_SCRIPT")
-    public String pmg_checkScript() {
-        List<GameModel> PMGs = this.findPMGs(true);
+    public String pmgCheckScript() {
+        List<GameModel> pmgs = this.findpmgs(true);
         StringBuilder ret = new StringBuilder();
 
         ret.append("<ul>");
-        for (GameModel pmg : PMGs) {
+        for (GameModel pmg : pmgs) {
             logger.info("Check {}", pmg);
             Map<Long, WegasScriptException> results = scriptController.testGameModel(pmg.getId());
             if (!results.isEmpty()) {
                 logger.info("#Errors: {}", results.size());
-                ret.append("<li>").append(pmg.getName()).append(" (").append(pmg.getId()).append(")").append("</li>");
+                ret.append("<li>").append(pmg.getName()).append(" (").append(pmg.getId()).append(')').append("</li>");
                 ret.append("<ul>");
                 for (Entry<Long, WegasScriptException> result : results.entrySet()) {
                     Long key = result.getKey();
@@ -778,15 +778,15 @@ public class UpdateController {
             // expected behaviour
         }
 
-        sb.append(this.processChildren(pmg, "questions", "questionsPhase", 4));
-        sb.append(this.processChildren(pmg, "questionsPhase1", "questionsPeriod1_", 1));
-        sb.append(this.processChildren(pmg, "questionsPhase2", "questionsPeriod2_", 1));
-        sb.append(this.processChildren(pmg, "questionsPhase3", "questionsPeriod3_", 1));
-        sb.append(this.processChildren(pmg, "questionsPhase4", "questionsPeriod4_", 1));
+        sb.append(this.processChildren(pmg, "questions", "questionsPhase", 4))
+        .append(this.processChildren(pmg, "questionsPhase1", "questionsPeriod1_", 1))
+        .append(this.processChildren(pmg, "questionsPhase2", "questionsPeriod2_", 1))
+        .append(this.processChildren(pmg, "questionsPhase3", "questionsPeriod3_", 1))
+        .append(this.processChildren(pmg, "questionsPhase4", "questionsPeriod4_", 1))
 
-        sb.append(this.processChildren(pmg, "actions", "actionsPhase", 4));
+        .append(this.processChildren(pmg, "actions", "actionsPhase", 4))
 
-        sb.append("</ul>");
+        .append("</ul>");
 
         return sb.toString();
     }
@@ -796,29 +796,29 @@ public class UpdateController {
      */
     @GET
     @Path("PMG_UPGRADE")
-    public String pmg_upgrade() {
-        List<GameModel> PMGs = this.findPMGs(false);
+    public String pmgUpgrade() {
+        List<GameModel> pmgs = this.findpmgs(false);
         StringBuilder ret = new StringBuilder();
 
         ret.append("<ul>");
-        for (GameModel pmg : PMGs) {
+        for (GameModel pmg : pmgs) {
             ret.append(this.updateHistorySize(pmg));
         }
         ret.append("</ul>");
         return ret.toString();
     }
 
-    public String pmg_upgrade_BURNDOWN() {
-        List<GameModel> PMGs = this.findPMGs(false);
+    public String pmgUpgradeBurndown() {
+        List<GameModel> pmgs = this.findpmgs(false);
         StringBuilder ret = new StringBuilder();
         String status;
 
         ret.append("<ul>");
 
-        for (GameModel pmg : PMGs) {
+        for (GameModel pmg : pmgs) {
             ret.append("<li>");
             ret.append(pmg.getName());
-            ret.append("/");
+            ret.append('/');
             ret.append(pmg.getId());
             status = addVariable(pmg, "{\"@class\":\"BooleanDescriptor\",\"comments\":\"\",\"defaultInstance\":{\"@class\":\"BooleanInstance\",\"value\":false},\"label\":\"burndownEnabled\",\"scope\":{\"@class\":\"GameModelScope\",\"broadcastScope\":\"TeamScope\"},\"title\":null,\"name\":\"burndownEnabled\"}", "burndownEnabled", "properties");
             ret.append(" burndownEnabled: ");
@@ -828,7 +828,7 @@ public class UpdateController {
 
             ret.append("<li>");
             ret.append(pmg.getName());
-            ret.append("/");
+            ret.append('/');
             ret.append(pmg.getId());
             status = addVariable(pmg, "{\"@class\":\"BurndownDescriptor\",\"comments\":\"\",\"defaultInstance\":{\"@class\":\"BurndownInstance\",\"iterations\":[]},\"label\":\"burndown\",\"scope\":{\"@class\":\"TeamScope\",\"broadcastScope\":\"TeamScope\"},\"title\":\"\",\"name\":\"burndown\",\"description\":\"\"}", "burndown", "pageUtilities");
             ret.append(" burndown: ");
@@ -859,7 +859,8 @@ public class UpdateController {
             logger.error("    DESC: {}", descName);
             em.remove(vi);
 
-            if (++counter == 3000) {
+            counter++;
+            if (counter == 3000) {
                 break;
             }
         }
@@ -880,7 +881,8 @@ public class UpdateController {
             gameModelFacade.propagateAndReviveDefaultInstances(g.getGameModel(), dt, true); // restart missing debugTeam
             stateMachineFacade.runStateMachines(dt);
             this.getEntityManager().flush();
-            if (++counter == 25) {
+            counter++;
+            if (counter == 25) {
                 break;
             }
         }
@@ -906,7 +908,8 @@ public class UpdateController {
     @Path("CleanOccupations")
     public String cleanOccupations() {
         String sqlRD = "SELECT rd FROM ResourceDescriptor rd";
-        TypedQuery<ResourceDescriptor> allRd = this.getEntityManager().createQuery(sqlRD, ResourceDescriptor.class);
+        TypedQuery<ResourceDescriptor> allRd = this.getEntityManager().createQuery(sqlRD, ResourceDescriptor.class
+        );
         StringBuilder output = new StringBuilder();
 
         for (ResourceDescriptor rd : allRd.getResultList()) {
@@ -954,9 +957,11 @@ public class UpdateController {
     private List<Game> findNoDebugTeamGames() {
         EntityManager em = this.getEntityManager();
         final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        final CriteriaQuery<Game> query = criteriaBuilder.createQuery(Game.class);
+        final CriteriaQuery<Game> query = criteriaBuilder.createQuery(Game.class
+        );
 
-        Root<Game> e = query.from(Game.class);
+        Root<Game> e = query.from(Game.class
+        );
         query.select(e);
 
         List<Game> games = em.createQuery(query).getResultList();
@@ -982,13 +987,15 @@ public class UpdateController {
 
     private Long countOrphans() {
         String sql = "SELECT count(variableinstance) FROM VariableInstance variableinstance WHERE  (variableinstance.playerScopeKey IS NOT NULL AND  variableinstance.playerScopeKey NOT IN (SELECT player.id FROM Player player)) OR (variableinstance.teamScopeKey IS NOT NULL AND variableinstance.teamScopeKey NOT IN (SELECT team.id FROM Team team)) OR (variableinstance.gameScopeKey IS NOT NULL AND variableinstance.gameScopeKey NOT IN (SELECT game.id from Game game))";
-        TypedQuery<Long> query = this.getEntityManager().createQuery(sql, Long.class);
+        TypedQuery<Long> query = this.getEntityManager().createQuery(sql, Long.class
+        );
         return query.getSingleResult();
     }
 
     private List<VariableInstance> findOrphans() {
         String sql = "SELECT variableinstance FROM VariableInstance variableinstance WHERE  (variableinstance.playerScopeKey IS NOT NULL AND  variableinstance.playerScopeKey NOT IN (SELECT player.id FROM Player player)) OR (variableinstance.teamScopeKey IS NOT NULL AND variableinstance.teamScopeKey NOT IN (SELECT team.id FROM Team team)) OR (variableinstance.gameScopeKey IS NOT NULL AND variableinstance.gameScopeKey NOT IN (SELECT game.id from Game game))";
-        TypedQuery<VariableInstance> query = this.getEntityManager().createQuery(sql, VariableInstance.class).setMaxResults(3000);
+        TypedQuery<VariableInstance> query = this.getEntityManager().createQuery(sql, VariableInstance.class
+        ).setMaxResults(3000);
         return query.getResultList();
     }
 
@@ -1015,7 +1022,7 @@ public class UpdateController {
             logger.error("CHECK {}", gm);
             Exception validate = gameModelCheck.validate(gm);
             sb.append("<li>");
-            sb.append(gm.getName()).append(";").append(gm.getId()).append(";");
+            sb.append(gm.getName()).append(';').append(gm.getId()).append(';');
             if (validate != null) {
                 logger.error(" FAILURE");
                 sb.append(validate);
@@ -1053,7 +1060,7 @@ public class UpdateController {
             logger.error("CHECK {}", gm);
             Exception validate = gameModelCheck.validate(gm);
             sb.append("<li>");
-            sb.append(gm.getName()).append(";").append(gm.getId()).append(";");
+            sb.append(gm.getName()).append(';').append(gm.getId()).append(';');
             if (validate != null) {
                 logger.error(" FAILURE");
                 sb.append(validate);
@@ -1097,11 +1104,11 @@ public class UpdateController {
     }
 
     private void appendInTag(StringBuilder sb, String tag, Object... args) {
-        sb.append("<").append(tag).append(">");
+        sb.append('<').append(tag).append('>');
         for (Object arg : args) {
             sb.append(arg);
         }
-        sb.append("</").append(tag).append(">");
+        sb.append("</").append(tag).append('>');
     }
 
     @GET
@@ -1147,7 +1154,7 @@ public class UpdateController {
         Map<GameModel, Map<VariableDescriptor, List<VariableInstance>>> map = findDuplicates();
         EntityManager em = getEntityManager();
 
-        for (Map<VariableDescriptor, List<VariableInstance>> descs : map.values()){
+        for (Map<VariableDescriptor, List<VariableInstance>> descs : map.values()) {
             for (Entry<VariableDescriptor, List<VariableInstance>> vdEntry : descs.entrySet()) {
                 VariableDescriptor vd = vdEntry.getKey();
 

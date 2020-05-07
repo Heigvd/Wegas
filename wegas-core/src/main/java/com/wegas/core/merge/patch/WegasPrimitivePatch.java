@@ -14,6 +14,7 @@ import com.github.difflib.text.DiffRow;
 import com.github.difflib.text.DiffRowGenerator;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasRuntimeException;
+import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
@@ -60,7 +61,7 @@ public final class WegasPrimitivePatch extends WegasPatch {
      * @param initOnly       only set if value to patch is null
      * @param cascade
      */
-    WegasPrimitivePatch(Object identifier, int order,
+    /* package */ WegasPrimitivePatch(Object identifier, int order,
         WegasCallback userCallback, Mergeable entity,
         Method getter, Method setter, Object fromValue, Object toValue,
         boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
@@ -155,7 +156,7 @@ public final class WegasPrimitivePatch extends WegasPatch {
                 if (cause instanceof WegasRuntimeException) {
                     throw (WegasRuntimeException) cause;
                 } else {
-                    throw new RuntimeException(cause != null ? cause : ex);
+                    throw new WegasWrappedException(cause != null ? cause : ex);
                 }
             }
         }

@@ -19,9 +19,9 @@ import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.jsonschema.ListOfTasksSchema;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.jsonschema.ListOfTasksSchema;
 import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -152,6 +152,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      *
      */
     public Iteration() {
+        // useless but ensure there is an empty constructor
     }
 
     @Override

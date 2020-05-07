@@ -12,6 +12,10 @@ package com.wegas.core.rest.util;
  */
 public class Views {
 
+    private Views(){
+        // empty private constructor prevents the class to be initialised
+    }
+
     /**
      *
      * @param str

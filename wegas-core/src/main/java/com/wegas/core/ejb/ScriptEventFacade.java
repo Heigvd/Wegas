@@ -253,6 +253,7 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
          *
          */
         public EmptyObject() {
+            // empty constructor of empty object: design 2 dot zero
         }
     }
 }

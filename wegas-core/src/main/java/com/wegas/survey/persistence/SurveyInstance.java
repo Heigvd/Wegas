@@ -34,20 +34,19 @@ public class SurveyInstance extends VariableInstance {
 
     @Enumerated(EnumType.STRING)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = ValueGenerators.SurveyNotStarted.class,
-            view = @View(label = "Status"))
+        optional = false, nullable = false, proposal = ValueGenerators.SurveyNotStarted.class,
+        view = @View(label = "Status"))
     private SurveyStatus status = SurveyStatus.NOT_STARTED;
 
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = ValueGenerators.True.class,
-            view = @View(label = "Active"))
+        optional = false, nullable = false, proposal = ValueGenerators.True.class,
+        view = @View(label = "Active"))
     private Boolean active = true;
 
-    
     public SurveyInstance() {
-
+        // ensure there is an empty constructor
     }
-    
+
     /**
      * @return the status
      */

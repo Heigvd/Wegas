@@ -10,6 +10,7 @@ package com.wegas.core;
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.hazelcast.core.Cluster;
 import com.hazelcast.core.Member;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.persistence.AbstractEntity;
@@ -565,7 +566,7 @@ public class Helper {
      */
     public static String camelCasify(String name) {
         if (name.isEmpty()) {
-            throw new NullPointerException("Name is empty");
+            throw WegasErrorMessage.error("Name is empty");
         }
         StringBuilder sb = new StringBuilder();
         StringTokenizer st = new StringTokenizer(name);

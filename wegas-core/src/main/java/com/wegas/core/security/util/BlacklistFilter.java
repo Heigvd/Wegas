@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 @WebFilter(filterName = "BlacklistFilter", urlPatterns = {"/wegas-private/*"}, dispatcherTypes = {DispatcherType.REQUEST})
 public class BlacklistFilter implements Filter {
 
-    final Logger logger = LoggerFactory.getLogger(BlacklistFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(BlacklistFilter.class);
 
     private static final List<String> blacklist = new ArrayList<>();
 
@@ -100,6 +100,7 @@ public class BlacklistFilter implements Filter {
 
     @Override
     public void destroy() {
+        // nothing to do
     }
 
     public static boolean isBlacklisted(String url) {

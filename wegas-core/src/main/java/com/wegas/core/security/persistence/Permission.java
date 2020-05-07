@@ -42,19 +42,19 @@ import org.slf4j.LoggerFactory;
 @NamedQuery(name = "Permission.findByPermission", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission")
 @NamedQuery(name = "Permission.findByPermissionAndUser", query = "SELECT p FROM Permission p WHERE p.value LIKE :permission AND p.user.id = :userId")
 @NamedQuery(name = "Permission.findByRole", query = "SELECT p FROM Permission p WHERE p.role.id = :roleId",
-        hints = {
-            @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
-        })
+    hints = {
+        @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
+    })
 @NamedQuery(name = "Permission.findByUser", query = "SELECT p FROM Permission p WHERE p.user.id = :userId",
-        hints = {
-            @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
-        })
+    hints = {
+        @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
+    })
 @NamedNativeQuery(name = "Permission.findByUser_native", query = "SELECT permissions FROM permission LEFT JOIN users_roles ON users_roles.roles_id = permission.role_id WHERE users_roles.users_id = ?1 OR permission.user_id = ?1")
 @Table(
-        indexes = {
-            @Index(columnList = "role_id"),
-            @Index(columnList = "user_id")
-        }
+    indexes = {
+        @Index(columnList = "role_id"),
+        @Index(columnList = "user_id")
+    }
 )
 public class Permission extends AbstractEntity {
 
@@ -94,6 +94,7 @@ public class Permission extends AbstractEntity {
      *
      */
     public Permission() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -178,25 +179,23 @@ public class Permission extends AbstractEntity {
 
         if (split.length == 3) {
             String perm = split[2];
-            switch (split[0]) {
-                case "GameModel":
-                    if (isPermId(perm)) {
-                        // One should have super right on the gameModel the permission give access to
-                        return WegasPermission.getAsCollection(GameModel.getAssociatedWritePermission(Long.parseLong(perm.replaceFirst("gm", ""))));
-                        /*GameModel gameModel = GameModelFacade.lookup().find(Long.parseLong(perm.replaceFirst("gm", "")));
+
+            if (isPermId(perm)) {
+                if ("GameModel".equals(split[0])) {
+                    // One should have super right on the gameModel the permission give access to
+                    return WegasPermission.getAsCollection(GameModel.getAssociatedWritePermission(Long.parseLong(perm.replaceFirst("gm", ""))));
+                    /*GameModel gameModel = GameModelFacade.lookup().find(Long.parseLong(perm.replaceFirst("gm", "")));
                         if (gameModel != null) {
                             return gameModel.getRequieredUpdatePermission();
                         }*/
-                    }
-                case "Game":
-                    if (isPermId(perm)) {
-                        // One should have super right on the game the permission give access to
-                        return WegasPermission.getAsCollection(Game.getAssociatedWritePermission(Long.parseLong(perm.replaceFirst("g", ""))));
-                        /*Game game = GameFacade.lookup().find(Long.parseLong(perm.replaceFirst("g", "")));
+                } else if ("GameModel".equals(split[0])) {
+                    // One should have super right on the game the permission give access to
+                    return WegasPermission.getAsCollection(Game.getAssociatedWritePermission(Long.parseLong(perm.replaceFirst("g", ""))));
+                    /*Game game = GameFacade.lookup().find(Long.parseLong(perm.replaceFirst("g", "")));
                         if (game != null) {
                             return game.getRequieredUpdatePermission();
                     }*/
-                    }
+                }
             }
         }
         return WegasMembership.ADMIN;

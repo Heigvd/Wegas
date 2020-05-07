@@ -47,6 +47,7 @@ public class GameModelProperties implements Serializable, Mergeable {
 
     @Override
     public void setRefId(String refId) {
+        // refid is hadcoded
     }
 
     private static final long serialVersionUID = 1L;
@@ -126,6 +127,7 @@ public class GameModelProperties implements Serializable, Mergeable {
      *
      */
     public GameModelProperties() {
+        // ensure there is a default constructor
     }
 
     /**

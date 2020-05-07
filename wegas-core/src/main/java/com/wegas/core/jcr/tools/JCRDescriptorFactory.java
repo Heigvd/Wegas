@@ -22,8 +22,21 @@ import javax.jcr.RepositoryException;
  */
 public class JCRDescriptorFactory implements WegasFactory {
 
+    /**
+     * 
+     * @param <T>
+     * @param gameModel
+     * @param originalObject
+     * @return
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws NoSuchMethodException
+     * @throws SecurityException 
+     */
     @Override
-    public <T> T newInstance(GameModel gameModel, T originalObject) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+    public <T> T newInstance(GameModel gameModel, T originalObject) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         if (originalObject instanceof AbstractContentDescriptor) {
             AbstractContentDescriptor ori = (AbstractContentDescriptor) originalObject;
             Constructor<? extends AbstractContentDescriptor> constructor = ori.getClass().getDeclaredConstructor(String.class, String.class, ContentConnector.class);

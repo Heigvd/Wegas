@@ -29,7 +29,7 @@ public abstract class BaseFacade<T extends AbstractEntity> extends WegasAbstract
     /**
      * the Class the facade manage
      */
-    final Class<T> entityClass;
+    /* package */ final Class<T> entityClass;
 
     /**
      *

@@ -209,7 +209,7 @@ public class Xapi implements XapiI {
 
         final Context context = new Context();
         final List<User> instructorsUser = userFacade.findEditors("g" + game.getId());
-        if (instructorsUser.size() > 0) {
+        if (!instructorsUser.isEmpty()) {
             final ArrayList<Agent> instructorsAgent = new ArrayList<>();
             for (User u : instructorsUser) {
                 instructorsAgent.add(this.agent(u));
@@ -478,7 +478,7 @@ public class Xapi implements XapiI {
         String user;
         String password;
 
-        int indexOf = decoded.indexOf(":");
+        int indexOf = decoded.indexOf(':');
 
         if (indexOf <= 0) {
             throw new MalformedURLException("Authorization token is invalid");

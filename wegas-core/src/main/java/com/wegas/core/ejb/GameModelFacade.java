@@ -129,7 +129,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     private StateMachineFacade stateMachineFacade;
 
     @Inject
-    I18nFacade i18nFacade;
+    private I18nFacade i18nFacade;
 
     @Inject
     private PageFacade pageFacade;
@@ -526,7 +526,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         InputStream filesStream = null;
         InputStream gameModelStream = null;
 
-        while ((entry = zip.getNextEntry()) != null) {
+        while ((entry = zip.getNextEntry()) != null) { // NOPMD
             if (entry.getName().equals("gamemodel.json")) {
                 gameModelStream = IOUtils.toBufferedInputStream(zip);
             } else if (entry.getName().equals("files.xml")) {
@@ -551,7 +551,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         InputStream filesStream = null;
         InputStream gameModelStream = null;
 
-        while ((entry = zip.getNextEntry()) != null) {
+        while ((entry = zip.getNextEntry()) != null) { // NOPMD
             if (entry.getName().equals("gamemodel.json")) {
                 gameModelStream = IOUtils.toBufferedInputStream(zip);
             } else if (entry.getName().equals("files.xml")) {

@@ -234,7 +234,8 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      * @param p      instance owner
      * @param create create new instance or update existing one ?
      */
-    protected void propagate(Player p, boolean create) {
+    protected void propagate(Player p, boolean create){
+        // default behaviour is to do nothng, maybe a bad design...
     }
 
     /**

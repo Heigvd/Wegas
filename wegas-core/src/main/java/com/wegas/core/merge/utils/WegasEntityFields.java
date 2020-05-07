@@ -10,6 +10,7 @@ package com.wegas.core.merge.utils;
 import ch.albasim.wegas.annotations.EmptyCallback;
 import ch.albasim.wegas.annotations.WegasCallback;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.annotations.WegasEntity;
 import java.beans.IntrospectionException;
@@ -109,7 +110,7 @@ public class WegasEntityFields {
             }
 
         } catch (IntrospectionException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
-            throw new RuntimeException(ex);
+            throw WegasErrorMessage.error("Introspection failed");
         }
     }
 

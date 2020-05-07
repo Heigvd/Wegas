@@ -285,7 +285,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             this.reviveChoiceDescriptor(gm, (ChoiceDescriptor) vd);
         }
 
-        this._revive(gm, vd);
+        this.reviveInternal(gm, vd);
 
         if (vd instanceof PeerReviewDescriptor) {
             reviewingFacade.revivePeerReviewDescriptor((PeerReviewDescriptor) vd);
@@ -310,7 +310,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         }
     }
 
-    private void _revive(GameModel gameModel, VariableDescriptor vd) {
+    private void reviveInternal(GameModel gameModel, VariableDescriptor vd) {
         if (vd.getDeprecatedTitle() != null) {
             String title = vd.getDeprecatedTitle();
             if (title.isEmpty()) {

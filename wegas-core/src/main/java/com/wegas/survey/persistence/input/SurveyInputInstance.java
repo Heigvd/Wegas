@@ -20,8 +20,8 @@ import javax.persistence.InheritanceType;
 
 /**
  *
- * A survey input instance just stores the status replied/unreplied of 
- * the corresponding question/input descriptor.
+ * A survey input instance just stores the status replied/unreplied of the corresponding
+ * question/input descriptor.
  *
  * @author Jarle Hulaas
  */
@@ -30,29 +30,26 @@ import javax.persistence.InheritanceType;
 public class SurveyInputInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
-    
-    
+
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = ValueGenerators.True.class,
-            view = @View(label = "Active"))
+        optional = false, nullable = false, proposal = ValueGenerators.True.class,
+        view = @View(label = "Active"))
     private Boolean active = true;
 
-    
     /**
      * False until the user has replied at least once to this question/input.
      */
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = ValueGenerators.False.class,
-            view = @View(label = "isReplied", value = Hidden.class))
+        optional = false, nullable = false, proposal = ValueGenerators.False.class,
+        view = @View(label = "isReplied", value = Hidden.class))
     private Boolean isReplied = FALSE;
-
 
     /**
      * Basic constructor
      */
     public SurveyInputInstance() {
-
+        // ensure there is an empty constructor
     }
 
     /**
@@ -68,14 +65,13 @@ public class SurveyInputInstance extends VariableInstance {
     public void setActive(Boolean active) {
         this.active = active;
     }
-    
+
     public Boolean getIsReplied() {
         return isReplied;
     }
-    
+
     public void setIsReplied(Boolean b) {
         isReplied = b;
     }
-    
-       
+
 }

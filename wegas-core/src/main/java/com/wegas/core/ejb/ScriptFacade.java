@@ -78,7 +78,7 @@ public class ScriptFacade extends WegasAbstractFacade {
     /**
      * name
      */
-    static final String CONTEXT = "currentDescriptor";
+    /* package */ static final String CONTEXT = "currentDescriptor";
     /**
      * A single, thread safe, javascript engine (only language currently supported)
      */
@@ -88,6 +88,11 @@ public class ScriptFacade extends WegasAbstractFacade {
      * variableDescriptor's scriptAlias. Must be included in each Bindings.
      */
     private static final CompiledScript noSuchProperty;
+
+    /**
+     * Keep static scripts pre-compiled
+     */
+    private static final Helper.LRUCache<String, CachedScript> staticCache = new Helper.LRUCache<>(250);
 
     private static class CachedScript {
 
@@ -106,11 +111,6 @@ public class ScriptFacade extends WegasAbstractFacade {
             this.language = language;
         }
     }
-
-    /**
-     * Keep static scripts pre-compiled
-     */
-    private static final Helper.LRUCache<String, CachedScript> staticCache = new Helper.LRUCache<>(250);
 
     /*
      * Initialize noSuchProperty and other nashorn stuff
@@ -399,7 +399,7 @@ public class ScriptFacade extends WegasAbstractFacade {
 
         for (File f : getJavaScriptsRecursively(root, scriptURI.split(";"))) {
             cacheFileName = "hard:" + f.getPath();
-            version = "" + f.lastModified();
+            version = Long.toString(f.lastModified());
 
             CachedScript cached = staticCache.get(cacheFileName);
 
@@ -411,6 +411,7 @@ public class ScriptFacade extends WegasAbstractFacade {
             if (cached.version == null
                 || !cached.version.equals(version)
                 || cached.script == null) {
+
                 try (FileInputStream fis = new FileInputStream(f); InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8)) {
                     cached.script = this.compile(isr);
                     cached.version = version;
@@ -563,7 +564,7 @@ public class ScriptFacade extends WegasAbstractFacade {
             }
         }
 
-        while (queue.size() > 0) {
+        while (!queue.isEmpty()) {
             File current = queue.remove(0);
 
             if (!Files.isSymbolicLink(current.toPath()) && current.canRead()) {
@@ -654,7 +655,7 @@ public class ScriptFacade extends WegasAbstractFacade {
         StringBuilder buf = new StringBuilder();
         for (Script s : scripts) { // concatenate all scripts
             if (s != null && !Helper.isNullOrEmpty(s.getContent())) {
-                buf.append(s.getContent()).append(";").append(System.lineSeparator());
+                buf.append(s.getContent()).append(';').append(System.lineSeparator());
             }
         }
         return this.eval(player, new Script(buf.toString()), arguments);
@@ -666,7 +667,8 @@ public class ScriptFacade extends WegasAbstractFacade {
         return this.eval(player, scripts, arguments);
     }
 
-    public Object eval_doNotUse(Player p, AbstractTransition transition, VariableDescriptor context) throws WegasScriptException {
+    @Deprecated
+    public Object evalDoNotUse(Player p, AbstractTransition transition, VariableDescriptor context) throws WegasScriptException {
         String name = "transition:" + transition.getId();
         CachedScript cached = getCachedScript(name, transition.getVersion().toString(), transition.getTriggerCondition().getContent());
 

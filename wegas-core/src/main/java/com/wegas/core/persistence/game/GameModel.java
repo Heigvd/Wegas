@@ -316,6 +316,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      *
      */
     public GameModel() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -1061,9 +1062,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     public GameModelLanguage getLanguageByCode(String code) {
         if (code != null) {
-            String CODE = code.toUpperCase();
+            String upperCode = code.toUpperCase();
             for (GameModelLanguage lang : this.getRawLanguages()) {
-                if (CODE.equals(lang.getCode())) {
+                if (upperCode.equals(lang.getCode())) {
                     return lang;
                 }
             }

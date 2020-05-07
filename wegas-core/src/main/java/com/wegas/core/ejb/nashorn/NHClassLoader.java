@@ -29,7 +29,7 @@ public class NHClassLoader extends ClassLoader {
         "java.net"
     };
 
-    Logger logger = LoggerFactory.getLogger(NHClassLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(NHClassLoader.class);
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {

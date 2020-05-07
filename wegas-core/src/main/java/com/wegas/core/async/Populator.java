@@ -27,7 +27,7 @@ public class Populator implements Callable<Integer> {
         Candidate candidate;
         int count = 0;
 
-        while ((candidate = populatorFacade.getNextCandidate(this)) != null) {
+        while ((candidate = populatorFacade.getNextCandidate(this)) != null) { // NOPMD
             if (candidate.owner instanceof Team) {
                 populatorFacade.populateTeam(candidate.owner.getId(), candidate.accountId);
             } else if (candidate.owner instanceof Player) {

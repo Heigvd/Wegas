@@ -74,7 +74,7 @@ public class WegasFieldProperties {
      *
      * @throws IntrospectionException should never been thrown (thanks to MergeFacadeTest.testGetterAndSetter)
      */
-    WegasFieldProperties(Field field, WegasEntityProperty wegasProperty, Class<? extends Mergeable> owner) throws IntrospectionException {
+    /* package */ WegasFieldProperties(Field field, WegasEntityProperty wegasProperty, Class<? extends Mergeable> owner) throws IntrospectionException {
         this.owner = owner;
         this.field = field;
         this.fieldClass = field.getType();

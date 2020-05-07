@@ -248,9 +248,10 @@ public class GameController {
         Game game = gameFacade.find(gameId);
         StringBuilder sb = new StringBuilder();
 
-        sb.append("\"Team Name\", \"Team Notes\", \"Team Creation Date\", \"Team Status\",");
-        sb.append("\"Player Name\", \"Player email\", \"Email verified\", \"Player Join Time\", \"Player Language\", \"Player Status\"");
-        sb.append(System.lineSeparator());
+        sb.append("\"Team Name\", \"Team Notes\", \"Team Creation Date\", \"Team Status\","
+            + "\"Player Name\", \"Player email\", \"Email verified\", "
+            + "\"Player Join Time\", \"Player Language\", \"Player Status\"")
+            .append(System.lineSeparator());
 
         for (Team t : game.getTeams()) {
             if (t instanceof DebugTeam == false) {
@@ -264,7 +265,7 @@ public class GameController {
                         appendCSVField(sb, p.getUser().getMainAccount().getDetails().getEmail()).append(",");
                         appendCSVField(sb, Boolean.TRUE.equals(p.getUser().getMainAccount().isVerified()) ? "yes" : "no").append(",");
                     } else {
-                        sb.append(",").append(",");
+                        sb.append(",,");//  empty fields
                     }
                     appendCSVField(sb, p.getJoinTime().toString()).append(",");
                     appendCSVField(sb, game.getGameModel().getLanguageByCode(p.getLang()).getLang()).append(",");

@@ -69,6 +69,7 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
      * Default Constructor
      */
     public ReviewingFacade() {
+        // useless but ensure there is an empty constructor
     }
     /**
      * Player Facade

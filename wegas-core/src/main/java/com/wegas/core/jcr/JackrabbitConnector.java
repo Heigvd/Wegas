@@ -82,7 +82,7 @@ public class JackrabbitConnector implements Serializable {
                     final SegmentNodeStore segmentNodeStore = SegmentNodeStoreBuilders.builder(fileStore).build();
                     JackrabbitConnector.repo = new Jcr(new Oak(segmentNodeStore)).createRepository();
                 }
-            } catch (URISyntaxException | NullPointerException e) {
+            } catch (URISyntaxException | NullPointerException e) { // NOPMD TODO check this NPE before, but, for the time, we do not know what to check...
                 logger.error("Failed to define JCR repository mode", e);
             }
 
