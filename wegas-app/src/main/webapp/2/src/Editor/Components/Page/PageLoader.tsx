@@ -26,30 +26,12 @@ export function PageLoader({ selectedPageId }: PageLoaderProps) {
   );
   const { editMode } = React.useContext(pageCTX);
 
-  // React.useEffect(() => {
-  //   wlog('mounted');
-  //   return () => wlog('unmounted');
-  // });
-
-  // React.useEffect(() => {
-  //   wlog('selectedPageId');
-  // }, [selectedPageId]);
-
-  // React.useEffect(() => {
-  //   wlog('selectedPage');
-  // }, [selectedPage]);
-
-  // React.useEffect(() => {
-  //   wlog('editMode');
-  // }, [editMode]);
-
   return (
     <DefaultDndProvider>
       <ThemeProvider contextName="player">
         <React.Suspense fallback={<TextLoader text="Building World!" />}>
           <div className={cx(flex, { [editStyle]: editMode })}>
             {selectedPage ? (
-              // <PageDeserializer json={selectedPage} />
               <PageDeserializer pageId={selectedPageId} />
             ) : (
               <pre>{`The page is undefined`}</pre>

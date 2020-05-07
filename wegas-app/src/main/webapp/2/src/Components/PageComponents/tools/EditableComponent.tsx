@@ -15,8 +15,12 @@ import { useDebounce } from '../../Hooks/useDebounce';
 import { omit } from 'lodash-es';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { Content, Splitter, ContainerProps } from '../../Layouts/FonkyFlex';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
-import { pagesStateStore, usePagesStateStore } from '../../../data/pageStore';
+import {
+  pagesStateStore,
+  usePagesStateStore,
+  isComponentFocused,
+  PageStateAction,
+} from '../../../data/pageStore';
 import {
   WegasComponentOptionsActions,
   WegasComponentActionsProperties,
@@ -101,16 +105,14 @@ const componentBorderCss = {
   borderWidth: '1px',
   borderColor: themeVar.primaryHoverColor,
 };
-const focusedComponentStyle = css(componentBorderCss);
+
+const focusedComponentStyle = css({
+  backgroundColor: themeVar.primaryHoverColor,
+});
+
 const handleControlHoverStyle = css({
   ':hover': componentBorderCss,
 });
-
-// const emptyListStyle = css({
-//   textAlign: 'center',
-//   borderStyle: 'solid',
-//   borderWidth: '1px',
-// });
 
 // Helper functions
 
@@ -275,6 +277,23 @@ function ComponentDropZone({
   );
 }
 
+interface LockedOverlayProps {
+  locked: boolean;
+}
+
+function LockedOverlay({ locked }: LockedOverlayProps) {
+  return locked ? (
+    <div
+      onClick={e => e.stopPropagation()}
+      style={{
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+      }}
+    ></div>
+  ) : null;
+}
+
 /**
  * WegasComponentItemProps - Required props for a layout item component
  */
@@ -326,6 +345,10 @@ export interface PageComponentProps {
    * last - is this component the last of the list
    */
   last?: boolean;
+  /**
+   * noHandle - if set, the component will not show a handle
+   */
+  noHandle?: boolean;
 }
 
 /**
@@ -385,7 +408,7 @@ interface ExtractedLayoutProps {
 
 type ComponentContainerProps = WegasComponentProps & ExtractedLayoutProps;
 
-const dispatch = pagesStateStore.dispatch;
+const pageDispatch = pagesStateStore.dispatch;
 
 export function ComponentContainer({
   componentType,
@@ -393,6 +416,7 @@ export function ComponentContainer({
   childrenType,
   containerType,
   last,
+  noHandle,
   name,
   options,
   layout,
@@ -414,6 +438,13 @@ export function ComponentContainer({
     showBorders,
   } = React.useContext(pageCTX);
 
+  const pageId = pageIdPath.slice(0, 1)[0];
+  const containerPath = [...path];
+  const itemPath = containerPath.pop();
+  const isNotFirstComponent = path.length > 0;
+  const editable = editMode && isNotFirstComponent;
+  const showLayout = showBorders && containerType != null;
+
   const locked = useStore(
     s =>
       options?.actions?.lock != null &&
@@ -421,13 +452,7 @@ export function ComponentContainer({
   );
 
   const isFocused = usePagesStateStore(
-    ({ focusedComponent }) =>
-      (editMode &&
-        focusedComponent &&
-        focusedComponent.pageId === pageId &&
-        JSON.stringify(focusedComponent.componentPath) ===
-          JSON.stringify(path)) === true,
-    deepDifferent,
+    isComponentFocused(editMode, pageId, path),
   );
 
   const computedVertical =
@@ -437,12 +462,6 @@ export function ComponentContainer({
       : containerType === 'LINEAR'
       ? vertical
       : false;
-
-  const containerPath = [...path];
-  const itemPath = containerPath.pop();
-  const isNotFirstComponent = path.length > 0;
-  const editable = editMode && isNotFirstComponent;
-  const showLayout = showBorders && containerType != null;
 
   const Container = React.useMemo(() => {
     switch (childrenType) {
@@ -455,8 +474,6 @@ export function ComponentContainer({
         return FlexItem;
     }
   }, [childrenType]);
-
-  const pageId = pageIdPath.slice(0, 1)[0];
 
   return (
     <>
@@ -480,7 +497,7 @@ export function ComponentContainer({
           }) + classNameOrEmpty(className)
         }
         style={{
-          cursor: options?.actions ? 'pointer' : 'initial',
+          cursor: options?.actions && !locked ? 'pointer' : 'initial',
           ...style,
         }}
         onClick={() => {
@@ -518,17 +535,14 @@ export function ComponentContainer({
             if (!stackedHandles) {
               setStackedHandles(() => computeHandles(handles, path));
             }
-            dispatch({
-              type: 'COMPONENT_SET_FOCUSED',
-              payload: { pageId: pageId, componentPath: path },
-            });
+            pageDispatch(PageStateAction.setFocused(pageId, path));
           }
         }}
         onMouseLeave={() => {
           if (editable) {
             setStackedHandles(undefined);
           }
-          dispatch({ type: 'COMPONENT_SET_FOCUSED', payload: undefined });
+          pageDispatch(PageStateAction.unsetFocused());
         }}
         tooltip={options?.upgrades?.tooltip}
       >
@@ -570,7 +584,7 @@ export function ComponentContainer({
             dropPosition="BEFORE"
           />
         )}
-        {editable && (
+        {!noHandle && editable && (
           <EditHandle
             name={name}
             stackedHandles={stackedHandles}
@@ -595,6 +609,7 @@ export function ComponentContainer({
             dropPosition="AFTER"
           />
         )}
+        <LockedOverlay locked={locked} />
       </Container>
       {childrenType === 'LINEAR' && !last && <Splitter />}
     </>

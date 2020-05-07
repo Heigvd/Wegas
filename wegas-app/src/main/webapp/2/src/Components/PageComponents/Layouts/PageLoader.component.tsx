@@ -10,7 +10,10 @@ import {
   PageLoaderComponentProps,
   PAGE_LOADER_COMPONENT_TYPE,
 } from '../../../Helper/pages';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import {
+  pageCTX,
+  defaultPageCTX,
+} from '../../../Editor/Components/Page/PageEditor';
 import { useStore, store } from '../../../data/store';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { ActionCreator } from '../../../data/actions';
@@ -43,15 +46,8 @@ function PlayerPageLoader({
   ) : (
     <pageCTX.Provider
       value={{
-        editMode: false,
-        showControls: false,
-        showBorders: false,
+        ...defaultPageCTX,
         pageIdPath: [...pageIdPath, pageId],
-        handles: {},
-        onDrop: () => {},
-        onDelete: () => {},
-        onEdit: () => {},
-        onUpdate: () => {},
       }}
     >
       <PageLoader selectedPageId={pageId} />

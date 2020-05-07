@@ -11,6 +11,7 @@ import 'emotion';
 import { useWebsocket } from './API/websocket';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
 import { PageLoader } from './Editor/Components/Page/PageLoader';
+import { pageCTX, defaultPageCTX } from './Editor/Components/Page/PageEditor';
 
 importPageComponents();
 
@@ -29,9 +30,20 @@ function PlayerPageLoader() {
     }),
   );
 
+  if (selectedPageId == null) {
+    return <pre>No page selected</pre>;
+  }
+
   return (
     <ThemeProvider contextName="player">
-      <PageLoader selectedPageId={selectedPageId} />
+      <pageCTX.Provider
+        value={{
+          ...defaultPageCTX,
+          pageIdPath: [selectedPageId],
+        }}
+      >
+        <PageLoader selectedPageId={selectedPageId} />
+      </pageCTX.Provider>
     </ThemeProvider>
   );
 }

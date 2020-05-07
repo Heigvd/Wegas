@@ -5,6 +5,14 @@ import { ContainerTypes, ComponentContainer } from './EditableComponent';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { useStore } from '../../../data/store';
 import { cloneDeep } from 'lodash-es';
+import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import { css } from 'emotion';
+
+const emptyLayoutItemStyle = css({
+  textAlign: 'center',
+  borderStyle: 'solid',
+  borderWidth: '1px',
+});
 
 function getComponentFromPath(page: WegasComponent, path: number[]) {
   const newPath = [...path];
@@ -42,6 +50,7 @@ export function PageDeserializer({
 }: PageDeserializerProps): JSX.Element {
   const realPath = path ? path : [];
 
+  const { editMode } = React.useContext(pageCTX);
   const wegasComponent = useStore(s => {
     if (!pageId) {
       return undefined;
@@ -82,18 +91,33 @@ export function PageDeserializer({
         {...restProps}
       >
         <WegasComponent {...restProps}>
-          {children.map((_, i) => {
-            return (
-              <PageDeserializer
-                key={JSON.stringify([...realPath, i])}
-                pageId={pageId}
-                path={[...realPath, i]}
-                uneditable={uneditable}
-                childrenType={component.containerType}
-                last={i === children.length - 1}
-              />
-            );
-          })}
+          {editMode && children.length === 0 ? (
+            <ComponentContainer
+              path={[...realPath, 0]}
+              last
+              containerType={undefined}
+              componentType={'Temporary children'}
+              childrenType={containerType}
+              noHandle
+            >
+              <div className={emptyLayoutItemStyle}>
+                The layout is empty, drop components in to fill it!
+              </div>
+            </ComponentContainer>
+          ) : (
+            children.map((_, i) => {
+              return (
+                <PageDeserializer
+                  key={JSON.stringify([...realPath, i])}
+                  pageId={pageId}
+                  path={[...realPath, i]}
+                  uneditable={uneditable}
+                  childrenType={containerType}
+                  last={i === children.length - 1}
+                />
+              );
+            })
+          )}
         </WegasComponent>
       </ComponentContainer>
     </ErrorBoundary>

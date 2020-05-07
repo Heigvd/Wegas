@@ -14,6 +14,7 @@ const togglerStyle = (
     minWidth: '50px',
     width: 'fit-content',
     height: '24px',
+    boxSizing: 'border-box',
     borderRadius: '24px',
     borderStyle: 'solid',
     borderWidth: '2px',

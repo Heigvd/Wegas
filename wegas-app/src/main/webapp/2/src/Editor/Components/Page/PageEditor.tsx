@@ -50,7 +50,7 @@ export interface PageContext {
   onUpdate: (value: WegasComponent, path?: number[], patch?: boolean) => void;
 }
 
-const defaultPageCTX: PageContext = {
+export const defaultPageCTX: PageContext = {
   editMode: false,
   showBorders: false,
   showControls: true,

@@ -27,8 +27,14 @@ import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
 import { themeVar } from '../../../Components/Theme';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { pageEditorCTX } from './PageEditor';
+import { pageEditorCTX, pageCTX } from './PageEditor';
 import { Tree, TreeNode, GetParentPropsFn } from '../Views/TreeView/TreeView';
+import {
+  usePagesStateStore,
+  isComponentFocused,
+  pagesStateStore,
+  PageStateAction,
+} from '../../../data/pageStore';
 
 const bulletCSS = {
   width: '1em',
@@ -59,9 +65,9 @@ const selectedComponentStyle = css({
   borderColor: themeVar.primaryLighterColor,
 });
 
-// const focusedComponentStyle = css({
-//   backgroundColor: themeVar.primaryHoverColor,
-// });
+const focusedComponentStyle = css({
+  backgroundColor: themeVar.primaryHoverColor,
+});
 
 const defaultPage = {
   type: 'FlexList',
@@ -301,64 +307,43 @@ const compToKey = (component: WegasComponent) =>
 
 interface LayoutNodeTitleProps extends ClassAndStyle {
   icon: Icons;
-  pageId?: string;
-  componentPath?: number[];
   title: string;
   advancedTitle?: string;
   tooltip?: string;
   onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  onMouseOver?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  onMouseOut?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   classSelector?: string[];
 }
 
 function LayoutNodeTitle({
   icon,
-  // pageId,
-  // componentPath,
   title,
   advancedTitle,
   tooltip,
   onClick,
+  onMouseOver,
+  onMouseOut,
   className,
   style,
   children,
 }: React.PropsWithChildren<LayoutNodeTitleProps>) {
   const { currentFeatures } = React.useContext(featuresCTX);
-  // const { editMode, focusedComponent, focusComponent } = React.useContext(
-  //   pageCTX,
-  // );
 
   const newTitle =
     currentFeatures.includes('ADVANCED') && advancedTitle != null
       ? advancedTitle
       : title;
 
-  // const isFocused =
-  //   // editMode &&
-  //   focusedComponent &&
-  //   focusedComponent.pageId === pageId &&
-  //   JSON.stringify(focusedComponent.componentPath) ===
-  //     JSON.stringify(componentPath);
-
   return (
     <div
       onClick={onClick}
       className={
-        cx(nodeContentStyle, titleStyle, flex, grow, itemCenter, {
-          // [focusedComponentStyle]: isFocused,
-        }) + classNameOrEmpty(className)
+        cx(nodeContentStyle, titleStyle, flex, grow, itemCenter, {}) +
+        classNameOrEmpty(className)
       }
-      // onMouseOver={e => {
-      //   if (/*editMode &&*/ pageId != null && componentPath != null) {
-      //     e.stopPropagation();
-      //     focusComponent({ pageId, componentPath });
-      //   }
-      // }}
-      // onMouseOut={e => {
-      //   if (/*editMode && */ pageId != null && componentPath != null) {
-      //     e.stopPropagation();
-      //     focusComponent(undefined);
-      //   }
-      // }}
+      onMouseOver={onMouseOver}
+      onMouseOut={onMouseOut}
       style={style}
       title={tooltip}
     >
@@ -368,6 +353,8 @@ function LayoutNodeTitle({
     </div>
   );
 }
+
+const pageDispatch = pagesStateStore.dispatch;
 
 interface WegasComponentTitleProps {
   page: WegasComponent;
@@ -389,6 +376,8 @@ function WegasComponentTitle({
   componentControls,
 }: WegasComponentTitleProps) {
   const registeredComponent = usePageComponentStore(s => s[component.type]);
+  const { editMode } = React.useContext(pageCTX);
+
   const { onDelete, onEdit, onNew } = componentControls;
 
   let icon: Icon;
@@ -403,20 +392,35 @@ function WegasComponentTitle({
     title += ` ${component.props.name}`;
   }
 
+  const isSelected =
+    pageId === selectedPageId &&
+    JSON.stringify(componentPath) === JSON.stringify(selectedComponentPath);
+  const isFocused = usePagesStateStore(
+    isComponentFocused(editMode, pageId, componentPath),
+  );
+
   return (
     <LayoutNodeTitle
       icon={icon}
-      pageId={pageId}
-      componentPath={componentPath}
       title={title}
       advancedTitle={title + ' ' + JSON.stringify(componentPath)}
       tooltip={registeredComponent == null ? 'Unknown component' : undefined}
       onClick={() => onEdit(pageId, componentPath)}
+      onMouseOver={e => {
+        if (editMode) {
+          e.stopPropagation();
+          pageDispatch(PageStateAction.setFocused(pageId, componentPath));
+        }
+      }}
+      onMouseOut={e => {
+        if (editMode) {
+          e.stopPropagation();
+          pageDispatch(PageStateAction.unsetFocused());
+        }
+      }}
       className={cx({
-        [selectedComponentStyle]:
-          pageId === selectedPageId &&
-          JSON.stringify(componentPath) ===
-            JSON.stringify(selectedComponentPath),
+        [selectedComponentStyle]: isSelected,
+        [focusedComponentStyle]: isFocused,
       })}
     >
       {component.props?.children && (
@@ -509,67 +513,6 @@ function WegasComponentNode({
     </TreeNode>
   );
 }
-
-// interface WegasComponentNodeProps {
-//   component: WegasComponent;
-//   nodeProps: () => {};
-//   pageId: string;
-//   selectedPageId?: string;
-//   componentPath: number[];
-//   selectedComponentPath?: number[];
-//   componentControls: ComponentControls;
-// }
-
-// function WegasComponentNode({
-//   component,
-//   nodeProps,
-//   pageId,
-//   selectedPageId,
-//   componentPath,
-//   selectedComponentPath,
-//   componentControls,
-// }: WegasComponentNodeProps) {
-//   const page = useStore(s => s.pages[pageId], deepDifferent);
-
-//   const id: ComponentNodeId = { pageId, page, componentPath };
-
-//   return (
-//     <Node
-//       {...nodeProps()}
-//       header={
-//         <WegasComponentTitle
-//           component={component}
-//           componentControls={componentControls}
-//           componentPath={componentPath}
-//           page={page}
-//           pageId={pageId}
-//           selectedComponentPath={selectedComponentPath}
-//           selectedPageId={selectedPageId}
-//         />
-//       }
-//       id={id}
-//       dragId={pageLayoutComponentType}
-//       dropIds={[pageLayoutComponentType, TREEVIEW_ITEM_TYPE]}
-//       dragDisabled={componentPath.length === 0}
-//       dropDisabled={componentPath.length === 0}
-//     >
-//       {({ nodeProps }) =>
-//         component.props?.children?.map((childComponent, i) => (
-//           <WegasComponentNode
-//             key={compToKey(childComponent)}
-//             nodeProps={nodeProps}
-//             component={childComponent}
-//             pageId={pageId}
-//             selectedPageId={selectedPageId}
-//             componentPath={[...componentPath, i]}
-//             selectedComponentPath={selectedComponentPath}
-//             componentControls={componentControls}
-//           />
-//         )) || null
-//       }
-//     </Node>
-//   );
-// }
 
 interface PageIndexTitleProps {
   newPath: string[];

@@ -13,6 +13,7 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 const CONTENT_TYPE = 'LinearLayout';
 
 interface PlayerLinearLayoutProps extends WegasComponentProps, ContainerProps {
+  children: React.ReactNode[];
   /**
    * allowResize - let the splitter for users to change the display
    */
@@ -62,7 +63,9 @@ const test = pageComponentFactory(
     flexValues: schemaProps.hidden(false, 'object'),
   },
   [],
-  () => ({}),
+  () => ({
+    children: [],
+  }),
   'LINEAR',
 );
 
