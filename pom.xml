@@ -818,11 +818,23 @@
                     </dependencies>
                 </plugin>
 
-
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jxr-plugin</artifactId>
                     <version>3.0.0</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.mycila</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>3.0</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>ch.albasim.wegas</groupId>
+                            <artifactId>build-tools</artifactId>
+                            <version>1.0</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -894,6 +906,35 @@
                     <content>${project.build.directory}/staging</content>
                     <scmBranch>gh-pages</scmBranch>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <header>wegas/licenseheader.template</header>
+                    <properties>
+                        <license.owner>School of Business and Engineering Vaud, Comem, MEI</license.owner>
+                        <license.years>2013-2020</license.years>
+                    </properties>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/README</exclude>
+                        <exclude>src/test/resources/**</exclude>
+                        <exclude>src/main/resources/**</exclude>
+                    </excludes>
+                </configuration>
+                <!--<executions>
+                    <execution>
+                        <id>first</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                    </execution>
+                </executions>-->
             </plugin>
         </plugins>
     </build>

@@ -1,4 +1,4 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
