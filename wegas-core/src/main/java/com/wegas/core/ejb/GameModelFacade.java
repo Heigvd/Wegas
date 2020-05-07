@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import ch.albasim.wegas.annotations.ProtectionLevel;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.wegas.core.Helper;
 import com.wegas.core.api.GameModelFacadeI;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
@@ -666,6 +667,14 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     public GameModel duplicate(final Long entityId) throws CloneNotSupportedException {
         final GameModel srcGameModel = this.find(entityId);
         if (srcGameModel != null) {
+            if (!srcGameModel.getPages().isEmpty()) {
+                // make sure to have an up-to-date page index before the copy
+                try {
+                    pageFacade.getPageIndex(srcGameModel);
+                } catch (RepositoryException | JsonProcessingException ex) {
+                    logger.warn("Unable to getIndex");
+                }
+            }
             return (GameModel) srcGameModel.duplicate();
         }
         return null;
