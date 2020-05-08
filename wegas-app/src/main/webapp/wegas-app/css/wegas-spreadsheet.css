@@ -14,6 +14,10 @@
     width: max-content;
 }
 
+.wegas-spreadsheet .wegas-empty-spreadsheet {
+    font-style: italic;
+}
+
 .wegas-spreadsheet table {
     text-align: right;
     border: 1px double #bbb;
@@ -24,13 +28,13 @@
 
 .wegas-spreadsheet .wegas-submit-button {
     float: right;
-    margin: 10px 0;
+    margin: 20px 0;
 }    
 
 .wegas-spreadsheet .help-button,
 .wegas-spreadsheet .answerkey-definition-button {
     max-width: 145px;
-    margin: 10px 10px 10px 0;
+    margin: 20px 10px 10px 10px;
     cursor: pointer;
 }
 
@@ -69,11 +73,10 @@
     padding: 2px 5px;
 }
 
-.wegas-spreadsheet input {
+.wegas-spreadsheet input[type="text"] {
     text-align: right;
     width: calc(100% - 7px);
     margin: 0;
-    padding: 0 2px 0 0;
 }
 
 .wegas-spreadsheet .checkbox.checked:before {
@@ -105,7 +108,7 @@
 
 .wegas-spreadsheet input.errored,
 .wegas-spreadsheet .checkbox.errored:before {
-    border: 2px solid red !important;
+    border: 2px solid red;
 }
 
 .yui3-skin-sam .wegas-panel-content.wegas-spreadsheet-help {
@@ -113,13 +116,37 @@
     -moz-user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
-    background: rgba(110, 110, 110, 0.97);
+    background: #555;
+    box-shadow: 4px 4px 8px hsla(0, 0%, 45%, 0.9);
+}
+
+.wegas-spreadsheet-help .yui3-widget-hd {
+    margin-bottom: 20px;
+}
+
+.wegas-spreadsheet-help .yui3-widget-hd h2 {
+    display: inline-block;
+}
+
+.wegas-spreadsheet-help .yui3-widget-hd button.close {
+    float: right;
+    margin: 6px 8px 0 0;
+    padding: 3px;
+}
+
+.wegas-spreadsheet-help .yui3-widget-hd button.close:hover {
+    color: red;
+    cursor: pointer;
 }
 
 .wegas-spreadsheet-help .yui3-widget-bd {
     margin: 10px;
     text-align: left;
     height: 400px;
+}
+
+.wegas-spreadsheet-help .yui3-widget-ft {
+    display: none;
 }
 
 /* Undo YUI3 cssreset: */

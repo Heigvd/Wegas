@@ -60,6 +60,9 @@ YUI.add("wegas-i18n-global-en", function(Y) {
             deleteEmailConfirmation: "The e-mail {{subject}} will be permanently deleted. Continue?",
             noMessages: "You have no messages",
             noMessageSelected: "Select an item on the left"
+        },
+        spreadsheet: {
+            empty: "No spreadsheet available at this time"
         }
     }, {
         base: {

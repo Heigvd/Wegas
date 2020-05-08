@@ -60,6 +60,9 @@ YUI.add("wegas-i18n-global-de", function(Y) {
             deleteEmailConfirmation: "Sind Sie sicher, dass Sie die E-Mail \"{{subject}}\" dauerhaft löschen wollen?",
             noMessages: "Keine E-Mail",
             noMessageSelected: "Wählen Sie eine E-Mail auf der linken Seite aus."
+        },
+        spreadsheet: {
+            empty: "Derzeit ist keine Tabelle verfügbar"
         }
     }, {
         base: {

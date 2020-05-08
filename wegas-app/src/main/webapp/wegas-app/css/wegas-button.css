@@ -181,8 +181,6 @@
     border-radius: 6px;
     color: white;
     transition: .3s;
-    right: 20px;
-    left: auto !important;
 }
 
 .wegas-submit-button:before {

@@ -14,8 +14,6 @@ YUI.add('wegas-spreadsheet', function(Y) {
 
     var CONTENTBOX = 'contentBox',
 
-        // URL of Wegas tab in scenario editor mode:
-        GAME_EDITOR_PATH = "edit.html",
         // Exported Object properties:
         PROP_VALIDATED = "validated",
         PROP_ERRORS = "errors",
@@ -55,18 +53,18 @@ YUI.add('wegas-spreadsheet', function(Y) {
                 '</ol>' +
                 '<h3>Specification of Input Fields and Formulas</h3>' +
                 'Input fields in the HTML table are cells containing either: <ul>' +
-                '<li><i>=ReadNumber(decimals)</i><br>This will enable the user to enter a number. ' +
-                '    Parameter "decimals" indicates the number of decimals that shall be displayed in the end.' +
+                '<li><i>=ReadNumber(nbDecimals)</i><br>This will enable the user to enter a number. ' +
+                '    Parameter "nbDecimals" is a number specifying how many decimals shall be displayed in the end.' +
                 '<li><i>=ReadClick()</i><br>This will enable the user to click on the cell to validate or invalidate a proposition.' +
                 '</ul>' +
                 'A cell can contain a formula, consisting of a sum of numbers specified like this:' +
                 '<ul><li><i>=Sum(from, to, nbDecimals)</i><ol>' +
-                '<li>Parameter "from" is the first cell in a row or column, e.g. <i>$B3</i>' +
-                '<li>Parameter "to" is the last cell in the same row or column, e.g. <i>$B6</i>' +
-                '<li>Parameter "decimals" is the number of decimals to display' +
+                '<li>Parameter "from" is the first cell of the range, e.g. <i>$B3</i>' +
+                '<li>Parameter "to" is the last cell of the range, e.g. <i>$C6</i>' +
+                '<li>Parameter "nbDecimals" is the number of decimals to display' +
                 '</ol></ul>' +
                 '<h3>Formatting</h3>' +
-                'Table cells can be quite freely formatted inside a text or HTML editor. To complete this, a few CSS classes are provided:<ul>' +
+                'Table cells can be formatted quite freely inside a text or HTML editor. To complete this, a few CSS classes are provided:<ul>' +
                 '<li><i>header-row</i> centers the text' +
                 '<li><i>header-column</i> aligns text to the left' +
                 '<li><i>gray-background</i> gives the cell a gray background' +
@@ -74,20 +72,26 @@ YUI.add('wegas-spreadsheet', function(Y) {
                 '<li><i>underline-1px</i> and <i>underline-2px</i> underline the result of a formula' +
                 '</ul>' +
                 '<h3>Conditions on Spreadsheet Contents</h3>' +
-                'A condition in a trigger or state machine can detect when a spreadsheet has been "submitted" by the user:' +
+                'A condition in a trigger or state machine can detect when a spreadsheet has been "submitted" by the user, such as:' +
                 '<ul><li><span class="bordered">Answers</span> <span class="bordered-menu">property</span> <span class="bordered">validated</span> <span class="bordered-menu">equals</span> <span class="bordered">true</span><br>' +
                 '    where Answers is the name of the Object variable specified to hold user input.</li></ul>' +
                 'Add this condition to detect if user input contains errors:' +
                 '<ul><li><span class="bordered">Answers</span> <span class="bordered-menu">property</span> <span class="bordered">errors</span> <span class="bordered-menu">is different from</span> <span class="bordered">0</span><br>' +
-                '    This is only possible when an answer keys parameter has been provided to the widget.</li></ul>'                
+                '    This is only possible when an "Answer keys" parameter has been given to the widget.</li></ul>'                
             ;
             var panel = new Y.Wegas.Panel({
-                headerContent: "<h2>Help on the Spreadsheet Widget</h2>",
+                headerContent: '<h2>Help on the Spreadsheet Widget</h2><button class="close fa fa-times"></button>',
                 content: msg,
                 modal: false,
                 width: 600
             }).render();
-            panel.get(CONTENTBOX).addClass("wegas-spreadsheet-help");
+            var panelCB = panel.get(CONTENTBOX),
+                handler;
+            panelCB.addClass("wegas-spreadsheet-help");
+            handler = panelCB.one(".close").on("click", function() {
+                handler.detach();
+                panel.destroy();
+            }, this);
             panel.plug(Y.Plugin.DraggablePanel, {});
         },
 
@@ -100,7 +104,12 @@ YUI.add('wegas-spreadsheet', function(Y) {
 
             this.source = this.get("source.evaluated");
             if (this.source) {
-                this.tableurHTML = this.source.getInstance().get("value");
+                if (this.source.get("@class") === "TextDescriptor") {
+                    this.tableurHTML = this.source.getInstance().get("value");
+                } else {
+                    // The source is a StaticTextDescriptor:
+                    this.tableurHTML = I18n.t(this.source.get("text"));
+                }
             }
             
             this.answersEntered = this.get("answers.evaluated");
@@ -126,17 +135,17 @@ YUI.add('wegas-spreadsheet', function(Y) {
             });
 
             if (this.isScenaristMode) {
-                this.get(CONTENTBOX).delegate("click", function (e) {
+                this.cb.delegate("click", function (e) {
                     this.saveAnswerKeys();
                 }, ".answerkey-definition-button", this);
-                this.get(CONTENTBOX).delegate("click", function (e) {
+                this.cb.delegate("click", function (e) {
                     this.scenaristHelp();
                 }, ".help-button", this);                
             }
 
             if (this.finished) return;
 
-            this.get(CONTENTBOX).delegate("click", function(e) {
+            this.cb.delegate("click", function(e) {
                 // Do not finalize if we just had a persistence issue
                 if (this.persistenceError ||
                     this.hasEmptyOrInvalidInputs()) {
@@ -211,7 +220,7 @@ YUI.add('wegas-spreadsheet', function(Y) {
         // Returns true if the given string is a valid cell reference (e.g. $A1)
         // Columns are in the range [A..Z] and rows in the range [1..99].
         isCellRef: function(ref) {
-            return ref && !!ref.match(/\$[A-Z][1-9][0-9]?/)
+            return ref && !!ref.match(/\$[A-Z][1-9][0-9]?/);
         },
         
         // Returns the list of cells from reference x1 to x2
@@ -250,12 +259,12 @@ YUI.add('wegas-spreadsheet', function(Y) {
         // Scans the given HTML table and implements all known annotations/formulas.
         processTable: function(table) {
             this.formulas = [];
-            for (var i = 0, row; row = table.rows[i]; i++) {
+            for (var i = 0, row; (row = table.rows[i]); i++) {
                 var rowName = String(i + 1);
-                for (var j = 0, cell; cell = row.cells[j]; j++) {
+                for (var j = 0, cell; (cell = row.cells[j]); j++) {
                     var cellName = "$" + String.fromCharCode(65 + j) + rowName,
                         contents = cell.innerText.trim().toUpperCase(),
-                        args, decimals,
+                        decimals,
                         cellparts = [],
                         output = '';
                     
@@ -266,26 +275,24 @@ YUI.add('wegas-spreadsheet', function(Y) {
                             output = cellparts[0];
                         }
                     }
-                    // Handle =ReadNumber(decimals)
                     var matcher;
-                    if ((matcher = contents.match(/=READNUMBER\((\d+)\)/))) {
+                    if ((matcher = contents.match(/=READNUMBER\(\s*(\d+)\s*\)/))) {
                         // Handle =ReadNumber(decimals)
                         decimals = +matcher[1];
                         output += 
                                 '<input type="text" class="' + NUMBERINPUT_CSS +
                                 '" name="' + cellName + 
                                 '" data-decimals="' + decimals +
-                                '" autocomplete="off">';
-                            
-                    // Handle =ReadClick()
-                    } else if (contents.length === 12 && contents.indexOf("=READCLICK()") === 0) {
+                                '" autocomplete="off">';                            
+                    } else if (contents.match(/=READCLICK\(\s*\)/)) {
+                        // Handle =ReadClick()
                         // We could specify the classes through which the user cycles when clicking
                         output +=  
                                 '<span class="' + CHECKBOX_CSS + 
                                 '" name="' + cellName + 
                                 '">';
-                    // Cells without input (constant content or formula)
-} else if (contents.indexOf("=SUM(") === 0) {
+                    } else if (contents.indexOf("=SUM(") === 0) {
+                        // Cells without input (constant content or formula)
                         // =Sum(from, to, decimals)
                         if ((matcher = contents.match(/=SUM\(\s*(\$[A-Z][1-9][0-9]?)\s*,\s*(\$[A-Z][1-9][0-9]?)\s*,\s*(\d+)\s*\)/))) {
                             var arg0 = matcher[1],
@@ -385,17 +392,22 @@ YUI.add('wegas-spreadsheet', function(Y) {
          * Displays the spreadsheet
          */
         displaySpreadsheet: function() {
-            var cb = this.get(CONTENTBOX);
-
-            cb.hide().setHTML(
+            this.cb.hide().setHTML(
                 this.isScenaristMode ?
                     this.tableurHTML +
                         (this.answerKeysObject ? SCENARIST_BUTTON : '') +
                         HELP_BUTTON +
                         VALIDATE_BUTTON :
                     this.tableurHTML + VALIDATE_BUTTON);
-            this.processTable(cb.one("table").addClass(SHEET_CSS).getDOMNode());
-            cb.show();
+            var table = this.cb.one("table");
+            if (table) {
+                this.processTable(table.addClass(SHEET_CSS).getDOMNode());
+            } else {
+                this.cb.insert('<div class="wegas-empty-spreadsheet">' + I18n.t("spreadsheet.empty") + '</div>', 0);
+                this.cb.all(".wegas-submit-button").hide();
+                this.cb.all(".answerkey-definition-button").hide();
+            }
+            this.cb.show();
             
             this.evalFormulas();
             this.doSheetBindings();
@@ -405,8 +417,7 @@ YUI.add('wegas-spreadsheet', function(Y) {
          * Clears the spreadsheet 
          */
         clearSpreadsheet: function() {
-            var cb = this.get(CONTENTBOX);
-            cb.setHTML("");
+            this.cb.setHTML("");
         },
         
         
@@ -414,16 +425,14 @@ YUI.add('wegas-spreadsheet', function(Y) {
          *
          */
         syncUI: function() { // Show / hide elements depending on their visibility attribute
-            if (this.tableurHTML) {
-                this.displaySpreadsheet();
-                this.restoreSheet();
+            this.displaySpreadsheet();
+            this.restoreSheet();
 
-                if (this.finished) {
-                    this.markAsFinished();
-                    this.correctSheet();
-                } else {
-                    this.markAsActive();
-                }
+            if (this.finished) {
+                this.markAsFinished();
+                this.correctSheet();
+            } else if (this.cb.one("table")) {
+                this.markAsActive();
             }
         },
 
@@ -564,6 +573,9 @@ YUI.add('wegas-spreadsheet', function(Y) {
         restoreSheet: function() {
             var obj = this.answersEnteredObject,
                 tab = this.cb.one(DOT_SHEET_CSS);
+            if (!tab) {
+                return;
+            }
             for (var name in obj) {
                 if( obj.hasOwnProperty(name) ) {
                     var valeur = obj[name],
@@ -642,13 +654,13 @@ YUI.add('wegas-spreadsheet', function(Y) {
         },
 
         markAsFinished: function() {
-            this.cb.one('button.yui3-button').hide();
+            this.cb.one('.wegas-submit-button').hide();
             this.cb.all(DOT_NUMBERINPUT_CSS).setAttribute('readonly', 'readonly');
             this.cb.all(DOT_CHECKBOX_CSS).setAttribute('readonly', 'readonly');
         },
 
         markAsActive: function() {
-            this.cb.one('button.yui3-button').show();
+            this.cb.one('.wegas-submit-button').show();
             this.cb.all(DOT_NUMBERINPUT_CSS).removeAttribute('readonly');
             this.cb.all(DOT_CHECKBOX_CSS).removeAttribute('readonly');
         },
