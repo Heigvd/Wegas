@@ -35,7 +35,8 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
             ok: "OK",
             cancel: "Annuler",
             yes: "oui",
-            no: "non"
+            no: "non",
+            submit: "valider"
         },
         i18n:{
             manager: {
@@ -58,6 +59,9 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
             deleteEmailConfirmation: "Êtes-vous sûr de vouloir supprimer le message {{subject}} de manière définitive ?",
             noMessages: "Vous n'avez pas de messages",
             noMessageSelected: "Sélectionnez un message sur la gauche"
+        },
+        spreadsheet: {
+            empty: "Aucun tableur disponible actuellement"
         }
     }, {base: {
             prefix: "",

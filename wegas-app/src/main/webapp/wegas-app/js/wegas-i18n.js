@@ -435,15 +435,17 @@ YUI.add("wegas-i18n", function(Y) {
             }
         }
 
-        function parseNumber(value, formatName) {
-            return Y.Number.parse(value, getFormatConfig(formatName));
+        function parseNumber(value, format) {
+            return Y.Number.parse(value, getFormatConfig(format));
         }
 
-        function formatNumber(value, formatName) {
-            return Y.Number.format(+value, getFormatConfig(formatName));
+        function formatNumber(value, format) {
+            return Y.Number.format(+value, getFormatConfig(format));
         }
 
-        function getFormatConfig(formatName) {
+        // Format is either a string (the name of a predefined format) or
+        // an object, which may overwrite any locale-specific setting.
+        function getFormatConfig(format) {
             var locale = currentNumericLocale().split(/[-_]/),
                 lang = locale[0],
                 variant = locale[1],
@@ -453,8 +455,8 @@ YUI.add("wegas-i18n", function(Y) {
             if (Y.Wegas.I18n._tables[lang]) {
                 // main language exists
 
-                if (formatName) {
-                    extra = getMostSpecificValue(lang, variant, "numbers.extra." + formatName, "object");
+                if (format && typeof format === "string") {
+                    extra = getMostSpecificValue(lang, variant, "numbers.extra." + format, "object");
                     if (extra && typeof extra === "object") {
                         Y.mix(formatConfig, extra);
                     }
@@ -463,6 +465,10 @@ YUI.add("wegas-i18n", function(Y) {
                 base = getMostSpecificValue(lang, variant, "numbers.base", "object");
                 if (base && typeof base === "object") {
                     Y.mix(formatConfig, base);
+                }
+                
+                if (format && typeof format === "object") {
+                    formatConfig = Y.mix(Y.mix({}, format), formatConfig);
                 }
 
             }

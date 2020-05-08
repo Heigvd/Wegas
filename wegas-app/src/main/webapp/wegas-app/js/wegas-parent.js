@@ -402,6 +402,17 @@ YUI.add("wegas-parent", function(Y) {
                                                         },
                                                         {
                                                             type: BUTTON,
+                                                            label: "Spreadsheet",
+                                                            cssClass: "wegas-advanced-feature",
+                                                            plugins: [{
+                                                                    fn: "AddChildWidgetAction",
+                                                                    cfg: {
+                                                                        childType: "Spreadsheet"
+                                                                    }
+                                                                }]
+                                                        },
+                                                        {
+                                                            type: BUTTON,
                                                             label: "Review",
                                                             cssClass: "wegas-advanced-feature",
                                                             plugins: [{
