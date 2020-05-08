@@ -478,6 +478,15 @@ YUI().use(function(Y) {
             },
             "wegas-chartistcss": {
                 type: CSS
+            },
+            "wegas-spreadsheet": {
+                path: "js/widget/wegas-spreadsheet-min.js",
+                requires: ["wegas-spreadsheetcss", "wegas-panel", 
+                    "wegas-i18n-global", "wegas-button"],
+                ws_provides: "Spreadsheet"
+            },
+            "wegas-spreadsheetcss": {
+                type: CSS
             }
         }
     });
