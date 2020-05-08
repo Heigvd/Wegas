@@ -324,7 +324,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
         } catch (WegasScriptException ex) {
             logger.error("EventListener error (\"addTaskPlannification\")", ex);
         }
-        requestManager.commit(player);
+        // requestManager.commit(player);
         return ti;
     }
 
