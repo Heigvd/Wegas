@@ -12,7 +12,6 @@ import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
@@ -67,9 +66,6 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     @Inject
     private GameModelFacade gameModelFacade;
-
-    @Inject
-    private I18nFacade i18nFacade;
 
     /**
      *
@@ -594,10 +590,13 @@ public class PlayerFacade extends BaseFacade<Player> {
         Player p = this.find(playerId);
         if (p.getStatus() == Status.FAILED) {
             gameModelFacade.createAndRevivePrivateInstance(p.getGame().getGameModel(), p);
-            p.setStatus(Status.LIVE);
 
+            p.setStatus(Status.INITIALIZING);
             this.flush();
+
             stateMachineFacade.runStateMachines(p);
+            p.setStatus(Status.LIVE);
+            this.flush();
             websocketFacade.propagateNewPlayer(p);
         }
         return p;

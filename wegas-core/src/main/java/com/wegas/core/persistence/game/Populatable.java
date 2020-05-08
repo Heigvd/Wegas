@@ -18,6 +18,7 @@ public interface Populatable {
         RESCHEDULED,
         PROCESSING,
         SEC_PROCESSING,
+        INITIALIZING,
         LIVE,
         FAILED,
         DELETED
