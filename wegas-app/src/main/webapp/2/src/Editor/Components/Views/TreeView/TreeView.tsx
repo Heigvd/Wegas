@@ -16,12 +16,6 @@ import { classNameOrEmpty } from '../../../../Helper/className';
 import { deepDifferent } from '../../../../Components/Hooks/storeHookFactory';
 
 const treeNodeStyle = cx(flex, flexColumn);
-const dropZoneStyle = css({
-  border: '1px dashed',
-  ':hover': {
-    backgroundColor: 'red',
-  },
-});
 const childrenStyle = css({ marginLeft: '2em' });
 
 export interface NodeBasicInfo<T> {
@@ -88,7 +82,7 @@ export function Tree<T>({
   );
 }
 
-interface DropPreviewProps {
+interface DropPreviewProps extends ClassAndStyle {
   /**
    * height - the height of the preview zone
    */
@@ -96,16 +90,19 @@ interface DropPreviewProps {
   /**
    * minHeight - the minimum height of the drop preview
    */
+  minHeight?: React.CSSProperties['minHeight'];
 }
 
 const DropPreview = React.forwardRef<HTMLDivElement, DropPreviewProps>(
-  ({ height }: DropPreviewProps, ref) => {
+  ({ height, minHeight, className, style }: DropPreviewProps, ref) => {
     return (
       <div
         ref={ref}
-        className={dropZoneStyle}
+        className={className}
         style={{
           height,
+          minHeight,
+          ...style,
         }}
       />
     );
@@ -394,14 +391,19 @@ export function TreeNode<T>({
       {!isDragging &&
         (showUpperDropZone || isOverUp) &&
         deepDifferent(item?.id, parentProps?.id) && (
-          <div
+          <DropPreview
             ref={dropUp}
             className={dropZoneClass(isOverUp)}
-            style={{
-              // height: item?.rect?.height,
-              height: item?.source?.current?.getBoundingClientRect().height,
-            }}
+            height={item?.source?.current?.getBoundingClientRect().height}
           />
+          // <div
+          //   ref={dropUp}
+          //   className={dropZoneClass(isOverUp)}
+          //   style={{
+          //     // height: item?.rect?.height,
+          //     height: item?.source?.current?.getBoundingClientRect().height,
+          //   }}
+          // />
         )}
       <div ref={innerContainer}>
         {!noTitle && (
@@ -421,6 +423,13 @@ export function TreeNode<T>({
               ? children(getParentProps)
               : children}
             {canDrop && deepDifferent(item?.id, id) && (
+              //   <DropPreview
+              //   ref={dropDown}
+              //   className={dropZoneClass(isOverDown)}
+              //   height={item?.source?.current?.getBoundingClientRect().height}
+              //   minHeight={isOverDown ? item?.rect?.height : '5px'}
+              // />
+
               <div
                 ref={dropDown}
                 style={{
@@ -432,6 +441,7 @@ export function TreeNode<T>({
               >
                 {!isDragging && isOverDown && (
                   <DropPreview
+                    className={dropZoneClass(isOverDown)}
                     height={
                       item?.source?.current?.getBoundingClientRect().height
                     }

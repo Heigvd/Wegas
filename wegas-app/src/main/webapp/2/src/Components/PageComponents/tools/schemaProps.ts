@@ -26,6 +26,7 @@ import {
   FileFilter,
   FilePickingType,
 } from '../../../Editor/Components/FileBrowser/FileBrowser';
+import { CustomScriptProps } from '../../../Editor/Components/FormView/CustomScript';
 
 type TypedProps<T extends { view: {} }> = Schema<
   T['view'] & {
@@ -177,6 +178,31 @@ const simpleSchemaProps = {
       label,
       mode,
       type: 'script',
+      layout,
+    },
+  }),
+  customScript: (
+    label?: string,
+    required: boolean = true,
+    returnType?: WegasScriptEditorReturnTypeName[],
+    language?: 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS',
+    value?: string,
+    featureLevel: FeatureLevel = 'DEFAULT',
+    index: number = 0,
+    layout?: SchemaLayout,
+    borderTop?: boolean,
+  ): TypedProps<CustomScriptProps> => ({
+    required,
+    type: 'object',
+    value: createScript(value, language),
+    index,
+    view: {
+      borderTop,
+      index,
+      featureLevel,
+      label,
+      returnType,
+      type: 'customscript',
       layout,
     },
   }),

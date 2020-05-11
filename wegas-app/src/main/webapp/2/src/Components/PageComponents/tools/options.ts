@@ -1,5 +1,5 @@
 // OPTIONS -> ACTIONS
-
+import * as React from 'react';
 import { store } from '../../../data/store';
 import { ActionCreator } from '../../../data/actions';
 import { clientScriptEval } from '../../Hooks/useScript';
@@ -14,6 +14,10 @@ import { InfoBeamProps } from './InfoBeam';
 import { flexlayoutChoices } from '../../Layouts/FlexList';
 import { absolutelayoutChoices } from '../../Layouts/Absolute';
 import { ContainerTypes } from './EditableComponent';
+import { useComponentScript } from '../../Hooks/useComponentScript';
+import { entityIs } from '../../../data/entities';
+import { getQuestionReplies } from '../../../data/proxyfy/instancesHelpers';
+import { createScript } from '../../../Helper/wegasEntites';
 
 export interface WegasComponentOptionsAction {
   priority?: number;
@@ -223,8 +227,9 @@ const actionsChoices: HashListChoices = [
 
 // OPTIONS -> UPGRADES
 export interface WegasComponentUpgrades {
-  tooltip: string;
-  infoBeam: InfoBeamProps;
+  tooltip?: string;
+  infoBeam?: InfoBeamProps;
+  unreadCount?: IScript;
 }
 
 const upgradeChoices: HashListChoices = [
@@ -254,11 +259,119 @@ const upgradeChoices: HashListChoices = [
           'TypeScript',
           'false',
         ),
-        messageScript: schemaProps.code('Message', false, 'TypeScript'),
+        messageScript: schemaProps.customScript(
+          'Message',
+          false,
+          ['string'],
+          'TypeScript',
+        ),
+        // messageScript: schemaProps.code('Message', false, 'TypeScript'),
       }),
     },
   },
+  {
+    label: 'Unread count',
+    value: {
+      prop: 'unreadCount',
+      schema: schemaProps.scriptVariable('Count in', true, [
+        'InboxDescriptor',
+        'DialogueDescriptor',
+        'QuestionDescriptor',
+        'WhQuestionDescriptor',
+        'SurveyDescriptor',
+        'PeerReviewDescriptor',
+      ]),
+    },
+  },
 ];
+
+export function useComputeUnreadCount(
+  unreadCountVariableScript: IScript | undefined,
+): InfoBeamProps | undefined {
+  const { descriptor: infobeamVD, instance: infobeamVI } = useComponentScript<
+    | IInboxDescriptor
+    | IDialogueDescriptor
+    | IQuestionDescriptor
+    | IWhQuestionDescriptor
+    | ISurveyDescriptor
+    | IPeerReviewDescriptor
+  >(unreadCountVariableScript);
+
+  const infoBeamMessage = React.useMemo(() => {
+    if (
+      entityIs(infobeamVD, 'DialogueDescriptor') &&
+      entityIs(infobeamVI, 'FSMInstance')
+    ) {
+      if (!infobeamVI.enabled) {
+        return 0;
+      } else {
+        return infobeamVD.states[infobeamVI.currentStateId].transitions.length >
+          0
+          ? 1
+          : 0;
+      }
+    }
+    if (infobeamVD != null && infobeamVI != null) {
+      // const computedInstance = infobeamVD["@class"] === "DialogueDescriptor" ? infobeamVD.defaultInstance
+      switch (infobeamVI['@class']) {
+        case 'InboxInstance': {
+          const nbUnread = infobeamVI.messages.filter(m => m.unread).length;
+          if (nbUnread > 0) {
+            return nbUnread;
+          }
+          return;
+        }
+        case 'QuestionInstance': {
+          const questionDescriptor = infobeamVD as IQuestionDescriptor;
+          if (questionDescriptor.cbx) {
+            return infobeamVI.active && !infobeamVI.validated ? 1 : 0;
+          } else {
+            const replies = getQuestionReplies(questionDescriptor, true);
+            return replies.length === 0 &&
+              !infobeamVI.validated &&
+              infobeamVI.active
+              ? 1
+              : 0;
+          }
+        }
+        case 'WhQuestionInstance': {
+          return infobeamVI.active && !infobeamVI.validated ? 1 : 0;
+        }
+        case 'SurveyInstance': {
+          // TODO : Ask Jarle or Maxence here, as there is no validated props in SurveyInstance but it's still used in wegas-button.js : 212
+          return infobeamVI.active /* && !infobeamVI.validated */ ? 1 : 0;
+        }
+        case 'PeerReviewInstance': {
+          const types: ['toReview', 'reviewed'] = ['toReview', 'reviewed'];
+          return types.reduce(
+            (ot, t) =>
+              ot +
+              (infobeamVI[t] as IReview[]).reduce(
+                (or, _r) =>
+                  // TODO : Ask Maxence because r.reviewState is used in wegas-button.js : 212 but this prop seem to no exists on a Review
+                  or +
+                  ((t === 'toReview' &&
+                    infobeamVI.reviewState === 'DISPATCHED') ||
+                  (t === 'reviewed' && infobeamVI.reviewState === 'NOTIFIED')
+                    ? 1
+                    : 0),
+                0,
+              ),
+            0,
+          );
+        }
+        default:
+          return;
+      }
+    }
+  }, [infobeamVD, infobeamVI]);
+
+  return infoBeamMessage
+    ? {
+        messageScript: createScript(JSON.stringify(String(infoBeamMessage))),
+      }
+    : undefined;
+}
 
 const layoutChoices = {
   FLEX: [

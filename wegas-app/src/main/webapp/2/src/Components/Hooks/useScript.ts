@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { proxyfy } from '../../data/proxyfy';
+import { proxyfy, StronglyTypedEntity } from '../../data/proxyfy';
 import { Player, VariableDescriptor as VDSelect } from '../../data/selectors';
 import { useStore, store } from '../../data/store';
 import { featuresCTX } from '../Contexts/FeaturesProvider';
@@ -13,7 +13,7 @@ interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
     _gm: unknown,
     name: string,
-  ) => Readonly<Readonly<T>> | undefined;
+  ) => Readonly<StronglyTypedEntity<Readonly<T>>> | undefined;
 }
 interface GlobalClasses {
   gameModel?: Readonly<Readonly<IGameModel>>;

@@ -1,18 +1,15 @@
 import * as React from 'react';
 import { usePageComponentStore } from './componentFactory';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
-import { ContainerTypes, ComponentContainer } from './EditableComponent';
+import {
+  ContainerTypes,
+  ComponentContainer,
+  EmptyComponentContainer,
+} from './EditableComponent';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { useStore } from '../../../data/store';
 import { cloneDeep } from 'lodash-es';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
-import { css } from 'emotion';
-
-const emptyLayoutItemStyle = css({
-  textAlign: 'center',
-  borderStyle: 'solid',
-  borderWidth: '1px',
-});
 
 function getComponentFromPath(page: WegasComponent, path: number[]) {
   const newPath = [...path];
@@ -51,18 +48,27 @@ export function PageDeserializer({
   const realPath = path ? path : [];
 
   const { editMode } = React.useContext(pageCTX);
-  const wegasComponent = useStore(s => {
-    if (!pageId) {
-      return undefined;
-    }
+  const wegasComponent = useStore(
+    s => {
+      if (!pageId) {
+        return undefined;
+      }
 
-    const page = s.pages[pageId];
-    if (!page) {
-      return undefined;
-    }
+      const page = s.pages[pageId];
+      if (!page) {
+        return undefined;
+      }
 
-    return getComponentFromPath(page, realPath);
-  }, deepDifferent);
+      return getComponentFromPath(page, realPath);
+    },
+    deepDifferent,
+    // (a, b) =>
+    //   deepDifferent(
+    //     { ...a, props: omit(a?.props, ['children']) },
+    //     { ...b, props: omit(b?.props, ['children']) } ||
+    //       a?.props.children?.length !== b?.props.children?.length,
+    //   ),
+  );
 
   const { children = [], ...restProps } =
     (wegasComponent && wegasComponent.props) || {};
@@ -92,18 +98,10 @@ export function PageDeserializer({
       >
         <WegasComponent {...restProps}>
           {editMode && children.length === 0 ? (
-            <ComponentContainer
-              path={[...realPath, 0]}
-              last
-              containerType={undefined}
-              componentType={'Temporary children'}
+            <EmptyComponentContainer
               childrenType={containerType}
-              noHandle
-            >
-              <div className={emptyLayoutItemStyle}>
-                The layout is empty, drop components in to fill it!
-              </div>
-            </ComponentContainer>
+              path={realPath}
+            />
           ) : (
             children.map((_, i) => {
               return (

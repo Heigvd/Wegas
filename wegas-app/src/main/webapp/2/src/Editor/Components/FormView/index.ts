@@ -28,6 +28,7 @@ import StatementView from './Script/Expressions/ExpressionEditor';
 import HashListView from './HashList';
 import PageLoaderSelect from './PageLoaderSelect';
 import FileSelector from './FileSelector';
+import { CustomScript } from './CustomScript';
 
 export const DEFINED_VIEWS = {
   hidden,
@@ -46,6 +47,7 @@ export const DEFINED_VIEWS = {
   html: LabeledHTMLEditor,
   i18nhtml: translatable(LabeledHTMLEditor),
   script: Script,
+  customscript: CustomScript,
   code: Code,
   variableselect: TreeVariableSelect,
   scriptableVariableSelect: ScripableVariableSelect,

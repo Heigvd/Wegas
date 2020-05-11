@@ -379,7 +379,13 @@ export default function PageEditor() {
       const sameContainerPath =
         JSON.stringify(sourcePath.slice(0, -1)) === JSON.stringify(destPath);
       const sourceIndex: number | undefined = sourcePath.slice(-1)[0];
-      const samePosition = sourceIndex === destIndex;
+
+      const computedDestIndex =
+        sameContainerPath && destIndex > sourceIndex
+          ? destIndex - 1
+          : destIndex;
+
+      const samePosition = sourceIndex === computedDestIndex;
 
       // Don't do anything if the result is the same than before or if the user tries to put a container in itself
       if (
@@ -398,7 +404,7 @@ export default function PageEditor() {
               destPath,
               component.type,
               props ? mergeDeep(component.props, props) : component.props,
-              destIndex,
+              computedDestIndex,
             );
             // Don't modify the source page if it's the same than the destination page
             if (newDestPage != null) {

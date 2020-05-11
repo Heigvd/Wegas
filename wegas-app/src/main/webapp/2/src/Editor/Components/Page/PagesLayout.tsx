@@ -718,96 +718,6 @@ function PageIndexItemNode({
   );
 }
 
-// interface PagesLayoutNodeProps extends PagesLayoutProps {
-//   indexItem: PageIndexItem;
-//   path: string[];
-//   defaultPageId: string;
-//   nodeProps: () => {};
-// }
-
-// function PageIndexItemNode({
-//   indexItem,
-//   path,
-//   defaultPageId,
-//   nodeProps,
-//   onPageClick,
-//   componentControls,
-// }: PagesLayoutNodeProps): JSX.Element | null {
-//   const { selectedPageId, editedPath } = React.useContext(pageEditorCTX);
-//   const { page } = useStore(s => {
-//     if (isPageItem(indexItem)) {
-//       return { page: s.pages[indexItem.id!] };
-//     }
-//     return {};
-//   }, deepDifferent);
-//   const newPath = [
-//     ...path,
-//     isPageItem(indexItem) ? indexItem.id! : indexItem.name,
-//   ];
-//   const id: IndexNodeId = { pagePath: newPath };
-
-//   return isPageItem(indexItem) ? (
-//     page ? (
-//       <Node
-//         {...nodeProps()}
-//         header={
-//           <PageIndexTitle
-//             newPath={newPath}
-//             indexItem={indexItem}
-//             onPageClick={onPageClick}
-//             defaultPageId={defaultPageId}
-//           />
-//         }
-//         id={id}
-//         dragId={pageLayoutItemType}
-//       >
-//         {({ nodeProps }) => [
-//           <WegasComponentNode
-//             key={indexItem.name + 'FIRSTCOMPONENT'}
-//             nodeProps={nodeProps}
-//             component={page}
-//             pageId={indexItem.id!}
-//             selectedPageId={selectedPageId}
-//             componentPath={[]}
-//             selectedComponentPath={editedPath}
-//             componentControls={componentControls}
-//           />,
-//         ]}
-//       </Node>
-//     ) : (
-//       <span>Loading ...</span>
-//     )
-//   ) : (
-//     <Node
-//       {...nodeProps()}
-//       header={
-//         <PageIndexTitle
-//           newPath={newPath}
-//           indexItem={indexItem}
-//           onPageClick={onPageClick}
-//           defaultPageId={defaultPageId}
-//         />
-//       }
-//       id={id}
-//       dragId={pageLayoutItemType}
-//     >
-//       {({ nodeProps }) =>
-//         indexItem.items.map(v => (
-//           <PageIndexItemNode
-//             nodeProps={nodeProps}
-//             key={v.name}
-//             indexItem={v}
-//             path={newPath}
-//             componentControls={componentControls}
-//             defaultPageId={defaultPageId}
-//             onPageClick={onPageClick}
-//           />
-//         ))
-//       }
-//     </Node>
-//   );
-// }
-
 interface ComponentControls {
   onNew: (
     pageId: string,
@@ -853,6 +763,7 @@ export function PagesLayout(props: PagesLayoutProps) {
           id={{ pagePath: [] }}
           type="NODE"
           onDrop={({ target, id }) => {
+            debugger;
             const computedTargetParent = target.parent
               ? target.parent
               : { pagePath: [] };
@@ -903,58 +814,6 @@ export function PagesLayout(props: PagesLayoutProps) {
             </div>
           )}
         </Tree>
-        {/* <Container
-          onDropResult={({ target, id }: DropResult<NodeId>) => {
-            const computedTargetParent = target.parent
-              ? target.parent
-              : { pagePath: [] };
-
-            if (
-              !isComponentNodeId(id) &&
-              !isComponentNodeId(computedTargetParent)
-            ) {
-              dispatch(
-                Actions.PageActions.moveIndexItem(
-                  id.pagePath,
-                  computedTargetParent.pagePath,
-                  target.index,
-                ),
-              );
-            } else if (
-              isComponentNodeId(id) &&
-              isComponentNodeId(computedTargetParent)
-            ) {
-              onMove(
-                id.pageId,
-                computedTargetParent.pageId,
-                id.page,
-                computedTargetParent.page,
-                id.componentPath,
-                computedTargetParent.componentPath,
-                target.index,
-              );
-            }
-          }}
-        >
-          {({ nodeProps }) => (
-            <div className={cx(flex, grow, flexColumn)}>
-              {index ? (
-                index.root.items.map(v => (
-                  <PageIndexItemNode
-                    nodeProps={nodeProps}
-                    key={v.name}
-                    indexItem={v}
-                    path={[]}
-                    defaultPageId={index.defaultPageId}
-                    {...props}
-                  />
-                ))
-              ) : (
-                <span>Loading ...</span>
-              )}
-            </div>
-          )}
-        </Container> */}
       </Toolbar.Content>
     </Toolbar>
   );

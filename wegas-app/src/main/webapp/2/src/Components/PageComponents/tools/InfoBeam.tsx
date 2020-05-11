@@ -23,15 +23,15 @@ export interface InfoBeamProps {
   /**
    * showScript - the condition that determines if the info beam must be visible or not
    */
-  showScript: IScript;
+  showScript?: IScript;
   /**
    * blinkScript - the condition that determines if the info beam must be blinking or not
    */
-  blinkScript: IScript;
+  blinkScript?: IScript;
   /**
    * messageScript - the script that returns the message to be displayed in the info beam
    */
-  messageScript: string;
+  messageScript?: IScript;
 }
 
 export function InfoBeam({
@@ -39,11 +39,11 @@ export function InfoBeam({
   blinkScript,
   messageScript,
 }: InfoBeamProps) {
-  const show = useScript<boolean>(showScript.content);
-  const blink = useScript<boolean>(blinkScript.content);
-  const message = useScript<string>(messageScript);
+  const show = useScript<boolean>(showScript?.content || 'true');
+  const blink = useScript<boolean>(blinkScript?.content || 'false');
+  const message = useScript<string>(messageScript?.content || '');
 
-  return show ? (
+  return show !== false ? (
     <div
       ref={container => {
         if (container) {

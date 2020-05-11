@@ -28,6 +28,7 @@ import {
   wegasComponentActions,
   WegasComponentActions,
   WegasComponentOptionsAction,
+  useComputeUnreadCount,
 } from './options';
 import { AbsoluteItem } from '../../Layouts/Absolute';
 import { InfoBeam } from './InfoBeam';
@@ -112,6 +113,16 @@ const focusedComponentStyle = css({
 
 const handleControlHoverStyle = css({
   ':hover': componentBorderCss,
+});
+
+const emptyLayoutItemStyle = css({
+  textAlign: 'center',
+  verticalAlign: 'middle',
+  borderStyle: 'solid',
+  borderWidth: '1px',
+  width: '100px',
+  overflowWrap: 'normal',
+  zIndex: 0,
 });
 
 // Helper functions
@@ -322,13 +333,9 @@ export interface WegasComponentItemProps extends ClassAndStyle {
 export type ContainerTypes = 'FLEX' | 'LINEAR' | 'ABSOLUTE' | undefined;
 
 /**
- * PageComponentProps - The props that are needed by the ComponentContainer
+ * EmptyPageComponentProps - The props needed for a virtual component (used in a layout when no children)
  */
-export interface PageComponentProps {
-  /**
-   * componentType - The type of component
-   */
-  componentType: string;
+export interface EmptyPageComponentProps {
   /**
    * path - the path of the current component
    */
@@ -337,6 +344,15 @@ export interface PageComponentProps {
    * childrenType - the item type of the component
    */
   childrenType: ContainerTypes;
+}
+/**
+ * PageComponentProps - The props that are needed by the ComponentContainer
+ */
+export interface PageComponentProps extends EmptyPageComponentProps {
+  /**
+   * componentType - The type of component
+   */
+  componentType: string;
   /**
    * containerType - the container type of the component
    */
@@ -345,10 +361,6 @@ export interface PageComponentProps {
    * last - is this component the last of the list
    */
   last?: boolean;
-  /**
-   * noHandle - if set, the component will not show a handle
-   */
-  noHandle?: boolean;
 }
 
 /**
@@ -416,7 +428,6 @@ export function ComponentContainer({
   childrenType,
   containerType,
   last,
-  noHandle,
   name,
   options,
   layout,
@@ -444,6 +455,13 @@ export function ComponentContainer({
   const isNotFirstComponent = path.length > 0;
   const editable = editMode && isNotFirstComponent;
   const showLayout = showBorders && containerType != null;
+  const computedVertical =
+    containerType === 'FLEX'
+      ? layout?.flexDirection === 'column' ||
+        layout?.flexDirection === 'column-reverse'
+      : containerType === 'LINEAR'
+      ? vertical
+      : false;
 
   const locked = useStore(
     s =>
@@ -454,14 +472,6 @@ export function ComponentContainer({
   const isFocused = usePagesStateStore(
     isComponentFocused(editMode, pageId, path),
   );
-
-  const computedVertical =
-    containerType === 'FLEX'
-      ? layout?.flexDirection === 'column' ||
-        layout?.flexDirection === 'column-reverse'
-      : containerType === 'LINEAR'
-      ? vertical
-      : false;
 
   const Container = React.useMemo(() => {
     switch (childrenType) {
@@ -474,6 +484,10 @@ export function ComponentContainer({
         return FlexItem;
     }
   }, [childrenType]);
+
+  const infoBeamProps =
+    useComputeUnreadCount(options?.upgrades?.unreadCount) ||
+    options?.upgrades?.infoBeam;
 
   return (
     <>
@@ -584,7 +598,7 @@ export function ComponentContainer({
             dropPosition="BEFORE"
           />
         )}
-        {!noHandle && editable && (
+        {editable && (
           <EditHandle
             name={name}
             stackedHandles={stackedHandles}
@@ -593,9 +607,7 @@ export function ComponentContainer({
           />
         )}
         <ErrorBoundary>{children}</ErrorBoundary>
-        {options?.upgrades?.infoBeam && (
-          <InfoBeam {...options.upgrades.infoBeam} />
-        )}
+        {infoBeamProps && <InfoBeam {...infoBeamProps} />}
         {editable && childrenType !== 'ABSOLUTE' && (
           <ComponentDropZone
             onDrop={dndComponent =>
@@ -613,5 +625,51 @@ export function ComponentContainer({
       </Container>
       {childrenType === 'LINEAR' && !last && <Splitter />}
     </>
+  );
+}
+
+export function EmptyComponentContainer({
+  path,
+  childrenType,
+}: EmptyPageComponentProps) {
+  const container = React.useRef<HTMLDivElement>();
+
+  const [{ isOver }, dropZone] = useDndComponentDrop();
+
+  const { onDrop, editMode } = React.useContext(pageCTX);
+
+  const Container = React.useMemo(() => {
+    switch (childrenType) {
+      case 'LINEAR':
+        return Content;
+      case 'ABSOLUTE':
+        return AbsoluteItem;
+      case 'FLEX':
+      default:
+        return FlexItem;
+    }
+  }, [childrenType]);
+
+  return (
+    <Container
+      ref={ref => {
+        dropZone(ref);
+        if (ref != null) {
+          container.current = ref;
+        }
+      }}
+      className={cx(emptyLayoutItemStyle, flex)}
+    >
+      {editMode && childrenType !== 'ABSOLUTE' && (
+        <ComponentDropZone
+          onDrop={dndComponent => {
+            onDrop(dndComponent, path);
+          }}
+          show={isOver}
+          dropPosition="INTO"
+        />
+      )}
+      The layout is empty, drop components in to fill it!
+    </Container>
   );
 }

@@ -192,7 +192,7 @@ class WebSocketListener {
     if (this.events[eventId]) {
       this.events[eventId].push(callback);
     } else {
-      console.log('Unknown event');
+      wlog('Unknown event');
     }
   }
 
@@ -203,7 +203,7 @@ class WebSocketListener {
     if (this.events[eventId]) {
       this.events[eventId] = this.events[eventId].filter(el => el !== callback);
     } else {
-      console.log('Unknown event');
+      wlog('Unknown event');
     }
   }
 
