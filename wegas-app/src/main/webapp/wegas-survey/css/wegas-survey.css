@@ -441,9 +441,19 @@
 }
 
 
-/***** Dashboard orchestrator *****/
+/***************     Dashboard orchestrator     ***************/
+
+.survey-orchestrator-parent {
+    background: #fafafa;
+}
+
 .wegas-survey-orchestrator {
-    margin: 10px;
+    margin: auto;
+    max-width: 800px;
+}
+
+.wegas-survey-orchestrator-content {
+    margin: 20px 10px;
 }
 
 .wegas-survey-orchestrator .warning:not(:empty) {
@@ -458,6 +468,8 @@
     border: 2px ridge #adceeb;
     padding: 10px;
     margin: 10px auto;
+    background: #e6f7ff;
+    border-radius: 8px;    
 }
 
 .wegas-survey-orchestrator .survey-mixer .close {
@@ -474,24 +486,26 @@
     height: 30px;
 }
 
-.wegas-survey-orchestrator .survey-mixer .external-surveys .title {
+.wegas-survey-orchestrator .external-surveys .title {
     margin-top: 20px;
     margin-bottom: 0;
 }
 
-.wegas-survey-orchestrator .survey-mixer .external-surveys .title.standard {
+.wegas-survey-orchestrator .external-surveys .title.standard {
     margin-top: 0px;
 }
 
-.wegas-survey-orchestrator .survey-mixer .title {
+.wegas-survey-orchestrator .title {
     font-weight: bold;
     font-size: 150%;
     display: inline-block;
-    margin-bottom: 15px;
+}
+
+.wegas-survey-orchestrator .survey-mixer .external-surveys {
+    width: 100%;
 }
 
 .wegas-survey-orchestrator .survey-mixer .external-surveys .list:not(:empty) {
-    margin-left: 15px;
     text-align: left;
     color: #666;
 }
@@ -516,101 +530,115 @@
     color: #009900;
 }
 
-.wegas-survey-orchestrator .survey-mixer .external-surveys .list .game-name {
-    margin-top: 20px;
+.wegas-survey-orchestrator .importable-survey,
+.wegas-survey-orchestrator .internal-survey {
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.wegas-survey-orchestrator .importable-survey:hover {
+    background: #d6f2ff;
+}
+
+.wegas-survey-orchestrator .internal-survey:hover {
+    background: #e5ffcc;
+}
+
+.wegas-survey-orchestrator .survey-header {
+    display: inline-block;
+    width: 40%;
+}
+
+.wegas-survey-orchestrator .survey-label {
     font-weight: bold;
-    width: max-content;
     color: black;
+    display: inline-block;
+    text-overflow: ellipsis;
 }
 
-.wegas-survey-orchestrator .survey-mixer .external-surveys .list .game-details {
-    font-weight: normal;
-    margin-left: 6px;
-    color: #666;
+.wegas-survey-orchestrator .action-buttons {
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    width: calc( 100% - 40% - 5px );
 }
 
-.wegas-survey-orchestrator .survey-mixer .external-surveys .list .importable-variable {
-    margin-left: 10px;
+.wegas-survey-orchestrator .action-buttons button {
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    width: 100px;
     cursor: pointer;
 }
 
-.wegas-survey-orchestrator .survey-mixer .external-surveys .list .importable-variable .scope-toggle {
-    margin-left: 45px;
-}
-
-.wegas-survey-orchestrator .survey-mixer .external-surveys .list .importable-variable .survey-comments {
-    font-size: 12px;
+.wegas-orchestrator-tooltip {
+    font-size: 14px;
     padding: 1px 8px;
     color: #6666aa;
 }
 
-.wegas-survey-orchestrator .survey-mixer .import-monitoring .import-success {
-    color: #009900;
+.wegas-tooltip-content {
+    border-radius: 4px;
 }
 
-.wegas-survey-orchestrator .survey-mixer .import-monitoring .import-success:before {
-    content: '✔';
-    margin: 0 6px;
+.wegas-survey-orchestrator .survey-comments:before {
+    margin-left: 8px;
+    font-size: 16px;
+    vertical-align: -1px;
+    color: #3285cd;
 }
 
-.wegas-survey-orchestrator .survey-mixer .import-monitoring .import-failure {
-    color: red;
-}
-
-.wegas-survey-orchestrator .survey-mixer .import-monitoring .import-failure:before {
-    content: '✘';
-    margin: 0 6px;
-}
-
-
-
-.wegas-survey-orchestrator .selected-survey-list {
-    border-top: 1px solid gray;
-    margin-top: 5px;
-}
-
-.wegas-survey-orchestrator .selected-survey {
-    margin: 10px 0;
+.wegas-survey-orchestrator .internal-surveys {
+    border: 2px ridge #8BC34A;
     padding: 10px;
-    border: 2px ridge #adceeb;
+    margin-top: 5px;
+    background: #f2ffe6;
+    border-radius: 8px;    
 }
 
-.wegas-survey-orchestrator .selected-survey .survey-header .survey-title {
+.wegas-survey-orchestrator .internal-survey .survey-header .survey-title {
     display: inline-block;
     max-width: calc(100% - 90px);
     font-size: 150%;
     font-weight: bold;
 }
 
-.wegas-survey-orchestrator .selected-survey .survey-header .survey-title .title-annotation {
+.wegas-survey-orchestrator .internal-survey .survey-header .survey-title .title-annotation {
     padding-left: 8px;
     font-size: 80%;
     font-weight: normal;
     color: #666;
 }
 
-.wegas-survey-orchestrator .selected-survey .survey-refresh {
-    float: right;
-    margin-right: 10px;
+.wegas-survey-orchestrator .internal-survey .survey-details .icon:before {
+    vertical-align: 1px;
+    margin-right: 6px;
 }
 
-.wegas-survey-orchestrator .selected-survey .survey-refresh button {
+.wegas-survey-orchestrator .internal-survey .survey-refresh {
+}
+
+.wegas-survey-orchestrator .internal-survey .survey-refresh button {
     border-radius: 4px;
     border: 1px solid lightgray;
+    font-size: 14px;
+    padding: 1px 4px;
+    width: auto;
 }
 
-.wegas-survey-orchestrator .selected-survey .status-line {
-    line-height: 2;
-    font-size: 16px;
+.wegas-survey-orchestrator .internal-survey .status-bloc {
+    width: 155px;
+}
+
+.wegas-survey-orchestrator .internal-survey .status-title {
     font-weight: bold;
 }
 
-.wegas-survey-orchestrator .selected-survey .edit-survey,
-.wegas-survey-orchestrator .selected-survey .request-survey {
+.wegas-survey-orchestrator .internal-survey .edit-survey,
+.wegas-survey-orchestrator .internal-survey .request-survey {
     margin-left: 10px;
 }
 
-.wegas-survey-orchestrator .selected-survey .edit-survey:before {
+.wegas-survey-orchestrator .internal-survey .edit-survey:before {
     content: "\f0d0";
     font-family: "FontAwesome";
     padding-left: 2px;
@@ -618,7 +646,7 @@
     color: blue;
 }
 
-.wegas-survey-orchestrator .selected-survey .request-survey:before {
+.wegas-survey-orchestrator .internal-survey .request-survey:before {
     content: "\f04b";
     font-family: "FontAwesome";
     padding-left: 2px;
@@ -626,49 +654,61 @@
     color: #009900;
 }
 
-.wegas-survey-orchestrator .selected-survey .request-survey:hover {
+.wegas-survey-orchestrator .internal-survey .request-survey:hover {
     background-image: linear-gradient(transparent,rgba(0,0,0,0.05) 40%,rgba(0,0,0,0.15));
 }
 
-.wegas-survey-orchestrator .selected-survey .teams-table {
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details {
+    border: 2px ridge #8BC34A;
+    box-shadow: 2px 2px 2px grey;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .yui3-widget-hd h2 {
+    display: inline-block;
+    margin-left: 8px;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .yui3-widget-hd .close {
+    float: right;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .yui3-widget-bd {
+    margin: 20px auto;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .yui3-widget-ft {
+    display: none;
+}
+
+.wegas-survey-details .teams-table {
     display: inline-table;
     border: 2px inset #adceeb;
     min-width: 300px;
 }
 
-.wegas-survey-orchestrator .selected-survey .teams-table thead {
+.wegas-survey-details .teams-table thead {
     font-weight: bold;
     font-style: italic;
 }
 
-.wegas-survey-orchestrator .selected-survey .teams-table thead tr {
+.wegas-survey-details .teams-table thead tr {
     height: 30px;
 }
 
-.wegas-survey-orchestrator .selected-survey .teams-table td {
+.wegas-survey-details .teams-table td {
     padding: 4px 8px;
     text-align: center;
     border: 1px solid #DDD;
 }
 
-.wegas-survey-orchestrator .selected-survey .teams-table .newteam {
+.wegas-survey-details .teams-table .newteam {
     border-top: 2px inset #adceeb;
 }
 
-.wegas-survey-orchestrator .selected-survey .teams-table .teamname,
-.wegas-survey-orchestrator .selected-survey .teams-table .playername {
+.wegas-survey-details .teams-table .teamname,
+.wegas-survey-details .teams-table .playername {
     font-weight: bold;
     text-align: left;
-}
-
-.wegas-survey-orchestrator .selected-survey .monitoring .menu {
-    margin-left: 8px;
-    font-size: 18px;
-    color: #5b9dd7;
-}
-
-.wegas-survey-orchestrator .selected-survey .monitoring .menu:hover {
-    cursor: pointer;
 }
 
 .wegas-survey-orchestrator .toggle-button,
@@ -726,7 +766,7 @@
     border-color: black;
 }
 
-.wegas-survey-orchestrator .importable-variable .yui3-button-disabled .checkbox:before {
+.wegas-survey-orchestrator .importable-survey .yui3-button-disabled .checkbox:before {
     content: '✘';
     font-weight: 600;
     color: red;

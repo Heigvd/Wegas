@@ -264,8 +264,9 @@ YUI.add('wegas-app', function(Y) {
                     })
                     if (isCurrentUserAdmin || Y.Wegas.Facade.Variable.cache.find("@class", "SurveyDescriptor")) {
                         extraTabs._addTab({
-                            label: I18n.t("global.survey"),
+                            label: I18n.t("global.surveys"),
                             targetMode: ["host"],
+                            cssClass: "survey-orchestrator-parent",
                             children: [{
                                     "type": "SurveyOrchestrator"
                                 }]

@@ -1,4 +1,3 @@
-
 /*
  * Wegas
  * http://wegas.albasim.ch
@@ -29,7 +28,6 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 replyOptional: "(optional reply)"
             },
             errors: {
-                inactive: "This survey is currently empty or inactive.",
                 incomplete: "Some questions have not been replied yet.<br>Please resume from question<br>{{question}}",
                 returnToQuestion: "Return to this question",
                 empty: "This survey contains no questions.",
@@ -42,6 +40,7 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 searchExternalSurveys: "Find all surveys",
                 standardSurveysTitle: "Standard Surveys",
                 externalSurveysTitle: "Your own surveys",
+                activeSurveysTitle: "Active surveys",
                 noSurveyFound: "No surveys found",
                 lastModifiedOn: "last modified on",
                 sessionOfScenario: "session of scenario",
@@ -50,8 +49,10 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 doImport: "Import selected surveys",
                 importing: "Importing surveys",
                 importTerminated: "Overview of imported surveys",
-                playedIndividually: "to be answered individually by each player",
-                currentStatus: "Current status: ",
+                hasPlayerScope: "This survey will be answered individually by each player",
+                hasTeamScope: "This survey will be answered teamwise",
+                currentStatus: "Status",
+                inactive: "Empty or inactive",
                 notStarted: "Not yet started",
                 requested: "Start requested",
                 ongoing: "Ongoing",
@@ -59,6 +60,7 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 closed: "Closed",
                 editButton: "Edit",
                 requestImmediatelyButton: "Launch now",
+                progressDetailsButton: "Details",
                 teamOrPlayer: "Team/Player",
                 team: "Team",
                 player: "Player",
