@@ -12,7 +12,7 @@ import { css } from 'emotion';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import {
-  toScriptableClassName,
+  scriptableClassNameToClassFilter,
   createScript,
 } from '../../../Helper/wegasEntites';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
@@ -118,7 +118,7 @@ export interface TreeVSelectProps<T>
     CommonView &
       LabeledView & {
         items?: TreeSelectItem<T>[];
-        classFilter?: WegasClassNames[];
+        returnType?: WegasScriptEditorReturnTypeName[];
       }
   > {
   value?: T;
@@ -219,7 +219,11 @@ export function TreeVariableSelect(
   props: TreeVariableSelectProps,
 ): JSX.Element {
   const items = useStore(() => GameModel.selectCurrent().itemsIds);
-  const varItems = genVarItems(items, undefined, props.view.classFilter);
+  const varItems = genVarItems(
+    items,
+    undefined,
+    scriptableClassNameToClassFilter(props.view.returnType),
+  );
   const filteredItems: TreeSelectItem<string>[] = props.view.items
     ? [
         {
@@ -289,7 +293,7 @@ export function ScripableVariableSelect(
         <div className={scriptEditStyle}>
           <WegasScriptEditor
             value={script}
-            returnType={toScriptableClassName(props.view.classFilter)}
+            returnType={props.view.returnType}
             onChange={value =>
               props.onChange(
                 props.value
@@ -303,7 +307,8 @@ export function ScripableVariableSelect(
                 : 'javascript'
             }
             minimap={false}
-            noGutter={true}
+            noGutter
+            resizable
           />
         </div>
       ) : (

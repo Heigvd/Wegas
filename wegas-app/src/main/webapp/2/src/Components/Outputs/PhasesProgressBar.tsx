@@ -62,15 +62,16 @@ function SimpleInterPhaseComponent(_props: PhaseComponentProps) {
 }
 
 function drawBar(
+  phaseMin: number,
+  phaseMax: number,
   value: number,
-  phases: number,
   PhaseComponent: React.FunctionComponent<PhaseComponentProps>,
   InterPhaseComponent: React.FunctionComponent<PhaseComponentProps>,
 ) {
   const content: JSX.Element[] = [];
 
-  for (let i = 0; i < phases; i++) {
-    if (i > 0) {
+  for (let i = phaseMin; i <= phaseMax; i++) {
+    if (i > phaseMin) {
       content.push(
         <InterPhaseComponent value={value} phase={i} key={'INTER' + i} />,
       );
@@ -88,9 +89,13 @@ export interface PhasesProgressBarProps extends ClassAndStyle {
    */
   value: number;
   /**
-   * phases - the number of phases
+   * phaseMin - the value of the first phase
    */
-  phases: number;
+  phaseMin: number;
+  /**
+   * phaseMax - the value of the last phase
+   */
+  phaseMax: number;
   /**
    * label - The label to display with the gauge
    */
@@ -108,7 +113,8 @@ interface CustomPhasesProgressBarProps extends PhasesProgressBarProps {
 
 export function CustomPhasesProgressBar({
   value,
-  phases,
+  phaseMin,
+  phaseMax,
   label,
   displayValue,
   className,
@@ -125,7 +131,7 @@ export function CustomPhasesProgressBar({
       style={style}
     >
       {label && <Value className={grow} value={label} />}
-      {drawBar(value, phases, PhaseComponent, InterPhaseComponent)}
+      {drawBar(phaseMin, phaseMax, value, PhaseComponent, InterPhaseComponent)}
       {displayValue && <Value className={grow} value={value} />}
     </div>
   );

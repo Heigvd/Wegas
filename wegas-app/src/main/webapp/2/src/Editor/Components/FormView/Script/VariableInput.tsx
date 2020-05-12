@@ -22,8 +22,8 @@ const schema = (scriptableClassFilter?: WegasScriptEditorReturnTypeName[]) => ({
     variableName: schemaProps.scriptVariable(
       'Variable',
       false,
-      scriptableClassFilter &&
-        scriptableClassFilter.map(sf => sf.substr(2) as WegasClassNames),
+      scriptableClassFilter,
+      // && scriptableClassFilter.map(sf => sf.substr(2) as WegasClassNames),
     ),
   },
 });

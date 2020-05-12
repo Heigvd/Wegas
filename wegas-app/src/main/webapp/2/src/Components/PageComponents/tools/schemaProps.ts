@@ -320,7 +320,7 @@ const simpleSchemaProps = {
   variable: (
     label?: string,
     required: boolean = true,
-    classFilter: WegasClassNames[] = [],
+    returnType: WegasScriptEditorReturnTypeName[] = [],
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
@@ -333,7 +333,7 @@ const simpleSchemaProps = {
     view: {
       borderTop,
       index,
-      classFilter,
+      returnType,
       featureLevel,
       label,
       type: 'variableselect',
@@ -345,7 +345,7 @@ const simpleSchemaProps = {
     label?: string,
     items?: TreeSelectItem<T>[],
     required: boolean = true,
-    classFilter: WegasClassNames[] = [],
+    returnType: WegasScriptEditorReturnTypeName[] = [],
     type: TYPESTRING | TYPESTRING[] = 'string',
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
@@ -358,7 +358,7 @@ const simpleSchemaProps = {
     view: {
       borderTop,
       index,
-      classFilter,
+      returnType,
       featureLevel,
       label,
       type: 'treeselect',
@@ -369,7 +369,7 @@ const simpleSchemaProps = {
   scriptVariable: (
     label?: string,
     required: boolean = true,
-    classFilter: WegasClassNames[] = [],
+    returnType: WegasScriptEditorReturnTypeName[] = [],
     featureLevel: FeatureLevel = 'DEFAULT',
     index: number = 0,
     layout?: SchemaLayout,
@@ -381,7 +381,7 @@ const simpleSchemaProps = {
     view: {
       borderTop,
       index,
-      classFilter,
+      returnType,
       featureLevel,
       label,
       type: 'scriptableVariableSelect',

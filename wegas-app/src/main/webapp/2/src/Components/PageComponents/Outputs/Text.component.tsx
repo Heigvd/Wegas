@@ -8,7 +8,7 @@ import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
 
 function PlayerText(props: TextProps & WegasComponentProps) {
-  return <Text {...props} />;
+  return <Text {...props} style={{ margin: 'auto', ...props.style }} />;
 }
 
 registerComponent(

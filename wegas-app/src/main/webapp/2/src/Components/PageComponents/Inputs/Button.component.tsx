@@ -18,6 +18,7 @@ export interface PlayerButtonProps extends WegasComponentProps {
 const PlayerButton: React.FunctionComponent<PlayerButtonProps> = ({
   label,
   action,
+  style,
 }: PlayerButtonProps) => {
   return (
     <Button
@@ -25,6 +26,7 @@ const PlayerButton: React.FunctionComponent<PlayerButtonProps> = ({
       onClick={() =>
         store.dispatch(Actions.VariableInstanceActions.runScript(action!))
       }
+      style={{ margin: 'auto', ...style }}
     />
   );
 };

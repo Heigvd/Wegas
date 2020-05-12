@@ -5,6 +5,7 @@ import {
   ContainerTypes,
   ComponentContainer,
   EmptyComponentContainer,
+  WegasComponentProps,
 } from './EditableComponent';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { useStore } from '../../../data/store';
@@ -75,7 +76,11 @@ export function PageDeserializer({
   const component = usePageComponentStore(
     s => s[(wegasComponent && wegasComponent.type) || ''],
     deepDifferent,
-  );
+  ) as {
+    WegasComponent: React.FunctionComponent<WegasComponentProps>;
+    containerType: ContainerTypes;
+    componentName: string;
+  };
 
   if (!wegasComponent) {
     return <pre>JSON error in page</pre>;
@@ -96,7 +101,14 @@ export function PageDeserializer({
         childrenType={childrenType}
         {...restProps}
       >
-        <WegasComponent {...restProps}>
+        <WegasComponent
+          path={realPath}
+          last={last}
+          componentType={componentName}
+          containerType={containerType}
+          childrenType={childrenType}
+          {...restProps}
+        >
           {editMode && children.length === 0 ? (
             <EmptyComponentContainer
               childrenType={containerType}

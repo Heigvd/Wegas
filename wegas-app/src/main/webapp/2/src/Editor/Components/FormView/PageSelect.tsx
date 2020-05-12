@@ -94,7 +94,8 @@ export default function PageSelect(props: PageSelectProps) {
                     isPageItem(item.value) && onPageChange(item.value.id);
                   }}
                   label={
-                    getPageIndexItem(index, pageId)?.name || 'Unknown page'
+                    (pageId != null && getPageIndexItem(index, pageId)?.name) ||
+                    'Unknown page'
                   }
                   containerClassName={grow}
                 />

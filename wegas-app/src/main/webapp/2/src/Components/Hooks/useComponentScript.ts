@@ -5,10 +5,8 @@ export function useComponentScript<T extends IVariableDescriptor>(
   script?: IScript,
 ) {
   const content = script ? script.content : '';
-  const descriptor = useScript(content) as T | undefined;
-  const instance = useVariableInstance(descriptor) as
-    | T['defaultInstance']
-    | undefined;
+  const descriptor = useScript<T>(content);
+  const instance = useVariableInstance<T>(descriptor);
   const notFound = descriptor == null || instance == null;
   return { content, descriptor, instance, notFound };
 }

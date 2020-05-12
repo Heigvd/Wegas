@@ -14,7 +14,8 @@ const testerStyle = css({
 export default function PhasesProgressBarTester() {
   const [values, setValues] = React.useState({
     value: 2,
-    phases: 5,
+    phaseMin: 1,
+    phaseMax: 5,
   });
 
   return (
@@ -45,15 +46,29 @@ export default function PhasesProgressBarTester() {
           displayValues="NumberInput"
         />
         <NumberSlider
-          label="Phases"
+          label="Phase Min"
           min={0}
           max={10}
           steps={10}
-          value={values.phases}
+          value={values.phaseMin}
           onChange={v =>
             setValues(ov => ({
               ...ov,
-              phases: v,
+              phaseMin: v,
+            }))
+          }
+          displayValues="NumberInput"
+        />
+        <NumberSlider
+          label="Phase Max"
+          min={0}
+          max={10}
+          steps={10}
+          value={values.phaseMax}
+          onChange={v =>
+            setValues(ov => ({
+              ...ov,
+              phaseMax: v,
             }))
           }
           displayValues="NumberInput"

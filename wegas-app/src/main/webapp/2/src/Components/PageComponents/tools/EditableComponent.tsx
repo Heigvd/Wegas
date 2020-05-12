@@ -35,6 +35,7 @@ import { InfoBeam } from './InfoBeam';
 import { EditHandle } from './EditHandle';
 import { schemaProps } from './schemaProps';
 import { useStore } from '../../../data/store';
+import { useScript } from '../../Hooks/useScript';
 
 // Styles
 export const layoutHighlightStyle = css({
@@ -96,7 +97,7 @@ const handleControlStyle = css({
   },
 });
 
-const lockedStyle = css({
+const disabledStyle = css({
   opacity: 0.5,
   backgroundColor: themeVar.disabledColor,
 });
@@ -468,6 +469,11 @@ export function ComponentContainer({
       options?.actions?.lock != null &&
       s.global.locks[options.actions.lock] === true,
   );
+  const disabled = useScript<boolean>(
+    options?.upgrades?.disableIf?.content || 'false',
+  );
+
+  const isDisabled = (locked || disabled) === true;
 
   const isFocused = usePagesStateStore(
     isComponentFocused(editMode, pageId, path),
@@ -507,15 +513,15 @@ export function ComponentContainer({
             [focusedComponentStyle]: isFocused,
             [childDropzoneHorizontalStyle]: !computedVertical,
             [childDropzoneVerticalStyle]: computedVertical,
-            [lockedStyle]: locked,
+            [disabledStyle]: isDisabled,
           }) + classNameOrEmpty(className)
         }
         style={{
-          cursor: options?.actions && !locked ? 'pointer' : 'initial',
+          cursor: options?.actions && !isDisabled ? 'pointer' : 'initial',
           ...style,
         }}
         onClick={() => {
-          if (!locked && options && options.actions) {
+          if (!isDisabled && options && options.actions) {
             if (
               !options.actions.confirmClick ||
               // TODO : Find a better way to do that than a modal!!!
@@ -621,7 +627,7 @@ export function ComponentContainer({
             dropPosition="AFTER"
           />
         )}
-        <LockedOverlay locked={locked} />
+        <LockedOverlay locked={isDisabled} />
       </Container>
       {childrenType === 'LINEAR' && !last && <Splitter />}
     </>

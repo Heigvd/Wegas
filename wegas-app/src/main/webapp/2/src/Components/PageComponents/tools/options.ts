@@ -2,7 +2,12 @@
 import * as React from 'react';
 import { store } from '../../../data/store';
 import { ActionCreator } from '../../../data/actions';
-import { clientScriptEval } from '../../Hooks/useScript';
+import {
+  clientScriptEval,
+  useScript,
+  useGlobals,
+  safeClientScriptEval,
+} from '../../Hooks/useScript';
 import { fileURL, generateAbsolutePath } from '../../../API/files.api';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
@@ -18,6 +23,8 @@ import { useComponentScript } from '../../Hooks/useComponentScript';
 import { entityIs } from '../../../data/entities';
 import { getQuestionReplies } from '../../../data/proxyfy/instancesHelpers';
 import { createScript } from '../../../Helper/wegasEntites';
+import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
+import { proxyfy } from '../../../data/proxyfy';
 
 export interface WegasComponentOptionsAction {
   priority?: number;
@@ -230,6 +237,7 @@ export interface WegasComponentUpgrades {
   tooltip?: string;
   infoBeam?: InfoBeamProps;
   unreadCount?: IScript;
+  disableIf?: IScript;
 }
 
 const upgradeChoices: HashListChoices = [
@@ -274,85 +282,104 @@ const upgradeChoices: HashListChoices = [
     value: {
       prop: 'unreadCount',
       schema: schemaProps.scriptVariable('Count in', true, [
-        'InboxDescriptor',
-        'DialogueDescriptor',
-        'QuestionDescriptor',
-        'WhQuestionDescriptor',
-        'SurveyDescriptor',
-        'PeerReviewDescriptor',
+        'number',
+        'string',
+        'object[]',
+        'ISInboxDescriptor',
+        'ISDialogueDescriptor',
+        'ISQuestionDescriptor',
+        'ISWhQuestionDescriptor',
+        'ISSurveyDescriptor',
+        'ISPeerReviewDescriptor',
       ]),
+    },
+  },
+  {
+    label: 'Disable If',
+    value: {
+      prop: 'disableIf',
+      schema: schemaProps.script(
+        'Disable If',
+        false,
+        'GET',
+        'TypeScript',
+        'false',
+      ),
     },
   },
 ];
 
-export function useComputeUnreadCount(
-  unreadCountVariableScript: IScript | undefined,
-): InfoBeamProps | undefined {
-  const { descriptor: infobeamVD, instance: infobeamVI } = useComponentScript<
+function extractUnreadCount(
+  descriptor?:
     | IInboxDescriptor
     | IDialogueDescriptor
     | IQuestionDescriptor
     | IWhQuestionDescriptor
     | ISurveyDescriptor
-    | IPeerReviewDescriptor
-  >(unreadCountVariableScript);
-
-  const infoBeamMessage = React.useMemo(() => {
-    if (
-      entityIs(infobeamVD, 'DialogueDescriptor') &&
-      entityIs(infobeamVI, 'FSMInstance')
-    ) {
-      if (!infobeamVI.enabled) {
-        return 0;
-      } else {
-        return infobeamVD.states[infobeamVI.currentStateId].transitions.length >
-          0
-          ? 1
-          : 0;
+    | IPeerReviewDescriptor,
+): number {
+  if (descriptor == null) {
+    return 0;
+  } else {
+    const proxyfiedDescriptor = proxyfy(descriptor);
+    const instance = proxyfiedDescriptor?.getInstance(Player.selectCurrent());
+    if (instance == null) {
+      return 0;
+    } else {
+      if (
+        entityIs(descriptor, 'DialogueDescriptor') &&
+        entityIs(instance, 'FSMInstance')
+      ) {
+        if (!instance.enabled) {
+          return 0;
+        } else {
+          return descriptor.states[instance.currentStateId].transitions.length >
+            0
+            ? 1
+            : 0;
+        }
       }
-    }
-    if (infobeamVD != null && infobeamVI != null) {
       // const computedInstance = infobeamVD["@class"] === "DialogueDescriptor" ? infobeamVD.defaultInstance
-      switch (infobeamVI['@class']) {
+      switch (instance['@class']) {
         case 'InboxInstance': {
-          const nbUnread = infobeamVI.messages.filter(m => m.unread).length;
+          const nbUnread = instance.messages.filter(m => m.unread).length;
           if (nbUnread > 0) {
             return nbUnread;
           }
-          return;
+          return 0;
         }
         case 'QuestionInstance': {
-          const questionDescriptor = infobeamVD as IQuestionDescriptor;
+          const questionDescriptor = descriptor as IQuestionDescriptor;
           if (questionDescriptor.cbx) {
-            return infobeamVI.active && !infobeamVI.validated ? 1 : 0;
+            return instance.active && !instance.validated ? 1 : 0;
           } else {
             const replies = getQuestionReplies(questionDescriptor, true);
             return replies.length === 0 &&
-              !infobeamVI.validated &&
-              infobeamVI.active
+              !instance.validated &&
+              instance.active
               ? 1
               : 0;
           }
         }
         case 'WhQuestionInstance': {
-          return infobeamVI.active && !infobeamVI.validated ? 1 : 0;
+          return instance.active && !instance.validated ? 1 : 0;
         }
         case 'SurveyInstance': {
           // TODO : Ask Jarle or Maxence here, as there is no validated props in SurveyInstance but it's still used in wegas-button.js : 212
-          return infobeamVI.active /* && !infobeamVI.validated */ ? 1 : 0;
+          return instance.active /* && !instance.validated */ ? 1 : 0;
         }
         case 'PeerReviewInstance': {
           const types: ['toReview', 'reviewed'] = ['toReview', 'reviewed'];
           return types.reduce(
             (ot, t) =>
               ot +
-              (infobeamVI[t] as IReview[]).reduce(
+              (instance[t] as IReview[]).reduce(
                 (or, _r) =>
                   // TODO : Ask Maxence because r.reviewState is used in wegas-button.js : 212 but this prop seem to no exists on a Review
                   or +
                   ((t === 'toReview' &&
-                    infobeamVI.reviewState === 'DISPATCHED') ||
-                  (t === 'reviewed' && infobeamVI.reviewState === 'NOTIFIED')
+                    instance.reviewState === 'DISPATCHED') ||
+                  (t === 'reviewed' && instance.reviewState === 'NOTIFIED')
                     ? 1
                     : 0),
                 0,
@@ -361,14 +388,48 @@ export function useComputeUnreadCount(
           );
         }
         default:
-          return;
+          return 0;
       }
     }
-  }, [infobeamVD, infobeamVI]);
+  }
+}
+
+type UnreadCountDescriptorTypes =
+  | IInboxDescriptor
+  | IDialogueDescriptor
+  | IQuestionDescriptor
+  | IWhQuestionDescriptor
+  | ISurveyDescriptor
+  | IPeerReviewDescriptor;
+
+export function useComputeUnreadCount(
+  unreadCountVariableScript: IScript | undefined,
+): InfoBeamProps | undefined {
+  const scriptReturn = useScript<
+    string | number | object[] | UnreadCountDescriptorTypes
+  >(unreadCountVariableScript?.content || '');
+
+  let infoBeamMessage: string | number;
+  if (typeof scriptReturn === 'number') {
+    infoBeamMessage = scriptReturn;
+  } else if (typeof scriptReturn === 'string') {
+    infoBeamMessage = scriptReturn;
+  } else if (Array.isArray(scriptReturn)) {
+    debugger;
+    infoBeamMessage = scriptReturn.reduce(
+      (o, v) => o + extractUnreadCount(v as UnreadCountDescriptorTypes),
+      0,
+    );
+  } else {
+    infoBeamMessage = extractUnreadCount(scriptReturn);
+  }
 
   return infoBeamMessage
     ? {
-        messageScript: createScript(JSON.stringify(String(infoBeamMessage))),
+        messageScript:
+          infoBeamMessage === 0
+            ? undefined
+            : createScript(JSON.stringify(String(infoBeamMessage))),
       }
     : undefined;
 }

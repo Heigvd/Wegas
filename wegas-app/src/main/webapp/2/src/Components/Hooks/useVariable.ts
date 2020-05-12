@@ -2,7 +2,7 @@ import * as React from 'react';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { Player, VariableDescriptor } from '../../data/selectors';
 import { useStore } from '../../data/store';
-import { shallowDifferent } from './storeHookFactory';
+import { shallowDifferent, deepDifferent } from './storeHookFactory';
 
 type instanceOf<D> = D extends IVariableDescriptor<infer U> ? U : never;
 /**
@@ -33,5 +33,5 @@ export function useVariableInstance<D extends IVariableDescriptor>(
     }
     return;
   }, [descriptor, player]);
-  return useStore(getInstanceForDescriptor, shallowDifferent);
+  return useStore(getInstanceForDescriptor, deepDifferent);
 }

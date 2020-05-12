@@ -14,31 +14,48 @@ interface PhasesProgressBarProps extends WegasComponentProps {
    */
   phase?: IScript;
   /**
-   * phases - a script returning a number descriptor containing the number of phase
+   * phaseMin - a script returning a number descriptor containing the value of the first phase
    */
-  phases?: IScript;
+  phaseMin?: IScript;
+  /**
+   * phaseMax - a script returning a number descriptor containing the value of the last phase
+   */
+  phaseMax?: IScript;
 }
 
-function PlayerPhasesProgressBar({ phase, phases }: PhasesProgressBarProps) {
+function PlayerPhasesProgressBar({
+  phase,
+  phaseMin,
+  phaseMax,
+}: PhasesProgressBarProps) {
   const {
     content: phaseContent,
     instance: phaseInstance,
     notFound: phaseNotFound,
   } = useComponentScript<INumberDescriptor>(phase);
   const {
-    content: phasesContent,
-    instance: phasesInstance,
-    notFound: phasesNotFound,
-  } = useComponentScript<INumberDescriptor>(phases);
+    content: phaseMinContent,
+    instance: phaseMinInstance,
+    notFound: phaseMinNotFound,
+  } = useComponentScript<INumberDescriptor>(phaseMin);
+
+  const {
+    content: phaseMaxContent,
+    instance: phaseMaxInstance,
+    notFound: phaseMaxNotFound,
+  } = useComponentScript<INumberDescriptor>(phaseMax);
 
   return phaseNotFound ? (
-    <pre>Not found: {phaseContent}</pre>
-  ) : phasesNotFound ? (
-    <pre>Not found: {phasesContent}</pre>
+    <pre>Current phase not found: {phaseContent}</pre>
+  ) : phaseMinNotFound ? (
+    <pre>Phase min not found: {phaseMinContent}</pre>
+  ) : phaseMaxNotFound ? (
+    <pre>Phase max not found: {phaseMaxContent}</pre>
   ) : (
     <PhasesProgressBar
       value={phaseInstance!.value}
-      phases={phasesInstance!.value}
+      phaseMin={phaseMinInstance!.value}
+      phaseMax={phaseMaxInstance!.value}
     />
   );
 }
@@ -50,7 +67,12 @@ registerComponent(
     'ellipsis-h',
     {
       phase: schemaProps.scriptVariable('Phase', true, ['NumberDescriptor']),
-      phases: schemaProps.scriptVariable('Phases', true, ['NumberDescriptor']),
+      phaseMin: schemaProps.scriptVariable('Phase min', true, [
+        'NumberDescriptor',
+      ]),
+      phaseMax: schemaProps.scriptVariable('Phase max', true, [
+        'NumberDescriptor',
+      ]),
     },
     ['number'],
     () => ({}),

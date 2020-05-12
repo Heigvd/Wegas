@@ -8,6 +8,8 @@ import { useGameModel } from './useGameModel';
 import { Actions } from '../../data';
 import { transpile } from 'typescript';
 import { classesCTX } from '../Contexts/ClassesProvider';
+import { wlog, wwarn } from '../../Helper/wegaslog';
+import { deepDifferent } from './storeHookFactory';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -58,8 +60,20 @@ export function useGlobals() {
 
   // Variable class
   globals.Variable = {
-    find: <T extends IVariableDescriptor>(_gm: unknown, name: string) =>
-      proxyfy(VDSelect.findByName<T>(name)),
+    find: <T extends IVariableDescriptor>(_gm: unknown, name: string) => {
+      wlog('Searching ' + name);
+      wlog(
+        'Value ' +
+          (VDSelect.findByName<T>(name) == null ? 'not found' : 'found'),
+      );
+      wlog(
+        'Proxy ' +
+          (proxyfy(VDSelect.findByName<T>(name)) == null
+            ? 'not found'
+            : 'found'),
+      );
+      return proxyfy(VDSelect.findByName<T>(name));
+    },
   };
 
   // Editor class
@@ -148,14 +162,24 @@ export function useGlobals() {
     addClass,
     removeClass,
   };
-}
 
-export function safeClientScriptEval<ReturnValue>(script: string) {
-  try {
-    return clientScriptEval<ReturnValue>(script);
-  } catch (e) {
-    return undefined;
-  }
+  // TEST
+  //   const currentPhase = globals.Variable.find(gameModel,'phaseMSG')?.getValue(self)
+  // 	const currentPeriod = 1;
+  // 	let items = []
+  // 	const q = globals.Variable.find(gameModel,'questions').item(currentPhase - 1);
+  // 	if (q) {
+  // 		for (const i in q.get('items')) {
+  // 			const item = q.item(i);
+  // 			if (item.get('@class') === 'QuestionDescriptor' || item.get('@class') === 'WhQuestionDescriptor')
+  // 			{
+  // 				items.push(item);
+  // 			} else if (i == currentPeriod - 1 && item.get('@class') === 'ListDescriptor') {
+  // 				items = items.concat(item.flatten());
+  // 			}
+  // 		}
+  // 	}
+  // wlog(items);
 }
 
 export function clientScriptEval<ReturnValue>(script: string) {
@@ -168,6 +192,21 @@ export function clientScriptEval<ReturnValue>(script: string) {
   );
 }
 
+export function safeClientScriptEval<ReturnValue>(script: string) {
+  try {
+    return clientScriptEval<ReturnValue>(script);
+  } catch (e) {
+    wwarn(
+      `Script error at line ${e.lineNumber} : ${
+        e.message
+      }\n\nScript content is :\n${script}\n\nTraspiled content is :\n${transpile(
+        script,
+      )}`,
+    );
+    return undefined;
+  }
+}
+
 /**
  * Hook, execute a script locally.
  * @param script code to execute
@@ -175,8 +214,9 @@ export function clientScriptEval<ReturnValue>(script: string) {
  */
 export function useScript<ReturnValue>(script: string) {
   useGlobals();
-  const fn = React.useCallback(() => clientScriptEval<ReturnValue>(script), [
-    script,
-  ]);
-  return useStore(fn);
+  const fn = React.useCallback(
+    () => safeClientScriptEval<ReturnValue>(script),
+    [script],
+  );
+  return useStore(fn, deepDifferent);
 }
