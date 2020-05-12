@@ -108,10 +108,9 @@ YUI.add("wegas-statistics", function(Y) {
 
                 this._rawButton = new Y.Wegas.Text({
                     srcNode: this.get("contentBox").one(".footer"),
-                    content: '<a title="Download statistics (Excel)" href="rest/Statistics/ExportXLSX/'
+                    content: '<a class="wegas-statistics-download-button" title="Download Excel file" href="rest/Statistics/ExportXLSX/'
                         + getLogID(gameModel) + '/Games/' + +game.get('id') + queryString + '" '
-                        + 'target="_blank"><span class="fa fa-2x fa-file-excel-o">Download raw data(Excel)</span></a>',
-//                    cssClass: 'download-stats global-button'
+                        + 'target="_blank"><span class="fa fa-2x fa-file-excel-o icon"></span>Download raw data (Excel)</a>',
                 }).render();
             },
             getQuestionList: function() {
