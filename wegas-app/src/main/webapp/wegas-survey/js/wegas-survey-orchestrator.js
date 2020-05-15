@@ -17,7 +17,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         BOUNDINGBOX = "boundingBox",
         SERVER_SCRIPT_PATH = "wegas-app/js/server/",
         SURVEY_NAME_DATE = "_CreationDate_",
-        SURVEY_NAME_DATE_REGEXP = /(_CreationDate_[0-9]+)$/,  // Name (script alias) must end with this expression.
+        SURVEY_NAME_DATE_REGEXP = /(_CreationDate_[0-9]+)$/i,  // Survey name (script alias) must end with this expression.
         Wegas = Y.Wegas,
         SurveyOrchestrator,
         // In increasing order of progress, status received from server-side script wegas-survey-helper:
@@ -213,13 +213,13 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                             if (surveyData.isExternal) {
                                 details += 'In session "' + surveyData.sourceGameName + '"';
                             } else {
-                                details += 'In this session,';
+                                details += 'In this session';
                             }
                         } else {
                             if (surveyData.isExternal) {
                                 details += 'In scenario "' + surveyData.sourceGameName + '"';                        
                             } else {
-                                details += 'In this scenario,';
+                                details += 'In this scenario';
                             }
                         }
                     } else {
@@ -230,7 +230,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                                             "survey.orchestrator.hasTeamScope");
                         }
                     }
-                    details += ' created on ' + new Date(surveyData.createdDate).toLocaleString('en-GB');
+                    details += '.<br>Created on ' + new Date(surveyData.createdDate).toLocaleString('en-GB');
                     if (surveyData.comments) {
                         // Preserve line breaks in HTML output:
                         comments = '<b>' + surveyData.comments.replace(/\n/g, '<br>') + '</b>';
