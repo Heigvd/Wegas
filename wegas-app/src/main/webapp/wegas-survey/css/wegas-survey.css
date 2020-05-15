@@ -472,13 +472,17 @@
     border-radius: 8px;    
 }
 
-.wegas-survey-orchestrator .survey-mixer .close {
+.wegas-survey-orchestrator .survey-mixer .close button {
     float: right;
     font-size: 14px;
     border: 1px solid lightgray;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    padding: 0;
 }
 
-.wegas-survey-orchestrator .survey-mixer .search-external-surveys button {
+.wegas-survey-orchestrator .survey-mixer .search-runnable-surveys button {
     border-radius: 50%;
     margin-left: 5px;
     border: 1px solid lightgray;
@@ -486,13 +490,13 @@
     height: 30px;
 }
 
-.wegas-survey-orchestrator .external-surveys .title {
+.wegas-survey-orchestrator .runnable-surveys .title {
     margin-top: 20px;
-    margin-bottom: 0;
+    margin-bottom: 2px;
 }
 
-.wegas-survey-orchestrator .external-surveys .title.standard {
-    margin-top: 0px;
+.wegas-survey-orchestrator .runnable-surveys .title.standard {
+    margin-top: 4px;
 }
 
 .wegas-survey-orchestrator .title {
@@ -501,11 +505,11 @@
     display: inline-block;
 }
 
-.wegas-survey-orchestrator .survey-mixer .external-surveys {
+.wegas-survey-orchestrator .survey-mixer .runnable-surveys {
     width: 100%;
 }
 
-.wegas-survey-orchestrator .survey-mixer .external-surveys .list:not(:empty) {
+.wegas-survey-orchestrator .survey-mixer .runnable-surveys .list:not(:empty) {
     text-align: left;
     color: #666;
 }
@@ -530,17 +534,17 @@
     color: #009900;
 }
 
-.wegas-survey-orchestrator .importable-survey,
-.wegas-survey-orchestrator .internal-survey {
+.wegas-survey-orchestrator .runnable-survey,
+.wegas-survey-orchestrator .running-survey {
     padding: 10px;
     border-radius: 4px;
 }
 
-.wegas-survey-orchestrator .importable-survey:hover {
+.wegas-survey-orchestrator .runnable-survey:hover {
     background: #d6f2ff;
 }
 
-.wegas-survey-orchestrator .internal-survey:hover {
+.wegas-survey-orchestrator .running-survey:hover {
     background: #e5ffcc;
 }
 
@@ -566,8 +570,38 @@
 .wegas-survey-orchestrator .action-buttons button {
     border: 1px solid lightgray;
     border-radius: 4px;
-    width: 100px;
+    width: 90px;
     cursor: pointer;
+    overflow: hidden;
+}
+
+
+.wegas-survey-orchestrator .runnable-surveys .action-buttons button .icon:before {
+    margin-right: 6px;
+}
+
+.wegas-survey-orchestrator .runnable-surveys .action-buttons .survey-settings button {
+    width: 26px;
+    border-radius: 50%;
+    padding: 0;
+}
+
+.wegas-survey-orchestrator .runnable-surveys .action-buttons .survey-settings button .icon:before {
+    vertical-align: 1px;
+    margin-right: 0;
+}
+
+.wegas-survey-orchestrator .runnable-surveys .action-buttons .survey-edit button .icon {
+    color: #286aa4;
+}
+
+.wegas-survey-orchestrator .runnable-surveys .action-buttons .survey-copy button .icon {
+    color: black;
+}
+
+.wegas-survey-orchestrator .runnable-surveys .action-buttons .survey-request button .icon,
+.wegas-survey-orchestrator .runnable-surveys .action-buttons .survey-invite button .icon {
+    color: green;
 }
 
 .wegas-orchestrator-tooltip {
@@ -587,7 +621,7 @@
     color: #3285cd;
 }
 
-.wegas-survey-orchestrator .internal-surveys {
+.wegas-survey-orchestrator .running-surveys {
     border: 2px ridge #8BC34A;
     padding: 10px;
     margin-top: 5px;
@@ -595,29 +629,39 @@
     border-radius: 8px;    
 }
 
-.wegas-survey-orchestrator .internal-survey .survey-header .survey-title {
+.wegas-survey-orchestrator .running-surveys .list + .empty-message {
+    display: none;
+    color: #666;
+}
+
+.wegas-survey-orchestrator .running-surveys .list:empty + .empty-message {
+    display: block;
+}
+
+.wegas-survey-orchestrator .running-survey .survey-header .survey-title {
     display: inline-block;
     max-width: calc(100% - 90px);
     font-size: 150%;
     font-weight: bold;
 }
 
-.wegas-survey-orchestrator .internal-survey .survey-header .survey-title .title-annotation {
+.wegas-survey-orchestrator .running-survey .survey-header .survey-title .title-annotation {
     padding-left: 8px;
     font-size: 80%;
     font-weight: normal;
     color: #666;
 }
 
-.wegas-survey-orchestrator .internal-survey .survey-details .icon:before {
+.wegas-survey-orchestrator .running-survey .survey-details .icon:before {
     vertical-align: 1px;
     margin-right: 6px;
+    color: green;
 }
 
-.wegas-survey-orchestrator .internal-survey .survey-refresh {
+.wegas-survey-orchestrator .running-survey .survey-refresh {
 }
 
-.wegas-survey-orchestrator .internal-survey .survey-refresh button {
+.wegas-survey-orchestrator .running-survey .survey-refresh button {
     border-radius: 4px;
     border: 1px solid lightgray;
     font-size: 14px;
@@ -625,20 +669,20 @@
     width: auto;
 }
 
-.wegas-survey-orchestrator .internal-survey .status-bloc {
+.wegas-survey-orchestrator .running-survey .status-bloc {
     width: 155px;
 }
 
-.wegas-survey-orchestrator .internal-survey .status-title {
+.wegas-survey-orchestrator .running-survey .status-title {
     font-weight: bold;
 }
 
-.wegas-survey-orchestrator .internal-survey .edit-survey,
-.wegas-survey-orchestrator .internal-survey .request-survey {
+.wegas-survey-orchestrator .running-survey .edit-survey,
+.wegas-survey-orchestrator .running-survey .request-survey {
     margin-left: 10px;
 }
 
-.wegas-survey-orchestrator .internal-survey .edit-survey:before {
+.wegas-survey-orchestrator .running-survey .edit-survey:before {
     content: "\f0d0";
     font-family: "FontAwesome";
     padding-left: 2px;
@@ -646,7 +690,7 @@
     color: blue;
 }
 
-.wegas-survey-orchestrator .internal-survey .request-survey:before {
+.wegas-survey-orchestrator .running-survey .request-survey:before {
     content: "\f04b";
     font-family: "FontAwesome";
     padding-left: 2px;
@@ -654,13 +698,14 @@
     color: #009900;
 }
 
-.wegas-survey-orchestrator .internal-survey .request-survey:hover {
+.wegas-survey-orchestrator .running-survey .request-survey:hover {
     background-image: linear-gradient(transparent,rgba(0,0,0,0.05) 40%,rgba(0,0,0,0.15));
 }
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details {
     border: 2px ridge #8BC34A;
-    box-shadow: 2px 2px 2px grey;
+    box-shadow: 2px 2px 4px grey;
+    background: rgba(255,255,255,0.95);
 }
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .yui3-widget-hd h2 {
@@ -678,6 +723,19 @@
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .yui3-widget-ft {
     display: none;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .survey-details-spinner {
+    top: 0;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: rgba(232, 232, 232, 0.85);
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .survey-details-spinner .fa-spin {
+    position: relative;
+    top: 25%;
 }
 
 .wegas-survey-details .teams-table {
@@ -766,7 +824,7 @@
     border-color: black;
 }
 
-.wegas-survey-orchestrator .importable-survey .yui3-button-disabled .checkbox:before {
+.wegas-survey-orchestrator .runnable-survey .yui3-button-disabled .checkbox:before {
     content: '✘';
     font-weight: 600;
     color: red;

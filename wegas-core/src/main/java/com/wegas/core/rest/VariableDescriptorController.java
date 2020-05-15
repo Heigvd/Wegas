@@ -337,21 +337,23 @@ public class VariableDescriptorController {
      *
      * @param gameModelId  the gameModel in which to put the variable
      * @param vdId         the variable to import
+     * @param vdName       the name of the target (new) variable
      * @param newScopeType if set, change scope recursively
      *
      * @return
      */
     @POST
-    @Path("CherryPick/{vdId: [1-9][0-9]*}{sep2: /?}{newScopeType: (PlayerScope|TeamScope|GameModelScope)?}")
+    @Path("CherryPick/{vdId: [1-9][0-9]*}/{vdName: [A-Za-z0-9_$]*}{sep2: /?}{newScopeType: (PlayerScope|TeamScope|GameModelScope)?}")
     public VariableDescriptor cherryPick(
         @PathParam("gameModelId") Long gameModelId,
         @PathParam("vdId") Long vdId,
+        @PathParam("vdName") String vdName,
         @PathParam("newScopeType") AbstractScope.ScopeType newScopeType) {
 
         VariableDescriptor vd = variableDescriptorFacade.find(vdId);
         GameModel source = vd.getGameModel();
 
-        return variableDescriptorFacade.cherryPick(gameModelId, vd.getName(), source.getId(), newScopeType);
+        return variableDescriptorFacade.cherryPick(gameModelId, vd.getName(), source.getId(), vdName, newScopeType);
     }
 
     /**

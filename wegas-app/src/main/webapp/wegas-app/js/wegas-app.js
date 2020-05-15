@@ -261,10 +261,11 @@ YUI.add('wegas-app', function(Y) {
                     // to admins and games already containing at least one survey:
                     var isCurrentUserAdmin = !!Y.Wegas.Facade.User.cache.get("currentUser").get("roles").find(function(role) {
                         return role.get("name") === "Administrator";
-                    })
+                    });
                     if (isCurrentUserAdmin || Y.Wegas.Facade.Variable.cache.find("@class", "SurveyDescriptor")) {
                         extraTabs._addTab({
                             label: I18n.t("global.surveys"),
+                            // This widget automatically updates the server script path
                             targetMode: ["host"],
                             cssClass: "survey-orchestrator-parent",
                             children: [{
