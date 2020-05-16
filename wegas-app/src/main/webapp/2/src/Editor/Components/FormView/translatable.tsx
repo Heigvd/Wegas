@@ -105,8 +105,8 @@ export default function translatable<P extends EndProps>(
             translations: {
               ...pvalue.translations,
               [lang]: {
-                status: '',
                 ...pvalue.translations[lang],
+                status: '',
                 translation: value,
                 lang,
               },

@@ -4,7 +4,6 @@ import { classNameOrEmpty } from '../../Helper/className';
 import { flex, flexColumn, flexRow, expandBoth } from '../../css/classes';
 import { themeVar } from '../Theme';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
-import { wlog } from '../../Helper/wegaslog';
 
 const SPLITTER_SELECTOR = 'fonkyflex-splitter';
 const CONTENT_SELECTOR = 'fonkyflex-content';
