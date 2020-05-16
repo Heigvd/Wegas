@@ -54,10 +54,6 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             "           <div class=\"title own\">" + I18n.t("survey.orchestrator.externalSurveysTitle") + "</div>" +
             "           <div class=\"list own\"></div>" +
             "        </div>" +
-            "        <div class=\"import-monitoring\" style=\"display:none;\">" +
-            "           <div class=\"title\"></div><div class=\"close\"></div>" +
-            "           <div class=\"list\"></div>" +
-            "        </div>" +
             "    </div>" +
             "    <div class=\"running-surveys\">" +
             "       <div class=\"title\">" + I18n.t("survey.orchestrator.activeSurveysTitle") + "</div>" +
@@ -126,7 +122,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             } else {
                 Y.log("Log ID = " + logId);
             }
-            // Prepare area for searching for and importing external surveys:
+
             this.searchExternalButton = new Y.Button({
                 label: "<i class=\"fa fa-search\"></i>",
                 visible: true
@@ -135,10 +131,6 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 label: "<i class=\"fa fa-times\"></i>",
                 visible: true
             }).render(cb.one(".runnable-surveys .close"));
-            this.closeSurveyMixerButton = new Y.Button({
-                label: "<i class=\"fa fa-times\"></i>",
-                visible: true
-            }).render(cb.one(".import-monitoring .close"));
             
             this.get(BOUNDINGBOX).ancestor().addClass("survey-orchestrator-parent");
         },
@@ -186,6 +178,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             this.handlers.push(cb.one(".search-runnable-surveys").on("click", this.onSearchAllSurveys, this));
             cb.delegate("click", this.closeSurveyMixer, ".survey-mixer .close", this);
 
+            cb.delegate("click", this.onCopy, ".runnable-survey .survey-copy", this);
             cb.delegate("click", this.onRequestNow, ".runnable-survey .survey-request", this);
             cb.delegate("click", this.onInvite, ".runnable-survey .survey-invite", this);
             
@@ -242,23 +235,26 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
 
         },
         
-        // Returns an object containing all internal surveys of the given list.
-        getInternalSurveys: function(surveyList) {
-            var internals = {};
+        // Returns an object containing all "own" surveys of the given list.
+        getOwnSurveys: function(surveyList) {
+            var own = {};
             for (var survId in surveyList) {
-                if (surveyList.hasOwnProperty(survId)) {
-                    var currSurv = surveyList[survId];
-                    if (!currSurv.isExternal) {
-                        internals[survId] = currSurv;
-                    }
+                var currSurv = surveyList[survId];
+                if (currSurv.isWriteable) {
+                    own[survId] = currSurv;
                 }
             }
-            return internals;
+            return own;
+        },
+
+        syncOwnSurveys: function() {
+            var ownList = this.getOwnSurveys(this.knownSurveys);
+            this.displayOrderedList(ownList, this.get(CONTENTBOX).one(".runnable-surveys .list.own"));
         },
         
         // Adds the given survey descriptor to the list of known surveys
-        // and calls syncUI unless parameter 'noSync' is true.
-        registerInternalSurvey: function(sd, noSync) {
+        // and updates display.
+        registerInternalSurvey: function(sd) {
             var descrId = sd.get("id"),
                 varSet = {},
                 varList;
@@ -269,29 +265,43 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 varSet.variables = [sd];
                 varList = this.processVarSet([varSet], /* writeable= */ true);
                 this.knownSurveys[descrId] = varList[descrId];
-                var ownList = this.getInternalSurveys(this.knownSurveys);
-                this.displayOrderedList(ownList, this.get(CONTENTBOX).one(".runnable-surveys .list.own"));
-                if (!noSync) {
-                    this.syncUI(descrId);
-                }
+                this.syncOwnSurveys();
+                this.syncUI(descrId);
             }
         },
         
-        // Removes the given survey descriptor from the list of known surveys
-        // and calls syncUI unless parameter 'noSync' is true.
+        // Removes the given "own" survey descriptor from the list of known surveys
+        // and updates the display.
         // Parameter sd is either a survey descriptor or a survey id.
-        deregisterSurvey: function(sd, noSync) {
-            var descrId = (typeof sd === 'number' ? sd : sd.get("id")),
-                currSurv = this.knownSurveys[descrId];
+        deregisterSurvey: function(sd) {
+            var descrId = (typeof sd === 'number' || typeof sd === 'string' ? +sd : sd.get("id")),
+                currSurv = this.knownSurveys[descrId],
+                wasInternal;
             if (currSurv) {
+                wasInternal = !currSurv.isExternal;
                 for (var b in currSurv.buttons) {
                     currSurv.buttons[b].destroy();
+                    // @TODO also detach related event handlers when not covered by delegate
                 }
                 delete this.knownSurveys[descrId];
-                if (!noSync) {
-                    this.syncUI(descrId);
-                }
             }            
+            var runnable = this.get(CONTENTBOX).one('.runnable-survey[data-varid="' + descrId + '"]');
+            runnable && runnable.remove(true);
+            if (wasInternal) {
+                var running = this.get(CONTENTBOX).one('.running-survey[data-varid="' + descrId + '"]');
+                running && running.remove(true);
+                this.checkIfEmptyRunningSurveys();
+            }
+        },
+        
+        // Checks if an 'empty list' message is to be displayed
+        checkIfEmptyRunningSurveys: function() {
+            var cb = this.get(CONTENTBOX).one('.running-surveys');
+            if (cb.all('.running-survey:not([hidden="hidden"])').size() === 0) {
+                cb.one('.empty-message').show();
+            } else {
+                cb.one('.empty-message').hide();
+            }
         },
         
         isExistingSurveyName: function(name) {
@@ -304,11 +314,12 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             return false;
         },
         
-        // Callback for editor mode
+        // Called when a survey descriptor has been modified.
         onUpdatedDescriptor: function(e) {
             var entity = e.entity;
             if (entity.get("@class") === "SurveyDescriptor") {
-                this.syncUI();
+                this.deregisterSurvey(entity);
+                this.registerInternalSurvey(entity);
             }
         },
 
@@ -327,11 +338,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         onDeletedDescriptor: function(e) {
             var entity = e.entity;
             if (entity.get("@class") === "SurveyDescriptor") {
-                var survId = entity.get("id"),
-                    survElem = this.get(CONTENTBOX).one('.runnable-survey[data-varid="' + survId + '"]');
-                survElem && survElem.remove(true);
-                // For running surveys, simply let syncUI notice the deletion of the descriptor and do the cleanup:
-                this.syncUI(entity.get("id"));
+                var survId = entity.get("id");
+                this.deregisterSurvey(survId);
             }
         },
 
@@ -391,10 +399,10 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             }
         },
         
-        // Imports given survey
+        // Imports given survey into the current gameModel
         importSurvey: function(survId, scope, successCb, failureCb) {
             return new Y.Promise(Y.bind(function(resolve) {
-                // Full request: /rest/GameModel/<gameModelId>/VariableDescriptor/CherryPick/<variableDescriptorId>/<newScopeType>
+                // Full request: /rest/GameModel/<gameModelId>/VariableDescriptor/CherryPick/<variableDescriptorId>/<newName>/<newScopeType>
                 var gameModelId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"),
                     varName = this.newSurveyName(survId),
                     config = {
@@ -419,46 +427,50 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 Y.Wegas.Facade.GameModel.sendRequest(config);
             }, this));
         },
-        
-        hideExternalSurveys: function() {
-            var cb = this.get(CONTENTBOX).one(".runnable-surveys");
-            cb.hide();
+
+        // Recursively sets the scope of the given variable
+        changeScope: function(survId, scope, successCb, failureCb) {
+            return new Y.Promise(Y.bind(function(resolve) {
+                // Full request: /rest/GameModel/<gameModelId>/VariableDescriptor/<variableDescriptorId>/CherryPick/<newScopeType>
+                var gameModelId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"),
+                    config = {
+                        request: '/' + gameModelId + "/VariableDescriptor/" + survId + "/changeScope/" + scope,
+                        cfg: {
+                            updateCache: true,
+                            method: "PUT"
+                        },
+                        on: {
+                            success: Y.bind(function(e) {
+                                var descr = e.response.entity;
+                                successCb && successCb(descr);
+                                resolve("OK");
+                            }, this),
+                            failure: Y.bind(function(e) {
+                                failureCb && failureCb(e);
+                                resolve("Not OK");
+                            }, this)
+                        }
+                    };
+                Y.Wegas.Facade.GameModel.sendRequest(config);
+            }, this));
         },
 
-        closeExternalSurveys: function() {
+        closeRunnableSurveys: function() {
             var cb = this.get(CONTENTBOX).one(".runnable-surveys");
             cb.hide();
-            cb.all(".list").setHTML('');
+            /*
             if (this.knownSurveys) {
-                for (var s in this.knownSurveys) {
-                    var surv = this.knownSurveys[s];
-                    surv.importToggle && surv.importToggle.destroy();
-                    surv.scopeToggle && surv.scopeToggle.destroy();
+                for (var survId in this.knownSurveys) {
+                    this.deregisterSurvey(survId);
                 }
             }
-            if (this.doImportButton) {
-                this.doImportButton.destroy();
-            }
-        },
-        
-        closeImportMonitoring: function() {
-            var cb = this.get(CONTENTBOX).one(".import-monitoring");
-            cb.one(".title").setHTML('');
-            cb.one(".list").setHTML('');
-            cb.hide();
-        },
-        
-        openImportMonitoring: function() {
-            var cb = this.get(CONTENTBOX).one(".import-monitoring");
-            this.hideExternalSurveys();
-            cb.one(".title").setHTML(I18n.t("survey.orchestrator.importing") + '&nbsp;<i class="fa fa-spinner fa-spin fa-fw"></i>');
-            cb.show();
+            */
+            cb.all(".list").setHTML('');
         },
         
         closeSurveyMixer: function() {
             var cb = this.get(CONTENTBOX);
-            this.closeExternalSurveys();
-            this.closeImportMonitoring();
+            this.closeRunnableSurveys();
             cb.one(".search-runnable-surveys").show();
         },
         
@@ -495,12 +507,10 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             var internals = [],
                 externals = [];
             for (var survId in surveyList) {
-                if (surveyList.hasOwnProperty(survId)) {
-                    if (surveyList[survId].isExternal) {
-                        externals.push(survId);
-                    } else {
-                        internals.push(survId);
-                    }
+                if (surveyList[survId].isExternal) {
+                    externals.push(survId);
+                } else {
+                    internals.push(survId);
                 }
             }
             internals.sort(
@@ -666,10 +676,17 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         
         // Displays the lists of (1) standard surveys and (2) the trainer's own (writeable) surveys.
         // Initializes this.knownSurveys.
-        listExternalSurveys: function(standardSurveys, writeableSurveys) {
+        listRunnableSurveys: function(standardSurveys, writeableSurveys) {
             var esCB = this.get(CONTENTBOX).one(".runnable-surveys"),
                 standardList, ownList, knownSurveys;
             
+            // Properly delete any pre-existing surveys:
+            if (this.knownSurveys) {
+                for (var survId in this.knownSurveys) {
+                    this.deregisterSurvey(survId);
+                }
+            }
+
             standardList = this.processVarSet(standardSurveys, /* writeable= */ false);
             ownList = this.processVarSet(writeableSurveys, /* writeable= */ true);
             knownSurveys = this.knownSurveys = Object.assign({}, ownList, standardList);
@@ -678,6 +695,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             this.displayOrderedList(standardList, esCB.one(".list.standard"));
             this.displayOrderedList(ownList, esCB.one(".list.own"));
             esCB.show();
+            // Update the list of running surveys:
+            this.syncUI();
         },
         
         // Returns true if the given surveyList contains the given game.
@@ -726,6 +745,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         // Fetches all readable and writeable external surveys from the server.
         // Returns a promise.
         onSearchAllSurveys: function() {
+            this.get(CONTENTBOX).one(".runnable-surveys .list").setHTML('<i class=\"fa fa-2x fa-refresh fa-spin\"></i>');
             return new Y.Promise(Y.bind(function(resolve) {
                 // /rest/Public/GameModel/VariableDescriptor/FetchAllPickable/<variableClassName>
                 var config = {
@@ -764,7 +784,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                             var entities = e.response && e.response.entities,
                                 writeableSurveys = this.filterExternalSurveys(entities),
                                 standardSurveys = this.extractStandardSurveys(allSurveys, writeableSurveys);
-                            this.listExternalSurveys(standardSurveys, writeableSurveys);
+                            this.listRunnableSurveys(standardSurveys, writeableSurveys);
                             resolve("Got writeable surveys");
                         }, this),
                         failure: Y.bind(function(e) {
@@ -781,8 +801,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         },
 
         syncUI: function(survDescrId) {
-            if (!this.knownSurveys || Object.keys(this.knownSurveys).length === 0) {
-                // First initialize this.knownSurveys:
+            if (!this.knownSurveys) {
+                // First initialization of this.knownSurveys:
                 if (!this.fetchingSurveys) {
                     this.fetchingSurveys = true;
                     this.onSearchAllSurveys().then(Y.bind(
@@ -793,48 +813,47 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 }
                 return;
             }
-            var cb = this.get(CONTENTBOX),
+            var listCB = this.get(CONTENTBOX).one(".running-surveys .list"),
                 survId, currSurv, survDescr;
+            if (typeof survDescrId === "string") {
+                survDescrId = +survDescrId;
+            }
             for (survId in this.knownSurveys) {
-                if (this.knownSurveys.hasOwnProperty(survId)) {
-                    if (survDescrId && survDescrId != survId) { // allow type conversions in comparison
-                        continue;
-                    }
-                    currSurv = this.knownSurveys[survId];
-                    if (currSurv.isExternal) {
-                        continue;
-                    }
-                    survDescr = Y.Wegas.Facade.VariableDescriptor.cache.findById(survId);
-                    if (!survDescr) {
-                        // The survey descriptor has been deleted
-                        var cbs = this.get(CONTENTBOX).one('.running-survey[data-varid="' + survId + '"]');
-                        cbs && cbs.remove(true);
-                        this.deregisterSurvey(+survId, true);
-                        continue;
-                    } else if (!currSurv.buttons.refreshButton) {
-                        // The survey descriptor is new, display the HTML and add the buttons.
-                        var surveyList = cb.one(".running-surveys .list").insert(currSurv.runningHTML),
-                            newSurvey = surveyList.one('[data-varid="' + survId + '"]');
-
-                        currSurv.buttons.detailsButton = new Y.Button({
-                            label: "<i class=\"fa fa-1x fa-tachometer icon\"></i>" + I18n.t("survey.orchestrator.progressDetailsButton"),
-                            visible: true
-                        }).render(newSurvey.one(".survey-details"));
-                        currSurv.buttons.detailsButton.get(CONTENTBOX).setAttribute("data-varid", survId);
-                        
-                        currSurv.buttons.refreshButton = new Y.Button({
-                            label: "<i class=\"fa fa-1x fa-refresh\"></i>",
-                            visible: true
-                        }).render(newSurvey.one(".survey-refresh"));
-                        currSurv.buttons.refreshButton.get(CONTENTBOX).setAttribute("data-varid", survId);
-
-                    } else {
-                        // Just update the survey title :
-                        var currSurvey = cb.one('.running-surveys [data-varid="' + survId + '"] .survey-label');
-                        currSurvey.setContent(this.getSurveyTitle(survDescr));
-                    }
-                    this._getMonitoredData(survId);
+                if (survDescrId && survDescrId !== +survId) {
+                    continue;
                 }
+                currSurv = this.knownSurveys[survId];
+                if (currSurv.isExternal) {
+                    continue;
+                }
+                survDescr = Y.Wegas.Facade.VariableDescriptor.cache.findById(survId);
+                if (!survDescr) {
+                    // The survey descriptor has been deleted
+                    this.deregisterSurvey(survId);
+                    continue;
+                } else if (!listCB.one('.running-survey[data-varid="' + survId + '"]')) {
+                    // The survey descriptor is new, display the HTML and add the buttons.
+                    var surveyList = listCB.insert(currSurv.runningHTML),
+                        newSurvey = surveyList.one('[data-varid="' + survId + '"]');
+
+                    currSurv.buttons.detailsButton = new Y.Button({
+                        label: "<i class=\"fa fa-1x fa-tachometer icon\"></i>" + I18n.t("survey.orchestrator.progressDetailsButton"),
+                        visible: true
+                    }).render(newSurvey.one(".survey-details"));
+                    currSurv.buttons.detailsButton.get(CONTENTBOX).setAttribute("data-varid", survId);
+
+                    currSurv.buttons.refreshButton = new Y.Button({
+                        label: "<i class=\"fa fa-1x fa-refresh\"></i>",
+                        visible: true
+                    }).render(newSurvey.one(".survey-refresh"));
+                    currSurv.buttons.refreshButton.get(CONTENTBOX).setAttribute("data-varid", survId);
+
+                } else {
+                    // Just update the survey title :
+                    var currSurvey = listCB.one('.running-survey[data-varid="' + survId + '"] .survey-label');
+                    currSurvey.setContent(this.getSurveyTitle(survDescr));
+                }
+                this._getMonitoredData(survId);
             }
         },
         
@@ -868,31 +887,29 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 nbTeams = 0,
                 survData = this._monitoredData[survId],
                 currSurv = this.knownSurveys[survId],
-                cb = this.get(CONTENTBOX).one('.running-survey[data-varid="' + survId + '"]'),
+                cb = this.get(CONTENTBOX).one('.running-surveys'),
+                listCB = cb.one('.list'),
+                survCB = listCB.one('.running-survey[data-varid="' + survId + '"]'),
                 refreshButtonIcon = currSurv.buttons.refreshButton.get("contentBox").one("i"),
                 prevTeamId = -1;
-            
-            // @TODO remove this
-            if (!cb){
-                alert("*********** skipping syncTable(" + survId+ ") ************");
-                return;
-            }
             
             refreshButtonIcon.addClass("fa-spin");
             
             // Hide inactive, empty and unstarted surveys from the list of running surveys:
             if (survData.active === false ||
                 survData.status === ORCHESTRATION_PROGRESS.NOT_STARTED) {
-                cb.hide();
-                currSurv.isRrunning = false;
+                survCB.hide();
+                currSurv.isRunning = false;
+                this.checkIfEmptyRunningSurveys();
             } else {
-                cb.show();
-                currSurv.isRrunning = false;
+                survCB.show();
+                currSurv.isRunning = true;
+                cb.one('.empty-message').hide();
             }
+                        
+            survCB.one(".status").setContent(this.statusToString(survData));
             
-            cb.one(".status").setContent(this.statusToString(survData));
-            
-            if (survData.status !== ORCHESTRATION_PROGRESS.NOT_STARTED) {
+            if (currSurv.isRunning) {
                 teamsTable.push(
                     '<table class="teams-table"><thead><tr><td>' +
                     (survData.isPlayerScope ?
@@ -1029,6 +1046,31 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             window.open(url, '_blank');
         },
         
+        // Called when user wants to duplicate a survey.
+        // Imports the survey if it's external (i.e. outside this gameModel).
+        // Otherwise it duplicates it.
+        onCopy: function(e) {
+            var survId = e.target.getData()["varid"];
+            if (!survId){
+                // The id attribute is on the parent button:
+                survId = e.target.get("parentNode").getData("varid");
+            }
+            // Importing with CherryPick will also duplicate when needed:
+            this.importSurvey(
+                survId,
+                // Set TeamScope in case it's going to be used in-game.
+                // It will be converted back to PlayerScope if launched via the dashboard.
+                "TeamScope",
+                function(descr) {
+                    // success, nothing to do.
+                },
+                function(e) {
+                    Y.Wegas.Panel.alert("Could not import survey<br>" + e);
+                }
+            );
+        },
+        
+        
         // Called when user wants to "request" a survey to start now.
         // First imports the survey if it's external.
         // Parameter e may be a survey id (number) or an event object.
@@ -1045,10 +1087,14 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 }
             }
             currSurv = this.knownSurveys[survId];
+            if (currSurv.isRunning) {
+                Y.Wegas.Panel.alert(I18n.t("survey.orchestrator.alreadyLaunched"));
+                return;
+            }
             if (currSurv.isExternal) {
                 this.importSurvey(
                     survId,
-                    null, // new Scope
+                    "PlayerScope",   // Convert to PlayerScope when launched through dashboard
                     function(descr) {
                         ctx.onRequestNow(descr.get("id"));
                     },
@@ -1057,6 +1103,20 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     }
                 );
             } else {
+                if (!currSurv.hasPlayerScope) { // The survey is internal but with wrong scope (we could also check recursively)
+                    this.changeScope(
+                        survId,
+                        "PlayerScope",  // Convert to PlayerScope when launched through dashboard
+                        function(descr) {
+                            currSurv.hasPlayerScope = true;
+                            ctx.onRequestNow(descr.get("id"));
+                        },
+                        function(e) {
+                            Y.Wegas.Panel.alert("Could not change scope of survey<br>" + e);
+                        }
+                    );
+                    return;
+                }
                 survDescr = Y.Wegas.Facade.Variable.cache.findById(survId);
                 Y.use(["wegas-dashboard-modals"], function(Y) {
                     var survName = survDescr.get("name"),
@@ -1086,7 +1146,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 });
             }
         },
-            
+        
         // Opens a dialog for selecting the e-mail message and its recipients.
         onInvite: function(e) {
             var survId = e.target.getData()["varid"];

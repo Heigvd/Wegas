@@ -449,7 +449,7 @@
 
 .wegas-survey-orchestrator {
     margin: auto;
-    max-width: 800px;
+    max-width: 1024px;
 }
 
 .wegas-survey-orchestrator-content {
@@ -469,7 +469,8 @@
     padding: 10px;
     margin: 10px auto;
     background: #e6f7ff;
-    border-radius: 8px;    
+    border-radius: 8px;
+    min-width: 650px;
 }
 
 .wegas-survey-orchestrator .survey-mixer .close button {
@@ -536,6 +537,8 @@
 
 .wegas-survey-orchestrator .runnable-survey,
 .wegas-survey-orchestrator .running-survey {
+    display: flex;
+    align-items: center;
     padding: 10px;
     border-radius: 4px;
 }
@@ -550,13 +553,13 @@
 
 .wegas-survey-orchestrator .survey-header {
     display: inline-block;
-    width: 40%;
+    width: 50%;
 }
 
 .wegas-survey-orchestrator .survey-label {
     font-weight: bold;
     color: black;
-    display: inline-block;
+    display: inline;
     text-overflow: ellipsis;
 }
 
@@ -564,7 +567,7 @@
     display: inline-flex;
     justify-content: space-between;
     align-items: center;
-    width: calc( 100% - 40% - 5px );
+    width: calc( 100% - 50% - 5px );
 }
 
 .wegas-survey-orchestrator .action-buttons button {
@@ -614,6 +617,10 @@
     border-radius: 4px;
 }
 
+.wegas-survey-orchestrator .survey-comments {
+    display: inline;
+}
+
 .wegas-survey-orchestrator .survey-comments:before {
     margin-left: 8px;
     font-size: 16px;
@@ -627,15 +634,11 @@
     margin-top: 5px;
     background: #f2ffe6;
     border-radius: 8px;    
+    min-width: 650px;
 }
 
 .wegas-survey-orchestrator .running-surveys .list + .empty-message {
-    display: none;
     color: #666;
-}
-
-.wegas-survey-orchestrator .running-surveys .list:empty + .empty-message {
-    display: block;
 }
 
 .wegas-survey-orchestrator .running-survey .survey-header .survey-title {

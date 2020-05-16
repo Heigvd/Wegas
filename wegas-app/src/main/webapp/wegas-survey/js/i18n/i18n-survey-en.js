@@ -70,7 +70,8 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 teamStatus: "Status",
                 teamRepliesCompulsory: "Compulsory Replies",
                 teamRepliesOptional: "Optional Replies",
-                noLogId: "No \"Log ID\" has been set for this session.<br>Replies to the survey will not be saved!<br>Please contact the platform administrator (AlbaSim)."
+                noLogId: "No \"Log ID\" has been set for this session.<br>Replies to the survey will not be saved!<br>Please contact the platform administrator (AlbaSim).",
+                alreadyLaunched: "This survey is already launched"
             }
         }
     });
