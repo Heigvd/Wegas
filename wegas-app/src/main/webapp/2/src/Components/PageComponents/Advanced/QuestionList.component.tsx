@@ -18,9 +18,9 @@ import {
 import { cx, css } from 'emotion';
 import { flex, itemCenter } from '../../../css/classes';
 import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
-import { useScript, safeClientScriptEval } from '../../Hooks/useScript';
+import { safeClientScriptEval } from '../../Hooks/useScript';
 import { useStore } from '../../../data/store';
-import { VariableDescriptor } from '../../../data/selectors';
+import { shallowDifferent } from '../../Hooks/storeHookFactory';
 
 const unreadSignalStyle = css({ margin: '3px' });
 
@@ -29,10 +29,6 @@ interface QuestionListDisplayProps extends WegasComponentProps {
 }
 
 function QuestionListDisplay({ questionList }: QuestionListDisplayProps) {
-  // const { content, descriptor } = useComponentScript<ISListDescriptor>(
-  //   questionList,
-  // );
-
   const entities = useStore(s => {
     const descriptor = safeClientScriptEval<ISListDescriptor>(
       questionList ? questionList.content : '',
@@ -41,11 +37,8 @@ function QuestionListDisplay({ questionList }: QuestionListDisplayProps) {
     if (descriptor == null || descriptor.name == null) {
       return [];
     }
-
-    const unproxifiedDescriptor = findByName<IListDescriptor>(descriptor.name);
-
     return flatten<IQuestionDescriptor>(
-      unproxifiedDescriptor,
+      descriptor,
       'QuestionDescriptor',
     ).filter(q => {
       const instance = getInstance(q);
@@ -54,7 +47,7 @@ function QuestionListDisplay({ questionList }: QuestionListDisplayProps) {
       }
       return false;
     });
-  });
+  }, shallowDifferent);
 
   if (questionList === undefined) {
     return <pre>No selected list</pre>;

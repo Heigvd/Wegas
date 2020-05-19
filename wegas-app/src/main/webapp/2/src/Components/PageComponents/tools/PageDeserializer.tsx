@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { usePageComponentStore } from './componentFactory';
-import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import {
   ContainerTypes,
   ComponentContainer,
@@ -92,8 +91,18 @@ export function PageDeserializer({
   const { WegasComponent, containerType, componentName } = component;
 
   return (
-    <ErrorBoundary>
-      <ComponentContainer
+    <ComponentContainer
+      // the key is set in order to force rerendering when page change
+      //(if not, if an error occures and the page's strucutre is the same it won't render the new component)
+      key={pageId}
+      path={realPath}
+      last={last}
+      componentType={componentName}
+      containerType={containerType}
+      childrenType={childrenType}
+      {...restProps}
+    >
+      <WegasComponent
         path={realPath}
         last={last}
         componentType={componentName}
@@ -101,35 +110,26 @@ export function PageDeserializer({
         childrenType={childrenType}
         {...restProps}
       >
-        <WegasComponent
-          path={realPath}
-          last={last}
-          componentType={componentName}
-          containerType={containerType}
-          childrenType={childrenType}
-          {...restProps}
-        >
-          {editMode && children.length === 0 ? (
-            <EmptyComponentContainer
-              childrenType={containerType}
-              path={realPath}
-            />
-          ) : (
-            children.map((_, i) => {
-              return (
-                <PageDeserializer
-                  key={JSON.stringify([...realPath, i])}
-                  pageId={pageId}
-                  path={[...realPath, i]}
-                  uneditable={uneditable}
-                  childrenType={containerType}
-                  last={i === children.length - 1}
-                />
-              );
-            })
-          )}
-        </WegasComponent>
-      </ComponentContainer>
-    </ErrorBoundary>
+        {editMode && children.length === 0 ? (
+          <EmptyComponentContainer
+            childrenType={containerType}
+            path={realPath}
+          />
+        ) : (
+          children.map((_, i) => {
+            return (
+              <PageDeserializer
+                key={JSON.stringify([...realPath, i])}
+                pageId={pageId}
+                path={[...realPath, i]}
+                uneditable={uneditable}
+                childrenType={containerType}
+                last={i === children.length - 1}
+              />
+            );
+          })
+        )}
+      </WegasComponent>
+    </ComponentContainer>
   );
 }

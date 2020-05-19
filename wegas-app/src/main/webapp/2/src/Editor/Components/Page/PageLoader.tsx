@@ -13,6 +13,7 @@ const editStyle = css({
   borderStyle: 'solid',
   borderWidth: '30px',
   borderColor: themeVar.disabledColor,
+  height: '100%',
 });
 
 interface PageLoaderProps {

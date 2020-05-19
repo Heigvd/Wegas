@@ -12,13 +12,15 @@ interface QuestionDisplayProps extends WegasComponentProps {
   /**
    * script - a script returning a QuestionDescriptor
    */
-  script?: IScript;
+  question?: IScript;
 }
 
-function QuestionDisplay({ script }: QuestionDisplayProps) {
+function QuestionDisplay({ question }: QuestionDisplayProps) {
   const { content, descriptor, notFound } = useComponentScript<
     IQuestionDescriptor
-  >(script);
+  >(question);
+
+  debugger;
 
   return notFound ? (
     <pre>Not found: {content}</pre>
@@ -34,7 +36,7 @@ registerComponent(
     'question',
     {
       question: schemaProps.scriptVariable('Question', true, [
-        'QuestionDescriptor',
+        'ISQuestionDescriptor',
       ]),
     },
     ['string'],

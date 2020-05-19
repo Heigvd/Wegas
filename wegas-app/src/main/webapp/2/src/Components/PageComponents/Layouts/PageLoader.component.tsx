@@ -27,8 +27,11 @@ const defaultPageAsScript = () =>
 
 function PlayerPageLoader({
   initialSelectedPageId = defaultPageAsScript(),
+  name,
 }: PlayerPageLoaderProps) {
-  let pageScript = useStore(s => s.global.pageLoaders[name], deepDifferent);
+  let pageScript = useStore(s => {
+    return s.global.pageLoaders[name];
+  }, deepDifferent);
   const { pageIdPath } = React.useContext(pageCTX);
   if (!pageScript) {
     store.dispatch(
@@ -61,7 +64,7 @@ registerComponent(
     PAGE_LOADER_COMPONENT_TYPE,
     'window-maximize',
     {
-      selectedPageId: schemaProps.pageSelect('Page', false),
+      initialSelectedPageId: schemaProps.pageSelect('Page', false),
     },
     [],
     () => ({

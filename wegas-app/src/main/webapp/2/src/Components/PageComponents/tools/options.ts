@@ -19,11 +19,9 @@ import { InfoBeamProps } from './InfoBeam';
 import { flexlayoutChoices } from '../../Layouts/FlexList';
 import { absolutelayoutChoices } from '../../Layouts/Absolute';
 import { ContainerTypes } from './EditableComponent';
-import { useComponentScript } from '../../Hooks/useComponentScript';
 import { entityIs } from '../../../data/entities';
 import { getQuestionReplies } from '../../../data/proxyfy/instancesHelpers';
 import { createScript } from '../../../Helper/wegasEntites';
-import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { proxyfy } from '../../../data/proxyfy';
 
 export interface WegasComponentOptionsAction {
@@ -415,7 +413,6 @@ export function useComputeUnreadCount(
   } else if (typeof scriptReturn === 'string') {
     infoBeamMessage = scriptReturn;
   } else if (Array.isArray(scriptReturn)) {
-    debugger;
     infoBeamMessage = scriptReturn.reduce(
       (o, v) => o + extractUnreadCount(v as UnreadCountDescriptorTypes),
       0,
