@@ -614,6 +614,10 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 }
                 for (v in variables) {
                     currVar = variables[v];
+                    if (currVarSet.isExternal && !currVar.get("isPublished")) {
+                        // This situation should not happen
+                        continue;
+                    }
                     var name = currVar.get("name"),
                         isTaken = this.isExistingSurveyName(name),
                         label = this.getFriendlyVarLabel(currVar),
@@ -660,6 +664,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                             label: label,
                             isWriteable: isWriteable,
                             isExternal: currVarSet.isExternal,
+                            isPublished: currVar.get("isPublished"),
                             isRunning: false,
                             isSession: isSession,
                             sourceGameModelId: sourceGameModel.get("id"),
