@@ -257,12 +257,12 @@ YUI.add('wegas-app', function(Y) {
 
                         }, this);
 
-                    // @TODO Until a survey import feature is available, restrict the survey tab
-                    // to admins and games already containing at least one survey:
+                    // @TODO Until a survey import feature is available,
+                    // restrict the survey tab to admins:
                     var isCurrentUserAdmin = !!Y.Wegas.Facade.User.cache.get("currentUser").get("roles").find(function(role) {
                         return role.get("name") === "Administrator";
                     });
-                    if (isCurrentUserAdmin || Y.Wegas.Facade.Variable.cache.find("@class", "SurveyDescriptor")) {
+                    if (isCurrentUserAdmin || Y.Wegas.Facade.User.cache.get("currentUser").get("name") === "scena scena") {
                         extraTabs._addTab({
                             label: I18n.t("global.surveys"),
                             // This widget automatically updates the server script path

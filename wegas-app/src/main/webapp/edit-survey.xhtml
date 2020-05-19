@@ -115,12 +115,22 @@
                 Y.Wegas.Facade.Instance.after(inst.get("id") + ":updatedInstance", onUpdatedSurveyInstance, this);
                 
                 Y.use(["wegas-survey-widgets", "wegas-popuplistener"], function(Y) {
-                    var status = inst.get("status");
-                    // We are loading the editor. Force start of survey if needed:
-                    if (status === ORCHESTRATION_PROGRESS.NOT_STARTED ||
-                        status === ORCHESTRATION_PROGRESS.CLOSED) {
+                    // We are loading the editor, reset all surveys to NOT_STARTED
+                    // and force restart of debug-team survey to make sure it's displayed
+
+                    var status = inst.get("status"),
+                        editedDescrId = descr.get("id");
+                    if (status !== ORCHESTRATION_PROGRESS.REQUESTED) {
                         sendSurveyStatusChange(descr, ORCHESTRATION_PROGRESS.REQUESTED);
                     }
+                    Y.Array.each(
+                        Y.Wegas.Facade.Variable.cache.findAll("@class", "SurveyDescriptor"),
+                        function(otherDescr) {
+                            if (otherDescr.get("id") !== editedDescrId) {
+                                sendSurveyStatusChange(otherDescr, ORCHESTRATION_PROGRESS.NOT_STARTED);
+                            }
+                        },
+                        this);
                 });
             });
         

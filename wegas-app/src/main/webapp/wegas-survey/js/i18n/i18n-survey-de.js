@@ -63,6 +63,12 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 copyButton: "Kopieren",
                 requestButton: "Starten",
                 inviteButton: "Einladen",
+                deleteButton: "Löschen",
+                renameButton: "Umbenennen (editieren)",
+                shareButton: "Teilen",
+                scopeTitle: "Wie werden die Teilnehmer antworten:",
+                playerScopeButton: "Individuell",
+                teamScopeButton: "Teamweise",
                 progressDetailsButton: "Details",
                 teamOrPlayer: "Team/Spieler",
                 team: "Team",
@@ -71,7 +77,8 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 teamRepliesCompulsory: "Erforderliche Antworte",
                 teamRepliesOptional: "Optionale Antworte",
                 noLogId: "Für diese Sitzung wurde keine \"Log-ID\" festgelegt.<br>Antworten auf die Umfrage werden nicht gespeichert!<br>Bitte kontaktieren Sie den Plattform-Administrator (AlbaSim).",
-                alreadyLaunched: "Diese Umfrage ist schon gestartet"
+                alreadyLaunched: "Diese Umfrage ist schon gestartet",
+                deleteRunning: "Diese Umfrage ist gestartet.<br>Wirklich löschen?"
             }
         }
     });

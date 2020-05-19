@@ -218,7 +218,7 @@ YUI().use(function(Y) {
             },
             "wegas-surveylistener": {
                 path: "js/plugin/wegas-surveylistener-min.js",
-                ws_provides: "SurveyListener",
+                ws_provides: "SurveyListener"
             },
             "wegas-resizelistener": {
                 path: "js/plugin/wegas-resizelistener-min.js",
@@ -1045,6 +1045,9 @@ YUI().use(function(Y) {
             "wegas-survey-css": {
                 type: CSS
             },
+            "wegas-survey-orchestrator-css": {
+                type: CSS
+            },
             "wegas-survey-entities": {
                 requires: "wegas-entity",
                 ws_provides: ["SurveyDescriptor", "SurveyInstance", "SurveySectionDescriptor", 
@@ -1067,7 +1070,7 @@ YUI().use(function(Y) {
                     "SurveyChoicesInput"]
             },
             "wegas-survey-orchestrator": {
-                requires: ["wegas-survey-css",
+                requires: ["wegas-survey-orchestrator-css",
                     "wegas-survey-entities",
                     "wegas-i18n-survey",
                     "wegas-panel",

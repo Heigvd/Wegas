@@ -63,6 +63,12 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 copyButton: "Copy",
                 requestButton: "Launch",
                 inviteButton: "Invite",
+                deleteButton: "Delete",
+                renameButton: "Rename (via edit)",
+                shareButton: "Share",
+                scopeTitle: "Change how players answer:",
+                playerScopeButton: "Individually",
+                teamScopeButton: "Teamwise",
                 progressDetailsButton: "Details",
                 teamOrPlayer: "Team/Player",
                 team: "Team",
@@ -71,7 +77,8 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 teamRepliesCompulsory: "Compulsory Replies",
                 teamRepliesOptional: "Optional Replies",
                 noLogId: "No \"Log ID\" has been set for this session.<br>Replies to the survey will not be saved!<br>Please contact the platform administrator (AlbaSim).",
-                alreadyLaunched: "This survey is already launched"
+                alreadyLaunched: "This survey is already launched",
+                deleteRunning: "This survey is already running.<br>Really delete it?"
             }
         }
     });
