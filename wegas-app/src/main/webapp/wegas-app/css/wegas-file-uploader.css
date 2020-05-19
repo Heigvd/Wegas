@@ -1,0 +1,23 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
+
+.wegas-file-uploader--uploader {
+    border:2px dashed gray;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 10px;
+}
+
+
+.wegas-file-uploader--uploader.highlight {
+    background-color: pink;
+}
+
+.wegas-file-uploader--filename {
+    text-align: center;
+}

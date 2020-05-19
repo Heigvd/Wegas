@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -49,6 +50,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
@@ -62,7 +64,7 @@ public class FileController {
     /**
      *
      */
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(FileController.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileController.class);
 
     /**
      *
@@ -88,6 +90,19 @@ public class FileController {
         return jCRConnectorProvider.getContentConnector(find, WorkspaceType.FILES);
     }
 
+    @POST
+    @Path("mkdir{directory : .*?}")
+    public Response mkdir(@PathParam("gameModelId") Long gameModelId,
+        @PathParam("directory") String path) throws RepositoryException {
+
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+
+        jcrFacade.assertPathWriteRight(gameModel, path);
+        jcrFacade.createDirectoryWithParents(gameModel, WorkspaceType.FILES, path);
+        //requestManager.assertUpdateRight(gameModel);
+        return Response.noContent().build();
+    }
+
     /**
      * @param gameModelId
      * @param name
@@ -107,16 +122,16 @@ public class FileController {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{force: (force/)?}upload{directory : .*?}")
     public Response upload(@PathParam("gameModelId") Long gameModelId,
-            @FormDataParam("name") String oName,
-            @FormDataParam("note") String note,
-            @FormDataParam("description") String description,
-            @PathParam("directory") String path,
-            @FormDataParam("file") InputStream file,
-            @FormDataParam("file") FormDataBodyPart details,
-            @PathParam("force") String force) throws RepositoryException {
+        @FormDataParam("name") String oName,
+        @FormDataParam("note") String note,
+        @FormDataParam("description") String description,
+        @PathParam("directory") String path,
+        @FormDataParam("file") InputStream file,
+        @FormDataParam("file") FormDataBodyPart details,
+        @PathParam("force") String force) throws RepositoryException {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
-        requestManager.assertUpdateRight(gameModel);
+        jcrFacade.assertPathWriteRight(gameModel, path);
 
         logger.debug("File name: {}", details.getContentDisposition().getFileName());
         final Boolean override = !force.equals("");
@@ -128,11 +143,11 @@ public class FileController {
         AbstractContentDescriptor detachedFile;
         //try {
         if (details.getContentDisposition().getFileName() == null
-                || details.getContentDisposition().getFileName().equals("")) {//Assuming an empty filename means a directory
+            || details.getContentDisposition().getFileName().equals("")) {//Assuming an empty filename means a directory
             detachedFile = jcrFacade.createDirectory(gameModel, WorkspaceType.FILES, name, path, note, description);
         } else {
             detachedFile = jcrFacade.createFile(gameModel, WorkspaceType.FILES, name, path, details.getMediaType().toString(),
-                    note, description, file, override);
+                note, description, file, override);
         }
         /*} catch (final WegasRuntimeException ex) {
             Response.StatusType status = new Response.StatusType() {
@@ -169,12 +184,15 @@ public class FileController {
     @Path("read{absolutePath : .*?}")
     //@CacheAge(time = 48, unit = TimeUnit.HOURS)
     public Response read(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("absolutePath") String name,
-            @Context Request request,
-            @HeaderParam("Range") String range) {
+        @PathParam("absolutePath") String name,
+        @Context Request request,
+        @HeaderParam("Range") String range) {
 
         logger.debug("Asking file (/{})", name);
         AbstractContentDescriptor fileDescriptor;
+
+        GameModel gameModel = gameModelFacade.find(gameModelId);
+        jcrFacade.assertPathReadRight(gameModel, name);
         // ContentConnector connector = null;
         Response.ResponseBuilder response = Response.status(404);
         try {
@@ -193,8 +211,7 @@ public class FileController {
                     final long from = Long.parseLong(ranges[0]);
                     long length = fileD.getLength();
                     /**
-                     * Chunk media if the range upper bound is unspecified.
-                     * Chrome sends "bytes=0-"
+                     * Chunk media if the range upper bound is unspecified. Chrome sends "bytes=0-"
                      */
                     long to;
                     if (ranges.length == 2) {
@@ -332,7 +349,7 @@ public class FileController {
             }
         };
         return Response.ok(out, MediaType.APPLICATION_OCTET_STREAM).header("content-disposition",
-                "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.xml").build();
+            "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.xml").build();
     }
 
     /**
@@ -374,7 +391,7 @@ public class FileController {
             }
         };
         return Response.ok(out, MediaType.APPLICATION_OCTET_STREAM).header("content-disposition",
-                "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.xml.gz").build();
+            "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.xml.gz").build();
     }
 
     /**
@@ -409,7 +426,7 @@ public class FileController {
             }
         };
         return Response.ok(out, "application/zip").
-                header("content-disposition", "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.zip").build();
+            header("content-disposition", "attachment; filename=WEGAS_" + gmFacade.find(gameModelId).getName() + "_files.zip").build();
     }
 
     /**
@@ -430,10 +447,10 @@ public class FileController {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public List<AbstractContentDescriptor> importXML(@PathParam("gameModelId") Long gameModelId,
-            @FormDataParam("file") InputStream file,
-            @FormDataParam("file") FormDataBodyPart details)
-            throws RepositoryException, IOException, SAXException,
-            ParserConfigurationException, TransformerException {
+        @FormDataParam("file") InputStream file,
+        @FormDataParam("file") FormDataBodyPart details)
+        throws RepositoryException, IOException, SAXException,
+        ParserConfigurationException, TransformerException {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
@@ -444,15 +461,15 @@ public class FileController {
                 case "x-gzip":
                 case "gzip":
                     try (GZIPInputStream in = new GZIPInputStream(file)) {
-                        connector.importXML(in);
-                    }
-                    break;
+                    connector.importXML(in);
+                }
+                break;
                 case "xml":
                     connector.importXML(file);
                     break;
                 default:
                     throw WegasErrorMessage.error("Uploaded file mimetype does not match requirements [XML or Gunzip], found:"
-                            + details.getMediaType().toString());
+                        + details.getMediaType().toString());
             }
         } finally {
             file.close();
@@ -467,18 +484,17 @@ public class FileController {
      *
      * @return the destroyed element or HTTP not modified
      *
-     * @throws WegasErrorMessage when deleting a non empty directory without
-     *                           force=true
+     * @throws WegasErrorMessage when deleting a non empty directory without force=true
      */
     @DELETE
     @Path("{force: (force/)?}delete{absolutePath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
     public Object delete(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("absolutePath") String absolutePath,
-            @PathParam("force") String force) {
+        @PathParam("absolutePath") String absolutePath,
+        @PathParam("force") String force) {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
-        requestManager.assertUpdateRight(gameModel);
+        jcrFacade.assertPathWriteRight(gameModel, absolutePath);
 
         return jcrFacade.delete(gameModel, ContentConnector.WorkspaceType.FILES, absolutePath, force);
     }
@@ -488,8 +504,8 @@ public class FileController {
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
     public Object deleteByPOST(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("force") String force,
-            String absolutePath) {
+        @PathParam("force") String force,
+        String absolutePath) {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(gameModel);
@@ -511,8 +527,8 @@ public class FileController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public AbstractContentDescriptor update(AbstractContentDescriptor tmpDescriptor,
-            @PathParam("gameModelId") Long gameModelId,
-            @PathParam("absolutePath") String absolutePath) {
+        @PathParam("gameModelId") Long gameModelId,
+        @PathParam("absolutePath") String absolutePath) {
 
         AbstractContentDescriptor descriptor;
 

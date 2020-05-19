@@ -144,7 +144,11 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      * @param contentConnector
      */
     protected AbstractContentDescriptor(String name, String path, ContentConnector contentConnector) {
-        path = path.charAt(0) == '/' ? path : "/" + path;
+        if (Helper.isNullOrEmpty(path)){
+            this.path = "/";
+        } else {
+            this.path = path.charAt(0) == '/' ? path : "/" + path;
+        }
         this.connector = contentConnector;
         this.name = name;
         this.path = path;
@@ -452,7 +456,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     @JsonIgnore
     protected ZipEntry getZipEntry() {
         String fullPath = this.getFullPath();
-        if (fullPath.charAt(0) == '/') { // ZIP entry shouldn't be absolute.
+        if (!fullPath.isEmpty() && fullPath.charAt(0) == '/') { // ZIP entry shouldn't be absolute.
             fullPath = fullPath.replaceFirst("/", "");
         }
         return new ZipEntry(fullPath);
@@ -466,7 +470,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     @JsonIgnore
     private void parseAbsolutePath(String absolutePath) {
 //        absolutePath = absolutePath.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
-        if (absolutePath.charAt(0) != '/') {
+        if (absolutePath.isEmpty() || absolutePath.charAt(0) != '/') {
             absolutePath = "/" + absolutePath;
         }
         if (absolutePath.equals("/")) {

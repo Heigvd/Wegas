@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -137,6 +138,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     @Inject
     private JCRConnectorProvider jcrConnectorProvider;
+
+    @Inject
+    private JCRFacade jcrFacade;
 
     @Inject
     private WebsocketFacade websocketFacade;
@@ -631,6 +635,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 throw WegasErrorMessage.error("Duplicating repository gm_" + srcGameModel.getId() + " failure: " + ex);
             }
         }
+        /* clear .user-uploads
+         * this special directory contains files uploaded by players.
+         * Hence, it has to be erase
+         */
+        jcrFacade.deleteUserUploads(newGameModel);
     }
 
     public GameModel createPlayGameModel(final Long entityId) throws CloneNotSupportedException {
@@ -1017,6 +1026,12 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
         this.propagateAndReviveDefaultInstances(gameModel, gameModel, false); // reset the whole gameModel
         stateMachineFacade.runStateMachines(gameModel);
+
+        /* clear .user-uploads
+         * this special directory contains files uploaded by players.
+         * Hence, it has to be erase on restart
+         */
+        jcrFacade.deleteUserUploads(gameModel);
     }
 
     @Override

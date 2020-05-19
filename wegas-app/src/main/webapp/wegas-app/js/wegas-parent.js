@@ -217,6 +217,16 @@ YUI.add("wegas-parent", function(Y) {
                                                                 }]
                                                         }, {
                                                             type: BUTTON,
+                                                            label: "File Upload",
+                                                            className: "wegas-advanced-feature",
+                                                            plugins: [{
+                                                                    fn: "AddChildWidgetAction",
+                                                                    cfg: {
+                                                                        childType: "FileUploader"
+                                                                    }
+                                                                }]
+                                                        }, {
+                                                            type: BUTTON,
                                                             label: "Number",
                                                             plugins: [{
                                                                     fn: "WidgetMenu",

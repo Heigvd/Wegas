@@ -647,10 +647,10 @@ YUI.add('wegas-dashboard', function(Y) {
                                 } else {
                                     o.cell.setHTML("<span class=\"bloc__value no-value\"></span>");
                                 }
+                            }
 
-                                if (o.column.valueFormatter) {
-                                    o.column.valueFormatter.call(this, o.cell, o.value);
-                                }
+                            if (o.column.valueFormatter) {
+                                o.column.valueFormatter.call(this, o.cell, o.value);
                             }
                         };
                     }

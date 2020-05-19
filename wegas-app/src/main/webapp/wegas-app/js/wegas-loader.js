@@ -255,6 +255,14 @@ YUI().use(function(Y) {
                 path: "js/widget/wegas-langselector-min.js",
                 ws_provides: "LangSelector"
             },
+            "wegas-file-uploadercss": {
+                type: CSS
+            },
+            "wegas-file-uploader": {
+                path: "js/widget/wegas-file-uploader-min.js",
+                ws_provides: ["FileUploader"],
+                requires: ["wegas-file-uploadercss"]
+            },
             "wegas-text-inputcss": {
                 type: CSS
             },

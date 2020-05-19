@@ -623,11 +623,8 @@ YUI.add('wegas-text-input', function(Y) {
             this._initialContent = value;
             theVar.set('value', value);
             Wegas.Facade.Variable.script.remoteEval(
-                'Variable.find(gameModel, "' +
-                descriptor.get('name') +
-                '").setValue(self, ' +
-                JSON.stringify(value) +
-                ');',
+                'Variable.find(gameModel, "' + descriptor.get('name') + '")'
+                + '.setValue(self, ' + JSON.stringify(value) + ');',
                 {
                     on: {
                         success: Y.bind(function() {
