@@ -64,13 +64,9 @@ const pageComponentReducer: Reducer<Readonly<PageComponentsState>> = u(
   (state: PageComponentsState, action: PageComponentAction) => {
     switch (action.type) {
       case PageComponentActionTypes.ADD_COMPONENT: {
-        return {
-          ...state,
-          [action.payload.componentName]: action.payload.component,
-        };
+        state[action.payload.componentName] = action.payload.component;
       }
     }
-    return state;
   },
   {},
 );

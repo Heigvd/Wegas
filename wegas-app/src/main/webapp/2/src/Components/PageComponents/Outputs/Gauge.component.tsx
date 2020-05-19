@@ -47,7 +47,7 @@ registerComponent(
     'tachometer-alt',
     {
       script: schemaProps.scriptVariable('Variable', false, [
-        'NumberDescriptor',
+        'ISNumberDescriptor',
       ]),
       label: schemaProps.string('Label', false),
       followNeedle: schemaProps.boolean('Follow needle', false),

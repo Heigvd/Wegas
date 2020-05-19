@@ -1,25 +1,18 @@
 import * as React from 'react';
-import { TranslatableContent } from '../../data/i18n';
-import { useComponentScript } from '../Hooks/useComponentScript';
+import { useTranslate } from '../../Editor/Components/FormView/translatable';
 
 export interface TextProps extends ClassAndStyle {
-  script?: IScript;
+  htmlTranslatableContent: ITranslatableContent;
 }
 
-export function Text({ script, className, style }: TextProps) {
-  const { content, instance, notFound } = useComponentScript<ITextDescriptor>(
-    script,
-  );
-  return notFound ? (
-    <span>Not found: {content}</span>
-  ) : (
+export function Text({ htmlTranslatableContent, className, style }: TextProps) {
+  const translatedContent = useTranslate(htmlTranslatableContent);
+  return (
     <div className={className} style={style}>
       <div
         style={{ display: 'inline-block' }}
         dangerouslySetInnerHTML={{
-          __html: TranslatableContent.toString(
-            instance!.trValue === undefined ? null : instance!.trValue,
-          ),
+          __html: translatedContent,
         }}
       />
     </div>

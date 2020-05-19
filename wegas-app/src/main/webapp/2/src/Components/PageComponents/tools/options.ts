@@ -1,13 +1,7 @@
 // OPTIONS -> ACTIONS
-import * as React from 'react';
 import { store } from '../../../data/store';
 import { ActionCreator } from '../../../data/actions';
-import {
-  clientScriptEval,
-  useScript,
-  useGlobals,
-  safeClientScriptEval,
-} from '../../Hooks/useScript';
+import { clientScriptEval, useScript } from '../../Hooks/useScript';
 import { fileURL, generateAbsolutePath } from '../../../API/files.api';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
@@ -337,47 +331,58 @@ function extractUnreadCount(
             : 0;
         }
       }
-      // const computedInstance = infobeamVD["@class"] === "DialogueDescriptor" ? infobeamVD.defaultInstance
-      switch (instance['@class']) {
+      // Idk what happens here. TS should infer type from @class prop in switch case but it doesnt so i had to cast all types manually
+      // The most strange thing is that VSCode does the inference but not ts ...
+      switch (
+        ((instance as unknown) as Readonly<
+          | IInboxInstance
+          | IQuestionInstance
+          | IWhQuestionInstance
+          | ISurveyInstance
+          | IPeerReviewInstance
+        >)['@class']
+      ) {
         case 'InboxInstance': {
-          const nbUnread = instance.messages.filter(m => m.unread).length;
+          const ii = (instance as unknown) as Readonly<IInboxInstance>;
+          const nbUnread = ii.messages.filter(m => m.unread).length;
           if (nbUnread > 0) {
             return nbUnread;
           }
           return 0;
         }
         case 'QuestionInstance': {
+          const qi = (instance as unknown) as Readonly<IQuestionInstance>;
           const questionDescriptor = descriptor as IQuestionDescriptor;
           if (questionDescriptor.cbx) {
-            return instance.active && !instance.validated ? 1 : 0;
+            return qi.active && !qi.validated ? 1 : 0;
           } else {
             const replies = getQuestionReplies(questionDescriptor, true);
-            return replies.length === 0 &&
-              !instance.validated &&
-              instance.active
-              ? 1
-              : 0;
+            return replies.length === 0 && !qi.validated && qi.active ? 1 : 0;
           }
         }
         case 'WhQuestionInstance': {
-          return instance.active && !instance.validated ? 1 : 0;
+          const wqi = (instance as unknown) as Readonly<IWhQuestionInstance>;
+          return wqi.active && !wqi.validated ? 1 : 0;
         }
         case 'SurveyInstance': {
-          // TODO : Ask Jarle or Maxence here, as there is no validated props in SurveyInstance but it's still used in wegas-button.js : 212
-          return instance.active /* && !instance.validated */ ? 1 : 0;
+          const si = (instance as unknown) as Readonly<ISurveyInstance>;
+          return si.active &&
+            (si.status === 'REQUESTED' || si.status === 'ONGOING')
+            ? 1
+            : 0;
         }
         case 'PeerReviewInstance': {
+          const pri = (instance as unknown) as Readonly<IPeerReviewInstance>;
           const types: ['toReview', 'reviewed'] = ['toReview', 'reviewed'];
           return types.reduce(
             (ot, t) =>
               ot +
-              (instance[t] as IReview[]).reduce(
+              (pri[t] as IReview[]).reduce(
                 (or, _r) =>
                   // TODO : Ask Maxence because r.reviewState is used in wegas-button.js : 212 but this prop seem to no exists on a Review
                   or +
-                  ((t === 'toReview' &&
-                    instance.reviewState === 'DISPATCHED') ||
-                  (t === 'reviewed' && instance.reviewState === 'NOTIFIED')
+                  ((t === 'toReview' && pri.reviewState === 'DISPATCHED') ||
+                  (t === 'reviewed' && pri.reviewState === 'NOTIFIED')
                     ? 1
                     : 0),
                 0,

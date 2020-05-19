@@ -40,8 +40,8 @@ registerComponent(
     'ambulance',
     {
       script: schemaProps.scriptVariable('Variable', true, [
-        'TextDescriptor',
-        'NumberDescriptor',
+        'ISTextDescriptor',
+        'ISNumberDescriptor',
       ]),
     },
     ['ISNumberDescriptor', 'ISStringDescriptor'],

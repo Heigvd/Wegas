@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TranslatableContent } from '../../../data/i18n';
-import { StoreConsumer, StoreDispatch, useStore } from '../../../data/store';
+import { StoreConsumer, StoreDispatch } from '../../../data/store';
 import { VariableDescriptor } from '../../../data/selectors';
 import { EntityChooser } from '../../EntityChooser';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
@@ -349,19 +349,5 @@ export default function QuestionList(props: QuestionProps) {
         );
       }}
     </StoreConsumer>
-  );
-}
-
-interface MessageDisplayProps {
-  entity: ISMessage;
-}
-
-export function MessageDisplay({ entity }: MessageDisplayProps) {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div>{entity.date}</div>
-      <div>{entity.from}</div>
-      <div>{entity.body}</div>
-    </div>
   );
 }

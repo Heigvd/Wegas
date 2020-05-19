@@ -10,6 +10,7 @@ import {
   DragSourceOptions,
   DragPreviewOptions,
 } from 'react-dnd';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 
 const componentStyle = css({
   padding: '10px',
@@ -67,7 +68,6 @@ export function useComponentDrag(
 function ComponentElement({ componentName }: ComponentElementProps) {
   const component = usePageComponentStore(s => s[componentName]);
   const [, drag, preview] = useComponentDrag(componentName);
-
   return (
     <div ref={drag} className={componentStyle}>
       {component ? (
@@ -86,10 +86,13 @@ function ComponentElement({ componentName }: ComponentElementProps) {
 }
 
 export function ComponentPalette() {
-  const components = usePageComponentStore(s => s);
+  const componentNames = usePageComponentStore(
+    s => Object.keys(s),
+    deepDifferent,
+  );
   return (
     <div className={cx(flex, flexWrap, paletteStyle)}>
-      {Object.keys(components).map(k => (
+      {componentNames.map(k => (
         <ComponentElement key={k} componentName={k} />
       ))}
     </div>

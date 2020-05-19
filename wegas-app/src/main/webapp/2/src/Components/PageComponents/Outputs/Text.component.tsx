@@ -1,14 +1,28 @@
 import * as React from 'react';
-import { Text, TextProps } from '../../Outputs/Text';
+import { Text } from '../../Outputs/Text';
 import {
   registerComponent,
   pageComponentFactory,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
+import { useComponentScript } from '../../Hooks/useComponentScript';
 
-function PlayerText(props: TextProps & WegasComponentProps) {
-  return <Text {...props} style={{ margin: 'auto', ...props.style }} />;
+export interface PlayerTextProps extends WegasComponentProps {
+  script?: IScript;
+}
+
+function PlayerText({ script, className, style }: PlayerTextProps) {
+  const { content, instance } = useComponentScript<ITextDescriptor>(script);
+  return instance == null || instance.trValue == null ? (
+    <span>Not found: {content}</span>
+  ) : (
+    <Text
+      style={{ margin: 'auto', ...style }}
+      className={className}
+      htmlTranslatableContent={instance.trValue}
+    />
+  );
 }
 
 registerComponent(
@@ -17,7 +31,9 @@ registerComponent(
     'Text',
     'paragraph',
     {
-      script: schemaProps.scriptVariable('Variable', true, ['TextDescriptor']),
+      script: schemaProps.scriptVariable('Variable', true, [
+        'ISTextDescriptor',
+      ]),
       className: schemaProps.string('ClassName', false),
     },
     ['ISTextDescriptor'],

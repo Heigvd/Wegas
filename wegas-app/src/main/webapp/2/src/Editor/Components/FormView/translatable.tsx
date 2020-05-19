@@ -41,16 +41,21 @@ export function createTranslatableContent(
   };
 }
 
-// export function translate(translatable: ITranslatableContent, lang: string, availableLang) {
-//   const translation = translatable.translations[lang];
-//   if (Object.keys(translatable.translations).length === 0) {
-//     return '';
-//   } else if (translation === undefined) {
-//     return translatable.translations[0];
-//   } else {
-//     return translation;
-//   }
-// }
+export function useTranslate(translatable: ITranslatableContent) {
+  const { lang } = React.useContext(languagesCTX);
+  return translate(translatable, lang);
+}
+
+export function translate(translatable: ITranslatableContent, lang: string) {
+  const translation = translatable.translations[lang];
+  if (Object.keys(translatable.translations).length === 0) {
+    return '';
+  } else if (translation === undefined) {
+    return translatable.translations[0]?.translation || '';
+  } else {
+    return translation.translation;
+  }
+}
 
 /**
  * HOC: Transform a hashmap (lang:value) into value based on current language

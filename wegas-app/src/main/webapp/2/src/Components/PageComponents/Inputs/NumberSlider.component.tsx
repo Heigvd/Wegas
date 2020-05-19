@@ -66,7 +66,7 @@ registerComponent(
     'sliders-h',
     {
       script: schemaProps.scriptVariable('Variable', true, [
-        'NumberDescriptor',
+        'ISNumberDescriptor',
       ]),
       steps: schemaProps.number('Steps', false),
       displayValues: schemaProps.select('Display value', false, displayModes),

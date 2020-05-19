@@ -6,15 +6,11 @@ import {
 import { schemaProps } from '../tools/schemaProps';
 import { ConnectedQuestionDisplay } from '../../AutoImport/Question/List';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { useComponentScript } from '../../Hooks/useComponentScript';
 import { EntityChooser } from '../../EntityChooser';
 import { TranslatableContent } from '../../../data/i18n';
 import { isUnread } from '../../../data/proxyfy/methods/QuestionDescriptor';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
-import {
-  flatten,
-  findByName,
-} from '../../../data/selectors/VariableDescriptorSelector';
+import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
 import { cx, css } from 'emotion';
 import { flex, itemCenter } from '../../../css/classes';
 import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
@@ -29,7 +25,7 @@ interface QuestionListDisplayProps extends WegasComponentProps {
 }
 
 function QuestionListDisplay({ questionList }: QuestionListDisplayProps) {
-  const entities = useStore(s => {
+  const entities = useStore(() => {
     const descriptor = safeClientScriptEval<ISListDescriptor>(
       questionList ? questionList.content : '',
     );

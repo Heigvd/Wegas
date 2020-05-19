@@ -66,12 +66,12 @@ registerComponent(
     'Phases',
     'ellipsis-h',
     {
-      phase: schemaProps.scriptVariable('Phase', true, ['NumberDescriptor']),
+      phase: schemaProps.scriptVariable('Phase', true, ['ISNumberDescriptor']),
       phaseMin: schemaProps.scriptVariable('Phase min', true, [
-        'NumberDescriptor',
+        'ISNumberDescriptor',
       ]),
       phaseMax: schemaProps.scriptVariable('Phase max', true, [
-        'NumberDescriptor',
+        'ISNumberDescriptor',
       ]),
     },
     ['number'],
