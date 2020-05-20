@@ -8,7 +8,7 @@ import { useGameModel } from './useGameModel';
 import { Actions } from '../../data';
 import { transpile } from 'typescript';
 import { classesCTX } from '../Contexts/ClassesProvider';
-import { wlog, wwarn } from '../../Helper/wegaslog';
+import { wwarn } from '../../Helper/wegaslog';
 import { deepDifferent } from './storeHookFactory';
 
 interface GlobalVariableClass {
@@ -61,17 +61,6 @@ export function useGlobals() {
   // Variable class
   globals.Variable = {
     find: <T extends IVariableDescriptor>(_gm: unknown, name: string) => {
-      wlog('Searching ' + name);
-      wlog(
-        'Value ' +
-          (VDSelect.findByName<T>(name) == null ? 'not found' : 'found'),
-      );
-      wlog(
-        'Proxy ' +
-          (proxyfy(VDSelect.findByName<T>(name)) == null
-            ? 'not found'
-            : 'found'),
-      );
       return proxyfy(VDSelect.findByName<T>(name));
     },
   };

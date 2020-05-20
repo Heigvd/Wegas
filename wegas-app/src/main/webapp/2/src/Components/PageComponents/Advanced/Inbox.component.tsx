@@ -30,6 +30,10 @@ registerComponent(
       inbox: schemaProps.scriptVariable('Mailbox', true, ['ISInboxDescriptor']),
     },
     ['string'],
-    () => ({}),
+    () => ({
+      style: {
+        overflow: 'auto',
+      },
+    }),
   ),
 );

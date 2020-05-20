@@ -434,7 +434,7 @@ export function ComponentContainer({
   layout,
   vertical,
   className,
-  style,
+  style = {},
   children,
 }: ComponentContainerProps) {
   const container = React.useRef<HTMLDivElement>();
@@ -494,6 +494,10 @@ export function ComponentContainer({
   const infoBeamProps =
     useComputeUnreadCount(options?.upgrades?.unreadCount) ||
     options?.upgrades?.infoBeam;
+
+  // if (componentType === 'QuestionList') {
+  //   debugger;
+  // }
 
   return (
     <>

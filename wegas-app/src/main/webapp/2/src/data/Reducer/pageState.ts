@@ -9,13 +9,17 @@ import { getItemFromPath, isPageItem } from '../../Helper/pages';
 
 export type PageState = Readonly<AllPages>;
 
-const pageState: Reducer<PageState> = u(
-  (state: PageState, action: StateActions) => {
+const pageState: Reducer<Readonly<AllPages>> = u(
+  (state: AllPages, action: StateActions) => {
     switch (action.type) {
       case ActionType.PAGE_FETCH:
-        return { ...state, ...action.payload.pages };
+        Object.entries(action.payload.pages).forEach(
+          ([k, v]) => (state[k] = v),
+        );
+        break;
       case ActionType.PAGE_INDEX:
-        return { ...state, ...action.payload } as PageState;
+        state.index = action.payload.index;
+        break;
     }
   },
   {},

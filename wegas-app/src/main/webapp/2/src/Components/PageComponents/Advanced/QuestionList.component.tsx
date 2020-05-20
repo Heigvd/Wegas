@@ -79,6 +79,10 @@ registerComponent(
       ]),
     },
     ['string'],
-    () => ({}),
+    () => ({
+      style: {
+        overflow: 'auto',
+      },
+    }),
   ),
 );

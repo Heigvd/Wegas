@@ -60,7 +60,7 @@ const test = pageComponentFactory(
   {
     vertical: schemaProps.boolean('Vertical', false),
     allowUserResize: schemaProps.boolean('Splitter', false),
-    flexValues: schemaProps.hidden(false, 'object'),
+    flexValues: schemaProps.hidden(false, 'array'),
   },
   [],
   () => ({

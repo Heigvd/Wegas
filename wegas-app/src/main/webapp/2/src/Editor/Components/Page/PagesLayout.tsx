@@ -35,6 +35,7 @@ import {
   pagesStateStore,
   PageStateAction,
 } from '../../../data/pageStore';
+import { PAGEEDITOR_COMPONENT_TYPE } from './ComponentPalette';
 
 const bulletCSS = {
   width: '1em',
@@ -364,6 +365,7 @@ interface WegasComponentTitleProps {
   componentPath: number[];
   selectedComponentPath?: number[];
   componentControls: ComponentControls;
+  // isDragging?: boolean;
 }
 
 function WegasComponentTitle({
@@ -374,7 +376,8 @@ function WegasComponentTitle({
   componentPath,
   selectedComponentPath,
   componentControls,
-}: WegasComponentTitleProps) {
+}: // isDragging,
+WegasComponentTitleProps) {
   const registeredComponent = usePageComponentStore(s => s[component.type]);
   const { editMode } = React.useContext(pageCTX);
 
@@ -399,6 +402,13 @@ function WegasComponentTitle({
     isComponentFocused(editMode, pageId, componentPath),
   );
 
+  // React.useEffect(() => {
+  //   if (isDragging) {
+  //     wlog('DRAGGING IN PROGRESS');
+  //     pageDispatch(PageStateAction.unsetFocused());
+  //   }
+  // }, [isDragging]);
+
   return (
     <LayoutNodeTitle
       icon={icon}
@@ -407,13 +417,13 @@ function WegasComponentTitle({
       tooltip={registeredComponent == null ? 'Unknown component' : undefined}
       onClick={() => onEdit(pageId, componentPath)}
       onMouseOver={e => {
-        if (editMode) {
+        if (editMode /*&& !isDragging*/) {
           e.stopPropagation();
           pageDispatch(PageStateAction.setFocused(pageId, componentPath));
         }
       }}
       onMouseOut={e => {
-        if (editMode) {
+        if (editMode /*&& !isDragging*/) {
           e.stopPropagation();
           pageDispatch(PageStateAction.unsetFocused());
         }
@@ -467,13 +477,21 @@ function WegasComponentNode({
   componentControls,
 }: WegasComponentNodeProps) {
   const page = useStore(s => s.pages[pageId], deepDifferent);
-
+  //const [isDragging, setIsDragging] = React.useState<boolean>(false);
   const id: ComponentNodeId = { pageId, page, componentPath };
   const parentProps = getParentProps();
 
   return (
     <TreeNode
       {...parentProps}
+      // draggingMonitor={{
+      //   isDragging: setIsDragging,
+      //   monitorTypes: [
+      //     TREEVIEW_COMPONENT_TYPE,
+      //     TREEVIEW_INDEX_ITEM_TYPE,
+      //     PAGEEDITOR_COMPONENT_TYPE,
+      //   ],
+      // }}
       title={
         <WegasComponentTitle
           component={component}
@@ -483,6 +501,7 @@ function WegasComponentNode({
           pageId={pageId}
           selectedComponentPath={selectedComponentPath}
           selectedPageId={selectedPageId}
+          //isDragging={isDragging}
         />
       }
       id={id}
@@ -490,7 +509,7 @@ function WegasComponentNode({
       acceptType={[
         TREEVIEW_COMPONENT_TYPE,
         TREEVIEW_INDEX_ITEM_TYPE,
-        // PAGEEDITOR_COMPONENT_TYPE,
+        PAGEEDITOR_COMPONENT_TYPE,
       ]}
       noDrag={componentPath.length === 0}
       noDrop={component.props?.children == null}
@@ -763,7 +782,6 @@ export function PagesLayout(props: PagesLayoutProps) {
           id={{ pagePath: [] }}
           type="NODE"
           onDrop={({ target, id }) => {
-            debugger;
             const computedTargetParent = target.parent
               ? target.parent
               : { pagePath: [] };

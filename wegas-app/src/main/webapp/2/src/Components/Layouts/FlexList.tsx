@@ -106,14 +106,14 @@ export interface FlexItemProps extends WegasComponentItemProps {
 export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
   (
     {
-      layout,
+      layout = {},
       onClick,
       onMouseOver,
       onMouseOut,
       onMouseEnter,
       onMouseLeave,
       className,
-      style,
+      style = {},
       tooltip,
       children,
     },
