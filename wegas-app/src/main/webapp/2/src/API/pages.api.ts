@@ -1,6 +1,5 @@
 import { rest } from './rest';
 import { GameModel } from '../data/selectors';
-import { PageState } from '../data/Reducer/pageState';
 
 const PAGE_BASE = (gameModelId?: number) =>
   `GameModel/${

@@ -3,7 +3,6 @@ import {
   Tree,
   TreeNode,
   DropResult,
-  ItemDescription,
 } from '../Editor/Components/Views/TreeView/TreeView';
 import {
   flexColumn,
@@ -25,10 +24,6 @@ const YELLOW_TEST_TYPE = 'YELLOW_TEST_TYPE';
 export default function NewTreeViewTester() {
   const [dropResult, setDropResult] = React.useState<DropResult<string>>();
 
-  const greenItem: ItemDescription<string> = {
-    id: 'OUTSIDE',
-    type: GREE_TEST_TYPE,
-  };
   const [, greenDrag] = useDrag({
     item: { type: GREE_TEST_TYPE },
   });

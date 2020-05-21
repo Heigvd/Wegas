@@ -230,6 +230,7 @@ export interface WegasComponentUpgrades {
   infoBeam?: InfoBeamProps;
   unreadCount?: IScript;
   disableIf?: IScript;
+  showIf?: IScript;
 }
 
 const upgradeChoices: HashListChoices = [
@@ -292,6 +293,19 @@ const upgradeChoices: HashListChoices = [
       prop: 'disableIf',
       schema: schemaProps.script(
         'Disable If',
+        false,
+        'GET',
+        'TypeScript',
+        'false',
+      ),
+    },
+  },
+  {
+    label: 'Show If',
+    value: {
+      prop: 'showIf',
+      schema: schemaProps.script(
+        'Show If',
         false,
         'GET',
         'TypeScript',

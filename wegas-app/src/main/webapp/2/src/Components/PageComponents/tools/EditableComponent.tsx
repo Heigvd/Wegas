@@ -122,6 +122,7 @@ const emptyLayoutItemStyle = css({
   borderStyle: 'solid',
   borderWidth: '1px',
   width: '100px',
+  height: 'fit-content',
   overflowWrap: 'normal',
   zIndex: 0,
 });
@@ -473,6 +474,12 @@ export function ComponentContainer({
     options?.upgrades?.disableIf?.content || 'false',
   );
 
+  const showScript = useScript<boolean>(
+    options?.upgrades?.showIf?.content || 'true;',
+  );
+
+  const showComponent = editable || showScript;
+
   const isDisabled = (locked || disabled) === true;
 
   const isFocused = usePagesStateStore(
@@ -494,10 +501,6 @@ export function ComponentContainer({
   const infoBeamProps =
     useComputeUnreadCount(options?.upgrades?.unreadCount) ||
     options?.upgrades?.infoBeam;
-
-  // if (componentType === 'QuestionList') {
-  //   debugger;
-  // }
 
   return (
     <>
@@ -614,9 +617,14 @@ export function ComponentContainer({
             stackedHandles={stackedHandles}
             componentType={componentType}
             path={path}
+            infoMessage={
+              options?.upgrades?.showIf != null && !showScript
+                ? 'This component is shown only in edit mode'
+                : undefined
+            }
           />
         )}
-        <ErrorBoundary>{children}</ErrorBoundary>
+        {showComponent && <ErrorBoundary>{children}</ErrorBoundary>}
         {infoBeamProps && <InfoBeam {...infoBeamProps} />}
         {editable && childrenType !== 'ABSOLUTE' && (
           <ComponentDropZone
@@ -659,6 +667,8 @@ export function EmptyComponentContainer({
         return FlexItem;
     }
   }, [childrenType]);
+
+  debugger;
 
   return (
     <Container

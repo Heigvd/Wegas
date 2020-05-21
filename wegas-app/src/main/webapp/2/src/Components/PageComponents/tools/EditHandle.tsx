@@ -7,6 +7,7 @@ import { flex, flexColumn, flexRow, textCenter } from '../../../css/classes';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 import { themeVar } from '../../Theme';
+import { MessageString } from '../../../Editor/Components/MessageString';
 
 const handleContentStyle = css({
   borderRadius: themeVar.borderRadius,
@@ -32,6 +33,10 @@ interface EditorHandleProps {
    * stackedHandles - the handles that overlapses with the current one
    */
   stackedHandles?: JSX.Element[];
+  /**
+   * infoMessage - a message to shows on the handle
+   */
+  infoMessage?: string;
 }
 
 export function EditHandle({
@@ -39,6 +44,7 @@ export function EditHandle({
   componentType,
   path,
   stackedHandles,
+  infoMessage,
 }: EditorHandleProps) {
   const handleRef = React.createRef<HTMLDivElement>();
   const {
@@ -66,6 +72,7 @@ export function EditHandle({
         >
           {(name ? name + ' : ' : '') + componentType}
         </div>
+        {infoMessage && <MessageString type="warning" value={infoMessage} />}
         <div className={cx(flex, flexRow) + ' wegas-component-handle-content'}>
           <IconButton icon="edit" onClick={() => onEdit(path)} />
           <IconButton icon="arrows-alt" ref={drag} />

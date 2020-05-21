@@ -33,6 +33,19 @@ export interface DnDComponent {
   path?: number[];
 }
 
+export function isDnDComponent(
+  item?: Partial<DnDComponent>,
+): item is DnDComponent {
+  return (
+    typeof item === 'object' &&
+    item != null &&
+    'componentName' in item &&
+    typeof item.componentName === 'string' &&
+    'type' in item &&
+    typeof item.type === 'string'
+  );
+}
+
 interface ComponentElementProps {
   componentName: string;
 }

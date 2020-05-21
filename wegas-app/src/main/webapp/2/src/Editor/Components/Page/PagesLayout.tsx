@@ -35,7 +35,7 @@ import {
   pagesStateStore,
   PageStateAction,
 } from '../../../data/pageStore';
-import { PAGEEDITOR_COMPONENT_TYPE } from './ComponentPalette';
+import { PAGEEDITOR_COMPONENT_TYPE, isDnDComponent } from './ComponentPalette';
 
 const bulletCSS = {
   width: '1em',
@@ -97,7 +97,7 @@ interface IndexNodeId {
   pagePath: string[];
 }
 
-interface ComponentNodeId {
+export interface ComponentNodeId {
   pageId: string;
   page: WegasComponent;
   componentPath: number[];
@@ -768,9 +768,10 @@ interface PagesLayoutProps {
 
 export function PagesLayout(props: PagesLayoutProps) {
   const index = useStore(s => s.pages.index, deepDifferent);
+  const { selectedPageId, selectedPage } = React.useContext(pageEditorCTX);
   const { dispatch } = store;
   const { componentControls } = props;
-  const { onMove } = componentControls;
+  const { onMove, onNew } = componentControls;
 
   return (
     <Toolbar className={expandBoth}>
@@ -781,35 +782,62 @@ export function PagesLayout(props: PagesLayoutProps) {
         <Tree<NodeId>
           id={{ pagePath: [] }}
           type="NODE"
-          onDrop={({ target, id }) => {
+          onDrop={({ target, id, item }) => {
             const computedTargetParent = target.parent
               ? target.parent
               : { pagePath: [] };
 
             if (
-              !isComponentNodeId(id) &&
-              !isComponentNodeId(computedTargetParent)
+              id == null &&
+              isDnDComponent(item) &&
+              isComponentNodeId(computedTargetParent) &&
+              selectedPageId != null &&
+              selectedPage != null
             ) {
-              dispatch(
-                Actions.PageActions.moveIndexItem(
-                  id.pagePath,
-                  computedTargetParent.pagePath,
-                  target.index,
-                ),
-              );
-            } else if (
-              isComponentNodeId(id) &&
-              isComponentNodeId(computedTargetParent)
-            ) {
-              onMove(
-                id.pageId,
-                computedTargetParent.pageId,
-                id.page,
-                computedTargetParent.page,
-                id.componentPath,
-                computedTargetParent.componentPath,
-                target.index || 0,
-              );
+              if (item.path != null) {
+                onMove(
+                  selectedPageId,
+                  computedTargetParent.pageId,
+                  selectedPage,
+                  computedTargetParent.page,
+                  item.path,
+                  computedTargetParent.componentPath,
+                  target.index || 0,
+                );
+              } else {
+                onNew(
+                  selectedPageId,
+                  selectedPage,
+                  computedTargetParent.componentPath,
+                  item.componentName,
+                );
+              }
+            } else {
+              if (
+                !isComponentNodeId(id) &&
+                !isComponentNodeId(computedTargetParent)
+              ) {
+                dispatch(
+                  Actions.PageActions.moveIndexItem(
+                    id.pagePath,
+                    computedTargetParent.pagePath,
+                    target.index,
+                  ),
+                );
+              } else if (
+                isComponentNodeId(id) &&
+                isComponentNodeId(computedTargetParent)
+              ) {
+                onMove(
+                  id.pageId,
+                  computedTargetParent.pageId,
+                  id.page,
+                  computedTargetParent.page,
+                  id.componentPath,
+                  computedTargetParent.componentPath,
+                  target.index || 0,
+                );
+              }
             }
           }}
         >

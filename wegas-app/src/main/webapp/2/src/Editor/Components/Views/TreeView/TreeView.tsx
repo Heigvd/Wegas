@@ -25,6 +25,7 @@ export interface NodeBasicInfo<T> {
 }
 
 export interface DropResult<T> {
+  item: {};
   id: T;
   source: NodeBasicInfo<T>;
   target: NodeBasicInfo<T>;
@@ -126,9 +127,10 @@ function useTreeViewDrop<T>(
   >({
     accept: acceptType,
     canDrop: () => !noDrop,
-    drop: ({ id, parent, index }) => {
+    drop: ({ id, parent, index }, mon) => {
       onDrop &&
         onDrop({
+          item: mon.getItem(),
           id,
           source: {
             parent,
