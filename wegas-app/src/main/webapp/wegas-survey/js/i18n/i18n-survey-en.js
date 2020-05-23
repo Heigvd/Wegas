@@ -78,7 +78,8 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 teamRepliesOptional: "Optional Replies",
                 noLogId: "No \"Log ID\" has been set for this session.<br>Replies to the survey will not be saved!<br>Please contact the platform administrator (AlbaSim).",
                 alreadyLaunched: "This survey is already launched",
-                deleteRunning: "This survey is already running.<br>Really delete it?"
+                deleteRunning: "This survey is already running.<br>Really delete it?",
+                modifyRunning: "This survey is running and cannot be modified now."
             }
         }
     });

@@ -78,7 +78,8 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 teamRepliesOptional: "Optionale Antworte",
                 noLogId: "Für diese Sitzung wurde keine \"Log-ID\" festgelegt.<br>Antworten auf die Umfrage werden nicht gespeichert!<br>Bitte kontaktieren Sie den Plattform-Administrator (AlbaSim).",
                 alreadyLaunched: "Diese Umfrage ist schon gestartet",
-                deleteRunning: "Diese Umfrage ist gestartet.<br>Wirklich löschen?"
+                deleteRunning: "Diese Umfrage ist gestartet.<br>Wirklich löschen?",
+                modifyRunning: "Diese Umfrage ist gestartet und darf jetzt nicht geändert werden."
             }
         }
     });

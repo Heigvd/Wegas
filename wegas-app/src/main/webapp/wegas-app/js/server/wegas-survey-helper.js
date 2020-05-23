@@ -140,7 +140,7 @@ var SurveyHelper = (function() {
 
         monitoring.nbInputs = inputDescriptors.length;
 
-        // Empty surveys are to be treated as inactive ones:
+        // Empty surveys are treated as inactive ones:
         if (inputDescriptors.length === 0) {
             monitoring.active = false;
             return JSON.stringify(monitoring);

@@ -78,7 +78,8 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
                 teamRepliesOptional: "Réponses facultatives",
                 noLogId: "Aucun \"Log ID\" n'a été fixé pour cette partie.<br>Les réponses au questionnaire ne seront pas sauvegardées !<br>Veuillez contacter l'administrateur de la plateforme (AlbaSim).",
                 alreadyLaunched: "Ce questionnaire est déjà lancé",
-                deleteRunning: "Ce questionnaire est en cours d'exécution.<br>Faut-il vraiment le supprimer ?"
+                deleteRunning: "Ce questionnaire est en cours d'exécution.<br>Faut-il vraiment le supprimer ?",
+                modifyRunning: "Ce questionnaire est en cours d'exécution et ne peut pas être modifié maintenant."
             }
 
         }
