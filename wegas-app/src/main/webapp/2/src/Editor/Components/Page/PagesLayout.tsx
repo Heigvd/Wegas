@@ -28,7 +28,13 @@ import { themeVar } from '../../../Components/Theme';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { pageEditorCTX, pageCTX } from './PageEditor';
-import { Tree, TreeNode, GetParentPropsFn, ItemDescription, isItemDescription } from '../Views/TreeView/TreeView';
+import {
+  Tree,
+  TreeNode,
+  GetParentPropsFn,
+  ItemDescription,
+  isItemDescription,
+} from '../Views/TreeView/TreeView';
 import {
   usePagesStateStore,
   isComponentFocused,
@@ -109,9 +115,11 @@ function isComponentNodeId(nodeId: NodeId): nodeId is ComponentNodeId {
   return 'pageId' in nodeId;
 }
 
-export type LayoutDndComponent = ItemDescription<ComponentNodeId>
+export type LayoutDndComponent = ItemDescription<ComponentNodeId>;
 
-export function isLayoutDndComponent(item?:Partial<LayoutDndComponent>): item is LayoutDndComponent{
+export function isLayoutDndComponent(
+  item?: Partial<LayoutDndComponent>,
+): item is LayoutDndComponent {
   return isItemDescription(item) && isComponentNodeId(item.id);
 }
 
@@ -317,7 +325,7 @@ interface LayoutNodeTitleProps extends ClassAndStyle {
   title: string;
   advancedTitle?: string;
   tooltip?: string;
-  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  onMouseUp?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   onMouseOver?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   onMouseOut?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   classSelector?: string[];
@@ -328,7 +336,7 @@ function LayoutNodeTitle({
   title,
   advancedTitle,
   tooltip,
-  onClick,
+  onMouseUp,
   onMouseOver,
   onMouseOut,
   className,
@@ -344,7 +352,7 @@ function LayoutNodeTitle({
 
   return (
     <div
-      onClick={onClick}
+      onMouseUp={onMouseUp}
       className={
         cx(nodeContentStyle, titleStyle, flex, grow, itemCenter, {}) +
         classNameOrEmpty(className)
@@ -421,7 +429,7 @@ WegasComponentTitleProps) {
       title={title}
       advancedTitle={title + ' ' + JSON.stringify(componentPath)}
       tooltip={registeredComponent == null ? 'Unknown component' : undefined}
-      onClick={() => onEdit(pageId, componentPath)}
+      onMouseUp={() => onEdit(pageId, componentPath)}
       onMouseOver={e => {
         if (editMode /*&& !isDragging*/) {
           e.stopPropagation();
@@ -564,7 +572,7 @@ function PageIndexTitle({
       advancedTitle={
         indexItem.name + (isPageItem(indexItem) ? ` ${indexItem.id}` : '')
       }
-      onClick={() => isPageItem(indexItem) && onPageClick(indexItem.id!)}
+      onMouseUp={() => isPageItem(indexItem) && onPageClick(indexItem.id!)}
       className={cx({
         [selectedIndexItemStyle]:
           isPageItem(indexItem) && indexItem.id === selectedPageId,

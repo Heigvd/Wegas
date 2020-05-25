@@ -126,6 +126,22 @@ export default function NewTreeViewTester() {
           )}
         </Tree>
       </div>
+      <div className={cx(flex, flexColumn, grow)}>
+        <div>Drop result : {JSON.stringify(dropResult)}</div>
+        <Tree
+          id={''}
+          type={TREENODE_TEST_TYPE}
+          onDrop={r => {
+            setDropResult(r);
+          }}
+        >
+          {getParentProps => (
+            <TreeNode {...getParentProps()} id="1" title="Stage 1">
+              Single stage
+            </TreeNode>
+          )}
+        </Tree>
+      </div>
       <div className={cx(flex, flexDistribute, itemCenter, grow)}>
         <div
           ref={greenDrag}

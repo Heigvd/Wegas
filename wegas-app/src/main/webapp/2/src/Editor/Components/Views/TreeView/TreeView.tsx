@@ -3,7 +3,12 @@ import {
   DefaultDndProvider,
   dropZoneClass,
 } from '../../../../Components/Contexts/DefaultDndProvider';
-import { flexColumn, flex, relative } from '../../../../css/classes';
+import {
+  flexColumn,
+  flex,
+  relative,
+  itemCenter,
+} from '../../../../css/classes';
 import { cx, css } from 'emotion';
 import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
 import {
@@ -14,7 +19,6 @@ import {
 } from 'react-dnd';
 import { classNameOrEmpty } from '../../../../Helper/className';
 import { deepDifferent } from '../../../../Components/Hooks/storeHookFactory';
-import { useDebounce } from '../../../../Components/Hooks/useDebounce';
 
 const treeNodeStyle = cx(flex, flexColumn);
 const childrenStyle = css({ marginLeft: '2em' });
@@ -34,7 +38,8 @@ export interface DropResult<T> {
 export interface ItemDescription<T> extends NodeBasicInfo<T> {
   id: T;
   type: string | symbol;
-  source?: React.MutableRefObject<HTMLDivElement | undefined>;
+  // source?: React.MutableRefObject<HTMLDivElement | undefined>;
+  rect: DOMRect | undefined;
 }
 
 export function isItemDescription<T>(
@@ -103,23 +108,43 @@ interface DropPreviewProps extends ClassAndStyle {
    * minHeight - the minimum height of the drop preview
    */
   minHeight?: React.CSSProperties['minHeight'];
+  /**
+   * hide - hide the drop zone
+   */
+  hide?: boolean;
 }
 
 const DropPreview = React.forwardRef<HTMLDivElement, DropPreviewProps>(
-  ({ height, minHeight, className, style }: DropPreviewProps, ref) => {
+  ({ height, minHeight, className, style, hide }: DropPreviewProps, ref) => {
     return (
       <div
         ref={ref}
         className={className}
         style={{
+          ...style,
           height,
           minHeight,
-          ...style,
+          ...(hide ? { display: 'none' } : {}),
         }}
       />
     );
   },
 );
+
+function isOverAllowed(
+  acceptType: string | symbol | (string | symbol)[] | undefined,
+  itemType: string | symbol | undefined | null,
+  isOver: boolean,
+) {
+  // wlog({ acceptType, itemType, isOver });
+  return (
+    isOver &&
+    itemType != null &&
+    (((typeof acceptType === 'string' || typeof acceptType === 'symbol') &&
+      acceptType === itemType) ||
+      (Array.isArray(acceptType) && acceptType.includes(itemType)))
+  );
+}
 
 function useTreeViewDrop<T>(
   acceptType: Exclude<TreeNodeProps<T>['acceptType'], undefined>,
@@ -130,6 +155,7 @@ function useTreeViewDrop<T>(
     ItemDescription<T>,
     void,
     {
+      isOver: boolean;
       isOverCurrent: boolean;
       canDrop: boolean;
       item: ItemDescription<T> | null;
@@ -149,16 +175,14 @@ function useTreeViewDrop<T>(
         });
     },
     collect: (mon: DropTargetMonitor) => {
-      const itemType = mon.getItem()?.type;
+      const itemType = mon.getItemType();
       return {
-        isOverCurrent:
-          (itemType != null &&
-            (typeof acceptType === 'string' ||
-              typeof acceptType === 'symbol') &&
-            acceptType === itemType) ||
-          (Array.isArray(acceptType) &&
-            acceptType.includes(itemType) &&
-            mon.isOver({ shallow: true })),
+        isOver: isOverAllowed(acceptType, itemType, mon.isOver()),
+        isOverCurrent: isOverAllowed(
+          acceptType,
+          itemType,
+          mon.isOver({ shallow: true }),
+        ),
         canDrop: mon.canDrop(),
         item: mon.getItem(),
       };
@@ -171,6 +195,14 @@ interface ParentPassedProps<T> {
    * id - the id of the parent node
    */
   id: ItemDescription<T>['parent'];
+  // /**
+  //  * nbChild - the number of children in the parent
+  //  */
+  // nbChild: React.MutableRefObject<number>;
+  /**
+   * getLastChildrenIndex - return the index of the last children
+   */
+  getLastChildrenIndex: () => number;
   /**
    * acceptType - the allowed type/s to drop in node. If not set, the type of the current node is used
    */
@@ -235,19 +267,19 @@ interface TreeNodeProps<T> extends ClassAndStyle {
    * onDrop - this function is triggered when something is dropped on a node,
    */
   onDrop?: (result: DropResult<T>) => void;
-  /**
-   * draggingMonitor - object that allows monitoring the dragged element over the tree
-   */
-  draggingMonitor?: {
-    /**
-     * isDragging - called every time a element with monitorTypes is dragged
-     */
-    isDragging: (dragging: boolean) => void;
-    /**
-     * monitorTypes - the types of element to monitor
-     */
-    monitorTypes: (string | symbol)[];
-  };
+  // /**
+  //  * draggingMonitor - object that allows monitoring the dragged element over the tree
+  //  */
+  // draggingMonitor?: {
+  //   /**
+  //    * isDragging - called every time a element with monitorTypes is dragged
+  //    */
+  //   isDragging: (dragging: boolean) => void;
+  //   /**
+  //    * monitorTypes - the types of element to monitor
+  //    */
+  //   monitorTypes: (string | symbol)[];
+  // };
   /**
    * children - can either be simple react node or a function allows to link children nodes with their parent
    */
@@ -268,19 +300,17 @@ export function TreeNode<T>({
   index,
   parentProps,
   onDrop,
-  draggingMonitor,
+  // draggingMonitor,
   children,
   className,
   style,
 }: TreeNodeProps<T>) {
-  const container = React.useRef<HTMLDivElement>();
-  const innerContainer = React.useRef<HTMLDivElement>(null);
+  const innerContainer = React.useRef<HTMLDivElement>();
   const [expanded, setExpanded] = React.useState(isExpanded || noTitle);
-  const [showUpperDropZone, setShowUpperDropZone] = React.useState(false);
+  const [hoverTopNode, setHoverTopNode] = React.useState(false);
+  const [hoverBottomNode, setHoverBottomNode] = React.useState(false);
 
   let nbChild = 0;
-
-  //wlog(JSON.stringify(acceptType));
 
   const [{ isDragging }, drag, preview] = useDrag<
     ItemDescription<T>,
@@ -292,52 +322,75 @@ export function TreeNode<T>({
       type,
       index,
       parent: parentProps?.id,
-      source: container,
+      rect: innerContainer.current?.getBoundingClientRect(),
     },
     canDrag: () => !noDrag,
-    collect: (mon: DragSourceMonitor) => ({
-      isDragging: mon.isDragging(),
-    }),
+    collect: (mon: DragSourceMonitor) => {
+      return {
+        isDragging: mon.isDragging(),
+      };
+    },
   });
 
-  const [{ canDrop: canInstantDrop, item }, drop] = useDrop<
+  const [{ item, isOverCurrent: isOverCurrentNode }, drop] = useDrop<
     ItemDescription<T>,
     void,
     {
-      canDrop: boolean;
+      isOverCurrent: boolean;
       item: ItemDescription<T> | null;
     }
   >({
     accept: parentProps?.acceptType || type,
     canDrop: () => !parentProps?.noDrop,
+    drop: ({ id, parent, index }, mon) => {
+      onDrop &&
+        onDrop({
+          item: mon.getItem(),
+          id,
+          source: {
+            parent,
+            index,
+          },
+          target: {
+            parent: id,
+            index: nbChild,
+          },
+        });
+    },
     hover: (_item, mon) => {
-      const rect = container.current?.getBoundingClientRect();
+      const rect = innerContainer.current?.getBoundingClientRect();
       const posY = mon.getClientOffset()?.y;
-      const itemType = mon.getItem()?.type;
+      const itemType = mon.getItemType();
 
-      setShowUpperDropZone(
-        ((itemType != null &&
-          (typeof acceptType === 'string' || typeof acceptType === 'symbol') &&
-          acceptType === itemType) ||
-          (Array.isArray(acceptType) &&
-            acceptType.includes(itemType) &&
-            mon.isOver({ shallow: true }) &&
-            rect != null &&
-            posY != null &&
-            posY < rect.top + rect.height / 2)) === true,
+      setHoverTopNode(
+        isOverAllowed(
+          parentProps?.acceptType || type,
+          itemType,
+          mon.isOver({ shallow: true }),
+        ) &&
+          rect != null &&
+          posY != null &&
+          posY < rect.top + (rect.height * 1) / 4 === true,
+      );
+      setHoverBottomNode(
+        isOverAllowed(
+          parentProps?.acceptType || type,
+          itemType,
+          mon.isOver({ shallow: true }),
+        ) &&
+          rect != null &&
+          posY != null &&
+          posY > rect.top + (rect.height * 3) / 4 === true,
       );
     },
     collect: (mon: DropTargetMonitor) => {
-      draggingMonitor && draggingMonitor.isDragging(mon.isOver());
+      // draggingMonitor && draggingMonitor.isDragging(mon.isOver());
       return {
         isOverCurrent: mon.isOver({ shallow: true }),
-        canDrop: mon.canDrop(),
         item: mon.getItem(),
       };
     },
   });
-
-  const canDrop = useDebounce(canInstantDrop, 100);
 
   const [{ isOverCurrent: isOverUp }, dropUp] = useTreeViewDrop<T>(
     parentProps?.acceptType || type,
@@ -354,18 +407,17 @@ export function TreeNode<T>({
   );
 
   const [{ isOverCurrent: isOverDown }, dropDown] = useTreeViewDrop<T>(
-    acceptType ? acceptType : type,
-    noDrop,
-    res => {
+    parentProps?.acceptType || type,
+    parentProps?.noDrop,
+    res =>
       onDrop &&
-        onDrop({
-          ...res,
-          target: {
-            parent: id,
-            index: nbChild,
-          },
-        });
-    },
+      onDrop({
+        ...res,
+        target: {
+          parent: parentProps?.id,
+          index: index == null ? undefined : index + 1,
+        },
+      }),
   );
 
   React.useEffect(() => {
@@ -380,40 +432,58 @@ export function TreeNode<T>({
       id,
       acceptType,
       noDrop,
+      getLastChildrenIndex: () => nbChild - 1,
     },
   });
 
+  const showTopDropZone =
+    !parentProps?.noDrop &&
+    !isDragging &&
+    ((isOverCurrentNode && hoverTopNode) || isOverUp) &&
+    deepDifferent(item?.id, parentProps?.id);
+  const showBottomDropZone =
+    !parentProps?.noDrop &&
+    !isDragging &&
+    ((isOverCurrentNode && hoverBottomNode) || isOverDown) &&
+    deepDifferent(item?.id, parentProps?.id) &&
+    parentProps?.getLastChildrenIndex() === index;
+  const showInnerDropZone =
+    children != null &&
+    !expanded &&
+    !noDrop &&
+    !isDragging &&
+    isOverCurrentNode &&
+    deepDifferent(item?.id, id);
+
   return (
-    <div
-      ref={ref => {
-        if (ref) {
-          container.current = ref;
-          drag(ref);
-          drop(ref);
-        }
-      }}
-      className={treeNodeStyle + classNameOrEmpty(className)}
-      style={style}
-    >
-      {!isDragging &&
-        (showUpperDropZone || isOverUp) &&
-        deepDifferent(item?.id, parentProps?.id) && (
-          <DropPreview
-            ref={dropUp}
-            className={dropZoneClass(isOverUp)}
-            height={item?.source?.current?.getBoundingClientRect().height || 50}
-          />
-        )}
-      <div ref={innerContainer}>
+    <div className={treeNodeStyle + classNameOrEmpty(className)} style={style}>
+      <DropPreview
+        ref={dropUp}
+        className={dropZoneClass(isOverUp)}
+        height={item?.rect?.height || 20}
+        hide={!showTopDropZone}
+      />
+      <div
+        ref={ref => {
+          if (ref) {
+            innerContainer.current = ref;
+            drag(ref);
+            drop(ref);
+          }
+        }}
+        className={showInnerDropZone ? dropZoneClass(true) : undefined}
+      >
         {!noTitle && (
-          <div ref={preview} className={cx(flex, relative)}>
+          <div ref={preview} className={cx(flex, relative, itemCenter)}>
             {children != null && (
-              <IconButton
-                icon={expanded ? 'caret-down' : 'caret-right'}
-                onClick={() => setExpanded(e => !e)}
-              />
+              <div>
+                <IconButton
+                  icon={expanded ? 'caret-down' : 'caret-right'}
+                  onClick={() => setExpanded(e => !e)}
+                />
+              </div>
             )}
-            {title}
+            {title != null && <div>{title}</div>}
           </div>
         )}
         {children != null && expanded && (
@@ -421,31 +491,15 @@ export function TreeNode<T>({
             {typeof children === 'function'
               ? children(getParentProps)
               : children}
-            {canDrop && deepDifferent(item?.id, id) && (
-              <div
-                ref={dropDown}
-                style={{
-                  minHeight: isOverDown
-                    ? item?.source?.current?.getBoundingClientRect().height ||
-                      50
-                    : '5px',
-                }}
-                className={dropZoneClass(isOverDown)}
-              >
-                {!isDragging && isOverDown && (
-                  <DropPreview
-                    className={dropZoneClass(isOverDown)}
-                    height={
-                      item?.source?.current?.getBoundingClientRect().height ||
-                      50
-                    }
-                  />
-                )}
-              </div>
-            )}
           </div>
         )}
       </div>
+      <DropPreview
+        ref={dropDown}
+        className={dropZoneClass(isOverDown)}
+        height={item?.rect?.height || 20}
+        hide={!showBottomDropZone}
+      />
     </div>
   );
 }
