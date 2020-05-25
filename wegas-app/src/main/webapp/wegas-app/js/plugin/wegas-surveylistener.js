@@ -89,6 +89,7 @@ YUI.add('wegas-surveylistener', function(Y) {
             var descrId = sd.get("id");
             if (this.currentSurvey && this.currentSurvey.get("parentId") === descrId) {
                 this.retireSurvey();
+                this.checkSurveys();
             }
             if (this.knownSurveyHandlers[descrId]) {
                 this.knownSurveyHandlers[descrId].detach();
@@ -145,8 +146,13 @@ YUI.add('wegas-surveylistener', function(Y) {
             }
             Y.use(["wegas-survey-widgets", "wegas-popuplistener"], function(Y) {
                 if (ctx.currentSurvey) {
-                    Y.log("Survey request ignored, another one is already active");
-                    return;
+                    if (ctx.currentSurvey.get("id") === inst.get("id")) {
+                        // The survey has been reset, restart the widget:
+                        ctx.retireSurvey();
+                    } else {
+                        Y.log("Survey request ignored, another one is already active");
+                        return;
+                    }
                 }
                 var status = inst.get("status");
                 if (inst.get("active") &&

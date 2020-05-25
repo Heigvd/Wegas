@@ -55,7 +55,15 @@ var SurveyHelper = (function() {
             inst = sd.getInstance();
         inst.setStatusFromString(ORCHESTRATION_PROGRESS.REQUESTED.name);
     }
-    
+
+    // Function for requesting the end of a survey.
+    // Yields the required client-side updates.
+    function close(SurveyDescriptorName) {
+        var sd = Variable.find(gameModel, SurveyDescriptorName),
+            inst = sd.getInstance();
+        inst.setStatusFromString(ORCHESTRATION_PROGRESS.CLOSED.name);
+    }
+
     // Param getDebugTeam should be true only when invoked from editor.
     function summarize(SurveyDescriptorName, getDebugTeam) {
         var sd = Variable.find(gameModel, SurveyDescriptorName),
@@ -63,7 +71,6 @@ var SurveyHelper = (function() {
             game = self.getGame(),
             teams = game.getTeams(),
             nbTeams = teams.size(),
-            isTeamGame = !gameModel.getProperties().getFreeForAll(),
             isPlayerScopeSurvey = (sd.getScopeType().toString() === "PlayerScope" ),
             t, teamId, team,
             players, nbPlayers, playerId, p, nbIterations,
@@ -253,9 +260,14 @@ var SurveyHelper = (function() {
                 }
             }
         }
-
-        // Return global status ONGOING in some hybrid situations:
-        if (globalStatus < ORCHESTRATION_PROGRESS.ONGOING.id && hasOngoing) {
+        
+        // Special case when no player has joined yet:
+        if (Object.keys(monitoring.data).length === 0) {
+            var defInst = sd.getDefaultInstance();
+            globalSurvStatus = defInst.getStatus().toString();
+            globalSurvActive = defInst.getActive();
+        } else if (globalStatus < ORCHESTRATION_PROGRESS.ONGOING.id && hasOngoing) {
+            // Return global status ONGOING in some hybrid situations:
             globalSurvStatus = ORCHESTRATION_PROGRESS.ONGOING.name;
         }
         monitoring.active = globalSurvActive;
@@ -272,6 +284,9 @@ var SurveyHelper = (function() {
         },
         request: function(surveyDescriptorName) {
             return request(surveyDescriptorName);
+        },
+        close: function(surveyDescriptorName) {
+            return close(surveyDescriptorName);
         }
     };
 

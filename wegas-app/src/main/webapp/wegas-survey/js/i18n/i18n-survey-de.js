@@ -79,7 +79,10 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 noLogId: "Für diese Sitzung wurde keine \"Log-ID\" festgelegt.<br>Antworten auf die Umfrage werden nicht gespeichert!<br>Bitte kontaktieren Sie den Plattform-Administrator (AlbaSim).",
                 alreadyLaunched: "Diese Umfrage ist schon gestartet",
                 deleteRunning: "Diese Umfrage ist gestartet.<br>Wirklich löschen?",
-                modifyRunning: "Diese Umfrage ist gestartet und darf jetzt nicht geändert werden."
+                modifyRunning: "Diese Umfrage ist gestartet und darf jetzt nicht geändert werden.",
+                surveyCancelled: "Die Umfrage wurde storniert.",
+                surveyLaunched: "Die Umfrage wurde erfolgreich gestartet."
+
             }
         }
     });
