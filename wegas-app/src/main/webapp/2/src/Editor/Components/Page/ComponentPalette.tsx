@@ -50,7 +50,7 @@ interface ComponentElementProps {
   componentName: string;
 }
 
-export const PAGEEDITOR_COMPONENT_TYPE: 'dndComponnent' = 'dndComponnent';
+export const PAGEEDITOR_COMPONENT_TYPE = 'dndComponnent';
 
 export interface DragMonitor {
   handlerId: string | symbol | null;

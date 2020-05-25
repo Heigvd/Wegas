@@ -17,6 +17,7 @@ import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import { useStore } from '../../../data/store';
 import { shallowDifferent } from '../../Hooks/storeHookFactory';
+import { entityIs } from '../../../data/entities';
 
 const unreadSignalStyle = css({ margin: '3px' });
 
@@ -27,7 +28,11 @@ interface QuestionListDisplayProps extends WegasComponentProps {
 function QuestionListDisplay({ questionList }: QuestionListDisplayProps) {
   const entities = useStore(() => {
     const descriptor = safeClientScriptEval<ISListDescriptor>(
-      questionList ? questionList.content : '',
+      entityIs(questionList, 'Script')
+        ? questionList
+          ? questionList.content
+          : ''
+        : '',
     );
 
     if (descriptor == null || descriptor.name == null) {

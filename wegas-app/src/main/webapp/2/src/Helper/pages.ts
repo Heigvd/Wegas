@@ -148,7 +148,7 @@ export const findComponent = (
 export const PAGE_LOADER_COMPONENT_TYPE = 'PageLoader';
 
 export interface PageLoaderComponentProps {
-  name: string;
+  name?: string;
   initialSelectedPageId: IScript;
 }
 

@@ -30,10 +30,12 @@ function PlayerPageLoader({
   name,
 }: PlayerPageLoaderProps) {
   let pageScript = useStore(s => {
-    return s.global.pageLoaders[name];
+    if (name != null) {
+      return s.global.pageLoaders[name];
+    }
   }, deepDifferent);
   const { pageIdPath } = React.useContext(pageCTX);
-  if (!pageScript) {
+  if (name != null && !pageScript) {
     store.dispatch(
       ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
         name,
@@ -64,11 +66,11 @@ registerComponent(
     PAGE_LOADER_COMPONENT_TYPE,
     'window-maximize',
     {
+      name: schemaProps.string('Page', true),
       initialSelectedPageId: schemaProps.pageSelect('Page', false),
     },
     [],
     () => ({
-      name: 'Unamed',
       initialSelectedPageId: defaultPageAsScript(),
     }),
   ),

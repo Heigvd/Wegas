@@ -266,16 +266,10 @@ const global: Reducer<Readonly<GlobalState>> = u(
         // return}
       }
       case ActionType.EDITOR_REGISTER_PAGE_LOADER:
-        state.pageLoaders = {
-          ...state.pageLoaders,
-          [action.payload.name]: action.payload.pageId,
-        };
+        state.pageLoaders[action.payload.name] = action.payload.pageId;
         return;
       case ActionType.LOCK_SET:
-        state.locks = {
-          ...state.locks,
-          [action.payload.token]: action.payload.locked,
-        };
+        state.locks[action.payload.token] = action.payload.locked;
         return;
       default:
         state.events = eventManagement(state, action);

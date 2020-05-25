@@ -9,7 +9,11 @@ import ComponentEditor from './ComponentEditor';
 import { PageLoader } from './PageLoader';
 import { css, cx } from 'emotion';
 import { noop } from 'lodash-es';
-import { PagesLayout } from './PagesLayout';
+import {
+  PagesLayout,
+  LayoutDndComponent,
+  isLayoutDndComponent,
+} from './PagesLayout';
 import { store, useStore } from '../../../data/store';
 import { Actions } from '../../../data';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
@@ -33,6 +37,8 @@ export interface FocusedComponent {
   componentPath: number[];
 }
 
+export type PageEditorComponent = DnDComponent | LayoutDndComponent;
+
 export interface PageContext {
   editMode: boolean;
   showBorders: boolean;
@@ -40,7 +46,7 @@ export interface PageContext {
   pageIdPath: string[];
   handles: Handles;
   onDrop: (
-    dndComponent: DnDComponent,
+    dndComponent: PageEditorComponent,
     path: number[],
     index?: number,
     props?: WegasComponent['props'],
@@ -423,41 +429,64 @@ export default function PageEditor() {
 
   const onDrop = React.useCallback(
     (
-      dndComponent: DnDComponent,
+      dndComponent: PageEditorComponent,
       path: number[],
       index?: number,
       props?: WegasComponent['props'],
     ) => {
+      let componentPageId = selectedPageId;
+      let componentPage = selectedPage;
+      let componentPath: number[] | undefined;
+      let componentName: string | undefined;
+
+      if (isLayoutDndComponent(dndComponent)) {
+        componentPageId = dndComponent.id.pageId;
+        componentPage = dndComponent.id.page;
+        componentPath = dndComponent.id.componentPath;
+        componentName = undefined;
+      } else {
+        componentPageId = selectedPageId;
+        componentPage = selectedPage;
+        componentPath = dndComponent.path;
+        componentName = dndComponent.componentName;
+      }
+
       if (selectedPageId != null && selectedPage != null) {
-        if (dndComponent.path == null) {
+        // Dropping new component
+        if (componentPath == null && componentName != null) {
           const newComponent = createComponent(
             selectedPage,
             path,
-            dndComponent.componentName,
+            componentName,
             props
               ? props
-              : components[
-                  dndComponent.componentName
-                ].getComputedPropsFromVariable(),
+              : components[componentName].getComputedPropsFromVariable(),
             index,
           );
           if (newComponent) {
             patchPage(selectedPageId, newComponent.newPage);
             onEdit(selectedPageId, newComponent.newPath);
           }
-        } else {
-          const newIndex = index ? index : 0;
-          onMoveLayoutComponent(
-            selectedPageId,
-            selectedPageId,
-            selectedPage,
-            selectedPage,
-            dndComponent.path,
-            path,
-            newIndex,
-            props,
-          );
-          // onEdit(selectedPageId, [...path, newIndex]);
+        }
+        // Dropping existing component
+        else {
+          if (
+            componentPageId != null &&
+            componentPage != null &&
+            componentPath != null
+          ) {
+            const newIndex = index ? index : 0;
+            onMoveLayoutComponent(
+              componentPageId,
+              selectedPageId,
+              componentPage,
+              selectedPage,
+              componentPath,
+              path,
+              newIndex,
+              props,
+            );
+          }
         }
       }
     },

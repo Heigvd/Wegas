@@ -28,7 +28,7 @@ import { themeVar } from '../../../Components/Theme';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { pageEditorCTX, pageCTX } from './PageEditor';
-import { Tree, TreeNode, GetParentPropsFn } from '../Views/TreeView/TreeView';
+import { Tree, TreeNode, GetParentPropsFn, ItemDescription, isItemDescription } from '../Views/TreeView/TreeView';
 import {
   usePagesStateStore,
   isComponentFocused,
@@ -41,19 +41,19 @@ const bulletCSS = {
   width: '1em',
 };
 
-const controlsClassName = 'page-index-item-controls';
+const CONTROLS_CLASSNAME = 'page-index-item-controls';
 
-const pageLayoutItemType = 'PAGE_LAYOUT_ITEM';
-const TREEVIEW_COMPONENT_TYPE = 'PAGE_LAYOUT_COMPONENT';
+const PAGE_LAYOUT_ITEM = 'PAGE_LAYOUT_ITEM';
+export const PAGE_LAYOUT_COMPONENT = 'PAGE_LAYOUT_COMPONENT';
 
 const titleStyle = css({
   borderStyle: 'solid',
   borderColor: 'transparent',
   borderRadius: themeVar.borderRadius,
-  [`&>.${controlsClassName}`]: {
+  [`&>.${CONTROLS_CLASSNAME}`]: {
     visibility: 'hidden',
   },
-  [`:hover>.${controlsClassName}`]: {
+  [`:hover>.${CONTROLS_CLASSNAME}`]: {
     visibility: 'visible',
   },
 });
@@ -107,6 +107,12 @@ type NodeId = IndexNodeId | ComponentNodeId;
 
 function isComponentNodeId(nodeId: NodeId): nodeId is ComponentNodeId {
   return 'pageId' in nodeId;
+}
+
+export type LayoutDndComponent = ItemDescription<ComponentNodeId>
+
+export function isLayoutDndComponent(item?:Partial<LayoutDndComponent>): item is LayoutDndComponent{
+  return isItemDescription(item) && isComponentNodeId(item.id);
 }
 
 interface LayoutButtonProps extends ClassAndStyle {
@@ -439,7 +445,7 @@ WegasComponentTitleProps) {
           onSelect={componentType =>
             onNew(pageId, page, componentPath, componentType)
           }
-          className={controlsClassName}
+          className={CONTROLS_CLASSNAME}
         />
       )}
       <ConfirmButton
@@ -451,7 +457,7 @@ WegasComponentTitleProps) {
             ? 'The first component of a page connot be deleted'
             : 'Delete the component'
         }
-        className={controlsClassName}
+        className={CONTROLS_CLASSNAME}
       />
     </LayoutNodeTitle>
   );
@@ -505,9 +511,9 @@ function WegasComponentNode({
         />
       }
       id={id}
-      type={TREEVIEW_COMPONENT_TYPE}
+      type={PAGE_LAYOUT_COMPONENT}
       acceptType={[
-        TREEVIEW_COMPONENT_TYPE,
+        PAGE_LAYOUT_COMPONENT,
         TREEVIEW_INDEX_ITEM_TYPE,
         PAGEEDITOR_COMPONENT_TYPE,
       ]}
@@ -567,7 +573,7 @@ function PageIndexTitle({
       {isFolderItem(indexItem) && (
         <IndexItemAdder
           path={newPath}
-          className={controlsClassName}
+          className={CONTROLS_CLASSNAME}
           tooltip="Add new page or folder"
         />
       )}
@@ -584,7 +590,7 @@ function PageIndexTitle({
             }}
             tooltip="Default page"
             className={cx({
-              [controlsClassName]: indexItem.id !== defaultPageId,
+              [CONTROLS_CLASSNAME]: indexItem.id !== defaultPageId,
             })}
           />
           <IconButton
@@ -602,7 +608,7 @@ function PageIndexTitle({
               );
             }}
             tooltip="Scenarist page"
-            className={controlsClassName}
+            className={CONTROLS_CLASSNAME}
           />
           <IconButton
             icon={
@@ -619,14 +625,14 @@ function PageIndexTitle({
               );
             }}
             tooltip="Trainer page"
-            className={controlsClassName}
+            className={CONTROLS_CLASSNAME}
           />
         </>
       )}
       <IndexItemModifer
         path={newPath}
         indexItem={indexItem}
-        className={controlsClassName}
+        className={CONTROLS_CLASSNAME}
       />
       <ConfirmButton
         icon="trash"
@@ -639,7 +645,7 @@ function PageIndexTitle({
             ? 'The folder must be empty to delete it'
             : `Delete the ${isPageItem(indexItem) ? 'page' : 'folder'}`
         }
-        className={controlsClassName}
+        className={CONTROLS_CLASSNAME}
       />
     </LayoutNodeTitle>
   );
@@ -688,7 +694,7 @@ function PageIndexItemNode({
           />
         }
         id={id}
-        type={pageLayoutItemType}
+        type={PAGE_LAYOUT_ITEM}
       >
         {getParentProps => (
           <WegasComponentNode
@@ -718,7 +724,7 @@ function PageIndexItemNode({
         />
       }
       id={id}
-      type={pageLayoutItemType}
+      type={PAGE_LAYOUT_ITEM}
     >
       {getParentProps =>
         indexItem.items.map(v => (

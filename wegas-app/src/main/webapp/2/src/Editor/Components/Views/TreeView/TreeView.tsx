@@ -35,7 +35,17 @@ export interface ItemDescription<T> extends NodeBasicInfo<T> {
   id: T;
   type: string | symbol;
   source?: React.MutableRefObject<HTMLDivElement | undefined>;
-  //rect?: DOMRect | undefined;
+}
+
+export function isItemDescription<T>(
+  item?: Partial<ItemDescription<T>>,
+): item is ItemDescription<T> {
+  return (
+    typeof item === 'object' &&
+    'id' in item &&
+    'type' in item &&
+    (typeof item.type === 'string' || typeof item.type === 'symbol')
+  );
 }
 
 interface TreeProps<T> extends ClassAndStyle {

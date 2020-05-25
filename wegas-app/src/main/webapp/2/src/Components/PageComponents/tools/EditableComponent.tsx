@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { dropZoneClass } from '../../Contexts/DefaultDndProvider';
-import {
-  DnDComponent,
-  PAGEEDITOR_COMPONENT_TYPE,
-} from '../../../Editor/Components/Page/ComponentPalette';
+import { PAGEEDITOR_COMPONENT_TYPE } from '../../../Editor/Components/Page/ComponentPalette';
 import { useDrop, DropTargetMonitor, DragElementWrapper } from 'react-dnd';
-import { pageCTX, Handles } from '../../../Editor/Components/Page/PageEditor';
+import {
+  pageCTX,
+  Handles,
+  PageEditorComponent,
+} from '../../../Editor/Components/Page/PageEditor';
 import { themeVar } from '../../Theme';
 import { flex } from '../../../css/classes';
 import { FlexItem, FlexListProps } from '../../Layouts/FlexList';
@@ -36,6 +37,7 @@ import { EditHandle } from './EditHandle';
 import { schemaProps } from './schemaProps';
 import { useStore } from '../../../data/store';
 import { useScript } from '../../Hooks/useScript';
+import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
 
 // Styles
 export const layoutHighlightStyle = css({
@@ -159,25 +161,37 @@ const checkIfInsideRectangle = (
  * @param onDrop - the function to trigger when a drop occures
  */
 function useDndComponentDrop(
-  onDrop?: (dndComponnent: DnDComponent, dndMonitor: DropTargetMonitor) => void,
+  onDrop?: (
+    dndComponnent: PageEditorComponent,
+    dndMonitor: DropTargetMonitor,
+  ) => void,
 ): [
   {
     isOver: boolean;
     isOverCurrent: boolean;
     canDrop: boolean;
-    item: DnDComponent | null;
+    item: PageEditorComponent | null;
   },
   DragElementWrapper<{}>,
 ] {
-  const [dropZoneProps, dropZone] = useDrop({
-    accept: PAGEEDITOR_COMPONENT_TYPE,
+  const [dropZoneProps, dropZone] = useDrop<
+    PageEditorComponent,
+    void,
+    {
+      isOver: boolean;
+      isOverCurrent: boolean;
+      canDrop: boolean;
+      item: PageEditorComponent | null;
+    }
+  >({
+    accept: [PAGEEDITOR_COMPONENT_TYPE, PAGE_LAYOUT_COMPONENT],
     canDrop: () => true,
     drop: onDrop,
     collect: (mon: DropTargetMonitor) => ({
       isOver: mon.isOver({ shallow: false }),
       isOverCurrent: mon.isOver({ shallow: true }),
       canDrop: mon.canDrop(),
-      item: mon.getItem() as DnDComponent | null,
+      item: mon.getItem() as PageEditorComponent | null,
     }),
   });
   const delayedCanDrop = useDebounce(dropZoneProps.canDrop, 100);
@@ -254,7 +268,10 @@ interface ComponentDropZoneProps {
   /**
    * onDrop - the called function when an authorized element is dropped on the zone
    */
-  onDrop?: (dndComponnent: DnDComponent, dndMonitor: DropTargetMonitor) => void;
+  onDrop?: (
+    dndComponnent: PageEditorComponent,
+    dndMonitor: DropTargetMonitor,
+  ) => void;
   /**
    * show - show the zone, hidden by default
    */
@@ -667,8 +684,6 @@ export function EmptyComponentContainer({
         return FlexItem;
     }
   }, [childrenType]);
-
-  debugger;
 
   return (
     <Container
