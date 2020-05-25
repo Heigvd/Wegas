@@ -1003,8 +1003,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     '</td><td>' +
                     I18n.t("survey.orchestrator.teamRepliesOptional") +
                     '</td></tr></thead><tbody>');
-                for (team in survData.data) {
-                    var teamData = survData.data[team];
+                for (team in survData.teamdata) {
+                    var teamData = survData.teamdata[team];
                     nbTeams++;
                     if (survData.isPlayerScope) {
                         // All members of a same team are expected to come sequentially:
@@ -1392,7 +1392,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     // This data has just been updated:
                     var survData = this.knownSurveys[surveyId];
                     // If no player has joined the session, we may simply delete the survey or reset it to NOT_STARTED:
-                    if (Object.keys(data.data).length === 0) {
+                    if (Object.keys(data.teamdata).length === 0) {
                         if (survData.isPublished) {
                             survDescr.get("defaultInstance").set("status", ORCHESTRATION_PROGRESS.NOT_STARTED);
                             this.persistSurvey(survDescr,

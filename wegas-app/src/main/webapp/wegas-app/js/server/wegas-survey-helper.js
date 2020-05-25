@@ -74,7 +74,7 @@ var SurveyHelper = (function() {
             isPlayerScopeSurvey = (sd.getScopeType().toString() === "PlayerScope" ),
             t, teamId, team,
             players, nbPlayers, playerId, p, nbIterations,
-            aPlayer, survInsts, survInst, data, replied, optionalReplied,
+            aPlayer, survInsts, survInst, teamdata, replied, optionalReplied,
             activeInputs, activeOptionalInputs,
             survActive,
             survStatus = ORCHESTRATION_PROGRESS.NOT_STARTED.name,
@@ -91,7 +91,7 @@ var SurveyHelper = (function() {
                 active: false,
                 status: globalSurvStatus,
                 nbInputs: 0,
-                data: {
+                teamdata: {
                     /*
                     teamId: {
                         name: "team name",
@@ -240,7 +240,7 @@ var SurveyHelper = (function() {
                     }
                 }
 
-                data = {
+                teamdata = {
                     name: team.getName(),
                     teamId: teamId,
                     teamSize: nbPlayers,
@@ -254,15 +254,15 @@ var SurveyHelper = (function() {
                 };
 
                 if (isPlayerScopeSurvey) {
-                    monitoring.data[playerId] = data;
+                    monitoring.teamdata[playerId] = teamdata;
                 } else {
-                    monitoring.data[teamId] = data;
+                    monitoring.teamdata[teamId] = teamdata;
                 }
             }
         }
         
         // Special case when no player has joined yet:
-        if (Object.keys(monitoring.data).length === 0) {
+        if (Object.keys(monitoring.teamdata).length === 0) {
             var defInst = sd.getDefaultInstance();
             globalSurvStatus = defInst.getStatus().toString();
             globalSurvActive = defInst.getActive();

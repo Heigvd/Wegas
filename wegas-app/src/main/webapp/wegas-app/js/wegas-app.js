@@ -257,8 +257,8 @@ YUI.add('wegas-app', function(Y) {
 
                         }, this);
 
-                    // @TODO Until a survey import feature is available,
-                    // restrict the survey tab to admins or games containing a survey:
+                    // @TODO Until all survey concepts are agreed upon,
+                    // restrict the survey tab to admins or games already containing a survey:
                     var isCurrentUserAdmin = !!Y.Wegas.Facade.User.cache.get("currentUser").get("roles").find(function(role) {
                         return role.get("name") === "Administrator";
                     });
