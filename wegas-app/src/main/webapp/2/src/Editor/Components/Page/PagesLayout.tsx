@@ -314,10 +314,11 @@ function ComponentAdder({ className, tooltip, onSelect }: ComponentAdderProps) {
   );
 }
 
-const compToKey = (component: WegasComponent) =>
+const compToKey = (component: WegasComponent, path?: number[]) =>
   JSON.stringify({
     type: component.type,
     props: omit(component.props, 'children'),
+    path,
   });
 
 interface LayoutNodeTitleProps extends ClassAndStyle {
@@ -532,7 +533,7 @@ function WegasComponentNode({
         ? getParentProps =>
             component.props?.children?.map((childComponent, i) => (
               <WegasComponentNode
-                key={compToKey(childComponent)}
+                key={compToKey(childComponent, [...componentPath, i])}
                 getParentProps={getParentProps}
                 component={childComponent}
                 pageId={pageId}

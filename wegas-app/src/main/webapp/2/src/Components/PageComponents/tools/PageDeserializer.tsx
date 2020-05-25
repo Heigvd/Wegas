@@ -72,6 +72,7 @@ export function PageDeserializer({
 
   const { children = [], ...restProps } =
     (wegasComponent && wegasComponent.props) || {};
+  const nbChildren = children.length;
   const component = usePageComponentStore(
     s => s[(wegasComponent && wegasComponent.type) || ''],
     deepDifferent,
@@ -81,14 +82,39 @@ export function PageDeserializer({
     componentName: string;
   };
 
+  const { WegasComponent, containerType, componentName } = component;
+
+  const oldRef = React.useRef({
+    containerType,
+    pageId,
+    uneditable,
+    path,
+  });
+
+  const childrenPack = React.useMemo(() => {
+    oldRef.current = { containerType, pageId, uneditable, path };
+    const newChildren = [];
+    for (let i = 0; i < nbChildren; ++i) {
+      newChildren.push(
+        <PageDeserializer
+          key={JSON.stringify([...(path ? path : []), i])}
+          pageId={pageId}
+          path={[...(path ? path : []), i]}
+          uneditable={uneditable}
+          childrenType={containerType}
+          last={i === nbChildren - 1}
+        />,
+      );
+    }
+    return newChildren;
+  }, [nbChildren, containerType, pageId, uneditable, path]);
+
   if (!wegasComponent) {
     return <pre>JSON error in page</pre>;
   }
   if (!component) {
     return <div>{`Unknown component : ${wegasComponent.type}`}</div>;
   }
-
-  const { WegasComponent, containerType, componentName } = component;
 
   return (
     <ComponentContainer
@@ -110,25 +136,30 @@ export function PageDeserializer({
         childrenType={childrenType}
         {...restProps}
       >
-        {editMode && children.length === 0 ? (
-          <EmptyComponentContainer
-            childrenType={containerType}
-            path={realPath}
-          />
-        ) : (
-          children.map((_, i) => {
-            return (
-              <PageDeserializer
-                key={JSON.stringify([...realPath, i])}
-                pageId={pageId}
-                path={[...realPath, i]}
-                uneditable={uneditable}
-                childrenType={containerType}
-                last={i === children.length - 1}
-              />
-            );
-          })
-        )}
+        {
+          editMode && children.length === 0 ? (
+            <EmptyComponentContainer
+              childrenType={containerType}
+              path={realPath}
+            />
+          ) : (
+            childrenPack
+          )
+          // (
+          //   children.map((_, i) => {
+          //     return (
+          //       <PageDeserializer
+          //         key={JSON.stringify([...realPath, i])}
+          //         pageId={pageId}
+          //         path={[...realPath, i]}
+          //         uneditable={uneditable}
+          //         childrenType={containerType}
+          //         last={i === children.length - 1}
+          //       />
+          //     );
+          //   })
+          // )
+        }
       </WegasComponent>
     </ComponentContainer>
   );
