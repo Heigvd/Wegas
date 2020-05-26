@@ -392,11 +392,10 @@ function extractUnreadCount(
             (ot, t) =>
               ot +
               (pri[t] as IReview[]).reduce(
-                (or, _r) =>
-                  // TODO : Ask Maxence because r.reviewState is used in wegas-button.js : 212 but this prop seem to no exists on a Review
+                (or, r) =>
                   or +
-                  ((t === 'toReview' && pri.reviewState === 'DISPATCHED') ||
-                  (t === 'reviewed' && pri.reviewState === 'NOTIFIED')
+                  ((t === 'toReview' && r.reviewState === 'DISPATCHED') ||
+                  (t === 'reviewed' && r.reviewState === 'NOTIFIED')
                     ? 1
                     : 0),
                 0,
