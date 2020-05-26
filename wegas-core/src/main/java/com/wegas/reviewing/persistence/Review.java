@@ -18,21 +18,19 @@ import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.View.Hidden;
+import com.wegas.editor.View.StringView;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import java.util.*;
 import javax.persistence.*;
 
 /**
- * A review is linked to two PeerReviewInstnace : the one who reviews and the
- * original reviewed 'author' A review is composed of the feedback (written by
- * reviewers) and the feedback comments (written by author). Both are a list of
- * evaluation instances
+ * A review is linked to two PeerReviewInstnace : the one who reviews and the original reviewed
+ * 'author' A review is composed of the feedback (written by reviewers) and the feedback comments
+ * (written by author). Both are a list of evaluation instances
  * <ol>
  * <li> dispatched: initial state, reviewer can edit feedback
- * <li> reviewed: reviewer can't edit feedback anymore, author can't read
- * feedback yet
- * <li> notified: author has access to the feedback and can edit feedback
- * comments
+ * <li> reviewed: reviewer can't edit feedback anymore, author can't read feedback yet
+ * <li> notified: author has access to the feedback and can edit feedback comments
  * <li> completed: feedback comments turns read-only, not yet visible by peers
  * <li>
  * <li> closed: feedback comments is visible by the reviewer <li>
@@ -98,6 +96,13 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
      * Current review state
      */
     @Enumerated(value = EnumType.STRING)
+    @WegasEntityProperty(
+        optional = false, nullable = false,
+        view = @View(
+            label = "Status",
+            value = StringView.class
+        )
+    )
     private ReviewState reviewState;
 
     @JsonIgnore
@@ -119,23 +124,21 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
     private PeerReviewInstance author;
 
     /**
-     * List of evaluation instances that compose the feedback (writable by
-     * 'reviewer' only)
+     * List of evaluation instances that compose the feedback (writable by 'reviewer' only)
      */
     @OneToMany(mappedBy = "feedbackReview", cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(value = Hidden.class, label ="FeedbacFeedbackk"))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(value = Hidden.class, label = "FeedbacFeedbackk"))
     private List<EvaluationInstance> feedback = new ArrayList<>();
 
     /**
-     * List of evaluation instances that compose the feedback evaluation
-     * (writable by 'author' only)
+     * List of evaluation instances that compose the feedback evaluation (writable by 'author' only)
      */
     @OneToMany(mappedBy = "commentsReview", cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(value = Hidden.class, label ="Comments"))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(value = Hidden.class, label = "Comments"))
     private List<EvaluationInstance> comments = new ArrayList<>();
 
     @Override
@@ -254,8 +257,7 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
     /**
      * set the list of evaluation instance composing the feedback comments
      *
-     * @param comments the list of evaluation instance composing the feedback
-     *                 comments
+     * @param comments the list of evaluation instance composing the feedback comments
      */
     public void setComments(List<EvaluationInstance> comments) {
         this.comments = comments;
@@ -294,7 +296,6 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
         return p;
     }
      */
-
     @Override
     public WithPermission getMergeableParent() {
         return this.getAuthor();
