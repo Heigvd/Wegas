@@ -61,6 +61,14 @@ YUI.add('wegas-survey-entities', function(Y) {
                 type: HTML,
                 label: "Closing remarks"
             }),
+            isPublished: {
+                type: BOOLEAN,
+                value: true,
+                view: {
+                    label: 'is published',
+                    type: HIDDEN
+                }
+            },
             items: {
                 type: ARRAY,
                 value: [],

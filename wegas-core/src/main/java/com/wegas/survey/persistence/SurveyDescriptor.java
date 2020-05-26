@@ -27,6 +27,7 @@ import com.wegas.survey.persistence.SurveyInstance.SurveyStatus;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.OneToMany;
@@ -81,6 +82,15 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
             optional = false, nullable = false, proposal = ValueGenerators.EmptyArray.class,
             view = @View(value = Hidden.class, label = "Items"), notSerialized = true)
     private List<SurveySectionDescriptor> items = new ArrayList<>();
+
+    /**
+     * True unless is should be hidden from trainer/scenarist listings
+     */
+    @Column(columnDefinition = "boolean default true")
+    @WegasEntityProperty(
+            optional = false, nullable = false, proposal = ValueGenerators.True.class,
+            view = @View(label = "isPublished"))
+    private Boolean isPublished = true;
 
     
     public SurveyDescriptor() {
@@ -164,7 +174,14 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
         }
     }
     
+    public Boolean getIsPublished() {
+        return isPublished;
+    }
     
+    public void setIsPublished(Boolean b) {
+        isPublished = b;
+    }
+
 // ~~~~~~ Sugar for scripts ~~~~~~~~
 
     /**

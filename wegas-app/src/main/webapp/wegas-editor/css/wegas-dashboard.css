@@ -493,6 +493,24 @@
     display: none !important; /* override inline style */
 }
 
-.yui3-skin-sam .wegas-statistics .footer a {
-    color: #878787;
+.yui3-skin-sam .wegas-statistics .footer a.wegas-statistics-download-button {
+    font-size: 18px;
+    color: #666;
+    text-decoration: none;
+    padding: 22px 10px 6px;
+    border: 1px solid #c9c9c9;
+    border-radius: 4px;
+    background: #dddddd;
 }
+
+.yui3-skin-sam .wegas-statistics .footer a.wegas-statistics-download-button:hover {
+    color: #333;
+    border-color: #aaa;
+    background-image: linear-gradient(transparent,rgba(0,0,0,0.05) 40%,rgba(0,0,0,0.15));
+}
+
+.yui3-skin-sam .wegas-statistics .footer a.wegas-statistics-download-button .icon {
+    vertical-align: 2px;
+    margin-right: 10px;
+}
+

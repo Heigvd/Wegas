@@ -257,14 +257,17 @@ YUI.add('wegas-app', function(Y) {
 
                         }, this);
 
-                    // @TODO Until a survey import feature is available, restrict the survey tab
-                    // to admins and games already containing at least one survey:
+                    // @TODO Until all survey concepts are agreed upon,
+                    // restrict the survey tab to admins or games already containing a survey:
                     var isCurrentUserAdmin = !!Y.Wegas.Facade.User.cache.get("currentUser").get("roles").find(function(role) {
                         return role.get("name") === "Administrator";
-                    })
+                    });
                     if (isCurrentUserAdmin || Y.Wegas.Facade.Variable.cache.find("@class", "SurveyDescriptor")) {
                         extraTabs._addTab({
-                            label: I18n.t("global.survey"),
+                            label: I18n.t("global.surveys"),
+                            // This widget automatically updates the server script path
+                            targetMode: ["host"],
+                            cssClass: "survey-orchestrator-parent",
                             children: [{
                                     "type": "SurveyOrchestrator"
                                 }]
