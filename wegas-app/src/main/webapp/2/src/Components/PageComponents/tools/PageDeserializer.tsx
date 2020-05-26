@@ -5,11 +5,13 @@ import {
   ComponentContainer,
   EmptyComponentContainer,
   WegasComponentProps,
+  ExtractedLayoutProps,
 } from './EditableComponent';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { useStore } from '../../../data/store';
 import { cloneDeep } from 'lodash-es';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import { PlayerLinearLayoutChildrenProps } from '../Layouts/LinearLayout.component';
 
 function getComponentFromPath(page: WegasComponent, path: number[]) {
   const newPath = [...path];
@@ -36,6 +38,7 @@ interface PageDeserializerProps {
   uneditable?: boolean;
   childrenType?: ContainerTypes;
   last?: boolean;
+  linearChildrenProps?: ExtractedLayoutProps['linearChildrenProps'];
 }
 
 export function PageDeserializer({
@@ -44,6 +47,7 @@ export function PageDeserializer({
   uneditable,
   childrenType,
   last,
+  linearChildrenProps,
 }: PageDeserializerProps): JSX.Element {
   const realPath = path ? path : [];
 
@@ -74,6 +78,10 @@ export function PageDeserializer({
   };
 
   const { WegasComponent, containerType, componentName } = component || {};
+  const linearProps: PlayerLinearLayoutChildrenProps =
+    containerType === 'LINEAR'
+      ? { noSplitter: restProps.noSplitter, noResize: restProps.noResize }
+      : {};
 
   const oldRef = React.useRef({
     containerType,
@@ -93,12 +101,13 @@ export function PageDeserializer({
           path={[...(path ? path : []), i]}
           uneditable={uneditable}
           childrenType={containerType}
+          linearChildrenProps={linearProps}
           last={i === nbChildren - 1}
         />,
       );
     }
     return newChildren;
-  }, [nbChildren, containerType, pageId, uneditable, path]);
+  }, [nbChildren, containerType, pageId, uneditable, path, linearProps]);
 
   if (!wegasComponent) {
     return <pre>JSON error in page</pre>;
@@ -117,6 +126,7 @@ export function PageDeserializer({
       componentType={componentName}
       containerType={containerType}
       childrenType={childrenType}
+      linearChildrenProps={linearChildrenProps}
       {...restProps}
     >
       <WegasComponent

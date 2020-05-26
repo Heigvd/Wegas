@@ -9,18 +9,20 @@ import { css, cx } from 'emotion';
 import { pageCTX } from './PageEditor';
 import { flex, expandHeight } from '../../../css/classes';
 
-const editStyle = css({
-  borderStyle: 'solid',
-  borderWidth: '30px',
-  borderColor: themeVar.disabledColor,
-  overflow: 'auto',
-});
+const editStyle = (editMode?: boolean) =>
+  css({
+    borderStyle: 'solid',
+    borderWidth: '30px',
+    borderColor: editMode ? themeVar.primaryHoverColor : themeVar.disabledColor,
+    overflow: 'auto',
+  });
 
 interface PageLoaderProps {
   selectedPageId?: string;
+  displayFrame?: boolean;
 }
 
-export function PageLoader({ selectedPageId }: PageLoaderProps) {
+export function PageLoader({ selectedPageId, displayFrame }: PageLoaderProps) {
   const selectedPage = useStore(
     s => (selectedPageId ? s.pages[selectedPageId] : undefined),
     deepDifferent,
@@ -31,7 +33,13 @@ export function PageLoader({ selectedPageId }: PageLoaderProps) {
     <DefaultDndProvider>
       <ThemeProvider contextName="player">
         <React.Suspense fallback={<TextLoader text="Building World!" />}>
-          <div className={cx(flex, { [editStyle]: editMode }, expandHeight)}>
+          <div
+            className={cx(
+              flex,
+              { [editStyle(editMode)]: displayFrame },
+              expandHeight,
+            )}
+          >
             {selectedPage ? (
               <PageDeserializer pageId={selectedPageId} />
             ) : (

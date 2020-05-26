@@ -13,9 +13,9 @@ const NODRAG_SELECTOR = 'fonkyflex-nodrag';
 
 const DEFAULT_FLEX_WRAP = 1000;
 
-const SPLITTER_TYPE = 'Splitter';
-const CONTENT_TYPE = 'Content';
-type ContainerItemType = typeof SPLITTER_TYPE | typeof CONTENT_TYPE;
+// const SPLITTER_TYPE = 'Splitter';
+// const CONTENT_TYPE = 'Content';
+// type ContainerItemType = typeof SPLITTER_TYPE | typeof CONTENT_TYPE;
 
 const containerStyle = css({
   [`&>.${SPLITTER_SELECTOR}.${HORIZONTAL_SELECTOR}`]: {
@@ -36,58 +36,58 @@ const splitterStyle = css({
   backgroundColor: themeVar.primaryLighterColor,
 });
 
-function isFonkyflexItem(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  i: any,
-): i is { type: { name: ContainerItemType } } {
-  return (
-    i != null &&
-    typeof i === 'object' &&
-    'type' in i &&
-    typeof i.type === 'function' &&
-    'name' in i.type
-  );
-}
+// function isFonkyflexItem(
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   i: any,
+// ): i is { type: { name: ContainerItemType } } {
+//   return (
+//     i != null &&
+//     typeof i === 'object' &&
+//     'type' in i &&
+//     typeof i.type === 'function' &&
+//     'name' in i.type
+//   );
+// }
 
-const MESSAGE_BAD_CONTENT =
-  'The content of the Container can only be Splitter or Content';
-const MESSAGE_BAD_STUCTURE =
-  'A Splitter must be surrounded by 2 Content components';
+// const MESSAGE_BAD_CONTENT =
+//   'The content of the Container can only be Splitter or Content';
+// const MESSAGE_BAD_STUCTURE =
+//   'A Splitter must be surrounded by 2 Content components';
 
 function getFlexGrowValues(flexItems: HTMLDivElement[]): number[] {
   return flexItems.map(c => Number(c.style.getPropertyValue('flex-grow')));
 }
 
-export interface ContainerProps extends ClassAndStyle {
+export interface FonkyFlexContainerProps extends ClassAndStyle {
   vertical?: boolean;
   flexValues?: number[];
-  noCheck?: boolean;
+  // noCheck?: boolean;
   onStartResize?: (splitterNumber: number, flexValues: number[]) => void;
   onStopResize?: (splitterNumber: number, flexValues: number[]) => void;
   onResize?: (splitterNumber: number, flexValues: number[]) => void;
 }
 
-interface SplitterProps extends ClassAndStyle {
+interface FonkyFlexSplitterProps extends ClassAndStyle {
   notDraggable?: boolean;
 }
 
-interface ContentProps extends WegasComponentItemProps {
+interface FonkyFlexContentProps extends WegasComponentItemProps {
   flexInit?: number;
 }
 
 // TODO : Rename with resize "something"
 
-export function Container({
+export function FonkyFlexContainer({
   vertical,
   flexValues,
-  noCheck,
+  // noCheck,
   onStartResize,
   onStopResize,
   onResize,
   className,
   style,
   children,
-}: React.PropsWithChildren<ContainerProps>) {
+}: React.PropsWithChildren<FonkyFlexContainerProps>) {
   const flexChildren = React.useRef<HTMLDivElement[]>([]);
   const splitterChildren = React.useRef<HTMLDivElement[]>([]);
   const contentChildren = React.useRef<HTMLDivElement[]>([]);
@@ -115,40 +115,40 @@ export function Container({
     };
   }, [manageMouseup]);
 
-  const error = noCheck
-    ? ''
-    : React.Children.map(children, (c, i) => {
-        if (
-          !isFonkyflexItem(c) ||
-          !(c.type.name === 'Splitter' || c.type.name === 'Content')
-        ) {
-          return MESSAGE_BAD_CONTENT;
-        } else if (c.type.name === 'Splitter') {
-          if (!Array.isArray(children)) {
-            return MESSAGE_BAD_STUCTURE;
-          } else {
-            const leftContent = children[i - 1];
-            const rightContent = children[i + 1];
-            if (leftContent == null || rightContent == null) {
-              return MESSAGE_BAD_STUCTURE;
-            } else if (
-              !isFonkyflexItem(leftContent) ||
-              !isFonkyflexItem(rightContent)
-            ) {
-              return MESSAGE_BAD_CONTENT;
-            } else if (
-              leftContent.type.name !== 'Content' ||
-              rightContent.type.name !== 'Content'
-            ) {
-              return MESSAGE_BAD_STUCTURE;
-            }
-          }
-        }
-      })?.reduce((o, e, i) => (e ? `${o}\n${i} : ${e}` : o), '') || '';
+  // const error = noCheck
+  //   ? ''
+  //   : React.Children.map(children, (c, i) => {
+  //       if (
+  //         !isFonkyflexItem(c) ||
+  //         !(c.type.name === 'Splitter' || c.type.name === 'Content')
+  //       ) {
+  //         return MESSAGE_BAD_CONTENT;
+  //       } else if (c.type.name === 'Splitter') {
+  //         if (!Array.isArray(children)) {
+  //           return MESSAGE_BAD_STUCTURE;
+  //         } else {
+  //           const leftContent = children[i - 1];
+  //           const rightContent = children[i + 1];
+  //           if (leftContent == null || rightContent == null) {
+  //             return MESSAGE_BAD_STUCTURE;
+  //           } else if (
+  //             !isFonkyflexItem(leftContent) ||
+  //             !isFonkyflexItem(rightContent)
+  //           ) {
+  //             return MESSAGE_BAD_CONTENT;
+  //           } else if (
+  //             leftContent.type.name !== 'Content' ||
+  //             rightContent.type.name !== 'Content'
+  //           ) {
+  //             return MESSAGE_BAD_STUCTURE;
+  //           }
+  //         }
+  //       }
+  //     })?.reduce((o, e, i) => (e ? `${o}\n${i} : ${e}` : o), '') || '';
 
-  if (error !== '') {
-    return <pre>{error}</pre>;
-  }
+  // if (error !== '') {
+  //   return <pre>{error}</pre>;
+  // }
 
   return (
     <div
@@ -271,14 +271,14 @@ export function Container({
   );
 }
 
-export function Splitter({
+export function FonkyFlexSplitter({
   notDraggable,
   className = splitterStyle,
   style,
-}: SplitterProps) {
+}: FonkyFlexSplitterProps) {
   return (
     <div
-      style={style}
+      style={{ ...style, ...(notDraggable ? { cursor: 'initial' } : {}) }}
       className={
         SPLITTER_SELECTOR +
         (notDraggable ? ' ' + NODRAG_SELECTOR : '') +
@@ -288,9 +288,9 @@ export function Splitter({
   );
 }
 
-export const Content = React.forwardRef<
+export const FonkyFlexContent = React.forwardRef<
   HTMLDivElement,
-  React.PropsWithChildren<ContentProps>
+  React.PropsWithChildren<FonkyFlexContentProps>
 >((props, ref) => {
   const {
     flexInit = DEFAULT_FLEX_WRAP,

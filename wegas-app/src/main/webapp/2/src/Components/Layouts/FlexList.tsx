@@ -129,7 +129,6 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
       className={className}
       style={{
         position: 'relative',
-        textAlign: 'center',
         ...layout,
         ...style,
       }}

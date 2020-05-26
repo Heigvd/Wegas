@@ -15,7 +15,7 @@ import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import { useDebounce } from '../../Hooks/useDebounce';
 import { omit } from 'lodash-es';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { Content, Splitter, ContainerProps } from '../../Layouts/FonkyFlex';
+import { FonkyFlexContent, FonkyFlexSplitter } from '../../Layouts/FonkyFlex';
 import {
   pagesStateStore,
   usePagesStateStore,
@@ -34,6 +34,10 @@ import { schemaProps } from './schemaProps';
 import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
 import { UpgradesState, ComponentUpgradesManager } from './UpgradesComponent';
 import { ActionsState, ComponentActionsManager } from './ActionsComponent';
+import {
+  PlayerLinearLayoutProps,
+  PlayerLinearLayoutChildrenProps,
+} from '../Layouts/LinearLayout.component';
 
 // Styles
 export const layoutHighlightStyle = css({
@@ -84,7 +88,7 @@ const childDropzoneVerticalStyle = css({
 });
 
 const handleControlStyle = css({
-  textAlign: 'center',
+  // textAlign: 'center',
   '&>.wegas-component-handle': {
     visibility: 'hidden',
     opacity: 0.0,
@@ -427,9 +431,10 @@ export const wegasComponentCommonSchema = {
  * ExtractedLayoutProps - Extracted props from currently layout containers
  * Needed to define the orientation of the container
  */
-interface ExtractedLayoutProps {
+export interface ExtractedLayoutProps {
   layout?: FlexListProps['layout'];
-  vertical?: ContainerProps['vertical'];
+  vertical?: PlayerLinearLayoutProps['vertical'];
+  linearChildrenProps?: PlayerLinearLayoutChildrenProps;
 }
 
 const defaultUpgradesState: UpgradesState = {
@@ -454,6 +459,7 @@ export function ComponentContainer({
   options,
   layout,
   vertical,
+  linearChildrenProps,
   className,
   style = {},
   children,
@@ -466,10 +472,15 @@ export function ComponentContainer({
   const [actionsState, setActionsState] = React.useState<ActionsState>(
     defaultActionsState,
   );
-
   const upgrades =
     options?.upgrades == null ? defaultUpgradesState : upgradesState;
   const actions = options?.actions == null ? defaultActionsState : actionsState;
+
+  if (linearChildrenProps) {
+    debugger;
+  }
+
+  const { noSplitter, noResize } = linearChildrenProps || {};
 
   const [{ isOver }, dropZone] = useDndComponentDrop();
 
@@ -495,7 +506,9 @@ export function ComponentContainer({
       : containerType === 'LINEAR'
       ? vertical
       : false;
-
+  const showSplitter =
+    childrenType === 'LINEAR' && !last && (editMode || !noSplitter);
+  const allowResize = childrenType === 'LINEAR' && (editMode || !noResize);
   const isDisabled = (actions.locked || upgrades.disabled) === true;
 
   const isFocused = usePagesStateStore(
@@ -505,7 +518,7 @@ export function ComponentContainer({
   const Container = React.useMemo(() => {
     switch (childrenType) {
       case 'LINEAR':
-        return Content;
+        return FonkyFlexContent;
       case 'ABSOLUTE':
         return AbsoluteItem;
       case 'FLEX':
@@ -631,11 +644,6 @@ export function ComponentContainer({
             stackedHandles={stackedHandles}
             componentType={componentType}
             path={path}
-            // infoMessage={
-            //   options?.upgrades?.showIf != null && !showScript
-            //     ? 'This component is shown only in edit mode'
-            //     : undefined
-            // }
             infoMessage={
               options?.upgrades?.showIf != null && upgrades.show === false
                 ? 'This component is shown only in edit mode'
@@ -644,7 +652,6 @@ export function ComponentContainer({
           />
         )}
         {showComponent && <ErrorBoundary>{children}</ErrorBoundary>}
-        {/* {infoBeamProps && <InfoBeam {...infoBeamProps} />} */}
         {upgrades.infoBeamProps && <InfoBeam {...upgrades.infoBeamProps} />}
         {editable && childrenType !== 'ABSOLUTE' && (
           <ComponentDropZone
@@ -661,7 +668,7 @@ export function ComponentContainer({
         )}
         <LockedOverlay locked={isDisabled} />
       </Container>
-      {childrenType === 'LINEAR' && !last && <Splitter />}
+      {showSplitter && <FonkyFlexSplitter notDraggable={!allowResize} />}
     </>
   );
 }
@@ -679,7 +686,7 @@ export function EmptyComponentContainer({
   const Container = React.useMemo(() => {
     switch (childrenType) {
       case 'LINEAR':
-        return Content;
+        return FonkyFlexContent;
       case 'ABSOLUTE':
         return AbsoluteItem;
       case 'FLEX':

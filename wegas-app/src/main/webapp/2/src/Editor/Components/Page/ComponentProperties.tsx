@@ -63,19 +63,19 @@ const AsyncComponentForm = asyncSFC<EditorProps>(
   ),
 );
 
-export interface ComponentEditorProps {
+export interface ComponentPropertiesProps {
   entity?: WegasComponent;
   parent?: WegasComponent;
   update?: (variable: WegasComponent) => void;
   actions?: EditorProps['actions'];
 }
 
-export function ComponentEditor({
+export function ComponentProperties({
   entity,
   parent,
   update,
   actions,
-}: ComponentEditorProps) {
+}: ComponentPropertiesProps) {
   const schema = usePageComponentStore(s => {
     const baseSchema =
       entity && s[entity.type]
@@ -106,7 +106,7 @@ export function ComponentEditor({
   );
 }
 
-export default function ConnectedComponentEditor() {
+export default function ConnectedComponentProperties() {
   const { editedPath, selectedPage } = React.useContext(pageEditorCTX);
   const { onUpdate, onDelete } = React.useContext(pageCTX);
 
@@ -123,7 +123,7 @@ export default function ConnectedComponentEditor() {
   }
 
   return (
-    <ComponentEditor
+    <ComponentProperties
       entity={component}
       parent={parent}
       update={onUpdate}

@@ -5,7 +5,7 @@ import { deepClone } from 'fast-json-patch';
 import { ComponentPalette, DnDComponent } from './ComponentPalette';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import { MainLinearLayout } from '../LinearTabLayout/LinearLayout';
-import ComponentEditor from './ComponentEditor';
+import ComponentProperties from './ComponentProperties';
 import { PageLoader } from './PageLoader';
 import { css, cx } from 'emotion';
 import { noop } from 'lodash-es';
@@ -264,7 +264,7 @@ function PageDisplay({
         </div>
       </Toolbar.Header>
       <Toolbar.Content>
-        <PageLoader selectedPageId={selectedPageId} />
+        <PageLoader selectedPageId={selectedPageId} displayFrame />
       </Toolbar.Content>
     </Toolbar>
   );
@@ -362,7 +362,8 @@ export default function PageEditor() {
   const onEdit = React.useCallback(
     (selectedPageId?: string, path?: number[]) => {
       if (path != null) {
-        focusTab.current && focusTab.current('Component Editor', pageLayoutId);
+        focusTab.current &&
+          focusTab.current('Component Properties', pageLayoutId);
       }
       setPageEditorState(o => ({ ...o, editedPath: path, selectedPageId }));
     },
@@ -564,7 +565,7 @@ export default function PageEditor() {
         />
       ),
       'Source Editor': <SourceEditor />,
-      'Component Editor': <ComponentEditor />,
+      'Component Properties': <ComponentProperties />,
     });
   }, [
     onDeleteLayoutComponent,

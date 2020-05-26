@@ -6,18 +6,25 @@ import {
 import { schemaProps } from '../tools/schemaProps';
 import { splitter } from '../../../Editor/Components/LinearTabLayout/LinearLayout';
 import 'react-reflex/styles.css';
-import { Container, ContainerProps } from '../../Layouts/FonkyFlex';
+import {
+  FonkyFlexContainer,
+  FonkyFlexContainerProps,
+} from '../../Layouts/FonkyFlex';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { WegasComponentProps } from '../tools/EditableComponent';
 
 const CONTENT_TYPE = 'LinearLayout';
 
-interface PlayerLinearLayoutProps extends WegasComponentProps, ContainerProps {
+export interface PlayerLinearLayoutChildrenProps {
+  noSplitter?: boolean;
+  noResize?: boolean;
+}
+
+export interface PlayerLinearLayoutProps
+  extends WegasComponentProps,
+    FonkyFlexContainerProps,
+    PlayerLinearLayoutChildrenProps {
   children: React.ReactNode[];
-  /**
-   * allowResize - let the splitter for users to change the display
-   */
-  allowUserResize?: boolean;
 }
 
 function PlayerLinearLayout({
@@ -29,11 +36,10 @@ function PlayerLinearLayout({
   const { editMode, onUpdate } = React.useContext(pageCTX);
 
   return (
-    <Container
+    <FonkyFlexContainer
       className={splitter}
       vertical={vertical}
       flexValues={flexValues}
-      noCheck
       onStopResize={(_splitterId, flexValues) => {
         editMode &&
           onUpdate(
@@ -49,7 +55,7 @@ function PlayerLinearLayout({
       }}
     >
       {children}
-    </Container>
+    </FonkyFlexContainer>
   );
 }
 
@@ -59,7 +65,8 @@ const test = pageComponentFactory(
   'bars',
   {
     vertical: schemaProps.boolean('Vertical', false),
-    allowUserResize: schemaProps.boolean('Splitter', false),
+    noSplitter: schemaProps.boolean('No splitter', false),
+    noResize: schemaProps.boolean('No resize', false),
     flexValues: schemaProps.hidden(false, 'array'),
   },
   [],
