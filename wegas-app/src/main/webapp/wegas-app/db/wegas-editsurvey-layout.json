@@ -1,0 +1,152 @@
+{
+    "type": "ResizableLayout",
+    "cssClass": "wegas-editview",
+    "plugins": [
+        {
+            "fn": "PopupListener"
+        },
+        {
+            "fn": "OnDeleteListener"
+        }
+    ],
+    "top": {
+        "height": 25,
+        "children": [
+            {
+                "type": "FlexList",
+                "direction": "horizontal",
+                "cssClass": "wegas-edit-maintoolbar",
+                "children": [
+                    {
+                        "type": "FlexList",
+                        "direction": "horizontal",
+                        "cssClass": "wegas-toolbar-title",
+                        "children": [
+                            {
+                                "type": "Text",
+                                "cssClass": "wegas-title"
+                            }
+                        ]
+                    }
+                ]
+            },
+                    {
+                        "type": "FlexList",
+                        "direction": "horizontal",
+                        "cssClass": "wegas-button-toolbar",
+                        "children": [
+                            {
+                                "type": "Button",
+                                "label": "<i class=\"fa fa-repeat fa-rotate-180\" title=\"Restart survey (only for you)\"></i>",
+                                "cssClass": "editor-restart-button",
+                                "plugins": [
+                                    {
+                                        "fn": "ResetTeamAction"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+
+        ]
+    },
+    "left": {
+        "width": 300,
+        "children": [
+            {
+                "type": "TabView",
+                "id": "leftTabView",
+                "cssClass": "wegas-tabview-fullheight",
+                "children": [
+                    {
+                        "type": "Tab",
+                        "label": "Content",
+                        "cssClass": "editor-variables",
+                        "children": [
+                            {
+                                "type": "VariableTreeView",
+                                "dataSource": "Variable",
+                                "dataSelector": {
+                                    "key": "@class",
+                                    "val": "SurveyDescriptor"
+                                },
+                                "plugins": [
+                                    {
+                                        "fn": "EditorTVNodeLoader"
+                                    },
+                                    {
+                                        "fn": "WidgetToolbar",
+                                        "cfg": {
+                                            "children": [
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "center": {
+        "width": "420px",
+        "children": [
+            {
+                "id": "centerTabView",
+                "type": "TabView",
+                "cssClass": "wegas-tabview-fullheight",
+                "children": [
+                    {
+                        "type": "Tab",
+                        "id": "Attributes",
+                        "label": "Attributes",
+                        "tabSelector": "#centerTabView",
+                        "selected": true,
+                        "cssClass": "wegas-editor-menu-item-center",
+                        "wchildren": [
+                            {
+                                "content": "<div class=\"empty-edit-panel\"></div>"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+        "right": {
+        "width": "calc( 100% - 300px - 420px )",
+        "children": [
+            {
+                "type": "TabView",
+                "id": "rightTabView",
+                "cssClass": "wegas-tabview-fullheight",
+                "children": [
+                    {
+                        "type": "Tab",
+                        "id": "Preview",
+                        "label": "Preview",
+                        "tabSelector": "#rightTabView",
+                        "selected": true,
+                        "children": [
+                            {
+                                "type": "PageLoader",
+                                "pageLoaderId": "previewPageLoader",
+                                "defaultPageId": "default",
+                                "cssClass": "editor-preview wegas-playerview",
+                                "plugins": [
+                                    {
+                                        "fn": "PopupListener"
+                                    },
+                                    {
+                                        "fn": "ServerPopupListener"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

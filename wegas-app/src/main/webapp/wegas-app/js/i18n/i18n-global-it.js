@@ -30,7 +30,7 @@ YUI.add("wegas-i18n-global-it", function(Y) {
             logout: "esci",
             statistics: "Statistica",
             peerReview: "Revisione paritaria",
-            survey: "Questionario",
+            surveys: "Sondaggi",
             backToMenu: "torna al menu",
             mcqBackToMenu: "torna alla lista",
             ok: "OK",

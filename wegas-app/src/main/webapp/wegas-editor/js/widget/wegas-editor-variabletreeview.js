@@ -99,7 +99,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 this.treeView.filter.set("testFn", searchFn);
                 Y.Wegas.app.fire("newSearchVal");
             }, this);
-            this._validateBttn = new Y.ToggleButton({
+            // Use Wegas.ToggleButton to enable the cssClass attribute:
+            this._validateBttn = new Y.Wegas.ToggleButton({
                 render: this.toolbar.get("header"),
                 cssClass: "wegas-findbugs-button",
                 label: scriptCheckLabel,
@@ -261,7 +262,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         },
         getNodes: function() {
             var ds = this.get(DATASOURCE),
-                selector = this.get("dataSelector"),
+                selector = YUI_config.Wegas.dataSelector || this.get("dataSelector"),
                 entities = (selector) ? ds.cache.findAll(selector.key, selector.val) : Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("items");
 
             return this.genTreeViewElements(entities);

@@ -8,6 +8,26 @@
     );
     l.setAttribute('rel', 'stylesheet');
     document.head.append(l);
+    
+    // If navigator is MS-Edge, check that it's Chromium, otherwise a nasty stack overflow will happen in PACT.
+    var browser = (function (agent) {
+        switch (true) {
+            case agent.indexOf("edge") > -1: return "old-edge";
+            case agent.indexOf("edg") > -1: return "edge";
+            case agent.indexOf("opr") > -1 && !!window.opr: return "opera";
+            case agent.indexOf("chrome") > -1 && !!window.chrome: return "chrome";
+            case agent.indexOf("trident") > -1: return "ie";
+            case agent.indexOf("firefox") > -1: return "firefox";
+            case agent.indexOf("safari") > -1: return "safari";
+            default: return "other";
+        }
+    })(window.navigator.userAgent.toLowerCase());
+    Y.log('Navigator: ' + browser);
+    if (browser === "old-edge") {
+        alert("You are using an OLD version of the Edge browser,\nwhich is NOT compatible with this game.\n \nPlease download the latest version of Edge from\nwww.microsoft.com/edge \n \nYou may also switch to Firefox or Chrome.");
+        alert("Vous utilisez une VIEILLE version du navigateur Edge,\nqui n'est PAS compatible avec ce jeu.\n \nVeuillez télécharger la dernière version de Edge sur\nwww.microsoft.com/edge \n \nVous pouvez aussi passer à Firefox ou Chrome.");
+    }
+    
     /**
      * @param {(...args:unknown[])=>void} fn
      * @param {number} wait
