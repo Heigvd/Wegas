@@ -93,14 +93,15 @@ export function EntryView<T>({
                 false,
               ),
           value: schema
-            ? {
-                ...schema,
-                view: {
-                  ...schema.view,
-                  layout: 'shortInline',
-                },
-              }
-            : schemaProps.string(
+            ? schema
+            : // {
+              //   ...schema,
+              //   view: {
+              //     ...schema.view,
+              //     layout: 'shortInline',
+              //   },
+              // }
+              schemaProps.string(
                 'Value',
                 true,
                 value === undefined

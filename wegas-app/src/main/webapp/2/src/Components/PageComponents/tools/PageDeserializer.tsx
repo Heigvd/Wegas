@@ -48,27 +48,18 @@ export function PageDeserializer({
   const realPath = path ? path : [];
 
   const { editMode } = React.useContext(pageCTX);
-  const wegasComponent = useStore(
-    s => {
-      if (!pageId) {
-        return undefined;
-      }
+  const wegasComponent = useStore(s => {
+    if (!pageId) {
+      return undefined;
+    }
 
-      const page = s.pages[pageId];
-      if (!page) {
-        return undefined;
-      }
+    const page = s.pages[pageId];
+    if (!page) {
+      return undefined;
+    }
 
-      return getComponentFromPath(page, realPath);
-    },
-    deepDifferent,
-    // (a, b) =>
-    //   deepDifferent(
-    //     { ...a, props: omit(a?.props, ['children']) },
-    //     { ...b, props: omit(b?.props, ['children']) } ||
-    //       a?.props.children?.length !== b?.props.children?.length,
-    //   ),
-  );
+    return getComponentFromPath(page, realPath);
+  }, deepDifferent);
 
   const { children = [], ...restProps } =
     (wegasComponent && wegasComponent.props) || {};
@@ -82,7 +73,7 @@ export function PageDeserializer({
     componentName: string;
   };
 
-  const { WegasComponent, containerType, componentName } = component;
+  const { WegasComponent, containerType, componentName } = component || {};
 
   const oldRef = React.useRef({
     containerType,
@@ -136,30 +127,14 @@ export function PageDeserializer({
         childrenType={childrenType}
         {...restProps}
       >
-        {
-          editMode && children.length === 0 ? (
-            <EmptyComponentContainer
-              childrenType={containerType}
-              path={realPath}
-            />
-          ) : (
-            childrenPack
-          )
-          // (
-          //   children.map((_, i) => {
-          //     return (
-          //       <PageDeserializer
-          //         key={JSON.stringify([...realPath, i])}
-          //         pageId={pageId}
-          //         path={[...realPath, i]}
-          //         uneditable={uneditable}
-          //         childrenType={containerType}
-          //         last={i === children.length - 1}
-          //       />
-          //     );
-          //   })
-          // )
-        }
+        {editMode && children.length === 0 ? (
+          <EmptyComponentContainer
+            childrenType={containerType}
+            path={realPath}
+          />
+        ) : (
+          childrenPack
+        )}
       </WegasComponent>
     </ComponentContainer>
   );

@@ -26,18 +26,14 @@ import {
   WegasComponentOptionsActions,
   WegasComponentActionsProperties,
   WegasComponentUpgrades,
-  wegasComponentActions,
-  WegasComponentActions,
-  WegasComponentOptionsAction,
-  useComputeUnreadCount,
 } from './options';
 import { AbsoluteItem } from '../../Layouts/Absolute';
 import { InfoBeam } from './InfoBeam';
 import { EditHandle } from './EditHandle';
 import { schemaProps } from './schemaProps';
-import { useStore } from '../../../data/store';
-import { useScript } from '../../Hooks/useScript';
 import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
+import { UpgradesState, ComponentUpgradesManager } from './UpgradesComponent';
+import { ActionsState, ComponentActionsManager } from './ActionsComponent';
 
 // Styles
 export const layoutHighlightStyle = css({
@@ -416,7 +412,6 @@ export const wegasComponentCommonSchema = {
     undefined,
     true,
   ),
-  // style: schemaProps.code('Style', false, 'JSON', undefined, 'ADVANCED', 1002),
   style: schemaProps.hashlist(
     'Style',
     false,
@@ -436,6 +431,14 @@ interface ExtractedLayoutProps {
   layout?: FlexListProps['layout'];
   vertical?: ContainerProps['vertical'];
 }
+
+const defaultUpgradesState: UpgradesState = {
+  disabled: false,
+  show: true,
+};
+const defaultActionsState: ActionsState = {
+  locked: false,
+};
 
 type ComponentContainerProps = WegasComponentProps & ExtractedLayoutProps;
 
@@ -457,6 +460,16 @@ export function ComponentContainer({
 }: ComponentContainerProps) {
   const container = React.useRef<HTMLDivElement>();
   const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
+  const [upgradesState, setUpgradesState] = React.useState<UpgradesState>(
+    defaultUpgradesState,
+  );
+  const [actionsState, setActionsState] = React.useState<ActionsState>(
+    defaultActionsState,
+  );
+
+  const upgrades =
+    options?.upgrades == null ? defaultUpgradesState : upgradesState;
+  const actions = options?.actions == null ? defaultActionsState : actionsState;
 
   const [{ isOver }, dropZone] = useDndComponentDrop();
 
@@ -473,6 +486,7 @@ export function ComponentContainer({
   const itemPath = containerPath.pop();
   const isNotFirstComponent = path.length > 0;
   const editable = editMode && isNotFirstComponent;
+  const showComponent = editable || upgrades.show;
   const showLayout = showBorders && containerType != null;
   const computedVertical =
     containerType === 'FLEX'
@@ -482,22 +496,7 @@ export function ComponentContainer({
       ? vertical
       : false;
 
-  const locked = useStore(
-    s =>
-      options?.actions?.lock != null &&
-      s.global.locks[options.actions.lock] === true,
-  );
-  const disabled = useScript<boolean>(
-    options?.upgrades?.disableIf?.content || 'false',
-  );
-
-  const showScript = useScript<boolean>(
-    options?.upgrades?.showIf?.content || 'true;',
-  );
-
-  const showComponent = editable || showScript;
-
-  const isDisabled = (locked || disabled) === true;
+  const isDisabled = (actions.locked || upgrades.disabled) === true;
 
   const isFocused = usePagesStateStore(
     isComponentFocused(editMode, pageId, path),
@@ -515,12 +514,73 @@ export function ComponentContainer({
     }
   }, [childrenType]);
 
-  const infoBeamProps =
-    useComputeUnreadCount(options?.upgrades?.unreadCount) ||
-    options?.upgrades?.infoBeam;
+  const onClick = React.useCallback(() => {
+    if (!isDisabled && actions.onClick != null) {
+      actions.onClick();
+    }
+  }, [isDisabled, actions]);
+
+  const onMouseOver = React.useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (editable) {
+        e.stopPropagation();
+        if (!stackedHandles) {
+          setStackedHandles(() => computeHandles(handles, path));
+        }
+        pageDispatch(PageStateAction.setFocused(pageId, path));
+      }
+    },
+    [editable, handles, pageId, path, stackedHandles],
+  );
+
+  const onMouseLeave = React.useCallback(() => {
+    if (editable) {
+      setStackedHandles(undefined);
+    }
+    pageDispatch(PageStateAction.unsetFocused());
+  }, [editable]);
+
+  const onEditableComponentDrop = React.useCallback(
+    (dndComponent, dndMonitor) => {
+      if (container.current) {
+        const { x: absX, y: absY } = dndMonitor.getClientOffset() || {
+          x: 0,
+          y: 0,
+        };
+        const {
+          left: srcX,
+          top: srcY,
+        } = container.current.getBoundingClientRect() || {
+          x: 0,
+          y: 0,
+        };
+
+        const [relX, relY] = [absX - srcX, absY - srcY];
+
+        onDrop(dndComponent, path, undefined, {
+          options: {
+            layout: { position: { left: relX, top: relY } },
+          },
+        });
+      }
+    },
+    [onDrop, path],
+  );
 
   return (
     <>
+      {options?.upgrades != null && (
+        <ComponentUpgradesManager
+          upgrades={options.upgrades}
+          setUpgradesState={setUpgradesState}
+        />
+      )}
+      {options?.actions != null && (
+        <ComponentActionsManager
+          actions={options.actions}
+          setActionsState={setActionsState}
+        />
+      )}
       <Container
         ref={ref => {
           dropZone(ref);
@@ -544,77 +604,14 @@ export function ComponentContainer({
           cursor: options?.actions && !isDisabled ? 'pointer' : 'initial',
           ...style,
         }}
-        onClick={() => {
-          if (!isDisabled && options && options.actions) {
-            if (
-              !options.actions.confirmClick ||
-              // TODO : Find a better way to do that than a modal!!!
-              // eslint-disable-next-line no-alert
-              confirm(options.actions.confirmClick)
-            ) {
-              Object.entries(
-                omit(
-                  options.actions,
-                  'confirmClick',
-                  'lock',
-                ) as WegasComponentOptionsActions,
-              )
-                .sort(
-                  (
-                    [, v1]: [string, WegasComponentOptionsAction],
-                    [, v2]: [string, WegasComponentOptionsAction],
-                  ) =>
-                    (v1.priority ? v1.priority : 0) -
-                    (v2.priority ? v2.priority : 0),
-                )
-                .forEach(([k, v]) =>
-                  wegasComponentActions[k as keyof WegasComponentActions](v),
-                );
-            }
-          }
-        }}
-        onMouseOver={e => {
-          if (editable) {
-            e.stopPropagation();
-            if (!stackedHandles) {
-              setStackedHandles(() => computeHandles(handles, path));
-            }
-            pageDispatch(PageStateAction.setFocused(pageId, path));
-          }
-        }}
-        onMouseLeave={() => {
-          if (editable) {
-            setStackedHandles(undefined);
-          }
-          pageDispatch(PageStateAction.unsetFocused());
-        }}
-        tooltip={options?.upgrades?.tooltip}
+        onClick={onClick}
+        onMouseOver={onMouseOver}
+        onMouseLeave={onMouseLeave}
+        tooltip={upgrades.tooltip}
       >
         {editable && containerType === 'ABSOLUTE' && (
           <ComponentDropZone
-            onDrop={(dndComponent, dndMonitor) => {
-              if (container.current) {
-                const { x: absX, y: absY } = dndMonitor.getClientOffset() || {
-                  x: 0,
-                  y: 0,
-                };
-                const {
-                  left: srcX,
-                  top: srcY,
-                } = container.current.getBoundingClientRect() || {
-                  x: 0,
-                  y: 0,
-                };
-
-                const [relX, relY] = [absX - srcX, absY - srcY];
-
-                onDrop(dndComponent, path, undefined, {
-                  options: {
-                    layout: { position: { left: relX, top: relY } },
-                  },
-                });
-              }
-            }}
+            onDrop={onEditableComponentDrop}
             show={isOver}
             dropPosition="INTO"
           />
@@ -634,15 +631,21 @@ export function ComponentContainer({
             stackedHandles={stackedHandles}
             componentType={componentType}
             path={path}
+            // infoMessage={
+            //   options?.upgrades?.showIf != null && !showScript
+            //     ? 'This component is shown only in edit mode'
+            //     : undefined
+            // }
             infoMessage={
-              options?.upgrades?.showIf != null && !showScript
+              options?.upgrades?.showIf != null && upgrades.show === false
                 ? 'This component is shown only in edit mode'
                 : undefined
             }
           />
         )}
         {showComponent && <ErrorBoundary>{children}</ErrorBoundary>}
-        {infoBeamProps && <InfoBeam {...infoBeamProps} />}
+        {/* {infoBeamProps && <InfoBeam {...infoBeamProps} />} */}
+        {upgrades.infoBeamProps && <InfoBeam {...upgrades.infoBeamProps} />}
         {editable && childrenType !== 'ABSOLUTE' && (
           <ComponentDropZone
             onDrop={dndComponent =>
