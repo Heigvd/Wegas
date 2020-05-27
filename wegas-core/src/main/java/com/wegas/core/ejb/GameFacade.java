@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -462,6 +463,33 @@ public class GameFacade extends BaseFacade<Game> {
         gameModelFacade.processQuery(roleQuery, null, gMatrix, null, null, statuses);
 
         return gMatrix;
+    }
+
+    /**
+     * Join the game individually. It means creating a brand new team, named after user's name, and
+     * joining that very team. The game does not need to be in freeForAll mode to use this method.
+     *
+     * @param game      the game to join
+     * @param languages list of user preferred languages
+     *
+     * @return the brand new player
+     */
+    public Player joinIndividually(Game game, List<Locale> languages) {
+        User currentUser = userFacade.getCurrentUser();
+
+        Team team = new Team(teamFacade.findUniqueNameForTeam(game, currentUser.getName()), 1);
+        teamFacade.create(game.getId(), team); // return managed team
+        team = teamFacade.find(team.getId());
+        this.joinTeam(team.getId(), currentUser.getId(), languages);
+        /**
+         * Detach and re-find to fetch the new player
+         */
+        teamFacade.detach(team);
+        team = teamFacade.find(team.getId());
+        Player p = team.getPlayers().get(0);
+        p.setQueueSize(populatorFacade.getQueue().indexOf(p) + 1);
+
+        return p;
     }
 
     /**

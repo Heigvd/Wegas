@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -30,7 +31,6 @@ import javax.persistence.PrePersist;
  * Shadow storage for sensitive information linked to AbstractAccounts. It means: <ul>
  * <li>password hash </li>
  * <li>salt</li>
- * <li>reset password token</li>
  * </ul>
  *
  * @author Maxence
@@ -52,16 +52,13 @@ public class Shadow extends AbstractEntity {
     @JsonIgnore
     private String passwordHex;
 
-    @JsonIgnore
-    private String token;
-
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "shadow")
     private AbstractAccount account;
 
     @Column(length = 24, columnDefinition = "character varying(24)")
     @Enumerated(value = EnumType.STRING)
     private HashMethod hashMethod = HashMethod.SHA_256;
-    
+
     @Column(length = 24, columnDefinition = "character varying(24)")
     @Enumerated(value = EnumType.STRING)
     private HashMethod nextHashMethod;
@@ -101,14 +98,6 @@ public class Shadow extends AbstractEntity {
      */
     public void setPasswordHex(String passwordHex) {
         this.passwordHex = passwordHex;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     /**

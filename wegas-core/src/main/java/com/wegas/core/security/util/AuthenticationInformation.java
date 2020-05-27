@@ -24,7 +24,7 @@ public class AuthenticationInformation {
      * hashed salted password
      */
     private List<String> hashes = new ArrayList<>();
-    
+
     private boolean remember;
     private boolean agreed = false;
 

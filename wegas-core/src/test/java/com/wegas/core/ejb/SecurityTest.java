@@ -13,7 +13,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.security.persistence.User;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import java.io.InputStream;
 import javax.ejb.EJBException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.jboss.arquillian.test.spi.ArquillianProxyException;

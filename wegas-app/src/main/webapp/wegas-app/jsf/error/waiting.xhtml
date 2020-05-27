@@ -79,7 +79,7 @@
                     spinner: document.getElementById("processing"),
                     title: document.getElementById("title"),
                     // <ui:insert name="setlang"><![CDATA[
-                    lang: (cfg && cfg.users && cfg.users[email] && cfg.users[email].language ? cfg.users[email].language : "en"),
+                    lang: (email && cfg && cfg.users && cfg.users[email] && cfg.users[email].language ? cfg.users[email].language : "en"),
                     //]]></ui:insert>
 
                     showSpinner: function() {

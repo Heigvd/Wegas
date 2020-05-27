@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -91,7 +92,11 @@ public class AaiController {
 
             String redirectTo = httpRequest.getParameter("redirect");
             if (redirectTo != null) {
-                target += "?redirect=" + redirectTo;
+                if (redirectTo.charAt(0) == '/') {
+                    target += redirectTo.substring(1);
+                } else {
+                    target += redirectTo;
+                }
             }
 
             if (proceed) {

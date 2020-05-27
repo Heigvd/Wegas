@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -8,16 +9,20 @@
 package com.wegas.core.security.rest;
 
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.aai.AaiConfigInfo;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.token.Token;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationMethod;
+import com.wegas.core.security.util.TokenInfo;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -26,6 +31,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
@@ -193,4 +199,34 @@ public class AccountController {
     public AaiConfigInfo getAaiConfig() {
         return AaiConfigInfo.getInstance();
     }
+
+    /**
+     * Based on accountId and token hash, retrieve the full token.
+     *
+     * @return the full token
+     *
+     * @throws WegasNoResultException if the token does not exist
+     */
+    @POST
+    @Path("Token")
+    public Token getToken(TokenInfo tokenInfo) throws WegasNoResultException {
+        return accountFacade.getToken(tokenInfo);
+    }
+
+    /**
+     *
+     * @param tokenId id of the token to process
+     * @param request http request may contains useful info (such as user preferred languages)
+     *
+     * @return the full token, which was updated while it was being consumed.
+     *
+     * @throws WegasNoResultException
+     */
+    @PUT
+    @Path("ProcessToken/{tokenId: [1-9][0-9]*}")
+    public Token processToken(@PathParam("tokenId") Long tokenId,
+        @Context HttpServletRequest request) throws WegasNoResultException {
+        return accountFacade.processToken(tokenId, request);
+    }
+
 }

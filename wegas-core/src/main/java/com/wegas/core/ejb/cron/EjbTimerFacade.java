@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -17,8 +18,10 @@ import com.wegas.core.persistence.game.Game.Status;
 import com.wegas.core.persistence.game.GameModel;
 import static com.wegas.core.persistence.game.GameModel.GmType.MODEL;
 import static com.wegas.core.persistence.game.GameModel.GmType.SCENARIO;
+import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.util.Sudoer;
 import java.util.Calendar;
 import java.util.List;
 import javax.ejb.Schedule;
@@ -57,12 +60,15 @@ public class EjbTimerFacade extends WegasAbstractFacade {
     private UserFacade userFacade;
 
     @Inject
+    private AccountFacade accountFacade;
+
+    @Inject
     private JackrabbitConnector jcrConnector;
 
     /**
-     * CRON to delete games once the bin have been emptied. Note that only games
-     * which are marked as {@link Status#PROCESSED} will be destroyed.
-     * {@link Status#TODO} and {@link Status#CHARGED} ones will not be destroyed
+     * CRON to delete games once the bin have been emptied. Note that only games which are marked as
+     * {@link Status#PROCESSED} will be destroyed. {@link Status#TODO} and {@link Status#CHARGED}
+     * ones will not be destroyed
      * <p>
      * This task is scheduled each Sunday at 1:30 am
      */
@@ -129,7 +135,7 @@ public class EjbTimerFacade extends WegasAbstractFacade {
                 try {
                     logger.info("removeIdleGuests(): unused guest accounts will be removed");
                     TypedQuery<GuestJpaAccount> findIdleGuests = getEntityManager().createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
-                            + "WHERE account.createdTime < :idletime", GuestJpaAccount.class);
+                        + "WHERE account.createdTime < :idletime", GuestJpaAccount.class);
                     Calendar calendar = Calendar.getInstance();
                     calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 3);
                     findIdleGuests.setParameter("idletime", calendar.getTime(), TemporalType.DATE);
@@ -171,6 +177,26 @@ public class EjbTimerFacade extends WegasAbstractFacade {
                 } finally {
                     requestManager.releaseSu();
                 }
+            } finally {
+                lock.unlock();
+            }
+        }
+    }
+
+    /**
+     * CRON to delete games once the bin have been emptied. Note that only games which are marked as
+     * {@link Status#PROCESSED} will be destroyed. {@link Status#TODO} and {@link Status#CHARGED}
+     * ones will not be destroyed
+     * <p>
+     * This task is scheduled each Sunday at 1:30 am
+     */
+    @Schedule(hour = "*", minute = "*/5", persistent = false)
+    public void deleteOutdatedTokens() {
+        ILock lock = hzInstance.getLock("ScheduleTokenGC");
+        if (lock.tryLock()) {
+            try (Sudoer su = requestManager.sudoer()) {
+                logger.info("Scheduled token GC");
+                accountFacade.removeOutdatedTokens();
             } finally {
                 lock.unlock();
             }

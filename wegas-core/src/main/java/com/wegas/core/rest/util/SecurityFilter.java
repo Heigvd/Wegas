@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -7,6 +8,7 @@
  */
 package com.wegas.core.rest.util;
 
+import com.wegas.core.Helper;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -72,7 +74,7 @@ public class SecurityFilter implements ContainerRequestFilter {
         RequiresAuthentication authRequired = this.getAnnotation(RequiresAuthentication.class, runtimeClass, method);
 
         // if Annotation found, assert subject is authenticated
-        if (authRequired != null && !subject.isAuthenticated() && !subject.isRemembered()) {
+        if (authRequired != null && !Helper.isLoggedIn(subject)) {
             logger.error("Access denied for non-authenticted users");
             crc.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity("Subject is not logged in").build());
         }

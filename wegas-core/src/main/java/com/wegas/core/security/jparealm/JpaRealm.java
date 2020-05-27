@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -38,28 +39,19 @@ public class JpaRealm extends AuthorizingRealm {
      *
      */
     public JpaRealm() {
-        setName("JpaRealm");                                                    //This name must match the name in the User class's getPrincipals() method
+        //This name must match the name in the User class's getPrincipals() method
+        setName("JpaRealm");
     }
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
-        UsernamePasswordToken token = (UsernamePasswordToken) authcToken;
-        AccountFacade accountFacade = AccountFacade.lookup();
-        RequestManager requestManager = RequestFacade.lookup().getRequestManager();
-        try {
-            requestManager.su();
-            JpaAccount account = accountFacade.findJpaByEmail(token.getUsername());
-
-            JpaAuthenticationInfo info = new JpaAuthenticationInfo(account.getId(),
-                account.getShadow().getPasswordHex(),
-                new SimpleByteSource(account.getShadow().getSalt()),
-                getName(), account.getShadow().getHashMethod());
-            return info;
-
-        } catch (WegasNoResultException e) {
-            // Could not find correponding mail,
+        if (authcToken instanceof UsernamePasswordToken) {
+            UsernamePasswordToken token = (UsernamePasswordToken) authcToken;
+            AccountFacade accountFacade = AccountFacade.lookup();
+            RequestManager requestManager = RequestFacade.lookup().getRequestManager();
             try {
-                JpaAccount account = accountFacade.findJpaByUsername(token.getUsername());// try with the username
+                requestManager.su();
+                JpaAccount account = accountFacade.findJpaByEmail(token.getUsername());
 
                 JpaAuthenticationInfo info = new JpaAuthenticationInfo(account.getId(),
                     account.getShadow().getPasswordHex(),
@@ -67,13 +59,26 @@ public class JpaRealm extends AuthorizingRealm {
                     getName(), account.getShadow().getHashMethod());
                 return info;
 
-            } catch (WegasNoResultException ex) {
-                logger.error("Unable to find token", ex);
-                return null;
+            } catch (WegasNoResultException e) {
+                // Could not find correponding mail,
+                try {
+                    JpaAccount account = accountFacade.findJpaByUsername(token.getUsername());// try with the username
+
+                    JpaAuthenticationInfo info = new JpaAuthenticationInfo(account.getId(),
+                        account.getShadow().getPasswordHex(),
+                        new SimpleByteSource(account.getShadow().getSalt()),
+                        getName(), account.getShadow().getHashMethod());
+                    return info;
+
+                } catch (WegasNoResultException ex) {
+                    logger.error("Unable to find token", ex);
+                    return null;
+                }
+            } finally {
+                requestManager.releaseSu();
             }
-        } finally {
-            requestManager.releaseSu();
         }
+        return null;
     }
 
     @Override

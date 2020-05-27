@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -35,6 +36,7 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.core.security.util.AuthenticationMethod;
+import com.wegas.core.security.util.TokenInfo;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -273,7 +275,7 @@ public class UserController {
     @POST
     @Path("AutoComplete/{value}")
     public List<AbstractAccount> getAutoCompleteByRoles(@PathParam("value") String value, Map<String, List<String>> rolesList) {
-        if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
+        if (!Helper.isLoggedIn(SecurityUtils.getSubject())) {
             throw new UnauthorizedException();
         }
 
@@ -387,11 +389,10 @@ public class UserController {
      */
     @POST
     @Path("AuthenticateWithToken")
-    public User loginWithDisposableToken(AuthenticationInformation authInfo,
+    public User loginWithDisposableToken(TokenInfo tokenInfo,
         @Context HttpServletRequest request
     ) throws ServletException, IOException, URISyntaxException {
-        return userFacade.authenticateFromToken(authInfo.getLogin(), 
-            authInfo.getHashes().get(0));
+        return userFacade.authenticateFromToken(tokenInfo);
     }
 
     /**
@@ -428,7 +429,7 @@ public class UserController {
     public void teacherGuestLogin(AuthenticationInformation authInfo) {
         userFacade.guestLogin();
 //        try {
-            //user.addRole(roleFacade.findByName("Scenarist"));
+        //user.addRole(roleFacade.findByName("Scenarist"));
 //        } catch (WegasNoResultException ex) {
 //            throw WegasErrorMessage.error("Teacher mode is not available");
 //        }
@@ -442,7 +443,7 @@ public class UserController {
     @GET
     @Path("LoggedIn")
     public boolean isLoggedIn() {
-        return SecurityUtils.getSubject().isRemembered() || SecurityUtils.getSubject().isAuthenticated();
+        return Helper.isLoggedIn(SecurityUtils.getSubject());
     }
 
     /**
@@ -562,7 +563,7 @@ public class UserController {
 
         // It should not be possible for the caller (our AAI login server) to be already logged in...
         Subject subject = SecurityUtils.getSubject();
-        if (subject.isAuthenticated()) {
+        if (Helper.isLoggedIn(subject)) {
             requestManager.logout(subject);
             throw WegasErrorMessage.error("Logging out an already logged in user (internal error?)");
         }
@@ -604,18 +605,21 @@ public class UserController {
     }
 
     /**
-     * @param authInfo
+     * Request reset password email. It's only valid for JPAAccounts
+     *
+     * @param authInfo send e-mail to user identified by authInfo login
      * @param request
      */
     @POST
     @Path("SendNewPassword")
     public void requestPasswordReset(AuthenticationInformation authInfo,
         @Context HttpServletRequest request) {
-        userFacade.requestPasswordReset(authInfo.getLogin(), request);
+        accountFacade.requestPasswordReset(authInfo.getLogin(), request);
     }
 
     /**
-     * @param authInfo
+     * Request validate email. It's only valid for JPAAccounts
+     *
      * @param request
      */
     @GET
@@ -809,7 +813,6 @@ public class UserController {
      * @param accountId   user accountId
      */
     @POST
-
     @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{permission: (View|Edit|Delete|Duplicate|Instantiate|Translate-[A-Z]*|,)*}/{accountId : [1-9][0-9]*}")
     public void shareGameModel(@PathParam("gameModelId") Long gameModelId,
         @PathParam("permission") String permission,

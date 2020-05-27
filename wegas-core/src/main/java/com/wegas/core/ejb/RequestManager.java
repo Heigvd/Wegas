@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -38,6 +39,7 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.Sudoer;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasIsTeamMate;
 import com.wegas.core.security.util.WegasIsTrainerForUser;
@@ -500,7 +502,7 @@ public class RequestManager implements RequestManagerI {
             Long principal = (Long) subject.getPrincipal();
             this.clearPermissions();
             try {
-                if (subject.isRemembered() || subject.isAuthenticated()) {
+                if (Helper.isLoggedIn(subject)) {
                     AbstractAccount account = accountFacade.find(principal);
                     if (account != null) {
                         this.currentUser = account.getUser();
@@ -1954,6 +1956,10 @@ public class RequestManager implements RequestManagerI {
         return this.su(1l);
     }
 
+    public Sudoer sudoer() {
+        return new Sudoer(this);
+    }
+
     /**
      * Current subject runAs another user. Effect is platform wide. It will impact all requests made
      * by the first subject until it explicitly logout.
@@ -2069,7 +2075,7 @@ public class RequestManager implements RequestManagerI {
     }
 
     public Subject login(Subject subject, AuthenticationToken token) {
-        if (subject.isAuthenticated()) {
+        if (Helper.isLoggedIn(subject)) {
             throw WegasErrorMessage.error("You are already logged in! Please logout first");
         }
         subject.login(token);

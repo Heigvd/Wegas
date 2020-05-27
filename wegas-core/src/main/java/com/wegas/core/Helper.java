@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -45,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
@@ -1172,5 +1174,16 @@ public class Helper {
 
     public static String getDomainFromEmailAddress(String email) {
         return email.replaceFirst("([^@]{1,4})[^@]*@(.*)", "$2");
+    }
+
+    /**
+     * Is the subject authenticated or remembered?
+     *
+     * @param subject
+     *
+     * @return true if subject identity can be trusted
+     */
+    public static boolean isLoggedIn(Subject subject) {
+        return subject.isAuthenticated() || subject.isRemembered();
     }
 }

@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -30,10 +31,12 @@ import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.Shadow;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.token.TokenAuthToken;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.core.security.util.AuthenticationMethod;
 import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.JpaAuthentication;
+import com.wegas.core.security.util.TokenInfo;
 import com.wegas.messaging.ejb.EMailFacade;
 import java.util.*;
 import javax.ejb.LocalBean;
@@ -51,11 +54,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.crypto.RandomNumberGenerator;
-import org.apache.shiro.crypto.SecureRandomNumberGenerator;
-import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.SimpleByteSource;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -144,19 +143,21 @@ public class UserFacade extends BaseFacade<User> {
      *
      * @return the just authenticated user
      */
-    public User authenticateFromToken(String email, String token) {
-        if (email != null && token != null) {
+    public User authenticateFromToken(TokenInfo tokenInfo) {
+        if (tokenInfo != null) {
             Subject subject = SecurityUtils.getSubject();
 
-            UsernamePasswordToken shiroToken = new UsernamePasswordToken(email, token);
-            shiroToken.setRememberMe(false);
+            TokenAuthToken at = new TokenAuthToken(
+                tokenInfo.getAccountId(),
+                tokenInfo.getToken());
+
             try {
-                requestManager.login(subject, shiroToken);
+                requestManager.login(subject, at);
                 User user = this.getCurrentUser();
                 AbstractAccount mainAccount = user.getMainAccount();
+
                 if (mainAccount instanceof JpaAccount) {
                     JpaAccount jpaAccount = (JpaAccount) mainAccount;
-                    jpaAccount.getShadow().setToken(null);
                     jpaAccount.setVerified(Boolean.TRUE);
                 }
 
@@ -164,10 +165,10 @@ public class UserFacade extends BaseFacade<User> {
 
                 return user;
             } catch (AuthenticationException aex) {
-                logger.error("Fails to log in with token {}", token);
+                logger.error("Fails to log in with token {}", tokenInfo);
             }
         }
-        throw WegasErrorMessage.error("Email/token combination not found");
+        throw WegasErrorMessage.error("Token not found");
     }
 
     public JpaAuthentication getDefaultAuthMethod() {
@@ -206,7 +207,7 @@ public class UserFacade extends BaseFacade<User> {
         Subject subject = SecurityUtils.getSubject();
 
         User guest = null;
-        if (subject.isAuthenticated()) {
+        if (Helper.isLoggedIn(subject)) {
             AbstractAccount gAccount = accountFacade.find((Long) subject.getPrincipal());
             if (gAccount instanceof GuestJpaAccount) {
                 logger.error("Logged as guest");
@@ -215,7 +216,6 @@ public class UserFacade extends BaseFacade<User> {
             }
         }
 
-        //if (!currentUser.isAuthenticated()) {
         String password = authInfo.getHashes().get(0);
         UsernamePasswordToken token = new UsernamePasswordToken(authInfo.getLogin(), password);
         token.setRememberMe(authInfo.isRemember());
@@ -272,7 +272,7 @@ public class UserFacade extends BaseFacade<User> {
             User user;
             Subject subject = SecurityUtils.getSubject();
 
-            if (subject.isAuthenticated()
+            if (Helper.isLoggedIn(subject)
                 && accountFacade.find((Long) subject.getPrincipal()) instanceof GuestJpaAccount) {
                 /**
                  * Subject is authenticated as guest but try to sign up with a full account : let's
@@ -333,7 +333,7 @@ public class UserFacade extends BaseFacade<User> {
     public AbstractAccount getCurrentAccount() {
         final Subject subject = SecurityUtils.getSubject();
 
-        if (subject.isRemembered() || subject.isAuthenticated()) {
+        if (Helper.isLoggedIn(subject)){
             return accountFacade.find((Long) subject.getPrincipal());
         }
         throw new WegasNotFoundException("Unable to find an account");
@@ -787,95 +787,18 @@ public class UserFacade extends BaseFacade<User> {
         }
     }
 
-    private String generateToken(int length) {
-        RandomNumberGenerator rng = new SecureRandomNumberGenerator();
-        return rng.nextBytes(length / 2).toHex();
-    }
-
-    private String hashToken(String token, JpaAccount account) {
-        return new Sha256Hash(token,
-            (new SimpleByteSource(account.getShadow().getSalt())).getBytes()).toHex();
-    }
-
-    public void requestPasswordReset(String email, HttpServletRequest request) {
-        try {
-            requestManager.su();
-            JpaAccount account = accountFacade.findJpaByEmail(email);
-            if (account != null) {
-                this.sendEmailWithDisposableToken(request, account,
-                    "[Albasim Wegas] Reset Password Request",
-                    "Click <a href='{{link}}'>here</a> to reset your password.<br /><br />"
-                    + "If you did't request this email, then simply ignore this message",
-                    "reset", 60);
-            }
-            this.flush();
-        } catch (WegasNoResultException ex) {
-            logger.error("No JPA account for {}", email);
-        } finally {
-            requestManager.releaseSu();
-        }
-    }
-
+    /**
+     * Send an e-mail to current user to verify its email address. It's only valid for JPAAccounts
+     *
+     * @param request http request is required to generate the link to send
+     */
     public void requestEmailValidation(HttpServletRequest request) {
         User currentUser = requestManager.getCurrentUser();
         if (currentUser != null) {
             AbstractAccount account = currentUser.getMainAccount();
 
             if (account instanceof JpaAccount) {
-                this.sendEmailWithDisposableToken(request, (JpaAccount) account,
-                    "[AlbaSim Wegas] Please validate your account",
-                    "Click <a href='{{link}}'>here</a> to confirm your email address.<br /><br />"
-                    + "If you did't request this verification, you can ignore this message",
-                    "verify", 60);
-            }
-        }
-    }
-
-    /**
-     * Send a e mail to a user. Generates a disposable token with
-     *
-     * @param request               current http request is used to guess the public hostname to
-     *                              generate the link to send
-     * @param account               Jpa account to send email to
-     * @param subject               Subject of the message
-     * @param text                  text of the message with "{{link}}" inside
-     * @param path                  reset or verify
-     * @param tokenValidityDuration how long the token will be valid, in minutes
-     */
-    private void sendEmailWithDisposableToken(HttpServletRequest request, JpaAccount account,
-        String subject, String text, String path, long tokenValidityDuration) {
-        User currentUser = requestManager.getCurrentUser();
-        if (currentUser != null && account != null) {
-            try {
-                EMailFacade emailFacade = new EMailFacade();
-                String token = generateToken(24);
-
-                Long expirationDate = (new Date()).getTime() + tokenValidityDuration * 60 * 1000;
-
-                String hashToken = expirationDate + ":" + hashToken(token, account);
-                account.getShadow().setToken(hashToken);
-
-                String theLink = Helper.getPublicBaseUrl(request)
-                    + "/#/" + path + "/" + account.getDetails().getEmail() + "/" + token;
-
-                if (text.contains("{{link}}")) {
-                    text = text.replace("{{link}}", theLink);
-                } else {
-                    text = text + "<br /><a href='" + theLink + "'>" + path.toUpperCase() + "</a>";
-                }
-
-                String body = "Hi " + account.getFirstname() + " " + account.getLastname() + ", "
-                    + "<br />"
-                    + "<br />"
-                    + text;
-
-                String from = "noreply@" + Helper.getWegasProperty("mail.default_domain");
-                emailFacade.send(account.getDetails().getEmail(), from, null, subject,
-                    body,
-                    Message.RecipientType.TO,
-                    "text/html; charset=utf-8", true);
-            } catch (MessagingException ex) {
-                logger.error("Error while sending validation email to {}", account.getDetails().getEmail());
+                accountFacade.requestValidationLink((JpaAccount) account, request);
             }
         }
     }
@@ -1018,7 +941,8 @@ public class UserFacade extends BaseFacade<User> {
      */
     public static UserFacade lookup() {
         try {
-            return Helper.lookupBy(UserFacade.class);
+            return Helper.lookupBy(UserFacade.class
+            );
         } catch (NamingException ex) {
             logger.error("Error retrieving user facade", ex);
             return null;

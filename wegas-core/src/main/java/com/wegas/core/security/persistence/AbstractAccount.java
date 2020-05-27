@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -7,6 +8,7 @@
  */
 package com.wegas.core.security.persistence;
 
+import com.wegas.core.security.persistence.token.Token;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
@@ -29,6 +31,7 @@ import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.view.NumberView;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -43,6 +46,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -104,6 +108,10 @@ public abstract class AbstractAccount extends AbstractEntity {
     @JsonIgnore
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
     private AccountDetails details;
+
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "account")
+    private List<Token> tokens = new ArrayList<>();
 
     /**
      *
@@ -424,6 +432,41 @@ public abstract class AbstractAccount extends AbstractEntity {
 
     public void setAgreedTime(Date agreedTime) {
         this.agreedTime = agreedTime != null ? new Date(agreedTime.getTime()) : null;
+    }
+
+    public List<Token> getTokens() {
+        return tokens;
+    }
+
+    public void setTokens(List<Token> tokens) {
+        this.tokens = tokens;
+        if (this.tokens != null) {
+            for (Token t : tokens) {
+                t.setAccount(this);
+            }
+        }
+    }
+
+    /**
+     * " To keep the JPA cache up to date
+     *
+     * @param token token to add
+     */
+    public void addToken(Token token) {
+        if (token != null) {
+            token.setAccount(this);
+            this.tokens.add(token);
+        }
+    }
+
+    /**
+     * Remove the token from account token list. This method does not destroy the given token. It's
+     * used to keep the JPA cache up to date
+     *
+     * @param token token to remove
+     */
+    public void removeToken(Token token) {
+        this.tokens.remove(token);
     }
 
     @JsonIgnore

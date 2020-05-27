@@ -134,10 +134,10 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
     //@Test
     public void testSendNewPassword() throws Exception {
         JpaAccount acc = accountFacade.findJpaByEmail(EMAIL);
-        String oldToken = acc.getShadow().getToken();
-        userFacade.requestPasswordReset(EMAIL, null);
+        //String oldToken = acc.getShadow().getToken();
+        accountFacade.requestPasswordReset(EMAIL, null);
         acc = accountFacade.findJpaByEmail(EMAIL);
-        Assert.assertFalse(oldToken.equals(acc.getShadow().getToken()));
+        //Assert.assertFalse(oldToken.equals(acc.getShadow().getToken()));
     }
 
     /**

@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -22,6 +23,8 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.survey.persistence.SurveyDescriptor;
+import com.wegas.survey.persistence.SurveyInstance;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -336,7 +339,8 @@ public class VariableDescriptorController {
 
     /**
      * Import a variable from the source gameModel and import it within the target gameModel. Such
-     * an import is recursive and all referenced files are {@link JCRFacade#importFile(AbstractContentDescriptor, ContentConnector) imported} too.
+     * an import is recursive and all referenced files are
+     * {@link JCRFacade#importFile(AbstractContentDescriptor, ContentConnector) imported} too.
      * <p>
      * Such imported files may be renamed to avoid overriding preexisting files.
      * <p>

@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -26,6 +27,7 @@ import com.wegas.core.persistence.game.Game.GameAccess;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.persistence.token.InviteToJoinToken;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.view.Hidden;
@@ -142,6 +144,13 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     @JoinColumn(nullable = false)
     @JsonIgnore
     private GameTeams gameTeams;
+
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<InviteToJoinToken> invitations = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User createdBy;
@@ -434,6 +443,18 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     public void setPrivateInstance(List<VariableInstance> privateInstances) {
         this.privateInstances = privateInstances;
+    }
+
+    public List<InviteToJoinToken> getInvitations() {
+        return invitations;
+    }
+
+    public void setInvitations(List<InviteToJoinToken> invitations) {
+        this.invitations = invitations;
+    }
+
+    public void removeInvitation(InviteToJoinToken invitation){
+        this.invitations.remove(invitation);
     }
 
     @Override

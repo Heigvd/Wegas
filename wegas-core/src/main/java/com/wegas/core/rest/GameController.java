@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -343,37 +344,38 @@ public class GameController {
     @Path("{id}/Player")
     public Response joinIndividually(@Context HttpServletRequest request,
         @PathParam("id") Long gameId) throws WegasNoResultException {
-        Response response = Response.status(Response.Status.UNAUTHORIZED).build();
         User currentUser = userFacade.getCurrentUser();
         if (currentUser != null) {
-            response = Response.status(Response.Status.BAD_REQUEST).build();
             Game game = gameFacade.find(gameId);
             if (game != null) {
-                response = Response.status(Response.Status.CONFLICT).build();
-                if (game.getAccess() == Game.GameAccess.OPEN && requestManager.tryLock("join-" + gameId + "-" + currentUser.getId())) {
-                    if (!playerFacade.isInGame(game.getId(), currentUser.getId())) {
+                if (game.getAccess() == Game.GameAccess.OPEN
+                    && requestManager.tryLock("join-" + gameId + "-" + currentUser.getId())) {
+                    Player player = playerFacade.findPlayer(game.getId(), currentUser.getId());
+                    if (player == null) {
                         if (game.getGameModel().getProperties().getFreeForAll()) {
-                            Team team = new Team(teamFacade.findUniqueNameForTeam(game, currentUser.getName()), 1);
-                            teamFacade.create(game.getId(), team); // return managed team
-                            team = teamFacade.find(team.getId());
-                            gameFacade.joinTeam(team.getId(), currentUser.getId(), request != null ? Collections.list(request.getLocales()) : null);
-                            /**
-                             * Detach and re-find to fetch the new player
-                             */
-                            teamFacade.detach(team);
-                            team = teamFacade.find(team.getId());
-                            Player p = team.getPlayers().get(0);
-                            p.setQueueSize(populatorFacade.getQueue().indexOf(p) + 1);
+                            player = gameFacade.joinIndividually(game,
+                                request != null ? Collections.list(request.getLocales()) : null);
 
-                            response = Response.status(Response.Status.CREATED).entity(team).build();
+                            return Response.status(Response.Status.CREATED).entity(player.getTeam()).build();
+                        } else {
+                            return Response.status(Response.Status.CONFLICT).build();
                         }
                     } else {
                         logger.warn("User has already joined this game");
+                        return Response.status(Response.Status.CREATED).entity(player.getTeam()).build();
                     }
+                } else {
+                    // game closed or user is joining in another request
+                    return Response.status(Response.Status.CONFLICT).build();
                 }
+            } else {
+                // game not found
+                return Response.status(Response.Status.BAD_REQUEST).build();
             }
+        } else {
+            // please log in
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        return response;
     }
 
     /**

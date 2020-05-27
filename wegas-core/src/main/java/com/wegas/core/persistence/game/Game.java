@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -26,6 +27,7 @@ import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.persistence.token.InviteToJoinToken;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
@@ -50,6 +52,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -176,6 +179,20 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     @Enumerated(value = EnumType.STRING)
     @Column(length = 24, columnDefinition = "character varying(24) default 'LIVE'::character varying")
     private Status status = Status.LIVE;
+
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<InviteToJoinToken> invitations = new ArrayList<>();
+
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<InviteToJoinToken> surveyInvitation = new ArrayList<>();
 
     /**
      *
@@ -509,6 +526,18 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
             instances.addAll(t.getAllInstances());
         }
         return instances;
+    }
+
+    public List<InviteToJoinToken> getInvitations() {
+        return invitations;
+    }
+
+    public void setInvitations(List<InviteToJoinToken> invitations) {
+        this.invitations = invitations;
+    }
+
+    public void removeInvitation(InviteToJoinToken invitation) {
+        this.invitations.remove(invitation);
     }
 
     /**
