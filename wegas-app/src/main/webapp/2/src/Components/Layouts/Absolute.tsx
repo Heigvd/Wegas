@@ -36,6 +36,9 @@ export const AbsoluteItem = React.forwardRef<HTMLDivElement, AbsoluteItemProps>(
       onClick,
       onMouseOver,
       onMouseLeave,
+      onDragEnter,
+      onDragLeave,
+      onDragEnd,
       children,
     },
     ref,
@@ -49,6 +52,9 @@ export const AbsoluteItem = React.forwardRef<HTMLDivElement, AbsoluteItemProps>(
         onClick={onClick}
         onMouseOver={onMouseOver}
         onMouseLeave={onMouseLeave}
+        onDragEnter={onDragEnter}
+        onDragLeave={onDragLeave}
+        onDragEnd={onDragEnd}
         className={className}
       >
         {children}

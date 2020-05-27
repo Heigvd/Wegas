@@ -38,6 +38,7 @@ import {
   PlayerLinearLayoutProps,
   PlayerLinearLayoutChildrenProps,
 } from '../Layouts/LinearLayout.component';
+import { useDropFunctions } from '../../Hooks/useDropFunctions';
 
 // Styles
 export const layoutHighlightStyle = css({
@@ -300,7 +301,8 @@ function ComponentDropZone({
         (dropPosition === 'AFTER' ? ' component-dropzone-after' : '')
       }
       style={{
-        visibility: show ? 'visible' : 'collapse',
+        // visibility: show ? 'visible' : 'collapse',
+        ...(show ? {} : { display: 'none' }),
         position: 'absolute',
       }}
     />
@@ -340,6 +342,18 @@ export interface WegasComponentItemProps extends ClassAndStyle {
    * onMouseLeave - trigered when the mouse is no more over the element
    */
   onMouseLeave?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  /**
+   * onDragEnter - triggered when the mouse is dragging over the element
+   */
+  onDragEnter?: (event: React.DragEvent<HTMLDivElement>) => void;
+  /**
+   * onDragLeave - triggered when the mouse is dragging out of the element
+   */
+  onDragLeave?: (event: React.DragEvent<HTMLDivElement>) => void;
+  /**
+   * onDragEnd - triggered when the mouse stops dragging any element
+   */
+  onDragEnd?: (event: React.DragEvent<HTMLDivElement>) => void;
   /**
    * tooltip - a descriptive text that apprear when the cursor is idle over the element
    */
@@ -465,6 +479,8 @@ export function ComponentContainer({
   children,
 }: ComponentContainerProps) {
   const container = React.useRef<HTMLDivElement>();
+  const mouseOver = React.useRef<boolean>(false);
+  const [dragHoverState, setDragHoverState] = React.useState<boolean>(false);
   const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
   const [upgradesState, setUpgradesState] = React.useState<UpgradesState>(
     defaultUpgradesState,
@@ -475,14 +491,9 @@ export function ComponentContainer({
   const upgrades =
     options?.upgrades == null ? defaultUpgradesState : upgradesState;
   const actions = options?.actions == null ? defaultActionsState : actionsState;
-
-  if (linearChildrenProps) {
-    debugger;
-  }
-
   const { noSplitter, noResize } = linearChildrenProps || {};
 
-  const [{ isOver }, dropZone] = useDndComponentDrop();
+  // const [{ isOver }, dropZone] = useDndComponentDrop();
 
   const {
     onDrop,
@@ -535,23 +546,41 @@ export function ComponentContainer({
 
   const onMouseOver = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (editable) {
-        e.stopPropagation();
-        if (!stackedHandles) {
-          setStackedHandles(() => computeHandles(handles, path));
+      if (!mouseOver.current) {
+        mouseOver.current = true;
+        if (editable) {
+          e.stopPropagation();
+          if (!stackedHandles) {
+            setStackedHandles(() => computeHandles(handles, path));
+          }
+          pageDispatch(PageStateAction.setFocused(pageId, path));
         }
-        pageDispatch(PageStateAction.setFocused(pageId, path));
       }
     },
     [editable, handles, pageId, path, stackedHandles],
   );
 
   const onMouseLeave = React.useCallback(() => {
+    mouseOver.current = false;
     if (editable) {
       setStackedHandles(undefined);
+      pageDispatch(PageStateAction.unsetFocused());
     }
-    pageDispatch(PageStateAction.unsetFocused());
   }, [editable]);
+
+  const dragEnter = React.useCallback(() => {
+    if (editable) {
+      setDragHoverState(true);
+    }
+  }, [editable]);
+
+  const dragLeave = React.useCallback(() => {
+    if (editable) {
+      setDragHoverState(false);
+    }
+  }, [editable]);
+
+  const dropFunctions = useDropFunctions(dragEnter, dragLeave, dragLeave);
 
   const onEditableComponentDrop = React.useCallback(
     (dndComponent, dndMonitor) => {
@@ -596,7 +625,7 @@ export function ComponentContainer({
       )}
       <Container
         ref={ref => {
-          dropZone(ref);
+          // dropZone(ref);
           if (ref != null) {
             container.current = ref;
           }
@@ -620,21 +649,22 @@ export function ComponentContainer({
         onClick={onClick}
         onMouseOver={onMouseOver}
         onMouseLeave={onMouseLeave}
+        {...dropFunctions}
         tooltip={upgrades.tooltip}
       >
-        {editable && containerType === 'ABSOLUTE' && (
+        {dragHoverState && editable && containerType === 'ABSOLUTE' && (
           <ComponentDropZone
             onDrop={onEditableComponentDrop}
-            show={isOver}
+            show
             dropPosition="INTO"
           />
         )}
-        {editable && childrenType !== 'ABSOLUTE' && (
+        {dragHoverState && editable && childrenType !== 'ABSOLUTE' && (
           <ComponentDropZone
             onDrop={dndComponent =>
               onDrop(dndComponent, containerPath, itemPath)
             }
-            show={isOver}
+            show
             dropPosition="BEFORE"
           />
         )}
@@ -653,7 +683,7 @@ export function ComponentContainer({
         )}
         {showComponent && <ErrorBoundary>{children}</ErrorBoundary>}
         {upgrades.infoBeamProps && <InfoBeam {...upgrades.infoBeamProps} />}
-        {editable && childrenType !== 'ABSOLUTE' && (
+        {dragHoverState && editable && childrenType !== 'ABSOLUTE' && (
           <ComponentDropZone
             onDrop={dndComponent =>
               onDrop(
@@ -662,7 +692,7 @@ export function ComponentContainer({
                 itemPath != null ? itemPath + 1 : itemPath,
               )
             }
-            show={isOver}
+            show
             dropPosition="AFTER"
           />
         )}

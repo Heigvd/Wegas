@@ -112,6 +112,9 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
       onMouseOut,
       onMouseEnter,
       onMouseLeave,
+      onDragEnter,
+      onDragLeave,
+      onDragEnd,
       className,
       style = {},
       tooltip,
@@ -126,6 +129,9 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
       onMouseOut={onMouseOut}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      onDragEnter={onDragEnter}
+      onDragLeave={onDragLeave}
+      onDragEnd={onDragEnd}
       className={className}
       style={{
         position: 'relative',

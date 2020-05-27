@@ -300,6 +300,9 @@ export const FonkyFlexContent = React.forwardRef<
     onClick,
     onMouseOver,
     onMouseLeave,
+    onDragEnter,
+    onDragLeave,
+    onDragEnd,
     tooltip,
   } = props;
   return (
@@ -316,6 +319,9 @@ export const FonkyFlexContent = React.forwardRef<
       onClick={onClick}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
+      onDragEnter={onDragEnter}
+      onDragLeave={onDragLeave}
+      onDragEnd={onDragEnd}
       title={tooltip}
     >
       {children}
