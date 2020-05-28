@@ -190,7 +190,7 @@ public class EjbTimerFacade extends WegasAbstractFacade {
      * <p>
      * This task is scheduled each Sunday at 1:30 am
      */
-    @Schedule(hour = "*", minute = "*/5", persistent = false)
+    @Schedule(hour = "*", minute = "48", persistent = false)
     public void deleteOutdatedTokens() {
         ILock lock = hzInstance.getLock("ScheduleTokenGC");
         if (lock.tryLock()) {
