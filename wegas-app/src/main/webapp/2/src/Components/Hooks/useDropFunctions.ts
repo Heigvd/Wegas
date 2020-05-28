@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { wlog } from '../../Helper/wegaslog';
 
 /**
  * useDropFunctions - creates two DOM event functions that can be directly put in an HTML element
@@ -31,7 +30,6 @@ export function useDropFunctions<T extends HTMLElement>(
 
   const onDragLeave = React.useCallback(
     (event: React.DragEvent<T>) => {
-      wlog(dragDepth.current);
       dragDepth.current--;
       if (dragDepth.current === 0) {
         dragOut(event);
@@ -48,10 +46,9 @@ export function useDropFunctions<T extends HTMLElement>(
     [dragEnd],
   );
 
-  const resetDrop = React.useCallback(() => {
+  const resetDrop = () => {
     dragDepth.current = 0;
-    dragEnd();
-  }, [dragEnd]);
+  };
 
   if (!allowReset) {
     return { onDragEnter, onDragLeave, onDragEnd };

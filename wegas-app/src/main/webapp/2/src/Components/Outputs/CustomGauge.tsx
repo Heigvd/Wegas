@@ -4,6 +4,7 @@ import {
   textCenter,
   flexColumn,
   grow,
+  expandWidth,
 } from '../../css/classes';
 import { PieChart, PieChartSection, NeedleStyle } from './PieChart';
 import { Value } from './Value';
@@ -108,7 +109,7 @@ export function CustomGauge({
   }));
 
   return (
-    <div className={cx(textCenter, centeredContent, flexColumn)}>
+    <div className={cx(textCenter, centeredContent, flexColumn, expandWidth)}>
       {label && <Value className={grow} value={label} />}
       <PieChart
         needleCfg={{

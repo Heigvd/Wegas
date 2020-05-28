@@ -36,23 +36,11 @@ const splitterStyle = css({
   backgroundColor: themeVar.primaryLighterColor,
 });
 
-// function isFonkyflexItem(
-//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//   i: any,
-// ): i is { type: { name: ContainerItemType } } {
-//   return (
-//     i != null &&
-//     typeof i === 'object' &&
-//     'type' in i &&
-//     typeof i.type === 'function' &&
-//     'name' in i.type
-//   );
-// }
-
-// const MESSAGE_BAD_CONTENT =
-//   'The content of the Container can only be Splitter or Content';
-// const MESSAGE_BAD_STUCTURE =
-//   'A Splitter must be surrounded by 2 Content components';
+export const defaultFlexContainerStyle: React.CSSProperties = {
+  height: '100%',
+  width: '100%',
+  overflow: 'auto',
+};
 
 function getFlexGrowValues(flexItems: HTMLDivElement[]): number[] {
   return flexItems.map(c => Number(c.style.getPropertyValue('flex-grow')));
@@ -182,7 +170,7 @@ export function FonkyFlexContainer({
         container.current = e as HTMLDivElement;
       }}
       className={
-        cx(flex, vertical ? flexColumn : flexRow, expandBoth, containerStyle) +
+        cx(flex, vertical ? flexColumn : flexRow, containerStyle) +
         classNameOrEmpty(className)
       }
       style={style}
@@ -313,6 +301,8 @@ export const FonkyFlexContent = React.forwardRef<
         position: 'relative',
         flexGrow: flexInit,
         flexBasis: 0,
+        height: '100%',
+        width: '100%',
         overflow: 'auto',
         ...style,
       }}

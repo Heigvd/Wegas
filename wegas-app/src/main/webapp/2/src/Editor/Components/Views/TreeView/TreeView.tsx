@@ -482,7 +482,6 @@ export function TreeNode<T>({
 
   return (
     <div className={treeNodeStyle + classNameOrEmpty(className)} style={style}>
-      {id + ' : ' + parentProps?.id + ' : ' + index}
       {showTopDropZone && (
         <DropPreview
           acceptType={parentProps?.acceptType || type}

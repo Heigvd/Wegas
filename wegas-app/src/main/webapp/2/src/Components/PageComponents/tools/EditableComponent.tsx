@@ -119,7 +119,7 @@ const handleControlHoverStyle = css({
   ':hover': componentBorderCss,
 });
 
-const emptyLayoutItemStyle = css({
+const emptyLayoutItemStyle: React.CSSProperties = {
   textAlign: 'center',
   verticalAlign: 'middle',
   borderStyle: 'solid',
@@ -128,7 +128,7 @@ const emptyLayoutItemStyle = css({
   height: 'fit-content',
   overflowWrap: 'normal',
   zIndex: 0,
-});
+};
 
 // Helper functions
 
@@ -582,6 +582,10 @@ export function ComponentContainer({
 
   const dropFunctions = useDropFunctions(dragEnter, dragLeave, dragLeave);
 
+  React.useEffect(() => {
+    setDragHoverState(false);
+  }, [children]);
+
   const onEditableComponentDrop = React.useCallback(
     (dndComponent, dndMonitor) => {
       if (container.current) {
@@ -733,7 +737,8 @@ export function EmptyComponentContainer({
           container.current = ref;
         }
       }}
-      className={cx(emptyLayoutItemStyle, flex)}
+      className={flex}
+      style={emptyLayoutItemStyle}
     >
       {editMode && childrenType !== 'ABSOLUTE' && (
         <ComponentDropZone
