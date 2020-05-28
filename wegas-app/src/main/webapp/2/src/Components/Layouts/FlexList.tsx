@@ -144,8 +144,6 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
     </div>
   ),
 );
-//   );
-// }
 
 export const flexDirectionValues = [
   'row',
