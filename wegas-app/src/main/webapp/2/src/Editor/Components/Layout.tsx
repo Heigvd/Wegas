@@ -17,7 +17,9 @@ const InstancesEditor = React.lazy(() => import('./Variable/InstancesEditor'));
 const HTMLEditor = React.lazy(() => import('../../Components/HTMLEditor'));
 const ThemeEditor = React.lazy(() => import('../../Components/ThemeEditor'));
 
-const Tester = React.lazy(() => import('../../Testers/NewTreeViewTester'));
+const Tester = React.lazy(() =>
+  import('../../Testers/Components/FlexLayoutTester'),
+);
 
 const layout = css({
   display: 'flex',

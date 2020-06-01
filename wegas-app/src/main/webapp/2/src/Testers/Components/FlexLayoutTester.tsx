@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cx, css } from 'emotion';
-import { flex, flexColumn, grow } from '../../css/classes';
+import { flex, flexColumn, grow, expandBoth } from '../../css/classes';
 import {
   FonkyFlexContainer,
   FonkyFlexContent,
@@ -10,10 +10,15 @@ import {
 export default function FlexLayoutTester() {
   return (
     <div
-      className={cx(flex, flexColumn, css({ width: '100%', height: '500px' }))}
+      className={cx(
+        flex,
+        flexColumn,
+        css({ width: '100%', height: '500px' }),
+        expandBoth,
+      )}
     >
       <div className={grow}>
-        <FonkyFlexContainer>
+        <FonkyFlexContainer className={expandBoth}>
           <FonkyFlexContent>Horizontal 1</FonkyFlexContent>
           <FonkyFlexSplitter />
           <FonkyFlexContent>Horizontal 2</FonkyFlexContent>
@@ -22,7 +27,7 @@ export default function FlexLayoutTester() {
         </FonkyFlexContainer>
       </div>
       <div className={grow}>
-        <FonkyFlexContainer>
+        <FonkyFlexContainer className={expandBoth}>
           <FonkyFlexContent>Horizontal Nosplitter 1</FonkyFlexContent>
           <FonkyFlexContent>Horizontal Nosplitter 2</FonkyFlexContent>
           <FonkyFlexContent>Horizontal Nosplitter 3</FonkyFlexContent>
@@ -30,7 +35,7 @@ export default function FlexLayoutTester() {
       </div>
       <div className={grow}>
         Vertical
-        <FonkyFlexContainer vertical>
+        <FonkyFlexContainer vertical className={expandBoth}>
           <FonkyFlexContent>Vertical 1</FonkyFlexContent>
           <FonkyFlexSplitter />
           <FonkyFlexContent>Vertical 2</FonkyFlexContent>
