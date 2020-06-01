@@ -5,7 +5,7 @@ import {
   flexColumn,
   grow,
   expandBoth,
-  centeredContent,
+  justifyCenter,
   shrinkWidth,
 } from '../../css/classes';
 import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
@@ -42,7 +42,7 @@ export function ResizeHandle({
       className={cx(flex, flexColumn)}
     >
       <div className={cx(flex, grow, expandBoth)}>{children}</div>
-      <div className={cx(centeredContent)}>
+      <div className={cx(flex, justifyCenter)}>
         <div className={cx(shrinkWidth)}>
           <IconButton
             icon={open ? 'angle-up' : 'angle-down'}

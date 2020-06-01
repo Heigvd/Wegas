@@ -86,8 +86,7 @@ export const textCenter = css({
 export const itemCenter = css({
   alignItems: 'center',
 });
-export const centeredContent = css({
-  display: 'flex',
+export const justifyCenter = css({
   justifyContent: 'center',
 });
 export const foregroundContent = css({

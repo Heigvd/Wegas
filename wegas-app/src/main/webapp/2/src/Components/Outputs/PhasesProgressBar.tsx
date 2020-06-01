@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  centeredContent,
+  justifyCenter,
   textCenter,
   flexColumn,
   grow,
@@ -125,7 +125,7 @@ export function CustomPhasesProgressBar({
   return (
     <div
       className={
-        cx(textCenter, centeredContent, flexColumn, grow) +
+        cx(flex, textCenter, justifyCenter, flexColumn, grow) +
         classNameOrEmpty(className)
       }
       style={style}

@@ -2,7 +2,15 @@ import * as React from 'react';
 import { debounce } from 'lodash-es';
 import { themeVar } from '../../Theme';
 import { cx, css } from 'emotion';
-import { flex } from '../../../css/classes';
+import {
+  flex,
+  flexColumn,
+  flexRow,
+  expandWidth,
+  flexWrap,
+  itemCenter,
+  justifyCenter,
+} from '../../../css/classes';
 import { CheckMinMax } from './numberComponentHelper';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
@@ -17,9 +25,6 @@ const numberSquareStyle = css({
   lineHeight: '2em',
   textAlign: 'center',
   cursor: 'default',
-  ':hover': {
-    borderColor: themeVar.primaryTextColor,
-  },
 });
 
 const activeNumberSquareStyle = css({
@@ -28,10 +33,17 @@ const activeNumberSquareStyle = css({
 
 const clickableNumberSquareStyle = css({
   cursor: 'pointer',
+  ':hover': {
+    borderColor: themeVar.primaryTextColor,
+  },
 });
 
 const disabledNumberSquareStyle = css({
   backgroundColor: themeVar.disabledColor,
+});
+
+const squareFrameStyle = css({
+  padding: '10px',
 });
 
 interface NumberSquareProps extends ClassAndStyle {
@@ -82,6 +94,18 @@ export interface NumberBoxProps extends InputProps<number> {
    */
   maxValue?: number;
   /**
+   * hideBoxValue - hide the value in the box
+   */
+  hideBoxValue?: boolean;
+  /**
+   * showLabelValue - show the value of the number in the label
+   */
+  showLabelValue?: boolean;
+  /**
+   * showQuantity - the boxes start from 1 event with min value lower or higher
+   */
+  showQuantity?: boolean;
+  /**
    * activeClassName - the class to apply on an active box
    */
   activeClassName?: string;
@@ -99,6 +123,9 @@ export function NumberBox({
   label,
   disabled,
   readOnly,
+  hideBoxValue,
+  showLabelValue,
+  showQuantity,
   activeClassName,
   boxClassName,
   className,
@@ -106,8 +133,13 @@ export function NumberBox({
 }: NumberBoxProps) {
   const [currentValue, setCurrentValue] = React.useState(value || 0);
 
-  const computedMinValue = minValue !== undefined ? minValue : 0;
+  const computedMinValue = showQuantity
+    ? 1
+    : minValue !== undefined
+    ? minValue
+    : 0;
   const computedMaxValue = maxValue !== undefined ? maxValue : currentValue + 1;
+  const readonly = readOnly || !onChange;
 
   React.useEffect(() => {
     setCurrentValue(value || 0);
@@ -122,7 +154,11 @@ export function NumberBox({
 
   const squares: JSX.Element[] = [];
 
-  for (let i = computedMinValue; i <= computedMaxValue; ++i) {
+  for (
+    let i = computedMinValue;
+    i < computedMaxValue + (readonly ? 0 : 1);
+    ++i
+  ) {
     squares.push(
       <NumberSquare
         key={i}
@@ -133,7 +169,8 @@ export function NumberBox({
         }}
         active={i <= currentValue}
         disabled={disabled}
-        readOnly={readOnly}
+        readOnly={readonly}
+        hideValue={hideBoxValue}
         activeClassName={activeClassName}
         className={boxClassName}
       />,
@@ -141,14 +178,26 @@ export function NumberBox({
   }
 
   return (
-    <div id={id} className={flex + classNameOrEmpty(className)}>
-      {label && <Value value={label} />}
+    <div
+      id={id}
+      className={
+        cx(flex, flexColumn, expandWidth, itemCenter) +
+        classNameOrEmpty(className)
+      }
+    >
+      {label && (
+        <Value value={label + (showLabelValue ? ` : ${currentValue}` : '')} />
+      )}
       <CheckMinMax
         min={computedMinValue}
         max={computedMaxValue}
         value={currentValue}
       />
-      {squares}
+      <div
+        className={cx(flex, flexRow, flexWrap, justifyCenter, squareFrameStyle)}
+      >
+        {squares}
+      </div>
     </div>
   );
 }
