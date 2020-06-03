@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { useDrag, DropTargetMonitor, useDrop } from 'react-dnd';
-import { primaryLight, primaryDark } from '../../../Components/Theme';
+import { primaryLight, primaryDark } from '../../../Components/Style/Theme';
 import { DropAction } from './DnDTabLayout';
 import { hidden, flex } from '../../../css/classes';
 import { dropZoneFocus } from '../../../Components/Contexts/DefaultDndProvider';

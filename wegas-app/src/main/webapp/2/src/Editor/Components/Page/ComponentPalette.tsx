@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cx, css } from 'emotion';
 import { flex, flexWrap, button } from '../../../css/classes';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
-import { themeVar } from '../../../Components/Theme';
+import { themeVar } from '../../../Components/Style/Theme';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import {
   useDrag,

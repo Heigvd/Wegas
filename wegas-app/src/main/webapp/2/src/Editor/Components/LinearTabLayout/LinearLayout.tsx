@@ -10,7 +10,7 @@ import { wlog } from '../../../Helper/wegaslog';
 
 import 'react-reflex/styles.css';
 import { flex, noOverflow, grow } from '../../../css/classes';
-import { themeVar } from '../../../Components/Theme';
+import { themeVar } from '../../../Components/Style/Theme';
 // import {
 //   Container,
 //   Content,

@@ -8,7 +8,7 @@ import {
   Handles,
   PageEditorComponent,
 } from '../../../Editor/Components/Page/PageEditor';
-import { themeVar } from '../../Theme';
+import { themeVar } from '../../Style/Theme';
 import { flex } from '../../../css/classes';
 import { FlexItem, FlexListProps } from '../../Layouts/FlexList';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';

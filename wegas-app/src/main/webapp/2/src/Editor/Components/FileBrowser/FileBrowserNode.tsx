@@ -5,7 +5,7 @@ import {
   themeVar,
   localSelection,
   globalSelection,
-} from '../../../Components/Theme';
+} from '../../../Components/Style/Theme';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { generateAbsolutePath, FileAPI, fileURL } from '../../../API/files.api';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';

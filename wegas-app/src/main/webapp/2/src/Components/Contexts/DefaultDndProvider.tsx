@@ -2,7 +2,7 @@ import * as React from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { css } from 'emotion';
-import { themeVar } from '../Theme';
+import { themeVar } from '../Style/Theme';
 
 // export const dropZoneFocusCss = {
 //   background:

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css, keyframes, cx } from 'emotion';
-import { themeVar } from '../../Theme';
+import { themeVar } from '../../Style/Theme';
 import { useScript } from '../../Hooks/useScript';
 
 const infoBeamStyle = css({

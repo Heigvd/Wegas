@@ -8,7 +8,7 @@ import { grow } from '../../../css/classes';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { MessageString } from '../MessageString';
 import { css } from 'emotion';
-import { themeVar } from '../../../Components/Theme';
+import { themeVar } from '../../../Components/Style/Theme';
 
 const fileBrowserStyle = css({
   backgroundColor: themeVar.backgroundColor,

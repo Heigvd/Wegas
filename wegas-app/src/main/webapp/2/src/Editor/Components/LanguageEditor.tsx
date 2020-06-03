@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cx } from 'emotion';
 import { Toolbar } from '../../Components/Toolbar';
 import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
-import { themeVar } from '../../Components/Theme';
+import { themeVar } from '../../Components/Style/Theme';
 import { LanguagesAPI } from '../../API/languages.api';
 import { useGameModel } from '../../Components/Hooks/useGameModel';
 import { GameModel } from '../../data/selectors';

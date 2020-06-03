@@ -1,5 +1,5 @@
 import { css, cx } from 'emotion';
-import { themeVar } from '../Components/Theme';
+import { themeVar } from '../Components/Style/Theme';
 
 // Display
 export const flex = css({

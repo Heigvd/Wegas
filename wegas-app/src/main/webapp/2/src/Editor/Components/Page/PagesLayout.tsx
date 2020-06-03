@@ -24,7 +24,7 @@ import { Actions } from '../../../data';
 import { MessageString } from '../MessageString';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
-import { themeVar } from '../../../Components/Theme';
+import { themeVar } from '../../../Components/Style/Theme';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { pageEditorCTX, pageCTX } from './PageEditor';

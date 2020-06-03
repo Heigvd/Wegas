@@ -1,6 +1,6 @@
 import { Item } from '../Editor/Components/Tree/TreeSelect';
 import { css } from 'emotion';
-import { themeVar } from '../Components/Theme';
+import { themeVar } from '../Components/Style/Theme';
 import { cloneDeep } from 'lodash-es';
 
 export function isPageItem(

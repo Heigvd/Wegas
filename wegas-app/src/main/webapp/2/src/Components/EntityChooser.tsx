@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { SizedDiv } from './SizedDiv';
-import { primaryDark, primaryLight, primary } from './Theme';
+import { primaryDark, primaryLight, primary } from './Style/Theme';
 import { css, cx } from 'emotion';
 import { deepDifferent } from './Hooks/storeHookFactory';
 import { flex } from '../css/classes';

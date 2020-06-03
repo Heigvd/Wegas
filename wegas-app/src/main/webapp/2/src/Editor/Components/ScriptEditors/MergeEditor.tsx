@@ -1,6 +1,6 @@
 import { css } from 'emotion';
 import * as React from 'react';
-import { themeVar } from '../../../Components/Theme';
+import { themeVar } from '../../../Components/Style/Theme';
 import { Toolbar } from '../../../Components/Toolbar';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import WegasDiffEditor, {

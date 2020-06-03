@@ -5,7 +5,7 @@ import { Toolbar } from '../../../Components/Toolbar';
 import { Menu } from '../../../Components/Menu';
 import { Reparentable } from '../Reparentable';
 import { cx, css } from 'emotion';
-import { themeVar } from '../../../Components/Theme';
+import { themeVar } from '../../../Components/Style/Theme';
 import { DropActionType } from './LinearLayout';
 import {
   grow,

@@ -1,8 +1,11 @@
 import { css } from 'emotion';
 import * as React from 'react';
 import { TranslatableContent } from '../../../data/i18n';
-import { primary } from '../../Theme';
-import { useVariableDescriptor, useVariableInstance } from '../../Hooks/useVariable';
+import { primary } from '../../Style/Theme';
+import {
+  useVariableDescriptor,
+  useVariableInstance,
+} from '../../Hooks/useVariable';
 
 const boxStyle = css(
   {

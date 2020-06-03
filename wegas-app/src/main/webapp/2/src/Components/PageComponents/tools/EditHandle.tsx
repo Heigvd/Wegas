@@ -6,7 +6,7 @@ import { cx, css } from 'emotion';
 import { flex, flexColumn, flexRow, textCenter } from '../../../css/classes';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
-import { themeVar } from '../../Theme';
+import { themeVar } from '../../Style/Theme';
 import { MessageString } from '../../../Editor/Components/MessageString';
 
 const handleContentStyle = css({

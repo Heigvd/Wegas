@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Toolbar } from './Toolbar';
 import { css } from 'emotion';
-import { primaryLight, primaryDark } from './Theme';
+import { primaryLight, primaryDark } from './Style/Theme';
 
 interface TabLayoutProps {
   active?: number;

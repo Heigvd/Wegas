@@ -8,7 +8,7 @@ import {
   disableBordersCSS,
   ButtonProps,
 } from './Button';
-import { themeVar } from '../../Theme';
+import { themeVar } from '../../Style/Theme';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../../../Helper/className';
 

@@ -3,7 +3,7 @@ import { Interpolation, css } from 'emotion';
 import Slider from 'react-input-slider';
 import { textCenter } from '../../../css/classes';
 import { CheckMinMax } from './numberComponentHelper';
-import { themeVar } from '../../Theme';
+import { themeVar } from '../../Style/Theme';
 import { Value } from '../../Outputs/Value';
 import { InputProps } from '../SimpleInput';
 import { NumberInput } from './NumberInput';

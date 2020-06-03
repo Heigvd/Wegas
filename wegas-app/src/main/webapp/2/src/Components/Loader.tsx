@@ -1,6 +1,6 @@
 import { css, keyframes } from 'emotion';
 import * as React from 'react';
-import { themeVar } from './Theme';
+import { themeVar } from './Style/Theme';
 
 const anim = keyframes({
   '0%': {

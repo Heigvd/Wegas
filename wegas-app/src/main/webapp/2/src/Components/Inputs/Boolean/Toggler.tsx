@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
-import { themeVar } from '../../Theme';
+import { themeVar } from '../../Style/Theme';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
 import { textCenter, flex, shrinkWidth } from '../../../css/classes';

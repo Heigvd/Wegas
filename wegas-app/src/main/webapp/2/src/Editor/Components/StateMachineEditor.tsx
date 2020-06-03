@@ -13,7 +13,7 @@ import {
   getInstance,
   editorLabel,
 } from '../../data/methods/VariableDescriptorMethods';
-import { themeVar } from '../../Components/Theme';
+import { themeVar } from '../../Components/Style/Theme';
 import { EditorAction } from '../../data/Reducer/globalState';
 import { State as RState } from '../../data/Reducer/reducers';
 import { wlog } from '../../Helper/wegaslog';

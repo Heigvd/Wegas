@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cx, css } from 'emotion';
 import { classNameOrEmpty } from '../../Helper/className';
 import { flex, flexColumn, flexRow } from '../../css/classes';
-import { themeVar } from '../Theme';
+import { themeVar } from '../Style/Theme';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
 
 const SPLITTER_SELECTOR = 'fonkyflex-splitter';

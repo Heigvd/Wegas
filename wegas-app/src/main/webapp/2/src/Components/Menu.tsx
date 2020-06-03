@@ -4,7 +4,7 @@ import { css, cx } from 'emotion';
 import { IconButton } from './Inputs/Buttons/IconButton';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { useKeyboard } from './Hooks/useKeyboard';
-import { themeVar } from './Theme';
+import { themeVar } from './Style/Theme';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { Item } from '../Editor/Components/Tree/TreeSelect';
 

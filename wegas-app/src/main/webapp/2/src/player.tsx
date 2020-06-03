@@ -5,7 +5,7 @@ import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
 import { LanguagesProvider } from './Components/Contexts/LanguagesProvider';
 import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
-import { ThemeProvider } from './Components/Theme';
+import { ThemeProvider } from './Components/Style/Theme';
 import { PageAPI } from './API/pages.api';
 import 'emotion';
 import { useWebsocket } from './API/websocket';

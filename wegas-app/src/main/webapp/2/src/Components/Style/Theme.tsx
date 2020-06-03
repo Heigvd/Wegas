@@ -2,71 +2,40 @@ import * as React from 'react';
 import { css } from 'emotion';
 import { setGlobal, useDispatch } from 'reactn';
 import { omit } from 'lodash';
-import { wlog } from '../Helper/wegaslog';
+import { wlog } from '../../Helper/wegaslog';
 import u from 'immer';
+import {
+  Mode,
+  defaultMode,
+  DefaultThemeColors,
+  DefaultThemeDimensions,
+  DefaultThemeOthers,
+  ModeComponentNames,
+} from './ThemeVars';
 
-type ColorType = Exclude<React.CSSProperties['color'], undefined>;
+export type ColorType = Exclude<React.CSSProperties['color'], undefined>;
 
-export interface ThemeColors {
-  'Main color': ColorType;
-  'Background color': ColorType;
-  'Text color': ColorType;
-  'Warning color': ColorType;
-  'Error color': ColorType;
-  'Sucess color': ColorType;
-  'Disabled color': ColorType;
-  'Highlight color': ColorType;
-  'Hover color': ColorType;
+interface ThemeColors extends DefaultThemeColors {
   [color: string]: ColorType;
 }
 
-export interface ThemeDimensions {
-  'Border radius': React.CSSProperties['borderRadius'];
+interface ThemeDimensions extends DefaultThemeDimensions {
   [dim: string]: React.CSSProperties[keyof React.CSSProperties];
 }
 
-export interface ThemeOthers {
-  'Font family': React.CSSProperties['fontFamily'];
+interface ThemeOthers extends DefaultThemeOthers {
   [dim: string]: React.CSSProperties[keyof React.CSSProperties];
 }
 
-type ModeColor = keyof ThemeColors;
-type ModeDimension = keyof ThemeDimensions;
-type ModeOthers = keyof ThemeOthers;
-
-interface ModeComponent<
-  C extends { [entry: string]: ModeColor } = {},
-  D extends { [entry: string]: ModeDimension } = {},
-  O extends { [entry: string]: ModeOthers } = {}
+export interface ModeComponent<
+  C extends { [entry: string]: string } = {},
+  D extends { [entry: string]: string } = {},
+  O extends { [entry: string]: string } = {}
 > {
-  colors?: C;
-  dimensions?: D;
-  others?: O;
+  colors: C;
+  dimensions: D;
+  others: O;
 }
-
-interface Mode {
-  Layout: ModeComponent<
-    {
-      BackgroundColor: ModeColor;
-      TextColor: ModeColor;
-    },
-    {},
-    { TextFont: ModeOthers }
-  >;
-  Button: ModeComponent<
-    {
-      Color: ModeColor;
-      TextColor: ModeColor;
-    },
-    { Radius: ModeDimension },
-    { TextFont: ModeOthers }
-  >;
-}
-
-type ModeComponentNames = keyof Mode;
-type ModeComponents = Mode[ModeComponentNames];
-type ModeComponentsSectionNames = keyof ModeComponents;
-type ModeComponentsSections = ModeComponents[ModeComponentsSectionNames];
 
 interface Modes {
   normal: Mode;
@@ -104,7 +73,7 @@ interface ThemesState {
 }
 
 interface ThemeContextValues {
-  themeState: ThemesState;
+  themesState: ThemesState;
   currentContext: Context;
   addNewTheme: (themeName: string) => void;
   deleteTheme: (themeName: string) => void;
@@ -119,36 +88,12 @@ interface ThemeContextValues {
     themeName: string,
     modeName: string,
     component: ModeComponentNames,
-    section: ModeComponentsSectionNames,
+    section: keyof ThemeValues,
     entry: string,
     value: string | number | undefined,
   ) => void;
   themeRoot?: React.RefObject<HTMLDivElement>;
 }
-
-const defaultMode: Mode = {
-  Button: {
-    colors: {
-      Color: 'Main color',
-      TextColor: 'Background color',
-    },
-    dimensions: {
-      Radius: 'Border radius',
-    },
-    others: {
-      TextFont: 'Font family',
-    },
-  },
-  Layout: {
-    colors: {
-      BackgroundColor: 'Background color',
-      TextColor: 'Text color',
-    },
-    others: {
-      TextFont: 'Font family',
-    },
-  },
-};
 
 const defaultThemeValues: ThemeValues = {
   colors: {
@@ -180,7 +125,7 @@ const defaultThemes = {
   default: defaultTheme,
 };
 
-const defaultThemeState: ThemesState = {
+const defaultThemesState: ThemesState = {
   selectedThemes: {
     editor: 'default',
     player: 'default',
@@ -189,69 +134,10 @@ const defaultThemeState: ThemesState = {
   themes: defaultThemes,
 };
 
-setGlobal({ themesState: defaultThemeState });
-
-export const themeVar: Mode = Object.entries(defaultMode).reduce(
-  (o, [ck, c]: [ModeComponentNames, ModeComponents]) => ({
-    ...o,
-    [ck]: Object.entries(c).reduce(
-      (o, [sk, s]: [keyof ThemeValues, ModeComponentsSections]) => ({
-        ...o,
-        [sk]: Object.keys(s || {}).reduce(
-          (o, ek) => ({ ...o, [ek]: `var(--${ck}-${sk}-${ek})`.toLowerCase() }),
-          {},
-        ),
-      }),
-      {},
-    ),
-  }),
-  defaultMode,
-);
-
-// export const themeVar = {
-//   primaryColor: 'var(--primary-color)',
-//   primaryTextColor: 'var(--primary-text-color)',
-//   primaryDarkerColor: 'var(--primary-darker-color)',
-//   primaryDarkerTextColor: 'var(--primary-darker-text-color)',
-//   primaryLighterColor: 'var(--primary-lighter-color)',
-//   primaryLighterTextColor: 'var(--primary-lighter-text-color)',
-//   primaryHoverColor: 'var(--primary-hover-color)',
-//   warningColor: 'var(--warning-color)',
-//   errorColor: 'var(--error-color)',
-//   successColor: 'var(--success-color)',
-//   disabledColor: 'var(--disabled-color)',
-//   backgroundColor: 'var(--background-color)',
-//   searchColor: 'var(--search-color)',
-//   borderRadius: 'var(--border-radius)',
-// };
-
-// export const primary = css({
-//   backgroundColor: themeVar.primaryColor,
-//   color: themeVar.primaryTextColor,
-// });
-// export const primaryDark = css({
-//   backgroundColor: themeVar.primaryDarkerColor,
-//   color: themeVar.primaryDarkerTextColor,
-// });
-// export const primaryLight = css({
-//   backgroundColor: themeVar.primaryLighterColor,
-//   color: themeVar.primaryLighterTextColor,
-// });
-// export const localSelection = css({
-//   backgroundColor: themeVar.primaryLighterColor,
-// });
-// export const globalSelection = css({
-//   borderStyle: 'solid',
-//   borderWidth: '2px',
-//   borderColor: themeVar.primaryDarkerColor,
-//   borderRadius: themeVar.borderRadius,
-// });
-// export const searchSelection = css({
-//   backgroundColor: themeVar.searchColor,
-// });
+setGlobal({ themesState: defaultThemesState });
 
 export const themeCTX = React.createContext<ThemeContextValues>({
-  themeState: defaultThemeState,
+  themesState: defaultThemesState,
   addNewTheme: () => {
     wlog('Not implemented yet');
   },
@@ -370,10 +256,9 @@ const themeStateReducer = (
         } = action;
         const psection = oldState.themes[themeName].modes[modeName][component][
           section
-        ] as { [id: string]: any };
+        ] as { [id: string]: unknown };
         if (psection != null && entry in psection) {
           psection[entry] = value;
-          // oldState.themes[themeName].modes[modeName][component][section][entry] = value;
         }
       }
     }
@@ -386,72 +271,20 @@ export function ThemeProvider({
   contextName,
   modeName,
 }: React.PropsWithChildren<{ contextName: Context; modeName?: string }>) {
-  // const themeRoot = React.useRef<HTMLDivElement>(null);
+  const themeRoot = React.useRef<HTMLDivElement>(null);
   const [themesState, dispatcher] = useDispatch<{ themesState: ThemesState }>(
     themeStateReducer,
     'themesState',
   );
   const dispatchTheme: (args: ThemeStateAction) => void = dispatcher;
 
-  const currentTheme =
-    themesState.themes[themesState.selectedThemes[contextName]];
-  const currentMode =
-    modeName == null || currentTheme.modes[modeName] == null
-      ? currentTheme.modes.normal
-      : currentTheme.modes[modeName];
-  const nodeVars = Object.entries(currentMode).reduce(
-    (o, [ck, c]: [ModeComponentNames, ModeComponents]) => ({
-      ...o,
-      ...Object.entries(c).reduce(
-        (o, [sk, s]: [keyof ThemeValues, ModeComponentsSections]) => ({
-          ...o,
-          ...Object.entries(s || {}).reduce(
-            (o, [ek, e]: [string, ModeColor | ModeDimension | ModeOthers]) => ({
-              ...o,
-              [`--${ck}-${sk}-${ek}`.toLowerCase()]: currentTheme.values[sk][e],
-            }),
-            {},
-          ),
-        }),
-        {},
-      ),
-    }),
-    {},
-  );
-  css(nodeVars);
-
-  debugger;
+  const nodeVars = themeVariables(themesState, contextName, modeName);
 
   return (
-    <div
-    // ref={themeRoot}
-    // className={css({
-    //   // width: '100%',
-    //   // height: '100%',
-    //   // overflow: 'auto',
-    //   flex: '1 1 auto',
-    //   backgroundColor: currentValues.backgroundColor,
-    //   color: textColor,
-    //   '--primary-color': currentValues.primaryColor,
-    //   '--primary-text-color': primText,
-    //   '--primary-darker-color': primDark.string(),
-    //   '--primary-darker-text-color': primDarkText,
-    //   '--primary-lighter-color': primLight.string(),
-    //   '--primary-lighter-text-color': primLightText,
-    //   '--primary-hover-color': primHover.string(),
-    //   '--warning-color': currentValues.warningColor,
-    //   '--error-color': currentValues.errorColor,
-    //   '--success-color': currentValues.successColor,
-    //   '--disabled-color': currentValues.disabledColor,
-    //   '--background-color': currentValues.backgroundColor,
-    //   '--search-color': currentValues.searchColor,
-    //   '--border-radius': currentEntries.borderRadius,
-    // })}
-    // className={css(nodeVars)}
-    >
+    <div ref={themeRoot} className={css(nodeVars)}>
       <Provider
         value={{
-          themeState: themesState,
+          themesState: themesState,
           addNewTheme: themeName =>
             dispatchTheme({ type: 'addNewTheme', themeName }),
           deleteTheme: themeName =>
@@ -492,3 +325,42 @@ export function ThemeProvider({
   );
 }
 export { Consumer as ThemeRoot };
+
+function themeVariables(
+  themesState: ThemesState,
+  contextName: Context,
+  modeName?: string,
+) {
+  const currentTheme =
+    themesState.themes[themesState.selectedThemes[contextName]];
+  const currentMode =
+    modeName == null || currentTheme.modes[modeName] == null
+      ? currentTheme.modes.normal
+      : currentTheme.modes[modeName];
+  return Object.entries(currentMode).reduce(
+    (o, [ck, c]) => ({
+      ...o,
+      ...Object.entries(c).reduce(
+        (o, [sk, s]) => ({
+          ...o,
+          ...Object.entries((s as {}) || {}).reduce(
+            (o, [ek, e]) => ({
+              ...o,
+              [`--${ck}-${sk}-${ek}`.toLowerCase()]: currentTheme.values[
+                sk as keyof ThemeValues
+              ][e as string],
+            }),
+            {},
+          ),
+        }),
+        {},
+      ),
+    }),
+    {},
+  );
+}
+
+export function useThemeModeVariables(modeName: string) {
+  const { themesState, currentContext } = React.useContext(themeCTX);
+  return themeVariables(themesState, currentContext, modeName);
+}

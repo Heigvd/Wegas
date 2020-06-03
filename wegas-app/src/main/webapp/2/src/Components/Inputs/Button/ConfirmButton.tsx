@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import { css } from 'emotion';
-import { themeVar } from '../../Theme';
+import { themeVar } from '../../Style/Theme';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 import { DisableBorders, disableBordersCSS, Button } from '../Buttons/Button';
 import { IconButton } from '../Buttons/IconButton';

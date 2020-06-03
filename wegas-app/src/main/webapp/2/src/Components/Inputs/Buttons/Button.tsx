@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import { CSSProperties } from 'react';
-import { themeVar } from '../../Theme';
+import { themeVar } from '../../Style/Theme';
 import { classNameOrEmpty } from '../../../Helper/className';
 
 export interface DisableBorders {

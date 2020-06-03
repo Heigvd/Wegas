@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { debounce } from 'lodash-es';
-import { themeVar } from '../../Theme';
+import { themeVar } from '../../Style/Theme';
 import { cx, css } from 'emotion';
 import {
   flex,

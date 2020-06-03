@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { themeVar } from '../../Components/Theme';
+import { themeVar } from '../../Components/Style/Theme';
 
 export const messageStringStyles = [
   'normal',

@@ -29,7 +29,7 @@ import {
   globalSelection,
   localSelection,
   searchSelection,
-} from '../../../Components/Theme';
+} from '../../../Components/Style/Theme';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { Edition } from '../../../data/Reducer/globalState';

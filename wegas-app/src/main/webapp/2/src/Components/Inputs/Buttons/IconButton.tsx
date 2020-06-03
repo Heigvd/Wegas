@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
-import { themeVar } from '../../Theme';
+import { themeVar } from '../../Style/Theme';
 import { CommonButtonProps } from './Button';
 
 export interface IconButtonProps extends CommonButtonProps {

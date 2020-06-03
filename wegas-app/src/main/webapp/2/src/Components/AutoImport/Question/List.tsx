@@ -6,7 +6,7 @@ import { EntityChooser } from '../../EntityChooser';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { css, cx } from 'emotion';
 import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
-import { themeVar } from '../../Theme';
+import { themeVar } from '../../Style/Theme';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import {
   selectAndValidate,

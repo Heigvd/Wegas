@@ -4,7 +4,7 @@ import {
   useVariableInstance,
 } from '../../Hooks/useVariable';
 import { TranslatableContent } from '../../../data/i18n';
-import { themeVar } from '../../Theme';
+import { themeVar } from '../../Style/Theme';
 import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
 import { css } from 'emotion';
 

@@ -11,7 +11,7 @@ import {
 import { Value } from './Value';
 import { cx, css } from 'emotion';
 import { IconComp } from '../../Editor/Components/Views/FontAwesome';
-import { themeVar } from '../Theme';
+import { themeVar } from '../Style/Theme';
 import { classNameOrEmpty } from '../../Helper/className';
 
 const phasePathStyle = css({

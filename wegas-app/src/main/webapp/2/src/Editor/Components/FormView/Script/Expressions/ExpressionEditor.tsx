@@ -5,7 +5,7 @@ import Form from 'jsoninput';
 import { css } from 'emotion';
 import { parse } from '@babel/parser';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { themeVar } from '../../../../../Components/Theme';
+import { themeVar } from '../../../../../Components/Style/Theme';
 import {
   IConditionAttributes,
   IInitAttributes,

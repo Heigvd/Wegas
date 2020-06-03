@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
-import { ThemeProvider, themeVar, themeCTX } from '../../../Components/Theme';
+import {
+  ThemeProvider,
+  themeVar,
+  themeCTX,
+} from '../../../Components/Style/Theme';
 import { TextLoader } from '../../../Components/Loader';
 import { PageDeserializer } from '../../../Components/PageComponents/tools/PageDeserializer';
 import { useStore } from '../../../data/store';

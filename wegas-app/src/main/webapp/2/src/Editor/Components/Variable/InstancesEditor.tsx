@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
 import { StoreDispatch, StoreConsumer } from '../../../data/store';
 import { css, cx } from 'emotion';
-import { themeVar, localSelection } from '../../../Components/Theme';
+import { themeVar, localSelection } from '../../../Components/Style/Theme';
 import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods';
 import { AsyncVariableForm, getError, EditorProps } from '../EntityEditor';
 import getEditionConfig from '../../editionConfig';

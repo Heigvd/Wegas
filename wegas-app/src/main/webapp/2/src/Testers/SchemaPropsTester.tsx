@@ -7,7 +7,7 @@ import { Value } from '../Components/Outputs/Value';
 import { MessageString } from '../Editor/Components/MessageString';
 import { schemaProps } from '../Components/PageComponents/tools/schemaProps';
 import { createScript } from '../Helper/wegasEntites';
-import { themeVar } from '../Components/Theme';
+import { themeVar } from '../Components/Style/Theme';
 
 //It's really important to import index.ts in order to have the widjets allready registered before using Form
 import '../Editor/Components/FormView';

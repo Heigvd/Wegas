@@ -1,15 +1,6 @@
 import * as React from 'react';
-import { Toolbar } from './Toolbar';
-import {
-  ThemeColorModifiers,
-  Theme,
-  themeCTX,
-  ThemeColors,
-  ThemeEntries,
-  themeVar,
-  SelectedTheme,
-  ThemeProvider,
-} from './Theme';
+import { Toolbar } from '../Toolbar';
+import { themeCTX, ThemeProvider } from './Theme';
 import { cx, css } from 'emotion';
 import {
   flex,
@@ -22,22 +13,23 @@ import {
   expandHeight,
   justifyCenter,
   autoScroll,
-} from '../css/classes';
+} from '../../css/classes';
 import { ColorChangeHandler, ChromePicker } from 'react-color';
 import * as Color from 'color';
-import { useOnClickOutside } from './Hooks/useOnClickOutside';
-import { IconButton } from './Inputs/Buttons/IconButton';
-import { Menu } from './Menu';
-import { TextPrompt } from '../Editor/Components/TextPrompt';
-import { ConfirmButton } from './Inputs/Buttons/ConfirmButton';
-import { NumberSlider } from './Inputs/Number/NumberSlider';
-import { MessageString } from '../Editor/Components/MessageString';
+import { useOnClickOutside } from '../Hooks/useOnClickOutside';
+import { IconButton } from '../Inputs/Buttons/IconButton';
+import { Menu } from '../Menu';
+import { TextPrompt } from '../../Editor/Components/TextPrompt';
+import { ConfirmButton } from '../Inputs/Buttons/ConfirmButton';
+import { NumberSlider } from '../Inputs/Number/NumberSlider';
+import { MessageString } from '../../Editor/Components/MessageString';
 import {
   FonkyFlexContainer,
   FonkyFlexContent,
   FonkyFlexSplitter,
-} from './Layouts/FonkyFlex';
-import { JSONPageDeserializer } from './PageComponents/tools/JSONPageDeserializer';
+} from '../Layouts/FonkyFlex';
+import { JSONPageDeserializer } from '../PageComponents/tools/JSONPageDeserializer';
+import { themeVar } from './ThemeVars';
 
 const colorButton = (color: string, bgColor?: string) =>
   css({
@@ -53,7 +45,7 @@ const colorButton = (color: string, bgColor?: string) =>
             : Color(bgColor).lighten(0.5)
           ).toString(),
     borderWidth: '5px',
-    borderRadius: themeVar.borderRadius,
+    borderRadius: themeVar.Button.dimensions.Radius,
     cursor: 'pointer',
   });
 
@@ -448,7 +440,7 @@ const page1JSON = {
 };
 
 const titleStyle = css({
-  backgroundColor: themeVar.primaryHoverColor,
+  backgroundColor: themeVar.Text.colors.HoverColor,
   textAlign: 'center',
   padding: '2px',
 });
@@ -462,7 +454,7 @@ function PageExamples() {
         css({
           borderStyle: 'solid',
           borderWidth: '5px',
-          borderColor: themeVar.primaryLighterColor,
+          borderColor: themeVar.Layout.colors.BorderColor,
         }),
       )}
     >
@@ -472,7 +464,7 @@ function PageExamples() {
             <div className={cx(flex, flexColumn, justifyCenter, expandHeight)}>
               <div className={titleStyle}>Mode : Normal</div>
               <div className={cx(grow, autoScroll)}>
-                <ThemeProvider contextName="editor">
+                <ThemeProvider contextName="player">
                   <JSONPageDeserializer wegasComponent={page1JSON} />
                 </ThemeProvider>
               </div>
@@ -483,7 +475,7 @@ function PageExamples() {
             <div className={cx(flex, flexColumn, justifyCenter, expandHeight)}>
               <div className={titleStyle}>Mode : Lighter</div>
               <div className={cx(grow, autoScroll)}>
-                <ThemeProvider contextName="default">
+                <ThemeProvider contextName="player">
                   <JSONPageDeserializer wegasComponent={page1JSON} />
                 </ThemeProvider>
               </div>
@@ -575,7 +567,7 @@ export default function ThemeEditor() {
     type: 'close',
   });
   const {
-    themeState,
+    themesState: themeState,
     addNewTheme,
     deleteTheme,
     setSelectedTheme,
@@ -584,7 +576,7 @@ export default function ThemeEditor() {
     setThemeModifer,
   } = React.useContext(themeCTX);
   const [currentModifiedTheme, setModifiedTheme] = React.useState<string>(
-    themeState.selectedTheme['editor'],
+    themeState.selectedThemes['editor'],
   );
   const [selectedSection, setSelectedSection] = React.useState<
     { [key in keyof Theme]?: boolean }
@@ -670,8 +662,8 @@ export default function ThemeEditor() {
           <div>
             <Menu
               label={'Contexts'}
-              items={Object.keys(themeState.selectedTheme).map(
-                (k: keyof typeof themeState.selectedTheme) => ({
+              items={Object.keys(themeState.selectedThemes).map(
+                (k: keyof typeof themeState.selectedThemes) => ({
                   value: k,
                   label: (
                     <>
@@ -679,7 +671,7 @@ export default function ThemeEditor() {
                         style={{ minWidth: '100px' }}
                       >{`${k}'s theme :`}</span>
                       <Menu
-                        label={themeState.selectedTheme[k]}
+                        label={themeState.selectedThemes[k]}
                         items={Object.keys(themeState.themes).map(k => ({
                           value: k,
                           label: k,
@@ -741,7 +733,7 @@ export default function ThemeEditor() {
                         <MyColorPicker
                           color={currentValues[k]}
                           bgColor={
-                            themeState.themes[themeState.selectedTheme.editor]
+                            themeState.themes[themeState.selectedThemes.editor]
                               .colors.backgroundColor
                           }
                           onChange={color => {

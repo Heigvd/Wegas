@@ -1,5 +1,5 @@
 import { css } from 'emotion';
-import { themeVar } from '../Theme';
+import { themeVar } from '../Style/Theme';
 
 export const inputDefaultCSS = {
   minWidth: '4em',

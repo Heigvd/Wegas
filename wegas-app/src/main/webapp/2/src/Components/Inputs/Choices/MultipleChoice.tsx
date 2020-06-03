@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button } from '../Buttons/Button';
 import { debounce, omit } from 'lodash-es';
-import { themeVar } from '../../Theme';
+import { themeVar } from '../../Style/Theme';
 import { cx, css } from 'emotion';
 import { InputProps } from '../SimpleInput';
 
