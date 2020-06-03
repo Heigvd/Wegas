@@ -31,18 +31,6 @@ export function JSONPageDeserializer({
   const realPath = path ? path : [];
 
   const { editMode } = React.useContext(pageCTX);
-  // const wegasComponent = useStore(s => {
-  //   if (!pageId) {
-  //     return undefined;
-  //   }
-
-  //   const page = s.pages[pageId];
-  //   if (!page) {
-  //     return undefined;
-  //   }
-
-  //   return getComponentFromPath(page, realPath);
-  // }, deepDifferent);
 
   const { children = [], ...restProps } =
     (wegasComponent && wegasComponent.props) || {};
@@ -61,32 +49,6 @@ export function JSONPageDeserializer({
     containerType === 'LINEAR'
       ? { noSplitter: restProps.noSplitter, noResize: restProps.noResize }
       : {};
-
-  // const oldRef = React.useRef({
-  //   containerType,
-  //   pageId,
-  //   uneditable,
-  //   path,
-  // });
-
-  const childrenPack = React.useMemo(() => {
-    // oldRef.current = { containerType, pageId, uneditable, path };
-    const newChildren = [];
-    for (let i = 0; i < nbChildren; ++i) {
-      newChildren.push(
-        <JSONPageDeserializer
-          key={JSON.stringify([...(path ? path : []), i])}
-          wegasComponent={children[i]}
-          path={[...(path ? path : []), i]}
-          uneditable={uneditable}
-          childrenType={containerType}
-          linearChildrenProps={linearProps}
-          last={i === nbChildren - 1}
-        />,
-      );
-    }
-    return newChildren;
-  }, [nbChildren, containerType, children, uneditable, path, linearProps]);
 
   if (!wegasComponent) {
     return <pre>JSON error in page</pre>;
@@ -122,7 +84,17 @@ export function JSONPageDeserializer({
             path={realPath}
           />
         ) : (
-          childrenPack
+          children.map((c, i) => (
+            <JSONPageDeserializer
+              key={JSON.stringify([...(path ? path : []), i])}
+              wegasComponent={c}
+              path={[...(path ? path : []), i]}
+              uneditable={uneditable}
+              childrenType={containerType}
+              linearChildrenProps={linearProps}
+              last={i === nbChildren - 1}
+            />
+          ))
         )}
       </WegasComponent>
     </ComponentContainer>

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
-import { ThemeProvider, themeVar } from '../../../Components/Theme';
+import { ThemeProvider, themeVar, themeCTX } from '../../../Components/Theme';
 import { TextLoader } from '../../../Components/Loader';
 import { PageDeserializer } from '../../../Components/PageComponents/tools/PageDeserializer';
 import { useStore } from '../../../data/store';
@@ -28,10 +28,10 @@ export function PageLoader({ selectedPageId, displayFrame }: PageLoaderProps) {
     deepDifferent,
   );
   const { editMode } = React.useContext(pageCTX);
-
+  const { contextName } = React.useContext(themeCTX);
   return (
     <DefaultDndProvider>
-      <ThemeProvider contextName="player">
+      <ThemeProvider contextName={contextName}>
         <React.Suspense fallback={<TextLoader text="Building World!" />}>
           <div
             className={cx(

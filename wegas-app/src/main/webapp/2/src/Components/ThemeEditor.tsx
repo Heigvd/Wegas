@@ -7,6 +7,8 @@ import {
   ThemeColors,
   ThemeEntries,
   themeVar,
+  SelectedTheme,
+  ThemeProvider,
 } from './Theme';
 import { cx, css } from 'emotion';
 import {
@@ -470,7 +472,9 @@ function PageExamples() {
             <div className={cx(flex, flexColumn, justifyCenter, expandHeight)}>
               <div className={titleStyle}>Mode : Normal</div>
               <div className={cx(grow, autoScroll)}>
-                <JSONPageDeserializer wegasComponent={page1JSON} />
+                <ThemeProvider contextName="editor">
+                  <JSONPageDeserializer wegasComponent={page1JSON} />
+                </ThemeProvider>
               </div>
             </div>
           </FonkyFlexContent>
@@ -479,7 +483,9 @@ function PageExamples() {
             <div className={cx(flex, flexColumn, justifyCenter, expandHeight)}>
               <div className={titleStyle}>Mode : Lighter</div>
               <div className={cx(grow, autoScroll)}>
-                <JSONPageDeserializer wegasComponent={page1JSON} />
+                <ThemeProvider contextName="default">
+                  <JSONPageDeserializer wegasComponent={page1JSON} />
+                </ThemeProvider>
               </div>
             </div>
           </FonkyFlexContent>
@@ -492,7 +498,9 @@ function PageExamples() {
             <div className={cx(flex, flexColumn, justifyCenter, expandHeight)}>
               <div className={titleStyle}>Mode : Dark</div>
               <div className={cx(grow, autoScroll)}>
-                <JSONPageDeserializer wegasComponent={page1JSON} />
+                <ThemeProvider contextName="player">
+                  <JSONPageDeserializer wegasComponent={page1JSON} />
+                </ThemeProvider>
               </div>
             </div>
           </FonkyFlexContent>
@@ -501,7 +509,9 @@ function PageExamples() {
             <div className={cx(flex, flexColumn, justifyCenter, expandHeight)}>
               <div className={titleStyle}>Mode : Dark lighter</div>
               <div className={cx(grow, autoScroll)}>
-                <JSONPageDeserializer wegasComponent={page1JSON} />
+                <ThemeProvider contextName="player">
+                  <JSONPageDeserializer wegasComponent={page1JSON} />
+                </ThemeProvider>
               </div>
             </div>
           </FonkyFlexContent>
