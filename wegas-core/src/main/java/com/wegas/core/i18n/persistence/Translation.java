@@ -72,7 +72,7 @@ public class Translation implements WithPermission {
         optional = false, nullable = false)
     private String translation;
 
-    @WegasEntityProperty(initOnly = true, view = @View(label = "Status"),
+    @WegasEntityProperty(view = @View(label = "Status"),
         proposal = EmptyString.class,
         optional = false, nullable = false)
     private String status;

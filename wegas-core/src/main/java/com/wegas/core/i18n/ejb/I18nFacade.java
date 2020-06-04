@@ -385,10 +385,9 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
     private VariableDescriptor getParentVariableDescriptor(AbstractEntity theParent) {
         if (theParent instanceof VariableDescriptor) {
             return (VariableDescriptor) theParent;
-        } else if (theParent instanceof Result) {
+        } else {
             return theParent.findNearestParent(VariableDescriptor.class);
         }
-        return null;
     }
 
     /**
