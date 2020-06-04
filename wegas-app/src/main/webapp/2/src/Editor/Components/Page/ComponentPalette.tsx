@@ -2,7 +2,6 @@ import * as React from 'react';
 import { cx, css } from 'emotion';
 import { flex, flexWrap, button } from '../../../css/classes';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
-import { themeVar } from '../../../Components/Style/Theme';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import {
   useDrag,
@@ -11,12 +10,13 @@ import {
   DragPreviewOptions,
 } from 'react-dnd';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const componentStyle = css({
   padding: '10px',
   height: 'fit-content',
   width: 'fit-content',
-  backgroundColor: themeVar.primaryLighterColor,
+  backgroundColor: themeVar.ComponentPalette.colors.ComponentColor,
   margin: '5px',
   display: 'inline-block',
   cursor: 'pointer',

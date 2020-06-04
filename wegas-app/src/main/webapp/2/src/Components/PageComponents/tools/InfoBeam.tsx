@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { css, keyframes, cx } from 'emotion';
-import { themeVar } from '../../Style/Theme';
 import { useScript } from '../../Hooks/useScript';
+import { themeVar } from '../../Style/ThemeVars';
 
 const infoBeamStyle = css({
   position: 'absolute',
-  color: themeVar.primaryLighterTextColor,
-  backgroundColor: themeVar.warningColor,
+  color: themeVar.InfoBeam.colors.TextColor,
+  backgroundColor: themeVar.InfoBeam.colors.BackgroundColor,
   borderRadius: '50%',
   padding: '0px 5px 0px 5px',
 });

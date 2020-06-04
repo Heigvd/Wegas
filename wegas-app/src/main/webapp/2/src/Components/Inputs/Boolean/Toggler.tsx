@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
-import { themeVar } from '../../Style/Theme';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
 import { textCenter, flex, shrinkWidth } from '../../../css/classes';
+import { themeVar } from '../../Style/ThemeVars';
 
 const togglerStyle = (
   disabled?: boolean,
@@ -18,8 +18,12 @@ const togglerStyle = (
     borderRadius: '24px',
     borderStyle: 'solid',
     borderWidth: '2px',
-    borderColor: disabled ? themeVar.disabledColor : themeVar.primaryColor,
-    backgroundColor: checked ? themeVar.successColor : themeVar.errorColor,
+    borderColor: disabled
+      ? themeVar.Toggler.colors.BorderDisabledColor
+      : themeVar.Toggler.colors.BorderColor,
+    backgroundColor: checked
+      ? themeVar.Toggler.colors.CheckedColor
+      : themeVar.Toggler.colors.UncheckedColor,
     cursor: disabled || readOnly ? 'default' : 'pointer',
     margin: 'auto',
   });
@@ -29,7 +33,9 @@ const handleStyle = (disabled?: boolean) =>
     borderRadius: '20px',
     minWidth: '20px',
     height: '20px',
-    backgroundColor: disabled ? themeVar.disabledColor : themeVar.primaryColor,
+    backgroundColor: disabled
+      ? themeVar.Toggler.colors.HandleDisabledColor
+      : themeVar.Toggler.colors.HandleColor,
   });
 
 export interface TogglerProps extends InputProps<boolean> {
@@ -104,12 +110,6 @@ export function Toggler({
               onChange && onChange(!v);
               return !v;
             });
-        }}
-        style={{
-          backgroundColor: checked
-            ? themeVar.successColor
-            : themeVar.errorColor,
-          display: 'flex',
         }}
         title={hint}
       >

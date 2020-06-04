@@ -8,13 +8,13 @@ import { grow } from '../../../css/classes';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { MessageString } from '../MessageString';
 import { css } from 'emotion';
-import { themeVar } from '../../../Components/Style/Theme';
+import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const fileBrowserStyle = css({
-  backgroundColor: themeVar.backgroundColor,
+  backgroundColor: themeVar.FileBrowser.colors.BackgroundColor,
   paddingRight: '5px',
-  borderColor: themeVar.primaryLighterColor,
-  borderRadius: themeVar.borderRadius,
+  borderColor: themeVar.FileBrowser.colors.BorderColor,
+  borderRadius: themeVar.FileBrowser.dimensions.BorderRadius,
   borderWidth: '2px',
   borderStyle: 'inset',
 });

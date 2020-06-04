@@ -1,35 +1,40 @@
 import * as React from 'react';
 import { Button } from '../Buttons/Button';
 import { debounce, omit } from 'lodash-es';
-import { themeVar } from '../../Style/Theme';
 import { cx, css } from 'emotion';
 import { InputProps } from '../SimpleInput';
+import { themeVar } from '../../Style/ThemeVars';
 
 const choiceStyle = css({
-  backgroundColor: themeVar.primaryLighterColor,
+  backgroundColor: themeVar.MultipleChoice.colors.ChoiceColor,
   margin: '2px',
+  ':hover': {
+    backgroundColor: themeVar.MultipleChoice.colors.ChoiceHoverColor,
+  },
+});
+
+const usableChoiceStyle = css({
   cursor: 'pointer',
-  ':hover': {
-    backgroundColor: themeVar.primaryDarkerColor,
-  },
 });
-const selectedChoiceStyle = css({
-  backgroundColor: themeVar.primaryDarkerColor,
-  ':hover': {
-    backgroundColor: themeVar.primaryDarkerColor,
-  },
-});
-const disabledChoiceStyle = css({
-  backgroundColor: themeVar.disabledColor,
-  ':hover': {
-    backgroundColor: themeVar.disabledColor,
-  },
-});
+
 const unusableChoiceStyle = css({
   cursor: 'default',
 });
 
-interface Choices<T> {
+const selectedChoiceStyle = css({
+  backgroundColor: themeVar.MultipleChoice.colors.SelectedChoiceColor,
+  ':hover': {
+    backgroundColor: themeVar.MultipleChoice.colors.SelectedChoiceHoverColor,
+  },
+});
+const disabledChoiceStyle = css({
+  backgroundColor: themeVar.MultipleChoice.colors.DisabledChoiceColor,
+  ':hover': {
+    backgroundColor: themeVar.MultipleChoice.colors.DisabledChoiceHoverColor,
+  },
+});
+
+export interface Choices<T> {
   [label: string]: T;
 }
 
@@ -43,9 +48,9 @@ export interface MultipleChoiceProps<T> extends InputProps<Choices<T>> {
    */
   selectedClassName?: string;
   /**
-   * choiceClassName - the class to apply on the choices
+   * disabledClassName - the class to apply on a disabled choice
    */
-  choiceClassName?: string;
+  disabledClassName?: string;
 }
 
 export function MultipleChoice<T>({
@@ -55,8 +60,9 @@ export function MultipleChoice<T>({
   disabled,
   readOnly,
   selectedClassName,
-  choiceClassName,
+  disabledClassName,
   className,
+  style,
   id,
 }: MultipleChoiceProps<T>) {
   const [currentChosen, setCurrentChosen] = React.useState<Choices<T>>(
@@ -82,6 +88,7 @@ export function MultipleChoice<T>({
           <Button
             key={key}
             label={key}
+            style={style}
             onClick={() => {
               if (!readOnly && !disabled) {
                 let newSet = currentChosen;
@@ -94,15 +101,14 @@ export function MultipleChoice<T>({
                 debouncedOnChange(newSet);
               }
             }}
-            className={cx(choiceStyle, {
+            className={cx(className ? className : choiceStyle, {
               [selectedClassName
                 ? selectedClassName
                 : selectedChoiceStyle]: selected,
-              [disabledChoiceStyle]: disabled && !selected,
-              [choiceClassName
-                ? choiceClassName
-                : themeVar.primaryLighterColor]: !disabled && !selected,
+              [disabledClassName ? disabledClassName : disabledChoiceStyle]:
+                disabled && !selected,
               [unusableChoiceStyle]: disabled || readOnly,
+              [usableChoiceStyle]: disabled && readOnly,
             })}
             disabled={disabled}
           />

@@ -1,11 +1,6 @@
 import * as React from 'react';
 import { useDrop, DragObjectWithType, DropTargetMonitor } from 'react-dnd';
 import { css, cx } from 'emotion';
-import {
-  themeVar,
-  localSelection,
-  globalSelection,
-} from '../../../Components/Style/Theme';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { generateAbsolutePath, FileAPI, fileURL } from '../../../API/files.api';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
@@ -15,20 +10,28 @@ import { GameModel } from '../../../data/selectors';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { store, StoreDispatch } from '../../../data/store';
 import { editFile } from '../../../data/Reducer/globalState';
-import { flex, grow, hidden, block } from '../../../css/classes';
+import {
+  flex,
+  grow,
+  hidden,
+  block,
+  localSelection,
+  globalSelection,
+} from '../../../css/classes';
 import { MessageString } from '../MessageString';
 import { FilePickingType, FileFilter } from './FileBrowser';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const clickableStyle = css({
   cursor: 'pointer',
   ':hover': {
-    backgroundColor: themeVar.primaryHoverColor,
+    backgroundColor: themeVar.FileBrowser.colors.NodeHoverColor,
   },
 });
 
 const disabledStyle = css({
-  color: themeVar.disabledColor,
+  color: themeVar.FileBrowser.colors.NodeDisabledColor,
 });
 
 const dropZoneStyle = css({

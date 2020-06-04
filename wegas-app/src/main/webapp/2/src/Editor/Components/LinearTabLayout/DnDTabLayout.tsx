@@ -5,7 +5,6 @@ import { Toolbar } from '../../../Components/Toolbar';
 import { Menu } from '../../../Components/Menu';
 import { Reparentable } from '../Reparentable';
 import { cx, css } from 'emotion';
-import { themeVar } from '../../../Components/Style/Theme';
 import { DropActionType } from './LinearLayout';
 import {
   grow,
@@ -19,17 +18,18 @@ import {
   button,
 } from '../../../css/classes';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const activeButton = cx(
   css({
-    color: themeVar.primaryDarkerTextColor,
+    color: themeVar.TabLayout.colors.ActiveTabColor,
   }),
   button,
 );
 
 const listStyle = css({
-  color: themeVar.primaryColor,
-  backgroundColor: themeVar.backgroundColor,
+  color: themeVar.TabLayout.colors.MenuTextColor,
+  backgroundColor: themeVar.TabLayout.colors.MenuBackgroundColor,
 });
 
 const dropZoneFocus = css({

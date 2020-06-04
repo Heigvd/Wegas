@@ -8,16 +8,16 @@ import {
   disableBordersCSS,
   ButtonProps,
 } from './Button';
-import { themeVar } from '../../Style/Theme';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { themeVar } from '../../Style/ThemeVars';
 
 const buttonZone = (disableBorders?: DisableBorders) =>
   css({
     // margin: '5px',
     padding: '5px',
     ...disableBordersCSS(disableBorders),
-    backgroundColor: themeVar.disabledColor,
+    backgroundColor: themeVar.Button.colors.ConfirmButtonZoneColor,
     textAlign: 'center',
     display: 'inline-block',
     width: 'max-content',
@@ -113,8 +113,9 @@ export function ConfirmButton({
     >
       <Button
         label="Accept"
-        // style={{ backgroundColor: themeVar.warningColor }}
-        className={css({ backgroundColor: themeVar.warningColor })}
+        className={css({
+          backgroundColor: themeVar.Button.colors.ConfirmButtonAcceptColor,
+        })}
         disableBorders={{ right: true }}
         onClick={onConfirm(true)}
         disabled={disabled}

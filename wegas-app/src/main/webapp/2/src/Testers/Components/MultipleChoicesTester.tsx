@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { css } from 'emotion';
-import { MultipleChoice } from '../../Components/Inputs/Choices/MultipleChoice';
+import {
+  MultipleChoice,
+  Choices,
+} from '../../Components/Inputs/Choices/MultipleChoice';
 
 export const testerSectionStyle = css({
   borderStyle: 'solid',
@@ -16,7 +19,7 @@ const testChoices = {
 };
 
 export default function MultipleChoicesTester() {
-  const [chosen, setChosen] = React.useState();
+  const [chosen, setChosen] = React.useState<Choices<string>>({});
 
   return (
     <div>
@@ -31,8 +34,9 @@ export default function MultipleChoicesTester() {
         choices={testChoices}
         value={chosen}
         onChange={setChosen}
-        choiceClassName={css({
+        className={css({
           backgroundColor: '#009c00',
+          margin: '2px',
           ':hover': {
             backgroundColor: 'darkgreen',
           },

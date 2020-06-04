@@ -1,14 +1,16 @@
 import * as React from 'react';
 import { SizedDiv } from './SizedDiv';
-import { primaryDark, primaryLight, primary } from './Style/Theme';
 import { css, cx } from 'emotion';
 import { deepDifferent } from './Hooks/storeHookFactory';
 import { flex } from '../css/classes';
+import { themeVar } from './Style/ThemeVars';
 
 const INLINE_SIZE_BREAKPOINT = 600;
 
 const cursorStyle = css({ cursor: 'pointer' });
 const itemStyle = css({
+  backgroundColor: themeVar.EntityChooser.colors.InactiveBackgroundColor,
+  color: themeVar.EntityChooser.colors.TextColor,
   border: '1px solid',
   lineHeight: '2',
 });
@@ -23,6 +25,14 @@ const flexStyle = css({
 const displayStyle = css({
   flex: '1 1 auto',
   overflow: 'auto',
+});
+const activeEntityStyle = css({
+  backgroundColor: themeVar.EntityChooser.colors.ActiveBackgroundColor,
+  color: themeVar.EntityChooser.colors.TextColor,
+});
+const inactiveEntityStyle = css({
+  backgroundColor: themeVar.EntityChooser.colors.InactiveBackgroundColor,
+  color: themeVar.EntityChooser.colors.TextColor,
 });
 
 interface EntityChooserProps<E extends IAbstractEntity> {
@@ -69,8 +79,8 @@ export class EntityChooser<E extends IAbstractEntity> extends React.Component<
               <div
                 className={cx(
                   {
-                    [primaryDark]: e === entity,
-                    [primaryLight]: e !== entity,
+                    [activeEntityStyle]: e === entity,
+                    [inactiveEntityStyle]: e !== entity,
                   },
                   itemStyle,
                   cursorStyle,
@@ -94,7 +104,7 @@ export class EntityChooser<E extends IAbstractEntity> extends React.Component<
                 <div className={listStyle}>{elements}</div>
                 <div className={displayStyle}>
                   {entity != null && (
-                    <div className={cx(itemStyle, primary)}>
+                    <div className={cx(itemStyle)}>
                       {this.props.entityLabel(entity)}
                     </div>
                   )}

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { useDrag, DropTargetMonitor, useDrop } from 'react-dnd';
-import { primaryLight, primaryDark } from '../../../Components/Style/Theme';
 import { DropAction } from './DnDTabLayout';
 import { hidden, flex } from '../../../css/classes';
 import { dropZoneFocus } from '../../../Components/Contexts/DefaultDndProvider';
+import { activeTabStyle, inactiveTabStyle } from '../../../Components/Tabs';
 
 // export const dndAcceptType = 'DnDTab';
 
@@ -49,8 +49,8 @@ export const Tab = React.forwardRef(
         props.className
           ? props.className
           : cx(defaultTabStyle, {
-              [primaryDark]: props.active !== undefined && props.active,
-              [primaryLight]: !props.active,
+              [activeTabStyle]: props.active !== undefined && props.active,
+              [inactiveTabStyle]: !props.active,
             })
       }
       onClick={props.onClick}

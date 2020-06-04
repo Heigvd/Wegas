@@ -3,9 +3,9 @@ import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
 import { defaultPadding, expandBoth, noOverflow } from '../../css/classes';
 import './FormView';
-import { ConfirmButton } from '../../Components/Inputs/Button/ConfirmButton';
 import { Button, ButtonProps } from '../../Components/Inputs/Buttons/Button';
 import { wlog } from '../../Helper/wegaslog';
+import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 
 interface EditorProps<T> {
   entity?: T;

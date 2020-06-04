@@ -10,16 +10,11 @@ import { wlog } from '../../../Helper/wegaslog';
 
 import 'react-reflex/styles.css';
 import { flex, noOverflow, grow } from '../../../css/classes';
-import { themeVar } from '../../../Components/Style/Theme';
-// import {
-//   Container,
-//   Content,
-//   Splitter,
-// } from '../../../Components/Layouts/FonkyFlex';
+import { themeVar } from '../../../Components/Style/ThemeVars';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
-    backgroundColor: themeVar.primaryLighterColor,
+    backgroundColor: themeVar.Layout.colors.BackgroundColor,
     zIndex: 0,
   },
   '&.reflex-container.vertical > .reflex-splitter': {

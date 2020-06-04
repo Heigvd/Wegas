@@ -1,6 +1,5 @@
 import { css } from 'emotion';
 import * as React from 'react';
-import { themeVar } from '../../../Components/Style/Theme';
 import { Toolbar } from '../../../Components/Toolbar';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import WegasDiffEditor, {
@@ -9,9 +8,10 @@ import WegasDiffEditor, {
 } from './WegasDiffEditor';
 import { arrayToText, textToArray } from './SrcEditor';
 import { MessageString } from '../MessageString';
+import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const diffLabel = css({
-  color: themeVar.primaryLighterColor,
+  color: themeVar.CodeEditor.colors.DiffEditorLabelColor,
   padding: '5px',
 });
 

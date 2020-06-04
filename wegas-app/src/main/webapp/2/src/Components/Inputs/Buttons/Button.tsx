@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import { CSSProperties } from 'react';
-import { themeVar } from '../../Style/Theme';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { themeVar } from '../../Style/ThemeVars';
 
 export interface DisableBorders {
   top?: boolean;
@@ -22,24 +22,24 @@ export const disableBordersCSS = (
     disableBorders &&
     (disableBorders.topLeft || disableBorders.left || disableBorders.top)
       ? undefined
-      : themeVar.borderRadius,
+      : themeVar.Button.dimensions.Radius,
   borderTopRightRadius:
     disableBorders &&
     (disableBorders.topRight || disableBorders.right || disableBorders.top)
       ? undefined
-      : themeVar.borderRadius,
+      : themeVar.Button.dimensions.Radius,
   borderBottomLeftRadius:
     disableBorders &&
     (disableBorders.bottomLeft || disableBorders.left || disableBorders.bottom)
       ? undefined
-      : themeVar.borderRadius,
+      : themeVar.Button.dimensions.Radius,
   borderBottomRightRadius:
     disableBorders &&
     (disableBorders.bottomRight ||
       disableBorders.right ||
       disableBorders.bottom)
       ? undefined
-      : themeVar.borderRadius,
+      : themeVar.Button.dimensions.Radius,
 });
 
 const buttonStyle = (
@@ -50,9 +50,9 @@ const buttonStyle = (
 ) =>
   css({
     backgroundColor: disabled
-      ? themeVar.disabledColor
-      : themeVar.primaryDarkerColor,
-    color: themeVar.primaryLighterTextColor,
+      ? themeVar.Button.colors.DisabledColor
+      : themeVar.Button.colors.Color,
+    color: themeVar.Button.colors.TextColor,
     borderStyle: 'none',
     ...disableBordersCSS(disableBorders),
     paddingLeft: '5px',
@@ -64,7 +64,7 @@ const buttonStyle = (
       disabled || noHover
         ? undefined
         : {
-            backgroundColor: themeVar.primaryLighterColor,
+            backgroundColor: themeVar.Button.colors.HoverColor,
             outline: 'none',
           },
   });

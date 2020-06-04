@@ -4,9 +4,9 @@ import {
   useVariableInstance,
 } from '../../Hooks/useVariable';
 import { TranslatableContent } from '../../../data/i18n';
-import { themeVar } from '../../Style/Theme';
 import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
 import { css } from 'emotion';
+import { themeVar } from '../../Style/ThemeVars';
 
 const containerStyle = css({
   minWidth: '8em',
@@ -70,14 +70,14 @@ export default function Gauge(props: {
   const {
     min = descriptor.minValue,
     max = descriptor.maxValue,
-    positiveColor = themeVar.successColor,
-    negativeColor = themeVar.errorColor,
+    positiveColor = themeVar.Gauge.colors.PositiveColor,
+    negativeColor = themeVar.Gauge.colors.NegativeColor,
   } = props;
   if (min == undefined || max == undefined) {
     return (
       <span>
         <FontAwesome
-          style={{ color: themeVar.warningColor }}
+          style={{ color: themeVar.Gauge.colors.WarningColor }}
           icon="exclamation-triangle"
         />
         Missing min or max value
@@ -98,7 +98,7 @@ export default function Gauge(props: {
         <path
           strokeWidth="75"
           fill="none"
-          stroke={themeVar.disabledColor}
+          stroke={themeVar.Gauge.colors.DisabledColor}
           d="M 50 500 A 450 450 0 0 1 950 500"
         />
         <path
@@ -114,8 +114,8 @@ export default function Gauge(props: {
           cy={end[1]}
           r="37"
           strokeWidth="20"
-          stroke={themeVar.primaryLighterColor}
-          fill={themeVar.primaryDarkerColor}
+          stroke={themeVar.Gauge.colors.NeedleBorderColor}
+          fill={themeVar.Gauge.colors.NeedleColor}
         />
       </svg>
       <div className={textStyle}>

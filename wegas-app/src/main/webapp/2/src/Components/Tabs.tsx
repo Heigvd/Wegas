@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Toolbar } from './Toolbar';
-import { css } from 'emotion';
-import { primaryLight, primaryDark } from './Style/Theme';
+import { css, cx } from 'emotion';
+import { themeVar } from './Style/ThemeVars';
 
 interface TabLayoutProps {
   active?: number;
@@ -64,7 +64,7 @@ export class TabLayout extends React.Component<
     );
   }
 }
-const tabStyle = css(primaryLight, {
+const tabStyle = css({
   display: 'inline-block',
   cursor: 'pointer',
   margin: '0 0.2em',
@@ -72,21 +72,35 @@ const tabStyle = css(primaryLight, {
   borderWidth: '1px 1px 0 1px',
   padding: '5px',
 });
-const activeTabStyle = css(tabStyle, primaryDark);
-function Tab(props: {
+export const inactiveTabStyle = css({
+  color: themeVar.TabLayout.colors.TabTextColor,
+  backgroundColor: themeVar.TabLayout.colors.InactiveTabColor,
+});
+export const activeTabStyle = css({
+  color: themeVar.TabLayout.colors.TabTextColor,
+  backgroundColor: themeVar.TabLayout.colors.ActiveTabColor,
+});
+function Tab({
+  active,
+  onClick,
+  children,
+}: {
   active: boolean;
   children: React.ReactChild | null;
   onClick: () => void;
 }) {
-  if (props.children === null) {
+  if (children === null) {
     return null;
   }
   return (
     <div
-      className={`${props.active ? activeTabStyle : tabStyle}`}
-      onClick={props.onClick}
+      className={cx(tabStyle, {
+        [activeTabStyle]: active,
+        [inactiveTabStyle]: !active,
+      })}
+      onClick={onClick}
     >
-      {props.children}
+      {children}
     </div>
   );
 }

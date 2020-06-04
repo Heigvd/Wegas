@@ -16,7 +16,6 @@ import {
 import { omit } from 'lodash-es';
 import { Menu } from '../../../Components/Menu';
 import { TextPrompt } from '../TextPrompt';
-import { ConfirmButton } from '../../../Components/Inputs/Button/ConfirmButton';
 import { isPageItem, isFolderItem } from '../../../Helper/pages';
 import { useStore, store } from '../../../data/store';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
@@ -24,7 +23,6 @@ import { Actions } from '../../../data';
 import { MessageString } from '../MessageString';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
-import { themeVar } from '../../../Components/Style/Theme';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { pageEditorCTX, pageCTX } from './PageEditor';
@@ -42,6 +40,8 @@ import {
   PageStateAction,
 } from '../../../data/pageStore';
 import { PAGEEDITOR_COMPONENT_TYPE, isDnDComponent } from './ComponentPalette';
+import { themeVar } from '../../../Components/Style/ThemeVars';
+import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 
 const bulletCSS = {
   width: '1em',
@@ -55,7 +55,7 @@ export const PAGE_LAYOUT_COMPONENT = 'PAGE_LAYOUT_COMPONENT';
 const titleStyle = css({
   borderStyle: 'solid',
   borderColor: 'transparent',
-  borderRadius: themeVar.borderRadius,
+  borderRadius: themeVar.PageLayout.dimensions.TitleRadius,
   [`&>.${CONTROLS_CLASSNAME}`]: {
     visibility: 'hidden',
   },
@@ -65,15 +65,15 @@ const titleStyle = css({
 });
 
 const selectedIndexItemStyle = css({
-  borderColor: themeVar.primaryDarkerColor,
+  borderColor: themeVar.PageLayout.colors.SelectedIndexItemColor,
 });
 
 const selectedComponentStyle = css({
-  borderColor: themeVar.primaryLighterColor,
+  borderColor: themeVar.PageLayout.colors.SelectedComponentColor,
 });
 
 const focusedComponentStyle = css({
-  backgroundColor: themeVar.primaryHoverColor,
+  backgroundColor: themeVar.PageLayout.colors.FocusedComponentColor,
 });
 
 const defaultPage = {
@@ -592,7 +592,10 @@ function PageIndexTitle({
           <IconButton
             icon={
               indexItem.id === defaultPageId
-                ? { icon: 'star', color: themeVar.successColor }
+                ? {
+                    icon: 'star',
+                    color: themeVar.PageLayout.colors.ActiveIconColor,
+                  }
                 : 'star'
             }
             onClick={() => {
@@ -606,7 +609,10 @@ function PageIndexTitle({
           <IconButton
             icon={
               indexItem.scenaristPage
-                ? { icon: 'magic', color: themeVar.successColor }
+                ? {
+                    icon: 'magic',
+                    color: themeVar.PageLayout.colors.ActiveIconColor,
+                  }
                 : 'magic'
             }
             onClick={() => {
@@ -623,7 +629,10 @@ function PageIndexTitle({
           <IconButton
             icon={
               indexItem.trainerPage
-                ? { icon: 'chalkboard-teacher', color: themeVar.successColor }
+                ? {
+                    icon: 'chalkboard-teacher',
+                    color: themeVar.PageLayout.colors.ActiveIconColor,
+                  }
                 : 'chalkboard-teacher'
             }
             onClick={() => {

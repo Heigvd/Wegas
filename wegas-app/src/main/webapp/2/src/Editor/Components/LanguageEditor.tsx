@@ -2,7 +2,6 @@ import * as React from 'react';
 import { cx } from 'emotion';
 import { Toolbar } from '../../Components/Toolbar';
 import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
-import { themeVar } from '../../Components/Style/Theme';
 import { LanguagesAPI } from '../../API/languages.api';
 import { useGameModel } from '../../Components/Hooks/useGameModel';
 import { GameModel } from '../../data/selectors';
@@ -14,9 +13,10 @@ import getEditionConfig from '../editionConfig';
 import { overrideSchema } from './EntityEditor';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { flex, grow, justifyCenter, flexColumn } from '../../css/classes';
+import { themeVar } from '../../Components/Style/ThemeVars';
 
-const edition = { color: themeVar.primaryDarkerColor };
-const simple = { color: themeVar.primaryLighterColor };
+const edition = { color: themeVar.LanguageEditor.colors.EditionTextColor };
+const simple = { color: themeVar.LanguageEditor.colors.SimpleTextColor };
 
 const title = 'Translation Manager';
 

@@ -8,7 +8,6 @@ import {
   Handles,
   PageEditorComponent,
 } from '../../../Editor/Components/Page/PageEditor';
-import { themeVar } from '../../Style/Theme';
 import { flex } from '../../../css/classes';
 import { FlexItem, FlexListProps } from '../../Layouts/FlexList';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
@@ -39,18 +38,19 @@ import {
   PlayerLinearLayoutChildrenProps,
 } from '../Layouts/LinearLayout.component';
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
+import { themeVar } from '../../Style/ThemeVars';
 
 // Styles
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
   borderWidth: '2px',
-  borderColor: themeVar.searchColor,
+  borderColor: themeVar.EditableComponent.colors.HighlightedBorderColor,
 });
 
 export const childHighlightCSS = {
   borderStyle: 'dotted',
   borderWidth: '1px',
-  borderColor: themeVar.searchColor,
+  borderColor: themeVar.EditableComponent.colors.HighlightedBorderColor,
 };
 
 const childHighlightStyle = css({
@@ -102,21 +102,19 @@ const handleControlStyle = css({
 
 const disabledStyle = css({
   opacity: 0.5,
-  backgroundColor: themeVar.disabledColor,
+  backgroundColor: themeVar.EditableComponent.colors.DisabledColor,
 });
 
-const componentBorderCss = {
-  borderStyle: 'solid',
-  borderWidth: '1px',
-  borderColor: themeVar.primaryHoverColor,
-};
-
 const focusedComponentStyle = css({
-  backgroundColor: themeVar.primaryHoverColor,
+  backgroundColor: themeVar.EditableComponent.colors.FocusedColor,
 });
 
 const handleControlHoverStyle = css({
-  ':hover': componentBorderCss,
+  ':hover': {
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    borderColor: themeVar.EditableComponent.colors.BorderHoverColor,
+  },
 });
 
 const emptyLayoutItemStyle: React.CSSProperties = {

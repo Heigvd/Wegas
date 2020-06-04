@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { Centered } from './Centered';
-import { themeVar } from '../Style/Theme';
 import { classNameOrEmpty } from '../../Helper/className';
+import { themeVar } from '../Style/ThemeVars';
 
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
   borderWidth: '2px',
-  borderColor: themeVar.searchColor,
+  borderColor: themeVar.Layout.colors.HighlightBorderColor,
 });
 
 const listStyle = css({
@@ -19,8 +19,6 @@ const listStyle = css({
 });
 const horizontalStyle = css({
   display: 'inline-flex',
-  // display: 'table',
-  // width: '100%',
 });
 const horizontalChildren = (shrink?: boolean) =>
   css({

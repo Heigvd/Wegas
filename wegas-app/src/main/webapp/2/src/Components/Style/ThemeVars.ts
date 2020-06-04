@@ -7,7 +7,7 @@ export interface DefaultThemeColors {
   'Text color': ColorType;
   'Warning color': ColorType;
   'Error color': ColorType;
-  'Sucess color': ColorType;
+  'Success color': ColorType;
   'Disabled color': ColorType;
   'Highlight color': ColorType;
   'Hover color': ColorType;
@@ -58,6 +58,7 @@ export interface Mode {
       BackgroundColor: ModeColor;
       TextColor: ModeColor;
       BorderColor: ModeColor;
+      HighlightBorderColor: ModeColor;
     },
     { BorderWidth: ModeDimension },
     { TextFont: ModeOther }
@@ -65,8 +66,12 @@ export interface Mode {
   Button: ModeComponent<
     {
       Color: ModeColor;
+      DisabledColor: ModeColor;
       TextColor: ModeColor;
       HoverColor: ModeColor;
+      ConfirmButtonZoneColor: ModeColor;
+      ConfirmButtonAcceptColor: ModeColor;
+      IconButtonActiveColor: ModeColor;
     },
     { Radius: ModeDimension },
     { TextFont: ModeOther }
@@ -146,6 +151,99 @@ export interface Mode {
     ActiveStateBorderColor: ModeColor;
     ActiveStateColor: ModeColor;
   }>;
+  CodeEditor: ModeComponent<{
+    DiffEditorLabelColor: ModeColor;
+  }>;
+  InfoBeam: ModeComponent<{
+    TextColor: ModeColor;
+    BackgroundColor: ModeColor;
+  }>;
+  PageLayout: ModeComponent<
+    {
+      SelectedIndexItemColor: ModeColor;
+      SelectedComponentColor: ModeColor;
+      FocusedComponentColor: ModeColor;
+      ActiveIconColor: ModeColor;
+    },
+    { TitleRadius: ModeDimension }
+  >;
+  PageLoader: ModeComponent<{
+    ActiveEditionColor: ModeColor;
+    InactiveEditionColor: ModeColor;
+  }>;
+  PageEditor: ModeComponent<{ BorderColor: ModeColor }>;
+  EditableComponent: ModeComponent<{
+    HighlightedBorderColor: ModeColor;
+    DisabledColor: ModeColor;
+    BorderHoverColor: ModeColor;
+    FocusedColor: ModeColor;
+  }>;
+  NumberSlider: ModeComponent<{ ActiveColor: ModeColor }>;
+  Toggler: ModeComponent<{
+    BorderColor: ModeColor;
+    BorderDisabledColor: ModeColor;
+    CheckedColor: ModeColor;
+    UncheckedColor: ModeColor;
+    HandleColor: ModeColor;
+    HandleDisabledColor: ModeColor;
+  }>;
+  MessageString: ModeComponent<{
+    NormalColor: ModeColor;
+    SuccessColor: ModeColor;
+    WarningColor: ModeColor;
+    ErrorColor: ModeColor;
+  }>;
+  LanguageEditor: ModeComponent<{
+    EditionTextColor: ModeColor;
+    SimpleTextColor: ModeColor;
+  }>;
+  FileBrowser: ModeComponent<
+    {
+      NodeHoverColor: ModeColor;
+      NodeDisabledColor: ModeColor;
+      BackgroundColor: ModeColor;
+      BorderColor: ModeColor;
+    },
+    { BorderRadius: ModeDimension }
+  >;
+  TabLayout: ModeComponent<{
+    ActiveTabColor: ModeColor;
+    MenuTextColor: ModeColor;
+    MenuBackgroundColor: ModeColor;
+    InactiveTabColor: ModeColor;
+    TabTextColor: ModeColor;
+  }>;
+  ComponentPalette: ModeComponent<{
+    ComponentColor: ModeColor;
+  }>;
+  ScriptEditor: ModeComponent<{
+    BackgroundColor: ModeColor;
+  }>;
+  EntityChooser: ModeComponent<{
+    ActiveBackgroundColor: ModeColor;
+    InactiveBackgroundColor: ModeColor;
+    TextColor: ModeColor;
+  }>;
+  MultipleChoice: ModeComponent<{
+    ChoiceColor: ModeColor;
+    ChoiceHoverColor: ModeColor;
+    SelectedChoiceColor: ModeColor;
+    SelectedChoiceHoverColor: ModeColor;
+    DisabledChoiceColor: ModeColor;
+    DisabledChoiceHoverColor: ModeColor;
+  }>;
+  Gauge: ModeComponent<{
+    PositiveColor: ModeColor;
+    NegativeColor: ModeColor;
+    DisabledColor: ModeColor;
+    NeedleColor: ModeColor;
+    NeedleBorderColor: ModeColor;
+    WarningColor: ModeColor;
+  }>;
+  NumberValue: ModeComponent<{
+    BackgroundColor: ModeColor;
+    TextColor: ModeColor;
+  }>;
 }
 
 export type ModeComponentNames = keyof Mode;
@@ -156,6 +254,10 @@ export const defaultMode: Mode = {
       Color: 'Main color',
       TextColor: 'Background color',
       HoverColor: 'Hover color',
+      DisabledColor: 'Disabled color',
+      ConfirmButtonZoneColor: 'Disabled color',
+      ConfirmButtonAcceptColor: 'Warning color',
+      IconButtonActiveColor: 'Secondary color',
     },
     dimensions: {
       Radius: 'Border radius',
@@ -169,6 +271,7 @@ export const defaultMode: Mode = {
       BackgroundColor: 'Background color',
       TextColor: 'Text color',
       BorderColor: 'Main color',
+      HighlightBorderColor: 'Highlight color',
     },
     dimensions: {
       BorderWidth: 'Border width',
@@ -185,7 +288,7 @@ export const defaultMode: Mode = {
   },
   Menu: {
     colors: {
-      TextColor: 'Main color',
+      TextColor: 'Text color',
       BackgroundColor: 'Background color',
       ShadowColor: 'Main color',
     },
@@ -227,7 +330,7 @@ export const defaultMode: Mode = {
   DragAndDrop: {
     colors: {
       DropZoneColor: 'Hover color',
-      DropZoneHoverColor: 'Sucess color',
+      DropZoneHoverColor: 'Success color',
     },
   },
   Selection: {
@@ -250,13 +353,13 @@ export const defaultMode: Mode = {
   },
   Question: {
     colors: {
-      ChoiceTextColor: 'Main color',
+      ChoiceTextColor: 'Text color',
       DisabledQuestionColor: 'Disabled color',
     },
   },
   Checkbox: {
     colors: {
-      TextColor: 'Main color',
+      TextColor: 'Text color',
       DisabledTextColor: 'Disabled color',
       ReadonlyTextColor: 'Secondary color',
     },
@@ -283,6 +386,139 @@ export const defaultMode: Mode = {
       SearchColor: 'Highlight color',
       ActiveStateBorderColor: 'Main color',
       ActiveStateColor: 'Warning color',
+    },
+  },
+  CodeEditor: {
+    colors: {
+      DiffEditorLabelColor: 'Main color',
+    },
+  },
+  InfoBeam: {
+    colors: {
+      TextColor: 'Text color',
+      BackgroundColor: 'Warning color',
+    },
+  },
+  PageLayout: {
+    colors: {
+      ActiveIconColor: 'Success color',
+      FocusedComponentColor: 'Hover color',
+      SelectedComponentColor: 'Main color',
+      SelectedIndexItemColor: 'Secondary color',
+    },
+    dimensions: {
+      TitleRadius: 'Border radius',
+    },
+  },
+  PageLoader: {
+    colors: {
+      ActiveEditionColor: 'Hover color',
+      InactiveEditionColor: 'Disabled color',
+    },
+  },
+  EditableComponent: {
+    colors: {
+      BorderHoverColor: 'Main color',
+      DisabledColor: 'Disabled color',
+      FocusedColor: 'Hover color',
+      HighlightedBorderColor: 'Highlight color',
+    },
+  },
+  NumberSlider: {
+    colors: {
+      ActiveColor: 'Main color',
+    },
+  },
+  Toggler: {
+    colors: {
+      BorderColor: 'Main color',
+      BorderDisabledColor: 'Disabled color',
+      CheckedColor: 'Success color',
+      UncheckedColor: 'Error color',
+      HandleColor: 'Main color',
+      HandleDisabledColor: 'Disabled color',
+    },
+  },
+  MessageString: {
+    colors: {
+      NormalColor: 'Text color',
+      SuccessColor: 'Success color',
+      WarningColor: 'Warning color',
+      ErrorColor: 'Error color',
+    },
+  },
+  PageEditor: {
+    colors: {
+      BorderColor: 'Secondary color',
+    },
+  },
+  LanguageEditor: {
+    colors: {
+      EditionTextColor: 'Secondary color',
+      SimpleTextColor: 'Text color',
+    },
+  },
+  FileBrowser: {
+    colors: {
+      NodeDisabledColor: 'Disabled color',
+      NodeHoverColor: 'Hover color',
+      BackgroundColor: 'Background color',
+      BorderColor: 'Main color',
+    },
+    dimensions: {
+      BorderRadius: 'Border radius',
+    },
+  },
+  TabLayout: {
+    colors: {
+      ActiveTabColor: 'Secondary color',
+      MenuBackgroundColor: 'Background color',
+      MenuTextColor: 'Text color',
+      InactiveTabColor: 'Main color',
+      TabTextColor: 'Text color',
+    },
+  },
+  ComponentPalette: {
+    colors: {
+      ComponentColor: 'Main color',
+    },
+  },
+  ScriptEditor: {
+    colors: {
+      BackgroundColor: 'Hover color',
+    },
+  },
+  EntityChooser: {
+    colors: {
+      ActiveBackgroundColor: 'Secondary color',
+      InactiveBackgroundColor: 'Main color',
+      TextColor: 'Text color',
+    },
+  },
+  MultipleChoice: {
+    colors: {
+      ChoiceColor: 'Main color',
+      ChoiceHoverColor: 'Secondary color',
+      SelectedChoiceColor: 'Secondary color',
+      SelectedChoiceHoverColor: 'Main color',
+      DisabledChoiceColor: 'Disabled color',
+      DisabledChoiceHoverColor: 'Hover color',
+    },
+  },
+  Gauge: {
+    colors: {
+      NeedleColor: 'Main color',
+      NeedleBorderColor: 'Secondary color',
+      DisabledColor: 'Disabled color',
+      NegativeColor: 'Error color',
+      PositiveColor: 'Success color',
+      WarningColor: 'Warning color',
+    },
+  },
+  NumberValue: {
+    colors: {
+      BackgroundColor: 'Main color',
+      TextColor: 'Text color',
     },
   },
 };

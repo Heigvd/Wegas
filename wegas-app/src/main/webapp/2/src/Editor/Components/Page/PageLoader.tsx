@@ -1,10 +1,6 @@
 import * as React from 'react';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
-import {
-  ThemeProvider,
-  themeVar,
-  themeCTX,
-} from '../../../Components/Style/Theme';
+import { ThemeProvider, themeCTX } from '../../../Components/Style/Theme';
 import { TextLoader } from '../../../Components/Loader';
 import { PageDeserializer } from '../../../Components/PageComponents/tools/PageDeserializer';
 import { useStore } from '../../../data/store';
@@ -12,12 +8,15 @@ import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { css, cx } from 'emotion';
 import { pageCTX } from './PageEditor';
 import { flex, expandHeight } from '../../../css/classes';
+import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const editStyle = (editMode?: boolean) =>
   css({
     borderStyle: 'solid',
     borderWidth: '30px',
-    borderColor: editMode ? themeVar.primaryHoverColor : themeVar.disabledColor,
+    borderColor: editMode
+      ? themeVar.PageLoader.colors.ActiveEditionColor
+      : themeVar.PageLoader.colors.InactiveEditionColor,
     overflow: 'auto',
   });
 
@@ -32,10 +31,10 @@ export function PageLoader({ selectedPageId, displayFrame }: PageLoaderProps) {
     deepDifferent,
   );
   const { editMode } = React.useContext(pageCTX);
-  const { contextName } = React.useContext(themeCTX);
+  const { currentContext } = React.useContext(themeCTX);
   return (
     <DefaultDndProvider>
-      <ThemeProvider contextName={contextName}>
+      <ThemeProvider contextName={currentContext}>
         <React.Suspense fallback={<TextLoader text="Building World!" />}>
           <div
             className={cx(

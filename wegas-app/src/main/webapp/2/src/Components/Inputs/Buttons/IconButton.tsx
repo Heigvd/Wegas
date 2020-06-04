@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
-import { themeVar } from '../../Style/Theme';
 import { CommonButtonProps } from './Button';
+import { themeVar } from '../../Style/ThemeVars';
 
 export interface IconButtonProps extends CommonButtonProps {
   icon: Icons;
@@ -13,7 +13,9 @@ export interface IconButtonProps extends CommonButtonProps {
   prefixedLabel?: boolean;
   // ref?: React.ClassAttributes<HTMLButtonElement>['ref'];
 }
-const defaultActiveStyle = css({ color: themeVar.primaryDarkerColor });
+const defaultActiveStyle = css({
+  color: themeVar.Button.colors.IconButtonActiveColor,
+});
 
 export const shapeStyle = (noHover?: boolean) =>
   css({
@@ -26,9 +28,9 @@ export const shapeStyle = (noHover?: boolean) =>
     cursor: 'pointer',
     textAlign: 'center',
     display: 'inline-block',
-    color: themeVar.primaryColor,
+    color: themeVar.Button.colors.Color,
     ':hover,:focus': {
-      color: noHover ? undefined : themeVar.primaryLighterColor,
+      color: noHover ? undefined : themeVar.Button.colors.HoverColor,
       outline: 'none',
     },
   });
@@ -38,10 +40,10 @@ const noClickStyle = css({
 });
 
 const disabledStyle = css({
-  color: themeVar.disabledColor,
+  color: themeVar.Button.colors.DisabledColor,
   cursor: 'initial',
   ':hover,:focus': {
-    color: themeVar.disabledColor,
+    color: themeVar.Button.colors.DisabledColor,
   },
 });
 

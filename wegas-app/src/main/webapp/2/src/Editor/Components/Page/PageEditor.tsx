@@ -17,12 +17,12 @@ import {
 import { store, useStore } from '../../../data/store';
 import { Actions } from '../../../data';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { themeVar } from '../../../Components/Style/Theme';
 import { flex, grow, expandBoth } from '../../../css/classes';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { mergeDeep } from '../../../Helper/tools';
 import { findComponent } from '../../../Helper/pages';
+import { themeVar } from '../../../Components/Style/ThemeVars';
 const innerButtonStyle = css({
   margin: '2px auto 2px auto',
   width: 'fit-content',
@@ -584,7 +584,7 @@ export default function PageEditor() {
           grow,
           css({
             borderStyle: 'solid',
-            borderColor: themeVar.primaryDarkerColor,
+            borderColor: themeVar.PageEditor.colors.BorderColor,
             margin: '1px',
             marginTop: '0px',
           }),

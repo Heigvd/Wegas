@@ -42,7 +42,7 @@ interface ThemeValues {
   others: ThemeOthers;
 }
 
-interface Theme {
+export interface Theme {
   values: ThemeValues;
   // selectedMode: keyof Modes;
   modes: Modes;
@@ -54,9 +54,9 @@ interface Themes {
 }
 
 interface SelectedThemes {
-  editor: keyof Themes;
-  player: keyof Themes;
-  survey: keyof Themes;
+  editor: string;
+  player: string;
+  survey: string;
 }
 
 type Context = keyof SelectedThemes;
@@ -100,7 +100,7 @@ const defaultThemeValues: ThemeValues = {
     'Highlight color': 'hotpink',
     'Hover color': 'rgba(0x15,0x65,0xC0,0.8)',
     'Warning color': '#ff9d00',
-    'Sucess color': 'green',
+    'Success color': 'green',
   },
   dimensions: {
     'Border radius': '5px',

@@ -5,7 +5,6 @@ import Form from 'jsoninput';
 import { css } from 'emotion';
 import { parse } from '@babel/parser';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { themeVar } from '../../../../../Components/Style/Theme';
 import {
   IConditionAttributes,
   IInitAttributes,
@@ -36,9 +35,10 @@ import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory'
 import { pick } from 'lodash-es';
 import { CallExpression } from '@babel/types';
 import { StringLiteral } from '@babel/types';
+import { themeVar } from '../../../../../Components/Style/ThemeVars';
 
 const expressionEditorStyle = css({
-  backgroundColor: themeVar.primaryHoverColor,
+  backgroundColor: themeVar.ScriptEditor.colors.BackgroundColor,
   marginTop: '0.8em',
   padding: '2px',
   div: {

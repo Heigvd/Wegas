@@ -3,11 +3,11 @@ import { Interpolation, css } from 'emotion';
 import Slider from 'react-input-slider';
 import { textCenter } from '../../../css/classes';
 import { CheckMinMax } from './numberComponentHelper';
-import { themeVar } from '../../Style/Theme';
 import { Value } from '../../Outputs/Value';
 import { InputProps } from '../SimpleInput';
 import { NumberInput } from './NumberInput';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { themeVar } from '../../Style/ThemeVars';
 
 const valueDisplayStyle = css({
   textAlign: 'center',
@@ -164,7 +164,9 @@ export function NumberSlider({
           track: desinterpolate(rightPartStyle),
           active: leftPartStyle
             ? desinterpolate(leftPartStyle)
-            : desinterpolate({ backgroundColor: themeVar.primaryLighterColor }),
+            : desinterpolate({
+                backgroundColor: themeVar.NumberSlider.colors.ActiveColor,
+              }),
           thumb: handleStyle
             ? desinterpolate(handleStyle)
             : css({ cursor: 'pointer' }),
