@@ -2,7 +2,7 @@ import * as React from 'react';
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { css } from 'emotion';
-import { themeVar } from '../Style/Theme';
+import { themeVar } from '../Style/ThemeVars';
 
 // export const dropZoneFocusCss = {
 //   background:
@@ -15,16 +15,16 @@ const dropZoneForeground = {
 
 export const dropZoneFocusCss = {
   background: `
-  repeating-Linear-gradient( 45deg, transparent 10px, ${themeVar.primaryHoverColor} 10px, transparent 20px);
-  repeating-Linear-gradient( -45deg, transparent 10px, ${themeVar.primaryHoverColor} 10px, transparent 20px);
+  repeating-Linear-gradient( 45deg, transparent 10px, ${themeVar.DragAndDrop.colors.DropZoneColor} 10px, transparent 20px);
+  repeating-Linear-gradient( -45deg, transparent 10px, ${themeVar.DragAndDrop.colors.DropZoneColor} 10px, transparent 20px);
   `,
   ...dropZoneForeground,
 };
 
 const dropZoneHoverCss = {
   background: `
-  repeating-Linear-gradient( 45deg, transparent 10px, ${themeVar.successColor} 10px, transparent 20px);
-  repeating-Linear-gradient( -45deg, transparent 10px, ${themeVar.successColor} 10px, transparent 20px);
+  repeating-Linear-gradient( 45deg, transparent 10px, ${themeVar.DragAndDrop.colors.DropZoneHoverColor} 10px, transparent 20px);
+  repeating-Linear-gradient( -45deg, transparent 10px, ${themeVar.DragAndDrop.colors.DropZoneHoverColor} 10px, transparent 20px);
   `,
   ...dropZoneForeground,
 };

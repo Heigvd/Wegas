@@ -11,19 +11,19 @@ import {
 import { Value } from './Value';
 import { cx, css } from 'emotion';
 import { IconComp } from '../../Editor/Components/Views/FontAwesome';
-import { themeVar } from '../Style/Theme';
 import { classNameOrEmpty } from '../../Helper/className';
+import { themeVar } from '../Style/ThemeVars';
 
 const phasePathStyle = css({
   height: '0.5em',
-  backgroundColor: themeVar.disabledColor,
+  backgroundColor: themeVar.PhaseProgressBar.colors.BorderColor,
 });
 
 const phaseDotStyle = css({
   borderRadius: '50%',
   borderStyle: 'solid',
   borderWidth: '5px',
-  borderColor: themeVar.disabledColor,
+  borderColor: themeVar.PhaseProgressBar.colors.BorderColor,
 });
 
 interface PhaseComponentProps {
@@ -47,10 +47,10 @@ function SimplePhaseComponent({ value, phase }: PhaseComponentProps) {
           size: 'lg',
           color:
             phase < value
-              ? themeVar.primaryColor
+              ? themeVar.PhaseProgressBar.colors.DoneColor
               : phase > value
               ? 'transparent'
-              : themeVar.primaryDarkerColor,
+              : themeVar.PhaseProgressBar.colors.InProgressColor,
         }}
       />
     </div>

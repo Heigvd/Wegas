@@ -4,7 +4,6 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { ConnectedQuestionDisplay } from '../../AutoImport/Question/List';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { EntityChooser } from '../../EntityChooser';
 import { TranslatableContent } from '../../../data/i18n';
@@ -18,6 +17,7 @@ import { safeClientScriptEval } from '../../Hooks/useScript';
 import { useStore } from '../../../data/store';
 import { shallowDifferent } from '../../Hooks/storeHookFactory';
 import { entityIs } from '../../../data/entities';
+import { ConnectedQuestionDisplay } from '../../Outputs/Question';
 
 const unreadSignalStyle = css({ margin: '3px' });
 

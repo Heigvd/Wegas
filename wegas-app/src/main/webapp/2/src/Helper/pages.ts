@@ -1,7 +1,7 @@
 import { Item } from '../Editor/Components/Tree/TreeSelect';
 import { css } from 'emotion';
-import { themeVar } from '../Components/Style/Theme';
 import { cloneDeep } from 'lodash-es';
+import { themeVar } from '../Components/Style/ThemeVars';
 
 export function isPageItem(
   pageItemIndex?: PageIndexItem,
@@ -103,7 +103,7 @@ export function pageItemsToTreeItem(
 export function indexToTree(index: PageIndex): Item<PageIndexItem>[] {
   return pageItemsToTreeItem(index.root.items, item =>
     isPageItem(item) && item.id === index.defaultPageId
-      ? css({ color: themeVar.primaryDarkerColor })
+      ? css({ color: themeVar.PageTree.colors.DefaultItemTextColor })
       : undefined,
   );
 }

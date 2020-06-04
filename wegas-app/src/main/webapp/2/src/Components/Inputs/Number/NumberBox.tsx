@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { debounce } from 'lodash-es';
-import { themeVar } from '../../Style/Theme';
 import { cx, css } from 'emotion';
 import {
   flex,
@@ -15,9 +14,10 @@ import { CheckMinMax } from './numberComponentHelper';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { themeVar } from '../../Style/ThemeVars';
 
 const numberSquareStyle = css({
-  borderColor: themeVar.disabledColor,
+  borderColor: themeVar.NumberBox.colors.SquareBorderColor,
   borderStyle: 'solid',
   borderRadius: '2px',
   width: '2em',
@@ -28,18 +28,18 @@ const numberSquareStyle = css({
 });
 
 const activeNumberSquareStyle = css({
-  backgroundColor: themeVar.primaryLighterColor,
+  backgroundColor: themeVar.NumberBox.colors.SquareColor,
 });
 
 const clickableNumberSquareStyle = css({
   cursor: 'pointer',
   ':hover': {
-    borderColor: themeVar.primaryTextColor,
+    borderColor: themeVar.NumberBox.colors.SquareBorderHoverColor,
   },
 });
 
 const disabledNumberSquareStyle = css({
-  backgroundColor: themeVar.disabledColor,
+  backgroundColor: themeVar.NumberBox.colors.SquareDisabledColor,
 });
 
 const squareFrameStyle = css({

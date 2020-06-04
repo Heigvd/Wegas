@@ -24,17 +24,17 @@ import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { SearchTool } from '../SearchTool';
 import { focusTabContext } from '../LinearTabLayout/LinearLayout';
 import { useAsync } from '../../../Components/Hooks/useAsync';
-import {
-  themeVar,
-  globalSelection,
-  localSelection,
-  searchSelection,
-} from '../../../Components/Style/Theme';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { Edition } from '../../../data/Reducer/globalState';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { mainLayoutId } from '../Layout';
+import { themeVar } from '../../../Components/Style/ThemeVars';
+import {
+  globalSelection,
+  localSelection,
+  searchSelection,
+} from '../../../css/classes';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -168,7 +168,7 @@ export const nodeContentStyle = css({
   marginLeft: '5px',
   marginRight: '5px',
   ':hover': {
-    backgroundColor: themeVar.primaryHoverColor,
+    backgroundColor: themeVar.VariableTree.colors.HoverColor,
   },
 });
 

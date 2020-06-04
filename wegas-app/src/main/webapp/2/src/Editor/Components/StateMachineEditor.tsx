@@ -13,7 +13,6 @@ import {
   getInstance,
   editorLabel,
 } from '../../data/methods/VariableDescriptorMethods';
-import { themeVar } from '../../Components/Style/Theme';
 import { EditorAction } from '../../data/Reducer/globalState';
 import { State as RState } from '../../data/Reducer/reducers';
 import { wlog } from '../../Helper/wegaslog';
@@ -31,6 +30,7 @@ import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { createTranslatableContent } from './FormView/translatable';
 import { createScript } from '../../Helper/wegasEntites';
+import { themeVar } from '../../Components/Style/ThemeVars';
 
 const editorStyle = css({
   position: 'relative',
@@ -70,7 +70,8 @@ const editorStyle = css({
 
 const searchHighlighted = css({
   // !important is the only way to take the priority because jsPlumb defines chained selectors for the style
-  backgroundColor: themeVar.searchColor + ' !important',
+  backgroundColor:
+    themeVar.StateMachineEditor.colors.SearchColor + ' !important',
 });
 
 export const searchWithState = (
@@ -114,13 +115,13 @@ const JS_PLUMB_OPTIONS: Defaults = {
   ],
   PaintStyle: {
     strokeWidth: 1,
-    stroke: themeVar.primaryColor,
+    stroke: themeVar.StateMachineEditor.colors.RelationColor,
     //@ts-ignore
     outlineStroke: 'white',
     outlineWidth: 2,
   },
   HoverPaintStyle: {
-    stroke: themeVar.primaryDarkerColor,
+    stroke: themeVar.StateMachineEditor.colors.RelationHoverColor,
   },
 };
 
@@ -572,9 +573,9 @@ const stateStyle = css({
 const initialStateStyle = css({
   border: '6px double',
 });
-const currentStateStyle = css({
-  borderColor: themeVar.primaryColor,
-  backgroundColor: themeVar.warningColor,
+const activeStateStyle = css({
+  borderColor: themeVar.StateMachineEditor.colors.ActiveStateBorderColor,
+  backgroundColor: themeVar.StateMachineEditor.colors.ActiveStateColor,
 });
 const sourceStyle = css({
   display: 'inline-block',
@@ -655,7 +656,7 @@ class State extends React.Component<{
           stateStyle,
           {
             [initialStateStyle]: initialState,
-            [currentStateStyle]: currentState,
+            [activeStateStyle]: currentState,
           },
           this.isBeingSearched() && searchHighlighted,
         )}

@@ -1,26 +1,26 @@
 import * as React from 'react';
-import { TranslatableContent } from '../../../data/i18n';
-import { StoreConsumer, StoreDispatch } from '../../../data/store';
-import { VariableDescriptor } from '../../../data/selectors';
-import { EntityChooser } from '../../EntityChooser';
-import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
+import { TranslatableContent } from '../../data/i18n';
+import { StoreConsumer, StoreDispatch } from '../../data/store';
+import { VariableDescriptor } from '../../data/selectors';
+import { EntityChooser } from '../EntityChooser';
+import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { css, cx } from 'emotion';
-import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
-import { themeVar } from '../../Style/Theme';
-import { IconButton } from '../../Inputs/Buttons/IconButton';
+import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
+import { IconButton } from '../Inputs/Buttons/IconButton';
 import {
   selectAndValidate,
   toggleReply,
   readChoice,
   validateQuestion,
-} from '../../../data/Reducer/VariableInstanceReducer';
-import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
+} from '../../data/Reducer/VariableInstanceReducer';
+import { flatten } from '../../data/selectors/VariableDescriptorSelector';
 import {
   getChoices,
   isUnread,
-} from '../../../data/proxyfy/methods/QuestionDescriptor';
-import { isSelected } from '../../../data/proxyfy/methods/ChoiceDescriptor';
-import { Button } from '../../Inputs/Buttons/Button';
+} from '../../data/proxyfy/methods/QuestionDescriptor';
+import { isSelected } from '../../data/proxyfy/methods/ChoiceDescriptor';
+import { Button } from '../Inputs/Buttons/Button';
+import { themeVar } from '../Style/ThemeVars';
 
 const unreadSignalStyle = css({ margin: '3px' });
 const choiceContainerStyle = css({
@@ -28,13 +28,13 @@ const choiceContainerStyle = css({
 });
 const choiceTitleStyle = css({
   borderBottom: '1px solid',
-  color: themeVar.primaryColor,
+  color: themeVar.Question.colors.ChoiceTextColor,
 });
 const rightFloatStyle = css({
   textAlign: 'right',
 });
 const disabledQuestionStyle = css({
-  backgroundColor: themeVar.disabledColor,
+  backgroundColor: themeVar.Question.colors.DisabledQuestionColor,
   cursor: 'not-allowed',
 });
 

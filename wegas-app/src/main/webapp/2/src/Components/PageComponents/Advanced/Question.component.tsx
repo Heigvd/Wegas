@@ -4,9 +4,9 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { ConnectedQuestionDisplay } from '../../AutoImport/Question/List';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { WegasComponentProps } from '../tools/EditableComponent';
+import { ConnectedQuestionDisplay } from '../../Outputs/Question';
 
 interface QuestionDisplayProps extends WegasComponentProps {
   /**
@@ -19,8 +19,6 @@ function QuestionDisplay({ question }: QuestionDisplayProps) {
   const { content, descriptor, notFound } = useComponentScript<
     IQuestionDescriptor
   >(question);
-
-  debugger;
 
   return notFound ? (
     <pre>Not found: {content}</pre>

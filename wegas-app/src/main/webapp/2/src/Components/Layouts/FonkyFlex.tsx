@@ -2,8 +2,8 @@ import * as React from 'react';
 import { cx, css } from 'emotion';
 import { classNameOrEmpty } from '../../Helper/className';
 import { flex, flexColumn, flexRow } from '../../css/classes';
-import { themeVar } from '../Style/Theme';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
+import { themeVar } from '../Style/ThemeVars';
 
 const SPLITTER_SELECTOR = 'fonkyflex-splitter';
 const CONTENT_SELECTOR = 'fonkyflex-content';
@@ -20,20 +20,20 @@ const DEFAULT_FLEX_WRAP = 1000;
 const containerStyle = css({
   [`&>.${SPLITTER_SELECTOR}.${HORIZONTAL_SELECTOR}`]: {
     height: 'auto',
-    minWidth: `5px`,
-    maxWidth: `5px`,
+    minWidth: themeVar.FonkyFlex.dimensions.SplitterSize,
+    maxWidth: themeVar.FonkyFlex.dimensions.SplitterSize,
     cursor: 'col-resize',
   },
   [`&>.${SPLITTER_SELECTOR}.${VERTICAL_SELECTOR}`]: {
-    minHeight: `5px`,
-    maxHeight: `5px`,
+    minHeight: themeVar.FonkyFlex.dimensions.SplitterSize,
+    maxHeight: themeVar.FonkyFlex.dimensions.SplitterSize,
     width: 'auto',
     cursor: 'row-resize',
   },
 });
 
 const splitterStyle = css({
-  backgroundColor: themeVar.primaryLighterColor,
+  backgroundColor: themeVar.FonkyFlex.colors.SplitterColor,
 });
 
 export const defaultFlexContainerStyle: React.CSSProperties = {

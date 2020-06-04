@@ -11,6 +11,10 @@ import {
   DefaultThemeDimensions,
   DefaultThemeOthers,
   ModeComponentNames,
+  FullModeComponent,
+  ModeColor,
+  ModeDimension,
+  ModeOther,
 } from './ThemeVars';
 
 export type ColorType = Exclude<React.CSSProperties['color'], undefined>;
@@ -25,16 +29,6 @@ interface ThemeDimensions extends DefaultThemeDimensions {
 
 interface ThemeOthers extends DefaultThemeOthers {
   [dim: string]: React.CSSProperties[keyof React.CSSProperties];
-}
-
-export interface ModeComponent<
-  C extends { [entry: string]: string } = {},
-  D extends { [entry: string]: string } = {},
-  O extends { [entry: string]: string } = {}
-> {
-  colors: C;
-  dimensions: D;
-  others: O;
 }
 
 interface Modes {
@@ -98,6 +92,7 @@ interface ThemeContextValues {
 const defaultThemeValues: ThemeValues = {
   colors: {
     'Main color': '#1565C0',
+    'Secondary color': '#00499c',
     'Background color': 'white',
     'Text color': 'white',
     'Disabled color': 'lightgrey',
@@ -109,6 +104,7 @@ const defaultThemeValues: ThemeValues = {
   },
   dimensions: {
     'Border radius': '5px',
+    'Border width': '5px',
   },
   others: {
     'Font family': 'arial',
@@ -254,11 +250,11 @@ const themeStateReducer = (
           entry,
           value,
         } = action;
-        const psection = oldState.themes[themeName].modes[modeName][component][
-          section
-        ] as { [id: string]: unknown };
+        const psection = (oldState.themes[themeName].modes[modeName][
+          component
+        ] as FullModeComponent)[section];
         if (psection != null && entry in psection) {
-          psection[entry] = value;
+          psection[entry] = value as ModeColor | ModeDimension | ModeOther;
         }
       }
     }

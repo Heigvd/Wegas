@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
 import { StoreDispatch, StoreConsumer } from '../../../data/store';
 import { css, cx } from 'emotion';
-import { themeVar, localSelection } from '../../../Components/Style/Theme';
 import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods';
 import { AsyncVariableForm, getError, EditorProps } from '../EntityEditor';
 import getEditionConfig from '../../editionConfig';
@@ -15,15 +14,16 @@ import {
 } from '../../../data/Reducer/VariableInstanceReducer';
 import { State } from '../../../data/Reducer/reducers';
 import { VariableInstanceAPI } from '../../../API/variableInstance.api';
-import { flex, flexColumn, grow } from '../../../css/classes';
+import { flex, flexColumn, grow, localSelection } from '../../../css/classes';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { MessageString } from '../MessageString';
+import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const listBox = css({
   width: '100%',
   maxHeight: '100px',
   overflowY: 'auto',
-  borderColor: themeVar.primaryLighterColor,
+  borderColor: themeVar.InstanceEditor.colors.BorderColor,
   borderWidth: '2px',
   borderStyle: 'solid',
 });
@@ -33,7 +33,7 @@ const listItem = css({
   width: '100%',
   cursor: 'pointer',
   ':hover': {
-    backgroundColor: themeVar.primaryHoverColor,
+    backgroundColor: themeVar.InstanceEditor.colors.HoverColor,
   },
 });
 

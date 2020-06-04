@@ -1,5 +1,5 @@
 import { css, cx } from 'emotion';
-import { themeVar } from '../Components/Style/Theme';
+import { themeVar } from '../Components/Style/ThemeVars';
 
 // Display
 export const flex = css({
@@ -119,9 +119,23 @@ export const defaultPadding = cx(
 
 // Components
 export const button = css({
-  color: themeVar.primaryLighterTextColor,
+  color: themeVar.Button.colors.TextColor,
   ':hover,:focus': {
-    color: themeVar.primaryHoverColor,
+    color: themeVar.Button.colors.HoverColor,
     outline: 'none',
   },
+});
+
+// Editor
+export const localSelection = css({
+  backgroundColor: themeVar.Selection.colors.LocalSelectionColor,
+});
+export const globalSelection = css({
+  borderStyle: 'solid',
+  borderWidth: '2px',
+  borderColor: themeVar.Selection.colors.GlobalSelectionColor,
+  borderRadius: themeVar.Selection.dimensions.SelectionRadius,
+});
+export const searchSelection = css({
+  backgroundColor: themeVar.Selection.colors.SearchSelectionColor,
 });

@@ -571,13 +571,12 @@ export default function ThemeEditor() {
     addNewTheme,
     deleteTheme,
     setSelectedTheme,
-    setThemeEntry,
-    setThemeColor,
-    setThemeModifer,
+    setThemeValue,
+    setModeValue,
   } = React.useContext(themeCTX);
-  const [currentModifiedTheme, setModifiedTheme] = React.useState<string>(
-    themeState.selectedThemes['editor'],
-  );
+  // const [currentModifiedTheme, setModifiedTheme] = React.useState<string>(
+  //   themeState.selectedThemes['editor'],
+  // );
   const [selectedSection, setSelectedSection] = React.useState<
     { [key in keyof Theme]?: boolean }
   >(

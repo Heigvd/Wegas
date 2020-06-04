@@ -7,11 +7,11 @@ import { Value } from '../Components/Outputs/Value';
 import { MessageString } from '../Editor/Components/MessageString';
 import { schemaProps } from '../Components/PageComponents/tools/schemaProps';
 import { createScript } from '../Helper/wegasEntites';
-import { themeVar } from '../Components/Style/Theme';
 
 //It's really important to import index.ts in order to have the widjets allready registered before using Form
 import '../Editor/Components/FormView';
 import { wegasComponentOptionsSchema } from '../Components/PageComponents/tools/options';
+import { themeVar } from '../Components/Style/ThemeVars';
 
 const testSchema = {
   hidden: schemaProps.hidden(),
@@ -118,7 +118,7 @@ export default function SchemaPropsTester() {
         style={{
           margin: '20px',
           borderStyle: 'solid',
-          borderColor: themeVar.primaryColor,
+          borderColor: themeVar.Layout.colors.BorderColor,
         }}
       >
         {Object.entries(values).map(([k, v]) => (

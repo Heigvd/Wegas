@@ -4,9 +4,9 @@ import { css, cx } from 'emotion';
 import { IconButton } from './Inputs/Buttons/IconButton';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { useKeyboard } from './Hooks/useKeyboard';
-import { themeVar } from './Style/Theme';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { Item } from '../Editor/Components/Tree/TreeSelect';
+import { themeVar } from './Style/ThemeVars';
 
 export interface MenuItem<T> extends Item<T> {
   disabled?: true;
@@ -57,7 +57,7 @@ const container = css({
   position: 'relative',
 });
 const subMenuContainer = css({
-  color: themeVar.primaryColor,
+  color: themeVar.Menu.colors.TextColor,
   position: 'absolute',
   display: 'inline-block',
   padding: '5px',
@@ -65,7 +65,7 @@ const subMenuContainer = css({
   whiteSpace: 'nowrap',
   margin: '2px',
   backgroundColor: 'rgba(255,255,255,0.95)',
-  boxShadow: `0px 0px 4px 1px ${themeVar.primaryColor}`,
+  boxShadow: `0px 0px 4px 1px ${themeVar.Menu.colors.ShadowColor}`,
   [`& .${container}`]: {
     width: '100%',
   },
@@ -142,7 +142,7 @@ export function Menu<T, MItem extends MenuItem<T>>({
               className={
                 cx(
                   DIR[realDirection],
-                  css({ background: themeVar.backgroundColor }),
+                  css({ background: themeVar.Menu.colors.BackgroundColor }),
                 ) +
                   ' ' +
                   listClassName || ''

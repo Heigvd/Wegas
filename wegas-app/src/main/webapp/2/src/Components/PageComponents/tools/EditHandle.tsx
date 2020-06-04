@@ -6,14 +6,14 @@ import { cx, css } from 'emotion';
 import { flex, flexColumn, flexRow, textCenter } from '../../../css/classes';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
-import { themeVar } from '../../Style/Theme';
 import { MessageString } from '../../../Editor/Components/MessageString';
+import { themeVar } from '../../Style/ThemeVars';
 
 const handleContentStyle = css({
-  borderRadius: themeVar.borderRadius,
+  borderRadius: themeVar.EditHandle.dimensions.BorderRadius,
   borderStyle: 'solid',
-  borderColor: themeVar.primaryLighterColor,
-  backgroundColor: themeVar.primaryHoverColor,
+  borderColor: themeVar.EditHandle.colors.BorderColor,
+  backgroundColor: themeVar.EditHandle.colors.BackgroundColor,
 });
 
 interface EditorHandleProps {

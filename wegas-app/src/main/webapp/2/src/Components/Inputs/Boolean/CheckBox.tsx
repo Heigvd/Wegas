@@ -1,19 +1,19 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
-import { themeVar } from '../../Style/Theme';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
 import { textCenter, shrinkWidth } from '../../../css/classes';
 import { IconButton } from '../Buttons/IconButton';
+import { themeVar } from '../../Style/ThemeVars';
 
 const checkboxStyle = (disabled?: boolean, readOnly?: boolean) =>
   css({
     cursor: disabled || readOnly ? 'default' : 'pointer',
     color: disabled
-      ? themeVar.disabledColor
+      ? themeVar.Checkbox.colors.DisabledTextColor
       : readOnly
-      ? themeVar.primaryDarkerColor
-      : themeVar.primaryColor,
+      ? themeVar.Checkbox.colors.ReadonlyTextColor
+      : themeVar.Checkbox.colors.TextColor,
   });
 
 export interface CheckBoxProps extends InputProps<boolean> {
