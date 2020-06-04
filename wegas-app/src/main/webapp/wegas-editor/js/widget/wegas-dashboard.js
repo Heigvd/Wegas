@@ -251,7 +251,7 @@ YUI.add('wegas-dashboard', function(Y) {
             this.get("contentBox").delegate("click", this.detailsClick, ".details__link", this);
 
             this.get("contentBox").delegate("click", this.onBooleanClick, ".bloc__boolean.toggleable", this);
-            this.get("contentBox").delegate("click", this.onTextClick, ".bloc__text", this);
+            this.get("contentBox").delegate("click", this.onTextClick, ".bloc__text.clickable", this);
 
             this.get("contentBox").delegate("click", this.onCustomizeGroupClick, ".customize-group", this);
 
@@ -620,12 +620,12 @@ YUI.add('wegas-dashboard', function(Y) {
                                     }
 
                                 } else if (def.kind === "inbox") {
-                                    o.cell.setHTML('<i class="bloc__text ' + (o.value.empty ? 'icon fa fa-comment-o"' : 'icon fa fa-commenting-o"') + ' title="Click to view"></i>');
+                                    o.cell.setHTML('<i class="bloc__text clickable ' + (o.value.empty ? 'icon fa fa-comment-o"' : 'icon fa fa-commenting-o"') + ' title="Click to view"></i>');
                                     if (o.column.valueTransformer) {
                                         o.value = o.column.valueTransformer.call(this, o.value);
                                     }
                                 } else if (def.kind === "text") {
-                                    o.cell.setHTML('<i class="bloc__text ' + (o.value.empty ? 'icon fa fa-file-o"' : 'icon fa fa-file-text-o"') + ' title="Click to view"></i>');
+                                    o.cell.setHTML('<i class="bloc__text clickable ' + (o.value.empty ? 'icon fa fa-file-o"' : 'icon fa fa-file-text-o"') + ' title="Click to view"></i>');
                                 } else {
                                     fallback = true;
                                     if (def.kind === "object") {
