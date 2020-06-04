@@ -5,6 +5,7 @@ export interface DefaultThemeColors {
   'Secondary color': ColorType;
   'Background color': ColorType;
   'Text color': ColorType;
+  'Secondary text color': ColorType;
   'Warning color': ColorType;
   'Error color': ColorType;
   'Success color': ColorType;
@@ -69,6 +70,7 @@ export interface Mode {
       DisabledColor: ModeColor;
       TextColor: ModeColor;
       HoverColor: ModeColor;
+      HoverTextColor: ModeColor;
       ConfirmButtonZoneColor: ModeColor;
       ConfirmButtonAcceptColor: ModeColor;
       IconButtonActiveColor: ModeColor;
@@ -84,6 +86,8 @@ export interface Mode {
     TextColor: ModeColor;
     BackgroundColor: ModeColor;
     ShadowColor: ModeColor;
+    HoverBackgroundColor: ModeColor;
+    HoverTextColor: ModeColor;
   }>;
   PageTree: ModeComponent<{
     DefaultItemTextColor: ModeColor;
@@ -207,11 +211,12 @@ export interface Mode {
     { BorderRadius: ModeDimension }
   >;
   TabLayout: ModeComponent<{
-    ActiveTabColor: ModeColor;
     MenuTextColor: ModeColor;
     MenuBackgroundColor: ModeColor;
-    InactiveTabColor: ModeColor;
+    TabColor: ModeColor;
+    ActiveTabColor: ModeColor;
     TabTextColor: ModeColor;
+    ActiveTabTextColor: ModeColor;
   }>;
   ComponentPalette: ModeComponent<{
     ComponentColor: ModeColor;
@@ -252,8 +257,9 @@ export const defaultMode: Mode = {
   Button: {
     colors: {
       Color: 'Main color',
-      TextColor: 'Background color',
+      TextColor: 'Secondary text color',
       HoverColor: 'Hover color',
+      HoverTextColor: 'Secondary text color',
       DisabledColor: 'Disabled color',
       ConfirmButtonZoneColor: 'Disabled color',
       ConfirmButtonAcceptColor: 'Warning color',
@@ -291,6 +297,8 @@ export const defaultMode: Mode = {
       TextColor: 'Text color',
       BackgroundColor: 'Background color',
       ShadowColor: 'Main color',
+      HoverBackgroundColor: 'Hover color',
+      HoverTextColor: 'Text color',
     },
   },
   PageTree: {
@@ -471,11 +479,12 @@ export const defaultMode: Mode = {
   },
   TabLayout: {
     colors: {
-      ActiveTabColor: 'Secondary color',
       MenuBackgroundColor: 'Background color',
       MenuTextColor: 'Text color',
-      InactiveTabColor: 'Main color',
-      TabTextColor: 'Text color',
+      TabColor: 'Main color',
+      ActiveTabColor: 'Secondary color',
+      TabTextColor: 'Secondary text color',
+      ActiveTabTextColor: 'Secondary text color',
     },
   },
   ComponentPalette: {

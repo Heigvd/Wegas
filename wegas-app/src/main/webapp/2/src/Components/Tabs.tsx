@@ -74,7 +74,7 @@ const tabStyle = css({
 });
 export const inactiveTabStyle = css({
   color: themeVar.TabLayout.colors.TabTextColor,
-  backgroundColor: themeVar.TabLayout.colors.InactiveTabColor,
+  backgroundColor: themeVar.TabLayout.colors.TabColor,
 });
 export const activeTabStyle = css({
   color: themeVar.TabLayout.colors.TabTextColor,

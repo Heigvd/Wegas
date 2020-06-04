@@ -15,22 +15,28 @@ import {
   hidden,
   hideOverflow,
   autoScroll,
-  button,
 } from '../../../css/classes';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 
-const activeButton = cx(
+const tabButton = (active: boolean) =>
   css({
-    color: themeVar.TabLayout.colors.ActiveTabColor,
-  }),
-  button,
-);
-
-const listStyle = css({
-  color: themeVar.TabLayout.colors.MenuTextColor,
-  backgroundColor: themeVar.TabLayout.colors.MenuBackgroundColor,
-});
+    color: active
+      ? themeVar.TabLayout.colors.ActiveTabTextColor
+      : themeVar.TabLayout.colors.TabTextColor,
+    ':hover': {
+      color: active
+        ? themeVar.TabLayout.colors.TabColor
+        : themeVar.TabLayout.colors.ActiveTabColor,
+      outline: 'none',
+    },
+    ':focus': {
+      color: active
+        ? themeVar.TabLayout.colors.ActiveTabTextColor
+        : themeVar.TabLayout.colors.TabTextColor,
+      outline: 'none',
+    },
+  });
 
 const dropZoneFocus = css({
   background:
@@ -230,7 +236,7 @@ export function DnDTabLayout({
                 icon="times"
                 tooltip="Remove tab"
                 onClick={() => onDeleteTab(label)}
-                className={label === defaultActiveLabel ? activeButton : button}
+                className={tabButton(label === defaultActiveLabel)}
               />
             </span>
           </DragTab>
@@ -271,8 +277,8 @@ export function DnDTabLayout({
                   onSelect && onSelect(i.value);
                   onNewTab(String(i.value));
                 }}
-                buttonClassName={button}
-                listClassName={listStyle}
+                buttonClassName={tabButton(false)}
+                // listClassName={listStyle}
               />
             </Tab>
           )}

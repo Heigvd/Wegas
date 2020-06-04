@@ -1,22 +1,18 @@
 import * as React from 'react';
 import Downshift, { StateChangeOptions } from 'downshift';
-import { css, cx } from 'emotion';
+import { css } from 'emotion';
 import { IconButton } from './Inputs/Buttons/IconButton';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { useKeyboard } from './Hooks/useKeyboard';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { Item } from '../Editor/Components/Tree/TreeSelect';
 import { themeVar } from './Style/ThemeVars';
+import { classNameOrEmpty } from '../Helper/className';
 
 export interface MenuItem<T> extends Item<T> {
   disabled?: true;
   items?: MenuItem<T>[];
 }
-
-// export interface SelectedMenuItem<T> extends MenuItem<T> {
-//   path: number[];
-//   value: T;
-// }
 
 export type SelectedMenuItem<T, MItem extends MenuItem<T>> = MItem & {
   path: number[];
@@ -58,14 +54,22 @@ const container = css({
 });
 const subMenuContainer = css({
   color: themeVar.Menu.colors.TextColor,
+  backgroundColor: themeVar.Menu.colors.BackgroundColor,
   position: 'absolute',
   display: 'inline-block',
   padding: '5px',
   zIndex: 1,
   whiteSpace: 'nowrap',
   margin: '2px',
-  backgroundColor: 'rgba(255,255,255,0.95)',
   boxShadow: `0px 0px 4px 1px ${themeVar.Menu.colors.ShadowColor}`,
+  '>div': {
+    padding: '1px',
+    borderRadius: '3px',
+  },
+  '>div:hover': {
+    backgroundColor: themeVar.Menu.colors.HoverBackgroundColor,
+    color: themeVar.Menu.colors.HoverTextColor,
+  },
   [`& .${container}`]: {
     width: '100%',
   },
@@ -139,14 +143,7 @@ export function Menu<T, MItem extends MenuItem<T>>({
 
           {isOpen && (
             <div
-              className={
-                cx(
-                  DIR[realDirection],
-                  css({ background: themeVar.Menu.colors.BackgroundColor }),
-                ) +
-                  ' ' +
-                  listClassName || ''
-              }
+              className={DIR[realDirection] + classNameOrEmpty(listClassName)}
               ref={n => {
                 if (
                   n != null &&

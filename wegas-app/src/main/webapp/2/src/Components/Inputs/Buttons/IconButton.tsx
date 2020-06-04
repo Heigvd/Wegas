@@ -17,21 +17,26 @@ const defaultActiveStyle = css({
   color: themeVar.Button.colors.IconButtonActiveColor,
 });
 
-export const shapeStyle = (noHover?: boolean) =>
+export const shapeStyle = css({
+  width: 'auto',
+  margin: '3px',
+  background: 'none',
+  border: 'none',
+  fontFamily: 'initial',
+  fontSize: 'initial',
+  cursor: 'pointer',
+  textAlign: 'center',
+  display: 'inline-block',
+  ':hover': {
+    outline: 'none',
+  },
+});
+
+const colorStyle = (noHover?: boolean) =>
   css({
-    width: 'auto',
-    margin: '3px',
-    background: 'none',
-    border: 'none',
-    fontFamily: 'initial',
-    fontSize: 'initial',
-    cursor: 'pointer',
-    textAlign: 'center',
-    display: 'inline-block',
     color: themeVar.Button.colors.Color,
-    ':hover,:focus': {
+    ':hover': {
       color: noHover ? undefined : themeVar.Button.colors.HoverColor,
-      outline: 'none',
     },
   });
 
@@ -42,7 +47,7 @@ const noClickStyle = css({
 const disabledStyle = css({
   color: themeVar.Button.colors.DisabledColor,
   cursor: 'initial',
-  ':hover,:focus': {
+  ':hover': {
     color: themeVar.Button.colors.DisabledColor,
   },
 });
@@ -93,15 +98,11 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
             ? event => !disabled && onMouseMove(event)
             : onMouseMove
         }
-        className={cx(
-          shapeStyle(noHover),
-          {
-            [noClickStyle]: !onClick && !onMouseDown && !onMouseUp,
-            [disabledStyle]: Boolean(disabled),
-            [defaultActiveStyle]: Boolean(pressed),
-          },
-          className,
-        )}
+        className={cx(shapeStyle, className ? className : colorStyle(noHover), {
+          [noClickStyle]: !onClick && !onMouseDown && !onMouseUp,
+          [disabledStyle]: Boolean(disabled),
+          [defaultActiveStyle]: Boolean(pressed),
+        })}
       >
         {prefixedLabel && label}
         <IconComp icon={icon} />

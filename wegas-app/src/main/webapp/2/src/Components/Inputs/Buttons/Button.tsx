@@ -64,6 +64,7 @@ const buttonStyle = (
       disabled || noHover
         ? undefined
         : {
+            color: themeVar.Button.colors.HoverTextColor,
             backgroundColor: themeVar.Button.colors.HoverColor,
             outline: 'none',
           },
