@@ -3,6 +3,14 @@ import { Toolbar } from './Toolbar';
 import { css, cx } from 'emotion';
 import { themeVar } from './Style/ThemeVars';
 
+export const tabLayoutHeaderStyle = css({
+  backgroundColor: themeVar.Layout.colors.HeaderBackgroundColor,
+});
+export const tabLayoutContentStyle = css({
+  margin: '5px',
+  backgroundColor: themeVar.Layout.colors.BackgroundColor,
+});
+
 interface TabLayoutProps {
   active?: number;
   vertical: boolean;
@@ -23,7 +31,7 @@ export class TabLayout extends React.Component<
   render() {
     return (
       <Toolbar vertical={this.props.vertical}>
-        <Toolbar.Header>
+        <Toolbar.Header className={tabLayoutHeaderStyle}>
           {this.props.tabs.map((t, i) => {
             return (
               <Tab
@@ -43,7 +51,7 @@ export class TabLayout extends React.Component<
             );
           })}
         </Toolbar.Header>
-        <Toolbar.Content>
+        <Toolbar.Content className={tabLayoutContentStyle}>
           {React.Children.map(this.props.children, (c, i) => {
             return (
               (i === this.state.active ||
@@ -64,12 +72,10 @@ export class TabLayout extends React.Component<
     );
   }
 }
-const tabStyle = css({
+export const tabStyle = css({
   display: 'inline-block',
   cursor: 'pointer',
-  margin: '0 0.2em',
-  borderStyle: 'solid',
-  borderWidth: '1px 1px 0 1px',
+  margin: '0 5px',
   padding: '5px',
 });
 export const inactiveTabStyle = css({
@@ -77,7 +83,7 @@ export const inactiveTabStyle = css({
   backgroundColor: themeVar.TabLayout.colors.TabColor,
 });
 export const activeTabStyle = css({
-  color: themeVar.TabLayout.colors.TabTextColor,
+  color: themeVar.TabLayout.colors.ActiveTabTextColor,
   backgroundColor: themeVar.TabLayout.colors.ActiveTabColor,
 });
 function Tab({

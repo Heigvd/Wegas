@@ -22,7 +22,7 @@ import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { mergeDeep } from '../../../Helper/tools';
 import { findComponent } from '../../../Helper/pages';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+
 const innerButtonStyle = css({
   margin: '2px auto 2px auto',
   width: 'fit-content',
@@ -322,7 +322,7 @@ function Layout({
   );
 }
 
-export const pageLayoutId = 'PageEditorLayout';
+export const PAGE_EDITOR_LAYOUT_ID = 'PageEditorLayout';
 
 export default function PageEditor() {
   const handles = React.useRef({});
@@ -334,10 +334,6 @@ export default function PageEditor() {
   const [editMode, setEditMode] = React.useState(false);
   const [showBorders, setShowBorders] = React.useState(false);
   const [showControls, setShowControls] = React.useState(true);
-
-  const [availableLayoutTabs, setAvailableLayoutTabs] = React.useState<{
-    [name: string]: JSX.Element;
-  }>({});
 
   const components = usePageComponentStore(s => s);
   const { selectedPage, defaultPageId, loading } = useStore(
@@ -363,7 +359,7 @@ export default function PageEditor() {
     (selectedPageId?: string, path?: number[]) => {
       if (path != null) {
         focusTab.current &&
-          focusTab.current('Component Properties', pageLayoutId);
+          focusTab.current('Component Properties', PAGE_EDITOR_LAYOUT_ID);
       }
       setPageEditorState(o => ({ ...o, editedPath: path, selectedPageId }));
     },
@@ -545,8 +541,8 @@ export default function PageEditor() {
     [],
   );
 
-  React.useEffect(() => {
-    setAvailableLayoutTabs({
+  const availableLayoutTabs = React.useMemo(
+    () => ({
       'Pages Layout': (
         <Layout
           onDeleteLayoutComponent={onDeleteLayoutComponent}
@@ -566,31 +562,19 @@ export default function PageEditor() {
       ),
       'Source Editor': <SourceEditor />,
       'Component Properties': <ComponentProperties />,
-    });
-  }, [
-    onDeleteLayoutComponent,
-    onEdit,
-    onMoveLayoutComponent,
-    onNewLayoutComponent,
-  ]);
+    }),
+    [
+      onDeleteLayoutComponent,
+      onEdit,
+      onMoveLayoutComponent,
+      onNewLayoutComponent,
+    ],
+  );
 
   return Object.keys(availableLayoutTabs).length === 0 ? (
     <pre>Loading...</pre>
   ) : (
-    <div
-      className={
-        cx(
-          flex,
-          grow,
-          css({
-            borderStyle: 'solid',
-            borderColor: themeVar.PageEditor.colors.BorderColor,
-            margin: '1px',
-            marginTop: '0px',
-          }),
-        ) + ' PAGE-EDITOR'
-      }
-    >
+    <div className={cx(flex, grow) + ' PAGE-EDITOR'}>
       <pageEditorCTX.Provider
         value={{
           selectedPageId,
@@ -622,7 +606,7 @@ export default function PageEditor() {
               [['Pages Layout'], ['Component Palette']],
               ['Page Display'],
             ]}
-            layoutId={pageLayoutId}
+            layoutId={PAGE_EDITOR_LAYOUT_ID}
             onFocusTab={ft => {
               focusTab.current = ft;
             }}

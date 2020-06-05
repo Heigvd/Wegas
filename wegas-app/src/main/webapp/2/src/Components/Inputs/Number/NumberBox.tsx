@@ -20,9 +20,10 @@ const numberSquareStyle = css({
   borderColor: themeVar.NumberBox.colors.SquareBorderColor,
   borderStyle: 'solid',
   borderRadius: '2px',
-  width: '2em',
-  height: '2em',
-  lineHeight: '2em',
+  width: '1em',
+  height: '1em',
+  lineHeight: '1em',
+  fontsize: '0.5em',
   textAlign: 'center',
   cursor: 'default',
 });

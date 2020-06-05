@@ -10,7 +10,7 @@ const INLINE_SIZE_BREAKPOINT = 600;
 const cursorStyle = css({ cursor: 'pointer' });
 const itemStyle = css({
   backgroundColor: themeVar.EntityChooser.colors.InactiveBackgroundColor,
-  color: themeVar.EntityChooser.colors.TextColor,
+  color: themeVar.EntityChooser.colors.InactiveTextColor,
   border: '1px solid',
   lineHeight: '2',
 });
@@ -28,11 +28,11 @@ const displayStyle = css({
 });
 const activeEntityStyle = css({
   backgroundColor: themeVar.EntityChooser.colors.ActiveBackgroundColor,
-  color: themeVar.EntityChooser.colors.TextColor,
+  color: themeVar.EntityChooser.colors.ActiveTextColor,
 });
 const inactiveEntityStyle = css({
   backgroundColor: themeVar.EntityChooser.colors.InactiveBackgroundColor,
-  color: themeVar.EntityChooser.colors.TextColor,
+  color: themeVar.EntityChooser.colors.InactiveTextColor,
 });
 
 interface EntityChooserProps<E extends IAbstractEntity> {

@@ -1,74 +1,407 @@
 import * as React from 'react';
 import { Toolbar } from '../Toolbar';
-import { themeCTX, Theme } from './Theme';
+import { themeCTX, Theme, ThemeValues, defaultThemeValues } from './Theme';
 import { cx, css } from 'emotion';
-import { flex, grow, flexRow, expandWidth } from '../../css/classes';
-// import { ColorChangeHandler , ChromePicker } from 'react-color';
-// import * as Color from 'color';
-// import { useOnClickOutside } from '../Hooks/useOnClickOutside';
+import {
+  flex,
+  grow,
+  flexRow,
+  expandWidth,
+  flexColumn,
+  defaultPadding,
+  expandBoth,
+  flexDistribute,
+  expandHeight,
+  autoScroll,
+} from '../../css/classes';
+import { ColorChangeHandler, ChromePicker } from 'react-color';
+import { useOnClickOutside } from '../Hooks/useOnClickOutside';
 import { IconButton } from '../Inputs/Buttons/IconButton';
 import { Menu } from '../Menu';
 import { TextPrompt } from '../../Editor/Components/TextPrompt';
 import { ConfirmButton } from '../Inputs/Buttons/ConfirmButton';
 import { MessageString } from '../../Editor/Components/MessageString';
-// import { themeVar } from './ThemeVars';
-import { PageExamples } from './PageExample';
+import { themeVar } from './ThemeVars';
+import { MainLinearLayout } from '../../Editor/Components/LinearTabLayout/LinearLayout';
+import {
+  FonkyFlexContainer,
+  FonkyFlexContent,
+  FonkyFlexSplitter,
+} from '../Layouts/FonkyFlex';
+import { SimpleInput } from '../Inputs/SimpleInput';
 
-// const colorButton = (color: string, bgColor?: string) =>
-//   css({
-//     backgroundColor: color,
-//     width: '200px',
-//     height: '50px',
-//     borderStyle: 'solid',
-//     borderColor:
-//       Color(bgColor).lightness() === 0
-//         ? '#4C4C4C'
-//         : (Color(bgColor).isLight()
-//             ? Color(bgColor).darken(0.5)
-//             : Color(bgColor).lighten(0.5)
-//           ).toString(),
-//     borderWidth: '5px',
-//     borderRadius: themeVar.Button.dimensions.Radius,
-//     cursor: 'pointer',
-//   });
+const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
 
-// interface MyColorPickerProps {
-//   color: string;
-//   bgColor?: string;
-//   onChange?: ColorChangeHandler;
-// }
+const colorButton = css({
+  width: '100%',
+  borderStyle: 'inset',
+  borderColor: themeVar.Button.colors.Color,
+  borderWidth: '5px',
+  borderRadius: themeVar.Button.dimensions.Radius,
+  cursor: 'pointer',
+  padding: '2px',
+});
 
-// function MyColorPicker({ color, bgColor, onChange }: MyColorPickerProps) {
-//   const [displayed, setDisplayed] = React.useState(false);
-//   const pickerZone = React.useRef(null);
-//   useOnClickOutside(pickerZone, () => {
-//     setDisplayed(false);
-//   });
+const valueEntryStyle = css({
+  marginBottom: '10px',
+});
 
-//   return (
-//     <div className={flex} ref={pickerZone}>
-//       <div
-//         className={cx(
-//           colorButton(
-//             color,
-//             Color(bgColor).lightness() < 20
-//               ? Color(bgColor).lighten(50).toString()
-//               : bgColor,
-//           ),
-//           grow,
-//         )}
-//         onClick={() => setDisplayed(old => !old)}
-//       />
-//       {displayed && (
-//         <ChromePicker
-//           // className={grow}
-//           color={color}
-//           onChangeComplete={onChange}
-//         />
-//       )}
-//     </div>
-//   );
-// }
+const valueStyle = css({
+  marginTop: '1px',
+});
+
+const themeValueModifierHeader = css({
+  margin: '10px',
+});
+
+const colorInnerButton = (color: string) =>
+  css({
+    height: '1.6em',
+    backgroundColor: color,
+  });
+
+interface MyColorPickerProps {
+  color: string;
+  onChange?: ColorChangeHandler;
+}
+
+function MyColorPicker({ color, onChange }: MyColorPickerProps) {
+  const [displayed, setDisplayed] = React.useState(false);
+  const pickerZone = React.useRef(null);
+  useOnClickOutside(pickerZone, () => {
+    setDisplayed(false);
+  });
+
+  return (
+    <div className={cx(flex, colorButton)} ref={pickerZone}>
+      <div
+        className={cx(colorInnerButton(color), valueStyle, grow)}
+        onClick={() => setDisplayed(old => !old)}
+      />
+      {displayed && (
+        <ChromePicker
+          // className={grow}
+          color={color}
+          onChangeComplete={onChange}
+        />
+      )}
+    </div>
+  );
+}
+
+type ThemeValueModifierModes = 'close' | 'new';
+
+interface ThemeValueModifierProps {
+  theme: Theme;
+  section: keyof ThemeValues;
+  onChange: (entry: string, value: string | null) => void;
+}
+
+function ThemeValueModifier({
+  theme,
+  section,
+  onChange,
+}: ThemeValueModifierProps) {
+  const [modalState, setModalState] = React.useState<ThemeValueModifierModes>(
+    'close',
+  );
+  const [newValue, setNewValue] = React.useState<{
+    name?: string;
+    value: string;
+  }>({ value: section === 'colors' ? 'black' : '' });
+
+  const nameAllreadExists = Object.keys(theme.values[section]).includes(
+    newValue.name || '',
+  );
+
+  return (
+    <div className={cx(flex, flexColumn, expandHeight)}>
+      <div className={themeValueModifierHeader}>
+        {modalState === 'close' ? (
+          <IconButton
+            icon="plus"
+            label={`Add new ${section} value`}
+            onClick={() => setModalState('new')}
+          />
+        ) : (
+          <div className={cx(flex, flexColumn)}>
+            {nameAllreadExists && (
+              <MessageString type="warning" value="This value already exists" />
+            )}
+            <div className={cx(flex, flexRow)}>
+              <IconButton
+                icon="arrow-left"
+                onClick={() => setModalState('close')}
+              />
+              <div className={cx(grow, flex, flexColumn)}>
+                <SimpleInput
+                  placeholder="value name"
+                  onChange={v =>
+                    setNewValue(ov => ({ ...ov, name: String(v) }))
+                  }
+                />
+                {section === 'colors' ? (
+                  <MyColorPicker
+                    color={newValue.value}
+                    onChange={color => {
+                      setNewValue(ov => ({ ...ov, value: color.hex }));
+                    }}
+                  />
+                ) : (
+                  <SimpleInput
+                    value={newValue.value}
+                    className={valueStyle}
+                    onChange={v =>
+                      setNewValue(ov => ({ ...ov, value: String(v) }))
+                    }
+                  />
+                )}
+              </div>
+              <IconButton
+                icon="save"
+                disabled={newValue.name == null || nameAllreadExists}
+                tooltip={
+                  newValue.name == null ? 'You have to enter a name' : undefined
+                }
+                onClick={() => {
+                  if (newValue.name != null && !nameAllreadExists) {
+                    setModalState('close');
+                    onChange(newValue.name, newValue.value);
+                  }
+                }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+      <div className={cx(flex, grow, flexColumn, defaultPadding, autoScroll)}>
+        {Object.entries(theme.values[section]).map(([k, v]) => (
+          <div key={k} className={cx(flex, flexColumn, valueEntryStyle)}>
+            <div className={cx(flex, flexRow)}>
+              <label
+                className={cx(css({ display: 'flex', alignItems: 'center' }))}
+                htmlFor={k}
+                title={k}
+              >
+                {k} :
+              </label>
+              {!Object.keys(defaultThemeValues[section]).includes(k) && (
+                <IconButton icon="trash" onClick={() => onChange(k, null)} />
+              )}
+            </div>
+            {section === 'colors' ? (
+              <MyColorPicker
+                color={(v as string) || 'black'}
+                onChange={color => {
+                  onChange(k, color.hex);
+                }}
+              />
+            ) : (
+              <SimpleInput
+                className={valueStyle}
+                value={v}
+                onChange={v => onChange(k, String(v))}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ThemeEdition() {
+  const {
+    themesState,
+    addNewTheme,
+    deleteTheme,
+    setSelectedTheme,
+    setThemeValue,
+  } = React.useContext(themeCTX);
+
+  const [modalState, setModalState] = React.useState<ThemeEditorState>({
+    type: 'close',
+  });
+  const [currentModifiedTheme, setModifiedTheme] = React.useState<string>(
+    themesState.selectedThemes['editor'],
+  );
+
+  const [selectedSection, setSelectedSection] = React.useState<
+    { [key in keyof Theme['values']]?: boolean }
+  >(
+    Object.keys(themesState.themes[currentModifiedTheme].values).reduce(
+      (o, k: keyof Theme['values']) => ({ ...o, [k]: true }),
+      {},
+    ),
+  );
+
+  return (
+    <Toolbar>
+      <Toolbar.Header className={cx(flex, flexDistribute)}>
+        {modalState.type === 'newTheme' ? (
+          <TextPrompt
+            placeholder="Theme name"
+            defaultFocus
+            onAction={(success, value) => {
+              if (value === '') {
+                setModalState({
+                  type: 'error',
+                  label: 'The theme must have a name',
+                });
+              } else {
+                if (success) {
+                  addNewTheme(value);
+                  setModifiedTheme(value);
+                  setModalState({ type: 'close' });
+                }
+              }
+            }}
+            onBlur={() => setModalState({ type: 'close' })}
+            applyOnEnter
+          />
+        ) : (
+          <>
+            <IconButton
+              icon="plus"
+              label="Add a new theme"
+              prefixedLabel
+              onClick={() => setModalState({ type: 'newTheme' })}
+            />
+
+            <div className={flex}>
+              <Menu
+                label={`Current theme : ${currentModifiedTheme}`}
+                items={Object.keys(themesState.themes).map(k => ({
+                  value: k,
+                  label: k,
+                }))}
+                onSelect={({ value }) => setModifiedTheme(value)}
+              />
+              <ConfirmButton
+                icon="trash"
+                tooltip="Delete the theme"
+                onAction={success => {
+                  if (success) {
+                    deleteTheme(currentModifiedTheme);
+                    setModifiedTheme(old => {
+                      const newThemes = Object.keys(themesState.themes).filter(
+                        k => k !== old,
+                      );
+                      if (newThemes.length === 0) {
+                        return 'default';
+                      }
+                      return newThemes[0];
+                    });
+                  }
+                }}
+                onBlur={() => setModalState({ type: 'close' })}
+              />
+            </div>
+          </>
+        )}
+        {modalState.type === 'error' && (
+          <MessageString
+            type="error"
+            value={modalState.label}
+            onLabelVanish={() => setModalState({ type: 'close' })}
+          />
+        )}
+        <Menu
+          label={'Contexts'}
+          items={Object.keys(themesState.selectedThemes).map(
+            (k: keyof typeof themesState.selectedThemes) => ({
+              value: k,
+              label: (
+                <>
+                  <span style={{ minWidth: '100px' }}>{`${k}'s theme :`}</span>
+                  <Menu
+                    label={themesState.selectedThemes[k]}
+                    items={Object.keys(themesState.themes).map(k => ({
+                      value: k,
+                      label: k,
+                    }))}
+                    onSelect={({ value }) => setSelectedTheme(value, k)}
+                  />
+                </>
+              ),
+            }),
+          )}
+          onSelect={() => {}}
+        />
+        <Menu
+          label={'Theme editor content'}
+          items={Object.keys(
+            themesState.themes[currentModifiedTheme].values,
+          ).map((k: keyof Theme['values']) => ({
+            value: k,
+            label: (
+              <>
+                <input
+                  type="checkbox"
+                  defaultChecked={selectedSection[k]}
+                  onChange={() =>
+                    setSelectedSection(o => ({ ...o, [k]: !o[k] }))
+                  }
+                  onClick={e => e.stopPropagation()}
+                />
+                {k}
+              </>
+            ),
+          }))}
+          onSelect={({ value: k }) =>
+            setSelectedSection(o => ({ ...o, [k]: !o[k] }))
+          }
+        />
+      </Toolbar.Header>
+      <Toolbar.Content>
+        <div className={cx(flex, flexRow, expandWidth)}>
+          <FonkyFlexContainer className={expandBoth}>
+            {selectedSection.colors && (
+              <FonkyFlexContent>
+                <ThemeValueModifier
+                  theme={themesState.themes[currentModifiedTheme]}
+                  section="colors"
+                  onChange={(k, v) =>
+                    setThemeValue(currentModifiedTheme, 'colors', k, v)
+                  }
+                />
+              </FonkyFlexContent>
+            )}
+            {selectedSection.colors &&
+              (selectedSection.dimensions || selectedSection.others) && (
+                <FonkyFlexSplitter />
+              )}
+            {selectedSection.dimensions && (
+              <FonkyFlexContent>
+                <ThemeValueModifier
+                  theme={themesState.themes[currentModifiedTheme]}
+                  section="dimensions"
+                  onChange={(k, v) =>
+                    setThemeValue(currentModifiedTheme, 'dimensions', k, v)
+                  }
+                />
+              </FonkyFlexContent>
+            )}
+            {selectedSection.dimensions && selectedSection.others && (
+              <FonkyFlexSplitter />
+            )}
+            {selectedSection.others && (
+              <FonkyFlexContent>
+                <ThemeValueModifier
+                  theme={themesState.themes[currentModifiedTheme]}
+                  section="others"
+                  onChange={(k, v) =>
+                    setThemeValue(currentModifiedTheme, 'others', k, v)
+                  }
+                />
+              </FonkyFlexContent>
+            )}
+          </FonkyFlexContainer>
+        </div>
+      </Toolbar.Content>
+    </Toolbar>
+  );
+}
 
 interface ThemeEditorModal {
   type: 'close' | 'newTheme';
@@ -82,257 +415,22 @@ interface ThemeEditorErrorModal {
 type ThemeEditorState = ThemeEditorModal | ThemeEditorErrorModal;
 
 export default function ThemeEditor() {
-  const [modalState, setModalState] = React.useState<ThemeEditorState>({
-    type: 'close',
-  });
-  const {
-    themesState: themeState,
-    addNewTheme,
-    deleteTheme,
-    setSelectedTheme,
-    // setThemeValue,
-    // setModeValue,
-  } = React.useContext(themeCTX);
-  const [currentModifiedTheme, setModifiedTheme] = React.useState<string>(
-    themeState.selectedThemes['editor'],
-  );
-  const [selectedSection, setSelectedSection] = React.useState<
-    { [key in keyof Theme]?: boolean }
-  >(
-    Object.keys(themeState.themes[currentModifiedTheme]).reduce(
-      (o, k: keyof Theme) => ({ ...o, [k]: true }),
-      {},
-    ),
+  const availableLayoutTabs = React.useMemo(
+    () => ({
+      Themes: <ThemeEdition />,
+      Modes: <div>Modes</div>,
+    }),
+    [],
   );
 
   return (
-    <Toolbar>
-      <Toolbar.Header className={flex}>
-        <div className={grow}>
-          <div>
-            {modalState.type === 'newTheme' ? (
-              <TextPrompt
-                placeholder="Theme name"
-                defaultFocus
-                onAction={(success, value) => {
-                  if (value === '') {
-                    setModalState({
-                      type: 'error',
-                      label: 'The theme must have a name',
-                    });
-                  } else {
-                    if (success) {
-                      addNewTheme(value);
-                      setModifiedTheme(value);
-                      setModalState({ type: 'close' });
-                    }
-                  }
-                }}
-                onBlur={() => setModalState({ type: 'close' })}
-                applyOnEnter
-              />
-            ) : (
-              <IconButton
-                icon="plus"
-                tooltip="Add a new theme"
-                onClick={() => setModalState({ type: 'newTheme' })}
-              />
-            )}
-            <Menu
-              label={currentModifiedTheme}
-              items={Object.keys(themeState.themes).map(k => ({
-                value: k,
-                label: k,
-              }))}
-              onSelect={({ value }) => setModifiedTheme(value)}
-            />
-            <ConfirmButton
-              icon="trash"
-              tooltip="Delete the theme"
-              onAction={success => {
-                if (success) {
-                  deleteTheme(currentModifiedTheme);
-                  setModifiedTheme(old => {
-                    const newThemes = Object.keys(themeState.themes).filter(
-                      k => k !== old,
-                    );
-                    if (newThemes.length === 0) {
-                      return 'default';
-                    }
-                    return newThemes[0];
-                  });
-                }
-              }}
-              onBlur={() => setModalState({ type: 'close' })}
-            />
-            {modalState.type === 'error' && (
-              <MessageString
-                type="error"
-                value={modalState.label}
-                onLabelVanish={() => setModalState({ type: 'close' })}
-              />
-            )}
-          </div>
-          <div>
-            <Menu
-              label={'Contexts'}
-              items={Object.keys(themeState.selectedThemes).map(
-                (k: keyof typeof themeState.selectedThemes) => ({
-                  value: k,
-                  label: (
-                    <>
-                      <span
-                        style={{ minWidth: '100px' }}
-                      >{`${k}'s theme :`}</span>
-                      <Menu
-                        label={themeState.selectedThemes[k]}
-                        items={Object.keys(themeState.themes).map(k => ({
-                          value: k,
-                          label: k,
-                        }))}
-                        onSelect={({ value }) => setSelectedTheme(value, k)}
-                      />
-                    </>
-                  ),
-                }),
-              )}
-              onSelect={() => {}}
-            />
-          </div>
-        </div>
-        <Menu
-          label={'Theme editor content'}
-          items={Object.keys(themeState.themes[currentModifiedTheme]).map(
-            (k: keyof Theme) => ({
-              value: k,
-              label: (
-                <>
-                  <input
-                    type="checkbox"
-                    defaultChecked={selectedSection[k]}
-                    onChange={() =>
-                      setSelectedSection(o => ({ ...o, [k]: !o[k] }))
-                    }
-                    onClick={e => e.stopPropagation()}
-                  />
-                  {k}
-                </>
-              ),
-            }),
-          )}
-          onSelect={({ value: k }) =>
-            setSelectedSection(o => ({ ...o, [k]: !o[k] }))
-          }
-        />
-      </Toolbar.Header>
-      <Toolbar.Content>
-        <div className={cx(flex, flexRow, expandWidth)}>
-          <div className={css({ width: '50%' })}>
-            {/* <FonkyFlexContainer className={expandHeight}>
-              {selectedSection.colors && (
-                <FonkyFlexContent>
-                  <div className={cx(flex, grow, flexColumn, defaultPadding)}>
-                    {Object.keys(currentValues).map((k: keyof ThemeColors) => (
-                      <p key={k}>
-                        <label
-                          className={cx(
-                            // titleStyle,
-                            css({ display: 'flex', alignItems: 'center' }),
-                          )}
-                          htmlFor={k}
-                          title={k}
-                        >
-                          {k} :
-                        </label>
-                        <MyColorPicker
-                          color={currentValues[k]}
-                          bgColor={
-                            themeState.themes[themeState.selectedThemes.editor]
-                              .colors.backgroundColor
-                          }
-                          onChange={color => {
-                            setThemeColor(currentModifiedTheme, k, color.hex);
-                          }}
-                        />
-                      </p>
-                    ))}
-                  </div>
-                </FonkyFlexContent>
-              )}
-              {selectedSection.colors &&
-                (selectedSection.modifiers || selectedSection.entries) && (
-                  <FonkyFlexSplitter />
-                )}
-              {selectedSection.modifiers && (
-                <FonkyFlexContent>
-                  <div className={cx(flex, grow, flexColumn, defaultPadding)}>
-                    {Object.keys(currentModifiers).map(
-                      (k: keyof ThemeColorModifiers) => (
-                        <p key={k}>
-                          <label
-                            className={cx(
-                              css({ display: 'flex', alignItems: 'center' }),
-                            )}
-                            htmlFor={k}
-                            title={k}
-                          >
-                            {k} :
-                          </label>
-                          <NumberSlider
-                            max={1}
-                            min={0}
-                            value={currentModifiers[k]}
-                            onChange={v =>
-                              setThemeModifer(currentModifiedTheme, k, v)
-                            }
-                          />
-                        </p>
-                      ),
-                    )}
-                  </div>
-                </FonkyFlexContent>
-              )}
-              {selectedSection.modifiers && selectedSection.entries && (
-                <FonkyFlexSplitter />
-              )}
-              {selectedSection.entries && (
-                <FonkyFlexContent>
-                  <div className={cx(flex, grow, flexColumn, defaultPadding)}>
-                    {Object.keys(currentEntries).map(
-                      (k: keyof ThemeEntries) => (
-                        <p key={k}>
-                          <label
-                            className={cx(
-                              css({ display: 'flex', alignItems: 'center' }),
-                            )}
-                            htmlFor={k}
-                            title={k}
-                          >
-                            {k} :
-                          </label>
-                          <NumberSlider
-                            max={15}
-                            min={0}
-                            steps={15}
-                            value={Number(currentEntries[k].replace('px', ''))}
-                            onChange={v =>
-                              setThemeEntry(currentModifiedTheme, k, v + 'px')
-                            }
-                            displayValues={val => val + 'px'}
-                          />
-                        </p>
-                      ),
-                    )}
-                  </div>
-                </FonkyFlexContent>
-              )}
-            </FonkyFlexContainer> */}
-          </div>
-          <div className={css({ width: '50%' })}>
-            <PageExamples />
-          </div>
-        </div>
-      </Toolbar.Content>
-    </Toolbar>
+    <MainLinearLayout
+      tabs={availableLayoutTabs}
+      layout={['Themes', 'Modes']}
+      layoutId={THEME_EDITOR_LAYOUT_ID}
+      // onFocusTab={ft => {
+      //   focusTab.current = ft;
+      // }}
+    />
   );
 }

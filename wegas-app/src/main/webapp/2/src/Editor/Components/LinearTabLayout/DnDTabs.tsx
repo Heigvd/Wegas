@@ -4,21 +4,15 @@ import { useDrag, DropTargetMonitor, useDrop } from 'react-dnd';
 import { DropAction } from './DnDTabLayout';
 import { hidden, flex } from '../../../css/classes';
 import { dropZoneFocus } from '../../../Components/Contexts/DefaultDndProvider';
-import { activeTabStyle, inactiveTabStyle } from '../../../Components/Tabs';
+import {
+  activeTabStyle,
+  inactiveTabStyle,
+  tabStyle,
+} from '../../../Components/Tabs';
 
 // export const dndAcceptType = 'DnDTab';
 
 const dropZone = cx(dropZoneFocus, css({ width: '50px' }));
-
-const defaultTabStyle = css({
-  display: 'inline-block',
-  cursor: 'pointer',
-  margin: '0 0.2em',
-  borderStyle: 'solid',
-  borderWidth: '1px 1px 0 1px',
-  padding: '5px',
-  verticalAlign: '',
-});
 
 interface TabInternalProps {
   /**
@@ -48,7 +42,7 @@ export const Tab = React.forwardRef(
       className={
         props.className
           ? props.className
-          : cx(defaultTabStyle, {
+          : cx(tabStyle, {
               [activeTabStyle]: props.active !== undefined && props.active,
               [inactiveTabStyle]: !props.active,
             })

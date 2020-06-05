@@ -18,6 +18,10 @@ import {
 } from '../../../css/classes';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { themeVar } from '../../../Components/Style/ThemeVars';
+import {
+  tabLayoutContentStyle,
+  tabLayoutHeaderStyle,
+} from '../../../Components/Tabs';
 
 const tabButton = (active: boolean) =>
   css({
@@ -25,15 +29,13 @@ const tabButton = (active: boolean) =>
       ? themeVar.TabLayout.colors.ActiveTabTextColor
       : themeVar.TabLayout.colors.TabTextColor,
     ':hover': {
-      color: active
-        ? themeVar.TabLayout.colors.TabColor
-        : themeVar.TabLayout.colors.ActiveTabColor,
-      outline: 'none',
+      color: themeVar.Button.colors.HoverColor,
+      // outline: 'none',
     },
     ':focus': {
-      color: active
-        ? themeVar.TabLayout.colors.ActiveTabTextColor
-        : themeVar.TabLayout.colors.TabTextColor,
+      // color: active
+      //   ? themeVar.TabLayout.colors.ActiveTabTextColor
+      //   : themeVar.TabLayout.colors.TabTextColor,
       outline: 'none',
     },
   });
@@ -262,7 +264,7 @@ export function DnDTabLayout({
 
   return (
     <Toolbar vertical={vertical} className={relative}>
-      <Toolbar.Header>
+      <Toolbar.Header className={tabLayoutHeaderStyle}>
         <div ref={dropTabs} className={cx(flex, grow, autoScroll)}>
           {renderTabs()}
           {selectItems && Object.keys(selectItems).length > 0 && (
@@ -284,7 +286,7 @@ export function DnDTabLayout({
           )}
         </div>
       </Toolbar.Header>
-      <Toolbar.Content className={relative}>
+      <Toolbar.Content className={cx(relative, tabLayoutContentStyle)}>
         <div className={cx(expandBoth, hideOverflow)}>
           <div className={cx(autoScroll, absoute, expandBoth, flex)}>
             {defaultActiveLabel && (

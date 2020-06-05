@@ -36,7 +36,7 @@ interface Modes {
   [name: string]: Mode;
 }
 
-interface ThemeValues {
+export interface ThemeValues {
   colors: ThemeColors;
   dimensions: ThemeDimensions;
   others: ThemeOthers;
@@ -89,17 +89,18 @@ interface ThemeContextValues {
   themeRoot?: React.RefObject<HTMLDivElement>;
 }
 
-const defaultThemeValues: ThemeValues = {
+export const defaultThemeValues: ThemeValues = {
   colors: {
     'Main color': '#1565C0',
     'Secondary color': '#00499c',
     'Background color': 'white',
+    'Secondary background color': 'rgba(208,224,243,1.0)',
     'Text color': '#1565C0',
     'Secondary text color': 'white',
     'Disabled color': 'lightgrey',
     'Error color': 'red',
     'Highlight color': 'hotpink',
-    'Hover color': 'rgba(21,101,192,0.2)',
+    'Hover color': 'rgba(208,224,243,1.0)',
     'Warning color': '#ff9d00',
     'Success color': 'green',
   },

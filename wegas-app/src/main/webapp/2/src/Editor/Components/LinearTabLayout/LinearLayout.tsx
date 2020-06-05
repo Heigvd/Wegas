@@ -14,16 +14,29 @@ import { themeVar } from '../../../Components/Style/ThemeVars';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
-    backgroundColor: themeVar.Layout.colors.BackgroundColor,
+    backgroundColor: themeVar.FonkyFlex.colors.SplitterColor,
     zIndex: 0,
+  },
+  '&.reflex-container > .reflex-splitter:hover': {
+    backgroundColor: themeVar.FonkyFlex.colors.SplitterHoverColor,
   },
   '&.reflex-container.vertical > .reflex-splitter': {
     width: '5px',
-    height: 'auto',
+    borderLeft: `solid 2px ${themeVar.Layout.colors.BackgroundColor}`,
+    borderRight: `solid 2px ${themeVar.Layout.colors.BackgroundColor}`,
   },
   '&.reflex-container.horizontal > .reflex-splitter': {
     height: '5px',
-    width: 'auto',
+    borderTop: `solid 2px ${themeVar.Layout.colors.BackgroundColor}`,
+    borderBottom: `solid 2px ${themeVar.Layout.colors.BackgroundColor}`,
+  },
+  '&.reflex-container.vertical > .reflex-splitter:hover': {
+    borderLeft: `solid 2px ${themeVar.Layout.colors.BackgroundColor}`,
+    borderRight: `solid 2px ${themeVar.Layout.colors.BackgroundColor}`,
+  },
+  '&.reflex-container.horizontal > .reflex-splitter:hover': {
+    borderTop: `solid 2px ${themeVar.Layout.colors.BackgroundColor}`,
+    borderBottom: `solid 2px ${themeVar.Layout.colors.BackgroundColor}`,
   },
 });
 

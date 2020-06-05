@@ -26,7 +26,7 @@ export const shapeStyle = css({
   fontSize: 'initial',
   cursor: 'pointer',
   textAlign: 'center',
-  display: 'inline-block',
+  // display: 'inline-block',
   ':hover': {
     outline: 'none',
   },

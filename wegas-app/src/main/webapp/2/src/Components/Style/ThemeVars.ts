@@ -4,6 +4,7 @@ export interface DefaultThemeColors {
   'Main color': ColorType;
   'Secondary color': ColorType;
   'Background color': ColorType;
+  'Secondary background color': ColorType;
   'Text color': ColorType;
   'Secondary text color': ColorType;
   'Warning color': ColorType;
@@ -57,6 +58,7 @@ export interface Mode {
   Layout: ModeComponent<
     {
       BackgroundColor: ModeColor;
+      HeaderBackgroundColor: ModeColor;
       TextColor: ModeColor;
       BorderColor: ModeColor;
       HighlightBorderColor: ModeColor;
@@ -107,6 +109,7 @@ export interface Mode {
   FonkyFlex: ModeComponent<
     {
       SplitterColor: ModeColor;
+      SplitterHoverColor: ModeColor;
     },
     { SplitterSize: ModeDimension }
   >;
@@ -175,7 +178,6 @@ export interface Mode {
     ActiveEditionColor: ModeColor;
     InactiveEditionColor: ModeColor;
   }>;
-  PageEditor: ModeComponent<{ BorderColor: ModeColor }>;
   EditableComponent: ModeComponent<{
     HighlightedBorderColor: ModeColor;
     DisabledColor: ModeColor;
@@ -217,6 +219,7 @@ export interface Mode {
     ActiveTabColor: ModeColor;
     TabTextColor: ModeColor;
     ActiveTabTextColor: ModeColor;
+    BorderColor: ModeColor;
   }>;
   ComponentPalette: ModeComponent<{
     ComponentColor: ModeColor;
@@ -227,7 +230,8 @@ export interface Mode {
   EntityChooser: ModeComponent<{
     ActiveBackgroundColor: ModeColor;
     InactiveBackgroundColor: ModeColor;
-    TextColor: ModeColor;
+    ActiveTextColor: ModeColor;
+    InactiveTextColor: ModeColor;
   }>;
   MultipleChoice: ModeComponent<{
     ChoiceColor: ModeColor;
@@ -275,6 +279,7 @@ export const defaultMode: Mode = {
   Layout: {
     colors: {
       BackgroundColor: 'Background color',
+      HeaderBackgroundColor: 'Secondary background color',
       TextColor: 'Text color',
       BorderColor: 'Main color',
       HighlightBorderColor: 'Highlight color',
@@ -325,6 +330,7 @@ export const defaultMode: Mode = {
   FonkyFlex: {
     colors: {
       SplitterColor: 'Main color',
+      SplitterHoverColor: 'Hover color',
     },
     dimensions: {
       SplitterSize: 'Border width',
@@ -439,7 +445,7 @@ export const defaultMode: Mode = {
   },
   Toggler: {
     colors: {
-      BorderColor: 'Main color',
+      BorderColor: 'Secondary color',
       BorderDisabledColor: 'Disabled color',
       CheckedColor: 'Success color',
       UncheckedColor: 'Error color',
@@ -453,11 +459,6 @@ export const defaultMode: Mode = {
       SuccessColor: 'Success color',
       WarningColor: 'Warning color',
       ErrorColor: 'Error color',
-    },
-  },
-  PageEditor: {
-    colors: {
-      BorderColor: 'Secondary color',
     },
   },
   LanguageEditor: {
@@ -482,9 +483,10 @@ export const defaultMode: Mode = {
       MenuBackgroundColor: 'Background color',
       MenuTextColor: 'Text color',
       TabColor: 'Main color',
-      ActiveTabColor: 'Secondary color',
       TabTextColor: 'Secondary text color',
-      ActiveTabTextColor: 'Secondary text color',
+      ActiveTabColor: 'Background color',
+      ActiveTabTextColor: 'Main color',
+      BorderColor: 'Secondary color',
     },
   },
   ComponentPalette: {
@@ -501,7 +503,8 @@ export const defaultMode: Mode = {
     colors: {
       ActiveBackgroundColor: 'Secondary color',
       InactiveBackgroundColor: 'Main color',
-      TextColor: 'Text color',
+      ActiveTextColor: 'Secondary text color',
+      InactiveTextColor: 'Secondary text color',
     },
   },
   MultipleChoice: {

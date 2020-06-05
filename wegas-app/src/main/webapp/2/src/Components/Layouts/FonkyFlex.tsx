@@ -42,6 +42,10 @@ export const defaultFlexContainerStyle: React.CSSProperties = {
   overflow: 'auto',
 };
 
+const contentNoSelect = css({
+  userSelect: 'none',
+});
+
 function getFlexGrowValues(flexItems: HTMLDivElement[]): number[] {
   return flexItems.map(c => Number(c.style.getPropertyValue('flex-grow')));
 }
@@ -82,12 +86,96 @@ export function FonkyFlexContainer({
   const container = React.useRef<HTMLDivElement>();
   const mouseDownTarget = React.useRef<HTMLDivElement>();
 
+  const manageMouseDown = React.useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      e.stopPropagation();
+      const { target } = e;
+      const divTarget = target as HTMLDivElement;
+      if (
+        typeof divTarget.className === 'string' &&
+        divTarget.className.includes(SPLITTER_SELECTOR)
+      ) {
+        mouseDownTarget.current = divTarget;
+        const splitterIndex = flexChildren.current.findIndex(
+          c => c === divTarget,
+        );
+        if (onStartResize && splitterIndex !== -1) {
+          flexChildren.current.forEach(c => {
+            c.className += ' ' + contentNoSelect;
+          });
+          onStartResize(
+            splitterIndex,
+            getFlexGrowValues(contentChildren.current),
+          );
+        }
+      }
+    },
+    [onStartResize],
+  );
+
+  const manageMouseMove = React.useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      e.stopPropagation();
+      const { clientX, clientY } = e;
+      if (
+        mouseDownTarget.current &&
+        typeof mouseDownTarget.current.className === 'string' &&
+        !mouseDownTarget.current.className.includes(NODRAG_SELECTOR)
+      ) {
+        const target = mouseDownTarget.current;
+        const splitterIndex = flexChildren.current.findIndex(c => c === target);
+
+        const leftContent = flexChildren.current[splitterIndex - 1];
+        const rightContent = flexChildren.current[splitterIndex + 1];
+
+        if (leftContent && rightContent && container.current) {
+          const containerBox = container.current.getBoundingClientRect();
+          const leftBox = leftContent.getBoundingClientRect();
+          const rightBox = rightContent.getBoundingClientRect();
+          const maxSize = vertical
+            ? rightBox.height + leftBox.height
+            : rightBox.width + leftBox.width;
+          const delta = vertical
+            ? clientY - leftBox.top
+            : clientX - leftBox.left;
+          const splittersSize = splitterChildren.current.reduce(
+            (o, f) =>
+              o +
+              (vertical
+                ? f.getBoundingClientRect().height
+                : f.getBoundingClientRect().width),
+            0,
+          );
+          const maxFlex =
+            ((DEFAULT_FLEX_WRAP * contentChildren.current.length) /
+              ((vertical ? containerBox.height : containerBox.width) -
+                splittersSize)) *
+            maxSize;
+          const flexLeft = Math.max(
+            Math.min((delta / maxSize) * maxFlex, maxFlex),
+            0,
+          );
+          leftContent.style.setProperty('flex-grow', `${flexLeft}`);
+          rightContent.style.setProperty('flex-grow', `${maxFlex - flexLeft}`);
+
+          if (onResize) {
+            onResize(splitterIndex, getFlexGrowValues(contentChildren.current));
+          }
+        }
+      }
+    },
+    [onResize, vertical],
+  );
+
   const manageMouseup = React.useCallback(() => {
     if (onStopResize) {
       const splitterIndex = flexChildren.current.findIndex(
         c => c === mouseDownTarget.current,
       );
       if (splitterIndex !== -1) {
+        flexChildren.current.forEach(c => {
+          c.className = c.className.replace(' ' + contentNoSelect, '');
+        });
         onStopResize(splitterIndex, getFlexGrowValues(contentChildren.current));
       }
     }
@@ -102,41 +190,6 @@ export function FonkyFlexContainer({
       manageMouseup();
     };
   }, [manageMouseup]);
-
-  // const error = noCheck
-  //   ? ''
-  //   : React.Children.map(children, (c, i) => {
-  //       if (
-  //         !isFonkyflexItem(c) ||
-  //         !(c.type.name === 'Splitter' || c.type.name === 'Content')
-  //       ) {
-  //         return MESSAGE_BAD_CONTENT;
-  //       } else if (c.type.name === 'Splitter') {
-  //         if (!Array.isArray(children)) {
-  //           return MESSAGE_BAD_STUCTURE;
-  //         } else {
-  //           const leftContent = children[i - 1];
-  //           const rightContent = children[i + 1];
-  //           if (leftContent == null || rightContent == null) {
-  //             return MESSAGE_BAD_STUCTURE;
-  //           } else if (
-  //             !isFonkyflexItem(leftContent) ||
-  //             !isFonkyflexItem(rightContent)
-  //           ) {
-  //             return MESSAGE_BAD_CONTENT;
-  //           } else if (
-  //             leftContent.type.name !== 'Content' ||
-  //             rightContent.type.name !== 'Content'
-  //           ) {
-  //             return MESSAGE_BAD_STUCTURE;
-  //           }
-  //         }
-  //       }
-  //     })?.reduce((o, e, i) => (e ? `${o}\n${i} : ${e}` : o), '') || '';
-
-  // if (error !== '') {
-  //   return <pre>{error}</pre>;
-  // }
 
   return (
     <div
@@ -174,84 +227,8 @@ export function FonkyFlexContainer({
         classNameOrEmpty(className)
       }
       style={style}
-      onMouseDown={e => {
-        e.stopPropagation();
-        const { target } = e;
-        const divTarget = target as HTMLDivElement;
-        if (
-          typeof divTarget.className === 'string' &&
-          divTarget.className.includes(SPLITTER_SELECTOR)
-        ) {
-          mouseDownTarget.current = divTarget;
-          const splitterIndex = flexChildren.current.findIndex(
-            c => c === divTarget,
-          );
-          if (onStartResize && splitterIndex !== -1) {
-            onStartResize(
-              splitterIndex,
-              getFlexGrowValues(contentChildren.current),
-            );
-          }
-        }
-      }}
-      onMouseMove={e => {
-        e.stopPropagation();
-        const { clientX, clientY } = e;
-        if (
-          mouseDownTarget.current &&
-          typeof mouseDownTarget.current.className === 'string' &&
-          !mouseDownTarget.current.className.includes(NODRAG_SELECTOR)
-        ) {
-          const target = mouseDownTarget.current;
-          const splitterIndex = flexChildren.current.findIndex(
-            c => c === target,
-          );
-
-          const leftContent = flexChildren.current[splitterIndex - 1];
-          const rightContent = flexChildren.current[splitterIndex + 1];
-
-          if (leftContent && rightContent && container.current) {
-            const containerBox = container.current.getBoundingClientRect();
-            const leftBox = leftContent.getBoundingClientRect();
-            const rightBox = rightContent.getBoundingClientRect();
-            const maxSize = vertical
-              ? rightBox.height + leftBox.height
-              : rightBox.width + leftBox.width;
-            const delta = vertical
-              ? clientY - leftBox.top
-              : clientX - leftBox.left;
-            const splittersSize = splitterChildren.current.reduce(
-              (o, f) =>
-                o +
-                (vertical
-                  ? f.getBoundingClientRect().height
-                  : f.getBoundingClientRect().width),
-              0,
-            );
-            const maxFlex =
-              ((DEFAULT_FLEX_WRAP * contentChildren.current.length) /
-                ((vertical ? containerBox.height : containerBox.width) -
-                  splittersSize)) *
-              maxSize;
-            const flexLeft = Math.max(
-              Math.min((delta / maxSize) * maxFlex, maxFlex),
-              0,
-            );
-            leftContent.style.setProperty('flex-grow', `${flexLeft}`);
-            rightContent.style.setProperty(
-              'flex-grow',
-              `${maxFlex - flexLeft}`,
-            );
-
-            if (onResize) {
-              onResize(
-                splitterIndex,
-                getFlexGrowValues(contentChildren.current),
-              );
-            }
-          }
-        }
-      }}
+      onMouseDown={manageMouseDown}
+      onMouseMove={manageMouseMove}
     >
       {children}
     </div>

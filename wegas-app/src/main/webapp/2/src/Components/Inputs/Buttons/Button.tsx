@@ -68,6 +68,9 @@ const buttonStyle = (
             backgroundColor: themeVar.Button.colors.HoverColor,
             outline: 'none',
           },
+    ':focus': {
+      outline: 'none',
+    },
   });
 
 export interface CommonButtonProps extends ClassAndStyle {
