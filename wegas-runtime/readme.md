@@ -19,7 +19,7 @@ CREATE DATABASE \"wegas_test\" OWNER \"user\";" |  docker exec -it wegas_postgre
 ### Jackrabbit backend (MongoDB)
 #### Install
 ```shell
-docker run -p 27017:27017 --name wegas_mongo -d mongo:4.0.11
+docker run -p 27017:27017 --name wegas_mongo -d mongo:4.2
 ```
 
 ## Build
