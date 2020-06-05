@@ -1182,18 +1182,16 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         // Opens a new tab for editing the target survey.
         onEdit: function(surveyId) {
             var currSurv = this.knownSurveys[surveyId],
-                url = 'edit-survey.html?surveyId=' + surveyId + '&';
+                url = currSurv.isWriteable ? 'edit-survey.html' : 'preview-survey.html';
             if (currSurv.isRunning) {
                 this.alert(I18n.t("survey.orchestrator.modifyRunning"));
                 return;
             }
+            url += '?surveyId=' + surveyId + '&';
             if (currSurv.isSession) {
                 url += 'gameId=' + currSurv.sourceGameId;
             } else {
                 url += 'gameModelId=' + currSurv.sourceGameModelId;
-            }
-            if (!currSurv.isWriteable) {
-                url += '&readonly=true';
             }
             window.open(url, '_blank');
             if (currSurv.runnableSettingsPanel) {

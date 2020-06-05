@@ -105,10 +105,25 @@ public class EditorGameController extends AbstractGameController {
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
             errorController.dispatch("Empty Team", "Team " + teamFacade.find(this.teamId).getName() + " has no player.");
         } else if (!requestManager.hasGameWriteRight(currentPlayer.getGame())
-                && !requestManager.hasGameModelTranslateRight(currentPlayer.getGameModel())) {
+                && !requestManager.hasGameModelTranslateRight(currentPlayer.getGameModel())
+                // Enable preview on games on which the user has read rights :
+                && !requestManager.hasGameModelReadRight(currentPlayer.getGameModel())) {
             errorController.accessDenied();
         }
 
+    }
+    
+    /**
+     * Checks that the current player has write rights on the game.
+     */
+    public String assertHasGameWriteRight() {
+        if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
+            errorController.dispatch("Empty Team", "Team " + teamFacade.find(this.teamId).getName() + " has no player.");
+        } else if (!requestManager.hasGameWriteRight(currentPlayer.getGame())) {
+            errorController.accessDenied();
+        }
+        // This kind of method has to return a string:
+        return "true";
     }
 
     /**

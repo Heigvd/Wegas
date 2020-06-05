@@ -1511,8 +1511,24 @@
     display: none;
 }
 
-.wegas-editsurveymode.wegas-readonly-editmode .wegas-react-form .wegas-toolbar button {
+.wegas-readonly-previewmode .wegas-react-form .wegas-toolbar button,
+.wegas-readonly-previewmode .wegas-editor-treeview .add-child-shortcut:before {
     display: none;
+}
+
+.wegas-readonly-previewmode .wegas-react-form-content .preview-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 99999;
+    cursor: not-allowed;
+}
+
+.wegas-readonly-previewmode .wegas-react-form-content input,
+.wegas-readonly-previewmode .wegas-react-form-content select,
+.wegas-readonly-previewmode .wegas-react-form-content textarea,
+.wegas-readonly-previewmode .wegas-react-form-content .mce-content-body {
+    background: #eee;
 }
 
 .wegas-i18n-activator .gm-language {
@@ -1607,3 +1623,4 @@
     box-shadow: inset 0px 0px 0px 2px #6aacf1;
     background: repeating-Linear-gradient( 45deg, #ffffff00, #ffffff00 5px, #eeeeee80 5px, #eeeeee80 10px);
 }
+

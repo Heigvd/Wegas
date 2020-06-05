@@ -86,6 +86,7 @@ const dragHandleStyle = css({
     alignSelf: 'center',
     opacity: 0.7,
     cursor: 'move',
+    marginRight: '15px',
     ':hover': {
         opacity: 1,
     },
