@@ -115,15 +115,6 @@
     min-height: 1px;
 }
 
-/*
-.wegas-survey-input-label.wegas-compulsory-input:after {
-    content: '(*)';
-    margin-left: 7px;
-    font-size: 12px;
-    vertical-align: bottom;
-}
-*/
-
 .wegas-survey-input-label.wegas-optional-input:after {
     content: attr(data-optionalornot);
     font-size: 12px;
@@ -434,8 +425,4 @@
 
 .yui3-skin-sam .wegas-survey-widget .progress-value {
     position: absolute;
-}
-
-.wegas-react-form-content span.fa-bars {
-    margin-right: 15px;
 }

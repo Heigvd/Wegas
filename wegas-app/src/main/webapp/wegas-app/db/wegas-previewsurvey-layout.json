@@ -35,23 +35,13 @@
                         "direction": "horizontal",
                         "cssClass": "wegas-button-toolbar",
                         "children": [
-                            {
-                                "type": "Button",
-                                "label": "<i class=\"fa fa-repeat fa-rotate-180\" title=\"Restart survey (only for you)\"></i>",
-                                "cssClass": "editor-restart-button",
-                                "plugins": [
-                                    {
-                                        "fn": "ResetTeamAction"
-                                    }
-                                ]
-                            }
                         ]
                     }
 
         ]
     },
     "left": {
-        "width": 300,
+        "width": "400px",
         "children": [
             {
                 "type": "TabView",
@@ -90,7 +80,7 @@
         ]
     },
     "center": {
-        "width": "420px",
+        "width": "calc( 100% - 400px )",
         "children": [
             {
                 "id": "centerTabView",
@@ -107,41 +97,6 @@
                         "wchildren": [
                             {
                                 "content": "<div class=\"empty-edit-panel\"></div>"
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    },
-    "right": {
-        "width": "calc( 100% - 300px - 420px )",
-        "children": [
-            {
-                "type": "TabView",
-                "id": "rightTabView",
-                "cssClass": "wegas-tabview-fullheight",
-                "children": [
-                    {
-                        "type": "Tab",
-                        "id": "Preview",
-                        "label": "Preview",
-                        "tabSelector": "#rightTabView",
-                        "selected": true,
-                        "children": [
-                            {
-                                "type": "PageLoader",
-                                "pageLoaderId": "previewPageLoader",
-                                "defaultPageId": "default",
-                                "cssClass": "editor-preview wegas-playerview",
-                                "plugins": [
-                                    {
-                                        "fn": "PopupListener"
-                                    },
-                                    {
-                                        "fn": "ServerPopupListener"
-                                    }
-                                ]
                             }
                         ]
                     }

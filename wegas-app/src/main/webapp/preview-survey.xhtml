@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets" 
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:composition template="wegas-app/jsf/editor-default.xhtml">
+        <ui:param name="writeRightNotNeeded" value="true" />
+        <ui:define name="pageUri">/wegas-app/db/wegas-previewsurvey-layout.json</ui:define>
+
+        <ui:define name="app-init">
+            <c:set var="extraBodyClass" value="wegas-editmode wegas-editsurveymode wegas-readonly-previewmode"/>
+            <c:set var="wegasMode" value="EDIT"/>
+        </ui:define>
+
+        <script>//<ui:define name = "editorFooter"><![CDATA[
+            Y.Wegas.app.once("preRender", function() {
+                var surveyId = +"#{param['surveyId']}";
+                if (surveyId > 0) {
+                    var descr = Y.Wegas.Facade.Variable.cache.findById(surveyId);
+                    if (descr) {
+                        YUI_config.Wegas.dataSelector = {
+                            key: 'id', 
+                            val: surveyId
+                        };
+                    }
+                }
+            });
+
+            Y.Wegas.app.once("render", function() {
+
+                if (!YUI_config.Wegas.dataSelector) {
+                    return; // abort
+                }
+                // Reinstall a transparent overlay each time a new react form is generated:
+                Y.after("edit-entity:edit", function() {
+                    var tab = Y.Plugin.EditEntityAction.getEditionTab();
+                    if (tab) {
+                        Y.after("available", function() {
+                            var cb = tab.form.get("contentBox");
+                            if (!cb.one(".preview-overlay")) {
+                                cb.one("div").insert('<div class="preview-overlay"></div>');
+                            }
+                        }, ".wegas-react-form-content div");
+                    }
+                });
+            });
+        
+            // Update editor title with name of survey:
+            Y.Wegas.app.after("render", function() {
+                if (!YUI_config.Wegas.dataSelector) {
+                    return; // abort
+                }
+                
+                function getFriendlyVarName(v) {
+                    var name = '',
+                        label = I18n.t(v.get("label"));
+                    if (v.get("editorTag")) {
+                        name += v.get("editorTag");
+                    }
+                    if (name && label) {
+                        name += ' - ';
+                    }
+                    if (label) {
+                        name += label;
+                    }
+                    if (!name) {
+                        name = v.get("name");
+                    }
+                    return name;
+                }
+
+                var descr = Y.Wegas.Facade.Variable.cache.findById(YUI_config.Wegas.dataSelector.val),
+                    friendlyName = getFriendlyVarName(descr);
+                Y.all(".wegas-title").setContent('Read-only preview of "' + friendlyName + '"');
+                document.title = friendlyName + ' - Wegas';
+            });
+
+        //]]></ui:define></script>
+    </ui:composition>
+</html>

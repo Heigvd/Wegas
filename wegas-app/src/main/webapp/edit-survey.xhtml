@@ -27,22 +27,15 @@
             });
 
             Y.Wegas.app.once("render", function() {
-                var gameModel = Y.Wegas.Facade.Game.cache.getCurrentGame(),
-                    isReadOnly = "#{param['readonly']}";
-
-                if (isReadOnly.toLowerCase() === "true"){
-                    Y.one("body").addClass("wegas-readonly-editmode");
-                }
-
                 // Prepare Preview of the given survey:
                 if (!YUI_config.Wegas.dataSelector) {
-                    return;
+                    return; // abort
                 }
                 var descr = Y.Wegas.Facade.Variable.cache.findById(YUI_config.Wegas.dataSelector.val),
                     inst = descr.getInstance(),
                     container = Y.one(".wegas-playerview .wegas-pageloader-content");
                 if (!inst || !container) {
-                    return;
+                    return; // abort
                 }
 
                 // In increasing order of progress, status of a given survey:
@@ -137,7 +130,7 @@
             // Update editor title:
             Y.Wegas.app.after("render", function() {
                 if (!YUI_config.Wegas.dataSelector) {
-                    return;
+                    return; // abort
                 }
                 
                 function getFriendlyVarName(v) {
@@ -158,8 +151,10 @@
                     return name;
                 }
 
-                var descr = Y.Wegas.Facade.Variable.cache.findById(YUI_config.Wegas.dataSelector.val);
-                Y.all(".wegas-title").setContent(getFriendlyVarName(descr));
+                var descr = Y.Wegas.Facade.Variable.cache.findById(YUI_config.Wegas.dataSelector.val),
+                    friendlyName = getFriendlyVarName(descr);
+                Y.all(".wegas-title").setContent(friendlyName);
+                document.title = friendlyName + ' - Wegas';
             });
 
         //]]></ui:define></script>
