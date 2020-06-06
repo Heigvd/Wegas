@@ -59,7 +59,7 @@ interface SelectedThemes {
   survey: string;
 }
 
-type Context = keyof SelectedThemes;
+export type ThemeContext = keyof SelectedThemes;
 
 interface ThemesState {
   selectedThemes: SelectedThemes;
@@ -68,10 +68,12 @@ interface ThemesState {
 
 interface ThemeContextValues {
   themesState: ThemesState;
-  currentContext: Context;
+  currentContext: ThemeContext;
   addNewTheme: (themeName: string) => void;
   deleteTheme: (themeName: string) => void;
-  setSelectedTheme: (themeName: string, contextName: Context) => void;
+  addNewMode: (themeName: string, modeName: string) => void;
+  deleteMode: (themeName: string, modeName: string) => void;
+  setSelectedTheme: (themeName: string, contextName: ThemeContext) => void;
   setThemeValue: (
     themeName: string,
     section: keyof ThemeValues,
@@ -84,7 +86,7 @@ interface ThemeContextValues {
     component: ModeComponentNames,
     section: keyof ThemeValues,
     entry: string,
-    value: string | number | undefined,
+    value: string,
   ) => void;
   themeRoot?: React.RefObject<HTMLDivElement>;
 }
@@ -142,6 +144,12 @@ export const themeCTX = React.createContext<ThemeContextValues>({
   deleteTheme: () => {
     wlog('Not implemented yet');
   },
+  addNewMode: () => {
+    wlog('Not implemented yet');
+  },
+  deleteMode: () => {
+    wlog('Not implemented yet');
+  },
   setSelectedTheme: () => {
     wlog('Not implemented yet');
   },
@@ -164,9 +172,21 @@ interface ThemeStateActionDeleteTheme {
   themeName: string;
 }
 
+interface ThemeStateActionNewMode {
+  type: 'addNewMode';
+  themeName: string;
+  modeName: string;
+}
+
+interface ThemeStateActionDeleteMode {
+  type: 'deleteMode';
+  themeName: string;
+  modeName: string;
+}
+
 interface ThemeStateActionSelectTheme {
   type: 'setSelectedTheme';
-  contextName: Context;
+  contextName: ThemeContext;
   themeName: string;
 }
 
@@ -191,6 +211,8 @@ interface ThemeStateActionSetModeValue {
 type ThemeStateAction =
   | ThemeStateActionNewTheme
   | ThemeStateActionDeleteTheme
+  | ThemeStateActionNewMode
+  | ThemeStateActionDeleteMode
   | ThemeStateActionSelectTheme
   | ThemeStateActionSetThemeValue
   | ThemeStateActionSetModeValue;
@@ -212,7 +234,8 @@ const themeStateReducer = (
         if (action.themeName !== 'default') {
           for (const context in oldState.selectedThemes) {
             if (
-              oldState.selectedThemes[context as Context] === action.themeName
+              oldState.selectedThemes[context as ThemeContext] ===
+              action.themeName
             ) {
               oldState.selectedThemes = {
                 ...oldState.selectedThemes,
@@ -221,6 +244,27 @@ const themeStateReducer = (
             }
           }
           oldState.themes = omit(oldState.themes, action.themeName) as Themes;
+        }
+        break;
+      }
+      case 'addNewMode': {
+        if (oldState.themes[action.themeName] != null) {
+          oldState.themes[action.themeName].modes = {
+            [action.modeName]: defaultMode,
+            ...oldState.themes[action.themeName].modes,
+          };
+        }
+        break;
+      }
+      case 'deleteMode': {
+        if (
+          oldState.themes[action.themeName] != null &&
+          action.modeName !== 'normal'
+        ) {
+          oldState.themes[action.themeName].modes = omit(
+            oldState.themes[action.themeName].modes,
+            action.modeName,
+          ) as Modes;
         }
         break;
       }
@@ -268,7 +312,7 @@ export function ThemeProvider({
   children,
   contextName,
   modeName,
-}: React.PropsWithChildren<{ contextName: Context; modeName?: string }>) {
+}: React.PropsWithChildren<{ contextName: ThemeContext; modeName?: string }>) {
   const themeRoot = React.useRef<HTMLDivElement>(null);
   const [themesState, dispatcher] = useDispatch<{ themesState: ThemesState }>(
     themeStateReducer,
@@ -287,6 +331,10 @@ export function ThemeProvider({
             dispatchTheme({ type: 'addNewTheme', themeName }),
           deleteTheme: themeName =>
             dispatchTheme({ type: 'deleteTheme', themeName }),
+          addNewMode: (themeName, modeName) =>
+            dispatchTheme({ type: 'addNewMode', themeName, modeName }),
+          deleteMode: (themeName, modeName) =>
+            dispatchTheme({ type: 'deleteMode', themeName, modeName }),
           setSelectedTheme: (themeName, contextName) =>
             dispatchTheme({ type: 'setSelectedTheme', contextName, themeName }),
           setThemeValue: (themeName, section, entry, value) =>
@@ -326,7 +374,7 @@ export { Consumer as ThemeRoot };
 
 function themeVariables(
   themesState: ThemesState,
-  contextName: Context,
+  contextName: ThemeContext,
   modeName?: string,
 ) {
   const currentTheme =

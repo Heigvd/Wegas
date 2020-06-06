@@ -6,7 +6,6 @@ import {
   flex,
   grow,
   flexRow,
-  expandWidth,
   flexColumn,
   defaultPadding,
   expandBoth,
@@ -21,7 +20,12 @@ import { Menu } from '../Menu';
 import { TextPrompt } from '../../Editor/Components/TextPrompt';
 import { ConfirmButton } from '../Inputs/Buttons/ConfirmButton';
 import { MessageString } from '../../Editor/Components/MessageString';
-import { themeVar } from './ThemeVars';
+import {
+  themeVar,
+  Mode,
+  ModeComponents,
+  ModeComponentNames,
+} from './ThemeVars';
 import { MainLinearLayout } from '../../Editor/Components/LinearTabLayout/LinearLayout';
 import {
   FonkyFlexContainer,
@@ -29,6 +33,7 @@ import {
   FonkyFlexSplitter,
 } from '../Layouts/FonkyFlex';
 import { SimpleInput } from '../Inputs/SimpleInput';
+import { PageExamples } from './PageExample';
 
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
 
@@ -89,7 +94,7 @@ function MyColorPicker({ color, onChange }: MyColorPickerProps) {
   );
 }
 
-type ThemeValueModifierModes = 'close' | 'new';
+type SimpleModes = 'close' | 'new';
 
 interface ThemeValueModifierProps {
   theme: Theme;
@@ -102,9 +107,7 @@ function ThemeValueModifier({
   section,
   onChange,
 }: ThemeValueModifierProps) {
-  const [modalState, setModalState] = React.useState<ThemeValueModifierModes>(
-    'close',
-  );
+  const [modalState, setModalState] = React.useState<SimpleModes>('close');
   const [newValue, setNewValue] = React.useState<{
     name?: string;
     value: string;
@@ -210,6 +213,17 @@ function ThemeValueModifier({
   );
 }
 
+interface NewCloseModal {
+  type: 'close' | 'new';
+}
+
+interface ErrorModal {
+  type: 'error';
+  label?: string;
+}
+
+type ModalState = NewCloseModal | ErrorModal;
+
 function ThemeEdition() {
   const {
     themesState,
@@ -219,7 +233,7 @@ function ThemeEdition() {
     setThemeValue,
   } = React.useContext(themeCTX);
 
-  const [modalState, setModalState] = React.useState<ThemeEditorState>({
+  const [modalState, setModalState] = React.useState<ModalState>({
     type: 'close',
   });
   const [currentModifiedTheme, setModifiedTheme] = React.useState<string>(
@@ -238,7 +252,7 @@ function ThemeEdition() {
   return (
     <Toolbar>
       <Toolbar.Header className={cx(flex, flexDistribute)}>
-        {modalState.type === 'newTheme' ? (
+        {modalState.type === 'new' ? (
           <TextPrompt
             placeholder="Theme name"
             defaultFocus
@@ -265,7 +279,7 @@ function ThemeEdition() {
               icon="plus"
               label="Add a new theme"
               prefixedLabel
-              onClick={() => setModalState({ type: 'newTheme' })}
+              onClick={() => setModalState({ type: 'new' })}
             />
 
             <div className={flex}>
@@ -354,71 +368,249 @@ function ThemeEdition() {
         />
       </Toolbar.Header>
       <Toolbar.Content>
-        <div className={cx(flex, flexRow, expandWidth)}>
-          <FonkyFlexContainer className={expandBoth}>
-            {selectedSection.colors && (
-              <FonkyFlexContent>
-                <ThemeValueModifier
-                  theme={themesState.themes[currentModifiedTheme]}
-                  section="colors"
-                  onChange={(k, v) =>
-                    setThemeValue(currentModifiedTheme, 'colors', k, v)
-                  }
-                />
-              </FonkyFlexContent>
-            )}
-            {selectedSection.colors &&
-              (selectedSection.dimensions || selectedSection.others) && (
-                <FonkyFlexSplitter />
-              )}
-            {selectedSection.dimensions && (
-              <FonkyFlexContent>
-                <ThemeValueModifier
-                  theme={themesState.themes[currentModifiedTheme]}
-                  section="dimensions"
-                  onChange={(k, v) =>
-                    setThemeValue(currentModifiedTheme, 'dimensions', k, v)
-                  }
-                />
-              </FonkyFlexContent>
-            )}
-            {selectedSection.dimensions && selectedSection.others && (
+        <FonkyFlexContainer className={expandBoth}>
+          {selectedSection.colors && (
+            <FonkyFlexContent>
+              <ThemeValueModifier
+                theme={themesState.themes[currentModifiedTheme]}
+                section="colors"
+                onChange={(k, v) =>
+                  setThemeValue(currentModifiedTheme, 'colors', k, v)
+                }
+              />
+            </FonkyFlexContent>
+          )}
+          {selectedSection.colors &&
+            (selectedSection.dimensions || selectedSection.others) && (
               <FonkyFlexSplitter />
             )}
-            {selectedSection.others && (
-              <FonkyFlexContent>
-                <ThemeValueModifier
-                  theme={themesState.themes[currentModifiedTheme]}
-                  section="others"
-                  onChange={(k, v) =>
-                    setThemeValue(currentModifiedTheme, 'others', k, v)
-                  }
-                />
-              </FonkyFlexContent>
-            )}
-          </FonkyFlexContainer>
-        </div>
+          {selectedSection.dimensions && (
+            <FonkyFlexContent>
+              <ThemeValueModifier
+                theme={themesState.themes[currentModifiedTheme]}
+                section="dimensions"
+                onChange={(k, v) =>
+                  setThemeValue(currentModifiedTheme, 'dimensions', k, v)
+                }
+              />
+            </FonkyFlexContent>
+          )}
+          {selectedSection.dimensions && selectedSection.others && (
+            <FonkyFlexSplitter />
+          )}
+          {selectedSection.others && (
+            <FonkyFlexContent>
+              <ThemeValueModifier
+                theme={themesState.themes[currentModifiedTheme]}
+                section="others"
+                onChange={(k, v) =>
+                  setThemeValue(currentModifiedTheme, 'others', k, v)
+                }
+              />
+            </FonkyFlexContent>
+          )}
+        </FonkyFlexContainer>
       </Toolbar.Content>
     </Toolbar>
   );
 }
 
-interface ThemeEditorModal {
-  type: 'close' | 'newTheme';
+interface ModeValueModifierProps {
+  theme: Theme;
+  component: ModeComponents;
+  section: keyof ThemeValues;
+  onChange: (entry: string, value: string) => void;
 }
 
-interface ThemeEditorErrorModal {
-  type: 'error';
-  label?: string;
+function ModeValueModifier({
+  theme,
+  component,
+  section,
+  onChange,
+}: ModeValueModifierProps) {
+  return (
+    <div className={cx(flex, flexColumn)}>
+      {Object.entries(component[section as keyof typeof component]).map(
+        ([k, v]) => (
+          <div key={k} className={cx(flex, flexRow)}>
+            <label
+              className={cx(css({ display: 'flex', alignItems: 'center' }))}
+              htmlFor={k}
+              title={k}
+            >
+              {k} :
+            </label>
+            <Menu
+              label={v}
+              items={Object.keys(theme.values[section]).map(k => ({
+                value: k,
+                label: k,
+              }))}
+              onSelect={({ value }) => onChange(k, value)}
+            />
+          </div>
+        ),
+      )}
+    </div>
+  );
 }
 
-type ThemeEditorState = ThemeEditorModal | ThemeEditorErrorModal;
+function ModeEdition() {
+  const [modalState, setModalState] = React.useState<ModalState>({
+    type: 'close',
+  });
+
+  const {
+    themesState,
+    addNewMode,
+    deleteMode,
+    setModeValue,
+  } = React.useContext(themeCTX);
+
+  const [currentModifiedTheme, setModifiedTheme] = React.useState<string>(
+    themesState.selectedThemes['editor'],
+  );
+
+  const [currentModifiedMode, setModifiedMode] = React.useState<string>(
+    'normal',
+  );
+
+  const [currentModifiedComponent, setModifiedComponent] = React.useState<
+    ModeComponentNames
+  >('Layout');
+  const [currentModifiedSection, setModifiedSection] = React.useState<
+    keyof ThemeValues
+  >('colors');
+
+  const currentModes = themesState.themes[currentModifiedTheme].modes;
+  const currentComponents = currentModes[currentModifiedMode];
+  const currentSections = currentComponents[currentModifiedComponent];
+
+  return (
+    <Toolbar>
+      <Toolbar.Header className={cx(flex, flexDistribute)}>
+        {modalState.type === 'new' ? (
+          <TextPrompt
+            placeholder="Mode name"
+            defaultFocus
+            onAction={(success, value) => {
+              if (value === '') {
+                setModalState({
+                  type: 'error',
+                  label: 'The mode must have a name',
+                });
+              } else {
+                if (success) {
+                  addNewMode(currentModifiedTheme, value);
+                  setModifiedMode(value);
+                  setModalState({ type: 'close' });
+                }
+              }
+            }}
+            onBlur={() => setModalState({ type: 'close' })}
+            applyOnEnter
+          />
+        ) : (
+          <>
+            <IconButton
+              icon="plus"
+              label="Add a new mode"
+              prefixedLabel
+              onClick={() => setModalState({ type: 'new' })}
+            />
+
+            <div className={flex}>
+              <Menu
+                label={`Current theme : ${currentModifiedTheme}`}
+                items={Object.keys(themesState.themes).map(k => ({
+                  value: k,
+                  label: k,
+                }))}
+                onSelect={({ value }) => setModifiedTheme(value)}
+              />
+              <Menu
+                label={`Current mode : ${currentModifiedMode}`}
+                items={Object.keys(currentModes).map(k => ({
+                  value: k,
+                  label: k,
+                }))}
+                onSelect={({ value }) => setModifiedTheme(value)}
+              />
+              <ConfirmButton
+                icon="trash"
+                tooltip="Delete the mode"
+                onAction={success => {
+                  if (success) {
+                    deleteMode(currentModifiedTheme, currentModifiedMode);
+                    setModifiedMode(old => {
+                      const newModes = Object.keys(currentModes).filter(
+                        k => k !== old,
+                      );
+                      if (newModes.length === 0) {
+                        return 'normal';
+                      }
+                      return newModes[0];
+                    });
+                  }
+                }}
+                onBlur={() => setModalState({ type: 'close' })}
+              />
+            </div>
+          </>
+        )}
+        <Menu
+          label={`Current component : ${currentModifiedComponent}`}
+          items={Object.keys(currentComponents).map(k => ({
+            value: k,
+            label: k,
+          }))}
+          onSelect={({ value }) => setModifiedComponent(value as keyof Mode)}
+        />
+        <Menu
+          label={`Current section : ${currentModifiedSection}`}
+          items={Object.keys(currentSections).map(k => ({
+            value: k,
+            label: k,
+          }))}
+          onSelect={({ value }) =>
+            setModifiedSection(value as keyof ThemeValues)
+          }
+        />
+      </Toolbar.Header>
+      <Toolbar.Content>
+        <FonkyFlexContainer className={expandBoth}>
+          <FonkyFlexContent>
+            <ModeValueModifier
+              theme={themesState.themes[currentModifiedTheme]}
+              component={currentComponents[currentModifiedComponent]}
+              section={currentModifiedSection}
+              onChange={(k, v) =>
+                setModeValue(
+                  currentModifiedTheme,
+                  currentModifiedMode,
+                  currentModifiedComponent,
+                  currentModifiedSection,
+                  k,
+                  v,
+                )
+              }
+            />
+          </FonkyFlexContent>
+          <FonkyFlexSplitter />
+          <FonkyFlexContent>
+            <PageExamples modeName={currentModifiedMode} />
+          </FonkyFlexContent>
+        </FonkyFlexContainer>
+      </Toolbar.Content>
+    </Toolbar>
+  );
+}
 
 export default function ThemeEditor() {
   const availableLayoutTabs = React.useMemo(
     () => ({
       Themes: <ThemeEdition />,
-      Modes: <div>Modes</div>,
+      Modes: <ModeEdition />,
     }),
     [],
   );

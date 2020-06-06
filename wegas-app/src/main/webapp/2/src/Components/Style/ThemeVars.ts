@@ -256,6 +256,7 @@ export interface Mode {
 }
 
 export type ModeComponentNames = keyof Mode;
+export type ModeComponents = Mode[keyof Mode];
 
 export const defaultMode: Mode = {
   Button: {

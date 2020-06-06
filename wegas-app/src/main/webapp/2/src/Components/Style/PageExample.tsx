@@ -1,28 +1,28 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
-import { themeVar } from './ThemeVars';
-import {
-  FonkyFlexContainer,
-  FonkyFlexContent,
-  FonkyFlexSplitter,
-} from '../Layouts/FonkyFlex';
-import {
-  expandBoth,
-  expandHeight,
-  flex,
-  flexColumn,
-  justifyCenter,
-  grow,
-  autoScroll,
-} from '../../css/classes';
-import { ThemeProvider } from './Theme';
+// import { css, cx } from 'emotion';
+// import { themeVar } from './ThemeVars';
+// import {
+//   FonkyFlexContainer,
+//   FonkyFlexContent,
+//   FonkyFlexSplitter,
+// } from '../Layouts/FonkyFlex';
+// import {
+//   expandBoth,
+//   expandHeight,
+//   flex,
+//   flexColumn,
+//   justifyCenter,
+//   grow,
+//   autoScroll,
+// } from '../../css/classes';
+import { ThemeProvider, ThemeContext } from './Theme';
 import { JSONPageDeserializer } from '../PageComponents/tools/JSONPageDeserializer';
 
-const titleStyle = css({
-  backgroundColor: themeVar.Text.colors.HoverColor,
-  textAlign: 'center',
-  padding: '2px',
-});
+// const titleStyle = css({
+//   backgroundColor: themeVar.Text.colors.HoverColor,
+//   textAlign: 'center',
+//   padding: '2px',
+// });
 
 const page1JSON = {
   type: 'FlexList',
@@ -414,70 +414,81 @@ const page1JSON = {
   },
 };
 
-export function PageExamples() {
+interface PageExamples {
+  contextName?: ThemeContext;
+  modeName?: string;
+}
+
+export function PageExamples({
+  contextName = 'player',
+  modeName,
+}: PageExamples) {
   return (
-    <FonkyFlexContainer
-      vertical
-      className={cx(
-        expandBoth,
-        css({
-          borderStyle: 'solid',
-          borderWidth: '5px',
-          borderColor: themeVar.Layout.colors.BorderColor,
-        }),
-      )}
-    >
-      <FonkyFlexContent>
-        <FonkyFlexContainer className={expandHeight}>
-          <FonkyFlexContent>
-            <div className={cx(flex, flexColumn, justifyCenter, expandHeight)}>
-              <div className={titleStyle}>Mode : Normal</div>
-              <div className={cx(grow, autoScroll)}>
-                <ThemeProvider contextName="player">
-                  <JSONPageDeserializer wegasComponent={page1JSON} />
-                </ThemeProvider>
-              </div>
-            </div>
-          </FonkyFlexContent>
-          <FonkyFlexSplitter notDraggable />
-          <FonkyFlexContent>
-            <div className={cx(flex, flexColumn, justifyCenter, expandHeight)}>
-              <div className={titleStyle}>Mode : Lighter</div>
-              <div className={cx(grow, autoScroll)}>
-                <ThemeProvider contextName="player">
-                  <JSONPageDeserializer wegasComponent={page1JSON} />
-                </ThemeProvider>
-              </div>
-            </div>
-          </FonkyFlexContent>
-        </FonkyFlexContainer>
-      </FonkyFlexContent>
-      <FonkyFlexSplitter notDraggable />
-      <FonkyFlexContent>
-        <FonkyFlexContainer className={expandHeight}>
-          <FonkyFlexContent>
-            <div className={cx(flex, flexColumn, justifyCenter, expandHeight)}>
-              <div className={titleStyle}>Mode : Dark</div>
-              <div className={cx(grow, autoScroll)}>
-                <ThemeProvider contextName="player">
-                  <JSONPageDeserializer wegasComponent={page1JSON} />
-                </ThemeProvider>
-              </div>
-            </div>
-          </FonkyFlexContent>
-          <FonkyFlexSplitter notDraggable />
-          <FonkyFlexContent>
-            <div className={cx(flex, flexColumn, justifyCenter, expandHeight)}>
-              <div className={titleStyle}>Mode : Dark lighter</div>
-              <div className={cx(grow, autoScroll)}>
-                <ThemeProvider contextName="player">
-                  <JSONPageDeserializer wegasComponent={page1JSON} />
-                </ThemeProvider>
-              </div>
-            </div>
-          </FonkyFlexContent>
-        </FonkyFlexContainer>
-      </FonkyFlexContent>
-    </FonkyFlexContainer>
+    <ThemeProvider contextName={contextName} modeName={modeName}>
+      <JSONPageDeserializer wegasComponent={page1JSON} />
+    </ThemeProvider>
+    // <FonkyFlexContainer
+    //   vertical
+    //   className={cx(
+    //     expandBoth,
+    //     css({
+    //       borderStyle: 'solid',
+    //       borderWidth: '5px',
+    //       borderColor: themeVar.Layout.colors.BorderColor,
+    //     }),
+    //   )}
+    // >
+    //   <FonkyFlexContent>
+    //     <FonkyFlexContainer className={expandHeight}>
+    //       <FonkyFlexContent>
+    //         <div className={cx(flex, flexColumn, justifyCenter, expandHeight)}>
+    //           <div className={titleStyle}>Mode : Normal</div>
+    //           <div className={cx(grow, autoScroll)}>
+    //             <ThemeProvider contextName="player">
+    //               <JSONPageDeserializer wegasComponent={page1JSON} />
+    //             </ThemeProvider>
+    //           </div>
+    //         </div>
+    //       </FonkyFlexContent>
+    //       <FonkyFlexSplitter notDraggable />
+    //       <FonkyFlexContent>
+    //         <div className={cx(flex, flexColumn, justifyCenter, expandHeight)}>
+    //           <div className={titleStyle}>Mode : Lighter</div>
+    //           <div className={cx(grow, autoScroll)}>
+    //             <ThemeProvider contextName="player">
+    //               <JSONPageDeserializer wegasComponent={page1JSON} />
+    //             </ThemeProvider>
+    //           </div>
+    //         </div>
+    //       </FonkyFlexContent>
+    //     </FonkyFlexContainer>
+    //   </FonkyFlexContent>
+    //   <FonkyFlexSplitter notDraggable />
+    //   <FonkyFlexContent>
+    //     <FonkyFlexContainer className={expandHeight}>
+    //       <FonkyFlexContent>
+    //         <div className={cx(flex, flexColumn, justifyCenter, expandHeight)}>
+    //           <div className={titleStyle}>Mode : Dark</div>
+    //           <div className={cx(grow, autoScroll)}>
+    //             <ThemeProvider contextName="player">
+    //               <JSONPageDeserializer wegasComponent={page1JSON} />
+    //             </ThemeProvider>
+    //           </div>
+    //         </div>
+    //       </FonkyFlexContent>
+    //       <FonkyFlexSplitter notDraggable />
+    //       <FonkyFlexContent>
+    //         <div className={cx(flex, flexColumn, justifyCenter, expandHeight)}>
+    //           <div className={titleStyle}>Mode : Dark lighter</div>
+    //           <div className={cx(grow, autoScroll)}>
+    //             <ThemeProvider contextName="player">
+    //               <JSONPageDeserializer wegasComponent={page1JSON} />
+    //             </ThemeProvider>
+    //           </div>
+    //         </div>
+    //       </FonkyFlexContent>
+    //     </FonkyFlexContainer>
+    //   </FonkyFlexContent>
+    // </FonkyFlexContainer>
   );
 }
