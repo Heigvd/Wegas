@@ -16,6 +16,14 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
     var CONTENTBOX = "contentBox",
         BOUNDINGBOX = "boundingBox",
         SERVER_SCRIPT_PATH = "wegas-app/js/server/",
+        SURVEY_CONTAINER_GAMEMODEL_NAME = "Survey container",
+        SURVEY_CONTAINER_ICON = "ICON_dark-orangine_bar-chart_fa",
+        SURVEY_CONTAINER_PROPERTIES = {
+            scriptUri: SERVER_SCRIPT_PATH,
+            iconUri: SURVEY_CONTAINER_ICON,
+            freeForAll: true
+        },
+        EMPTY_GAMEMODEL_ID = 1,
         WEGAS_MAX_NAME_LENGTH = 255,
         SURVEY_NAME_DATE = "_CrDat_",
         SURVEY_NAME_DATE_REGEXP = /(_CrDat_[0-9]+)$/i,  // Survey name (script alias) must end with this expression.
@@ -148,16 +156,15 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             this.checkXapiPath();            
         },
         
-        // Persists the current gameModel "as is".
-        persistCurrentGameModel: function(successCb, failureCb) {
-            var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
-                gameModelId = gm.get("id"),
+        // Persists the given gameModel "as is".
+        persistGameModel: function(gameModel, successCb, failureCb) {
+            var gameModelId = gameModel.get("id"),
                 config = {
                     request: '/' + gameModelId,
                     cfg: {
                         updateCache: true,
                         method: "PUT",
-                        data: gm
+                        data: gameModel
                     },
                     on: {
                         success: Y.bind(function(e) {
@@ -165,6 +172,28 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                         }, this),
                         failure: Y.bind(function(e) {
                             failureCb && failureCb(gameModelId);
+                        }, this)
+                }
+            };
+            Y.Wegas.Facade.GameModel.sendRequest(config);
+        },
+        
+        // Persists the given game "as is".
+        persistGame: function(game, successCb, failureCb) {
+            var gameId = game.get("id"),
+                config = {
+                    request: '/Game/' + gameId,
+                    cfg: {
+                        updateCache: true,
+                        method: "PUT",
+                        data: game
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            successCb && successCb(gameId);
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            failureCb && failureCb(gameId);
                         }, this)
                 }
             };
@@ -196,6 +225,64 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             Y.Wegas.Facade.GameModel.sendRequest(config);
         },
 
+        // Instantiates a new game (or "session") from the given gameModel
+        createGame: function(sourceGameModelId, gameName, successCb, failureCb) {
+            // Full request: /rest/GameModel/<gameModelId>/Game
+            var gameAttrs = {
+                    "@class": "Game",
+                    "access": "OPEN",   // "CLOSE" generates access right issues on debug team at this stage
+                    "gameModelId": sourceGameModelId,
+                    "name": gameName,
+                    "properties": SURVEY_CONTAINER_PROPERTIES
+                },
+                config = {
+                    request: '/' + sourceGameModelId + "/Game",
+                    cfg: {
+                        updateCache: true,
+                        method: "POST",
+                        data: gameAttrs
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            successCb && successCb(e.response.entity);
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            failureCb && failureCb(e);
+                        }, this)
+                }
+            };
+            Y.Wegas.Facade.GameModel.sendRequest(config);
+        },
+        
+        // Creates an empty gameModel with the given name.
+        createEmptyGameModel: function(gameName, successCb, failureCb) {
+            // Full request: /rest/GameModel/<gameModelId>
+            var gameModelId = EMPTY_GAMEMODEL_ID,
+                gameAttrs = {
+                    "@class": "GameModel",
+                    "name": gameName,
+                    // This attribute seems to be ignored: server-side bug?
+                    "properties": SURVEY_CONTAINER_PROPERTIES
+                },
+                config = {
+                    request: '/' + gameModelId,
+                    cfg: {
+                        updateCache: true,
+                        method: "POST",
+                        data: gameAttrs
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            successCb && successCb(e.response.entity);
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            failureCb && failureCb(e);
+                        }, this)
+                }
+            };
+            Y.Wegas.Facade.GameModel.sendRequest(config);
+        },
+        
         // Checks that server script paths enable xAPI logging and updates server script paths if needed.
         // Does nothing if the gameModel has no internal surveys.
         checkXapiPath: function(){
@@ -206,7 +293,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 if (serverScripts.indexOf(SERVER_SCRIPT_PATH) < 0) {
                     serverScripts += (serverScripts ? ';' : '') + SERVER_SCRIPT_PATH;
                     props.set("val.scriptUri", serverScripts);
-                    this.persistCurrentGameModel();
+                    this.persistGameModel(gm);
                 }
             } else {
                 // Remove script path from gameModel properties ?
@@ -445,15 +532,14 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             }
         },
         
-        // Imports given survey into the current gameModel
-        importSurvey: function(surveyId, scope, setPublished, successCb, failureCb) {
+        // Imports given survey into the given gameModel
+        importSurvey: function(surveyId, targetGameModelId, scope, setPublished, successCb, failureCb) {
             this._importUnpublished = !setPublished;
             return new Y.Promise(Y.bind(function(resolve) {
-                // Full request: /rest/GameModel/<gameModelId>/VariableDescriptor/CherryPick/<variableDescriptorId>/<newName>/<newScopeType>
-                var gameModelId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"),
-                    varName = this.newSurveyName(surveyId),
+                // Full request: /rest/GameModel/<targetGameModelId>/VariableDescriptor/CherryPick/<variableDescriptorId>/<newName>/<newScopeType>
+                var varName = this.newSurveyName(surveyId),
                     config = {
-                        request: '/' + gameModelId + "/VariableDescriptor/CherryPick/" + surveyId + '/' + varName + (scope ? '/' + scope : ''),
+                        request: '/' + targetGameModelId + "/VariableDescriptor/CherryPick/" + surveyId + '/' + varName + (scope ? '/' + scope : ''),
                         cfg: {
                             updateCache: true,
                             method: "POST"
@@ -1129,8 +1215,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 
                 buttons.deleteButton = new SpinButton({
                     label: "<i class=\"fa fa-trash icon\"></i>" + I18n.t("survey.orchestrator.deleteButton"),
-                    autoSpin: true,
                     onClick: Y.bind(this.onDelete, this),
+                    autoSpin: true,
                     surveyId: surveyId
                 }).render(panelCB.one(".survey-delete"));
 
@@ -1142,22 +1228,22 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
 
                 buttons.shareButton = new SpinButton({
                     label: "<i class=\"fa fa-share-alt-square icon\"></i>" + I18n.t("survey.orchestrator.shareButton"),
-                    autoSpin: false,
                     onClick: Y.bind(this.onShare, this),
+                    autoSpin: true,
                     surveyId: surveyId
                 }).render(panelCB.one(".survey-share"));
 
                 buttons.playerScopeButton = new SpinButton({
                     label: "<i class=\"fa fa-user icon\"></i>" + I18n.t("survey.orchestrator.playerScopeButton"),
-                    autoSpin: true,
                     onClick: Y.bind(this.onPlayerScope, this),
+                    autoSpin: true,
                     surveyId: surveyId
                 }).render(panelCB.one(".survey-scope-player"));
 
                 buttons.teamScopeButton = new SpinButton({
                     label: "<i class=\"fa fa-users icon\"></i>" + I18n.t("survey.orchestrator.teamScopeButton"),
-                    autoSpin: true,
                     onClick: Y.bind(this.onTeamScope, this),
+                    autoSpin: true,
                     surveyId: surveyId
                 }).render(panelCB.one(".survey-scope-team"));
                                 
@@ -1244,6 +1330,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             // Importing with CherryPick will also duplicate when needed:
             this.importSurvey(
                 surveyId,
+                Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"),
                 // Set TeamScope in case it's going to be used in-game.
                 // It will be converted back to PlayerScope if launched via the dashboard.
                 "TeamScope",
@@ -1272,6 +1359,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             if (currSurv.isExternal) {
                 this.importSurvey(
                     surveyId,
+                    Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"),
                     "PlayerScope",   // Convert to PlayerScope when launched through dashboard
                     UNPUBLISHED,
                     function(newDescr) {
@@ -1323,8 +1411,66 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         
         // Opens a dialog for sharing a survey with another trainer.
         onShare: function(surveyId, btn) {
-            this.alert("Sorry, not yet implemented.");
-            btn.stopSpinning();
+            var descr = Y.Wegas.Facade.VariableDescriptor.cache.findById(surveyId),
+                gameName = this.getFriendlyVarLabel(descr),
+                isScenarist = !!Y.Wegas.Facade.User.cache.get("currentUser").get("roles").find(function(role) {
+                    return role.get("name") === "Scenarist";
+                });
+            if (isScenarist) {
+                this.createEmptyGameModel(
+                    gameName,
+                    Y.bind(function(newGameModel) {
+                        this.importSurvey(
+                            surveyId,
+                            newGameModel.get("id"),
+                            "TeamScope",
+                            PUBLISHED,
+                            Y.bind(function() {
+                                this.success('This survey is now available for sharing in game scenario "' + gameName + '".<br>Please refresh the browser tab containing your current scenarios.'); // @TODO I18n.t
+                                btn.stopSpinning();
+                                newGameModel.set("comments", SURVEY_CONTAINER_GAMEMODEL_NAME);
+                                this.persistGameModel(newGameModel);
+                                // Adjust scenario properties
+                                newGameModel.set("properties", SURVEY_CONTAINER_PROPERTIES);
+                                this.persistGameModel(newGameModel);
+                            }, this),
+                            Y.bind(function(e) {
+                                Y.Wegas.Panel.alert("Could not create game scenario<br>" + e);
+                                btn.stopSpinning();
+                            }, this)
+                        );
+                    }, this)
+                );
+            } else { // User has only Trainer rights:
+                this.createGame(
+                    EMPTY_GAMEMODEL_ID,
+                    gameName,
+                    Y.bind(function(newGame) {
+                        this.importSurvey(
+                            surveyId,
+                            newGame.get("parentId"),
+                            "TeamScope",
+                            PUBLISHED,
+                            Y.bind(function() {
+                                this.success('This survey is now available for sharing in game session "' + gameName + '".<br>Please refresh the browser tab containing your current sessions.'); // @TODO I18n.t
+                                btn.stopSpinning();
+                                var newGM = Y.Wegas.Facade.GameModel.cache.find('id', newGame.get("parentId")); // The gamemodel came with the new game
+                                // Adjust scenario name and other properties visible in the lobby:
+                                newGM.set("name", SURVEY_CONTAINER_GAMEMODEL_NAME);
+                                newGM.set("properties", SURVEY_CONTAINER_PROPERTIES);
+                                this.persistGameModel(newGM);
+                                // Adjust session properties:
+                                newGame.set("access", "CLOSE");
+                                this.persistGame(newGame);
+                            }, this),
+                            Y.bind(function(e) {
+                                Y.Wegas.Panel.alert("Could not create game<br>" + e);
+                                btn.stopSpinning();
+                            }, this)
+                        );
+                    }, this)
+                );
+            }
         },
 
         // Deletes given survey if it's not running.
@@ -1447,7 +1593,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 surveyData = this.knownSurveys[surveyId],
                 details = '',
                 comments;
-                details += 'Created on ' + new Date(surveyData.createdDate).toLocaleString('en-GB');
+                details += 'Created on ' + new Date(surveyData.createdDate).toLocaleDateString('en-GB');
                 if (e.node.ancestor(function(node) { return node.hasClass("runnable-survey"); })) {
                     details += '<div class="wegas-advanced-feature">';
                     if (surveyData.isSession) {

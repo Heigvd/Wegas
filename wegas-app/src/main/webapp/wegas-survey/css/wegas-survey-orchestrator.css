@@ -145,7 +145,7 @@
 }
 
 .wegas-panel-content.wegas-survey-settings .yui3-widget-bd .settings-line button {
-    width: fit-content;
+    width: auto;
 }
 
 .wegas-panel-content.wegas-survey-settings .yui3-widget-bd .settings-line button .icon {
