@@ -33,6 +33,7 @@ import com.wegas.survey.persistence.input.SurveySectionDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.ManyToMany;
@@ -91,6 +92,15 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     @JsonIgnore
     private List<SurveyToken> tokens;
 
+    /**
+     * True unless is should be hidden from trainer/scenarist listings
+     */
+    @Column(columnDefinition = "boolean default true")
+    @WegasEntityProperty(
+        optional = false, nullable = false, proposal = ValueGenerators.True.class,
+        view = @View(label = "isPublished"))
+    private Boolean isPublished = true;
+
     public SurveyDescriptor() {
         // ensure there is an empty constructor
     }
@@ -121,6 +131,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     public void setTokens(List<SurveyToken> tokens) {
         this.tokens = tokens;
     }
+
     public void removeToken(SurveyToken token) {
         this.tokens.remove(token);
     }
@@ -190,6 +201,14 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
         if (this.descriptionEnd != null) {
             this.descriptionEnd.setParentDescriptor(this);
         }
+    }
+
+    public Boolean getIsPublished() {
+        return isPublished;
+    }
+
+    public void setIsPublished(Boolean b) {
+        isPublished = b;
     }
 
 // ~~~~~~ Sugar for scripts ~~~~~~~~

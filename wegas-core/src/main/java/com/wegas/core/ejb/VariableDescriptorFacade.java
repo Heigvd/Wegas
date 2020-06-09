@@ -962,9 +962,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     }
 
     public VariableDescriptor cherryPick(Long targetId, String variableName, Long sourceId,
-        AbstractScope.ScopeType newScopeType) {
+        String targetVariableName, AbstractScope.ScopeType newScopeType) {
         return this.cherryPick(gameModelFacade.find(targetId),
-            variableName, gameModelFacade.find(sourceId), newScopeType);
+            variableName, gameModelFacade.find(sourceId), targetVariableName, newScopeType);
     }
 
     /**
@@ -976,25 +976,30 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * Such imported files may be renamed to avoid overriding files.
      *
      *
-     * @param target       the gameModel in which to import the variable
-     * @param variableName name (scriptAlias) of the variable to import
-     * @param source       the gameModel in which to pick the variable
-     * @param newScopeType optional
+     * @param target                the gameModel in which to import the variable
+     * @param variableName          name (scriptAlias) of the variable to import
+     * @param source                the gameModel in which to pick the variable
+     * @param targetVariableName    name (scriptAlias) of the variable to create
+     * @param newScopeType          optional
      *
      * @return
      */
     public VariableDescriptor cherryPick(GameModel target, String variableName, GameModel source,
-        AbstractScope.ScopeType newScopeType) {
+        String targetVariableName, AbstractScope.ScopeType newScopeType) {
 
+        if (targetVariableName.length() == 0) {
+            targetVariableName = variableName;
+        }
+        
         VariableDescriptor toImport;
         try {
             toImport = this.find(source, variableName);
             VariableDescriptor theVar;
             try {
-                theVar = this.find(target, variableName);
+                theVar = this.find(target, targetVariableName);
 
                 if (!theVar.getRefId().equals(toImport.getRefId())) {
-                    throw WegasErrorMessage.error("Variable " + variableName + " already exists");
+                    throw WegasErrorMessage.error("Variable " + targetVariableName + " already exists");
                 }
             } catch (WegasNoResultException ex) {
                 theVar = null;
@@ -1009,6 +1014,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             } else {
                 try {
                     theVar = (VariableDescriptor) toImport.duplicate();
+                    theVar.setName(targetVariableName);
 
                     if (newScopeType != null) {
                         // desc not yet persisted : do not care about instance when changing the scope
@@ -1032,7 +1038,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                             }
                         });
                     }
-
+                    
                     theVar = this.createChild(target, target,
                         theVar, false);
 

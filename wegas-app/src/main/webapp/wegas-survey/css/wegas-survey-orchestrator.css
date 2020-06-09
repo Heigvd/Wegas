@@ -1,0 +1,428 @@
+/*
+* Wegas
+* http://wegas.albasim.ch
+*
+* Copyright (c) 2020  School of Business and Engineering Vaud, Comem, MEI
+* Licensed under the MIT License
+*/
+
+
+.survey-orchestrator-parent {
+    background: #fafafa;
+}
+
+.wegas-survey-orchestrator {
+    margin: auto;
+    max-width: 1024px;
+}
+
+.wegas-survey-orchestrator-content {
+    margin: 20px 10px;
+}
+
+.wegas-survey-orchestrator .warning:not(:empty) {
+    font-weight: bold;
+    color: red;
+    border: 3px ridge red;
+    width: max-content;
+    padding: 10px;
+}
+
+.wegas-survey-orchestrator .survey-mixer {
+    border: 2px ridge #adceeb;
+    padding: 10px;
+    margin: 10px auto;
+    background: #e6f7ff;
+    border-radius: 8px;
+    min-width: 760px;
+}
+
+.wegas-survey-orchestrator .survey-mixer .close button {
+    float: right;
+    font-size: 14px;
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+}
+
+.wegas-survey-orchestrator .survey-mixer .search-runnable-surveys button {
+    border-radius: 50%;
+    margin-left: 5px;
+    border: 1px solid lightgray;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+}
+
+.wegas-survey-orchestrator .runnable-surveys .title {
+    margin-top: 20px;
+    margin-bottom: 2px;
+}
+
+.wegas-survey-orchestrator .runnable-surveys .title.standard {
+    margin-top: 4px;
+}
+
+.wegas-survey-orchestrator .title {
+    font-weight: bold;
+    font-size: 150%;
+    display: inline-block;
+}
+
+.wegas-survey-orchestrator .survey-mixer .runnable-surveys {
+    width: 100%;
+}
+
+.wegas-survey-orchestrator .survey-mixer .runnable-surveys .list:not(:empty) {
+    text-align: left;
+    color: #666;
+}
+
+.wegas-survey-orchestrator .survey-mixer .do-import {
+    text-align: right;
+}
+
+.wegas-survey-orchestrator .survey-mixer .do-import button {
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    color: black;
+}
+
+.wegas-survey-orchestrator .survey-mixer .do-import button:after {
+    content: '\f090';
+    font-family: FontAwesome;
+    display: inline-block;
+    font-size: 16px;
+    transform: rotate(90deg);
+    margin-left: 6px;
+    color: #009900;
+}
+
+.wegas-survey-orchestrator .runnable-survey,
+.wegas-survey-orchestrator .running-survey {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.wegas-survey-orchestrator .runnable-survey:hover {
+    background: #d6f2ff;
+}
+
+.wegas-survey-orchestrator .running-survey:hover {
+    background: #e5ffcc;
+}
+
+.wegas-survey-orchestrator .survey-header {
+    display: inline-block;
+    width: 50%;
+}
+
+.wegas-survey-orchestrator .survey-label {
+    font-weight: bold;
+    color: black;
+    display: inline;
+    text-overflow: ellipsis;
+}
+
+.wegas-survey-orchestrator .action-buttons {
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    width: calc( 100% - 50% - 5px );
+}
+
+.wegas-survey-orchestrator .action-buttons button,
+.wegas-panel-content.wegas-survey-settings .yui3-widget-bd .settings-line button {
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    width: 90px;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.wegas-panel-content.wegas-survey-settings .yui3-widget-bd .settings-line button {
+    width: fit-content;
+}
+
+.wegas-panel-content.wegas-survey-settings .yui3-widget-bd .settings-line button .icon {
+    min-height: unset;
+    padding-left: unset;
+}
+
+.wegas-survey-orchestrator .runnable-surveys .action-buttons button .icon,
+.wegas-panel-content.wegas-survey-settings .yui3-widget-bd .settings-line button .icon {
+    margin-right: 6px;
+}
+
+.wegas-panel-content.wegas-survey-settings .yui3-widget-bd .settings-line .settings-text {
+    
+}
+
+.wegas-survey-orchestrator .runnable-surveys .action-buttons .survey-settings button,
+.wegas-survey-orchestrator .runnable-surveys .action-buttons .survey-settings .no-button {
+    width: 26px;
+    border-radius: 50%;
+    padding: 0;
+}
+
+.wegas-survey-orchestrator .runnable-surveys .action-buttons .survey-settings button .icon {
+    vertical-align: 1px;
+    margin-right: 0;
+}
+
+.wegas-survey-orchestrator .runnable-surveys .action-buttons .survey-edit button .icon,
+.wegas-survey-settings .settings-line .survey-rename button .icon {
+    color: #286aa4;
+}
+
+.wegas-survey-orchestrator .runnable-surveys .action-buttons .survey-copy button .icon {
+    color: black;
+}
+
+.wegas-survey-orchestrator .runnable-surveys .action-buttons .survey-request button .icon,
+.wegas-survey-orchestrator .runnable-surveys .action-buttons .survey-invite button .icon,
+.wegas-survey-settings .settings-line .survey-share button .icon {
+    color: green;
+}
+
+.wegas-survey-settings .settings-line .survey-delete button .icon {
+    color: red;
+}
+
+.wegas-orchestrator-tooltip {
+    font-size: 14px;
+    padding: 1px 8px;
+    color: #6666aa;
+}
+
+.wegas-tooltip-content {
+    border-radius: 4px;
+}
+
+.wegas-survey-orchestrator .survey-comments {
+    display: inline;
+}
+
+.wegas-survey-orchestrator .survey-comments:before {
+    margin-left: 8px;
+    font-size: 16px;
+    vertical-align: -1px;
+    color: #3285cd;
+}
+
+.wegas-survey-orchestrator .running-surveys {
+    border: 2px ridge #8BC34A;
+    padding: 10px;
+    margin-top: 5px;
+    background: #f2ffe6;
+    border-radius: 8px;    
+    min-width: 760px;
+}
+
+.wegas-survey-orchestrator .running-surveys .list + .empty-message {
+    color: #666;
+}
+
+.wegas-survey-orchestrator .running-survey .survey-header .survey-title {
+    display: inline-block;
+    max-width: calc(100% - 90px);
+    font-size: 150%;
+    font-weight: bold;
+}
+
+.wegas-survey-orchestrator .running-survey .survey-header .survey-title .title-annotation {
+    padding-left: 8px;
+    font-size: 80%;
+    font-weight: normal;
+    color: #666;
+}
+
+.wegas-survey-orchestrator .running-survey .survey-cancel button {
+    border-radius: 50%;
+    border: 1px solid lightgray;
+    font-size: 14px;
+    padding: 0;
+    width: 26px;
+    height: 26px;
+}
+
+.wegas-survey-orchestrator .running-survey .survey-cancel button .icon {
+    color: orangered;
+    vertical-align: 1px;
+}
+
+.wegas-survey-orchestrator .running-survey .survey-details .icon:before {
+    vertical-align: 1px;
+    margin-right: 6px;
+    color: green;
+}
+
+@keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+            transform: rotate(359deg);
+  }
+}
+
+.wegas-survey-orchestrator button.spinner-icon .icon:not(.same-icon):before,
+.wegas-survey-settings button.spinner-icon .icon:not(.same-icon):before {
+    content: '\f110';
+    font-size: 16px;
+    color: orange;
+    filter: saturate(50);
+}
+
+.wegas-survey-orchestrator button.spinner-icon .icon,
+.wegas-survey-settings button.spinner-icon .icon {
+    animation: fa-spin 2s infinite linear;
+}
+
+.wegas-survey-orchestrator .running-survey .survey-refresh button {
+    border-radius: 4px;
+    border: 1px solid lightgray;
+    font-size: 14px;
+    padding: 1px 4px;
+    width: auto;
+}
+
+.wegas-survey-orchestrator .running-survey .status-bloc {
+    width: 155px;
+}
+
+.wegas-survey-orchestrator .running-survey .status-title {
+    font-weight: bold;
+}
+
+.wegas-survey-orchestrator .running-survey .edit-survey,
+.wegas-survey-orchestrator .running-survey .request-survey {
+    margin-left: 10px;
+}
+
+.wegas-survey-orchestrator .running-survey .edit-survey:before {
+    content: "\f0d0";
+    font-family: "FontAwesome";
+    padding-left: 2px;
+    padding-right: 6px;
+    color: blue;
+}
+
+.wegas-survey-orchestrator .running-survey .request-survey:before {
+    content: "\f04b";
+    font-family: "FontAwesome";
+    padding-left: 2px;
+    padding-right: 6px;
+    color: #009900;
+}
+
+.wegas-survey-orchestrator .running-survey .request-survey:hover {
+    background-image: linear-gradient(transparent,rgba(0,0,0,0.05) 40%,rgba(0,0,0,0.15));
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details,
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-settings {
+    border: 2px ridge #8BC34A;
+    box-shadow: 2px 2px 4px grey;
+    background: rgba(255,255,255,0.95);
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-settings {
+    border-color: #FFC107;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .yui3-widget-hd h2,
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-settings .yui3-widget-hd h2 {
+    display: inline-block;
+    margin-left: 8px;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .yui3-widget-hd .close,
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-settings .yui3-widget-hd .close{
+    float: right;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .yui3-widget-bd,
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-settings .yui3-widget-bd {
+    margin: 20px auto;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .yui3-widget-ft,
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-settings .yui3-widget-ft {
+    display: none;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .survey-details-spinner {
+    top: 0;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background: rgba(232, 232, 232, 0.85);
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .survey-details-spinner .fa-spin {
+    position: relative;
+    top: 25%;
+}
+
+.wegas-survey-details .teams-table {
+    display: inline-table;
+    border: 2px inset #adceeb;
+    min-width: 300px;
+}
+
+.wegas-survey-details .teams-table thead {
+    font-weight: bold;
+    font-style: italic;
+}
+
+.wegas-survey-details .teams-table thead tr {
+    height: 30px;
+}
+
+.wegas-survey-details .teams-table td {
+    padding: 4px 8px;
+    text-align: center;
+    border: 1px solid #DDD;
+}
+
+.wegas-survey-details .teams-table .newteam {
+    border-top: 2px inset #adceeb;
+}
+
+.wegas-survey-details .teams-table .teamname,
+.wegas-survey-details .teams-table .playername {
+    font-weight: bold;
+    text-align: left;
+}
+
+.wegas-survey-settings .settings-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 60%;
+    margin: 10px auto;
+}
+
+.wegas-survey-settings .settings-line .settings-text {
+    font-weight: bold;
+    text-align: left;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-alert {
+    border: 2px ridge darkorange;
+    box-shadow: -3px -3px 50px grey;
+    padding: 10px;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-success {
+    border: 2px ridge lightgreen;
+    box-shadow: -3px -3px 50px grey;
+    padding: 10px;
+}
