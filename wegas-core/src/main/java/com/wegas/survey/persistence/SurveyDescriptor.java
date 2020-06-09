@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -10,14 +11,19 @@ package com.wegas.survey.persistence;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.ejb.AccountFacade;
+import com.wegas.core.security.persistence.token.SurveyToken;
+import com.wegas.core.security.persistence.token.Token;
 import com.wegas.editor.ValueGenerators;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.view.Hidden;
@@ -29,6 +35,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Index;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
@@ -76,6 +83,14 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
         view = @View(value = Hidden.class, label = "Items"), notSerialized = true)
     private List<SurveySectionDescriptor> items = new ArrayList<>();
 
+    /**
+     * Invitation to participate in this survey sent by email
+     */
+    @ManyToMany
+    //@JsonView(Views.ExtendedI.class)
+    @JsonIgnore
+    private List<SurveyToken> tokens;
+
     public SurveyDescriptor() {
         // ensure there is an empty constructor
     }
@@ -87,6 +102,27 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     @JsonView(Views.ExportI.class)
     public List<SurveySectionDescriptor> getItems() {
         return this.items;
+    }
+
+    /**
+     * Get the list of invitation to participate
+     *
+     * @return inviation sent by email
+     */
+    public List<SurveyToken> getTokens() {
+        return tokens;
+    }
+
+    /**
+     * Set invitations
+     *
+     * @param tokens list of invitations
+     */
+    public void setTokens(List<SurveyToken> tokens) {
+        this.tokens = tokens;
+    }
+    public void removeToken(SurveyToken token) {
+        this.tokens.remove(token);
     }
 
     /**
@@ -294,4 +330,21 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
         return this.getInstance(p).getStatus() != SurveyStatus.CLOSED;
     }
 
+    @Override
+    public void updateCacheOnDelete(Beanjection beans) {
+        if (this.tokens != null) {
+            AccountFacade accountFacade = beans.getAccountFacade();
+
+            for (SurveyToken token : tokens) {
+                if (token != null) {
+                    Token find = accountFacade.findToken(token.getId());
+                    if (find instanceof SurveyToken) {
+                        ((SurveyToken) find).removeSurvey(this);
+                    }
+                }
+            }
+        }
+
+        super.updateCacheOnDelete(beans);
+    }
 }

@@ -269,6 +269,16 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     @JsonIgnore
+    public Player getAnySurveyPlayer() {
+        for (Player p : this.getPlayers()) {
+            if (p.getStatus().equals(Populatable.Status.SURVEY)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    @JsonIgnore
     @Override
     public Player getTestPlayer() {
         if (this instanceof DebugTeam) {
@@ -453,7 +463,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         this.invitations = invitations;
     }
 
-    public void removeInvitation(InviteToJoinToken invitation){
+    public void removeInvitation(InviteToJoinToken invitation) {
         this.invitations.remove(invitation);
     }
 

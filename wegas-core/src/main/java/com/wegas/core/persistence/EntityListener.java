@@ -8,6 +8,7 @@
  */
 package com.wegas.core.persistence;
 
+import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -73,10 +74,13 @@ public class EntityListener {
     @Inject
     private TeamFacade teamFacade;
 
+    @Inject
+    private GameFacade gameFacade;
+
     private Beanjection getBeansjection() {
         return new Beanjection(variableInstanceFacade, variableDescriptorFacade, resourceFacade,
             iterationFacade, reviewingFacade, userFacade, accountFacade,
-            teamFacade, questionDescriptorFacade);
+            teamFacade, questionDescriptorFacade, gameFacade);
     }
 
     @PrePersist

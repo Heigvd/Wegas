@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -12,9 +13,13 @@ import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.survey.persistence.SurveyDescriptor;
+import com.wegas.survey.persistence.input.SurveyInputDescriptor;
+import com.wegas.survey.persistence.input.SurveySectionDescriptor;
 import javax.persistence.Entity;
 
 /**
@@ -71,6 +76,14 @@ public class TeamScope extends AbstractScope<Team> {
     @Override
     protected void propagate(Team t, boolean create) {
         VariableDescriptor vd = this.getVariableDescriptor();
+
+        if (t.getStatus().equals(Status.SURVEY) && !(vd instanceof SurveyDescriptor
+            || vd instanceof SurveySectionDescriptor
+            || vd instanceof SurveyInputDescriptor)) {
+            // only proceed Survey related variable for SURVEY players
+            return;
+        }
+
         if (create) {
             try {
                 VariableInstance newInstance = vd.getDefaultInstance().duplicate();

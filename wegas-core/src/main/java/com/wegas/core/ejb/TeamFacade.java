@@ -130,6 +130,30 @@ public class TeamFacade extends BaseFacade<Team> {
         gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
     }
 
+    /**
+     * Internal use(eg. to create debug team)
+     *
+     * @param entity
+     */
+    public void createForSurvey(Team entity) {
+        Game game = entity.getGame();
+        game = gameFacade.find(game.getId());
+        game.addTeam(entity);
+        entity.setStatus(Status.SURVEY);
+
+        getEntityManager().persist(entity);
+        Player player = entity.getAnySurveyPlayer();
+
+        if (player != null) {
+            requestManager.setPlayer(player);
+        }
+
+        gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
+    }
+
+
+
+
     public List<Team> findTeamsToPopulate() {
         TypedQuery<Team> query = this.getEntityManager().createNamedQuery("Team.findToPopulate", Team.class);
         return query.getResultList();

@@ -14,6 +14,10 @@ package com.wegas.core.persistence.game;
 public interface Populatable {
 
     enum Status {
+        /**
+         * same as live but only populated with survey related instances
+         */
+        SURVEY,
         WAITING,
         RESCHEDULED,
         PROCESSING,

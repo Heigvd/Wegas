@@ -8,6 +8,7 @@
  */
 package com.wegas.core.persistence.variable;
 
+import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
@@ -46,6 +47,8 @@ public class Beanjection implements Serializable {
 
     private QuestionDescriptorFacade questionDescriptorFacade;
 
+    private GameFacade gameFacade;
+
     public Beanjection() {
         // ensure to have an empty constructor
     }
@@ -62,7 +65,8 @@ public class Beanjection implements Serializable {
         UserFacade userFacade,
         AccountFacade accountFacade,
         TeamFacade teamFacade,
-        QuestionDescriptorFacade questionDescriptorFacade) {
+        QuestionDescriptorFacade questionDescriptorFacade, 
+        GameFacade gameFacade) {
         this.variableInstanceFacade = variableInstanceFacade;
         this.variableDescriptorFacade = variableDescriptorFacade;
         this.resourceFacade = resourceFacade;
@@ -72,6 +76,7 @@ public class Beanjection implements Serializable {
         this.accountFacade = accountFacade;
         this.teamFacade = teamFacade;
         this.questionDescriptorFacade = questionDescriptorFacade;
+        this.gameFacade = gameFacade;
     }
 
     public VariableInstanceFacade getVariableInstanceFacade() {
@@ -146,4 +151,11 @@ public class Beanjection implements Serializable {
         this.accountFacade = accountFacade;
     }
 
+    public void setGameFacade(GameFacade gameFacade) {
+        this.gameFacade = gameFacade;
+    }
+
+    public GameFacade getGameFacade() {
+        return gameFacade;
+    }
 }

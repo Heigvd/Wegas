@@ -15,6 +15,7 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.aai.AaiAccount;
@@ -27,11 +28,13 @@ import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.token.Token;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.persistence.token.InviteToJoinToken;
+import com.wegas.core.security.persistence.token.SurveyToken;
 import com.wegas.core.security.persistence.token.ValidateAddressToken;
 import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.Sudoer;
 import com.wegas.core.security.util.TokenInfo;
 import com.wegas.messaging.ejb.EMailFacade;
+import com.wegas.survey.persistence.SurveyDescriptor;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.ejb.EJBException;
@@ -587,7 +590,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     private void setupAndAssertTokenAccount(Long tokenId) {
         Subject subject = SecurityUtils.getSubject();
 
-        if (!Helper.isLoggedIn(subject)){
+        if (!Helper.isLoggedIn(subject)) {
             throw WegasErrorMessage.error("Please log in to consume token");
         }
 
@@ -789,6 +792,96 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
+     * Trainer send invitation to participate in a survey. Such invitation will force to log with an
+     * anonymous guest account.
+     *
+     * @param email   email address to send the link to
+     * @param surveys
+     * @param request http request is required to generate the link to send
+     */
+    public void sendSurveyAnonymousToken(String email, List<SurveyDescriptor> surveys,
+        HttpServletRequest request) {
+
+        SurveyToken token = new SurveyToken();
+        token.setToken(Helper.genToken(128));
+
+        token.setSurveys(surveys);
+        // force anonymous (guest) login
+        token.setAccount(null);
+        token.setAutoLogin(true);
+
+        // never exipire
+        token.setExpiryDate(null);
+        // can be used as many times as desired
+        token.setRemainingUses(null);
+
+        String sender = requestManager.getCurrentUser().getMainAccount().getName();
+
+        this.persistAndSendDisposableToken(token, request, email, sender,
+            "[Albasim Wegas] Survey",
+            "Hi " + email + ", <br /><br />Click <a href='{{link}}'>here</a> to participate in a survey");
+    }
+
+    /**
+     *
+     * Trainer send invitation to participate in a survey anonymously to all game players
+     *
+     * @param account
+     * @param request http request is required to generate the link to send
+     */
+    public void sendSurveyAnonymousToken(AbstractAccount account, List<SurveyDescriptor> surveys,
+        HttpServletRequest request) {
+
+        SurveyToken token = new SurveyToken();
+        token.setToken(Helper.genToken(128));
+
+        token.setSurveys(surveys);
+        // do not link to given account to force guest login
+        token.setAccount(null);
+        token.setAutoLogin(true);
+
+        // never exipire
+        token.setExpiryDate(null);
+        // can be used as many times as desired
+        token.setRemainingUses(null);
+
+        String sender = requestManager.getCurrentUser().getMainAccount().getName();
+
+        this.persistAndSendDisposableToken(token, request, account.getEmail(), sender,
+            "[Albasim Wegas] Survey",
+            "Hi " + account.getName() + ", <br /><br />Click <a href='{{link}}'>here</a> to participate in a survey");
+    }
+
+    /**
+     * Trainer send invitation to participate in a survey
+     *
+     * @param account
+     * @param request http request is required to generate the link to send
+     */
+    public void sendSurveyToken(AbstractAccount account, List<SurveyDescriptor> surveys,
+        HttpServletRequest request) {
+
+        SurveyToken token = new SurveyToken();
+        token.setToken(Helper.genToken(128));
+
+        token.setSurveys(surveys);
+        // link to given account
+        token.setAccount(account);
+        token.setAutoLogin(true);
+
+        // never exipire
+        token.setExpiryDate(null);
+        // can be used as many times as desired
+        token.setRemainingUses(null);
+
+        String sender = requestManager.getCurrentUser().getMainAccount().getName();
+
+        this.persistAndSendDisposableToken(token, request, account.getEmail(), sender,
+            "[Albasim Wegas] Survey",
+            "Hi " + account.getName() + ", <br /><br />Click <a href='{{link}}'>here</a> to participate in a survey");
+    }
+
+    /**
      * Send a disposable token by e-mail to a user.
      *
      * @param request               current http request is used to guess the public hostname to
@@ -922,6 +1015,26 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                         // redirect to join team modale but such a config is quite strange
                     }
                 }
+            }
+        }
+    }
+
+    public void processSurveyToken(SurveyToken token, HttpServletRequest request) {
+        if (token != null) {
+
+            GameModel gameModel = token.getGameModel();
+            if (gameModel.isPlay()) {
+                User user = requestManager.getCurrentUser();
+                Long userId = user.getId();
+
+                Player player = playerFacade.findPlayerInGameModel(gameModel.getId(), userId);
+                if (player == null) {
+                    // join as SurveyPlayer
+                    ArrayList<Locale> languages = request != null ? Collections.list(request.getLocales()) : null;
+                    gameFacade.joinForSurvey(gameModel.getGames().get(0), languages);
+                }
+            } else {
+                throw WegasErrorMessage.error("Invitiation only works for real game");
             }
         }
     }

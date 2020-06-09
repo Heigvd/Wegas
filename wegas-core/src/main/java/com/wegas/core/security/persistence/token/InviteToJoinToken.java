@@ -9,8 +9,10 @@
 package com.wegas.core.security.persistence.token;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
@@ -80,5 +82,18 @@ public class InviteToJoinToken extends Token {
     @Override
     public void process(AccountFacade accountFacade, HttpServletRequest request) {
         accountFacade.processJoin(this, request);
+    }
+
+    @Override
+    public void updateCacheOnDelete(Beanjection beans) {
+        if (this.game != null) {
+            GameFacade gameFacade = beans.getGameFacade();
+            Game find = gameFacade.find(game.getId());
+            if (find != null) {
+                game.removeInvitation(this);
+            }
+        }
+
+        super.updateCacheOnDelete(beans);
     }
 }

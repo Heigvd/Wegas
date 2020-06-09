@@ -21,6 +21,7 @@ import com.wegas.core.persistence.game.Game.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -422,4 +424,57 @@ public class GameController {
             workbook.close();
         }
     }
+
+    /**
+     * Invite all LIVE player to participate in a survey
+     *
+     * @param request
+     * @param gameId
+     * @param surveyIds ids of survey descriptors, comma separated list
+     *
+     * @return account for which an invitation has been sent
+     */
+    @GET
+    @Path("InvitePlayersInSurvey/{surveyIds: .*}")
+    public List<AbstractAccount> inviteInSurvey(@Context HttpServletRequest request,
+        @PathParam("surveyIds") String surveyIds
+    ) {
+        return gameFacade.sendSurveysInvitation(request, surveyIds);
+    }
+
+    /**
+     * Invite all LIVE player to participate in a survey anonymously
+     *
+     * @param request
+     * @param gameId
+     * @param surveyIds ids of survey descriptors, comma separated list
+     *
+     * @return account for which an invitation has been sent
+     */
+    @GET
+    @Path("InvitePlayersInSurveyAnonymously/{surveyIds: .*}")
+    public void inviteInSurveyAnonymously(@Context HttpServletRequest request,
+        @PathParam("surveyIds") String surveyIds
+    ) {
+        gameFacade.sendSurveysInvitationAnonymously(request, surveyIds);
+    }
+
+    /**
+     * Invite given email addresses to participate in a survey anonymously
+     *
+     * @param request
+     * @param gameId
+     * @param surveyIds ids of survey descriptors, comma separated list
+     *
+     * @return account for which an invitation has been sent
+     */
+    @GET
+    @Path("InviteInSurveyAnonymously/{surveyIds: .*}")
+    public void inviteInSurveyAnonymously(@Context HttpServletRequest request,
+        @PathParam("surveyIds") String surveyIds,
+        List<String> recipients
+    ) {
+        gameFacade.sendSurveysInvitationAnonymously(request, surveyIds);
+    }
+
 }

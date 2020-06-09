@@ -25,16 +25,22 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.persistence.token.SurveyToken;
+import com.wegas.survey.persistence.SurveyDescriptor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -44,6 +50,7 @@ import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import javax.servlet.http.HttpServletRequest;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -97,10 +104,16 @@ public class GameFacade extends BaseFacade<Game> {
     private UserFacade userFacade;
 
     @Inject
+    private AccountFacade accountFacade;
+
+    @Inject
     private PopulatorScheduler populatorScheduler;
 
     @Inject
     private PopulatorFacade populatorFacade;
+
+    @Inject
+    private VariableDescriptorFacade variableDescriptorFacade;
 
     @Inject
     private StateMachineFacade stateMachineFacade;
@@ -490,6 +503,181 @@ public class GameFacade extends BaseFacade<Game> {
         p.setQueueSize(populatorFacade.getQueue().indexOf(p) + 1);
 
         return p;
+    }
+
+    /**
+     * Join the game to participate in surveys. It means creating a brand new team, named after
+     * user's name, and joining that very team. The game does not need to be in freeForAll mode to
+     * use this method. A survey player will only have a subset of the variable initialised
+     *
+     * @param game      the game to join
+     * @param languages list of user preferred languages
+     *
+     * @return the brand new player
+     */
+    public Player joinForSurvey(Game game, List<Locale> languages) {
+        User currentUser = userFacade.getCurrentUser();
+
+        Team team = new Team(teamFacade.findUniqueNameForTeam(game, currentUser.getName()), 1);
+        team.setGame(game);
+
+        team.setStatus(Status.SURVEY);
+
+        Player player = new Player();
+        player.setStatus(Status.SURVEY);
+        player.setUser(currentUser);
+
+
+        GameModelLanguage lang = playerFacade.findPreferredLanguages(game.getGameModel(), languages);
+
+        player.setLang(lang.getCode());
+
+        team.addPlayer(player);
+
+        teamFacade.createForSurvey(team);
+
+        return player;
+    }
+
+    /**
+     * Return all accounts with valid email address linked to LIVE players of the given game.
+     *
+     * @param game
+     *
+     * @return
+     */
+    private List<AbstractAccount> getPlayerAccounstWithEmail(Game game) {
+        return game.getLivePlayers().stream()
+            .map(p -> p.getUser())
+            .filter(u -> u != null)
+            .map(u -> u.getMainAccount())
+            .filter(account -> account != null && !Helper.isNullOrEmpty(account.getEmail()))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Get the one game from a list of surveys.
+     *
+     * @param surveys
+     *
+     * @return the game
+     *
+     * @throws WegasErrorMessage surveys belong to different games or no game found
+     */
+    public Game getGameFromSurveys(List<SurveyDescriptor> surveys) {
+        GameModel gm = SurveyToken.getUniqueGameModel(surveys);
+
+        if (gm != null) {
+            if (!gm.getGames().isEmpty()) {
+                return gm.getGames().get(0);
+            } else {
+                throw WegasErrorMessage.error("No game in the gameModel");
+            }
+        } else {
+            throw WegasErrorMessage.error("Surveys belong to different gamemodels");
+        }
+    }
+
+    /**
+     * Send invitation to participate in a survey. An invitation will be sent to all LIVE players
+     * which have a valid email address. Invitation will force users to log-in with their very own
+     * account.
+     * <p>
+     * Such survey is made of several SurveyDescriptor. All SurveyDescriptor must belong to the same
+     * gameModel. must belongs to the same game model.
+     *
+     * @param surveys surveys
+     * @param request need request to generate the link
+     *
+     * @throws WegasErrorMessage if 1) surveys belong to different GameModel; 2) no game; 3) no
+     *                           account
+     */
+    public List<AbstractAccount> sendSurveysInvitation(List<SurveyDescriptor> surveys,
+        HttpServletRequest request) {
+        Game game = getGameFromSurveys(surveys);
+        List<AbstractAccount> accounts = getPlayerAccounstWithEmail(game);
+        if (!accounts.isEmpty()) {
+            for (AbstractAccount account : accounts) {
+                accountFacade.sendSurveyToken(account, surveys, request);
+            }
+            return accounts;
+        } else {
+            throw WegasErrorMessage.error("Unable to find account with email addresses");
+        }
+    }
+
+    private List<SurveyDescriptor> loadSurveys(String ids) {
+        return Arrays.stream(ids.split(","))
+            .map(sId -> (SurveyDescriptor) variableDescriptorFacade.find(Long.parseLong(sId.trim())))
+            .collect(Collectors.toList());
+    }
+
+    public List<AbstractAccount> sendSurveysInvitation(HttpServletRequest request,
+        String surveyIds) {
+
+        List<SurveyDescriptor> surveys = this.loadSurveys(surveyIds);
+
+        return this.sendSurveysInvitation(surveys, request);
+    }
+
+    public void sendSurveysInvitationAnonymously(HttpServletRequest request,
+        String surveyIds) {
+
+        List<SurveyDescriptor> surveys = this.loadSurveys(surveyIds);
+
+        this.sendSurveysAnonymousInvitation(surveys, request);
+    }
+
+    /**
+     * Send invitation to participate in a survey. An invitation will be sent to all LIVE players
+     * which have a valid email address. Invitation will force users to log-in with brand new
+     * anonymous guest accounts.
+     * <p>
+     * Such survey is made of several SurveyDescriptor. All SurveyDescriptor must belong to the same
+     * gameModel. must belongs to the same game model.
+     *
+     * @param surveys surveys
+     * @param request need request to generate the link
+     *
+     * @throws WegasErrorMessage if 1) surveys belong to different GameModel; 2) no game; 3) no
+     *                           account
+     */
+    public void sendSurveysAnonymousInvitation(List<SurveyDescriptor> surveys,
+        HttpServletRequest request
+    ) {
+        Game game = getGameFromSurveys(surveys);
+        List<AbstractAccount> accounts = getPlayerAccounstWithEmail(game);
+        if (!accounts.isEmpty()) {
+            for (AbstractAccount account : accounts) {
+                accountFacade.sendSurveyAnonymousToken(account, surveys, request);
+            }
+        } else {
+            throw WegasErrorMessage.error("Unable to find account with email addresses");
+        }
+    }
+
+    /**
+     * Send invitation to participate in a survey. One invitation will be sent to each recipient
+     * address. Such survey is made of several SurveyDescriptor.All SurveyDescriptor must belong to
+     * the same gameModel. must belongs to the same game model.
+     *
+     * @param surveys    surveys
+     * @param recipients list of email addresses
+     * @param request    need request to generate the link
+     *
+     * @throws WegasErrorMessage if 1) surveys belong to different GameModel; 2) no game; 3) no
+     *                           account
+     */
+    public void sendSurveysAnonymousInvitation(List<SurveyDescriptor> surveys,
+        List<String> recipients,
+        HttpServletRequest request) {
+        if (!recipients.isEmpty()) {
+            for (String recipient : recipients) {
+                accountFacade.sendSurveyAnonymousToken(recipient, surveys, request);
+            }
+        } else {
+            throw WegasErrorMessage.error("Unable to find account with email addresses");
+        }
     }
 
     /**

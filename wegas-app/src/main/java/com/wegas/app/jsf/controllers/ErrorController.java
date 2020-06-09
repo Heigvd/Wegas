@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -62,6 +63,10 @@ public class ErrorController implements Serializable {
     }
 
     public void accessDenied() {
+        this.dispatch("Access Denied", "You do not have access to this game");
+    }
+
+    public void accessForSurveyOnly() {
         this.dispatch("Access Denied", "You do not have access to this game");
     }
 
