@@ -20,15 +20,15 @@ const DEFAULT_FLEX_WRAP = 1000;
 const containerStyle = css({
   [`&>.${SPLITTER_SELECTOR}.${HORIZONTAL_SELECTOR}`]: {
     height: 'auto',
-    minWidth: themeVar.FonkyFlex.dimensions.SplitterSize,
-    maxWidth: themeVar.FonkyFlex.dimensions.SplitterSize,
+    minWidth: themeVar.Splitter.dimensions.SplitterSize,
+    maxWidth: themeVar.Splitter.dimensions.SplitterSize,
     borderLeft: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
     borderRight: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
     cursor: 'col-resize',
   },
   [`&>.${SPLITTER_SELECTOR}.${VERTICAL_SELECTOR}`]: {
-    minHeight: themeVar.FonkyFlex.dimensions.SplitterSize,
-    maxHeight: themeVar.FonkyFlex.dimensions.SplitterSize,
+    minHeight: themeVar.Splitter.dimensions.SplitterSize,
+    maxHeight: themeVar.Splitter.dimensions.SplitterSize,
     borderTop: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
     borderBottom: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
     width: 'auto',
@@ -37,7 +37,7 @@ const containerStyle = css({
 });
 
 const splitterStyle = css({
-  backgroundColor: themeVar.FonkyFlex.colors.SplitterColor,
+  backgroundColor: themeVar.Common.colors.MainColor,
 });
 
 export const defaultFlexContainerStyle: React.CSSProperties = {

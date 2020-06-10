@@ -26,12 +26,12 @@ import { themeVar } from '../../../Components/Style/ThemeVars';
 const clickableStyle = css({
   cursor: 'pointer',
   ':hover': {
-    backgroundColor: themeVar.FileBrowser.colors.NodeHoverColor,
+    backgroundColor: themeVar.Common.colors.BackgroundColor,
   },
 });
 
 const disabledStyle = css({
-  color: themeVar.FileBrowser.colors.NodeDisabledColor,
+  color: themeVar.Common.colors.DisabledColor,
 });
 
 const dropZoneStyle = css({

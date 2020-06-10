@@ -29,18 +29,18 @@ const numberSquareStyle = css({
 });
 
 const activeNumberSquareStyle = css({
-  backgroundColor: themeVar.NumberBox.colors.SquareColor,
+  backgroundColor: themeVar.Common.colors.MainColor,
 });
 
 const clickableNumberSquareStyle = css({
   cursor: 'pointer',
   ':hover': {
-    borderColor: themeVar.NumberBox.colors.SquareBorderHoverColor,
+    borderColor: themeVar.Common.colors.MainColor,
   },
 });
 
 const disabledNumberSquareStyle = css({
-  backgroundColor: themeVar.NumberBox.colors.SquareDisabledColor,
+  backgroundColor: themeVar.Common.colors.DisabledColor,
 });
 
 const squareFrameStyle = css({

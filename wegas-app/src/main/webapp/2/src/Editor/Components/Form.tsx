@@ -1,7 +1,7 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
-import { defaultPadding, expandBoth, noOverflow } from '../../css/classes';
+import { defaultMargin, expandBoth, noOverflow } from '../../css/classes';
 import './FormView';
 import { Button, ButtonProps } from '../../Components/Inputs/Buttons/Button';
 import { wlog } from '../../Helper/wegaslog';
@@ -113,7 +113,7 @@ export class Form<T> extends React.Component<
           })}
         </Toolbar.Header>
         <Toolbar.Content className={noOverflow}>
-          <div className={defaultPadding}>
+          <div className={defaultMargin}>
             <JSONForm
               ref={n => {
                 if (n != null) {

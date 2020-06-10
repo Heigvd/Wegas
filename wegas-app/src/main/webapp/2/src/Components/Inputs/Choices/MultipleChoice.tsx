@@ -6,10 +6,10 @@ import { InputProps } from '../SimpleInput';
 import { themeVar } from '../../Style/ThemeVars';
 
 const choiceStyle = css({
-  backgroundColor: themeVar.MultipleChoice.colors.ChoiceColor,
+  backgroundColor: themeVar.Common.colors.MainColor,
   margin: '2px',
   ':hover': {
-    backgroundColor: themeVar.MultipleChoice.colors.ChoiceHoverColor,
+    backgroundColor: themeVar.Common.colors.MainColor,
   },
 });
 
@@ -22,16 +22,16 @@ const unusableChoiceStyle = css({
 });
 
 const selectedChoiceStyle = css({
-  backgroundColor: themeVar.MultipleChoice.colors.SelectedChoiceColor,
+  backgroundColor: themeVar.Common.colors.ActiveColor,
   ':hover': {
-    backgroundColor: themeVar.MultipleChoice.colors.SelectedChoiceHoverColor,
+    backgroundColor: themeVar.Common.colors.HoverColor,
   },
 });
 const disabledChoiceStyle = css({
-  backgroundColor: themeVar.MultipleChoice.colors.DisabledChoiceColor,
-  ':hover': {
-    backgroundColor: themeVar.MultipleChoice.colors.DisabledChoiceHoverColor,
-  },
+  backgroundColor: themeVar.Common.colors.DisabledColor,
+  // ':hover': {
+  //   backgroundColor: themeVar.Common.colors.DisabledChoiceHoverColor,
+  // },
 });
 
 export interface Choices<T> {

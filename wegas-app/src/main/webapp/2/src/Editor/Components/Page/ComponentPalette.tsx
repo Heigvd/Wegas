@@ -16,7 +16,7 @@ const componentStyle = css({
   padding: '10px',
   height: 'fit-content',
   width: 'fit-content',
-  backgroundColor: themeVar.ComponentPalette.colors.ComponentColor,
+  backgroundColor: themeVar.Common.colors.HeaderColor,
   margin: '5px',
   display: 'inline-block',
   cursor: 'pointer',

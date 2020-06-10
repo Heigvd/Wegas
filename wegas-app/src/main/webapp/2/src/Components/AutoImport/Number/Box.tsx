@@ -8,8 +8,8 @@ import {
 import { themeVar } from '../../Style/ThemeVars';
 
 const boxStyle = css({
-  backgroundColor: themeVar.NumberValue.colors.BackgroundColor,
-  color: themeVar.NumberValue.colors.TextColor,
+  backgroundColor: themeVar.Common.colors.HeaderColor,
+  color: themeVar.Common.colors.TextColor,
   display: 'inline-block',
   width: '1ex',
   height: '1ex',

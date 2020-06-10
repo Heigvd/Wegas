@@ -38,7 +38,7 @@ import { StringLiteral } from '@babel/types';
 import { themeVar } from '../../../../../Components/Style/ThemeVars';
 
 const expressionEditorStyle = css({
-  backgroundColor: themeVar.ScriptEditor.colors.BackgroundColor,
+  backgroundColor: themeVar.Common.colors.HeaderColor,
   marginTop: '0.8em',
   padding: '2px',
   div: {

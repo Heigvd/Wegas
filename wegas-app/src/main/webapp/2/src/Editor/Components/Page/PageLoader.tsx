@@ -15,8 +15,8 @@ const editStyle = (editMode?: boolean) =>
     borderStyle: 'solid',
     borderWidth: '30px',
     borderColor: editMode
-      ? themeVar.PageLoader.colors.ActiveEditionColor
-      : themeVar.PageLoader.colors.InactiveEditionColor,
+      ? themeVar.Common.colors.MainColor
+      : themeVar.Common.colors.BorderColor,
     overflow: 'auto',
   });
 

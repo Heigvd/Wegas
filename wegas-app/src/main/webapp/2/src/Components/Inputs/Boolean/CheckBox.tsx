@@ -10,10 +10,10 @@ const checkboxStyle = (disabled?: boolean, readOnly?: boolean) =>
   css({
     cursor: disabled || readOnly ? 'default' : 'pointer',
     color: disabled
-      ? themeVar.Checkbox.colors.DisabledTextColor
+      ? themeVar.Common.colors.DisabledColor
       : readOnly
-      ? themeVar.Checkbox.colors.ReadonlyTextColor
-      : themeVar.Checkbox.colors.TextColor,
+      ? themeVar.Common.colors.HeaderColor
+      : themeVar.Common.colors.TextColor,
   });
 
 export interface CheckBoxProps extends InputProps<boolean> {

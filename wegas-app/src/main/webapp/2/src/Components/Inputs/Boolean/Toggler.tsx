@@ -22,8 +22,8 @@ const togglerStyle = (
       ? themeVar.Common.colors.DisabledColor
       : themeVar.Common.colors.BorderColor,
     backgroundColor: checked
-      ? themeVar.Toggler.colors.CheckedColor
-      : themeVar.Toggler.colors.UncheckedColor,
+      ? themeVar.Common.colors.SuccessColor
+      : themeVar.Common.colors.ErrorColor,
     cursor: disabled || readOnly ? 'default' : 'pointer',
     margin: 'auto',
   });
@@ -34,8 +34,8 @@ const handleStyle = (disabled?: boolean) =>
     minWidth: '20px',
     height: '20px',
     backgroundColor: disabled
-      ? themeVar.Toggler.colors.HandleDisabledColor
-      : themeVar.Toggler.colors.HandleColor,
+      ? themeVar.Common.colors.DisabledColor
+      : themeVar.Common.colors.MainColor,
   });
 
 export interface TogglerProps extends InputProps<boolean> {

@@ -19,10 +19,10 @@ interface TabInternalProps {
    * active - the state of the tab
    */
   active?: boolean;
-  /**
-   * children - the content of the tab
-   */
-  children?: React.ReactChild | null;
+  // /**
+  //  * children - the content of the tab
+  //  */
+  // children?: React.ReactChild | null;
   /**
    * onClick - the function to be called when the tab is clicked
    */
@@ -35,7 +35,7 @@ interface TabInternalProps {
 
 type TabProps = React.PropsWithChildren<TabInternalProps>;
 
-export const Tab = React.forwardRef(
+export const Tab = React.forwardRef<HTMLDivElement, TabProps>(
   (props: TabProps, ref: React.RefObject<HTMLDivElement>) => (
     <div
       ref={ref}

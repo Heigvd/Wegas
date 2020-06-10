@@ -64,6 +64,7 @@ export interface Mode {
         ActiveColor: ModeColor;
         BackgroundColor: ModeColor;
         TextColor: ModeColor;
+        SecondaryTextColor: ModeColor;
         DisabledColor: ModeColor;
         BorderColor: ModeColor;
         HighlightColor: ModeColor;
@@ -72,138 +73,12 @@ export interface Mode {
         HoverTextColor: ModeColor;
         WarningColor: ModeColor;
         SuccessColor: ModeColor;
+        ErrorColor: ModeColor;
       },
       { BorderWidth: ModeDimension; BorderRadius: ModeDimension },
       { TextFont: ModeOther }
     >;
-    FonkyFlex: ModeComponent<
-      {
-        SplitterColor: ModeColor;
-      },
-      { SplitterSize: ModeDimension }
-    >;
-    DragAndDrop: ModeComponent<{
-      DropZoneColor: ModeColor;
-      DropZoneHoverColor: ModeColor;
-    }>;
-    Selection: ModeComponent<
-      {
-        LocalSelectionColor: ModeColor;
-        GlobalSelectionColor: ModeColor;
-        SearchSelectionColor: ModeColor;
-      },
-      { SelectionRadius: ModeDimension }
-    >;
-    NumberBox: ModeComponent<{
-      SquareBorderHoverColor: ModeColor;
-      SquareColor: ModeColor;
-      SquareDisabledColor: ModeColor;
-    }>;
-    Question: ModeComponent<{
-      ChoiceTextColor: ModeColor;
-      DisabledQuestionColor: ModeColor;
-    }>;
-    Checkbox: ModeComponent<{
-      TextColor: ModeColor;
-      DisabledTextColor: ModeColor;
-      ReadonlyTextColor: ModeColor;
-    }>;
-    StateMachineEditor: ModeComponent<{
-      SearchColor: ModeColor;
-      RelationColor: ModeColor;
-      RelationHoverColor: ModeColor;
-      ActiveStateColor: ModeColor;
-    }>;
-    CodeEditor: ModeComponent<{
-      DiffEditorLabelColor: ModeColor;
-    }>;
-    InfoBeam: ModeComponent<{
-      TextColor: ModeColor;
-      BackgroundColor: ModeColor;
-    }>;
-    PageLayout: ModeComponent<
-      {
-        SelectedIndexItemColor: ModeColor;
-        SelectedComponentColor: ModeColor;
-        FocusedComponentColor: ModeColor;
-        ActiveIconColor: ModeColor;
-      },
-      { TitleRadius: ModeDimension }
-    >;
-    PageLoader: ModeComponent<{
-      ActiveEditionColor: ModeColor;
-      InactiveEditionColor: ModeColor;
-    }>;
-    EditableComponent: ModeComponent<{
-      DisabledColor: ModeColor;
-      BorderHoverColor: ModeColor;
-      FocusedColor: ModeColor;
-    }>;
-    NumberSlider: ModeComponent<{ ActiveColor: ModeColor }>;
-    Toggler: ModeComponent<{
-      BorderDisabledColor: ModeColor;
-      CheckedColor: ModeColor;
-      UncheckedColor: ModeColor;
-      HandleColor: ModeColor;
-      HandleDisabledColor: ModeColor;
-    }>;
-    MessageString: ModeComponent<{
-      NormalColor: ModeColor;
-      SuccessColor: ModeColor;
-      WarningColor: ModeColor;
-      ErrorColor: ModeColor;
-    }>;
-    LanguageEditor: ModeComponent<{
-      EditionTextColor: ModeColor;
-      SimpleTextColor: ModeColor;
-    }>;
-    FileBrowser: ModeComponent<
-      {
-        NodeHoverColor: ModeColor;
-        NodeDisabledColor: ModeColor;
-        BackgroundColor: ModeColor;
-      },
-      { BorderRadius: ModeDimension }
-    >;
-    TabLayout: ModeComponent<{
-      MenuTextColor: ModeColor;
-      MenuBackgroundColor: ModeColor;
-      TabColor: ModeColor;
-      ActiveTabColor: ModeColor;
-      TabTextColor: ModeColor;
-      ActiveTabTextColor: ModeColor;
-    }>;
-    ComponentPalette: ModeComponent<{
-      ComponentColor: ModeColor;
-    }>;
-    ScriptEditor: ModeComponent<{
-      BackgroundColor: ModeColor;
-    }>;
-    EntityChooser: ModeComponent<{
-      ActiveBackgroundColor: ModeColor;
-      InactiveBackgroundColor: ModeColor;
-      ActiveTextColor: ModeColor;
-      InactiveTextColor: ModeColor;
-    }>;
-    MultipleChoice: ModeComponent<{
-      ChoiceColor: ModeColor;
-      ChoiceHoverColor: ModeColor;
-      SelectedChoiceColor: ModeColor;
-      SelectedChoiceHoverColor: ModeColor;
-      DisabledChoiceColor: ModeColor;
-      DisabledChoiceHoverColor: ModeColor;
-    }>;
-    Gauge: ModeComponent<{
-      PositiveColor: ModeColor;
-      NegativeColor: ModeColor;
-      DisabledColor: ModeColor;
-      NeedleColor: ModeColor;
-      WarningColor: ModeColor;
-    }>;
-    NumberValue: ModeComponent<{
-      BackgroundColor: ModeColor;
-      TextColor: ModeColor;
-    }>;
+    Splitter: ModeComponent<undefined, { SplitterSize: ModeDimension }>;
   };
 }
 
@@ -226,8 +101,10 @@ export const defaultLightMode: Mode = {
         HoverColor: 'Hover color',
         HoverTextColor: 'Secondary text color',
         TextColor: 'Text color',
+        SecondaryTextColor: 'Secondary text color',
         WarningColor: 'Warning color',
         SuccessColor: 'Success color',
+        ErrorColor: 'Error color',
       },
       dimensions: {
         BorderRadius: 'Border radius',
@@ -237,182 +114,9 @@ export const defaultLightMode: Mode = {
         TextFont: 'Font family',
       },
     },
-    FonkyFlex: {
-      colors: {
-        SplitterColor: 'Main color',
-      },
+    Splitter: {
       dimensions: {
         SplitterSize: 'Border width',
-      },
-    },
-    DragAndDrop: {
-      colors: {
-        DropZoneColor: 'Hover color',
-        DropZoneHoverColor: 'Success color',
-      },
-    },
-    Selection: {
-      colors: {
-        LocalSelectionColor: 'Main color',
-        GlobalSelectionColor: 'Secondary color',
-        SearchSelectionColor: 'Highlight color',
-      },
-      dimensions: {
-        SelectionRadius: 'Border radius',
-      },
-    },
-    NumberBox: {
-      colors: {
-        SquareBorderHoverColor: 'Text color',
-        SquareColor: 'Main color',
-        SquareDisabledColor: 'Disabled color',
-      },
-    },
-    Question: {
-      colors: {
-        ChoiceTextColor: 'Text color',
-        DisabledQuestionColor: 'Disabled color',
-      },
-    },
-    Checkbox: {
-      colors: {
-        TextColor: 'Text color',
-        DisabledTextColor: 'Disabled color',
-        ReadonlyTextColor: 'Secondary color',
-      },
-    },
-    StateMachineEditor: {
-      colors: {
-        RelationColor: 'Main color',
-        RelationHoverColor: 'Secondary color',
-        SearchColor: 'Highlight color',
-        ActiveStateColor: 'Warning color',
-      },
-    },
-    CodeEditor: {
-      colors: {
-        DiffEditorLabelColor: 'Main color',
-      },
-    },
-    InfoBeam: {
-      colors: {
-        TextColor: 'Text color',
-        BackgroundColor: 'Warning color',
-      },
-    },
-    PageLayout: {
-      colors: {
-        ActiveIconColor: 'Success color',
-        FocusedComponentColor: 'Hover color',
-        SelectedComponentColor: 'Main color',
-        SelectedIndexItemColor: 'Secondary color',
-      },
-      dimensions: {
-        TitleRadius: 'Border radius',
-      },
-    },
-    PageLoader: {
-      colors: {
-        ActiveEditionColor: 'Hover color',
-        InactiveEditionColor: 'Disabled color',
-      },
-    },
-    EditableComponent: {
-      colors: {
-        BorderHoverColor: 'Main color',
-        DisabledColor: 'Disabled color',
-        FocusedColor: 'Hover color',
-      },
-    },
-    NumberSlider: {
-      colors: {
-        ActiveColor: 'Main color',
-      },
-    },
-    Toggler: {
-      colors: {
-        BorderDisabledColor: 'Disabled color',
-        CheckedColor: 'Success color',
-        UncheckedColor: 'Error color',
-        HandleColor: 'Main color',
-        HandleDisabledColor: 'Disabled color',
-      },
-    },
-    MessageString: {
-      colors: {
-        NormalColor: 'Text color',
-        SuccessColor: 'Success color',
-        WarningColor: 'Warning color',
-        ErrorColor: 'Error color',
-      },
-    },
-    LanguageEditor: {
-      colors: {
-        EditionTextColor: 'Secondary color',
-        SimpleTextColor: 'Text color',
-      },
-    },
-    FileBrowser: {
-      colors: {
-        NodeDisabledColor: 'Disabled color',
-        NodeHoverColor: 'Hover color',
-        BackgroundColor: 'Background color',
-      },
-      dimensions: {
-        BorderRadius: 'Border radius',
-      },
-    },
-    TabLayout: {
-      colors: {
-        MenuBackgroundColor: 'Background color',
-        MenuTextColor: 'Text color',
-        TabColor: 'Main color',
-        TabTextColor: 'Secondary text color',
-        ActiveTabColor: 'Background color',
-        ActiveTabTextColor: 'Main color',
-      },
-    },
-    ComponentPalette: {
-      colors: {
-        ComponentColor: 'Main color',
-      },
-    },
-    ScriptEditor: {
-      colors: {
-        BackgroundColor: 'Hover color',
-      },
-    },
-    EntityChooser: {
-      colors: {
-        ActiveBackgroundColor: 'Secondary color',
-        InactiveBackgroundColor: 'Main color',
-        ActiveTextColor: 'Secondary text color',
-        InactiveTextColor: 'Secondary text color',
-      },
-    },
-    MultipleChoice: {
-      colors: {
-        ChoiceColor: 'Main color',
-        ChoiceHoverColor: 'Secondary color',
-        SelectedChoiceColor: 'Secondary color',
-        SelectedChoiceHoverColor: 'Main color',
-        DisabledChoiceColor: 'Disabled color',
-        DisabledChoiceHoverColor: 'Hover color',
-      },
-    },
-    Gauge: {
-      colors: {
-        NeedleColor: 'Main color',
-        DisabledColor: 'Disabled color',
-        NegativeColor: 'Error color',
-        PositiveColor: 'Success color',
-        WarningColor: 'Warning color',
-      },
-    },
-    NumberValue: {
-      colors: {
-        BackgroundColor: 'Main color',
-        TextColor: 'Text color',
       },
     },
   },
@@ -434,8 +138,10 @@ export const defaultDarkMode: Mode = {
         HoverColor: 'Hover color',
         HoverTextColor: 'Secondary text color',
         TextColor: 'Background color',
+        SecondaryTextColor: 'Secondary text color',
         WarningColor: 'Warning color',
         SuccessColor: 'Success color',
+        ErrorColor: 'Error color',
       },
       dimensions: {
         BorderRadius: 'Border radius',
@@ -445,182 +151,9 @@ export const defaultDarkMode: Mode = {
         TextFont: 'Font family',
       },
     },
-    FonkyFlex: {
-      colors: {
-        SplitterColor: 'Main color',
-      },
+    Splitter: {
       dimensions: {
         SplitterSize: 'Border width',
-      },
-    },
-    DragAndDrop: {
-      colors: {
-        DropZoneColor: 'Hover color',
-        DropZoneHoverColor: 'Success color',
-      },
-    },
-    Selection: {
-      colors: {
-        LocalSelectionColor: 'Main color',
-        GlobalSelectionColor: 'Secondary color',
-        SearchSelectionColor: 'Highlight color',
-      },
-      dimensions: {
-        SelectionRadius: 'Border radius',
-      },
-    },
-    NumberBox: {
-      colors: {
-        SquareBorderHoverColor: 'Text color',
-        SquareColor: 'Main color',
-        SquareDisabledColor: 'Disabled color',
-      },
-    },
-    Question: {
-      colors: {
-        ChoiceTextColor: 'Text color',
-        DisabledQuestionColor: 'Disabled color',
-      },
-    },
-    Checkbox: {
-      colors: {
-        TextColor: 'Text color',
-        DisabledTextColor: 'Disabled color',
-        ReadonlyTextColor: 'Secondary color',
-      },
-    },
-    StateMachineEditor: {
-      colors: {
-        RelationColor: 'Main color',
-        RelationHoverColor: 'Secondary color',
-        SearchColor: 'Highlight color',
-        ActiveStateColor: 'Warning color',
-      },
-    },
-    CodeEditor: {
-      colors: {
-        DiffEditorLabelColor: 'Main color',
-      },
-    },
-    InfoBeam: {
-      colors: {
-        TextColor: 'Text color',
-        BackgroundColor: 'Warning color',
-      },
-    },
-    PageLayout: {
-      colors: {
-        ActiveIconColor: 'Success color',
-        FocusedComponentColor: 'Hover color',
-        SelectedComponentColor: 'Main color',
-        SelectedIndexItemColor: 'Secondary color',
-      },
-      dimensions: {
-        TitleRadius: 'Border radius',
-      },
-    },
-    PageLoader: {
-      colors: {
-        ActiveEditionColor: 'Hover color',
-        InactiveEditionColor: 'Disabled color',
-      },
-    },
-    EditableComponent: {
-      colors: {
-        BorderHoverColor: 'Main color',
-        DisabledColor: 'Disabled color',
-        FocusedColor: 'Hover color',
-      },
-    },
-    NumberSlider: {
-      colors: {
-        ActiveColor: 'Main color',
-      },
-    },
-    Toggler: {
-      colors: {
-        BorderDisabledColor: 'Disabled color',
-        CheckedColor: 'Success color',
-        UncheckedColor: 'Error color',
-        HandleColor: 'Main color',
-        HandleDisabledColor: 'Disabled color',
-      },
-    },
-    MessageString: {
-      colors: {
-        NormalColor: 'Text color',
-        SuccessColor: 'Success color',
-        WarningColor: 'Warning color',
-        ErrorColor: 'Error color',
-      },
-    },
-    LanguageEditor: {
-      colors: {
-        EditionTextColor: 'Secondary color',
-        SimpleTextColor: 'Text color',
-      },
-    },
-    FileBrowser: {
-      colors: {
-        NodeDisabledColor: 'Disabled color',
-        NodeHoverColor: 'Hover color',
-        BackgroundColor: 'Background color',
-      },
-      dimensions: {
-        BorderRadius: 'Border radius',
-      },
-    },
-    TabLayout: {
-      colors: {
-        MenuBackgroundColor: 'Background color',
-        MenuTextColor: 'Text color',
-        TabColor: 'Main color',
-        TabTextColor: 'Secondary text color',
-        ActiveTabColor: 'Background color',
-        ActiveTabTextColor: 'Main color',
-      },
-    },
-    ComponentPalette: {
-      colors: {
-        ComponentColor: 'Main color',
-      },
-    },
-    ScriptEditor: {
-      colors: {
-        BackgroundColor: 'Hover color',
-      },
-    },
-    EntityChooser: {
-      colors: {
-        ActiveBackgroundColor: 'Secondary color',
-        InactiveBackgroundColor: 'Main color',
-        ActiveTextColor: 'Secondary text color',
-        InactiveTextColor: 'Secondary text color',
-      },
-    },
-    MultipleChoice: {
-      colors: {
-        ChoiceColor: 'Main color',
-        ChoiceHoverColor: 'Secondary color',
-        SelectedChoiceColor: 'Secondary color',
-        SelectedChoiceHoverColor: 'Main color',
-        DisabledChoiceColor: 'Disabled color',
-        DisabledChoiceHoverColor: 'Hover color',
-      },
-    },
-    Gauge: {
-      colors: {
-        NeedleColor: 'Main color',
-        DisabledColor: 'Disabled color',
-        NegativeColor: 'Error color',
-        PositiveColor: 'Success color',
-        WarningColor: 'Warning color',
-      },
-    },
-    NumberValue: {
-      colors: {
-        BackgroundColor: 'Main color',
-        TextColor: 'Text color',
       },
     },
   },

@@ -55,7 +55,7 @@ export const PAGE_LAYOUT_COMPONENT = 'PAGE_LAYOUT_COMPONENT';
 const titleStyle = css({
   borderStyle: 'solid',
   borderColor: 'transparent',
-  borderRadius: themeVar.PageLayout.dimensions.TitleRadius,
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
   [`&>.${CONTROLS_CLASSNAME}`]: {
     visibility: 'hidden',
   },
@@ -65,15 +65,15 @@ const titleStyle = css({
 });
 
 const selectedIndexItemStyle = css({
-  borderColor: themeVar.PageLayout.colors.SelectedIndexItemColor,
+  borderColor: themeVar.Common.colors.BorderColor,
 });
 
 const selectedComponentStyle = css({
-  borderColor: themeVar.PageLayout.colors.SelectedComponentColor,
+  borderColor: themeVar.Common.colors.BorderColor,
 });
 
 const focusedComponentStyle = css({
-  backgroundColor: themeVar.PageLayout.colors.FocusedComponentColor,
+  backgroundColor: themeVar.Common.colors.HeaderColor,
 });
 
 const defaultPage = {
@@ -594,7 +594,7 @@ function PageIndexTitle({
               indexItem.id === defaultPageId
                 ? {
                     icon: 'star',
-                    color: themeVar.PageLayout.colors.ActiveIconColor,
+                    color: themeVar.Common.colors.SuccessColor,
                   }
                 : 'star'
             }
@@ -611,7 +611,7 @@ function PageIndexTitle({
               indexItem.scenaristPage
                 ? {
                     icon: 'magic',
-                    color: themeVar.PageLayout.colors.ActiveIconColor,
+                    color: themeVar.Common.colors.SuccessColor,
                   }
                 : 'magic'
             }
@@ -631,7 +631,7 @@ function PageIndexTitle({
               indexItem.trainerPage
                 ? {
                     icon: 'chalkboard-teacher',
-                    color: themeVar.PageLayout.colors.ActiveIconColor,
+                    color: themeVar.Common.colors.SuccessColor,
                   }
                 : 'chalkboard-teacher'
             }

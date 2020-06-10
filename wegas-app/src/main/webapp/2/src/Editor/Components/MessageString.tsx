@@ -33,17 +33,17 @@ interface MessageStringProps {
 function colorByType(type?: MessageStringStyle) {
   switch (type) {
     case 'succes': {
-      return themeVar.MessageString.colors.SuccessColor;
+      return themeVar.Common.colors.SuccessColor;
     }
     case 'warning': {
-      return themeVar.MessageString.colors.WarningColor;
+      return themeVar.Common.colors.WarningColor;
     }
     case 'error': {
-      return themeVar.MessageString.colors.ErrorColor;
+      return themeVar.Common.colors.ErrorColor;
     }
     case 'normal':
     default: {
-      return themeVar.MessageString.colors.NormalColor;
+      return themeVar.Common.colors.TextColor;
     }
   }
 }

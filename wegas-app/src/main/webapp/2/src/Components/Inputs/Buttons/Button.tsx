@@ -52,8 +52,8 @@ const buttonStyle = (
   css({
     backgroundColor: disabled
       ? themeVar.Common.colors.DisabledColor
-      : themeVar.Common.colors.BackgroundColor,
-    color: themeVar.Common.colors.TextColor,
+      : themeVar.Common.colors.MainColor,
+    color: themeVar.Common.colors.SecondaryTextColor,
     borderStyle: 'none',
     ...disableBordersCSS(disableBorders),
     paddingLeft: '5px',
@@ -66,7 +66,7 @@ const buttonStyle = (
         ? undefined
         : {
             color: themeVar.Common.colors.HoverTextColor,
-            backgroundColor: themeVar.Common.colors.HoverColor,
+            backgroundColor: themeVar.Common.colors.ActiveColor,
             outline: 'none',
           },
     ':focus': {
@@ -85,7 +85,7 @@ export interface CommonButtonProps extends ClassAndStyle {
   id?: string;
 }
 
-export interface ButtonProps extends CommonButtonProps, ThemeComponent {
+export interface ButtonProps extends CommonButtonProps {
   disableBorders?: DisableBorders;
 }
 
@@ -102,8 +102,42 @@ export function Button({
   tooltip,
   type,
   id,
-  modeName,
 }: React.PropsWithChildren<ButtonProps>) {
+  return (
+    <button
+      id={id}
+      className={
+        cx(buttonStyle(disabled, noHover, disableBorders, onClick == null)) +
+        classNameOrEmpty(className)
+      }
+      style={style}
+      onClick={onClick}
+      disabled={disabled}
+      tabIndex={tabIndex}
+      title={tooltip}
+      type={type}
+    >
+      {label}
+      {children}
+    </button>
+  );
+}
+
+export function SwitchingModeButton({
+  label,
+  onClick,
+  disabled,
+  noHover,
+  disableBorders,
+  className,
+  style,
+  children,
+  tabIndex,
+  tooltip,
+  type,
+  id,
+  modeName,
+}: React.PropsWithChildren<ButtonProps & ThemeComponent>) {
   const {
     currentModeClassName,
     childrenModeClassName,

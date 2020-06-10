@@ -18,6 +18,7 @@ const defaultActiveStyle = css({
 });
 
 export const shapeStyle = css({
+  display: 'flex',
   width: 'auto',
   margin: '3px',
   background: 'none',
@@ -36,7 +37,7 @@ const colorStyle = (noHover?: boolean) =>
   css({
     color: themeVar.Common.colors.TextColor,
     ':hover': {
-      color: noHover ? undefined : themeVar.Common.colors.HoverColor,
+      color: noHover ? undefined : themeVar.Common.colors.ActiveColor,
     },
   });
 

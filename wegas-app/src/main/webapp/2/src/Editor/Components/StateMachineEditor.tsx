@@ -70,8 +70,7 @@ const editorStyle = css({
 
 const searchHighlighted = css({
   // !important is the only way to take the priority because jsPlumb defines chained selectors for the style
-  backgroundColor:
-    themeVar.StateMachineEditor.colors.SearchColor + ' !important',
+  backgroundColor: themeVar.Common.colors.HighlightColor + ' !important',
 });
 
 export const searchWithState = (
@@ -115,13 +114,13 @@ const JS_PLUMB_OPTIONS: Defaults = {
   ],
   PaintStyle: {
     strokeWidth: 1,
-    stroke: themeVar.StateMachineEditor.colors.RelationColor,
+    stroke: themeVar.Common.colors.MainColor,
     //@ts-ignore
     outlineStroke: 'white',
     outlineWidth: 2,
   },
   HoverPaintStyle: {
-    stroke: themeVar.StateMachineEditor.colors.RelationHoverColor,
+    stroke: themeVar.Common.colors.HoverColor,
   },
 };
 
@@ -575,7 +574,7 @@ const initialStateStyle = css({
 });
 const activeStateStyle = css({
   borderColor: themeVar.Common.colors.BorderColor,
-  backgroundColor: themeVar.StateMachineEditor.colors.ActiveStateColor,
+  backgroundColor: themeVar.Common.colors.WarningColor,
 });
 const sourceStyle = css({
   display: 'inline-block',

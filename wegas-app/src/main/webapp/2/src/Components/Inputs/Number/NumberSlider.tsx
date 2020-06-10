@@ -165,7 +165,7 @@ export function NumberSlider({
           active: leftPartStyle
             ? desinterpolate(leftPartStyle)
             : desinterpolate({
-                backgroundColor: themeVar.NumberSlider.colors.ActiveColor,
+                backgroundColor: themeVar.Common.colors.MainColor,
               }),
           thumb: handleStyle
             ? desinterpolate(handleStyle)

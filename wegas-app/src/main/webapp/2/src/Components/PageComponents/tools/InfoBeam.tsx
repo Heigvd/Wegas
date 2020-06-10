@@ -5,8 +5,8 @@ import { themeVar } from '../../Style/ThemeVars';
 
 const infoBeamStyle = css({
   position: 'absolute',
-  color: themeVar.InfoBeam.colors.TextColor,
-  backgroundColor: themeVar.InfoBeam.colors.BackgroundColor,
+  color: themeVar.Common.colors.SecondaryTextColor,
+  backgroundColor: themeVar.Common.colors.WarningColor,
   borderRadius: '50%',
   padding: '0px 5px 0px 5px',
 });

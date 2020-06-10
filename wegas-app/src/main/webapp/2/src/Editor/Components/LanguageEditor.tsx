@@ -15,8 +15,8 @@ import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { flex, grow, justifyCenter, flexColumn } from '../../css/classes';
 import { themeVar } from '../../Components/Style/ThemeVars';
 
-const edition = { color: themeVar.LanguageEditor.colors.EditionTextColor };
-const simple = { color: themeVar.LanguageEditor.colors.SimpleTextColor };
+const edition = { color: themeVar.Common.colors.ActiveColor };
+const simple = { color: themeVar.Common.colors.TextColor };
 
 const title = 'Translation Manager';
 

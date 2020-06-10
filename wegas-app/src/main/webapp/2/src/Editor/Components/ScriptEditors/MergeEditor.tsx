@@ -11,7 +11,7 @@ import { MessageString } from '../MessageString';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const diffLabel = css({
-  color: themeVar.CodeEditor.colors.DiffEditorLabelColor,
+  color: themeVar.Common.colors.TextColor,
   padding: '5px',
 });
 

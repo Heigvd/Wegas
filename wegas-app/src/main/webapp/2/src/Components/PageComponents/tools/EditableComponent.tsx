@@ -102,18 +102,18 @@ const handleControlStyle = css({
 
 const disabledStyle = css({
   opacity: 0.5,
-  backgroundColor: themeVar.EditableComponent.colors.DisabledColor,
+  backgroundColor: themeVar.Common.colors.DisabledColor,
 });
 
 const focusedComponentStyle = css({
-  backgroundColor: themeVar.EditableComponent.colors.FocusedColor,
+  backgroundColor: themeVar.Common.colors.HoverColor,
 });
 
 const handleControlHoverStyle = css({
   ':hover': {
     borderStyle: 'solid',
     borderWidth: '1px',
-    borderColor: themeVar.EditableComponent.colors.BorderHoverColor,
+    borderColor: themeVar.Common.colors.HoverColor,
   },
 });
 

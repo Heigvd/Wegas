@@ -73,18 +73,19 @@ export class TabLayout extends React.Component<
   }
 }
 export const tabStyle = css({
-  display: 'inline-block',
+  display: 'flex',
+  alignItems: 'center',
   cursor: 'pointer',
   margin: '0 5px',
   padding: '5px',
 });
 export const inactiveTabStyle = css({
-  color: themeVar.TabLayout.colors.TabTextColor,
-  backgroundColor: themeVar.TabLayout.colors.TabColor,
+  color: themeVar.Common.colors.SecondaryTextColor,
+  backgroundColor: themeVar.Common.colors.MainColor,
 });
 export const activeTabStyle = css({
-  color: themeVar.TabLayout.colors.ActiveTabTextColor,
-  backgroundColor: themeVar.TabLayout.colors.ActiveTabColor,
+  color: themeVar.Common.colors.SecondaryTextColor,
+  backgroundColor: themeVar.Common.colors.ActiveColor,
 });
 function Tab({
   active,

@@ -15,16 +15,16 @@ const dropZoneForeground = {
 
 export const dropZoneFocusCss = {
   background: `
-  repeating-Linear-gradient( 45deg, transparent 10px, ${themeVar.DragAndDrop.colors.DropZoneColor} 10px, transparent 20px);
-  repeating-Linear-gradient( -45deg, transparent 10px, ${themeVar.DragAndDrop.colors.DropZoneColor} 10px, transparent 20px);
+  repeating-Linear-gradient( 45deg, transparent 10px, ${themeVar.Common.colors.HeaderColor} 10px, transparent 20px);
+  repeating-Linear-gradient( -45deg, transparent 10px, ${themeVar.Common.colors.HeaderColor} 10px, transparent 20px);
   `,
   ...dropZoneForeground,
 };
 
 const dropZoneHoverCss = {
   background: `
-  repeating-Linear-gradient( 45deg, transparent 10px, ${themeVar.DragAndDrop.colors.DropZoneHoverColor} 10px, transparent 20px);
-  repeating-Linear-gradient( -45deg, transparent 10px, ${themeVar.DragAndDrop.colors.DropZoneHoverColor} 10px, transparent 20px);
+  repeating-Linear-gradient( 45deg, transparent 10px, ${themeVar.Common.colors.SuccessColor} 10px, transparent 20px);
+  repeating-Linear-gradient( -45deg, transparent 10px, ${themeVar.Common.colors.SuccessColor} 10px, transparent 20px);
   `,
   ...dropZoneForeground,
 };

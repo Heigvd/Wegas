@@ -11,12 +11,12 @@ import { css } from 'emotion';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const fileBrowserStyle = css({
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
+  backgroundColor: themeVar.Common.colors.HeaderColor,
   paddingRight: '5px',
-  borderColor: themeVar.Common.colors.BorderColor,
-  borderRadius: themeVar.FileBrowser.dimensions.BorderRadius,
-  borderWidth: '2px',
-  borderStyle: 'inset',
+  // borderColor: themeVar.Common.colors.BorderColor,
+  // borderRadius: themeVar.Common.dimensions.BorderRadius,
+  // borderWidth: '2px',
+  // borderStyle: 'inset',
 });
 
 export type FilePickingType = 'FILE' | 'FOLDER' | 'BOTH' | undefined;

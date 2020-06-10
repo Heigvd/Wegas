@@ -70,14 +70,14 @@ export default function Gauge(props: {
   const {
     min = descriptor.minValue,
     max = descriptor.maxValue,
-    positiveColor = themeVar.Gauge.colors.PositiveColor,
-    negativeColor = themeVar.Gauge.colors.NegativeColor,
+    positiveColor = themeVar.Common.colors.SuccessColor,
+    negativeColor = themeVar.Common.colors.ErrorColor,
   } = props;
   if (min == undefined || max == undefined) {
     return (
       <span>
         <FontAwesome
-          style={{ color: themeVar.Gauge.colors.WarningColor }}
+          style={{ color: themeVar.Common.colors.WarningColor }}
           icon="exclamation-triangle"
         />
         Missing min or max value
@@ -98,7 +98,7 @@ export default function Gauge(props: {
         <path
           strokeWidth="75"
           fill="none"
-          stroke={themeVar.Gauge.colors.DisabledColor}
+          stroke={themeVar.Common.colors.DisabledColor}
           d="M 50 500 A 450 450 0 0 1 950 500"
         />
         <path
@@ -114,8 +114,8 @@ export default function Gauge(props: {
           cy={end[1]}
           r="37"
           strokeWidth="20"
-          stroke={themeVar.Common.colors.BorderColor}
-          fill={themeVar.Gauge.colors.NeedleColor}
+          stroke={themeVar.Common.colors.MainColor}
+          fill={themeVar.Common.colors.HeaderColor}
         />
       </svg>
       <div className={textStyle}>

@@ -93,21 +93,44 @@ export const foregroundContent = css({
   zIndex: 1000,
 });
 
-/* Paddings */
-export const defaultPaddingLeft = css({
+/* Spaces */
+export const defaultMarginLeft = css({
   marginLeft: '10px',
 });
 
-export const defaultPaddingRight = css({
+export const defaultMarginRight = css({
   marginRight: '10px',
 });
 
-export const defaultPaddingTop = css({
+export const defaultMarginTop = css({
   marginTop: '10px',
 });
 
-export const defaultPaddingBottom = css({
+export const defaultMarginBottom = css({
   marginTop: '10px',
+});
+
+export const defaultMargin = cx(
+  defaultMarginTop,
+  defaultMarginRight,
+  defaultMarginBottom,
+  defaultMarginLeft,
+);
+
+export const defaultPaddingLeft = css({
+  paddingLeft: '10px',
+});
+
+export const defaultPaddingRight = css({
+  paddingRight: '10px',
+});
+
+export const defaultPaddingTop = css({
+  paddingTop: '10px',
+});
+
+export const defaultPaddingBottom = css({
+  paddingTop: '10px',
 });
 
 export const defaultPadding = cx(
@@ -128,14 +151,14 @@ export const button = css({
 
 // Editor
 export const localSelection = css({
-  backgroundColor: themeVar.Selection.colors.LocalSelectionColor,
+  backgroundColor: themeVar.Common.colors.HeaderColor,
 });
 export const globalSelection = css({
   borderStyle: 'solid',
   borderWidth: '2px',
-  borderColor: themeVar.Selection.colors.GlobalSelectionColor,
-  borderRadius: themeVar.Selection.dimensions.SelectionRadius,
+  borderColor: themeVar.Common.colors.MainColor,
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
 });
 export const searchSelection = css({
-  backgroundColor: themeVar.Selection.colors.SearchSelectionColor,
+  backgroundColor: themeVar.Common.colors.HighlightColor,
 });

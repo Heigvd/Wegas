@@ -28,13 +28,13 @@ const choiceContainerStyle = css({
 });
 const choiceTitleStyle = css({
   borderBottom: '1px solid',
-  color: themeVar.Question.colors.ChoiceTextColor,
+  color: themeVar.Common.colors.SecondaryTextColor,
 });
 const rightFloatStyle = css({
   textAlign: 'right',
 });
 const disabledQuestionStyle = css({
-  backgroundColor: themeVar.Question.colors.DisabledQuestionColor,
+  backgroundColor: themeVar.Common.colors.DisabledColor,
   cursor: 'not-allowed',
 });
 
