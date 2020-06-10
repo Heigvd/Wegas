@@ -6,17 +6,17 @@ const anim = keyframes({
   '0%': {
     width: '0%',
     left: 0,
-    borderBottomColor: themeVar.Layout.colors.BorderColor,
+    borderBottomColor: themeVar.Common.colors.BorderColor,
   },
   '50%': {
     width: '50%',
     left: '25%',
-    borderBottomColor: themeVar.Layout.colors.BorderColor,
+    borderBottomColor: themeVar.Common.colors.BorderColor,
   },
   '100%': {
     width: '0%',
     left: '100%',
-    borderBottomColor: themeVar.Layout.colors.BorderColor,
+    borderBottomColor: themeVar.Common.colors.BorderColor,
   },
 });
 const loaderStyle = css({

@@ -6,7 +6,8 @@ import { wlog } from '../../Helper/wegaslog';
 import u from 'immer';
 import {
   Mode,
-  defaultMode,
+  defaultLightMode,
+  defaultDarkMode,
   DefaultThemeColors,
   DefaultThemeDimensions,
   DefaultThemeOthers,
@@ -15,6 +16,7 @@ import {
   ModeColor,
   ModeDimension,
   ModeOther,
+  ModeComponent,
 } from './ThemeVars';
 
 export type ColorType = Exclude<React.CSSProperties['color'], undefined>;
@@ -31,8 +33,15 @@ interface ThemeOthers extends DefaultThemeOthers {
   [dim: string]: React.CSSProperties[keyof React.CSSProperties];
 }
 
+interface ModeClasses {
+  light: string;
+  dark: string;
+  [name: string]: string;
+}
+
 interface Modes {
-  normal: Mode;
+  light: Mode;
+  dark: Mode;
   [name: string]: Mode;
 }
 
@@ -44,8 +53,9 @@ export interface ThemeValues {
 
 export interface Theme {
   values: ThemeValues;
-  // selectedMode: keyof Modes;
+  baseMode: string;
   modes: Modes;
+  modeClasses: ModeClasses;
 }
 
 interface Themes {
@@ -57,6 +67,10 @@ interface SelectedThemes {
   editor: string;
   player: string;
   survey: string;
+}
+
+export interface ThemeComponent {
+  modeName?: string;
 }
 
 export type ThemeContext = keyof SelectedThemes;
@@ -88,6 +102,7 @@ interface ThemeContextValues {
     entry: string,
     value: string,
   ) => void;
+  setBaseMode: (themeName: string, baseNode: string) => void;
   themeRoot?: React.RefObject<HTMLDivElement>;
 }
 
@@ -115,10 +130,14 @@ export const defaultThemeValues: ThemeValues = {
   },
 };
 
-const defaultTheme = {
+const defaultTheme: Theme = {
   values: defaultThemeValues,
-  modes: { normal: defaultMode },
-  selectedMode: 'normal',
+  modes: { light: defaultLightMode, dark: defaultDarkMode },
+  modeClasses: {
+    light: modeClass(defaultThemeValues, defaultLightMode),
+    dark: modeClass(defaultThemeValues, defaultDarkMode),
+  },
+  baseMode: 'light',
 };
 
 const defaultThemes = {
@@ -157,6 +176,9 @@ export const themeCTX = React.createContext<ThemeContextValues>({
     wlog('Not implemented yet');
   },
   setModeValue: () => {
+    wlog('Not implemented yet');
+  },
+  setBaseMode: () => {
     wlog('Not implemented yet');
   },
   currentContext: 'editor',
@@ -202,10 +224,16 @@ interface ThemeStateActionSetModeValue {
   type: 'setModeValue';
   themeName: string;
   modeName: string;
-  component: keyof Mode;
+  component: ModeComponentNames;
   section: keyof ThemeValues;
   entry: string;
   value: string | number | undefined;
+}
+
+interface ThemeStateActionSetBaseMode {
+  type: 'setBaseMode';
+  themeName: string;
+  modeName: string;
 }
 
 type ThemeStateAction =
@@ -215,7 +243,8 @@ type ThemeStateAction =
   | ThemeStateActionDeleteMode
   | ThemeStateActionSelectTheme
   | ThemeStateActionSetThemeValue
-  | ThemeStateActionSetModeValue;
+  | ThemeStateActionSetModeValue
+  | ThemeStateActionSetBaseMode;
 
 const themeStateReducer = (
   oldState: ThemesState,
@@ -248,23 +277,27 @@ const themeStateReducer = (
         break;
       }
       case 'addNewMode': {
-        if (oldState.themes[action.themeName] != null) {
-          oldState.themes[action.themeName].modes = {
-            [action.modeName]: defaultMode,
-            ...oldState.themes[action.themeName].modes,
+        const oldTheme = oldState.themes[action.themeName];
+        if (oldTheme != null) {
+          oldTheme.modes = {
+            [action.modeName]: defaultLightMode,
+            ...oldTheme.modes,
+          };
+          oldTheme.modeClasses = {
+            [action.modeName]: modeClass(oldTheme.values, defaultLightMode),
+            ...oldTheme.modeClasses,
           };
         }
         break;
       }
       case 'deleteMode': {
-        if (
-          oldState.themes[action.themeName] != null &&
-          action.modeName !== 'normal'
-        ) {
-          oldState.themes[action.themeName].modes = omit(
-            oldState.themes[action.themeName].modes,
+        const oldTheme = oldState.themes[action.themeName];
+        if (oldTheme != null && action.modeName !== 'normal') {
+          oldTheme.modes = omit(oldTheme.modes, action.modeName) as Modes;
+          oldTheme.modeClasses = omit(
+            oldTheme.modeClasses,
             action.modeName,
-          ) as Modes;
+          ) as ModeClasses;
         }
         break;
       }
@@ -274,17 +307,25 @@ const themeStateReducer = (
       }
       case 'setThemeValue': {
         const { themeName, section, entry, value } = action;
+        const oldTheme = oldState.themes[themeName];
         if (value === null) {
-          const psection = oldState.themes[themeName].values[section];
+          const psection = oldTheme.values[section];
           if (!Object.keys(defaultTheme.values[section]).includes(entry)) {
-            oldState.themes[themeName].values[section] = omit(
-              psection,
-              entry,
-            ) as ThemeColors & ThemeDimensions & ThemeOthers;
+            oldTheme.values[section] = omit(psection, entry) as ThemeColors &
+              ThemeDimensions &
+              ThemeOthers;
           }
         } else {
-          oldState.themes[themeName].values[section][entry] = value;
+          oldTheme.values[section][entry] = value;
         }
+        // Recreating modes
+        oldTheme.modeClasses = Object.entries(oldTheme.modes).reduce(
+          (o, [k, m]) => ({
+            ...o,
+            [k]: modeClass(oldTheme.values, m),
+          }),
+          oldTheme.modeClasses,
+        );
         break;
       }
       case 'setModeValue': {
@@ -296,12 +337,20 @@ const themeStateReducer = (
           entry,
           value,
         } = action;
-        const psection = (oldState.themes[themeName].modes[modeName][
-          component
-        ] as FullModeComponent)[section];
+        const oldTheme = oldState.themes[themeName];
+        const oldMode = oldTheme.modes[modeName];
+        const psection = (oldMode.values[component] as FullModeComponent)[
+          section
+        ];
         if (psection != null && entry in psection) {
           psection[entry] = value as ModeColor | ModeDimension | ModeOther;
+          oldTheme.modeClasses[modeName] = modeClass(oldTheme.values, oldMode);
         }
+        break;
+      }
+      case 'setBaseMode': {
+        oldState.themes[action.themeName].baseMode = action.modeName;
+        break;
       }
     }
   });
@@ -312,7 +361,7 @@ export function ThemeProvider({
   children,
   contextName,
   modeName,
-}: React.PropsWithChildren<{ contextName: ThemeContext; modeName?: string }>) {
+}: React.PropsWithChildren<{ contextName: ThemeContext } & ThemeComponent>) {
   const themeRoot = React.useRef<HTMLDivElement>(null);
   const [themesState, dispatcher] = useDispatch<{ themesState: ThemesState }>(
     themeStateReducer,
@@ -320,10 +369,10 @@ export function ThemeProvider({
   );
   const dispatchTheme: (args: ThemeStateAction) => void = dispatcher;
 
-  const nodeVars = themeVariables(themesState, contextName, modeName);
+  const className = themeModeClass(themesState, contextName, modeName);
 
   return (
-    <div ref={themeRoot} className={css(nodeVars)}>
+    <div ref={themeRoot} className={className}>
       <Provider
         value={{
           themesState: themesState,
@@ -362,7 +411,10 @@ export function ThemeProvider({
               entry,
               value,
             }),
+          setBaseMode: (themeName, modeName) =>
+            dispatchTheme({ type: 'setBaseMode', themeName, modeName }),
           currentContext: contextName,
+          themeRoot,
         }}
       >
         {children}
@@ -372,41 +424,148 @@ export function ThemeProvider({
 }
 export { Consumer as ThemeRoot };
 
-function themeVariables(
+function modeClass(themeValues: ThemeValues, mode: Mode): string {
+  return css({
+    '--current-mode-name': mode.modeName,
+    '--next-mode-name': mode.nextModeName,
+    ...Object.entries(mode.values).reduce(
+      (o, [ck, c]) => ({
+        ...o,
+        ...Object.entries(c).reduce(
+          (o, [sk, s]) => ({
+            ...o,
+            ...Object.entries((s as {}) || {}).reduce(
+              (o, [ek, e]) => ({
+                ...o,
+                [`--${ck}-${sk}-${ek}`.toLowerCase()]:
+                  themeValues[sk as keyof ThemeValues][e as string] ||
+                  themeValues[sk as keyof ThemeValues][
+                    defaultLightMode.values[ck as ModeComponentNames][
+                      sk as keyof ModeComponent
+                    ][ek] as string
+                  ],
+              }),
+              {},
+            ),
+          }),
+          {},
+        ),
+      }),
+      {},
+    ),
+  });
+}
+
+function themeModeClass(
   themesState: ThemesState,
   contextName: ThemeContext,
   modeName?: string,
 ) {
   const currentTheme =
     themesState.themes[themesState.selectedThemes[contextName]];
-  const currentMode =
-    modeName == null || currentTheme.modes[modeName] == null
-      ? currentTheme.modes.normal
-      : currentTheme.modes[modeName];
-  return Object.entries(currentMode).reduce(
-    (o, [ck, c]) => ({
-      ...o,
-      ...Object.entries(c).reduce(
-        (o, [sk, s]) => ({
-          ...o,
-          ...Object.entries((s as {}) || {}).reduce(
-            (o, [ek, e]) => ({
-              ...o,
-              [`--${ck}-${sk}-${ek}`.toLowerCase()]: currentTheme.values[
-                sk as keyof ThemeValues
-              ][e as string],
-            }),
-            {},
-          ),
-        }),
-        {},
-      ),
-    }),
-    {},
-  );
+  const computedModeName = modeName ? modeName : currentTheme.baseMode;
+  return currentTheme.modeClasses[computedModeName];
 }
 
-export function useThemeModeVariables(modeName: string) {
+/**
+ * useModeClass - a hook that returns the selector for defining mode variables
+ * @param modeName The name of the mode
+ * @returns  the selector of the rule containing mode variables or an empty string if modeName is undefined
+ */
+export function useModeClass(modeName: string | undefined) {
   const { themesState, currentContext } = React.useContext(themeCTX);
-  return themeVariables(themesState, currentContext, modeName);
+  const currentTheme =
+    themesState.themes[themesState.selectedThemes[currentContext]];
+  return modeName ? currentTheme.modeClasses[modeName] : '';
+}
+
+/**
+ * useModeSwitch - a hook that allows switching to next mode
+ * @param modeName The name of the targeted mode
+ * @param children The React children node
+ * @returns currentModeClassName: the className for current mode rules.
+ *          childrenModeClassName: the className for the children mode rules.
+ *          childrenNode: the new children node that must be used instead of the one given in the functions.
+ *          switcher: a switcher that must be placed in the ref prop of a DivElement.
+ */
+export function useModeSwitch(
+  modeName: string | undefined,
+  children: React.ReactNode,
+) {
+  const { themesState, currentContext } = React.useContext(themeCTX);
+  const currentTheme =
+    themesState.themes[themesState.selectedThemes[currentContext]];
+  const [
+    { currentModeName, nextModeName },
+    setCurrentModeNames,
+  ] = React.useState<{
+    currentModeName?: string;
+    nextModeName?: string;
+  }>({});
+
+  const [
+    currentModeClassName,
+    childrenModeClassName,
+    childrenNode,
+  ] = React.useMemo(() => {
+    const modeClassName = modeName
+      ? currentTheme.modeClasses[modeName]
+      : currentModeName
+      ? currentTheme.modeClasses[currentModeName]
+      : undefined;
+    const nextModeClassName = modeName
+      ? currentTheme.modeClasses[currentTheme.modes[modeName].nextModeName]
+      : nextModeName
+      ? currentTheme.modeClasses[nextModeName]
+      : undefined;
+
+    const currentClassName = modeClassName
+      ? css({
+          '&&': modeClassName,
+        })
+      : undefined;
+    const childrenClassName = nextModeClassName
+      ? css({
+          '& *': nextModeClassName,
+        })
+      : undefined;
+    return [
+      currentClassName,
+      childrenClassName,
+      React.Children.map(children, (c, i) => (
+        <React.Fragment key={childrenClassName || '' + i}>{c}</React.Fragment>
+      )),
+    ];
+  }, [currentModeName, nextModeName, currentTheme, modeName, children]);
+
+  const switcher = React.useCallback(
+    (ref: HTMLElement | null) => {
+      if (ref) {
+        const newCurrentModeName = getComputedStyle(ref).getPropertyValue(
+          '--current-mode-name',
+        );
+        const newNextModeName = getComputedStyle(ref).getPropertyValue(
+          '--next-mode-name',
+        );
+
+        if (
+          newCurrentModeName !== currentModeName ||
+          newNextModeName !== nextModeName
+        ) {
+          setCurrentModeNames({
+            currentModeName: newCurrentModeName,
+            nextModeName: newNextModeName,
+          });
+        }
+      }
+    },
+    [currentModeName, nextModeName],
+  );
+
+  return {
+    currentModeClassName,
+    childrenModeClassName,
+    childrenNode,
+    switcher,
+  };
 }

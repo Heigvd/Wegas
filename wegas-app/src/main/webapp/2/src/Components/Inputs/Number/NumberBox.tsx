@@ -17,7 +17,7 @@ import { classNameOrEmpty } from '../../../Helper/className';
 import { themeVar } from '../../Style/ThemeVars';
 
 const numberSquareStyle = css({
-  borderColor: themeVar.NumberBox.colors.SquareBorderColor,
+  borderColor: themeVar.Common.colors.BorderColor,
   borderStyle: 'solid',
   borderRadius: '2px',
   width: '1em',

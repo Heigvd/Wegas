@@ -4,11 +4,11 @@ import { css, cx } from 'emotion';
 import { themeVar } from './Style/ThemeVars';
 
 export const tabLayoutHeaderStyle = css({
-  backgroundColor: themeVar.Layout.colors.HeaderBackgroundColor,
+  backgroundColor: themeVar.Common.colors.HeaderColor,
 });
 export const tabLayoutContentStyle = css({
   margin: '5px',
-  backgroundColor: themeVar.Layout.colors.BackgroundColor,
+  backgroundColor: themeVar.Common.colors.BackgroundColor,
 });
 
 interface TabLayoutProps {

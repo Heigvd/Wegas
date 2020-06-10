@@ -10,10 +10,10 @@ import { MessageString } from '../../../Editor/Components/MessageString';
 import { themeVar } from '../../Style/ThemeVars';
 
 const handleContentStyle = css({
-  borderRadius: themeVar.EditHandle.dimensions.BorderRadius,
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
   borderStyle: 'solid',
-  borderColor: themeVar.EditHandle.colors.BorderColor,
-  backgroundColor: themeVar.EditHandle.colors.BackgroundColor,
+  borderColor: themeVar.Common.colors.BorderColor,
+  backgroundColor: themeVar.Common.colors.BackgroundColor,
 });
 
 interface EditorHandleProps {

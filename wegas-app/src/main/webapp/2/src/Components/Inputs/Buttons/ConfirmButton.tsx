@@ -17,7 +17,7 @@ const buttonZone = (disableBorders?: DisableBorders) =>
     // margin: '5px',
     padding: '5px',
     ...disableBordersCSS(disableBorders),
-    backgroundColor: themeVar.Button.colors.ConfirmButtonZoneColor,
+    backgroundColor: themeVar.Common.colors.HeaderColor,
     textAlign: 'center',
     display: 'inline-block',
     width: 'max-content',
@@ -114,7 +114,7 @@ export function ConfirmButton({
       <Button
         label="Accept"
         className={css({
-          backgroundColor: themeVar.Button.colors.ConfirmButtonAcceptColor,
+          backgroundColor: themeVar.Common.colors.WarningColor,
         })}
         disableBorders={{ right: true }}
         onClick={onConfirm(true)}

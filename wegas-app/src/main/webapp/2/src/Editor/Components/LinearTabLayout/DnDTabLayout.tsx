@@ -29,7 +29,7 @@ const tabButton = (active: boolean) =>
       ? themeVar.TabLayout.colors.ActiveTabTextColor
       : themeVar.TabLayout.colors.TabTextColor,
     ':hover': {
-      color: themeVar.Button.colors.HoverColor,
+      color: themeVar.Common.colors.HoverColor,
       // outline: 'none',
     },
     ':focus': {

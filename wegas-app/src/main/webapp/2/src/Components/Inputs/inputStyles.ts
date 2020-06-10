@@ -10,12 +10,13 @@ export const inputStyle = css({
   ...inputDefaultCSS,
   resize: 'vertical',
   borderStyle: 'thin solid',
-  borderColor: themeVar.TextInput.colors.BorderColor,
-  borderRadius: themeVar.TextInput.dimensions.BorderRadius,
+  borderColor: themeVar.Common.colors.BorderColor,
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
   '::placeholder': {
     fontStyle: 'italic',
   },
   '&[readonly]': {
-    backgroundColor: themeVar.TextInput.colors.ReadonlyColor,
+    color: themeVar.Common.colors.HoverTextColor,
+    backgroundColor: themeVar.Common.colors.HoverColor,
   },
 });

@@ -14,7 +14,7 @@ export interface IconButtonProps extends CommonButtonProps {
   // ref?: React.ClassAttributes<HTMLButtonElement>['ref'];
 }
 const defaultActiveStyle = css({
-  color: themeVar.Button.colors.IconButtonActiveColor,
+  color: themeVar.Common.colors.ActiveColor,
 });
 
 export const shapeStyle = css({
@@ -34,9 +34,9 @@ export const shapeStyle = css({
 
 const colorStyle = (noHover?: boolean) =>
   css({
-    color: themeVar.Button.colors.Color,
+    color: themeVar.Common.colors.TextColor,
     ':hover': {
-      color: noHover ? undefined : themeVar.Button.colors.HoverColor,
+      color: noHover ? undefined : themeVar.Common.colors.HoverColor,
     },
   });
 
@@ -45,10 +45,10 @@ const noClickStyle = css({
 });
 
 const disabledStyle = css({
-  color: themeVar.Button.colors.DisabledColor,
+  color: themeVar.Common.colors.DisabledColor,
   cursor: 'initial',
   ':hover': {
-    color: themeVar.Button.colors.DisabledColor,
+    color: themeVar.Common.colors.DisabledColor,
   },
 });
 
@@ -70,7 +70,6 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
       className,
       icon,
       noHover,
-      // ref,
     } = props;
 
     return (

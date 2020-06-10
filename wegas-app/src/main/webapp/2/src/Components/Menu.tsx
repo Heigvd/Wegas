@@ -53,22 +53,22 @@ const container = css({
   position: 'relative',
 });
 const subMenuContainer = css({
-  color: themeVar.Menu.colors.TextColor,
-  backgroundColor: themeVar.Menu.colors.BackgroundColor,
+  color: themeVar.Common.colors.TextColor,
+  backgroundColor: themeVar.Common.colors.BackgroundColor,
   position: 'absolute',
   display: 'inline-block',
   padding: '5px',
   zIndex: 1,
   whiteSpace: 'nowrap',
   margin: '2px',
-  boxShadow: `0px 0px 4px 1px ${themeVar.Menu.colors.ShadowColor}`,
+  boxShadow: `0px 0px 4px 1px ${themeVar.Common.colors.BorderColor}`,
   '>div': {
     padding: '1px',
     borderRadius: '3px',
   },
   '>div:hover': {
-    backgroundColor: themeVar.Menu.colors.HoverBackgroundColor,
-    color: themeVar.Menu.colors.HoverTextColor,
+    backgroundColor: themeVar.Common.colors.HoverColor,
+    color: themeVar.Common.colors.HoverTextColor,
   },
   [`& .${container}`]: {
     width: '100%',

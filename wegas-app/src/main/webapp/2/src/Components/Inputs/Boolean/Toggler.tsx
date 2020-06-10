@@ -19,8 +19,8 @@ const togglerStyle = (
     borderStyle: 'solid',
     borderWidth: '2px',
     borderColor: disabled
-      ? themeVar.Toggler.colors.BorderDisabledColor
-      : themeVar.Toggler.colors.BorderColor,
+      ? themeVar.Common.colors.DisabledColor
+      : themeVar.Common.colors.BorderColor,
     backgroundColor: checked
       ? themeVar.Toggler.colors.CheckedColor
       : themeVar.Toggler.colors.UncheckedColor,

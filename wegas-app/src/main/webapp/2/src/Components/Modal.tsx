@@ -16,8 +16,8 @@ const modalStyle = css({
   zIndex: 1000,
   '&>div': {
     width: 'fit-content',
-    backgroundColor: themeVar.Layout.colors.BackgroundColor,
-    borderWidth: themeVar.Layout.dimensions.BorderWidth,
+    backgroundColor: themeVar.Common.colors.BackgroundColor,
+    borderWidth: themeVar.Common.dimensions.BorderWidth,
     margin: '0 auto',
     padding: '10px',
     boxShadow: '0 0 1px 1px',

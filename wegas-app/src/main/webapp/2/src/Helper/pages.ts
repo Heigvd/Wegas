@@ -103,7 +103,7 @@ export function pageItemsToTreeItem(
 export function indexToTree(index: PageIndex): Item<PageIndexItem>[] {
   return pageItemsToTreeItem(index.root.items, item =>
     isPageItem(item) && item.id === index.defaultPageId
-      ? css({ color: themeVar.PageTree.colors.DefaultItemTextColor })
+      ? css({ color: themeVar.Common.colors.SuccessColor })
       : undefined,
   );
 }

@@ -114,7 +114,7 @@ export default function Gauge(props: {
           cy={end[1]}
           r="37"
           strokeWidth="20"
-          stroke={themeVar.Gauge.colors.NeedleBorderColor}
+          stroke={themeVar.Common.colors.BorderColor}
           fill={themeVar.Gauge.colors.NeedleColor}
         />
       </svg>

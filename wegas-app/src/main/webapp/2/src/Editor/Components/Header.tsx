@@ -11,7 +11,7 @@ import { flex, itemCenter, grow, foregroundContent } from '../../css/classes';
 import { themeVar } from '../../Components/Style/ThemeVars';
 
 const headerStyle = css({
-  backgroundColor: themeVar.Layout.colors.HeaderBackgroundColor,
+  backgroundColor: themeVar.Common.colors.HeaderColor,
 });
 
 export default function Header() {

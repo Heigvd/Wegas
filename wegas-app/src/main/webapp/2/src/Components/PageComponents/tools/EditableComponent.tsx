@@ -44,13 +44,13 @@ import { themeVar } from '../../Style/ThemeVars';
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
   borderWidth: '2px',
-  borderColor: themeVar.EditableComponent.colors.HighlightedBorderColor,
+  borderColor: themeVar.Common.colors.HighlightColor,
 });
 
 export const childHighlightCSS = {
   borderStyle: 'dotted',
   borderWidth: '1px',
-  borderColor: themeVar.EditableComponent.colors.HighlightedBorderColor,
+  borderColor: themeVar.Common.colors.HighlightColor,
 };
 
 const childHighlightStyle = css({

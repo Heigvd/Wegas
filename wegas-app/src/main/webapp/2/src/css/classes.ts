@@ -119,9 +119,9 @@ export const defaultPadding = cx(
 
 // Components
 export const button = css({
-  color: themeVar.Button.colors.TextColor,
+  color: themeVar.Common.colors.TextColor,
   ':hover,:focus': {
-    color: themeVar.Button.colors.HoverColor,
+    color: themeVar.Common.colors.HoverColor,
     outline: 'none',
   },
 });

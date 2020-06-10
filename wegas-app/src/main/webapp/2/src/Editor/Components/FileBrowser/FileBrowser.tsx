@@ -11,9 +11,9 @@ import { css } from 'emotion';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const fileBrowserStyle = css({
-  backgroundColor: themeVar.FileBrowser.colors.BackgroundColor,
+  backgroundColor: themeVar.Common.colors.BackgroundColor,
   paddingRight: '5px',
-  borderColor: themeVar.FileBrowser.colors.BorderColor,
+  borderColor: themeVar.Common.colors.BorderColor,
   borderRadius: themeVar.FileBrowser.dimensions.BorderRadius,
   borderWidth: '2px',
   borderStyle: 'inset',

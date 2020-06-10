@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { CSSProperties } from 'react';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { themeVar } from '../../Style/ThemeVars';
+import { ThemeComponent, useModeSwitch } from '../../Style/Theme';
 
 export interface DisableBorders {
   top?: boolean;
@@ -22,24 +23,24 @@ export const disableBordersCSS = (
     disableBorders &&
     (disableBorders.topLeft || disableBorders.left || disableBorders.top)
       ? undefined
-      : themeVar.Button.dimensions.Radius,
+      : themeVar.Common.dimensions.BorderRadius,
   borderTopRightRadius:
     disableBorders &&
     (disableBorders.topRight || disableBorders.right || disableBorders.top)
       ? undefined
-      : themeVar.Button.dimensions.Radius,
+      : themeVar.Common.dimensions.BorderRadius,
   borderBottomLeftRadius:
     disableBorders &&
     (disableBorders.bottomLeft || disableBorders.left || disableBorders.bottom)
       ? undefined
-      : themeVar.Button.dimensions.Radius,
+      : themeVar.Common.dimensions.BorderRadius,
   borderBottomRightRadius:
     disableBorders &&
     (disableBorders.bottomRight ||
       disableBorders.right ||
       disableBorders.bottom)
       ? undefined
-      : themeVar.Button.dimensions.Radius,
+      : themeVar.Common.dimensions.BorderRadius,
 });
 
 const buttonStyle = (
@@ -50,9 +51,9 @@ const buttonStyle = (
 ) =>
   css({
     backgroundColor: disabled
-      ? themeVar.Button.colors.DisabledColor
-      : themeVar.Button.colors.Color,
-    color: themeVar.Button.colors.TextColor,
+      ? themeVar.Common.colors.DisabledColor
+      : themeVar.Common.colors.BackgroundColor,
+    color: themeVar.Common.colors.TextColor,
     borderStyle: 'none',
     ...disableBordersCSS(disableBorders),
     paddingLeft: '5px',
@@ -64,8 +65,8 @@ const buttonStyle = (
       disabled || noHover
         ? undefined
         : {
-            color: themeVar.Button.colors.HoverTextColor,
-            backgroundColor: themeVar.Button.colors.HoverColor,
+            color: themeVar.Common.colors.HoverTextColor,
+            backgroundColor: themeVar.Common.colors.HoverColor,
             outline: 'none',
           },
     ':focus': {
@@ -84,7 +85,7 @@ export interface CommonButtonProps extends ClassAndStyle {
   id?: string;
 }
 
-export interface ButtonProps extends CommonButtonProps {
+export interface ButtonProps extends CommonButtonProps, ThemeComponent {
   disableBorders?: DisableBorders;
 }
 
@@ -101,12 +102,23 @@ export function Button({
   tooltip,
   type,
   id,
+  modeName,
 }: React.PropsWithChildren<ButtonProps>) {
+  const {
+    currentModeClassName,
+    childrenModeClassName,
+    childrenNode,
+    switcher,
+  } = useModeSwitch(modeName, children);
+
   return (
     <button
+      ref={switcher}
       id={id}
       className={
-        buttonStyle(disabled, noHover, disableBorders, onClick == null) +
+        cx(buttonStyle(disabled, noHover, disableBorders, onClick == null)) +
+        classNameOrEmpty(currentModeClassName) +
+        classNameOrEmpty(childrenModeClassName) +
         classNameOrEmpty(className)
       }
       style={style}
@@ -116,10 +128,8 @@ export function Button({
       title={tooltip}
       type={type}
     >
-      <>
-        {label}
-        {children}
-      </>
+      {label}
+      {childrenNode}
     </button>
   );
 }

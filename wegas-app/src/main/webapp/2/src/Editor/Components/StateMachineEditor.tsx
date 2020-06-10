@@ -574,7 +574,7 @@ const initialStateStyle = css({
   border: '6px double',
 });
 const activeStateStyle = css({
-  borderColor: themeVar.StateMachineEditor.colors.ActiveStateBorderColor,
+  borderColor: themeVar.Common.colors.BorderColor,
   backgroundColor: themeVar.StateMachineEditor.colors.ActiveStateColor,
 });
 const sourceStyle = css({

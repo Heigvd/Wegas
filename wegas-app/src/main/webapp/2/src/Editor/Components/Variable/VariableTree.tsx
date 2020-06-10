@@ -168,7 +168,7 @@ export const nodeContentStyle = css({
   marginLeft: '5px',
   marginRight: '5px',
   ':hover': {
-    backgroundColor: themeVar.VariableTree.colors.HoverColor,
+    backgroundColor: themeVar.Common.colors.HoverColor,
   },
 });
 

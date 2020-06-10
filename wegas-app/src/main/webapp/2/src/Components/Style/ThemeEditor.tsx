@@ -20,12 +20,7 @@ import { Menu } from '../Menu';
 import { TextPrompt } from '../../Editor/Components/TextPrompt';
 import { ConfirmButton } from '../Inputs/Buttons/ConfirmButton';
 import { MessageString } from '../../Editor/Components/MessageString';
-import {
-  themeVar,
-  Mode,
-  ModeComponents,
-  ModeComponentNames,
-} from './ThemeVars';
+import { themeVar, ModeComponents, ModeComponentNames } from './ThemeVars';
 import { MainLinearLayout } from '../../Editor/Components/LinearTabLayout/LinearLayout';
 import {
   FonkyFlexContainer,
@@ -40,9 +35,9 @@ const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
 const colorButton = css({
   width: '100%',
   borderStyle: 'inset',
-  borderColor: themeVar.Button.colors.Color,
+  borderColor: themeVar.Common.colors.BorderColor,
   borderWidth: '5px',
-  borderRadius: themeVar.Button.dimensions.Radius,
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
   cursor: 'pointer',
   padding: '2px',
 });
@@ -472,18 +467,18 @@ function ModeEdition() {
   );
 
   const [currentModifiedMode, setModifiedMode] = React.useState<string>(
-    'normal',
+    'light',
   );
 
   const [currentModifiedComponent, setModifiedComponent] = React.useState<
     ModeComponentNames
-  >('Layout');
+  >('Common');
   const [currentModifiedSection, setModifiedSection] = React.useState<
     keyof ThemeValues
   >('colors');
 
   const currentModes = themesState.themes[currentModifiedTheme].modes;
-  const currentComponents = currentModes[currentModifiedMode];
+  const currentComponents = currentModes[currentModifiedMode].values;
   const currentSections = currentComponents[currentModifiedComponent];
 
   return (
@@ -534,7 +529,7 @@ function ModeEdition() {
                   value: k,
                   label: k,
                 }))}
-                onSelect={({ value }) => setModifiedTheme(value)}
+                onSelect={({ value }) => setModifiedMode(value)}
               />
               <ConfirmButton
                 icon="trash"
@@ -547,7 +542,7 @@ function ModeEdition() {
                         k => k !== old,
                       );
                       if (newModes.length === 0) {
-                        return 'normal';
+                        return 'light';
                       }
                       return newModes[0];
                     });
@@ -564,7 +559,9 @@ function ModeEdition() {
             value: k,
             label: k,
           }))}
-          onSelect={({ value }) => setModifiedComponent(value as keyof Mode)}
+          onSelect={({ value }) =>
+            setModifiedComponent(value as ModeComponentNames)
+          }
         />
         <Menu
           label={`Current section : ${currentModifiedSection}`}

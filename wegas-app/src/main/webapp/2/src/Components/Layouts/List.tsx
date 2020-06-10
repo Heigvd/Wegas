@@ -7,7 +7,7 @@ import { themeVar } from '../Style/ThemeVars';
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
   borderWidth: '2px',
-  borderColor: themeVar.Layout.colors.HighlightBorderColor,
+  borderColor: themeVar.Common.colors.HighlightColor,
 });
 
 const listStyle = css({
