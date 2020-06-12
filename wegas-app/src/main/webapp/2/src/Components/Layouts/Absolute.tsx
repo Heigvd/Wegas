@@ -5,9 +5,13 @@ import {
 } from '../PageComponents/tools/EditableComponent';
 import { HashListChoices } from '../../Editor/Components/FormView/HashList';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
+import { classNameOrEmpty } from '../../Helper/className';
+import { layoutStyle } from '../../css/classes';
 
 export function AbsoluteLayout({ className, children }: WegasComponentProps) {
-  return <div className={className}>{children}</div>;
+  return (
+    <div className={layoutStyle + classNameOrEmpty(className)}>{children}</div>
+  );
 }
 
 interface AbsoluteItemProps

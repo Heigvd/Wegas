@@ -15,13 +15,11 @@ import {
   hidden,
   hideOverflow,
   autoScroll,
+  headerStyle,
+  contentStyle,
 } from '../../../css/classes';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { themeVar } from '../../../Components/Style/ThemeVars';
-import {
-  tabLayoutContentStyle,
-  tabLayoutHeaderStyle,
-} from '../../../Components/Tabs';
 
 const tabButton = css({
   color: themeVar.Common.colors.SecondaryTextColor,
@@ -255,7 +253,7 @@ export function DnDTabLayout({
 
   return (
     <Toolbar vertical={vertical} className={relative}>
-      <Toolbar.Header className={tabLayoutHeaderStyle}>
+      <Toolbar.Header className={headerStyle}>
         <div ref={dropTabs} className={cx(flex, grow, autoScroll)}>
           {renderTabs()}
           {selectItems && Object.keys(selectItems).length > 0 && (
@@ -276,7 +274,7 @@ export function DnDTabLayout({
           )}
         </div>
       </Toolbar.Header>
-      <Toolbar.Content className={cx(relative, tabLayoutContentStyle)}>
+      <Toolbar.Content className={cx(relative, contentStyle)}>
         <div className={cx(expandBoth, hideOverflow)}>
           <div className={cx(autoScroll, absoute, expandBoth, flex)}>
             {defaultActiveLabel && (

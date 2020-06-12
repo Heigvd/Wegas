@@ -107,8 +107,8 @@ export function Button({
     <button
       id={id}
       className={
-        cx(buttonStyle(disabled, noHover, disableBorders, onClick == null)) +
-        classNameOrEmpty(className)
+        classNameOrEmpty(className) +
+        cx(buttonStyle(disabled, noHover, disableBorders, onClick == null))
       }
       style={style}
       onClick={onClick}

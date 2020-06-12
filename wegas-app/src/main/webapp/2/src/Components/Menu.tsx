@@ -48,7 +48,7 @@ const itemStyle = css({
     textShadow: '0 0 1px',
   },
 });
-const container = css({
+const containerStyle = css({
   display: 'inline-block',
   position: 'relative',
 });
@@ -70,7 +70,7 @@ const subMenuContainer = css({
     backgroundColor: themeVar.Common.colors.HoverColor,
     color: themeVar.Common.colors.HoverTextColor,
   },
-  [`& .${container}`]: {
+  [`& .${containerStyle}`]: {
     width: '100%',
   },
 });
@@ -127,7 +127,10 @@ export function Menu<T, MItem extends MenuItem<T>>({
       itemToString={emtpyStr}
     >
       {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
-        <div id={id} className={container + ' ' + containerClassName || ''}>
+        <div
+          id={id}
+          className={containerStyle + classNameOrEmpty(containerClassName)}
+        >
           <div className={itemStyle} onClick={() => toggleMenu()}>
             <IconButton
               label={label}

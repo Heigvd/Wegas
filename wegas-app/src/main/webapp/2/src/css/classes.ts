@@ -162,3 +162,16 @@ export const globalSelection = css({
 export const searchSelection = css({
   backgroundColor: themeVar.Common.colors.HighlightColor,
 });
+
+// Layout base styles
+export const layoutStyle = css({
+  color: themeVar.Common.colors.TextColor,
+  backgroundColor: themeVar.Common.colors.BackgroundColor,
+});
+export const headerStyle = css({
+  backgroundColor: themeVar.Common.colors.HeaderColor,
+});
+export const contentStyle = css({
+  margin: '5px',
+  // backgroundColor: themeVar.Common.colors.BackgroundColor,
+});

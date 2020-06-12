@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { cx, css } from 'emotion';
 import { classNameOrEmpty } from '../../Helper/className';
-import { flex, flexColumn, flexRow } from '../../css/classes';
+import { flex, flexColumn, flexRow, layoutStyle } from '../../css/classes';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
 import { themeVar } from '../Style/ThemeVars';
 
@@ -227,7 +227,7 @@ export function FonkyFlexContainer({
         container.current = e as HTMLDivElement;
       }}
       className={
-        cx(flex, vertical ? flexColumn : flexRow, containerStyle) +
+        cx(flex, vertical ? flexColumn : flexRow, containerStyle, layoutStyle) +
         classNameOrEmpty(className)
       }
       style={style}

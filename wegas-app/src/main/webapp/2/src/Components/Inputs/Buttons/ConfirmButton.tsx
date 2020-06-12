@@ -84,20 +84,21 @@ export function ConfirmButton({
 
   return !confirmation ? (
     <div tabIndex={tabIndex} ref={confirmButton} id={id} className={className}>
-      {label && (
+      {icon ? (
+        <IconButton
+          label={label}
+          icon={icon}
+          onClick={onClickVerify}
+          tooltip={tooltip}
+          disabled={disabled}
+          noHover={noHover}
+          prefixedLabel
+        />
+      ) : (
         <Button
           label={label}
           onClick={onClickVerify}
           disableBorders={disableBorders}
-          tooltip={tooltip}
-          disabled={disabled}
-          noHover={noHover}
-        />
-      )}
-      {icon && (
-        <IconButton
-          icon={icon}
-          onClick={onClickVerify}
           tooltip={tooltip}
           disabled={disabled}
           noHover={noHover}

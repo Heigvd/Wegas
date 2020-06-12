@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { setGlobal, useDispatch } from 'reactn';
 import { omit } from 'lodash';
 import { wlog } from '../../Helper/wegaslog';
@@ -18,6 +18,7 @@ import {
   ModeOther,
   ModeComponent,
 } from './ThemeVars';
+import { layoutStyle, expandBoth } from '../../css/classes';
 
 export type ColorType = Exclude<React.CSSProperties['color'], undefined>;
 
@@ -372,7 +373,7 @@ export function ThemeProvider({
   const className = themeModeClass(themesState, contextName, modeName);
 
   return (
-    <div ref={themeRoot} className={className}>
+    <div ref={themeRoot} className={cx(className, layoutStyle, expandBoth)}>
       <Provider
         value={{
           themesState: themesState,
