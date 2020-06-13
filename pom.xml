@@ -94,6 +94,8 @@
         <wegas.clientErrorLogging>false</wegas.clientErrorLogging>
         <wegas.useYUICDN>false</wegas.useYUICDN>
 
+        <jakarta.version>8.0.0</jakarta.version>
+
         <shiro.version>1.5.2</shiro.version>
         <jdk.version>1.8</jdk.version>
         <payara.version>5.201</payara.version>
@@ -435,9 +437,9 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>javax</groupId>
-                <artifactId>javaee-api</artifactId>
-                <version>8.0.1</version>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-api</artifactId>
+                <version>${jakarta.version}</version>
                 <scope>provided</scope>
             </dependency>
 

@@ -395,7 +395,11 @@ public abstract class WegasPatch {
     }
 
     public PatchDiff diff(){
-        return this.buildDiff();
+        return this.buildDiff(false);
+    }
+
+    public PatchDiff diffForce(){
+        return this.buildDiff(true);
     }
 
     /**
@@ -443,8 +447,7 @@ public abstract class WegasPatch {
         return this.vdf;
     }
 
-
-    protected abstract PatchDiff buildDiff();
+    protected abstract PatchDiff buildDiff(boolean bypassVisibility);
 
     public static abstract class PatchDiff{
     };

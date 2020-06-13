@@ -40,7 +40,7 @@
 }
 .wegas-survey-widget .description {
     margin: 20px auto 25px;
-    width: max-content;
+    width: auto;
 }
 
 .wegas-survey-widget .section {
@@ -62,6 +62,7 @@
 
 .wegas-survey-widget .section-title-bar {
     width: 100%;
+    padding-bottom: 5px;
 }
 
 .wegas-survey-widget .save-status {
@@ -115,21 +116,14 @@
     min-height: 1px;
 }
 
-/*
-.wegas-survey-input-label.wegas-compulsory-input:after {
-    content: '(*)';
-    margin-left: 7px;
-    font-size: 12px;
-    vertical-align: bottom;
-}
-*/
-
 .wegas-survey-input-label.wegas-optional-input:after {
     content: attr(data-optionalornot);
     font-size: 12px;
     font-weight: normal;
     font-style: italic;
-    margin-left: 4px;
+    margin-left: 5px;
+    display: inline-block;
+    float: right;
 }
 
 .wegas-survey-widget .section .content{
@@ -434,156 +428,4 @@
 
 .yui3-skin-sam .wegas-survey-widget .progress-value {
     position: absolute;
-}
-
-.wegas-react-form-content span.fa-bars {
-    margin-right: 15px;
-}
-
-
-/***** Dashboard orchestrator *****/
-.wegas-survey-orchestrator {
-    margin: 10px;
-}
-
-.wegas-survey-orchestrator .warning:not(:empty) {
-    font-weight: bold;
-    color: red;
-    border: 3px ridge red;
-    width: max-content;
-    padding: 10px;
-}
-
-.wegas-survey-orchestrator .survey-mixer {
-    border: 2px ridge #adceeb;
-    padding: 10px;
-    margin: 10px auto;
-}
-
-.wegas-survey-orchestrator .search-external-surveys button {
-    border-radius: 50%;
-    margin-left: 5px;
-    border: 1px solid lightgray;
-    width: 30px;
-    height: 30px;
-}
-
-.wegas-survey-orchestrator .external-surveys-title {
-    font-weight: bold;
-    font-size: 150%;
-}
-
-.wegas-survey-orchestrator .external-surveys-title .close {
-    float: right;
-    font-weight: bold;
-    cursor: pointer;
-    font-size: 14px;
-    border-radius: 50%;
-    padding: 4px;
-}
-
-.wegas-survey-orchestrator .external-surveys-title .close:hover {
-    background: #ddd;
-}
-
-.wegas-survey-orchestrator .external-surveys-list:not(:empty) {
-    margin-bottom: 20px;
-}
-
-.wegas-survey-orchestrator .external-surveys-list .game-name {
-    margin-top: 10px;
-    font-weight: bold;
-}
-
-.wegas-survey-orchestrator .external-surveys-list .importable-variable {
-    margin-left: 10px;
-    cursor: pointer;
-}
-
-.wegas-survey-orchestrator .external-surveys-list .importable-variable:hover {
-    text-decoration: underline;
-}
-
-.wegas-survey-orchestrator .selected-survey-list {
-    border-top: 1px solid gray;
-    margin-top: 5px;
-}
-
-.wegas-survey-orchestrator .selected-survey {
-    margin: 10px 0;
-    padding: 10px;
-    border: 2px ridge #adceeb;
-}
-
-.wegas-survey-orchestrator .selected-survey .survey-header .survey-title {
-    display: inline-block;
-    max-width: calc(100% - 90px);
-    font-size: 150%;
-    font-weight: bold;
-}
-
-.wegas-survey-orchestrator .selected-survey .survey-refresh {
-    float: right;
-    margin-right: 10px;
-}
-
-.wegas-survey-orchestrator .selected-survey .survey-refresh button {
-    border-radius: 4px;
-    border: 1px solid lightgray;
-}
-
-.wegas-survey-orchestrator .selected-survey .status-line {
-    line-height: 2;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.wegas-survey-orchestrator .selected-survey .request-survey {
-    margin-left: 10px;
-}
-
-.wegas-survey-orchestrator .selected-survey .request-survey:before {
-    content: "\f04b";
-    font-family: "FontAwesome";
-    padding-left: 2px;
-    padding-right: 6px;
-    color: #009900;
-}
-
-.wegas-survey-orchestrator .selected-survey .request-survey:hover {
-    background-image: linear-gradient(transparent,rgba(0,0,0,0.05) 40%,rgba(0,0,0,0.15));
-}
-
-.wegas-survey-orchestrator .selected-survey .teams-table {
-    display: inline-table;
-    border: 2px inset #adceeb;
-    min-width: 300px;
-}
-
-.wegas-survey-orchestrator .selected-survey .teams-table thead {
-    font-weight: bold;
-    font-style: italic;
-}
-
-.wegas-survey-orchestrator .selected-survey .teams-table thead tr {
-    height: 30px;
-}
-
-.wegas-survey-orchestrator .selected-survey .teams-table td {
-    padding: 4px 8px;
-    text-align: center;
-    border: 1px solid #DDD;
-}
-
-.wegas-survey-orchestrator .selected-survey .teams-table .name {
-}
-
-.wegas-survey-orchestrator .selected-survey .monitoring .menu {
-    margin-left: 8px;
-    font-size: 18px;
-    color: #5b9dd7;
-}
-
-.wegas-survey-orchestrator .selected-survey .monitoring .menu:hover {
-    cursor: pointer;
 }

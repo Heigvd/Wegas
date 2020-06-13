@@ -68,7 +68,7 @@ angular
             }
         };
     })
-    .directive('modelerHistoryActions', function(ScenariosModel) {
+    .directive('modelerHistoryActions', function(ScenariosModel, Auth) {
         "use strict";
         return {
             templateUrl: 'app/private/modeler/history/directives.tmpl/actions.html',
@@ -77,6 +77,10 @@ angular
             },
             require: "^modelerHistoryIndex",
             link: function($scope, element, attrs, parentCtrl) {
+                Auth.getAuthenticatedUser().then(function(user) {
+                    $scope.user = user;
+                });
+
                 $scope.addVersion = function() {
                     parentCtrl.addVersion();
                 };
@@ -110,23 +114,73 @@ angular
             }
         };
     })
+    .directive('modelerHistoryPatchDiff', function(ScenariosModel) {
+        "use strict";
+        return {
+            scope: {
+                model: "="
+            },
+            link: function(scope, element, attrs) {
+                scope.$watch("model", function(n, o) {
+                    element.bind('change', function() {
+                        if (n) {
+                            ScenariosModel.diffFromFile(n, element[0].files[0])
+                                .then(function(response) {
+                                    element[0].value = '';
+                                    if (response.flash) {
+                                        response.flash();
+                                    } else if (typeof response  === "string"){
+                                        // perché non vieni a casa a mangiare gli spaghetti?
+                                        scope.$parent.$parent.$parent.$parent.diff = response;
+                                        scope.$parent.$parent.diffDone = true
+                                    }
+                                });
+                        }
+                    });
+                    scope.model = n;
+                });
+            }
+        };
+    })
+    .directive('modelerHistoryPatch', function(ScenariosModel) {
+        "use strict";
+        return {
+            scope: {
+                model: "="
+            },
+            link: function(scope, element, attrs) {
+                scope.$watch("model", function(n, o) {
+                    element.bind('change', function() {
+                        if (n) {
+                            ScenariosModel.patchFromFile(n,
+                                element[0].files[0]).then(function(response) {
+                                response.flash();
+                                element[0].value = '';
+                            }).then()
+                        }
+                    });
+                    scope.model = n;
+                });
+            }
+        };
+    })
     .directive('modelerHistoryDownloadWgz', function(ScenariosModel) {
         "use strict";
         return {
             scope: {
-                scenario: "="
+                model: "="
             },
             link: function(scope, element, attrs, parentCtrl) {
                 var $jsonElement = element;
 
-                scope.$watch("scenario", function(n, o) {
+                scope.$watch("model", function(n, o) {
                     if (_.contains([false, undefined], n)) {
                         $jsonElement.addClass('disabled').attr('href', '#');
                     } else {
                         var url = window.ServiceURL + "rest/Export/GameModel/" + n.id + ".wgz";
                         $jsonElement.removeClass('disabled').attr('href', url);
                     }
-                    scope.scenario = n;
+                    scope.model = n;
                 });
 
 

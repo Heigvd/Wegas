@@ -61,6 +61,14 @@ YUI.add('wegas-survey-entities', function(Y) {
                 type: HTML,
                 label: "Closing remarks"
             }),
+            isPublished: {
+                type: BOOLEAN,
+                value: true,
+                view: {
+                    label: 'is published',
+                    type: HIDDEN
+                }
+            },
             items: {
                 type: ARRAY,
                 value: [],
@@ -346,6 +354,29 @@ YUI.add('wegas-survey-entities', function(Y) {
                     ]
                 }
             }
+        },
+        
+        /**
+         * Defines methods available in wysiwyg script editor
+         */
+        METHODS: {
+            activate: {
+                arguments: [SELFARG]
+            },
+            deactivate: {
+                label: "deactivate",
+                arguments: [SELFARG]
+            },
+            isActive: {
+                label: "is active",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
+            },
+            isNotActive: {
+                label: "is active",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
+            }
         }
     });
 
@@ -394,6 +425,28 @@ YUI.add('wegas-survey-entities', function(Y) {
                 view: {
                     label: 'Reply is compulsory'
                 }
+            }
+        },
+        /**
+         * Methods available in wysiwyg script editor
+         */
+        METHODS: {
+            activate: {
+                arguments: [SELFARG]
+            },
+            deactivate: {
+                label: "deactivate",
+                arguments: [SELFARG]
+            },
+            isActive: {
+                label: "is active",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
+            },
+            isNotActive: {
+                label: "is active",
+                returns: BOOLEAN,
+                arguments: [SELFARG]
             }
         }
     });

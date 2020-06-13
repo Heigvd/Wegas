@@ -1,4 +1,3 @@
-
 /*
  * Wegas
  * http://wegas.albasim.ch
@@ -29,7 +28,6 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 replyOptional: "(optional reply)"
             },
             errors: {
-                inactive: "This survey is currently empty or inactive.",
                 incomplete: "Some questions have not been replied yet.<br>Please resume from question<br>{{question}}",
                 returnToQuestion: "Return to this question",
                 empty: "This survey contains no questions.",
@@ -39,19 +37,51 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
             },
             orchestrator: {
                 globalTitle: "Survey orchestration",
-                surveyTitle: "Dashboard for survey \"{{surveyName}}\"",
-                currentStatus: "Current status: ",
+                searchExternalSurveys: "Find all surveys",
+                standardSurveysTitle: "Standard Surveys",
+                externalSurveysTitle: "Your own surveys",
+                activeSurveysTitle: "Active surveys",
+                noSurveyFound: "No surveys found",
+                lastModifiedOn: "last modified on",
+                sessionOfScenario: "session of scenario",
+                scenario: "scenario",
+                nameTaken: "a variable in this game already has the same internal name \"{{name}}\"",
+                doImport: "Import selected surveys",
+                importing: "Importing surveys",
+                importTerminated: "Overview of imported surveys",
+                hasPlayerScope: "This survey is to be answered individually by each player",
+                hasTeamScope: "This survey is to be answered teamwise",
+                currentStatus: "Status",
+                inactive: "Empty or inactive",
                 notStarted: "Not yet started",
                 requested: "Start requested",
                 ongoing: "Ongoing",
                 completed: "Completed",
                 closed: "Closed",
-                requestButton: "Start survey",
+                editButton: "Edit",
+                previewButton: "Preview",
+                copyButton: "Copy",
+                requestButton: "Launch",
+                inviteButton: "Invite",
+                deleteButton: "Delete",
+                renameButton: "Rename (via edit)",
+                shareButton: "Share",
+                scopeTitle: "Change how players answer:",
+                playerScopeButton: "Individually",
+                teamScopeButton: "Teamwise",
+                progressDetailsButton: "Details",
                 teamOrPlayer: "Team/Player",
+                team: "Team",
+                player: "Player",
                 teamStatus: "Status",
                 teamRepliesCompulsory: "Compulsory Replies",
                 teamRepliesOptional: "Optional Replies",
                 noLogId: "No \"Log ID\" has been set for this session.<br>Replies to the survey will not be saved!<br>Please contact the platform administrator (AlbaSim).",
+                alreadyLaunched: "This survey is already launched",
+                deleteRunning: "This survey is already running.<br>Really delete it?",
+                modifyRunning: "This survey is running and cannot be modified now.",
+                surveyCancelled: "The survey is cancelled.",
+                surveyLaunched: "The survey has been started successfully."
             }
         }
     });

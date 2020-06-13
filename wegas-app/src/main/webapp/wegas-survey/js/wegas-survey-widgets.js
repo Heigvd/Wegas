@@ -13,10 +13,9 @@
  */
 YUI.add("wegas-survey-widgets", function(Y) {
     "use strict";
-    var CONTENTBOX = "contentBox", WIDGET = "widget", PAGEID = "pageId",
+    var CONTENTBOX = "contentBox",
         Wegas = Y.Wegas,
-        BUTTON = "wegas-survey-button",
-        SurveyWidget, SurveyOrchestrator,
+        SurveyWidget,
         SurveyNumberInput, SurveyTextInput, SurveyChoicesInput,
         SLIDER_MAX = 100,
         SLIDER_DEFAULT_POS = SLIDER_MAX/2,
@@ -638,29 +637,12 @@ YUI.add("wegas-survey-widgets", function(Y) {
         
         // Advances to the next question or section by updating "this.currentInputId"
         nextClicked: function() {
-            this.saveCurrentInputs();
-            
-            var currentInputElem = this.inputCache[this.currentInputId],
-                currentInput, currentSection;
-            if (this.oneQuestionPerPage) {
-                switch (this.surveyDisplay) {
-                    case SURVEY_DISPLAY.SURVEY_HEAD:
-                        currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
-                        currentSection = this.getSectionOfInputObj(currentInput);
-                        if (currentSection.silent) {
-                            this.surveyDisplay = SURVEY_DISPLAY.INPUT;
-                        } else {
-                            this.surveyDisplay = SURVEY_DISPLAY.SECTION_HEAD;
-                        }
-                        break;
-                    case SURVEY_DISPLAY.SECTION_HEAD:
-                        this.surveyDisplay = SURVEY_DISPLAY.INPUT;
-                        break;
-                    case SURVEY_DISPLAY.INPUT:
-                        if (currentInputElem.nextId) {
-                            this.currentInputId = currentInputElem.nextId;
-                        } else {
-                            this.advanceToNextSection();
+            this.saveCurrentInputs().then(Y.bind(function(msg) {
+                var currentInputElem = this.inputCache[this.currentInputId],
+                    currentInput, currentSection;
+                if (this.oneQuestionPerPage) {
+                    switch (this.surveyDisplay) {
+                        case SURVEY_DISPLAY.SURVEY_HEAD:
                             currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
                             currentSection = this.getSectionOfInputObj(currentInput);
                             if (currentSection.silent) {
@@ -668,104 +650,122 @@ YUI.add("wegas-survey-widgets", function(Y) {
                             } else {
                                 this.surveyDisplay = SURVEY_DISPLAY.SECTION_HEAD;
                             }
-                        }
-                        break;
-                    case SURVEY_DISPLAY.COMPLETED:
-                        alert("internal error in nextClicked()");
-                        break;
-                }
-            } else { // One section/page mode:
-                switch (this.surveyDisplay) {
-                    case SURVEY_DISPLAY.SURVEY_HEAD:
-                        this.surveyDisplay = SURVEY_DISPLAY.SECTION_HEAD;
-                        break;
-                    case SURVEY_DISPLAY.SECTION_HEAD:
-                        currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
-                        currentSection = this.getSectionOfInputObj(currentInput);
-                        if (currentSection.silent) {
-                            // Jump over concatenated silent sections:
-                            do {
+                            break;
+                        case SURVEY_DISPLAY.SECTION_HEAD:
+                            this.surveyDisplay = SURVEY_DISPLAY.INPUT;
+                            break;
+                        case SURVEY_DISPLAY.INPUT:
+                            if (currentInputElem.nextId) {
+                                this.currentInputId = currentInputElem.nextId;
+                            } else {
                                 this.advanceToNextSection();
                                 currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
                                 currentSection = this.getSectionOfInputObj(currentInput);
-                            } while (currentSection && currentSection.silent);
-                        } else {
-                            this.advanceToNextSection();
-                        }
-                        break;
-                    case SURVEY_DISPLAY.INPUT:
-                    case SURVEY_DISPLAY.COMPLETED:
-                        alert("internal error in nextClicked()");
-                        break;
+                                if (currentSection.silent) {
+                                    this.surveyDisplay = SURVEY_DISPLAY.INPUT;
+                                } else {
+                                    this.surveyDisplay = SURVEY_DISPLAY.SECTION_HEAD;
+                                }
+                            }
+                            break;
+                        case SURVEY_DISPLAY.COMPLETED:
+                            alert("internal error in nextClicked()");
+                            break;
+                    }
+                } else { // One section/page mode:
+                    switch (this.surveyDisplay) {
+                        case SURVEY_DISPLAY.SURVEY_HEAD:
+                            this.surveyDisplay = SURVEY_DISPLAY.SECTION_HEAD;
+                            break;
+                        case SURVEY_DISPLAY.SECTION_HEAD:
+                            currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
+                            currentSection = this.getSectionOfInputObj(currentInput);
+                            if (currentSection.silent) {
+                                // Jump over concatenated silent sections:
+                                do {
+                                    this.advanceToNextSection();
+                                    currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
+                                    currentSection = this.getSectionOfInputObj(currentInput);
+                                } while (currentSection && currentSection.silent);
+                            } else {
+                                this.advanceToNextSection();
+                            }
+                            break;
+                        case SURVEY_DISPLAY.INPUT:
+                        case SURVEY_DISPLAY.COMPLETED:
+                            alert("internal error in nextClicked()");
+                            break;
+                    }
                 }
-            }
-            this.syncUI();
+                this.syncUI();
+            }, this));
         },
         
         // Goes back to the previous question or section by updating "this.currentInputId"
         backClicked: function() {
-            this.saveCurrentInputs();
+            this.saveCurrentInputs().then(Y.bind(function(msg) {
 
-            var currentInputElem = this.inputCache[this.currentInputId],
-                currentInput, currentSection, currentSectionId;
-            if (this.oneQuestionPerPage) {
-                switch (this.surveyDisplay) {
-                    case SURVEY_DISPLAY.SURVEY_HEAD:
-                        alert("internal error in backClicked()");
-                        break;
-                    case SURVEY_DISPLAY.SECTION_HEAD:
-                        // Find last input of previous section:
-                        currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
-                        currentSectionId = this.getSectionOfInputObj(currentInput).get("id");
-                        if (currentSectionId !== this.firstSection.get("id")) {
-                            this.surveyDisplay = SURVEY_DISPLAY.INPUT;
-                            // Find previous section:
-                            var sectionIndex = this._findById(this.activeSections, currentSectionId),
-                                prevSection = this.activeSections[sectionIndex-1];
-                            this.currentInputId = prevSection.lastInputId;
-                        } else {
-                            this.surveyDisplay = SURVEY_DISPLAY.SURVEY_HEAD;
-                        }
-                        break;
-                    case SURVEY_DISPLAY.INPUT:
-                        if (currentInputElem.backId) {
-                            this.currentInputId = currentInputElem.backId;
-                        } else {
+                var currentInputElem = this.inputCache[this.currentInputId],
+                    currentInput, currentSection, currentSectionId;
+                if (this.oneQuestionPerPage) {
+                    switch (this.surveyDisplay) {
+                        case SURVEY_DISPLAY.SURVEY_HEAD:
+                            alert("internal error in backClicked()");
+                            break;
+                        case SURVEY_DISPLAY.SECTION_HEAD:
+                            // Find last input of previous section:
                             currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
-                            currentSection = this.getSectionOfInputObj(currentInput);
-                            currentSectionId = currentSection.get("id");
-                            if (currentSection.silent) {
-                                if (currentSectionId !== this.firstSection.get("id")) {
-                                    this.surveyDisplay = SURVEY_DISPLAY.INPUT;
-                                    // Find previous section:
-                                    var sectionIndex = this._findById(this.activeSections, currentSectionId),
-                                        prevSection = this.activeSections[sectionIndex-1];
-                                    this.currentInputId = prevSection.lastInputId;
-                                } else {
-                                    this.surveyDisplay = SURVEY_DISPLAY.SURVEY_HEAD;
-                                }
+                            currentSectionId = this.getSectionOfInputObj(currentInput).get("id");
+                            if (currentSectionId !== this.firstSection.get("id")) {
+                                this.surveyDisplay = SURVEY_DISPLAY.INPUT;
+                                // Find previous section:
+                                var sectionIndex = this._findById(this.activeSections, currentSectionId),
+                                    prevSection = this.activeSections[sectionIndex-1];
+                                this.currentInputId = prevSection.lastInputId;
                             } else {
-                                this.surveyDisplay = SURVEY_DISPLAY.SECTION_HEAD;
+                                this.surveyDisplay = SURVEY_DISPLAY.SURVEY_HEAD;
                             }
-                        }
-                        break;
-                    case SURVEY_DISPLAY.COMPLETED:
-                        alert("internal error in backClicked()");
-                        break;
+                            break;
+                        case SURVEY_DISPLAY.INPUT:
+                            if (currentInputElem.backId) {
+                                this.currentInputId = currentInputElem.backId;
+                            } else {
+                                currentInput = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentInputId);
+                                currentSection = this.getSectionOfInputObj(currentInput);
+                                currentSectionId = currentSection.get("id");
+                                if (currentSection.silent) {
+                                    if (currentSectionId !== this.firstSection.get("id")) {
+                                        this.surveyDisplay = SURVEY_DISPLAY.INPUT;
+                                        // Find previous section:
+                                        var sectionIndex = this._findById(this.activeSections, currentSectionId),
+                                            prevSection = this.activeSections[sectionIndex-1];
+                                        this.currentInputId = prevSection.lastInputId;
+                                    } else {
+                                        this.surveyDisplay = SURVEY_DISPLAY.SURVEY_HEAD;
+                                    }
+                                } else {
+                                    this.surveyDisplay = SURVEY_DISPLAY.SECTION_HEAD;
+                                }
+                            }
+                            break;
+                        case SURVEY_DISPLAY.COMPLETED:
+                            alert("internal error in backClicked()");
+                            break;
+                    }
+                } else { // One section/page mode:
+                    switch (this.surveyDisplay) {
+                        case SURVEY_DISPLAY.SECTION_HEAD:
+                            this.backToPreviousSectionByPage();
+                            break;
+                        case SURVEY_DISPLAY.SURVEY_HEAD:
+                        case SURVEY_DISPLAY.INPUT:
+                        case SURVEY_DISPLAY.COMPLETED:
+                            alert("internal error in backClicked()");
+                            break;
+                    }
                 }
-            } else { // One section/page mode:
-                switch (this.surveyDisplay) {
-                    case SURVEY_DISPLAY.SECTION_HEAD:
-                        this.backToPreviousSectionByPage();
-                        break;
-                    case SURVEY_DISPLAY.SURVEY_HEAD:
-                    case SURVEY_DISPLAY.INPUT:
-                    case SURVEY_DISPLAY.COMPLETED:
-                        alert("internal error in backClicked()");
-                        break;
-                }
-            }
-            this.syncUI();
+                this.syncUI();
+            }, this));
         },
         // Sets this.currentInputId to the top of the previous section 
         // (or even further back if silent sections are concatenated).
@@ -909,7 +909,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
         },
         sendReplyRequest: function(inputId, cb) {
             if (inputId === undefined) {
-                // @TODO: this happens when destroying the widget
+                // This happens when destroying the widget
                 return;
             }
 
@@ -975,14 +975,17 @@ YUI.add("wegas-survey-widgets", function(Y) {
         },
         // Saves all currently displayed inputs. To be called when navigating or validating
         saveCurrentInputs: function() {
-            for (var cw in this.childWidgets) {
-                var curr = this.childWidgets[cw];
-                try {
-                    curr.logValue();
-                } catch(e) {
-                    Y.log("SurveyWidget: logValue failed.");
+            return new Y.Promise(Y.bind(function(resolve) {
+                for (var cw in this.childWidgets) {
+                    var curr = this.childWidgets[cw];
+                    try {
+                        curr.logValue();
+                    } catch(e) {
+                        Y.log("SurveyWidget: logValue failed.");
+                    }
                 }
-            }
+                resolve("Current input(s) saved");
+            }, this));
         },
         // Returns, if applicable, a reference to the first unreplied, active and compulsory input.
         // Returns { input: input, msg: error message }
@@ -1011,44 +1014,44 @@ YUI.add("wegas-survey-widgets", function(Y) {
         // Final validation of the survey by the player.
         // Checks that it has not already been validated and that all inputs have been replied.
         validate: function() {
-            this.saveCurrentInputs();
-            
-            var desc = this.get("survey.evaluated"),
-                inst = desc.getInstance();
-            if (inst.get("status") !== ORCHESTRATION_PROGRESS.COMPLETED) {
-                var unreplied = this.getFirstUnrepliedInput();
-                if (!unreplied) {
-                    Wegas.Panel.confirm(I18n.tCap("survey.global.confirmation"), Y.bind(function() {
-                        Wegas.Panel.confirmPlayerAction(Y.bind(function(e) {
-                                this._validated = true;
-                                this.sendSurveyStatusChange(ORCHESTRATION_PROGRESS.COMPLETED, Y.bind(function(e) {
-                                    if (!e.error) {
-                                        this.surveyStatus = SURVEY_STATUS.COMPLETED;
-                                        this.surveyDisplay = SURVEY_DISPLAY.COMPLETED;
-                                        this.syncUI();
-                                    }
-                                }, this));
-                                // Send completion event to xAPI:
-                                Y.Wegas.Facade.Variable.script.remoteFnEval(
-                                    function(survname) {
-                                        surveyXapi.post(surveyXapi.surveyCompleted(survname));
-                                    },
-                                    this.get("survey.evaluated").get("name")
-                                );
+            this.saveCurrentInputs().then(Y.bind(function(msg) {
+                var desc = this.get("survey.evaluated"),
+                    inst = desc.getInstance();
+                if (inst.get("status") !== ORCHESTRATION_PROGRESS.COMPLETED) {
+                    var unreplied = this.getFirstUnrepliedInput();
+                    if (!unreplied) {
+                        Wegas.Panel.confirm(I18n.tCap("survey.global.confirmation"), Y.bind(function() {
+                            Wegas.Panel.confirmPlayerAction(Y.bind(function(e) {
+                                    this._validated = true;
+                                    this.sendSurveyStatusChange(ORCHESTRATION_PROGRESS.COMPLETED, Y.bind(function(e) {
+                                        if (!e.error) {
+                                            this.surveyStatus = SURVEY_STATUS.COMPLETED;
+                                            this.surveyDisplay = SURVEY_DISPLAY.COMPLETED;
+                                            this.syncUI();
+                                        }
+                                    }, this));
+                                    // Send completion event to xAPI:
+                                    Y.Wegas.Facade.Variable.script.remoteFnEval(
+                                        function(survname) {
+                                            surveyXapi.post(surveyXapi.surveyCompleted(survname));
+                                        },
+                                        this.get("survey.evaluated").get("name")
+                                    );
+                            }, this));
                         }, this));
-                    }, this));
-                } else {
-                    var ctx = this;
-                    this.alert(
-                        I18n.t("survey.errors.incomplete", {question: "<i><b>" + unreplied.msg + "</b></i>"}),
-                        function(){
-                            ctx.currentInputId = unreplied.input.get("id");
-                            ctx.syncUI();
-                        },
-                        I18n.t("survey.errors.returnToQuestion")
-                    );
+                    } else {
+                        var ctx = this;
+                        this.alert(
+                            I18n.t("survey.errors.incomplete", {question: "<i><b>" + unreplied.msg + "</b></i>"}),
+                            function(){
+                                ctx.currentInputId = unreplied.input.get("id");
+                                ctx.syncUI();
+                            },
+                            I18n.t("survey.errors.returnToQuestion")
+                        );
+                    }
                 }
-            }
+            }, this));
         },
         // Overload Wegas.Panel.alert in order to add a custom cssClass.
         alert: function(msg, okCb, okLabel, additionalClass, modal) {
@@ -1981,536 +1984,4 @@ YUI.add("wegas-survey-widgets", function(Y) {
     });
     Wegas.SurveyChoicesInput = SurveyChoicesInput;
    
-   
-    
-    /**
-     * @name Y.Wegas.SurveyOrchestrator
-     * @extends Y.Widget
-     * @borrows Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.Editable
-     * @class  class loader of wegas pages
-     * @constructor
-     * @description
-     */
-    SurveyOrchestrator = Y.Base.create("wegas-survey-orchestrator", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
-        CONTENT_TEMPLATE:
-            "<div>" +
-            "    <div class=\"global-header\">" +
-            "        <h1>" + I18n.t("survey.orchestrator.globalTitle") + "</h1>" +
-            "    </div>" +
-            "    <div class=\"warning\"></div>" +
-            "    <div class=\"survey-mixer\">" +
-            "        <div class=\"search-external-surveys\">Search for surveys in other games</div>" +
-            "        <div class=\"external-surveys-title\" style=\"display:none;\">Surveys found in other games<div class=\"close\">X</div></div>" +
-            "        <div class=\"external-surveys-list\"></div>" +
-            "    </div>" +
-            "    <div class=\"selected-survey-list\">" +
-            "    </div>" +
-            "</div>",
-    
-        initializer: function() {
-            this.handlers = [];
-            // List of all known surveys:
-            this.knownSurveys = {};
-            // List of surveys incorporated in the game:
-            this.managedSurveys = {};
-            this._monitoredData = {};
-            this.datatables = {};
-            this._freeForAll = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll");
-            xAPI.testXapi();
-        },
-        // Adds the given survey descriptor to the list of known surveys
-        registerSurvey: function(sd) {
-            var descrId = sd.get("id");
-            if (!this.knownSurveys[descrId]) {
-                this.knownSurveys[descrId] = {};
-            }
-        },
-        // Removes the given survey descriptor from the list of known surveys
-        deregisterSurvey: function(sd) {
-            var descrId = sd.get("id");
-            if (this.knownSurveys[descrId]) {
-                delete this.knownSurveys[descrId];
-                this.syncUI();
-            }            
-        },
-        // Adds the given survey descriptor to the list of managed surveys
-        selectSurvey: function(sd) {
-            var descrId = sd.get("id");
-            if (!this.managedSurveys[descrId]) {
-                this.managedSurveys[descrId] = {
-                    refreshButton: null
-                };
-                this.syncUI();
-            }            
-        },
-        // Removes the given survey descriptor from the list of managed surveys
-        deselectSurvey: function(sd) {
-            var descrId = sd.get("id");
-            if (this.managedSurveys[descrId]) {
-                delete this.managedSurveys[descrId];
-                this.syncUI();
-            }            
-        },
-        renderUI: function() {
-            var cb = this.get(CONTENTBOX),
-                logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
-            if (!logId) {
-                var msg = I18n.t("survey.orchestrator.noLogId");
-                this.get("contentBox").one(".warning").setContent(msg);
-            } else {
-                Y.log("Log ID = " + logId);
-            }
-            // Get updates about all internal surveys and list them:
-            Y.Array.each(Y.Wegas.Facade.Variable.cache.findAll("@class", "SurveyDescriptor"),
-                function(sd) {
-                    this.registerSurvey(sd);
-                    this.selectSurvey(sd);
-                }, this);
-            // Prepare area for searching for and importing external surveys:
-            this.searchExternalButton = new Y.Button({
-                label: "<i class=\"fa fa-search\"></i>",
-                visible: true
-            }).render(cb.one(".search-external-surveys"));
-        },
-        _getMonitoredData: function(survId) {
-            var survDescr = Y.Wegas.Facade.Variable.cache.findById(survId);
-            if (survDescr){
-                var survName = survDescr.get("name"),
-                    ctx = this;
-                Y.Wegas.Facade.Variable.sendRequest({
-                    request: "/Script/Run/" + Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id"),
-                    cfg: {
-                        method: "POST",
-                        headers: {"Managed-Mode": false},
-                        data: {
-                            "@class": "Script",
-                            content: "SurveyHelper.summarize('" + survName + "');"
-                        }
-                    },
-                    on: {
-                        success: function(e) {
-                            ctx._monitoredData[survId] = e.response.results;
-                            ctx.syncTable(survId);
-                        },
-                        failure: function(e) {
-                            if (e && e.response && e.response.results && e.response.results.message && e.response.results.message.indexOf("undefined in SurveyHelper")) {
-                                ctx.showMessage("error", "Please include server script : \"wegas-app/js/server/\"");
-                            }
-                        }
-                    }
-                });
-            }
-        },
-        /**
-         * @function
-         * @private
-         * @description bind function to events.
-         */
-        bindUI: function() {
-            var cb = this.get(CONTENTBOX);
-            this.handlers.push(Y.Wegas.Facade.Variable.after("updatedDescriptor", this.onUpdatedDescriptor, this));
-            this.handlers.push(Y.Wegas.Facade.Variable.after("added", this.onAddedDescriptor, this));
-            this.handlers.push(Y.Wegas.Facade.Variable.after("delete", this.onDeletedDescriptor, this));
-            
-            this.handlers.push(cb.one(".search-external-surveys").on("click", this.onSearchExternal, this));
-            this.handlers.push(cb.one(".external-surveys-title .close").on("click", this.closeExternalSurveys, this));
-
-            cb.delegate("click", this.onRequest, ".selected-survey .request-survey", this);
-            cb.delegate("click", this.refresh, ".selected-survey .survey-header .survey-refresh", this);
-            cb.delegate("click", this.importSurvey, ".external-surveys-list .importable-variable", this);
-        },
-        
-        onUpdatedDescriptor: function(e) {
-            var entity = e.entity;
-            if (entity.get("@class") === "SurveyDescriptor") {
-                this.registerSurvey(entity);
-                // @TODO distinguish between known and actually managed surveys
-                this.selectSurvey(entity);
-                this.syncUI();
-            }
-        },
-
-        onAddedDescriptor: function(e) {
-            var entity = e.entity;
-            if (entity.get("@class") === "SurveyDescriptor") {
-                this.registerSurvey(entity);
-                // @TODO distinguish between known and actually managed surveys
-                this.selectSurvey(entity);
-                this.syncUI();
-            }
-        },
-
-        onDeletedDescriptor: function(e) {
-            var entity = e.entity;
-            if (entity.get("@class") === "SurveyDescriptor") {
-                this.deregisterSurvey(entity);
-                // @TODO distinguish between known and actually managed surveys
-                this.deselectSurvey(entity);
-                this.syncUI();
-            }
-        },
-
-        refresh: function(e) {
-            var survId = e.target.getData("id");
-            if (!survId){
-                // The id attribute is on the parent button:
-                survId = e.target.get("parentNode").getData("id");
-            }
-
-            this.syncUI(survId);            
-        },
-
-        getFriendlyVarName: function(v) {
-            var name = '',
-                label = I18n.t(v.get("label"));
-            if (v.get("editorTag")) {
-                name += v.get("editorTag");
-            }
-            if (name && label) {
-                name += ' - ';
-            }
-            if (label) {
-                name += label;
-            }
-            if (!name) {
-                name = v.get("name");
-            }
-            return name;
-        },
-        
-        // Called via on click
-        importSurvey: function(e) {
-            // /rest/GameModel/<gameModelId>/VariableDescriptor/CherryPick/<variableDescriptorId>/<newScopeType>
-            var data = e.target.getData(),
-                gmId = data.gamemodelid,
-                varId = data.varid,
-                newscope = null, // data.newscope,
-                config = {
-                    request: '/' + gmId + "/VariableDescriptor/CherryPick/" + varId + (newscope ? '/' + newscope : ''),
-                    cfg: {
-                        updateCache: true,
-                        method: "POST"
-                    },
-                    on: {
-                        success: Y.bind(function(e) {
-                            alert("ok");
-                        }, this),
-                        failure: Y.bind(function(e) {
-                            this.showMessage("error", "Something went wrong: importSurvey");
-                        }, this)
-                }
-            };
-            Y.Wegas.Facade.GameModel.sendRequest(config);
-        },
-        
-        closeExternalSurveys: function() {
-            var cb = this.get(CONTENTBOX);
-            cb.one(".external-surveys-list").setHTML('');
-            cb.one(".search-external-surveys").show();
-            cb.one(".external-surveys-title").hide();
-        },
-        
-        listExternalSurveys: function(e) {
-            var varSets = e.response && e.response.entities,
-                currGameId = Y.Wegas.Facade.Game.cache.getCurrentGame().get("id"),
-                currGameModelId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"),
-                currVarSet, vs, currGameModel, currGame, variables, v, currVar,
-                txt = '';
-            for (vs in varSets){
-                currVarSet = varSets[vs].get("val");
-                currGameModel = currVarSet.gameModel;
-                currGame = currVarSet.game;
-                variables = currVarSet.variables;
-                if (currGameModel.get("type") === "PLAY" ) {   // It's a session, not a scenario
-                    if (currGame.get("id") === currGameId) {
-                        continue;
-                    }
-                    txt += '<div class="game-name">' + currGame.get("name") + ' &nbsp;(session of scenario ' + currGameModel.get("name") + '):</div>';
-                } else {
-                    if (currGameModel.get("id") === currGameModelId) {
-                        continue;
-                    }
-                    txt += '<div class="game-name">' + currGameModel.get("name") + '</div>';
-                }
-                for (v in variables) {
-                    currVar = variables[v];
-                    txt += 
-                        '<div class="importable-variable" data-varid="' + currVar.get("id") + 
-                        '" data-gamemodelid="' + currGameModelId + //currGameModel.get("id") + 
-                        '" data-newscope="TeamScope">' +
-                        this.getFriendlyVarName(currVar) +
-                        '</div>';
-                }
-            }
-            if (!txt) {
-                txt = "no surveys found";
-            }
-            var cb = this.get(CONTENTBOX);
-            cb.one(".external-surveys-list").setHTML(txt);
-            cb.one(".search-external-surveys").hide();
-            cb.one(".external-surveys-title").show();
-        },
-        
-        onSearchExternal: function() {
-            // /rest/Public/GameModel/VariableDescriptor/FetchWriteablePickable/<variableClassName>
-            var config = {
-                    request: "/VariableDescriptor/FetchWriteablePickable/com.wegas.survey.persistence.SurveyDescriptor",
-                    cfg: {
-                        updateCache: true,
-                        method: "GET"
-                    },
-                    on: {
-                        success: Y.bind(function(e) {
-                            this.listExternalSurveys(e);
-                        }, this),
-                        failure: Y.bind(function(e) {
-                            this.showMessage("error", "Something went wrong: FetchWriteablePickable");
-                        }, this)
-                }
-            };
-            Y.Wegas.Facade.GameModel.sendRequest(config);
-        },
-        /**
-         * @function
-         * @private
-         */
-        syncUI: function(survDescrId) {
-            var cb = this.get(CONTENTBOX);
-            for (var survId in this.managedSurveys) {
-                if (this.managedSurveys.hasOwnProperty(survId)) {
-                    if (survDescrId && survDescrId !== survId) {
-                        continue;
-                    }
-                    var currSurv = this.managedSurveys[survId],
-                        survDescr = Y.Wegas.Facade.VariableDescriptor.cache.findById(survId);
-                    if (!survDescr) {
-                        // The survey descriptor has been deleted
-                        var cbs = this.get(CONTENTBOX).one('.selected-survey[data-id="' + survId + '"]');
-                        cbs.remove(true);
-                        currSurv.refreshButton && currSurv.refreshButton.destroy();
-                        delete this.managedSurveys[survId];
-                        delete this.knownSurveys[survId];
-                        continue;
-                    } else if (!currSurv.refreshButton) {
-                        // The survey descriptor has just been created, add the HTML block:
-                        var html =
-                            "<div class=\"selected-survey\" data-id=\"" + survId + "\">" +
-                            "   <div class=\"survey-header\">" +
-                            "       <span class=\"survey-title\"></span>" +
-                            "       <span class=\"survey-refresh\"></span>" +
-                            "    </div>" +
-                            "    <div class=\"control-panel\">" +
-                            "        <div class=\"status-line\">" +
-                                         I18n.t("survey.orchestrator.currentStatus") +
-                            "            <span class=\"status\">status</span>" +
-                            "            <button class=\"request-survey\" data-id=\"" + survId + "\">" + 
-                                             I18n.t("survey.orchestrator.requestButton") + 
-                            "            </button>" +
-                            "        </div>" +
-                            "    </div>" +
-                            "    <div class=\"monitoring\"></div>" +
-                            "</div>";
-
-                        var surveyList = cb.one(".selected-survey-list").insert(html),
-                            newSurvey = surveyList.one('[data-id="' + survId + '"]');
-                        
-                        currSurv.refreshButton = new Y.Button({
-                            label: "<i class=\"fa fa-3x fa-refresh\"></i>",
-                            visible: true
-                        }).render(newSurvey.one(".survey-refresh"));
-                        currSurv.refreshButton.get(CONTENTBOX).setAttribute("data-id", survId);
-
-                        newSurvey.one(".survey-header .survey-title")
-                            .setContent(I18n.t(survDescr.get("label")));
-                    
-                    } else {
-                        // Just update the survey title :
-                        var currSurvey = cb.one('.selected-survey-list [data-id="' + survId + '"] .survey-header .survey-title');
-                        currSurvey.setContent(I18n.t(survDescr.get("label")));
-                    }
-                    this._getMonitoredData(survId);
-                }
-            }
-        },
-        
-        statusToString: function(survey) {
-            if (!survey.active) {
-                return I18n.t("survey.errors.inactive");
-            } else {
-                switch (survey.status) {
-                    case ORCHESTRATION_PROGRESS.NOT_STARTED:
-                        return I18n.t("survey.orchestrator.notStarted");
-                    case ORCHESTRATION_PROGRESS.REQUESTED:
-                        return I18n.t("survey.orchestrator.requested");
-                    case ORCHESTRATION_PROGRESS.ONGOING:
-                        return I18n.t("survey.orchestrator.ongoing");
-                    case ORCHESTRATION_PROGRESS.COMPLETED:
-                        return I18n.t("survey.orchestrator.completed");
-                    case ORCHESTRATION_PROGRESS.CLOSED:
-                        return I18n.t("survey.orchestrator.closed");
-                    default:
-                        return "Internal error";
-                }
-            }
-        },
-        
-        syncTable: function(survId) {
-            var team,
-                teamsTable = [],
-                nbTeams = 0,
-                survData = this._monitoredData[survId],
-                cb = this.get(CONTENTBOX).one('.selected-survey[data-id="' + survId + '"]'),
-                refreshButton = this.managedSurveys[survId].refreshButton.get("contentBox").one("i");
-            
-            refreshButton.addClass("fa-spin");
-            
-            cb.one(".status-line .status").setContent(this.statusToString(survData));
-            if (survData.active === true &&
-                survData.status === ORCHESTRATION_PROGRESS.NOT_STARTED) {
-                cb.one(".request-survey").show();
-            } else {
-                cb.one(".request-survey").hide();
-            }
-            
-            if (survData.status !== ORCHESTRATION_PROGRESS.NOT_STARTED) {
-                teamsTable.push(
-                    '<table class="teams-table"><thead><tr><td>' +
-                    I18n.t("survey.orchestrator.teamOrPlayer") +
-                    '</td><td>' +
-                    I18n.t("survey.orchestrator.teamStatus") +
-                    '</td><td>' +
-                    I18n.t("survey.orchestrator.teamRepliesCompulsory") +
-                    '</td><td>' +
-                    I18n.t("survey.orchestrator.teamRepliesOptional") +
-                    '</td></tr></thead><tbody>');
-                for (team in survData.data) {
-                    var data = survData.data[team];
-                    nbTeams++;
-                    teamsTable.push(
-                        '<tr><td class="name">' +
-                        data.name +
-                        '</td><td class="status">' +
-                        this.statusToString(data) +
-                        '</td><td class="replied">' +
-                        data.replied + ' / ' + data.activeInputs +
-                        '</td><td class="repliedOptional">' +
-                        data.optionalReplied + ' / ' + data.activeOptionalInputs +
-                        '</td></tr>');
-                }
-                if (nbTeams) {
-                    var monitoring = cb.one(".monitoring"),
-                        menu;
-                    teamsTable.push('</tbody></table><span class="menu"></span>');
-                    monitoring.setContent(teamsTable.join(""));
-                    menu = monitoring.one(".menu");
-                    this.setTableVisibility(monitoring);
-                    menu.on("click", Y.bind(function() {
-                        this.setTableVisibility(monitoring, true);
-                    },this));
-                }
-            } else {
-                cb.one(".monitoring").setContent('');
-            }
-            
-            Y.later(500, this, function() {
-                refreshButton.removeClass("fa-spin");
-            });
-        },
-        
-        setTableVisibility: function(monitoringWrapper, toggle){
-            var tbody = monitoringWrapper.one("tbody"),
-                menu = monitoringWrapper.one(".menu"),
-                makeVisible = monitoringWrapper.hasClass("open-menu");
-            if (toggle) {
-                makeVisible = !makeVisible;
-            }
-            if (makeVisible) {
-                tbody.show();
-                menu.setContent('<i class="fa fa-chevron-circle-up"></i>');
-                monitoringWrapper.addClass("open-menu");
-            } else {
-                tbody.hide();
-                menu.setContent('<i class="fa fa-chevron-circle-down"></i>');
-                monitoringWrapper.removeClass("open-menu");
-            }
-        },
-        
-        /**
-         * @function
-         * @private
-         * @description Destroy widget and detach all functions created by this widget
-         */
-        destructor: function() {
-            Y.Array.each(this.handlers, function(h) {
-                h.detach();
-            });
-        },
-        
-        // @TODO: in team playing mode, ask if we should impact teams or players !
-        onRequest: function(e) {
-            var ctx = this;
-            Y.use(["wegas-dashboard-modals"], function(Y) {
-                var survId = e.target.getData()["id"],
-                    survName = Y.Wegas.Facade.Variable.cache.findById(survId).get("name"),
-                    script = "SurveyHelper.request('" + survName + "')",
-                    // Hack to impact all teams:
-                    team = Y.Wegas.Facade.Game.cache.getCurrentGame(),
-                    player = Y.Wegas.Facade.Game.cache.getCurrentPlayer();
-                if (!team.get("players")) {
-                    // Hack in scenarist mode:
-                    team.set("players", [player]);
-                }
-                new Y.Wegas.ImpactsTeamModal({
-                    "team": team,
-                    "customImpacts": [[
-                            "Do you really want to launch this survey?",
-                            script
-                        ]],
-                    "showAdvancedImpacts": false
-                }).render();
-                // Catch refresh signal generated when the modal is closed:
-                var handler = Y.on("dashboard:refresh", function() {
-                    handler.detach();
-                    ctx.syncUI(survId);
-                });
-            });
-            
-/* This version does not yield the required client-side updates:
-            var ctx = this,
-                survId = e.target.getData()["id"],
-                survName = Y.Wegas.Facade.Variable.cache.findById(survId).get("name"),
-                script = "SurveyHelper.request('" + survName + "')";
-
-            Y.Wegas.Facade.Variable.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id"),
-                cfg: {
-                    method: "POST",
-                    headers: {"Managed-Mode": false},
-                    data: {
-                        "@class": "Script",
-                        content: script
-                    }
-                },
-                on: {
-                    success: function(e) {
-                        ctx._monitoredData[survId] = e.response.results;
-                        ctx.syncTable(survId);
-                    },
-                    failure: function(e) {
-                        if (e && e.response && e.response.results && e.response.results.message && e.response.results.message.indexOf("undefined in SurveyHelper")) {
-                            ctx.showMessage("error", "Please include server script : \"wegas-survey/server/\"");
-                        }
-                    }
-                }
-            });
-*/
-        },
-    }, {
-        /** @lends Y.Wegas.SurveyOrchestrator */
-        EDITORNAME: "Survey Orchestrator",
-        ATTRS: {
-        }
-    });
-    Wegas.SurveyOrchestrator = SurveyOrchestrator;
-    
 });

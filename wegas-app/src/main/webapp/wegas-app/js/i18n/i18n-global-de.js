@@ -30,13 +30,14 @@ YUI.add("wegas-i18n-global-de", function(Y) {
             logout: "abmelden",
             statistics: "Statistiken",
             peerReview: "Peer-Review",
-            survey: "Umfrage",
+            surveys: "Umfragen",
             backToMenu: "zurück zum Menü",
             mcqBackToMenu: "zurück zur Frageliste",
             ok: "OK",
             cancel: "Abbrechen",
             yes: "Ja",
-            no: "Nein"
+            no: "Nein",
+            submit: "einreichen"
         },
         i18n: {
             manager: {
@@ -59,6 +60,9 @@ YUI.add("wegas-i18n-global-de", function(Y) {
             deleteEmailConfirmation: "Sind Sie sicher, dass Sie die E-Mail \"{{subject}}\" dauerhaft löschen wollen?",
             noMessages: "Keine E-Mail",
             noMessageSelected: "Wählen Sie eine E-Mail auf der linken Seite aus."
+        },
+        spreadsheet: {
+            empty: "Derzeit ist keine Tabelle verfügbar"
         }
     }, {
         base: {

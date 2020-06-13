@@ -189,6 +189,7 @@ body > .wegas-pageloader {
 .wegas-page-editor .yui3-treeleaf-content-icon.fa,
 .wegas-page-editor .yui3-treenode-content-icon.fa {
     background: none;
+    color: #4E525E;
 }
 .wegas-page-editor .yui3-treenode:not(.yui3-treenode-collapsed) > .content-header .yui3-treenode-content-icon.fa-folder:before {
     content: "\f07c";

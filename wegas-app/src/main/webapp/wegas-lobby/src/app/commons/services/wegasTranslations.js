@@ -1800,6 +1800,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Cette action génère un nouveau " + keywords.scenario.singular.fr +
                                 " basé sur celui-ci"
                         },
+                        'SCENARIST-MODALE-VERSIONS-DIFF-BTN': {
+                            'en': "Diff",
+                            'fr': "Diff"
+                        },
+                        'SCENARIST-MODALE-VERSIONS-PATCH-BTN': {
+                            'en': "Patch",
+                            'fr': "Patch"
+                        },
                         'SCENARIST-MODALE-VERSIONS-PDF-BTN': {
                             'en': "PDF",
                             'fr': "PDF"

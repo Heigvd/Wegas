@@ -1,0 +1,58 @@
+.diff {
+    padding-left: 1em;
+    border-left: 1px dashed lightgray;
+
+    .diff-title {
+
+    }
+
+    pre {
+        display: inline-block;
+        margin: 0;
+    }
+
+    .change {
+
+        line-height: 18px;
+        
+        .line-number {
+            display: inline-block;
+            width: 25px;
+            height: 100%;
+            padding-right: 5px;
+            color: gray;
+            user-select: none;
+            text-align: right;
+            background: #eeeaea;
+            vertical-align: top;
+        }
+
+        .line-change {
+            width: calc(100% - 35px);
+            overflow-wrap: anywhere;
+            overflow-x: auto;
+            white-space: pre-wrap;
+
+            .editOldInline {
+                background-color: #fdb8c0;
+                text-decoration: line-through;
+            }
+
+            .editNewInline {
+                background-color: #acf2bd;
+            }
+        }
+    }
+
+    .side2side-change {
+        .old {
+            background-color: #fdb8c0;
+            text-decoration: line-through;
+        }
+
+        .new {
+            background-color: #acf2bd;
+        }
+
+    }
+}

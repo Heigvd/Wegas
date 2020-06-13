@@ -135,10 +135,14 @@ public class PopulatorFacade extends WegasAbstractFacade {
 
             gameModelFacade.createAndRevivePrivateInstance(team.getGame().getGameModel(), player);
 
-            player.setStatus(Status.LIVE);
-
+            player.setStatus(Status.INITIALIZING);
             this.flush();
+
             stateMachineFacade.runStateMachines(player);
+
+            player.setStatus(Status.LIVE);
+            this.flush();
+
             utx.commit();
             websocketFacade.propagateNewPlayer(player);
 
@@ -172,9 +176,9 @@ public class PopulatorFacade extends WegasAbstractFacade {
     }
 
     /**
-     * Something went wring during the populate process
-     * If it was the first attempt, another tentative will be scheduled.
-     * The target will be makes as failed whether it was the second attempt.
+     * Something went wring during the populate process If it was the first attempt, another
+     * tentative will be scheduled. The target will be makes as failed whether it was the second
+     * attempt.
      *
      * @param p
      */
@@ -187,8 +191,8 @@ public class PopulatorFacade extends WegasAbstractFacade {
     }
 
     /**
-     * Set the target status to processing.
-     * For the first shop : processing, for the second tentative sec_processing
+     * Set the target status to processing. For the first shop : processing, for the second
+     * tentative sec_processing
      *
      * @param p
      */
@@ -246,7 +250,7 @@ public class PopulatorFacade extends WegasAbstractFacade {
                             candidate = new Candidate(t.getCreatedBy().getMainAccount().getId(), t);
                             break;
                         } else if (pop instanceof Player
-                                && teamFacade.find(((Player) pop).getTeam().getId()).getStatus().equals(Status.LIVE)) {
+                            && teamFacade.find(((Player) pop).getTeam().getId()).getStatus().equals(Status.LIVE)) {
                             Player p = (Player) pop;
                             this.markAsProcessing(p);
                             candidate = new Candidate(p.getUser().getMainAccount().getId(), p);
