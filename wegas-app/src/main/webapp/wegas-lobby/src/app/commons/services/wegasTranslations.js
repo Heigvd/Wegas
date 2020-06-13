@@ -557,8 +557,8 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         // Referenced server side:
                         'COMMONS-SESSIONS-TAKEN-TOKEN-ERROR': {
-                            'en': "This access key is already used for another " + keywords.session.singular.en,
-                            'fr': "Cette clé d'accès est déjà utilisée pour une autre " + keywords.session.singular.fr
+                            'en': "Access key already used by another " + keywords.session.singular.en,
+                            'fr': "Clé d'accès déjà utilisée par une autre " + keywords.session.singular.fr
                         },
                         'COMMONS-SESSIONS-UPDATE-NO-SESSION-FLASH-ERROR': {
                             'en': "No " + keywords.session.singular.en + " to update",
@@ -601,6 +601,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Error while editing " + keywords.session.singular.en + " access",
                             'fr': "Une erreur est survenue durant l'édition de l'accès à la " +
                                 keywords.session.singular.fr
+                        },
+                        'COMMONS-SESSIONS-EDIT-TOKEN-SUCCESS': {
+                            'en': "Access key is updated",
+                            'fr': "Clé d'accès mise à jour"
                         },
                         'COMMONS-SESSIONS-CREATE-SUCCESS': {
                             'en': startSentence(keywords.session.singular.en) + " created",
@@ -1105,12 +1109,12 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': startSentence(keywords.token.singular.fr)
                         },
                         'PRIVATE-SESSIONS-ACCESS-KEY-PLACEHOLDER-INPUT': {
-                            'en': startSentence(keywords.token.singular.en) + " is required",
-                            'fr': "La " + keywords.token.singular.fr + " est obligatoire"
+                            'en': "Missing key!",
+                            'fr': "Clé manquante!"
                         },
                         'PRIVATE-SESSIONS-ACCESS-KEY-ERROR-INPUT': {
-                            'en': "Syntax error: please don't use special characters !",
-                            'fr': "Erreur de syntaxe : veuillez éviter les caractères spéciaux !"
+                            'en': "Error: special characters and empty keys are not allowed",
+                            'fr': "Erreur : les caractères spéciaux et les clés vides ne sont pas admis"
                         },
                         'PRIVATE-SCENARIOS-NAME-LABEL-INPUT': {
                             'en': "Name",

@@ -141,6 +141,8 @@ angular.module('private.trainer.settings.directives', [
         ctrl.save = function() {
             SessionsModel.updateSession(ctrl.session, ctrl.infos).then(function(response) {
                 if (!response.isErroneous()) {
+                    // @hack: update input field in parent listing
+                    $('#token-' + ctrl.session.id).removeClass("token-error");
                     $rootScope.$emit("changeSessions", true);
                     $scope.close();
                 } else {

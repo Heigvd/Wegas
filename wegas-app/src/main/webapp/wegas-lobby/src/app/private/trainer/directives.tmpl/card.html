@@ -19,7 +19,7 @@
                 <div class="choice__box__display"></div>
             </div>
         </label>
-        <div class="key-label" onClick="this.firstChild.select()" title="{{'TRAINER-CARD-KEY-ICON' | translate}}"><input class="key" value="{{session.token}}" readonly/></div>
+        <div class="key-label" onClick="this.firstChild.select()" title="{{'TRAINER-CARD-KEY-ICON' | translate}}"><input type="text" id="token-{{session.id}}" class="key" value="{{session.token}}" placeholder="{{'PRIVATE-SESSIONS-ACCESS-KEY-PLACEHOLDER-INPUT' | translate}}" ng-model="session.token" ng-change="editToken(session)" autocomplete="off" spellcheck="false" /></div>
     </div>
     <a class="button button--small button--round button--default-reverse button--label-off button--settings" title="{{'TRAINER-CARD-SETTINGS-BTN' | translate}}" ui-sref=".settings({id: session.id})">
       <span class="button__label">{{'TRAINER-CARD-SETTINGS-BTN' | translate}}</span>
