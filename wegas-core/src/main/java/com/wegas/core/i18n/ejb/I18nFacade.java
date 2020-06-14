@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -68,6 +69,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.naming.NamingException;
+import org.glassfish.jersey.internal.util.ReflectionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,6 +177,24 @@ public class I18nFacade extends WegasAbstractFacade implements I18nFacadeI {
         }
 
         return lang;
+    }
+
+    /**
+     * Make sure all languages defined in sources gameModel exists in the target one. This method
+     * does not import translation. It just creates GameModelLanguages.
+     *
+     * @param target gameModel to create languages in
+     * @param source gameModel to copy languages from
+     *
+     * @return the target GameModel
+     */
+    public GameModel importLanguages(GameModel target, GameModel source) {
+        for (GameModelLanguage lang : source.getRawLanguages()) {
+            if (target.getLanguageByCode(lang.getCode()) == null) {
+                this.createLanguage(target, lang.getCode(), lang.getName());
+            }
+        }
+        return target;
     }
 
     /**

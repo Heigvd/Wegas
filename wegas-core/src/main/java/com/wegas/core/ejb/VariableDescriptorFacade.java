@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -13,6 +14,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.api.VariableDescriptorFacadeI;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
@@ -116,6 +118,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
     @Inject
     private JCRFacade jcrFacade;
+
+    @Inject
+    private I18nFacade i18nFacade;
 
     /**
      *
@@ -961,36 +966,46 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         gameModelFacade.resetAndReviveScopeInstances(vd);
     }
 
+    /**
+     * @param targetId           id of the gameModel in which to import the variable
+     * @param variableName       name (scriptAlias) of the variable to import
+     * @param sourceId           id of the gameModel in which to pick the variable
+     * @param targetVariableName name (scriptAlias) of the variable to create
+     * @param newScopeType       optional
+     * @param importLanguages    whether to import languages
+     *
+     * @return
+     */
     public VariableDescriptor cherryPick(Long targetId, String variableName, Long sourceId,
-        String targetVariableName, AbstractScope.ScopeType newScopeType) {
+        String targetVariableName, AbstractScope.ScopeType newScopeType, boolean importLanguages) {
         return this.cherryPick(gameModelFacade.find(targetId),
-            variableName, gameModelFacade.find(sourceId), targetVariableName, newScopeType);
+            variableName, gameModelFacade.find(sourceId), targetVariableName, newScopeType, importLanguages);
     }
 
     /**
-     * Cherry Pick a variable from the source gameModel and import it within the target gameModel.
-     * Such an import is recursive and all referenced files are
-     * {@link JCRFacade#importFile(com.wegas.core.jcr.content.AbstractContentDescriptor, com.wegas.core.jcr.content.ContentConnector)  imported}
-     * too.
-     * <p>
+     * Cherry Pick a variable from the source gameModel and import it within the target
+     * gameModel.Such an import is recursive and all referenced files are
+     * {@link JCRFacade#importFile(com.wegas.core.jcr.content.AbstractContentDescriptor, com.wegas.core.jcr.content.ContentConnector) imported}
+     * too.<p>
      * Such imported files may be renamed to avoid overriding files.
      *
      *
-     * @param target                the gameModel in which to import the variable
-     * @param variableName          name (scriptAlias) of the variable to import
-     * @param source                the gameModel in which to pick the variable
-     * @param targetVariableName    name (scriptAlias) of the variable to create
-     * @param newScopeType          optional
+     * @param target             the gameModel in which to import the variable
+     * @param variableName       name (scriptAlias) of the variable to import
+     * @param source             the gameModel in which to pick the variable
+     * @param targetVariableName name (scriptAlias) of the variable to create
+     * @param newScopeType       optional
+     * @param importLanguages    whether to import languages
      *
      * @return
      */
     public VariableDescriptor cherryPick(GameModel target, String variableName, GameModel source,
-        String targetVariableName, AbstractScope.ScopeType newScopeType) {
+        String targetVariableName, AbstractScope.ScopeType newScopeType, boolean importLanguages) {
 
         if (targetVariableName.length() == 0) {
             targetVariableName = variableName;
         }
-        
+
         VariableDescriptor toImport;
         try {
             toImport = this.find(source, variableName);
@@ -1013,6 +1028,10 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                 throw WegasErrorMessage.error("Patch not yet implemented");
             } else {
                 try {
+                    if (importLanguages) {
+                        i18nFacade.importLanguages(target, source);
+                    }
+
                     theVar = (VariableDescriptor) toImport.duplicate();
                     theVar.setName(targetVariableName);
 
@@ -1038,7 +1057,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                             }
                         });
                     }
-                    
+
                     theVar = this.createChild(target, target,
                         theVar, false);
 

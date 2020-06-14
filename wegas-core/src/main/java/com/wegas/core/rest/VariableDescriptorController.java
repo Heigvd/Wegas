@@ -8,6 +8,7 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.JCRFacade;
 import com.wegas.core.ejb.ModelFacade;
@@ -353,8 +354,9 @@ public class VariableDescriptorController {
      * @return
      */
     @POST
-    @Path("CherryPick/{vdId: [1-9][0-9]*}/{vdName: [A-Za-z0-9_$]*}{sep2: /?}{newScopeType: (PlayerScope|TeamScope|GameModelScope)?}")
+    @Path("CherryPick{withLanguages: (WithLanguages)?}/{vdId: [1-9][0-9]*}{sep2: /?}{vdName: [A-Za-z0-9_$]*}{sep3: /?}{newScopeType: (PlayerScope|TeamScope|GameModelScope)?}")
     public VariableDescriptor cherryPick(
+        @PathParam("withLanguages") String withLanguages,
         @PathParam("gameModelId") Long gameModelId,
         @PathParam("vdId") Long vdId,
         @PathParam("vdName") String vdName,
@@ -363,7 +365,10 @@ public class VariableDescriptorController {
         VariableDescriptor vd = variableDescriptorFacade.find(vdId);
         GameModel source = vd.getGameModel();
 
-        return variableDescriptorFacade.cherryPick(gameModelId, vd.getName(), source.getId(), vdName, newScopeType);
+        boolean withLang = "WithLanguages".equals(withLanguages);
+
+        return variableDescriptorFacade.cherryPick(gameModelId, vd.getName(),
+            source.getId(), vdName, newScopeType, withLang);
     }
 
     /**
