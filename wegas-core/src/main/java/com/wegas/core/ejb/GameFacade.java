@@ -493,16 +493,7 @@ public class GameFacade extends BaseFacade<Game> {
         Team team = new Team(teamFacade.findUniqueNameForTeam(game, currentUser.getName()), 1);
         teamFacade.create(game.getId(), team); // return managed team
         team = teamFacade.find(team.getId());
-        this.joinTeam(team.getId(), currentUser.getId(), languages);
-        /**
-         * Detach and re-find to fetch the new player
-         */
-        teamFacade.detach(team);
-        team = teamFacade.find(team.getId());
-        Player p = team.getPlayers().get(0);
-        p.setQueueSize(populatorFacade.getQueue().indexOf(p) + 1);
-
-        return p;
+        return this.joinTeam(team.getId(), currentUser.getId(), languages);
     }
 
     /**
@@ -694,7 +685,12 @@ public class GameFacade extends BaseFacade<Game> {
         Long playerId = playerFacade.joinTeamAndCommit(teamId, userId, languages);
         Player player = playerFacade.find(playerId);
         populatorScheduler.scheduleCreation();
+
+        Team team = player.getTeam();
+
         playerFacade.detach(player);
+        teamFacade.detach(team);;
+
         player = playerFacade.find(player.getId());
         int indexOf = populatorFacade.getQueue().indexOf(player);
         player.setQueueSize(indexOf + 1);

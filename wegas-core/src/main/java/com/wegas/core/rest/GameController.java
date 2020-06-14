@@ -357,6 +357,13 @@ public class GameController {
                         if (game.getGameModel().getProperties().getFreeForAll()) {
                             player = gameFacade.joinIndividually(game,
                                 request != null ? Collections.list(request.getLocales()) : null);
+                            Team team = player.getTeam();
+
+                            /**
+                             * Detach and re-find to fetch up-to date team
+                             */
+                            teamFacade.detach(team);
+                            team = teamFacade.find(team.getId());
 
                             return Response.status(Response.Status.CREATED).entity(player.getTeam()).build();
                         } else {
