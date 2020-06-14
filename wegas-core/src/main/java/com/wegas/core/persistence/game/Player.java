@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -432,6 +433,21 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     @JsonIgnore
     public Player getUserLivePlayer(User user) {
         if (this.getStatus().equals(Status.LIVE)
+            && Objects.equal(this.user, user)) {
+            return this;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    @JsonIgnore
+    public Player getUserLiveOrSurveyPlayer(User user) {
+        if ((this.getStatus().equals(Status.LIVE)
+            || this.getStatus().equals(Status.SURVEY))
             && Objects.equal(this.user, user)) {
             return this;
         } else {

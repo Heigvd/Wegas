@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:composition template="wegas-app/jsf/app-default.xhtml">
+
+        <ui:define name="app-init">
+            <c:set var="extraBodyClass" value="wegas-surveymode"/>
+            <c:set var="wegasMode" value="SURVEY"/>
+        </ui:define>
+
+        <ui:define name="title">#{surveyController.currentGame.name} - #{surveyController.currentGameModel.name}</ui:define>
+
+        <ui:define name="head">
+
+            <!-- Stylesheets from current game model style library -->
+            <style type="text/css">#{surveyController.combinedStyleSheet}</style>
+
+            <!-- Stylesheets from current game model cssUri property -->
+            <ui:repeat rendered="#{surveyController.currentGameModel.properties.cssUri != ''}"
+                       var="o" value="#{surveyController.currentGameModel.properties.cssUri.split(';')}" varStatus="status">
+                <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o.trim()}?#{wegasConfig.timestamp}" />
+            </ui:repeat>
+
+        </ui:define>
+
+        <ui:define name="body">
+
+            <script type="text/javascript">
+                YUI().use('wegas-app', 'wegas-scripteval', "wegas-websocketlistener", function(Y) {
+                    var app = new Y.Wegas.App({
+                        dataSources: {
+                            Variable: {
+                                //source: "rest/Private/#{surveyController.currentPlayer.id}/GameModel/#{surveyController.currentGameModel.id}/VariableDescriptor",
+                                //source: "rest/Editor/GameModel/#{surveyController.currentGameModel.id}/VariableDescriptor",
+                                source: "rest/GameModel/#{surveyController.currentGameModel.id}/VariableDescriptor",
+                                initialRequest: "",
+                                plugins: [{
+                                        fn: "VariableDescriptorCache",
+                                        cfg: {
+                                            indexes: ["name", "id"]
+                                        }
+                                    }, {
+                                        fn: "ScriptEval"
+                                    }/*, {
+                                     fn: "WebSocketListener",
+                                     cfg: {
+                                     dataSource: "Pusher"
+                                     }
+                                     }*/]
+                            },
+                            Instance: {
+                                source: "rest/Editor/GameModel/#{surveyController.currentGameModel.id}/VariableDescriptor",
+                                initialRequest: "/VariableInstance/AllPlayerInstances/#{surveyController.currentPlayer.id}",
+                                plugins: [{
+                                        fn: "VariableInstanceCache",
+                                        cfg: {
+                                            indexes: ["descriptorId"]
+                                        }
+                                    }]
+                            },
+                            Page: {
+                                /*
+                                 *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{surveyController.currentGameModel.properties.pagesUri == ''}">
+                                 */
+                                source: "rest/GameModel/#{surveyController.currentGameModel.id}/Page/",
+                                /* THIS IS NOT A COMMENT
+                                 * </ui:fragment>
+                                 */
+                                /*
+                                 *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{surveyController.currentGameModel.properties.pagesUri != ''}">
+                                 */
+                                source: "#{surveyController.currentGameModel.properties.pagesUri}",
+                                /* THIS IS NOT A COMMENT
+                                 * </ui:fragment>
+                                 */
+                                initialFullRequest: '<ui:insert name="pageUri">wegas-app/db/wegas-surveys-layout.json</ui:insert>',
+                                plugins: [{
+                                        fn: "JSONSchema"
+                                    }, {
+                                        fn: "PageCache"
+                                    }
+                                ]
+                            },
+                            GameModel: {
+                                source: "rest/GameModel",
+                                initialRequest: "/#{surveyController.currentGameModel.id}",
+                                plugins: [{
+                                        fn: "GameModelCache",
+                                        cfg: {
+                                            currentGameModelId: #{surveyController.currentGameModel.id}
+                                        }
+                                    }]
+                            },
+                            Game: {
+                                /* Use Extended view to load teams*/
+                                source: "rest/Extended/GameModel/#{surveyController.currentGameModel.id}/Game",
+                                initialRequest: "/#{surveyController.currentGame.id}",
+                                plugins: [{
+                                        fn: "GameCache",
+                                        cfg: {
+                                            currentGameId: #{surveyController.currentGame.id},
+                                            currentTeamId: #{surveyController.currentPlayer.team.id},
+                                            currentPlayerId: #{surveyController.currentPlayer.id},
+                                            indexes: ["id"]
+                                        }
+                                    }
+                                ]
+                            },
+                            User: {
+                                source: "rest/Extended/User",
+                                initialRequest: "/" + #{requestController.currentUser.id},
+                                plugins: [{
+                                        fn: "UserCache",
+                                        cfg: {
+                                            currentUserId: #{requestController.currentUser.id}
+                                        }
+                                    }]
+                            },
+                            Pusher: {
+                                type: "PusherDataSource",
+                                source: "rest/Pusher/",
+//                                applicationKey: "#{surveyController.currentGameModel.properties.websocket}"
+                                applicationKey: "#{surveyController.getWegasProperty('pusher.key')}",
+                                cluster: "#{surveyController.getWegasProperty('pusher.cluster')}",
+                                plugins: [{
+                                        fn: "WebSocketListener",
+                                        cfg: {
+                                            dataSource: "Pusher"
+                                        }
+                                    }]
+                            },
+                            File: {
+                                source: "rest/GameModel/#{surveyController.currentGameModel.id}/File/",
+                                plugins: [{
+                                        fn: "JSONSchema"
+                                    }]
+                            }
+                        }
+                    });
+
+                    // Update instance config with global one. GameModel specific loaders.
+                    Y.applyConfig(YUI_config);
+
+                    Y.Wegas.app.once("render", function() {
+                        var surveyIds = "#{param['surveyIds']}";
+                        var surveys = [];
+                        surveyIds.split(',').forEach(function(id) {
+                            surveys.push({
+                                "@class": "Script",
+                                "content": "Y.Wegas.Facade.Variable.cache.findById(" + id + ");"
+                            });
+                        });
+                        Y.Widget.getByNode(".wegas-surveys-widget").set("surveys", surveys);
+                    });
+
+                    app.render();
+                });
+            </script>
+
+        </ui:define>
+
+    </ui:composition>
+
+</html>

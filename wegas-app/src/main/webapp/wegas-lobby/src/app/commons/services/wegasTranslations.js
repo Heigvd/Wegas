@@ -25,12 +25,12 @@ angular.module('wegas.service.wegasTranslations', [])
                             isFr = true;
                         }
                     });
-                        localStorage.setObject("wegas-config", {
-                            'commons': {
+                    localStorage.setObject("wegas-config", {
+                        'commons': {
                             'language': (isFr ? 'fr' : 'en')
-                            },
-                            'users': {}
-                        });
+                        },
+                        'users': {}
+                    });
                     $translateProvider.preferredLanguage(isFr ? 'fr' : 'en');
                 }
             },
@@ -1943,6 +1943,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'ADMIN-USERS-VERIFIED-ID': {
                             'en': '✔ verified identity',
                             'fr': '✔ identité vérifiée',
+                        },
+                        'ADMIN-USERS-PROCESSING': {
+                            'en': 'initialisation in progress',
+                            'fr': 'en cours d\'initialisation',
                         },
                         'ADMIN-USERS-CARD-EDIT-BTN': {
                             'en': "Edit user",

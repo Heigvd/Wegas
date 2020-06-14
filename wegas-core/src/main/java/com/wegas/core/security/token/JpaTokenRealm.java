@@ -16,7 +16,9 @@ import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
+import com.wegas.core.security.persistence.Shadow;
 import com.wegas.core.security.persistence.token.Token;
+import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.JpaAuthenticationInfo;
 import java.util.Date;
 import javax.ejb.EJBException;
@@ -27,6 +29,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.util.ByteSource;
 import org.apache.shiro.util.SimpleByteSource;
 
 /**
@@ -82,13 +85,25 @@ public class JpaTokenRealm extends AuthorizingRealm {
                         }
 
                         AbstractAccount account = token.getAccount();
+                        Shadow shadow = account.getShadow();
+
+                        ByteSource salt;
+                        HashMethod hashMethod;
+
+                        if (shadow != null) {
+                            hashMethod = shadow.getHashMethod();
+                            salt = new SimpleByteSource(shadow.getSalt());
+                        } else {
+                            /* guests, for instance, does not have any shadow info
+                             assume unsalted PLAIN */
+                            hashMethod = HashMethod.PLAIN;
+                            salt = null;
+                        }
 
                         JpaAuthenticationInfo info = new JpaAuthenticationInfo(
                             account.getId(),
                             token.getToken(),
-                            new SimpleByteSource(account.getShadow().getSalt()),
-                            getName(),
-                            account.getShadow().getHashMethod());
+                            salt, getName(), hashMethod);
                         return info;
                     }
                 } catch (WegasNoResultException e) {// NOPMD

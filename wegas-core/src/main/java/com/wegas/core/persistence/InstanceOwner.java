@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -60,12 +61,18 @@ public interface InstanceOwner extends WithId {
      * Find a player owned by the given user
      *
      * @param user
+     *
      * @return a live player linked to the user or null
      */
     @JsonIgnore
     Player getUserLivePlayer(User user);
 
+    @JsonIgnore
+    Player getUserLiveOrSurveyPlayer(User user);
+
     /**
+     * Return the player the currentUser must user to match this instance owner. This method will
+     * return a fully playable player (ie never a survey, failed, etc player)
      *
      * @param user
      *
@@ -73,6 +80,23 @@ public interface InstanceOwner extends WithId {
      */
     default Player getUserLivePlayerOrDebugPlayer(User user) {
         Player p = this.getUserLivePlayer(user);
+        if (p == null) {
+            p = this.getGameModel().getTestPlayer();
+        }
+
+        return p;
+    }
+
+    /**
+     * Same as {@link #getUserLivePlayerOrDebugPlayer(com.wegas.core.security.persistence.User) but
+     * may return a Survey player
+     *
+     * @param user
+     *
+     * @return
+     */
+    default Player getUserLiveOrSurveyOrDebugPlayer(User user) {
+        Player p = this.getUserLiveOrSurveyPlayer(user);
         if (p == null) {
             p = this.getGameModel().getTestPlayer();
         }
@@ -124,8 +148,8 @@ public interface InstanceOwner extends WithId {
     WegasPermission getAssociatedWritePermission();
 
     /**
-     * 
-     * @return 
+     *
+     * @return
      */
     //@JsonIgnore /* Do not JsonIgnore here as Game must serialize the gameModel (Lobby case) */
     GameModel getGameModel();

@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -631,7 +632,20 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         return null;
     }
 
-
+    /**
+     * {@inheritDoc }
+     */
+    @JsonIgnore
+    @Override
+    public Player getUserLiveOrSurveyPlayer(User user) {
+        for (Game g : this.getGames()) {
+            Player theP = g.getUserLiveOrSurveyPlayer(user);
+            if (theP != null) {
+                return theP;
+            }
+        }
+        return null;
+    }
 
     @Override
     @JsonIgnore
@@ -655,7 +669,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     public Player getTestPlayer() {
         for (Game game : this.getGames()) {
             Player testPlayer = game.getTestPlayer();
-            if (testPlayer!= null){
+            if (testPlayer != null) {
                 return testPlayer;
             }
         }

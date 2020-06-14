@@ -38,7 +38,7 @@ YUI.add('wegas-dashboard-modals', function(Y) {
                 }
                 return gamePlayers;
             }
-            
+
             function getAllPlayers(game) {
                 var gamePlayers = [], player,
                     i, t, teams = game.get("teams"),
@@ -51,13 +51,13 @@ YUI.add('wegas-dashboard-modals', function(Y) {
                     if (t.get("@class") !== "DebugTeam" && nbPlayers) {
                         for (j = 0; j < nbPlayers; j++) {
                             player = players[j];
-                            if (player !== null) {
+                            if (player !== null && player.get("status") === 'LIVE') {
                                 gamePlayers.push(player);
                             }
                         }
                     }
                 }
-                return gamePlayers;                
+                return gamePlayers;
             }
 
             if (game && team) {

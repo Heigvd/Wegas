@@ -138,7 +138,7 @@ angular.module('autologin', [
                         if (autoLogin) {
                             if (token.account) {
                                 // Auto log in to to linked account
-                                Auth.loginWithToken($stateParams.accountId, $stateParams.token)
+                                Auth.loginWithToken(token.account.id, $stateParams.token)
                                     .then(function() {
                                         process(token);
                                     })

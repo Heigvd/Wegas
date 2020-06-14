@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -237,7 +238,8 @@ public class ScriptFacade extends WegasAbstractFacade {
         }
 
         if (player.getStatus() != Populatable.Status.LIVE
-            && player.getStatus() != Populatable.Status.INITIALIZING) {
+            && player.getStatus() != Populatable.Status.INITIALIZING
+            && player.getStatus() != Populatable.Status.SURVEY) {
             throw WegasErrorMessage.error("ScriptFacade.populate requires a LIVE player !!!");
         }
 

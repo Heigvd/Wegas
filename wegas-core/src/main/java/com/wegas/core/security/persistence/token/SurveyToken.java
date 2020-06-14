@@ -79,7 +79,7 @@ public class SurveyToken extends Token {
             ids.add(sd.getId().toString());
         }
 
-        return "/survey.html?surveysId=" + String.join(",", ids);
+        return "/survey.html?surveyIds=" + String.join(",", ids);
     }
 
     public void process(AccountFacade accountFacade, HttpServletRequest request) {

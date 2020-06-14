@@ -25,6 +25,7 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.token.ResetPasswordToken;
 import com.wegas.core.security.persistence.Role;
+import com.wegas.core.security.persistence.Shadow;
 import com.wegas.core.security.persistence.token.Token;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.persistence.token.InviteToJoinToken;
@@ -659,8 +660,13 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      */
     private String hashToken(String token, AbstractAccount account) {
         if (account != null) {
-            return account.getShadow().getHashMethod().hash(
-                token, account.getShadow().getSalt());
+            Shadow shadow = account.getShadow();
+            if (shadow != null && shadow.getHashMethod() != null) {
+                return account.getShadow().getHashMethod().hash(
+                    token, account.getShadow().getSalt());
+            } else {
+                return token;
+            }
         } else {
             return token;
         }

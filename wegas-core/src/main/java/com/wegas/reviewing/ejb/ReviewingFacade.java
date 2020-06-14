@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -19,6 +20,7 @@ import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -247,29 +249,33 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
              */
             for (Game game : prd.getGameModel().getGames()) {
                 for (Team team : game.getTeams()) {
-                    if (scope instanceof TeamScope) {
-                        // 1 instance per team: evict empty team instances
-                        TeamScope tScope = (TeamScope) scope;
-                        PeerReviewInstance instance = (PeerReviewInstance) variableInstanceFacade.getTeamInstance(tScope, team);
-                        if (team.getPlayers().isEmpty() || team instanceof DebugTeam) {
-                            // Discared instance
-                            instance.setReviewState(PeerReviewDescriptor.ReviewingState.DISCARDED);
-                            variableInstanceFacade.merge(instance);
-                            touched.add(instance);
-                        } else {
-                            pris.add(instance);
-                        }
-                    } else { // PlayerScoped
-                        // 1 instance per player: evict test player instance
-                        for (Player p : team.getPlayers()) {
-                            PeerReviewInstance instance = (PeerReviewInstance) variableInstanceFacade.getPlayerInstance((PlayerScope) scope, p);
-                            if (team instanceof DebugTeam) {
+                    if (team.getStatus() == Populatable.Status.LIVE) {
+                        if (scope instanceof TeamScope) {
+                            // 1 instance per team: evict empty team instances
+                            TeamScope tScope = (TeamScope) scope;
+                            PeerReviewInstance instance = (PeerReviewInstance) variableInstanceFacade.getTeamInstance(tScope, team);
+                            if (team.getPlayers().isEmpty() || team instanceof DebugTeam) {
                                 // Discared instance
                                 instance.setReviewState(PeerReviewDescriptor.ReviewingState.DISCARDED);
                                 variableInstanceFacade.merge(instance);
                                 touched.add(instance);
                             } else {
                                 pris.add(instance);
+                            }
+                        } else { // PlayerScoped
+                            // 1 instance per player: evict test player instance
+                            for (Player p : team.getPlayers()) {
+                                if (p.getStatus() == Populatable.Status.LIVE) {
+                                    PeerReviewInstance instance = (PeerReviewInstance) variableInstanceFacade.getPlayerInstance((PlayerScope) scope, p);
+                                    if (team instanceof DebugTeam) {
+                                        // Discared instance
+                                        instance.setReviewState(PeerReviewDescriptor.ReviewingState.DISCARDED);
+                                        variableInstanceFacade.merge(instance);
+                                        touched.add(instance);
+                                    } else {
+                                        pris.add(instance);
+                                    }
+                                }
                             }
                         }
                     }

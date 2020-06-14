@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -23,7 +24,11 @@ public enum HashMethod {
          * {@inheritDoc }
          */
         @Override
-        public String hash(Object value, Object salt) {
+        public String hash(Object oValue, Object salt) {
+            Object value = oValue;
+            if (value instanceof char[]){
+                value = new String((char[]) value);
+            }
             if (salt == null) {
                 return value.toString();
             } else {

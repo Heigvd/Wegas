@@ -245,11 +245,29 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         return players;
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @JsonIgnore
     @Override
     public Player getUserLivePlayer(User user) {
         for (Player p : this.getPlayers()) {
             Player theP = p.getUserLivePlayer(user);
+            if (theP != null) {
+                return theP;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @JsonIgnore
+    @Override
+    public Player getUserLiveOrSurveyPlayer(User user) {
+        for (Player p : this.getPlayers()) {
+            Player theP = p.getUserLiveOrSurveyPlayer(user);
             if (theP != null) {
                 return theP;
             }

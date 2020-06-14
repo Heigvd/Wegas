@@ -1058,7 +1058,7 @@ YUI().use(function(Y) {
             },
             "wegas-survey-entities": {
                 requires: "wegas-entity",
-                ws_provides: ["SurveyDescriptor", "SurveyInstance", "SurveySectionDescriptor", 
+                ws_provides: ["SurveyDescriptor", "SurveyInstance", "SurveySectionDescriptor",
                     "SurveySectionInstance", "SurveyInputDescriptor", "SurveyInputInstance",
                     "SurveyNumberDescriptor", "SurveyTextDescriptor", "SurveyChoicesDescriptor"]
             },
@@ -1072,6 +1072,7 @@ YUI().use(function(Y) {
                     "wegas-tooltip",
                     "wegas-injector"],
                 ws_provides: [
+                    "SurveysWidget",
                     "SurveyWidget",
                     "SurveyNumberInput",
                     "SurveyTextInput",

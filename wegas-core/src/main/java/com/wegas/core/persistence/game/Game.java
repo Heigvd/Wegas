@@ -293,6 +293,27 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     /**
+     * Return all LIVE teams of the game. To be considered LIVE, a team must have a LIVE status and
+     * must contains at least one player with such a LIVE status too
+     *
+     * @return
+     */
+    @JsonIgnore
+    public List<Team> getLiveTeams() {
+        List<Team> lives = new ArrayList<>();
+
+        List<Team> teams = this.getTeams();
+
+        for (Team t : teams) {
+            if (t.getStatus() == Populatable.Status.LIVE && !t.getLivePlayers().isEmpty()) {
+                lives.add(t);
+            }
+        }
+
+        return lives;
+    }
+
+    /**
      * {@inheritDoc }
      */
     @JsonIgnore
@@ -300,6 +321,21 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     public Player getUserLivePlayer(User user) {
         for (Team t : this.getTeams()) {
             Player theP = t.getUserLivePlayer(user);
+            if (theP != null) {
+                return theP;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @JsonIgnore
+    @Override
+    public Player getUserLiveOrSurveyPlayer(User user) {
+        for (Team t : this.getTeams()) {
+            Player theP = t.getUserLiveOrSurveyPlayer(user);
             if (theP != null) {
                 return theP;
             }
