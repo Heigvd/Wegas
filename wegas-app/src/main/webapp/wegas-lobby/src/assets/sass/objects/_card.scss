@@ -337,6 +337,12 @@
                             color: red;
                             font-weight: bold;
                         }
+                        &:focus,
+                        &:active {
+                            outline: none;
+                            border-radius: 4px;
+                            border: 2px solid black;                            
+                        }
                     }
 
                 }

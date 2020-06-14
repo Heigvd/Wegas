@@ -234,8 +234,11 @@ angular.module('private.trainer.directives', [
                 // Legal token syntax: (/^([a-zA-Z0-9_-]|\.(?!\.))*$/, '')
                 notLegal = sessionToSet.token.length === 0 || !!sessionToSet.token.match(/[^\w-\.]|\.\./g);
             if (notLegal) {
-                input.addClass('token-error');
                 sessionToSet.token = sessionToSet.token.replace(/[^\w-\.]/g, '').replace(/\.\.*/g, '.');
+                input.addClass('token-error');
+                setTimeout(function() {
+                    input.removeClass('token-error');
+                }, 1000);
             } else {
                 input.removeClass('token-error');
                 ctrl.saveTimeout = setTimeout(function() {
