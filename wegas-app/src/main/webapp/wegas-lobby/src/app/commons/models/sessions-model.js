@@ -492,7 +492,7 @@ angular.module('wegas.models.sessions', [])
             return deferred.promise;
         };
 
-        /* Update the comment of a session. */
+        /* Update the access status of a session. */
         model.updateAccessSession = function(sessionToSet) {
             var deferred = $q.defer(),
                 sessionBeforeChange = sessions.findSession("LIVE", sessionToSet.id);
@@ -517,6 +517,28 @@ angular.module('wegas.models.sessions', [])
                     $translate('COMMONS-SESSIONS-EDIT-ACCESS-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
+                });
+            }
+            return deferred.promise;
+        };
+
+        /* Update the access token of a session. */
+        model.updateSessionToken = function(sessionToSet) {
+            var deferred = $q.defer(),
+                sessionBeforeChange = sessions.findSession("LIVE", sessionToSet.id);
+            if (sessionBeforeChange) {
+                sessionBeforeChange.token = sessionToSet.token;
+                $http.put(ServiceURL + "rest/GameModel/Game/" + sessionToSet.id, sessionBeforeChange, {
+                    ignoreLoadingBar: true
+                }).success(function(data) {
+                    $translate(
+                        'COMMONS-SESSIONS-EDIT-TOKEN-SUCCESS'
+                    ).then(function(message) {
+                        deferred.resolve(Responses.success(message, data));
+                    });
+                }).error(function(WegasException) {
+                    var message = WegasException.messageId ? $translate.instant(WegasException.messageId) : WegasException.message;
+                    deferred.resolve(Responses.danger(message, false));
                 });
             }
             return deferred.promise;

@@ -21,6 +21,7 @@ angular.module('private.trainer.directives', [
         ctrl.username = '';
         ctrl.mefirst = false;
         ctrl.handlers = {};
+        ctrl.saveTimeout = null;
 
         var MENU_HEIGHT = 50,
             SEARCH_FIELD_HEIGHT = 72,
@@ -116,7 +117,7 @@ angular.module('private.trainer.directives', [
             }
             isFiltering = false;
             ctrl.updateSessions(updateDisplay);
-        }
+        };
 
         // Updates the listing when the user has clicked on the "My sessions first" checkbox.
         ctrl.toggleMeFirst = function() {
@@ -124,7 +125,7 @@ angular.module('private.trainer.directives', [
             var config = localStorage.getObject("wegas-config");
             config.commons.mySessionsFirst = ctrl.mefirst;
             localStorage.setObject("wegas-config", config);
-        }
+        };
 
         ctrl.initMeFirst = function() {
             if (ctrl.user) {
@@ -140,7 +141,7 @@ angular.module('private.trainer.directives', [
                     ctrl.setMeFirst(false, true);
                 }
             }
-        }
+        };
 
         /*
          ** Filters ctrl.rawSessions according to the given search string and puts the result in ctrl.sessions.
@@ -219,6 +220,42 @@ angular.module('private.trainer.directives', [
                 if (!response.isErroneous()) {
                     ctrl.updateSessions();
                 } else {
+                    response.flash();
+                }
+            });
+        };
+
+        ctrl.editToken = function(sessionToSet) {
+            if (ctrl.saveTimeout) {
+                clearTimeout(ctrl.saveTimeout);
+                ctrl.saveTimeout = null;
+            }
+            var input = $('#token-' + sessionToSet.id),
+                // Legal token syntax: (/^([a-zA-Z0-9_-]|\.(?!\.))*$/, '')
+                notLegal = sessionToSet.token.length === 0 || !!sessionToSet.token.match(/[^\w-\.]|\.\./g);
+            if (notLegal) {
+                sessionToSet.token = sessionToSet.token.replace(/[^\w-\.]/g, '').replace(/\.\.*/g, '.');
+                input.addClass('token-error');
+                setTimeout(function() {
+                    input.removeClass('token-error');
+                }, 1000);
+            } else {
+                input.removeClass('token-error');
+                ctrl.saveTimeout = setTimeout(function() {
+                    ctrl.saveToken(sessionToSet, this);
+                    ctrl.saveTimeout = null;
+                }, 1000);
+            }
+        };
+        
+        // This should, but will not be called by ng-blur in the current version of Angular (1.3)
+        ctrl.saveToken = function(sessionToSet) {
+            SessionsModel.updateSessionToken(sessionToSet).then(function(response) {
+                if (!response.isErroneous()) {
+                    response.flash();
+                    ctrl.updateSessions(true);
+                } else {
+                    $('#token-' + sessionToSet.id).addClass('token-error');
                     response.flash();
                 }
             });
@@ -422,6 +459,7 @@ angular.module('private.trainer.directives', [
                 search: "=",
                 archive: "=",
                 editAccess: "=",
+                editToken: "=",
                 filterSessions: "=",
                 user: '=',
                 username: '=',
@@ -437,6 +475,7 @@ angular.module('private.trainer.directives', [
                 session: '=',
                 archive: "=",
                 editAccess: "=",
+                editToken: "=",
                 user: '=',
                 username: '='
             },
