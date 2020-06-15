@@ -132,14 +132,14 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             "    <div class=\"survey-mixer\">" +
             "        <div class=\"search-runnable-surveys\">" + I18n.t("survey.orchestrator.searchExternalSurveys") + "</div>" +
             "        <div class=\"runnable-surveys\" style=\"display:none;\"><div class=\"close\"></div>" +
-            "           <div class=\"title standard\">" + I18n.t("survey.orchestrator.standardSurveysTitle") + "</div>" +
+            "           <div class=\"section-title standard\">" + I18n.t("survey.orchestrator.standardSurveysTitle") + "</div>" +
             "           <div class=\"list standard\"></div>" +
-            "           <div class=\"title own\">" + I18n.t("survey.orchestrator.externalSurveysTitle") + "</div>" +
+            "           <div class=\"section-title own\">" + I18n.t("survey.orchestrator.externalSurveysTitle") + "</div>" +
             "           <div class=\"list own\"></div>" +
             "        </div>" +
             "    </div>" +
             "    <div class=\"running-surveys\">" +
-            "       <div class=\"title\">" + I18n.t("survey.orchestrator.activeSurveysTitle") + "</div>" +
+            "       <div class=\"section-title\">" + I18n.t("survey.orchestrator.activeSurveysTitle") + "</div>" +
             "       <div class=\"list\"></div>" +
             "       <div class=\"empty-message\">(" +
                         I18n.t("survey.orchestrator.noSurveyFound") +
@@ -153,7 +153,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             this._monitoredData = {};
             this.datatables = {};
             this.playedIndividually = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val.freeForAll");
-            this.checkXapiPath();            
+            this.checkXapiPath();
         },
         
         // Persists the given gameModel "as is".
@@ -315,6 +315,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 onClick: Y.bind(this.onSearchAllSurveys, this),
                 autoSpin: true
             }).render(cb.one(".search-runnable-surveys"));
+            this.searchExternalButton.startSpinning();
             
             this.closeSearchButton = new SpinButton({
                 label: '<i class="fa fa-times"></i>',

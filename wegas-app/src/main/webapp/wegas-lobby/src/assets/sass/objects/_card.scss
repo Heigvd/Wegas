@@ -322,11 +322,35 @@
                     .key{
                         display:block;
                         border:none;
-                        width: calc(100% - 79px); /* was 100% - 24px */
+                        width: calc(100% - 79px);
                         text-overflow:ellipsis;
                         overflow:hidden;
                         white-space: nowrap;
                         font-weight:500;
+                        
+                        &.token-error {
+                            outline: none;
+                            border-radius: 4px;
+                            border: 2px solid red !important;
+                            color: red;
+                            background: #fff0f0;
+                            margin-top: -2px;
+                            position: relative;
+                            left: -2px;
+                        }
+                        &::placeholder {
+                            color: red;
+                            font-weight: bold;
+                        }
+                        &:focus,
+                        &:active {
+                            outline: none;
+                            border-radius: 4px;
+                            border: 2px solid black;
+                            margin-top: -2px;
+                            position: relative;
+                            left: -2px;
+                        }
                     }
 
                 }

@@ -56,16 +56,16 @@
     padding: 0;
 }
 
-.wegas-survey-orchestrator .runnable-surveys .title {
+.wegas-survey-orchestrator .runnable-surveys .section-title {
     margin-top: 20px;
     margin-bottom: 2px;
 }
 
-.wegas-survey-orchestrator .runnable-surveys .title.standard {
+.wegas-survey-orchestrator .runnable-surveys .section-title.standard {
     margin-top: 4px;
 }
 
-.wegas-survey-orchestrator .title {
+.wegas-survey-orchestrator .section-title {
     font-weight: bold;
     font-size: 150%;
     display: inline-block;
@@ -341,6 +341,7 @@
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-settings .yui3-widget-hd h2 {
     display: inline-block;
     margin-left: 8px;
+    width: calc( 100% - 40px );
 }
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .yui3-widget-hd .close,

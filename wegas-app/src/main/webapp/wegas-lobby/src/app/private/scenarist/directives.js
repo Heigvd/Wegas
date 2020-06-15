@@ -112,9 +112,9 @@ angular.module('private.scenarist.directives', [
         // Updates the listing when the user has clicked on the "My scenarios first" checkbox.
         ctrl.toggleMeFirst = function() {
             ctrl.setMeFirst(!ctrl.mefirst);
-            var config = localStorage.getObject("wegas-config");
-            config.commons.myScenariosFirst = ctrl.mefirst;
-            localStorage.setObject("wegas-config", config);
+            var config = localStorage.getObject("wegas-config-nonplayer") || {};
+            config.myScenariosFirst = ctrl.mefirst;
+            localStorage.setObject("wegas-config-nonplayer", config);
         };
 
         ctrl.initMeFirst = function() {
@@ -122,8 +122,8 @@ angular.module('private.scenarist.directives', [
                 if (ctrl.user.isAdmin) {
                     if (ctrl.username.length > 0) {
                         // Load the "My scenarios first" preference, defaulting to true:
-                        var config = localStorage.getObject("wegas-config"),
-                            mefirst = config.commons && config.commons.myScenariosFirst !== false;
+                        var config = localStorage.getObject("wegas-config-nonplayer") || {},
+                            mefirst = config.myScenariosFirst !== false;
                         ctrl.setMeFirst(mefirst, true);
                     } // else: ignore as long as required information is missing
                 } else {
