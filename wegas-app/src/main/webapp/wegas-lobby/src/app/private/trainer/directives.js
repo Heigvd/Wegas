@@ -238,7 +238,7 @@ angular.module('private.trainer.directives', [
                 input.addClass('token-error');
                 setTimeout(function() {
                     input.removeClass('token-error');
-                }, 1000);
+                }, 2000);
             } else {
                 input.removeClass('token-error');
                 ctrl.saveTimeout = setTimeout(function() {
