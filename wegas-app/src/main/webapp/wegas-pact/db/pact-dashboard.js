@@ -262,8 +262,6 @@ var PactDashboard = (function() {
         
         var event, time, start, duration;
         
-        debugger;
-
         for (var k in keys) {
             event = seqObj[keys[k]];
             time = new Date(event.time).toTimeString().substr(0,8);
