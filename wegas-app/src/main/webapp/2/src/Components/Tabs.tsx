@@ -2,14 +2,7 @@ import * as React from 'react';
 import { Toolbar } from './Toolbar';
 import { css, cx } from 'emotion';
 import { themeVar } from './Style/ThemeVars';
-
-export const tabLayoutHeaderStyle = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
-});
-export const tabLayoutContentStyle = css({
-  margin: '5px',
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
-});
+import { contentStyle, layoutStyle } from '../css/classes';
 
 interface TabLayoutProps {
   active?: number;
@@ -31,7 +24,7 @@ export class TabLayout extends React.Component<
   render() {
     return (
       <Toolbar vertical={this.props.vertical}>
-        <Toolbar.Header className={tabLayoutHeaderStyle}>
+        <Toolbar.Header className={layoutStyle}>
           {this.props.tabs.map((t, i) => {
             return (
               <Tab
@@ -51,7 +44,7 @@ export class TabLayout extends React.Component<
             );
           })}
         </Toolbar.Header>
-        <Toolbar.Content className={tabLayoutContentStyle}>
+        <Toolbar.Content className={contentStyle}>
           {React.Children.map(this.props.children, (c, i) => {
             return (
               (i === this.state.active ||

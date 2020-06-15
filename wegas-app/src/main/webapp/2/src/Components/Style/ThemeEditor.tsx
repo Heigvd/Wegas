@@ -20,8 +20,6 @@ import { ColorChangeHandler, ChromePicker } from 'react-color';
 import { useOnClickOutside } from '../Hooks/useOnClickOutside';
 import { IconButton } from '../Inputs/Buttons/IconButton';
 import { Menu } from '../Menu';
-import { TextPrompt } from '../../Editor/Components/TextPrompt';
-import { ConfirmButton } from '../Inputs/Buttons/ConfirmButton';
 import { MessageString } from '../../Editor/Components/MessageString';
 import { themeVar, ModeComponents, ModeComponentNames } from './ThemeVars';
 import { MainLinearLayout } from '../../Editor/Components/LinearTabLayout/LinearLayout';
@@ -33,7 +31,7 @@ import {
 import { SimpleInput } from '../Inputs/SimpleInput';
 import { PageExamples } from './PageExample';
 import { wlog } from '../../Helper/wegaslog';
-import { InputConfirm } from '../Inputs/String/InputConfirm';
+import { ConfirmStringAdder } from '../Inputs/String/ConfirmStringAdder';
 
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
 
@@ -232,17 +230,6 @@ function ThemeValueModifier({
   );
 }
 
-interface NewCloseModal {
-  type: 'close' | 'new';
-}
-
-interface ErrorModal {
-  type: 'error';
-  label?: string;
-}
-
-type ModalState = NewCloseModal | ErrorModal;
-
 function ThemeEdition() {
   const {
     themesState,
@@ -267,39 +254,46 @@ function ThemeEdition() {
   return (
     <Toolbar>
       <Toolbar.Header className={cx(flex, flexDistribute, headerStyle)}>
-        <InputConfirm
-          label="Add a new theme"
-          validator={value => {
-            if (!value || value === '') {
-              return 'The theme must have a name';
-            } else if (Object.keys(themesState.themes).includes(value)) {
-              return 'The theme allready exists';
-            }
-          }}
-          forceInputValue
-          onChange={value => {
-            if (value != null) {
-              addNewTheme(value);
-              setEditedThemeName(value);
-            }
-          }}
-        />
-        <ConfirmButton
-          label="Delete current theme"
-          icon="trash"
-          onAction={success => {
-            if (success) {
-              deleteTheme(editedThemeName);
-              setEditedThemeName(old => {
+        <Menu
+          label={`Theme : ${editedThemeName}`}
+          items={Object.keys(themesState.themes).map(k => ({
+            value: k,
+            label: k,
+          }))}
+          onSelect={({ value }) => setEditedThemeName(value)}
+          adder={
+            <ConfirmStringAdder
+              label="Add a new theme"
+              validator={value => {
+                if (!value || value === '') {
+                  return 'The theme must have a name';
+                } else if (Object.keys(themesState.themes).includes(value)) {
+                  return 'The theme allready exists';
+                }
+              }}
+              forceInputValue
+              onAccept={value => {
+                if (value != null) {
+                  addNewTheme(value);
+                  setEditedThemeName(value);
+                }
+              }}
+            />
+          }
+          deleter={{
+            filter: item => item.value !== 'default',
+            onDelete: item => {
+              deleteTheme(item.value);
+              setEditedThemeName(() => {
                 const newThemes = Object.keys(themesState.themes).filter(
-                  k => k !== old,
+                  k => k !== item.value,
                 );
                 if (newThemes.length === 0) {
                   return 'default';
                 }
                 return newThemes[0];
               });
-            }
+            },
           }}
         />
         <Menu
@@ -325,7 +319,7 @@ function ThemeEdition() {
           onSelect={() => {}}
         />
         <Menu
-          label={'Theme editor content'}
+          label={'Sections'}
           items={Object.keys(themesState.themes[editedThemeName].values).map(
             (k: keyof Theme['values']) => ({
               value: k,
@@ -466,10 +460,6 @@ function ModeValueModifier({
 }
 
 function ModeEdition() {
-  const [modalState, setModalState] = React.useState<ModalState>({
-    type: 'close',
-  });
-
   const {
     themesState,
     addNewMode,
@@ -484,78 +474,58 @@ function ModeEdition() {
   const [editedComponent, setEditedComponent] = React.useState<
     ModeComponentNames
   >('Common');
-  const [editedSection, setEditedSection] = React.useState<keyof ThemeValues>(
-    'colors',
-  );
+  const [selectedSection, setSelectedSection] = React.useState<
+    { [key in keyof Theme['values']]?: boolean }
+  >({ colors: true, dimensions: true, others: true });
 
   const currentModes = themesState.themes[editedThemeName].modes;
   const currentComponents = currentModes[editedMode].values;
-  const currentSections = currentComponents[editedComponent];
 
   return (
     <Toolbar>
       <Toolbar.Header className={cx(flex, flexDistribute, headerStyle)}>
-        {modalState.type === 'new' ? (
-          <TextPrompt
-            placeholder="Mode name"
-            defaultFocus
-            onAction={(success, value) => {
-              if (value === '') {
-                setModalState({
-                  type: 'error',
-                  label: 'The mode must have a name',
-                });
-              } else {
-                if (success) {
+        <Menu
+          label={`Mode : ${editedMode}`}
+          items={Object.keys(currentModes).map(k => ({
+            value: k,
+            label: k,
+          }))}
+          onSelect={({ value }) => setEditedMode(value)}
+          adder={
+            <ConfirmStringAdder
+              label="Add a new mode"
+              validator={value => {
+                if (!value || value === '') {
+                  return 'The mode must have a name';
+                } else if (Object.keys(currentModes).includes(value)) {
+                  return 'The mode allready exists';
+                }
+              }}
+              forceInputValue
+              onAccept={value => {
+                if (value != null) {
                   addNewMode(editedThemeName, value);
                   setEditedMode(value);
-                  setModalState({ type: 'close' });
                 }
-              }
-            }}
-            onBlur={() => setModalState({ type: 'close' })}
-            applyOnEnter
-          />
-        ) : (
-          <>
-            <IconButton
-              icon="plus"
-              label="Add a new mode"
-              prefixedLabel
-              onClick={() => setModalState({ type: 'new' })}
+              }}
             />
-
-            <div className={flex}>
-              <Menu
-                label={`Mode : ${editedMode}`}
-                items={Object.keys(currentModes).map(k => ({
-                  value: k,
-                  label: k,
-                }))}
-                onSelect={({ value }) => setEditedMode(value)}
-              />
-              <ConfirmButton
-                icon="trash"
-                tooltip="Delete the mode"
-                onAction={success => {
-                  if (success) {
-                    deleteMode(editedThemeName, editedMode);
-                    setEditedMode(old => {
-                      const newModes = Object.keys(currentModes).filter(
-                        k => k !== old,
-                      );
-                      if (newModes.length === 0) {
-                        return 'light';
-                      }
-                      return newModes[0];
-                    });
-                  }
-                }}
-                onBlur={() => setModalState({ type: 'close' })}
-              />
-            </div>
-          </>
-        )}
+          }
+          deleter={{
+            filter: item => item.value !== 'dark' && item.value !== 'light',
+            onDelete: item => {
+              deleteMode(editedThemeName, item.value);
+              setEditedMode(() => {
+                const newModes = Object.keys(currentModes).filter(
+                  k => k !== item.value,
+                );
+                if (newModes.length === 0) {
+                  return 'light';
+                }
+                return newModes[0];
+              });
+            },
+          }}
+        />
         <Menu
           label={`Component : ${editedComponent}`}
           items={Object.keys(currentComponents).map(k => ({
@@ -567,18 +537,62 @@ function ModeEdition() {
           }
         />
         <Menu
-          label={`Section : ${editedSection}`}
-          items={Object.keys(currentSections).map(k => ({
-            value: k,
-            label: k,
-          }))}
-          onSelect={({ value }) => setEditedSection(value as keyof ThemeValues)}
+          label={'Sections'}
+          items={Object.keys(themesState.themes[editedThemeName].values).map(
+            (k: keyof Theme['values']) => ({
+              value: k,
+              label: (
+                <>
+                  <input
+                    type="checkbox"
+                    defaultChecked={selectedSection[k]}
+                    onChange={() =>
+                      setSelectedSection(o => ({ ...o, [k]: !o[k] }))
+                    }
+                    onClick={e => e.stopPropagation()}
+                  />
+                  {k}
+                </>
+              ),
+            }),
+          )}
+          onSelect={({ value: k }) =>
+            setSelectedSection(o => ({ ...o, [k]: !o[k] }))
+          }
         />
       </Toolbar.Header>
       <Toolbar.Content className={contentStyle}>
         <FonkyFlexContainer className={expandBoth}>
           <FonkyFlexContent>
-            <ModeValueModifier
+            <FonkyFlexContainer className={expandBoth} vertical>
+              {Object.entries(selectedSection)
+                .filter(([v]) => v)
+                .map(([section], i, a) => {
+                  return (
+                    <>
+                      <FonkyFlexContent key={section}>
+                        <ModeValueModifier
+                          theme={themesState.themes[editedThemeName]}
+                          component={currentComponents[editedComponent]}
+                          section={section as keyof ThemeValues}
+                          onChange={(k, v) =>
+                            setModeValue(
+                              editedThemeName,
+                              editedMode,
+                              editedComponent,
+                              section as keyof ThemeValues,
+                              k,
+                              v,
+                            )
+                          }
+                        />
+                      </FonkyFlexContent>
+                      {i < a.length - 1 && <FonkyFlexSplitter />}
+                    </>
+                  );
+                })}
+            </FonkyFlexContainer>
+            {/* <ModeValueModifier
               theme={themesState.themes[editedThemeName]}
               component={currentComponents[editedComponent]}
               section={editedSection}
@@ -592,7 +606,7 @@ function ModeEdition() {
                   v,
                 )
               }
-            />
+            /> */}
           </FonkyFlexContent>
           <FonkyFlexSplitter />
           <FonkyFlexContent>

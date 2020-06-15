@@ -43,7 +43,7 @@ export const disableBordersCSS = (
       : themeVar.Common.dimensions.BorderRadius,
 });
 
-const buttonStyle = (
+export const buttonStyle = (
   disabled?: boolean,
   noHover?: boolean,
   disableBorders?: DisableBorders,

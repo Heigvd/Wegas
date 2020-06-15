@@ -1,13 +1,15 @@
 import * as React from 'react';
 import Downshift, { StateChangeOptions } from 'downshift';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { IconButton } from './Inputs/Buttons/IconButton';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
-import { useKeyboard } from './Hooks/useKeyboard';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { Item } from '../Editor/Components/Tree/TreeSelect';
 import { themeVar } from './Style/ThemeVars';
 import { classNameOrEmpty } from '../Helper/className';
+import { ConfirmButton } from './Inputs/Buttons/ConfirmButton';
+import { flexRow, flex, itemCenter } from '../css/classes';
+import { lastKeyboardEvents } from '../Helper/keyboardEvents';
 
 export interface MenuItem<T> extends Item<T> {
   disabled?: true;
@@ -34,6 +36,11 @@ export interface MenuProps<T, MItem extends MenuItem<T>> {
   containerClassName?: string;
   buttonClassName?: string;
   listClassName?: string;
+  adder?: React.ReactNode;
+  deleter?: {
+    filter?: (item: MItem) => boolean;
+    onDelete: (item: MItem) => void;
+  };
 }
 /**
  * returns an empty string
@@ -96,9 +103,10 @@ export function Menu<T, MItem extends MenuItem<T>>({
   containerClassName,
   buttonClassName,
   listClassName,
+  adder,
+  deleter,
 }: MenuProps<T, MItem>) {
   const realDirection = direction ? direction : 'down';
-  const keyboardEvents = useKeyboard();
 
   const onStateChange = React.useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -121,7 +129,7 @@ export function Menu<T, MItem extends MenuItem<T>>({
             value: i.value as Exclude<MItem['value'], undefined>,
             path: path || [],
           },
-          keyboardEvents,
+          lastKeyboardEvents,
         )
       }
       itemToString={emtpyStr}
@@ -180,8 +188,19 @@ export function Menu<T, MItem extends MenuItem<T>>({
                 }
               }}
             >
-              {items.map((item: MenuItem<T>, index: number) => {
+              {adder}
+              {items.map((item: MItem, index: number) => {
                 const newPath = [...(path ? path : []), index];
+                const trasher =
+                  deleter && (!deleter.filter || deleter.filter(item)) ? (
+                    <ConfirmButton
+                      icon="trash"
+                      onAction={() => deleter.onDelete(item)}
+                    />
+                  ) : null;
+                const itemClassName =
+                  cx(flex, flexRow, itemCenter) +
+                  classNameOrEmpty(item.className);
                 if (Array.isArray(item.items)) {
                   return (
                     <div
@@ -192,7 +211,7 @@ export function Menu<T, MItem extends MenuItem<T>>({
                             onClick: stopPropagation,
                           })
                         : undefined)}
-                      className={item.className}
+                      className={itemClassName}
                       style={item.style}
                     >
                       <Menu
@@ -208,6 +227,7 @@ export function Menu<T, MItem extends MenuItem<T>>({
                         label={item.label}
                         path={newPath}
                       />
+                      {trasher}
                     </div>
                   );
                 }
@@ -221,9 +241,10 @@ export function Menu<T, MItem extends MenuItem<T>>({
                           onClick: stopPropagation,
                         })
                       : undefined)}
-                    className={item.className}
+                    className={itemClassName}
                   >
                     {item.label}
+                    {trasher}
                   </div>
                 );
               })}

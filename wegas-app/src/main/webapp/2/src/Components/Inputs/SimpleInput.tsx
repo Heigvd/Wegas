@@ -83,7 +83,7 @@ export function SimpleInput({
   const debouncedOnChange = React.useCallback(
     debounce((value: string) => {
       onChange && onChange(value);
-    }, 500),
+    }, 250),
     [onChange],
   );
 

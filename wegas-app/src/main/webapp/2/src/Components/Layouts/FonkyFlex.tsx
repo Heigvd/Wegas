@@ -4,6 +4,7 @@ import { classNameOrEmpty } from '../../Helper/className';
 import { flex, flexColumn, flexRow, layoutStyle } from '../../css/classes';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
 import { themeVar } from '../Style/ThemeVars';
+import { wlog } from '../../Helper/wegaslog';
 
 const SPLITTER_SELECTOR = 'fonkyflex-splitter';
 const CONTENT_SELECTOR = 'fonkyflex-content';
@@ -17,20 +18,28 @@ const DEFAULT_FLEX_WRAP = 1000;
 // const CONTENT_TYPE = 'Content';
 // type ContainerItemType = typeof SPLITTER_TYPE | typeof CONTENT_TYPE;
 
+// const noSelectStyle = css({
+//   userSelect: 'none',
+// });
+
 const containerStyle = css({
   [`&>.${SPLITTER_SELECTOR}.${HORIZONTAL_SELECTOR}`]: {
     height: 'auto',
-    minWidth: themeVar.Splitter.dimensions.SplitterSize,
-    maxWidth: themeVar.Splitter.dimensions.SplitterSize,
-    borderLeft: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
-    borderRight: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
+    // minWidth: themeVar.Splitter.dimensions.SplitterSize,
+    // maxWidth: themeVar.Splitter.dimensions.SplitterSize,
+    // borderLeft: `solid 2px ${themeVar.Common.colors.HoverColor}`,
+    // borderRight: `solid 2px ${themeVar.Common.colors.HoverColor}`,
+    minWidth: 20,
+    maxWidth: 20,
+    borderLeft: `solid 50px ${themeVar.Common.colors.HoverColor}`,
+    borderRight: `solid 50px ${themeVar.Common.colors.HoverColor}`,
     cursor: 'col-resize',
   },
   [`&>.${SPLITTER_SELECTOR}.${VERTICAL_SELECTOR}`]: {
     minHeight: themeVar.Splitter.dimensions.SplitterSize,
     maxHeight: themeVar.Splitter.dimensions.SplitterSize,
-    borderTop: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
-    borderBottom: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
+    borderTop: `solid 2px ${themeVar.Common.colors.HoverColor}`,
+    borderBottom: `solid 2px ${themeVar.Common.colors.HoverColor}`,
     width: 'auto',
     cursor: 'row-resize',
   },
@@ -46,9 +55,9 @@ export const defaultFlexContainerStyle: React.CSSProperties = {
   overflow: 'auto',
 };
 
-const contentNoSelect = css({
-  userSelect: 'none',
-});
+// const contentNoSelect = css({
+//   userSelect: 'none',
+// });
 
 function getFlexGrowValues(flexItems: HTMLDivElement[]): number[] {
   return flexItems.map(c => Number(c.style.getPropertyValue('flex-grow')));
@@ -92,106 +101,126 @@ export function FonkyFlexContainer({
 
   const manageMouseDown = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      e.stopPropagation();
+      // e.stopPropagation()
       const { target } = e;
       const divTarget = target as HTMLDivElement;
-      if (
-        typeof divTarget.className === 'string' &&
-        divTarget.className.includes(SPLITTER_SELECTOR)
-      ) {
-        mouseDownTarget.current = divTarget;
-        const splitterIndex = flexChildren.current.findIndex(
-          c => c === divTarget,
-        );
-        if (onStartResize && splitterIndex !== -1) {
-          flexChildren.current.forEach(c => {
-            c.className += ' ' + contentNoSelect;
-          });
-          onStartResize(
-            splitterIndex,
-            getFlexGrowValues(contentChildren.current),
-          );
-        }
-      }
+
+      // divTarget.className += ' ' + noSelectStyle;
+      // if (
+      //   typeof divTarget.className === 'string' &&
+      //   divTarget.className.includes(SPLITTER_SELECTOR)
+      // ) {
+      //   mouseDownTarget.current = divTarget;
+      //   const splitterIndex = flexChildren.current.findIndex(
+      //     c => c === divTarget,
+      //   );
+      //   if (onStartResize && splitterIndex !== -1) {
+      //     flexChildren.current.forEach(c => {
+      //       c.className += ' ' + contentNoSelect;
+      //     });
+      //     onStartResize(
+      //       splitterIndex,
+      //       getFlexGrowValues(contentChildren.current),
+      //     );
+      //   }
+      // }
     },
     [onStartResize],
   );
 
   const manageMouseMove = React.useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    (e: DragEvent) => {
       e.stopPropagation();
+
+      wlog(e);
+
+      // if (vertical) {
+      //   debugger;
+      // }
+
       const { clientX, clientY } = e;
-      if (
-        mouseDownTarget.current &&
-        typeof mouseDownTarget.current.className === 'string' &&
-        !mouseDownTarget.current.className.includes(NODRAG_SELECTOR)
-      ) {
-        const target = mouseDownTarget.current;
-        const splitterIndex = flexChildren.current.findIndex(c => c === target);
+      // if (
+      //   mouseDownTarget.current &&
+      //   typeof mouseDownTarget.current.className === 'string' &&
+      //   !mouseDownTarget.current.className.includes(NODRAG_SELECTOR)
+      // ) {
+      // const target = mouseDownTarget.current;
+      const target = e.target;
+      const splitterIndex = flexChildren.current.findIndex(c => c === target);
 
-        const leftContent = flexChildren.current[splitterIndex - 1];
-        const rightContent = flexChildren.current[splitterIndex + 1];
+      const leftContent = flexChildren.current[splitterIndex - 1];
+      const rightContent = flexChildren.current[splitterIndex + 1];
 
-        if (leftContent && rightContent && container.current) {
-          const containerBox = container.current.getBoundingClientRect();
-          const leftBox = leftContent.getBoundingClientRect();
-          const rightBox = rightContent.getBoundingClientRect();
-          const maxSize = vertical
-            ? rightBox.height + leftBox.height
-            : rightBox.width + leftBox.width;
-          const delta = vertical
-            ? clientY - leftBox.top
-            : clientX - leftBox.left;
-          const splittersSize = splitterChildren.current.reduce(
-            (o, f) =>
-              o +
-              (vertical
-                ? f.getBoundingClientRect().height
-                : f.getBoundingClientRect().width),
-            0,
-          );
-          const maxFlex =
-            ((DEFAULT_FLEX_WRAP * contentChildren.current.length) /
-              ((vertical ? containerBox.height : containerBox.width) -
-                splittersSize)) *
-            maxSize;
-          const flexLeft = Math.max(
-            Math.min((delta / maxSize) * maxFlex, maxFlex),
-            0,
-          );
-          leftContent.style.setProperty('flex-grow', `${flexLeft}`);
-          rightContent.style.setProperty('flex-grow', `${maxFlex - flexLeft}`);
+      if (leftContent && rightContent && container.current) {
+        const containerBox = container.current.getBoundingClientRect();
+        const leftBox = leftContent.getBoundingClientRect();
+        const rightBox = rightContent.getBoundingClientRect();
+        const maxSize = vertical
+          ? rightBox.height + leftBox.height
+          : rightBox.width + leftBox.width;
+        const delta = vertical ? clientY - leftBox.top : clientX - leftBox.left;
+        const splittersSize = splitterChildren.current.reduce(
+          (o, f) =>
+            o +
+            (vertical
+              ? f.getBoundingClientRect().height
+              : f.getBoundingClientRect().width),
+          0,
+        );
+        const maxFlex =
+          ((DEFAULT_FLEX_WRAP * contentChildren.current.length) /
+            ((vertical ? containerBox.height : containerBox.width) -
+              splittersSize)) *
+          maxSize;
+        const flexLeft = Math.max(
+          Math.min((delta / maxSize) * maxFlex, maxFlex),
+          0,
+        );
+        leftContent.style.setProperty('flex-grow', `${flexLeft}`);
+        rightContent.style.setProperty('flex-grow', `${maxFlex - flexLeft}`);
+        // leftContent.style.setProperty('user-select', 'none');
+        // rightContent.style.setProperty('user-select', 'none');
 
-          if (onResize) {
-            onResize(splitterIndex, getFlexGrowValues(contentChildren.current));
-          }
+        if (onResize) {
+          onResize(splitterIndex, getFlexGrowValues(contentChildren.current));
         }
       }
+      // }
     },
     [onResize, vertical],
   );
 
-  const manageMouseup = React.useCallback(() => {
-    if (onStopResize) {
-      const splitterIndex = flexChildren.current.findIndex(
-        c => c === mouseDownTarget.current,
-      );
-      if (splitterIndex !== -1) {
-        flexChildren.current.forEach(c => {
-          c.className = c.className.replace(' ' + contentNoSelect, '');
-        });
-        onStopResize(splitterIndex, getFlexGrowValues(contentChildren.current));
-      }
-    }
-    mouseDownTarget.current = undefined;
-  }, [onStopResize]);
+  const manageMouseup = React.useCallback(
+    e => {
+      const { target } = e;
+      const divTarget = target as HTMLDivElement;
+      // divTarget.className = divTarget.className.replace(
+      //   ' ' + noSelectStyle,
+      //   '',
+      // );
+
+      // if (onStopResize) {
+      //   const splitterIndex = flexChildren.current.findIndex(
+      //     c => c === mouseDownTarget.current,
+      //   );
+      //   if (splitterIndex !== -1) {
+      //     flexChildren.current.forEach(c => {
+      //       c.className = c.className.replace(' ' + contentNoSelect, '');
+      //     });
+      //     onStopResize(splitterIndex, getFlexGrowValues(contentChildren.current));
+      //   }
+      // }
+      // mouseDownTarget.current = undefined;
+    },
+    [onStopResize],
+  );
 
   React.useEffect(() => {
     window.addEventListener('mouseup', manageMouseup);
     return () => {
       window.removeEventListener('mouseup', manageMouseup);
       // Call mouseup in case it the drag was still in progress
-      manageMouseup();
+      // manageMouseup();
     };
   }, [manageMouseup]);
 
@@ -213,6 +242,7 @@ export function FonkyFlexContainer({
             ) {
               child.className += ' ' + HORIZONTAL_SELECTOR;
             }
+            child.ondrag = e => manageMouseMove(e);
           } else if (child.className.includes(CONTENT_SELECTOR)) {
             if (flexValues && flexValues[contentChildren.current.length]) {
               child.style.setProperty(
@@ -231,8 +261,8 @@ export function FonkyFlexContainer({
         classNameOrEmpty(className)
       }
       style={style}
-      onMouseDown={manageMouseDown}
-      onMouseMove={manageMouseMove}
+      // onMouseDown={manageMouseDown}
+      // onMouseMove={manageMouseMove}
     >
       {children}
     </div>
@@ -246,12 +276,19 @@ export function FonkyFlexSplitter({
 }: FonkyFlexSplitterProps) {
   return (
     <div
-      style={{ ...style, ...(notDraggable ? { cursor: 'initial' } : {}) }}
+      style={{
+        ...style,
+        ...(notDraggable ? { cursor: 'initial' } : {}),
+        // userSelect: 'none',
+      }}
       className={
         SPLITTER_SELECTOR +
         (notDraggable ? ' ' + NODRAG_SELECTOR : '') +
         classNameOrEmpty(className)
       }
+      // draggable
+      draggable={true}
+      // onDrag={e => wlog(e)}
     />
   );
 }
@@ -262,6 +299,7 @@ export const FonkyFlexContent = React.forwardRef<
 >((props, ref) => {
   const {
     flexInit = DEFAULT_FLEX_WRAP,
+    // flexInit,
     className,
     style,
     children,
@@ -280,6 +318,7 @@ export const FonkyFlexContent = React.forwardRef<
       style={{
         position: 'relative',
         flexGrow: flexInit,
+        // flexShrink: DEFAULT_FLEX_WRAP,
         flexBasis: 0,
         height: '100%',
         width: '100%',
@@ -293,6 +332,7 @@ export const FonkyFlexContent = React.forwardRef<
       onDragLeave={onDragLeave}
       onDragEnd={onDragEnd}
       title={tooltip}
+      // draggable={false}
     >
       {children}
     </div>

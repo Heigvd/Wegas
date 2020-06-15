@@ -261,7 +261,6 @@ const page1JSON = {
                   },
                 ],
                 layout: {
-                  justifyContent: 'space-evenly',
                   alignItems: 'center',
                   flexDirection: 'column',
                 },
