@@ -14,6 +14,7 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.persistence.Permission;
+import com.wegas.core.security.persistence.Shadow;
 import com.wegas.core.security.util.JpaAuthenticationInfo;
 import javax.ejb.EJBException;
 import org.apache.shiro.authc.AuthenticationException;
@@ -43,6 +44,15 @@ public class JpaRealm extends AuthorizingRealm {
         setName("JpaRealm");
     }
 
+    private AuthenticationInfo doGetFromAccount(JpaAccount account) {
+        Shadow shadow = account.getShadow();
+
+        JpaAuthenticationInfo info = new JpaAuthenticationInfo(account.getId(),
+            shadow.getPasswordHex(),
+            new SimpleByteSource(shadow.getSalt()), getName(), shadow.getHashMethod());
+        return info;
+    }
+
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
         if (authcToken instanceof UsernamePasswordToken) {
@@ -52,24 +62,12 @@ public class JpaRealm extends AuthorizingRealm {
             try {
                 requestManager.su();
                 JpaAccount account = accountFacade.findJpaByEmail(token.getUsername());
-
-                JpaAuthenticationInfo info = new JpaAuthenticationInfo(account.getId(),
-                    account.getShadow().getPasswordHex(),
-                    new SimpleByteSource(account.getShadow().getSalt()),
-                    getName(), account.getShadow().getHashMethod());
-                return info;
-
+                return doGetFromAccount(account);
             } catch (WegasNoResultException e) {
                 // Could not find correponding mail,
                 try {
                     JpaAccount account = accountFacade.findJpaByUsername(token.getUsername());// try with the username
-
-                    JpaAuthenticationInfo info = new JpaAuthenticationInfo(account.getId(),
-                        account.getShadow().getPasswordHex(),
-                        new SimpleByteSource(account.getShadow().getSalt()),
-                        getName(), account.getShadow().getHashMethod());
-                    return info;
-
+                    return doGetFromAccount(account);
                 } catch (WegasNoResultException ex) {
                     logger.error("Unable to find token", ex);
                     return null;
