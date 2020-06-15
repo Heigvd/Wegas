@@ -223,7 +223,7 @@ public class Xapi implements XapiI {
             new Activity(LOG_ID_PREFIX + logID)
         )));
 
-        ctxActivities.setCategory(new ArrayList<Activity>(List.of(
+        ctxActivities.setGrouping(new ArrayList<Activity>(List.of(
             new Activity("internal://wegas/team/" + team.getId()),
             new Activity("internal://wegas/game/" + game.getId())
         )));
