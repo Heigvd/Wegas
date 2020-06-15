@@ -322,7 +322,7 @@
                     .key{
                         display:block;
                         border:none;
-                        width: calc(100% - 79px); /* was 100% - 24px */
+                        width: calc(100% - 79px);
                         text-overflow:ellipsis;
                         overflow:hidden;
                         white-space: nowrap;
@@ -332,6 +332,11 @@
                             outline: none;
                             border-radius: 4px;
                             border: 2px solid red !important;
+                            color: red;
+                            background: #fff0f0;
+                            margin-top: -2px;
+                            position: relative;
+                            left: -2px;
                         }
                         &::placeholder {
                             color: red;
@@ -341,7 +346,10 @@
                         &:active {
                             outline: none;
                             border-radius: 4px;
-                            border: 2px solid black;                            
+                            border: 2px solid black;
+                            margin-top: -2px;
+                            position: relative;
+                            left: -2px;
                         }
                     }
 
