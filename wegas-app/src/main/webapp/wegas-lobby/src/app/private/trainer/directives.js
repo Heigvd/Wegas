@@ -122,9 +122,9 @@ angular.module('private.trainer.directives', [
         // Updates the listing when the user has clicked on the "My sessions first" checkbox.
         ctrl.toggleMeFirst = function() {
             ctrl.setMeFirst(!ctrl.mefirst);
-            var config = localStorage.getObject("wegas-config");
-            config.commons.mySessionsFirst = ctrl.mefirst;
-            localStorage.setObject("wegas-config", config);
+            var config = localStorage.getObject("wegas-config-nonplayer") || {};
+            config.mySessionsFirst = ctrl.mefirst;
+            localStorage.setObject("wegas-config-nonplayer", config);
         };
 
         ctrl.initMeFirst = function() {
@@ -132,8 +132,8 @@ angular.module('private.trainer.directives', [
                 if (ctrl.user.isAdmin) {
                     if (ctrl.username.length > 0) {
                         // Load the "My sessions first" preference, defaulting to true:
-                        var config = localStorage.getObject("wegas-config"),
-                            mefirst = config.commons && config.commons.mySessionsFirst !== false;
+                        var config = localStorage.getObject("wegas-config-nonplayer") || {},
+                            mefirst = config.mySessionsFirst !== false;
                         ctrl.setMeFirst(mefirst, true);
                     } // else: ignore as long as required information is missing
                 } else {
