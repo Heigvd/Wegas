@@ -110,9 +110,9 @@ angular.module('private.modeler.directives', [
         // Updates the listing when the user has clicked on the "My models first" checkbox.
         ctrl.toggleMeFirst = function() {
             ctrl.setMeFirst(!ctrl.mefirst);
-            var config = localStorage.getObject("wegas-config");
-            config.commons.myModelsFirst = ctrl.mefirst;
-            localStorage.setObject("wegas-config", config);
+            var config = localStorage.getObject("wegas-config-nonplayer") || {};
+            config.myModelsFirst = ctrl.mefirst;
+            localStorage.setObject("wegas-config-nonplayer", config);
         };
 
         ctrl.initMeFirst = function() {
@@ -120,8 +120,8 @@ angular.module('private.modeler.directives', [
                 if (ctrl.user.isAdmin) {
                     if (ctrl.username.length > 0) {
                         // Load the "My models first" preference, defaulting to true:
-                        var config = localStorage.getObject("wegas-config"),
-                            mefirst = config.commons && config.commons.myModelsFirst !== false;
+                        var config = localStorage.getObject("wegas-config-nonplayer") || {},
+                            mefirst = config.myModelsFirst !== false;
                         ctrl.setMeFirst(mefirst, true);
                     } // else: ignore as long as required information is missing
                 } else {

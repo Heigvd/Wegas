@@ -121,7 +121,9 @@
     font-size: 12px;
     font-weight: normal;
     font-style: italic;
-    margin-left: 4px;
+    margin-left: 5px;
+    display: inline-block;
+    float: right;
 }
 
 .wegas-survey-widget .section .content{
