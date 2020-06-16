@@ -156,6 +156,7 @@ export function FonkyFlexContainer({
         );
 
         debugger;
+
         leftContent.style.setProperty('flex-grow', `${flexLeft}`);
         rightContent.style.setProperty('flex-grow', `${maxFlex - flexLeft}`);
 

@@ -146,13 +146,15 @@ function MyColorPicker({ initColor = 'black', onChange }: MyColorPickerProps) {
               setColor(newColor.rgb);
             }}
           />
-          <Button
-            label="Accept"
-            onClick={() => {
-              setDisplayed(false);
-              onChange && onChange(color);
-            }}
-          />
+          <div style={{ margin: themeVar.Common.dimensions.BorderWidth }}>
+            <Button
+              label="Accept"
+              onClick={() => {
+                setDisplayed(false);
+                onChange && onChange(color);
+              }}
+            />
+          </div>
         </div>
       )}
     </div>
@@ -170,16 +172,6 @@ function ThemeValueModifier({
   section,
   onChange,
 }: ThemeValueModifierProps) {
-  // const [modalState, setModalState] = React.useState<SimpleModes>('close');
-  // const [newValue, setNewValue] = React.useState<{
-  //   name?: string;
-  //   value: string;
-  // }>({ value: section === 'colors' ? 'black' : '' });
-
-  // const nameAllreadExists = Object.keys(theme.values[section]).includes(
-  //   newValue.name || '',
-  // );
-
   const accept: (value?: {
     name?: string;
     value: string;
@@ -641,7 +633,7 @@ function ModeEdition() {
                     <>
                       <FonkyFlexContent
                         key={section}
-                        flexInit={entries.length + 1}
+                        flexInit={(entries.length + 1) * 1000}
                       >
                         <ModeValueModifier
                           theme={themesState.themes[editedThemeName]}

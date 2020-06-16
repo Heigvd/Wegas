@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { flex, flexColumn, flexRow } from '../../../css/classes';
+import {
+  flex,
+  flexColumn,
+  flexRow,
+  justifyCenter,
+  itemCenter,
+  layoutStyle,
+} from '../../../css/classes';
 import { IconButton } from '../Buttons/IconButton';
 import { cx, css } from 'emotion';
 import { MessageString } from '../../../Editor/Components/MessageString';
@@ -73,7 +80,16 @@ export function ConfirmAdder<T>({
           prefixedLabel
         />
       ) : (
-        <div className={cx(flex, flexColumn, newModeStyle)}>
+        <div
+          className={cx(
+            flex,
+            flexColumn,
+            newModeStyle,
+            justifyCenter,
+            itemCenter,
+            layoutStyle,
+          )}
+        >
           {error && (
             <MessageString
               type="warning"
@@ -82,8 +98,8 @@ export function ConfirmAdder<T>({
               onLabelVanish={() => setError(undefined)}
             />
           )}
+          {children(setValue)}
           <div className={cx(flex, flexRow)}>
-            {children(setValue)}
             <IconButton
               icon="save"
               disabled={error != null || !accept || accept(inputValue) != null}
