@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -83,6 +84,38 @@ public class PlayerFacade extends BaseFacade<Player> {
     private WebsocketFacade websocketFacade;
 
     /**
+     *
+     * @param gameModel
+     * @param languages
+     *
+     * @return language
+     *
+     * @throws WegasErrorMessage if there is not language in the gameModel
+     */
+    public GameModelLanguage findPreferredLanguages(GameModel gameModel, List<Locale> languages) {
+        List<GameModelLanguage> gmLanguages = gameModel.getRawLanguages();
+        if (languages != null && gmLanguages != null) {
+            for (Locale locale : languages) {
+                GameModelLanguage lang = gameModel.getLanguageByCode(locale.toLanguageTag());
+                if (lang != null && lang.isActive()) {
+                    return lang;
+                } else {
+                    lang = gameModel.getLanguageByCode(locale.getLanguage());
+                    if (lang != null && lang.isActive()) {
+                        return lang;
+                    }
+                }
+            }
+        }
+
+        if (gmLanguages != null && !gmLanguages.isEmpty()) {
+            return gmLanguages.get(0);
+        } else {
+            throw new WegasErrorMessage("error", "No language");
+        }
+    }
+
+    /**
      * Create a player linked to the user identified by userId(may be null) and join the team
      * identified by teamId.
      * <p>
@@ -115,33 +148,10 @@ public class PlayerFacade extends BaseFacade<Player> {
 
         Player player = new Player();
         GameModel gameModel = team.getGame().getGameModel();
-        List<GameModelLanguage> gmLanguages = gameModel.getLanguages();
 
-        String preferredLang = null;
-        if (languages != null && gmLanguages != null) {
-            for (Locale locale : languages) {
-                GameModelLanguage lang = gameModel.getLanguageByCode(locale.toLanguageTag());
-                if (lang != null && lang.isActive()) {
-                    preferredLang = lang.getCode();
-                    break;
-                } else {
-                    lang = gameModel.getLanguageByCode(locale.getLanguage());
-                    if (lang != null && lang.isActive()) {
-                        preferredLang = lang.getCode();
-                        break;
-                    }
-                }
-            }
-        }
+        GameModelLanguage preferredLang = this.findPreferredLanguages(gameModel, languages);
 
-        if (Helper.isNullOrEmpty(preferredLang)) {
-            if (gmLanguages != null && !gmLanguages.isEmpty()) {
-                preferredLang = gmLanguages.get(0).getCode();
-            } else {
-                throw new WegasErrorMessage("error", "No language");
-            }
-        }
-        player.setLang(preferredLang);
+        player.setLang(preferredLang.getCode());
 
         if (userId != null) {
             User user = userFacade.find(userId);
@@ -478,10 +488,8 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     private Player findDebugPlayerByGame(Game game) {
         for (Team t : game.getTeams()) {
-            if (t instanceof DebugTeam || game instanceof DebugGame) {
-                if (t.getPlayers().size() > 0) {
-                    return t.getPlayers().get(0);
-                }
+            if ((t instanceof DebugTeam || game instanceof DebugGame) && !t.getPlayers().isEmpty()) {
+                return t.getPlayers().get(0);
             }
         }
         return null;

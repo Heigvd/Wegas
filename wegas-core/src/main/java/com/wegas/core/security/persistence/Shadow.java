@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.persistence;
@@ -15,13 +16,21 @@ import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 
 /**
  * Shadow storage for sensitive information linked to AbstractAccounts. It means: <ul>
  * <li>password hash </li>
  * <li>salt</li>
- * <li>reset password token</li>
  * </ul>
  *
  * @author Maxence
@@ -43,16 +52,13 @@ public class Shadow extends AbstractEntity {
     @JsonIgnore
     private String passwordHex;
 
-    @JsonIgnore
-    private String token;
-
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "shadow")
     private AbstractAccount account;
 
     @Column(length = 24, columnDefinition = "character varying(24)")
     @Enumerated(value = EnumType.STRING)
     private HashMethod hashMethod = HashMethod.SHA_256;
-    
+
     @Column(length = 24, columnDefinition = "character varying(24)")
     @Enumerated(value = EnumType.STRING)
     private HashMethod nextHashMethod;
@@ -92,14 +98,6 @@ public class Shadow extends AbstractEntity {
      */
     public void setPasswordHex(String passwordHex) {
         this.passwordHex = passwordHex;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     /**

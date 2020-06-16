@@ -74,13 +74,6 @@
         </goals>
     </action>
     <action>
-        <actionName>CUSTOM-Run Cobertura</actionName>
-        <displayName>Run Cobertura</displayName>
-        <goals>
-            <goal>cobertura:cobertura</goal>
-        </goals>
-    </action>
-    <action>
         <actionName>CUSTOM-Install Site</actionName>
         <displayName>Install Site</displayName>
         <recursive>false</recursive>

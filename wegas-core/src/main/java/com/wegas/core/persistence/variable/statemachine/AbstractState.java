@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
@@ -24,9 +24,9 @@ import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyScript;
 import com.wegas.editor.ValueGenerators.Zero;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.ScriptView;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.NumberView;
+import com.wegas.editor.view.ScriptView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +34,18 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -135,6 +146,7 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
      *
      */
     public AbstractState() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -174,6 +186,7 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
 
     /**
      * Kept for backward compatibility
+     *
      * @param editorPosition
      */
     public void setEditorPosition(Coordinate editorPosition) {
@@ -299,6 +312,7 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
         private static final long serialVersionUID = -6452488638539643500L;
 
         public ComparatorImpl() {
+            // ensure there is a default constructor
         }
 
         @Override

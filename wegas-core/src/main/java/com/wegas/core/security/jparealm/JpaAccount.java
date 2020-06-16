@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.jparealm;
@@ -15,7 +15,15 @@ import com.wegas.core.security.persistence.Shadow;
 import com.wegas.core.security.util.AuthenticationMethod;
 import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.JpaAuthentication;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.NamedQuery;
+import javax.persistence.PrePersist;
+import javax.persistence.Transient;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 
@@ -82,7 +90,6 @@ public class JpaAccount extends AbstractAccount {
             this.setShadow(new Shadow());
         }
         if (this.password == null || this.password.isEmpty()) {
-            org.apache.shiro.authc.credential.HashedCredentialsMatcher oo;
             RandomNumberGenerator rng = new SecureRandomNumberGenerator();
             this.password = rng.nextBytes().toString().substring(0, 7);
         }
@@ -152,7 +159,7 @@ public class JpaAccount extends AbstractAccount {
 
     @Override
     public Boolean isVerified() {
-        return verified;
+        return verified != null && verified;
     }
 
     public void setVerified(Boolean verified) {

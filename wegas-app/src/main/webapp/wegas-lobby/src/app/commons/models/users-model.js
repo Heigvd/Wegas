@@ -265,7 +265,12 @@ angular.module('wegas.models.users', [])
                                                         delete user.name;
                                                         delete user.password2;
 
-                                                        user.password = digestedPassword;
+                                                        // hack: empty password means do not update the password
+                                                        if (user.password) {
+                                                            user.password = digestedPassword;
+                                                        } else {
+                                                            user.password = "";
+                                                        }
 
                                                         if (user.roles) {
                                                             for (var i = 0; i < user.roles.length; i++) {

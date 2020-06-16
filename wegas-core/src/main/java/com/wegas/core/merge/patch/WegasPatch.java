@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.merge.patch;
@@ -36,7 +36,7 @@ public abstract class WegasPatch {
     /**
      * Represent the patch mode: CREATE, DELETE, UPDATE, OVERRIDE or SKIP
      */
-    public static enum PatchMode {
+    public enum PatchMode {
         /**
          * object is to be created
          */
@@ -265,10 +265,8 @@ public abstract class WegasPatch {
 
                 // but skip PRIVATE visibility
                 // Allow to
-                if (!bypassVisibility && to instanceof ModelScoped) {
-                    if (Visibility.PRIVATE.equals(((ModelScoped) to).getVisibility())) {
-                        mode = PatchMode.SKIP;
-                    }
+                if (!bypassVisibility && to instanceof ModelScoped && Visibility.PRIVATE.equals(((ModelScoped) to).getVisibility())) {
+                    mode = PatchMode.SKIP;
                 }
             } else {
                 // should be DELETE but target does not exists
@@ -336,8 +334,8 @@ public abstract class WegasPatch {
                         mode = PatchMode.SKIP;
                     }
                     // FROM NULL TO NULL !!!
-                    logger.error("Patch Null2Null: Target: {}, From: {}; To: {}; ParentMode: {}; inheritedVisibility: {}; Visibility: {}; protectionLevel: {}; => mode: {}",
-                        target, from, to, parentMode, inheritedVisibility, visibility, protectionLevel, mode);
+                    logger.error("Patch Null2Null: Target: {}, From: null; To: null; ParentMode: {}; inheritedVisibility: {}; Visibility: {}; protectionLevel: {}; => mode: {}",
+                        target, parentMode, inheritedVisibility, visibility, protectionLevel, mode);
                 }
             }
         }
@@ -363,10 +361,12 @@ public abstract class WegasPatch {
             effectiveAbstractEntity = (AbstractEntity) toEntity;
         } else {
             Mergeable mergeableParent = toEntity;
+
             do {
                 mergeableParent = mergeableParent.getMergeableParent();
             } while (mergeableParent != null && mergeableParent instanceof AbstractEntity == false);
-            if (mergeableParent instanceof AbstractEntity) {
+
+            if (mergeableParent != null) {
                 effectiveAbstractEntity = (AbstractEntity) mergeableParent;
             } else {
                 effectiveAbstractEntity = null;
@@ -394,11 +394,11 @@ public abstract class WegasPatch {
         return this.print(0).toString();
     }
 
-    public PatchDiff diff(){
+    public PatchDiff diff() {
         return this.buildDiff(false);
     }
 
-    public PatchDiff diffForce(){
+    public PatchDiff diffForce() {
         return this.buildDiff(true);
     }
 
@@ -412,7 +412,7 @@ public abstract class WegasPatch {
     protected StringBuilder print(int ident) {
         StringBuilder sb = new StringBuilder();
         newLine(sb, ident);
-        sb.append("Patch ").append(this.getClass().getSimpleName()).append(" ").append(identifier);
+        sb.append("Patch ").append(this.getClass().getSimpleName()).append(' ').append(identifier);
         if (fieldCallback != null) {
             newLine(sb, ident + 1);
             sb.append("FieldCallback: ").append(fieldCallback);
@@ -436,7 +436,7 @@ public abstract class WegasPatch {
     }
 
     protected void newLine(StringBuilder sb, int ident) {
-        sb.append("\n");
+        sb.append(System.lineSeparator());
         this.indent(sb, ident);
     }
 
@@ -449,6 +449,6 @@ public abstract class WegasPatch {
 
     protected abstract PatchDiff buildDiff(boolean bypassVisibility);
 
-    public static abstract class PatchDiff{
+    public static abstract class PatchDiff {
     };
 }

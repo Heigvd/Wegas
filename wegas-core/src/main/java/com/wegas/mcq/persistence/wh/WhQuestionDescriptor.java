@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.persistence.wh;
@@ -21,8 +21,8 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.PrimitiveDescriptorI;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.I18nHtmlView;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;

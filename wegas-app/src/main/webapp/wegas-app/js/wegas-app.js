@@ -160,7 +160,7 @@ YUI.add('wegas-app', function(Y) {
 
             // Send data sources initial requests
             Wegas.use(Y.Object.values(dataSources), Y.bind(function(Y) { // Retrieve data sources dependencies (e.g. Pusher)
-                Y.Object.each(dataSources, function(cfg, name) { // For each data source,       
+                Y.Object.each(dataSources, function(cfg, name) { // For each data source,
                     cfg.source = this.get("base") + (cfg.source || ""); // Set up datasource path
                     dsClass = Wegas[cfg.type] || Wegas.DataSource; // Determine which class to use (default is Y.Wegas.DataSource)
                     ds = new dsClass(cfg); // Instantiate the datasource

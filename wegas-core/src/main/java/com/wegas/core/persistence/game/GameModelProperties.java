@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -17,11 +17,11 @@ import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.ValueGenerators.False;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.SelectView.FreeForAllSelector;
-import com.wegas.editor.View.StringView;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.SelectView.FreeForAllSelector;
+import com.wegas.editor.view.StringView;
 import java.io.Serializable;
-import javax.persistence.*;
+import javax.persistence.Embeddable;
 
 /**
  *
@@ -47,6 +47,7 @@ public class GameModelProperties implements Serializable, Mergeable {
 
     @Override
     public void setRefId(String refId) {
+        // refid is hadcoded
     }
 
     private static final long serialVersionUID = 1L;
@@ -126,6 +127,7 @@ public class GameModelProperties implements Serializable, Mergeable {
      *
      */
     public GameModelProperties() {
+        // ensure there is a default constructor
     }
 
     /**

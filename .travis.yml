@@ -1,9 +1,9 @@
 language: java
-dist: trusty
+dist: bionic
 jdk:
-  - openjdk8
+  - openjdk11
 addons:
-  postgresql: "9.6"
+  postgresql: 10
   ssh_known_hosts: 
   - rancher01.albasim.ch
 services: postgresql

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.i18n.persistence;
@@ -18,7 +18,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.StringView;
+import com.wegas.editor.view.StringView;
 import java.util.Collection;
 import java.util.Objects;
 import javax.persistence.Basic;
@@ -47,6 +47,35 @@ import javax.persistence.Table;
 )
 @IdClass(Translation.TranslationKey.class)
 public class Translation implements WithPermission {
+
+    @JsonIgnore
+    @Id
+    @WegasEntityProperty(initOnly = true, optional = false, nullable = false,
+        view = @View(label = "Language", readOnly = true, value = StringView.class))
+    @JsonView(Views.IndexI.class)
+    private String lang;
+
+    @ManyToOne
+    @JsonIgnore
+    private TranslatableContent translatableContent;
+
+    @Id
+    @Column(name = "translatablecontent_id", insertable = false, updatable = false, columnDefinition = "bigint")
+    @JsonView(Views.IndexI.class)
+    private Long trId;
+
+    @Lob
+    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
+    @Column(name = "tr")
+    @WegasEntityProperty(searchable = true, view = @View(label = "Text"),
+        proposal = EmptyString.class,
+        optional = false, nullable = false)
+    private String translation;
+
+    @WegasEntityProperty(view = @View(label = "Status"),
+        proposal = EmptyString.class,
+        optional = false, nullable = false)
+    private String status;
 
     public static class TranslationKey {
 
@@ -81,36 +110,8 @@ public class Translation implements WithPermission {
         }
     }
 
-    @JsonIgnore
-    @Id
-    @WegasEntityProperty(initOnly = true, optional = false, nullable = false,
-        view = @View(label = "Language", readOnly = true, value = StringView.class))
-    @JsonView(Views.IndexI.class)
-    private String lang;
-
-    @ManyToOne
-    @JsonIgnore
-    private TranslatableContent translatableContent;
-
-    @Id
-    @Column(name = "translatablecontent_id", insertable = false, updatable = false, columnDefinition = "bigint")
-    @JsonView(Views.IndexI.class)
-    private Long trId;
-
-    @Lob
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    @Column(name = "tr")
-    @WegasEntityProperty(searchable = true, view = @View(label = "Text"),
-        proposal = EmptyString.class,
-        optional = false, nullable = false)
-    private String translation;
-
-    @WegasEntityProperty(initOnly = true, view = @View(label = "Status"),
-        proposal = EmptyString.class,
-        optional = false, nullable = false)
-    private String status;
-
     public Translation() {
+        // ensure to have an empty constructor
     }
 
     public Translation(String lang, String translation) {

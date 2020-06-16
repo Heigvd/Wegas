@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb.statemachine;
@@ -127,7 +127,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
     }
 
     /**
-     * Test () ->+1 (+5) ->+2 (+10)
+     * Test () ->gt; +1 (+5) ->gt;+2 (+10)
      *
      * @throws NamingException
      */

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.i18n.persistence;
@@ -28,20 +28,28 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.Zero;
-import com.wegas.editor.View.NumberView;
+import com.wegas.editor.view.NumberView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Version;
 import jdk.nashorn.api.scripting.JSObject;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -56,8 +64,6 @@ import org.slf4j.LoggerFactory;
 public class TranslatableContent extends AbstractEntity implements Broadcastable {
 
     private static final long serialVersionUID = 1L;
-
-    private static final Logger logger = LoggerFactory.getLogger(TranslatableContent.class);
 
     @ManyToOne
     @JsonIgnore
@@ -202,9 +208,9 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
      */
     public Translation getTranslation(String code) {
         if (code != null) {
-            String CODE = code.toUpperCase();
+            String upperCode = code.toUpperCase();
             for (Translation tr : this.translations) {
-                if (CODE.equals(tr.getLang())) {
+                if (upperCode.equals(tr.getLang())) {
                     return tr;
                 }
             }
@@ -389,7 +395,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         return trC;
     }
 
-    public TranslatableContent clone() {
+    public TranslatableContent createCopy() {
         TranslatableContent trC = new TranslatableContent();
         for (Translation t : this.getRawTranslations()) {
             trC.getRawTranslations().add(
@@ -460,7 +466,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
                 for (String code : langs) {
                     Object member = trs.getMember(code);
                     if (member instanceof String) {
-                        trContent.updateTranslation(code, (String) trs.getMember(code));
+                        trContent.updateTranslation(code, (String) member);
                     } else if (member instanceof ScriptObjectMirror) {
                         String tr = (String) ((ScriptObjectMirror) member).getMember("translation");
                         String status = (String) ((ScriptObjectMirror) member).getMember("status");

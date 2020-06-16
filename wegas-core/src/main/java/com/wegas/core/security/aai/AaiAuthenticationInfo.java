@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.aai;
@@ -15,12 +15,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 
 /**
- * Wegas
- * http://wegas.albasim.ch
- *
- * Copyright (c) AlbaSim, School of Business and Engineering of Western Switzerland
- * Licensed under the MIT License
- * Created by jarle.hulaas@heig-vd.ch on 07.03.2017.
+ * @author jarle.hulaas@heig-vd.ch on 07.03.2017.
  */
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")

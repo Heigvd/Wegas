@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
@@ -10,6 +10,7 @@ package com.wegas.core.rest.util;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.persistence.game.Player;
+import java.util.Arrays;
 
 /**
  *
@@ -26,6 +27,7 @@ public class Email {
     private Player[] to;
 
     public Email() {
+        // useless but ensure there is an empty constructor
     }
 
     public String getSubject() {
@@ -61,10 +63,14 @@ public class Email {
     }
 
     public Player[] getTo() {
-        return to;
+        if (to != null) {
+            return Arrays.copyOf(to, to.length);
+        } else {
+            return new Player[0];
+        }
     }
 
     public void setTo(Player[] to) {
-        this.to = to;
+        this.to = Arrays.copyOf(to, to.length);
     }
 }

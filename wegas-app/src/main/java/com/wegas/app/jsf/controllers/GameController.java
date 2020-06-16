@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.jsf.controllers;
@@ -46,12 +47,14 @@ public class GameController extends AbstractGameController {
     /**
      *
      */
-    @Inject @HttpParam
+    @Inject
+    @HttpParam
     private Long gameId;
     /**
      *
      */
-    @Inject @HttpParam
+    @Inject
+    @HttpParam
     private Long gameModelId;
     /**
      *
@@ -119,7 +122,7 @@ public class GameController extends AbstractGameController {
         if (this.gameModelId != null) {
             GameModel gameModel = gameModelFacade.find(this.gameModelId);
             if (gameModel != null) {
-                if (gameModel.isScenario() || gameModel.isModel()){
+                if (gameModel.isScenario() || gameModel.isModel()) {
                     // use the debug player from the debug game
                     currentPlayer = gameModel.getTestPlayer();
                 } else {
@@ -135,13 +138,16 @@ public class GameController extends AbstractGameController {
 
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
             errorController.gameNotFound();
+        } else if (currentPlayer.getStatus().equals(Status.SURVEY)) {
+            errorController.accessForSurveyOnly();
         } else if (!currentPlayer.getStatus().equals(Status.LIVE)) {
             try {
                 externalContext.dispatch("/wegas-app/jsf/error/waiting.xhtml");
             } catch (IOException ex) {
                 logger.error("Dispatch error: {}", ex);
             }
-        } else if ( currentPlayer.getGame().getStatus().equals(Game.Status.DELETE) || currentPlayer.getGame().getStatus().equals(Game.Status.SUPPRESSED)) {
+        } else if (currentPlayer.getGame().getStatus().equals(Game.Status.DELETE)
+            || currentPlayer.getGame().getStatus().equals(Game.Status.SUPPRESSED)) {
             currentPlayer = null;
             errorController.gameDeleted();
         } else if (!requestManager.hasPlayerRight(currentPlayer)) {

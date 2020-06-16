@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
@@ -26,7 +26,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.View.StringView;
+import com.wegas.editor.view.StringView;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import java.io.IOException;
 import java.io.Serializable;
@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "VariableInstance", value = VariableInstance.class),
     @JsonSubTypes.Type(name = "EvaluationInstance", value = EvaluationInstance.class)
 })
-/**
+/*
  * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for some
  * object (eg ChoiceDescriptor and result). INVALIDATE_CHANGED_OBJECTS must be set to fix this
  * problem. 2018-04-05: revert to default since it seems the buggy behaviour no longer occurs
@@ -325,6 +325,7 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
      * @param beans facade wrapper
      */
     public void updateCacheOnDelete(Beanjection beans) {
+        // default behaviour is noop
     }
 
     /**

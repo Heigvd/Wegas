@@ -1,12 +1,15 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
 
+import com.wegas.core.AlphanumericComparator;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import java.io.Serializable;
 import java.util.Comparator;
 
 public class EntityComparators {
@@ -16,7 +19,7 @@ public class EntityComparators {
      *
      * @param <T> extends AbstractEntity
      */
-    public static class EntityIdComparator<T extends AbstractEntity> implements Comparator<T> {
+    public static class EntityIdComparator<T extends AbstractEntity> implements Comparator<T>, Serializable {
 
         @Override
         public int compare(T o1, T o2) {
@@ -35,7 +38,7 @@ public class EntityComparators {
      *
      * @param <T> extends Orderable
      */
-    public static class OrderComparator<T extends Orderable> implements Comparator<T> {
+    public static class OrderComparator<T extends Orderable> implements Comparator<T>, Serializable {
 
         @Override
         public int compare(T o1, T o2) {
@@ -49,7 +52,7 @@ public class EntityComparators {
         }
     }
 
-    public static class CreateTimeComparator<T extends DatedEntity> implements Comparator<T> {
+    public static class CreateTimeComparator<T extends DatedEntity> implements Comparator<T>, Serializable {
 
         @Override
         public int compare(T o1, T o2) {
@@ -63,7 +66,7 @@ public class EntityComparators {
         }
     }
 
-    public static class ReverseCreateTimeComparator<T extends DatedEntity> implements Comparator<T> {
+    public static class ReverseCreateTimeComparator<T extends DatedEntity> implements Comparator<T>, Serializable {
 
         @Override
         public int compare(T o1, T o2) {
@@ -77,4 +80,12 @@ public class EntityComparators {
         }
     }
 
+    public static class VariableDescriptorComparator<T extends VariableDescriptor> implements Comparator<T>, Serializable {
+        private final AlphanumericComparator<String> alphaNumComp = new AlphanumericComparator<>();
+
+        @Override
+        public int compare(T o1, T o2) {
+            return alphaNumComp.compare(o1.getEditorLabel(), o2.getEditorLabel());
+        }
+    }
 }

@@ -1,3 +1,10 @@
+/**
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
 package com.wegas.editor;
 
 import ch.albasim.wegas.annotations.JSONSchema;
@@ -13,7 +20,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE })
 @Inherited
 @Repeatable(Schemas.class)
-public @interface Schema {
+    public @interface Schema {
     Class<? extends JSONSchema> value();
 
     String property();

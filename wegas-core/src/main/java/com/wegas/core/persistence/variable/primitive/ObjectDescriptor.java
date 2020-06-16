@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
@@ -18,7 +18,7 @@ import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.ValueGenerators.EmptyMap;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.HtmlView;
+import com.wegas.editor.view.HtmlView;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.ElementCollection;
@@ -41,8 +41,8 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
      */
     @Lob
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyString.class,
-            view = @View(label = "Description", value = HtmlView.class))
+        optional = false, nullable = false, proposal = EmptyString.class,
+        view = @View(label = "Description", value = HtmlView.class))
     private String description;
     /**
      *
@@ -50,8 +50,8 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
     @ElementCollection
     @JsonIgnore
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyMap.class,
-            view = @View(label = "Descriptor properties"))
+        optional = false, nullable = false, proposal = EmptyMap.class,
+        view = @View(label = "Descriptor properties"))
     private List<VariableProperty> properties = new ArrayList<>();
 
     @Override
@@ -106,8 +106,8 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
      */
     @Scriptable
     public void setProperty(Player p,
-            @Param(view = @View(label = "Key")) String key,
-            @Param(view = @View(label = "Value")) String value) {
+        @Param(view = @View(label = "Key")) String key,
+        @Param(view = @View(label = "Value")) String value) {
         this.getInstance(p).setProperty(key, value);
     }
 
@@ -143,13 +143,15 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
 
     public double getNumberInstanceProperty(Player p, String key) {
         String value = this.getProperty(p, key);
-        double parsedValue;
-        try {
-            parsedValue = Double.parseDouble(value);
-        } catch (NullPointerException | NumberFormatException e) {
-            parsedValue = Double.NaN;
+        if (value != null) {
+            try {
+                return Double.parseDouble(value);
+            } catch (NumberFormatException e) {
+                return Double.NaN;
+            }
+        } else {
+            return Double.NaN;
         }
-        return parsedValue;
     }
 
     /**
@@ -162,10 +164,11 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
         try {
             ObjectInstance instance = this.getInstance(p);
             double oldValue = instance.getPropertyD(key);
-            double newValue = oldValue + Double.parseDouble(value);
-            instance.setProperty(key, "" + newValue);
+            Double newValue = oldValue + Double.parseDouble(value);
+            instance.setProperty(key, newValue.toString());
         } catch (NumberFormatException e) {
             // do nothing...
+            logger.trace("Fails to add NaN ({}) to property {}", value, key);
         }
     }
 

@@ -1,9 +1,9 @@
-/*
-* Wegas
-* http://wegas.albasim.ch
-*
-* Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
-* Licensed under the MIT License
+/**
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
  */
 package com.wegas.core;
 
@@ -198,29 +198,25 @@ public class XlsxSpreadsheet {
      * set current cell value and move cursor to the right. set style if defined
      *
      * @param oValue current cell value
-     * @param style optional style
+     * @param style  optional style
      *
      * @return the edited cell
      */
-    public Cell addValue(Object oValue, CellStyle style) {
+    public Cell addValue(Object value, CellStyle style) {
         Cell cell = this.addCell(style);
 
-        Object value = oValue;
-        if (oValue instanceof String) {
+        if (value instanceof String) {
             try {
-                value = Double.parseDouble((String) oValue);
+                cell.setCellValue(Double.parseDouble((String) value));
             } catch (NumberFormatException ex) {
+                String v = (String) value;
+                if (v.length() >= 32767) {
+                    v = v.substring(0, 32767);
+                }
+                cell.setCellValue(v);
             }
-        }
-
-        if (value instanceof Number) {
+        } else if (value instanceof Number) {
             cell.setCellValue(((Number) value).doubleValue());
-        } else if (value instanceof String) {
-            String v = (String) value;
-            if (v.length() >= 32767) {
-                v = v.substring(0, 32767);
-            }
-            cell.setCellValue(v);
         } else if (value instanceof Calendar) {
             cell.setCellValue((Calendar) value);
         } else if (value instanceof Boolean) {

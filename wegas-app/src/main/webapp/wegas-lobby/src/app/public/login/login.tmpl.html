@@ -8,7 +8,8 @@
         <ul class="subactions">
             <li class="subaction" ng-repeat="language in languages">
                 <a class="button button--default-reverse"
-                   ng-class="{'button--active': language.key == currentLanguage}"
+                   ng-class="{
+                               'button--active': language.key == currentLanguage}"
                    ng-click="changeLanguage(language.key)">{{language.name}}
                 </a>
             </li>
@@ -17,12 +18,19 @@
 </div>
 <form id="login-form" class="view__login-form view--reverse-middle form" ng-submit="login()">
     <div class="row">
-        <h1 id="wegas-icon-title" class="view__first-header">{{'WEGAS-TITLE' | translate}}</h1>
+        <h1 id="wegas-icon-title" class="view__first-header">{{'WEGAS-TITLE'| translate}}</h1>
     </div>
 
     <div class="form__row">
-        <input class="form__row__entry input input--small input--primary" type="text" class="form-control" id="login"
-               placeholder="{{ 'LOGIN-INPUT-EMAIL' | translate }}" autocomplete="off" ng-model="username">
+        <!-- such a ugly hack just because ng-attr-readonly does not seem to work...-->
+        <span ng-if="forcedUsername" class="form__row__entry input input--small input--primary form-control">{{username}}</span>
+
+        <!-- using ng-if to hide this input when there is a forcedUsername does not work...
+            let add hidden class to CSS hide it -->
+        <input class="form__row__entry input input--small input--primary form-control {{ forcedUsername ? 'hidden' : '' }}"
+               type="text" id="login" placeholder="{{ 'LOGIN-INPUT-EMAIL' | translate }}"
+               autocomplete="off" ng-model="username">
+
     </div>
     <div class="form__row">
         <input class="form__row__entry input input--small input--primary" type="password" class="form-control"
@@ -31,10 +39,10 @@
     </div>
     <div class="form__row" id="agreeDiv" ng-init="init()" style="display:none;clear:both;font-size:110%">
         <input class="form__row__entry" ng-model="agreeCbx" type="checkbox" id="agreeCbx" autocomplete="off" style="width:22px;margin-top:5px;">
-        <label for="agreeCbx" style="font-weight:bold; color:white;">{{'CREATE-ACCOUNT-INPUT-AGREE' | translate}}
-            <a href="{{'WEGAS-TERMS-OF-USE-URL' | translate}}" target="_blank" style="font-weight:bold;color:white;text-decoration:underline;">{{'WEGAS-TERMS-OF-USE-TITLE' | translate}}</a>
-            {{'WEGAS-KEYWORD-AND' | translate}}
-            <a href="{{'WEGAS-DATA-PRIVACY-URL' | translate}}" target="_blank" style="font-weight:bold;color:white;text-decoration:underline;">{{'WEGAS-DATA-PRIVACY-TITLE' | translate}}</a>
+        <label for="agreeCbx" style="font-weight:bold; color:white;">{{'CREATE-ACCOUNT-INPUT-AGREE'| translate}}
+            <a href="{{'WEGAS-TERMS-OF-USE-URL'| translate}}" target="_blank" style="font-weight:bold;color:white;text-decoration:underline;">{{'WEGAS-TERMS-OF-USE-TITLE'| translate}}</a>
+            {{'WEGAS-KEYWORD-AND'| translate}}
+            <a href="{{'WEGAS-DATA-PRIVACY-URL'| translate}}" target="_blank" style="font-weight:bold;color:white;text-decoration:underline;">{{'WEGAS-DATA-PRIVACY-TITLE'| translate}}</a>
         </label>
     </div>
     <div class="form__row form__row--left" id="recoverPassDiv" style="margin:-25px 2px -35px 0;">
@@ -44,14 +52,14 @@
         <input class="form__row__btn button button--small button--default" type="submit" class="link"
                value="{{ 'LOGIN-BTN' | translate }}"/>
     </div>
-    <div class="form__row" style="clear:both; text-align: center;">
-        <a class="button button--success-reverse transparent" ui-sref="wegas.public.signup" style="margin: 15px auto -10px; color: white; font-weight: normal;"><i class="fa fa-plus-circle same-color-larger">&nbsp;</i> {{'CREATE-ACCOUNT-BTN' | translate}}</a>
+    <div class="form__row" ng-if="!forcedUsername" style="clear:both; text-align: center;">
+        <a class="button button--success-reverse transparent" ui-sref="wegas.public.signup({redirectTo: redirect})" style="margin: 15px auto -10px; color: white; font-weight: normal;"><i class="fa fa-plus-circle same-color-larger">&nbsp;</i> {{'CREATE-ACCOUNT-BTN'| translate}}</a>
     </div>
 </form>
 <div ng-if="deprecatedBrowser" style="margin: 50px auto 0; text-align: center;">
     <center><i><a href="http://www.browsehappy.com/">{{ 'DEPRECATED-BROWSER' | translate }}</a></i></center>
 </div>
-<div ng-if="showAaiLogin && !deprecatedBrowser" style="margin: 50px auto 0; text-align: center;">
+<div ng-if="showAaiLogin && !deprecatedBrowser && !forcedUsername" style="margin: 50px auto 0; text-align: center;">
     <a class="view__aai-login" href="{{aaiLoginUrl}}">
         AAI <b>Login</b>
     </a>

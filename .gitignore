@@ -6,6 +6,8 @@ wegas-runtime/target/
 wegas-runtime/derby.log
 wegas-resources/target
 wenerator-maven-plugin/target
+build-tools/target
+wegas-annotations/target/
 doc/Wegas.uml~
 #!target/site*
 #!target/Wegas.war
@@ -47,4 +49,3 @@ Icon?
 Thumbs.db
 
 .vscode
-/wegas-annotations/target/

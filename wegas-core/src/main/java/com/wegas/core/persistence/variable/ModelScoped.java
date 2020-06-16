@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
@@ -23,7 +23,7 @@ public interface ModelScoped {
     /**
      * INTERNAL -> TO BE RENAMED PROTECTED INHERITED PRIVATE
      */
-    public static enum Visibility {
+     enum Visibility {
         /**
          * <ul>
          * <li>propagated: true</li>
@@ -62,7 +62,7 @@ public interface ModelScoped {
 
     void setVisibility(Visibility visibility);
 
-    public static class BelongsToModel extends Or {
+    class BelongsToModel extends Or {
 
         public BelongsToModel() {
             super(

@@ -1,21 +1,15 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.aai;
 
 /**
- * Wegas
- * http://wegas.albasim.ch
- *
- * Copyright (c) AlbaSim, School of Business and Engineering of Western Switzerland
- * Licensed under the MIT License
- * Created by jarle.hulaas@heig-vd.ch on 06.03.2017.
+ * @ author jarle.hulaas@heig-vd.ch on 06.03.2017.
  */
-
 public class AaiUserDetails {
 
     private String persistentId;
@@ -26,21 +20,23 @@ public class AaiUserDetails {
     private String secret;
     private boolean rememberMe;
 
-    public AaiUserDetails(){ }
+    public AaiUserDetails() {
+        // ensure there is a default constructor
+    }
 
-    public String getHomeOrg(){
+    public String getHomeOrg() {
         return homeOrg;
     }
 
-    public void setHomeOrg(String homeOrg){
+    public void setHomeOrg(String homeOrg) {
         this.homeOrg = homeOrg;
     }
 
-    public String getPersistentId(){
+    public String getPersistentId() {
         return persistentId;
     }
 
-    public void setPersistentId(String persistentId){
+    public void setPersistentId(String persistentId) {
         this.persistentId = persistentId;
     }
 
@@ -48,7 +44,7 @@ public class AaiUserDetails {
         return firstname;
     }
 
-    public void setFirstname(String firstname){
+    public void setFirstname(String firstname) {
         this.firstname = firstname;
     }
 

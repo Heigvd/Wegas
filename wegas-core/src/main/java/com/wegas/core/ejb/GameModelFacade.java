@@ -1,13 +1,13 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.tools.FindAndReplaceVisitor;
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.wegas.core.Helper;
@@ -37,20 +37,23 @@ import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.GmType;
-import static com.wegas.core.persistence.game.GameModel.GmType.*;
+import static com.wegas.core.persistence.game.GameModel.GmType.MODEL;
+import static com.wegas.core.persistence.game.GameModel.GmType.PLAY;
+import static com.wegas.core.persistence.game.GameModel.GmType.SCENARIO;
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
-import com.wegas.core.tools.FindAndReplacePayload;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.tools.FindAndReplacePayload;
+import com.wegas.core.tools.FindAndReplaceVisitor;
 import com.wegas.core.tools.RegexExtractorVisitor;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,7 +65,11 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-import javax.ejb.*;
+import javax.ejb.Asynchronous;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
@@ -124,13 +131,16 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     private StateMachineFacade stateMachineFacade;
 
     @Inject
-    I18nFacade i18nFacade;
+    private I18nFacade i18nFacade;
 
     @Inject
     private PageFacade pageFacade;
 
     @Inject
     private JCRConnectorProvider jcrConnectorProvider;
+
+    @Inject
+    private JCRFacade jcrFacade;
 
     @Inject
     private WebsocketFacade websocketFacade;
@@ -501,7 +511,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      */
     private void openRepositories(GameModel gameModel) throws RepositoryException {
         for (ContentConnector.WorkspaceType wt : ContentConnector.WorkspaceType.values()) {
-            ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, wt);
+            jcrConnectorProvider.getContentConnector(gameModel, wt);
         }
     }
 
@@ -521,7 +531,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         InputStream filesStream = null;
         InputStream gameModelStream = null;
 
-        while ((entry = zip.getNextEntry()) != null) {
+        while ((entry = zip.getNextEntry()) != null) { // NOPMD
             if (entry.getName().equals("gamemodel.json")) {
                 gameModelStream = IOUtils.toBufferedInputStream(zip);
             } else if (entry.getName().equals("files.xml")) {
@@ -546,7 +556,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         InputStream filesStream = null;
         InputStream gameModelStream = null;
 
-        while ((entry = zip.getNextEntry()) != null) {
+        while ((entry = zip.getNextEntry()) != null) { // NOPMD
             if (entry.getName().equals("gamemodel.json")) {
                 gameModelStream = IOUtils.toBufferedInputStream(zip);
             } else if (entry.getName().equals("files.xml")) {
@@ -559,7 +569,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         if (gameModelStream != null && filesStream != null) {
             gameModel = JacksonMapperProvider.getMapper().readValue(gameModelStream, GameModel.class);
 
-            gameModel.setName(this.findUniqueName(gameModel.getName(), GmType.SCENARIO));
+            gameModel.setName(this.findUniqueName(gameModel.getName(), SCENARIO));
             this.createWithDebugGame(gameModel);
 
             ContentConnector connector = jcrConnectorProvider.getContentConnector(gameModel, WorkspaceType.FILES);
@@ -625,6 +635,11 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 throw WegasErrorMessage.error("Duplicating repository gm_" + srcGameModel.getId() + " failure: " + ex);
             }
         }
+        /* clear .user-uploads
+         * this special directory contains files uploaded by players.
+         * Hence, it has to be erase
+         */
+        jcrFacade.deleteUserUploads(newGameModel);
     }
 
     public GameModel createPlayGameModel(final Long entityId) throws CloneNotSupportedException {
@@ -948,7 +963,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      *
      * @return all gameModel matching the given status
      */
-    public List<GameModel> findByTypeAndStatus(final GameModel.GmType gmType, final GameModel.Status status) {
+    public List<GameModel> findByTypeAndStatus(final GmType gmType, final GameModel.Status status) {
         final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByTypeAndStatus", GameModel.class);
         query.setParameter("type", gmType);
         query.setParameter("status", status);
@@ -963,7 +978,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      *
      * @return all gameModel matching the given status
      */
-    public List<GameModel> findByTypesAndStatuses(List<GameModel.GmType> gmTypes,
+    public List<GameModel> findByTypesAndStatuses(List<GmType> gmTypes,
         final List<GameModel.Status> statuses) {
 
         final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByTypesAndStatuses", GameModel.class);
@@ -1011,6 +1026,12 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         //gameModel.propagateGameModel();  -> propagation is now done automatically after descriptor creation
         this.propagateAndReviveDefaultInstances(gameModel, gameModel, false); // reset the whole gameModel
         stateMachineFacade.runStateMachines(gameModel);
+
+        /* clear .user-uploads
+         * this special directory contains files uploaded by players.
+         * Hence, it has to be erase on restart
+         */
+        jcrFacade.deleteUserUploads(gameModel);
     }
 
     @Override
@@ -1054,7 +1075,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      *
      * @return
      */
-    public Collection<GameModel> findByTypeStatusAndUser(GameModel.GmType type,
+    public Collection<GameModel> findByTypeStatusAndUser(GmType type,
         GameModel.Status status) {
         ArrayList<GameModel> gameModels = new ArrayList<>();
 
@@ -1079,10 +1100,10 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      *
      * @return list of gameModel id mapped with the permission the user has
      */
-    public Map<Long, List<String>> getPermissionMatrix(GameModel.GmType type,
+    public Map<Long, List<String>> getPermissionMatrix(GmType type,
         GameModel.Status status) {
 
-        List<GameModel.GmType> gmTypes = new ArrayList<>();
+        List<GmType> gmTypes = new ArrayList<>();
         List<GameModel.Status> gmStatuses = new ArrayList<>();
 
         gmTypes.add(type);
@@ -1099,7 +1120,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      *
      * @return list of gameModel id mapped with the permission the user has
      */
-    public Map<Long, List<String>> getPermissionMatrix(List<GameModel.GmType> types,
+    public Map<Long, List<String>> getPermissionMatrix(List<GmType> types,
         List<GameModel.Status> statuses) {
         Map<Long, List<String>> pMatrix = new HashMap<>();
 
@@ -1116,7 +1137,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         return pMatrix;
     }
 
-    public void processQuery(String sqlQuery, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, List<GameModel.GmType> gmTypes, List<GameModel.Status> gmStatuses, List<Game.Status> gStatuses) {
+    public void processQuery(String sqlQuery, Map<Long, List<String>> gmMatrix, Map<Long, List<String>> gMatrix, List<GmType> gmTypes, List<GameModel.Status> gmStatuses, List<Game.Status> gStatuses) {
         TypedQuery<Permission> query = this.getEntityManager().createQuery(sqlQuery, Permission.class);
         User user = userFacade.getCurrentUser();
         query.setParameter("userId", user.getId());
@@ -1129,7 +1150,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     private void processPermission(String permission, Map<Long, List<String>> gmMatrix,
         Map<Long, List<String>> gMatrix,
-        List<GameModel.GmType> gmTypes, List<GameModel.Status> gmStatuses,
+        List<GmType> gmTypes, List<GameModel.Status> gmStatuses,
         List<Game.Status> gStatuses) {
         if (permission != null && !permission.isEmpty()) {
             String[] split = permission.split(":");
@@ -1224,29 +1245,25 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
             @Override
             public void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object[] references) {
-                if (field != null) {
-                    if (field.getAnnotation() != null) {
-                        if (field.getAnnotation().searchable()) {
-                            VariableDescriptor vd = null;
-                            for (Mergeable ancestor : ancestors) {
-                                if (ancestor instanceof VariableDescriptor) {
-                                    vd = (VariableDescriptor) ancestor;
-                                    break;
-                                }
-                            }
-                            if (vd != null && !matches.contains(vd.getId())) {
-                                String text = null;
+                if (field != null && field.getAnnotation() != null && field.getAnnotation().searchable()) {
+                    VariableDescriptor vd = null;
+                    for (Mergeable ancestor : ancestors) {
+                        if (ancestor instanceof VariableDescriptor) {
+                            vd = (VariableDescriptor) ancestor;
+                            break;
+                        }
+                    }
+                    if (vd != null && !matches.contains(vd.getId())) {
+                        String text = null;
 
-                                if (target instanceof Translation) {
-                                    text = ((Translation) target).getTranslation();
-                                } else if (target != null) {
-                                    text = target.toString();
-                                }
+                        if (target instanceof Translation) {
+                            text = ((Translation) target).getTranslation();
+                        } else if (target != null) {
+                            text = target.toString();
+                        }
 
-                                if (text != null && Helper.insensitiveContainsAll(text, criterias)) {
-                                    matches.add(vd.getId());
-                                }
-                            }
+                        if (text != null && Helper.insensitiveContainsAll(text, criterias)) {
+                            matches.add(vd.getId());
                         }
                     }
                 }

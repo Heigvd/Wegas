@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.jta;
@@ -39,8 +39,8 @@ public class JCRSync implements Synchronization {
     /**
      * At this point, the final state of the transaction in known.
      * <p>
-     * From this point, any committed changes will be available to other transactions,
-     * and any rolled back changes will be definitely loosed.
+     * From this point, any committed changes will be available to other transactions, and any
+     * rolled back changes will be definitely loosed.
      *
      *
      * @param status status of the current transaction, either STATUS_COMMITTED or STATUS_ROLLEDBACK

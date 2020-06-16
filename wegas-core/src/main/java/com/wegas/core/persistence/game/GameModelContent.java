@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -22,14 +22,26 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.ValueGenerators.Zero;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.StringView;
-import com.wegas.editor.View.VisibilitySelectView;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.NumberView;
+import com.wegas.editor.view.StringView;
+import com.wegas.editor.view.VisibilitySelectView;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Objects;
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 /**
  *
@@ -53,27 +65,27 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
 
     @ManyToOne
     @JsonIgnore
-    private GameModel csslibrary_GameModel;
+    private GameModel csslibrary_GameModel; // NOPMD : field name in db
 
     @ManyToOne
     @JsonIgnore
-    private GameModel scriptlibrary_GameModel;
+    private GameModel scriptlibrary_GameModel; // NOPMD : field name in db
 
     @ManyToOne
     @JsonIgnore
-    private GameModel clientscriptlibrary_GameModel;
+    private GameModel clientscriptlibrary_GameModel; // NOPMD : field name in db
 
     @WegasEntityProperty(
-            nullable = false,
-            view = @View(label = "Key", readOnly = true, value = StringView.class))
+        nullable = false,
+        view = @View(label = "Key", readOnly = true, value = StringView.class))
     private String contentKey;
 
     /**
      *
      */
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyString.class,
-            view = @View(label = "Content Type", readOnly = true, value = StringView.class))
+        optional = false, nullable = false, proposal = EmptyString.class,
+        view = @View(label = "Content Type", readOnly = true, value = StringView.class))
     private String contentType;
     /**
      *
@@ -83,28 +95,28 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     //@Column(columnDefinition = "text")
     //@JsonView({Views.Export.class})
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyString.class,
-            view = @View(label = "Content", value = Hidden.class))
+        optional = false, nullable = false, proposal = EmptyString.class,
+        view = @View(label = "Content", value = Hidden.class))
     private String content = "";
 
     @Enumerated(value = EnumType.STRING)
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
     @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL,
-            nullable = false,
-            view = @View(
-                    label = "Visibility",
-                    value = VisibilitySelectView.class
-            ))
+        nullable = false,
+        view = @View(
+            label = "Visibility",
+            value = VisibilitySelectView.class
+        ))
     private Visibility visibility = Visibility.PRIVATE;
 
     @Version
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
-            sameEntityOnly = true, view = @View(
-                    label = "Version",
-                    readOnly = true,
-                    value = NumberView.class,
-                    featureLevel = ADVANCED
-            )
+        sameEntityOnly = true, view = @View(
+            label = "Version",
+            readOnly = true,
+            value = NumberView.class,
+            featureLevel = ADVANCED
+        )
     )
     @Column(columnDefinition = "bigint default '0'::bigint")
     private Long version;
@@ -113,6 +125,7 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
      *
      */
     public GameModelContent() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -158,12 +171,12 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     }
 
     @JsonIgnore
-    public GameModel getClientscriptlibrary_GameModel() {
+    public GameModel getClientscriptlibrary_GameModel() { // NOPMD : field name in db
         return clientscriptlibrary_GameModel;
     }
 
     @JsonIgnore
-    public void setClientscriptlibrary_GameModel(GameModel clientscriptlibrary_GameModel) {
+    public void setClientscriptlibrary_GameModel(GameModel clientscriptlibrary_GameModel) { // NOPMD : field name in db
         this.clientscriptlibrary_GameModel = clientscriptlibrary_GameModel;
     }
 
@@ -196,12 +209,12 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     }
 
     @JsonIgnore
-    public GameModel getCsslibrary_GameModel() {
+    public GameModel getCsslibrary_GameModel() { // NOPMD: field name in db
         return csslibrary_GameModel;
     }
 
     @JsonIgnore
-    public void setCsslibrary_GameModel(GameModel csslibrary_GameModel) {
+    public void setCsslibrary_GameModel(GameModel csslibrary_GameModel) { // NOPMD: field name in db
         this.csslibrary_GameModel = csslibrary_GameModel;
     }
 
@@ -253,12 +266,12 @@ public class GameModelContent extends AbstractEntity implements Serializable, Mo
     }
 
     @JsonIgnore
-    public GameModel getScriptlibrary_GameModel() {
+    public GameModel getScriptlibrary_GameModel() { // NOPMD: field name in db
         return scriptlibrary_GameModel;
     }
 
     @JsonIgnore
-    public void setScriptlibrary_GameModel(GameModel scriptlibrary_GameModel) {
+    public void setScriptlibrary_GameModel(GameModel scriptlibrary_GameModel) { // NOPMD: field name in db
         this.scriptlibrary_GameModel = scriptlibrary_GameModel;
     }
 

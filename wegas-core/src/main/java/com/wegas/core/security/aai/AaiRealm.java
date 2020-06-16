@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.aai;
@@ -11,7 +11,9 @@ import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.ejb.AccountFacade;
-import org.apache.shiro.authc.*;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -20,12 +22,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Wegas
- * http://wegas.albasim.ch
- * <p>
- * Copyright (c) AlbaSim, School of Business and Engineering of Western Switzerland
- * Licensed under the MIT License
- * Created by jarle.hulaas@heig-vd.ch on 07.03.2017.
+ * @author jarle.hulaas@heig-vd.ch on 07.03.2017.
  */
 public class AaiRealm extends AuthorizingRealm {
 

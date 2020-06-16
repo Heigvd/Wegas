@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.i18n.deepl;
@@ -23,8 +23,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * DeepL Pro Client.
@@ -33,7 +31,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Deepl {
 
-    private static final Logger logger = LoggerFactory.getLogger(Deepl.class);
+    //private static final Logger logger = LoggerFactory.getLogger(Deepl.class);
 
     /**
      * DeepL API URL
@@ -63,7 +61,7 @@ public class Deepl {
     /**
      * List of language supported by DeepL.
      */
-    public static enum Language {
+    public enum Language {
         /**
          * English
          */
@@ -99,7 +97,16 @@ public class Deepl {
         /**
          * Russian
          */
-        RU;
+        RU,
+        /**
+         * Japanese
+         */
+        JA,
+        /**
+         * Chinese
+         */
+        ZH;
+
     }
 
     /**
@@ -181,24 +188,24 @@ public class Deepl {
     public DeeplTranslations translate(Language sourceLang, Language targetLang, String... texts) throws UnsupportedEncodingException {
 
         StringBuilder sb = new StringBuilder();
-        sb.append("auth_key=").append(this.key);
-        sb.append("&tag_handling=xml");
+        sb.append("auth_key=").append(this.key)
+        .append("&tag_handling=xml");
         if (sourceLang != null) {
             sb.append("&source_lang=").append(sourceLang);
         }
 
         if (targetLang != null) {
             sb.append("&target_lang=").append(targetLang);
-        } else {
-            //TODO else : throw error
+        /*} else {
+            //TODO else : throw error*/
         }
 
         if (texts != null) {
             for (String text : texts) {
                 sb.append("&text=").append(URLEncoder.encode(text, "UTF-8"));
             }
-        } else {
-            //TODO else : throw error
+        /*} else {
+            //TODO else : throw error*/
         }
 
         /* hack <p></p> => <p>&nbsp;</p> */

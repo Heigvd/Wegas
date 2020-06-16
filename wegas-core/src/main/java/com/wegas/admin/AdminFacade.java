@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.admin;
@@ -13,7 +13,6 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Game.Status;
 import com.wegas.core.persistence.game.GameModel;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -169,8 +168,8 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
 
     /**
      * delete games once the bin have been emptied. Note that only games
-     * which are marked as {@link Status#PROCESSED} will be destroyed.
-     * {@link Status#TODO} and {@link Status#CHARGED} ones will not be destroyed
+     * which are marked as {@link GameAdmin.Status#PROCESSED} will be destroyed.
+     * {@link GameAdmin.Status#TODO} and {@link GameAdmin.Status#CHARGED} ones will not be destroyed
      * <p>
      * This task is scheduled each Sunday at 1:30 am
      */

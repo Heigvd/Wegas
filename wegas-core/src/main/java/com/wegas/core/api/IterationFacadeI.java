@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.api;
@@ -39,8 +39,7 @@ public interface IterationFacadeI {
     Iteration addIteration(Long burndownInstanceId, Iteration iteration);
 
     /**
-     * {@link #addTaskToIteration(com.wegas.resourceManagement.persistence.TaskInstance, com.wegas.resourceManagement.persistence.Iteration)
-     * }
+     * See {@link #addTaskToIteration(com.wegas.resourceManagement.persistence.TaskInstance, com.wegas.resourceManagement.persistence.Iteration, double, long, double, double) }
      *
      * @param taskInstanceId id of the task
      * @param iterationId    id of the iteration
@@ -80,8 +79,7 @@ public interface IterationFacadeI {
     void removeIteration(Long iterationId);
 
     /**
-     * same as {@link #removeTaskFromIteration(com.wegas.resourceManagement.persistence.TaskInstance, com.wegas.resourceManagement.persistence.Iteration)
-     * }
+     * same as {@link #removeTaskFromIteration(com.wegas.resourceManagement.persistence.TaskInstance, com.wegas.resourceManagement.persistence.Iteration, double, long, double, double) }
      *
      * @param taskInstanceId id of the task to remove
      * @param iterationId    id of the iteration to remove the task from

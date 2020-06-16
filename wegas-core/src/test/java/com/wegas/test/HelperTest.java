@@ -1,13 +1,14 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.test;
 
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import org.junit.*;
 import static org.junit.Assert.assertEquals;
 
@@ -49,7 +50,7 @@ public class HelperTest {
         try {
             Helper.encodeVariableName("");
         } catch (Throwable t) {
-            assertEquals(NullPointerException.class, t.getClass());
+            assertEquals(WegasErrorMessage.class, t.getClass());
         }
     }
 

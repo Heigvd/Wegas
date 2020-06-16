@@ -1,18 +1,18 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.ejb.*;
+import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
-import com.wegas.core.security.ejb.UserFacade;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -20,8 +20,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -30,18 +28,6 @@ import org.slf4j.LoggerFactory;
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/StateMachine/")
 public class StateMachineController {
 
-    private static final Logger logger = LoggerFactory.getLogger(StateMachineController.class);
-
-    /**
-     *
-     */
-    @Inject
-    private GameFacade gameFacade;
-    /**
-     *
-     */
-    @Inject
-    private UserFacade userFacade;
     /**
      *
      */

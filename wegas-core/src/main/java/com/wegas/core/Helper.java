@@ -1,15 +1,17 @@
-/*
-* Wegas
-* http://wegas.albasim.ch
-*
-* Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
-* Licensed under the MIT License
+
+/**
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
  */
 package com.wegas.core;
 
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.hazelcast.core.Cluster;
 import com.hazelcast.core.Member;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.persistence.AbstractEntity;
@@ -33,7 +35,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.mail.internet.AddressException;
@@ -45,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
@@ -69,6 +71,10 @@ public class Helper {
     public static final String TEAM_CHANNEL_PREFIX = "private-Team-";
     public static final String GAME_CHANNEL_PREFIX = "private-Game-";
     public static final String GAMEMODEL_CHANNEL_PREFIX = "private-GameModel-";
+
+    private Helper() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
 
     /**
      * @param <T>
@@ -190,8 +196,17 @@ public class Helper {
         return "";
     }
 
-    public static enum NewNameStrategy {
+    /**
+     * How to generate new name
+     */
+    public enum NewNameStrategy {
+        /**
+         * Add incremented suffix
+         */
         ORDINAL,
+        /**
+         * Generate brand new random name
+         */
         HASH
     };
 
@@ -214,21 +229,22 @@ public class Helper {
         String preSuff, String postSuff,
         NewNameStrategy strategy) {
 
-        String pattern = "(.+)" + Pattern.quote(preSuff);
+        StringBuilder patternB = new StringBuilder();
+        patternB.append("(.+)").append(Pattern.quote(preSuff));
 
         switch (strategy) {
             case HASH:
-                pattern += "(\\p{Alnum}+)";
+                patternB.append("(\\p{Alnum}+)");
                 break;
             case ORDINAL:
             default:
-                pattern += "(\\d+)";
+                patternB.append("(\\d+)");
                 break;
         }
-        pattern += Pattern.quote(postSuff);
+        patternB.append(Pattern.quote(postSuff));
 
         if (usedNames != null) {
-            Pattern p = Pattern.compile(pattern);
+            Pattern p = Pattern.compile(patternB.toString());
             Matcher matcher = p.matcher(name);
 
             String suff;
@@ -255,7 +271,7 @@ public class Helper {
 
     private static String genNewSuffix(String suffix, NewNameStrategy strategy) {
         if (NewNameStrategy.ORDINAL.equals(strategy)) {
-            return "" + (Integer.parseInt(suffix, 10) + 1);
+            return Integer.toString(Integer.parseInt(suffix, 10) + 1, 10);
         } else {
             return Helper.genToken(6);
         }
@@ -368,8 +384,9 @@ public class Helper {
         }
 
         Map<String, Translation> translations = theLabel.getTranslations();
-        for (String code : translations.keySet()) {
-            Translation currentLabel = translations.get(code);
+        for (Entry<String, Translation> entry : translations.entrySet()) {
+            String code = entry.getKey();
+            Translation currentLabel = entry.getValue();
             if (!Helper.isNullOrEmpty(currentLabel.getTranslation())) {
                 theLabel.updateTranslation(code, findUniqueLabel(currentLabel.getTranslation(), mapUsedlabels.get(code)));
             }
@@ -517,6 +534,13 @@ public class Helper {
         return replaceSpecialCharacters(camelCasify(s));
     }
 
+    /**
+     * Remove all common diacritic marks.
+     *
+     * @param s the string to clean
+     *
+     * @return the cleaned string
+     */
     public static String replaceSpecialCharacters(String s) {
         s = s.replaceAll(" ", "_");
 
@@ -544,7 +568,7 @@ public class Helper {
      */
     public static String camelCasify(String name) {
         if (name.isEmpty()) {
-            throw new NullPointerException("Name is empty");
+            throw WegasErrorMessage.error("Name is empty");
         }
         StringBuilder sb = new StringBuilder();
         StringTokenizer st = new StringTokenizer(name);
@@ -567,10 +591,10 @@ public class Helper {
     /**
      * Convert camelCase to human readable string.
      * <ul>
-     * <li>PDFFile -> PDF file</li>
-     * <li>99Files -> 99 files</li>
-     * <li>SomeFiles -> some files</li>
-     * <li>SomePDFFiles -> some PDF files</li>
+     * <li>PDFFile -&gt; PDF file</li>
+     * <li>99Files -&gt; 99 files</li>
+     * <li>SomeFiles -&gt; some files</li>
+     * <li>SomePDFFiles -&gt; some PDF files</li>
      * </ul>
      *
      * @param camelCased
@@ -730,12 +754,14 @@ public class Helper {
      *
      * @return the MD5 digest or null if the system does not support MD5 digest
      */
+    @Deprecated
     public static String md5Hex(String message) {
         try {
             MessageDigest md
                 = MessageDigest.getInstance("MD5");
             return hex(md.digest(message.getBytes("CP1252")));
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            logger.error("No Such Algorithm");
         }
         return null;
     }
@@ -806,17 +832,21 @@ public class Helper {
      */
     public static void recursiveDelete(File file) throws IOException {
         if (file.isDirectory()) {
-            if (file.list().length == 0) {
+            String[] files = file.list();
+            if (files == null || files.length == 0) {
                 if (!file.delete()) {
                     logger.warn("Failed to delete file {}", file.getName());
                 }
             } else {
-                String files[] = file.list();
-                for (String f : files) {
-                    File fileToDel = new File(file, f);
-                    recursiveDelete(fileToDel);
+                files = file.list();
+                if (files != null) {
+                    for (String f : files) {
+                        File fileToDel = new File(file, f);
+                        recursiveDelete(fileToDel);
+                    }
                 }
-                if (file.list().length == 0) {
+                files = file.list();
+                if (files == null || files.length == 0) {
                     if (!file.delete()) {
                         logger.warn("Failed to delete file {}", file.getName());
                     }
@@ -925,12 +955,15 @@ public class Helper {
     public static String genRandomLetters(int length) {
         final String tokenElements = "abcdefghijklmnopqrstuvwxyz";
         final int digits = tokenElements.length();
-        length = Math.min(50, length); // max 50 length;
+
+        int count = Math.min(50, length); // max 50 length;
+
         StringBuilder sb = new StringBuilder();
-        int random = (int) (Math.random() * digits);
-        sb.append(tokenElements.charAt(random));
-        if (length > 1) {
-            sb.append(genRandomLetters(length - 1));
+        SecureRandom sr = new SecureRandom();
+
+        while (count > 0) {
+            count--;
+            sb.append(tokenElements.charAt(sr.nextInt(digits)));
         }
         return sb.toString();
     }
@@ -974,8 +1007,6 @@ public class Helper {
      */
     public static class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
-        ConcurrentHashMap<K, V> yaja;
-
         private int cacheSize;
 
         /**
@@ -1017,14 +1048,14 @@ public class Helper {
     }
 
     private static void newLine(StringBuilder sb, int ident) {
-        sb.append("\n");
+        sb.append('\n');
         Helper.indent(sb, ident);
     }
 
     private static void printDescriptors(GameModel gameModel, List<VariableDescriptor> list, StringBuilder sb, int level) {
         for (VariableDescriptor vd : list) {
             newLine(sb, level);
-            sb.append(vd).append("(").append(gameModel.getVariableDescriptors().contains(vd)).append(" -> ").append(vd.getDefaultInstance());
+            sb.append(vd).append('(').append(gameModel.getVariableDescriptors().contains(vd)).append(" -> ").append(vd.getDefaultInstance());
             if (vd instanceof DescriptorListI) {
                 printDescriptors(gameModel, ((DescriptorListI) vd).getItems(), sb, level + 1);
             }
@@ -1143,5 +1174,16 @@ public class Helper {
 
     public static String getDomainFromEmailAddress(String email) {
         return email.replaceFirst("([^@]{1,4})[^@]*@(.*)", "$2");
+    }
+
+    /**
+     * Is the subject authenticated or remembered?
+     *
+     * @param subject
+     *
+     * @return true if subject identity can be trusted
+     */
+    public static boolean isLoggedIn(Subject subject) {
+        return subject.isAuthenticated() || subject.isRemembered();
     }
 }

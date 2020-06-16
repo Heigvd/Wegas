@@ -71,12 +71,15 @@
                 ],
                 "plugins": [{
                         "fn": "ExtraTabs"
-                    }, 
+                    },
                     {
                         "fn": "PopupListener"
                     },
                     {
                         "fn": "ServerPopupListener"
+                    },
+                    {
+                        "fn": "Injector"
                     }
                 ]
             }

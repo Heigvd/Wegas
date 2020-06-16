@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -22,8 +22,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -31,8 +29,6 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @LocalBean
 public class TeamFacade extends BaseFacade<Team> {
-
-    private static final Logger logger = LoggerFactory.getLogger(TeamFacade.class);
 
     @Inject
     private PopulatorScheduler populatorScheduler;
@@ -133,6 +129,30 @@ public class TeamFacade extends BaseFacade<Team> {
         }
         gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
     }
+
+    /**
+     * Internal use(eg. to create debug team)
+     *
+     * @param entity
+     */
+    public void createForSurvey(Team entity) {
+        Game game = entity.getGame();
+        game = gameFacade.find(game.getId());
+        game.addTeam(entity);
+        entity.setStatus(Status.SURVEY);
+
+        getEntityManager().persist(entity);
+        Player player = entity.getAnySurveyPlayer();
+
+        if (player != null) {
+            requestManager.setPlayer(player);
+        }
+
+        gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
+    }
+
+
+
 
     public List<Team> findTeamsToPopulate() {
         TypedQuery<Team> query = this.getEntityManager().createNamedQuery("Team.findToPopulate", Team.class);

@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -12,14 +13,22 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.security.ejb.AccountFacade;
 import java.util.Collection;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,7 +40,6 @@ import org.slf4j.LoggerFactory;
 @Produces(MediaType.APPLICATION_JSON)
 public class TeamController {
 
-    private static final Logger logger = LoggerFactory.getLogger(TeamController.class);
     /**
      *
      */
@@ -46,9 +54,13 @@ public class TeamController {
     @Inject
     private RequestManager requestManager;
 
+    @Inject
+    private AccountFacade accountFacade;
+
     /**
      *
      * @param teamId
+     *
      * @return the team
      */
     @GET
@@ -62,6 +74,7 @@ public class TeamController {
     /**
      *
      * @param gameId
+     *
      * @return all teams in the game
      */
     @GET
@@ -74,6 +87,7 @@ public class TeamController {
      *
      * @param gameId
      * @param entity
+     *
      * @return HTTP created containing the new team or HTTP Conflict (?)
      */
     @POST
@@ -81,10 +95,10 @@ public class TeamController {
         Response r = Response.status(Response.Status.CONFLICT).build();
         Game g = gameFacade.find(gameId);
         if (g.getAccess() == Game.GameAccess.OPEN) {
-            entity = this.teamFacade.create(gameId, entity);
-            teamFacade.detach(entity);
-            entity = teamFacade.find(entity.getId());
-            r = Response.status(Response.Status.CREATED).entity(entity).build();
+            Team team = this.teamFacade.create(gameId, entity);
+            teamFacade.detach(team);
+            team = teamFacade.find(entity.getId());
+            r = Response.status(Response.Status.CREATED).entity(team).build();
         }
         return r;
     }
@@ -93,6 +107,7 @@ public class TeamController {
      *
      * @param teamId
      * @param entity
+     *
      * @return up to date team
      */
     @PUT
@@ -106,6 +121,7 @@ public class TeamController {
     /**
      *
      * @param teamId
+     *
      * @return just delete team
      */
     @DELETE
@@ -121,6 +137,7 @@ public class TeamController {
      * Resets all the variables of a given team
      *
      * @param teamId teamId
+     *
      * @return OK
      */
     @GET
@@ -129,6 +146,42 @@ public class TeamController {
         Team team = teamFacade.find(teamId);
 
         teamFacade.reset(team);
+        return Response.ok().build();
+    }
+
+    /**
+     * Invite members
+     *
+     * @param teamId teamId
+     *
+     * @return OK
+     */
+    @GET
+    @Path("{teamId: [1-9][0-9]*}/Invite/{email: .*}")
+    public Response invite(@PathParam("teamId") Long teamId,
+        @PathParam("email") String email,
+        @Context HttpServletRequest request
+    ) {
+        Team team = teamFacade.find(teamId);
+        accountFacade.inviteByMail(request, email, false, null, team);
+        return Response.ok().build();
+    }
+
+    /**
+     * Invite player to join as guest
+     *
+     * @param teamId teamId
+     *
+     * @return OK
+     */
+    @GET
+    @Path("{teamId: [1-9][0-9]*}/InviteAsGuest/{email: .*}")
+    public Response inviteAsGuest(@PathParam("teamId") Long teamId,
+        @PathParam("email") String email,
+        @Context HttpServletRequest request
+    ) {
+        Team team = teamFacade.find(teamId);
+        accountFacade.inviteByMail(request, email, true, null, team);
         return Response.ok().build();
     }
 }

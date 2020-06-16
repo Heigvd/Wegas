@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -12,7 +13,12 @@ import ch.albasim.wegas.annotations.ProtectionLevel;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -39,14 +45,36 @@ import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.ValueGenerators.GmProperties;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.StringView;
-import com.wegas.editor.View.Textarea;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.NumberView;
+import com.wegas.editor.view.StringView;
+import com.wegas.editor.view.Textarea;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
+import javax.persistence.PostPersist;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -289,6 +317,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      *
      */
     public GameModel() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -603,7 +632,20 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         return null;
     }
 
-
+    /**
+     * {@inheritDoc }
+     */
+    @JsonIgnore
+    @Override
+    public Player getUserLiveOrSurveyPlayer(User user) {
+        for (Game g : this.getGames()) {
+            Player theP = g.getUserLiveOrSurveyPlayer(user);
+            if (theP != null) {
+                return theP;
+            }
+        }
+        return null;
+    }
 
     @Override
     @JsonIgnore
@@ -627,7 +669,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     public Player getTestPlayer() {
         for (Game game : this.getGames()) {
             Player testPlayer = game.getTestPlayer();
-            if (testPlayer!= null){
+            if (testPlayer != null) {
                 return testPlayer;
             }
         }
@@ -1034,9 +1076,9 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     public GameModelLanguage getLanguageByCode(String code) {
         if (code != null) {
-            String CODE = code.toUpperCase();
+            String upperCode = code.toUpperCase();
             for (GameModelLanguage lang : this.getRawLanguages()) {
-                if (CODE.equals(lang.getCode())) {
+                if (upperCode.equals(lang.getCode())) {
                     return lang;
                 }
             }

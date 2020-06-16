@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+    <parent>
+        since wegas-parent requires this very module, do not not register inherit from it !!! !
+    </parent/-->
+
+    <groupId>ch.albasim.wegas</groupId>
+    <artifactId>build-tools</artifactId>
+    <version>1.0</version>
+    <name>Wegas Build Tools</name>
+    <packaging>jar</packaging>
+    <description>Some shared configuration files</description>
+
+    <distributionManagement>
+        <!--        <site>
+            <id>localhost</id>
+            <url>file://./site</url>
+        </site>-->
+        <site>
+            <id>github</id>
+            <url>scm:git:https://github.com/Heigvd/Wegas.git</url>
+        </site>
+    </distributionManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.9.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

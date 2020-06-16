@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -14,7 +14,6 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
@@ -23,8 +22,6 @@ import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
-import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.resourceManagement.ejb.IterationFacade;
@@ -76,14 +73,6 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
      */
     @Inject
     private TeamFacade teamFacade;
-    /**
-     *
-     */
-    @Inject
-    private GameFacade gameFacade;
-
-    @Inject
-    private UserFacade userFacade;
 
     @Inject
     private ResourceFacade resourceFacade;
@@ -94,22 +83,11 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
     @Inject
     private ReviewingFacade reviewingFacade;
 
-    @Inject QuestionDescriptorFacade questionDescriptorFacade;
+    @Inject
+    private QuestionDescriptorFacade questionDescriptorFacade;
 
     @Inject
     private ScriptEventFacade scriptEvent;
-
-    private Beanjection beans = null;
-
-    private Beanjection getBeans() {
-        if (beans == null) {
-            logger.error("INIT BEANS");
-            beans = new Beanjection(this, variableDescriptorFacade,
-                    resourceFacade, iterationFacade,
-                    reviewingFacade, userFacade, teamFacade, questionDescriptorFacade);
-        }
-        return beans;
-    }
 
     /**
      *
@@ -119,7 +97,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
      * @return variableDescriptor instance owned by player
      */
     public VariableInstance find(Long variableDescriptorId,
-            Player player) {
+        Player player) {
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
         return vd.getInstance(player);
     }
@@ -127,7 +105,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
     public VariableInstance getTeamInstance(TeamScope scope, Team team) {
         try {
             TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
-                    "VariableInstance.findTeamInstance", VariableInstance.class);
+                "VariableInstance.findTeamInstance", VariableInstance.class);
             query.setParameter("scopeId", scope.getId());
             query.setParameter("teamId", team.getId());
             return query.getSingleResult();
@@ -139,7 +117,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
     public VariableInstance getPlayerInstance(PlayerScope scope, Player player) {
         try {
             TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
-                    "VariableInstance.findPlayerInstance", VariableInstance.class);
+                "VariableInstance.findPlayerInstance", VariableInstance.class);
             query.setParameter("scopeId", scope.getId());
             query.setParameter("playerId", player.getId());
             return query.getSingleResult();
@@ -181,7 +159,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
         } else if (scope instanceof PlayerScope) {
             return this.getAllPlayerInstances((PlayerScope) scope);
         } else if (scope instanceof GameModelScope) {
-            HashMap<GameModel, VariableInstance> hashMap = new HashMap<GameModel, VariableInstance>();
+            HashMap<GameModel, VariableInstance> hashMap = new HashMap<>();
             hashMap.put(null, ((GameModelScope) scope).getVariableInstance());
             return hashMap;
         } else {
@@ -192,7 +170,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
     public Map<Player, VariableInstance> getAllPlayerInstances(PlayerScope scope) {
         Map<Player, VariableInstance> instances = new HashMap<>();
         TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
-                "VariableInstance.findAllPlayerInstances", VariableInstance.class);
+            "VariableInstance.findAllPlayerInstances", VariableInstance.class);
         query.setParameter("scopeId", scope.getId());
 
         List<VariableInstance> resultList = query.getResultList();
@@ -205,7 +183,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
     public Map<Team, VariableInstance> getAllTeamInstances(TeamScope scope) {
         Map<Team, VariableInstance> instances = new HashMap<>();
         TypedQuery<VariableInstance> query = getEntityManager().createNamedQuery(
-                "VariableInstance.findAllTeamInstances", VariableInstance.class);
+            "VariableInstance.findAllTeamInstances", VariableInstance.class);
         query.setParameter("scopeId", scope.getId());
 
         List<VariableInstance> resultList = query.getResultList();
@@ -223,15 +201,14 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
      * @return variableDescriptor instance owned by player
      */
     public VariableInstance find(Long variableDescriptorId,
-            Long playerId) {
+        Long playerId) {
         return this.find(variableDescriptorId, playerFacade.find(playerId));
     }
 
     /**
-     * Get all players owning the given entity. For a player scoped entity,
-     * there will be only one player, for a team scopes one, all players from
-     * the team. A game scoped instance will returns every players and the game
-     * and a gameModel scoped, every players known in the gameModel
+     * Get all players owning the given entity. For a player scoped entity, there will be only one
+     * player, for a team scopes one, all players from the team. A game scoped instance will returns
+     * every players and the game and a gameModel scoped, every players known in the gameModel
      *
      * @param instance
      *
@@ -280,9 +257,8 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
      *
      * @return the team the instance belongs to
      *
-     * @throws UnsupportedOperationException when instance is a default
-     *                                       instance, a gameModel scoped or
-     *                                       game scoped one
+     * @throws UnsupportedOperationException when instance is a default instance, a gameModel scoped
+     *                                       or game scoped one
      */
     public Team findTeam(VariableInstance instance) {
         if (instance.getScope() instanceof PlayerScope) {
@@ -320,7 +296,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
      * @return up to date instance
      */
     public VariableInstance update(Long variableDescriptorId,
-            Long playerId, VariableInstance variableInstance) {
+        Long playerId, VariableInstance variableInstance) {
 
         VariableDescriptor vd = variableDescriptorFacade.find(variableDescriptorId);
         VariableInstance vi = vd.getScope().getVariableInstance(playerFacade.find(playerId));
@@ -363,7 +339,7 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
                  * A player who match the given variableInstance scope must be
                  * manually selected !
                  */
-                Player p = find.getOwner().getUserLivePlayerOrDebugPlayer(requestManager.getCurrentUser());
+                Player p = find.getOwner().getUserLiveOrSurveyOrDebugPlayer(requestManager.getCurrentUser());
                 requestFacade.getRequestManager().setPlayer(p);
             }
 

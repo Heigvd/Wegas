@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.survey.persistence.input;
@@ -17,10 +17,10 @@ import com.wegas.core.persistence.variable.primitive.Enumeration;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.editor.ValueGenerators;
 import com.wegas.editor.ValueGenerators.EmptyArray;
-import com.wegas.editor.View.ArrayView;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.NumberView;
 import com.wegas.editor.Visible;
+import com.wegas.editor.view.ArrayView;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.NumberView;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import static java.lang.Boolean.FALSE;
 import java.util.ArrayList;
@@ -32,16 +32,16 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 /**
- * Define a survey input as a labeled choice. For instance : [ very bad ; bad ;
- * acceptable ; good ; very good ], [true ; false]
+ * Define a survey input as a labeled choice. For instance : [ very bad ; bad ; acceptable ; good ;
+ * very good ], [true ; false]
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  * @author Jarle Hulaas
  */
 @Entity
 public class SurveyChoicesDescriptor
-        extends SurveyInputDescriptor
-        implements Enumeration {
+    extends SurveyInputDescriptor
+    implements Enumeration {
 
     private static final long serialVersionUID = 1L;
 
@@ -51,10 +51,10 @@ public class SurveyChoicesDescriptor
     @OneToMany(mappedBy = "parentSurveyChoice", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonDeserialize(using = EnumItem.ListDeserializer.class)
     @WegasEntityProperty(
-            optional = false, nullable= false, proposal = EmptyArray.class,
-            view = @View(label = "Choices", value = ArrayView.HighlightAndSortable.class))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(label = "Choices", value = ArrayView.HighlightAndSortable.class))
     private List<EnumItem> choices = new ArrayList<>();
-   
+
     /**
      * Maximum number of allowed values a user can select
      */
@@ -69,14 +69,13 @@ public class SurveyChoicesDescriptor
     @Visible(StringDescriptor.IsEnumeration.class)
     private Integer maxSelectable = 1;
 
-    
     /**
      * Tells if these choices should be presented as a scale
      */
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = ValueGenerators.False.class,
-            view = @View(label = "Present as a scale", value = Hidden.class))
+        optional = false, nullable = false, proposal = ValueGenerators.False.class,
+        view = @View(label = "Present as a scale", value = Hidden.class))
     private Boolean isScale = FALSE;
 
     /**
@@ -84,17 +83,15 @@ public class SurveyChoicesDescriptor
      */
     @Column(columnDefinition = "boolean default false")
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = ValueGenerators.False.class,
-            view = @View(label = "Present as a slider", value = Hidden.class))
+        optional = false, nullable = false, proposal = ValueGenerators.False.class,
+        view = @View(label = "Present as a slider", value = Hidden.class))
     private Boolean isSlider = FALSE;
-    
 
     // Default constructor:
-    public SurveyChoicesDescriptor(){
-        
+    public SurveyChoicesDescriptor() {
+        // ensure there is an empty constructor
     }
-    
-    
+
     public Integer getMaxSelectable() {
         return maxSelectable;
     }
@@ -102,11 +99,11 @@ public class SurveyChoicesDescriptor
     public void setMaxSelectable(Integer maxSelectable) {
         this.maxSelectable = maxSelectable;
     }
-    
+
     public Boolean getIsScale() {
         return isScale;
     }
-    
+
     public void setIsScale(Boolean isScale) {
         this.isScale = isScale;
     }
@@ -114,11 +111,10 @@ public class SurveyChoicesDescriptor
     public Boolean getIsSlider() {
         return isSlider;
     }
-    
+
     public void setIsSlider(Boolean isSlider) {
         this.isSlider = isSlider;
     }
-    
 
     /**
      * Get the list of allowed choices
@@ -150,11 +146,10 @@ public class SurveyChoicesDescriptor
         }
     }
 
-   
     @Override
     public void registerItem(EnumItem item) {
         item.setParentSurveyChoice(this);
-        if (item.getLabel() != null && this.getSection() != null){
+        if (item.getLabel() != null && this.getSection() != null) {
             item.getLabel().setParentDescriptor(this.getSection());
         }
     }

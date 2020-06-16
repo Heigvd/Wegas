@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.util;
@@ -24,11 +24,12 @@ public class AuthenticationInformation {
      * hashed salted password
      */
     private List<String> hashes = new ArrayList<>();
-    
+
     private boolean remember;
     private boolean agreed = false;
 
     public AuthenticationInformation() {
+        // ensure there is a default constructor
     }
 
     public String getLogin() {

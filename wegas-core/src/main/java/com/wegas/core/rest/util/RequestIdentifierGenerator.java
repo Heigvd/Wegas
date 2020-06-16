@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
@@ -17,9 +17,6 @@ import javax.ejb.Singleton;
 public class RequestIdentifierGenerator {
 
     private long counter = 0;
-
-    public RequestIdentifierGenerator() {
-    }
 
     public String getUniqueIdentifier(){
         return Long.toString(counter++, 10);

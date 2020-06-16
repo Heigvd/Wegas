@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
@@ -10,7 +10,7 @@ package com.wegas.core.persistence.variable.statemachine;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import javax.persistence.*;
+import javax.persistence.Entity;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)

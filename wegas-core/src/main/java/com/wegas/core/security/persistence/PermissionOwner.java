@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.persistence;
@@ -19,19 +19,19 @@ public interface PermissionOwner {
     /**
      * @return all role permissions
      */
-    public List<Permission> getPermissions();
+    List<Permission> getPermissions();
 
     /**
      * @param permissions
      */
-    public void setPermissions(List<Permission> permissions);
+    void setPermissions(List<Permission> permissions);
 
     /**
      * @param permission
      *
      * @return true if the permission has successfully been added
      */
-    default public boolean addPermission(String permission) {
+    default boolean addPermission(String permission) {
         return this.addPermission(new Permission(permission));
     }
 
@@ -40,9 +40,9 @@ public interface PermissionOwner {
      *
      * @return true if the permission has successfully been added
      */
-    public boolean addPermission(Permission permission);
+    boolean addPermission(Permission permission);
 
-    default public boolean hasPermission(Permission permission) {
+    default boolean hasPermission(Permission permission) {
         if (permission != null) {
             for (Permission p : getPermissions()) {
                 if (permission.getValue().equals(p.getValue())) {
@@ -60,7 +60,7 @@ public interface PermissionOwner {
      *
      * @return true if the permission has successfully been removed
      */
-    default public boolean removePermission(String permission) {
+    default boolean removePermission(String permission) {
         boolean r = false;
         for (Iterator<Permission> it = getPermissions().iterator(); it.hasNext();) {
             Permission p = it.next();
@@ -79,7 +79,7 @@ public interface PermissionOwner {
      *
      * @return true if the permission have been removed, false owner didn't even own the property
      */
-    default public boolean removePermission(Permission permission) {
+    default boolean removePermission(Permission permission) {
         boolean r = false;
         if (permission != null) {
             for (Iterator<Permission> it = getPermissions().iterator(); it.hasNext();) {

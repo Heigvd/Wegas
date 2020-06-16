@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.servlet;
@@ -12,8 +12,6 @@ import com.hazelcast.core.Member;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.MetricsFacade;
-import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.WebsocketFacade;
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;

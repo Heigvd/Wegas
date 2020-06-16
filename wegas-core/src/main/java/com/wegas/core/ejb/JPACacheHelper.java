@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -35,7 +35,7 @@ public class JPACacheHelper {
 
     @Inject
     @Outbound(eventName = JPACacheHelper.CLEAR_CACHE_EVENT_NAME, loopBack = true)
-    Event<String> messages;
+    private Event<String> messages;
 
     /**
      * Note: payload must be serialisable. (but using an ArrayList does not work...)

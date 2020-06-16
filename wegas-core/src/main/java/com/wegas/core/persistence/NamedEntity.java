@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
@@ -20,11 +20,11 @@ public interface NamedEntity {
      *
      * @return the entity name
      */
-    public abstract String getName();
+    String getName();
 
     /**
      *
      * @param name
      */
-    public abstract void setName(String name);
+    void setName(String name);
 }

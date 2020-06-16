@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
@@ -19,7 +19,8 @@ import javax.persistence.PostUpdate;
  */
 public class NumberListener {
 
-    @Inject Xapi xapi;
+    @Inject
+    private Xapi xapi;
 
     /**
      * @param number received from EntityListener
@@ -55,7 +56,7 @@ public class NumberListener {
 
         final public NumberInstance number;
 
-        NumberUpdate(Player player, NumberInstance number) {
+        /* package */ NumberUpdate(Player player, NumberInstance number) {
             this.number = number;
             this.player = player;
         }

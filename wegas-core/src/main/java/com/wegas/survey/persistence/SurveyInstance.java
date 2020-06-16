@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.survey.persistence;
@@ -11,12 +11,9 @@ import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Instance of the SurveyDescriptor variable:<br>
@@ -29,7 +26,6 @@ import org.slf4j.LoggerFactory;
 public class SurveyInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(SurveyInstance.class);
 
     public enum SurveyStatus {
         // NB: Changing the syntax of these keywords may invalidate database-persisted surveys.
@@ -38,20 +34,19 @@ public class SurveyInstance extends VariableInstance {
 
     @Enumerated(EnumType.STRING)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = ValueGenerators.SurveyNotStarted.class,
-            view = @View(label = "Status"))
+        optional = false, nullable = false, proposal = ValueGenerators.SurveyNotStarted.class,
+        view = @View(label = "Status"))
     private SurveyStatus status = SurveyStatus.NOT_STARTED;
 
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = ValueGenerators.True.class,
-            view = @View(label = "Active"))
+        optional = false, nullable = false, proposal = ValueGenerators.True.class,
+        view = @View(label = "Active"))
     private Boolean active = true;
 
-    
     public SurveyInstance() {
-
+        // ensure there is an empty constructor
     }
-    
+
     /**
      * @return the status
      */

@@ -1,10 +1,3 @@
-/*
- * Wegas
- * http://wegas.albasim.ch
- *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
- * Licensed under the MIT License
- */
 package com.wegas.app.jsf.controllers;
 
 import com.wegas.app.jsf.controllers.utils.HttpParam;
@@ -20,9 +13,9 @@ import java.util.Iterator;
 import java.util.Locale;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJBException;
-import javax.inject.Inject;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
@@ -39,7 +32,7 @@ public class RequestController implements Serializable {
 
     private static final long serialVersionUID = 3889537926448950055L;
 
-    Logger logger = LoggerFactory.getLogger(RequestController.class);
+    private static final Logger logger = LoggerFactory.getLogger(RequestController.class);
 
     private static String[] availableLocales = {"en", "fr", "fr-CH"};
 
@@ -136,6 +129,7 @@ public class RequestController implements Serializable {
                 context.getExternalContext().redirect(((HttpServletRequest) context.getExternalContext().getRequest()).getContextPath()); // redirect to login
             } catch (IOException ex1) {
                 //check if this happens.
+                logger.error("Failed to get current user");
             }
             return null;
         }
@@ -147,7 +141,7 @@ public class RequestController implements Serializable {
      */
     public String getCurrentUserId() {
         try {
-            return "" + this.getCurrentUser().getId();
+            return this.getCurrentUser().getId().toString();
         } catch (WegasNotFoundException e) {
             return "0";
         }

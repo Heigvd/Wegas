@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.ejb;
@@ -14,7 +14,6 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
-import com.wegas.core.security.util.AuthenticationMethod;
 import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.JpaAuthentication;
 import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
@@ -135,10 +134,10 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
     //@Test
     public void testSendNewPassword() throws Exception {
         JpaAccount acc = accountFacade.findJpaByEmail(EMAIL);
-        String oldToken = acc.getShadow().getToken();
-        userFacade.requestPasswordReset(EMAIL, null);
+        //String oldToken = acc.getShadow().getToken();
+        accountFacade.requestPasswordReset(EMAIL, null);
         acc = accountFacade.findJpaByEmail(EMAIL);
-        Assert.assertFalse(oldToken.equals(acc.getShadow().getToken()));
+        //Assert.assertFalse(oldToken.equals(acc.getShadow().getToken()));
     }
 
     /**
@@ -273,5 +272,13 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
 
         login(user);
 
+    }
+
+    @Test(expected = WegasErrorMessage.class)
+    public void testWrongPassword() {
+        WegasUser dumb = this.signup("dumb@local", "abce123");
+        dumb.getPassword();
+        WegasUser dumber = new WegasUser(dumb.getUser(), "dumb@local", "123abcde");
+        this.login(dumber);
     }
 }

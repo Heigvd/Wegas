@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.util;
@@ -23,7 +24,11 @@ public enum HashMethod {
          * {@inheritDoc }
          */
         @Override
-        public String hash(Object value, Object salt) {
+        public String hash(Object oValue, Object salt) {
+            Object value = oValue;
+            if (value instanceof char[]){
+                value = new String((char[]) value);
+            }
             if (salt == null) {
                 return value.toString();
             } else {

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.pdf.helper;
@@ -228,7 +228,7 @@ public class UIHelper {
      * @throws IOException
      */
     public static void printProperty(FacesContext ctx, ResponseWriter writer, String key, boolean value) throws IOException {
-        printProperty(ctx, writer, key, (value ? "Yes" : "No"));
+        printProperty(ctx, writer, key, value ? "Yes" : "No");
         writer.write("\r\n");
     }
 
@@ -243,7 +243,7 @@ public class UIHelper {
      * @throws IOException
      */
     public static void printProperty(FacesContext ctx, ResponseWriter writer, String key, Object value) throws IOException {
-        printProperty(ctx, writer, key, (value == null ? TEXT_NOT_AVAILABLE : value.toString()));
+        printProperty(ctx, writer, key, value == null ? TEXT_NOT_AVAILABLE : value.toString());
     }
 
     /**
@@ -279,7 +279,7 @@ public class UIHelper {
      */
     public static void printPropertyTextArea(FacesContext ctx, ResponseWriter writer, String key, String value, boolean code, boolean displayNA) throws IOException {
         // Skip empty value for players
-        if (displayNA || (value != null && !value.isEmpty())) {
+        if (displayNA || value != null && !value.isEmpty()) {
             startDiv(writer, CSS_CLASS_PROPERTY);
             printText(ctx, writer, key, CSS_CLASS_PROPERTY_KEY);
             printTextArea(ctx, writer, value, CSS_CLASS_PROPERTY_VALUE_TEXTAREA + (code ? " " + CSS_CLASS_SOURCE_CODE : ""), code);

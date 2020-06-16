@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.merge.utils;
@@ -35,6 +35,10 @@ public class MergeHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(MergeHelper.class);
 
+    private MergeHelper(){
+        // empty private constructor to prevent class initialisation
+    }
+
     public interface MergeableVisitor {
 
         /**
@@ -42,43 +46,50 @@ public class MergeHelper {
          * (i.e. a scenario which depends on a model) and must stand in a protected scope according
          * to the current protection level and its inherited visibility
          *
-         * @param target
-         * @param protectionLevel
+         * @param target          current mergeable object
+         * @param protectionLevel current protection level
          *
-         * @return
+         * @return true if the current target is read-only.
          */
         default boolean isProtected(Mergeable target, ProtectionLevel protectionLevel) {
             return target.belongsToProtectedGameModel()
-                && Helper.isProtected(protectionLevel, target.getCLosestVisibility());
+                && Helper.isProtected(protectionLevel, target.getClosestVisibility());
         }
 
         /**
-         * visit
+         * visit a mergeable object
          *
-         * @param target          the mergeable target
+         * @param target          the mergeable target to visit
          * @param protectionLevel current protection level
          * @param level           deepness
          * @param field           field description
-         * @param ancestors       mergeable ancestors
-         * @param references      others paralal mergeable
+         * @param ancestors       list of all mergeables passed through to get to this place
+         * @param references      others mergeables visited in parallel
+         *
+         * @return return false to stop visiting this branch, true to continue
          */
-        public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references);
+        boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable... references);
 
         /**
+         * Visit ea property
          *
-         * @param target
-         * @param protectionLevel
-         * @param level
-         * @param field
-         * @param ancestors
-         * @param key
-         * @param references
+         * @param target          the property to visit
+         * @param protectionLevel current protection level
+         * @param level           deepness
+         * @param field           field description
+         * @param ancestors       list of all mergeables passed through to get to this place
+         * @param key             when the property is part of an array or a map, indicated the
+         *                        index (for arrays) or the entry key (for maps), null for any other
+         *                        cases
+         * @param references      others properties visited in parallel
          */
-        default public void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references) {
+        default void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object... references) {
+            // default behaviour is noop
         }
     }
 
     /**
+     * Start the visit of the given mergeable target:
      *
      * @param target         object to visit
      * @param forceRecursion should visit non includedByDefault properties ?
@@ -90,17 +101,17 @@ public class MergeHelper {
     }
 
     /**
+     * Internal visit method.
      *
-     *
-     * @param target
-     * @param reference
-     * @param protectionLevel
-     * @param forceRecursion  do not follow includeByDefault=false properted unless forceRecursion
+     * @param target          the mergeable to visit
+     * @param references      try to visit those ones in parallel
+     * @param protectionLevel current protection level
+     * @param forceRecursion  do not follow includeByDefault=false properties unless forceRecursion
      *                        is true
-     * @param visitor
-     * @param level
-     * @param f
-     * @param ancestors
+     * @param visitor         the visitor itself
+     * @param level           deepness
+     * @param f               WegasFieldProperties about current target
+     * @param ancestors       list of all mergeables passed through to get to this place
      */
     private static void visitMergeable(Mergeable target, ProtectionLevel protectionLevel, Boolean forceRecursion, MergeableVisitor visitor, int level, WegasFieldProperties f, Deque<Mergeable> ancestors, Mergeable... references) {
 
@@ -270,7 +281,7 @@ public class MergeHelper {
                                                         ref = refMap.get(entry.getKey());
                                                     }
 
-                                                    if (ref != null && ref instanceof Mergeable) {
+                                                    if (ref instanceof Mergeable) {
                                                         mRefs[refIndex] = (Mergeable) ref;
                                                     } else {
                                                         mRefs[refIndex] = null;
@@ -328,14 +339,25 @@ public class MergeHelper {
         }
     }
 
+    /**
+     * Track all instances of {@link ModelScoped} and reset their visibility.
+     */
     private static class VisibilityResetter implements MergeableVisitor {
 
         private final Visibility visibility;
 
+        /**
+         * Create a visibilityResetter which will reset to the given visibility
+         *
+         * @param visibility
+         */
         public VisibilityResetter(Visibility visibility) {
             this.visibility = visibility;
         }
 
+        /**
+         * ${@inheritDoc }
+         */
         @Override
         public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Mergeable[] references) {
             if (target instanceof ModelScoped) {

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr;
@@ -11,7 +11,12 @@ import com.wegas.core.Helper;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.jcr.*;
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +28,10 @@ public class SessionManager {
     final static private SimpleCredentials admin = new SimpleCredentials(Helper.getWegasProperty("jcr.admin.username"), Helper.getWegasProperty("jcr.admin.password").toCharArray());
 
     private static final Logger logger = LoggerFactory.getLogger(SessionManager.class);
+
+    private SessionManager() {
+        // private constructor prevents initialisation
+    }
 
     /**
      * @return JCR session, logged as admin
@@ -48,8 +57,8 @@ public class SessionManager {
 
     public static Node createPath(Session session, String absolutePath) throws RepositoryException {
         final List<String> path = Arrays.stream(absolutePath.split("/"))
-                .filter(p -> !p.equals(""))
-                .collect(Collectors.toList());
+            .filter(p -> !p.equals(""))
+            .collect(Collectors.toList());
         Node n = session.getRootNode();
         for (String p : path) {
             try {

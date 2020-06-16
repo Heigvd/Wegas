@@ -1,15 +1,15 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.exception.internal;
 
 /**
  * Such an exception MUST be internally treated
- * 
+ *
  * @author Maxence Laurent <maxence.laurent at gmail.com>
  */
 public abstract class WegasInternalException extends Exception {
@@ -18,12 +18,13 @@ public abstract class WegasInternalException extends Exception {
      *
      */
     public WegasInternalException() {
+        // ensure there is a default constructor
     }
 
-    public WegasInternalException (final Throwable t){
+    public WegasInternalException(final Throwable t) {
         super(t);
     }
-    
+
     /**
      *
      * @param message

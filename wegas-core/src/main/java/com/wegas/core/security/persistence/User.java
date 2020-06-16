@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.persistence;
@@ -23,9 +23,25 @@ import com.wegas.core.security.util.WegasIsTeamMate;
 import com.wegas.core.security.util.WegasIsTrainerForUser;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.View.StringView;
-import java.util.*;
-import javax.persistence.*;
+import com.wegas.editor.view.StringView;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -100,6 +116,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
      *
      */
     public User() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -200,6 +217,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     }
 
     public void setName(String name) {
+        // hardcoded name
     }
 
     /**

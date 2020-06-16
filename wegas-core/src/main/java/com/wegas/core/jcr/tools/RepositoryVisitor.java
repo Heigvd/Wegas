@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.tools;
@@ -92,7 +92,7 @@ public abstract class RepositoryVisitor {
         public void visit(AbstractContentDescriptor node) {
             StringBuilder sb = new StringBuilder();
             indent(sb);
-            sb.append(node.getName()).append(" (").append(node.getFullPath()).append(")");
+            sb.append(node.getName()).append(" (").append(node.getFullPath()).append(')');
             if (bytesLimit > 0 && node instanceof FileDescriptor) {
                 FileDescriptor fd = (FileDescriptor) node;
                 byte[] data;
@@ -106,9 +106,10 @@ public abstract class RepositoryVisitor {
                     sb.append("Content (first bytes only): ");
 
                     for (int i = 0; i < bytesLimit && i < data.length; i++) {
-                        sb.append(data[i]).append(" ");
+                        sb.append(data[i]).append(' ');
                     }
                 } catch (IOException ex) {
+                    logger.warn("Fails to read File {}", ex);
                 }
             }
             logger.trace("{}", sb);

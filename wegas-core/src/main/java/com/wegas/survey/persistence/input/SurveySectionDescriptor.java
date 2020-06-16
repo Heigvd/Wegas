@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.survey.persistence.input;
@@ -24,14 +24,22 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.I18nHtmlView;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import com.wegas.survey.persistence.SurveyDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderColumn;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,13 +53,13 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @Table(
-        indexes = {
-            @Index(columnList = "survey_id"),
-            @Index(columnList = "description_id")
-        }
+    indexes = {
+        @Index(columnList = "survey_id"),
+        @Index(columnList = "description_id")
+    }
 )
 public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionInstance>
-        implements DescriptorListI<SurveyInputDescriptor> {
+    implements DescriptorListI<SurveyInputDescriptor> {
 
     private static final long serialVersionUID = 1L;
 
@@ -62,41 +70,39 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = ValueGenerators.EmptyI18n.class,
-            view = @View(
-                    label = "Description",
-                    value = I18nHtmlView.class
-            ))
+        optional = false, nullable = false, proposal = ValueGenerators.EmptyI18n.class,
+        view = @View(
+            label = "Description",
+            value = I18nHtmlView.class
+        ))
     private TranslatableContent description;
 
     /**
      * to order sections
      */
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = ValueGenerators.One.class,
-            view = @View(label = "Index"))
+        optional = false, nullable = false, proposal = ValueGenerators.One.class,
+        view = @View(label = "Index"))
     private Integer index;
 
-    
     /**
      * The enclosing survey
      */
     //@JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference(value="survey-sections")
+    @JsonBackReference(value = "survey-sections")
     private SurveyDescriptor survey;
 
-    
     /**
      * List of questions/inputs of this section
      */
     @OneToMany(mappedBy = "section", cascade = {CascadeType.ALL})
     @OrderColumn(name = "index")
-    @JsonManagedReference(value="input-section")
+    @JsonManagedReference(value = "input-section")
     //@JsonView(Views.EditorI.class)
     @WegasEntityProperty(
-            includeByDefault = false,
-            view = @View(value = Hidden.class, label = "Items"), notSerialized = true)
+        includeByDefault = false,
+        view = @View(value = Hidden.class, label = "Items"), notSerialized = true)
     @NotNull
     //@JsonIgnore
     private List<SurveyInputDescriptor> items = new ArrayList<>();
@@ -105,7 +111,7 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
      * Empty constructor
      */
     public SurveySectionDescriptor() {
-
+        // ensure there is an empty constructor
     }
 
     /**
@@ -142,7 +148,6 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
         this.index = index;
     }
 
-    
     public TranslatableContent getDescription() {
         return description;
     }
@@ -157,7 +162,7 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
     public SurveyDescriptor getSurvey() {
         return survey;
     }
-    
+
     //@JsonBackReference
     public void setSurvey(SurveyDescriptor survey) {
         this.survey = survey;
@@ -171,7 +176,6 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
         }
     }
 
-    
     @JsonIgnore
     @Override
     public DescriptorListI<? extends VariableDescriptor> getParentOrNull() {
@@ -211,14 +215,12 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
     public SurveyDescriptor getParent() {
         return survey;
     }
-    */
-
+     */
     @Override
     public WithPermission getMergeableParent() {
         return this.getSurvey();
     }
 
-    
     @Override
     public Collection<WegasPermission> getRequieredUpdatePermission() {
         return this.getSurvey().getRequieredUpdatePermission();
@@ -228,8 +230,7 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
     public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getSurvey().getRequieredReadPermission();
     }
-    
-    
+
     @Override
     public void setRoot(GameModel rootGameModel) {
         super.setRoot(rootGameModel);
@@ -255,10 +256,7 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
         }
     }
 
-
-    
     // ~~~~~~ Sugar for scripts ~~~~~~~~
-
     /**
      *
      * @param p

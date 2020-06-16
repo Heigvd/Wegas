@@ -733,6 +733,10 @@
         max-width: 380px;
         border-radius: 6px;
         padding: 12px 32px;
+
+        #login.hidden {
+            display: none;
+        }
     }
     .view__password-form.form {
         padding: 16px;

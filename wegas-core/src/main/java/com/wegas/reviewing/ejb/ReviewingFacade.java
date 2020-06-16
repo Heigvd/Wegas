@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.ejb;
@@ -19,6 +20,7 @@ import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -69,6 +71,7 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
      * Default Constructor
      */
     public ReviewingFacade() {
+        // useless but ensure there is an empty constructor
     }
     /**
      * Player Facade
@@ -147,8 +150,7 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
     }
 
     /**
-     * Let a player submit his variable. It means the variable become ready to
-     * be reviewed
+     * Let a player submit his variable. It means the variable become ready to be reviewed
      *
      * @param prd the PeerReview Descriptor
      * @param p   the player submitting
@@ -164,8 +166,7 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
     }
 
     /**
-     * Let a player submit his variable. It means the variable become ready to
-     * be reviewed
+     * Let a player submit his variable. It means the variable become ready to be reviewed
      *
      * @param peerReviewDescriptorId the PeerReview Descriptor id
      * @param playerId               the player submitting
@@ -211,8 +212,8 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
     }
 
     /**
-     * Called by the teacher, it will take each PeerReviewInstance matching the
-     * given peer review descriptor and dispatch them (who review who?)
+     * Called by the teacher, it will take each PeerReviewInstance matching the given peer review
+     * descriptor and dispatch them (who review who?)
      *
      * @param prd peer review descriptor to dispatch
      *
@@ -248,29 +249,33 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
              */
             for (Game game : prd.getGameModel().getGames()) {
                 for (Team team : game.getTeams()) {
-                    if (scope instanceof TeamScope) {
-                        // 1 instance per team: evict empty team instances
-                        TeamScope tScope = (TeamScope) scope;
-                        PeerReviewInstance instance = (PeerReviewInstance) variableInstanceFacade.getTeamInstance(tScope, team);
-                        if (team.getPlayers().isEmpty() || team instanceof DebugTeam) {
-                            // Discared instance
-                            instance.setReviewState(PeerReviewDescriptor.ReviewingState.DISCARDED);
-                            variableInstanceFacade.merge(instance);
-                            touched.add(instance);
-                        } else {
-                            pris.add(instance);
-                        }
-                    } else { // PlayerScoped
-                        // 1 instance per player: evict test player instance
-                        for (Player p : team.getPlayers()) {
-                            PeerReviewInstance instance = (PeerReviewInstance) variableInstanceFacade.getPlayerInstance((PlayerScope) scope, p);
-                            if (team instanceof DebugTeam) {
+                    if (team.getStatus() == Populatable.Status.LIVE) {
+                        if (scope instanceof TeamScope) {
+                            // 1 instance per team: evict empty team instances
+                            TeamScope tScope = (TeamScope) scope;
+                            PeerReviewInstance instance = (PeerReviewInstance) variableInstanceFacade.getTeamInstance(tScope, team);
+                            if (team.getPlayers().isEmpty() || team instanceof DebugTeam) {
                                 // Discared instance
                                 instance.setReviewState(PeerReviewDescriptor.ReviewingState.DISCARDED);
                                 variableInstanceFacade.merge(instance);
                                 touched.add(instance);
                             } else {
                                 pris.add(instance);
+                            }
+                        } else { // PlayerScoped
+                            // 1 instance per player: evict test player instance
+                            for (Player p : team.getPlayers()) {
+                                if (p.getStatus() == Populatable.Status.LIVE) {
+                                    PeerReviewInstance instance = (PeerReviewInstance) variableInstanceFacade.getPlayerInstance((PlayerScope) scope, p);
+                                    if (team instanceof DebugTeam) {
+                                        // Discared instance
+                                        instance.setReviewState(PeerReviewDescriptor.ReviewingState.DISCARDED);
+                                        variableInstanceFacade.merge(instance);
+                                        touched.add(instance);
+                                    } else {
+                                        pris.add(instance);
+                                    }
+                                }
                             }
                         }
                     }
@@ -286,19 +291,19 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
                     boolean reject = false;
 
                     if (pri.getReviewState() == PeerReviewDescriptor.ReviewingState.COMPLETED
-                            || pri.getReviewState() == PeerReviewDescriptor.ReviewingState.DISPATCHED
-                            || pri.getReviewState() == PeerReviewDescriptor.ReviewingState.NOTIFIED) {
+                        || pri.getReviewState() == PeerReviewDescriptor.ReviewingState.DISPATCHED
+                        || pri.getReviewState() == PeerReviewDescriptor.ReviewingState.NOTIFIED) {
                         // Only accept NOT_STARTED and SUBMITTING states
                         reject = true;
                     } else if (toReviewInstance instanceof TextInstance) {
                         TextInstance primitive = (TextInstance) toReviewInstance;
                         String primitiveValue = primitive.getValue(),
-                                defaultValue = ((TextInstance) primitive.getDescriptor().getDefaultInstance()).getValue();
+                            defaultValue = ((TextInstance) primitive.getDescriptor().getDefaultInstance()).getValue();
                         reject = Helper.isNullOrEmpty(primitiveValue) || primitiveValue.equals(defaultValue);
                     } else if (toReviewInstance instanceof StringInstance) {
                         StringInstance primitive = (StringInstance) toReviewInstance;
                         String primitiveValue = primitive.getValue(),
-                                defaultValue = ((StringInstance) primitive.getDescriptor().getDefaultInstance()).getValue();
+                            defaultValue = ((StringInstance) primitive.getDescriptor().getDefaultInstance()).getValue();
                         reject = Helper.isNullOrEmpty(primitiveValue) || primitiveValue.equals(defaultValue);
                     }
 
@@ -324,13 +329,13 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
             PeerReviewInstance author = pris.get(i);
 
             if (author.getReviewState() == PeerReviewDescriptor.ReviewingState.SUBMITTED
-                    || author.getReviewState() == PeerReviewDescriptor.ReviewingState.NOT_STARTED) {
+                || author.getReviewState() == PeerReviewDescriptor.ReviewingState.NOT_STARTED) {
                 logger.warn("Dispatch Author");
                 //List<Review> reviewed = author.getReviewed();
                 for (j = 1; j <= numberOfReview; j++) {
                     PeerReviewInstance reviewer = pris.get((i + j) % pris.size());
 
-                    Review r = createReview(prd, author, reviewer);
+                    createReview(prd, author, reviewer);
                     //reviewed.add(r);
                     //reviewer.getToReview().add(r);
                     variableInstanceFacade.merge(reviewer);
@@ -347,7 +352,7 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
                 for (j = 0; j < numberOfReview; j++) {
                     // NOTE : such an author will have some extra feedback !
                     PeerReviewInstance author = pris.get(j % pris.size());
-                    Review r = createReview(prd, author, reviewer);
+                    createReview(prd, author, reviewer);
                 }
             }
         }
@@ -360,8 +365,8 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
     }
 
     /**
-     * Called by the teacher, it will take each PeerReviewInstance matching the
-     * given peer review descriptor and dispatch them (who review who?)
+     * Called by the teacher, it will take each PeerReviewInstance matching the given peer review
+     * descriptor and dispatch them (who review who?)
      *
      * @param peerReviewDescriptorId peer review descriptor id to dispatch
      */
@@ -395,8 +400,7 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
     }
 
     /**
-     * Retrieve the PeerReviewInstance containing given Review that belongs to
-     * the currentPlayer
+     * Retrieve the PeerReviewInstance containing given Review that belongs to the currentPlayer
      *
      * @param review
      *
@@ -444,10 +448,9 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
     }
 
     /**
-     * Submitting a review occurs twice in the whole process First time when the
-     * reviewer post his review. In this case, the review switch from DISPATCHED
-     * to REVIEWED. The second time is when the author post his comments, switch
-     * from NOTIFIED to COMPLETED
+     * Submitting a review occurs twice in the whole process First time when the reviewer post his
+     * review. In this case, the review switch from DISPATCHED to REVIEWED. The second time is when
+     * the author post his comments, switch from NOTIFIED to COMPLETED
      *
      * @param review the review to submit
      * @param player
@@ -469,8 +472,7 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
     }
 
     /**
-     * {@link #submitReview(com.wegas.reviewing.persistence.Review) } a review
-     * by id
+     * {@link #submitReview(com.wegas.reviewing.persistence.Review) } a review by id
      *
      * @param reviewId
      *
@@ -540,7 +542,7 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
                 if (pri.getReviewState() == PeerReviewDescriptor.ReviewingState.NOTIFIED) {
                     for (Review review : pri.getReviewed()) {
                         if (review.getReviewState() == Review.ReviewState.NOTIFIED
-                                || review.getReviewState() == Review.ReviewState.COMPLETED) {
+                            || review.getReviewState() == Review.ReviewState.COMPLETED) {
                             review.setReviewState(Review.ReviewState.CLOSED);
                         }
                     }
@@ -573,13 +575,11 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
     }
 
     /**
-     * Since PeerReviewDescriptor toReview variable is only referenced by its
-     * own private name on the JSON side, we have to resolve those name to
-     * effective VariableDescriptor
+     * Since PeerReviewDescriptor toReview variable is only referenced by its own private name on
+     * the JSON side, we have to resolve those name to effective VariableDescriptor
      * <p>
-     * Moreover, as the variable may not yet exists (especially when posting a
-     * whole GameModel) when the PeerReviewDescriptor is created, we'll have to
-     * wait to resolve such identifier.
+     * Moreover, as the variable may not yet exists (especially when posting a whole GameModel) when
+     * the PeerReviewDescriptor is created, we'll have to wait to resolve such identifier.
      * <p>
      * This is done by listening to EntityRevivedEvent
      *
@@ -636,11 +636,8 @@ public class ReviewingFacade extends WegasAbstractFacade implements ReviewingFac
         if (rScope instanceof GameModelScope) {
             throw WegasErrorMessage.error("GameModel/Game Scope is forbidden for " + prd);
         }
-        if (rScope instanceof TeamScope) {
-            if (vScope instanceof PlayerScope) {
-                throw WegasErrorMessage.error("Reviewed variable " + toReview + " scope is too scpecific");
-            }
+        if (rScope instanceof TeamScope && vScope instanceof PlayerScope) {
+            throw WegasErrorMessage.error("Reviewed variable " + toReview + " scope is too scpecific");
         }
-
     }
 }
