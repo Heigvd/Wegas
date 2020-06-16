@@ -121,13 +121,21 @@ export const defaultThemeValues: ThemeValues = {
     'Hover color': 'rgba(208,224,243,1.0)',
     'Warning color': '#ff9d00',
     'Success color': 'green',
+    'Header color': 'rgba(208,224,243,1.0)',
   },
   dimensions: {
     'Border radius': '5px',
     'Border width': '5px',
+    'Font size 1': '2em',
+    'Font size 2': '1.75em',
+    'Font size 3': '1.5em',
+    'Font size 4': '1.25em',
+    'Font size 5': '1.25em',
   },
   others: {
-    'Font family': 'arial',
+    'Font family 1': '"Courier New"',
+    'Font family 2': '"Montserrat"',
+    'Font family 3': '"Arial"',
   },
 };
 

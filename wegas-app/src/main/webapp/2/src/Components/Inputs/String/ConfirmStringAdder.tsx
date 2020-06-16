@@ -21,7 +21,12 @@ export function ConfirmStringAdder({
     <ConfirmAdder
       label={label}
       validator={validator}
-      forceInputValue={forceInputValue}
+      accept={value =>
+        forceInputValue &&
+        (value == null || (typeof value === 'string' && value === ''))
+          ? 'You have to enter a value'
+          : undefined
+      }
       onAccept={onAccept}
     >
       {onNewValue => (

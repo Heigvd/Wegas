@@ -13,20 +13,28 @@ export interface DefaultThemeColors {
   'Disabled color': ColorType;
   'Highlight color': ColorType;
   'Hover color': ColorType;
+  'Header color': ColorType;
 }
 
 export interface DefaultThemeDimensions {
   'Border radius': React.CSSProperties['borderRadius'];
   'Border width': React.CSSProperties['borderWidth'];
+  'Font size 1': React.CSSProperties['fontSize'];
+  'Font size 2': React.CSSProperties['fontSize'];
+  'Font size 3': React.CSSProperties['fontSize'];
+  'Font size 4': React.CSSProperties['fontSize'];
+  'Font size 5': React.CSSProperties['fontSize'];
 }
 
 export interface DefaultThemeOthers {
-  'Font family': React.CSSProperties['fontFamily'];
+  'Font family 1': React.CSSProperties['fontFamily'];
+  'Font family 2': React.CSSProperties['fontFamily'];
+  'Font family 3': React.CSSProperties['fontFamily'];
 }
 
-export type ModeColor = keyof DefaultThemeColors;
-export type ModeDimension = keyof DefaultThemeDimensions;
-export type ModeOther = keyof DefaultThemeOthers;
+export type ModeColor = keyof DefaultThemeColors | undefined;
+export type ModeDimension = keyof DefaultThemeDimensions | undefined;
+export type ModeOther = keyof DefaultThemeOthers | undefined;
 
 export type ModeComponent<
   C extends { [entry: string]: ModeColor } | undefined = undefined,
@@ -76,9 +84,37 @@ export interface Mode {
         ErrorColor: ModeColor;
       },
       { BorderWidth: ModeDimension; BorderRadius: ModeDimension },
-      { TextFont: ModeOther }
+      { TextFont1: ModeOther; TextFont2: ModeOther }
     >;
     Splitter: ModeComponent<undefined, { SplitterSize: ModeDimension }>;
+    Title: ModeComponent<
+      {
+        TextColor1: ModeColor;
+        TextBackground1: ModeColor;
+        TextColor2: ModeColor;
+        TextBackground2: ModeColor;
+        TextColor3: ModeColor;
+        TextBackground3: ModeColor;
+        TextColor4: ModeColor;
+        TextBackground4: ModeColor;
+        TextColor5: ModeColor;
+        TextBackground5: ModeColor;
+      },
+      {
+        FontSize1: ModeDimension;
+        FontSize2: ModeDimension;
+        FontSize3: ModeDimension;
+        FontSize4: ModeDimension;
+        FontSize5: ModeDimension;
+      },
+      {
+        FontFamily1: ModeOther;
+        FontFamily2: ModeOther;
+        FontFamily3: ModeOther;
+        FontFamily4: ModeOther;
+        FontFamily5: ModeOther;
+      }
+    >;
   };
 }
 
@@ -111,12 +147,41 @@ export const defaultLightMode: Mode = {
         BorderWidth: 'Border width',
       },
       others: {
-        TextFont: 'Font family',
+        TextFont1: 'Font family 1',
+        TextFont2: 'Font family 3',
       },
     },
     Splitter: {
       dimensions: {
         SplitterSize: 'Border width',
+      },
+    },
+    Title: {
+      colors: {
+        TextColor1: 'Text color',
+        TextBackground1: undefined,
+        TextColor2: 'Text color',
+        TextBackground2: undefined,
+        TextColor3: 'Text color',
+        TextBackground3: undefined,
+        TextColor4: 'Text color',
+        TextBackground4: 'Header color',
+        TextColor5: 'Secondary text color',
+        TextBackground5: 'Header color',
+      },
+      dimensions: {
+        FontSize1: 'Font size 1',
+        FontSize2: 'Font size 2',
+        FontSize3: 'Font size 3',
+        FontSize4: 'Font size 4',
+        FontSize5: 'Font size 5',
+      },
+      others: {
+        FontFamily1: 'Font family 2',
+        FontFamily2: 'Font family 2',
+        FontFamily3: 'Font family 2',
+        FontFamily4: 'Font family 2',
+        FontFamily5: 'Font family 2',
       },
     },
   },
@@ -148,12 +213,41 @@ export const defaultDarkMode: Mode = {
         BorderWidth: 'Border width',
       },
       others: {
-        TextFont: 'Font family',
+        TextFont1: 'Font family 1',
+        TextFont2: 'Font family 3',
       },
     },
     Splitter: {
       dimensions: {
         SplitterSize: 'Border width',
+      },
+    },
+    Title: {
+      colors: {
+        TextColor1: 'Background color',
+        TextBackground1: undefined,
+        TextColor2: 'Background color',
+        TextBackground2: undefined,
+        TextColor3: 'Background color',
+        TextBackground3: undefined,
+        TextColor4: 'Background color',
+        TextBackground4: 'Header color',
+        TextColor5: 'Secondary text color',
+        TextBackground5: 'Header color',
+      },
+      dimensions: {
+        FontSize1: 'Font size 1',
+        FontSize2: 'Font size 2',
+        FontSize3: 'Font size 3',
+        FontSize4: 'Font size 4',
+        FontSize5: 'Font size 5',
+      },
+      others: {
+        FontFamily1: 'Font family 2',
+        FontFamily2: 'Font family 2',
+        FontFamily3: 'Font family 2',
+        FontFamily4: 'Font family 2',
+        FontFamily5: 'Font family 2',
       },
     },
   },

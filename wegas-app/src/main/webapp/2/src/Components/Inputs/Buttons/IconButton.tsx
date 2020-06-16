@@ -24,12 +24,12 @@ export const shapeStyle = css({
   margin: '3px',
   background: 'none',
   border: 'none',
-  fontFamily: 'initial',
   fontSize: 'initial',
   cursor: 'pointer',
   textAlign: 'center',
   // display: 'inline-block',
   borderRadius: themeVar.Common.dimensions.BorderRadius,
+  fontFamily: themeVar.Common.others.TextFont2,
   ':hover': {
     outline: 'none',
   },
@@ -123,9 +123,13 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
           },
         )}
       >
-        {prefixedLabel && label}
+        {prefixedLabel === true && (
+          <div style={{ marginRight: '3px' }}>{label}</div>
+        )}
         <IconComp icon={icon} />
-        {!prefixedLabel && label}
+        {prefixedLabel === false && (
+          <div style={{ marginLeft: '3px' }}>{label}</div>
+        )}
       </button>
     );
   },

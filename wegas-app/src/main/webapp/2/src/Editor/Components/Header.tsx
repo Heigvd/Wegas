@@ -9,6 +9,7 @@ import { FeatureToggler } from '../../Components/Contexts/FeaturesProvider';
 import { LangToggler } from '../../Components/Contexts/LanguagesProvider';
 import { flex, itemCenter, grow, foregroundContent } from '../../css/classes';
 import { themeVar } from '../../Components/Style/ThemeVars';
+import { Title } from '../../Components/Inputs/String/Title';
 
 const headerStyle = css({
   backgroundColor: themeVar.Common.colors.HeaderColor,
@@ -24,7 +25,7 @@ export default function Header() {
     >
       {({ state: { gameModel, user }, dispatch }) => (
         <div className={cx(flex, itemCenter, foregroundContent, headerStyle)}>
-          <h2 className={grow}>{gameModel.name}</h2>
+          <Title className={grow}>{gameModel.name}</Title>
           <LangToggler />
           <FeatureToggler />
           <FontAwesome icon="user" />

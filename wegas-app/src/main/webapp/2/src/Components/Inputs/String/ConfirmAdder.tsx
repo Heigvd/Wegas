@@ -19,7 +19,7 @@ type InputModes = 'close' | 'new';
 export interface ConfrimAdderProps<T> {
   label?: string;
   validator?: (input?: T) => string | undefined;
-  forceInputValue?: boolean;
+  accept?: (input?: T) => string | undefined;
   onAccept: (value?: T) => void;
   children: (
     onNewValue: (setter: (oldValue?: T) => T | undefined) => void,
@@ -29,7 +29,7 @@ export interface ConfrimAdderProps<T> {
 export function ConfirmAdder<T>({
   label,
   validator,
-  forceInputValue,
+  accept,
   onAccept,
   children,
 }: ConfrimAdderProps<T>) {
@@ -38,17 +38,11 @@ export function ConfirmAdder<T>({
   const [modalState, setModalState] = React.useState<InputModes>('close');
   const [error, setError] = React.useState<string | undefined>();
   const [inputValue, setInputValue] = React.useState<T | undefined>();
-  // const timeout = React.useRef<number>();
 
   const setValue = React.useCallback<
     (setter: (oldValue?: T) => T | undefined) => void
   >(
     setter => {
-      // if (timeout.current != null) {
-      //   clearTimeout(timeout.current);
-      // }
-
-      // timeout.current = window.setTimeout(() => {
       const newValue = setter(inputValue);
 
       let error = undefined;
@@ -57,9 +51,6 @@ export function ConfirmAdder<T>({
       }
       setError(error);
       setInputValue(newValue);
-      // }, 1000);
-
-      // return () => clearTimeout(timeout.current);
     },
     [inputValue, validator],
   );
@@ -70,20 +61,7 @@ export function ConfirmAdder<T>({
     setModalState('close');
   }
 
-  // React.useEffect(() => {
-  //   let error = undefined;
-  //   if (validator) {
-  //     error = validator(inputValue);
-  //   }
-  //   setError(error);
-  // }, [inputValue, validator]);
-
   useOnClickOutside(container, onCancel);
-
-  const noInputFound =
-    forceInputValue &&
-    (inputValue == null ||
-      (typeof inputValue === 'string' && inputValue === ''));
 
   return (
     <div ref={container} className={flex}>
@@ -108,8 +86,8 @@ export function ConfirmAdder<T>({
             {children(setValue)}
             <IconButton
               icon="save"
-              disabled={error != null || noInputFound}
-              tooltip={noInputFound ? 'You have to enter a value' : undefined}
+              disabled={error != null || !accept || accept(inputValue) != null}
+              tooltip={(accept && accept(inputValue)) || error}
               onClick={() => {
                 onAccept(inputValue);
                 setInputValue(undefined);

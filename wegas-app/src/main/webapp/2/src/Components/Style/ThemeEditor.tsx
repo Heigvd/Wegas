@@ -15,13 +15,21 @@ import {
   defaultPadding,
   headerStyle,
   contentStyle,
+  justifyCenter,
 } from '../../css/classes';
-import { ColorChangeHandler, ChromePicker } from 'react-color';
+import { ChromePicker, RGBColor } from 'react-color';
 import { useOnClickOutside } from '../Hooks/useOnClickOutside';
 import { IconButton } from '../Inputs/Buttons/IconButton';
 import { Menu } from '../Menu';
-import { MessageString } from '../../Editor/Components/MessageString';
-import { themeVar, ModeComponents, ModeComponentNames } from './ThemeVars';
+// import { MessageString } from '../../Editor/Components/MessageString';
+import {
+  themeVar,
+  ModeComponents,
+  ModeComponentNames,
+  ModeColor,
+  ModeDimension,
+  ModeOther,
+} from './ThemeVars';
 import { MainLinearLayout } from '../../Editor/Components/LinearTabLayout/LinearLayout';
 import {
   FonkyFlexContainer,
@@ -32,6 +40,10 @@ import { SimpleInput } from '../Inputs/SimpleInput';
 import { PageExamples } from './PageExample';
 import { wlog } from '../../Helper/wegaslog';
 import { ConfirmStringAdder } from '../Inputs/String/ConfirmStringAdder';
+import { Title } from '../Inputs/String/Title';
+import { ConfirmAdder } from '../Inputs/String/ConfirmAdder';
+import { Button } from '../Inputs/Buttons/Button';
+import * as Color from 'color';
 
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
 
@@ -81,36 +93,71 @@ export const themeEditorCTX = React.createContext<ThemeEditorContextValues>({
   setEditedThemeName: () => wlog('Not implemented yet'),
 });
 
-interface MyColorPickerProps {
-  color: string;
-  onChange?: ColorChangeHandler;
+function stringToRGBA(color?: string): RGBColor {
+  const colorObject = Color(color);
+  return {
+    r: colorObject.red(),
+    g: colorObject.green(),
+    b: colorObject.blue(),
+    a: colorObject.alpha(),
+  };
 }
 
-function MyColorPicker({ color, onChange }: MyColorPickerProps) {
+function rgbaToString(color?: RGBColor): string {
+  return `rgba(${color?.r || 0},${color?.g || 0},${color?.b || 0}${
+    color?.a ? `,${color.a}` : ''
+  })`;
+}
+
+interface MyColorPickerProps {
+  initColor?: string;
+  onChange?: (newColor: RGBColor) => void;
+}
+
+function MyColorPicker({ initColor = 'black', onChange }: MyColorPickerProps) {
   const [displayed, setDisplayed] = React.useState(false);
+  const [color, setColor] = React.useState<RGBColor>(stringToRGBA(initColor));
   const pickerZone = React.useRef(null);
+
+  React.useEffect(() => {
+    setColor(stringToRGBA(initColor));
+  }, [initColor]);
+
   useOnClickOutside(pickerZone, () => {
     setDisplayed(false);
   });
 
   return (
-    <div className={cx(flex, colorButton)} ref={pickerZone}>
-      <div
-        className={cx(colorInnerButton(color), valueStyle, grow)}
-        onClick={() => setDisplayed(old => !old)}
-      />
-      {displayed && (
-        <ChromePicker
-          // className={grow}
-          color={color}
-          onChangeComplete={onChange}
+    <div className={cx(flex, colorButton, justifyCenter)} ref={pickerZone}>
+      {!displayed ? (
+        <div
+          className={cx(
+            colorInnerButton(rgbaToString(color)),
+            valueStyle,
+            grow,
+          )}
+          onClick={() => setDisplayed(old => !old)}
         />
+      ) : (
+        <div className={cx(flex, flexColumn, itemCenter)}>
+          <ChromePicker
+            color={color}
+            onChangeComplete={newColor => {
+              setColor(newColor.rgb);
+            }}
+          />
+          <Button
+            label="Accept"
+            onClick={() => {
+              setDisplayed(false);
+              onChange && onChange(color);
+            }}
+          />
+        </div>
       )}
     </div>
   );
 }
-
-type SimpleModes = 'close' | 'new';
 
 interface ThemeValueModifierProps {
   theme: Theme;
@@ -123,76 +170,79 @@ function ThemeValueModifier({
   section,
   onChange,
 }: ThemeValueModifierProps) {
-  const [modalState, setModalState] = React.useState<SimpleModes>('close');
-  const [newValue, setNewValue] = React.useState<{
+  // const [modalState, setModalState] = React.useState<SimpleModes>('close');
+  // const [newValue, setNewValue] = React.useState<{
+  //   name?: string;
+  //   value: string;
+  // }>({ value: section === 'colors' ? 'black' : '' });
+
+  // const nameAllreadExists = Object.keys(theme.values[section]).includes(
+  //   newValue.name || '',
+  // );
+
+  const accept: (value?: {
     name?: string;
     value: string;
-  }>({ value: section === 'colors' ? 'black' : '' });
+  }) => string | undefined = value =>
+    value?.name == null || value.name === ''
+      ? 'You have to enter a name'
+      : undefined;
 
-  const nameAllreadExists = Object.keys(theme.values[section]).includes(
-    newValue.name || '',
-  );
+  const validator: (
+    value?:
+      | {
+          name?: string;
+          value: string;
+        }
+      | undefined,
+  ) => string | undefined = value => {
+    if (Object.keys(theme.values[section]).includes(value?.name || '')) {
+      return `The ${section} value already exists`;
+    }
+  };
 
   return (
     <div className={cx(flex, flexColumn, expandHeight)}>
       <div className={cx(flex, itemCenter, flexDistribute, headerStyle)}>
-        {modalState === 'close' ? (
-          <IconButton
-            icon="plus"
-            label={`Add new ${section} value`}
-            onClick={() => setModalState('new')}
-            prefixedLabel
-          />
-        ) : (
-          <div className={cx(flex, flexColumn)}>
-            {nameAllreadExists && (
-              <MessageString type="warning" value="This value already exists" />
-            )}
-            <div className={cx(flex, flexRow)}>
-              <IconButton
-                icon="arrow-left"
-                onClick={() => setModalState('close')}
+        <ConfirmAdder
+          label={`Add new ${section} value`}
+          accept={accept}
+          validator={validator}
+          onAccept={value =>
+            accept(value) &&
+            validator(value) &&
+            onChange(value!.name!, value!.value)
+          }
+        >
+          {onNewValue => (
+            <>
+              <SimpleInput
+                placeholder="value name"
+                onChange={v =>
+                  onNewValue(ov => ({
+                    ...(ov || { value: 'black' }),
+                    name: String(v),
+                  }))
+                }
               />
-              <div className={cx(grow, flex, flexColumn)}>
+              {section === 'colors' ? (
+                <MyColorPicker
+                  onChange={color => {
+                    onNewValue(ov => ({ ...ov, value: rgbaToString(color) }));
+                  }}
+                />
+              ) : (
                 <SimpleInput
-                  placeholder="value name"
+                  placeholder="Theme value"
+                  className={valueStyle}
                   onChange={v =>
-                    setNewValue(ov => ({ ...ov, name: String(v) }))
+                    onNewValue(ov => ({ ...ov, value: String(v) }))
                   }
                 />
-                {section === 'colors' ? (
-                  <MyColorPicker
-                    color={newValue.value}
-                    onChange={color => {
-                      setNewValue(ov => ({ ...ov, value: color.hex }));
-                    }}
-                  />
-                ) : (
-                  <SimpleInput
-                    value={newValue.value}
-                    className={valueStyle}
-                    onChange={v =>
-                      setNewValue(ov => ({ ...ov, value: String(v) }))
-                    }
-                  />
-                )}
-              </div>
-              <IconButton
-                icon="save"
-                disabled={newValue.name == null || nameAllreadExists}
-                tooltip={
-                  newValue.name == null ? 'You have to enter a name' : undefined
-                }
-                onClick={() => {
-                  if (newValue.name != null && !nameAllreadExists) {
-                    setModalState('close');
-                    onChange(newValue.name, newValue.value);
-                  }
-                }}
-              />
-            </div>
-          </div>
-        )}
+              )}
+            </>
+          )}
+        </ConfirmAdder>
       </div>
       <div className={cx(flex, grow, flexColumn, defaultPadding, autoScroll)}>
         {Object.entries(theme.values[section]).map(([k, v]) => (
@@ -211,9 +261,9 @@ function ThemeValueModifier({
             </div>
             {section === 'colors' ? (
               <MyColorPicker
-                color={(v as string) || 'black'}
+                initColor={(v as string) || 'black'}
                 onChange={color => {
-                  onChange(k, color.hex);
+                  onChange(k, rgbaToString(color));
                 }}
               />
             ) : (
@@ -392,7 +442,7 @@ function ThemeEdition() {
 }
 
 interface ModeColorValueProps {
-  label: string;
+  label?: string;
   theme: Theme;
 }
 
@@ -402,7 +452,9 @@ function ModeColorValue({ label, theme }: ModeColorValueProps) {
       {label}
       <div
         className={modeColorSelectorSample}
-        style={{ backgroundColor: theme.values.colors[label] }}
+        style={{
+          backgroundColor: label ? theme.values.colors[label] : undefined,
+        }}
       ></div>
     </div>
   );
@@ -421,39 +473,51 @@ function ModeValueModifier({
   section,
   onChange,
 }: ModeValueModifierProps) {
+  const themeValuesWithUndefined = [
+    'undefined',
+    ...Object.keys(theme.values[section]),
+  ];
+
   return (
-    <div className={cx(flex, flexColumn)}>
-      {Object.entries(component[section as keyof typeof component]).map(
-        ([k, v]) => (
-          <div key={k} className={cx(flex, flexRow)}>
-            <label
-              className={cx(css({ display: 'flex', alignItems: 'center' }))}
-              htmlFor={k}
-              title={k}
-            >
-              {k} :
-            </label>
-            <Menu
-              label={
-                section === 'colors' ? (
-                  <ModeColorValue label={v} theme={theme} />
-                ) : (
-                  v
-                )
-              }
-              items={Object.keys(theme.values[section]).map(k => ({
-                value: k,
-                label:
-                  section === 'colors' ? (
-                    <ModeColorValue label={k} theme={theme} />
+    <div
+      className={cx(flex, flexColumn)}
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'max-content auto',
+        alignItems: 'center',
+      }}
+    >
+      <Title level="2" style={{ gridColumnStart: 1, gridColumnEnd: 3 }}>
+        {section}
+      </Title>
+      {Object.entries(component[section as keyof typeof component] || []).map(
+        ([k, v]: [string, ModeColor | ModeDimension | ModeOther]) => {
+          const sectionValue = v == null ? 'undefined' : v;
+          return (
+            <React.Fragment key={k}>
+              <div title={k}>{k} :</div>
+              <Menu
+                label={
+                  section === 'colors' && v != null ? (
+                    <ModeColorValue label={sectionValue} theme={theme} />
                   ) : (
-                    k
-                  ),
-              }))}
-              onSelect={({ value }) => onChange(k, value)}
-            />
-          </div>
-        ),
+                    sectionValue
+                  )
+                }
+                items={themeValuesWithUndefined.map(k => ({
+                  value: k,
+                  label:
+                    section === 'colors' && k !== 'undefined' ? (
+                      <ModeColorValue label={k} theme={theme} />
+                    ) : (
+                      k
+                    ),
+                }))}
+                onSelect={({ value: themeValue }) => onChange(k, themeValue)}
+              />
+            </React.Fragment>
+          );
+        },
       )}
     </div>
   );
@@ -568,12 +632,20 @@ function ModeEdition() {
               {Object.entries(selectedSection)
                 .filter(([v]) => v)
                 .map(([section], i, a) => {
+                  const component = currentComponents[editedComponent];
+                  const entries = Object.keys(
+                    component[section as keyof typeof component] || {},
+                  );
+
                   return (
                     <>
-                      <FonkyFlexContent key={section}>
+                      <FonkyFlexContent
+                        key={section}
+                        flexInit={entries.length + 1}
+                      >
                         <ModeValueModifier
                           theme={themesState.themes[editedThemeName]}
-                          component={currentComponents[editedComponent]}
+                          component={component}
                           section={section as keyof ThemeValues}
                           onChange={(k, v) =>
                             setModeValue(

@@ -167,6 +167,7 @@ export const searchSelection = css({
 export const layoutStyle = css({
   color: themeVar.Common.colors.TextColor,
   backgroundColor: themeVar.Common.colors.BackgroundColor,
+  fontFamily: themeVar.Common.others.TextFont1,
 });
 export const headerStyle = css({
   backgroundColor: themeVar.Common.colors.HeaderColor,

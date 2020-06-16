@@ -61,6 +61,7 @@ export const buttonStyle = (
     paddingTop: '2px',
     paddingBottom: '2px',
     cursor: disabled ? 'initial' : noClick ? 'inherit' : 'pointer',
+    fontFamily: themeVar.Common.others.TextFont2,
     ':hover':
       disabled || noHover
         ? undefined
