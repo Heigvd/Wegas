@@ -225,6 +225,30 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             Y.Wegas.Facade.GameModel.sendRequest(config);
         },
 
+        // Removes the given language from the given gameModel.
+        // @TODO The server-side code is not yet implemented.
+        /*
+        removeLanguage: function(gameModelId, langCode, successCb, failureCb) {
+            // Full request: /rest/GameModel/<gameModelId>/I18n/Lang/<code>
+            var config = {
+                    request: '/' + gameModelId + "/I18n/Lang/" + langCode,
+                    cfg: {
+                        updateCache: true,
+                        method: "DELETE"
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            successCb && successCb(e);
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            failureCb && failureCb(e);
+                        }, this)
+                }
+            };
+            Y.Wegas.Facade.GameModel.sendRequest(config);
+        },
+        */
+       
         // Instantiates a new game (or "session") from the given gameModel
         createGame: function(sourceGameModelId, gameName, successCb, failureCb) {
             // Full request: /rest/GameModel/<gameModelId>/Game
@@ -244,7 +268,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     },
                     on: {
                         success: Y.bind(function(e) {
-                            successCb && successCb(e.response.entity);
+                            var newGame = e.response.entity;
+                            successCb && successCb(newGame);                            
                         }, this),
                         failure: Y.bind(function(e) {
                             failureCb && failureCb(e);
@@ -537,10 +562,10 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         importSurvey: function(surveyId, targetGameModelId, scope, setPublished, successCb, failureCb) {
             this._importUnpublished = !setPublished;
             return new Y.Promise(Y.bind(function(resolve) {
-                // Full request: /rest/GameModel/<targetGameModelId>/VariableDescriptor/CherryPick/<variableDescriptorId>/<newName>/<newScopeType>
+                // Full request: /rest/GameModel/<targetGameModelId>/VariableDescriptor/CherryPickWithLanguages/<variableDescriptorId>/<newName>/<newScopeType>
                 var varName = this.newSurveyName(surveyId),
                     config = {
-                        request: '/' + targetGameModelId + "/VariableDescriptor/CherryPick/" + surveyId + '/' + varName + (scope ? '/' + scope : ''),
+                        request: '/' + targetGameModelId + "/VariableDescriptor/CherryPickWithLanguages/" + surveyId + '/' + varName + (scope ? '/' + scope : ''),
                         cfg: {
                             updateCache: true,
                             method: "POST"
@@ -579,7 +604,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         // Recursively sets the scope of the given variable
         changeScope: function(surveyId, scope, successCb, failureCb) {
             return new Y.Promise(Y.bind(function(resolve) {
-                // Full request: /rest/GameModel/<gameModelId>/VariableDescriptor/<variableDescriptorId>/CherryPick/<newScopeType>
+                // Full request: /rest/GameModel/<gameModelId>/VariableDescriptor/<variableDescriptorId>/changeScope/<newScopeType>
                 var gameModelId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"),
                     config = {
                         request: '/' + gameModelId + "/VariableDescriptor/" + surveyId + "/changeScope/" + scope,
@@ -1410,7 +1435,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             btn.stopSpinning();
         },
         
-        // Opens a dialog for sharing a survey with another trainer.
+        // Exports a survey for sharing with other trainers or scenarists.
         onShare: function(surveyId, btn) {
             var descr = Y.Wegas.Facade.VariableDescriptor.cache.findById(surveyId),
                 gameName = this.getFriendlyVarLabel(descr),
@@ -1430,13 +1455,14 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                                 this.success('This survey is now available for sharing in game scenario "' + gameName + '".<br>Please refresh the browser tab containing your current scenarios.'); // @TODO I18n.t
                                 btn.stopSpinning();
                                 newGameModel.set("comments", SURVEY_CONTAINER_GAMEMODEL_NAME);
+                                // @TODO Here we should remove the "DEF" language in the target.
                                 this.persistGameModel(newGameModel);
                                 // Adjust scenario properties
                                 newGameModel.set("properties", SURVEY_CONTAINER_PROPERTIES);
                                 this.persistGameModel(newGameModel);
                             }, this),
                             Y.bind(function(e) {
-                                Y.Wegas.Panel.alert("Could not create game scenario<br>" + e);
+                                Y.Wegas.Panel.alert("Could not create game scenario");
                                 btn.stopSpinning();
                             }, this)
                         );
@@ -1459,13 +1485,14 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                                 // Adjust scenario name and other properties visible in the lobby:
                                 newGM.set("name", SURVEY_CONTAINER_GAMEMODEL_NAME);
                                 newGM.set("properties", SURVEY_CONTAINER_PROPERTIES);
+                                // @TODO Here we should remove the "DEF" language in the target.
                                 this.persistGameModel(newGM);
                                 // Adjust session properties:
                                 newGame.set("access", "CLOSE");
                                 this.persistGame(newGame);
                             }, this),
                             Y.bind(function(e) {
-                                Y.Wegas.Panel.alert("Could not create game<br>" + e);
+                                Y.Wegas.Panel.alert("Could not create game");
                                 btn.stopSpinning();
                             }, this)
                         );
