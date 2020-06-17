@@ -87,7 +87,7 @@ export interface Mode {
       { TextFont1: ModeOther; TextFont2: ModeOther }
     >;
     Splitter: ModeComponent<undefined, { SplitterSize: ModeDimension }>;
-    Title: ModeComponent<
+    ComponentTitle: ModeComponent<
       {
         TextColor1: ModeColor;
         TextBackground1: ModeColor;
@@ -156,7 +156,7 @@ export const defaultLightMode: Mode = {
         SplitterSize: 'Border width',
       },
     },
-    Title: {
+    ComponentTitle: {
       colors: {
         TextColor1: 'Text color',
         TextBackground1: undefined,
@@ -222,7 +222,7 @@ export const defaultDarkMode: Mode = {
         SplitterSize: 'Border width',
       },
     },
-    Title: {
+    ComponentTitle: {
       colors: {
         TextColor1: 'Background color',
         TextBackground1: undefined,

@@ -145,8 +145,12 @@ export function FonkyFlexContainer({
               : f.getBoundingClientRect().width),
           0,
         );
+
         const maxFlex =
-          ((DEFAULT_FLEX_WRAP * contentChildren.current.length) /
+          (contentChildren.current.reduce(
+            (o, i) => o + Number(i.style.getPropertyValue('flex-grow')),
+            0,
+          ) /
             ((vertical ? containerBox.height : containerBox.width) -
               splittersSize)) *
           maxSize;
@@ -154,8 +158,6 @@ export function FonkyFlexContainer({
           Math.min((delta / maxSize) * maxFlex, maxFlex),
           0,
         );
-
-        debugger;
 
         leftContent.style.setProperty('flex-grow', `${flexLeft}`);
         rightContent.style.setProperty('flex-grow', `${maxFlex - flexLeft}`);

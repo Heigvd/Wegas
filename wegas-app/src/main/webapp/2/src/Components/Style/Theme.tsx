@@ -83,6 +83,7 @@ interface ThemesState {
 
 interface ThemeContextValues {
   themesState: ThemesState;
+  currentMode?: string;
   currentContext: ThemeContext;
   addNewTheme: (themeName: string) => void;
   deleteTheme: (themeName: string) => void;
@@ -385,6 +386,7 @@ export function ThemeProvider({
       <Provider
         value={{
           themesState: themesState,
+          currentMode: modeName,
           addNewTheme: themeName =>
             dispatchTheme({ type: 'addNewTheme', themeName }),
           deleteTheme: themeName =>

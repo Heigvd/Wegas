@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cx, css } from 'emotion';
-import { flex, flexWrap, button } from '../../../css/classes';
+import { flex, flexWrap, button, justifyCenter } from '../../../css/classes';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import {
@@ -16,14 +16,18 @@ const componentStyle = css({
   padding: '10px',
   height: 'fit-content',
   width: 'fit-content',
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  borderStyle: 'solid',
+  borderColor: themeVar.Common.colors.BorderColor,
+  borderWidth: themeVar.Common.dimensions.BorderWidth,
   margin: '5px',
   display: 'inline-block',
   cursor: 'pointer',
+  ':hover': {
+    backgroundColor: themeVar.Common.colors.HeaderColor,
+  },
 });
 
 const paletteStyle = css({
-  width: '125px',
   height: 'fit-content',
 });
 
@@ -90,6 +94,7 @@ function ComponentElement({ componentName }: ComponentElementProps) {
           className={cx(button, css({ width: '25px', height: '25px' }))}
           tooltip={componentName}
           label={componentName}
+          noHover
         />
       ) : (
         <span>{`Unknown component "${componentName}"`}</span>
@@ -104,7 +109,7 @@ export function ComponentPalette() {
     deepDifferent,
   );
   return (
-    <div className={cx(flex, flexWrap, paletteStyle)}>
+    <div className={cx(flex, flexWrap, paletteStyle, justifyCenter)}>
       {componentNames.map(k => (
         <ComponentElement key={k} componentName={k} />
       ))}

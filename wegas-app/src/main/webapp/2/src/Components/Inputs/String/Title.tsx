@@ -8,20 +8,20 @@ type TitleLevels = '1' | '2' | '3' | '4' | '5';
 const levelStyle = (level: TitleLevels) =>
   css({
     color:
-      themeVar.Title.colors[
-        `TextColor${level}` as keyof typeof themeVar.Title.colors
+      themeVar.ComponentTitle.colors[
+        `TextColor${level}` as keyof typeof themeVar.ComponentTitle.colors
       ],
     background:
-      themeVar.Title.colors[
-        `TextBackground${level}` as keyof typeof themeVar.Title.colors
+      themeVar.ComponentTitle.colors[
+        `TextBackground${level}` as keyof typeof themeVar.ComponentTitle.colors
       ],
     fontSize:
-      themeVar.Title.dimensions[
-        `FontSize${level}` as keyof typeof themeVar.Title.dimensions
+      themeVar.ComponentTitle.dimensions[
+        `FontSize${level}` as keyof typeof themeVar.ComponentTitle.dimensions
       ],
     fontFamily:
-      themeVar.Title.others[
-        `FontFamily${level}` as keyof typeof themeVar.Title.others
+      themeVar.ComponentTitle.others[
+        `FontFamily${level}` as keyof typeof themeVar.ComponentTitle.others
       ],
   });
 

@@ -23,18 +23,25 @@ const editStyle = (editMode?: boolean) =>
 interface PageLoaderProps {
   selectedPageId?: string;
   displayFrame?: boolean;
+  themeMode?: string;
 }
 
-export function PageLoader({ selectedPageId, displayFrame }: PageLoaderProps) {
+export function PageLoader({
+  selectedPageId,
+  displayFrame,
+  themeMode,
+}: PageLoaderProps) {
   const selectedPage = useStore(
     s => (selectedPageId ? s.pages[selectedPageId] : undefined),
     deepDifferent,
   );
   const { editMode } = React.useContext(pageCTX);
-  const { currentContext } = React.useContext(themeCTX);
+  const { currentContext, currentMode = themeMode } = React.useContext(
+    themeCTX,
+  );
   return (
     <DefaultDndProvider>
-      <ThemeProvider contextName={currentContext}>
+      <ThemeProvider contextName={currentContext} modeName={currentMode}>
         <React.Suspense fallback={<TextLoader text="Building World!" />}>
           <div
             className={cx(
