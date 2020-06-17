@@ -226,7 +226,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         },
 
         // Removes the given language from the given gameModel.
-        // @TODO The server-side code is not yet implemented.
+        // @TODO finish implementation of server-side code.
         /*
         removeLanguage: function(gameModelId, langCode, successCb, failureCb) {
             // Full request: /rest/GameModel/<gameModelId>/I18n/Lang/<code>
@@ -1452,7 +1452,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                             "TeamScope",
                             PUBLISHED,
                             Y.bind(function() {
-                                this.success('This survey is now available for sharing in game scenario "' + gameName + '".<br>Please refresh the browser tab containing your current scenarios.'); // @TODO I18n.t
+                                this.success(I18n.t("survey.orchestrator.scenarioCreated", { name: gameName } ));
                                 btn.stopSpinning();
                                 newGameModel.set("comments", SURVEY_CONTAINER_GAMEMODEL_NAME);
                                 // @TODO Here we should remove the "DEF" language in the target.
@@ -1479,7 +1479,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                             "TeamScope",
                             PUBLISHED,
                             Y.bind(function() {
-                                this.success('This survey is now available for sharing in game session "' + gameName + '".<br>Please refresh the browser tab containing your current sessions.'); // @TODO I18n.t
+                                this.success(I18n.t("survey.orchestrator.sessionCreated", { name: gameName } ));
                                 btn.stopSpinning();
                                 var newGM = Y.Wegas.Facade.GameModel.cache.find('id', newGame.get("parentId")); // The gamemodel came with the new game
                                 // Adjust scenario name and other properties visible in the lobby:

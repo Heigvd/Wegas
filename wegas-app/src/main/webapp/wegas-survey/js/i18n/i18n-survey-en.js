@@ -81,7 +81,9 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 deleteRunning: "This survey is already running.<br>Really delete it?",
                 modifyRunning: "This survey is running and cannot be modified now.",
                 surveyCancelled: "The survey is cancelled.",
-                surveyLaunched: "The survey has been started successfully."
+                surveyLaunched: "The survey has been started successfully.",
+                scenarioCreated: "This survey is now available for sharing in game scenario<br>\"{{name}}\".<br>Please refresh the browser tab containing your current scenarios.",
+                sessionCreated: "This survey is now available for sharing in game session<br>\"{{name}}\".<br>Please refresh the browser tab containing your current sessions."
             }
         }
     });

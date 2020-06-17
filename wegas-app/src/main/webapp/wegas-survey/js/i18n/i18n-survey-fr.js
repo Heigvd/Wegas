@@ -81,7 +81,9 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
                 deleteRunning: "Ce questionnaire est en cours d'exécution.<br>Faut-il vraiment le supprimer ?",
                 modifyRunning: "Ce questionnaire est en cours d'exécution et ne peut pas être modifié maintenant.",
                 surveyCancelled: "Le questionnaire a été annulé.",
-                surveyLaunched: "Le questionnaire a été lancé avec succès."
+                surveyLaunched: "Le questionnaire a été lancé avec succès.",
+                scenarioCreated: "Ce questionnaire est à présent disponible dans le scénario<br>\"{{name}}\".<br>Veuillez rafraichir l'onglet du browser contenant vos scenarios actuels.",
+                sessionCreated: "Ce questionnaire est à présent disponible dans la partie<br>\"{{name}}\".<br>Veuillez rafraichir l'onglet du browser contenant vos parties actuelles."
             }
 
         }

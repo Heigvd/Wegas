@@ -81,8 +81,9 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 deleteRunning: "Diese Umfrage ist gestartet.<br>Wirklich löschen?",
                 modifyRunning: "Diese Umfrage ist gestartet und darf jetzt nicht geändert werden.",
                 surveyCancelled: "Die Umfrage wurde storniert.",
-                surveyLaunched: "Die Umfrage wurde erfolgreich gestartet."
-
+                surveyLaunched: "Die Umfrage wurde erfolgreich gestartet.",
+                scenarioCreated: "Die Umfrage steht nun in diesem Szenario zur Verfügung:<br>\"{{name}}\".<br>Bitte laden Sie den Browser-Tab mit Ihren aktuellen Szenarios neu.",
+                sessionCreated: "Die Umfrage steht nun in dieser Session zur Verfügung:<br>\"{{name}}\".<br>Bitte laden Sie den Browser-Tab mit Ihren aktuellen Sessionen neu."
             }
         }
     });
