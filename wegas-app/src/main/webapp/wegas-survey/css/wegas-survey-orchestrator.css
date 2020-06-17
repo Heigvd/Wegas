@@ -128,7 +128,8 @@
     text-overflow: ellipsis;
 }
 
-.wegas-survey-orchestrator .action-buttons {
+.wegas-survey-orchestrator .action-buttons,
+.wegas-panel-content .action-buttons {
     display: inline-flex;
     justify-content: space-between;
     align-items: center;
@@ -136,6 +137,7 @@
 }
 
 .wegas-survey-orchestrator .action-buttons button,
+.wegas-panel-content .action-buttons button,
 .wegas-panel-content.wegas-survey-settings .yui3-widget-bd .settings-line button {
     border: 1px solid lightgray;
     border-radius: 4px;
@@ -144,18 +146,28 @@
     overflow: hidden;
 }
 
-.wegas-panel-content.wegas-survey-settings .yui3-widget-bd .settings-line button {
+.wegas-panel-content.wegas-survey-settings .yui3-widget-bd .settings-line button,
+.wegas-panel-content .action-buttons button {
     width: auto;
 }
 
+.wegas-panel-content .action-buttons button .icon,
 .wegas-panel-content.wegas-survey-settings .yui3-widget-bd .settings-line button .icon {
     min-height: unset;
     padding-left: unset;
 }
 
 .wegas-survey-orchestrator .runnable-surveys .action-buttons button .icon,
+.wegas-panel-content .action-buttons button .icon,
 .wegas-panel-content.wegas-survey-settings .yui3-widget-bd .settings-line button .icon {
     margin-right: 6px;
+}
+
+.wegas-panel-content .section-title {
+    display: block;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1.5em;
 }
 
 .wegas-panel-content.wegas-survey-settings .yui3-widget-bd .settings-line .settings-text {
@@ -191,6 +203,10 @@
 
 .wegas-survey-settings .settings-line .survey-delete button .icon {
     color: red;
+}
+
+.wegas-survey-invite button .icon {
+    color: green;
 }
 
 .wegas-orchestrator-tooltip {
@@ -327,6 +343,7 @@
 }
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details,
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-invite,
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-settings {
     border: 2px ridge #8BC34A;
     box-shadow: 2px 2px 4px grey;
@@ -337,7 +354,12 @@
     border-color: #FFC107;
 }
 
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-invite {
+    border-color: green;
+}
+
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .yui3-widget-hd h2,
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-invite .yui3-widget-hd h2,
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-settings .yui3-widget-hd h2 {
     display: inline-block;
     margin-left: 8px;
@@ -345,16 +367,19 @@
 }
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .yui3-widget-hd .close,
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-invite .yui3-widget-hd .close,
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-settings .yui3-widget-hd .close{
     float: right;
 }
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .yui3-widget-bd,
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-invite .yui3-widget-bd,
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-settings .yui3-widget-bd {
     margin: 20px auto;
 }
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-details .yui3-widget-ft,
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-invite .yui3-widget-ft,
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-survey-settings .yui3-widget-ft {
     display: none;
 }

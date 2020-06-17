@@ -429,7 +429,6 @@ public class GameController {
      * Invite all LIVE player to participate in a survey
      *
      * @param request
-     * @param gameId
      * @param surveyIds ids of survey descriptors, comma separated list
      *
      * @return account for which an invitation has been sent
@@ -446,10 +445,8 @@ public class GameController {
      * Invite all LIVE player to participate in a survey anonymously
      *
      * @param request
-     * @param gameId
      * @param surveyIds ids of survey descriptors, comma separated list
      *
-     * @return account for which an invitation has been sent
      */
     @GET
     @Path("InvitePlayersInSurveyAnonymously/{surveyIds: .*}")
@@ -463,10 +460,9 @@ public class GameController {
      * Invite given email addresses to participate in a survey anonymously
      *
      * @param request
-     * @param gameId
      * @param surveyIds ids of survey descriptors, comma separated list
+     * @param recipients e-mail addresses
      *
-     * @return account for which an invitation has been sent
      */
     @GET
     @Path("InviteInSurveyAnonymously/{surveyIds: .*}")
