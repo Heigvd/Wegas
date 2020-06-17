@@ -186,42 +186,44 @@ YUI.add('wegas-file-uploader', function(Y) {
                         + "</span>";
                     this._updateLink(link);
 
+                    // add a delay to let JCR backend sync up
+                    Y.Later(1500, this, function() {
+                        // do not use YUI sendRequest due to very strage behaviour regarding file upload
+                        fetch(url, {
+                            credentials: 'same-origin',
+                            headers: {
+                                //'Content-Type': // do not define to let system set to multipart with boundaries
+                                'Managed-Mode': false,
+                                'SocketId': null
+                            },
+                            method: 'POST',
+                            body: body
+                        }).then(Y.bind(function(response) {
+                            var varName = this.get("shortcutVar.evaluated").get('name');
 
-                    // do not use YUI sendRequest due to very strage behaviour regarding file upload
-                    fetch(url, {
-                        credentials: 'same-origin',
-                        headers: {
-                            //'Content-Type': // do not define to let system set to multipart with boundaries
-                            'Managed-Mode': false,
-                            'SocketId': null
-                        },
-                        method: 'POST',
-                        body: body
-                    }).then(Y.bind(function(response) {
-                        var varName = this.get("shortcutVar.evaluated").get('name');
-
-                        if (response.ok) {
-                            var link = '<a target="_blank" data-file=\"'
-                                + path + file.name
-                                + '">'
-                                + file.name// display name
-                                + '</a>';
-                            Y.Wegas.Facade.Variable.script.remoteEval(
-                                'Variable.find(gameModel, "' + varName + '")'
-                                + '.setValue(self, ' + JSON.stringify(link) + ');');
-
-                        } else {
-                            response.json().then(function(error) {
-                                var content = "Fails to uplaod file";
-                                if (error && error.message) {
-                                    content += ": " + error.message
-                                }
+                            if (response.ok) {
+                                var link = '<a target="_blank" data-file=\"'
+                                    + path + file.name
+                                    + '">'
+                                    + file.name// display name
+                                    + '</a>';
                                 Y.Wegas.Facade.Variable.script.remoteEval(
                                     'Variable.find(gameModel, "' + varName + '")'
-                                    + '.setValue(self, ' + JSON.stringify(content) + ');');
-                            })
-                        }
-                    }, this));
+                                    + '.setValue(self, ' + JSON.stringify(link) + ');');
+
+                            } else {
+                                response.json().then(function(error) {
+                                    var content = "Fails to uplaod file";
+                                    if (error && error.message) {
+                                        content += ": " + error.message;
+                                    }
+                                    Y.Wegas.Facade.Variable.script.remoteEval(
+                                        'Variable.find(gameModel, "' + varName + '")'
+                                        + '.setValue(self, ' + JSON.stringify(content) + ');');
+                                });
+                            }
+                        }, this));
+                    });
                 } else {
                     Y.Wegas.Alerts.showMessage('error', "Fails to uplaod file");
                 }
