@@ -14,7 +14,7 @@ import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyMap;
-import com.wegas.editor.View.HashListView;
+import com.wegas.editor.view.HashListView;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Access;

@@ -23,7 +23,7 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.EmptyMap;
-import com.wegas.editor.View.HashListView;
+import com.wegas.editor.view.HashListView;
 import com.wegas.editor.jsonschema.ListOfTasksSchema;
 import com.wegas.editor.view.I18nHtmlView;
 import java.util.ArrayList;
