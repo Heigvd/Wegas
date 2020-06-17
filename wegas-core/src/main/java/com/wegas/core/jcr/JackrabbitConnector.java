@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr;
@@ -82,7 +82,7 @@ public class JackrabbitConnector implements Serializable {
                     final SegmentNodeStore segmentNodeStore = SegmentNodeStoreBuilders.builder(fileStore).build();
                     JackrabbitConnector.repo = new Jcr(new Oak(segmentNodeStore)).createRepository();
                 }
-            } catch (URISyntaxException | NullPointerException e) {
+            } catch (URISyntaxException | NullPointerException e) { // NOPMD TODO check this NPE before, but, for the time, we do not know what to check...
                 logger.error("Failed to define JCR repository mode", e);
             }
 
@@ -100,6 +100,7 @@ public class JackrabbitConnector implements Serializable {
     }
 
     @PreDestroy
+    @SuppressWarnings("PMD")
     private void preDestroy() {
         if (nodeStore != null) {
             nodeStore.dispose();

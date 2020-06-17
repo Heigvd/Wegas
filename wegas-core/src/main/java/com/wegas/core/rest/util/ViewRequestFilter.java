@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
@@ -11,7 +11,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -47,17 +46,14 @@ import org.slf4j.LoggerFactory;
 public class ViewRequestFilter implements ContainerRequestFilter {
 
     @Inject
-    RequestIdentifierGenerator idGenerator;
+    private RequestIdentifierGenerator idGenerator;
 
     @Inject
-    UserFacade userFacade;
-
-    @Inject
-    RequestFacade requestFacade;
+    private RequestFacade requestFacade;
 
     @Inject
     @Metric(name = "requests_total", description = "Total requests", absolute = true)
-    Counter requests;
+    private Counter requests;
 
     private final static Logger logger = LoggerFactory.getLogger(ViewRequestFilter.class);
 
@@ -134,7 +130,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
 
     private static class JsonViewModifier extends ObjectWriterModifier {
 
-        Class<?> view;
+        private Class<?> view;
 
         public JsonViewModifier(Class<?> view) {
             this.view = view;

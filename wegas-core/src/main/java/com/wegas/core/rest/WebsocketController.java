@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -17,6 +17,7 @@ import com.wegas.core.rest.util.PusherChannelExistenceWebhook;
 import com.wegas.core.rest.util.PusherWebhooks;
 import com.wegas.core.security.util.OnlineUser;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -34,8 +35,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -45,7 +44,6 @@ import org.slf4j.LoggerFactory;
 @Path("Pusher/")
 public class WebsocketController {
 
-    private static final Logger logger = LoggerFactory.getLogger(WebsocketController.class);
     /**
      * Keep Websocket auth info
      */
@@ -125,7 +123,7 @@ public class WebsocketController {
     @POST
     @Path("OnlineUser")
     public void pusherChannelExistenceWebhook(@Context HttpServletRequest request, String rawHooks) throws IOException {
-        websocketFacade.authenticateHookSource(request, rawHooks.getBytes());
+        websocketFacade.authenticateHookSource(request, rawHooks.getBytes(StandardCharsets.UTF_8));
 
         requestManager.su();
         try {

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.persistence;
@@ -16,7 +16,7 @@ import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
-import com.wegas.editor.View.Textarea;
+import com.wegas.editor.view.Textarea;
 import java.util.*;
 import javax.persistence.Basic;
 import javax.persistence.Cacheable;
@@ -104,6 +104,7 @@ public class Role extends AbstractEntity implements PermissionOwner {
      *
      */
     protected Role() {
+        // ensure there is a default constructor
     }
 
     /**

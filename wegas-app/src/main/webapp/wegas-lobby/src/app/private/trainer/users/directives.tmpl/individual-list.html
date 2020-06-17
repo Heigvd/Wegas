@@ -1,8 +1,19 @@
 <div class="card card--users" ng-repeat="player in players track by player.id">
-    <div ng-if="player.status != 'LIVE'"
+    <div ng-if="player.status === 'FAILED'"
          class="card__illustration illustration illustration--icon"
          illustration="ICON_light-red_exclamation-triangle_fa"
          title="Player failed to join the team">
+    </div>
+    <!--  HIDE Survey only players 
+    <div ng-if="player.status === 'SURVEY'"
+         class="card__illustration illustration illustration--icon"
+         illustration="ICON_grey_file-text-o_fa"
+         title="{{'ADMIN-USERS-SURVEY'| translate}}">
+    </div> -->
+    <div ng-if="player.status === 'WAITING' || player.status === 'RESCHEDULED' || player.status === 'PROCESSING' || player.status === 'SEC_PROCESSING' || player.status === 'INITIALIZING'"
+         class="card__illustration illustration illustration--icon"
+         illustration="ICON_grey_cog_fa"
+         title="{{'ADMIN-USERS-PROCESSING'| translate}}">
     </div>
     <div ng-if="player.status === 'LIVE' && !player.verifiedId"
          class="card__illustration illustration illustration--icon"

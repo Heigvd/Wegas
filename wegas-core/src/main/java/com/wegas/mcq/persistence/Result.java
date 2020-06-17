@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.persistence;
@@ -25,39 +25,55 @@ import com.wegas.core.persistence.annotations.WegasConditions.Not;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.EmptyScript;
 import com.wegas.editor.ValueGenerators.Zero;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.I18nHtmlView;
-import com.wegas.editor.View.I18nStringView;
-import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.ScriptView;
 import com.wegas.editor.Visible;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.I18nHtmlView;
+import com.wegas.editor.view.I18nStringView;
+import com.wegas.editor.view.NumberView;
+import com.wegas.editor.view.ScriptView;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Table(
-        name = "MCQResult",
-        uniqueConstraints = {
-            @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
-            @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"})
-        },
-        indexes = {
-            @Index(columnList = "choicedescriptor_id"),
-            @Index(columnList = "label_id"),
-            @Index(columnList = "answer_id"),
-            @Index(columnList = "ignorationanswer_id")
-        }
+    name = "MCQResult",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
+        @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"})
+    },
+    indexes = {
+        @Index(columnList = "choicedescriptor_id"),
+        @Index(columnList = "label_id"),
+        @Index(columnList = "answer_id"),
+        @Index(columnList = "ignorationanswer_id")
+    }
 )
 @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor.id=:choicedescriptorId AND res.name LIKE :name")
 public class Result extends AbstractEntity implements LabelledEntity {
@@ -67,23 +83,15 @@ public class Result extends AbstractEntity implements LabelledEntity {
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(
-            nullable = false, optional = false, proposal = Zero.class,
-            sameEntityOnly = true, view = @View(
-                    index = 0,
-                    label = "Version",
-                    readOnly = true,
-                    value = NumberView.class,
-                    featureLevel = ADVANCED
-            ))
+        nullable = false, optional = false, proposal = Zero.class,
+        sameEntityOnly = true, view = @View(
+            index = 0,
+            label = "Version",
+            readOnly = true,
+            value = NumberView.class,
+            featureLevel = ADVANCED
+        ))
     private Long version;
-
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
-    }
 
     /**
      *
@@ -96,13 +104,13 @@ public class Result extends AbstractEntity implements LabelledEntity {
      * Internal Name
      */
     @WegasEntityProperty(searchable = true,
-            nullable = false,
-            view = @View(
-                    index = 1,
-                    label = "Script alias",
-                    featureLevel = ADVANCED,
-                    description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
-            ))
+        nullable = false,
+        view = @View(
+            index = 1,
+            label = "Script alias",
+            featureLevel = ADVANCED,
+            description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character."
+        ))
     @Visible(HasMultipleResult.class)
     private String name;
 
@@ -111,8 +119,8 @@ public class Result extends AbstractEntity implements LabelledEntity {
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(index = 2, label = "Label", value = I18nStringView.class))
+        optional = false, nullable = false, proposal = EmptyI18n.class,
+        view = @View(index = 2, label = "Label", value = I18nStringView.class))
     @Visible(HasMultipleResult.class)
     private TranslatableContent label;
 
@@ -121,8 +129,8 @@ public class Result extends AbstractEntity implements LabelledEntity {
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(index = 3, label = "Feedback", value = I18nHtmlView.class))
+        optional = false, nullable = false, proposal = EmptyI18n.class,
+        view = @View(index = 3, label = "Feedback", value = I18nHtmlView.class))
     private TranslatableContent answer;
 
     /**
@@ -130,13 +138,13 @@ public class Result extends AbstractEntity implements LabelledEntity {
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(
-                    index = 4,
-                    label = "Feedback when ignored",
-                    value = I18nHtmlView.class,
-                    borderTop = true
-            ))
+        optional = false, nullable = false, proposal = EmptyI18n.class,
+        view = @View(
+            index = 4,
+            label = "Feedback when ignored",
+            value = I18nHtmlView.class,
+            borderTop = true
+        ))
     @Visible(IsQuestionCbx.class)
     private TranslatableContent ignorationAnswer;
 
@@ -145,7 +153,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
      */
     @ElementCollection
     @WegasEntityProperty(view = @View(label = "Files", value = Hidden.class),
-            optional = false, nullable = false, proposal = EmptyArray.class)
+        optional = false, nullable = false, proposal = EmptyArray.class)
     private Set<String> files = new HashSet<>();
     /**
      *
@@ -153,8 +161,8 @@ public class Result extends AbstractEntity implements LabelledEntity {
     @Embedded
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyScript.class,
-            view = @View(label = "Impact", value = ScriptView.Impact.class))
+        optional = false, nullable = false, proposal = EmptyScript.class,
+        view = @View(label = "Impact", value = ScriptView.Impact.class))
     private Script impact;
     /**
      *
@@ -162,14 +170,14 @@ public class Result extends AbstractEntity implements LabelledEntity {
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name = "content", column
-                = @Column(name = "ignoration_content")),
+            = @Column(name = "ignoration_content")),
         @AttributeOverride(name = "language", column
-                = @Column(name = "ignoration_language"))
+            = @Column(name = "ignoration_language"))
     })
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyScript.class,
-            view = @View(label = "Impact when ignored", value = ScriptView.Impact.class))
+        optional = false, nullable = false, proposal = EmptyScript.class,
+        view = @View(label = "Impact when ignored", value = ScriptView.Impact.class))
     @Visible(IsQuestionCbx.class)
     private Script ignorationImpact;
     /**
@@ -183,6 +191,7 @@ public class Result extends AbstractEntity implements LabelledEntity {
      *
      */
     public Result() {
+        // useless but ensure there is an empty constructor
     }
 
     @Override
@@ -402,6 +411,14 @@ public class Result extends AbstractEntity implements LabelledEntity {
         this.getReplies().remove(reply);
     }
      */
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
     @Override
     public void updateCacheOnDelete(Beanjection beans) {
         VariableInstanceFacade vif = beans.getVariableInstanceFacade();
@@ -412,9 +429,9 @@ public class Result extends AbstractEntity implements LabelledEntity {
         // clear currentResult
         for (ChoiceInstance cInstance : choiceInstances) {
             if (cInstance != null) {
-                cInstance = (ChoiceInstance) vif.find(cInstance.getId());
-                if (cInstance != null) {
-                    cInstance.setCurrentResult(null);
+                VariableInstance instance = vif.find(cInstance.getId());
+                if (instance instanceof ChoiceInstance) {
+                    ((ChoiceInstance) instance).setCurrentResult(null);
                 }
             }
         }
@@ -461,8 +478,8 @@ public class Result extends AbstractEntity implements LabelledEntity {
 
         public IsQuestionCbx() {
             super(
-                    new IsDefined(new Field(QuestionDescriptor.class, "cbx")),
-                    new IsTrue(new Field(QuestionDescriptor.class, "cbx"))
+                new IsDefined(new Field(QuestionDescriptor.class, "cbx")),
+                new IsTrue(new Field(QuestionDescriptor.class, "cbx"))
             );
         }
     }

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -21,8 +21,8 @@ import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.False;
-import com.wegas.editor.View.StringView;
-import com.wegas.editor.View.VisibilitySelectView;
+import com.wegas.editor.view.StringView;
+import com.wegas.editor.view.VisibilitySelectView;
 import java.util.Collection;
 import javax.persistence.Column;
 import javax.persistence.Entity;

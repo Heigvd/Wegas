@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.log.rest;
@@ -11,9 +11,9 @@ import com.wegas.core.XlsxSpreadsheet;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.rest.GameController.StreamingOutputImpl;
 import com.wegas.log.xapi.Xapi;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,13 +21,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class contains the methods used to access the Wegas statistics. It uses the data of the xAPI database to create
@@ -41,7 +44,6 @@ import org.slf4j.LoggerFactory;
 @Produces(MediaType.APPLICATION_JSON)
 public class StatisticController {
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(StatisticController.class);
 
     @Inject
     private RequestManager requestManager;
@@ -53,7 +55,7 @@ public class StatisticController {
     private GameFacade gameFacade;
 
     @Inject
-    Xapi xapi;
+    private Xapi xapi;
 
     private List<Long> readIds(String ids) {
         if (ids != null) {
@@ -108,13 +110,7 @@ public class StatisticController {
         Workbook workbook = xlsx.getWorkbood();
 
         StreamingOutput sout;
-        sout = new StreamingOutput() {
-            @Override
-            public void write(OutputStream out) throws IOException, WebApplicationException {
-                workbook.write(out);
-                workbook.close();
-            }
-        };
+        sout = new StreamingOutputImpl(workbook);
 
         String filename = logId + ".xlsx";
 
@@ -139,13 +135,7 @@ public class StatisticController {
         Workbook workbook = xlsx.getWorkbood();
 
         StreamingOutput sout;
-        sout = new StreamingOutput() {
-            @Override
-            public void write(OutputStream out) throws IOException, WebApplicationException {
-                workbook.write(out);
-                workbook.close();
-            }
-        };
+        sout = new StreamingOutputImpl(workbook);
 
         String filename = logId + ".xlsx";
 

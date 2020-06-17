@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -23,7 +23,14 @@ import java.util.Collections;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -68,7 +75,6 @@ public class PlayerController {
     @GET
     @Path("{playerId : [1-9][0-9]*}")
     public Player get(@PathParam("playerId") Long playerId) {
-        Player p = playerFacade.find(playerId);
         return playerFacade.find(playerId);
     }
 
@@ -79,7 +85,7 @@ public class PlayerController {
      */
     @POST
     public Response create(@Context HttpServletRequest request,
-            @PathParam("teamId") Long teamId) {
+        @PathParam("teamId") Long teamId) {
         User currentUser;
         try {
             currentUser = userFacade.getCurrentUser();
@@ -89,17 +95,15 @@ public class PlayerController {
         Team teamToJoin = teamFacade.find(teamId);
         if (teamToJoin != null) {
             if (!(teamToJoin instanceof DebugTeam)
-                    && teamToJoin.getGame().getAccess() == Game.GameAccess.OPEN
-                    && !teamToJoin.getGame().getProperties().getFreeForAll()) {
-                if (requestManager.tryLock("join-" + teamToJoin.getGameId() + "-" + currentUser.getId())) {
-
-                    if (!playerFacade.isInGame(teamToJoin.getGameId(), currentUser.getId())) {
-                        gameFacade.joinTeam(teamToJoin.getId(), currentUser.getId(), Collections.list(request.getLocales()));
-                        // reload up to date team
-                        teamFacade.detach(teamToJoin);
-                        teamToJoin = teamFacade.find(teamToJoin.getId());
-                        return Response.status(Response.Status.CREATED).entity(teamToJoin).build();
-                    }
+                && teamToJoin.getGame().getAccess() == Game.GameAccess.OPEN
+                && !teamToJoin.getGame().getProperties().getFreeForAll()) {
+                if (requestManager.tryLock("join-" + teamToJoin.getGameId() + "-" + currentUser.getId())
+                    && !playerFacade.isInGame(teamToJoin.getGameId(), currentUser.getId())) {
+                    gameFacade.joinTeam(teamToJoin.getId(), currentUser.getId(), Collections.list(request.getLocales()));
+                    // reload up to date team
+                    teamFacade.detach(teamToJoin);
+                    teamToJoin = teamFacade.find(teamToJoin.getId());
+                    return Response.status(Response.Status.CREATED).entity(teamToJoin).build();
                 }
                 return Response.status(Response.Status.CONFLICT).build();
             }
@@ -107,9 +111,10 @@ public class PlayerController {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         //the team doesn't exists
-        return Response.status(Response.Status.BAD_REQUEST).build();
-    }
 
+        return Response.status(Response.Status.BAD_REQUEST)
+            .build();
+    }
 
     /**
      * Retry to join a team when previous attempt fails

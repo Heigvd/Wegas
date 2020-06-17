@@ -1,18 +1,70 @@
+/**
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
 package ch.albasim.wegas.processor;
 
+import ch.albasim.wegas.annotations.CommonView;
+import ch.albasim.wegas.annotations.JSONSchema;
+import ch.albasim.wegas.annotations.ProtectionLevel;
+import ch.albasim.wegas.annotations.Scriptable;
+import ch.albasim.wegas.annotations.UndefinedSchema;
+import ch.albasim.wegas.annotations.ValueGenerator;
+import ch.albasim.wegas.annotations.ValueGenerator.Undefined;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
+import ch.albasim.wegas.annotations.processor.ClassDoc;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.TextNode;
+import com.google.common.reflect.TypeToken;
+import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasWrappedException;
+import com.wegas.core.merge.utils.WegasEntityFields;
+import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.annotations.Errored;
+import com.wegas.core.persistence.annotations.Param;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.primitive.StringDescriptor;
+import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.editor.jsonschema.JSONArray;
+import com.wegas.editor.jsonschema.JSONBoolean;
+import com.wegas.editor.jsonschema.JSONExtendedSchema;
+import com.wegas.editor.jsonschema.JSONIdentifier;
+import com.wegas.editor.jsonschema.JSONNumber;
+import com.wegas.editor.jsonschema.JSONObject;
+import com.wegas.editor.jsonschema.JSONString;
+import com.wegas.editor.jsonschema.JSONType;
+import com.wegas.editor.jsonschema.JSONUnknown;
+import com.wegas.editor.jsonschema.JSONWRef;
+import com.wegas.editor.Schema;
+import com.wegas.editor.Schemas;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.Visible;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -27,53 +79,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.json.Json;
 import javax.json.JsonMergePatch;
 import javax.json.JsonValue;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.node.TextNode;
-import com.google.common.reflect.TypeToken;
-import ch.albasim.wegas.annotations.CommonView;
-import ch.albasim.wegas.annotations.JSONSchema;
-import ch.albasim.wegas.annotations.ProtectionLevel;
-import ch.albasim.wegas.annotations.Scriptable;
-import ch.albasim.wegas.annotations.UndefinedSchema;
-import ch.albasim.wegas.annotations.ValueGenerator;
-import ch.albasim.wegas.annotations.ValueGenerator.Undefined;
-import ch.albasim.wegas.annotations.View;
-import ch.albasim.wegas.annotations.WegasExtraProperty;
-import ch.albasim.wegas.annotations.processor.ClassDoc;
-import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.merge.utils.WegasEntityFields;
-import com.wegas.core.persistence.Mergeable;
-import com.wegas.core.persistence.annotations.Errored;
-import com.wegas.core.persistence.annotations.Param;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.primitive.StringDescriptor;
-import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.editor.Schema;
-import com.wegas.editor.Schemas;
-import com.wegas.editor.Visible;
-import com.wegas.editor.JSONSchema.JSONArray;
-import com.wegas.editor.JSONSchema.JSONBoolean;
-import com.wegas.editor.JSONSchema.JSONExtendedSchema;
-import com.wegas.editor.JSONSchema.JSONIdentifier;
-import com.wegas.editor.JSONSchema.JSONNumber;
-import com.wegas.editor.JSONSchema.JSONObject;
-import com.wegas.editor.JSONSchema.JSONString;
-import com.wegas.editor.JSONSchema.JSONType;
-import com.wegas.editor.JSONSchema.JSONUnknown;
-import com.wegas.editor.JSONSchema.JSONWRef;
-import com.wegas.editor.View.Hidden;
-import java.io.InputStream;
-
+import net.jodah.typetools.TypeResolver;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -81,8 +90,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.reflections.Reflections;
-
-import net.jodah.typetools.TypeResolver;
 
 @Mojo(name = "schema", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class SchemaGenerator extends AbstractMojo {
@@ -142,9 +149,9 @@ public class SchemaGenerator extends AbstractMojo {
 
         if (schemas != null) {
             for (Schema schema : schemas) {
-                System.out.println("Override Schema for  " + (schema.property()));
+                getLog().info("Override Schema for  " + (schema.property()));
                 try {
-                    JSONSchema val = schema.value().newInstance();
+                    JSONSchema val = schema.value().getDeclaredConstructor().newInstance();
                     injectView(val, schema.view(), null);
 
                     if (schema.merge()) {
@@ -160,10 +167,12 @@ public class SchemaGenerator extends AbstractMojo {
                     } else {
                         o.setProperty(schema.property(), val);
                     }
-                } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | SecurityException
-                    | IOException e) {
-                    // TODO Auto-generated catch block
+                } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                    | SecurityException | NoSuchMethodException | InvocationTargetException e) {
                     e.printStackTrace();
+                    throw WegasErrorMessage.error("Failed to instantiate schema: " + schema);
+                } catch (JsonProcessingException ex) {
+                    throw WegasErrorMessage.error("Failed to serialise schema: " + schema);
                 }
             }
         }
@@ -173,7 +182,7 @@ public class SchemaGenerator extends AbstractMojo {
     public Object patchSchema(JSONExtendedSchema o, Class<? extends JSONSchema> schema) {
         if (schema != null && !schema.equals(UndefinedSchema.class)) {
             try {
-                JSONSchema val = schema.newInstance();
+                JSONSchema val = schema.getDeclaredConstructor().newInstance();
 
                 String jsonNewConfig = mapper.writeValueAsString(val);
                 JsonValue readValue = Json.createReader(new StringReader(jsonNewConfig)).readValue();
@@ -185,21 +194,22 @@ public class SchemaGenerator extends AbstractMojo {
                 JsonValue patched = patch.apply(oValue);
                 return mapper.readValue(patched.toString(), Object.class);
 
-            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | SecurityException
-                | IOException e) {
-                // TODO Auto-generated catch block
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                | SecurityException | NoSuchMethodException | InvocationTargetException e) {
                 e.printStackTrace();
+                throw WegasErrorMessage.error("Failed to instantiate schema: " + schema);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw WegasErrorMessage.error("Failed to serialise schema: " + schema);
             }
         }
         return o;
     }
 
     private void injectErrords(JSONSchema schema, List<Errored> erroreds) {
-        if (erroreds != null) {
-            if (schema instanceof JSONExtendedSchema) {
-                for (Errored e : erroreds) {
-                    ((JSONExtendedSchema) schema).addErrored(e);
-                }
+        if (erroreds != null && schema instanceof JSONExtendedSchema) {
+            for (Errored e : erroreds) {
+                ((JSONExtendedSchema) schema).addErrored(e);
             }
         }
     }
@@ -218,32 +228,31 @@ public class SchemaGenerator extends AbstractMojo {
      * inject View into Schema
      */
     private void injectView(JSONSchema schema, View view, Boolean forceReadOnly) {
-        if (view != null) {
-            if (schema instanceof JSONExtendedSchema) {
-                try {
-                    CommonView v = view.value().newInstance();
+        if (view != null && schema instanceof JSONExtendedSchema) {
+            try {
+                CommonView v = view.value().getDeclaredConstructor().newInstance();
 
-                    if (!view.label().isEmpty()) {
-                        v.setLabel(view.label());
-                    }
-                    v.setBorderTop(view.borderTop());
-                    v.setDescription(view.description());
-                    v.setLayout(view.layout());
-
-                    if (view.readOnly() || Boolean.TRUE.equals(forceReadOnly)) {
-                        v.setReadOnly(true);
-                    }
-
-                    ((JSONExtendedSchema) schema).setFeatureLevel(view.featureLevel());
-                    ((JSONExtendedSchema) schema).setView(v);
-
-                    v.setIndex(view.index()); // TO REMOVE
-                    v.setFeatureLevel(view.featureLevel()); // TO REMOVE
-                    ((JSONExtendedSchema) schema).setIndex(view.index());
-                } catch (InstantiationException | IllegalAccessException e) {
-                    e.printStackTrace();
-                    throw WegasErrorMessage.error("Fails to inject " + view);
+                if (!view.label().isEmpty()) {
+                    v.setLabel(view.label());
                 }
+                v.setBorderTop(view.borderTop());
+                v.setDescription(view.description());
+                v.setLayout(view.layout());
+
+                if (view.readOnly() || Boolean.TRUE.equals(forceReadOnly)) {
+                    v.setReadOnly(true);
+                }
+
+                ((JSONExtendedSchema) schema).setFeatureLevel(view.featureLevel());
+                ((JSONExtendedSchema) schema).setView(v);
+
+                v.setIndex(view.index()); // TO REMOVE
+                v.setFeatureLevel(view.featureLevel()); // TO REMOVE
+                ((JSONExtendedSchema) schema).setIndex(view.index());
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                | SecurityException | NoSuchMethodException | InvocationTargetException e) {
+                e.printStackTrace();
+                throw WegasErrorMessage.error("Fails to inject " + view);
             }
         }
     }
@@ -263,18 +272,18 @@ public class SchemaGenerator extends AbstractMojo {
             Class<?> forName = Class.forName(className);
             if (Mergeable.class.isAssignableFrom(forName)) {
                 return getTsInterfaceName((Class<? extends Mergeable>) forName, genericity, suffix);
+            } else {
+                throw WegasErrorMessage.error(className + " not instance of Mergeable");
             }
         } catch (ClassNotFoundException ex) {
+            throw WegasErrorMessage.error(className + " not found");
         }
-        throw WegasErrorMessage.error(className + " not found");
     }
 
     private String getTsInterfaceName(Class<? extends Mergeable> klass, Map<String, String> genericity, String suffix) {
         String tsName = suffix + Mergeable.getJSONClassName(klass);
-        if (genericity != null) {
-            if (genericity.containsKey(tsName)) {
-                return genericity.get(tsName);
-            }
+        if (genericity != null && genericity.containsKey(tsName)) {
+            return genericity.get(tsName);
         }
         return tsName;
     }
@@ -323,7 +332,7 @@ public class SchemaGenerator extends AbstractMojo {
         }
         sb.append("]");
         if (dryRun) {
-            System.out.println(theClass.getSimpleName() + ":" + sb.toString());
+            getLog().info(theClass.getSimpleName() + ":" + sb.toString());
         } else {
             inheritance.put(Mergeable.getJSONClassName(theClass), sb.toString());
         }
@@ -346,7 +355,7 @@ public class SchemaGenerator extends AbstractMojo {
 
         StringBuilder sb = new StringBuilder();
         String interfaceSuffix = generateScriptableTSClass ? "IS" : "I";
-        String initSequence = generateScriptableTSClass ? "export class " : "interface ";
+        //String initSequence = generateScriptableTSClass ? "export class " : "interface ";
 
         ClassDoc jDoc = this.javadoc.get(c.getName());
         if (jDoc != null) {
@@ -453,8 +462,8 @@ public class SchemaGenerator extends AbstractMojo {
         sb.append("}\n");
 
         if (dryRun) {
-            System.out.println(c.getSimpleName() + ":");
-            System.out.println(sb);
+            getLog().info(c.getSimpleName() + ":");
+            getLog().info(sb);
         } else {
             String iName = getTsInterfaceName(c, null, interfaceSuffix);
             String iContent = "/*\n * " + iName + "\n */\n" + sb + "\n";
@@ -507,7 +516,7 @@ public class SchemaGenerator extends AbstractMojo {
                 property += this.formatJSDoc(fDoc);
             }
         } else {
-            getLog().error("No JavaDoc for class " + c);
+            getLog().warn("No JavaDoc for class " + c);
         }
 
         if (readOnly) {
@@ -553,7 +562,7 @@ public class SchemaGenerator extends AbstractMojo {
                 if (method.getAnnotation(annotationClass) != null) {
                     return method.getAnnotation(annotationClass);
                 }
-            } catch (NoSuchMethodException | SecurityException ex) {
+            } catch (NoSuchMethodException | SecurityException ex) { // NOPMD
                 // silent catch
             }
 
@@ -574,11 +583,11 @@ public class SchemaGenerator extends AbstractMojo {
             return "\"" + e.getKey() + "\": " + e.getValue();
         }).collect(Collectors.joining(",\n")));
         sb.append("\n}");
-        File f = new File(outputTypings, "Inheritance.json");
-        try (FileWriter fw = new FileWriter(f)) {
-            fw.write(sb.toString());
+
+        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(outputTypings.getAbsolutePath(), "Inheritance.json"))){
+            writer.write(sb.toString());
         } catch (IOException ex) {
-            getLog().error("Failed to write " + f.getAbsolutePath(), ex);
+            throw new WegasWrappedException(ex);
         }
     }
 
@@ -590,12 +599,10 @@ public class SchemaGenerator extends AbstractMojo {
             sb.append(typeDef).append("\n");
         });
 
-        File f = new File(outputTypings, fileName);
-
-        try (FileWriter fw = new FileWriter(f)) {
-            fw.write(sb.toString());
+        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(outputTypings.getAbsolutePath(), fileName))){
+            writer.write(sb.toString());
         } catch (IOException ex) {
-            getLog().error("Failed to write " + f.getAbsolutePath(), ex);
+            getLog().error("Failed to write " + fileName + " in " + outputTypings.getAbsolutePath(), ex);
         }
     }
 
@@ -625,7 +632,7 @@ public class SchemaGenerator extends AbstractMojo {
          */
         sb.append(System.lineSeparator()).append("interface WegasClassNamesAndClasses {");
         intKeys.forEach(key -> {
-            sb  .append(System.lineSeparator())
+            sb.append(System.lineSeparator())
                 .append("  " + key.substring(1) + " : " + key + ";");
         });
         sb.append(System.lineSeparator())
@@ -651,7 +658,7 @@ public class SchemaGenerator extends AbstractMojo {
         /**
          * Creating a mergeable interface
          */
-        writeMergeable(sb,"IS");
+        writeMergeable(sb, "IS");
 
         /**
          * Creating ts interface linking real classes and stringified classes
@@ -957,23 +964,21 @@ public class SchemaGenerator extends AbstractMojo {
                     jsonBuiltFileNames.put(jsonFileName, wEF.getTheClass().getName());
 
                     if (!dryRun) {
-                        File f = new File(outputDirectory, jsonFileName);
-                        try (FileWriter fw = new FileWriter(f)) {
-                            fw.write(configToString(config, patches));
+                        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(outputDirectory.getAbsolutePath(), jsonFileName))){
+                            writer.write(configToString(config, patches));
                         } catch (IOException ex) {
-                            getLog().error("Failed to write " + f.getAbsolutePath(), ex);
+                            getLog().error("Failed to write " + jsonFileName + " in " + outputDirectory.getAbsolutePath(), ex);
                         }
-                        File f2 = new File(outputScriptables, classFileName);
-                        try (FileWriter fw = new FileWriter(f2)) {
-                            fw.write(getTsScriptableClass(c, allMethods));
+                        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(outputScriptables.getAbsolutePath(), classFileName))){
+                            writer.write(getTsScriptableClass(c, allMethods));
                         } catch (IOException ex) {
-                            getLog().error("Failed to write " + f.getAbsolutePath(), ex);
+                            getLog().error("Failed to write " + classFileName + " in " + outputScriptables.getAbsolutePath(), ex);
                         }
                     } else {
-                        System.out.println(jsonFileName);
-                        System.out.println(configToString(config, patches));
-                        System.out.println(classFileName);
-                        System.out.println(getTsScriptableClass(c, allMethods));
+                        getLog().info(jsonFileName);
+                        getLog().info(configToString(config, patches));
+                        getLog().info(classFileName);
+                        getLog().info(getTsScriptableClass(c, allMethods));
                     }
                 }
             } catch (NoClassDefFoundError nf) {
@@ -1015,10 +1020,8 @@ public class SchemaGenerator extends AbstractMojo {
             }
         }
 
-        if (!optional) {
-            if (prop instanceof JSONExtendedSchema) {
-                ((JSONExtendedSchema) prop).setRequired(true);
-            }
+        if (!optional && prop instanceof JSONExtendedSchema) {
+            ((JSONExtendedSchema) prop).setRequired(true);
         }
 
         injectView(prop, view, readOnly);
@@ -1145,7 +1148,7 @@ public class SchemaGenerator extends AbstractMojo {
             } else {
                 for (Type t : types) {
                     String javaToTSType = javaToTSType(t, genericity);
-                    System.out.println("ArrayType:" + javaToTSType);
+                    getLog().info("ArrayType:" + javaToTSType);
                 }
                 return "any[]";
             }
@@ -1343,8 +1346,8 @@ public class SchemaGenerator extends AbstractMojo {
                     returns = "boolean";
                 } else {
                     returns = "undef";
-                    getLog().error("Unknown return type " + m);
-                    // TODO: throw error
+                    // happens when returning abstract type (like VariableInstance)
+                    getLog().warn("Unknown return type " + m);
                 }
             } else {
                 // VOID means setter
@@ -1364,7 +1367,7 @@ public class SchemaGenerator extends AbstractMojo {
                     Class kl = m.getDeclaringClass();
                     Type reified = TypeResolver.reify(type, kl);
                     Param param = p.getAnnotation(Param.class);
-                    boolean nullable = false;
+
                     JSONExtendedSchema prop = javaToJSType(reified, param != null && param.nullable());
                     if (param != null) {
                         injectView(prop, param.view(), null);

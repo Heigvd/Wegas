@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.survey.persistence;
@@ -10,32 +11,36 @@ package com.wegas.survey.persistence;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.ejb.AccountFacade;
+import com.wegas.core.security.persistence.token.SurveyToken;
+import com.wegas.core.security.persistence.token.Token;
 import com.wegas.editor.ValueGenerators;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.I18nHtmlView;
-import com.wegas.survey.persistence.input.SurveySectionDescriptor;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.I18nHtmlView;
 import com.wegas.survey.persistence.SurveyInstance.SurveyStatus;
+import com.wegas.survey.persistence.input.SurveySectionDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Descriptor of the Survey variable<br>
@@ -43,60 +48,63 @@ import org.slf4j.LoggerFactory;
  * @author Jarle Hulaas
  * @see SurveyDescriptor
  */
-
 @Entity
 @Table(
-        indexes = {
-            @Index(columnList = "description_id"),
-            @Index(columnList = "descriptionend_id")
-        }
+    indexes = {
+        @Index(columnList = "description_id"),
+        @Index(columnList = "descriptionend_id")
+    }
 )
 public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
-        implements DescriptorListI<SurveySectionDescriptor> {
+    implements DescriptorListI<SurveySectionDescriptor> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(SurveyDescriptor.class);
-
 
     @OneToOne(cascade = CascadeType.ALL)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Introductory description", value = I18nHtmlView.class))
+        optional = false, nullable = false, proposal = EmptyI18n.class,
+        view = @View(label = "Introductory description", value = I18nHtmlView.class))
     private TranslatableContent description;
 
-    
     @OneToOne(cascade = CascadeType.ALL)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Closing remarks", value = I18nHtmlView.class))
+        optional = false, nullable = false, proposal = EmptyI18n.class,
+        view = @View(label = "Closing remarks", value = I18nHtmlView.class))
     private TranslatableContent descriptionEnd;
 
     /**
      * List of sections inside this survey
      */
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL)
-    @JsonManagedReference(value="survey-sections")
+    @JsonManagedReference(value = "survey-sections")
     @OrderColumn(name = "index")
     //@JsonView(Views.EditorI.class)
     @WegasEntityProperty(includeByDefault = false,
-            optional = false, nullable = false, proposal = ValueGenerators.EmptyArray.class,
-            view = @View(value = Hidden.class, label = "Items"), notSerialized = true)
+        optional = false, nullable = false, proposal = ValueGenerators.EmptyArray.class,
+        view = @View(value = Hidden.class, label = "Items"), notSerialized = true)
     private List<SurveySectionDescriptor> items = new ArrayList<>();
+
+    /**
+     * Invitation to participate in this survey sent by email
+     */
+    @ManyToMany
+    //@JsonView(Views.ExtendedI.class)
+    @JsonIgnore
+    private List<SurveyToken> tokens;
 
     /**
      * True unless is should be hidden from trainer/scenarist listings
      */
     @Column(columnDefinition = "boolean default true")
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = ValueGenerators.True.class,
-            view = @View(label = "isPublished"))
+        optional = false, nullable = false, proposal = ValueGenerators.True.class,
+        view = @View(label = "isPublished"))
     private Boolean isPublished = true;
 
-    
     public SurveyDescriptor() {
-
+        // ensure there is an empty constructor
     }
-    
+
     /**
      * @return the items (i.e. the sections)
      */
@@ -105,7 +113,29 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     public List<SurveySectionDescriptor> getItems() {
         return this.items;
     }
-    
+
+    /**
+     * Get the list of invitation to participate
+     *
+     * @return inviation sent by email
+     */
+    public List<SurveyToken> getTokens() {
+        return tokens;
+    }
+
+    /**
+     * Set invitations
+     *
+     * @param tokens list of invitations
+     */
+    public void setTokens(List<SurveyToken> tokens) {
+        this.tokens = tokens;
+    }
+
+    public void removeToken(SurveyToken token) {
+        this.tokens.remove(token);
+    }
+
     /**
      * @param items the items (i.e. sections) to set
      */
@@ -134,12 +164,11 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
         item.setSurvey(this);
     }
 
-
     @Override
     public void resetItemsField() {
         this.items = new ArrayList<>();
     }
-    
+
     /**
      * @return the description
      */
@@ -173,17 +202,16 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
             this.descriptionEnd.setParentDescriptor(this);
         }
     }
-    
+
     public Boolean getIsPublished() {
         return isPublished;
     }
-    
+
     public void setIsPublished(Boolean b) {
         isPublished = b;
     }
 
 // ~~~~~~ Sugar for scripts ~~~~~~~~
-
     /**
      *
      * @param p
@@ -320,6 +348,22 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     public boolean isNotClosed(Player p) {
         return this.getInstance(p).getStatus() != SurveyStatus.CLOSED;
     }
-    
 
+    @Override
+    public void updateCacheOnDelete(Beanjection beans) {
+        if (this.tokens != null) {
+            AccountFacade accountFacade = beans.getAccountFacade();
+
+            for (SurveyToken token : tokens) {
+                if (token != null) {
+                    Token find = accountFacade.findToken(token.getId());
+                    if (find instanceof SurveyToken) {
+                        ((SurveyToken) find).removeSurvey(this);
+                    }
+                }
+            }
+        }
+
+        super.updateCacheOnDelete(beans);
+    }
 }

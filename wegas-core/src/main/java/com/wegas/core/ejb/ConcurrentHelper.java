@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -37,9 +37,6 @@ public class ConcurrentHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(ConcurrentHelper.class);
 
-    @Inject
-    private HazelcastInstance hzInstance;
-
     private static final String MAIN_LOCK_NAME = "ConcurrentHelper.lock";
 
     // effectiveTokens
@@ -49,7 +46,10 @@ public class ConcurrentHelper {
     private Cache<String, RefCounterLock> locks;
 
     @Inject
-    WebsocketFacade websocketFacade;
+    private HazelcastInstance hzInstance;
+
+    @Inject
+    private WebsocketFacade websocketFacade;
 
     public static class RefCounterLock implements Serializable {
 
@@ -123,19 +123,17 @@ public class ConcurrentHelper {
     }
 
     /**
-     * Helper is a cluster wide singleton.
-     * Unlock it
+     * Helper is a cluster wide singleton. Unlock it
      */
     private void mainUnlock() {
         hzInstance.getLock(MAIN_LOCK_NAME).unlock();
     }
 
     /**
-     * Acquire the lock only if it's not held by another thread at invocation
-     * time.
+     * Acquire the lock only if it's not held by another thread at invocation time.
      * <p>
-     * THE CALLING THREAD WILL NEVER BEEING BLOCKED WITHIN THIS METHOD AND WILL
-     * RETURN EVEN IF IT HAS NOT SUCCESSFULY ACQUIRED THE LOCK !!!
+     * THE CALLING THREAD WILL NEVER BEEING BLOCKED WITHIN THIS METHOD AND WILL RETURN EVEN IF IT
+     * HAS NOT SUCCESSFULY ACQUIRED THE LOCK !!!
      *
      * @param token    lock identifier
      * @param audience
@@ -182,8 +180,7 @@ public class ConcurrentHelper {
     /**
      * Acquire the lock only if it's not held by another thread.
      * <p>
-     * The method will return only when the lock will be held by the calling
-     * thread.
+     * The method will return only when the lock will be held by the calling thread.
      *
      * @param token    lock identifier
      * @param audience

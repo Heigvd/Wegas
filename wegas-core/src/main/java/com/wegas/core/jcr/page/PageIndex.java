@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.page;
@@ -50,7 +50,7 @@ public class PageIndex {
         return this.findPage(pageId) != null;
     }
 
-    void resetDefaultPage() {
+    public void resetDefaultPage() {
         if (Helper.isNullOrEmpty(this.defaultPageId)) {
             List<Folder> folders = new ArrayList<>();
             folders.add(this.root);
@@ -147,13 +147,17 @@ public class PageIndex {
     }
 
     public void deleteFolder(Folder folder, boolean force) {
-        if (folder != null && (folder.getItems().isEmpty() || force)) {
-            Folder parent = this.findParent(folder);
-            parent.getItems().remove(folder);
-        } else {
-            throw WegasErrorMessage.error("Failed to remove '" + folder.getName() + "':Directory not empty");
-        }
+        if (folder != null) {
+            if (folder.getItems().isEmpty() || force) {
 
+                Folder parent = this.findParent(folder);
+                parent.getItems().remove(folder);
+            } else {
+                throw WegasErrorMessage.error("Failed to remove '" + folder.getName() + "':Directory not empty");
+            }
+        } else {
+            throw WegasErrorMessage.error("Can not remove null folder");
+        }
     }
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
@@ -163,11 +167,11 @@ public class PageIndex {
         @JsonSubTypes.Type(name = "Page", value = Page.class),
         @JsonSubTypes.Type(name = "Folder", value = Folder.class)
     })
-    public static interface IndexItem {
+    public interface IndexItem {
 
-        public String getId();
+        String getId();
 
-        public void setName(String newName);
+        void setName(String newName);
     }
 
     @JsonTypeName("Page")
@@ -179,6 +183,7 @@ public class PageIndex {
         private Boolean scenaristPage;
 
         public Page() {
+            // ensure to have an empty constructor
         }
 
         public Page(String id, String name) {

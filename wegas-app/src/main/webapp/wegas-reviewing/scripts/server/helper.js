@@ -206,7 +206,7 @@ var ReviewHelper = (function() {
 
     function summarize(peerReviewDescriptorName) {
         var prd = Variable.find(gameModel, peerReviewDescriptorName),
-            game = self.getGame(), teams = game.getTeams(), t, teamId, team,
+            game = self.getGame(), teams = game.getLiveTeams(), t, teamId, team,
             pris, pri, reviews, review, evs, ev, evK, i, j, k,
             entry, nbRDone, nbRTot, nbRCom, nbRComClosed, nbRComTotal,
             evaluationsR, evaluationsC, evaluationsAll, evaluationsValues = {}, evDescriptor,

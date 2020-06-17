@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -31,12 +31,6 @@ public class LibraryFacade {
     @Inject
     private GameModelFacade gameModelFacade;
 
-    @Inject
-    private WebsocketFacade websocketFacade;
-
-    @Inject
-    private RequestManager requestManager;
-
     private List<GameModelContent> getLibrary(Long gameModelId, String name) {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
@@ -52,7 +46,7 @@ public class LibraryFacade {
                 return gameModel.getCssLibraryList();
 
             default:
-                throw new RuntimeException("Unable to find associated library: " + name);
+                throw WegasErrorMessage.error("Unable to find associated library: " + name);
         }
     }
 
@@ -120,8 +114,8 @@ public class LibraryFacade {
         GameModel gameModel = gameModelFacade.find(gameModelId);
 
         GameModelContent gameModelContent = gameModel.getGameModelContent(lib, key);
-        content.setContentKey(gameModelContent.getContentKey());
         if (gameModelContent != null) {
+            content.setContentKey(gameModelContent.getContentKey());
             gameModelContent.merge(content);
             //gameModelContent.setContent(content.getContent());
             //gameModelContent.setVersion(content.getVersion());

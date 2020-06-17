@@ -1,15 +1,20 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.api.QuestionDescriptorFacadeI;
-import com.wegas.core.ejb.*;
+import com.wegas.core.ejb.BaseFacade;
+import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.ScriptEventFacade;
+import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
@@ -24,7 +29,13 @@ import com.wegas.core.persistence.variable.primitive.PrimitiveDescriptorI;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.log.xapi.Xapi;
-import com.wegas.mcq.persistence.*;
+import com.wegas.mcq.persistence.ChoiceDescriptor;
+import com.wegas.mcq.persistence.ChoiceInstance;
+import com.wegas.mcq.persistence.QuestionDescriptor;
+import com.wegas.mcq.persistence.QuestionInstance;
+import com.wegas.mcq.persistence.ReadableInstance;
+import com.wegas.mcq.persistence.Reply;
+import com.wegas.mcq.persistence.Result;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
 import com.wegas.mcq.persistence.wh.WhQuestionInstance;
 import com.wegas.messaging.persistence.Message;
@@ -32,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -543,7 +553,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public Reply TX_selectAndValidateChoice(Long choiceId, Long playerId) {
+    public Reply selectAndValidateChoiceTx(Long choiceId, Long playerId) {
         return this.selectAndValidateChoice(choiceId, playerId);
     }
 
@@ -559,7 +569,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         try {
             scriptEvent.fire(player, "replyCancel", new ReplyValidate(r));// Throw an event
         } catch (WegasRuntimeException e) {
-            // GOTCHA no eventManager is instantiated
+            logger.trace("Fails to fire replyCancel event: {}", e);
         }
         return reply;
     }
@@ -576,7 +586,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         try {
             scriptEvent.fire(player, "replyCancel", new ReplyValidate(reply));// Throw an event
         } catch (WegasRuntimeException e) {
-            // GOTCHA no eventManager is instantiated
+            logger.trace("Fails to fire replyCancel event: {}", e);
         }
         return reply;
     }
@@ -740,18 +750,24 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             // Test if the current choice has been selected, i.e. there is a reply for it.
             ChoiceInstance choiceInstance = choice.getInstance(player);
 
-            boolean found = false;
-            for (Reply r : choiceInstance.getReplies()) {
+            List<Reply> choiceReplies = choiceInstance.getReplies();
+
+            if (choiceReplies.size() > 1) {
+                logger.error("validateQuestion() too many replies in the choice {}", choiceInstance);
+                // TODO should throw error ?
+            }
+
+            if (!choiceReplies.isEmpty()) {
+                Reply r = choiceReplies.get(0);
+
                 if (!r.getIgnored()) {
                     // It's been selected: validate the reply (which executes the impact)
                     this.validateReply(player, r);
                 } else {
                     logger.error("validateQuestion() invoked on a Question where ignored replies are already persisted");
+                    // TODO should throw error ?
                 }
-                found = true;
-                break;
-            }
-            if (!found) {
+            } else {
                 Reply ignoredReply = ignoreChoice(choice.getId(), player);
                 this.validateReply(player, ignoredReply);
             }
@@ -823,15 +839,14 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             String description = whValidate.whDescriptor.getDescription().translateOrEmpty(gameModel, code);
 
             StringBuilder bd = new StringBuilder();
-            bd.append("<div class=\"whquestion-history\">");
-
-            bd.append("<div class=\"whquestion-label\">").append(title).append("</div>");
-            bd.append(description);
+            bd.append("<div class=\"whquestion-history\">")
+                .append("<div class=\"whquestion-label\">").append(title).append("</div>")
+                .append(description);
 
             for (VariableDescriptor item : whValidate.whDescriptor.getItems()) {
                 if (item instanceof PrimitiveDescriptorI) {
-                    bd.append("<div class=\"whview-history-answer\">");
-                    bd.append("<div class=\"whview-history-answer-title\">").
+                    bd.append("<div class=\"whview-history-answer\">")
+                        .append("<div class=\"whview-history-answer-title\">").
                         append(item.getLabel().translateOrEmpty(gameModel, code)).
                         append("</div>");
 

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
@@ -28,6 +28,7 @@ public class NumberHistoryEntry implements Serializable, Orderable {
     private Integer order;
 
     public NumberHistoryEntry() {
+        // ensure to have an empty constructor
     }
 
     public NumberHistoryEntry(Double value, int order) {

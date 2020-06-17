@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
@@ -22,8 +22,8 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
-import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.StringView;
+import com.wegas.editor.view.NumberView;
+import com.wegas.editor.view.StringView;
 
 /**
  *
@@ -40,7 +40,7 @@ public interface Mergeable extends IMergeable {
 
     void setRefId(String refId);
 
-    public static String getJSONClassName(Class<?> klass) {
+    static String getJSONClassName(Class<?> klass) {
         JsonTypeName annotation = klass.getAnnotation(JsonTypeName.class);
 
         if (annotation != null) {
@@ -51,23 +51,23 @@ public interface Mergeable extends IMergeable {
     }
 
     @WegasExtraProperty(name = "@class",
-            optional = false,
-            nullable = false,
-            view = @View(
-                    value = StringView.class,
-                    label = "",
-                    featureLevel = INTERNAL,
-                    index = -2000
-            )
+        optional = false,
+        nullable = false,
+        view = @View(
+            value = StringView.class,
+            label = "",
+            featureLevel = INTERNAL,
+            index = -2000
+        )
     )
     @JsonProperty("@class")
     //@JsonProperty(value = "@class", access = JsonProperty.Access.READ_ONLY)
-    default public String getJSONClassName() {
+    default String getJSONClassName() {
         return Mergeable.getJSONClassName(this.getClass());
     }
-    
+
     @JsonProperty("@class")
-    default public void setJSONClassName(String atClass){
+    default void setJSONClassName(String atClass) {
         // no-op
     }
 
@@ -114,9 +114,9 @@ public interface Mergeable extends IMergeable {
     }
 
     @JsonIgnore
-    default Visibility getCLosestVisibility() {
-        if (this instanceof ModelScoped){
-                return ((ModelScoped) this).getVisibility();
+    default Visibility getClosestVisibility() {
+        if (this instanceof ModelScoped) {
+            return ((ModelScoped) this).getVisibility();
         } else {
             return this.getInheritedVisibility();
         }
@@ -146,14 +146,14 @@ public interface Mergeable extends IMergeable {
     @JsonView(Views.IndexI.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @WegasExtraProperty(
-            nullable = false,
-            view = @View(
-                    value = StringView.class,
-                    label = "Parent Type",
-                    featureLevel = INTERNAL,
-                    index = -990,
-                    layout = shortInline
-            ))
+        nullable = false,
+        view = @View(
+            value = StringView.class,
+            label = "Parent Type",
+            featureLevel = INTERNAL,
+            index = -990,
+            layout = shortInline
+        ))
     default String getParentType() {
         AbstractEntity parent = this.getParentEntity();
         if (parent != null) {
@@ -165,14 +165,14 @@ public interface Mergeable extends IMergeable {
     @JsonView(Views.IndexI.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @WegasExtraProperty(
-            nullable = false,
-            view = @View(
-                    value = NumberView.class,
-                    label = "Parent ID",
-                    featureLevel = INTERNAL,
-                    index = -980,
-                    layout = shortInline
-            ))
+        nullable = false,
+        view = @View(
+            value = NumberView.class,
+            label = "Parent ID",
+            featureLevel = INTERNAL,
+            index = -980,
+            layout = shortInline
+        ))
     default Long getParentId() {
         AbstractEntity parent = this.getParentEntity();
         if (parent != null) {

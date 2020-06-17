@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -29,10 +29,16 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonPatch;
 import javax.json.JsonReader;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -51,8 +57,6 @@ public class PageController {
      */
     private final String[] reservedPageId = {"index"};
 
-    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(PageController.class);
-
     @Inject
     private HazelcastInstance hzInstance;
 
@@ -65,7 +69,7 @@ public class PageController {
     @Inject
     private PageFacade pageFacade;
 
-    private void _assertPageIdValidity(String pageId, String[] restriction) {
+    private void assertPageIdValidityInternal(String pageId, String[] restriction) {
         for (String reserved : restriction) {
             if (pageId.equals(reserved)) {
                 throw WegasErrorMessage.error("Invalid page id \"" + pageId + "\"");
@@ -78,8 +82,8 @@ public class PageController {
             throw WegasErrorMessage.error("Page id cannot be empty");
         } else {
             String lowPageId = pageId.toLowerCase();
-            this._assertPageIdValidity(lowPageId, reservedPageId);
-            this._assertPageIdValidity(lowPageId, extraRestrictions);
+            this.assertPageIdValidityInternal(lowPageId, reservedPageId);
+            this.assertPageIdValidityInternal(lowPageId, extraRestrictions);
         }
     }
 
@@ -175,7 +179,7 @@ public class PageController {
     @PUT
     @Path("/Page/{pageId : [A-Za-z0-9]+}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response setPage(@PathParam("gameModelId") Long gameModelId,
+    public Response updatePage(@PathParam("gameModelId") Long gameModelId,
         @PathParam("pageId") String pageId,
         JsonNode content) throws RepositoryException, IOException {
 
@@ -254,7 +258,7 @@ public class PageController {
 
     @PUT
     @Path("/SetDefault/{pageId : [A-Za-z0-9]+}")
-    public Response setDefaultPage(@PathParam("gameModelId") Long gameModelId,
+    public Response changeDefaultPage(@PathParam("gameModelId") Long gameModelId,
         @PathParam("pageId") String pageId)
         throws RepositoryException, JsonProcessingException {
 

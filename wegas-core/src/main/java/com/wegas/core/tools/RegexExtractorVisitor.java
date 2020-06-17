@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.tools;
@@ -98,31 +98,25 @@ public class RegexExtractorVisitor implements MergeHelper.MergeableVisitor {
     public void visitProperty(Object target, ProtectionLevel protectionLevel,
         int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key,
         Object... references) {
-        if (!this.isProtected(ancestors.peekFirst(), protectionLevel)) {
-            if (field != null) {
-                if (field.getAnnotation() != null) {
-                    if (field.getAnnotation().searchable()) {
-                        if (target instanceof String) {
-                            if (field.getType() == WegasFieldProperties.FieldType.PROPERTY) {
-                                this.collect((String) target);
-                            }
-                        }
-                    }
-                }
-            }
+        if (!this.isProtected(ancestors.peekFirst(), protectionLevel)
+            && target instanceof String
+            && field != null
+            && field.getAnnotation() != null && field.getAnnotation().searchable()
+            && field.getType() == WegasFieldProperties.FieldType.PROPERTY) {
+            this.collect((String) target);
         }
     }
 
     public void processStyles(GameModel gameModel) {
-        this.processLibrary(gameModel.getCssLibraryList(), "Stylesheet");
+        this.processLibrary(gameModel.getCssLibraryList());
     }
 
     public void processScripts(GameModel gameModel) {
-        this.processLibrary(gameModel.getClientScriptLibraryList(), "Client Script");
-        this.processLibrary(gameModel.getScriptLibraryList(), "Server Script");
+        this.processLibrary(gameModel.getClientScriptLibraryList());
+        this.processLibrary(gameModel.getScriptLibraryList());
     }
 
-    private void processLibrary(List<GameModelContent> library, String title) {
+    private void processLibrary(List<GameModelContent> library) {
         for (GameModelContent content : library) {
             this.collect(content.getContent());
         }

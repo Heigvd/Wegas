@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
@@ -11,6 +11,10 @@ package com.wegas.core.rest.util;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class Views {
+
+    private Views(){
+        // empty private constructor prevents the class to be initialised
+    }
 
     /**
      *

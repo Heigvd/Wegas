@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
@@ -28,10 +28,10 @@ public interface Propertable {
      *
      * @return internal properties representation, use with caution
      */
-    public List<VariableProperty> getInternalProperties();
+    List<VariableProperty> getInternalProperties();
 
     @JsonIgnore
-    default public Map<String, String> getModifiableProperties() {
+    default Map<String, String> getModifiableProperties() {
         return ListUtils.mapEntries(getInternalProperties(), new VariableProperty.Extractor());
     }
 
@@ -40,7 +40,7 @@ public interface Propertable {
      * @return the properties
      */
     @JsonProperty
-    default public Map<String, String> getProperties() {
+    default Map<String, String> getProperties() {
         return Collections.unmodifiableMap(this.getModifiableProperties());
     }
 
@@ -48,7 +48,7 @@ public interface Propertable {
      * @param properties the properties to set
      */
     @JsonProperty
-    default public void setProperties(Map<String, String> properties) {
+    default void setProperties(Map<String, String> properties) {
         this.getInternalProperties().clear();
         for (Entry<String, String> entry : properties.entrySet()) {
             this.getInternalProperties().add(new VariableProperty(entry.getKey(), entry.getValue()));
@@ -60,7 +60,7 @@ public interface Propertable {
      * @param key
      * @param val
      */
-    default public void setProperty(String key, String val) {
+    default void setProperty(String key, String val) {
         Map<String, String> props = this.getModifiableProperties();
         props.put(key, val);
         this.setProperties(props);
@@ -72,7 +72,7 @@ public interface Propertable {
      *
      * @return true is the resourceInstance is active
      */
-    default public String getProperty(String key) {
+    default String getProperty(String key) {
         return this.getProperties().get(key);
     }
 
@@ -85,19 +85,19 @@ public interface Propertable {
      *
      * @throws NumberFormatException if the property is not a number
      */
-    default public double getPropertyD(String key) {
+    default double getPropertyD(String key) {
         return Double.valueOf(this.getProperty(key));
     }
 
-    default public boolean removeProperty(String key) {
+    default boolean removeProperty(String key) {
         return this.getInternalProperties().remove(new VariableProperty(key, ""));
     }
 
-    default public boolean hasProperty(String key) {
+    default boolean hasProperty(String key) {
         return this.getProperties().containsKey(key);
     }
 
-    default public void clearProperties() {
+    default void clearProperties() {
         this.getInternalProperties().clear();
     }
 }

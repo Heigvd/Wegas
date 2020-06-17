@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.rest;
@@ -10,25 +11,32 @@ package com.wegas.core.security.rest;
 import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
-import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.DatedEntity;
-import com.wegas.core.persistence.game.*;
+import com.wegas.core.persistence.game.DebugGame;
+import com.wegas.core.persistence.game.DebugTeam;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Email;
-import com.wegas.core.security.aai.*;
+import com.wegas.core.security.aai.AaiAccount;
+import com.wegas.core.security.aai.AaiConfigInfo;
+import com.wegas.core.security.aai.AaiLoginResponse;
+import com.wegas.core.security.aai.AaiToken;
+import com.wegas.core.security.aai.AaiUserDetails;
 import com.wegas.core.security.ejb.AccountFacade;
-import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.core.security.util.AuthenticationMethod;
+import com.wegas.core.security.util.TokenInfo;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -38,7 +46,14 @@ import javax.mail.internet.AddressException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -73,12 +88,6 @@ public class UserController {
      *
      */
     @Inject
-    private RoleFacade roleFacade;
-
-    /**
-     *
-     */
-    @Inject
     private AccountFacade accountFacade;
 
     /**
@@ -86,9 +95,6 @@ public class UserController {
      */
     @Inject
     private GameFacade gameFacade;
-
-    @Inject
-    private GameModelFacade gameModelFacade;
 
     /**
      *
@@ -166,7 +172,7 @@ public class UserController {
         }
         requestManager.assertGameTrainer(g);
 
-        List<String> emails = new ArrayList<String>();
+        List<String> emails = new ArrayList<>();
         for (Team t : g.getTeams()) {
             emails.addAll(collectEmails(t));
         }
@@ -269,7 +275,7 @@ public class UserController {
     @POST
     @Path("AutoComplete/{value}")
     public List<AbstractAccount> getAutoCompleteByRoles(@PathParam("value") String value, Map<String, List<String>> rolesList) {
-        if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
+        if (!Helper.isLoggedIn(SecurityUtils.getSubject())) {
             throw new UnauthorizedException();
         }
 
@@ -383,11 +389,10 @@ public class UserController {
      */
     @POST
     @Path("AuthenticateWithToken")
-    public User loginWithDisposableToken(AuthenticationInformation authInfo,
+    public User loginWithDisposableToken(TokenInfo tokenInfo,
         @Context HttpServletRequest request
     ) throws ServletException, IOException, URISyntaxException {
-        return userFacade.authenticateFromToken(authInfo.getLogin(), 
-            authInfo.getHashes().get(0));
+        return userFacade.authenticateFromToken(tokenInfo);
     }
 
     /**
@@ -422,9 +427,9 @@ public class UserController {
     @Path("TeacherGuestLogin")
     @Deprecated
     public void teacherGuestLogin(AuthenticationInformation authInfo) {
-        User user = userFacade.guestLogin();
+        userFacade.guestLogin();
 //        try {
-            //user.addRole(roleFacade.findByName("Scenarist"));
+        //user.addRole(roleFacade.findByName("Scenarist"));
 //        } catch (WegasNoResultException ex) {
 //            throw WegasErrorMessage.error("Teacher mode is not available");
 //        }
@@ -438,7 +443,7 @@ public class UserController {
     @GET
     @Path("LoggedIn")
     public boolean isLoggedIn() {
-        return SecurityUtils.getSubject().isRemembered() || SecurityUtils.getSubject().isAuthenticated();
+        return Helper.isLoggedIn(SecurityUtils.getSubject());
     }
 
     /**
@@ -482,7 +487,6 @@ public class UserController {
             error = WegasErrorMessage.error("This e-mail address is not valid", "CREATE-ACCOUNT-INVALID-EMAIL");
             return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
         } catch (WegasConflictException ex) {
-            String msg;
             switch (ex.getMessage()) {
                 case "email":
                     error = WegasErrorMessage.error("This email address is already taken", "CREATE-ACCOUNT-TAKEN-EMAIL");
@@ -559,7 +563,7 @@ public class UserController {
 
         // It should not be possible for the caller (our AAI login server) to be already logged in...
         Subject subject = SecurityUtils.getSubject();
-        if (subject.isAuthenticated()) {
+        if (Helper.isLoggedIn(subject)) {
             requestManager.logout(subject);
             throw WegasErrorMessage.error("Logging out an already logged in user (internal error?)");
         }
@@ -601,18 +605,21 @@ public class UserController {
     }
 
     /**
-     * @param authInfo
+     * Request reset password email. It's only valid for JPAAccounts
+     *
+     * @param authInfo send e-mail to user identified by authInfo login
      * @param request
      */
     @POST
     @Path("SendNewPassword")
     public void requestPasswordReset(AuthenticationInformation authInfo,
         @Context HttpServletRequest request) {
-        userFacade.requestPasswordReset(authInfo.getLogin(), request);
+        accountFacade.requestPasswordReset(authInfo.getLogin(), request);
     }
 
     /**
-     * @param authInfo
+     * Request validate email. It's only valid for JPAAccounts
+     *
      * @param request
      */
     @GET
@@ -806,7 +813,6 @@ public class UserController {
      * @param accountId   user accountId
      */
     @POST
-
     @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{permission: (View|Edit|Delete|Duplicate|Instantiate|Translate-[A-Z]*|,)*}/{accountId : [1-9][0-9]*}")
     public void shareGameModel(@PathParam("gameModelId") Long gameModelId,
         @PathParam("permission") String permission,

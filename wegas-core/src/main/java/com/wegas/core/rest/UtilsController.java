@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -67,6 +67,8 @@ import org.slf4j.LoggerFactory;
 @Produces(MediaType.APPLICATION_JSON)
 public class UtilsController {
 
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UtilsController.class);
+
     private static final String TRAVIS_URL = "https://api.travis-ci.org";
 
     @Inject
@@ -91,7 +93,7 @@ public class UtilsController {
 
     @Inject
     @Outbound(eventName = SET_LEVEL_EVENT, loopBack = false)
-    Event<LoggerLevel> events;
+    private Event<LoggerLevel> events;
 
     public static class LoggerLevel implements Serializable {
 
@@ -171,7 +173,7 @@ public class UtilsController {
             String prNumber = Helper.getWegasProperty("wegas.build.pr_number", null);
             sb.append(", ");
             if (!Helper.isNullOrEmpty(prNumber) && !"false".equals(prNumber)) {
-                sb.append("pull request ").append(prNumber).append("/").append(prBranch).append(" into ").append(branch);
+                sb.append("pull request ").append(prNumber).append('/').append(prBranch).append(" into ").append(branch);
 
                 int intPrNumber = Integer.parseInt(prNumber, 10);
                 travisVersion = findCurrentTravisVersionPr("master", intPrNumber);
@@ -236,7 +238,7 @@ public class UtilsController {
             response.getEntity().writeTo(baos);
             String strResponse = baos.toString("UTF-8");
 
-            try ( JsonReader reader = Json.createReader(new StringReader(strResponse))) {
+            try (JsonReader reader = Json.createReader(new StringReader(strResponse))) {
                 JsonObject r = reader.readObject();
                 JsonArray builds = r.getJsonArray("builds");
 
@@ -249,7 +251,10 @@ public class UtilsController {
                     }
                 }
             }
-        } catch (URISyntaxException | IOException ex) {
+        } catch (URISyntaxException ex) {
+            logger.error("Please review Travis URL: {}", TRAVIS_URL);
+        } catch (IOException ex) {
+            logger.error("Error while reading Travis response");
         }
         return -1;
     }
@@ -282,9 +287,7 @@ public class UtilsController {
             } else {
                 return -1;
             }
-        } catch (URISyntaxException ex) {
-            return -1;
-        } catch (IOException ex) {
+        } catch (URISyntaxException | IOException ex) {
             return -1;
         }
     }
@@ -301,20 +304,17 @@ public class UtilsController {
     public String getClusterInfo() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("<h1>WegasCluster</h1>");
-
-        sb.append("<h2>Hazelcast</h2>");
-
-        sb.append("<ul>");
+        sb.append("<h1>WegasCluster</h1>")
+            .append("<h2>Hazelcast</h2>")
+            .append("<ul>");
 
         for (Member m : hzInstance.getCluster().getMembers()) {
             sb.append("<li>").append(m.toString()).append("</li>");
         }
 
-        sb.append("</ul>");
-
-        sb.append("<h2>LocalList</h2>");
-        sb.append("<ul>");
+        sb.append("</ul>")
+            .append("<h2>LocalList</h2>")
+            .append("<ul>");
 
         for (String m : applicationLifecycle.getMembers()) {
             sb.append("<li>").append(m).append("</li>");
@@ -329,14 +329,14 @@ public class UtilsController {
     @Path("SetLoggerLevel/{loggerName: .*}/{level: .*}")
     @RequiresRoles("Administrator")
     @Produces(MediaType.TEXT_PLAIN)
-    public String setLoggerLevel(@PathParam("loggerName") String loggerName, @PathParam("level") String level) {
+    public String changeLoggerLevel(@PathParam("loggerName") String loggerName, @PathParam("level") String level) {
         LoggerLevel payload = new LoggerLevel(loggerName, level);
         events.fire(payload);
-        this.setLoggerLevelInternal(payload);
+        this.changeLoggerLevelInternal(payload);
         return level;
     }
 
-    public String setLoggerLevelInternal(@Observes @Inbound(eventName = SET_LEVEL_EVENT) LoggerLevel payload) {
+    public String changeLoggerLevelInternal(@Observes @Inbound(eventName = SET_LEVEL_EVENT) LoggerLevel payload) {
         Logger logger = (Logger) LoggerFactory.getLogger(payload.getLoggerName());
         logger.setLevel(Level.valueOf(payload.getLoggerLevel()));
         return logger.getLevel().toString();
@@ -345,7 +345,7 @@ public class UtilsController {
     @GET
     @Path("SetPopulatingSynchronous")
     @RequiresRoles("Administrator")
-    public String setPopulatingSynchronous() {
+    public String turnPopulatingSynchronous() {
         populatorScheduler.setBroadcast(false);
         populatorScheduler.setAsync(false);
         return "Populating Process is now synchronous";
@@ -354,7 +354,7 @@ public class UtilsController {
     @GET
     @Path("SetPopulatingAsynchronous")
     @RequiresRoles("Administrator")
-    public String setPopulatingAsynchronous() {
+    public String turnPopulatingAsynchronous() {
         populatorScheduler.setBroadcast(true);
         populatorScheduler.setAsync(true);
         return "Populating Process is now asynchronous";
@@ -398,7 +398,7 @@ public class UtilsController {
 
         private String name;
         private Map<String, TreeNode> children = new HashMap<>();
-        private ch.qos.logback.classic.Logger logger;
+        private Logger logger;
 
         public TreeNode(String name) {
             this.name = name;
@@ -430,8 +430,7 @@ public class UtilsController {
 
         @Override
         public String toString() {
-            StringBuilder sb = new StringBuilder("<li>");
-            sb.append("<div class='header'>");
+            StringBuilder sb = new StringBuilder("<li><div class='header'>");
             if (this.name != null && !this.name.isEmpty()) {
                 sb.append("<b>").append(this.name).append("</b>");
             }
@@ -467,7 +466,7 @@ public class UtilsController {
         TreeNode root = new TreeNode(null);
 
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-        for (ch.qos.logback.classic.Logger logger : lc.getLoggerList()) {
+        for (Logger logger : lc.getLoggerList()) {
             String name = logger.getName();
             if (name.startsWith("com.wegas")) {
                 TreeNode leaf = root.getOrCreateLeaf(name);
@@ -477,8 +476,8 @@ public class UtilsController {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("<style>");
-        sb.append("ul, li {\n"
+        sb.append("<style>")
+            .append("ul, li {\n"
                 + "      padding-left: 5px;\n"
                 + "  }\n"
                 + "\n"
@@ -497,15 +496,12 @@ public class UtilsController {
                 + ".levels {\n"
                 + "    left: 375px;\n"
                 + "    position: absolute;\n"
-                + "}");
-        sb.append("</style>");
-
-        sb.append("<ul>");
-        sb.append(root);
-        sb.append("</ul>");
-
-        sb.append("<script>");
-        sb.append("document.body.onclick= function(e){\n"
+                + "}")
+            .append("</style>")
+            .append("<ul>")
+            .append(root)
+            .append("</ul>\n"
+                + "<script>document.body.onclick= function(e){\n"
                 + "   e=window.event? event.srcElement: e.target;\n"
                 + "   if(e.className && e.className.indexOf('level')!=-1){\n"
                 + "		var logger = e.getAttribute(\"data-logger\");\n"
@@ -513,8 +509,8 @@ public class UtilsController {
                 + "        fetch(\"SetLoggerLevel/\" + logger + \"/\" + level, {credentials: \"same-origin\"}).then(function(){window.location.reload();});\n"
                 + "   }\n"
                 + "\n"
-                + "}");
-        sb.append("</script>");
+                + "}")
+            .append("</script>");
 
         return sb.toString();
     }
@@ -527,8 +523,8 @@ public class UtilsController {
         List<ConcurrentHelper.RefCounterLock> allLockedTokens = concurrentHelper.getAllLockedTokens();
         StringBuilder sb = new StringBuilder();
 
-        sb.append("<style>");
-        sb.append("ul, li {\n"
+        sb.append("<style>")
+            .append("ul, li {\n"
                 + "      padding-left: 5px;\n"
                 + "  }\n"
                 + "\n"
@@ -546,14 +542,13 @@ public class UtilsController {
                 + ".levels {\n"
                 + "    left: 300px;\n"
                 + "    position: absolute;\n"
-                + "}");
-        sb.append("</style>");
-
-        sb.append("<h1>Locks</h1>");
-        sb.append("<h3>LocalLocks: effectiveToken</h3>");
-        sb.append(concurrentHelper.getMyLocks());
-        sb.append("<h3>Locks</h3>");
-        sb.append("<ul>");
+                + "}")
+            .append("</style>")
+            .append("<h1>Locks</h1>")
+            .append("<h3>LocalLocks: effectiveToken</h3>")
+            .append(concurrentHelper.getMyLocks())
+            .append("<h3>Locks</h3>")
+            .append("<ul>");
 
         for (ConcurrentHelper.RefCounterLock lock : allLockedTokens) {
             String effAudicence;
@@ -567,14 +562,13 @@ public class UtilsController {
             sb.append("' data-token='");
             sb.append(lock.getToken());
             sb.append("'>");
-            sb.append(effAudicence).append("::").append(lock.getToken()).append(" ").append(lock.getCounter()).append("x");
+            sb.append(effAudicence).append("::").append(lock.getToken()).append(' ').append(lock.getCounter()).append('x');
             sb.append("</li>");
         }
 
-        sb.append("</ul>");
-
-        sb.append("<script>");
-        sb.append("document.body.onclick= function(e){\n"
+        sb.append("</ul>")
+            .append("<script>")
+            .append("document.body.onclick= function(e){\n"
                 + "   e=window.event? event.srcElement: e.target;\n"
                 + "   if(e.className && e.className.indexOf('lock')!=-1){\n"
                 + "		var audience = e.getAttribute(\"data-audience\");\n"
@@ -582,8 +576,8 @@ public class UtilsController {
                 + "        fetch(\"ReleaseLock/\" + token + \"/\" + audience, {credentials: \"same-origin\"}).then(function(){window.location.reload();});\n"
                 + "   }\n"
                 + "\n"
-                + "}");
-        sb.append("</script>");
+                + "}")
+            .append("</script>");
 
         return sb.toString();
     }
@@ -597,7 +591,6 @@ public class UtilsController {
         return "ok";
     }
 
-
     /**
      * Request all cluster instances to clear JPA l2 cache
      */
@@ -606,8 +599,6 @@ public class UtilsController {
     public void jcrGC() {
         jcrConnector.revisionGC();
     }
-
-
 
     /**
      * Returns the current time according to the server.
@@ -623,9 +614,9 @@ public class UtilsController {
     @Produces(MediaType.TEXT_HTML)
     public String getRequestDetails(@Context HttpServletRequest request) {
         StringBuilder sb = new StringBuilder();
-        sb.append("<h1>Http Request</h1>");
-        sb.append("<h2>Headers</h2>");
-        sb.append("<ul>");
+        sb.append("<h1>Http Request</h1>")
+            .append("<h2>Headers</h2>")
+            .append("<ul>");
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
@@ -635,31 +626,31 @@ public class UtilsController {
                 sb.append("<li>").append(headerName).append(": ").append(request.getHeader(headerName)).append("</li>");
             }
         }
-        sb.append("</ul>");
-        sb.append("<h2>Others</h2>");
-        sb.append("<ul>");
-        sb.append("<li>");
-        sb.append("ContextPath: ").append(request.getContextPath());
-        sb.append("</li>");
-        sb.append("<li>");
-        sb.append("PathInfo: ").append(request.getPathInfo());
-        sb.append("</li>");
-        sb.append("<li>");
-        sb.append("PathTranslated: ").append(request.getPathTranslated());
-        sb.append("</li>");
-        sb.append("<li>");
-        sb.append("QueryString: ").append(request.getQueryString());
-        sb.append("</li>");
-        sb.append("<li>");
-        sb.append("RequestURI: ").append(request.getRequestURI());
-        sb.append("</li>");
-        sb.append("<li>");
-        sb.append("RequestURL: ").append(request.getRequestURL());
-        sb.append("</li>");
-        sb.append("<li>");
-        sb.append("ServletPath: ").append(request.getServletPath());
-        sb.append("</li>");
-        sb.append("</ul>");
+        sb.append("</ul>")
+            .append("<h2>Others</h2>")
+            .append("<ul>")
+            .append("<li>")
+            .append("ContextPath: ").append(request.getContextPath())
+            .append("</li>")
+            .append("<li>")
+            .append("PathInfo: ").append(request.getPathInfo())
+            .append("</li>")
+            .append("<li>")
+            .append("PathTranslated: ").append(request.getPathTranslated())
+            .append("</li>")
+            .append("<li>")
+            .append("QueryString: ").append(request.getQueryString())
+            .append("</li>")
+            .append("<li>")
+            .append("RequestURI: ").append(request.getRequestURI())
+            .append("</li>")
+            .append("<li>")
+            .append("RequestURL: ").append(request.getRequestURL())
+            .append("</li>")
+            .append("<li>")
+            .append("ServletPath: ").append(request.getServletPath())
+            .append("</li>")
+            .append("</ul>");
 
         return sb.toString();
     }

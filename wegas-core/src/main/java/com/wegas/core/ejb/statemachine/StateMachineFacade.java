@@ -1,14 +1,18 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.api.StateMachineFacadeI;
-import com.wegas.core.ejb.*;
+import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.ScriptEventFacade;
+import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.WegasAbstractFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
@@ -54,7 +58,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
      * Event parameter will be passed in a function with named parameter
      * {@value #EVENT_PARAMETER_NAME}
      */
-    static final private String EVENT_PARAMETER_NAME = "param";
+    //static final private String EVENT_PARAMETER_NAME = "param";
 
     @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
@@ -187,7 +191,6 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                             throw ex;
                         } catch (WegasScriptException ex) {
                             logger.trace("WegasScriptException: {}", ex);
-                            String script = ex.getScript();
                             Long stateId = transition.getState().getIndex();
                             Long nextStateId = transition.getNextStateId();
                             ex.setScript("Transition from state #" + stateId + " to state #" + nextStateId + " of StateMachine \"" + sm.getLabel() + "\"");

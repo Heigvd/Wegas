@@ -1,12 +1,14 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.util;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -16,7 +18,7 @@ import java.util.Collection;
  */
 public abstract class WegasPermission {
 
-    public static final Collection<WegasPermission> FORBIDDEN = new ArrayList<>();
+    public static final Collection<WegasPermission> FORBIDDEN = Collections.unmodifiableList(new ArrayList<>());
 
     public static Collection<WegasPermission> getAsCollection(WegasPermission... permissions) {
         Collection<WegasPermission> list = new ArrayList<>(permissions.length);

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
@@ -14,7 +14,7 @@ import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.editor.View.I18nHtmlView;
+import com.wegas.editor.view.I18nHtmlView;
 import java.util.Objects;
 import javax.persistence.Entity;
 import jdk.nashorn.api.scripting.JSObject;

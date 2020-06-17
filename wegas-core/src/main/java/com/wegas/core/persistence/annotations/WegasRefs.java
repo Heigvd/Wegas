@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.annotations;
@@ -20,8 +20,8 @@ import java.util.Collection;
 import org.apache.commons.lang3.Validate;
 
 /**
- * WegasReferences allow to reference fields and values
- * within {@link Errored} and {@link Validate} annotations.
+ * WegasReferences allow to reference fields and values within {@link Errored} and {@link Validate}
+ * annotations.
  *
  * @author maxence
  */
@@ -46,7 +46,7 @@ public class WegasRefs {
         public Collection resolveAsCollection(Object self, Mergeable object) {
             Object o = this.resolve(self, object);
             if (o instanceof Collection) {
-                return (Collection)o;
+                return (Collection) o;
             }
             return null;
         }
@@ -81,6 +81,7 @@ public class WegasRefs {
     public static class Self extends Ref {
 
         public Self() {
+            // ensure to have an empty constructor
         }
 
         @Override
@@ -90,23 +91,22 @@ public class WegasRefs {
     }
 
     /**
-     * Resolves to an object property.
-     * With no classFilter provided, resolves to the property of the current object which match fieldName
-     * If a classFilter is provided, the first parent of the given class is used as current object.
+     * Resolves to an object property. With no classFilter provided, resolves to the property of the
+     * current object which match fieldName If a classFilter is provided, the first parent of the
+     * given class is used as current object.
      */
     @JsonTypeName("Field")
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public static class Field extends Ref {
 
         /**
-         * null of empty means the current object,
-         * other values means the first parent which match the class
+         * null of empty means the current object, other values means the first parent which match
+         * the class
          */
         private final Class<? extends Mergeable> classFilter;
 
         /**
-         * null or empty means the object itself.
-         * Other values
+         * null or empty means the object itself. Other values
          */
         private final String fieldName;
 

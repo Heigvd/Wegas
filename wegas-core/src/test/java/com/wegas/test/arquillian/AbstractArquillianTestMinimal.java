@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.test.arquillian;
@@ -182,6 +182,8 @@ public abstract class AbstractArquillianTestMinimal {
      */
     @Before
     public void init() {
+        logger.info("Start TEST {}", testName.getMethodName());
+
         this.startTime = System.currentTimeMillis();
 
         Ini ini = Ini.fromResourcePath("classpath:shiro.ini");
@@ -254,7 +256,9 @@ public abstract class AbstractArquillianTestMinimal {
                 + "CREATE INDEX IF NOT EXISTS index_result_files_result_id on result_files (result_id);"
                 + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_taskdescriptor_id_predecessor_id on taskdescriptor_taskdescriptor (taskdescriptor_id,predecessor_id);"
                 + "CREATE INDEX IF NOT EXISTS index_users_roles_roles_id_user_id on users_roles (role_id,user_id);"
-                + "CREATE INDEX IF NOT EXISTS index_game_toen ON game (token) WHERE (status = 'LIVE' OR status = 'BIN');";
+                + "CREATE INDEX IF NOT EXISTS index_game_toen ON game (token) WHERE (status = 'LIVE' OR status = 'BIN');"
+                + "CREATE INDEX IF NOT EXISTS index_surveydescriptor_token_surveys_id on surveydescriptor_token (surveys_id);"
+                + "CREATE INDEX IF NOT EXISTS index_surveydescriptor_token_tokens_id on surveydescriptor_token (tokens_id);";
 
             statement.execute(setupQuery);
         } catch (SQLException ex) {
@@ -409,9 +413,9 @@ public abstract class AbstractArquillianTestMinimal {
             return guest;
         }
 
-        User user;
-        String username;
-        String password;
+        private User user;
+        private String username;
+        private String password;
         boolean guest;
 
         public WegasUser(User user, String username, String password) {

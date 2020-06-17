@@ -1,0 +1,20 @@
+<div style="position:relative; height:100%; overflow-y:hidden; ">
+    <div style="position:absolute; width:100%; text-align:center; top:50%; transform: translateY(-50%); font-size:24px">
+        <div ng-bind-html="message"></div>
+
+        <div><p></p></div>
+        <div>
+            <a ng-click="abort()"
+               class="button button--small button--default"
+               title="{{'PRIVATE-WS-VERIFY-TOOLTIP'| translate}}">
+                <span class="button__label">Cancel<!--{{'PRIVATE-WS-VERIFY-BTN'| translate}}--></span>
+            </a>
+
+            <a ng-click="logOutAndContinue()"
+               class="button button--small button--default"
+               title="{{'PRIVATE-WS-VERIFY-TOOLTIP'| translate}}">
+                <span class="button__label">Logout and continue<!--{{'PRIVATE-WS-VERIFY-BTN'| translate}}--></span>
+            </a>
+        </div>
+    </div>
+</div>

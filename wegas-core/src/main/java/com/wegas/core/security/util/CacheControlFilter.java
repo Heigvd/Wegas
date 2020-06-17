@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.util;
@@ -31,10 +31,11 @@ import org.slf4j.LoggerFactory;
 @WebFilter(filterName = "CacheControlFilter", urlPatterns = {"/*"}, dispatcherTypes = {DispatcherType.REQUEST})
 public class CacheControlFilter implements Filter {
 
-    final Logger logger = LoggerFactory.getLogger(CacheControlFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(CacheControlFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        // noop
     }
 
     @Override
@@ -53,5 +54,6 @@ public class CacheControlFilter implements Filter {
 
     @Override
     public void destroy() {
+        // noop
     }
 }

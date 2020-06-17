@@ -1,22 +1,19 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.pdf.controllers;
 
-import com.wegas.app.jsf.controllers.*;
+import com.wegas.app.jsf.controllers.ErrorController;
 import com.wegas.app.jsf.controllers.utils.HttpParam;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.persistence.game.DebugTeam;
-import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -27,7 +24,7 @@ import javax.inject.Named;
  *
  * Controls player access to games
  *
- * @author Maxence Laurent <maxence.laurent> <gmail.com>
+ * @author Maxence
  */
 @Named("printController")
 @RequestScoped
@@ -60,13 +57,15 @@ public class PrintController {
     /**
      * CASE #1 export based on a specific user
      */
-    @Inject @HttpParam("id")
+    @Inject
+    @HttpParam("id")
     private Long playerId;
 
     /**
      * CASE# 2 export from scenarist/trainer lobby: fetch default user
      */
-    @Inject @HttpParam
+    @Inject
+    @HttpParam
     private Long gameModelId;
 
     /**
@@ -110,6 +109,7 @@ public class PrintController {
 
     /**
      * Get the gameModel linked to the currentPlayer
+     *
      * @return get the current gameModel
      */
     public GameModel getGameModel() {
@@ -121,10 +121,8 @@ public class PrintController {
      */
     @PostConstruct
     public void init() {
-        String permissionToCheck = null;
-
-        // Case #1: print against a specific user 
-        if (this.playerId != null) {
+        // Case #1: print against a specific user
+        if ((this.playerId != null)) {
             currentPlayer = playerFacade.find(this.playerId);
         }
 
@@ -132,7 +130,7 @@ public class PrintController {
         if (this.gameModelId != null) {
             GameModel gameModel = gameModelFacade.find(this.gameModelId);
             if (gameModel != null) {
-                if (gameModel.isScenario() || gameModel.isModel()){
+                if (gameModel.isScenario() || gameModel.isModel()) {
                     // use the debug player from the debug game
                     currentPlayer = gameModel.getTestPlayer();
                 } else {

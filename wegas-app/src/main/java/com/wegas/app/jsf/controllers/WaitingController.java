@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.jsf.controllers;
@@ -14,12 +15,12 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.persistence.game.DebugGame;
-import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Populatable.Status;
-import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -94,7 +95,14 @@ public class WaitingController extends AbstractGameController {
     }
 
     public String getCurrentUserEmail() {
-        return this.getCurrentUser().getMainAccount().getDetails().getEmail();
+        AbstractAccount account = this.getCurrentUser().getMainAccount();
+        if (account instanceof GuestJpaAccount) {
+            return null;
+        } else if (account != null && account.getDetails() != null) {
+            return account.getDetails().getEmail();
+        } else {
+            return null;
+        }
     }
 
     /**

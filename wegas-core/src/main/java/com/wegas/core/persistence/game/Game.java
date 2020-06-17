@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -26,13 +27,38 @@ import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.persistence.token.InviteToJoinToken;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.Open;
-import com.wegas.editor.View.Hidden;
-import java.util.*;
-import javax.persistence.*;
+import com.wegas.editor.view.Hidden;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -157,7 +183,22 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     /**
      *
      */
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<InviteToJoinToken> invitations = new ArrayList<>();
+
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<InviteToJoinToken> surveyInvitation = new ArrayList<>();
+
+    /**
+     *
+     */
     public Game() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -252,6 +293,27 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     /**
+     * Return all LIVE teams of the game. To be considered LIVE, a team must have a LIVE status and
+     * must contains at least one player with such a LIVE status too
+     *
+     * @return
+     */
+    @JsonIgnore
+    public List<Team> getLiveTeams() {
+        List<Team> lives = new ArrayList<>();
+
+        List<Team> teams = this.getTeams();
+
+        for (Team t : teams) {
+            if (t.getStatus() == Populatable.Status.LIVE && !t.getLivePlayers().isEmpty()) {
+                lives.add(t);
+            }
+        }
+
+        return lives;
+    }
+
+    /**
      * {@inheritDoc }
      */
     @JsonIgnore
@@ -271,9 +333,27 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @JsonIgnore
     @Override
+    public Player getUserLiveOrSurveyPlayer(User user) {
+        for (Team t : this.getTeams()) {
+            Player theP = t.getUserLiveOrSurveyPlayer(user);
+            if (theP != null) {
+                return theP;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @JsonIgnore
+    @Override
     public Player getAnyLivePlayer() {
         for (Team t : this.getTeams()) {
-            return t.getAnyLivePlayer();
+            Player p = t.getAnyLivePlayer();
+            if (p != null) {
+                return t.getAnyLivePlayer();
+            }
         }
         return null;
     }
@@ -484,6 +564,18 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
         return instances;
     }
 
+    public List<InviteToJoinToken> getInvitations() {
+        return invitations;
+    }
+
+    public void setInvitations(List<InviteToJoinToken> invitations) {
+        this.invitations = invitations;
+    }
+
+    public void removeInvitation(InviteToJoinToken invitation) {
+        this.invitations.remove(invitation);
+    }
+
     /**
      * @return true if such a debugteam exists
      */
@@ -508,11 +600,11 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     public enum GameAccess {
 
         /**
-         *
+         * Player can join
          */
         OPEN,
         /**
-         *
+         * Player can not join
          */
         CLOSE
     }

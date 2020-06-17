@@ -1,4 +1,4 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
@@ -40,6 +40,7 @@ public class JpaAuthentication extends AuthenticationMethod {
     private String newSalt;
 
     public JpaAuthentication() {
+        // ensure there is a default constructor
     }
 
     public JpaAuthentication(

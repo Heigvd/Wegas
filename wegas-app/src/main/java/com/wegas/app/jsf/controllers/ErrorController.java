@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.jsf.controllers;
@@ -62,6 +63,10 @@ public class ErrorController implements Serializable {
     }
 
     public void accessDenied() {
+        this.dispatch("Access Denied", "You do not have access to this game");
+    }
+
+    public void accessForSurveyOnly() {
         this.dispatch("Access Denied", "You do not have access to this game");
     }
 

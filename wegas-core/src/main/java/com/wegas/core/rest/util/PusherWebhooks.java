@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
@@ -19,13 +19,12 @@ public class PusherWebhooks {
 
     private Long time_ms;
 
-    public PusherWebhooks() {
-    }
-
+    @SuppressWarnings("PMD")
     public Long getTime_ms() {
         return time_ms;
     }
 
+    @SuppressWarnings("PMD")
     public void setTime_ms(Long time_ms) {
         this.time_ms = time_ms;
     }

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.util;
@@ -32,7 +32,7 @@ public class OnlineUser implements Serializable {
     public OnlineUser(User user, long highestRole) {
         this.fullname = user.getName();
         this.username = user.getMainAccount().getUsername();
-        this.email = user.getMainAccount().getDetails().getEmail();
+        this.email = user.getMainAccount().getEmail();
         this.connectionDate = new Date();
         this.lastActivityDate = new Date();
         this.userId = user.getId();

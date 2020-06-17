@@ -19,7 +19,7 @@
                     var descr = Y.Wegas.Facade.Variable.cache.findById(surveyId);
                     if (descr) {
                         YUI_config.Wegas.dataSelector = {
-                            key: 'id', 
+                            key: 'id',
                             val: surveyId
                         };
                     }
@@ -46,7 +46,7 @@
                     COMPLETED: "COMPLETED",
                     CLOSED: "CLOSED"
                 };
-                
+
                 function onUpdatedSurveyInstance(e) {
                     var entity = e.entity,
                         newStatus = entity.get("status"),
@@ -78,7 +78,7 @@
                         });
                     }
                 }
-                
+
                 // Sends an update to the survey instance of the given descriptor.
                 function sendSurveyStatusChange(desc, surveyStatus, cb) {
                     var inst = desc.getInstance();
@@ -103,10 +103,10 @@
                     };
                     Y.Wegas.Facade.Variable.sendRequest(config);
                 }
-               
-                
+
+
                 Y.Wegas.Facade.Instance.after(inst.get("id") + ":updatedInstance", onUpdatedSurveyInstance, this);
-                
+
                 Y.use(["wegas-survey-widgets", "wegas-popuplistener"], function(Y) {
                     // We are loading the editor, reset all surveys to NOT_STARTED
                     // and force restart of debug-team survey to make sure it's displayed
@@ -126,13 +126,13 @@
                         this);
                 });
             });
-        
+
             // Update editor title:
             Y.Wegas.app.after("render", function() {
                 if (!YUI_config.Wegas.dataSelector) {
                     return; // abort
                 }
-                
+
                 function getFriendlyVarName(v) {
                     var name = '',
                         label = I18n.t(v.get("label"));
@@ -157,7 +157,7 @@
                 document.title = friendlyName + ' - Wegas';
             });
 
-        //]]></ui:define></script>
+            //]]></ui:define></script>
 
     </ui:composition>
 </html>

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
@@ -10,7 +10,7 @@ package com.wegas.core.persistence;
 import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
-import com.wegas.editor.View.NumberView;
+import com.wegas.editor.view.NumberView;
 
 /**
  *
@@ -25,5 +25,5 @@ public interface WithId {
                     index = -1000
             )
     )
-    public Long getId();
+    Long getId();
 }

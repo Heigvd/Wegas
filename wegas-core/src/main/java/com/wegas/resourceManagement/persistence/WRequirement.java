@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
@@ -22,8 +22,8 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.ValueGenerators.Zero;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.SelectView;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.SelectView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -47,10 +47,10 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(
-        columnNames = {"taskinstance_id", "wrequirement_name"}),
-        indexes = {
-            @Index(columnList = "taskinstance_id")
-        }
+    columnNames = {"taskinstance_id", "wrequirement_name"}),
+    indexes = {
+        @Index(columnList = "taskinstance_id")
+    }
 )
 public class WRequirement extends AbstractEntity implements NamedEntity {
 
@@ -69,36 +69,36 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
     @Column(name = "wrequirement_name")
     @NotNull
     @WegasEntityProperty(
-            nullable = false,
-            view = @View(
-                    label = "Script Alias",
-                    featureLevel = ADVANCED,
-                    index = -1
-            ))
+        nullable = false,
+        view = @View(
+            label = "Script Alias",
+            featureLevel = ADVANCED,
+            index = -1
+        ))
     private String name;
     /**
      *
      */
     @Column(name = "wlimit")
     @WegasEntityProperty(
-            nullable = false, optional = false, proposal = Zero.class,
-            view = @View(label = "Limit", layout = extraShortInline, index = 10))
+        nullable = false, optional = false, proposal = Zero.class,
+        view = @View(label = "Limit", layout = extraShortInline, index = 10))
     private Integer limit = 0;
     /**
      *
      */
     @Column(name = "wwork")
     @WegasEntityProperty(
-            nullable = false, optional = false, proposal = EmptyString.class,
-            view = @View(label = "", layout = shortInline, value = SelectView.WorkSkills.class, index = 3))
+        nullable = false, optional = false, proposal = EmptyString.class,
+        view = @View(label = "", layout = shortInline, value = SelectView.WorkSkills.class, index = 3))
     private String work = "";
     /*
      *
      */
     @Column(name = "wlevel")
     @WegasEntityProperty(
-            nullable = false, optional = false, proposal = Zero.class,
-            view = @View(label = "", layout = shortInline, value = SelectView.WorkLevels.class, index = 2))
+        nullable = false, optional = false, proposal = Zero.class,
+        view = @View(label = "", layout = shortInline, value = SelectView.WorkLevels.class, index = 2))
     private Integer level = 0;
     /**
      *
@@ -109,22 +109,22 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
      *
      */
     @WegasEntityProperty(
-            nullable = false, optional = false, proposal = Zero.class,
-            view = @View(label = "Quantity", layout = extraShortInline, index = 1))
+        nullable = false, optional = false, proposal = Zero.class,
+        view = @View(label = "Quantity", layout = extraShortInline, index = 1))
     private Long quantity = 0L;
     /*
      *
      */
     @WegasEntityProperty(
-            nullable = false, optional = false, proposal = Zero.class,
-            view = @View(label = "Completeness", value = Hidden.class))
+        nullable = false, optional = false, proposal = Zero.class,
+        view = @View(label = "Completeness", value = Hidden.class))
     private Double completeness = 0.0D;
     /*
      *
      */
     @WegasEntityProperty(
-            nullable = false, optional = false, proposal = Zero.class,
-            view = @View(label = "Quality", value = Hidden.class))
+        nullable = false, optional = false, proposal = Zero.class,
+        view = @View(label = "Quality", value = Hidden.class))
     private Double quality = 0.0D;
 
     /**
@@ -138,6 +138,7 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
      *
      */
     public WRequirement() {
+        // useless but ensure there is an empty constructor
     }
 
     /**
@@ -243,7 +244,7 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
             if (beans != null) {
                 beans.getVariableInstanceFacade().fireNumberChange(this, pVal);
             }
-            */
+             */
         }
     }
 
@@ -306,8 +307,9 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
                 return this.getQuality();
             case "quantity":
                 return this.getQuantity();
+            default:
+                return Double.NaN;
         }
-        return Double.NaN;
     }
 
     /**
@@ -361,7 +363,7 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
     }
 
     @PrePersist
-    private void checkName() {
+    public void checkName() {
         if (name == null || name.isEmpty()) {
             name = work + level + quantity + Helper.genToken(4);
         }

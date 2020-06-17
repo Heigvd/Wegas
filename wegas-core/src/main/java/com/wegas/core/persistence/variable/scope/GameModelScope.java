@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.scope;
@@ -21,8 +21,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -33,7 +31,6 @@ import org.slf4j.LoggerFactory;
 public class GameModelScope extends AbstractScope<GameModel> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(GameModelScope.class);
     /**
      *
      */
@@ -70,13 +67,8 @@ public class GameModelScope extends AbstractScope<GameModel> {
     @JsonIgnore
     @Override
     public void propagateDefaultInstance(InstanceOwner context, boolean create) {
-        if (context instanceof Player) {
-            // Since player's gamemodel already exists, nothing to propagate
-        } else if (context instanceof Team) {
-            // Since team's gamemodel already exists, nothing to propagate
-        } else if (context instanceof Game) {
-            // Since game's gamemodel already exists, nothing to propagate
-        } else {
+        if (context == null || context instanceof GameModel) {
+            // GameModelScope only cares about global contexts
             propagate(getVariableDescriptor().getGameModel(), create);
         }
     }

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
@@ -40,8 +40,17 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.variable.primitive.*;
-import com.wegas.core.persistence.variable.scope.*;
+import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
+import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
+import com.wegas.core.persistence.variable.primitive.StaticTextDescriptor;
+import com.wegas.core.persistence.variable.primitive.StringDescriptor;
+import com.wegas.core.persistence.variable.primitive.TextDescriptor;
+import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.persistence.variable.scope.AbstractScope.ScopeType;
+import com.wegas.core.persistence.variable.scope.GameModelScope;
+import com.wegas.core.persistence.variable.scope.PlayerScope;
+import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
@@ -52,12 +61,12 @@ import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.ValueGenerators.TeamScopeVal;
 import com.wegas.editor.ValueGenerators.Zero;
-import com.wegas.editor.View.I18nStringView;
-import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.SelectView;
-import com.wegas.editor.View.Textarea;
-import com.wegas.editor.View.VisibilitySelectView;
 import com.wegas.editor.Visible;
+import com.wegas.editor.view.I18nStringView;
+import com.wegas.editor.view.NumberView;
+import com.wegas.editor.view.SelectView;
+import com.wegas.editor.view.Textarea;
+import com.wegas.editor.view.VisibilitySelectView;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
@@ -68,17 +77,37 @@ import com.wegas.resourceManagement.persistence.ResourceDescriptor;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.survey.persistence.SurveyDescriptor;
+import com.wegas.survey.persistence.input.SurveyChoicesDescriptor;
 import com.wegas.survey.persistence.input.SurveyInputDescriptor;
+import com.wegas.survey.persistence.input.SurveyNumberDescriptor;
 import com.wegas.survey.persistence.input.SurveySectionDescriptor;
 import com.wegas.survey.persistence.input.SurveyTextDescriptor;
-import com.wegas.survey.persistence.input.SurveyNumberDescriptor;
-import com.wegas.survey.persistence.input.SurveyChoicesDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.QueryHint;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.CacheIndexes;
@@ -355,7 +384,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
             index = -400
         ))
     @Errored(CheckScope.class)
-    private AbstractScope.ScopeType scopeType;
+    private ScopeType scopeType;
 
     @Transient
     @WegasEntityProperty(
@@ -368,7 +397,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
             index = -390
         ))
     @Errored(CheckScope.class)
-    private AbstractScope.ScopeType broadcastScope;
+    private ScopeType broadcastScope;
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
@@ -753,11 +782,11 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     @JsonIgnore
-    public AbstractScope.ScopeType getDeserialisedScopeType() {
+    public ScopeType getDeserialisedScopeType() {
         return this.scopeType;
     }
 
-    public AbstractScope.ScopeType getScopeType() {
+    public ScopeType getScopeType() {
         if (this.scope != null) {
             return this.scope.getScopeType();
         } else {
@@ -765,16 +794,16 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         }
     }
 
-    public void setScopeType(AbstractScope.ScopeType scopeType) {
+    public void setScopeType(ScopeType scopeType) {
         this.scopeType = scopeType;
     }
 
     @JsonIgnore
-    public AbstractScope.ScopeType getDeserialisedBroadcastScopeType() {
+    public ScopeType getDeserialisedBroadcastScopeType() {
         return this.broadcastScope;
     }
 
-    public AbstractScope.ScopeType getBroadcastScope() {
+    public ScopeType getBroadcastScope() {
         if (this.scope != null) {
             return this.scope.getBroadcastScope();
         } else {
@@ -782,7 +811,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         }
     }
 
-    public void setBroadcastScope(AbstractScope.ScopeType broadcastScope) {
+    public void setBroadcastScope(ScopeType broadcastScope) {
         this.broadcastScope = broadcastScope;
     }
 

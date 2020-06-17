@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -11,9 +12,9 @@ import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.wegas.core.AlphanumericComparator;
 import com.wegas.core.Helper;
 import com.wegas.core.api.VariableDescriptorFacadeI;
-import com.wegas.core.tools.FindAndReplaceVisitor;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
+import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
@@ -51,13 +52,11 @@ import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
 import com.wegas.core.persistence.variable.statemachine.DialogueState;
 import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
 import com.wegas.core.tools.FindAndReplacePayload;
-import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.mcq.ejb.QuestionDescriptorFacade;
+import com.wegas.core.tools.FindAndReplaceVisitor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
-import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.reviewing.ejb.ReviewingFacade;
@@ -80,7 +79,6 @@ import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -110,16 +108,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     private ResourceFacade resourceFacade;
 
     @Inject
-    private IterationFacade iterationFacade;
-
-    @Inject
     private ReviewingFacade reviewingFacade;
-
-    @Inject
-    private UserFacade userFacade;
-
-    @Inject
-    private TeamFacade teamFacade;
 
     @Inject
     private GameFacade gameFacade;
@@ -130,19 +119,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     @Inject
     private JCRFacade jcrFacade;
 
-    private QuestionDescriptorFacade questionDescriptorFacade;
-
-    private Beanjection beans = null;
-
-    private Beanjection getBeans() {
-        if (beans == null) {
-            logger.error("INIT BEANS");
-            beans = new Beanjection(variableInstanceFacade, this,
-                resourceFacade, iterationFacade,
-                reviewingFacade, userFacade, teamFacade, questionDescriptorFacade);
-        }
-        return beans;
-    }
+    @Inject
+    private I18nFacade i18nFacade;
 
     /**
      *
@@ -312,7 +290,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
             this.reviveChoiceDescriptor(gm, (ChoiceDescriptor) vd);
         }
 
-        this._revive(gm, vd);
+        this.reviveInternal(gm, vd);
 
         if (vd instanceof PeerReviewDescriptor) {
             reviewingFacade.revivePeerReviewDescriptor((PeerReviewDescriptor) vd);
@@ -337,7 +315,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         }
     }
 
-    private void _revive(GameModel gameModel, VariableDescriptor vd) {
+    private void reviveInternal(GameModel gameModel, VariableDescriptor vd) {
         if (vd.getDeprecatedTitle() != null) {
             String title = vd.getDeprecatedTitle();
             if (title.isEmpty()) {
@@ -518,7 +496,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
     private VariableDescriptor changeScopeRecursively(VariableDescriptor vd,
         AbstractScope.ScopeType newScopeType) {
-        if (!vd.getScope().getClass().getSimpleName().equals(newScopeType)) {
+        if (!vd.getScope().getScopeType().equals(newScopeType)) {
             this.updateScope(vd,
                 AbstractScope.build(newScopeType,
                     newScopeType));
@@ -540,14 +518,14 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     public VariableDescriptor convertToStaticText(VariableDescriptor vd) {
 
         if (vd != null) {
-            TranslatableContent label = vd.getLabel().clone();
+            TranslatableContent label = vd.getLabel().createCopy();
             TranslatableContent value = null;
             if (vd instanceof TextDescriptor) {
                 TextInstance ti = (TextInstance) vd.getDefaultInstance();
-                value = ti.getTrValue().clone();
+                value = ti.getTrValue().createCopy();
             } else if (vd instanceof StringDescriptor) {
                 StringInstance si = (StringInstance) vd.getDefaultInstance();
-                value = si.getTrValue().clone();
+                value = si.getTrValue().createCopy();
             }
 
             if (value != null) {
@@ -583,10 +561,10 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     public VariableDescriptor convertToText(VariableDescriptor vd) {
 
         if (vd != null) {
-            TranslatableContent label = vd.getLabel().clone();
+            TranslatableContent label = vd.getLabel().createCopy();
             TranslatableContent value = null;
             if (vd instanceof StaticTextDescriptor) {
-                value = ((StaticTextDescriptor) vd).getText().clone();
+                value = ((StaticTextDescriptor) vd).getText().createCopy();
                 if (value != null) {
                     TextDescriptor text = new TextDescriptor();
                     text.setDefaultInstance(new TextInstance());
@@ -620,7 +598,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
 
     @Override
     public void remove(VariableDescriptor entity) {
-        GameModel root = entity.getRoot();
         this.preDestroy(entity.getGameModel(), entity);
         entity.getParent().remove(entity);
 
@@ -989,36 +966,46 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         gameModelFacade.resetAndReviveScopeInstances(vd);
     }
 
+    /**
+     * @param targetId           id of the gameModel in which to import the variable
+     * @param variableName       name (scriptAlias) of the variable to import
+     * @param sourceId           id of the gameModel in which to pick the variable
+     * @param targetVariableName name (scriptAlias) of the variable to create
+     * @param newScopeType       optional
+     * @param importLanguages    whether to import languages
+     *
+     * @return
+     */
     public VariableDescriptor cherryPick(Long targetId, String variableName, Long sourceId,
-        String targetVariableName, AbstractScope.ScopeType newScopeType) {
+        String targetVariableName, AbstractScope.ScopeType newScopeType, boolean importLanguages) {
         return this.cherryPick(gameModelFacade.find(targetId),
-            variableName, gameModelFacade.find(sourceId), targetVariableName, newScopeType);
+            variableName, gameModelFacade.find(sourceId), targetVariableName, newScopeType, importLanguages);
     }
 
     /**
-     * Cherry Pick a variable from the source gameModel and import it within the target gameModel.
-     * Such an import is recursive and all referenced files are
-     * {@link JCRFacade#importFile(com.wegas.core.jcr.content.AbstractContentDescriptor, com.wegas.core.jcr.content.ContentConnector)  imported}
-     * too.
-     * <p>
+     * Cherry Pick a variable from the source gameModel and import it within the target
+     * gameModel.Such an import is recursive and all referenced files are
+     * {@link JCRFacade#importFile(com.wegas.core.jcr.content.AbstractContentDescriptor, com.wegas.core.jcr.content.ContentConnector) imported}
+     * too.<p>
      * Such imported files may be renamed to avoid overriding files.
      *
      *
-     * @param target                the gameModel in which to import the variable
-     * @param variableName          name (scriptAlias) of the variable to import
-     * @param source                the gameModel in which to pick the variable
-     * @param targetVariableName    name (scriptAlias) of the variable to create
-     * @param newScopeType          optional
+     * @param target             the gameModel in which to import the variable
+     * @param variableName       name (scriptAlias) of the variable to import
+     * @param source             the gameModel in which to pick the variable
+     * @param targetVariableName name (scriptAlias) of the variable to create
+     * @param newScopeType       optional
+     * @param importLanguages    whether to import languages
      *
      * @return
      */
     public VariableDescriptor cherryPick(GameModel target, String variableName, GameModel source,
-        String targetVariableName, AbstractScope.ScopeType newScopeType) {
+        String targetVariableName, AbstractScope.ScopeType newScopeType, boolean importLanguages) {
 
         if (targetVariableName.length() == 0) {
             targetVariableName = variableName;
         }
-        
+
         VariableDescriptor toImport;
         try {
             toImport = this.find(source, variableName);
@@ -1041,6 +1028,10 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                 throw WegasErrorMessage.error("Patch not yet implemented");
             } else {
                 try {
+                    if (importLanguages) {
+                        i18nFacade.importLanguages(target, source);
+                    }
+
                     theVar = (VariableDescriptor) toImport.duplicate();
                     theVar.setName(targetVariableName);
 
@@ -1066,7 +1057,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                             }
                         });
                     }
-                    
+
                     theVar = this.createChild(target, target,
                         theVar, false);
 

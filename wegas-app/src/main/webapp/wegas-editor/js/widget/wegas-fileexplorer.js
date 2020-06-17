@@ -883,9 +883,9 @@ YUI.add('wegas-fileexplorer', function(Y) {
             }
         }
     );
-
-
     Wegas.FileExplorer = FileExplorer;
+
+
     FileUploader = Y.Base.create('wegas-fileuploader', Y.Widget, [Y.WidgetParent], {
         initializer: function() {
             this.fileList = [];

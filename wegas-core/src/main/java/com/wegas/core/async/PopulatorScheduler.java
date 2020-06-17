@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.async;
@@ -43,7 +43,7 @@ public class PopulatorScheduler {
     private static boolean async = true;
     private static boolean broadcast = true;
 
-    protected static enum PopulatingCommand {
+    protected enum PopulatingCommand {
         START_ONE,
         START_ALL,
         STOP_ALL,
@@ -56,7 +56,7 @@ public class PopulatorScheduler {
 
     @Inject
     @Outbound(eventName = EVENT_NAME, loopBack = true)
-    Event<PopulatingCommand> events;
+    private Event<PopulatingCommand> events;
 
     @Resource
     private ManagedExecutorService managedExecutorService;
@@ -86,7 +86,7 @@ public class PopulatorScheduler {
                 try {
                     logger.info("Wait to re-sycn call");
                     Integer get = scheduleCreation.get();
-                    logger.info ("re-sync done {}", get);
+                    logger.info("re-sync done {}", get);
                 } catch (Exception ex) {
                     logger.error("Synchronous Creation Error: ", ex);
                 }
@@ -165,6 +165,7 @@ public class PopulatorScheduler {
                 Integer get = future.get();
                 logger.info(" * Got {}", get);
             } catch (Exception ex) {
+                logger.error("Error while waiting populator: {} ", ex);
             }
         }
     }
@@ -183,6 +184,7 @@ public class PopulatorScheduler {
                 Integer get = future.get();
                 logger.info(" * Got {}", get);
             } catch (Exception ex) {
+                logger.error("Error while waiting populator: {} ", ex);
             }
         }
 

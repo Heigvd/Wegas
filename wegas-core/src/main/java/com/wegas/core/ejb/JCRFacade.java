@@ -1,17 +1,25 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
 
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.jcr.content.*;
+import com.wegas.core.jcr.content.AbstractContentDescriptor;
+import com.wegas.core.jcr.content.ContentComparator;
+import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
+import com.wegas.core.jcr.content.DescriptorFactory;
+import com.wegas.core.jcr.content.DirectoryDescriptor;
+import com.wegas.core.jcr.content.FileDescriptor;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ModelScoped;
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -20,15 +28,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.ItemExistsException;
-import javax.jcr.LoginException;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.ws.rs.core.Response;
-import org.apache.jackrabbit.oak.namepath.impl.NamePathMapperImpl;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -38,11 +47,24 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class JCRFacade {
 
+    private static final String USERLAND_PATH = ".user-uploads";
+
+    private static final Pattern USERLAND_PATTERN = Pattern.compile("^/" + USERLAND_PATH + "/(Player|Team|GameModel)-([1-9][0-9]*).*");
+
     @Inject
-    JCRConnectorProvider jCRConnectorProvider;
+    private JCRConnectorProvider jCRConnectorProvider;
 
     @Inject
     private GameModelFacade gameModelFacade;
+
+    @Inject
+    private TeamFacade teamFacade;
+
+    @Inject
+    private PlayerFacade playerFacade;
+
+    @Inject
+    private RequestManager requestManager;
 
     /**
      *
@@ -52,7 +74,74 @@ public class JCRFacade {
     /**
      *
      */
-    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(JCRFacade.class);
+    static final private Logger logger = LoggerFactory.getLogger(JCRFacade.class);
+
+    public void assertPathReadRight(GameModel gameModel, String path) {
+        if (gameModel != null) {
+            if (path.startsWith("/" + USERLAND_PATH)) {
+                this.assertPathWriteRight(gameModel, path);
+            } else {
+                requestManager.assertReadRight(gameModel);
+            }
+        } else {
+            throw WegasErrorMessage.error("Invalid gameModel");
+        }
+    }
+
+    public void assertPathWriteRight(GameModel gameModel, String path) {
+        if (gameModel != null) {
+            if (path.startsWith("/" + USERLAND_PATH)) {
+                Matcher matcher = USERLAND_PATTERN.matcher(path);
+                if (matcher.matches()) {
+                    if (matcher.groupCount() >= 2) {
+                        String scope = matcher.group(1);
+                        long id = Long.parseLong(matcher.group(2)); // tested by regex
+                        if ("Player".equals(scope)) {
+                            // Assert player write right
+                            Player player = playerFacade.find(id);
+                            requestManager.assertUpdateRight(player);
+
+                            // and make sure the player plays  in that gameModel
+                            if (!gameModel.equals(player.getGameModel())) {
+                                throw WegasErrorMessage.error("Player not in gameModel");
+                            }
+                        } else if ("Team".equals(scope)) {
+                            // Assert team write right
+                            Team team = teamFacade.find(id);
+                            requestManager.assertUpdateRight(team);
+
+                            // and make sure the team is part of that gameModel
+                            if (!gameModel.equals(team.getGameModel())) {
+                                throw WegasErrorMessage.error("Player not in gameModel");
+                            }
+                        } else {
+                            // Global scope
+                            GameModel find = gameModelFacade.find(id);
+                            requestManager.assertReadRight(gameModel);
+
+                            if (!gameModel.equals(find)) {
+                                throw WegasErrorMessage.error("GameModel mismatch");
+                            }
+                        }
+                    } else {
+                        // Invalid path
+                        throw WegasErrorMessage.error("Invalid path");
+                    }
+                } else {
+                    throw WegasErrorMessage.error("Invalid path");
+                }
+            } else {
+                requestManager.assertUpdateRight(gameModel);
+            }
+        } else {
+            throw WegasErrorMessage.error("Invalid gameModel");
+        }
+    }
+
+    public void deleteUserUploads(GameModel gameModel) {
+        requestManager.assertUpdateRight(gameModel);
+        this.delete(gameModel, WorkspaceType.FILES, USERLAND_PATH, "true");
+    }
 
     /**
      * @param gameModel
@@ -120,8 +209,6 @@ public class JCRFacade {
                 Collections.sort(ret, new ContentComparator());
                 return ret;
             }
-        } catch (LoginException ex) {
-            logger.error(null, ex);
         } catch (RepositoryException ex) {
             logger.error(null, ex);
         }
@@ -187,7 +274,7 @@ public class JCRFacade {
     }
 
     private void assertFilenameIsValid(String filename) {
-        List<String> errors = new LinkedList<String>();
+        List<String> errors = new LinkedList<>();
 
         // rewrite with a powerfil regex
         for (String c : FORBIDDEN_CHARS) {
@@ -199,12 +286,12 @@ public class JCRFacade {
         if (!errors.isEmpty()) {
             StringBuilder sb = new StringBuilder("Filename ").append(filename).append(" is not valid! Character");
             if (errors.size() > 1) {
-                sb.append("s");
+                sb.append('s');
             }
             for (int i = errors.size() - 1; i >= 0; i--) {
-                sb.append(" ").append(errors.get(i));
+                sb.append(' ').append(errors.get(i));
                 if (i > 1) {
-                    sb.append(",");
+                    sb.append(',');
                 } else if (i == 1) {
                     sb.append(" and");
                 }
@@ -312,8 +399,6 @@ public class JCRFacade {
      * @throws RepositoryException
      */
     public DirectoryDescriptor createDirectory(GameModel gameModel, WorkspaceType wType, String name, String path, String note, String description) throws RepositoryException {
-
-        NamePathMapperImpl npm;
         //logger.debug("Directory name: {}", name);
         assertFilenameIsValid(name);
 
@@ -363,7 +448,7 @@ public class JCRFacade {
 
         ContentConnector connector = this.getContentConnector(gameModel, wType);
 
-        if (!path.startsWith("/")) {
+        if (path.isEmpty() || path.charAt(0) != '/') {
             path = "/" + path;
         }
         String[] segments = path.split("/");
@@ -575,7 +660,7 @@ public class JCRFacade {
         String basename;
         String extension;
 
-        int lastIndexOf = filename.lastIndexOf(".");
+        int lastIndexOf = filename.lastIndexOf('.');
         if (lastIndexOf > 0) {
             basename = filename.substring(0, lastIndexOf); // eg picture, a
             extension = filename.substring(lastIndexOf); // eg. .jpg, .txt

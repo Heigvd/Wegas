@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.merge.patch;
@@ -15,6 +15,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
+import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.merge.utils.DefaultWegasFactory;
@@ -38,8 +39,8 @@ import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.editor.JSONSchema.WithVisible;
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -114,7 +115,7 @@ public final class WegasEntityPatch extends WegasPatch {
      * @param recursive
      *
      */
-    WegasEntityPatch(Object identifier, int order,
+    /* package */ WegasEntityPatch(Object identifier, int order,
         WegasCallback userCallback, Method getter, Method setter,
         Mergeable from, Mergeable to, boolean recursive,
         boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
@@ -215,7 +216,7 @@ public final class WegasEntityPatch extends WegasPatch {
             if (cause instanceof WegasRuntimeException) {
                 throw (WegasRuntimeException) cause;
             } else {
-                throw new RuntimeException(cause != null ? cause : ex);
+                throw new WegasWrappedException(cause != null ? cause : ex);
             }
         }
     }
@@ -415,7 +416,7 @@ public final class WegasEntityPatch extends WegasPatch {
                         logger.debug("REJECT PATCH : IGNORE NULL");
                     }
                 } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException | SecurityException | NoSuchMethodException ex) {
-                    throw new RuntimeException(ex);
+                    throw new WegasWrappedException(ex);
                 } finally {
                     logger.unindent();
                 }
@@ -498,7 +499,6 @@ public final class WegasEntityPatch extends WegasPatch {
                             VariableDescriptor p = (VariableDescriptor) orphanParent;
                             if (deleted.containsKey(p.getRefId())) {
                                 // should restore p
-                                p.getName();
                                 DescriptorListI grandparent = p.getParent();
                                 try {
 
@@ -623,7 +623,7 @@ public final class WegasEntityPatch extends WegasPatch {
         return collector;
     }
 
-    private static final class PatchOrderComparator implements Comparator<WegasPatch> {
+    private static final class PatchOrderComparator implements Comparator<WegasPatch>, Serializable {
 
         @Override
         public int compare(WegasPatch o1, WegasPatch o2) {
@@ -637,7 +637,7 @@ public final class WegasEntityPatch extends WegasPatch {
         ident++;
         newLine(sb, ident);
         sb.append("ToEntity ").append(toEntity);
-        if (entityCallbacks.size() > 0) {
+        if (!entityCallbacks.isEmpty()) {
             newLine(sb, ident);
             sb.append("EntityCallback:");
             for (WegasCallback wc : entityCallbacks) {
@@ -674,10 +674,10 @@ public final class WegasEntityPatch extends WegasPatch {
     @Override
     protected PatchDiff buildDiff(boolean bypassVisibility) {
 
-        if (this.toEntity instanceof ModelScoped) {
-            if (!bypassVisibility && ((ModelScoped) this.toEntity).getVisibility().equals(ModelScoped.Visibility.PRIVATE)) {
-                return null;
-            }
+        if (this.toEntity instanceof ModelScoped
+            && !bypassVisibility
+            && ((ModelScoped) this.toEntity).getVisibility().equals(ModelScoped.Visibility.PRIVATE)) {
+            return null;
         }
 
         List<PatchDiff> subs = new ArrayList<>();

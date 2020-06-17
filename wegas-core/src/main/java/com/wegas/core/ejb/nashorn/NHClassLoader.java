@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb.nashorn;
@@ -29,7 +29,7 @@ public class NHClassLoader extends ClassLoader {
         "java.net"
     };
 
-    Logger logger = LoggerFactory.getLogger(NHClassLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(NHClassLoader.class);
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {

@@ -28,10 +28,8 @@ angular.module('wegas.service.auth', [
                     if (data) {
                         var acct = data.accounts[0],
                             isLocal = (acct["@class"] === "JpaAccount");
-
                         // build a common name to be displayed
                         var commonName = ((acct.firstname || "") + " " + (acct.lastname || "")).trim();
-
                         if (commonName) {
                             // first or last name: append username if any
                             if (acct.username) {
@@ -89,7 +87,6 @@ angular.module('wegas.service.auth', [
                 });
                 return deferred.promise;
             };
-
         /**
          *
          * @param {type} string
@@ -308,7 +305,7 @@ angular.module('wegas.service.auth', [
                                 }
                             });
                         },
-                        function (payload){
+                        function(payload) {
                             deferred.resolve(payload);
                         });
                 } else {
@@ -326,21 +323,105 @@ angular.module('wegas.service.auth', [
             return deferred.promise;
         };
 
-        service.loginWithToken = function(email, token) {
+        /**
+         * Returns AAI config for the login page.
+         * @param {type} string
+         * @returns {Array}
+         */
+        service.getAaiConfig = function() {
+            var deferred = $q.defer();
+            var url = "rest/Extended/User/Account/AaiConfig";
+            $http.get(ServiceURL + url, null, {
+                "headers": {
+                    "managed-mode": "true"
+                }
+            }).success(function(data) {
+                if (data !== undefined) {
+                    return deferred.resolve(data);
+                } else if (data.events !== undefined) {
+                    console.log("WEGAS LOBBY : Could not obtain AAI config data");
+                    console.log(data.events);
+                }
+                deferred.resolve();
+                return;
+            }).error(function(data) {
+                if (data.events !== undefined) {
+                    console.log("WEGAS LOBBY : Could not obtain AAI config data");
+                    console.log(data.events);
+                }
+                deferred.resolve();
+                return;
+            });
+            return deferred.promise;
+        };
+
+
+        /**
+         * Fetch the full token from the token hash and accountId.
+         * token + accountId have been sent by e-mail to the user.
+         * 
+         * @param {type} accountId id of account the token is for or 0 if there is no such account
+         * @param {type} token token hash
+         * @returns {promise} the full token
+         */
+        service.getToken = function(accountId, token) {
+            var deferred = $q.defer(),
+                url = "rest/Editor/User/Account/Token";
+            $http.post(window.ServiceURL + url, {
+                "@class": "TokenInfo",
+                accountId: accountId,
+                token: token
+            }).success(function(data) {
+                service.getAuthenticatedUser();
+                deferred.resolve(data);
+            }).error(function(data) {
+                deferred.reject(data && data.message);
+            });
+            return deferred.promise;
+        };
+
+        /**
+         * Uset the token to authenticate. It is only allowed for token which provide autologin and 
+         * are linked to an account.
+         *
+         * @param {type} accountId accountId send by e-mail
+         * @param {type} token token sent by e-mail
+         *
+         * @returns {promise} nothing if successful, error message otherwise
+         */
+        service.loginWithToken = function(accountId, token) {
             var deferred = $q.defer(),
                 url = "rest/User/AuthenticateWithToken";
             $http.post(window.ServiceURL + url, {
-                "@class": "AuthenticationInformation",
-                "login": email,
-                "hashes": [token],
-                "remember": false,
-                "agreed": false
+                "@class": "TokenInfo",
+                accountId: accountId,
+                token: token
             }).success(function() {
                 service.getAuthenticatedUser();
                 deferred.resolve();
             }).error(function(data) {
                 deferred.reject(data && data.message);
             });
+            return deferred.promise;
+        };
+
+        /**
+         * Process the token.
+         *
+         * @param {type} token full token as return by getToken
+         * @returns {promise} maybe updated new token
+         */
+        service.processToken = function(token) {
+            var deferred = $q.defer(),
+                url = "rest/User/Account/ProcessToken/" + token.id;
+            $http.put(window.ServiceURL + url)
+                .success(function(token) {
+                    deferred.resolve(token);
+                })
+                .error(function(data) {
+                    deferred.reject(data && data.message);
+                });
+
             return deferred.promise;
         };
 

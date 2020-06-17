@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.jparealm;
@@ -13,9 +14,13 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.persistence.Permission;
+import com.wegas.core.security.persistence.Shadow;
 import com.wegas.core.security.util.JpaAuthenticationInfo;
 import javax.ejb.EJBException;
-import org.apache.shiro.authc.*;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -35,42 +40,43 @@ public class JpaRealm extends AuthorizingRealm {
      *
      */
     public JpaRealm() {
-        setName("JpaRealm");                                                    //This name must match the name in the User class's getPrincipals() method
+        //This name must match the name in the User class's getPrincipals() method
+        setName("JpaRealm");
+    }
+
+    private AuthenticationInfo doGetFromAccount(JpaAccount account) {
+        Shadow shadow = account.getShadow();
+
+        JpaAuthenticationInfo info = new JpaAuthenticationInfo(account.getId(),
+            shadow.getPasswordHex(),
+            new SimpleByteSource(shadow.getSalt()), getName(), shadow.getHashMethod());
+        return info;
     }
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
-        UsernamePasswordToken token = (UsernamePasswordToken) authcToken;
-        AccountFacade accountFacade = AccountFacade.lookup();
-        RequestManager requestManager = RequestFacade.lookup().getRequestManager();
-        try {
-            requestManager.su();
-            JpaAccount account = accountFacade.findJpaByEmail(token.getUsername());
-
-            JpaAuthenticationInfo info = new JpaAuthenticationInfo(account.getId(),
-                account.getShadow().getPasswordHex(),
-                new SimpleByteSource(account.getShadow().getSalt()),
-                getName(), account.getShadow().getHashMethod());
-            return info;
-
-        } catch (WegasNoResultException e) {
-            // Could not find correponding mail,
+        if (authcToken instanceof UsernamePasswordToken) {
+            UsernamePasswordToken token = (UsernamePasswordToken) authcToken;
+            AccountFacade accountFacade = AccountFacade.lookup();
+            RequestManager requestManager = RequestFacade.lookup().getRequestManager();
             try {
-                JpaAccount account = accountFacade.findJpaByUsername(token.getUsername());// try with the username
-
-                JpaAuthenticationInfo info = new JpaAuthenticationInfo(account.getId(),
-                    account.getShadow().getPasswordHex(),
-                    new SimpleByteSource(account.getShadow().getSalt()),
-                    getName(), account.getShadow().getHashMethod());
-                return info;
-
-            } catch (WegasNoResultException ex) {
-                logger.error("Unable to find token", ex);
-                return null;
+                requestManager.su();
+                JpaAccount account = accountFacade.findJpaByEmail(token.getUsername());
+                return doGetFromAccount(account);
+            } catch (WegasNoResultException e) {
+                // Could not find correponding mail,
+                try {
+                    JpaAccount account = accountFacade.findJpaByUsername(token.getUsername());// try with the username
+                    return doGetFromAccount(account);
+                } catch (WegasNoResultException ex) {
+                    logger.error("Unable to find token", ex);
+                    return null;
+                }
+            } finally {
+                requestManager.releaseSu();
             }
-        } finally {
-            requestManager.releaseSu();
         }
+        return null;
     }
 
     @Override

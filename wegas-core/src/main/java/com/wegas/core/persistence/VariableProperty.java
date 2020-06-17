@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
@@ -30,6 +30,7 @@ public class VariableProperty implements Serializable {
     private String value;
 
     public VariableProperty() {
+        // ensure to have an empty constructor
     }
 
     public VariableProperty(String key, String value) {
@@ -39,7 +40,7 @@ public class VariableProperty implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj != null && obj instanceof VariableProperty) {
+        if (obj instanceof VariableProperty) {
             VariableProperty other = (VariableProperty) obj;
             return this.key.equals(other.getKey());
         }

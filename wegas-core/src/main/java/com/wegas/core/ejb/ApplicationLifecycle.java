@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -249,7 +249,7 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
             sb.append("** Hazelcast **\n");
 
             for (Member m : hzInstance.getCluster().getMembers()) {
-                sb.append(" - ").append(m.toString()).append("\n");
+                sb.append(" - ").append(m.toString()).append(System.lineSeparator());
             }
         } else {
             sb.append("Hazelcast is down\n");
@@ -258,7 +258,7 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
         sb.append("** LocalList **\n");
 
         for (String m : this.getMembers()) {
-            sb.append(" - ").append(m).append("\n");
+            sb.append(" - ").append(m).append(System.lineSeparator());
         }
 
         logger.info(sb.toString());

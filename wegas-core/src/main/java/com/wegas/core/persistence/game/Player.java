@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -34,15 +35,33 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.Zero;
-import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.StringView;
+import com.wegas.editor.view.NumberView;
+import com.wegas.editor.view.StringView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.persistence.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,10 +84,10 @@ import org.slf4j.LoggerFactory;
     query = "SELECT p.team.gameTeams.game.id FROM Player p where p.user.id = :userId")
 @NamedNativeQuery(name = "Player.IsTrainerForUser",
     query = "SELECT true FROM player as player "
-        + " JOIN team AS team on team.id = player.team_id"
-        + " JOIN gameteams AS gt on gt.id = team.gameteams_id"
-        + " JOIN permission perm on perm.permissions LIKE 'Game:%Edit%:g' || gt.game_id"
-        + " WHERE player.user_id = ?1 AND perm.user_id = ?2")
+    + " JOIN team AS team on team.id = player.team_id"
+    + " JOIN gameteams AS gt on gt.id = team.gameteams_id"
+    + " JOIN permission perm on perm.permissions LIKE 'Game:%Edit%:g' || gt.game_id"
+    + " WHERE player.user_id = ?1 AND perm.user_id = ?2")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(indexes = {
     @Index(columnList = "user_id"),
@@ -163,6 +182,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      *
      */
     public Player() {
+        // ensure to have an empty constructor
     }
 
     /**
@@ -290,10 +310,8 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
      */
     @JsonIgnore
     public Long getGameId() {
-        if (this.getTeam() != null) {
-            if (this.getGame() != null) {
-                return this.getTeam().getGame().getId();
-            }
+        if (this.getTeam() != null && this.getGame() != null) {
+            return this.getTeam().getGame().getId();
         }
         return null;
     }
@@ -364,10 +382,12 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     public String getHomeOrg() {
         if (this.user != null) {
             AbstractAccount account = user.getMainAccount();
-            if (account instanceof AaiAccount) {
-                return "AAI " + ((AaiAccount) account).getHomeOrg();
-            } else if (account != null && Boolean.TRUE == account.isVerified()) { // avoid NPE : isVerified() means isVerified().getValue() !!
-                return account.getEmailDomain();
+            if (account != null) {
+                if (account instanceof AaiAccount) {
+                    return "AAI " + ((AaiAccount) account).getHomeOrg();
+                } else if (account.isVerified()) {
+                    return account.getEmailDomain();
+                }
             }
         }
         return "";
@@ -412,7 +432,22 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     @Override
     @JsonIgnore
     public Player getUserLivePlayer(User user) {
-        if (this.getStatus().equals(Status.LIVE) 
+        if (this.getStatus().equals(Status.LIVE)
+            && Objects.equal(this.user, user)) {
+            return this;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    @JsonIgnore
+    public Player getUserLiveOrSurveyPlayer(User user) {
+        if ((this.getStatus().equals(Status.LIVE)
+            || this.getStatus().equals(Status.SURVEY))
             && Objects.equal(this.user, user)) {
             return this;
         } else {
@@ -422,7 +457,7 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
 
     @Override
     public Player getTestPlayer() {
-        if (this.isTestPlayer()){
+        if (this.isTestPlayer()) {
             return this;
         } else {
             return null;

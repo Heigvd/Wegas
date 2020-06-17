@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
@@ -14,10 +14,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
-import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.StringView;
-import javax.persistence.*;
+import com.wegas.editor.view.NumberView;
+import com.wegas.editor.view.StringView;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  *
@@ -236,24 +246,23 @@ public class Activity extends AbstractAssignement {
         WRequirement theReq = this.getRequirement();
 
         if (theTask != null) {
-            theTask = ((TaskInstance) beans.getVariableInstanceFacade().find(theTask.getId()));
-            if (theTask != null) {
-                theTask.getActivities().remove(this);
+            VariableInstance find = beans.getVariableInstanceFacade().find(theTask.getId());
+            if (find instanceof TaskInstance) {
+                ((TaskInstance) find).getActivities().remove(this);
             }
         }
         if (theResource != null) {
-            theResource = ((ResourceInstance) beans.getVariableInstanceFacade().find(theResource.getId()));
-            if (theResource != null) {
-                theResource.getActivities().remove(this);
+            VariableInstance find = beans.getVariableInstanceFacade().find(theResource.getId());
+            if (find instanceof ResourceInstance){
+                ((ResourceInstance) find).getActivities().remove(this);
             }
         }
 
         if (theReq != null) {
             TaskInstance ti = theReq.getTaskInstance();
             if (ti != null) {
-                ti = ((TaskInstance) beans.getVariableInstanceFacade().find(ti.getId()));
-                if (ti != null) {
-
+                VariableInstance find = beans.getVariableInstanceFacade().find(ti.getId());
+                if (find instanceof TaskInstance) {
                     theReq = beans.getResourceFacade().findRequirement(theReq.getId());
 
                     //theReq = taskInstance.getRequirementById(theReq.getId());

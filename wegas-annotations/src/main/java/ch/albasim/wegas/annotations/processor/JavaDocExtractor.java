@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
@@ -34,7 +33,7 @@ import javax.tools.StandardLocation;
     "ch.albasim.wegas.annotations.WegasExtraProperty",
     "ch.albasim.wegas.annotations.Scriptable"
 })*/
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_11)
 public class JavaDocExtractor extends AbstractProcessor {
 
     private Map<String, ClassDoc> data = new HashMap<>();
@@ -46,7 +45,7 @@ public class JavaDocExtractor extends AbstractProcessor {
         set.add(WegasEntityProperty.class.getName());
         set.add(WegasEntityProperty.class.getName());
         set.add(WegasEntityProperty.class.getName());
-        
+
         return set;
     }
 
@@ -98,9 +97,10 @@ public class JavaDocExtractor extends AbstractProcessor {
         for (final Element element : roundEnv.getElementsAnnotatedWith(WegasEntityProperty.class)) {
             String javadoc = this.getJavaDoc(element);
 
-            if (element instanceof TypeElement) {
+            /*if (element instanceof TypeElement) {
 
-            } else if (element instanceof VariableElement) {
+            } else */
+            if (element instanceof VariableElement) {
                 final VariableElement vElem = (VariableElement) element;
 
                 ClassDoc classDoc = this.getClassDoc(element);
@@ -132,7 +132,7 @@ public class JavaDocExtractor extends AbstractProcessor {
                     name = extra.name();
                 } else {
                     name = Introspector.decapitalize(eElem.getSimpleName().toString()
-                            .replaceFirst("get", "").replaceFirst("is", ""));
+                        .replaceFirst("get", "").replaceFirst("is", ""));
                 }
 
                 Map<String, String> fields = classDoc.getFields();
@@ -169,7 +169,7 @@ public class JavaDocExtractor extends AbstractProcessor {
 
             try {
                 final FileObject fileObject = processingEnv.getFiler().createResource(StandardLocation.SOURCE_OUTPUT,
-                        "com.wegas.javadoc", "javadoc.json");
+                    "com.wegas.javadoc", "javadoc.json");
 
                 try (Writer writer = fileObject.openWriter()) {
                     ObjectMapper mapper = new ObjectMapper();

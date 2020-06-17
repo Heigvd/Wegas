@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -10,20 +11,27 @@ package com.wegas.core.persistence.game;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.game.Game.GameAccess;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.persistence.token.InviteToJoinToken;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.Textarea;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.Textarea;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -137,6 +145,13 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     @JsonIgnore
     private GameTeams gameTeams;
 
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<InviteToJoinToken> invitations = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     private User createdBy;
 
@@ -152,6 +167,7 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      *
      */
     public Team() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -229,11 +245,29 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         return players;
     }
 
+    /**
+     * {@inheritDoc }
+     */
     @JsonIgnore
     @Override
     public Player getUserLivePlayer(User user) {
         for (Player p : this.getPlayers()) {
             Player theP = p.getUserLivePlayer(user);
+            if (theP != null) {
+                return theP;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @JsonIgnore
+    @Override
+    public Player getUserLiveOrSurveyPlayer(User user) {
+        for (Player p : this.getPlayers()) {
+            Player theP = p.getUserLiveOrSurveyPlayer(user);
             if (theP != null) {
                 return theP;
             }
@@ -252,6 +286,15 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         return null;
     }
 
+    @JsonIgnore
+    public Player getAnySurveyPlayer() {
+        for (Player p : this.getPlayers()) {
+            if (p.getStatus().equals(Populatable.Status.SURVEY)) {
+                return p;
+            }
+        }
+        return null;
+    }
 
     @JsonIgnore
     @Override
@@ -363,7 +406,11 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     public Integer getDeclaredSize() {
-        return declaredSize == null ? 0 : declaredSize;
+        if (declaredSize != null) {
+            return declaredSize;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -426,6 +473,18 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
         this.privateInstances = privateInstances;
     }
 
+    public List<InviteToJoinToken> getInvitations() {
+        return invitations;
+    }
+
+    public void setInvitations(List<InviteToJoinToken> invitations) {
+        this.invitations = invitations;
+    }
+
+    public void removeInvitation(InviteToJoinToken invitation) {
+        this.invitations.remove(invitation);
+    }
+
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         Game game = this.getGame();
@@ -463,11 +522,10 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
 
     @Override
     public Collection<WegasPermission> getRequieredCreatePermission() {
-        switch (this.getGame().getAccess()) {
-            case OPEN:
-                return null; // everybody can register en new team
-            default:
-                return WegasPermission.FORBIDDEN; // nobody can create
+        if (this.getGame().getAccess() == GameAccess.OPEN) {
+            return null; // everybody can register en new team
+        } else {
+            return WegasPermission.FORBIDDEN; // nobody can create
         }
     }
 

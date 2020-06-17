@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.messaging.persistence;
@@ -13,12 +13,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
-import com.wegas.editor.View.Hidden;
+import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -61,11 +62,11 @@ public class InboxInstance extends VariableInstance {
      */
     @JsonManagedReference("inbox-message")
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(
-                    label = "Messages",
-                    value = Hidden.class
-            ))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(
+            label = "Messages",
+            value = Hidden.class
+        ))
     private List<Message> messages = new ArrayList<>();
 
     /**
@@ -130,7 +131,8 @@ public class InboxInstance extends VariableInstance {
      * @param from    message sender
      * @param subject message subject
      * @param body    message body
-     * @param token   ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
+     * @param
+     *                token   ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
      *
      * @return The sent message
      */
@@ -142,7 +144,8 @@ public class InboxInstance extends VariableInstance {
      * @param from    message sender
      * @param subject message subject
      * @param body    message body
-     * @param date    ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
+     * @param
+     *                date    ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
      *
      * @return The sent message
      */
@@ -166,7 +169,8 @@ public class InboxInstance extends VariableInstance {
      * @param from        message sender
      * @param subject     message subject
      * @param body        message body
-     * @param date        ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
+     * @param
+     *                    date        ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
      * @param attachments
      *
      * @return The sent message
@@ -180,8 +184,10 @@ public class InboxInstance extends VariableInstance {
      * @param from        message sender
      * @param subject     message subject
      * @param body        message body
-     * @param date        ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
-     * @param token       ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
+     * @param
+     *                    date        ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
+     * @param
+     *                    token       ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
      * @param attachments
      *
      * @return The sent message
@@ -211,8 +217,8 @@ public class InboxInstance extends VariableInstance {
      * @return
      */
     public Message sendMessage(final TranslatableContent from, final TranslatableContent subject,
-            final TranslatableContent body, final TranslatableContent date,
-            String token, final List<Attachment> attachments) {
+        final TranslatableContent body, final TranslatableContent date,
+        String token, final List<Attachment> attachments) {
         final Message msg = new Message();
         msg.setToken(token);
         msg.setFrom(TranslatableContent.merger(null, from));
@@ -234,8 +240,8 @@ public class InboxInstance extends VariableInstance {
     }
 
     public Message sendMessage(final JSObject from, final JSObject subject,
-            final JSObject body, final JSObject date,
-            String token, final List<JSObject> attachments) {
+        final JSObject body, final JSObject date,
+        String token, final List<JSObject> attachments) {
 
         List<Attachment> atts = new ArrayList<>();
         if (attachments != null && !attachments.isEmpty()) {
@@ -245,11 +251,11 @@ public class InboxInstance extends VariableInstance {
         }
 
         return this.sendMessage(
-                TranslatableContent.readFromNashorn(from),
-                TranslatableContent.readFromNashorn(subject),
-                TranslatableContent.readFromNashorn(body),
-                TranslatableContent.readFromNashorn(date),
-                token, atts);
+            TranslatableContent.readFromNashorn(from),
+            TranslatableContent.readFromNashorn(subject),
+            TranslatableContent.readFromNashorn(body),
+            TranslatableContent.readFromNashorn(date),
+            token, atts);
     }
 
     /**
@@ -280,8 +286,10 @@ public class InboxInstance extends VariableInstance {
      */
     public Message getMessageBySubject(String subject) {
         for (Message m : this.getMessages()) {
-            if (m.getSubject().equals(subject)) {
-                return m;
+            for (Translation tr : m.getSubject().getRawTranslations()) {
+                if (tr.getTranslation().equals(subject)) {
+                    return m;
+                }
             }
         }
         return null;

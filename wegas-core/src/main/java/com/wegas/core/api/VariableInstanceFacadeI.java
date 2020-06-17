@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.api;
@@ -22,5 +22,5 @@ public interface VariableInstanceFacadeI {
      *
      * @return
      */
-    public VariableInstance find(Long id);
+    VariableInstance find(Long id);
 }

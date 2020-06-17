@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.log.xapi.jta;
@@ -88,7 +88,8 @@ public class XapiTx implements Serializable {
     }
 
     /**
-     * As soon as this bean is construct, make sure there is a XapiSync bound to the current transaction
+     * As soon as this bean is construct, make sure there is a XapiSync bound to the current
+     * transaction
      */
     @PostConstruct
     public void construct() {
@@ -107,20 +108,18 @@ public class XapiTx implements Serializable {
 
     /**
      * make sure changes from all opened repositories are "committable" or throw something bad
+     * @throws WegasErrorMessage if commit will not be possible
      */
-    protected void prepare() throws RuntimeException {
+    protected void prepare() {
         if (!statements.isEmpty() && isLoggingEnabled()) {
             // checkink connection may be  very slow
             long start = System.currentTimeMillis();
             /**
-            try {
-                // well, the connection seems valid
-                // I still don't know whether I can post statement or not...
-                xapi.getClient().limitResults(1).getStatements();
-            } catch (Exception ex) {
-                throw WegasErrorMessage.error("XAPI: is enabled but client fails to connect: " + ex);
-            }
-            */
+             * try { // well, the connection seems valid // I still don't know whether I can post
+             * statement or not... xapi.getClient().limitResults(1).getStatements(); } catch
+             * (Exception ex) { throw WegasErrorMessage.error("XAPI: is enabled but client fails to
+             * connect: " + ex); }
+             */
             long step1 = System.currentTimeMillis();
 
             for (Object o : statements) {
@@ -141,7 +140,7 @@ public class XapiTx implements Serializable {
 
             long step2 = System.currentTimeMillis();
             logger.trace("Xapi Prepare: skip check connection in {} ms; check statements: {}, total: {}",
-                    step1 - start, step2 - step1, step2 - start);
+                step1 - start, step2 - step1, step2 - start);
         }
     }
 
@@ -149,17 +148,15 @@ public class XapiTx implements Serializable {
      * Cancel all statements
      */
     protected void rollback() {
-        statements.clear();;
+        statements.clear();
     }
 
     /**
      * Commit all changes in all opened repositories
      */
     protected void commit() {
-        if (!statements.isEmpty()) {
-            if (isLoggingEnabled()) {
-                xapi.asyncPost(statements);
-            }
+        if (!statements.isEmpty() && isLoggingEnabled()) {
+            xapi.asyncPost(statements);
         }
     }
 
@@ -173,7 +170,7 @@ public class XapiTx implements Serializable {
 
     public Boolean isLoggingEnabled() {
         if (Helper.isNullOrEmpty(Helper.getWegasProperty("xapi.auth"))
-                || Helper.isNullOrEmpty(Helper.getWegasProperty("xapi.host"))) {
+            || Helper.isNullOrEmpty(Helper.getWegasProperty("xapi.host"))) {
             logger.warn("XAPI host/auth are not defined");
             return false;
         }

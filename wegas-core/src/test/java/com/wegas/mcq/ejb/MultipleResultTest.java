@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.ejb;
@@ -28,9 +28,6 @@ import org.slf4j.LoggerFactory;
  * @author Maxence Laurent <maxence.laurent> at <gmail.com>
  */
 public class MultipleResultTest extends AbstractArquillianTest {
-
-    @Inject
-    private QuestionDescriptorFacade questionDescriptorFacade;
 
     @Inject
     private Answerer answerer;

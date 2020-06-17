@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -16,9 +17,11 @@ import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Game.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,10 +31,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -40,6 +52,8 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -49,6 +63,8 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class GameController {
+
+    private static final Logger logger = LoggerFactory.getLogger(GameController.class);
 
     /**
      *
@@ -108,13 +124,13 @@ public class GameController {
      *
      */
     @POST
-    public Game create(@PathParam("gameModelId") Long gameModelId, Game game) throws CloneNotSupportedException {
-        gameFacade.publishAndCreate(gameModelId, game);
+    public Game create(@PathParam("gameModelId") Long gameModelId, Game entity) throws CloneNotSupportedException {
+        gameFacade.publishAndCreate(gameModelId, entity);
         //@Dirty: those lines exist to get a new game pointer. Cache is messing with it
         // removing debug team will stay in cache as this game pointer is new. work around
         gameFacade.flush();
-        gameFacade.detach(game);
-        game = gameFacade.find(game.getId());
+        gameFacade.detach(entity);
+        Game game = gameFacade.find(entity.getId());
         //gameFacade.create(gameModelId, game);
         return gameFacade.getGameWithoutDebugTeam(game);
     }
@@ -235,9 +251,10 @@ public class GameController {
         Game game = gameFacade.find(gameId);
         StringBuilder sb = new StringBuilder();
 
-        sb.append("\"Team Name\", \"Team Notes\", \"Team Creation Date\", \"Team Status\",");
-        sb.append("\"Player Name\", \"Player email\", \"Email verified\", \"Player Join Time\", \"Player Language\", \"Player Status\"");
-        sb.append(System.lineSeparator());
+        sb.append("\"Team Name\", \"Team Notes\", \"Team Creation Date\", \"Team Status\","
+            + "\"Player Name\", \"Player email\", \"Email verified\", "
+            + "\"Player Join Time\", \"Player Language\", \"Player Status\"")
+            .append(System.lineSeparator());
 
         for (Team t : game.getTeams()) {
             if (t instanceof DebugTeam == false) {
@@ -251,7 +268,7 @@ public class GameController {
                         appendCSVField(sb, p.getUser().getMainAccount().getDetails().getEmail()).append(",");
                         appendCSVField(sb, Boolean.TRUE.equals(p.getUser().getMainAccount().isVerified()) ? "yes" : "no").append(",");
                     } else {
-                        sb.append(",").append(",");
+                        sb.append(",,");//  empty fields
                     }
                     appendCSVField(sb, p.getJoinTime().toString()).append(",");
                     appendCSVField(sb, game.getGameModel().getLanguageByCode(p.getLang()).getLang()).append(",");
@@ -263,8 +280,8 @@ public class GameController {
         String filename = URLEncoder.encode(game.getName().replaceAll("\\" + "s+", "_") + ".csv", StandardCharsets.UTF_8.displayName());
 
         return Response.ok(sb.toString(), "text/csv")
-                .header("Content-Disposition", "attachment; filename="
-                        + filename).build();
+            .header("Content-Disposition", "attachment; filename="
+                + filename).build();
     }
 
     @GET
@@ -276,18 +293,12 @@ public class GameController {
         Workbook workbook = xlsx.getWorkbood();
 
         StreamingOutput sout;
-        sout = new StreamingOutput() {
-            @Override
-            public void write(OutputStream out) throws IOException, WebApplicationException {
-                workbook.write(out);
-                workbook.close();
-            }
-        };
+        sout = new StreamingOutputImpl(workbook);
 
         String filename = URLEncoder.encode(game.getName().replaceAll("\\" + "s+", "_") + ".xlsx", StandardCharsets.UTF_8.displayName());
 
         return Response.ok(sout, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                .header("Content-Disposition", "attachment; filename=" + filename).build();
+            .header("Content-Disposition", "attachment; filename=" + filename).build();
     }
 
     /**
@@ -298,10 +309,8 @@ public class GameController {
     @RequiresRoles("Administrator")
     public void forceDelete(@PathParam("entityId") Long entityId) {
         Game entity = gameFacade.find(entityId);
-        switch (entity.getStatus()) {
-            case DELETE:
-                gameFacade.remove(entity);
-                break;
+        if (Status.DELETE == entity.getStatus()) {
+            gameFacade.remove(entity);
         }
     }
 
@@ -322,9 +331,9 @@ public class GameController {
     }
 
     /**
-     * Check if a user is logged, Find a game by id and check if this game has an open access, Check if current user is
-     * already a player for this game, Check if the game is played individually, Create a new team with a new player
-     * linked on the current user for the game found.
+     * Check if a user is logged, Find a game by id and check if this game has an open access, Check
+     * if current user is already a player for this game, Check if the game is played individually,
+     * Create a new team with a new player linked on the current user for the game found.
      *
      * @param request
      * @param gameId
@@ -336,38 +345,39 @@ public class GameController {
     @POST
     @Path("{id}/Player")
     public Response joinIndividually(@Context HttpServletRequest request,
-            @PathParam("id") Long gameId) throws WegasNoResultException {
-        Response r = Response.status(Response.Status.UNAUTHORIZED).build();
+        @PathParam("id") Long gameId) throws WegasNoResultException {
         User currentUser = userFacade.getCurrentUser();
         if (currentUser != null) {
-            r = Response.status(Response.Status.BAD_REQUEST).build();
             Game game = gameFacade.find(gameId);
             if (game != null) {
-                r = Response.status(Response.Status.CONFLICT).build();
-                if (game.getAccess() == Game.GameAccess.OPEN) {
-                    if (requestManager.tryLock("join-" + gameId + "-" + currentUser.getId())) {
-                        if (!playerFacade.isInGame(game.getId(), currentUser.getId())) {
-                            if (game.getGameModel().getProperties().getFreeForAll()) {
-                                Team team = new Team(teamFacade.findUniqueNameForTeam(game, currentUser.getName()), 1);
-                                teamFacade.create(game.getId(), team); // return managed team
-                                team = teamFacade.find(team.getId());
-                                gameFacade.joinTeam(team.getId(), currentUser.getId(), request != null ? Collections.list(request.getLocales()) : null);
-                                /**
-                                 * Detach and re-find to fetch the new player
-                                 */
-                                teamFacade.detach(team);
-                                team = teamFacade.find(team.getId());
-                                Player p = team.getPlayers().get(0);
-                                p.setQueueSize(populatorFacade.getQueue().indexOf(p) + 1);
+                if (game.getAccess() == Game.GameAccess.OPEN
+                    && requestManager.tryLock("join-" + gameId + "-" + currentUser.getId())) {
+                    Player player = playerFacade.findPlayer(game.getId(), currentUser.getId());
+                    if (player == null) {
+                        if (game.getGameModel().getProperties().getFreeForAll()) {
+                            player = gameFacade.joinIndividually(game,
+                                request != null ? Collections.list(request.getLocales()) : null);
 
-                                r = Response.status(Response.Status.CREATED).entity(team).build();
-                            }
+                            return Response.status(Response.Status.CREATED).entity(player.getTeam()).build();
+                        } else {
+                            return Response.status(Response.Status.CONFLICT).build();
                         }
+                    } else {
+                        logger.warn("User has already joined this game");
+                        return Response.status(Response.Status.CREATED).entity(player.getTeam()).build();
                     }
+                } else {
+                    // game closed or user is joining in another request
+                    return Response.status(Response.Status.CONFLICT).build();
                 }
+            } else {
+                // game not found
+                return Response.status(Response.Status.BAD_REQUEST).build();
             }
+        } else {
+            // please log in
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
-        return r;
     }
 
     /**
@@ -399,4 +409,72 @@ public class GameController {
         gameFacade.reset(gameId);
         return Response.ok().build();
     }
+
+    public static class StreamingOutputImpl implements StreamingOutput {
+
+        private final Workbook workbook;
+
+        public StreamingOutputImpl(Workbook workbook) {
+            this.workbook = workbook;
+        }
+
+        @Override
+        public void write(OutputStream out) throws IOException, WebApplicationException {
+            workbook.write(out);
+            workbook.close();
+        }
+    }
+
+    /**
+     * Invite all LIVE player to participate in a survey
+     *
+     * @param request
+     * @param gameId
+     * @param surveyIds ids of survey descriptors, comma separated list
+     *
+     * @return account for which an invitation has been sent
+     */
+    @GET
+    @Path("InvitePlayersInSurvey/{surveyIds: .*}")
+    public List<AbstractAccount> inviteInSurvey(@Context HttpServletRequest request,
+        @PathParam("surveyIds") String surveyIds
+    ) {
+        return gameFacade.sendSurveysInvitationToPlayers(request, surveyIds);
+    }
+
+    /**
+     * Invite all LIVE player to participate in a survey anonymously
+     *
+     * @param request
+     * @param gameId
+     * @param surveyIds ids of survey descriptors, comma separated list
+     *
+     * @return account for which an invitation has been sent
+     */
+    @GET
+    @Path("InvitePlayersInSurveyAnonymously/{surveyIds: .*}")
+    public void inviteInSurveyAnonymously(@Context HttpServletRequest request,
+        @PathParam("surveyIds") String surveyIds
+    ) {
+        gameFacade.sendSurveysInvitationAnonymouslyToPlayers(request, surveyIds);
+    }
+
+    /**
+     * Invite given email addresses to participate in a survey anonymously
+     *
+     * @param request
+     * @param gameId
+     * @param surveyIds ids of survey descriptors, comma separated list
+     *
+     * @return account for which an invitation has been sent
+     */
+    @GET
+    @Path("InviteInSurveyAnonymously/{surveyIds: .*}")
+    public void inviteInSurveyAnonymously(@Context HttpServletRequest request,
+        @PathParam("surveyIds") String surveyIds,
+        List<String> recipients
+    ) {
+        gameFacade.sendSurveysInvitationAnonymouslyToList(surveyIds, recipients, request);
+    }
+
 }

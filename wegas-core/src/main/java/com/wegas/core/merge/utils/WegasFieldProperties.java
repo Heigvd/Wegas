@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.merge.utils;
@@ -74,7 +74,7 @@ public class WegasFieldProperties {
      *
      * @throws IntrospectionException should never been thrown (thanks to MergeFacadeTest.testGetterAndSetter)
      */
-    WegasFieldProperties(Field field, WegasEntityProperty wegasProperty, Class<? extends Mergeable> owner) throws IntrospectionException {
+    /* package */ WegasFieldProperties(Field field, WegasEntityProperty wegasProperty, Class<? extends Mergeable> owner) throws IntrospectionException {
         this.owner = owner;
         this.field = field;
         this.fieldClass = field.getType();
@@ -173,7 +173,7 @@ public class WegasFieldProperties {
      * CHILDREN: a list or a map of children
      * PROPERTY: any other value (eg primitive types)
      */
-    public static enum FieldType {
+    public enum FieldType {
         PROPERTY,
         CHILD,
         CHILDREN

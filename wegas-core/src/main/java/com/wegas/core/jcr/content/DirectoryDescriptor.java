@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.content;
@@ -16,12 +16,16 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class DirectoryDescriptor extends AbstractContentDescriptor {
+
+    private static final Logger logger = LoggerFactory.getLogger(DirectoryDescriptor.class);
 
     /**
      * Directory mime-type
@@ -31,7 +35,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
 
     @JsonIgnore
     @WegasEntityProperty(includeByDefault = false, callback = ChildrenCallback.class, notSerialized = true)
-    private List<AbstractContentDescriptor> children;
+    private List<AbstractContentDescriptor> children; // Hack: to make this property visible to MwegasPatch // NOPMD
 
     /**
      *
@@ -74,6 +78,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
         try {
             nodes = this.list();
         } catch (RepositoryException ex) {
+            logger.error("Repository error: {}", ex);
         }
         Long sum = 0L;
         for (AbstractContentDescriptor n : nodes) {
@@ -145,6 +150,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
                     theChild.delete(false);
                     return refId;
                 } catch (RepositoryException ex) {
+                    logger.error("Repository error: {}", ex);
                 }
             }
             return null;
