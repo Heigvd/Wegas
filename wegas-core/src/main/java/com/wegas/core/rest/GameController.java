@@ -439,7 +439,7 @@ public class GameController {
     public List<AbstractAccount> inviteInSurvey(@Context HttpServletRequest request,
         @PathParam("surveyIds") String surveyIds
     ) {
-        return gameFacade.sendSurveysInvitation(request, surveyIds);
+        return gameFacade.sendSurveysInvitationToPlayers(request, surveyIds);
     }
 
     /**
@@ -456,7 +456,7 @@ public class GameController {
     public void inviteInSurveyAnonymously(@Context HttpServletRequest request,
         @PathParam("surveyIds") String surveyIds
     ) {
-        gameFacade.sendSurveysInvitationAnonymously(request, surveyIds);
+        gameFacade.sendSurveysInvitationAnonymouslyToPlayers(request, surveyIds);
     }
 
     /**
@@ -474,7 +474,7 @@ public class GameController {
         @PathParam("surveyIds") String surveyIds,
         List<String> recipients
     ) {
-        gameFacade.sendSurveysInvitationAnonymously(request, surveyIds);
+        gameFacade.sendSurveysInvitationAnonymouslyToList(surveyIds, recipients, request);
     }
 
 }
