@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Toolbar } from './Toolbar';
-import { css } from 'emotion';
-import { primaryLight, primaryDark } from './Theme';
+import { css, cx } from 'emotion';
+import { themeVar } from './Style/ThemeVars';
+import { contentStyle, layoutStyle } from '../css/classes';
 
 interface TabLayoutProps {
   active?: number;
@@ -23,7 +24,7 @@ export class TabLayout extends React.Component<
   render() {
     return (
       <Toolbar vertical={this.props.vertical}>
-        <Toolbar.Header>
+        <Toolbar.Header className={layoutStyle}>
           {this.props.tabs.map((t, i) => {
             return (
               <Tab
@@ -43,7 +44,7 @@ export class TabLayout extends React.Component<
             );
           })}
         </Toolbar.Header>
-        <Toolbar.Content>
+        <Toolbar.Content className={contentStyle}>
           {React.Children.map(this.props.children, (c, i) => {
             return (
               (i === this.state.active ||
@@ -64,29 +65,42 @@ export class TabLayout extends React.Component<
     );
   }
 }
-const tabStyle = css(primaryLight, {
-  display: 'inline-block',
+export const tabStyle = css({
+  display: 'flex',
+  alignItems: 'center',
   cursor: 'pointer',
-  margin: '0 0.2em',
-  borderStyle: 'solid',
-  borderWidth: '1px 1px 0 1px',
+  margin: '0 5px',
   padding: '5px',
 });
-const activeTabStyle = css(tabStyle, primaryDark);
-function Tab(props: {
+export const inactiveTabStyle = css({
+  color: themeVar.Common.colors.SecondaryTextColor,
+  backgroundColor: themeVar.Common.colors.MainColor,
+});
+export const activeTabStyle = css({
+  color: themeVar.Common.colors.SecondaryTextColor,
+  backgroundColor: themeVar.Common.colors.ActiveColor,
+});
+function Tab({
+  active,
+  onClick,
+  children,
+}: {
   active: boolean;
   children: React.ReactChild | null;
   onClick: () => void;
 }) {
-  if (props.children === null) {
+  if (children === null) {
     return null;
   }
   return (
     <div
-      className={`${props.active ? activeTabStyle : tabStyle}`}
-      onClick={props.onClick}
+      className={cx(tabStyle, {
+        [activeTabStyle]: active,
+        [inactiveTabStyle]: !active,
+      })}
+      onClick={onClick}
     >
-      {props.children}
+      {children}
     </div>
   );
 }

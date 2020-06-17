@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { themeVar } from '../../Components/Theme';
+import { themeVar } from '../../Components/Style/ThemeVars';
 
 export const messageStringStyles = [
   'normal',
@@ -33,17 +33,17 @@ interface MessageStringProps {
 function colorByType(type?: MessageStringStyle) {
   switch (type) {
     case 'succes': {
-      return themeVar.successColor;
+      return themeVar.Common.colors.SuccessColor;
     }
     case 'warning': {
-      return themeVar.warningColor;
+      return themeVar.Common.colors.WarningColor;
     }
     case 'error': {
-      return themeVar.errorColor;
+      return themeVar.Common.colors.ErrorColor;
     }
     case 'normal':
     default: {
-      return themeVar.primaryLighterColor;
+      return themeVar.Common.colors.TextColor;
     }
   }
 }

@@ -9,7 +9,7 @@ import SrcEditor, {
 } from './SrcEditor';
 import { WegasScriptEditor } from './WegasScriptEditor';
 import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
-import { Button } from '../../../Components/Inputs/Button/Button';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { MessageString, MessageStringStyle } from '../MessageString';
 
 const infoDuration = 5000;

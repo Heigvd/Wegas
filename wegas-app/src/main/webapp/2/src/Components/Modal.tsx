@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { css } from 'emotion';
-import { ThemeRoot, themeVar } from './Theme';
+import { ThemeRoot } from './Style/Theme';
+import { themeVar } from './Style/ThemeVars';
 
 const modalStyle = css({
   position: 'fixed',
@@ -15,7 +16,8 @@ const modalStyle = css({
   zIndex: 1000,
   '&>div': {
     width: 'fit-content',
-    backgroundColor: themeVar.backgroundColor,
+    backgroundColor: themeVar.Common.colors.BackgroundColor,
+    borderWidth: themeVar.Common.dimensions.BorderWidth,
     margin: '0 auto',
     padding: '10px',
     boxShadow: '0 0 1px 1px',

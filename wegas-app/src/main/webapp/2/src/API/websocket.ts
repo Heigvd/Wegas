@@ -5,6 +5,7 @@ import { updatePusherStatus } from '../data/Reducer/globalState';
 import { manageResponseHandler } from '../data/actions';
 import { Actions } from '../data';
 import * as React from 'react';
+import { wlog } from '../Helper/wegaslog';
 
 const CHANNEL_PREFIX = {
   Admin: 'private-Admin',
@@ -95,7 +96,8 @@ export type WebSocketEvent =
   | 'PageUpdate'
   | 'LibraryUpdate-CSS'
   | 'LibraryUpdate-ClientScript'
-  | 'LibraryUpdate-ServerScript';
+  | 'LibraryUpdate-ServerScript'
+  | 'LockEvent';
 
 const webSocketEvents: WebSocketEvent[] = [
   'EntityUpdatedEvent',
@@ -105,6 +107,7 @@ const webSocketEvents: WebSocketEvent[] = [
   'LibraryUpdate-CSS',
   'LibraryUpdate-ClientScript',
   'LibraryUpdate-ServerScript',
+  'LockEvent',
 ];
 
 interface EventMap {
@@ -117,6 +120,12 @@ interface ICustomEventData {
   deletedEntities: IAbstractEntity[];
   updatedEntities: IAbstractEntity[];
   events: any[];
+}
+
+export interface LockEventData {
+  '@class': 'LockEvent';
+  token: string;
+  status: 'lock' | 'unlock';
 }
 
 /**
@@ -183,7 +192,7 @@ class WebSocketListener {
     if (this.events[eventId]) {
       this.events[eventId].push(callback);
     } else {
-      console.log('Unknown event');
+      wlog('Unknown event');
     }
   }
 
@@ -194,7 +203,7 @@ class WebSocketListener {
     if (this.events[eventId]) {
       this.events[eventId] = this.events[eventId].filter(el => el !== callback);
     } else {
-      console.log('Unknown event');
+      wlog('Unknown event');
     }
   }
 
@@ -223,6 +232,9 @@ class WebSocketListener {
         );
       case 'PageUpdate':
         store.dispatch(Actions.PageActions.get(data as string));
+        return;
+      case 'LockEvent':
+        store.dispatch(Actions.EditorActions.setLock(data as LockEventData));
         return;
       default:
         if (!eventFound) {

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { LabeledView, Labeled } from '../labeled';
 import { CommonView, CommonViewContainer } from '../commonView';
-import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
+import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import { css } from 'emotion';
 import { store } from '../../../../data/store';
@@ -21,15 +21,19 @@ import {
   isLogicalExpression,
   expressionStatement,
   LogicalExpression,
-  logicalExpression,isBinaryExpression,CallExpression,isEmptyStatement
+  logicalExpression,
+  isBinaryExpression,
+  CallExpression,
+  isEmptyStatement,
 } from '@babel/types';
 import { parse } from '@babel/parser';
 import generate from '@babel/generator';
 import { Menu } from '../../../../Components/Menu';
 import { ResizeHandle } from '../../ResizeHandle';
+import { createScript } from '../../../../Helper/wegasEntites';
 
 export const scriptEditStyle = css({
-  // height: '5em',
+  minHeight: '5em',
   marginTop: '0.8em',
   width: '500px',
 });
@@ -119,8 +123,6 @@ function concatStatementsToCondition(
     }
   });
 
-  //binaryExpressions.reverse();
-
   if (canBeMerged) {
     if (binaryExpressions.length === 1) {
       return [expressionStatement(binaryExpressions[0])];
@@ -178,11 +180,7 @@ export function Script({
     (value: string) => {
       if (value !== script.current) {
         script.current = value;
-        onChange({
-          '@class': 'Script',
-          language: 'JavaScript',
-          content: value,
-        });
+        onChange(createScript(value));
       }
     },
     [onChange],
@@ -273,7 +271,7 @@ export function Script({
 
   return (
     <CommonViewContainer view={view} errorMessage={error}>
-      <Labeled label={view.label} description={view.description} /*{...view}*/>
+      <Labeled label={view.label} description={view.description}>
         {({ labelNode }) => {
           return (
             <>
@@ -294,7 +292,7 @@ export function Script({
               {isScriptCondition(view.mode) && (
                 <Menu
                   label={operator}
-                  items={operators.map(o => ({ label: o }))}
+                  items={operators.map(o => ({ label: o, value: o }))}
                   onSelect={({ label }) => onSelectOperator(label)}
                 />
               )}

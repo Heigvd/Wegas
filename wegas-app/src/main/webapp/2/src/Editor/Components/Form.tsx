@@ -1,10 +1,11 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
-import { defaultPadding, expand, noOverflow } from '../../css/classes';
+import { defaultMargin, expandBoth, noOverflow } from '../../css/classes';
 import './FormView';
-import { Button, ButtonProps } from '../../Components/Inputs/Button/Button';
-import { ConfirmButton } from '../../Components/Inputs/Button/ConfirmButton';
+import { Button, ButtonProps } from '../../Components/Inputs/Buttons/Button';
+import { wlog } from '../../Helper/wegaslog';
+import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 
 interface EditorProps<T> {
   entity?: T;
@@ -56,7 +57,7 @@ export class Form<T> extends React.Component<
   }
   render() {
     return (
-      <Toolbar className={expand}>
+      <Toolbar className={expandBoth}>
         <Toolbar.Header>
           {this.props.update && (
             <Button
@@ -66,10 +67,7 @@ export class Form<T> extends React.Component<
                 if (this.state.val !== this.props.entity && this.form) {
                   const validation = this.form.validate();
                   if (validation.length) {
-                    console.log(
-                      this.state.val,
-                      JSON.stringify(validation, null, 2),
-                    );
+                    wlog(this.state.val, JSON.stringify(validation, null, 2));
                   } else {
                     this.props.update!(this.state.val);
                   }
@@ -115,7 +113,7 @@ export class Form<T> extends React.Component<
           })}
         </Toolbar.Header>
         <Toolbar.Content className={noOverflow}>
-          <div className={defaultPadding}>
+          <div className={defaultMargin}>
             <JSONForm
               ref={n => {
                 if (n != null) {

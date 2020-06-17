@@ -49,6 +49,7 @@ export function Code({ view, value, onChange }: CodeProps) {
                   onChange={onValueChange}
                   minimap={false}
                   noGutter={true}
+                  resizable
                 />
               </div>
             </>

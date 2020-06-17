@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { cx } from 'emotion';
 import { Toolbar } from '../../Components/Toolbar';
-import { IconButton } from '../../Components/Inputs/Button/IconButton';
-import { themeVar } from '../../Components/Theme';
+import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { LanguagesAPI } from '../../API/languages.api';
 import { useGameModel } from '../../Components/Hooks/useGameModel';
 import { GameModel } from '../../data/selectors';
@@ -13,10 +12,11 @@ import { AvailableViews } from './FormView';
 import getEditionConfig from '../editionConfig';
 import { overrideSchema } from './EntityEditor';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
-import { flex, grow, centeredContent, flexColumn } from '../../css/classes';
+import { flex, grow, justifyCenter, flexColumn } from '../../css/classes';
+import { themeVar } from '../../Components/Style/ThemeVars';
 
-const edition = { color: themeVar.primaryDarkerColor };
-const simple = { color: themeVar.primaryLighterColor };
+const edition = { color: themeVar.Common.colors.ActiveColor };
+const simple = { color: themeVar.Common.colors.TextColor };
 
 const title = 'Translation Manager';
 
@@ -69,7 +69,7 @@ export default function LanguageEditor() {
                 return (
                   <React.Fragment key={language.code}>
                     {index > 0 && (
-                      <div className={cx(flex, grow, centeredContent)}>
+                      <div className={cx(flex, grow, justifyCenter)}>
                         <IconButton
                           icon="arrows-alt-h"
                           tooltip="Priorize language on the right"
@@ -88,7 +88,7 @@ export default function LanguageEditor() {
                         />
                       </div>
                     )}
-                    <div className={cx(flex, grow, centeredContent)}>
+                    <div className={cx(flex, grow, justifyCenter)}>
                       {language.code}
                       <input
                         type="checkbox"
@@ -132,7 +132,7 @@ export default function LanguageEditor() {
                         actions={[
                           {
                             label: 'Save',
-                            action: function(e: IGameModelLanguage) {
+                            action: function (e: IGameModelLanguage) {
                               LanguagesAPI.updateLanguage(e).then(
                                 gameModelLanguage => {
                                   getDispatch()(
@@ -156,7 +156,7 @@ export default function LanguageEditor() {
                   return (
                     <div
                       key={language.code}
-                      className={cx(flex, grow, centeredContent)}
+                      className={cx(flex, grow, justifyCenter)}
                     >
                       <div className={flexColumn}>
                         <div>{`${language.lang} (${language.code})`}</div>

@@ -38,7 +38,8 @@
     "react/no-did-mount-set-state": [0],
     "jsx-a11y/no-static-element-interactions": [0],
     // eslint@6.8.0
-    "react/jsx-props-no-spreading": [0]
+    "react/jsx-props-no-spreading": [0],
+    "react/destructuring-assignment": [0]
   },
   "env": {
     "es6": true,

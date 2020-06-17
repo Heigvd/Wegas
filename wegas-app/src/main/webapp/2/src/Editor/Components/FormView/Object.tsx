@@ -7,12 +7,12 @@ const borderTopStyle = css({
   borderWidth: '1px 0 0 0',
 });
 const reset = css({
-  border: '0px solid #b3b3b3',
+  border: '0px solid #8e8e8e',
   padding: 0,
   margin: 0,
 });
 const legendStyle = css({
-  color: '#b3b3b3',
+  color: '#8e8e8e',
   textAlign: 'center',
 });
 

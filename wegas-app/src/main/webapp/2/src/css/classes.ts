@@ -1,5 +1,5 @@
 import { css, cx } from 'emotion';
-import { themeVar } from '../Components/Theme';
+import { themeVar } from '../Components/Style/ThemeVars';
 
 // Display
 export const flex = css({
@@ -10,6 +10,9 @@ export const block = css({
 });
 export const hidden = css({
   display: 'none',
+});
+export const hiddenImportant = css({
+  display: 'none !important',
 });
 
 // Layout constraints
@@ -38,12 +41,25 @@ export const showOverflow = css({
 });
 
 // Size
-export const expand = css({
+export const expandBoth = css({
   width: '100%',
   height: '100%',
 });
-export const schrink = css({
+export const expandWidth = css({
+  width: '100%',
+});
+export const expandHeight = css({
+  height: '100%',
+});
+export const shrinkBoth = css({
   width: 'fit-content',
+  height: 'fit-content',
+});
+export const shrinkWidth = css({
+  width: 'fit-content',
+});
+export const shrinkHeight = css({
+  height: 'fit-content',
 });
 
 // Flex
@@ -59,6 +75,9 @@ export const flexRow = css({
 export const flexWrap = css({
   flexWrap: 'wrap',
 });
+export const flexDistribute = css({
+  justifyContent: 'space-evenly',
+});
 
 // Position
 export const textCenter = css({
@@ -67,28 +86,51 @@ export const textCenter = css({
 export const itemCenter = css({
   alignItems: 'center',
 });
-export const centeredContent = css({
+export const justifyCenter = css({
   justifyContent: 'center',
 });
 export const foregroundContent = css({
   zIndex: 1000,
 });
 
-/* Paddings */
-export const defaultPaddingLeft = css({
+/* Spaces */
+export const defaultMarginLeft = css({
   marginLeft: '10px',
 });
 
-export const defaultPaddingRight = css({
+export const defaultMarginRight = css({
   marginRight: '10px',
 });
 
-export const defaultPaddingTop = css({
+export const defaultMarginTop = css({
   marginTop: '10px',
 });
 
-export const defaultPaddingBottom = css({
+export const defaultMarginBottom = css({
   marginTop: '10px',
+});
+
+export const defaultMargin = cx(
+  defaultMarginTop,
+  defaultMarginRight,
+  defaultMarginBottom,
+  defaultMarginLeft,
+);
+
+export const defaultPaddingLeft = css({
+  paddingLeft: '10px',
+});
+
+export const defaultPaddingRight = css({
+  paddingRight: '10px',
+});
+
+export const defaultPaddingTop = css({
+  paddingTop: '10px',
+});
+
+export const defaultPaddingBottom = css({
+  paddingTop: '10px',
 });
 
 export const defaultPadding = cx(
@@ -100,9 +142,37 @@ export const defaultPadding = cx(
 
 // Components
 export const button = css({
-  color: themeVar.primaryLighterTextColor,
+  color: themeVar.Common.colors.TextColor,
   ':hover,:focus': {
-    color: themeVar.primaryHoverColor,
+    color: themeVar.Common.colors.HoverColor,
     outline: 'none',
   },
+});
+
+// Editor
+export const localSelection = css({
+  backgroundColor: themeVar.Common.colors.HeaderColor,
+});
+export const globalSelection = css({
+  borderStyle: 'solid',
+  borderWidth: '2px',
+  borderColor: themeVar.Common.colors.MainColor,
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
+});
+export const searchSelection = css({
+  backgroundColor: themeVar.Common.colors.HighlightColor,
+});
+
+// Layout base styles
+export const layoutStyle = css({
+  color: themeVar.Common.colors.TextColor,
+  backgroundColor: themeVar.Common.colors.BackgroundColor,
+  fontFamily: themeVar.Common.others.TextFont1,
+});
+export const headerStyle = css({
+  backgroundColor: themeVar.Common.colors.HeaderColor,
+});
+export const contentStyle = css({
+  margin: '5px',
+  // backgroundColor: themeVar.Common.colors.BackgroundColor,
 });

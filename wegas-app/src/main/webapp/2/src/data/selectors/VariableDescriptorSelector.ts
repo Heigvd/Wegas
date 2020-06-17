@@ -125,6 +125,7 @@ export function flatten<
   }
   const ret: T[] = [];
   const state = store.getState();
+
   ld.itemsIds.forEach(id => {
     const descriptor = state.variableDescriptors[id];
     if (cls.length > 0) {

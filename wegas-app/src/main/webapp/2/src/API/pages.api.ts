@@ -1,6 +1,5 @@
 import { rest } from './rest';
 import { GameModel } from '../data/selectors';
-import { PageState } from '../data/Reducer/pageState';
 
 const PAGE_BASE = (gameModelId?: number) =>
   `GameModel/${
@@ -45,7 +44,7 @@ export const PageAPIFactory = (gameModelId?: number) => {
      * fetch a page
      * @param pageId optional pageId
      */
-    getAll(): Promise<PageState> {
+    getAll(): Promise<AllPages> {
       return rest(PAGE_BASE(gameModelId)).then(res => {
         return res.json();
       });
