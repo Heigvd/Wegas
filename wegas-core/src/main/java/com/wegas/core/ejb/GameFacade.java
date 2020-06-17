@@ -603,7 +603,7 @@ public class GameFacade extends BaseFacade<Game> {
             .collect(Collectors.toList());
     }
 
-    public List<AbstractAccount> sendSurveysInvitation(HttpServletRequest request,
+    public List<AbstractAccount> sendSurveysInvitationToPlayers(HttpServletRequest request,
         String surveyIds) {
 
         List<SurveyDescriptor> surveys = this.loadSurveys(surveyIds);
@@ -611,12 +611,12 @@ public class GameFacade extends BaseFacade<Game> {
         return this.sendSurveysInvitation(surveys, request);
     }
 
-    public void sendSurveysInvitationAnonymously(HttpServletRequest request,
+    public void sendSurveysInvitationAnonymouslyToPlayers(HttpServletRequest request,
         String surveyIds) {
 
         List<SurveyDescriptor> surveys = this.loadSurveys(surveyIds);
 
-        this.sendSurveysAnonymousInvitation(surveys, request);
+        this.sendSurveysInvitationAnonymouslyToPlayers(surveys, request);
     }
 
     /**
@@ -633,7 +633,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @throws WegasErrorMessage if 1) surveys belong to different GameModel; 2) no game; 3) no
      *                           account
      */
-    public void sendSurveysAnonymousInvitation(List<SurveyDescriptor> surveys,
+    public void sendSurveysInvitationAnonymouslyToPlayers(List<SurveyDescriptor> surveys,
         HttpServletRequest request
     ) {
         Game game = getGameFromSurveys(surveys);
@@ -645,6 +645,15 @@ public class GameFacade extends BaseFacade<Game> {
         } else {
             throw WegasErrorMessage.error("Unable to find account with email addresses");
         }
+    }
+
+public void sendSurveysInvitationAnonymouslyToList(String surveyIds,
+        List<String> recipients,
+        HttpServletRequest request) {
+
+        List<SurveyDescriptor> surveys = this.loadSurveys(surveyIds);
+
+        this.sendSurveysInvitationAnonymouslyToList(surveys, recipients, request);
     }
 
     /**
@@ -659,7 +668,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @throws WegasErrorMessage if 1) surveys belong to different GameModel; 2) no game; 3) no
      *                           account
      */
-    public void sendSurveysAnonymousInvitation(List<SurveyDescriptor> surveys,
+    public void sendSurveysInvitationAnonymouslyToList(List<SurveyDescriptor> surveys,
         List<String> recipients,
         HttpServletRequest request) {
         if (!recipients.isEmpty()) {
