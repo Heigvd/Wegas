@@ -126,13 +126,9 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
           },
         )}
       >
-        {prefixedLabel === true && (
-          <div style={{ marginRight: '3px' }}>{label}</div>
-        )}
+        {prefixedLabel && <div style={{ marginRight: '3px' }}>{label}</div>}
         <IconComp icon={icon} />
-        {prefixedLabel === false && (
-          <div style={{ marginLeft: '3px' }}>{label}</div>
-        )}
+        {!prefixedLabel && <div style={{ marginLeft: '3px' }}>{label}</div>}
       </button>
     );
   },
