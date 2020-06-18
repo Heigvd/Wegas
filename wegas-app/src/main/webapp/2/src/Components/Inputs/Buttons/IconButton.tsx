@@ -33,6 +33,9 @@ export const shapeStyle = css({
   ':hover': {
     outline: 'none',
   },
+  ':focus': {
+    outline: 'none',
+  },
 });
 
 const colorStyle = (noHover?: boolean) =>

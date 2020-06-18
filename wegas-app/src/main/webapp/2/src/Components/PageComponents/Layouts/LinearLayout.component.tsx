@@ -61,6 +61,7 @@ function PlayerLinearLayout({
 
 const test = pageComponentFactory(
   PlayerLinearLayout,
+  'Layout',
   CONTENT_TYPE,
   'bars',
   {

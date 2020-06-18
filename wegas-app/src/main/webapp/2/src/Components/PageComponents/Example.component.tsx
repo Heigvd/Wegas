@@ -36,6 +36,7 @@ const Example: React.FunctionComponent<ExampleProps> = ({
 registerComponent(
   pageComponentFactory(
     Example,
+    'Advanced',
     'Example',
     'ambulance',
     {

@@ -8,10 +8,10 @@ import { grow } from '../../../css/classes';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { MessageString } from '../MessageString';
 import { css } from 'emotion';
-import { themeVar } from '../../../Components/Style/ThemeVars';
+// import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const fileBrowserStyle = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  // backgroundColor: themeVar.Common.colors.HeaderColor,
   paddingRight: '5px',
   // borderColor: themeVar.Common.colors.BorderColor,
   // borderRadius: themeVar.Common.dimensions.BorderRadius,

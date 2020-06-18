@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { WegasComponentProps } from './EditableComponent';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import {
+  pageCTX,
+  pageEditorCTX,
+} from '../../../Editor/Components/Page/PageEditor';
 import { useComponentDrag } from '../../../Editor/Components/Page/ComponentPalette';
 import { cx, css } from 'emotion';
 import { flex, flexColumn, flexRow, textCenter } from '../../../css/classes';
@@ -37,6 +40,10 @@ interface EditorHandleProps {
    * infoMessage - a message to shows on the handle
    */
   infoMessage?: string;
+  /**
+   * isSelected - the component is selected
+   */
+  isSelected: boolean;
 }
 
 export function EditHandle({
@@ -45,6 +52,7 @@ export function EditHandle({
   path,
   stackedHandles,
   infoMessage,
+  isSelected,
 }: EditorHandleProps) {
   const handleRef = React.createRef<HTMLDivElement>();
   const {
@@ -74,7 +82,10 @@ export function EditHandle({
         </div>
         {infoMessage && <MessageString type="warning" value={infoMessage} />}
         <div className={cx(flex, flexRow) + ' wegas-component-handle-content'}>
-          <IconButton icon="edit" onClick={() => onEdit(path)} />
+          <IconButton
+            icon="edit"
+            onClick={() => onEdit(isSelected ? undefined : path)}
+          />
           <IconButton icon="arrows-alt" ref={drag} />
           <ConfirmButton
             icon="trash"

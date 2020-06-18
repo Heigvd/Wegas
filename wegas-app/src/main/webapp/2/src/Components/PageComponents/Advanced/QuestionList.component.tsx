@@ -76,6 +76,7 @@ function QuestionListDisplay({ questionList }: QuestionListDisplayProps) {
 registerComponent(
   pageComponentFactory(
     QuestionListDisplay,
+    'Advanced',
     'QuestionList',
     'bars',
     {

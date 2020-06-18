@@ -29,6 +29,7 @@ function PlayerFlexList(props: PlayerFlexListProps) {
 registerComponent(
   pageComponentFactory(
     PlayerFlexList,
+    'Layout',
     'FlexList',
     'bars',
     {

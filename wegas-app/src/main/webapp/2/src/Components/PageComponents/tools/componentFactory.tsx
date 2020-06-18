@@ -5,16 +5,26 @@ import { composeEnhancers } from '../../../data/store';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { useAnyStore } from '../../Hooks/storeHookFactory';
 import {
-  ContainerTypes,
+  ContainerTypes as ContainerType,
   WegasComponentProps,
   PageComponentProps,
 } from './EditableComponent';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 import { SchemaPropsSchemas } from './schemaProps';
 
+export const componentTypes = [
+  'Layout',
+  'Input',
+  'Output',
+  'Advanced',
+] as const;
+
+export type ComponentType = typeof componentTypes[number];
+
 export interface PageComponent<P extends {} = {}> {
   WegasComponent: React.FunctionComponent<P>;
-  containerType: ContainerTypes;
+  containerType: ContainerType;
+  componentType: ComponentType;
   componentName: string;
   icon: Icon;
   schema: {
@@ -115,15 +125,17 @@ export function pageComponentFactory<
   R extends Omit<P, keyof PageComponentProps>
 >(
   WegasComponent: React.FunctionComponent<P>,
+  componentType: ComponentType,
   componentName: string,
   icon: Icon,
   schema: { [prop: string]: SchemaPropsSchemas },
   allowedVariables: T[],
   getComputedPropsFromVariable: (variable?: V) => R,
-  containerType?: ContainerTypes,
+  containerType?: ContainerType,
 ): PageComponent<P> {
   return {
     WegasComponent,
+    componentType,
     containerType,
     icon,
     componentName,

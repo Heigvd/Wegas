@@ -24,6 +24,7 @@ function PlayerInbox({ inbox }: PlayerInboxProps) {
 registerComponent(
   pageComponentFactory(
     PlayerInbox,
+    'Advanced',
     'Inbox',
     'envelope',
     {

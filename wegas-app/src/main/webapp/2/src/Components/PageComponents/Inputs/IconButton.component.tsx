@@ -31,6 +31,7 @@ function PlayerIconButton(props: PlayerIconButtonProps) {
 registerComponent(
   pageComponentFactory(
     PlayerIconButton,
+    'Input',
     'IconButton',
     'cube',
     {

@@ -62,6 +62,7 @@ function PlayerNumberSlider(props: PlayerNumberSliderProps) {
 registerComponent(
   pageComponentFactory(
     PlayerNumberSlider,
+    'Input',
     'NumberSlider',
     'sliders-h',
     {

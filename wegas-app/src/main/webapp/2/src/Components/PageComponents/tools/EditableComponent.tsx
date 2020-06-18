@@ -7,6 +7,7 @@ import {
   pageCTX,
   Handles,
   PageEditorComponent,
+  pageEditorCTX,
 } from '../../../Editor/Components/Page/PageEditor';
 import { flex } from '../../../css/classes';
 import { FlexItem, FlexListProps } from '../../Layouts/FlexList';
@@ -491,8 +492,6 @@ export function ComponentContainer({
   const actions = options?.actions == null ? defaultActionsState : actionsState;
   const { noSplitter, noResize } = linearChildrenProps || {};
 
-  // const [{ isOver }, dropZone] = useDndComponentDrop();
-
   const {
     onDrop,
     editMode,
@@ -500,6 +499,8 @@ export function ComponentContainer({
     pageIdPath,
     showBorders,
   } = React.useContext(pageCTX);
+
+  const { editedPath } = React.useContext(pageEditorCTX);
 
   const pageId = pageIdPath.slice(0, 1)[0];
   const containerPath = [...path];
@@ -519,7 +520,7 @@ export function ComponentContainer({
     childrenType === 'LINEAR' && !last && (editMode || !noSplitter);
   const allowResize = childrenType === 'LINEAR' && (editMode || !noResize);
   const isDisabled = (actions.locked || upgrades.disabled) === true;
-
+  const isSelected = JSON.stringify(path) === JSON.stringify(editedPath);
   const isFocused = usePagesStateStore(
     isComponentFocused(editMode, pageId, path),
   );
@@ -638,7 +639,7 @@ export function ComponentContainer({
             [layoutHighlightStyle]: showLayout,
             [childHighlightStyle]: showLayout,
             [handleControlHoverStyle]: editMode,
-            [focusedComponentStyle]: isFocused,
+            [focusedComponentStyle]: isFocused || isSelected,
             [childDropzoneHorizontalStyle]: !computedVertical,
             [childDropzoneVerticalStyle]: computedVertical,
             [disabledStyle]: isDisabled,
@@ -681,6 +682,7 @@ export function ComponentContainer({
                 ? 'This component is shown only in edit mode'
                 : undefined
             }
+            isSelected={isSelected}
           />
         )}
         {showComponent && <ErrorBoundary>{children}</ErrorBoundary>}
