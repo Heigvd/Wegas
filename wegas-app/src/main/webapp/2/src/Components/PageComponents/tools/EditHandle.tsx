@@ -19,6 +19,13 @@ const handleContentStyle = css({
   backgroundColor: themeVar.Common.colors.BackgroundColor,
 });
 
+//TODO : Find a way to hide all the handles when dragging
+const desapearingStyle = css({
+  //transition: 'all 1s',
+  opacity: 0,
+  zIndex: -1000,
+});
+
 interface EditorHandleProps {
   /**
    * name - The name of the component in the page
@@ -64,16 +71,23 @@ export function EditHandle({
   } = React.useContext(pageCTX);
 
   const HandleContent = React.forwardRef<HTMLDivElement>((_, ref) => {
-    const [, drag] = useComponentDrag(componentType, path);
+    const [{ isDragging }, drag] = useComponentDrag(componentType, path);
+    // const debouncedDragging = useDebounce(isDragging, 50);
+
     return (
       <div
         ref={ref}
-        className={cx(flex, flexColumn, handleContentStyle)}
+        className={cx(flex, flexColumn, handleContentStyle, {
+          [desapearingStyle]: isDragging,
+        })}
         //Avoiding the container actions to trigger when using handle
         onClick={event => event.stopPropagation()}
+        // style={{ visibility: isDragging ? 'collapse' : 'visible' }}
       >
         <div
-          style={{ fontSize: '10px' }}
+          style={{
+            fontSize: '10px',
+          }}
           className={
             cx(flex, flexRow, textCenter) + ' wegas-component-handle-title'
           }
