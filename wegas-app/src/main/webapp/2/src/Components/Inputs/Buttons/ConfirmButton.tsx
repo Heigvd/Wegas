@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { IconButton } from './IconButton';
 import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import {
   Button,
   DisableBorders,
@@ -11,6 +11,7 @@ import {
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { themeVar } from '../../Style/ThemeVars';
+import { flex } from '../../../css/classes';
 
 const buttonZone = (disableBorders?: DisableBorders) =>
   css({
@@ -30,6 +31,7 @@ interface ConfirmButtonProps extends ButtonProps {
   defaultConfirm?: boolean;
   dontResetOnBlur?: boolean;
   disableBorders?: DisableBorders;
+  buttonClassName?: string;
 }
 
 export function ConfirmButton({
@@ -44,6 +46,7 @@ export function ConfirmButton({
   noHover,
   disableBorders,
   className,
+  buttonClassName,
   tabIndex,
   tooltip,
   type,
@@ -93,6 +96,7 @@ export function ConfirmButton({
           disabled={disabled}
           noHover={noHover}
           prefixedLabel
+          className={buttonClassName}
         />
       ) : (
         <Button
@@ -102,6 +106,7 @@ export function ConfirmButton({
           tooltip={tooltip}
           disabled={disabled}
           noHover={noHover}
+          className={buttonClassName}
         />
       )}
     </div>
@@ -110,13 +115,13 @@ export function ConfirmButton({
       ref={confirmButton}
       tabIndex={tabIndex}
       id={id}
-      className={buttonZone(disableBorders) + classNameOrEmpty(className)}
+      className={
+        cx(buttonZone(disableBorders), flex) + classNameOrEmpty(className)
+      }
     >
       <Button
         label="Accept"
-        className={css({
-          backgroundColor: themeVar.Common.colors.WarningColor,
-        })}
+        customColor={{ backgroundColor: themeVar.Common.colors.WarningColor }}
         disableBorders={{ right: true }}
         onClick={onConfirm(true)}
         disabled={disabled}

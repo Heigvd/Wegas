@@ -48,12 +48,17 @@ export const buttonStyle = (
   noHover?: boolean,
   disableBorders?: DisableBorders,
   noClick?: boolean,
+  customColor?: { textColor?: string; backgroundColor?: string },
 ) =>
   css({
     backgroundColor: disabled
       ? themeVar.Common.colors.DisabledColor
+      : customColor?.backgroundColor
+      ? customColor.backgroundColor
       : themeVar.Common.colors.MainColor,
-    color: themeVar.Common.colors.SecondaryTextColor,
+    color: customColor?.textColor
+      ? customColor.textColor
+      : themeVar.Common.colors.SecondaryTextColor,
     borderStyle: 'none',
     ...disableBordersCSS(disableBorders),
     paddingLeft: '5px',
@@ -84,6 +89,7 @@ export interface CommonButtonProps extends ClassAndStyle {
   noHover?: boolean;
   type?: 'submit' | 'reset' | 'button';
   id?: string;
+  customColor?: { textColor?: string; backgroundColor?: string };
 }
 
 export interface ButtonProps extends CommonButtonProps {
@@ -103,13 +109,19 @@ export function Button({
   tooltip,
   type,
   id,
+  customColor,
 }: React.PropsWithChildren<ButtonProps>) {
   return (
     <button
       id={id}
       className={
-        classNameOrEmpty(className) +
-        cx(buttonStyle(disabled, noHover, disableBorders, onClick == null))
+        buttonStyle(
+          disabled,
+          noHover,
+          disableBorders,
+          onClick == null,
+          customColor,
+        ) + classNameOrEmpty(className)
       }
       style={style}
       onClick={onClick}

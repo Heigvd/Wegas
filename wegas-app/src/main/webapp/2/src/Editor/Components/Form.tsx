@@ -1,7 +1,12 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
-import { defaultMargin, expandBoth, noOverflow } from '../../css/classes';
+import {
+  defaultMargin,
+  expandBoth,
+  noOverflow,
+  expandHeight,
+} from '../../css/classes';
 import './FormView';
 import { Button, ButtonProps } from '../../Components/Inputs/Buttons/Button';
 import { wlog } from '../../Helper/wegaslog';
@@ -73,6 +78,7 @@ export class Form<T> extends React.Component<
                   }
                 }
               }}
+              className={expandHeight}
               disableBorders={{ right: true }}
             />
           )}
@@ -85,6 +91,7 @@ export class Form<T> extends React.Component<
               left: this.props.update !== undefined,
               right: this.props.actions.length > 0,
             }}
+            buttonClassName={expandHeight}
           />
           {this.props.actions.map((a, i) => {
             const btnProps: ButtonProps = {
@@ -102,12 +109,14 @@ export class Form<T> extends React.Component<
                 onAction={succes =>
                   succes && a.action(this.state.val, this.props.path)
                 }
+                buttonClassName={expandHeight}
               />
             ) : (
               <Button
                 {...btnProps}
                 key={i}
                 onClick={() => a.action(this.state.val, this.props.path)}
+                className={expandHeight}
               />
             );
           })}

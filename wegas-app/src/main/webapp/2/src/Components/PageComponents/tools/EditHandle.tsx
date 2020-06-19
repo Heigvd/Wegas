@@ -2,7 +2,7 @@ import * as React from 'react';
 import { WegasComponentProps } from './EditableComponent';
 import {
   pageCTX,
-  pageEditorCTX,
+  // pageEditorCTX,
 } from '../../../Editor/Components/Page/PageEditor';
 import { useComponentDrag } from '../../../Editor/Components/Page/ComponentPalette';
 import { cx, css } from 'emotion';
