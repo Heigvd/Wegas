@@ -635,7 +635,7 @@ export function ComponentContainer({
         }}
         {...omit(options, ['actions', 'upgrades'])}
         className={
-          cx(handleControlStyle, flex, {
+          cx(handleControlStyle, flex, upgradesState.themeModeClassName, {
             [layoutHighlightStyle]: showLayout,
             [childHighlightStyle]: showLayout,
             [handleControlHoverStyle]: editMode,

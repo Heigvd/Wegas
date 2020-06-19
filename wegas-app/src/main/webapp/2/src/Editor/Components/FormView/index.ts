@@ -29,6 +29,7 @@ import HashListView from './HashList';
 import PageLoaderSelect from './PageLoaderSelect';
 import FileSelector from './FileSelector';
 import { CustomScript } from './CustomScript';
+import ThemeModeSelect from './ThemeModeSelect';
 
 export const DEFINED_VIEWS = {
   hidden,
@@ -59,6 +60,7 @@ export const DEFINED_VIEWS = {
   listchildren: ListChildrenSelectView,
   listchildrennull: ListChildrenNullSelectView,
   treeselect: TreeVSelect,
+  thememodeselect: ThemeModeSelect,
   file: FileSelector,
 };
 setDefaultWidgets(DEFINED_VIEWS);

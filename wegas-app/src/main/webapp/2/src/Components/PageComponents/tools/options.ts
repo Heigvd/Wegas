@@ -231,6 +231,7 @@ export interface WegasComponentUpgrades {
   unreadCount?: IScript;
   disableIf?: IScript;
   showIf?: IScript;
+  themeMode?: string;
 }
 
 const upgradeChoices: HashListChoices = [
@@ -311,6 +312,13 @@ const upgradeChoices: HashListChoices = [
         'TypeScript',
         'false',
       ),
+    },
+  },
+  {
+    label: 'Theme mode',
+    value: {
+      prop: 'themeMode',
+      schema: schemaProps.themeModeSelect('Theme mode', true),
     },
   },
 ];
