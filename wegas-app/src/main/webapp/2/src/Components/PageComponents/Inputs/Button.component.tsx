@@ -39,6 +39,7 @@ export const buttonSchema = {
 registerComponent(
   pageComponentFactory(
     PlayerButton,
+    'Input',
     'Button',
     'cube',
     buttonSchema,

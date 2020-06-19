@@ -69,6 +69,7 @@ function PlayerBoolean({
 registerComponent(
   pageComponentFactory(
     PlayerBoolean,
+    'Input',
     'Boolean',
     'check-square',
     {

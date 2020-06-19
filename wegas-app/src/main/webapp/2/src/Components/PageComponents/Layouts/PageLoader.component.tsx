@@ -63,6 +63,7 @@ function PlayerPageLoader({
 registerComponent(
   pageComponentFactory(
     PlayerPageLoader,
+    'Layout',
     PAGE_LOADER_COMPONENT_TYPE,
     'window-maximize',
     {

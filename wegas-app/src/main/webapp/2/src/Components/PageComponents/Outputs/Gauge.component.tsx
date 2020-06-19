@@ -43,6 +43,7 @@ function PlayerGauge(props: PlayerGaugeProps) {
 registerComponent(
   pageComponentFactory(
     PlayerGauge,
+    'Output',
     'Gauge',
     'tachometer-alt',
     {

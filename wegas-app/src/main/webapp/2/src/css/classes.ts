@@ -86,6 +86,9 @@ export const textCenter = css({
 export const itemCenter = css({
   alignItems: 'center',
 });
+export const contentCenter = css({
+  alignContent: 'center',
+});
 export const justifyCenter = css({
   justifyContent: 'center',
 });
@@ -156,7 +159,7 @@ export const localSelection = css({
 export const globalSelection = css({
   borderStyle: 'solid',
   borderWidth: '2px',
-  borderColor: themeVar.Common.colors.MainColor,
+  borderColor: themeVar.Common.colors.BorderColor,
   borderRadius: themeVar.Common.dimensions.BorderRadius,
 });
 export const searchSelection = css({

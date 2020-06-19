@@ -108,7 +108,7 @@ export function ComponentProperties({
 
 export default function ConnectedComponentProperties() {
   const { editedPath, selectedPage } = React.useContext(pageEditorCTX);
-  const { onUpdate, onDelete } = React.useContext(pageCTX);
+  const { onUpdate, onDelete, onEdit } = React.useContext(pageCTX);
 
   if (!editedPath) {
     return <pre>No component selected yet</pre>;
@@ -132,6 +132,10 @@ export default function ConnectedComponentProperties() {
           label: 'Delete',
           action: () => onDelete(editedPath),
           confirm: true,
+        },
+        {
+          label: 'Deselect',
+          action: () => onEdit(undefined),
         },
       ]}
     />

@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { WegasComponentProps } from './EditableComponent';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import {
+  pageCTX,
+  // pageEditorCTX,
+} from '../../../Editor/Components/Page/PageEditor';
 import { useComponentDrag } from '../../../Editor/Components/Page/ComponentPalette';
 import { cx, css } from 'emotion';
 import { flex, flexColumn, flexRow, textCenter } from '../../../css/classes';
@@ -14,6 +17,13 @@ const handleContentStyle = css({
   borderStyle: 'solid',
   borderColor: themeVar.Common.colors.BorderColor,
   backgroundColor: themeVar.Common.colors.BackgroundColor,
+});
+
+//TODO : Find a way to hide all the handles when dragging
+const desapearingStyle = css({
+  //transition: 'all 1s',
+  opacity: 0,
+  zIndex: -1000,
 });
 
 interface EditorHandleProps {
@@ -37,6 +47,10 @@ interface EditorHandleProps {
    * infoMessage - a message to shows on the handle
    */
   infoMessage?: string;
+  /**
+   * isSelected - the component is selected
+   */
+  isSelected: boolean;
 }
 
 export function EditHandle({
@@ -45,6 +59,7 @@ export function EditHandle({
   path,
   stackedHandles,
   infoMessage,
+  isSelected,
 }: EditorHandleProps) {
   const handleRef = React.createRef<HTMLDivElement>();
   const {
@@ -56,16 +71,23 @@ export function EditHandle({
   } = React.useContext(pageCTX);
 
   const HandleContent = React.forwardRef<HTMLDivElement>((_, ref) => {
-    const [, drag] = useComponentDrag(componentType, path);
+    const [{ isDragging }, drag] = useComponentDrag(componentType, path);
+    // const debouncedDragging = useDebounce(isDragging, 50);
+
     return (
       <div
         ref={ref}
-        className={cx(flex, flexColumn, handleContentStyle)}
+        className={cx(flex, flexColumn, handleContentStyle, {
+          [desapearingStyle]: isDragging,
+        })}
         //Avoiding the container actions to trigger when using handle
         onClick={event => event.stopPropagation()}
+        // style={{ visibility: isDragging ? 'collapse' : 'visible' }}
       >
         <div
-          style={{ fontSize: '10px' }}
+          style={{
+            fontSize: '10px',
+          }}
           className={
             cx(flex, flexRow, textCenter) + ' wegas-component-handle-title'
           }
@@ -74,7 +96,10 @@ export function EditHandle({
         </div>
         {infoMessage && <MessageString type="warning" value={infoMessage} />}
         <div className={cx(flex, flexRow) + ' wegas-component-handle-content'}>
-          <IconButton icon="edit" onClick={() => onEdit(path)} />
+          <IconButton
+            icon="edit"
+            onClick={() => onEdit(isSelected ? undefined : path)}
+          />
           <IconButton icon="arrows-alt" ref={drag} />
           <ConfirmButton
             icon="trash"

@@ -28,6 +28,7 @@ function PlayerText({ script, className, style }: PlayerTextProps) {
 registerComponent(
   pageComponentFactory(
     PlayerText,
+    'Output',
     'Text',
     'paragraph',
     {

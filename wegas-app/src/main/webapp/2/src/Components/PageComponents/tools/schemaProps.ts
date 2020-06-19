@@ -317,6 +317,28 @@ const simpleSchemaProps = {
       },
     };
   },
+  themeModeSelect: (
+    label?: string,
+    required: boolean = true,
+    featureLevel: FeatureLevel = 'DEFAULT',
+    index: number = 0,
+    layout?: SchemaLayout,
+    borderTop?: boolean,
+  ): TypedProps<PageSelectProps> => {
+    return {
+      required,
+      type: 'string',
+      index,
+      view: {
+        borderTop,
+        index,
+        featureLevel,
+        label,
+        type: 'thememodeselect',
+        layout,
+      },
+    };
+  },
   variable: (
     label?: string,
     required: boolean = true,

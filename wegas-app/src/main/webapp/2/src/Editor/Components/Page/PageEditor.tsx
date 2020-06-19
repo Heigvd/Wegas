@@ -52,7 +52,7 @@ export interface PageContext {
     props?: WegasComponent['props'],
   ) => void;
   onDelete: (path: number[]) => void;
-  onEdit: (path: number[]) => void;
+  onEdit: (path: number[] | undefined) => void;
   onUpdate: (value: WegasComponent, path?: number[], patch?: boolean) => void;
 }
 

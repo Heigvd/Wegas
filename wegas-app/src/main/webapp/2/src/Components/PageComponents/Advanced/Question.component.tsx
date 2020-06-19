@@ -30,6 +30,7 @@ function QuestionDisplay({ question }: QuestionDisplayProps) {
 registerComponent(
   pageComponentFactory(
     QuestionDisplay,
+    'Advanced',
     'Question',
     'question',
     {

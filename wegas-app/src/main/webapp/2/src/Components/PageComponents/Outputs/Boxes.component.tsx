@@ -53,6 +53,7 @@ function PlayerBoxes({
 registerComponent(
   pageComponentFactory(
     PlayerBoxes,
+    'Output',
     'Boxes',
     'box',
     {

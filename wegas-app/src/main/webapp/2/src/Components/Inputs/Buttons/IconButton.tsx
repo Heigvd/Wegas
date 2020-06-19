@@ -33,11 +33,19 @@ export const shapeStyle = css({
   ':hover': {
     outline: 'none',
   },
+  ':focus': {
+    outline: 'none',
+  },
 });
 
-const colorStyle = (noHover?: boolean) =>
+const colorStyle = (
+  noHover?: boolean,
+  customColor?: { textColor?: string; backgroundColor?: string },
+) =>
   css({
-    color: themeVar.Common.colors.TextColor,
+    color: customColor?.textColor
+      ? customColor.textColor
+      : themeVar.Common.colors.TextColor,
     ':hover': {
       color: noHover ? undefined : themeVar.Common.colors.ActiveColor,
     },
@@ -55,10 +63,17 @@ const disabledStyle = css({
   },
 });
 
-const labeledStyle = (noHover?: boolean) =>
+const labeledStyle = (
+  noHover?: boolean,
+  customColor?: { textColor?: string; backgroundColor?: string },
+) =>
   css({
-    backgroundColor: themeVar.Common.colors.MainColor,
-    color: themeVar.Common.colors.SecondaryTextColor,
+    backgroundColor: customColor?.backgroundColor
+      ? customColor.backgroundColor
+      : themeVar.Common.colors.MainColor,
+    color: customColor?.textColor
+      ? customColor.textColor
+      : themeVar.Common.colors.SecondaryTextColor,
     ':hover': {
       color: noHover ? undefined : themeVar.Common.colors.HoverTextColor,
     },
@@ -82,6 +97,7 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
       className,
       icon,
       noHover,
+      customColor,
     } = props;
 
     return (
@@ -114,8 +130,8 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
           className
             ? className
             : label
-            ? labeledStyle(noHover)
-            : colorStyle(noHover),
+            ? labeledStyle(noHover, customColor)
+            : colorStyle(noHover, customColor),
           {
             [noClickStyle]: !onClick && !onMouseDown && !onMouseUp,
             [disabledStyle]: Boolean(disabled),
@@ -123,13 +139,9 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
           },
         )}
       >
-        {prefixedLabel === true && (
-          <div style={{ marginRight: '3px' }}>{label}</div>
-        )}
+        {prefixedLabel && <div style={{ marginRight: '3px' }}>{label}</div>}
         <IconComp icon={icon} />
-        {prefixedLabel === false && (
-          <div style={{ marginLeft: '3px' }}>{label}</div>
-        )}
+        {!prefixedLabel && <div style={{ marginLeft: '3px' }}>{label}</div>}
       </button>
     );
   },

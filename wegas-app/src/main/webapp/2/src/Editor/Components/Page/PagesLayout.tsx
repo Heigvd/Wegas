@@ -6,6 +6,7 @@ import {
   grow,
   itemCenter,
   expandBoth,
+  globalSelection,
 } from '../../../css/classes';
 import { cx, css } from 'emotion';
 import { FontAwesome, IconComp, Icon, Icons } from '../Views/FontAwesome';
@@ -24,7 +25,6 @@ import { MessageString } from '../MessageString';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
 import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
-import { classNameOrEmpty } from '../../../Helper/className';
 import { pageEditorCTX, pageCTX } from './PageEditor';
 import {
   Tree,
@@ -64,13 +64,13 @@ const titleStyle = css({
   },
 });
 
-const selectedIndexItemStyle = css({
-  borderColor: themeVar.Common.colors.BorderColor,
-});
+// const selectedIndexItemStyle = css({
+//   borderColor: themeVar.Common.colors.BorderColor,
+// });
 
-const selectedComponentStyle = css({
-  borderColor: themeVar.Common.colors.BorderColor,
-});
+// const selectedComponentStyle = css({
+//   borderColor: themeVar.Common.colors.BorderColor,
+// });
 
 const focusedComponentStyle = css({
   backgroundColor: themeVar.Common.colors.HeaderColor,
@@ -355,10 +355,14 @@ function LayoutNodeTitle({
   return (
     <div
       onMouseUp={onMouseUp}
-      className={
-        cx(nodeContentStyle, titleStyle, flex, grow, itemCenter, {}) +
-        classNameOrEmpty(className)
-      }
+      className={cx(
+        nodeContentStyle,
+        titleStyle,
+        flex,
+        grow,
+        itemCenter,
+        className,
+      )}
       onMouseOver={onMouseOver}
       onMouseOut={onMouseOut}
       style={style}
@@ -431,7 +435,12 @@ WegasComponentTitleProps) {
       title={title}
       advancedTitle={title + ' ' + JSON.stringify(componentPath)}
       tooltip={registeredComponent == null ? 'Unknown component' : undefined}
-      onMouseUp={() => onEdit(pageId, componentPath)}
+      onMouseUp={() =>
+        onEdit(
+          isSelected ? undefined : pageId,
+          isSelected ? undefined : componentPath,
+        )
+      }
       onMouseOver={e => {
         if (editMode /*&& !isDragging*/) {
           e.stopPropagation();
@@ -445,7 +454,7 @@ WegasComponentTitleProps) {
         }
       }}
       className={cx({
-        [selectedComponentStyle]: isSelected,
+        [globalSelection]: isSelected,
         [focusedComponentStyle]: isFocused,
       })}
     >
@@ -576,8 +585,9 @@ function PageIndexTitle({
       }
       onMouseUp={() => isPageItem(indexItem) && onPageClick(indexItem.id!)}
       className={cx({
-        [selectedIndexItemStyle]:
+        [globalSelection]:
           isPageItem(indexItem) && indexItem.id === selectedPageId,
+        // [css({ backgroundColor: 'green' })]: indexItem.id === selectedPageId,
       })}
     >
       {isFolderItem(indexItem) && (
@@ -774,7 +784,7 @@ interface ComponentControls {
     page: WegasComponent,
     compoentPath: number[],
   ) => void;
-  onEdit: (pageId: string, compoentPath: number[]) => void;
+  onEdit: (pageId?: string, componentPath?: number[]) => void;
   onMove: (
     sourcePageId: string,
     destPageId: string,

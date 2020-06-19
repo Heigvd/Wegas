@@ -8,6 +8,7 @@ import { AbsoluteLayout } from '../../Layouts/Absolute';
 registerComponent(
   pageComponentFactory(
     AbsoluteLayout,
+    'Layout',
     'AbsoluteLayout',
     'bars',
     {

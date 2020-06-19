@@ -63,6 +63,7 @@ function PlayerPhasesProgressBar({
 registerComponent(
   pageComponentFactory(
     PlayerPhasesProgressBar,
+    'Advanced',
     'Phases',
     'ellipsis-h',
     {

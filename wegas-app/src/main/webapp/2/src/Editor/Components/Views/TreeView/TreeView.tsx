@@ -255,7 +255,7 @@ interface TreeNodeProps<T> extends ClassAndStyle {
    */
   isExpanded?: boolean;
   /**
-   * noTitle - hide the title and the carret and force expand the Node
+   * noTitle - hide the title and the caret and force expand the Node
    */
   noTitle?: boolean;
   /**
