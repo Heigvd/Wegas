@@ -279,6 +279,7 @@ YUI.add('wegas-datasource', function(Y) {
 
             this.on("ExceptionEvent", function(e) {
                 var type = e.type.split(":").pop(),
+                    muteMessage = false,
                     val, min, max, msg, level;
 
                 if (e.serverEvent) {
@@ -292,8 +293,13 @@ YUI.add('wegas-datasource', function(Y) {
                                 msg = Y.Wegas.I18n.t('errors.conflict');
                                 break;
                             case "WegasErrorMessage":
-                                level = val.level;
-                                msg = val.message;
+                                // If the error has a messageId, it's the client's responsibility to translate and display it:
+                                if (val.messageId) {
+                                    muteMessage = true;
+                                } else {
+                                    level = val.level;
+                                    msg = val.message;
+                                }
                                 break;
                             case "WegasNotFoundException":
                                 level = "error";
@@ -327,7 +333,9 @@ YUI.add('wegas-datasource', function(Y) {
                                 break;
                         }
 
-                        this.__showMessage(level, msg);
+                        if (!muteMessage) {
+                            this.__showMessage(level, msg);
+                        }
                     }
                     this.get(HOST).fire("ExceptionEvent", e.serverEvent.get("val.exceptions")[0]);
                 }

@@ -45,7 +45,6 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 lastModifiedOn: "last modified on",
                 sessionOfScenario: "session of scenario",
                 scenario: "scenario",
-                nameTaken: "a variable in this game already has the same internal name \"{{name}}\"",
                 doImport: "Import selected surveys",
                 importing: "Importing surveys",
                 importTerminated: "Overview of imported surveys",
@@ -79,14 +78,19 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 teamStatus: "Status",
                 teamRepliesCompulsory: "Compulsory Replies",
                 teamRepliesOptional: "Optional Replies",
-                noLogId: "No \"Log ID\" has been set for this session.<br>Replies to the survey will not be saved!<br>Please contact the platform administrator (AlbaSim).",
                 alreadyLaunched: "This survey is already launched",
                 deleteRunning: "This survey is already running.<br>Really delete it?",
                 modifyRunning: "This survey is running and cannot be modified now.",
                 surveyCancelled: "The survey is cancelled.",
                 surveyLaunched: "The survey has been started successfully.",
+                surveyInvited: "Invitations have been sent to {{number}} persons.",
                 scenarioCreated: "This survey is now available for sharing in game scenario<br>\"{{name}}\".<br>Please refresh the browser tab containing your current scenarios.",
-                sessionCreated: "This survey is now available for sharing in game session<br>\"{{name}}\".<br>Please refresh the browser tab containing your current sessions."
+                sessionCreated: "This survey is now available for sharing in game session<br>\"{{name}}\".<br>Please refresh the browser tab containing your current sessions.",
+                errors: {
+                    inviteNoEmails: "Currently no players have joined the game<br>(or they have no registered email address)",
+                    nameTaken: "a variable in this game already has the same internal name \"{{name}}\"",
+                    noLogId: "No \"Log ID\" has been set for this session.<br>Replies to the survey will not be saved!<br>Please contact the platform administrator (AlbaSim)."
+                }
             }
         }
     });

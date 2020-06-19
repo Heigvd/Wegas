@@ -45,7 +45,6 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 lastModifiedOn: "letzte Änderung am",
                 sessionOfScenario: "Session des Szenarios",
                 scenario: "Szenario",
-                nameTaken: "eine Variable in diesem Spiel hat bereits den gleichen internen Namen \"{{name}}\"",
                 doImport: "Ausgewählte Umfragen importieren",
                 importing: "Import im Gange",
                 importTerminated: "Übersicht der Importe",
@@ -79,14 +78,19 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 teamStatus: "Stand",
                 teamRepliesCompulsory: "Erforderliche Antworte",
                 teamRepliesOptional: "Optionale Antworte",
-                noLogId: "Für diese Sitzung wurde keine \"Log-ID\" festgelegt.<br>Antworten auf die Umfrage werden nicht gespeichert!<br>Bitte kontaktieren Sie den Plattform-Administrator (AlbaSim).",
                 alreadyLaunched: "Diese Umfrage ist schon gestartet",
                 deleteRunning: "Diese Umfrage ist gestartet.<br>Wirklich löschen?",
                 modifyRunning: "Diese Umfrage ist gestartet und darf jetzt nicht geändert werden.",
                 surveyCancelled: "Die Umfrage wurde storniert.",
                 surveyLaunched: "Die Umfrage wurde erfolgreich gestartet.",
+                surveyInvited: "Einladungen wurden an {{number}} Personen versandt.",
                 scenarioCreated: "Die Umfrage steht nun in diesem Szenario zur Verfügung:<br>\"{{name}}\".<br>Bitte laden Sie den Browser-Tab mit Ihren aktuellen Szenarios neu.",
-                sessionCreated: "Die Umfrage steht nun in dieser Session zur Verfügung:<br>\"{{name}}\".<br>Bitte laden Sie den Browser-Tab mit Ihren aktuellen Sessionen neu."
+                sessionCreated: "Die Umfrage steht nun in dieser Session zur Verfügung:<br>\"{{name}}\".<br>Bitte laden Sie den Browser-Tab mit Ihren aktuellen Sessionen neu.",
+                errors: {
+                    inviteNoEmails: "Derzeit haben sich keine Spieler dem Spiel angeschlossen<br>(oder sie haben keine E-Mail-Adresse registriert)",
+                    nameTaken: "eine Variable in diesem Spiel hat bereits den gleichen internen Namen \"{{name}}\"",
+                    noLogId: "Für diese Sitzung wurde keine \"Log-ID\" festgelegt.<br>Antworten auf die Umfrage werden nicht gespeichert!<br>Bitte kontaktieren Sie den Plattform-Administrator (AlbaSim)."
+                }
             }
         }
     });

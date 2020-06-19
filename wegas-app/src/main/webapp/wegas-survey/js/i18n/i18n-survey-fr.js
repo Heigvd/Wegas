@@ -45,7 +45,6 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
                 lastModifiedOn: "dernière modification le",
                 sessionOfScenario: "partie issue du scénario",
                 scenario: "scénario",
-                nameTaken: "une variable dans ce jeu a déjà le même nom interne \"{{name}}\"",
                 doImport: "Importer les questionnaires sélectionnés",
                 importing: "Importation en cours",
                 importTerminated: "Sommaire des questionnaires importés",
@@ -79,14 +78,19 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
                 teamStatus: "Statut",
                 teamRepliesCompulsory: "Réponses obligatoires",
                 teamRepliesOptional: "Réponses facultatives",
-                noLogId: "Aucun \"Log ID\" n'a été fixé pour cette partie.<br>Les réponses au questionnaire ne seront pas sauvegardées !<br>Veuillez contacter l'administrateur de la plateforme (AlbaSim).",
                 alreadyLaunched: "Ce questionnaire est déjà lancé",
                 deleteRunning: "Ce questionnaire est en cours d'exécution.<br>Faut-il vraiment le supprimer ?",
                 modifyRunning: "Ce questionnaire est en cours d'exécution et ne peut pas être modifié maintenant.",
                 surveyCancelled: "Le questionnaire a été annulé.",
                 surveyLaunched: "Le questionnaire a été lancé avec succès.",
+                surveyInvited: "Des invitations ont été envoyés à {{number}} personnes.",
                 scenarioCreated: "Ce questionnaire est à présent disponible dans le scénario<br>\"{{name}}\".<br>Veuillez rafraichir l'onglet du browser contenant vos scenarios actuels.",
-                sessionCreated: "Ce questionnaire est à présent disponible dans la partie<br>\"{{name}}\".<br>Veuillez rafraichir l'onglet du browser contenant vos parties actuelles."
+                sessionCreated: "Ce questionnaire est à présent disponible dans la partie<br>\"{{name}}\".<br>Veuillez rafraichir l'onglet du browser contenant vos parties actuelles.",
+                errors: {
+                    inviteNoEmails: "Aucun joueur n'a rejoint le jeu actuellement<br>(ou alors ils n'ont pas enregistré d'adresse e-mail)",
+                    nameTaken: "une variable dans ce jeu a déjà le même nom interne \"{{name}}\"",
+                    noLogId: "Aucun \"Log ID\" n'a été fixé pour cette partie.<br>Les réponses au questionnaire ne seront pas sauvegardées !<br>Veuillez contacter l'administrateur de la plateforme (AlbaSim)."
+                }
             }
 
         }

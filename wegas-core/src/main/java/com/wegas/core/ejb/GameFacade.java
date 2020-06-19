@@ -537,7 +537,7 @@ public class GameFacade extends BaseFacade<Game> {
      *
      * @return
      */
-    private List<AbstractAccount> getPlayerAccounstWithEmail(Game game) {
+    private List<AbstractAccount> getPlayerAccountsWithEmail(Game game) {
         return game.getLivePlayers().stream()
             .map(p -> p.getUser())
             .filter(u -> u != null)
@@ -575,25 +575,25 @@ public class GameFacade extends BaseFacade<Game> {
      * account.
      * <p>
      * Such survey is made of several SurveyDescriptor. All SurveyDescriptor must belong to the same
-     * gameModel. must belongs to the same game model.
+     * gameModel.
      *
      * @param surveys surveys
      * @param request need request to generate the link
      *
-     * @throws WegasErrorMessage if 1) surveys belong to different GameModel; 2) no game; 3) no
+     * @throws WegasErrorMessage if 1) surveys belong to different GameModels; 2) no game; 3) no
      *                           account
      */
     public List<AbstractAccount> sendSurveysInvitation(List<SurveyDescriptor> surveys,
         HttpServletRequest request) {
         Game game = getGameFromSurveys(surveys);
-        List<AbstractAccount> accounts = getPlayerAccounstWithEmail(game);
+        List<AbstractAccount> accounts = getPlayerAccountsWithEmail(game);
         if (!accounts.isEmpty()) {
             for (AbstractAccount account : accounts) {
                 accountFacade.sendSurveyToken(account, surveys, request);
             }
             return accounts;
         } else {
-            throw WegasErrorMessage.error("Unable to find account with email addresses");
+            throw WegasErrorMessage.error("Unable to find accounts with email addresses", "WEGAS-INVITE-SURVEY-NO-EMAIL");
         }
     }
 
@@ -611,12 +611,12 @@ public class GameFacade extends BaseFacade<Game> {
         return this.sendSurveysInvitation(surveys, request);
     }
 
-    public void sendSurveysInvitationAnonymouslyToPlayers(HttpServletRequest request,
+    public int sendSurveysInvitationAnonymouslyToPlayers(HttpServletRequest request,
         String surveyIds) {
 
         List<SurveyDescriptor> surveys = this.loadSurveys(surveyIds);
 
-        this.sendSurveysInvitationAnonymouslyToPlayers(surveys, request);
+        return this.sendSurveysInvitationAnonymouslyToPlayers(surveys, request);
     }
 
     /**
@@ -630,21 +630,24 @@ public class GameFacade extends BaseFacade<Game> {
      * @param surveys surveys
      * @param request need request to generate the link
      *
+     * @return number of accounts to which an invitation has been sent
+     * 
      * @throws WegasErrorMessage if 1) surveys belong to different GameModel; 2) no game; 3) no
      *                           account
      */
-    public void sendSurveysInvitationAnonymouslyToPlayers(List<SurveyDescriptor> surveys,
+    public int sendSurveysInvitationAnonymouslyToPlayers(List<SurveyDescriptor> surveys,
         HttpServletRequest request
     ) {
         Game game = getGameFromSurveys(surveys);
-        List<AbstractAccount> accounts = getPlayerAccounstWithEmail(game);
+        List<AbstractAccount> accounts = getPlayerAccountsWithEmail(game);
         if (!accounts.isEmpty()) {
             for (AbstractAccount account : accounts) {
                 accountFacade.sendSurveyAnonymousToken(account, surveys, request);
             }
         } else {
-            throw WegasErrorMessage.error("Unable to find account with email addresses");
+            throw WegasErrorMessage.error("Unable to find accounts with email addresses", "WEGAS-INVITE-SURVEY-NO-EMAIL");
         }
+        return accounts.size();
     }
 
 public void sendSurveysInvitationAnonymouslyToList(String surveyIds,
@@ -652,8 +655,6 @@ public void sendSurveysInvitationAnonymouslyToList(String surveyIds,
         HttpServletRequest request) {
 
         List<SurveyDescriptor> surveys = this.loadSurveys(surveyIds);
-
-        this.sendSurveysInvitationAnonymouslyToList(surveys, recipients, request);
     }
 
     /**
@@ -676,7 +677,7 @@ public void sendSurveysInvitationAnonymouslyToList(String surveyIds,
                 accountFacade.sendSurveyAnonymousToken(recipient, surveys, request);
             }
         } else {
-            throw WegasErrorMessage.error("Unable to find account with email addresses");
+            throw WegasErrorMessage.error("Unable to find accounts with email addresses", "WEGAS-INVITE-SURVEY-NO-EMAIL");
         }
     }
 

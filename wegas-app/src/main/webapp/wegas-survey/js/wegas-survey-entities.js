@@ -65,8 +65,8 @@ YUI.add('wegas-survey-entities', function(Y) {
                 type: BOOLEAN,
                 value: true,
                 view: {
-                    label: 'is published',
-                    type: HIDDEN
+                    className: 'wegas-advanced-feature',
+                    label: 'is published'
                 }
             },
             items: {
