@@ -11,6 +11,7 @@ import './FormView';
 import { Button, ButtonProps } from '../../Components/Inputs/Buttons/Button';
 import { wlog } from '../../Helper/wegaslog';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
+import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 
 interface EditorProps<T> {
   entity?: T;
@@ -67,7 +68,7 @@ export class Form<T> extends React.Component<
           {this.props.update && (
             <Button
               label="Save"
-              disabled={this.state.val === this.props.entity}
+              disabled={!deepDifferent(this.state.val, this.props.entity)}
               onClick={() => {
                 if (this.state.val !== this.props.entity && this.form) {
                   const validation = this.form.validate();

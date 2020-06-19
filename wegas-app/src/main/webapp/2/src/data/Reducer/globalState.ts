@@ -49,7 +49,7 @@ export type Edition =
   | {
       type: 'File';
       entity: IAbstractContentDescriptor;
-      cb: (updatedValue: IAbstractEntity) => void;
+      cb?: (updatedValue: IAbstractEntity) => void;
     };
 export interface EditingState {
   editing?: Readonly<Edition>;
@@ -402,7 +402,7 @@ export function editStateMachine(
  */
 export function editFile(
   entity: IAbstractContentDescriptor,
-  cb: (updatedValue: IAbstractContentDescriptor) => void,
+  cb?: (updatedValue: IAbstractContentDescriptor) => void,
 ) {
   return ActionCreator.FILE_EDIT({
     entity,
@@ -472,7 +472,10 @@ export function saveEditor(value: IAbstractEntity): ThunkResult {
       case 'File':
         return dispatch(dispatch => {
           return FileAPI.updateMetadata(value as IAbstractContentDescriptor)
-            .then((res: IAbstractContentDescriptor) => editMode.cb(res))
+            .then((res: IAbstractContentDescriptor) => {
+              dispatch(ACTIONS.EditorActions.editFile(res));
+              editMode.cb && editMode.cb(res);
+            })
             .catch((res: Error) => {
               dispatch(ACTIONS.EditorActions.editorError(res.message));
             });

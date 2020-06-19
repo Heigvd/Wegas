@@ -63,7 +63,7 @@ export const ActionCreator = {
   FSM_EDIT: variableEditAction(ActionType.FSM_EDIT),
   FILE_EDIT: (data: {
     entity: IAbstractContentDescriptor;
-    cb: (newEntity: IAbstractContentDescriptor) => void;
+    cb?: (newEntity: IAbstractContentDescriptor) => void;
   }) => createAction(ActionType.FILE_EDIT, data),
   VARIABLE_CREATE: <T extends IAbstractEntity>(data: {
     '@class': string;
