@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isNode(object: any): object is Node {
   for (const key in Node) {
     if (object[key] === undefined) {
@@ -11,7 +12,6 @@ function isNode(object: any): object is Node {
 
 export function useOnClickOutside(
   ref: React.RefObject<HTMLDivElement>,
-
   cb: () => void,
 ) {
   React.useEffect(() => {

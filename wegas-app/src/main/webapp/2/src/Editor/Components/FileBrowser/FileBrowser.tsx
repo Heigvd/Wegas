@@ -7,6 +7,27 @@ import { StoreDispatch, useStore } from '../../../data/store';
 import { grow } from '../../../css/classes';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { MessageString } from '../MessageString';
+import { css } from 'emotion';
+import { focusTabContext } from '../LinearTabLayout/LinearLayout';
+import { mainLayoutId } from '../Layout';
+// import { themeVar } from '../../../Components/Style/ThemeVars';
+
+const fileBrowserStyle = css({
+  // backgroundColor: themeVar.Common.colors.HeaderColor,
+  paddingRight: '5px',
+  // borderColor: themeVar.Common.colors.BorderColor,
+  // borderRadius: themeVar.Common.dimensions.BorderRadius,
+  // borderWidth: '2px',
+  // borderStyle: 'inset',
+});
+
+export type FilePickingType = 'FILE' | 'FOLDER' | 'BOTH' | undefined;
+export type FileType = 'directory' | 'audio' | 'video' | 'image';
+export type FilterType = 'show' | 'hide' | 'grey';
+export interface FileFilter {
+  filterType: FilterType;
+  fileType: FileType;
+}
 
 interface FileBrowserProps {
   onFileClick?: FileBrowserNodeProps['onFileClick'];
@@ -14,6 +35,9 @@ interface FileBrowserProps {
   selectedLocalPaths?: string[];
   selectedGlobalPaths?: string[];
   localDispatch?: StoreDispatch;
+  pick?: FilePickingType;
+  filter?: FileFilter;
+  id?: string;
 }
 
 export function FileBrowser({
@@ -22,6 +46,9 @@ export function FileBrowser({
   selectedLocalPaths,
   selectedGlobalPaths,
   localDispatch,
+  pick,
+  filter,
+  id,
 }: FileBrowserProps) {
   const [rootFile, setRootFile] = React.useState<IAbstractContentDescriptor>();
   const [error, setError] = React.useState<string>('');
@@ -40,7 +67,7 @@ export function FileBrowser({
 
   return rootFile ? (
     <DefaultDndProvider>
-      <div className={grow} ref={comp.current}>
+      <div className={grow} ref={comp.current} id={id}>
         <MessageString value={error} type={'error'} duration={3000} />
         <FileBrowserNode
           defaultFile={rootFile}
@@ -51,6 +78,9 @@ export function FileBrowser({
           onFileClick={onFileClick}
           onDelelteFile={onDelelteFile}
           localDispatch={localDispatch}
+          pick={pick}
+          filter={filter}
+          className={fileBrowserStyle}
         />
       </div>
     </DefaultDndProvider>
@@ -68,6 +98,8 @@ export default function FileBrowserWithMeta() {
     shallowDifferent,
   );
 
+  const focusTab = React.useContext(focusTabContext);
+
   return (
     <ComponentWithForm>
       {({ localState, localDispatch }) => {
@@ -82,6 +114,7 @@ export default function FileBrowserWithMeta() {
                 : []
             }
             localDispatch={localDispatch}
+            onFileClick={() => focusTab('Editor', mainLayoutId)}
           />
         );
       }}

@@ -1,8 +1,11 @@
 import { inheritanceChain } from '../entities';
 import { methods } from './methods';
+import { deepClone } from 'fast-json-patch/module/core';
+
+const proxyCache = new WeakMap<IAbstractEntity, IAbstractEntity>();
 
 const traps = {
-  get: function(
+  get: function (
     obj: Record<string | number, unknown>,
     prop: string | number,
   ): unknown {
@@ -12,34 +15,43 @@ const traps = {
     }
     return val;
   },
-  set: function() {
+  set: function () {
     return true;
   },
   deleteProperty() {
     return true;
   },
 };
-// function immutable(o: object) {
-//   return new Proxy(o, traps);
-// }
-const proxyCache = new WeakMap<IAbstractEntity, IAbstractEntity>();
+
+export type StronglyTypedEntity<
+  T extends {
+    '@class': keyof WegasClassNameAndScriptableClasses | string;
+  }
+> = T['@class'] extends keyof WegasClassNameAndScriptableClasses
+  ? WegasClassNameAndScriptableClasses[T['@class']]
+  : T;
 /**
  * Proxy the AbstractEntity given. Defensively makes it readonly through a proxy.
  * Also adds some methods to it.
  * Meant to be used within client Script
  * @param entity AbstractEntity to proxy
  */
-export function proxyfy<Entity extends IAbstractEntity>(
-  entity?: Entity,
-): Readonly<Entity> | undefined {
+export function proxyfy<
+  Entity extends {
+    '@class': keyof WegasClassNameAndScriptableClasses | string;
+  }
+>(entity?: Entity): Readonly<StronglyTypedEntity<Entity>> | undefined {
   if (entity != null) {
     if (proxyCache.has(entity)) {
-      return proxyCache.get(entity) as Entity;
+      return proxyCache.get(entity) as StronglyTypedEntity<Entity>;
     }
     const iChain = [entity['@class'], ...inheritanceChain(entity['@class'])];
-    const p = new Proxy(entity, {
+    /**
+     * IMPORTANT: To avoid proxy unmutability errors with ES6 Proxies use deepClone of object
+     */
+    const p = new Proxy(deepClone(entity), {
       ...traps,
-      get: function(obj, prop: string | number) {
+      get: function (obj, prop: string | number) {
         for (const cls of iChain) {
           if (cls in methods && typeof methods[cls][prop] === 'function') {
             return methods[cls][prop](entity);

@@ -1,52 +1,48 @@
 import * as React from 'react';
 import { TranslatableContent } from '../../data/i18n';
-import { useVariableInstance } from '../Hooks/useVariable';
 import {
   pageComponentFactory,
   registerComponent,
-  PageComponentMandatoryProps,
 } from './tools/componentFactory';
 import { schemaProps } from './tools/schemaProps';
-import { useScript } from '../Hooks/useScript';
+import { useComponentScript } from '../Hooks/useComponentScript';
+import { entityIs } from '../../data/entities';
+import { WegasComponentProps } from './tools/EditableComponent';
 
-interface ExampleProps extends PageComponentMandatoryProps {
+interface ExampleProps extends WegasComponentProps {
   script?: ISScript;
 }
 
 const Example: React.FunctionComponent<ExampleProps> = ({
   script,
-  EditHandle,
 }: ExampleProps) => {
-  const descriptor = useScript(script ? script.content : '') as
-    | IStringDescriptor
-    | ISNumberDescriptor;
-  const instance = useVariableInstance(descriptor);
+  const { content, instance, notFound } = useComponentScript<
+    INumberDescriptor | ITextDescriptor
+  >(script);
 
-  return (
-    <>
-      <EditHandle />
-      {instance === undefined ? (
-        <span>{`Instance of ${descriptor.name} not found`}</span>
-      ) : (
-        <div>
-          {'trValue' in instance
-            ? TranslatableContent.toString(instance.trValue)
-            : String(instance.value)}
-        </div>
-      )}
-    </>
+  return notFound ? (
+    <pre>Not found: {content}</pre>
+  ) : (
+    <div>
+      {entityIs(instance, 'StringInstance')
+        ? TranslatableContent.toString(instance.trValue)
+        : entityIs(instance, 'NumberInstance')
+        ? String(instance.value)
+        : 'The found variable is neither a StringInstance nore a NumberInstance'}
+    </div>
   );
 };
 
 registerComponent(
   pageComponentFactory(
     Example,
+    'Advanced',
     'Example',
     'ambulance',
     {
       script: schemaProps.scriptVariable('Variable', true, [
-        'TextDescriptor',
-        'NumberDescriptor',
+        'ISTextDescriptor',
+        'ISNumberDescriptor',
       ]),
     },
     ['ISNumberDescriptor', 'ISStringDescriptor'],

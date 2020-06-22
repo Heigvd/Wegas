@@ -171,7 +171,7 @@ export const DropZoneFactory = (
         });
       },
     },
-    function(connect, monitor) {
+    function (connect, monitor) {
       return {
         connectDropTarget: connect.dropTarget(),
         isOver: monitor.isOver({ shallow: true }),
@@ -179,32 +179,3 @@ export const DropZoneFactory = (
       };
     },
   )(DropZoneContainer);
-
-// function DropZone(props: DropZoneProps) {
-
-//   const { accept } = props;
-
-//   const [dropZoneProps, dropZone] = useDrop({
-//     accept,
-//     canDrop: () => true,
-//     drop: (component, monitor) => {
-//       if (monitor!.didDrop()) {
-//         return;
-//       }
-//       const item = monitor!.getItem() as ItemDescription;
-//       return outcome(props, item, monitor!, component!);
-//     },
-//     collect: (mon: DropTargetMonitor) => ({
-//       isOverCurrent: mon.isOver({ shallow: true }),
-//       canDrop: mon.canDrop(),
-//       item: mon.getItem() as DnDComponent | null,
-//     }),
-//   });
-//   return (
-//     <DropZoneContainer {...props}>
-//       {(test)=><div>
-
-//         </div>}
-//     </DropZoneContainer>
-//   );
-// }

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IconButton } from '../../Components/Inputs/Button/IconButton';
+import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { useOnClickOutside } from '../../Components/Hooks/useOnClickOutside';
 import { css } from 'emotion';
 

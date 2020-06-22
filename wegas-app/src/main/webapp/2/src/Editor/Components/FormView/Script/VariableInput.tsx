@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IconButton } from '../../../../Components/Inputs/Button/IconButton';
+import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import Form from 'jsoninput';
 import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
@@ -22,8 +22,8 @@ const schema = (scriptableClassFilter?: WegasScriptEditorReturnTypeName[]) => ({
     variableName: schemaProps.scriptVariable(
       'Variable',
       false,
-      scriptableClassFilter &&
-        scriptableClassFilter.map(sf => sf.substr(2) as WegasClassNames),
+      scriptableClassFilter,
+      // && scriptableClassFilter.map(sf => sf.substr(2) as WegasClassNames),
     ),
   },
 });

@@ -1,11 +1,19 @@
-export const wlog = (message?: unknown, ...optionalParams: unknown[]): void => {
+export const wconsole = (
+  csl: (message?: unknown, ...optionalParams: unknown[]) => void,
+) => (message?: unknown, ...optionalParams: unknown[]): void => {
   if (process.env.NODE_ENV !== 'production') {
     if (optionalParams.length === 0) {
-      // eslint-disable-next-line no-console
-      console.log(message);
+      csl(message);
     } else {
-      // eslint-disable-next-line no-console
-      console.log(message, optionalParams);
+      csl(message, optionalParams);
     }
   }
 };
+
+export const wlog = (message?: unknown, ...optionalParams: unknown[]): void =>
+  // eslint-disable-next-line no-console
+  wconsole(console.log)(message, ...optionalParams);
+
+export const wwarn = (message?: unknown, ...optionalParams: unknown[]): void =>
+  // eslint-disable-next-line no-console
+  wconsole(console.warn)(message, ...optionalParams);

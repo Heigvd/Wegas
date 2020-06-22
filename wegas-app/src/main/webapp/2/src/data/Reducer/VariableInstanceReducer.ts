@@ -8,6 +8,8 @@ import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { QuestionDescriptorAPI } from '../../API/questionDescriptor.api';
 import { isSelected, getReply } from '../proxyfy/methods/ChoiceDescriptor';
 import { getInstance } from '../methods/VariableDescriptorMethods';
+import { createScript } from '../../Helper/wegasEntites';
+import { InboxAPI } from '../../API/inbox.api';
 
 export interface VariableInstanceState {
   [id: string]: Readonly<IVariableInstance> | undefined;
@@ -46,7 +48,7 @@ export function updateInstance(
   variableInstance: IVariableInstance,
   cb?: () => void,
 ): ThunkResult<Promise<StateActions | void>> {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableInstanceAPI.update(variableInstance, gameModelId).then(res =>
       store.dispatch(
@@ -57,7 +59,7 @@ export function updateInstance(
 }
 
 export function getAll(): ThunkResult<Promise<StateActions>> {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     return VariableInstanceAPI.getByPlayer().then(res =>
       dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
@@ -69,16 +71,14 @@ export function runScript(
   player?: IPlayer,
   context?: IVariableDescriptor,
 ): ThunkResult {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
       throw Error('Missing persisted player');
     }
     const finalScript: IScript =
-      'string' === typeof script
-        ? { '@class': 'Script', language: 'JavaScript', content: script }
-        : script;
+      'string' === typeof script ? createScript(script) : script;
     return VariableDescriptorAPI.runScript(
       gameModelId,
       p.id,
@@ -96,7 +96,7 @@ export function readChoice(
   choice: IChoiceDescriptor,
   player?: IPlayer,
 ): ThunkResult {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
@@ -116,7 +116,7 @@ export function selectAndValidate(
   choice: IChoiceDescriptor,
   player?: IPlayer,
 ): ThunkResult {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
@@ -136,7 +136,7 @@ export function selectChoice(
   choice: IChoiceDescriptor,
   player?: IPlayer,
 ): ThunkResult {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
@@ -156,7 +156,7 @@ export function cancelReply(
   choice: IChoiceDescriptor,
   player?: IPlayer,
 ): ThunkResult {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     const reply = getReply(choice)(p);
@@ -189,7 +189,7 @@ export function validateQuestion(
   question: IQuestionDescriptor,
   player?: IPlayer,
 ): ThunkResult {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     const instance = getInstance(question);
@@ -201,6 +201,41 @@ export function validateQuestion(
       p.id,
       instance,
     ).then(res =>
+      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
+
+// Message specific actions
+
+export function readMessage(message: IMessage, player?: IPlayer): ThunkResult {
+  return function (dispatch, getState) {
+    const p = player != null ? player : Player.selectCurrent();
+    if (message.id == null) {
+      throw Error('Missing message id');
+    }
+    if (p.id == null) {
+      throw Error('Missing persisted player');
+    }
+    return InboxAPI.readMessage(message.id, p.id).then(res =>
+      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
+
+export function readMessages(
+  inbox: IInboxDescriptor,
+  player?: IPlayer,
+): ThunkResult {
+  return function (dispatch, getState) {
+    const p = player != null ? player : Player.selectCurrent();
+    if (inbox.id == null) {
+      throw Error('Missing message id');
+    }
+    if (p.id == null) {
+      throw Error('Missing persisted player');
+    }
+    return InboxAPI.readMessages(inbox.id, p.id).then(res =>
       dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };

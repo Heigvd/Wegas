@@ -122,6 +122,7 @@ const modules = {
     ],
   },
   devServer: {
+    stats: 'errors-warnings',
     port: PREPROD ? 4004 : 3003,
     overlay: true,
     publicPath: '/Wegas/2/dist/',

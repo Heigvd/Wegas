@@ -2,45 +2,40 @@ import * as React from 'react';
 import {
   pageComponentFactory,
   registerComponent,
-  PageComponentMandatoryProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { ConnectedQuestionDisplay } from '../../AutoImport/Question/List';
-import { entityIs } from '../../../data/entities';
-import { useScript } from '../../Hooks/useScript';
+import { useComponentScript } from '../../Hooks/useComponentScript';
+import { WegasComponentProps } from '../tools/EditableComponent';
+import { ConnectedQuestionDisplay } from '../../Outputs/Question';
 
-interface QuestionDisplayProps extends PageComponentMandatoryProps {
+interface QuestionDisplayProps extends WegasComponentProps {
   /**
    * script - a script returning a QuestionDescriptor
    */
-  script?: IScript;
+  question?: IScript;
 }
 
-function QuestionDisplay({ script, EditHandle }: QuestionDisplayProps) {
-  const descriptor = useScript(
-    script ? script.content : '',
-  ) as IQuestionDescriptor;
-  return (
-    <>
-      <EditHandle />
-      {descriptor === undefined ||
-      !entityIs(descriptor, 'QuestionDescriptor') ? (
-        <pre>Undefined entity</pre>
-      ) : (
-        <ConnectedQuestionDisplay entity={descriptor} />
-      )}
-    </>
+function QuestionDisplay({ question }: QuestionDisplayProps) {
+  const { content, descriptor, notFound } = useComponentScript<
+    IQuestionDescriptor
+  >(question);
+
+  return notFound ? (
+    <pre>Not found: {content}</pre>
+  ) : (
+    <ConnectedQuestionDisplay entity={descriptor!} />
   );
 }
 
 registerComponent(
   pageComponentFactory(
     QuestionDisplay,
+    'Advanced',
     'Question',
     'question',
     {
       question: schemaProps.scriptVariable('Question', true, [
-        'QuestionDescriptor',
+        'ISQuestionDescriptor',
       ]),
     },
     ['string'],

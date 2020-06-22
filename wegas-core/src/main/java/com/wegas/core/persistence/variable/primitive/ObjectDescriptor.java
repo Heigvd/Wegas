@@ -18,6 +18,7 @@ import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.ValueGenerators.EmptyMap;
 import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.view.HashListView;
 import com.wegas.editor.view.HtmlView;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +51,8 @@ public class ObjectDescriptor extends VariableDescriptor<ObjectInstance> impleme
     @ElementCollection
     @JsonIgnore
     @WegasEntityProperty(
-        optional = false, nullable = false, proposal = EmptyMap.class,
-        view = @View(label = "Descriptor properties"))
+            optional = false, nullable = false, proposal = EmptyMap.class,
+            view = @View(label = "Descriptor properties", value = HashListView.class))
     private List<VariableProperty> properties = new ArrayList<>();
 
     @Override

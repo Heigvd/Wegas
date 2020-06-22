@@ -2,7 +2,7 @@ import { css, cx } from 'emotion';
 import produce from 'immer';
 import { Connection, Defaults, jsPlumbInstance } from 'jsplumb';
 import * as React from 'react';
-import { IconButton } from '../../Components/Inputs/Button/IconButton';
+import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { VariableDescriptor } from '../../data/selectors';
 import { StoreDispatch, useStore } from '../../data/store';
 import { entityIs } from '../../data/entities';
@@ -13,7 +13,6 @@ import {
   getInstance,
   editorLabel,
 } from '../../data/methods/VariableDescriptorMethods';
-import { themeVar } from '../../Components/Theme';
 import { EditorAction } from '../../data/Reducer/globalState';
 import { State as RState } from '../../data/Reducer/reducers';
 import { wlog } from '../../Helper/wegaslog';
@@ -24,12 +23,14 @@ import {
   grow,
   flex,
   relative,
-  expand,
+  expandBoth,
   showOverflow,
 } from '../../css/classes';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { createTranslatableContent } from './FormView/translatable';
+import { createScript } from '../../Helper/wegasEntites';
+import { themeVar } from '../../Components/Style/ThemeVars';
 
 const editorStyle = css({
   position: 'relative',
@@ -69,7 +70,7 @@ const editorStyle = css({
 
 const searchHighlighted = css({
   // !important is the only way to take the priority because jsPlumb defines chained selectors for the style
-  backgroundColor: themeVar.searchColor + ' !important',
+  backgroundColor: themeVar.Common.colors.HighlightColor + ' !important',
 });
 
 export const searchWithState = (
@@ -113,13 +114,13 @@ const JS_PLUMB_OPTIONS: Defaults = {
   ],
   PaintStyle: {
     strokeWidth: 1,
-    stroke: themeVar.primaryColor,
+    stroke: themeVar.Common.colors.MainColor,
     //@ts-ignore
     outlineStroke: 'white',
     outlineWidth: 2,
   },
   HoverPaintStyle: {
-    stroke: themeVar.primaryDarkerColor,
+    stroke: themeVar.Common.colors.HoverColor,
   },
 };
 
@@ -181,32 +182,16 @@ class StateMachineEditor extends React.Component<
           '@class': 'Transition',
           label: '',
           nextStateId,
-          triggerCondition: {
-            '@class': 'Script',
-            language: 'JavaScript',
-            content: '',
-          },
-          preStateImpact: {
-            '@class': 'Script',
-            language: 'JavaScript',
-            content: '',
-          },
+          triggerCondition: createScript(),
+          preStateImpact: createScript(),
           index: 0,
           version: 0,
         }
       : {
           '@class': 'DialogueTransition',
           nextStateId,
-          triggerCondition: {
-            '@class': 'Script',
-            language: 'JavaScript',
-            content: '',
-          },
-          preStateImpact: {
-            '@class': 'Script',
-            language: 'JavaScript',
-            content: '',
-          },
+          triggerCondition: createScript(),
+          preStateImpact: createScript(),
           index: 0,
           version: 0,
           actionText: createTranslatableContent(this.context.lang),
@@ -277,10 +262,8 @@ class StateMachineEditor extends React.Component<
   moveState = (id: number, pos: [number, number]) => {
     this.setState(
       produce((state: StateMachineEditorState) => {
-        state.stateMachine.states[id].x =
-          pos[0] < 0 ? 0 : pos[0];
-        state.stateMachine.states[id].y =
-          pos[1] < 0 ? 0 : pos[1];
+        state.stateMachine.states[id].x = pos[0] < 0 ? 0 : pos[0];
+        state.stateMachine.states[id].y = pos[1] < 0 ? 0 : pos[1];
       }),
     );
   };
@@ -297,11 +280,7 @@ class StateMachineEditor extends React.Component<
       ? {
           '@class': 'State',
           version: 0,
-          onEnterEvent: {
-            '@class': 'Script',
-            content: '',
-            language: 'JavaScript',
-          },
+          onEnterEvent: createScript(),
           x: position.left >= 10 ? position.left : 10,
           y: position.top >= 10 ? position.top : 10,
           label: '',
@@ -310,11 +289,7 @@ class StateMachineEditor extends React.Component<
       : {
           '@class': 'DialogueState',
           version: 0,
-          onEnterEvent: {
-            '@class': 'Script',
-            content: '',
-            language: 'JavaScript',
-          },
+          onEnterEvent: createScript(),
           x: position.left >= 10 ? position.left : 10,
           y: position.top >= 10 ? position.top : 10,
           text: createTranslatableContent(lang),
@@ -445,8 +420,8 @@ class StateMachineEditor extends React.Component<
       plumb.bind('connectionAborted', connection => {
         const str_left = (connection.target as HTMLElement).style.left;
         const str_top = (connection.target as HTMLElement).style.top;
-        const left = parseInt(str_left ? str_left : "0");
-        const top = parseInt(str_top ? str_top : "0");
+        const left = parseInt(str_left ? str_left : '0');
+        const top = parseInt(str_top ? str_top : '0');
         const src = Number(connection.sourceId);
         this.createState({ left, top }, src);
       });
@@ -491,36 +466,36 @@ class StateMachineEditor extends React.Component<
       <Toolbar>
         <Toolbar.Header>{editorLabel(stateMachine)}</Toolbar.Header>
         <Toolbar.Content className={cx(flex, relative, showOverflow)}>
-      <div
-        ref={n => {
-          this.container = n;
-        }}
-            className={cx(editorStyle, expand)}
-      >
-        {plumb != null &&
-          Object.keys(stateMachine.states).map(k => {
-            const key = Number(k);
-            return (
-              <State
-                editState={this.editState}
-                state={stateMachine.states[key]}
-                currentState={
-                  Number(key) === stateMachineInstance.currentStateId
-                }
-                id={key}
-                initialState={
-                  stateMachine.defaultInstance.currentStateId === key
-                }
-                key={key}
-                plumb={plumb}
-                deleteState={this.deleteState}
-                moveState={this.moveState}
-                editTransition={this.editTransition}
-                search={this.props.search}
-              />
-            );
-          })}
-      </div>
+          <div
+            ref={n => {
+              this.container = n;
+            }}
+            className={cx(editorStyle, expandBoth)}
+          >
+            {plumb != null &&
+              Object.keys(stateMachine.states).map(k => {
+                const key = Number(k);
+                return (
+                  <State
+                    editState={this.editState}
+                    state={stateMachine.states[key]}
+                    currentState={
+                      Number(key) === stateMachineInstance.currentStateId
+                    }
+                    id={key}
+                    initialState={
+                      stateMachine.defaultInstance.currentStateId === key
+                    }
+                    key={key}
+                    plumb={plumb}
+                    deleteState={this.deleteState}
+                    moveState={this.moveState}
+                    editTransition={this.editTransition}
+                    search={this.props.search}
+                  />
+                );
+              })}
+          </div>
         </Toolbar.Content>
       </Toolbar>
     );
@@ -553,6 +528,7 @@ export function ConnectedStateMachineEditor({
       ? getInstance(stateMachine.current)
       : undefined;
     if (
+      !entityIs(stateMachine.current, 'TriggerDescriptor', true) &&
       entityIs(stateMachine.current, 'AbstractStateMachineDescriptor', true) &&
       entityIs(instance, 'FSMInstance', true)
     ) {
@@ -596,9 +572,9 @@ const stateStyle = css({
 const initialStateStyle = css({
   border: '6px double',
 });
-const currentStateStyle = css({
-  borderColor: themeVar.primaryColor,
-  backgroundColor: themeVar.warningColor,
+const activeStateStyle = css({
+  borderColor: themeVar.Common.colors.BorderColor,
+  backgroundColor: themeVar.Common.colors.WarningColor,
 });
 const sourceStyle = css({
   display: 'inline-block',
@@ -679,7 +655,7 @@ class State extends React.Component<{
           stateStyle,
           {
             [initialStateStyle]: initialState,
-            [currentStateStyle]: currentState,
+            [activeStateStyle]: currentState,
           },
           this.isBeingSearched() && searchHighlighted,
         )}
@@ -758,40 +734,46 @@ class Transition extends React.Component<{
       ...(src === tgt ? ({ connector: ['StateMachine'] } as any) : undefined),
     });
     if (this.connection) {
-    (this.connection as any).bind(
-      'click',
-      (connection: any, e: ModifierKeysEvent) => {
-        this.props.editTransition(
-          e,
-          [this.props.parent, this.props.position],
-          connection.getParameter('transition'),
-        );
-      },
-    );
-    this.updateData();
-  }
+      (this.connection as any).bind(
+        'click',
+        (connection: any, e: ModifierKeysEvent) => {
+          this.props.editTransition(
+            e,
+            [this.props.parent, this.props.position],
+            connection.getParameter('transition'),
+          );
+        },
+      );
+      this.updateData();
+    }
   }
   componentDidUpdate() {
     this.updateData();
   }
-  buildLabel(label: string, condition: string, impact: string){
-      if (label){
-          return label;
-      } else {
-        return (condition ? "Condition: " + condition + ' ' : '') + 
-          (impact ? "Impact: " + impact + ' ' : '');
-      }
+  buildLabel(label: string, condition: string, impact: string) {
+    if (label) {
+      return label;
+    } else {
+      return (
+        (condition ? 'Condition: ' + condition + ' ' : '') +
+        (impact ? 'Impact: ' + impact + ' ' : '')
+      );
+    }
   }
   updateData = () => {
-    const {triggerCondition, preStateImpact } = this.props.transition;
+    const { triggerCondition, preStateImpact } = this.props.transition;
 
     try {
       this.connection!.setParameter('transition', this.props.transition);
       this.connection!.setParameter('transitionIndex', this.props.position);
-      if(entityIs(this.props.transition, "Transition")){
-        this.connection!.setLabel(this.buildLabel(this.props.transition.label, 
-        triggerCondition ? triggerCondition.content : '', 
-        preStateImpact ? preStateImpact.content : ''));
+      if (entityIs(this.props.transition, 'Transition')) {
+        this.connection!.setLabel(
+          this.buildLabel(
+            this.props.transition.label,
+            triggerCondition ? triggerCondition.content : '',
+            preStateImpact ? preStateImpact.content : '',
+          ),
+        );
       }
 
       // "(this.connection! as any)" is compulsory since jsPlumb is not fully implemented for TS

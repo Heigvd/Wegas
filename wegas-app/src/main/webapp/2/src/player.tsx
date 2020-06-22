@@ -5,12 +5,13 @@ import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
 import { LanguagesProvider } from './Components/Contexts/LanguagesProvider';
 import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
-import { ThemeProvider } from './Components/Theme';
-import { PageIdLoader } from './Editor/Components/Page/PageLoader';
+import { ThemeProvider } from './Components/Style/Theme';
 import { PageAPI } from './API/pages.api';
 import 'emotion';
 import { useWebsocket } from './API/websocket';
 import { importPageComponents } from './Components/PageComponents/tools/componentFactory';
+import { PageLoader } from './Editor/Components/Page/PageLoader';
+import { pageCTX, defaultPageCTX } from './Editor/Components/Page/PageEditor';
 
 importPageComponents();
 
@@ -29,13 +30,20 @@ function PlayerPageLoader() {
     }),
   );
 
+  if (selectedPageId == null) {
+    return <pre>No page selected</pre>;
+  }
+
   return (
     <ThemeProvider contextName="player">
-      {selectedPageId ? (
-        <PageIdLoader selectedPageId={selectedPageId} />
-      ) : (
-        <pre>No given pageId</pre>
-      )}
+      <pageCTX.Provider
+        value={{
+          ...defaultPageCTX,
+          pageIdPath: [selectedPageId],
+        }}
+      >
+        <PageLoader selectedPageId={selectedPageId} />
+      </pageCTX.Provider>
     </ThemeProvider>
   );
 }

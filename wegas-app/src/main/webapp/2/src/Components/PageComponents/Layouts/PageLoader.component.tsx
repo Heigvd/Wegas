@@ -2,44 +2,77 @@ import * as React from 'react';
 import {
   pageComponentFactory,
   registerComponent,
-  PageComponentMandatoryProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { useScript } from '../../Hooks/useScript';
-import { PageIdLoader } from '../../../Editor/Components/Page/PageLoader';
+import { PageLoader } from '../../../Editor/Components/Page/PageLoader';
+import {
+  PageLoaderComponentProps,
+  PAGE_LOADER_COMPONENT_TYPE,
+} from '../../../Helper/pages';
+import {
+  pageCTX,
+  defaultPageCTX,
+} from '../../../Editor/Components/Page/PageEditor';
+import { useStore, store } from '../../../data/store';
+import { deepDifferent } from '../../Hooks/storeHookFactory';
+import { ActionCreator } from '../../../data/actions';
+import { createScript } from '../../../Helper/wegasEntites';
+import { WegasComponentProps } from '../tools/EditableComponent';
 
-interface PlayerPageLoaderProps extends PageComponentMandatoryProps {
-  selectedPageId?: IScript;
-}
+type PlayerPageLoaderProps = WegasComponentProps & PageLoaderComponentProps;
+
+const defaultPageAsScript = () =>
+  createScript(JSON.stringify(store.getState().pages.index.defaultPageId));
 
 function PlayerPageLoader({
-  EditHandle,
-  selectedPageId,
+  initialSelectedPageId = defaultPageAsScript(),
+  name,
 }: PlayerPageLoaderProps) {
-  const pageId = useScript(
-    selectedPageId ? selectedPageId.content : '',
-  ) as string;
-  return (
-    <>
-      <EditHandle />
-      {selectedPageId === undefined ? (
-        <pre>Unknown pageid</pre>
-      ) : (
-        <PageIdLoader selectedPageId={pageId} />
-      )}
-    </>
+  let pageScript = useStore(s => {
+    if (name != null) {
+      return s.global.pageLoaders[name];
+    }
+  }, deepDifferent);
+  const { pageIdPath } = React.useContext(pageCTX);
+  if (name != null && !pageScript) {
+    store.dispatch(
+      ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
+        name,
+        pageId: initialSelectedPageId,
+      }),
+    );
+    pageScript = initialSelectedPageId;
+  }
+  const pageId = useScript(pageScript ? pageScript.content : '') as string;
+
+  return pageIdPath.includes(pageId) ? (
+    <pre>Page {pageId} recursion</pre>
+  ) : (
+    <pageCTX.Provider
+      value={{
+        ...defaultPageCTX,
+        pageIdPath: [...pageIdPath, pageId],
+      }}
+    >
+      <PageLoader selectedPageId={pageId} />
+    </pageCTX.Provider>
   );
 }
 
 registerComponent(
   pageComponentFactory(
     PlayerPageLoader,
-    'PageLoader',
-    'windows',
+    'Layout',
+    PAGE_LOADER_COMPONENT_TYPE,
+    'window-maximize',
     {
-      selectedPageId: schemaProps.pageSelect('Page', false),
+      name: schemaProps.string('Page', true),
+      initialSelectedPageId: schemaProps.pageSelect('Page', false),
     },
     [],
-    () => ({}),
+    () => ({
+      initialSelectedPageId: defaultPageAsScript(),
+    }),
   ),
 );

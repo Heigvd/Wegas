@@ -5,7 +5,6 @@ import Form from 'jsoninput';
 import { css } from 'emotion';
 import { parse } from '@babel/parser';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { themeVar } from '../../../../../Components/Theme';
 import {
   IConditionAttributes,
   IInitAttributes,
@@ -27,7 +26,7 @@ import { useStore } from '../../../../../data/store';
 import { GameModel } from '../../../../../data/selectors';
 import { parseStatement, generateStatement } from './astManagement';
 import { WegasTypeString } from '../../../../editionConfig';
-import { IconButton } from '../../../../../Components/Inputs/Button/IconButton';
+import { IconButton } from '../../../../../Components/Inputs/Buttons/IconButton';
 import { MessageString } from '../../../MessageString';
 import { WegasScriptEditor } from '../../../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
@@ -36,10 +35,10 @@ import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory'
 import { pick } from 'lodash-es';
 import { CallExpression } from '@babel/types';
 import { StringLiteral } from '@babel/types';
-import { ResizeHandle } from '../../../ResizeHandle';
+import { themeVar } from '../../../../../Components/Style/ThemeVars';
 
 const expressionEditorStyle = css({
-  backgroundColor: themeVar.primaryHoverColor,
+  backgroundColor: themeVar.Common.colors.HeaderColor,
   marginTop: '0.8em',
   padding: '2px',
   div: {
@@ -66,9 +65,9 @@ export function ExpressionEditor({
   mode,
   onChange,
 }: ExpressionEditorProps) {
-  const [error, setError] = React.useState();
+  const [error, setError] = React.useState<string>();
   const [srcMode, setSrcMode] = React.useState(false);
-  const [newSrc, setNewSrc] = React.useState();
+  const [newSrc, setNewSrc] = React.useState<string>();
   const [formState, setFormState] = React.useState<ExpressionEditorState>({});
 
   // Getting variables id
@@ -277,22 +276,21 @@ export function ExpressionEditor({
               onClick={() => onScripEditorSave(newSrc)}
             />
           )}
-          <ResizeHandle minSize={100}>
-            <WegasScriptEditor
-              value={
-                newSrc === undefined
-                  ? formState.statement
-                    ? generate(formState.statement).code
-                    : ''
-                  : newSrc
-              }
-              onChange={setNewSrc}
-              noGutter
-              minimap={false}
-              returnType={returnTypes(mode)}
-              onSave={onScripEditorSave}
-            />
-          </ResizeHandle>
+          <WegasScriptEditor
+            value={
+              newSrc === undefined
+                ? formState.statement
+                  ? generate(formState.statement).code
+                  : ''
+                : newSrc
+            }
+            onChange={setNewSrc}
+            noGutter
+            minimap={false}
+            returnType={returnTypes(mode)}
+            onSave={onScripEditorSave}
+            resizable
+          />
         </div>
       ) : (
         <Form

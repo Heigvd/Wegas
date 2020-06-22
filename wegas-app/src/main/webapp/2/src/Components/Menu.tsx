@@ -1,26 +1,46 @@
 import * as React from 'react';
 import Downshift, { StateChangeOptions } from 'downshift';
 import { css, cx } from 'emotion';
-import { IconButton } from './Inputs/Button/IconButton';
+import { IconButton } from './Inputs/Buttons/IconButton';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
-import { useKeyboard } from './Hooks/useKeyboard';
-import { themeVar } from './Theme';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
+import { Item } from '../Editor/Components/Tree/TreeSelect';
+import { themeVar } from './Style/ThemeVars';
+import { classNameOrEmpty } from '../Helper/className';
+import { ConfirmButton } from './Inputs/Buttons/ConfirmButton';
+import { flexRow, flex, itemCenter } from '../css/classes';
+import { lastKeyboardEvents } from '../Helper/keyboardEvents';
 
-interface Item<T> {
-  label: React.ReactNode;
+export interface MenuItem<T> extends Item<T> {
   disabled?: true;
-  children?: T[];
+  items?: MenuItem<T>[];
 }
-export interface MenuProps<T extends Item<T>> {
-  onSelect: (item: T, keyEvent: ModifierKeysEvent) => void;
+
+export type SelectedMenuItem<T, MItem extends MenuItem<T>> = MItem & {
+  path: number[];
+  value: Exclude<MItem['value'], undefined>;
+};
+
+export interface MenuProps<T, MItem extends MenuItem<T>> {
+  id?: string;
+  onSelect: (
+    item: SelectedMenuItem<T, MItem>,
+    keyEvent: ModifierKeysEvent,
+  ) => void;
   onOpen?: () => void;
-  items: readonly T[];
+  items: readonly MItem[];
   label?: React.ReactNode;
+  path?: number[];
   icon?: IconName;
   direction?: 'left' | 'down' | 'right' | 'top';
+  containerClassName?: string;
   buttonClassName?: string;
   listClassName?: string;
+  adder?: React.ReactNode;
+  deleter?: {
+    filter?: (item: MItem) => boolean;
+    onDelete: (item: MItem) => void;
+  };
 }
 /**
  * returns an empty string
@@ -35,20 +55,29 @@ const itemStyle = css({
     textShadow: '0 0 1px',
   },
 });
-const container = css({
+const containerStyle = css({
   display: 'inline-block',
   position: 'relative',
 });
 const subMenuContainer = css({
+  color: themeVar.Common.colors.TextColor,
+  backgroundColor: themeVar.Common.colors.BackgroundColor,
   position: 'absolute',
   display: 'inline-block',
   padding: '5px',
   zIndex: 1,
   whiteSpace: 'nowrap',
   margin: '2px',
-  backgroundColor: 'rgba(255,255,255,0.95)',
-  boxShadow: '0px 0px 4px 1px black',
-  [`& .${container}`]: {
+  boxShadow: `0px 0px 4px 1px ${themeVar.Common.colors.BorderColor}`,
+  '>div': {
+    padding: '1px',
+    borderRadius: '3px',
+  },
+  '>div:hover': {
+    backgroundColor: themeVar.Common.colors.HoverColor,
+    color: themeVar.Common.colors.HoverTextColor,
+  },
+  [`& .${containerStyle}`]: {
     width: '100%',
   },
 });
@@ -62,20 +91,25 @@ function stopPropagation(ev: React.MouseEvent<HTMLElement>) {
   ev.stopPropagation();
 }
 
-export function Menu<T extends Item<T>>({
+export function Menu<T, MItem extends MenuItem<T>>({
+  id,
   onOpen,
   onSelect,
   direction,
   label,
+  path,
   items,
   icon,
+  containerClassName,
   buttonClassName,
   listClassName,
-}: MenuProps<T>) {
+  adder,
+  deleter,
+}: MenuProps<T, MItem>) {
   const realDirection = direction ? direction : 'down';
-  const keyboardEvents = useKeyboard();
 
   const onStateChange = React.useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (changes: StateChangeOptions<any>) => {
       if (changes.isOpen != null && changes.isOpen) {
         onOpen && onOpen();
@@ -87,14 +121,28 @@ export function Menu<T extends Item<T>>({
   return (
     <Downshift
       onStateChange={onStateChange}
-      onSelect={i => onSelect(i, keyboardEvents)}
+      onSelect={(i: MItem) =>
+        i.value != null &&
+        onSelect(
+          {
+            ...i,
+            value: i.value as Exclude<MItem['value'], undefined>,
+            path: path || [],
+          },
+          lastKeyboardEvents,
+        )
+      }
       itemToString={emtpyStr}
     >
       {({ getItemProps, isOpen, toggleMenu, closeMenu }) => (
-        <div className={container}>
+        <div
+          id={id}
+          className={containerStyle + classNameOrEmpty(containerClassName)}
+        >
           <div className={itemStyle} onClick={() => toggleMenu()}>
-            {label}
             <IconButton
+              label={label}
+              prefixedLabel
               icon={withDefault(icon, `caret-${realDirection}` as IconName)}
               onClick={ev => {
                 ev.stopPropagation();
@@ -106,25 +154,54 @@ export function Menu<T extends Item<T>>({
 
           {isOpen && (
             <div
-              className={cx(
-                DIR[realDirection],
-                listClassName,
-                css({ background: themeVar.backgroundColor }),
-              )}
+              className={DIR[realDirection] + classNameOrEmpty(listClassName)}
               ref={n => {
                 if (
                   n != null &&
                   n.style.getPropertyValue('position') !== 'fixed'
                 ) {
-                  const { left, top } = n.getBoundingClientRect();
-                  n.style.setProperty('left', `${left}px`);
-                  n.style.setProperty('top', `${top}px`);
+                  const {
+                    left,
+                    top,
+                    width,
+                    height,
+                  } = n.getBoundingClientRect();
+                  const { innerWidth, innerHeight } = window;
+                  const {
+                    width: pWidth,
+                    height: pHeight,
+                  } = n.parentElement!.getBoundingClientRect();
+                  let finalLeft = left;
+                  let finalTop = top;
+
+                  // Out of window check (right and bottom)
+                  if (left + width > innerWidth) {
+                    finalLeft -= pWidth + width;
+                  }
+                  if (top + height > innerHeight) {
+                    finalTop -= pHeight + height;
+                  }
+
+                  n.style.setProperty('left', `${finalLeft}px`);
+                  n.style.setProperty('top', `${finalTop}px`);
                   n.style.setProperty('position', 'fixed');
                 }
               }}
             >
-              {items.map((item, index) => {
-                if (Array.isArray(item.children)) {
+              {adder}
+              {items.map((item: MItem, index: number) => {
+                const newPath = [...(path ? path : []), index];
+                const trasher =
+                  deleter && (!deleter.filter || deleter.filter(item)) ? (
+                    <ConfirmButton
+                      icon="trash"
+                      onAction={() => deleter.onDelete(item)}
+                    />
+                  ) : null;
+                const itemClassName =
+                  cx(flex, flexRow, itemCenter) +
+                  classNameOrEmpty(item.className);
+                if (Array.isArray(item.items)) {
                   return (
                     <div
                       key={index}
@@ -134,16 +211,23 @@ export function Menu<T extends Item<T>>({
                             onClick: stopPropagation,
                           })
                         : undefined)}
+                      className={itemClassName}
+                      style={item.style}
                     >
                       <Menu
                         onSelect={(v, e) => {
                           closeMenu();
-                          onSelect(v, e);
+                          onSelect(
+                            v as Parameters<MenuProps<T, MItem>['onSelect']>[0],
+                            e,
+                          );
                         }}
-                        items={item.children}
+                        items={item.items}
                         direction="right"
                         label={item.label}
+                        path={newPath}
                       />
+                      {trasher}
                     </div>
                   );
                 }
@@ -157,8 +241,10 @@ export function Menu<T extends Item<T>>({
                           onClick: stopPropagation,
                         })
                       : undefined)}
+                    className={itemClassName}
                   >
                     {item.label}
+                    {trasher}
                   </div>
                 );
               })}

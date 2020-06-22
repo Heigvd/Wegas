@@ -10,6 +10,7 @@ import { Schema } from 'jsoninput';
 import { AvailableViews } from '../../Editor/Components/FormView';
 import { FileAPI } from '../../API/files.api';
 import { omit } from 'lodash';
+import { LockEventData } from '../../API/websocket';
 
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
@@ -48,7 +49,7 @@ export type Edition =
   | {
       type: 'File';
       entity: IAbstractContentDescriptor;
-      cb: (updatedValue: IAbstractEntity) => void;
+      cb?: (updatedValue: IAbstractEntity) => void;
     };
 export interface EditingState {
   editing?: Readonly<Edition>;
@@ -94,6 +95,8 @@ export interface GlobalState extends EditingState {
       [name: string]: CustomSchemaFN;
     };
   };
+  pageLoaders: { [name: string]: IScript };
+  locks: { [token: string]: boolean };
 }
 
 /**
@@ -189,34 +192,6 @@ export const editorManagement = (
 const global: Reducer<Readonly<GlobalState>> = u(
   (state: GlobalState, action: StateActions) => {
     switch (action.type) {
-      // case ActionType.PAGE_EDIT:
-      //   state.editing = {
-      //     type: 'Component',
-      //     page: action.payload.page,
-      //     path: action.payload.path,
-      //     actions: {},
-      //   };
-      //   return;
-      // case ActionType.PAGE_LOAD_ID:
-      //   state.currentPageId = action.payload;
-      //   return;
-      // case ActionType.PAGE_INDEX:
-      //   // if current page doesn't exist
-      //   if (!action.payload.some(meta => meta.id === state.currentPageId)) {
-      //     if (action.payload.length > 0) {
-      //       // there is at lease 1 page
-      //       state.currentPageId = action.payload[0].id;
-      //     } else {
-      //       state.currentPageId = undefined;
-      //     }
-      //   }
-      //   return;
-      // case ActionType.PAGE_SRC_MODE:
-      //   state.pageSrc = action.payload;
-      //   return;
-      // case ActionType.PAGE_EDIT_MODE:
-      //   state.pageEdit = action.payload;
-      //   return;
       case ActionType.PAGE_ERROR:
         state.pageError = action.payload.error;
         return;
@@ -290,6 +265,12 @@ const global: Reducer<Readonly<GlobalState>> = u(
         //         case ActionType.EDITOR_SET_VARIABLE_METHOD: {
         // return}
       }
+      case ActionType.EDITOR_REGISTER_PAGE_LOADER:
+        state.pageLoaders[action.payload.name] = action.payload.pageId;
+        return;
+      case ActionType.LOCK_SET:
+        state.locks[action.payload.token] = action.payload.locked;
+        return;
       default:
         state.events = eventManagement(state, action);
         state.editing = editorManagement(state, action);
@@ -304,8 +285,6 @@ const global: Reducer<Readonly<GlobalState>> = u(
     currentUser: CurrentUser,
     pusherStatus: { status: 'disconnected' },
     search: { type: 'NONE' },
-    // pageEdit: false,
-    // pageSrc: false,
     events: [],
     clientMethods: {},
     serverMethods: {},
@@ -314,6 +293,8 @@ const global: Reducer<Readonly<GlobalState>> = u(
       unfiltered: [],
       views: {},
     },
+    pageLoaders: {},
+    locks: {},
   } as GlobalState,
 );
 export default global;
@@ -332,7 +313,7 @@ export function editVariable(
   config?: Schema<AvailableViews>,
   actions?: EditorAction<IVariableDescriptor>,
 ): ThunkResult {
-  return function(dispatch) {
+  return function (dispatch) {
     const currentActions: EditorAction<IVariableDescriptor> =
       actions != null
         ? actions
@@ -381,7 +362,7 @@ export function editStateMachine(
   path: string[] = [],
   config?: Schema<AvailableViews>,
 ): ThunkResult {
-  return function(dispatch) {
+  return function (dispatch) {
     dispatch(
       ActionCreator.FSM_EDIT({
         entity,
@@ -421,7 +402,7 @@ export function editStateMachine(
  */
 export function editFile(
   entity: IAbstractContentDescriptor,
-  cb: (updatedValue: IAbstractContentDescriptor) => void,
+  cb?: (updatedValue: IAbstractContentDescriptor) => void,
 ) {
   return ActionCreator.FILE_EDIT({
     entity,
@@ -491,7 +472,10 @@ export function saveEditor(value: IAbstractEntity): ThunkResult {
       case 'File':
         return dispatch(dispatch => {
           return FileAPI.updateMetadata(value as IAbstractContentDescriptor)
-            .then((res: IAbstractContentDescriptor) => editMode.cb(res))
+            .then((res: IAbstractContentDescriptor) => {
+              dispatch(ACTIONS.EditorActions.editFile(res));
+              editMode.cb && editMode.cb(res);
+            })
             .catch((res: Error) => {
               dispatch(ACTIONS.EditorActions.editorError(res.message));
             });
@@ -499,33 +483,6 @@ export function saveEditor(value: IAbstractEntity): ThunkResult {
     }
   };
 }
-// /**
-//  * Set or unset page edit mode
-//  *
-//  * @export
-//  * @param {boolean} payload set it or not.
-//  */
-// export function pageEditMode(payload: boolean) {
-//   return ActionCreator.PAGE_EDIT_MODE(payload);
-// }
-// /**
-//  * Set or unset page edit mode
-//  *
-//  * @export
-//  * @param {boolean} payload set it or not.
-//  */
-// export function pageLoadId(payload?: string) {
-//   return ActionCreator.PAGE_LOAD_ID(payload);
-// }
-// /**
-//  * Set or unset page src mode
-//  *
-//  * @export
-//  * @param payload set it or not
-//  */
-// export function pageSrcMode(payload: boolean) {
-//   return ActionCreator.PAGE_SRC_MODE(payload);
-// }
 
 export function updatePusherStatus(status: string, socket_id: string) {
   return ActionCreator.PUSHER_SOCKET({ socket_id, status });
@@ -554,7 +511,7 @@ export function searchClear() {
  * @param value the text to search for
  */
 export function searchGlobal(value: string): ThunkResult {
-  return function(dispatch) {
+  return function (dispatch) {
     dispatch(ActionCreator.SEARCH_ONGOING());
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.contains(gameModelId, value)
@@ -572,7 +529,7 @@ export function searchUsage(
   variable: IVariableDescriptor & { id: number },
 ): ThunkResult {
   const search = `Variable.find(gameModel, "${variable.name}")`;
-  return function(dispatch) {
+  return function (dispatch) {
     store.dispatch(ActionCreator.SEARCH_ONGOING());
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.contains(gameModelId, search)
@@ -634,5 +591,21 @@ export function setSchema(
     name,
     schemaFN,
     simpleFilter,
+  });
+}
+
+/**
+ * registerPageLoader - stores a script that returns a page id for every page loaders
+ * @param name
+ * @param pageId
+ */
+export function registerPageLoader(name: string, pageId: IScript) {
+  return ActionCreator.EDITOR_REGISTER_PAGE_LOADER({ name, pageId });
+}
+
+export function setLock(data: LockEventData) {
+  return ActionCreator.LOCK_SET({
+    token: data.token,
+    locked: data.status === 'lock',
   });
 }

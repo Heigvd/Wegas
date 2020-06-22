@@ -10,18 +10,33 @@ import { wlog } from '../../../Helper/wegaslog';
 
 import 'react-reflex/styles.css';
 import { flex, noOverflow, grow } from '../../../css/classes';
-import { themeVar } from '../../../Components/Theme';
+import { themeVar } from '../../../Components/Style/ThemeVars';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
-    backgroundColor: themeVar.primaryLighterColor,
+    backgroundColor: themeVar.Common.colors.MainColor,
     zIndex: 0,
+  },
+  '&.reflex-container > .reflex-splitter:hover': {
+    backgroundColor: themeVar.Common.colors.MainColor,
   },
   '&.reflex-container.vertical > .reflex-splitter': {
     width: '5px',
+    borderLeft: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
+    borderRight: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
   },
   '&.reflex-container.horizontal > .reflex-splitter': {
     height: '5px',
+    borderTop: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
+    borderBottom: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
+  },
+  '&.reflex-container.vertical > .reflex-splitter:hover': {
+    borderLeft: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
+    borderRight: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
+  },
+  '&.reflex-container.horizontal > .reflex-splitter:hover': {
+    borderTop: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
+    borderBottom: `solid 2px ${themeVar.Common.colors.BackgroundColor}`,
   },
 });
 
@@ -54,6 +69,12 @@ interface LayoutNode {
    * flex - the proportion of the layout
    */
   flex?: number;
+
+  /**
+   * flexValues - the flex values of the content
+   */
+  flexValues: number[];
+
   /**
    * defaultActive - the label of the active children
    */
@@ -331,6 +352,7 @@ const createLayout = (
     type: type,
     vertical: vertical,
     children: children,
+    flexValues: [],
   };
 
   return newLayouts;
@@ -471,13 +493,20 @@ interface ActionResize extends Action {
   flex?: number;
 }
 
+interface ActionFlexResize extends Action {
+  type: 'FLEX-RESIZE';
+  layoutKey: string;
+  flexValues: number[];
+}
+
 type TabLayoutsAction<T extends ComponentMap> =
   | ActionDrop<T>
   | ActionDelete<T>
   | ActionDropTab<T>
   | ActionSelect<T>
   | ActionExternalSelect<T>
-  | ActionResize;
+  | ActionResize
+  | ActionFlexResize;
 
 /**
  * setLayout is the reducer function for layout disposition management
@@ -488,9 +517,11 @@ const setLayout = (layoutAccept: string) => <T extends ManagedLayoutMap>(
 ) =>
   u(layouts, (layouts: ManagedLayoutMap) => {
     let newLayouts = layouts;
-    // If a layout has been resized, same it in the state
+    // If a layout has been resized, save it in the state
     if (action.type === 'RESIZE') {
       newLayouts.layoutMap[action.layoutKey].flex = action.flex;
+    } else if (action.type === 'FLEX-RESIZE') {
+      newLayouts.layoutMap[action.layoutKey].flexValues = action.flexValues;
     }
     // If new action, simply insert the new tab in the dest tabLayout
     else {
@@ -696,7 +727,12 @@ const setLayout = (layoutAccept: string) => <T extends ManagedLayoutMap>(
 const defaultLayout: ManagedLayoutMap = {
   lastKey: '0',
   layoutMap: {
-    '0': { type: 'ReflexLayoutNode', children: [], vertical: false },
+    '0': {
+      type: 'ReflexLayoutNode',
+      children: [],
+      vertical: false,
+      flexValues: [],
+    },
   },
   rootKey: '0',
 };
@@ -906,6 +942,89 @@ export function MainLinearLayout<T extends ComponentMap>(
       }
     }
   };
+
+  // /**
+  //  * renderLayouts is a recursvie function that renders the linearLayout.
+  //  * This function creates a reflexLayout or a tabLayout component depending on the layout type
+  //  * then if the layout is reflex and have children it calls itself to render the children the same way
+  //  *
+  //  * @param layoutKey - the key of the layout to display
+  //  */
+  // const renderLayouts = (layoutKey?: string) => {
+  //   const currentLayoutKey = layoutKey ? layoutKey : layout.rootKey;
+  //   const currentLayout = layout.layoutMap[currentLayoutKey];
+  //   if (currentLayout) {
+  //     switch (currentLayout.type) {
+  //       case 'TabLayoutNode': {
+  //         return (
+  //           <DnDTabLayout
+  //             key={currentLayoutKey}
+  //             components={makeTabMap(currentLayout.children, tabs.current)}
+  //             selectItems={getUnusedTabs(layout.layoutMap, tabs.current)}
+  //             vertical={currentLayout.vertical}
+  //             onDrop={onDrop(currentLayoutKey)}
+  //             onDropTab={onDropTab(currentLayoutKey)}
+  //             onDeleteTab={onDeleteTab}
+  //             onNewTab={onNewTab(currentLayoutKey)}
+  //             defaultActiveLabel={currentLayout.defaultActive}
+  //             onSelect={onSelect}
+  //             layoutId={props.layoutId}
+  //           />
+  //         );
+  //       }
+  //       case 'ReflexLayoutNode': {
+  //         const rendered: JSX.Element[] = [];
+  //         for (let i = 0; i < currentLayout.children.length; i += 1) {
+  //           const childKey = currentLayout.children[i];
+  //           rendered.push(
+  //             <Content
+  //               key={childKey}
+  //               // flex={
+  //               //   layout.layoutMap[childKey].flex
+  //               //     ? layout.layoutMap[childKey].flex
+  //               //     : 1000
+  //               // }
+  //               flexInit={
+  //                 layout.layoutMap[childKey].flexValues
+  //                   ? layout.layoutMap[childKey].flexValues[i]
+  //                   : undefined
+  //               }
+  //               // onStopResize={({ component }) =>
+  //               //   dispatchLayout({
+  //               //     type: 'RESIZE',
+  //               //     layoutKey: childKey,
+  //               //     flex: component.props.flex,
+  //               //   })
+  //               // }
+  //               // minSize={50}
+  //               className={cx(flex, noOverflow)}
+  //             >
+  //               {renderLayouts(childKey)}
+  //             </Content>,
+  //           );
+  //           if (i < currentLayout.children.length - 1) {
+  //             rendered.push(<Splitter key={childKey + 'SEPARATOR'} />);
+  //           }
+  //         }
+  //         return (
+  //           <Container
+  //             className={splitter}
+  //             vertical={currentLayout.vertical}
+  //             onStopResize={(_splitter, flexValues) =>
+  //               dispatchLayout({
+  //                 type: 'FLEX-RESIZE',
+  //                 layoutKey: currentLayoutKey,
+  //                 flexValues,
+  //               })
+  //             }
+  //           >
+  //             {rendered}
+  //           </Container>
+  //         );
+  //       }
+  //     }
+  //   }
+  // };
 
   return (
     <focusTabContext.Provider value={focusTab}>

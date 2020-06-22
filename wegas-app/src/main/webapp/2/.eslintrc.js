@@ -18,13 +18,14 @@ module.exports = {
   },
   settings: {
     react: {
-      version: '16.8',
+      version: '16.12',
     },
   },
   env: { browser: true, es6: true },
   rules: {
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
+    'react/display-name': 'off',
     'no-console': 'warn',
     'no-alert': 'error',
     'no-var': 'error',
@@ -39,6 +40,7 @@ module.exports = {
     // eslint@6.8.0
     '@typescript-eslint/ban-ts-ignore': 'off',
     '@typescript-eslint/no-inferrable-types': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
   },
   overrides: [
     {

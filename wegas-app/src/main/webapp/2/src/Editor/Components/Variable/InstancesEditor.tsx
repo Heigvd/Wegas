@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
-import { StoreDispatch, StoreConsumer } from '../../../data/store';
+import { StoreDispatch, useStore, getDispatch } from '../../../data/store';
 import { css, cx } from 'emotion';
-import { themeVar, localSelection } from '../../../Components/Theme';
 import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods';
 import { AsyncVariableForm, getError, EditorProps } from '../EntityEditor';
 import getEditionConfig from '../../editionConfig';
@@ -13,17 +12,18 @@ import {
   updateInstance,
   VariableInstanceState,
 } from '../../../data/Reducer/VariableInstanceReducer';
-import { State } from '../../../data/Reducer/reducers';
 import { VariableInstanceAPI } from '../../../API/variableInstance.api';
-import { flex, flexColumn, grow } from '../../../css/classes';
+import { flex, flexColumn, grow, localSelection } from '../../../css/classes';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { MessageString } from '../MessageString';
+import { themeVar } from '../../../Components/Style/ThemeVars';
+import { themeCTX, ThemeComponent } from '../../../Components/Style/Theme';
 
 const listBox = css({
   width: '100%',
   maxHeight: '100px',
   overflowY: 'auto',
-  borderColor: themeVar.primaryLighterColor,
+  borderColor: themeVar.Common.colors.BorderColor,
   borderWidth: '2px',
   borderStyle: 'solid',
 });
@@ -33,11 +33,11 @@ const listItem = css({
   width: '100%',
   cursor: 'pointer',
   ':hover': {
-    backgroundColor: themeVar.primaryHoverColor,
+    backgroundColor: themeVar.Common.colors.HoverColor,
   },
 });
 
-export interface InstancesEditorProps {
+export interface InstancesEditorProps extends ThemeComponent {
   state: LocalGlobalState;
   dispatch: StoreDispatch;
   actions?: EditorProps<IVariableInstance>['actions'];
@@ -168,24 +168,22 @@ export function InstancesEditor({
 }
 
 export default function ConnectedInstancesEditor() {
-  return (
-    <StoreConsumer
-      selector={(s: State) => {
-        const editing = s.global.editing;
-        if (!editing) {
-          return null;
-        } else {
-          return { global: { editing, events: s.global.events } };
-        }
-      }}
-      shouldUpdate={shallowDifferent}
-    >
-      {({ state, dispatch }) => {
-        if (state == null || dispatch == null) {
-          return null;
-        }
-        return <InstancesEditor state={state} dispatch={dispatch} />;
-      }}
-    </StoreConsumer>
+  const state = useStore(s => {
+    const editing = s.global.editing;
+    if (!editing) {
+      return null;
+    } else {
+      return { global: { editing, events: s.global.events } };
+    }
+  }, shallowDifferent);
+
+  const { themesState } = React.useContext(themeCTX);
+  const modeName =
+    themesState.themes[themesState.selectedThemes.editor].baseMode;
+
+  const dispatch = getDispatch();
+
+  return state == null || dispatch == null ? null : (
+    <InstancesEditor state={state} dispatch={dispatch} modeName={modeName} />
   );
 }

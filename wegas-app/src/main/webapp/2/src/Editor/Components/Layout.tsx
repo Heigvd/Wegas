@@ -15,7 +15,11 @@ const LanguageEditor = React.lazy(() => import('./LanguageEditor'));
 const PlayLocal = React.lazy(() => import('./PlayLocal'));
 const InstancesEditor = React.lazy(() => import('./Variable/InstancesEditor'));
 const HTMLEditor = React.lazy(() => import('../../Components/HTMLEditor'));
-const ThemeEditor = React.lazy(() => import('../../Components/ThemeEditor'));
+const ThemeEditor = React.lazy(() =>
+  import('../../Components/Style/ThemeEditor'),
+);
+
+const Tester = React.lazy(() => import('../../Testers/ThemeModeTester'));
 
 const layout = css({
   display: 'flex',
@@ -35,6 +39,7 @@ export const availableLayoutTabs = {
   TestHTMLEditor: (
     <HTMLEditor value={'<div class="testClass">Testing testClass</div>'} />
   ),
+  Tester: <Tester />,
   ThemeEditor: <ThemeEditor />,
   PageEditor: <PageEditor />,
 };

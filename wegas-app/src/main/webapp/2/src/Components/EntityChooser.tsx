@@ -1,17 +1,22 @@
 import * as React from 'react';
 import { SizedDiv } from './SizedDiv';
-import { primaryDark, primaryLight, primary } from './Theme';
 import { css, cx } from 'emotion';
+import { deepDifferent } from './Hooks/storeHookFactory';
+import { flex } from '../css/classes';
+import { themeVar } from './Style/ThemeVars';
 
 const INLINE_SIZE_BREAKPOINT = 600;
 
 const cursorStyle = css({ cursor: 'pointer' });
 const itemStyle = css({
+  backgroundColor: themeVar.Common.colors.MainColor,
+  color: themeVar.Common.colors.SecondaryTextColor,
   border: '1px solid',
   lineHeight: '2',
 });
 const listStyle = css({
   minWidth: '15em',
+  overflow: 'auto',
 });
 const flexStyle = css({
   display: 'flex',
@@ -19,6 +24,15 @@ const flexStyle = css({
 });
 const displayStyle = css({
   flex: '1 1 auto',
+  overflow: 'auto',
+});
+const activeEntityStyle = css({
+  backgroundColor: themeVar.Common.colors.ActiveColor,
+  color: themeVar.Common.colors.SecondaryTextColor,
+});
+const inactiveEntityStyle = css({
+  backgroundColor: themeVar.Common.colors.DisabledColor,
+  color: themeVar.Common.colors.TextColor,
 });
 
 interface EntityChooserProps<E extends IAbstractEntity> {
@@ -54,25 +68,31 @@ export class EntityChooser<E extends IAbstractEntity> extends React.Component<
   render() {
     const { entity } = this.state;
     return (
-      <SizedDiv>
+      <SizedDiv className={flex}>
         {size => {
           let i: number | undefined;
           const elements = this.props.entities.map((e, index) => {
-            if (e === entity) {
+            if (!deepDifferent(e, entity)) {
               i = index;
             }
             return (
               <div
                 className={cx(
                   {
-                    [primaryDark]: e === entity,
-                    [primaryLight]: e !== entity,
+                    [activeEntityStyle]: e === entity,
+                    [inactiveEntityStyle]: e !== entity,
                   },
                   itemStyle,
                   cursorStyle,
                 )}
                 key={e.id}
-                onClick={() => this.setState({ entity: e })}
+                onClick={() =>
+                  this.setState(os =>
+                    deepDifferent(os.entity, e)
+                      ? { entity: e }
+                      : { entity: undefined },
+                  )
+                }
               >
                 {this.props.entityLabel(e)}
               </div>
@@ -84,7 +104,7 @@ export class EntityChooser<E extends IAbstractEntity> extends React.Component<
                 <div className={listStyle}>{elements}</div>
                 <div className={displayStyle}>
                   {entity != null && (
-                    <div className={cx(itemStyle, primary)}>
+                    <div className={cx(itemStyle)}>
                       {this.props.entityLabel(entity)}
                     </div>
                   )}
@@ -103,7 +123,7 @@ export class EntityChooser<E extends IAbstractEntity> extends React.Component<
             );
           }
           return (
-            <div>
+            <div className={displayStyle}>
               <div className={listStyle}>{elements}</div>
             </div>
           );

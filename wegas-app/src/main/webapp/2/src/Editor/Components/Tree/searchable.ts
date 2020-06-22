@@ -1,12 +1,12 @@
-import { Item } from './TreeSelect';
+import { TreeSelectItem } from '../FormView/TreeVariableSelect';
 
 interface SearchableTreeSelectProps<T> {
-  items: Item<T>[];
+  items: TreeSelectItem<T>[];
   search: string;
-  match?: (item: Item<T>, search: string) => boolean;
+  match?: (item: TreeSelectItem<T>, search: string) => boolean;
   render: (props: { items: any[] }) => JSX.Element;
 }
-function defaultSearchFn<T>(item: Item<T>, search: string) {
+function defaultSearchFn<T>(item: TreeSelectItem<T>, search: string) {
   return (
     JSON.stringify(item.value)
       .toLowerCase()
@@ -15,10 +15,10 @@ function defaultSearchFn<T>(item: Item<T>, search: string) {
 }
 
 function filterChildren<T>(
-  items: Item<T>[],
+  items: TreeSelectItem<T>[],
   search: string,
-  match: (item: Item<T>, search: string) => boolean,
-): Item<T>[] {
+  match: (item: TreeSelectItem<T>, search: string) => boolean,
+): TreeSelectItem<T>[] {
   return items
     .map(i => {
       if (i.items) {
