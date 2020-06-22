@@ -58,7 +58,7 @@
     "@tinymce/tinymce-react": "^3.4.0",
     "@typescript-eslint/eslint-plugin": "^2.20.0",
     "color": "^3.1.1",
-    "downshift": "^5.0.3",
+    "downshift": "^5.1.0",
     "emotion": "^10.0.14",
     "fast-json-patch": "^3.0.0-1",
     "immer": "5.3.6",
@@ -120,7 +120,8 @@
     "webpack": "^4.39.2",
     "webpack-bundle-analyzer": "^3.4.1",
     "webpack-cli": "^3.3.6",
-    "webpack-dev-server": "^3.8.0"
+    "webpack-dev-server": "^3.8.0",
+    "webpack-node-externals": "^1.7.2"
   },
   "peerDependencies": {},
   "engines": {

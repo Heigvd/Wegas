@@ -1,66 +1,92 @@
 import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
-import { Container, Node, DropResult } from '../Views/TreeView';
 import {
   flex,
   flexColumn,
   grow,
-  expand,
   itemCenter,
+  expandBoth,
+  globalSelection,
 } from '../../../css/classes';
 import { cx, css } from 'emotion';
 import { FontAwesome, IconComp, Icon, Icons } from '../Views/FontAwesome';
-import { nodeContentStyle, TREEVIEW_ITEM_TYPE } from '../Variable/VariableTree';
+import {
+  nodeContentStyle,
+  TREEVIEW_ITEM_TYPE as TREEVIEW_INDEX_ITEM_TYPE,
+} from '../Variable/VariableTree';
 import { omit } from 'lodash-es';
 import { Menu } from '../../../Components/Menu';
 import { TextPrompt } from '../TextPrompt';
-import { ConfirmButton } from '../../../Components/Inputs/Button/ConfirmButton';
 import { isPageItem, isFolderItem } from '../../../Helper/pages';
 import { useStore, store } from '../../../data/store';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { Actions } from '../../../data';
 import { MessageString } from '../MessageString';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
-import { IconButton } from '../../../Components/Inputs/Button/IconButton';
-import { themeVar } from '../../../Components/Theme';
 import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { pageEditorCTX, pageCTX } from './PageEditor';
+import {
+  Tree,
+  TreeNode,
+  GetParentPropsFn,
+  ItemDescription,
+  isItemDescription,
+} from '../Views/TreeView/TreeView';
+import {
+  usePagesStateStore,
+  isComponentFocused,
+  pagesStateStore,
+  PageStateAction,
+} from '../../../data/pageStore';
+import { PAGEEDITOR_COMPONENT_TYPE, isDnDComponent } from './ComponentPalette';
+import { themeVar } from '../../../Components/Style/ThemeVars';
+import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 
 const bulletCSS = {
   width: '1em',
 };
 
-const controlsClassName = 'page-index-item-controls';
+const CONTROLS_CLASSNAME = 'page-index-item-controls';
 
-const pageLayoutItemType = 'PAGE_LAYOUT_ITEM';
-const pageLayoutComponentType = 'PAGE_LAYOUT_COMPONENT';
+const PAGE_LAYOUT_ITEM = 'PAGE_LAYOUT_ITEM';
+export const PAGE_LAYOUT_COMPONENT = 'PAGE_LAYOUT_COMPONENT';
 
 const titleStyle = css({
   borderStyle: 'solid',
   borderColor: 'transparent',
-  borderRadius: themeVar.borderRadius,
-  [`&>.${controlsClassName}`]: {
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  [`&>.${CONTROLS_CLASSNAME}`]: {
     visibility: 'hidden',
   },
-  [`:hover>.${controlsClassName}`]: {
+  [`:hover>.${CONTROLS_CLASSNAME}`]: {
     visibility: 'visible',
   },
 });
 
-const selectedIndexItem = css({
-  borderColor: themeVar.primaryDarkerColor,
-});
+// const selectedIndexItemStyle = css({
+//   borderColor: themeVar.Common.colors.BorderColor,
+// });
 
-const selectedComponent = css({
-  borderColor: themeVar.primaryLighterColor,
+// const selectedComponentStyle = css({
+//   borderColor: themeVar.Common.colors.BorderColor,
+// });
+
+const focusedComponentStyle = css({
+  backgroundColor: themeVar.Common.colors.HeaderColor,
 });
 
 const defaultPage = {
-  type: 'List',
+  type: 'FlexList',
   props: {
     children: [],
+    layout: {
+      flexDirection: 'column',
+    },
     style: {
       width: '100%',
       height: '100%',
+      overflow: 'auto',
     },
   },
 };
@@ -78,7 +104,7 @@ interface IndexNodeId {
   pagePath: string[];
 }
 
-interface ComponentNodeId {
+export interface ComponentNodeId {
   pageId: string;
   page: WegasComponent;
   componentPath: number[];
@@ -90,8 +116,15 @@ function isComponentNodeId(nodeId: NodeId): nodeId is ComponentNodeId {
   return 'pageId' in nodeId;
 }
 
-interface LayoutButtonProps {
-  className?: string;
+export type LayoutDndComponent = ItemDescription<ComponentNodeId>;
+
+export function isLayoutDndComponent(
+  item?: Partial<LayoutDndComponent>,
+): item is LayoutDndComponent {
+  return isItemDescription(item) && isComponentNodeId(item.id);
+}
+
+interface LayoutButtonProps extends ClassAndStyle {
   tooltip?: string;
 }
 
@@ -101,12 +134,17 @@ interface IndexItemAdderProps extends LayoutButtonProps {
   path: string[];
 }
 
-function IndexItemAdder({ path, className, tooltip }: IndexItemAdderProps) {
+function IndexItemAdder({
+  path,
+  className,
+  style,
+  tooltip,
+}: IndexItemAdderProps) {
   const [modalState, setModalState] = React.useState<LayoutModalStates>();
   const { dispatch } = store;
 
   return (
-    <div className={className} title={tooltip}>
+    <div className={className} style={style} title={tooltip}>
       <Menu
         icon="plus"
         items={[
@@ -117,7 +155,7 @@ function IndexItemAdder({ path, className, tooltip }: IndexItemAdderProps) {
                 New page
               </div>
             ),
-            id: 'newpage' as LayoutModalStates['type'],
+            value: 'newpage' as LayoutModalStates['type'],
           },
           {
             label: (
@@ -126,10 +164,12 @@ function IndexItemAdder({ path, className, tooltip }: IndexItemAdderProps) {
                 New folder
               </div>
             ),
-            id: 'newfolder' as LayoutModalStates['type'],
+            value: 'newfolder' as LayoutModalStates['type'],
           },
         ]}
-        onSelect={({ id }) => setModalState({ type: id } as PageModalState)}
+        onSelect={({ value }) => {
+          setModalState({ type: value } as PageModalState);
+        }}
       />
       {modalState &&
         (modalState.type === 'newpage' || modalState.type === 'newfolder') && (
@@ -266,8 +306,8 @@ function ComponentAdder({ className, tooltip, onSelect }: ComponentAdderProps) {
       <Menu
         icon="plus"
         items={Object.values(components).map(v => ({
-          label: v.getName(),
-          id: v.getName(),
+          label: v.componentName,
+          id: v.componentName,
         }))}
         onSelect={({ id }) => onSelect(id)}
       />
@@ -275,19 +315,21 @@ function ComponentAdder({ className, tooltip, onSelect }: ComponentAdderProps) {
   );
 }
 
-const compToKey = (component: WegasComponent) =>
+const compToKey = (component: WegasComponent, path?: number[]) =>
   JSON.stringify({
     type: component.type,
     props: omit(component.props, 'children'),
+    path,
   });
 
-interface LayoutNodeTitleProps {
+interface LayoutNodeTitleProps extends ClassAndStyle {
   icon: Icons;
   title: string;
   advancedTitle?: string;
   tooltip?: string;
-  onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  className?: string;
+  onMouseUp?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  onMouseOver?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  onMouseOut?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   classSelector?: string[];
 }
 
@@ -296,12 +338,15 @@ function LayoutNodeTitle({
   title,
   advancedTitle,
   tooltip,
-  onClick,
+  onMouseUp,
+  onMouseOver,
+  onMouseOut,
   className,
-  classSelector,
+  style,
   children,
 }: React.PropsWithChildren<LayoutNodeTitleProps>) {
   const { currentFeatures } = React.useContext(featuresCTX);
+
   const newTitle =
     currentFeatures.includes('ADVANCED') && advancedTitle != null
       ? advancedTitle
@@ -309,12 +354,18 @@ function LayoutNodeTitle({
 
   return (
     <div
-      onClick={onClick}
-      className={
-        cx(nodeContentStyle, titleStyle, flex, grow, itemCenter, className) +
-        ' ' +
-        (classSelector ? classSelector.join(' ') : '')
-      }
+      onMouseUp={onMouseUp}
+      className={cx(
+        nodeContentStyle,
+        titleStyle,
+        flex,
+        grow,
+        itemCenter,
+        className,
+      )}
+      onMouseOver={onMouseOver}
+      onMouseOut={onMouseOut}
+      style={style}
       title={tooltip}
     >
       <IconComp icon={icon} style={bulletCSS} />
@@ -324,9 +375,116 @@ function LayoutNodeTitle({
   );
 }
 
+const pageDispatch = pagesStateStore.dispatch;
+
+interface WegasComponentTitleProps {
+  page: WegasComponent;
+  component: WegasComponent;
+  pageId: string;
+  selectedPageId?: string;
+  componentPath: number[];
+  selectedComponentPath?: number[];
+  componentControls: ComponentControls;
+  // isDragging?: boolean;
+}
+
+function WegasComponentTitle({
+  page,
+  component,
+  pageId,
+  selectedPageId,
+  componentPath,
+  selectedComponentPath,
+  componentControls,
+}: // isDragging,
+WegasComponentTitleProps) {
+  const registeredComponent = usePageComponentStore(s => s[component.type]);
+  const { editMode } = React.useContext(pageCTX);
+
+  const { onDelete, onEdit, onNew } = componentControls;
+
+  let icon: Icon;
+  if (registeredComponent != null) {
+    icon = registeredComponent.icon;
+  } else {
+    icon = 'exclamation-triangle';
+  }
+
+  let title = component.type;
+  if ('name' in component.props) {
+    title += ` ${component.props.name}`;
+  }
+
+  const isSelected =
+    pageId === selectedPageId &&
+    JSON.stringify(componentPath) === JSON.stringify(selectedComponentPath);
+  const isFocused = usePagesStateStore(
+    isComponentFocused(editMode, pageId, componentPath),
+  );
+
+  // React.useEffect(() => {
+  //   if (isDragging) {
+  //     wlog('DRAGGING IN PROGRESS');
+  //     pageDispatch(PageStateAction.unsetFocused());
+  //   }
+  // }, [isDragging]);
+
+  return (
+    <LayoutNodeTitle
+      icon={icon}
+      title={title}
+      advancedTitle={title + ' ' + JSON.stringify(componentPath)}
+      tooltip={registeredComponent == null ? 'Unknown component' : undefined}
+      onMouseUp={() =>
+        onEdit(
+          isSelected ? undefined : pageId,
+          isSelected ? undefined : componentPath,
+        )
+      }
+      onMouseOver={e => {
+        if (editMode /*&& !isDragging*/) {
+          e.stopPropagation();
+          pageDispatch(PageStateAction.setFocused(pageId, componentPath));
+        }
+      }}
+      onMouseOut={e => {
+        if (editMode /*&& !isDragging*/) {
+          e.stopPropagation();
+          pageDispatch(PageStateAction.unsetFocused());
+        }
+      }}
+      className={cx({
+        [globalSelection]: isSelected,
+        [focusedComponentStyle]: isFocused,
+      })}
+    >
+      {component.props?.children && (
+        <ComponentAdder
+          tooltip="Add a component"
+          onSelect={componentType =>
+            onNew(pageId, page, componentPath, componentType)
+          }
+          className={CONTROLS_CLASSNAME}
+        />
+      )}
+      <ConfirmButton
+        icon="trash"
+        onAction={success => success && onDelete(pageId, page, componentPath)}
+        disabled={componentPath.length === 0}
+        tooltip={
+          componentPath.length === 0
+            ? 'The first component of a page connot be deleted'
+            : 'Delete the component'
+        }
+        className={CONTROLS_CLASSNAME}
+      />
+    </LayoutNodeTitle>
+  );
+}
+
 interface WegasComponentNodeProps {
   component: WegasComponent;
-  nodeProps: () => {};
+  getParentProps: GetParentPropsFn<NodeId>;
   pageId: string;
   selectedPageId?: string;
   componentPath: number[];
@@ -336,149 +494,106 @@ interface WegasComponentNodeProps {
 
 function WegasComponentNode({
   component,
-  nodeProps,
+  getParentProps,
   pageId,
   selectedPageId,
   componentPath,
   selectedComponentPath,
   componentControls,
 }: WegasComponentNodeProps) {
-  const { onDelete, onEdit, onNew } = componentControls;
-
   const page = useStore(s => s.pages[pageId], deepDifferent);
-
-  const Title = () => {
-    const registeredComponent = usePageComponentStore(s => s[component.type]);
-
-    let icon: Icon;
-    if (registeredComponent != null) {
-      icon = registeredComponent.getIcon();
-    } else {
-      icon = 'exclamation-triangle';
-    }
-
-    let title = component.type;
-    if ('name' in component.props) {
-      title += ` ${component.props.name}`;
-    }
-
-    return (
-      <LayoutNodeTitle
-        icon={icon}
-        title={title}
-        advancedTitle={title + ' ' + JSON.stringify(componentPath)}
-        tooltip={registeredComponent == null ? 'Unknown component' : undefined}
-        onClick={() => onEdit(pageId, componentPath)}
-        className={cx({
-          [selectedComponent]:
-            pageId === selectedPageId &&
-            JSON.stringify(componentPath) ===
-              JSON.stringify(selectedComponentPath),
-        })}
-      >
-        {component.props?.children && (
-          <ComponentAdder
-            tooltip="Add a component"
-            onSelect={componentType =>
-              onNew(pageId, page, componentPath, componentType)
-            }
-            className={controlsClassName}
-          />
-        )}
-        <ConfirmButton
-          icon="trash"
-          onAction={success => success && onDelete(pageId, page, componentPath)}
-          disabled={componentPath.length === 0}
-          tooltip={
-            componentPath.length === 0
-              ? 'The first component of a page connot be deleted'
-              : 'Delete the component'
-          }
-          className={controlsClassName}
-        />
-      </LayoutNodeTitle>
-    );
-  };
-
+  //const [isDragging, setIsDragging] = React.useState<boolean>(false);
   const id: ComponentNodeId = { pageId, page, componentPath };
+  const parentProps = getParentProps();
 
   return (
-    <Node
-      {...nodeProps()}
-      header={<Title />}
-      id={id}
-      dragId={pageLayoutComponentType}
-      dropIds={[pageLayoutComponentType, TREEVIEW_ITEM_TYPE]}
-      dragDisabled={componentPath.length === 0}
-      dropDisabled={componentPath.length === 0}
-    >
-      {({ nodeProps }) =>
-        component.props?.children?.map((childComponent, i) => (
-          <WegasComponentNode
-            key={compToKey(childComponent)}
-            nodeProps={nodeProps}
-            component={childComponent}
-            pageId={pageId}
-            selectedPageId={selectedPageId}
-            componentPath={[...componentPath, i]}
-            selectedComponentPath={selectedComponentPath}
-            componentControls={componentControls}
-          />
-        )) || null
+    <TreeNode
+      {...parentProps}
+      // draggingMonitor={{
+      //   isDragging: setIsDragging,
+      //   monitorTypes: [
+      //     TREEVIEW_COMPONENT_TYPE,
+      //     TREEVIEW_INDEX_ITEM_TYPE,
+      //     PAGEEDITOR_COMPONENT_TYPE,
+      //   ],
+      // }}
+      title={
+        <WegasComponentTitle
+          component={component}
+          componentControls={componentControls}
+          componentPath={componentPath}
+          page={page}
+          pageId={pageId}
+          selectedComponentPath={selectedComponentPath}
+          selectedPageId={selectedPageId}
+          //isDragging={isDragging}
+        />
       }
-    </Node>
+      id={id}
+      type={PAGE_LAYOUT_COMPONENT}
+      acceptType={[
+        PAGE_LAYOUT_COMPONENT,
+        TREEVIEW_INDEX_ITEM_TYPE,
+        PAGEEDITOR_COMPONENT_TYPE,
+      ]}
+      noDrag={componentPath.length === 0}
+      noDrop={component.props?.children == null}
+    >
+      {component.props?.children
+        ? getParentProps =>
+            component.props?.children?.map((childComponent, i) => (
+              <WegasComponentNode
+                key={compToKey(childComponent, [...componentPath, i])}
+                getParentProps={getParentProps}
+                component={childComponent}
+                pageId={pageId}
+                selectedPageId={selectedPageId}
+                componentPath={[...componentPath, i]}
+                selectedComponentPath={selectedComponentPath}
+                componentControls={componentControls}
+              />
+            ))
+        : null}
+    </TreeNode>
   );
 }
 
-interface PagesLayoutNodeProps extends PagesLayoutProps {
+interface PageIndexTitleProps {
+  newPath: string[];
   indexItem: PageIndexItem;
-  path: string[];
+  onPageClick: (selectedPageId: string) => void;
   defaultPageId: string;
-  nodeProps: () => {};
 }
 
-function PageIndexItemNode({
+function PageIndexTitle({
+  newPath,
   indexItem,
-  path,
-  defaultPageId,
-  nodeProps,
-  selectedPageId,
-  selectedComponentPath,
   onPageClick,
-  componentControls,
-}: PagesLayoutNodeProps): JSX.Element | null {
+  defaultPageId,
+}: PageIndexTitleProps) {
+  const { selectedPageId } = React.useContext(pageEditorCTX);
   const { dispatch } = store;
-  const newPath = [
-    ...path,
-    isPageItem(indexItem) ? indexItem.id! : indexItem.name,
-  ];
   const folderIsNotEmpty =
     isFolderItem(indexItem) && indexItem.items.length > 0;
 
-  const { page } = useStore(s => {
-    if (isPageItem(indexItem)) {
-      return { page: s.pages[indexItem.id!] };
-    }
-    return {};
-  }, deepDifferent);
-
-  const Title = (
+  return (
     <LayoutNodeTitle
       icon={isPageItem(indexItem) ? 'file' : 'folder'}
       title={indexItem.name}
       advancedTitle={
         indexItem.name + (isPageItem(indexItem) ? ` ${indexItem.id}` : '')
       }
-      onClick={() => isPageItem(indexItem) && onPageClick(indexItem.id!)}
+      onMouseUp={() => isPageItem(indexItem) && onPageClick(indexItem.id!)}
       className={cx({
-        [selectedIndexItem]:
+        [globalSelection]:
           isPageItem(indexItem) && indexItem.id === selectedPageId,
+        // [css({ backgroundColor: 'green' })]: indexItem.id === selectedPageId,
       })}
     >
       {isFolderItem(indexItem) && (
         <IndexItemAdder
           path={newPath}
-          className={controlsClassName}
+          className={CONTROLS_CLASSNAME}
           tooltip="Add new page or folder"
         />
       )}
@@ -487,7 +602,10 @@ function PageIndexItemNode({
           <IconButton
             icon={
               indexItem.id === defaultPageId
-                ? { icon: 'star', color: themeVar.successColor }
+                ? {
+                    icon: 'star',
+                    color: themeVar.Common.colors.SuccessColor,
+                  }
                 : 'star'
             }
             onClick={() => {
@@ -495,13 +613,16 @@ function PageIndexItemNode({
             }}
             tooltip="Default page"
             className={cx({
-              [controlsClassName]: indexItem.id !== defaultPageId,
+              [CONTROLS_CLASSNAME]: indexItem.id !== defaultPageId,
             })}
           />
           <IconButton
             icon={
               indexItem.scenaristPage
-                ? { icon: 'magic', color: themeVar.successColor }
+                ? {
+                    icon: 'magic',
+                    color: themeVar.Common.colors.SuccessColor,
+                  }
                 : 'magic'
             }
             onClick={() => {
@@ -513,12 +634,15 @@ function PageIndexItemNode({
               );
             }}
             tooltip="Scenarist page"
-            className={controlsClassName}
+            className={CONTROLS_CLASSNAME}
           />
           <IconButton
             icon={
               indexItem.trainerPage
-                ? { icon: 'chalkboard-teacher', color: themeVar.successColor }
+                ? {
+                    icon: 'chalkboard-teacher',
+                    color: themeVar.Common.colors.SuccessColor,
+                  }
                 : 'chalkboard-teacher'
             }
             onClick={() => {
@@ -530,14 +654,14 @@ function PageIndexItemNode({
               );
             }}
             tooltip="Trainer page"
-            className={controlsClassName}
+            className={CONTROLS_CLASSNAME}
           />
         </>
       )}
       <IndexItemModifer
         path={newPath}
         indexItem={indexItem}
-        className={controlsClassName}
+        className={CONTROLS_CLASSNAME}
       />
       <ConfirmButton
         icon="trash"
@@ -550,49 +674,101 @@ function PageIndexItemNode({
             ? 'The folder must be empty to delete it'
             : `Delete the ${isPageItem(indexItem) ? 'page' : 'folder'}`
         }
-        className={controlsClassName}
+        className={CONTROLS_CLASSNAME}
       />
     </LayoutNodeTitle>
   );
+}
 
+interface PagesLayoutNodeProps extends PagesLayoutProps {
+  indexItem: PageIndexItem;
+  path: string[];
+  defaultPageId: string;
+  getParentProps: GetParentPropsFn<NodeId>;
+}
+
+function PageIndexItemNode({
+  indexItem,
+  path,
+  defaultPageId,
+  getParentProps,
+  onPageClick,
+  componentControls,
+}: PagesLayoutNodeProps): JSX.Element | null {
+  const { selectedPageId, editedPath } = React.useContext(pageEditorCTX);
+  const { page } = useStore(s => {
+    if (isPageItem(indexItem)) {
+      return { page: s.pages[indexItem.id!] };
+    }
+    return {};
+  }, deepDifferent);
+  const newPath = [
+    ...path,
+    isPageItem(indexItem) ? indexItem.id! : indexItem.name,
+  ];
   const id: IndexNodeId = { pagePath: newPath };
+
+  const parentProps = getParentProps();
 
   return isPageItem(indexItem) ? (
     page ? (
-      <Node {...nodeProps()} header={Title} id={id} dragId={pageLayoutItemType}>
-        {({ nodeProps }) => [
+      <TreeNode
+        {...parentProps}
+        title={
+          <PageIndexTitle
+            newPath={newPath}
+            indexItem={indexItem}
+            onPageClick={onPageClick}
+            defaultPageId={defaultPageId}
+          />
+        }
+        id={id}
+        type={PAGE_LAYOUT_ITEM}
+      >
+        {getParentProps => (
           <WegasComponentNode
             key={indexItem.name + 'FIRSTCOMPONENT'}
-            nodeProps={nodeProps}
+            getParentProps={getParentProps}
             component={page}
             pageId={indexItem.id!}
             selectedPageId={selectedPageId}
             componentPath={[]}
-            selectedComponentPath={selectedComponentPath}
+            selectedComponentPath={editedPath}
             componentControls={componentControls}
-          />,
-        ]}
-      </Node>
+          />
+        )}
+      </TreeNode>
     ) : (
       <span>Loading ...</span>
     )
   ) : (
-    <Node {...nodeProps()} header={Title} id={id} dragId={pageLayoutItemType}>
-      {({ nodeProps }) =>
+    <TreeNode
+      {...parentProps}
+      title={
+        <PageIndexTitle
+          newPath={newPath}
+          indexItem={indexItem}
+          onPageClick={onPageClick}
+          defaultPageId={defaultPageId}
+        />
+      }
+      id={id}
+      type={PAGE_LAYOUT_ITEM}
+    >
+      {getParentProps =>
         indexItem.items.map(v => (
           <PageIndexItemNode
-            nodeProps={nodeProps}
+            getParentProps={getParentProps}
             key={v.name}
             indexItem={v}
             path={newPath}
             componentControls={componentControls}
             defaultPageId={defaultPageId}
             onPageClick={onPageClick}
-            selectedPageId={selectedPageId}
           />
         ))
       }
-    </Node>
+    </TreeNode>
   );
 }
 
@@ -608,7 +784,7 @@ interface ComponentControls {
     page: WegasComponent,
     compoentPath: number[],
   ) => void;
-  onEdit: (pageId: string, compoentPath: number[]) => void;
+  onEdit: (pageId?: string, componentPath?: number[]) => void;
   onMove: (
     sourcePageId: string,
     destPageId: string,
@@ -622,62 +798,90 @@ interface ComponentControls {
 
 interface PagesLayoutProps {
   onPageClick: (selectedPageId: string) => void;
-  selectedPageId?: string;
-  selectedComponentPath?: number[];
   componentControls: ComponentControls;
 }
 
 export function PagesLayout(props: PagesLayoutProps) {
   const index = useStore(s => s.pages.index, deepDifferent);
+  const { selectedPageId, selectedPage } = React.useContext(pageEditorCTX);
   const { dispatch } = store;
   const { componentControls } = props;
-  const { onMove } = componentControls;
+  const { onMove, onNew } = componentControls;
 
   return (
-    <Toolbar className={expand}>
+    <Toolbar className={expandBoth}>
       <Toolbar.Header>
         <IndexItemAdder path={[]} />
       </Toolbar.Header>
       <Toolbar.Content className={cx(flex, grow)}>
-        <Container
-          onDropResult={({ target, id }: DropResult<NodeId>) => {
+        <Tree<NodeId>
+          id={{ pagePath: [] }}
+          type="NODE"
+          onDrop={({ target, id, item }) => {
             const computedTargetParent = target.parent
               ? target.parent
               : { pagePath: [] };
 
             if (
-              !isComponentNodeId(id) &&
-              !isComponentNodeId(computedTargetParent)
+              id == null &&
+              isDnDComponent(item) &&
+              isComponentNodeId(computedTargetParent) &&
+              selectedPageId != null &&
+              selectedPage != null
             ) {
-              dispatch(
-                Actions.PageActions.moveIndexItem(
-                  id.pagePath,
-                  computedTargetParent.pagePath,
-                  target.index,
-                ),
-              );
-            } else if (
-              isComponentNodeId(id) &&
-              isComponentNodeId(computedTargetParent)
-            ) {
-              onMove(
-                id.pageId,
-                computedTargetParent.pageId,
-                id.page,
-                computedTargetParent.page,
-                id.componentPath,
-                computedTargetParent.componentPath,
-                target.index,
-              );
+              if (item.path != null) {
+                onMove(
+                  selectedPageId,
+                  computedTargetParent.pageId,
+                  selectedPage,
+                  computedTargetParent.page,
+                  item.path,
+                  computedTargetParent.componentPath,
+                  target.index || 0,
+                );
+              } else {
+                onNew(
+                  selectedPageId,
+                  selectedPage,
+                  computedTargetParent.componentPath,
+                  item.componentName,
+                );
+              }
+            } else {
+              if (
+                !isComponentNodeId(id) &&
+                !isComponentNodeId(computedTargetParent)
+              ) {
+                dispatch(
+                  Actions.PageActions.moveIndexItem(
+                    id.pagePath,
+                    computedTargetParent.pagePath,
+                    target.index,
+                  ),
+                );
+              } else if (
+                isComponentNodeId(id) &&
+                isComponentNodeId(computedTargetParent)
+              ) {
+                onMove(
+                  id.pageId,
+                  computedTargetParent.pageId,
+                  id.page,
+                  computedTargetParent.page,
+                  id.componentPath,
+                  computedTargetParent.componentPath,
+                  target.index || 0,
+                );
+              }
             }
           }}
         >
-          {({ nodeProps }) => (
+          {getParentProps => (
             <div className={cx(flex, grow, flexColumn)}>
               {index ? (
                 index.root.items.map(v => (
                   <PageIndexItemNode
-                    nodeProps={nodeProps}
+                    getParentProps={getParentProps}
                     key={v.name}
                     indexItem={v}
                     path={[]}
@@ -690,7 +894,7 @@ export function PagesLayout(props: PagesLayoutProps) {
               )}
             </div>
           )}
-        </Container>
+        </Tree>
       </Toolbar.Content>
     </Toolbar>
   );

@@ -25,7 +25,7 @@ type ComparaisonTypes = 'SIMPLE' | 'SHALLOW' | 'DEEP';
 
 // COMPARAISON FUNCTIONS
 function simpleCheck(a: unknown, b: unknown) {
-  return a === b;
+  return a !== b;
 }
 function shallowCheck(a: unknown, b: unknown, verbose?: boolean) {
   if (typeof a !== typeof b) {
@@ -38,7 +38,7 @@ function shallowCheck(a: unknown, b: unknown, verbose?: boolean) {
   const A = a as Props;
   const B = b as Props;
   const keys = Object.keys(A);
-  if (!deepCheck(A, B, verbose)) {
+  if (deepCheck(A, B, verbose)) {
     verbose && console.log('Objects keys changed');
     return false;
   }
@@ -52,7 +52,7 @@ function shallowCheck(a: unknown, b: unknown, verbose?: boolean) {
 }
 function deepCheck(a: unknown, b: unknown, verbose?: boolean) {
   try {
-    return JSON.stringify(a) === JSON.stringify(b);
+    return JSON.stringify(a) !== JSON.stringify(b);
   } catch (e) {
     verbose && console.log(e);
     return false;
@@ -124,9 +124,13 @@ export function useComparator(
   Object.keys(object).map((k: keyof object) => {
     const oldValue = state.current[k];
     const newValue = object[k];
-    if (!compFNSelection(compType)(oldValue, newValue)) {
+    if (compFNSelection(compType)(oldValue, newValue)) {
       wlog(
-        `Changes in ${k} : ${typeof newValue} \n----------------\nOLD : ${oldValue}\nNEW : ${newValue}`,
+        `Changes in ${k} : ${typeof newValue} \n----------------\nOLD : ${
+          compType === 'SIMPLE' ? oldValue : JSON.stringify(oldValue)
+        }\nNEW : ${
+          compType === 'SIMPLE' ? newValue : JSON.stringify(newValue)
+        }`,
       );
     }
   });

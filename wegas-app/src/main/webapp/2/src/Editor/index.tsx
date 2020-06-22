@@ -7,7 +7,7 @@ import Layout from './Components/Layout';
 import { LibrariesLoader } from './Components/LibrariesLoader';
 import { ClassesProvider } from '../Components/Contexts/ClassesProvider';
 import { FeaturesProvider } from '../Components/Contexts/FeaturesProvider';
-import { ThemeProvider } from '../Components/Theme';
+import { ThemeProvider } from '../Components/Style/Theme';
 import '../data/store';
 import { importPageComponents } from '../Components/PageComponents/tools/componentFactory';
 

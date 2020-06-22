@@ -28,29 +28,45 @@ export function getParent(vd: IVariableDescriptor): IParentDescriptor {
   return GameModel.select(vd.parentId!);
 }
 
+/**
+ * Cache for getInstance
+ */
+const instancesCache = new Map<string, number>();
+
 export function getInstance<I extends IVariableInstance>(
   vd: IVariableDescriptor<I>,
   self?: IPlayer,
 ): Readonly<I> | undefined {
   type IorUndef = Readonly<I> | undefined;
   const player = self != null ? self : Player.selectCurrent();
-  switch (vd.scopeType) {
-    case 'PlayerScope':
-      return VariableInstance.firstMatch<IVariableInstance>({
-        parentId: vd.id,
-        scopeKey: player.id,
-      }) as IorUndef;
-    case 'TeamScope':
-      return VariableInstance.firstMatch<IVariableInstance>({
-        parentId: vd.id,
-        scopeKey: player.parentId,
-      }) as IorUndef;
-    case 'GameModelScope':
-      return VariableInstance.firstMatch<IVariableInstance>({
-        parentId: vd.id,
-        scopeKey: 0,
-      }) as IorUndef;
+  const scopeType = vd.scopeType;
+  const parentId = vd.id;
+  const scopeKey =
+    scopeType === 'PlayerScope'
+      ? player.id
+      : scopeType === 'TeamScope'
+      ? player.parentId
+      : 0;
+  const cacheKey = `${parentId}${scopeType}${scopeKey}`;
+
+  const id = instancesCache.get(cacheKey);
+  if (typeof id === 'number') {
+    const instance = VariableInstance.select<I>(id);
+    // Check if instance still exists and has the right parentId and scopeKey.
+    if (instance != null) {
+      return instance;
+    }
+    instancesCache.delete(cacheKey);
   }
+
+  const instance = VariableInstance.firstMatch<IVariableInstance>({
+    parentId,
+    scopeKey,
+  }) as IorUndef;
+  if (instance != null && instance.id != null) {
+    instancesCache.set(cacheKey, instance.id!);
+  }
+  return instance;
 }
 
 export function getScopeEntity(

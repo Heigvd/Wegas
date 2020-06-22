@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { Centered } from './Centered';
-import { themeVar } from '../Theme';
+import { classNameOrEmpty } from '../../Helper/className';
+import { themeVar } from '../Style/ThemeVars';
 
 export const layoutHighlightStyle = css({
   borderStyle: 'solid',
   borderWidth: '2px',
-  borderColor: themeVar.searchColor,
+  borderColor: themeVar.Common.colors.HighlightColor,
 });
 
 const listStyle = css({
@@ -18,8 +19,6 @@ const listStyle = css({
 });
 const horizontalStyle = css({
   display: 'inline-flex',
-  // display: 'table',
-  // width: '100%',
 });
 const horizontalChildren = (shrink?: boolean) =>
   css({
@@ -35,19 +34,11 @@ const verticalStyle = css({
   // width: '100%',
 });
 
-export interface OrientedLayoutProps<T> {
+export interface OrientedLayoutProps<T> extends ClassAndStyle {
   /**
    * children - the items to display
    */
   children: T[];
-  /**
-   * style - specific style for the component
-   */
-  style?: React.CSSProperties;
-  /**
-   * className - specific className for the component
-   */
-  className?: string;
   /**
    * horizontal - the component orientation
    */
@@ -78,14 +69,12 @@ export default function List<T = React.ReactChild>({
   return (
     <div
       style={style /* ? style : { flex: '1 1 auto' } */}
-      className={cx(
-        listStyle,
-        {
+      className={
+        cx(listStyle, {
           [horizontalStyle]: horizontal,
           [verticalStyle]: !horizontal,
-        },
-        className,
-      )}
+        }) + classNameOrEmpty(className)
+      }
     >
       {children.map((c, i) => {
         return horizontal ? (

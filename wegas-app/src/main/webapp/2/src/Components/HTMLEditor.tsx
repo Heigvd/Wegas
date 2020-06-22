@@ -29,9 +29,9 @@ import { LabeledView, Labeled } from '../Editor/Components/FormView/labeled';
 import { FileBrowser } from '../Editor/Components/FileBrowser/FileBrowser';
 import { css, cx } from 'emotion';
 import { classesCTX } from './Contexts/ClassesProvider';
-import { debounceAction } from '../Helper/debounceAction';
 import { flexColumn, flex } from '../css/classes';
 import { WidgetProps } from 'jsoninput/typings/types';
+import { debounce } from 'lodash-es';
 
 const toolbar = css({
   width: '300px',
@@ -51,7 +51,7 @@ interface ExtraButtons {
   [name: string]: ExtraButton;
 }
 
-interface HTMLEditorProps {
+interface HTMLEditorProps extends ClassAndStyle {
   /**
    * value - content to inject in the editor
    */
@@ -65,10 +65,6 @@ interface HTMLEditorProps {
    */
   onChange?: (content: string) => void;
   /**
-   * className - classes to apply to the element
-   */
-  className?: string;
-  /**
    * id - the id of the main container
    */
   id?: string;
@@ -81,6 +77,7 @@ export default function HTMLEditor({
   onSave,
   onChange,
   className,
+  style,
   id,
 }: HTMLEditorProps) {
   const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>(
@@ -159,7 +156,7 @@ export default function HTMLEditor({
           })),
         },
       ],
-      setup: function(editor: TinyMCEEditor) {
+      setup: function (editor: TinyMCEEditor) {
         let formatter: TinyMCEEditorFormatter | undefined;
         editor.on('init', () => {
           formatter = editor.formatter;
@@ -184,7 +181,7 @@ export default function HTMLEditor({
                 },
               });
             },
-            onSetup: function(buttonApi) {
+            onSetup: function (buttonApi) {
               // Getting the class of the current token to define button state
               const editorEventCallback = (
                 eventApi: TinyMCENodeChangeEvent,
@@ -214,17 +211,27 @@ export default function HTMLEditor({
     }
   }, [fileBrowsing.fn]);
 
+  const onEditorChange = React.useCallback(
+    debounce((value: string) => {
+      HTMLContent.current = value;
+      onChange && onChange(HTMLContent.current);
+    }, 500),
+    [onChange],
+  );
+
   const toolBarId = 'externalEditorToolbar' + String(HTMLEditorID++);
 
   return (
-    <div className={className} id={id}>
+    <div className={className} style={style} id={id}>
       <div style={{ visibility: fileBrowsing.fn ? 'hidden' : 'visible' }}>
         <div id={toolBarId} className={toolbar}>
           {!editorFocus && (
             <img
-              src={require(onSave
-                ? '../pictures/tinymcetoolbar.png'
-                : '../pictures/tinymcetoolbarnosave.png')}
+              src={
+                require(onSave
+                  ? '../pictures/tinymcetoolbar.png'
+                  : '../pictures/tinymcetoolbarnosave.png').default
+              }
               onClick={() => HTMLEditor.current && HTMLEditor.current.focus()}
             />
           )}
@@ -235,12 +242,7 @@ export default function HTMLEditor({
             testbutton: { text: 'test', className: 'testclass' },
           })}
           onInit={editor => (HTMLEditor.current = editor.target)}
-          onEditorChange={value => {
-            debounceAction('HTMLEditorOnChange', () => {
-              HTMLContent.current = value;
-              onChange && onChange(HTMLContent.current);
-            });
-          }}
+          onEditorChange={onEditorChange}
           onFocus={() => setEditorFocus(true)}
           onBlur={() => setEditorFocus(false)}
         />

@@ -207,7 +207,7 @@ class TreeNode extends React.Component<
     } = this.props;
     const { expanded } = this.state;
     const children = this.props.children({
-      nodeProps: (function() {
+      nodeProps: (function () {
         let index = 0;
         return function nodeProps() {
           return { index: index++, parent: id };
@@ -307,7 +307,7 @@ const DSNodeFactory = (
         }
       },
     },
-    function(connect, monitor) {
+    function (connect, monitor) {
       return {
         connectDragSource: connect.dragSource(),
         isDragging: monitor.isDragging(),

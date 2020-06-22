@@ -55,13 +55,15 @@ export const ActionCreator = {
     schemaFN?: CustomSchemaFN;
     simpleFilter?: WegasClassNames;
   }) => createAction(ActionType.EDITOR_SET_VARIABLE_SCHEMA, data),
+  EDITOR_REGISTER_PAGE_LOADER: (data: { name: string; pageId: IScript }) =>
+    createAction(ActionType.EDITOR_REGISTER_PAGE_LOADER, data),
   // EDITOR_SET_VARIABLE_METHOD: (data: ClientMethodPayload) =>
   // createAction(ActionType.EDITOR_SET_SERVER_METHOD, data),
   VARIABLE_EDIT: variableEditAction(ActionType.VARIABLE_EDIT),
   FSM_EDIT: variableEditAction(ActionType.FSM_EDIT),
   FILE_EDIT: (data: {
     entity: IAbstractContentDescriptor;
-    cb: (newEntity: IAbstractContentDescriptor) => void;
+    cb?: (newEntity: IAbstractContentDescriptor) => void;
   }) => createAction(ActionType.FILE_EDIT, data),
   VARIABLE_CREATE: <T extends IAbstractEntity>(data: {
     '@class': string;
@@ -112,6 +114,8 @@ export const ActionCreator = {
     createAction(ActionType.TEAM_FETCH_ALL, data),
   GAME_FETCH: (data: { game: IGame }) =>
     createAction(ActionType.GAME_FETCH, data),
+  LOCK_SET: (data: { token: string; locked: boolean }) =>
+    createAction(ActionType.LOCK_SET, data),
 };
 
 export type StateActions<

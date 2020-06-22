@@ -1,34 +1,28 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { useDrag, DropTargetMonitor, useDrop } from 'react-dnd';
-import { primaryLight, primaryDark } from '../../../Components/Theme';
 import { DropAction } from './DnDTabLayout';
 import { hidden, flex } from '../../../css/classes';
 import { dropZoneFocus } from '../../../Components/Contexts/DefaultDndProvider';
+import {
+  activeTabStyle,
+  inactiveTabStyle,
+  tabStyle,
+} from '../../../Components/Tabs';
 
 // export const dndAcceptType = 'DnDTab';
 
 const dropZone = cx(dropZoneFocus, css({ width: '50px' }));
-
-const defaultTabStyle = css({
-  display: 'inline-block',
-  cursor: 'pointer',
-  margin: '0 0.2em',
-  borderStyle: 'solid',
-  borderWidth: '1px 1px 0 1px',
-  padding: '5px',
-  verticalAlign: '',
-});
 
 interface TabInternalProps {
   /**
    * active - the state of the tab
    */
   active?: boolean;
-  /**
-   * children - the content of the tab
-   */
-  children?: React.ReactChild | null;
+  // /**
+  //  * children - the content of the tab
+  //  */
+  // children?: React.ReactChild | null;
   /**
    * onClick - the function to be called when the tab is clicked
    */
@@ -41,16 +35,16 @@ interface TabInternalProps {
 
 type TabProps = React.PropsWithChildren<TabInternalProps>;
 
-export const Tab = React.forwardRef(
+export const Tab = React.forwardRef<HTMLDivElement, TabProps>(
   (props: TabProps, ref: React.RefObject<HTMLDivElement>) => (
     <div
       ref={ref}
       className={
         props.className
           ? props.className
-          : cx(defaultTabStyle, {
-              [primaryDark]: props.active !== undefined && props.active,
-              [primaryLight]: !props.active,
+          : cx(tabStyle, {
+              [activeTabStyle]: props.active !== undefined && props.active,
+              [inactiveTabStyle]: !props.active,
             })
       }
       onClick={props.onClick}

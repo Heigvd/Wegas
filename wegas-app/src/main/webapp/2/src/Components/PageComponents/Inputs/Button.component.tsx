@@ -4,45 +4,48 @@ import { store } from '../../../data/store';
 import {
   pageComponentFactory,
   registerComponent,
-  PageComponentMandatoryProps,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { Button } from '../../Inputs/Button/Button';
+import { Button } from '../../Inputs/Buttons/Button';
+import { createScript } from '../../../Helper/wegasEntites';
+import { WegasComponentProps } from '../tools/EditableComponent';
 
-interface PlayerButtonProps extends PageComponentMandatoryProps {
+export interface PlayerButtonProps extends WegasComponentProps {
   label: string;
-  action: IScript | string;
+  action: IScript;
 }
 
-const PlayerButton: React.FunctionComponent<PlayerButtonProps> = (
-  props: PlayerButtonProps,
-) => {
-  const { label, action, EditHandle } = props;
+const PlayerButton: React.FunctionComponent<PlayerButtonProps> = ({
+  label,
+  action,
+  style,
+}: PlayerButtonProps) => {
   return (
-    <>
-      <EditHandle />
-      <Button
-        label={label}
-        onClick={() =>
-          store.dispatch(Actions.VariableInstanceActions.runScript(action))
-        }
-      />
-    </>
+    <Button
+      label={label}
+      onClick={() =>
+        store.dispatch(Actions.VariableInstanceActions.runScript(action!))
+      }
+      style={{ margin: 'auto', ...style }}
+    />
   );
+};
+
+export const buttonSchema = {
+  action: schemaProps.script('Action', undefined, 'SET'),
+  label: schemaProps.string('Label'),
 };
 
 registerComponent(
   pageComponentFactory(
     PlayerButton,
+    'Input',
     'Button',
     'cube',
-    {
-      action: schemaProps.script('Action', undefined, 'SET'),
-      label: schemaProps.string('Label'),
-    },
+    buttonSchema,
     [],
     () => ({
-      action: '',
+      action: createScript(),
       label: 'Button',
     }),
   ),

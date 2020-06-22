@@ -28,6 +28,7 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.Zero;
+import com.wegas.editor.view.HashListView;
 import com.wegas.editor.view.NumberView;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -99,7 +100,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     @JsonIgnore
     @WegasEntityProperty(searchable = true, callback = TranslatableCallback.class,
             optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Translations"))
+            view = @View(label = "Translations", value = HashListView.class))
     @OneToMany(mappedBy = "translatableContent", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @PrivateOwned
     private List<Translation> translations = new ArrayList<>();

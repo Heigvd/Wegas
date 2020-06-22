@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { IconButton } from '../../../Components/Inputs/Button/IconButton';
-import { Menu } from '../../../Components/Menu';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import { Menu, MenuItem, SelectedMenuItem } from '../../../Components/Menu';
 import { CommonViewContainer, CommonView } from './commonView';
 import { Labeled, LabeledView } from './labeled';
-import { themeVar } from '../../../Components/Theme';
 import { useDrag, useDrop } from 'react-dnd';
 import { dropZoneFocusCss } from '../../../Components/Contexts/DefaultDndProvider';
 import { array_move } from '../../../Helper/tools';
+import { Item } from '../Tree/TreeSelect';
+import { classNameOrEmpty } from '../../../Helper/className';
 
 const transparentStyle = css({
   opacity: 0,
@@ -20,7 +21,7 @@ const transparentStyle = css({
 
 const listElementContainerStyle = css({
   display: 'flex',
-  backgroundColor: themeVar.primaryHoverColor,
+  backgroundColor: '#d5e6f9',
   padding: '4px',
   marginTop: '4px',
 });
@@ -42,25 +43,29 @@ const handleStyle = css({
   display: 'inline-grid',
 });
 
-function Adder(props: WidgetProps.ArrayProps & IArrayProps & { id: string }) {
-  const { userOnChildAdd } = props.view;
-  if (Array.isArray(props.view.choices)) {
+interface AdderProps<T> {
+  onChildAdd: (value?: SelectedMenuItem<T, MenuItem<T>>) => void;
+  choices?: MenuItem<T>[];
+  id?: string;
+  tooltip?: string;
+}
+
+function Adder<T>({ onChildAdd, choices, id, tooltip }: AdderProps<T>) {
+  if (Array.isArray(choices)) {
     return (
       <Menu
-        items={props.view.choices}
+        items={choices}
         icon="plus-circle"
-        onSelect={({ value }) =>
-          userOnChildAdd ? userOnChildAdd(value) : props.onChildAdd(value)
-        }
+        onSelect={item => onChildAdd(item)}
       />
     );
   }
   return (
     <IconButton
-      id={props.id}
+      id={id}
       icon="plus-circle"
-      onClick={() => (userOnChildAdd ? userOnChildAdd() : props.onChildAdd())}
-      tooltip={props.view.tooltip}
+      onClick={() => onChildAdd()}
+      tooltip={tooltip}
     />
   );
 }
@@ -74,7 +79,7 @@ interface DnDArrayDragMonitor {
   dragStyle: React.CSSProperties;
 }
 
-interface ArrayItemProps {
+interface ArrayItemProps extends ClassAndStyle {
   /**
    * index - The index of the item in the array
    */
@@ -87,14 +92,6 @@ interface ArrayItemProps {
    * unmovable - if set, the item could not be moved to another and the move handle won't be displayed
    */
   unmovable?: boolean;
-  /**
-   * className - the classes of the element
-   */
-  className?: string;
-  /**
-   * style - the classes of the element
-   */
-  style?: React.CSSProperties;
 }
 
 const dndItemType = 'ArrayItem';
@@ -125,7 +122,7 @@ function ArrayItem({
   return (
     <div
       ref={preview}
-      className={cx(listElementContainerStyle, className)}
+      className={cx(listElementContainerStyle) + classNameOrEmpty(className)}
       style={{ ...style, ...dragStyle }}
     >
       <div className={listElementStyle}>{children}</div>
@@ -152,19 +149,11 @@ interface DnDArrayDropMonitor {
   canDrop?: boolean;
 }
 
-interface ArrayDropzoneProps {
+interface ArrayDropzoneProps extends ClassAndStyle {
   /**
    * onDrop - the function that is called when an item is dropped
    */
   onDrop: (index: number) => void;
-  /**
-   * className - the classes of the element
-   */
-  className?: string;
-  /**
-   * style - the classes of the element
-   */
-  style?: React.CSSProperties;
 }
 
 function ArrayDropzone({ onDrop, className, style }: ArrayDropzoneProps) {
@@ -184,7 +173,7 @@ function ArrayDropzone({ onDrop, className, style }: ArrayDropzoneProps) {
 
   return (
     <div
-      className={cx(dropZoneStyle, className)}
+      className={cx(dropZoneStyle) + classNameOrEmpty(className)}
       style={{
         minHeight: isOverCurrent ? '50px' : canDrop ? '10px' : '0px',
         ...style,
@@ -197,7 +186,7 @@ function ArrayDropzone({ onDrop, className, style }: ArrayDropzoneProps) {
 export interface IArrayProps
   extends WidgetProps.ArrayProps<
     {
-      choices?: { label: React.ReactNode; value: string }[];
+      choices?: Item<string>[];
       tooltip?: string;
       disabled?: boolean;
       userOnChildAdd?: (value?: {}) => void;
@@ -210,49 +199,140 @@ export interface IArrayProps
   value?: {}[];
 }
 
-function ArrayWidget(props: IArrayProps) {
-  const valueLength = Array.isArray(props.value) ? props.value.length : 0;
-  const { maxItems = Infinity, minItems = 0 } = props.schema;
-  const disabled = props.view.disabled;
-  const readOnly = props.view.readOnly;
+interface DropArrayProps<T> {
+  array?: {}[];
+  onMove?: (array?: {}[]) => void;
+  onChildRemove?: (index: number) => void;
+  onChildAdd?: (value?: SelectedMenuItem<T, MenuItem<T>>) => void;
+  choices?: MenuItem<T>[];
+  tooltip?: string;
+  label?: React.ReactNode;
+  maxItems?: number;
+  minItems?: number;
+  inputId?: string;
+  disabled?: boolean;
+  readOnly?: boolean;
+  unsortable?: boolean;
+  filterRemovable?: boolean[];
+}
+
+export function DragDropArray<T>({
+  array,
+  onMove,
+  onChildRemove,
+  onChildAdd,
+  choices,
+  tooltip,
+  label,
+  maxItems = Infinity,
+  minItems = 0,
+  inputId,
+  disabled,
+  readOnly,
+  children,
+  unsortable,
+  filterRemovable,
+}: React.PropsWithChildren<DropArrayProps<T>>) {
+  const valueLength = Array.isArray(array) ? array.length : 0;
   return (
-    <CommonViewContainer errorMessage={props.errorMessage} view={props.view}>
-      <Labeled label={props.view.label} description={props.view.description}>
-        {({ inputId, labelNode }) => {
-          return (
-            <>
-              {labelNode}
-              {maxItems > valueLength && !disabled && !readOnly && (
-                <Adder id={inputId} {...props} />
-              )}
-              {React.Children.map(props.children, (c, i) => (
-                <>
-                  <ArrayDropzone
-                    onDrop={index => {
-                      props.onChange(array_move(props.value, index, i));
-                    }}
-                  />
-                  <ArrayItem
-                    index={i}
-                    onChildRemove={
-                      minItems < valueLength && !disabled && !readOnly
-                        ? props.onChildRemove
-                        : undefined
-                    }
-                    unmovable={valueLength < 2 && !disabled && !readOnly}
-                  >
-                    {c}
-                  </ArrayItem>
-                </>
-              ))}
-              <ArrayDropzone
-                onDrop={index => {
-                  props.onChange(array_move(props.value, index, valueLength));
-                }}
-              />
-            </>
-          );
-        }}
+    <>
+      {label}
+      {!unsortable &&
+        maxItems > valueLength &&
+        !disabled &&
+        !readOnly &&
+        onChildAdd && (
+          <Adder
+            id={inputId}
+            onChildAdd={onChildAdd}
+            choices={choices}
+            tooltip={tooltip}
+          />
+        )}
+      {React.Children.map(children, (c, i) => (
+        <>
+          {onMove && !unsortable && (
+            <ArrayDropzone
+              onDrop={index => {
+                onMove(array_move(array, index, i));
+              }}
+            />
+          )}
+          <ArrayItem
+            index={i}
+            onChildRemove={
+              minItems < valueLength &&
+              !disabled &&
+              !readOnly &&
+              (!filterRemovable || filterRemovable[i])
+                ? onChildRemove
+                : undefined
+            }
+            unmovable={
+              !onMove ||
+              unsortable ||
+              (valueLength < 2 && !disabled && !readOnly)
+            }
+          >
+            {c}
+          </ArrayItem>
+        </>
+      ))}
+      {onMove && !unsortable && (
+        <ArrayDropzone
+          onDrop={index => {
+            onMove(array_move(array, index, valueLength));
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+function ArrayWidget({
+  errorMessage,
+  view,
+  onChange,
+  onChildAdd,
+  onChildRemove,
+  value,
+  children,
+  schema,
+}: IArrayProps) {
+  const {
+    label,
+    description,
+    choices,
+    disabled,
+    readOnly,
+    tooltip,
+    userOnChildAdd,
+    sortable,
+  } = view;
+  const { maxItems, minItems } = schema;
+  const onNewChild = userOnChildAdd ? userOnChildAdd : onChildAdd;
+  return (
+    <CommonViewContainer errorMessage={errorMessage} view={view}>
+      <Labeled label={label} description={description}>
+        {({ inputId, labelNode }) => (
+          <DragDropArray
+            onMove={onChange}
+            onChildAdd={i => onNewChild(i ? i.value : undefined)}
+            onChildRemove={onChildRemove}
+            array={value}
+            choices={choices}
+            disabled={disabled}
+            readOnly={readOnly}
+            inputId={inputId}
+            label={labelNode}
+            maxItems={maxItems}
+            minItems={minItems}
+            tooltip={tooltip}
+            unsortable={!sortable}
+          >
+            {children}
+          </DragDropArray>
+        )}
       </Labeled>
     </CommonViewContainer>
   );

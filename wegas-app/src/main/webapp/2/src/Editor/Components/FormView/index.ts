@@ -25,11 +25,17 @@ import { TimestampView } from './Timestamp';
 import { VariableInput } from './Script/VariableInput';
 import PageSelect from './PageSelect';
 import StatementView from './Script/Expressions/ExpressionEditor';
+import HashListView from './HashList';
+import PageLoaderSelect from './PageLoaderSelect';
+import FileSelector from './FileSelector';
+import { CustomScript } from './CustomScript';
+import ThemeModeSelect from './ThemeModeSelect';
 
 export const DEFINED_VIEWS = {
   hidden,
   uneditable,
   object: ObjectView,
+  hashlist: HashListView,
   string: StringInput,
   i18nstring: translatable(StringInput),
   number: StringInput,
@@ -38,9 +44,11 @@ export const DEFINED_VIEWS = {
   array: ArrayWidget,
   select: Select,
   pageselect: PageSelect,
+  pagesloaderselect: PageLoaderSelect,
   html: LabeledHTMLEditor,
   i18nhtml: translatable(LabeledHTMLEditor),
   script: Script,
+  customscript: CustomScript,
   code: Code,
   variableselect: TreeVariableSelect,
   scriptableVariableSelect: ScripableVariableSelect,
@@ -52,10 +60,12 @@ export const DEFINED_VIEWS = {
   listchildren: ListChildrenSelectView,
   listchildrennull: ListChildrenNullSelectView,
   treeselect: TreeVSelect,
+  thememodeselect: ThemeModeSelect,
+  file: FileSelector,
 };
 setDefaultWidgets(DEFINED_VIEWS);
 
-type ViewTypes = keyof typeof DEFINED_VIEWS;
+export type ViewTypes = keyof typeof DEFINED_VIEWS;
 type PropsType<T> = T extends React.ComponentType<infer U>
   ? U
   : T extends (p: infer P) => unknown

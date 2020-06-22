@@ -76,10 +76,10 @@ export function LangToggler() {
     <Menu
       label={lang}
       items={availableLang.map(language => ({
-        id: language.code,
+        value: language.code,
         label: `${language.code} : ${language.lang}`,
       }))}
-      onSelect={item => selectLang(item.id)}
+      onSelect={({ value }) => selectLang(value)}
     />
   );
 }

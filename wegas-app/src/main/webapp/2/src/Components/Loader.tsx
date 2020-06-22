@@ -1,22 +1,22 @@
 import { css, keyframes } from 'emotion';
 import * as React from 'react';
-import { themeVar } from './Theme';
+import { themeVar } from './Style/ThemeVars';
 
 const anim = keyframes({
   '0%': {
     width: '0%',
     left: 0,
-    borderBottomColor: themeVar.primaryLighterColor,
+    borderBottomColor: themeVar.Common.colors.BorderColor,
   },
   '50%': {
     width: '50%',
     left: '25%',
-    borderBottomColor: themeVar.primaryDarkerColor,
+    borderBottomColor: themeVar.Common.colors.BorderColor,
   },
   '100%': {
     width: '0%',
     left: '100%',
-    borderBottomColor: themeVar.primaryLighterColor,
+    borderBottomColor: themeVar.Common.colors.BorderColor,
   },
 });
 const loaderStyle = css({

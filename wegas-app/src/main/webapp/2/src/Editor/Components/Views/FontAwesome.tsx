@@ -72,12 +72,14 @@ function IconDisplay({ icon, style }: IconDisplayProps) {
 }
 
 interface IconCompProps {
-  icon: Icons;
+  icon?: Icons;
   style?: React.CSSProperties;
 }
 
 export function IconComp({ icon, style }: IconCompProps) {
-  return Array.isArray(icon) ? (
+  return icon == null ? (
+    <pre>No icon</pre>
+  ) : Array.isArray(icon) ? (
     <span className="fa-layers fa-fw">
       {icon.map((ic: Icon, i) => (
         <IconDisplay

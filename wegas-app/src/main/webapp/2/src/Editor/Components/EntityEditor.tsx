@@ -216,7 +216,7 @@ async function WindowedEditor<T extends IMergeable>({
         update={update != null ? updatePath : update}
         actions={actions.map(action => ({
           ...action,
-          action: function(e: T) {
+          action: function (e: T) {
             action.action(deepUpdate(entity, path, e) as T, path);
           },
         }))}

@@ -3,7 +3,7 @@ import { css } from 'emotion';
 import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
 
 export interface LabeledView {
-  label?: string;
+  label?: React.ReactNode;
   description?: string;
   index?: number;
 }
@@ -13,7 +13,7 @@ interface LabeledProps extends LabeledView {
     labelNode: JSX.Element;
   }) => React.ReactNode;
 }
-const titleStyle = css({
+export const titleStyle = css({
   display: 'flex',
   '[title]': {
     display: 'inline-block',

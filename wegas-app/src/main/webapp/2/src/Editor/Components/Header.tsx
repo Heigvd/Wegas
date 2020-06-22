@@ -1,13 +1,19 @@
 import * as React from 'react';
 import { GameModel, Global } from '../../data/selectors';
-import { cx } from 'emotion';
+import { css, cx } from 'emotion';
 import { StoreConsumer } from '../../data/store';
-import { IconButton } from '../../Components/Inputs/Button/IconButton';
+import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { Actions } from '../../data';
 import { FontAwesome } from './Views/FontAwesome';
 import { FeatureToggler } from '../../Components/Contexts/FeaturesProvider';
 import { LangToggler } from '../../Components/Contexts/LanguagesProvider';
 import { flex, itemCenter, grow, foregroundContent } from '../../css/classes';
+import { themeVar } from '../../Components/Style/ThemeVars';
+import { Title } from '../../Components/Inputs/String/Title';
+
+const headerStyle = css({
+  backgroundColor: themeVar.Common.colors.HeaderColor,
+});
 
 export default function Header() {
   return (
@@ -18,8 +24,8 @@ export default function Header() {
       })}
     >
       {({ state: { gameModel, user }, dispatch }) => (
-        <div className={cx(flex, itemCenter, foregroundContent)}>
-          <h2 className={grow}>{gameModel.name}</h2>
+        <div className={cx(flex, itemCenter, foregroundContent, headerStyle)}>
+          <Title className={grow}>{gameModel.name}</Title>
           <LangToggler />
           <FeatureToggler />
           <FontAwesome icon="user" />

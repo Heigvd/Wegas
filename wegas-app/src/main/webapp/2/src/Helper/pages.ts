@@ -1,6 +1,7 @@
 import { Item } from '../Editor/Components/Tree/TreeSelect';
 import { css } from 'emotion';
-import { themeVar } from '../Components/Theme';
+import { cloneDeep } from 'lodash-es';
+import { themeVar } from '../Components/Style/ThemeVars';
 
 export function isPageItem(
   pageItemIndex?: PageIndexItem,
@@ -11,6 +12,30 @@ export function isFolderItem(
   pageItemIndex?: PageIndexItem,
 ): pageItemIndex is PageIndexFolder {
   return pageItemIndex != null && pageItemIndex['@class'] === 'Folder';
+}
+
+export function isPageIndex(
+  page?: PageIndex | WegasComponent,
+): page is PageIndex {
+  return (
+    page != null &&
+    'root' in page &&
+    isFolderItem(page.root) &&
+    'defaultPageId' in page &&
+    typeof page.defaultPageId === 'string'
+  );
+}
+
+export function isWegasComponent(
+  page?: PageIndex | WegasComponent,
+): page is WegasComponent {
+  return (
+    page != null &&
+    'type' in page &&
+    typeof page.type === 'string' &&
+    'props' in page &&
+    typeof page.props === 'object'
+  );
 }
 
 export function getItemFromPath(
@@ -35,13 +60,20 @@ export function getItemFromPath(
 
 export function getPageIndexItemFromFolder(
   folder: PageIndexFolder,
-  id: string,
+  id?: string,
 ): PageIndexPage | undefined {
-  for (const item of folder.items) {
-    if (isPageItem(item) && item.id === id) {
-      return item;
-    } else if (isFolderItem(item)) {
-      return getPageIndexItemFromFolder(item, id);
+  if (id == null) {
+    return undefined;
+  } else {
+    for (const item of folder.items) {
+      if (isPageItem(item) && item.id === id) {
+        return item;
+      } else if (isFolderItem(item)) {
+        const pageItem = getPageIndexItemFromFolder(item, id);
+        if (pageItem != null) {
+          return pageItem;
+        }
+      }
     }
   }
 }
@@ -71,7 +103,65 @@ export function pageItemsToTreeItem(
 export function indexToTree(index: PageIndex): Item<PageIndexItem>[] {
   return pageItemsToTreeItem(index.root.items, item =>
     isPageItem(item) && item.id === index.defaultPageId
-      ? css({ color: themeVar.primaryDarkerColor })
+      ? css({ color: themeVar.Common.colors.SuccessColor })
       : undefined,
+  );
+}
+
+export function visitComponents(
+  component: WegasComponent,
+  callbackFN: (component: WegasComponent) => void,
+): void {
+  callbackFN(component);
+  const children = component.props?.children;
+  if (children) {
+    for (const child of children) {
+      visitComponents(child, callbackFN);
+    }
+  }
+}
+
+export const findComponent = (
+  page: WegasComponent,
+  path: number[],
+): {
+  newPage: WegasComponent;
+  component?: WegasComponent;
+  parent?: WegasComponent;
+} => {
+  const browsePath = [...path];
+  const newPage = cloneDeep(page);
+  let parent: WegasComponent | undefined = undefined;
+  let component: WegasComponent = newPage;
+  while (browsePath.length > 0) {
+    if (component.props.children) {
+      parent = component;
+      component = component.props.children[browsePath[0]];
+      browsePath.splice(0, 1);
+    } else {
+      return { newPage };
+    }
+  }
+  return { newPage, component, parent };
+};
+
+export const PAGE_LOADER_COMPONENT_TYPE = 'PageLoader';
+
+export interface PageLoaderComponentProps {
+  name?: string;
+  initialSelectedPageId: IScript;
+}
+
+export type PageLoaderComponent = WegasComponent & {
+  props: WegasComponent['props'] & PageLoaderComponentProps;
+};
+
+export function isPageLoaderComponent(
+  component?: WegasComponent,
+): component is PageLoaderComponent {
+  return (
+    component != null &&
+    component.type === PAGE_LOADER_COMPONENT_TYPE &&
+    'selectedPageId' in component.props
   );
 }

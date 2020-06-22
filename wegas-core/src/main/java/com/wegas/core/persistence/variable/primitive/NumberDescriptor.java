@@ -59,7 +59,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
             view = @View(
                     label = "Maximum",
                     layout = CommonView.LAYOUT.shortInline,
-                    value = NumberView.WithNegInfinityPlaceholder.class,
+                    value = NumberView.WithInfinityPlaceholder.class,
                     index = 2
             ))
     @Errored(NumberDescBoundsConstraint.class)

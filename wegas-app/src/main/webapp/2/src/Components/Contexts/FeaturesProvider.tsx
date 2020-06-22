@@ -55,7 +55,7 @@ export function FeatureToggler() {
       <Menu
         label={'Features'}
         items={availableFeatures.map(feature => ({
-          id: feature,
+          value: feature,
           label: (
             <>
               <input
@@ -68,7 +68,7 @@ export function FeatureToggler() {
             </>
           ),
         }))}
-        onSelect={({ id: feature }) => selectFeature(feature)}
+        onSelect={({ value: feature }) => selectFeature(feature)}
       />
     ),
     [currentFeatures, selectFeature],

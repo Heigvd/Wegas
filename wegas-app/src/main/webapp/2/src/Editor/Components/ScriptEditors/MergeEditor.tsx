@@ -1,17 +1,17 @@
 import { css } from 'emotion';
 import * as React from 'react';
-import { themeVar } from '../../../Components/Theme';
 import { Toolbar } from '../../../Components/Toolbar';
-import { IconButton } from '../../../Components/Inputs/Button/IconButton';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import WegasDiffEditor, {
   ExtendedDiffNavigator,
   DiffEditorLineChanges,
 } from './WegasDiffEditor';
 import { arrayToText, textToArray } from './SrcEditor';
 import { MessageString } from '../MessageString';
+import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const diffLabel = css({
-  color: themeVar.primaryLighterColor,
+  color: themeVar.Common.colors.TextColor,
   padding: '5px',
 });
 

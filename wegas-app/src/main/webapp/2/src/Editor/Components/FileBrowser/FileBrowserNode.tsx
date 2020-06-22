@@ -1,28 +1,37 @@
 import * as React from 'react';
 import { useDrop, DragObjectWithType, DropTargetMonitor } from 'react-dnd';
 import { css, cx } from 'emotion';
-import {
-  themeVar,
-  localSelection,
-  globalSelection,
-} from '../../../Components/Theme';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { generateAbsolutePath, FileAPI, fileURL } from '../../../API/files.api';
-import { IconButton } from '../../../Components/Inputs/Button/IconButton';
+import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { TextPrompt } from '../TextPrompt';
-import { ConfirmButton } from '../../../Components/Inputs/Button/ConfirmButton';
+import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import { GameModel } from '../../../data/selectors';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { store, StoreDispatch } from '../../../data/store';
 import { editFile } from '../../../data/Reducer/globalState';
-import { flex, grow, hidden, block } from '../../../css/classes';
+import {
+  flex,
+  grow,
+  hidden,
+  block,
+  localSelection,
+  globalSelection,
+} from '../../../css/classes';
 import { MessageString } from '../MessageString';
+import { FilePickingType, FileFilter } from './FileBrowser';
+import { classNameOrEmpty } from '../../../Helper/className';
+import { themeVar } from '../../../Components/Style/ThemeVars';
 
-const hoverRow = css({
+const clickableStyle = css({
   cursor: 'pointer',
   ':hover': {
-    backgroundColor: themeVar.primaryHoverColor,
+    backgroundColor: themeVar.Common.colors.BackgroundColor,
   },
+});
+
+const disabledStyle = css({
+  color: themeVar.Common.colors.DisabledColor,
 });
 
 const dropZoneStyle = css({
@@ -86,14 +95,14 @@ type DropAction = (
   monitor: DropTargetMonitor,
 ) => void;
 
-const dropSpecs = (action: DropAction) => ({
+const dropSpecs = (action: DropAction, disabled: boolean) => ({
   accept: NativeTypes.FILE,
-  canDrop: () => true,
+  canDrop: () => !disabled,
   drop: action,
   collect: (mon: DropTargetMonitor) => ({
-    isOver: !!mon.isOver(),
-    isShallowOver: !!mon.isOver({ shallow: true }),
-    canDrop: !!mon.canDrop(),
+    isOver: !!mon.isOver() && !disabled,
+    isShallowOver: !!mon.isOver({ shallow: true }) && !disabled,
+    canDrop: !!mon.canDrop() && !disabled,
   }),
 });
 
@@ -146,7 +155,7 @@ type ModalState =
   | ModalStateDelete
   | ModalStateChangeType;
 
-export interface FileBrowserNodeProps {
+export interface FileBrowserNodeProps extends ClassAndStyle {
   defaultFile: IAbstractContentDescriptor;
   selectedLocalPaths?: string[];
   selectedGlobalPaths?: string[];
@@ -159,6 +168,8 @@ export interface FileBrowserNodeProps {
   ) => void;
   onDelelteFile?: (deletedFile: IAbstractContentDescriptor) => void;
   localDispatch?: StoreDispatch;
+  pick?: FilePickingType;
+  filter?: FileFilter;
 }
 
 export function FileBrowserNode({
@@ -171,6 +182,10 @@ export function FileBrowserNode({
   onFileClick = () => {},
   onDelelteFile = () => {},
   localDispatch,
+  pick,
+  filter,
+  className,
+  style,
 }: FileBrowserNodeProps) {
   const [open, setOpen] = React.useState(
     defaultOpen ||
@@ -381,7 +396,7 @@ export function FileBrowserNode({
           }
         });
       }
-    }),
+    }, pick != null),
   );
 
   const timeoutBeforeExpend = 1000;
@@ -401,24 +416,44 @@ export function FileBrowserNode({
     }
   }, [dropZoneProps, currentFile]);
 
-  return (
-    <div ref={dropZone} className={cx(flex, grow)}>
-      <input
-        ref={uploader}
-        type="file"
-        name="file"
-        multiple={isDirectory(currentFile)}
-        className={hidden}
-        onChange={event => {
-          if (event.target.files && event.target.files.length > 0) {
-            if (isDirectory(currentFile)) {
-              insertFiles(event.target.files);
-            } else {
-              updateFile(event.target.files[0]);
+  const pickApproved =
+    !pick ||
+    pick === 'BOTH' ||
+    (pick === 'FOLDER' && isDirectory(currentFile)) ||
+    (pick === 'FILE' && !isDirectory(currentFile));
+  const typeFilterApproved =
+    !filter || currentFile.mimeType.includes(filter.fileType);
+  const greyFiltered =
+    !isDirectory(currentFile) &&
+    filter &&
+    !currentFile.mimeType.includes(filter.fileType);
+
+  //TODO : Improve node layout using flex only
+
+  return !filter || filter.filterType !== 'hide' || typeFilterApproved ? (
+    <div
+      ref={dropZone}
+      className={cx(flex, grow) + classNameOrEmpty(className)}
+      style={style}
+    >
+      {!pick && (
+        <input
+          ref={uploader}
+          type="file"
+          name="file"
+          multiple={isDirectory(currentFile)}
+          className={hidden}
+          onChange={event => {
+            if (event.target.files && event.target.files.length > 0) {
+              if (isDirectory(currentFile)) {
+                insertFiles(event.target.files);
+              } else {
+                updateFile(event.target.files[0]);
+              }
             }
-          }
-        }}
-      />
+          }}
+        />
+      )}
       {isDirectory(currentFile) && !noBracket && (
         <div className={css({ verticalAlign: 'top' })}>
           <IconButton
@@ -433,23 +468,29 @@ export function FileBrowserNode({
       )}
       <div className={cx(block, grow)}>
         <div
-          className={cx(flex, grow, hoverRow, {
+          className={cx(flex, grow, {
+            [clickableStyle]: typeFilterApproved,
+            [disabledStyle]: greyFiltered,
             [dropZoneStyle]:
               isDirectory(currentFile) && dropZoneProps.isShallowOver,
             [localSelection]: isSelected(currentFile, selectedLocalPaths),
             [globalSelection]: isSelected(currentFile, selectedGlobalPaths),
           })}
           onClick={(e: ModifierKeysEvent) => {
-            /// OLD
-            onFileClick(currentFile, setCurrentFile);
-
-            /// NEW
-            const dispatch =
-              e.ctrlKey && localDispatch ? localDispatch : store.dispatch;
-            dispatch(editFile(currentFile, setCurrentFile));
+            if (typeFilterApproved && pickApproved) {
+              onFileClick(currentFile, setCurrentFile);
+              if (!pick) {
+                const dispatch =
+                  e.ctrlKey && localDispatch ? localDispatch : store.dispatch;
+                dispatch(editFile(currentFile, setCurrentFile));
+              }
+            }
           }}
         >
-          <IconButton icon={getIconForFileType(currentFile.mimeType)} />
+          <IconButton
+            disabled={greyFiltered}
+            icon={getIconForFileType(currentFile.mimeType)}
+          />
           <div className={grow}>{currentFile.name}</div>
           {nbUploadingFiles > 0 && (
             <div className={grow}>
@@ -490,6 +531,7 @@ export function FileBrowserNode({
               />
             )}
             {modalState.type === 'close' &&
+              !pick &&
               (isDirectory(currentFile) ? (
                 <>
                   <IconButton
@@ -526,7 +568,7 @@ export function FileBrowserNode({
                   />
                 </>
               ))}
-            {modalState.type === 'close' && !noDelete && (
+            {modalState.type === 'close' && !noDelete && !pick && (
               <ConfirmButton
                 icon={'trash'}
                 tooltip={'Delete'}
@@ -630,6 +672,8 @@ export function FileBrowserNode({
                       selectedLocalPaths={selectedLocalPaths}
                       selectedGlobalPaths={selectedGlobalPaths}
                       localDispatch={localDispatch}
+                      filter={filter}
+                      pick={pick}
                     />
                   ))
                 : 'Empty...'
@@ -637,5 +681,5 @@ export function FileBrowserNode({
         </div>
       </div>
     </div>
-  );
+  ) : null;
 }

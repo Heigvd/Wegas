@@ -32,8 +32,7 @@ const Eval = React.memo(function Eval({ script }: { script: string }) {
 });
 Eval.displayName = 'Eval';
 
-const testScript =
-  'const tsTest : SimpleSchema = {};\nMethods.getMethod("Taddaaa")();';
+const testScript = 'Variable.find(gameModel,"initGroups")';
 
 export default function PlayLocal() {
   const [script, setScript] = React.useState(testScript);
@@ -44,7 +43,7 @@ export default function PlayLocal() {
         <WegasScriptEditor
           value={script}
           onChange={e => setScript(e)}
-          returnType={['number']}
+          // returnType={['number']}
         />
       </div>
       <ErrorBoundary script={debouncedScript}>
