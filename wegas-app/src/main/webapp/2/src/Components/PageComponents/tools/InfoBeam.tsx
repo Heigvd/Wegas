@@ -9,6 +9,7 @@ const infoBeamStyle = css({
   backgroundColor: themeVar.Common.colors.WarningColor,
   borderRadius: '50%',
   padding: '0px 5px 0px 5px',
+  zIndex: 10000,
 });
 
 const blinkAnimation = keyframes(`
