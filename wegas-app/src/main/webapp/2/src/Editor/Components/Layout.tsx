@@ -19,7 +19,7 @@ const ThemeEditor = React.lazy(() =>
   import('../../Components/Style/ThemeEditor'),
 );
 
-const Tester = React.lazy(() => import('../../Testers/ThemeModeTester'));
+const Tester = React.lazy(() => import('../../Testers/ObjectChangesTester'));
 
 const layout = css({
   display: 'flex',
