@@ -52,6 +52,7 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 hasTeamScope: "Diese Umfrage wird teamweise beantwortet",
                 currentStatus: "Stand",
                 inactive: "Leer oder inaktiv",
+                inviting: "Einladungen versandt",
                 notStarted: "Noch nicht gestartet",
                 requested: "Start angefordert",
                 ongoing: "Laufend",

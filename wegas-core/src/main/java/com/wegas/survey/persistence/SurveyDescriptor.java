@@ -13,6 +13,8 @@ import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.GameModel;
@@ -41,6 +43,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Descriptor of the Survey variable<br>
@@ -73,7 +76,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     private TranslatableContent descriptionEnd;
 
     /**
-     * List of sections inside this survey
+     * List of sections inside this survey.
      */
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "survey-sections")
@@ -85,7 +88,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     private List<SurveySectionDescriptor> items = new ArrayList<>();
 
     /**
-     * Invitation to participate in this survey sent by email
+     * Invitation to participate to this survey sent by email.
      */
     @ManyToMany
     //@JsonView(Views.ExtendedI.class)
@@ -93,7 +96,18 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     private List<SurveyToken> tokens;
 
     /**
-     * True unless is should be hidden from trainer/scenarist listings
+     * Read-only information about presence of any tokens,
+     * meaning that players have been invited to the survey by email.
+     * Only for use by the trainer dashboard.
+     */
+    @JsonView(Views.EditorI.class)
+    @JsonProperty(access = Access.READ_ONLY)    
+    public Boolean getHasTokens() {
+        return tokens.size() > 0;
+    }
+    
+    /**
+     * True unless it should be hidden from trainer/scenarist listings.
      */
     @Column(columnDefinition = "boolean default true")
     @WegasEntityProperty(
@@ -117,7 +131,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     /**
      * Get the list of invitation to participate
      *
-     * @return inviation sent by email
+     * @return invitation sent by email
      */
     public List<SurveyToken> getTokens() {
         return tokens;

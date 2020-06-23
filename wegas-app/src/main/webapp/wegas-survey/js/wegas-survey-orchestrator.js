@@ -315,13 +315,55 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         },
 
         // Invites into the current game all LIVE players, either anonymously or linked to accounts.
-        sendInvite: function(surveyIds, btn, linkedToAccount, successCb, failureCb) {
+        sendInviteToLive: function(surveyIds, btn, linkedToAccount, successCb, failureCb) {
             // Full request linked: /rest/GameModel/<gameModelId>/Game/InvitePlayersInSurvey/<surveyIds>*
             // Full request anon: /rest/GameModel/<gameModelId>/Game/InvitePlayersInSurveyAnonymously/<surveyIds>*
             // Request returns: List of AbstractAccounts
             var request = linkedToAccount ? 'InvitePlayersInSurvey' : 'InvitePlayersInSurveyAnonymously',
                 config = {
                     request: '/' + this.currentGameModelId + '/Game/' + request + '/' + surveyIds,
+                    cfg: {
+                        updateCache: true,
+                        method: "POST"
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            var entities = e.serverResponse.get("updatedEntities"),
+                                res = entities.find(
+                                    function(obj) {
+                                        return obj.get("@class") && obj.get("@class").indexOf("InvitationResult");
+                                    });
+                            res = res && res.get("val");
+                            var number = (res && res.nbAccounts) || 0;
+                            this.success(I18n.t("survey.orchestrator.surveyInvited", { number: number }));
+                            successCb && successCb(surveyIds, e);
+                            btn && btn.stopSpinning();
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            try {
+                                var wegasErrorMessage = e.serverResponse.get("events")[0].get("val.exceptions")[0].get("val");
+                                if (wegasErrorMessage.messageId === "WEGAS-INVITE-SURVEY-NO-EMAIL") {
+                                    this.alert(I18n.t("survey.orchestrator.errors.inviteNoEmails"));
+                                } else {
+                                    this.alert(wegasErrorMessage.message);
+                                }
+                            } catch(ex) {
+                                this.alert("Internal error: could not send invitations");
+                            }
+                            failureCb && failureCb(surveyIds, e);
+                            btn && btn.stopSpinning();
+                        }, this)
+                }
+            };
+            Y.Wegas.Facade.GameModel.sendRequest(config);
+        },
+
+        // Invites into the current game the given email owners.
+        sendInviteToList: function(surveyIds, btn, list, successCb, failureCb) {
+            // Full request: /rest/GameModel/<gameModelId>/Game/InvitePlayersInSurveyAnonymously/<surveyIds>*
+            // Request returns: number of recipients
+            var config = {
+                    request: '/' + this.currentGameModelId + '/Game/' + surveyIds,
                     cfg: {
                         updateCache: true,
                         method: "POST"
@@ -445,6 +487,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             this.get(BOUNDINGBOX).ancestor().addClass("survey-orchestrator-parent");
         },
         
+        // Gets information from server about players who actually entered the given survey.
         getPlayerSummary: function(surveyId, successCB, failureCB) {
             var survDescr = Y.Wegas.Facade.Variable.cache.findById(surveyId),
                 refreshButton = this.knownSurveys[surveyId].buttons.refreshButton;
@@ -465,7 +508,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                         success: Y.bind(function(e) {
                             var currSurv = this.knownSurveys[surveyId],
                                 survData = this._monitoredData[surveyId] = e.response.results;
-                            currSurv.isRunning = (survData.active === true);
+                            currSurv.isRunning = (survData.active === true && (survData.status !== ORCHESTRATION_PROGRESS.NOT_STARTED || currSurv.isInviting));
                             currSurv.runStatus = survData.status;
                             successCB && successCB(survData);
                             this.syncTable(surveyId);
@@ -882,7 +925,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                             isWriteable: isWriteable,
                             isExternal: currVarSet.isExternal,
                             isPublished: isPublished,
-                            isRunning: false,
+                            isRunning: currVar.get("hasTokens"), // additional conditions must still be fetched from the server
+                            isInviting: currVar.get("hasTokens"),
                             isSession: isSession,
                             sourceGameModelId: sourceGameModel.get("id"),
                             sourceGameId: sourceGame.get("id"),
@@ -1165,7 +1209,9 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             } else {
                 switch (survey.status) {
                     case ORCHESTRATION_PROGRESS.NOT_STARTED:
-                        return I18n.t("survey.orchestrator.notStarted");
+                        return survey.isInviting ? 
+                            I18n.t("survey.orchestrator.inviting") :
+                            I18n.t("survey.orchestrator.notStarted");
                     case ORCHESTRATION_PROGRESS.REQUESTED:
                         return I18n.t("survey.orchestrator.requested");
                     case ORCHESTRATION_PROGRESS.ONGOING:
@@ -1194,8 +1240,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             
             refreshButton.startSpinning();
             
-            // Hide inactive and empty surveys from the list of running surveys:
-            if (survData.active === false) {
+            // Hide inactive, empty and unstarted, uninviting surveys from the list of running surveys:
+            if (!currSurv.isRunning) {
                 survCB.hide();
                 currSurv.runningDetailsPanel && currSurv.deleteRunningDetailsPanel();
                 this.checkIfEmptyRunningSurveys();
@@ -1616,7 +1662,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 surveyId, 
                 btn, 
                 Y.bind(function(newSurveyId) {
-                    this.sendInvite(newSurveyId, btn, linkedToAccount);
+                    this.sendInviteToLive(newSurveyId, btn, linkedToAccount);
                 }, this)
             );
         },
@@ -1742,8 +1788,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
          *   If survey.isPublished == false, delete the hidden surveyDescriptor.
          *   If survey.isPublished == true:
          *     sets all instances, including defaultInstance,
-         *     to status CLOSED (a real reset would have to be recursive, 
-         *     would require player survey Widgets to handle status going "backwards" and 
+         *     to status CLOSED (a real reset would require survey Widgets to 
+         *     handle status going "backwards" and 
          *     would make xAPI logs hardly understandable).
          * 
          * @param {number} surveyId

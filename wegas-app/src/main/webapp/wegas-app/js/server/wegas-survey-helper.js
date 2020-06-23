@@ -89,7 +89,9 @@ var SurveyHelper = (function() {
                 id: sdId,
                 name: SurveyDescriptorName,
                 active: false,
+                empty: false,
                 status: globalSurvStatus,
+                isInviting: sd.getHasTokens(),
                 nbInputs: 0,
                 teamdata: {
                     /*
@@ -150,6 +152,7 @@ var SurveyHelper = (function() {
         // Empty surveys are treated as inactive ones:
         if (inputDescriptors.length === 0) {
             monitoring.active = false;
+            monitoring.empty = true;
             return JSON.stringify(monitoring);
         }
 

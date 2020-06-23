@@ -52,6 +52,7 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
                 hasTeamScope: "Les réponses à ce questionnaire se font par équipes",
                 currentStatus: "Statut",
                 inactive: "Vide ou inactif",
+                inviting: "Invitations envoyées",
                 notStarted: "Pas encore démarré",
                 requested: "Démarrage demandé",
                 ongoing: "En cours",
