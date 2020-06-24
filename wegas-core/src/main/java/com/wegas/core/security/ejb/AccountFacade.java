@@ -802,8 +802,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      * anonymous guest account.
      *
      * @param email   email address to send the link to
-     * @param surveys
-     * @param request http request is required to generate the link to send
+     * @param surveys   survey list
+     * @param request HTTP request is required to generate the link to send
      */
     public void sendSurveyAnonymousToken(String email, List<SurveyDescriptor> surveys,
         HttpServletRequest request) {
@@ -830,10 +830,11 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
     /**
      *
-     * Trainer send invitation to participate in a survey anonymously to all game players
+     * Trainer send invitation to participate in a survey anonymously 
      *
-     * @param account
-     * @param request http request is required to generate the link to send
+     * @param account recipient
+     * @param surveys survey list
+     * @param request HTTP request is required to generate the link to send
      */
     public void sendSurveyAnonymousToken(AbstractAccount account, List<SurveyDescriptor> surveys,
         HttpServletRequest request) {
@@ -859,10 +860,11 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
-     * Trainer send invitation to participate in a survey
+     * Trainer send invitation to participate in a survey (non-anonymously)
      *
-     * @param account
-     * @param request http request is required to generate the link to send
+     * @param account recipient
+     * @param surveys survey list
+     * @param request HTTP request is required to generate the link to send
      */
     public void sendSurveyToken(AbstractAccount account, List<SurveyDescriptor> surveys,
         HttpServletRequest request) {

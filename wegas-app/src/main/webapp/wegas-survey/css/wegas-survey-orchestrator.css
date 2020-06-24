@@ -360,6 +360,7 @@
     display: inline-block;
     margin-left: 8px;
     width: calc( 100% - 40px );
+    color: #333;
 }
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel .yui3-widget-hd .close{
