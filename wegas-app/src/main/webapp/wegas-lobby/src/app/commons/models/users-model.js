@@ -220,7 +220,10 @@ angular.module('wegas.models.users', [])
             });
             return deferred.promise;
         };
-        model.updateUser = function(user, relaxed) {
+        model.updateUser = function(oUser, relaxed) {
+            // clone object to prevent unwanted UI update
+            var user = JSON.parse(JSON.stringify(oUser));
+
             relaxed = relaxed || false;
             var deferred = $q.defer(),
                 isNonLocal = user['@class'] !== "JpaAccount";
@@ -245,92 +248,90 @@ angular.module('wegas.models.users', [])
                                 || user.firstname && user.firstname.length > 0
                                 && user.lastname && user.lastname.length > 0) {
 
-                                Auth.getAuthenticatedUser().then(function(currentUser) {
-                                    /*
-                                     * we need to salt and hash the password before sending it to
-                                     * the server. The server must be asked for the hash function
-                                     * and the salt to be used.
-                                     */
-                                    $http.get(window.ServiceURL + "rest/User/AuthMethod/" + currentUser.email)
-                                        .success(function(data) {
-                                            var jpaAuths = data.filter(function(method) {
-                                                return method["@class"] === "JpaAuthentication";
-                                            });
-                                            if (jpaAuths.length) {
-                                                var salt = jpaAuths[0].salt || "";
-                                                // salt and hash the password
-                                                Auth.digest(jpaAuths[0].mandatoryMethod, salt + user.password)
-                                                    .then(function(digestedPassword) {
-                                                        delete user.hash;
-                                                        delete user.name;
-                                                        delete user.password2;
+                                /*
+                                 * we need to salt and hash the password before sending it to
+                                 * the server. The server must be asked for the hash function
+                                 * and the salt to be used.
+                                 */
+                                $http.get(window.ServiceURL + "rest/User/AuthMethod/" + user.email)
+                                    .success(function(data) {
+                                        var jpaAuths = data.filter(function(method) {
+                                            return method["@class"] === "JpaAuthentication";
+                                        });
+                                        if (jpaAuths.length) {
+                                            var salt = jpaAuths[0].salt || "";
+                                            // salt and hash the password
+                                            Auth.digest(jpaAuths[0].mandatoryMethod, salt + user.password)
+                                                .then(function(digestedPassword) {
+                                                    delete user.hash;
+                                                    delete user.name;
+                                                    delete user.password2;
 
-                                                        // hack: empty password means do not update the password
-                                                        if (user.password) {
-                                                            user.password = digestedPassword;
+                                                    // hack: empty password means do not update the password
+                                                    if (user.password) {
+                                                        user.password = digestedPassword;
+                                                    } else {
+                                                        user.password = "";
+                                                    }
+
+                                                    if (user.roles) {
+                                                        for (var i = 0; i < user.roles.length; i++) {
+                                                            // Additional attribute created in user admin code:
+                                                            delete user.roles[i].users;
+                                                        }
+                                                    }
+
+                                                    var url = "rest/Extended/User/Account/" + user.id;
+                                                    $http.put(ServiceURL + url, user, {
+                                                        "headers": {
+                                                            "managed-mode": "true"
+                                                        }
+                                                    }).success(function(data) {
+                                                        if (data.events !== undefined && data.events.length === 0) {
+                                                            /*
+                                                             $translate('COMMONS-USERS-UPDATE-FLASH-SUCCESS').then(function(message) {
+                                                             deferred.resolve(Responses.success(message, data.updatedEntities[0]));
+                                                             });
+                                                             */
+                                                            deferred.resolve();
+                                                            return;
                                                         } else {
-                                                            user.password = "";
-                                                        }
-
-                                                        if (user.roles) {
-                                                            for (var i = 0; i < user.roles.length; i++) {
-                                                                // Additional attribute created in user admin code:
-                                                                delete user.roles[i].users;
-                                                            }
-                                                        }
-
-                                                        var url = "rest/Extended/User/Account/" + user.id;
-                                                        $http.put(ServiceURL + url, user, {
-                                                            "headers": {
-                                                                "managed-mode": "true"
-                                                            }
-                                                        }).success(function(data) {
-                                                            if (data.events !== undefined && data.events.length === 0) {
-                                                                /*
-                                                                 $translate('COMMONS-USERS-UPDATE-FLASH-SUCCESS').then(function(message) {
-                                                                 deferred.resolve(Responses.success(message, data.updatedEntities[0]));
-                                                                 });
-                                                                 */
-                                                                deferred.resolve();
-                                                                return;
-                                                            } else {
-                                                                if (data.events !== undefined) {
-                                                                    console.log("WEGAS LOBBY : Error while updating profile");
-                                                                    console.log(data.events);
-                                                                }
-                                                                $translate('COMMONS-USERS-UPDATE-FLASH-ERROR').then(function(message) {
-                                                                    deferred.resolve(Responses.danger(message, false));
-                                                                });
-                                                            }
-                                                        }).error(function(data) {
                                                             if (data.events !== undefined) {
                                                                 console.log("WEGAS LOBBY : Error while updating profile");
                                                                 console.log(data.events);
-                                                                try {
-                                                                    deferred.resolve(Responses.danger(data.events[0].exceptions[0].localizedMessage, false));
-                                                                    return;
-                                                                } catch (e) {
-                                                                    // Fall through to generic error message
-                                                                }
                                                             }
                                                             $translate('COMMONS-USERS-UPDATE-FLASH-ERROR').then(function(message) {
                                                                 deferred.resolve(Responses.danger(message, false));
                                                             });
+                                                        }
+                                                    }).error(function(data) {
+                                                        if (data.events !== undefined) {
+                                                            console.log("WEGAS LOBBY : Error while updating profile");
+                                                            console.log(data.events);
+                                                            try {
+                                                                deferred.resolve(Responses.danger(data.events[0].exceptions[0].localizedMessage, false));
+                                                                return;
+                                                            } catch (e) {
+                                                                // Fall through to generic error message
+                                                            }
+                                                        }
+                                                        $translate('COMMONS-USERS-UPDATE-FLASH-ERROR').then(function(message) {
+                                                            deferred.resolve(Responses.danger(message, false));
                                                         });
                                                     });
-                                            } else {
-                                                $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function(message) {
-                                                    deferred.resolve(Responses.danger(message, false));
                                                 });
-                                            }
-                                        }).error(function(data) {
-                                        // no auth method
-                                        $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-SERVER').then(function(message) {
-                                            deferred.resolve(Responses.danger(message, false));
-                                        });
+                                        } else {
+                                            $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function(message) {
+                                                deferred.resolve(Responses.danger(message, false));
+                                            });
+                                        }
+                                    }).error(function(data) {
+                                    // no auth method
+                                    $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-SERVER').then(function(message) {
+                                        deferred.resolve(Responses.danger(message, false));
                                     });
-
                                 });
+
 
                             } else {
                                 $translate('CREATE-ACCOUNT-FLASH-WRONG-NAME').then(function(message) {
