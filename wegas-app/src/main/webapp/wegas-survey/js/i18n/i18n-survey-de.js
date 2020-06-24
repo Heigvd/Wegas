@@ -70,8 +70,9 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 playerScopeButton: "Individuell",
                 teamScopeButton: "Teamweise",
                 inviteTitle: "Sollen die Antworten anonym oder mit den Konten der Spieler verknüpft sein?",
-                inviteAnonButton: "Anonym",
-                inviteLinkedButton: "Mit Konten verknüpft",
+                inviteLiveAnonButton: "Anonym",
+                inviteLiveLinkedButton: "Mit Konten verknüpft",
+                inviteAnonListButton: "Email-Liste",
                 progressDetailsButton: "Details",
                 teamOrPlayer: "Team/Spieler",
                 team: "Team",
@@ -90,7 +91,9 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 errors: {
                     inviteNoEmails: "Derzeit haben sich keine Spieler dem Spiel angeschlossen<br>(oder sie haben keine E-Mail-Adresse registriert)",
                     nameTaken: "eine Variable in diesem Spiel hat bereits den gleichen internen Namen \"{{name}}\"",
-                    noLogId: "Für diese Sitzung wurde keine \"Log-ID\" festgelegt.<br>Antworten auf die Umfrage werden nicht gespeichert!<br>Bitte kontaktieren Sie den Plattform-Administrator (AlbaSim)."
+                    noLogId: "Für diese Sitzung wurde keine \"Log-ID\" festgelegt.<br>Antworten auf die Umfrage werden nicht gespeichert!<br>Bitte kontaktieren Sie den Plattform-Administrator (AlbaSim).",
+                    invalidEmail: "Ungültige E-mail-Adresse: {{email}}<br>Bitte korrigieren und erneut versuchen.",
+                    noValidEmails: "Bitte mindestens eine E-mail-Adresse eingeben."
                 }
             }
         }

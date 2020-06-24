@@ -655,6 +655,8 @@ public void sendSurveysInvitationAnonymouslyToList(String surveyIds,
         HttpServletRequest request) {
 
         List<SurveyDescriptor> surveys = this.loadSurveys(surveyIds);
+
+        this.sendSurveysInvitationAnonymouslyToList(surveys, recipients, request);
     }
 
     /**
