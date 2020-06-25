@@ -10,6 +10,7 @@ import { LangToggler } from '../../Components/Contexts/LanguagesProvider';
 import { flex, itemCenter, grow, foregroundContent } from '../../css/classes';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { Title } from '../../Components/Inputs/String/Title';
+import { mainLayoutId } from './Layout';
 
 const headerStyle = css({
   backgroundColor: themeVar.Common.colors.HeaderColor,
@@ -39,7 +40,7 @@ export default function Header() {
             icon={[{ icon: 'undo' }, { icon: 'window-restore', size: 'xs' }]}
             tooltip="Reset layout"
             onClick={() => {
-              window.localStorage.removeItem('DnDGridLayoutData');
+              window.localStorage.removeItem('DnDGridLayoutData.' + mainLayoutId);
               window.location.reload();
             }}
           />

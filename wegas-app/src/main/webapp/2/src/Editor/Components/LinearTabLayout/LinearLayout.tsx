@@ -718,7 +718,7 @@ const setLayout = (layoutAccept: string) => <T extends ManagedLayoutMap>(
     }
     // Saving layout in local storage
     window.localStorage.setItem(
-      `DnDGridLayoutData\\${layoutAccept}`,
+      `DnDGridLayoutData.${layoutAccept}`,
       JSON.stringify(newLayouts),
     );
     return newLayouts;
@@ -805,7 +805,7 @@ export function MainLinearLayout<T extends ComponentMap>(
 ) {
   const tabs = React.useRef<ComponentMap>(props.tabs ? props.tabs : {});
   const savedLayoutJSON = window.localStorage.getItem(
-    `DnDGridLayoutData\\${props.layoutId}`,
+    `DnDGridLayoutData.${props.layoutId}`,
   );
   const savedLayout = savedLayoutJSON
     ? (JSON.parse(savedLayoutJSON) as ManagedLayoutMap)

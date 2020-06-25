@@ -4,19 +4,26 @@
 <table class="table table-striped">
     <thead>
     <tr>
-        <th>Created</th>
-        <th>Creator</th>
-        <th>Name</th>
-        <th>Scenario</th>
-        <th class="centeredText">Players</th>
+        <th rowspan="2">Created</th>
+        <th rowspan="2">Creator</th>
+        <th rowspan="2">Name</th>
+        <th rowspan="2">Scenario</th>
+        <th colspan="6" class="centeredText">Players</th>
+        <th rowspan="2" class="centeredText">Teams</th>
+        <th rowspan="2">Done</th>
+        <th rowspan="2">Charged</th>
+        <th rowspan="2">Game Status</th>
+        <th rowspan="2">Comments</th>
+        <th rowspan="2">To Game</th>
+        <th rowspan="2">Force Deletion</th>
+    </tr>
+    <tr>
+        <th class="centeredText">All</th>
+        <th class="centeredText">Live</th>
+        <th class="centeredText">Survey</th>
+        <th class="centeredText">Failed</th>
+        <th class="centeredText">Pending</th>
         <th class="centeredText">Declared</th>
-        <th class="centeredText">Teams</th>
-        <th>Done</th>
-        <th>Charged</th>
-        <th>Game Status</th>
-        <th>Comments</th>
-        <th>To Game</th>
-        <th>Force Deletion</th>
     </tr>
     </thead>
     <tbody>
@@ -26,9 +33,13 @@
             <td>{{game.creator}}</td>
             <td>{{game.gameName}}</td>
             <td>{{game.gameModelName}}</td>
-            <td class="mouse-pointer centeredText" {{action 'openModal' "players" game}}><u>{{game.playerCount}}</u></td>
+            <td class="mouse-pointer centeredText" {{action 'openModal' "players" game}}><u>{{game.playerDetails.TOTAL}}</u></td>
+            <td class="mouse-pointer centeredText" {{action 'openModal' "players" game}}><u>{{game.playerDetails.LIVE}}</u></td>
+            <td class="mouse-pointer centeredText" {{action 'openModal' "players" game}}><u>{{game.playerDetails.SURVEY}}</u></td>
+            <td class="mouse-pointer centeredText" {{action 'openModal' "players" game}}><u>{{game.playerDetails.FAILED}}</u></td>
+            <td class="mouse-pointer centeredText" {{action 'openModal' "players" game}}><u>{{game.playerDetails.OTHER}}</u></td>
             <td class="centeredText">{{game.declaredSize}}</td>
-            <td class="mouse-pointer centeredText" {{action 'openModal' "teams" game}}><u>{{game.teamCount}}</u></td>
+            <td class="mouse-pointer centeredText" {{action 'openModal' "teams" game}}><u>{{game.teams.length}}</u></td>
             <td>{{input type='checkbox' id=game.doneId checked=game.isDone}}<label class='mouse-pointer' {{bindAttr for="game.doneId"}} /></td>
             <td>{{input type='checkbox' id=game.chargedId checked=game.isCharged}}<label class='mouse-pointer' {{bindAttr for="game.chargedId"}} /></td>
             <td>{{game.gameStatus}}</td>

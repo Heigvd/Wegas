@@ -7,19 +7,19 @@
  */
 /*global define, require, window*/
 define(["game",
-        "ember-data",
-        "ember",
+    "ember-data",
+    "ember",
 
-        //no function param dependencies
-        "controller/game",
-        "controller/games",
-        "controller/players",
-        "controller/teams",
-        "templates/games",
-        "component/modal-dialog",
-        "templates/players",
-        "templates/teams",
-        "textarea-edit"],
+    //no function param dependencies
+    "controller/game",
+    "controller/games",
+    "controller/players",
+    "controller/teams",
+    "templates/games",
+    "component/modal-dialog",
+    "templates/players",
+    "templates/teams",
+    "textarea-edit"],
     function(game, DS, Ember) {
         "use strict";
         var Admin = Ember.Application.create();
@@ -82,38 +82,28 @@ define(["game",
         Admin.GameSerializer = DS.RESTSerializer.extend({
             extractArray: function(store, type, payload) {
                 var games = [];
-                payload.forEach(function(game){
-                    var newTeams = [],
-                        newPlayers = [],
+                payload.forEach(function(game) {
+                    var allPlayers = [],
                         declaredSize = 0;
                     if (game.teams) {
-                        game.teams.forEach(function (team) {
-                            var newTeam;
-                            try {
-                                newTeam = JSON.parse(team);
-                                if (newTeam.declaredSize != null) {
-                                    declaredSize += newTeam.declaredSize;
-                                }
-                                if (newTeam.playerNames.length !== 0) {
-                                    newPlayers = newPlayers.concat(newTeam.playerNames);
-                                }
-
-                            } catch (e) {
-                                newTeam = {name: 'Internal JSON error', declaredSize: 0, playerNames: []};
+                        game.teams.forEach(function(team) {
+                            if (team.declaredSize) {
+                                declaredSize += team.declaredSize;
                             }
-                            newTeam.realMatchesDeclaredSize = (newTeam.playerNames.length === newTeam.declaredSize);
-                            newTeam.realGreaterThanDeclaredSize = (newTeam.playerNames.length > newTeam.declaredSize);
-                            newTeam.hasDeclaredSize = (newTeam.declaredSize>0);
-                            newTeams.push(newTeam);
+
+                            if (team.players.length > 0) {
+                                allPlayers = allPlayers.concat(team.players);
+                            }
+
+                            team.realMatchesDeclaredSize = (team.players.length === team.declaredSize);
+                            team.realGreaterThanDeclaredSize = (team.players.length > team.declaredSize);
+                            team.hasDeclaredSize = (team.declaredSize > 0);
                         });
-                        if (!game.teamCount)
-                            game.teamCount = newTeams.length;
-                        if (!game.players)
-                            game.players = newPlayers;
                     }
+
+                    game.players = allPlayers;
                     game.declaredSize = declaredSize;
-                    delete game.teams;
-                    game.teams = newTeams;
+
                     games.push(game);
                 });
                 return games;

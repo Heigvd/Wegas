@@ -14,6 +14,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.ejb.AccountFacade;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.survey.persistence.SurveyDescriptor;
@@ -96,6 +97,29 @@ public class SurveyToken extends Token {
         } else {
             return WegasMembership.FORBIDDEN;
         }
+    }
+
+    @Override
+    public Collection<WegasPermission> getRequieredUpdatePermission() {
+        Collection<WegasPermission> ps = new ArrayList<>();
+
+        GameModel gm = SurveyToken.getUniqueGameModel(surveys);
+
+        if (gm != null) {
+            ps.addAll(gm.getRequieredUpdatePermission());
+        }
+
+        AbstractAccount account = this.getAccount();
+
+        if (account != null) {
+            ps.addAll(account.getRequieredUpdatePermission());
+        }
+
+        if (ps.isEmpty()){
+            ps.addAll(WegasMembership.ADMIN);
+        }
+
+        return ps;
     }
 
     public void removeSurvey(SurveyDescriptor sd) {
