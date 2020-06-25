@@ -8,7 +8,6 @@
  */
 package com.wegas.core.rest;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.wegas.core.XlsxSpreadsheet;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
@@ -24,6 +23,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.Helper.EmailAttributes;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -471,57 +471,61 @@ public class GameController {
     }
 
     /**
-     * Invite all LIVE player to participate to a survey
+     * Invite all LIVE player to participate in a survey
      *
      * @param request
      * @param surveyIds ids of survey descriptors, comma separated list
+     * @param email structure containing the attributes recipients, sender, subject and body.
      * @return InvitationResult object
      *
      */
     @POST
-    @Path("InvitePlayersInSurvey/{surveyIds: .*}")
-    public InvitationResult inviteInSurvey(@Context HttpServletRequest request,
-        @PathParam("surveyIds") String surveyIds
+    @Path("InvitePlayersToSurvey/{surveyIds: .*}")
+    public InvitationResult invitePlayersToSurvey(@Context HttpServletRequest request,
+        @PathParam("surveyIds") String surveyIds,
+        EmailAttributes email
     ) {
-        List<AbstractAccount> accounts = gameFacade.sendSurveysInvitationToPlayers(request, surveyIds);
+        List<AbstractAccount> accounts = gameFacade.sendSurveysInvitationToPlayers(request, surveyIds, email);
         return new InvitationResult("InvitePlayersInSurvey", accounts);
     }
     
     /**
-     * Invite all LIVE player to participate to a survey anonymously
+     * Invite all LIVE player to participate in a survey anonymously
      *
      * @param request
      * @param surveyIds ids of survey descriptors, comma separated list
+     * @param email structure containing the attributes recipients, sender, subject and body.
      * @return InvitationResult object
      *
      */
     @POST
-    @Path("InvitePlayersInSurveyAnonymously/{surveyIds: .*}")
-    public InvitationResult inviteInSurveyAnonymously(@Context HttpServletRequest request,
-        @PathParam("surveyIds") String surveyIds
+    @Path("InvitePlayersToSurveyAnonymously/{surveyIds: .*}")
+    public InvitationResult invitePlayersToSurveyAnonymously(@Context HttpServletRequest request,
+        @PathParam("surveyIds") String surveyIds,
+        EmailAttributes email
     ) {
-        int num = gameFacade.sendSurveysInvitationAnonymouslyToPlayers(request, surveyIds);
+        int num = gameFacade.sendSurveysInvitationAnonymouslyToPlayers(request, surveyIds, email);
         return new InvitationResult("InvitePlayersInSurveyAnonymously", num);
     }
 
     /**
-     * Invite given email addresses to participate to a survey anonymously
+     * Invite given email addresses to participate in a survey anonymously
      *
      * @param request
      * @param surveyIds ids of survey descriptors, comma separated list
-     * @param recipients e-mail addresses
+     * @param email structure containing the attributes recipients, sender, subject and body.
      * @return InvitationResult object
      *
      */
     @POST
-    @Path("InviteInSurveyAnonymously/{surveyIds: .*}")
-    public InvitationResult inviteInSurveyAnonymously(@Context HttpServletRequest request,
+    @Path("inviteEmailsToSurveyAnonymously/{surveyIds: .*}")
+    public InvitationResult inviteEmailsToSurveyAnonymously(@Context HttpServletRequest request,
         @PathParam("surveyIds") String surveyIds,
-        List<String> recipients
+        EmailAttributes email
     ) {
-        gameFacade.sendSurveysInvitationAnonymouslyToList(surveyIds, recipients, request);
+        gameFacade.sendSurveysInvitationAnonymouslyToList(request, surveyIds, email);
         // The returned number of accounts is not necessarily true (if emails are invalid, etc)
-        return new InvitationResult("InviteInSurveyAnonymously", recipients.size());
+        return new InvitationResult("inviteToSurveyAnonymously", email.getRecipients().size());
     }
 
 }

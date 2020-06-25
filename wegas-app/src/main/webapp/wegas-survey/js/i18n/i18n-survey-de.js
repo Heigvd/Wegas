@@ -69,10 +69,6 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 scopeTitle: "Wie werden die Teilnehmer antworten:",
                 playerScopeButton: "Individuell",
                 teamScopeButton: "Teamweise",
-                inviteTitle: "Sollen die Antworten anonym oder mit den Konten der Spieler verknüpft sein?",
-                inviteLiveAnonButton: "Anonym",
-                inviteLiveLinkedButton: "Mit Konten verknüpft",
-                inviteAnonListButton: "Email-Liste",
                 progressDetailsButton: "Details",
                 teamOrPlayer: "Team/Spieler",
                 team: "Team",
@@ -85,15 +81,28 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 modifyRunning: "Diese Umfrage ist gestartet und darf jetzt nicht geändert werden.",
                 surveyCancelled: "Die Umfrage wurde storniert.",
                 surveyLaunched: "Die Umfrage wurde erfolgreich gestartet.",
-                surveyInvited: "Einladungen wurden an {{number}} Personen versandt.",
                 scenarioCreated: "Die Umfrage steht nun in diesem Szenario zur Verfügung:<br>\"{{name}}\".<br>Bitte laden Sie den Browser-Tab mit Ihren aktuellen Szenarios neu.",
                 sessionCreated: "Die Umfrage steht nun in dieser Session zur Verfügung:<br>\"{{name}}\".<br>Bitte laden Sie den Browser-Tab mit Ihren aktuellen Sessionen neu.",
+                invitePanel: {
+                    inviteTitle: "Sollen die Antworten anonym oder mit den Konten der Spieler verknüpft sein?",
+                    inviteLiveAnonButton: "Anonym",
+                    inviteLiveLinkedButton: "Mit Konten verknüpft",
+                    inviteAnonListButton: "Email-Liste",
+                    surveyInvited: "Einladungen wurden an {{number}} Personen versandt.",
+                    defaultMailBody: "Dear {{player}},\n&nbsp;\nPlease click here to participate in a survey: {{link}} \n&nbsp;\nThank you! \n&nbsp;\n",
+                    defaultMailSubject: "[Albasim Wegas] Umfrage"
+                },
                 errors: {
                     inviteNoEmails: "Derzeit haben sich keine Spieler dem Spiel angeschlossen<br>(oder sie haben keine E-Mail-Adresse registriert)",
                     nameTaken: "eine Variable in diesem Spiel hat bereits den gleichen internen Namen \"{{name}}\"",
                     noLogId: "Für diese Sitzung wurde keine \"Log-ID\" festgelegt.<br>Antworten auf die Umfrage werden nicht gespeichert!<br>Bitte kontaktieren Sie den Plattform-Administrator (AlbaSim).",
                     invalidEmail: "Ungültige E-mail-Adresse: {{email}}<br>Bitte korrigieren und erneut versuchen.",
-                    noValidEmails: "Bitte mindestens eine E-mail-Adresse eingeben."
+                    noValidEmails: "Bitte mindestens eine E-mail-Adresse eingeben.",
+                    noValidSender: "Bitte Ihren Namen (nicht Ihre E-Mail-Adresse) eingeben",
+                    noValidSubject: "Bitte geben Sie den Betreff der Nachricht ein",
+                    noValidBody: "Der Hauptteil der Nachricht darf nicht leer sein",
+                    noLinkInBody: "Der Hauptteil der Nachricht muss den Code <b>{<!anti-match>{link}}</b> enthalten. Dieser wird automatisch durch die tatsächliche URL-Adresse der Umfrage ersetzt",
+                    noPlayerInBody: "Der Hauptteil der Nachricht muss den Code <b>{<!anti-match>{player}}</b> enthalten. Dieser wird automatisch durch den Namen oder die E-Mail-Adresse des Teilnehmers ersetzt."
                 }
             }
         }

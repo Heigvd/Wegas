@@ -69,10 +69,6 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
                 scopeTitle: "Définir comment les joueurs répondent:",
                 playerScopeButton: "Individuellement",
                 teamScopeButton: "Par équipe",
-                inviteTitle: "Les réponses doivent-elles être anonymes ou liées aux comptes utilisateurs ?",
-                inviteLiveAnonButton: "Anonymes",
-                inviteLiveLinkedButton: "Liées aux comptes",
-                inviteAnonListButton: "Liste e-mail",
                 progressDetailsButton: "Détails",
                 teamOrPlayer: "Équipe/Joueur",
                 team: "Équipe",
@@ -85,15 +81,28 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
                 modifyRunning: "Ce questionnaire est en cours d'exécution et ne peut pas être modifié maintenant.",
                 surveyCancelled: "Le questionnaire a été annulé.",
                 surveyLaunched: "Le questionnaire a été lancé avec succès.",
-                surveyInvited: "Des invitations ont été envoyés à {{number}} personnes.",
                 scenarioCreated: "Ce questionnaire est à présent disponible dans le scénario<br>\"{{name}}\".<br>Veuillez rafraichir l'onglet du browser contenant vos scenarios actuels.",
                 sessionCreated: "Ce questionnaire est à présent disponible dans la partie<br>\"{{name}}\".<br>Veuillez rafraichir l'onglet du browser contenant vos parties actuelles.",
+                invitePanel: {
+                    inviteTitle: "Les réponses doivent-elles être anonymes ou liées aux comptes utilisateurs ?",
+                    inviteLiveAnonButton: "Anonymes",
+                    inviteLiveLinkedButton: "Liées aux comptes",
+                    inviteAnonListButton: "Liste e-mail",
+                    surveyInvited: "Des invitations ont été envoyés à {{number}} personnes.",
+                    defaultMailBody: "Cher/Chère {{player}},\n&nbsp;\nVeuillez cliquer ici pour participer au questionnaire : {{link}} \n&nbsp;\nMerci beaucoup ! \n&nbsp;\n",
+                    defaultMailSubject: "[Albasim Wegas] Questionnaire"
+                },
                 errors: {
                     inviteNoEmails: "Aucun joueur n'a rejoint le jeu actuellement<br>(ou alors ils n'ont pas enregistré d'adresse e-mail)",
                     nameTaken: "une variable dans ce jeu a déjà le même nom interne \"{{name}}\"",
                     noLogId: "Aucun \"Log ID\" n'a été fixé pour cette partie.<br>Les réponses au questionnaire ne seront pas sauvegardées !<br>Veuillez contacter l'administrateur de la plateforme (AlbaSim).",
                     invalidEmail: "Adresse e-mail invalide : {{email}}<br>Veuillez corriger et réessayer.",
-                    noValidEmails: "Veuillez entrer au moins une adresse e-mail."
+                    noValidEmails: "Veuillez entrer au moins une adresse e-mail.",
+                    noValidSender: "Veuillez entrer votre nom (pas votre adresse e-mail) comme expéditeur",
+                    noValidSubject: "Veuillez entrer le sujet du message",
+                    noValidBody: "Le corps du message ne peut pas être vide",
+                    noLinkInBody: "Le corps du message doit contenir le code <b>{<!anti-match>{link}}</b> qui sera automatiquement remplacé par la véritable adresse (URL) du questionnaire",
+                    noPlayerInBody: "Le corps du message doit contenir le code <b>{<!anti-match>{player}}</b> qui sera automatiquement remplacé par le véritable nom ou email du participant"
                 }
             }
 

@@ -69,10 +69,6 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 scopeTitle: "Change how players answer:",
                 playerScopeButton: "Individually",
                 teamScopeButton: "Teamwise",
-                inviteTitle: "Shall the replies be anonymous or linked to the players' accounts?",
-                inviteLiveAnonButton: "Anonymous",
-                inviteLiveLinkedButton: "Linked to account",
-                inviteAnonListButton: "Email list",
                 progressDetailsButton: "Details",
                 teamOrPlayer: "Team/Player",
                 team: "Team",
@@ -85,15 +81,28 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 modifyRunning: "This survey is running and cannot be modified now.",
                 surveyCancelled: "The survey is cancelled.",
                 surveyLaunched: "The survey has been started successfully.",
-                surveyInvited: "Invitations have been sent to {{number}} persons.",
                 scenarioCreated: "This survey is now available for sharing in game scenario<br>\"{{name}}\".<br>Please refresh the browser tab containing your current scenarios.",
                 sessionCreated: "This survey is now available for sharing in game session<br>\"{{name}}\".<br>Please refresh the browser tab containing your current sessions.",
+                invitePanel: {
+                    inviteTitle: "Shall the replies be anonymous or linked to the players' accounts?",
+                    inviteLiveAnonButton: "Anonymous",
+                    inviteLiveLinkedButton: "Linked to account",
+                    inviteAnonListButton: "Email list",
+                    surveyInvited: "Invitations have been sent to {{number}} persons.",
+                    defaultMailBody: "Dear {{player}},\n&nbsp;\nPlease click here to participate in a survey: {{link}} \n&nbsp;\nThank you! \n&nbsp;\n",
+                    defaultMailSubject: "[Albasim Wegas] Survey"
+                },
                 errors: {
                     inviteNoEmails: "Currently no players have joined the game<br>(or they have no registered email address)",
                     nameTaken: "a variable in this game already has the same internal name \"{{name}}\"",
                     noLogId: "No \"Log ID\" has been set for this session.<br>Replies to the survey will not be saved!<br>Please contact the platform administrator (AlbaSim).",
                     invalidEmail: "Invalid email address: {{email}}<br>Please correct and try again.",
-                    noValidEmails: "Please enter at least one email address."
+                    noValidEmails: "Please enter at least one recipient email address.",
+                    noValidSender: "Please enter your name (not your email address)",
+                    noValidSubject: "Please enter the subject of the message",
+                    noValidBody: "The body of the message cannot be empty",
+                    noLinkInBody: "The body of the message must contain the code <b>{<!anti-match>{link}}</b> which will automatically be replaced by the real URL address of the survey",
+                    noPlayerInBody: "The body of the message must contain the code <b>{<!anti-match>{player}}</b> which will automatically be replaced by the real name or email of the participant"
                 }
             }
         }
