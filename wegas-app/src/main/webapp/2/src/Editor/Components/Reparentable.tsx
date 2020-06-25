@@ -78,7 +78,9 @@ export function Reparentable({
       node.className = innerClassName ? innerClassName : '';
       container.appendChild(node);
       return () => {
-        container.removeChild(node);
+        if (node.parentNode === container) {
+          container.removeChild(node);
+        }
       };
     }
   }, [n, node, innerClassName]);
