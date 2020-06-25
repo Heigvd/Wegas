@@ -9,7 +9,7 @@ import { wlog } from '../../../Helper/wegaslog';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 import { schemaProps } from './schemaProps';
-import { InfoBeamProps } from './InfoBeam';
+import { InfoBeamProps } from './InfoBullet';
 import { flexlayoutChoices } from '../../Layouts/FlexList';
 import { absolutelayoutChoices } from '../../Layouts/Absolute';
 import { ContainerTypes } from './EditableComponent';
@@ -59,9 +59,20 @@ export interface WegasComponentOptionsActions {
   printVariable?: PrintVariableAction & WegasComponentOptionsAction;
 }
 
+export const defaultWegasComponentOptionsActions: WegasComponentOptionsActions = {
+  impactVariable: undefined,
+  localScriptEval: undefined,
+  openFile: undefined,
+  openPage: undefined,
+  openPopupPage: undefined,
+  openUrl: undefined,
+  playSound: undefined,
+  printVariable: undefined,
+};
+
 export interface WegasComponentActionsProperties {
   confirmClick?: string;
-  lock?: string;
+  // lock?: string;
 }
 
 export interface WegasComponentActions {
@@ -225,13 +236,15 @@ const actionsChoices: HashListChoices = [
 ];
 
 // OPTIONS -> UPGRADES
-export interface WegasComponentUpgrades {
+export interface WegasComponentExtra {
   tooltip?: string;
   infoBeam?: InfoBeamProps;
   unreadCount?: IScript;
   disableIf?: IScript;
-  showIf?: IScript;
+  hideIf?: IScript;
+  readonlyIf?: IScript;
   themeMode?: string;
+  lock?: string;
 }
 
 const upgradeChoices: HashListChoices = [

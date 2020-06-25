@@ -13,7 +13,7 @@ import { flex } from '../../../css/classes';
 import { FlexItem, FlexListProps } from '../../Layouts/FlexList';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import { useDebounce } from '../../Hooks/useDebounce';
-import { omit } from 'lodash-es';
+import { omit, pick } from 'lodash-es';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { FonkyFlexContent, FonkyFlexSplitter } from '../../Layouts/FonkyFlex';
 import {
@@ -25,15 +25,18 @@ import {
 import {
   WegasComponentOptionsActions,
   WegasComponentActionsProperties,
-  WegasComponentUpgrades,
+  WegasComponentExtra,
+  defaultWegasComponentOptionsActions,
+  WegasComponentOptionsAction,
+  wegasComponentActions,
 } from './options';
 import { AbsoluteItem } from '../../Layouts/Absolute';
-import { InfoBeam } from './InfoBeam';
+import { InfoBeam } from './InfoBullet';
 import { EditHandle } from './EditHandle';
 import { schemaProps } from './schemaProps';
 import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
-import { UpgradesState, ComponentUpgradesManager } from './UpgradesComponent';
-import { ActionsState, ComponentActionsManager } from './ActionsComponent';
+import { OptionsState, ComponentOptionsManager } from './OptionsComponent';
+// import { ActionsState, ComponentActionsManager } from './ActionsComponent';
 import {
   PlayerLinearLayoutProps,
   PlayerLinearLayoutChildrenProps,
@@ -395,6 +398,12 @@ export interface PageComponentProps extends EmptyPageComponentProps {
   last?: boolean;
 }
 
+export type WegasComponentOptions = WegasComponentOptionsActions &
+  WegasComponentActionsProperties &
+  WegasComponentExtra & {
+    [options: string]: unknown;
+  };
+
 /**
  * WegasComponentProps - Required props for a Wegas component
  */
@@ -408,11 +417,12 @@ export interface WegasComponentProps
   /**
    * options - Various options that can be defined on every component of a page
    */
-  options?: {
-    actions?: WegasComponentOptionsActions & WegasComponentActionsProperties;
-    upgrades?: WegasComponentUpgrades;
-    [options: string]: unknown;
-  };
+  options?: WegasComponentOptions;
+  // extra?: {
+  //   actions?: WegasComponentOptionsActions & WegasComponentActionsProperties;
+  //   upgrades?: WegasComponentUpgrades;
+  //   [options: string]: unknown;
+  // };
 }
 
 /**
@@ -450,13 +460,13 @@ export interface ExtractedLayoutProps {
   linearChildrenProps?: PlayerLinearLayoutChildrenProps;
 }
 
-const defaultUpgradesState: UpgradesState = {
-  disabled: false,
-  show: true,
-};
-const defaultActionsState: ActionsState = {
-  locked: false,
-};
+// const defaultUpgradesState: ExtraState = {
+//   disabled: false,
+//   hidden: false,
+// };
+// const defaultActionsState: ActionsState = {
+//   locked: false,
+// };
 
 type ComponentContainerProps = WegasComponentProps & ExtractedLayoutProps;
 
@@ -469,7 +479,7 @@ export function ComponentContainer({
   containerType,
   last,
   name,
-  options,
+  options: options,
   layout,
   vertical,
   linearChildrenProps,
@@ -481,15 +491,13 @@ export function ComponentContainer({
   const mouseOver = React.useRef<boolean>(false);
   const [dragHoverState, setDragHoverState] = React.useState<boolean>(false);
   const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
-  const [upgradesState, setUpgradesState] = React.useState<UpgradesState>(
-    defaultUpgradesState,
-  );
-  const [actionsState, setActionsState] = React.useState<ActionsState>(
-    defaultActionsState,
-  );
-  const upgrades =
-    options?.upgrades == null ? defaultUpgradesState : upgradesState;
-  const actions = options?.actions == null ? defaultActionsState : actionsState;
+  const [extraState, setExtraState] = React.useState<OptionsState>({});
+  // const [actionsState, setActionsState] = React.useState<ActionsState>(
+  //   defaultActionsState,
+  // );
+  // const upgrades =
+  //   options?.upgrades == null ? defaultUpgradesState : upgradesState;
+  // const actions = options?.actions == null ? defaultActionsState : actionsState;
   const { noSplitter, noResize } = linearChildrenProps || {};
 
   const {
@@ -507,7 +515,7 @@ export function ComponentContainer({
   const itemPath = containerPath.pop();
   const isNotFirstComponent = path.length > 0;
   const editable = editMode && isNotFirstComponent;
-  const showComponent = editable || upgrades.show;
+  const showComponent = editable || !extraState.hidden;
   const showLayout = showBorders && containerType != null;
   const computedVertical =
     containerType === 'FLEX'
@@ -519,7 +527,7 @@ export function ComponentContainer({
   const showSplitter =
     childrenType === 'LINEAR' && !last && (editMode || !noSplitter);
   const allowResize = childrenType === 'LINEAR' && (editMode || !noResize);
-  const isDisabled = (actions.locked || upgrades.disabled) === true;
+  // const isDisabled = (actions.locked || upgrades.disabled) === true;
   const isSelected = JSON.stringify(path) === JSON.stringify(editedPath);
   const isFocused = usePagesStateStore(
     isComponentFocused(editMode, pageId, path),
@@ -537,11 +545,38 @@ export function ComponentContainer({
     }
   }, [childrenType]);
 
+  // const onClick = React.useCallback(() => {
+  //   if (!isDisabled && actions.onClick != null) {
+  //     actions.onClick();
+  //   }
+  // }, [isDisabled, actions]);
+
   const onClick = React.useCallback(() => {
-    if (!isDisabled && actions.onClick != null) {
-      actions.onClick();
+    if (
+      options != null &&
+      (!options.confirmClick ||
+        // TODO : Find a better way to do that than a modal!!!
+        // eslint-disable-next-line no-alert
+        confirm(options.confirmClick))
+    ) {
+      Object.entries(
+        pick(
+          options,
+          Object.keys(defaultWegasComponentOptionsActions),
+        ) as WegasComponentOptionsActions,
+      )
+        .sort(
+          (
+            [, v1]: [string, WegasComponentOptionsAction],
+            [, v2]: [string, WegasComponentOptionsAction],
+          ) =>
+            (v1.priority ? v1.priority : 0) - (v2.priority ? v2.priority : 0),
+        )
+        .forEach(([k, v]) =>
+          wegasComponentActions[k as keyof WegasComponentOptionsActions](v),
+        );
     }
-  }, [isDisabled, actions]);
+  }, [options]);
 
   const onMouseOver = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -615,17 +650,17 @@ export function ComponentContainer({
   return (
     <>
       {options?.upgrades != null && (
-        <ComponentUpgradesManager
-          upgrades={options.upgrades}
-          setUpgradesState={setUpgradesState}
+        <ComponentOptionsManager
+          options={options}
+          setUpgradesState={setExtraState}
         />
       )}
-      {options?.actions != null && (
+      {/* {options?.actions != null && (
         <ComponentActionsManager
           actions={options.actions}
           setActionsState={setActionsState}
         />
-      )}
+      )} */}
       <Container
         ref={ref => {
           // dropZone(ref);
@@ -635,25 +670,26 @@ export function ComponentContainer({
         }}
         {...omit(options, ['actions', 'upgrades'])}
         className={
-          cx(handleControlStyle, flex, upgradesState.themeModeClassName, {
+          cx(handleControlStyle, flex, extraState.themeModeClassName, {
             [layoutHighlightStyle]: showLayout,
             [childHighlightStyle]: showLayout,
             [handleControlHoverStyle]: editMode,
             [focusedComponentStyle]: isFocused || isSelected,
             [childDropzoneHorizontalStyle]: !computedVertical,
             [childDropzoneVerticalStyle]: computedVertical,
-            [disabledStyle]: isDisabled,
+            [disabledStyle]: extraState.disabled,
           }) + classNameOrEmpty(className)
         }
         style={{
-          cursor: options?.actions && !isDisabled ? 'pointer' : 'initial',
+          cursor:
+            options?.actions && !extraState.disabled ? 'pointer' : 'initial',
           ...style,
         }}
         onClick={onClick}
         onMouseOver={onMouseOver}
         onMouseLeave={onMouseLeave}
         {...dropFunctions}
-        tooltip={upgrades.tooltip}
+        tooltip={extraState.tooltip}
       >
         {dragHoverState && editable && containerType === 'ABSOLUTE' && (
           <ComponentDropZone
@@ -678,7 +714,7 @@ export function ComponentContainer({
             componentType={componentType}
             path={path}
             infoMessage={
-              options?.upgrades?.showIf != null && upgrades.show === false
+              extraState.hidden
                 ? 'This component is shown only in edit mode'
                 : undefined
             }
@@ -686,7 +722,9 @@ export function ComponentContainer({
           />
         )}
         {showComponent && <ErrorBoundary>{children}</ErrorBoundary>}
-        {upgrades.infoBeamProps && <InfoBeam {...upgrades.infoBeamProps} />}
+        {extraState.infoBulletProps && (
+          <InfoBeam {...extraState.infoBulletProps} />
+        )}
         {dragHoverState && editable && childrenType !== 'ABSOLUTE' && (
           <ComponentDropZone
             onDrop={dndComponent =>
@@ -700,7 +738,9 @@ export function ComponentContainer({
             dropPosition="AFTER"
           />
         )}
-        <LockedOverlay locked={isDisabled} />
+        <LockedOverlay
+          locked={(extraState.disabled || extraState.locked) === true}
+        />
       </Container>
       {showSplitter && <FonkyFlexSplitter notDraggable={!allowResize} />}
     </>

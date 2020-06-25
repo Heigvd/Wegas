@@ -1,40 +1,49 @@
 import * as React from 'react';
 import { useScript } from '../../Hooks/useScript';
-import { WegasComponentUpgrades, useComputeUnreadCount } from './options';
-import { InfoBeamProps } from './InfoBeam';
+import { useComputeUnreadCount } from './options';
+import { InfoBeamProps } from './InfoBullet';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { themeCTX } from '../../Style/Theme';
+import { WegasComponentOptions } from './EditableComponent';
+import { useStore } from '../../../data/store';
 
-export interface UpgradesState {
+export interface OptionsState {
   disabled?: boolean;
-  show?: boolean;
-  infoBeamProps?: InfoBeamProps;
+  hidden?: boolean;
+  readOnly?: boolean;
+  locked?: boolean;
+  infoBulletProps?: InfoBeamProps;
   tooltip?: string;
   themeModeClassName?: string;
 }
 
-interface ComponentUpgradesManagerProps {
-  upgrades: WegasComponentUpgrades;
+interface ComponentOptionsManagerProps {
+  options: WegasComponentOptions;
   setUpgradesState: (
-    newState: (oldState: UpgradesState) => UpgradesState,
+    newState: (oldState: OptionsState) => OptionsState,
   ) => void;
 }
 
-export function ComponentUpgradesManager({
-  upgrades,
+export function ComponentOptionsManager({
+  options,
   setUpgradesState,
-}: ComponentUpgradesManagerProps) {
+}: ComponentOptionsManagerProps) {
   const {
     tooltip,
     disableIf,
-    showIf,
+    readonlyIf,
+    hideIf,
     unreadCount,
     infoBeam,
     themeMode,
-  } = upgrades;
+    lock,
+  } = options;
 
-  const disabled = useScript<boolean>(disableIf?.content || 'false');
-  const show = useScript<boolean>(showIf?.content || 'true;');
+  const disabled = useScript<boolean>(disableIf?.content || 'undefined;');
+  const hidden = useScript<boolean>(hideIf?.content || 'undefined;');
+  const readOnly = useScript<boolean>(readonlyIf?.content || 'undefined;');
+  const locked = useStore(s => lock != null && s.global.locks[lock] === true);
+
   const infoBeamProps = useComputeUnreadCount(unreadCount) || infoBeam;
 
   const { themesState, currentContext } = React.useContext(themeCTX);
@@ -44,10 +53,12 @@ export function ComponentUpgradesManager({
       : themesState.themes[themesState.selectedThemes[currentContext]]
           .modeClasses[themeMode];
 
-  const newUpgrades: UpgradesState = {
+  const newUpgrades: OptionsState = {
     disabled,
-    show,
-    infoBeamProps,
+    hidden,
+    readOnly,
+    locked,
+    infoBulletProps: infoBeamProps,
     tooltip,
     themeModeClassName,
   };
