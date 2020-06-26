@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useScript } from '../../Hooks/useScript';
 import { useComputeUnreadCount } from './options';
-import { InfoBeamProps } from './InfoBullet';
+import { InfoBulletProps } from './InfoBullet';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { themeCTX } from '../../Style/Theme';
 import { WegasComponentOptions } from './EditableComponent';
@@ -12,7 +12,7 @@ export interface OptionsState {
   hidden?: boolean;
   readOnly?: boolean;
   locked?: boolean;
-  infoBulletProps?: InfoBeamProps;
+  infoBulletProps?: InfoBulletProps;
   tooltip?: string;
   themeModeClassName?: string;
 }
@@ -31,20 +31,20 @@ export function ComponentOptionsManager({
   const {
     tooltip,
     disableIf,
-    readonlyIf,
+    readOnlyIf,
     hideIf,
     unreadCount,
-    infoBeam,
+    infoBullet,
     themeMode,
     lock,
   } = options;
 
   const disabled = useScript<boolean>(disableIf?.content || 'undefined;');
   const hidden = useScript<boolean>(hideIf?.content || 'undefined;');
-  const readOnly = useScript<boolean>(readonlyIf?.content || 'undefined;');
+  const readOnly = useScript<boolean>(readOnlyIf?.content || 'undefined;');
   const locked = useStore(s => lock != null && s.global.locks[lock] === true);
 
-  const infoBeamProps = useComputeUnreadCount(unreadCount) || infoBeam;
+  const infoBulletProps = useComputeUnreadCount(unreadCount) || infoBullet;
 
   const { themesState, currentContext } = React.useContext(themeCTX);
   const themeModeClassName =
@@ -58,7 +58,7 @@ export function ComponentOptionsManager({
     hidden,
     readOnly,
     locked,
-    infoBulletProps: infoBeamProps,
+    infoBulletProps,
     tooltip,
     themeModeClassName,
   };

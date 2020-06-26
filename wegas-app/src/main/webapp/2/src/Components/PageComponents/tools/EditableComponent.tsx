@@ -10,10 +10,14 @@ import {
   pageEditorCTX,
 } from '../../../Editor/Components/Page/PageEditor';
 import { flex } from '../../../css/classes';
-import { FlexItem, FlexListProps } from '../../Layouts/FlexList';
+import {
+  FlexItem,
+  FlexListProps,
+  defaultFlexLayoutOptionsKeys,
+} from '../../Layouts/FlexList';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import { useDebounce } from '../../Hooks/useDebounce';
-import { omit, pick } from 'lodash-es';
+import { pick } from 'lodash-es';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { FonkyFlexContent, FonkyFlexSplitter } from '../../Layouts/FonkyFlex';
 import {
@@ -30,10 +34,12 @@ import {
   WegasComponentOptionsAction,
   wegasComponentActions,
 } from './options';
-import { AbsoluteItem } from '../../Layouts/Absolute';
-import { InfoBeam } from './InfoBullet';
+import {
+  AbsoluteItem,
+  defaultAbsoluteLayoutPropsKeys,
+} from '../../Layouts/Absolute';
+import { InfoBullet } from './InfoBullet';
 import { EditHandle } from './EditHandle';
-import { schemaProps } from './schemaProps';
 import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
 import { OptionsState, ComponentOptionsManager } from './OptionsComponent';
 // import { ActionsState, ComponentActionsManager } from './ActionsComponent';
@@ -409,46 +415,22 @@ export type WegasComponentOptions = WegasComponentOptionsActions &
  */
 export interface WegasComponentProps
   extends React.PropsWithChildren<ClassAndStyle>,
-    PageComponentProps {
-  /**
-   * name - The name of the component in the page
-   */
-  name?: string;
+    PageComponentProps,
+    WegasComponentOptions {
+  // /**
+  //  * name - The name of the component in the page
+  //  */
+  // name?: string;
   /**
    * options - Various options that can be defined on every component of a page
    */
-  options?: WegasComponentOptions;
+  // options?: WegasComponentOptions;
   // extra?: {
   //   actions?: WegasComponentOptionsActions & WegasComponentActionsProperties;
   //   upgrades?: WegasComponentUpgrades;
   //   [options: string]: unknown;
   // };
 }
-
-/**
- * wegasComponentCommonSchema - defines the minimum schema for every WegasComponent
- */
-export const wegasComponentCommonSchema = {
-  name: schemaProps.string('Name', false, undefined, undefined, -1),
-  className: schemaProps.string(
-    'Classes',
-    false,
-    undefined,
-    undefined,
-    1001,
-    undefined,
-    true,
-  ),
-  style: schemaProps.hashlist(
-    'Style',
-    false,
-    undefined,
-    undefined,
-    undefined,
-    1002,
-  ),
-  children: schemaProps.hidden(false, 'array', 1003),
-};
 
 /**
  * ExtractedLayoutProps - Extracted props from currently layout containers
@@ -479,13 +461,14 @@ export function ComponentContainer({
   containerType,
   last,
   name,
-  options: options,
+  // options,
   layout,
   vertical,
   linearChildrenProps,
   className,
   style = {},
   children,
+  ...options
 }: ComponentContainerProps) {
   const container = React.useRef<HTMLDivElement>();
   const mouseOver = React.useRef<boolean>(false);
@@ -649,18 +632,12 @@ export function ComponentContainer({
 
   return (
     <>
-      {options?.upgrades != null && (
+      {Object.keys(options).length > 0 && (
         <ComponentOptionsManager
           options={options}
           setUpgradesState={setExtraState}
         />
       )}
-      {/* {options?.actions != null && (
-        <ComponentActionsManager
-          actions={options.actions}
-          setActionsState={setActionsState}
-        />
-      )} */}
       <Container
         ref={ref => {
           // dropZone(ref);
@@ -668,7 +645,14 @@ export function ComponentContainer({
             container.current = ref;
           }
         }}
-        {...omit(options, ['actions', 'upgrades'])}
+        {...pick(
+          options,
+          childrenType === 'FLEX'
+            ? defaultFlexLayoutOptionsKeys
+            : childrenType === 'ABSOLUTE'
+            ? defaultAbsoluteLayoutPropsKeys
+            : [],
+        )}
         className={
           cx(handleControlStyle, flex, extraState.themeModeClassName, {
             [layoutHighlightStyle]: showLayout,
@@ -723,7 +707,7 @@ export function ComponentContainer({
         )}
         {showComponent && <ErrorBoundary>{children}</ErrorBoundary>}
         {extraState.infoBulletProps && (
-          <InfoBeam {...extraState.infoBulletProps} />
+          <InfoBullet {...extraState.infoBulletProps} />
         )}
         {dragHoverState && editable && childrenType !== 'ABSOLUTE' && (
           <ComponentDropZone

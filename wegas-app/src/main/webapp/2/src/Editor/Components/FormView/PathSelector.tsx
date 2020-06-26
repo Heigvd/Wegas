@@ -9,14 +9,14 @@ import {
 } from '../FileBrowser/FileBrowser';
 import { generateAbsolutePath } from '../../../API/files.api';
 
-interface FileSelectProps extends WidgetProps.BaseProps {
+interface PathSelectProps extends WidgetProps.BaseProps {
   view: CommonView &
     LabeledView & { pick: FilePickingType; filter?: FileFilter };
-  value?: IAbstractContentDescriptor;
-  onChange: (code: IAbstractContentDescriptor) => void;
+  value?: string;
+  onChange: (code: string) => void;
 }
 
-export default function FileSelector(props: FileSelectProps) {
+export default function PathSelector(props: PathSelectProps) {
   const { errorMessage, view, value, onChange } = props;
   return (
     <CommonViewContainer view={view} errorMessage={errorMessage}>
@@ -27,10 +27,8 @@ export default function FileSelector(props: FileSelectProps) {
             <FileBrowser
               id={inputId}
               filter={view.filter}
-              selectedGlobalPaths={
-                value ? [generateAbsolutePath(value)] : undefined
-              }
-              onFileClick={onChange}
+              selectedGlobalPaths={value ? [value] : undefined}
+              onFileClick={file => onChange(generateAbsolutePath(file))}
               pick={view.pick}
             />
           </>

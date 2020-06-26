@@ -30,6 +30,7 @@ import PageLoaderSelect from './PageLoaderSelect';
 import FileSelector from './FileSelector';
 import { CustomScript } from './CustomScript';
 import ThemeModeSelect from './ThemeModeSelect';
+import PathSelector from './PathSelector';
 
 export const DEFINED_VIEWS = {
   hidden,
@@ -62,6 +63,7 @@ export const DEFINED_VIEWS = {
   treeselect: TreeVSelect,
   thememodeselect: ThemeModeSelect,
   file: FileSelector,
+  path: PathSelector,
 };
 setDefaultWidgets(DEFINED_VIEWS);
 

@@ -26,7 +26,7 @@ export const flexBasisValues = [
 ] as const;
 type FlexBasis = typeof flexBasisValues[number] | string;
 
-export interface FlexItemFlexProps {
+export interface FlexItemLayoutProps {
   /**
    * order - the order of the current item
    */
@@ -49,6 +49,17 @@ export interface FlexItemFlexProps {
    */
   flexBasis?: FlexBasis;
 }
+
+export const defaultFlexLayoutOptions: FlexItemLayoutProps = {
+  alignSelf: undefined,
+  flexBasis: undefined,
+  flexGrow: undefined,
+  flexShrink: undefined,
+  order: undefined,
+};
+export const defaultFlexLayoutOptionsKeys = Object.keys(
+  defaultFlexLayoutOptions,
+);
 
 export const flexlayoutChoices: HashListChoices = [
   {
@@ -88,11 +99,9 @@ export const flexlayoutChoices: HashListChoices = [
   },
 ];
 
-export interface FlexItemProps extends WegasComponentItemProps {
-  /**
-   * layout : props relative to the flex environement
-   */
-  layout?: FlexItemFlexProps;
+export interface FlexItemProps
+  extends WegasComponentItemProps,
+    FlexItemLayoutProps {
   /**
    * onMouseOut - triggers when the mouse is not more over the element
    */
@@ -106,7 +115,6 @@ export interface FlexItemProps extends WegasComponentItemProps {
 export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
   (
     {
-      layout = {},
       onClick,
       onMouseOver,
       onMouseOut,
@@ -119,6 +127,7 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
       style = {},
       tooltip,
       children,
+      ...layout
     },
     ref,
   ) => (

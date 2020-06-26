@@ -20,7 +20,7 @@ const blinkStyle = css(`
     animation: ${blinkAnimation} 1.0s linear infinite;
   `);
 
-export interface InfoBeamProps {
+export interface InfoBulletProps {
   /**
    * showScript - the condition that determines if the info beam must be visible or not
    */
@@ -35,11 +35,11 @@ export interface InfoBeamProps {
   messageScript?: IScript;
 }
 
-export function InfoBeam({
+export function InfoBullet({
   showScript,
   blinkScript,
   messageScript,
-}: InfoBeamProps) {
+}: InfoBulletProps) {
   const show = useScript<boolean>(showScript?.content || 'true');
   const blink = useScript<boolean>(blinkScript?.content || 'false');
   const message = useScript<string>(messageScript?.content || '');
