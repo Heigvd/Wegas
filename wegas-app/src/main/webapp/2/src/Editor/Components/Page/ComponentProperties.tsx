@@ -8,10 +8,40 @@ import { BaseView, Schema } from 'jsoninput/typings/types';
 import { MessageString } from '../MessageString';
 import { pageEditorCTX, pageCTX } from './PageEditor';
 import { findComponent } from '../../../Helper/pages';
-import { wegasComponentOptionsSchema } from '../../../Components/PageComponents/tools/options';
-import { wegasComponentCommonSchema } from '../../../Components/PageComponents/tools/EditableComponent';
+import {
+  wegasComponentExtraSchema,
+  WegasComponentLayoutCommonOptions,
+  WegasComponentLayoutConditionnalOptions,
+  WegasComponentOptionsActions,
+  WegasComponentActionsProperties,
+  WegasComponentDecorations,
+} from '../../../Components/PageComponents/tools/options';
+import {
+  schemaProps,
+  SimpleSchemaPropsSchemas,
+  SchemaPropsSchemas,
+} from '../../../Components/PageComponents/tools/schemaProps';
+import {
+  FlexItemLayoutProps,
+  defaultFlexLayoutOptionsKeys,
+} from '../../../Components/Layouts/FlexList';
+import {
+  AbsoluteItemLayoutProps,
+  defaultAbsoluteLayoutPropsKeys,
+} from '../../../Components/Layouts/Absolute';
+import { pick, omit } from 'lodash-es';
+import { ContainerTypes } from '../../../Components/PageComponents/tools/EditableComponent';
 
-interface EditorProps<T = WegasComponent['props']> {
+/**
+ * wegasComponentCommonSchema - defines the minimum schema for every WegasComponent
+ */
+export const wegasComponentCommonSchema = {
+  name: schemaProps.string('Name', false, undefined, undefined, -1),
+  className: schemaProps.string('Classes', false, undefined, 'ADVANCED'),
+  children: schemaProps.hidden(false, 'array', 1003),
+};
+
+interface EditorProps<T = WegasComponentForm> {
   entity: T;
   schema: Schema<BaseView>;
   update?: (variable: T) => void;
@@ -63,6 +93,136 @@ const AsyncComponentForm = asyncSFC<EditorProps>(
   ),
 );
 
+interface WegasComponentCommonProperties {
+  name?: string;
+  className?: string;
+  children?: WegasComponent[];
+}
+
+const defaultCommonProperties: WegasComponentCommonProperties = {
+  name: undefined,
+  children: undefined,
+  className: undefined,
+};
+const defaultCommonPropertiesKeys = Object.keys(defaultCommonProperties);
+
+const defaultLayoutCommonOptions: WegasComponentLayoutCommonOptions = {
+  style: undefined,
+  themeMode: undefined,
+  tooltip: undefined,
+};
+const defaultLayoutCommonOptionsKeys = Object.keys(defaultLayoutCommonOptions);
+const defaultLayoutOptionsKeys = [
+  ...defaultFlexLayoutOptionsKeys,
+  ...defaultAbsoluteLayoutPropsKeys,
+  ...defaultLayoutCommonOptionsKeys,
+];
+
+const defaultLayoutConditions: WegasComponentLayoutConditionnalOptions = {
+  disableIf: undefined,
+  hideIf: undefined,
+  lock: undefined,
+  readOnlyIf: undefined,
+};
+const defaultLayoutConditionsKeys = Object.keys(defaultLayoutConditions);
+
+const defaultAction: WegasComponentOptionsActions &
+  WegasComponentActionsProperties = {
+  confirmClick: undefined,
+  impactVariable: undefined,
+  localScriptEval: undefined,
+  openFile: undefined,
+  openPage: undefined,
+  openPopupPage: undefined,
+  openUrl: undefined,
+  playSound: undefined,
+  printVariable: undefined,
+};
+const defaultActionKeys = Object.keys(defaultAction);
+
+const defaultDecorations: WegasComponentDecorations = {
+  infoBullet: undefined,
+  unreadCount: undefined,
+};
+const defaultDecorationsKeys = Object.keys(defaultDecorations);
+
+interface WegasComponentForm {
+  commonProperties: WegasComponentCommonProperties;
+  componentProperties: {
+    [prop: string]: unknown;
+  };
+  layoutOptions: WegasComponentLayoutCommonOptions &
+    (FlexItemLayoutProps | AbsoluteItemLayoutProps);
+  layoutConditions: WegasComponentLayoutConditionnalOptions;
+  actions: WegasComponentOptionsActions & WegasComponentActionsProperties;
+  decorations: WegasComponentDecorations;
+}
+
+function wegasComponentToForm(
+  wegasComponentProperties: WegasComponent['props'],
+): WegasComponentForm {
+  return {
+    commonProperties: pick(
+      wegasComponentProperties,
+      defaultCommonPropertiesKeys,
+    ),
+    componentProperties: omit(wegasComponentProperties, [
+      ...defaultCommonPropertiesKeys,
+      ...defaultLayoutOptionsKeys,
+      ...defaultLayoutConditionsKeys,
+      ...defaultActionKeys,
+      ...defaultDecorationsKeys,
+    ]),
+    layoutOptions: pick(wegasComponentProperties, defaultLayoutOptionsKeys),
+    layoutConditions: pick(
+      wegasComponentProperties,
+      defaultLayoutConditionsKeys,
+    ),
+    actions: pick(wegasComponentProperties, defaultActionKeys),
+    decorations: pick(wegasComponentProperties, defaultDecorationsKeys),
+  };
+}
+
+function formToWegasComponent(
+  formObject: WegasComponentForm,
+): WegasComponent['props'] {
+  return {
+    ...formObject.commonProperties,
+    ...formObject.componentProperties,
+    ...formObject.layoutOptions,
+    ...formObject.layoutConditions,
+    ...formObject.actions,
+    ...formObject.decorations,
+  };
+}
+
+function wegasComponentSchema(
+  pageComponentSchema: {
+    description: string;
+    properties: {
+      [prop: string]: SchemaPropsSchemas;
+    };
+  },
+  parentContainerType: ContainerTypes,
+) {
+  return {
+    description: pageComponentSchema.description,
+    properties: {
+      commonProperties: schemaProps.object(
+        'Common properties',
+        wegasComponentCommonSchema,
+      ),
+      componentProperties: schemaProps.object(
+        'Component properties',
+        (pageComponentSchema.properties || {}) as {
+          [key: string]: SimpleSchemaPropsSchemas;
+        },
+      ),
+      ...wegasComponentExtraSchema(parentContainerType),
+    },
+  };
+}
+
 export interface ComponentPropertiesProps {
   entity?: WegasComponent;
   parent?: WegasComponent;
@@ -82,25 +242,21 @@ export function ComponentProperties({
         ? s[entity.type].schema
         : { description: 'Unknown schema', properties: {} };
 
-    return {
-      ...baseSchema,
-      properties: {
-        ...baseSchema.properties,
-        ...wegasComponentCommonSchema,
-        ...wegasComponentOptionsSchema(
-          parent ? s[parent.type].containerType : undefined,
-        ),
-      },
-    } as Schema<BaseView>;
+    return wegasComponentSchema(
+      baseSchema,
+      parent ? s[parent.type].containerType : undefined,
+    ) as Schema<BaseView>;
   }, deepDifferent);
   if (entity === undefined || schema === undefined) {
     return null;
   }
   return (
     <AsyncComponentForm
-      entity={entity.props}
+      entity={wegasComponentToForm(entity.props)}
       schema={schema}
-      update={value => update && update({ ...entity, props: value })}
+      update={value =>
+        update && update({ ...entity, props: formToWegasComponent(value) })
+      }
       actions={actions}
     />
   );
