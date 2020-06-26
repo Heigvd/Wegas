@@ -84,12 +84,19 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
                 scenarioCreated: "Ce questionnaire est à présent disponible dans le scénario<br>\"{{name}}\".<br>Veuillez rafraichir l'onglet du browser contenant vos scenarios actuels.",
                 sessionCreated: "Ce questionnaire est à présent disponible dans la partie<br>\"{{name}}\".<br>Veuillez rafraichir l'onglet du browser contenant vos parties actuelles.",
                 invitePanel: {
+                    invitePanelTitle: "Inviter à",
+                    currentPlayers: "Nombre actuel de joueurs enregistrés",
                     inviteTitle: "Les réponses doivent-elles être anonymes ou liées aux comptes utilisateurs ?",
                     inviteLiveAnonButton: "Anonymes",
                     inviteLiveLinkedButton: "Liées aux comptes",
                     inviteAnonListButton: "Liste e-mail",
+                    senderName: "Votre nom",
+                    recipients: "Adresses des destinataires",
+                    recipientsPlaceholder: "Entrer les adresses des gens qui n'ont pas rejoint la simulation sur Wegas. Les adresses e-mail peuvent être séparées par des virgules, des points-virgules ou des espaces.",
+                    subject: "Sujet",
+                    body: "Message",
                     surveyInvited: "Des invitations ont été envoyés à {{number}} personnes.",
-                    defaultMailBody: "Cher/Chère {{player}},\n&nbsp;\nVeuillez cliquer ici pour participer au questionnaire : {{link}} \n&nbsp;\nMerci beaucoup ! \n&nbsp;\n",
+                    defaultMailBody: "Bonjour {\\{player}\\},<br>En tant que participant-e à la simulation logicielle \"{{game}}\", vous êtes cordialement invité-e à répondre à un sondage en ligne.<br>Veuillez cliquer ici pour commencer : {\\{link}\\} <br>Merci beaucoup !",
                     defaultMailSubject: "[Albasim Wegas] Questionnaire"
                 },
                 errors: {
@@ -101,8 +108,8 @@ YUI.add("wegas-i18n-survey-fr", function(Y) {
                     noValidSender: "Veuillez entrer votre nom (pas votre adresse e-mail) comme expéditeur",
                     noValidSubject: "Veuillez entrer le sujet du message",
                     noValidBody: "Le corps du message ne peut pas être vide",
-                    noLinkInBody: "Le corps du message doit contenir le code <b>{<!anti-match>{link}}</b> qui sera automatiquement remplacé par la véritable adresse (URL) du questionnaire",
-                    noPlayerInBody: "Le corps du message doit contenir le code <b>{<!anti-match>{player}}</b> qui sera automatiquement remplacé par le véritable nom ou email du participant"
+                    noLinkInBody: "Le corps du message doit contenir le code <b>{\\{link}\\}</b> qui sera automatiquement remplacé par la véritable adresse (URL) du questionnaire",
+                    noPlayerInBody: "Le corps du message doit contenir le code <b>{\\{player}\\}</b> qui sera automatiquement remplacé par le véritable nom ou email du participant"
                 }
             }
 

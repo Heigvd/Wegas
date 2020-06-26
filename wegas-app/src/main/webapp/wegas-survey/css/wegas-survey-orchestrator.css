@@ -346,6 +346,8 @@
     border: 2px ridge #8BC34A;
     box-shadow: 2px 2px 4px grey;
     background: rgba(255,255,255,0.95);
+    max-height: 600px;
+    overflow-y: scroll;
 }
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-settings {
@@ -386,6 +388,45 @@
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-details .survey-details-spinner .fa-spin {
     position: relative;
     top: 25%;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .invitation-selection {
+    width: 90%;
+    margin: 20px auto;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .invitation-selection .section-title {
+    text-align: left;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .invitation-selection .wegas-survey-orchestrator-updated-nb-players {
+    border-bottom: 2px solid #666;
+    padding: 1px 3px;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .survey-invite-email-form {
+    width: fit-content;
+    margin: 10px auto;
+    padding: 20px;
+    background: #efefef;
+    border: 1px solid #ddd;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .survey-invite-email-form input[type="text"],
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .survey-invite-email-form textarea {
+    width: 400px;
+    padding: 2px;
+    border: 1px solid #666;
+    margin: 4px auto;
+    resize: none;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .survey-invite-email-form .section-title {
+    width: 404px;
+    color: #999;
+    margin: 4px auto 2px;
+    text-align: left;
+    font-weight: bold;
 }
 
 .wegas-survey-details .teams-table {
@@ -443,3 +484,4 @@
     box-shadow: -3px -3px 50px grey;
     padding: 10px;
 }
+

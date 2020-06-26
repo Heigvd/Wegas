@@ -430,35 +430,20 @@ public class GameController {
      * Class common to all invitation methods for returning a JSON result.
      */
     public static final class InvitationResult {
-        private int nbAccounts = -1;
-        private List<AbstractAccount> accounts = null;
+        private List<String> invitedEmails = null;
         private String methodName = "";
         
-        public InvitationResult(String methodName, int nbAccounts) {
+        public InvitationResult(String methodName, List<String> invitedEmails) {
             this.setMethodName(methodName);
-            this.setNbAccounts(nbAccounts);
+            this.setInvitedEmails(invitedEmails);
         }
-
-        public InvitationResult(String methodName, List<AbstractAccount> accounts) {
-            this.setMethodName(methodName);
-            this.setAccounts(accounts);
-            this.setNbAccounts(accounts.size());
+       
+        public void setInvitedEmails(List<String> invitedEmails) {
+            this.invitedEmails = invitedEmails;
         }
         
-        public void setNbAccounts(int nbAccounts) {
-            this.nbAccounts = nbAccounts;
-        }
-        
-        public int getNbAccounts() {
-            return nbAccounts;
-        }
-        
-        public void setAccounts(List<AbstractAccount> accounts) {
-            this.accounts = accounts;
-        }
-        
-        public List<AbstractAccount> getAccounts() {
-            return accounts;
+        public List<String> getInvitedEmails() {
+            return invitedEmails;
         }
         
         public void setMethodName(String methodName) {
@@ -485,8 +470,8 @@ public class GameController {
         @PathParam("surveyIds") String surveyIds,
         EmailAttributes email
     ) {
-        List<AbstractAccount> accounts = gameFacade.sendSurveysInvitationToPlayers(request, surveyIds, email);
-        return new InvitationResult("InvitePlayersInSurvey", accounts);
+        List<String> emails = gameFacade.sendSurveysInvitationToPlayers(request, surveyIds, email);
+        return new InvitationResult("InvitePlayersInSurvey", emails);
     }
     
     /**
@@ -504,8 +489,8 @@ public class GameController {
         @PathParam("surveyIds") String surveyIds,
         EmailAttributes email
     ) {
-        int num = gameFacade.sendSurveysInvitationAnonymouslyToPlayers(request, surveyIds, email);
-        return new InvitationResult("InvitePlayersInSurveyAnonymously", num);
+        List<String> emails = gameFacade.sendSurveysInvitationAnonymouslyToPlayers(request, surveyIds, email);
+        return new InvitationResult("InvitePlayersInSurveyAnonymously", emails);
     }
 
     /**
@@ -525,7 +510,7 @@ public class GameController {
     ) {
         gameFacade.sendSurveysInvitationAnonymouslyToList(request, surveyIds, email);
         // The returned number of accounts is not necessarily true (if emails are invalid, etc)
-        return new InvitationResult("inviteToSurveyAnonymously", email.getRecipients().size());
+        return new InvitationResult("inviteToSurveyAnonymously", email.getRecipients());
     }
 
 }

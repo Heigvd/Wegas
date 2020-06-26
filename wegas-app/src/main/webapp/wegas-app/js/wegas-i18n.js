@@ -56,7 +56,8 @@ YUI.add("wegas-i18n", function(Y) {
          * Take the initial string and replace ALL parameters by theirs argument value
          * provided by k/v in args object.
          *
-         * All paramters (i.e. identifier [a-zA-Z0-9_] surrounded by '{{' and '}}') are mandatory
+         * All parameters (i.e. identifier [a-zA-Z0-9_] surrounded by '{{' and '}}') are mandatory.
+         * Escape sequence is allowed for preventing replacement: \\{ and \\}
          *
          */
         function mapArguments(str, args, tName) {
@@ -70,7 +71,7 @@ YUI.add("wegas-i18n", function(Y) {
                     return "[I18N] MISSING MANDATORY ARGUMENT \"" + key + "\" FOR \"" + tName + "\"";
                 }
             }
-            return str;
+            return str.replace(/\\{/g, '{').replace(/\\}/g, '}');
         }
 
         function interpolateParam(str, param) {

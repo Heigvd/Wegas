@@ -1194,7 +1194,7 @@ public class Helper {
         @JsonIgnore
         public String getRecipient() {
             if (recipients.size() != 1){
-                throw WegasErrorMessage.error("There should be only one recipient in the list.");
+                throw WegasErrorMessage.error("There should be only one recipient in the email list.");
             }
             
             return recipients.get(0);
@@ -1204,9 +1204,13 @@ public class Helper {
         @JsonIgnore
         public void setRecipient(String recipient) {
             if (recipients.size() > 1){
-                throw WegasErrorMessage.error("There should be only one recipient in the list.");
+                throw WegasErrorMessage.error("There should be only one recipient in the email list.");
             }
-            this.recipients.set(0, recipient);
+            if (recipients.isEmpty()) {
+                this.recipients.add(recipient);
+            } else {
+                this.recipients.set(0, recipient);
+            }
         }
 
         public List<String> getRecipients() {

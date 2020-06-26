@@ -367,7 +367,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         sendInviteToLive: function(surveyIds, btn, emails, linkedToAccount, successCb, failureCb) {
             // Full request linked: /rest/GameModel/<gameModelId>/Game/InvitePlayersToSurvey/<surveyIds>*
             // Full request anon: /rest/GameModel/<gameModelId>/Game/InvitePlayersToSurveyAnonymously/<surveyIds>*
-            // Request returns: InvitationResult object { nbAccounts: number, Accounts: optional array }
+            // Request returns: InvitationResult object { invitedEmails: array of strings }
             var request = linkedToAccount ? 'InvitePlayersToSurvey' : 'InvitePlayersToSurveyAnonymously',
                 config = {
                     request: '/' + this.currentGameModelId + '/Game/' + request + '/' + surveyIds,
@@ -384,9 +384,9 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                                         return obj.get("@class") && obj.get("@class").indexOf("InvitationResult");
                                     });
                             res = res && res.get("val");
-                            var number = (res && res.nbAccounts) || 0;
-                            orchestratorSuccess(I18n.t("survey.orchestrator.surveyInvited", { number: number }));
-                            successCb && successCb(surveyIds, e);
+                            var invitedEmails = (res && res.invitedEmails) || [];
+                            orchestratorSuccess(I18n.t("survey.orchestrator.invitePanel.surveyInvited", { number: invitedEmails.length }));
+                            successCb && successCb(invitedEmails);
                             btn && btn.stopSpinning();
                         }, this),
                         failure: Y.bind(function(e) {
@@ -400,7 +400,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                             } catch(ex) {
                                 orchestratorAlert("Internal error: could not send invitations");
                             }
-                            failureCb && failureCb(surveyIds, e);
+                            failureCb && failureCb(e);
                             btn && btn.stopSpinning();
                         }, this)
                 }
@@ -411,7 +411,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         // Invites into the current game the given email owners.
         sendInviteToList: function(surveyIds, btn, emails, successCb, failureCb) {
             // Full request: /rest/GameModel/<gameModelId>/Game/inviteEmailsToSurveyAnonymously/<surveyIds>*
-            // Request returns: InvitationResult object { nbAccounts: number of recipients }
+            // Request returns: InvitationResult object { invitedEmails: array of strings }
             var config = {
                     request: '/' + this.currentGameModelId + '/Game/inviteEmailsToSurveyAnonymously/' + surveyIds,
                     cfg: {
@@ -427,9 +427,9 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                                         return obj.get("@class") && obj.get("@class").indexOf("InvitationResult");
                                     });
                             res = res && res.get("val");
-                            var number = (res && res.nbAccounts) || 0;
-                            orchestratorSuccess(I18n.t("survey.orchestrator.surveyInvited", { number: number }));
-                            successCb && successCb(surveyIds, e);
+                            var invitedEmails = (res && res.invitedEmails) || [];
+                            orchestratorSuccess(I18n.t("survey.orchestrator.invitePanel.surveyInvited", { number: invitedEmails.length }));
+                            successCb && successCb(invitedEmails);
                             btn && btn.stopSpinning();
                         }, this),
                         failure: Y.bind(function(e) {
@@ -443,7 +443,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                             } catch(ex) {
                                 orchestratorAlert("Internal error: could not send invitations");
                             }
-                            failureCb && failureCb(surveyIds, e);
+                            failureCb && failureCb(e);
                             btn && btn.stopSpinning();
                         }, this)
                 }
@@ -1638,10 +1638,11 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         // Opens a dialog for selecting the e-mail message and its recipients.
         showInvitePanel: function(surveyId) {
             var survObj = this.knownSurveys[surveyId],
-                title = 'Invite to "' + survObj.label + '"',
+                title = I18n.t("survey.orchestrator.invitePanel.invitePanelTitle") + ' "' + survObj.label + '"',
                 participants = this.getNbTeamsPlayers(),
                 buttons = {},
-                body, panel, panelCB, closeHandler, updateHandler;
+                alreadyInvitedEmails = '',
+                panelBody, mailBody, panel, panelCB, closeHandler, updateHandler;
             
             function validateEmail(email) {
                 var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -1713,25 +1714,38 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     throw I18n.t("survey.orchestrator.errors.noPlayerInBody");
                 }
                 // HTMLize the body:
-                return body.replace(/[\n]/g, "<br>");
+                return body.replace(/\n\n/g, "<br>&nbsp;<br>").replace(/[\n]/g, "<br>");
+            }
+            
+            function setInvitedEmails(panelCB, invitedEmails) {
+                alreadyInvitedEmails += invitedEmails;
             }
 
             if (!survObj.runningInvitePanel) {
-                body = 
-                    '<div class="section-title">This game currently has <span class="wegas-survey-orchestrator-updated-nb-players">' + participants.players + '</span> players in <span class="wegas-survey-orchestrator-updated-nb-teams">' + participants.teams + '</span> teams.</div>' +
-                    '<div class="section-title">' + I18n.t("survey.orchestrator.invitePanel.inviteTitle") + '</div>' +
-                    '<div class="action-buttons"><div class="survey-invite-anon"></div><div class="survey-invite-linked"></div></div>' +
-                    '<div class="action-buttons" style="margin:auto;display:flex"><div class="survey-invite-list"></div></div>' +
-                    '<div class="email-form">' +
-                    '<input type="text" class="email-sender" value="' + Y.Wegas.Facade.User.get("currentUser").get("name") + '" placeholder="Your name is mandatory!"/>' +
-                    '<textarea class="email-recipients" rows="10" cols="50" autocomplete="no" spellcheck="false" placeholder="Paste email addresses here">' +
-                        I18n.t("survey.orchestrator.invitePanel.defaultMailBody") +
-                    '</textarea>' +
-                    '<input type="text" class="email-subject" value="' + I18n.t("survey.orchestrator.invitePanel.defaultMailSubject") + '" placeholder="Subject cannot be empty!"/>' +
-                    '<textarea class="email-body" rows="10" cols="50" autocomplete="no" spellcheck="false" placeholder="Write the email text here"></textarea></div>';
+                mailBody =
+                    I18n.t("survey.orchestrator.invitePanel.defaultMailBody", {game: Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("name")})
+                    // Transform into plain textarea-compatible content:
+                    .replace(/<br\s*\/?>/g, '\n\n');
+                panelBody =
+                    '<div class="invitation-selection">' +
+                    '   <div class="section-title">' + I18n.t("survey.orchestrator.invitePanel.currentPlayers") + ': <span class="wegas-survey-orchestrator-updated-nb-players">' + participants.players + '</span></div>' +
+                    '   <div class="section-title">' + I18n.t("survey.orchestrator.invitePanel.inviteTitle") + '</div>' +
+                    '   <div class="action-buttons"><div class="survey-invite-anon"></div><div class="survey-invite-linked"></div></div>' +
+                    '   <div class="action-buttons" style="margin:auto;display:flex"><div class="survey-invite-list"></div></div>' +
+                    '</div>' +
+                    '<div class="survey-invite-email-form">' +
+                    '   <div class="section-title email-sender-title">' + I18n.t("survey.orchestrator.invitePanel.senderName") + '</div>' +
+                    '   <input type="text" class="email-sender" value="' + Y.Wegas.Facade.User.get("currentUser").get("name") + '"/>' +
+                    '   <div class="section-title email-recipients-title">' + I18n.t("survey.orchestrator.invitePanel.recipients") + '</div>' +
+                    '   <textarea class="email-recipients" rows="10" autocomplete="no" spellcheck="false" placeholder="' + I18n.t("survey.orchestrator.invitePanel.recipientsPlaceholder") + '"></textarea>' +
+                    '   <div class="section-title email-subject-title">' + I18n.t("survey.orchestrator.invitePanel.subject") + '</div>' +
+                    '   <input type="text" class="email-subject" value="' + I18n.t("survey.orchestrator.invitePanel.defaultMailSubject") + '"/>' +
+                    '   <div class="section-title email-body-title">' + I18n.t("survey.orchestrator.invitePanel.body") + '</div>' +
+                    '   <textarea class="email-body" rows="10" autocomplete="no" spellcheck="false">' + mailBody + '</textarea>' +
+                    '</div>';
                 survObj.runningInvitePanel = panel = new Y.Wegas.Panel({
                     headerContent: '<h2>' + title + '</h2><button class="yui3-widget yui3-button yui3-button-content close fa fa-times"></button>',
-                    content: body,
+                    content: panelBody,
                     modal: false,
                     width: 600
                 }).render();
@@ -1745,12 +1759,16 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                         function(surveyId, btn) {
                             try {
                                 var email = {
-                                    recipients: "", // Set server side to the live players
+                                    recipients: [], // This will be set server side to the live players
                                     sender: getSender(panelCB),
                                     subject: getSubject(panelCB),
                                     body: getBody(panelCB)
                                 };
-                                this.onInviteLive(surveyId, btn, email, /* linkedToAccount: */ false);
+                                this.onInviteLive(surveyId, btn, email, /* linkedToAccount: */ false,
+                                    function(invitedEmails) {
+                                        setInvitedEmails(panelCB, invitedEmails);
+                                    }
+                                );
                             } catch(e) {
                                 orchestratorAlert(e);
                                 btn.stopSpinning();
@@ -1767,12 +1785,16 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                         function(surveyId, btn) {
                             try {
                                 var email = {
-                                    recipients: "", // Set server side to the live players
+                                    recipients: [], // This will be set server side to the live players
                                     sender: getSender(panelCB),
                                     subject: getSubject(panelCB),
                                     body: getBody(panelCB)
                                 };
-                                this.onInviteLive(surveyId, btn, email, /* linkedToAccount: */ true);
+                                this.onInviteLive(surveyId, btn, email, /* linkedToAccount: */ true,
+                                    function(invitedEmails) {
+                                        setInvitedEmails(panelCB, invitedEmails);
+                                    }
+                                );
                             } catch(e) {
                                 orchestratorAlert(e);
                                 btn.stopSpinning();
@@ -1794,7 +1816,11 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                                     subject: getSubject(panelCB),
                                     body: getBody(panelCB)
                                 };
-                                this.onInviteList(surveyId, btn, email);
+                                this.onInviteList(surveyId, btn, email,
+                                    function(invitedEmails) {
+                                        setInvitedEmails(panelCB, invitedEmails);
+                                    }
+                                );
                             } catch(e) {
                                 orchestratorAlert(e);
                                 btn.stopSpinning();
@@ -1840,7 +1866,10 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 surveyId, 
                 btn, 
                 Y.bind(function(newSurveyId) {
-                    this.sendInviteToLive(newSurveyId, btn, email, linkedToAccount);
+                    this.sendInviteToLive(newSurveyId, btn, email, linkedToAccount,
+                        function(invitedEmails) {
+                            throw "comment mettre cette liste dans le contexte de la fenêtre ??"
+                        });
                 }, this)
             );
         },
@@ -1852,7 +1881,10 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 surveyId, 
                 btn, 
                 Y.bind(function(newSurveyId) {
-                    this.sendInviteToList(newSurveyId, btn, email);
+                    this.sendInviteToList(newSurveyId, btn, email,
+                        function(invitedEmails) {
+                            throw "comment mettre cette liste dans le contexte de la fenêtre ??"
+                        });
                 }, this)
             );
         },

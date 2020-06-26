@@ -827,9 +827,9 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             token.setRemainingUses(null);
             
             String body = email.getBody();
-            // insert the player email within the text
+            // insert the player email into the text
             if (body.contains("{{player}}")) {
-                body = body.replace("{{player}}", recipient);
+                body = body.replaceAll("\\{\\{player\\}\\}", recipient);
             }
 
             this.persistAndSendDisposableToken(token, request,
@@ -867,9 +867,9 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         token.setRemainingUses(null);
         
         String body = email.getBody();
-        // insert the player name in the text
+        // insert the player name into the text
         if (body.contains("{{player}}")) {
-            body = body.replace("{{player}}", account.getName());
+            body = body.replaceAll("\\{\\{player\\}\\}", account.getName());
         }
 
         this.persistAndSendDisposableToken(token, request,
@@ -922,7 +922,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                 // insert the link within the text
                 if (text.contains("{{link}}")) {
                     // a placeholder is present in the text, replace it
-                    text = text.replace("{{link}}", theLink);
+                    text = text.replaceAll("\\{\\{link\\}\\}", theLink);
                 } else {
                     // no placeholder -> append
                     text = text + "<br /><a href='" + theLink + "'>" + theLink + "</a>";

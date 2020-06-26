@@ -84,12 +84,19 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                 scenarioCreated: "This survey is now available for sharing in game scenario<br>\"{{name}}\".<br>Please refresh the browser tab containing your current scenarios.",
                 sessionCreated: "This survey is now available for sharing in game session<br>\"{{name}}\".<br>Please refresh the browser tab containing your current sessions.",
                 invitePanel: {
+                    invitePanelTitle: "Invite to",
+                    currentPlayers: "Current number of registered players",
                     inviteTitle: "Shall the replies be anonymous or linked to the players' accounts?",
                     inviteLiveAnonButton: "Anonymous",
                     inviteLiveLinkedButton: "Linked to account",
                     inviteAnonListButton: "Email list",
+                    senderName: "Your name",
+                    recipients: "Recipient addresses",
+                    recipientsPlaceholder: "Enter addresses of those who have not joined the simulation on Wegas. Email adresses can be separated by commas, semicolons or spaces.",
+                    subject: "Subject",
+                    body: "Message",
                     surveyInvited: "Invitations have been sent to {{number}} persons.",
-                    defaultMailBody: "Dear {{player}},\n&nbsp;\nPlease click here to participate in a survey: {{link}} \n&nbsp;\nThank you! \n&nbsp;\n",
+                    defaultMailBody: "Hi {\\{player}\\},<br>As a participant in the software simulation \"{{game}}\", you are cordially invited to complete an online survey.<br>Please click here to start: {\\{link}\\}<br>Thank you!",
                     defaultMailSubject: "[Albasim Wegas] Survey"
                 },
                 errors: {
@@ -101,8 +108,8 @@ YUI.add("wegas-i18n-survey-en", function(Y) {
                     noValidSender: "Please enter your name (not your email address)",
                     noValidSubject: "Please enter the subject of the message",
                     noValidBody: "The body of the message cannot be empty",
-                    noLinkInBody: "The body of the message must contain the code <b>{<!anti-match>{link}}</b> which will automatically be replaced by the real URL address of the survey",
-                    noPlayerInBody: "The body of the message must contain the code <b>{<!anti-match>{player}}</b> which will automatically be replaced by the real name or email of the participant"
+                    noLinkInBody: "The body of the message must contain the code <b>{\\{link}\\}</b> which will automatically be replaced by the real URL address of the survey",
+                    noPlayerInBody: "The body of the message must contain the code <b>{\\{player}\\}</b> which will automatically be replaced by the real name or email of the participant"
                 }
             }
         }

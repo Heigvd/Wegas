@@ -84,12 +84,19 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 scenarioCreated: "Die Umfrage steht nun in diesem Szenario zur Verfügung:<br>\"{{name}}\".<br>Bitte laden Sie den Browser-Tab mit Ihren aktuellen Szenarios neu.",
                 sessionCreated: "Die Umfrage steht nun in dieser Session zur Verfügung:<br>\"{{name}}\".<br>Bitte laden Sie den Browser-Tab mit Ihren aktuellen Sessionen neu.",
                 invitePanel: {
+                    invitePanelTitle: "Einladung an",
+                    currentPlayers: "Aktuelle Anzahl der registrierten Spieler",
                     inviteTitle: "Sollen die Antworten anonym oder mit den Konten der Spieler verknüpft sein?",
                     inviteLiveAnonButton: "Anonym",
                     inviteLiveLinkedButton: "Mit Konten verknüpft",
                     inviteAnonListButton: "Email-Liste",
+                    senderName: "Ihr Name",
+                    recipients: "Empfänger-Adressen",
+                    recipientsPlaceholder: "Die Adressen derjenigen eingeben, die nicht an der Software-Simulation auf Wegas teilgenommen haben. E-Mail-Adressen können durch Komma, Semikolon oder Leerzeichen getrennt werden.",
+                    subject: "Betreff",
+                    body: "Nachricht",
                     surveyInvited: "Einladungen wurden an {{number}} Personen versandt.",
-                    defaultMailBody: "Dear {{player}},\n&nbsp;\nPlease click here to participate in a survey: {{link}} \n&nbsp;\nThank you! \n&nbsp;\n",
+                    defaultMailBody: "Hallo {\\{player}\\},<br>Als Teilnehmer/in an der Software-Simulation \"{{game}}\" sind Sie herzlich eingeladen, eine Online-Umfrage auszufüllen.<br>Bitte klicken Sie hier, um zu beginnen: {\\{link}\\}<br>Besten Dank!",
                     defaultMailSubject: "[Albasim Wegas] Umfrage"
                 },
                 errors: {
@@ -101,8 +108,8 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                     noValidSender: "Bitte Ihren Namen (nicht Ihre E-Mail-Adresse) eingeben",
                     noValidSubject: "Bitte geben Sie den Betreff der Nachricht ein",
                     noValidBody: "Der Hauptteil der Nachricht darf nicht leer sein",
-                    noLinkInBody: "Der Hauptteil der Nachricht muss den Code <b>{<!anti-match>{link}}</b> enthalten. Dieser wird automatisch durch die tatsächliche URL-Adresse der Umfrage ersetzt",
-                    noPlayerInBody: "Der Hauptteil der Nachricht muss den Code <b>{<!anti-match>{player}}</b> enthalten. Dieser wird automatisch durch den Namen oder die E-Mail-Adresse des Teilnehmers ersetzt."
+                    noLinkInBody: "Der Hauptteil der Nachricht muss den Code <b>{\\{link}\\}</b> enthalten. Dieser wird automatisch durch die tatsächliche URL-Adresse der Umfrage ersetzt",
+                    noPlayerInBody: "Der Hauptteil der Nachricht muss den Code <b>{\\{player}\\}</b> enthalten. Dieser wird automatisch durch den Namen oder die E-Mail-Adresse des Teilnehmers ersetzt."
                 }
             }
         }
