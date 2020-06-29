@@ -12,6 +12,8 @@ import { LabeledView, Labeled } from './labeled';
 import { DragDropArray } from './Array';
 import { MenuItem } from '../../../Components/Menu';
 import { setEntry, getEntry } from '../../../Helper/tools';
+import { legendStyle, reset, borderTopStyle } from './Object';
+import { cx } from 'emotion';
 
 interface ObjectValues {
   [key: string]: string | number | ObjectValues;
@@ -61,6 +63,7 @@ type HashListViewBag = CommonView &
     disabled?: boolean;
     tooltip?: string;
     choices?: HashListChoices;
+    objectViewStyle?: boolean;
   };
 
 interface EntryViewProps<T> {
@@ -363,7 +366,7 @@ function HashListView({
   onChange: onChangeOutside,
   value,
 }: HashListViewProps) {
-  const { label, description, choices } = view;
+  const { label, description, choices, objectViewStyle } = view;
 
   const onChange = React.useCallback(
     (value?: ImprovedValues) => {
@@ -398,22 +401,42 @@ function HashListView({
     : undefined;
 
   return (
-    <CommonViewContainer errorMessage={errorMessage} view={view}>
-      <Labeled label={label} description={description}>
-        {({ inputId, labelNode }) => (
-          <EntriesView
-            view={view}
-            allowedChoices={allowedChoices}
-            currentValue={currentValue}
-            onNewEntry={(value: ImprovedValues) => setValue(value)}
-            onChange={onChange}
-            inputId={inputId}
-            labelNode={labelNode}
-            allowChildAdd
-          />
+    <>
+      <CommonViewContainer errorMessage={errorMessage} view={view}>
+        {objectViewStyle ? (
+          <fieldset
+            className={cx(reset, {
+              [borderTopStyle]: label !== undefined,
+            })}
+          >
+            <legend className={legendStyle}>{label}</legend>
+            <EntriesView
+              view={view}
+              allowedChoices={allowedChoices}
+              currentValue={currentValue}
+              onNewEntry={(value: ImprovedValues) => setValue(value)}
+              onChange={onChange}
+              allowChildAdd
+            />
+          </fieldset>
+        ) : (
+          <Labeled label={label} description={description}>
+            {({ inputId, labelNode }) => (
+              <EntriesView
+                view={view}
+                allowedChoices={allowedChoices}
+                currentValue={currentValue}
+                onNewEntry={(value: ImprovedValues) => setValue(value)}
+                onChange={onChange}
+                inputId={inputId}
+                labelNode={labelNode}
+                allowChildAdd
+              />
+            )}
+          </Labeled>
         )}
-      </Labeled>
-    </CommonViewContainer>
+      </CommonViewContainer>
+    </>
   );
 }
 

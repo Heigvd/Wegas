@@ -2,14 +2,14 @@
 import { store } from '../../../data/store';
 import { ActionCreator } from '../../../data/actions';
 import { clientScriptEval, useScript } from '../../Hooks/useScript';
-import { fileURL, generateAbsolutePath } from '../../../API/files.api';
+import { fileURL } from '../../../API/files.api';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
 import { wlog } from '../../../Helper/wegaslog';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 import { schemaProps } from './schemaProps';
-import { InfoBeamProps } from './InfoBeam';
+import { InfoBulletProps } from './InfoBullet';
 import { flexlayoutChoices } from '../../Layouts/FlexList';
 import { absolutelayoutChoices } from '../../Layouts/Absolute';
 import { ContainerTypes } from './EditableComponent';
@@ -30,7 +30,7 @@ interface OpenURLAction {
   url: string;
 }
 interface OpenFileAction {
-  fileDescriptor: IFileDescriptor;
+  filePath: string;
 }
 interface ImpactVariableAction {
   impact: IScript;
@@ -42,7 +42,7 @@ interface OpenPopupPageAction {
   pageId: IScript;
 }
 interface PlaySoundAction {
-  fileDescriptor: IFileDescriptor;
+  filePath: string;
 }
 interface PrintVariableAction {
   variableName: string;
@@ -59,9 +59,19 @@ export interface WegasComponentOptionsActions {
   printVariable?: PrintVariableAction & WegasComponentOptionsAction;
 }
 
+export const defaultWegasComponentOptionsActions: WegasComponentOptionsActions = {
+  impactVariable: undefined,
+  localScriptEval: undefined,
+  openFile: undefined,
+  openPage: undefined,
+  openPopupPage: undefined,
+  openUrl: undefined,
+  playSound: undefined,
+  printVariable: undefined,
+};
+
 export interface WegasComponentActionsProperties {
   confirmClick?: string;
-  lock?: string;
 }
 
 export interface WegasComponentActions {
@@ -88,10 +98,7 @@ export const wegasComponentActions: WegasComponentActions = {
     window.open(props.url);
   },
   openFile: props => {
-    const win = window.open(
-      fileURL(generateAbsolutePath(props.fileDescriptor)),
-      '_blank',
-    );
+    const win = window.open(fileURL(props.filePath), '_blank');
     win!.focus();
   },
   impactVariable: props => {
@@ -110,9 +117,7 @@ export const wegasComponentActions: WegasComponentActions = {
     wlog(props);
   },
   playSound: props => {
-    const audio = new Audio(
-      fileURL(generateAbsolutePath(props.fileDescriptor)),
-    );
+    const audio = new Audio(fileURL(props.filePath));
     // We may register the sound component here and add another action for sound control (play, pause, volume, etc...)
     audio.play();
   },
@@ -150,7 +155,7 @@ const actionsChoices: HashListChoices = [
     value: {
       prop: 'openFile',
       schema: schemaProps.object('Open File', {
-        fileDescriptor: schemaProps.file('File', true),
+        fileDescriptor: schemaProps.path('File', true),
         priority: schemaProps.number('Priority', false),
       }),
     },
@@ -190,7 +195,7 @@ const actionsChoices: HashListChoices = [
     value: {
       prop: 'playSound',
       schema: schemaProps.object('Play sound', {
-        fileDescriptor: schemaProps.file('File', true, 'FILE', {
+        fileDescriptor: schemaProps.path('File', true, 'FILE', {
           filterType: 'grey',
           fileType: 'audio',
         }),
@@ -215,6 +220,87 @@ const actionsChoices: HashListChoices = [
       schema: schemaProps.string('Confirmation message', true, 'Are you sure?'),
     },
   },
+];
+
+// OPTIONS -> LAYOUT COMMON
+export interface WegasComponentLayoutCommonOptions {
+  tooltip?: string;
+  themeMode?: string;
+  style?: React.CSSProperties;
+}
+
+const layoutCommonChoices: HashListChoices = [
+  {
+    label: 'Tooltip',
+    value: {
+      prop: 'tooltip',
+      schema: schemaProps.string('Tooltip'),
+    },
+  },
+  {
+    label: 'Theme mode',
+    value: {
+      prop: 'themeMode',
+      schema: schemaProps.themeModeSelect('Theme mode'),
+    },
+  },
+  {
+    label: 'Style',
+    value: {
+      prop: 'style',
+      schema: schemaProps.hashlist('Style'),
+    },
+  },
+];
+
+// OPTIONS -> LAYOUT CONDITIONNAL
+export interface WegasComponentLayoutConditionnalOptions {
+  disableIf?: IScript;
+  hideIf?: IScript;
+  readOnlyIf?: IScript;
+  lock?: string;
+}
+
+const layoutConditionnalChoices: HashListChoices = [
+  {
+    label: 'Disable If',
+    value: {
+      prop: 'disableIf',
+      schema: schemaProps.script(
+        'Disable If',
+        false,
+        'GET',
+        'TypeScript',
+        'false',
+      ),
+    },
+  },
+  {
+    label: 'Hide If',
+    value: {
+      prop: 'hideIf',
+      schema: schemaProps.script(
+        'Hide If',
+        false,
+        'GET',
+        'TypeScript',
+        'false',
+      ),
+    },
+  },
+  {
+    label: 'Readonly If',
+    value: {
+      prop: 'readOnlyIf',
+      schema: schemaProps.script(
+        'Readonly If',
+        false,
+        'GET',
+        'TypeScript',
+        'false',
+      ),
+    },
+  },
   {
     label: 'Lock',
     value: {
@@ -224,29 +310,18 @@ const actionsChoices: HashListChoices = [
   },
 ];
 
-// OPTIONS -> UPGRADES
-export interface WegasComponentUpgrades {
-  tooltip?: string;
-  infoBeam?: InfoBeamProps;
+// OPTIONS -> DECORATIONS
+export interface WegasComponentDecorations {
+  infoBullet?: InfoBulletProps;
   unreadCount?: IScript;
-  disableIf?: IScript;
-  showIf?: IScript;
-  themeMode?: string;
 }
 
-const upgradeChoices: HashListChoices = [
+const decorationsChoices: HashListChoices = [
   {
-    label: 'Tooltip',
+    label: 'Info Bullet',
     value: {
-      prop: 'tooltip',
-      schema: schemaProps.string('Tooltip'),
-    },
-  },
-  {
-    label: 'Info Beam',
-    value: {
-      prop: 'infoBeam',
-      schema: schemaProps.object('Info Beam', {
+      prop: 'infoBullet',
+      schema: schemaProps.object('Info Bullet', {
         showScript: schemaProps.script(
           'Show',
           false,
@@ -286,39 +361,6 @@ const upgradeChoices: HashListChoices = [
         'ISSurveyDescriptor',
         'ISPeerReviewDescriptor',
       ]),
-    },
-  },
-  {
-    label: 'Disable If',
-    value: {
-      prop: 'disableIf',
-      schema: schemaProps.script(
-        'Disable If',
-        false,
-        'GET',
-        'TypeScript',
-        'false',
-      ),
-    },
-  },
-  {
-    label: 'Show If',
-    value: {
-      prop: 'showIf',
-      schema: schemaProps.script(
-        'Show If',
-        false,
-        'GET',
-        'TypeScript',
-        'false',
-      ),
-    },
-  },
-  {
-    label: 'Theme mode',
-    value: {
-      prop: 'themeMode',
-      schema: schemaProps.themeModeSelect('Theme mode', true),
     },
   },
 ];
@@ -428,7 +470,7 @@ type UnreadCountDescriptorTypes =
 
 export function useComputeUnreadCount(
   unreadCountVariableScript: IScript | undefined,
-): InfoBeamProps | undefined {
+): InfoBulletProps | undefined {
   const scriptReturn = useScript<
     string | number | object[] | UnreadCountDescriptorTypes
   >(unreadCountVariableScript?.content || '');
@@ -457,44 +499,61 @@ export function useComputeUnreadCount(
     : undefined;
 }
 
+export type WegasComponentExtra = WegasComponentLayoutCommonOptions &
+  WegasComponentLayoutConditionnalOptions &
+  WegasComponentDecorations;
+
 const layoutChoices = {
-  FLEX: [
-    {
-      label: 'Layout',
-      value: { prop: 'layout' },
-      items: flexlayoutChoices,
-    },
-  ],
+  FLEX: flexlayoutChoices,
   LINEAR: [],
-  ABSOLUTE: [
-    {
-      label: 'Layout',
-      value: { prop: 'layout' },
-      items: absolutelayoutChoices,
-    },
-  ],
+  ABSOLUTE: absolutelayoutChoices,
 };
 
-export const wegasComponentOptionsSchema = (containerType: ContainerTypes) => ({
-  options: schemaProps.hashlist(
-    'Options',
+export const wegasComponentExtraSchema = (containerType: ContainerTypes) => ({
+  layoutOptions: schemaProps.hashlist(
+    'Layout options',
     false,
     [
       ...(containerType ? layoutChoices[containerType] : []),
-      {
-        label: 'Actions',
-        value: { prop: 'actions' },
-        items: actionsChoices,
-      },
-      {
-        label: 'Upgrades',
-        value: { prop: 'upgrades' },
-        items: upgradeChoices,
-      },
+      ...layoutCommonChoices,
     ],
     undefined,
     undefined,
-    1000,
+    undefined,
+    undefined,
+    undefined,
+    true,
+  ),
+  layoutConditions: schemaProps.hashlist(
+    'Layout conditions',
+    false,
+    layoutConditionnalChoices,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    true,
+  ),
+  actions: schemaProps.hashlist(
+    'OnClick Actions',
+    false,
+    actionsChoices,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    true,
+  ),
+  decorations: schemaProps.hashlist(
+    'Decorations',
+    false,
+    decorationsChoices,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
     undefined,
     true,
   ),

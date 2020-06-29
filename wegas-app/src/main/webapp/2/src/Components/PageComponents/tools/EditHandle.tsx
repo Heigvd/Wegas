@@ -133,7 +133,7 @@ export function EditHandle({
         }
       }}
       style={{
-        zIndex: 1000,
+        zIndex: 100000,
       }}
       className={'wegas-component-handle'}
     >
