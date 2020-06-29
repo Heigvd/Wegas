@@ -21,7 +21,6 @@ import com.wegas.core.persistence.game.Game.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.Helper.EmailAttributes;
 import java.io.IOException;

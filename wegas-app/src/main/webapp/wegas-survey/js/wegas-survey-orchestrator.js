@@ -90,7 +90,13 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         panel.plug(Y.Plugin.DraggablePanel, {});
     }
     
-        
+    // Syntactical validation of an email address.
+    // Returns null if not valid.
+    function validateEmail(email) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    }
+
     /**
      * @name SpinButton
      * @extends Y.Button
@@ -207,6 +213,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             this.playedIndividually = gm.get("properties").get("val.freeForAll");
             this.currentPlayerId = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id");
             this.participants = this.getNbTeamsPlayers();
+            this.playerEmails = [];
+            this.getEmails();
             this.participantsCallbacks = [];
             this.checkXapiPath();
         },
@@ -385,7 +393,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                                     });
                             res = res && res.get("val");
                             var invitedEmails = (res && res.invitedEmails) || [];
-                            orchestratorSuccess(I18n.t("survey.orchestrator.invitePanel.surveyInvited", { number: invitedEmails.length }));
+                            orchestratorSuccess(I18n.t("survey.orchestrator.invitePanel.surveyInvitedFromLive", { number: invitedEmails.length }));
                             successCb && successCb(invitedEmails);
                             btn && btn.stopSpinning();
                         }, this),
@@ -428,7 +436,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                                     });
                             res = res && res.get("val");
                             var invitedEmails = (res && res.invitedEmails) || [];
-                            orchestratorSuccess(I18n.t("survey.orchestrator.invitePanel.surveyInvited", { number: invitedEmails.length }));
+                            orchestratorSuccess(I18n.t("survey.orchestrator.invitePanel.surveyInvitedFromList", { number: invitedEmails.length }));
                             successCb && successCb(invitedEmails);
                             btn && btn.stopSpinning();
                         }, this),
@@ -451,9 +459,48 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             Y.Wegas.Facade.GameModel.sendRequest(config);
         },
 
+        // Returns the promise of an array of emails as strings
+        // @Param team optional
+        getEmails: function(team) {
+            return new Y.Promise(function(resolve, reject) {
+                var gameId = Y.Wegas.Facade.Game.cache.getCurrentGame().get("id"),
+                    requestURL;
+                if (team) {
+                    requestURL = Y.Wegas.app.get("base") + "rest/Extended/User/Emails/" + gameId + "/" + team.get("id");
+                } else {
+                    requestURL = Y.Wegas.app.get("base") + "rest/Extended/User/Emails/" + gameId;
+                }
+
+                Y.io(requestURL, {
+                    cfg: {
+                        method: "GET",
+                        headers: {
+                            "Managed-Mode": true
+                        }
+                    },
+                    on: {
+                        success: Y.bind(function(rId, xmlHttpRequest) {
+                            var emails = JSON.parse(xmlHttpRequest.response),
+                                guestPos;
+                            // Suppress all occurrences of "Guest"
+                            while ((guestPos = emails.indexOf("Guest")) !== -1) {
+                                emails.splice(guestPos, 1);
+                            }
+                            this.playerEmails = emails;
+                            resolve(emails);
+                        }, this),
+                        failure: Y.bind(function(rId, xmlHttpRequest) {
+                            resolve("PERMISSION-ERROR");
+                        }, this)
+                    }
+                });
+            });
+        },
+
         // Returns the most up-to-date number of live/waiting non-empty teams and players in the current game.
         // Also counts anonymous "SURVEY" teams and players.
-        // Result: { teams: #, players: #, surveyTeams: #, surveyPlayers: # } 
+        // Result: { teams: #, players: #, surveyTeams: #, surveyPlayers: # }
+        // Updates global this.playerEmails when required.
         getNbTeamsPlayers: function() {
             var game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
                 teams = game.get("teams"),
@@ -466,7 +513,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 currTeam = teams[t];
                 if (currTeam.get("@class") === "DebugTeam") { continue; }
                 tStatus = currTeam.get("status");
-                if (tStatus === "LIVE" || tStatus === "SURVEY") {
+                if (tStatus === "LIVE" || tStatus === "SURVEY" || tStatus === "WAITING") {
                     empty = true;
                     players = currTeam.get("players");
                     for (p in players) {
@@ -539,7 +586,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         },
         
         // Gets information from server about players who actually entered the given survey.
-        getPlayerSummary: function(surveyId, successCB, failureCB) {
+        getSurveyPlayers: function(surveyId, successCB, failureCB) {
             var survDescr = Y.Wegas.Facade.Variable.cache.findById(surveyId),
                 refreshButton = this.knownSurveys[surveyId].buttons.refreshButton;
             if (survDescr){
@@ -710,7 +757,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             this.participantsCallbacks.splice(callbackID, 1);
         },
 
-        // Listens to updates to the current game, especially the number of participants
+        // Listens to updates to the current game, especially the number of participants and their emails.
+        // Updates global variables this.participants and this.playerEmails.
         onUpdatedGame: function(e) {
             var entity = e.currentTarget.data[0];
             if (entity.get("id") === this.currentGameId) {
@@ -720,8 +768,18 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     this.participants = latestCount;
                     Y.all(".wegas-survey-orchestrator-updated-nb-players").setContent(latestCount.players);
                     Y.all(".wegas-survey-orchestrator-updated-nb-teams").setContent(latestCount.teams);
-                    for (var cb in this.participantsCallbacks) {
-                        this.participantsCallbacks[cb](latestCount);
+                    // Update the list of emails only when needed:
+                    if (Y.one(".wegas-survey-invite")) {
+                        this.getEmails().then(Y.bind(
+                            function(emails) {
+                                for (var cb in this.participantsCallbacks) {
+                                    this.participantsCallbacks[cb](latestCount);
+                                }
+                            }, this));
+                    } else {
+                        for (var cb in this.participantsCallbacks) {
+                            this.participantsCallbacks[cb](latestCount);
+                        }
                     }
                 }
             }
@@ -1241,7 +1299,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     var currSurvey = listCB.one('.running-survey[data-surveyId="' + surveyId + '"] .survey-label');
                     currSurvey.setContent(this.getSurveyTitle(survDescr));
                 }
-                this.getPlayerSummary(surveyId);
+                this.getSurveyPlayers(surveyId);
             }
         },
         
@@ -1586,7 +1644,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                         ctx.importAsUnpublishedIfExternal_Then_SetPlayerScope(newDescr.get("id"), btn, successCb);
                     },
                     function() {
-                        ctx.alert("Internal error: Could not import survey");
+                        orchestratorAlert("Internal error: Could not import survey");
                         btn && btn.stopSpinning();
                     }
                 );
@@ -1600,7 +1658,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                             ctx.importAsUnpublishedIfExternal_Then_SetPlayerScope(descr.get("id"), btn, successCb);
                         },
                         function() {
-                            ctx.alert("Internal error: Could not change scope of survey");
+                            orchestratorAlert("Internal error: Could not change scope of survey");
                             btn && btn.stopSpinning();
                         }
                     );
@@ -1639,87 +1697,13 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         showInvitePanel: function(surveyId) {
             var survObj = this.knownSurveys[surveyId],
                 title = I18n.t("survey.orchestrator.invitePanel.invitePanelTitle") + ' "' + survObj.label + '"',
-                participants = this.getNbTeamsPlayers(),
+                participants = this.participants,
                 buttons = {},
-                alreadyInvitedEmails = '',
-                panelBody, mailBody, panel, panelCB, closeHandler, updateHandler;
+                panelBody, mailBody, panel, panelCB, closeHandler, updateHandler,
+                radioInputs = {},
+                globalChoice, liveChoice = 'LINKED';
             
-            function validateEmail(email) {
-                var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                return re.test(email);
-            }
 
-            // Returns the cleaned up email list of the form.
-            // Throws an error in case of syntax errors or empty list.
-            function getRecipients(panelCB) {
-                var text = panelCB.one(".email-recipients"),
-                    list = text.get("value"),
-                    emailArray = list.split(/[\n,;\s]+/),
-                    cleanList = "",
-                    mail;
-                // Do simple cleanup, no validation yet:
-                for (var i in emailArray) {
-                    mail = emailArray[i].trim();
-                    if (!mail) {
-                        emailArray.splice(i, 1);
-                    } else {
-                        cleanList += emailArray[i] + "\n";
-                    }
-                }
-                // Update displayed list:
-                text.set("value", cleanList);
-                // Check validity:
-                if (emailArray.length === 0) {
-                    throw I18n.t("survey.orchestrator.errors.noValidEmails");
-                }
-                for (var m in emailArray) {
-                    if (!validateEmail(emailArray[m])) {
-                        throw I18n.t("survey.orchestrator.errors.invalidEmail", { email: emailArray[m]});
-                    }
-                }
-                return emailArray;
-            }
-            
-            // Returns the self-assigned name of the trainer.
-            // Throws an error if empty.
-            function getSender(panelCB) {
-                var text = panelCB.one(".email-sender").get("value");
-                if (!text) {
-                    throw I18n.t("survey.orchestrator.errors.noValidSender");
-                }
-                return text;
-            }
-
-            // Returns the subject of the mail.
-            // Throws an error if empty.
-            function getSubject(panelCB) {
-                var text = panelCB.one(".email-subject").get("value");
-                if (!text) {
-                    throw I18n.t("survey.orchestrator.errors.noValidSubject");
-                }
-                return text;
-            }
-
-            // Returns the body of the mail.
-            // Throws an error if empty or does not contain variables {{link}} or {{player}}.
-            function getBody(panelCB) {
-                var body = panelCB.one(".email-body").get("value");
-                if (!body) {
-                    throw I18n.t("survey.orchestrator.errors.noValidBody");
-                }
-                if (body.indexOf("{{link}}") === -1) {
-                    throw I18n.t("survey.orchestrator.errors.noLinkInBody");
-                }
-                if (body.indexOf('{{player}}') === -1) {
-                    throw I18n.t("survey.orchestrator.errors.noPlayerInBody");
-                }
-                // HTMLize the body:
-                return body.replace(/\n\n/g, "<br>&nbsp;<br>").replace(/[\n]/g, "<br>");
-            }
-            
-            function setInvitedEmails(panelCB, invitedEmails) {
-                alreadyInvitedEmails += invitedEmails;
-            }
 
             if (!survObj.runningInvitePanel) {
                 mailBody =
@@ -1729,15 +1713,28 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 panelBody =
                     '<div class="invitation-selection">' +
                     '   <div class="section-title">' + I18n.t("survey.orchestrator.invitePanel.currentPlayers") + ': <span class="wegas-survey-orchestrator-updated-nb-players">' + participants.players + '</span></div>' +
-                    '   <div class="section-title">' + I18n.t("survey.orchestrator.invitePanel.inviteTitle") + '</div>' +
-                    '   <div class="action-buttons"><div class="survey-invite-anon"></div><div class="survey-invite-linked"></div></div>' +
-                    '   <div class="action-buttons" style="margin:auto;display:flex"><div class="survey-invite-list"></div></div>' +
+                    '   <div class="action-buttons"><div class="section-title">' + I18n.t("survey.orchestrator.invitePanel.inviteTitle") + '</div>' +
+                    '   <div class="survey-invite-live global-choice choiceA"></div><div class="survey-invite-list global-choice choiceB"></div><div class="survey-invite-live-and-list global-choice choiceC"></div></div>' +
+                    '   <div class="action-buttons live-choice" style="display:none"><div class="section-title">' + I18n.t("survey.orchestrator.invitePanel.inviteLiveTitle") + '</div>' +
+                    '   <div class="survey-invite-live-linked live-subchoice"></div><div class="survey-invite-live-anon live-subchoice"></div><div class="survey-invite-live-dummy live-subchoice" style="visibility:hidden;"></div></div>' +
+                    '   <div class="action-buttons invite-send"><div class="survey-invite-send"></div></div>' +
+                    '</div>' +
+                    '<div class="survey-invite-email-form recipients-sections">' +
+                    '  <div class="live-recipients-section">' +
+                    '   <div class="section-title live-recipients-email-title">' + I18n.t("survey.orchestrator.invitePanel.liveRecipients") + '</div>' +
+                    '   <div class="editable-email-list live-recipients-email" autocomplete="no" spellcheck="false">' + '</div>' +
+                    '   <div class="email-count">' + I18n.t("survey.orchestrator.invitePanel.countEmails") + '<span class="live-recipients-email-count">0</span></div>' +
+                    '  </div>' +
+                    '  <div class="list-recipients-section" style="display:none">' +
+                    '   <div class="section-title list-recipients-email-title">' + I18n.t("survey.orchestrator.invitePanel.listRecipientsChoiceB") + '</div>' +
+                    '   <div contenteditable class="editable-email-list list-recipients-email" autocomplete="no" spellcheck="false"></div>' +
+                    '   <div class="email-count">' + I18n.t("survey.orchestrator.invitePanel.countEmails") + '<span class="list-recipients-email-count">0</span></div>' +
+                    '   <div class="action-buttons recipients-cleanup"><div class="survey-invite-cleanup"></div></div>' +
+                    '  </div>' +
                     '</div>' +
                     '<div class="survey-invite-email-form">' +
                     '   <div class="section-title email-sender-title">' + I18n.t("survey.orchestrator.invitePanel.senderName") + '</div>' +
                     '   <input type="text" class="email-sender" value="' + Y.Wegas.Facade.User.get("currentUser").get("name") + '"/>' +
-                    '   <div class="section-title email-recipients-title">' + I18n.t("survey.orchestrator.invitePanel.recipients") + '</div>' +
-                    '   <textarea class="email-recipients" rows="10" autocomplete="no" spellcheck="false" placeholder="' + I18n.t("survey.orchestrator.invitePanel.recipientsPlaceholder") + '"></textarea>' +
                     '   <div class="section-title email-subject-title">' + I18n.t("survey.orchestrator.invitePanel.subject") + '</div>' +
                     '   <input type="text" class="email-subject" value="' + I18n.t("survey.orchestrator.invitePanel.defaultMailSubject") + '"/>' +
                     '   <div class="section-title email-body-title">' + I18n.t("survey.orchestrator.invitePanel.body") + '</div>' +
@@ -1753,85 +1750,136 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 panelCB.addClass("wegas-orchestrator-panel wegas-survey-invite");
                 panel.plug(Y.Plugin.DraggablePanel, {});
                 
-                buttons.inviteLiveAnon = new SpinButton({
-                    label: "<i class=\"fa fa-user-secret icon\"></i>" + I18n.t("survey.orchestrator.invitePanel.inviteLiveAnonButton"),
-                    onClick: Y.bind(
-                        function(surveyId, btn) {
-                            try {
-                                var email = {
-                                    recipients: [], // This will be set server side to the live players
-                                    sender: getSender(panelCB),
-                                    subject: getSubject(panelCB),
-                                    body: getBody(panelCB)
-                                };
-                                this.onInviteLive(surveyId, btn, email, /* linkedToAccount: */ false,
-                                    function(invitedEmails) {
-                                        setInvitedEmails(panelCB, invitedEmails);
-                                    }
-                                );
-                            } catch(e) {
-                                orchestratorAlert(e);
-                                btn.stopSpinning();
-                            }
-                        }, this),
-                    autoSpin: true,
-                    surveyId: surveyId,
-                    disabled: participants.players === 0
-                }).render(panelCB.one(".survey-invite-anon"));
+                radioInputs.onlyLive = panelCB.one(".survey-invite-live").setHTML('<label for="choiceA">' + I18n.t("survey.orchestrator.invitePanel.inviteLiveChoice") + '</label><input id="choiceA" name="globalChoice" value="A" type="radio"/>');
+                radioInputs.onlyLive.one("input").on("change", function() {
+                    globalChoice = 'A';
+                    panelCB.one(".live-choice").show();
+                    panelCB.one(".live-recipients-section").show();
+                    panelCB.one(".list-recipients-section").hide();
+                    buttons.inviteLiveAnon.set("disabled", liveChoice === undefined);
+                }, this);
+                
+                radioInputs.onlyList = panelCB.one(".survey-invite-list").setHTML('<label for="choiceB">' + I18n.t("survey.orchestrator.invitePanel.inviteListChoice") + '</label><input id="choiceB" name="globalChoice" value="B" type="radio"/>');
+                radioInputs.onlyList.one("input").on("change", function() {
+                    globalChoice = 'B';
+                    panelCB.one(".live-choice").hide();
+                    panelCB.one(".live-recipients-section").hide();
+                    panelCB.one(".list-recipients-section").show();
+                    panelCB.one(".list-recipients-email-title").setHTML(I18n.t("survey.orchestrator.invitePanel.listRecipientsChoiceB"));
+                    panelCB.one(".recipients-cleanup").hide();
+                    buttons.inviteLiveAnon.set("disabled", false);
+                }, this);
 
-                buttons.inviteLiveLinked = new SpinButton({
-                    label: "<i class=\"fa fa-id-card icon\"></i>" + I18n.t("survey.orchestrator.invitePanel.inviteLiveLinkedButton"),
-                    onClick: Y.bind(
-                        function(surveyId, btn) {
-                            try {
-                                var email = {
-                                    recipients: [], // This will be set server side to the live players
-                                    sender: getSender(panelCB),
-                                    subject: getSubject(panelCB),
-                                    body: getBody(panelCB)
-                                };
-                                this.onInviteLive(surveyId, btn, email, /* linkedToAccount: */ true,
-                                    function(invitedEmails) {
-                                        setInvitedEmails(panelCB, invitedEmails);
-                                    }
-                                );
-                            } catch(e) {
-                                orchestratorAlert(e);
-                                btn.stopSpinning();
-                            }
-                        }, this),
-                    autoSpin: true,
-                    surveyId: surveyId,
-                    disabled: participants.players === 0
-                }).render(panelCB.one(".survey-invite-linked"));
+                radioInputs.onlyList = panelCB.one(".survey-invite-live-and-list").setHTML('<label for="choiceC">' + I18n.t("survey.orchestrator.invitePanel.inviteLiveAndListChoice") + '</label><input id="choiceC" name="globalChoice" value="C" type="radio"/>');
+                radioInputs.onlyList.one("input").on("change", function() {
+                    globalChoice = 'C';
+                    panelCB.one(".live-choice").hide();
+                    panelCB.one(".live-recipients-section").show();
+                    panelCB.one(".list-recipients-section").show();
+                    panelCB.one(".list-recipients-email-title").setHTML(I18n.t("survey.orchestrator.invitePanel.listRecipientsChoiceC"));
+                    panelCB.one(".recipients-cleanup").show();
+                    buttons.inviteLiveAnon.set("disabled", false);
+                }, this);
 
-                buttons.inviteList = new SpinButton({
-                    label: "<i class=\"fa fa-user-secret icon\"></i>" + I18n.t("survey.orchestrator.invitePanel.inviteAnonListButton"),
+                radioInputs.onlyList = panelCB.one(".survey-invite-live-linked").setHTML('<label for="choiceA1">' + I18n.t("survey.orchestrator.invitePanel.inviteLiveLinkedChoice") + '</label><input id="choiceA1" name="liveChoice" value="LINKED" type="radio" checked="checked"/>');
+                radioInputs.onlyList.one("input").on("change", function() {
+                    liveChoice = 'LINKED';
+                    buttons.inviteLiveAnon.set("disabled", false);
+                }, this);
+
+                radioInputs.onlyList = panelCB.one(".survey-invite-live-anon").setHTML('<label for="choiceA2">' + I18n.t("survey.orchestrator.invitePanel.inviteLiveAnonChoice") + '</label><input id="choiceA2" name="liveChoice" value="LINKED" type="radio"/>');
+                radioInputs.onlyList.one("input").on("change", function() {
+                    liveChoice = 'ANON';
+                    buttons.inviteLiveAnon.set("disabled", false);
+                }, this);
+
+                buttons.cleanupEmails = new SpinButton({
+                    label: "<i class=\"fa fa-compress icon\"></i>" + I18n.t("survey.orchestrator.invitePanel.cleanupButton"),
                     onClick: Y.bind(
                         function(surveyId, btn) {
-                            try {
-                                var email = {
-                                    recipients: getRecipients(panelCB),
-                                    sender: getSender(panelCB),
-                                    subject: getSubject(panelCB),
-                                    body: getBody(panelCB)
-                                };
-                                this.onInviteList(surveyId, btn, email,
-                                    function(invitedEmails) {
-                                        setInvitedEmails(panelCB, invitedEmails);
-                                    }
-                                );
-                            } catch(e) {
-                                orchestratorAlert(e);
-                                btn.stopSpinning();
-                            }
+                            this.cleanupListEmails(panelCB);
+                            btn.stopSpinning();
                         }, this),
                     autoSpin: true,
                     surveyId: surveyId,
                     disabled: false
-                }).render(panelCB.one(".survey-invite-list"));
+                }).render(panelCB.one(".survey-invite-cleanup"));
 
+                buttons.inviteLiveAnon = new SpinButton({
+                    label: "<i class=\"fa fa-envelope icon\"></i>" + I18n.t("survey.orchestrator.invitePanel.sendButton"),
+                    onClick: Y.bind(
+                        function(surveyId, btn) {
+                            try {
+                                var email = {
+                                    recipients: [], // To be set below depending on the combination selected by the trainer
+                                    sender: this.getSender(panelCB),
+                                    subject: this.getSubject(panelCB),
+                                    body: this.getBody(panelCB)
+                                };
+                            } catch(e) {
+                                orchestratorAlert(e);
+                                btn.stopSpinning();
+                            }
+                            switch (globalChoice) {
+                                case 'A': 
+                                    if (this.getLiveRecipients(panelCB).length !== 0) {
+                                        this.onInviteLive(surveyId, btn, email, /* linkedToAccount: */ liveChoice === 'LINKED',
+                                            Y.bind(function(invitedEmails) {
+                                                this.setLiveRecipients(panelCB, invitedEmails);
+                                            }, this)
+                                        );
+                                    } else {
+                                        orchestratorError(I18n.t("survey.orchestrator.errors.noValidPlayers"));                                    
+                                    }
+                                    break;
+                                case 'B':
+                                    email.recipients = this.getListRecipients(panelCB);
+                                    if (email.recipients.length !== 0) {
+                                        this.onInviteList(surveyId, btn, email,
+                                            function(invitedEmails) {
+                                                //setInvitedEmails(panelCB, invitedEmails);
+                                            }
+                                        );
+                                    } else {
+                                        orchestratorError(I18n.t("survey.orchestrator.errors.noValidEmails"));
+                                    }
+                                    btn.stopSpinning();
+                                    break;
+                                case 'C':
+                                    if (this.getLiveRecipients(panelCB).length === 0) {
+                                        orchestratorError(I18n.t("survey.orchestrator.errors.noValidPlayers"));
+                                    } else {
+                                        email.recipients = this.cleanupListEmails(panelCB);
+                                        if (email.recipients.length !== 0) {
+                                            this.onInviteLiveAndList(surveyId, btn, email, panelCB,
+                                                function(invitedLive, invitedList) {
+                                                }
+                                            );
+                                        } else {
+                                            orchestratorError(I18n.t("survey.orchestrator.errors.noValidEmails"));
+                                        }
+                                    }
+                                    btn.stopSpinning();
+                                    break;
+                                default:
+                                    alert('internal error');
+                            }
+                        }, this),
+                    autoSpin: true,
+                    surveyId: surveyId,
+                    disabled: true
+                }).render(panelCB.one(".survey-invite-send"));
                 
+                var mailListOnPasteHandler = panelCB.one(".list-recipients-email").on("paste", Y.bind(
+                    function(){
+                        this.getListRecipients(panelCB);
+                    }, this));
+                
+                var mailListOnBlurHandler = panelCB.one(".list-recipients-email").on("blur", Y.bind(
+                    function(){
+                        this.getListRecipients(panelCB);
+                    }, this));
+
                 survObj.deleteRunningInvitePanel = Y.bind(function() {
                     if (survObj.runningInvitePanel) {
                         survObj.runningInvitePanel = null;
@@ -1840,35 +1888,172 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                         }
                         this.detachParticipantUpdates(updateHandler);
                         closeHandler.detach();
+                        mailListOnPasteHandler.detach();
+                        mailListOnBlurHandler.detach();
                         panel.destroy();
                     }
                 }, this);
                 
                 updateHandler = this.subscribeToParticipantUpdates(Y.bind(
                     function(participants) {
-                        if (participants.players === 0) {
-                            buttons.inviteLiveAnon.disable();
-                            buttons.inviteLiveLinked.disable();
-                        } else {
-                            buttons.inviteLiveAnon.enable();
-                            buttons.inviteLiveLinked.enable();                            
+                        if (participants.players > 0) {
+                            // this.playerEmails has also been updated automatically:
+                            this.setLiveRecipients(panelCB, this.playerEmails);
+                            
+                            // @TODO also update listRecipients if globalChoice === 'C'
+                            
                         }
                     }, this));
                     
                 closeHandler = panelCB.one(".close").on("click", survObj.deleteRunningInvitePanel, this);
+                
+                // Just for initializing when creating the panel:
+                this.getEmails().then(Y.bind(
+                    function(emails) {
+                        this.setLiveRecipients(panelCB, emails);
+                    }, this)
+                );
             }
         },
 
+        // Returns the cleaned up email list of the form.
+        // Also updates the display.
+        getListRecipients: function(panelCB) {
+            var text = panelCB.one(".list-recipients-email"),
+                list = text.getHTML(),
+                // Extract emails, even in the form: "realname" <name@corp.com>
+                emailArray = list.split(/[\n,;<>\(\)\s]+|&lt|&gt/),
+                validEmails = [],
+                cleanList = "",
+                mail;
+
+            for (var i in emailArray) {
+                mail = emailArray[i];
+                if (mail) {
+                    mail = mail.trim();
+                    if (mail && validateEmail(mail)) {
+                        cleanList += mail + "<br>";
+                        // Prevent any duplication:
+                        if (validEmails.indexOf(mail) === -1) {
+                            validEmails.push(mail);
+                        }
+                    }
+                }
+            }
+            // Update displayed list:
+            text.setHTML(cleanList);
+            panelCB.one(".list-recipients-email-count").setHTML(validEmails.length);
+            return validEmails;
+        },
+
+        setListRecipients: function(panelCB, emails) {
+            var text = panelCB.one(".list-recipients-email"),
+                list = '';
+            for (var i in emails) {
+                list += emails[i] + "<br>";
+            }
+            text.setHTML(list);
+            panelCB.one(".list-recipients-email-count").setHTML(emails.length);
+        },
+
+        getLiveRecipients: function(panelCB) {
+            var text = panelCB.one(".live-recipients-email").getHTML(),
+                // Extract emails, even in the form: "realname" <name@corp.com>
+                emailArray = text.split(/[\n,;<>\(\)\s]+|&lt|&gt/),
+                validEmails = [],
+                mail;
+
+            for (var i in emailArray) {
+                mail = emailArray[i];
+                if (mail) {
+                    mail = mail.trim();
+                    if (mail && validateEmail(mail)) {
+                        validEmails.push(mail);
+                    }
+                }
+            }
+            return validEmails;
+        },
+
+        setLiveRecipients: function(panelCB, emails) {
+            var text = panelCB.one(".live-recipients-email"),
+                list = '';
+            for (var i in emails) {
+                list += emails[i] + "<br>";
+            }
+            text.setHTML(list);
+            panelCB.one(".live-recipients-email-count").setHTML(emails.length);
+        },
+
+        // Removes duplicates between LIVE and LIST emails.
+        // Returns the new LIST.
+        cleanupListEmails: function(panelCB) {
+            var list = this.getListRecipients(panelCB),
+                live = this.getLiveRecipients(panelCB),
+                duplicates = [],
+                pos;
+            for (var i in live) {
+                pos = list.indexOf(live[i]);
+                if (pos !== -1) {
+                    list.splice(pos, 1);
+                    duplicates.push(live[i]);
+                }
+            }
+            this.setListRecipients(panelCB, list);
+            if (duplicates.length !== 0) {
+                orchestratorSuccess("Removed " + duplicates.length + " duplicates from your list:<br>" +
+                    duplicates.join('<br>'));
+            }
+            return list;
+        },
+
+        // Returns the self-assigned name of the trainer.
+        // Throws an error if empty.
+        getSender: function(panelCB) {
+            var text = panelCB.one(".email-sender").get("value");
+            if (!text) {
+                throw I18n.t("survey.orchestrator.errors.noValidSender");
+            }
+            return text;
+        },
+
+        // Returns the subject of the mail.
+        // Throws an error if empty.
+        getSubject: function(panelCB) {
+            var text = panelCB.one(".email-subject").get("value");
+            if (!text) {
+                throw I18n.t("survey.orchestrator.errors.noValidSubject");
+            }
+            return text;
+        },
+
+        // Returns the body of the mail.
+        // Throws an error if empty or does not contain variables {{link}} or {{player}}.
+        getBody: function(panelCB) {
+            var body = panelCB.one(".email-body").get("value");
+            if (!body) {
+                throw I18n.t("survey.orchestrator.errors.noValidBody");
+            }
+            if (body.indexOf("{{link}}") === -1) {
+                throw I18n.t("survey.orchestrator.errors.noLinkInBody");
+            }
+            if (body.indexOf('{{player}}') === -1) {
+                throw I18n.t("survey.orchestrator.errors.noPlayerInBody");
+            }
+            // HTMLize the body:
+            return body.replace(/\n\n/g, "<br>&nbsp;<br>").replace(/[\n]/g, "<br>");
+        },
+        
         // Called when user wants to invite LIVE players to a survey (by email).
         // Imports the survey as unpublished if it's external.
-        onInviteLive: function(surveyId, btn, email, linkedToAccount) {
+        onInviteLive: function(surveyId, btn, email, linkedToAccount, successCb) {
             this.importAsUnpublishedIfExternal_Then_SetPlayerScope(
                 surveyId, 
                 btn, 
                 Y.bind(function(newSurveyId) {
                     this.sendInviteToLive(newSurveyId, btn, email, linkedToAccount,
                         function(invitedEmails) {
-                            throw "comment mettre cette liste dans le contexte de la fenêtre ??"
+                            successCb && successCb(invitedEmails);
                         });
                 }, this)
             );
@@ -1876,15 +2061,54 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         
         // Called when user provides an email list to invite people to a survey.
         // Imports the survey as unpublished if it's external.
-        onInviteList: function(surveyId, btn, email) {
+        onInviteList: function(surveyId, btn, email, successCb) {
             this.importAsUnpublishedIfExternal_Then_SetPlayerScope(
                 surveyId, 
                 btn, 
                 Y.bind(function(newSurveyId) {
                     this.sendInviteToList(newSurveyId, btn, email,
                         function(invitedEmails) {
-                            throw "comment mettre cette liste dans le contexte de la fenêtre ??"
+                            successCb && successCb(invitedEmails);
                         });
+                }, this)
+            );
+        },
+
+        // Called when user provides an email list to invite people to a survey,
+        // IN ADDITION to those who are LIVE.
+        // Imports the survey as unpublished if it's external.
+        onInviteLiveAndList: function(surveyId, btn, email, panelCB, successCb) {
+            var live = this.getLiveRecipients(panelCB);
+            this.importAsUnpublishedIfExternal_Then_SetPlayerScope(
+                surveyId, 
+                btn, 
+                Y.bind(function(newSurveyId) {
+                    this.sendInviteToLive(newSurveyId, btn, email, /*linkedToAccount:*/ true,
+                    // First launch LIVE in order to reduce risk of new LIVE players joining during the process:
+                        Y.bind(function(invitedEmailsFromLive) {
+                            if (live.length !== invitedEmailsFromLive.length) {
+                                Y.log("*** Incoherent number of LIVE players...");
+                                this.getEmails().then(Y.bind(
+                                    function(emails) {
+                                        this.setLiveRecipients(panelCB, emails);
+                                        var newList = this.cleanupListEmails(panelCB);
+                                        email.recipients = newList;
+                                        this.sendInviteToList(newSurveyId, btn, email,
+                                            Y.bind(function(invitedEmailsFromList) {
+                                                successCb && successCb(invitedEmailsFromLive, invitedEmailsFromList);
+                                            }, this)
+                                        );
+                                    }, this)
+                                );
+                            } else {
+                                this.sendInviteToList(newSurveyId, btn, email,
+                                    Y.bind(function(invitedEmailsFromList) {
+                                        successCb && successCb(invitedEmailsFromList);
+                                    }, this)
+                                );
+                            }
+                        }, this)
+                    );
                 }, this)
             );
         },
@@ -2012,7 +2236,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
          */
         onCancelRunningSurvey: function(surveyId, btn) {
             var survDescr = Y.Wegas.Facade.Variable.cache.findById(surveyId);
-            this.getPlayerSummary(
+            this.getSurveyPlayers(
                 surveyId,
                 Y.bind(function(data) {
                     // This data has just been updated:

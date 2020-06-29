@@ -1084,7 +1084,8 @@ YUI().use(function(Y) {
                     "wegas-i18n-survey",
                     "wegas-panel",
                     "wegas-tooltip",
-                    "wegas-injector"],
+                    "wegas-injector",
+                    "event-valuechange"],
                 ws_provides: "SurveyOrchestrator"
             },
             "wegas-i18n-survey-de": {
