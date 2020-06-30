@@ -97,6 +97,26 @@ YUI.add('wegas-surveylistener', function(Y) {
             }
         },
 
+        // Sets a survey as the exclusive one (for the survey editor)
+        // by deregistering all other surveys and preventing new registrations.
+        discardOtherSurveys: function(sd) {
+            var descrId = sd.get("id");
+            // Make sure the given survey is registered:
+            if (!this.knownSurveyHandlers[descrId]) {
+                this.registerSurvey(sd);
+            }
+            // Prevent registration of any new surveys:
+            this.onUpdatedDescriptor = function(){};
+            // Deregister all other surveys:
+            for (var id in this.knownSurveyHandlers){
+                if (+id !== descrId) {
+                    var descr = Y.Wegas.Facade.Variable.cache.findById(id);
+                    this.deregisterSurvey(descr);
+                }
+            }
+            this.checkSurveys();
+        },
+        
         onUpdatedInstance: function(e) {
             var entity = e.entity,
                 status = entity.get("status");

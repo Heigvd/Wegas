@@ -1497,7 +1497,9 @@
 }
 
 .wegas-editsurveymode .wegas-filter-input button,
-.wegas-editsurveymode .wegas-findbugs-button {
+.wegas-editsurveymode .wegas-findbugs-button,
+.wegas-editsurveymode .wegas-find-usage-icon,
+.wegas-editsurveymode .wegas-export-entity-icon {
     display: none;
 }
 

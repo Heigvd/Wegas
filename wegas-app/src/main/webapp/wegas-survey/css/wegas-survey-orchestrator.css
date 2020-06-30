@@ -412,6 +412,13 @@
     text-align: left;
 }
 
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .invitation-selection .inline-title {
+    text-align: left;
+    align-self: center;
+    display: block;
+    font-weight: bold;
+}
+
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .invitation-selection .wegas-survey-orchestrator-updated-nb-players {
     border-bottom: 2px solid #666;
     padding: 1px 3px;
@@ -420,6 +427,7 @@
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .invitation-selection .action-buttons,
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .survey-invite-email-form .action-buttons {
     display: flex;
+    align-items: stretch;
     width: 100%;
 }
 
@@ -436,8 +444,18 @@
     background: #e6f7ff;
     border-radius: 4px;
     padding: 4px;
-    border: 1px solid #ccefff;
+    border: 1px solid #e7e7e7;
     color: black;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .invitation-selection .action-buttons .global-choice,
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .invitation-selection .action-buttons .live-subchoice {
+    cursor: pointer !important;
+}
+
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .invitation-selection .action-buttons .global-choice:hover,
+.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .invitation-selection .action-buttons .live-subchoice:hover {
+    filter: brightness(90%);
 }
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .invitation-selection .action-buttons .global-choice {
@@ -461,12 +479,9 @@
     margin: 10px auto;
 }
 
-.yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .invitation-selection .action-buttons div label {
-    cursor: pointer;
-}
-
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .invitation-selection .action-buttons .survey-invite-send {
     margin: 10px 0 10px auto;
+    width: auto;
 }
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel.wegas-survey-invite .survey-invite-email-form {

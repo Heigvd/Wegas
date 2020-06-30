@@ -140,10 +140,12 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                         case "Export":
                             i = EditEntityAction.stackedIcon(i, 'fa-file-pdf-o');
                             i.tooltip = 'Export';
+                            i.cssClass += ' wegas-export-entity-icon';
                             break;
                         case "Search for usages":
                             i = EditEntityAction.stackedIcon(i, 'fa-compass');
                             i.tooltip = 'Find usage';
+                            i.cssClass += ' wegas-find-usage-icon';
                             break;
                         case "Reset visibilities":
                             i = EditEntityAction.stackedIcon(i, 'fa-paw');

@@ -276,9 +276,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 value: "TeamScope",
                 index: -6,
                 view: {
-                    className: 'wegas-advanced-feature'
-                },
-                view: {
                     type: SELECT,
                     layout: 'shortInline',
                     choices: [
@@ -295,6 +292,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             label: 'the whole game'
                         }
                     ],
+                    className: 'wegas-advanced-feature',
                     label: 'One variable for'
                 }
             },
@@ -313,6 +311,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 },
                 view: {
                     type: SELECT,
+                    className: 'wegas-advanced-feature',
                     label: 'Variable is visible by',
                     layout: 'shortInline',
                     choices: [
@@ -325,7 +324,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                             label: "team members"
                         },
                         {
-                                value: 'GameModelScope',
+                            value: 'GameModelScope',
                             label: 'everybody'
                         }
                     ]
