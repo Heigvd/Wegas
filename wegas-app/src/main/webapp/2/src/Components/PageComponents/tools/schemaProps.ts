@@ -480,6 +480,7 @@ const simpleSchemaProps = {
     index: number = 0,
     layout?: SchemaLayout,
     borderTop?: boolean,
+    objectViewStyle?: boolean,
   ) => ({
     required,
     type: 'object',
@@ -493,6 +494,7 @@ const simpleSchemaProps = {
       type: 'hashlist',
       layout,
       borderTop,
+      objectViewStyle,
     },
   }),
   file: (
@@ -521,11 +523,37 @@ const simpleSchemaProps = {
       borderTop,
     },
   }),
+  path: (
+    label?: string,
+    required: boolean = true,
+    pick: FilePickingType = 'FILE',
+    filter?: FileFilter,
+    value?: string,
+    featureLevel: FeatureLevel = 'DEFAULT',
+    index: number = 0,
+    layout?: SchemaLayout,
+    borderTop?: boolean,
+  ) => ({
+    required,
+    type: 'string',
+    value,
+    index,
+    view: {
+      pick,
+      filter,
+      featureLevel,
+      index,
+      label,
+      type: 'file',
+      layout,
+      borderTop,
+    },
+  }),
 };
 
 type SimpleSchemaPropsValues = keyof typeof simpleSchemaProps;
 
-type SimpleSchemaPropsSchemas = ReturnType<
+export type SimpleSchemaPropsSchemas = ReturnType<
   typeof simpleSchemaProps[SimpleSchemaPropsValues]
 >;
 

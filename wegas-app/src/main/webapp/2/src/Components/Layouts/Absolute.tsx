@@ -14,20 +14,30 @@ export function AbsoluteLayout({ className, children }: WegasComponentProps) {
   );
 }
 
+export interface AbsoluteItemLayoutProps {
+  position?: {
+    left?: string;
+    right?: string;
+    top?: string;
+    bottom?: string;
+  };
+  size?: {
+    width?: string;
+    height?: string;
+  };
+}
+
+export const defaultAbsoluteLayoutProps: AbsoluteItemLayoutProps = {
+  position: undefined,
+  size: undefined,
+};
+export const defaultAbsoluteLayoutPropsKeys = Object.keys(
+  defaultAbsoluteLayoutProps,
+);
+
 interface AbsoluteItemProps
   extends React.PropsWithChildren<WegasComponentItemProps> {
-  layout?: {
-    position?: {
-      left?: string;
-      right?: string;
-      top?: string;
-      bottom?: string;
-    };
-    size?: {
-      width?: string;
-      height?: string;
-    };
-  };
+  layout?: AbsoluteItemLayoutProps;
 }
 
 export const AbsoluteItem = React.forwardRef<HTMLDivElement, AbsoluteItemProps>(

@@ -3,15 +3,15 @@ import { css, cx } from 'emotion';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonViewContainer, CommonView } from './commonView';
 
-const borderTopStyle = css({
+export const borderTopStyle = css({
   borderWidth: '1px 0 0 0',
 });
-const reset = css({
+export const reset = css({
   border: '0px solid #8e8e8e',
   padding: 0,
   margin: 0,
 });
-const legendStyle = css({
+export const legendStyle = css({
   color: '#8e8e8e',
   textAlign: 'center',
 });
