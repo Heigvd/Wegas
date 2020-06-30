@@ -13,7 +13,7 @@ import {
   WegasComponentLayoutCommonOptions,
   WegasComponentLayoutConditionnalOptions,
   WegasComponentOptionsActions,
-  WegasComponentActionsProperties,
+  WegasComponentOptionsActionsProperties,
   WegasComponentDecorations,
 } from '../../../Components/PageComponents/tools/options';
 import {
@@ -127,7 +127,7 @@ const defaultLayoutConditions: WegasComponentLayoutConditionnalOptions = {
 const defaultLayoutConditionsKeys = Object.keys(defaultLayoutConditions);
 
 const defaultAction: WegasComponentOptionsActions &
-  WegasComponentActionsProperties = {
+  WegasComponentOptionsActionsProperties = {
   confirmClick: undefined,
   impactVariable: undefined,
   localScriptEval: undefined,
@@ -154,7 +154,8 @@ interface WegasComponentForm {
   layoutOptions: WegasComponentLayoutCommonOptions &
     (FlexItemLayoutProps | AbsoluteItemLayoutProps);
   layoutConditions: WegasComponentLayoutConditionnalOptions;
-  actions: WegasComponentOptionsActions & WegasComponentActionsProperties;
+  actions: WegasComponentOptionsActions &
+    WegasComponentOptionsActionsProperties;
   decorations: WegasComponentDecorations;
 }
 

@@ -1,13 +1,12 @@
 import * as React from 'react';
 import { useScript } from '../../Hooks/useScript';
-import { useComputeUnreadCount } from './options';
+import { useComputeUnreadCount, WegasComponentExtra } from './options';
 import { InfoBulletProps } from './InfoBullet';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { themeCTX } from '../../Style/Theme';
-import { WegasComponentOptions } from './EditableComponent';
 import { useStore } from '../../../data/store';
 
-export interface OptionsState {
+export interface ExtrasState {
   disabled?: boolean;
   hidden?: boolean;
   readOnly?: boolean;
@@ -17,17 +16,15 @@ export interface OptionsState {
   themeModeClassName?: string;
 }
 
-interface ComponentOptionsManagerProps {
-  options: WegasComponentOptions;
-  setUpgradesState: (
-    newState: (oldState: OptionsState) => OptionsState,
-  ) => void;
+interface ComponentExtrasManagerProps {
+  extras: WegasComponentExtra;
+  setExtrasState: (newState: (oldState: ExtrasState) => ExtrasState) => void;
 }
 
-export function ComponentOptionsManager({
-  options,
-  setUpgradesState,
-}: ComponentOptionsManagerProps) {
+export function ComponentExtrasManager({
+  extras,
+  setExtrasState,
+}: ComponentExtrasManagerProps) {
   const {
     tooltip,
     disableIf,
@@ -37,7 +34,7 @@ export function ComponentOptionsManager({
     infoBullet,
     themeMode,
     lock,
-  } = options;
+  } = extras;
 
   const disabled = useScript<boolean>(disableIf?.content || 'undefined;');
   const hidden = useScript<boolean>(hideIf?.content || 'undefined;');
@@ -53,7 +50,7 @@ export function ComponentOptionsManager({
       : themesState.themes[themesState.selectedThemes[currentContext]]
           .modeClasses[themeMode];
 
-  const newUpgrades: OptionsState = {
+  const newUpgrades: ExtrasState = {
     disabled,
     hidden,
     readOnly,
@@ -64,14 +61,14 @@ export function ComponentOptionsManager({
   };
 
   React.useEffect(() => {
-    setUpgradesState(oldUpgrades => {
+    setExtrasState(oldUpgrades => {
       if (deepDifferent(oldUpgrades, newUpgrades)) {
         return newUpgrades;
       } else {
         return oldUpgrades;
       }
     });
-  }, [setUpgradesState, newUpgrades]);
+  }, [setExtrasState, newUpgrades]);
 
   return null;
 }

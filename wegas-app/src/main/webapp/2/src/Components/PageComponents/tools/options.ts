@@ -59,7 +59,7 @@ export interface WegasComponentOptionsActions {
   printVariable?: PrintVariableAction & WegasComponentOptionsAction;
 }
 
-export const defaultWegasComponentOptionsActions: WegasComponentOptionsActions = {
+const defaultWegasComponentOptionsActions: WegasComponentOptionsActions = {
   impactVariable: undefined,
   localScriptEval: undefined,
   openFile: undefined,
@@ -70,9 +70,26 @@ export const defaultWegasComponentOptionsActions: WegasComponentOptionsActions =
   printVariable: undefined,
 };
 
-export interface WegasComponentActionsProperties {
+export const defaultWegasComponentOptionsActionsKeys = Object.keys(
+  defaultWegasComponentOptionsActions,
+);
+
+export interface WegasComponentOptionsActionsProperties {
   confirmClick?: string;
 }
+
+const defaulWegasComponentOptionsActionsProperties: WegasComponentOptionsActionsProperties = {
+  confirmClick: undefined,
+};
+
+const defaultWegasComponentOptionsActionsPropertiesKeys = Object.keys(
+  defaulWegasComponentOptionsActionsProperties,
+);
+
+export const defaultWegasComponentActionsKeys = [
+  ...defaultWegasComponentOptionsActionsKeys,
+  ...defaultWegasComponentOptionsActionsPropertiesKeys,
+];
 
 export interface WegasComponentActions {
   openPage: (props: OpenPageAction) => void;
