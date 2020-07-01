@@ -161,7 +161,7 @@ const visitPath = (path: number[], callback: (path: number[]) => void) => {
  * @param page
  * @param path
  */
-function getComponentFromPath(page: WegasComponent, path: number[]) {
+export function getComponentFromPath(page: WegasComponent, path: number[]) {
   const newPath = [...path];
   let component: WegasComponent = page;
   while (newPath.length > 0) {
@@ -478,7 +478,7 @@ export interface ExtractedLayoutProps {
   linearChildrenProps?: PlayerLinearLayoutChildrenProps;
 }
 
-interface ComponentContainerProps extends WegasComponentOptions {
+interface ComponentContainerProps {
   pageId?: string;
   path?: number[];
   childrenType?: ContainerTypes;
@@ -493,8 +493,6 @@ export function ComponentContainer({
 }: ComponentContainerProps) {
   const realPath = path || [];
 
-  debugger;
-
   const wegasComponent = useStore(s => {
     if (!pageId) {
       return undefined;
@@ -504,8 +502,6 @@ export function ComponentContainer({
     if (!page) {
       return undefined;
     }
-
-    debugger;
 
     return getComponentFromPath(page, realPath);
   }, deepDifferent);
@@ -829,6 +825,381 @@ export function ComponentContainer({
                 />
               ) : (
                 childrenPack
+              )}
+            </WegasComponent>
+          </ErrorBoundary>
+        )}
+        {extraState.infoBulletProps && (
+          <InfoBullet {...extraState.infoBulletProps} />
+        )}
+        {dragHoverState && editable && childrenType !== 'ABSOLUTE' && (
+          <ComponentDropZone
+            onDrop={dndComponent =>
+              onDrop(
+                dndComponent,
+                containerPath,
+                itemIndex != null ? itemIndex + 1 : itemIndex,
+              )
+            }
+            show
+            dropPosition="AFTER"
+          />
+        )}
+        <LockedOverlay
+          locked={(extraState.disabled || extraState.locked) === true}
+        />
+      </Container>
+      {showSplitter && <FonkyFlexSplitter notDraggable={!allowResize} />}
+    </>
+  );
+}
+
+interface JSONComponentContainerProps extends WegasComponentOptions {
+  pageId?: string;
+  wegasComponent: WegasComponent;
+  path?: number[];
+  childrenType?: ContainerTypes;
+}
+
+export function JSONComponentContainer({
+  pageId,
+  wegasComponent,
+  path,
+  childrenType,
+}: JSONComponentContainerProps) {
+  const realPath = path || [];
+
+  const restProps = wegasComponent.props;
+  const extras = pick(restProps, defaultExtrasKeys);
+  const actions = pick(restProps, defaultWegasComponentActionsKeys);
+
+  const oldType = React.useRef<string>();
+  const oldComponent = React.useRef<{
+    WegasComponent: React.FunctionComponent<WegasComponentProps>;
+    containerType: ContainerTypes;
+    componentName: string;
+  }>();
+  const component = usePageComponentStore(
+    s => {
+      if (wegasComponent && wegasComponent.type !== oldType.current) {
+        oldType.current = wegasComponent?.type;
+        oldComponent.current = s[(wegasComponent && wegasComponent.type) || ''];
+      }
+      return oldComponent.current;
+    },
+    (a, b) => a?.componentName !== b?.componentName,
+  ) as {
+    WegasComponent: React.FunctionComponent<WegasComponentProps>;
+    containerType: ContainerTypes;
+    componentName: string;
+  };
+
+  const { WegasComponent, containerType, componentName } = component || {};
+
+  const container = React.useRef<HTMLDivElement>();
+  const mouseOver = React.useRef<boolean>(false);
+  const [dragHoverState, setDragHoverState] = React.useState<boolean>(false);
+  const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
+  const [extraState, setExtraState] = React.useState<ExtrasState>({});
+
+  const {
+    onDrop,
+    editMode,
+    handles,
+    // pageIdPath,
+    showBorders,
+  } = React.useContext(pageCTX);
+
+  const { editedPath } = React.useContext(pageEditorCTX);
+
+  // const pageId = pageIdPath.slice(0, 1)[0];
+  const containerPath = [...(path || [])];
+  const itemIndex = containerPath.pop();
+  const isNotFirstComponent = realPath.length > 0;
+  const editable = editMode && isNotFirstComponent;
+  const showComponent = editable || !extraState.hidden;
+  const showLayout = showBorders && containerType != null;
+  const computedVertical =
+    containerType === 'FLEX'
+      ? restProps.layout?.flexDirection === 'column' ||
+        restProps.layout?.flexDirection === 'column-reverse'
+      : containerType === 'LINEAR'
+      ? restProps.vertical
+      : false;
+
+  // debugger;
+  // const showSplitter =
+  //   childrenType === 'LINEAR' && !last && (editMode || !noSplitter);
+  // const allowResize = childrenType === 'LINEAR' && (editMode || !noResize);
+  // const isDisabled = (actions.locked || upgrades.disabled) === true;
+  const isSelected = JSON.stringify(realPath) === JSON.stringify(editedPath);
+  const isFocused = usePagesStateStore(
+    s => pageId != null && isComponentFocused(editMode, pageId, realPath)(s),
+  );
+
+  const showSplitter =
+    containerType === 'LINEAR' && (editMode || !restProps.noSplitter);
+  const allowResize =
+    containerType === 'LINEAR' && (editMode || !restProps.noResize);
+
+  // const childrenPack = React.useMemo(() => {
+  //   const newChildren: JSX.Element[] = [];
+  //   for (let i = 0; nbChildren != null && i < nbChildren; ++i) {
+  //     const last = i === nbChildren - 1;
+
+  //     newChildren.push(
+  //       <React.Fragment
+  //         key={JSON.stringify([...(realPath ? realPath : []), i])}
+  //       >
+  //         <ComponentContainer
+  //           pageId={pageId}
+  //           path={[...realPath, i]}
+  //           childrenType={containerType}
+  //           // childrenVertical={computedVertical}
+  //         />
+  //         {showSplitter && !last && (
+  //           <FonkyFlexSplitter notDraggable={!allowResize} />
+  //         )}
+  //       </React.Fragment>,
+  //     );
+  //   }
+  //   return newChildren;
+  // }, [
+  //   nbChildren,
+  //   pageId,
+  //   realPath,
+  //   showSplitter,
+  //   allowResize,
+  //   containerType,
+  //   // computedVertical,
+  // ]);
+
+  const Container = React.useMemo(() => {
+    switch (childrenType) {
+      case 'LINEAR':
+        return FonkyFlexContent;
+      case 'ABSOLUTE':
+        return AbsoluteItem;
+      case 'FLEX':
+      default:
+        return FlexItem;
+    }
+  }, [childrenType]);
+
+  // const onClick = React.useCallback(() => {
+  //   if (!isDisabled && actions.onClick != null) {
+  //     actions.onClick();
+  //   }
+  // }, [isDisabled, actions]);
+
+  const onClick = React.useCallback(() => {
+    if (
+      !restProps.confirmClick ||
+      // TODO : Find a better way to do that than a modal!!!
+      // eslint-disable-next-line no-alert
+      confirm(restProps.confirmClick)
+    ) {
+      Object.entries(
+        pick(
+          restProps,
+          defaultWegasComponentOptionsActionsKeys,
+        ) as WegasComponentOptionsActions,
+      )
+        .sort(
+          (
+            [, v1]: [string, WegasComponentOptionsAction],
+            [, v2]: [string, WegasComponentOptionsAction],
+          ) =>
+            (v1.priority ? v1.priority : 0) - (v2.priority ? v2.priority : 0),
+        )
+        .forEach(([k, v]) =>
+          wegasComponentActions[k as keyof WegasComponentOptionsActions](v),
+        );
+    }
+  }, [restProps]);
+
+  const onMouseOver = React.useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (!mouseOver.current) {
+        mouseOver.current = true;
+        if (editable) {
+          e.stopPropagation();
+          if (!stackedHandles) {
+            setStackedHandles(() => computeHandles(handles, realPath));
+          }
+          if (pageId != null) {
+            pageDispatch(PageStateAction.setFocused(pageId, realPath));
+          }
+        }
+      }
+    },
+    [editable, handles, pageId, realPath, stackedHandles],
+  );
+
+  const onMouseLeave = React.useCallback(() => {
+    mouseOver.current = false;
+    if (editable) {
+      setStackedHandles(undefined);
+      pageDispatch(PageStateAction.unsetFocused());
+    }
+  }, [editable]);
+
+  const dragEnter = React.useCallback(() => {
+    if (editable) {
+      setDragHoverState(true);
+    }
+  }, [editable]);
+
+  const dragLeave = React.useCallback(() => {
+    if (editable) {
+      setDragHoverState(false);
+    }
+  }, [editable]);
+
+  const dropFunctions = useDropFunctions(dragEnter, dragLeave, dragLeave);
+
+  // React.useEffect(() => {
+  //   setDragHoverState(false);
+  // }, [nbChildren]);
+
+  const onEditableComponentDrop = React.useCallback(
+    (dndComponent, dndMonitor) => {
+      if (container.current) {
+        const { x: absX, y: absY } = dndMonitor.getClientOffset() || {
+          x: 0,
+          y: 0,
+        };
+        const {
+          left: srcX,
+          top: srcY,
+        } = container.current.getBoundingClientRect() || {
+          x: 0,
+          y: 0,
+        };
+
+        const [relX, relY] = [absX - srcX, absY - srcY];
+
+        onDrop(dndComponent, realPath, undefined, {
+          layout: { position: { left: relX, top: relY } },
+        });
+      }
+    },
+    [onDrop, realPath],
+  );
+
+  if (!wegasComponent) {
+    return <pre>JSON error in page</pre>;
+  }
+  if (!component) {
+    return <div>{`Unknown component : ${wegasComponent.type}`}</div>;
+  }
+
+  return (
+    <>
+      {Object.keys(extras).length > 0 && (
+        <ComponentExtrasManager
+          extras={extras}
+          setExtrasState={setExtraState}
+        />
+      )}
+      <Container
+        ref={ref => {
+          // dropZone(ref);
+          if (ref != null) {
+            container.current = ref;
+          }
+        }}
+        {...pick(
+          restProps,
+          childrenType === 'FLEX'
+            ? defaultFlexLayoutOptionsKeys
+            : childrenType === 'ABSOLUTE'
+            ? defaultAbsoluteLayoutPropsKeys
+            : [],
+        )}
+        className={cx(handleControlStyle, flex, extraState.themeModeClassName, {
+          [layoutHighlightStyle]: showLayout,
+          [childHighlightStyle]: showLayout,
+          [handleControlHoverStyle]: editMode,
+          [focusedComponentStyle]: isFocused || isSelected,
+          [childDropzoneHorizontalStyle]: !computedVertical,
+          [childDropzoneVerticalStyle]: computedVertical,
+          [disabledStyle]: extraState.disabled,
+        })}
+        style={{
+          cursor:
+            Object.keys(actions).length > 0 && !extraState.disabled
+              ? 'pointer'
+              : 'initial',
+        }}
+        onClick={onClick}
+        onMouseOver={onMouseOver}
+        onMouseLeave={onMouseLeave}
+        {...dropFunctions}
+        tooltip={extraState.tooltip}
+      >
+        {dragHoverState && editable && containerType === 'ABSOLUTE' && (
+          <ComponentDropZone
+            onDrop={onEditableComponentDrop}
+            show
+            dropPosition="INTO"
+          />
+        )}
+        {dragHoverState && editable && childrenType !== 'ABSOLUTE' && (
+          <ComponentDropZone
+            onDrop={dndComponent =>
+              onDrop(dndComponent, containerPath, itemIndex)
+            }
+            show
+            dropPosition="BEFORE"
+          />
+        )}
+        {editable && (
+          <EditHandle
+            name={name}
+            stackedHandles={stackedHandles}
+            componentType={componentName}
+            path={realPath}
+            infoMessage={
+              extraState.hidden
+                ? 'This component is shown only in edit mode'
+                : undefined
+            }
+            isSelected={isSelected}
+          />
+        )}
+        {showComponent && (
+          <ErrorBoundary key={pageId}>
+            <WegasComponent
+              // path={realPath}
+              // last={last}
+              // componentType={componentName}
+              // containerType={containerType}
+              // childrenType={childrenType}
+              {...restProps}
+            >
+              {wegasComponent.props.children == null ? null : editMode &&
+                wegasComponent.props.children.length === 0 ? (
+                <EmptyComponentContainer
+                  childrenType={containerType}
+                  path={realPath}
+                />
+              ) : (
+                wegasComponent.props.children.map((c, i, a) => (
+                  <React.Fragment
+                    key={JSON.stringify([...(realPath ? realPath : []), i])}
+                  >
+                    <JSONComponentContainer
+                      wegasComponent={c}
+                      pageId={pageId}
+                      path={[...realPath, i]}
+                      childrenType={containerType}
+                    />
+                    {showSplitter && i > a.length - 1 && (
+                      <FonkyFlexSplitter notDraggable={!allowResize} />
+                    )}
+                  </React.Fragment>
+                ))
               )}
             </WegasComponent>
           </ErrorBoundary>
