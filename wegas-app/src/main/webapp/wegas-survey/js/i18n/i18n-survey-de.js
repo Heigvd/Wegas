@@ -66,7 +66,7 @@ YUI.add("wegas-i18n-survey-de", function(Y) {
                 deleteButton: "Löschen",
                 renameButton: "Umbenennen (editieren)",
                 shareButton: "Teilen",
-                scopeTitle: "Wie werden die Teilnehmer antworten:",
+                scopeTitle: "Die Teilnehmer antworten:",
                 playerScopeButton: "Individuell",
                 teamScopeButton: "Teamweise",
                 progressDetailsButton: "Details",
