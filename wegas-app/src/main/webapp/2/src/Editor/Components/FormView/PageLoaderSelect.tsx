@@ -33,7 +33,7 @@ export interface PageSelectProps extends WidgetProps.BaseProps {
 }
 
 export default function PageLoaderSelect(props: PageSelectProps) {
-  const [loaderValue, setPageLoader] = React.useState<string>('');
+  const [loaderValue, setPageLoader] = React.useState<string>();
   const [srcMode, setSrcMode] = React.useState(false);
   const pageLoaders = useStore(s => {
     const loaders: MenuItem<
