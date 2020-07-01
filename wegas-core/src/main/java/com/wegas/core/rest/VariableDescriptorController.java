@@ -24,6 +24,8 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.survey.persistence.SurveyDescriptor;
+import com.wegas.survey.persistence.SurveyInstance;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -369,6 +371,84 @@ public class VariableDescriptorController {
 
         return variableDescriptorFacade.cherryPick(gameModelId, vd.getName(),
             source.getId(), vdName, newScopeType, withLang);
+    }
+    
+
+    /**
+     * Class for customizing cherryPicked Surveys.
+     */
+    public static final class SurveyConfig {
+
+        private SurveyInstance.SurveyStatus defaultStatus;
+        private Boolean published;
+
+        public SurveyInstance.SurveyStatus getDefaultStatus() {
+            return defaultStatus;
+        }
+
+        public void setDefaultStatus(SurveyInstance.SurveyStatus defaultStatus) {
+            this.defaultStatus = defaultStatus;
+        }
+
+        public Boolean isPublished() {
+            return published;
+        }
+
+        public void setPublished(Boolean published) {
+            this.published = published;
+        }
+    }
+
+    /**
+     * Import a survey variable from the source gameModel into the target gameModel.
+     * Such an import is recursive and all referenced files are
+     * {@link JCRFacade#importFile(AbstractContentDescriptor, ContentConnector) imported} too.
+     * <p>
+     * Such imported files may be renamed to avoid overriding preexisting files.
+     * <p>
+     * /**
+     * Import a survey from another gameModel
+     *
+     * @param gameModelId  the gameModel in which to put the variable
+     * @param vdId         the variable to import
+     * @param vdName       the name of the target (new) variable
+     * @param newScopeType if set, change scope recursively
+     * @param config       if set, custom configuration for the new survey
+     *
+     * @return
+     */
+    @POST
+    @Path("CherryPickSurvey/{vdId: [1-9][0-9]*}{sep2: /?}{vdName: [A-Za-z0-9_$]*}{sep3: /?}{newScopeType: (PlayerScope|TeamScope|GameModelScope)?}")
+    public VariableDescriptor cherryPickSurvey(
+        @PathParam("gameModelId") Long gameModelId,
+        @PathParam("vdId") Long vdId,
+        @PathParam("vdName") String vdName,
+        @PathParam("newScopeType") AbstractScope.ScopeType newScopeType,
+        SurveyConfig config) {
+
+        // first, cherry pick survey as any other variable
+        VariableDescriptor newDesc = this.cherryPick("withLanguages", gameModelId, vdId, vdName, newScopeType);
+
+        // then, apply custom configuration
+        if (newDesc instanceof SurveyDescriptor) {
+            SurveyDescriptor surveyDesc = (SurveyDescriptor) newDesc;
+            if (config != null) {
+                if (config.isPublished() != null) {
+                    surveyDesc.setIsPublished(config.isPublished());
+                }
+                if (config.getDefaultStatus() != null) {
+                    // set default instance status
+                    surveyDesc.getDefaultInstance().setStatus(config.getDefaultStatus());
+                    // update effective instances status
+                    variableDescriptorFacade.getInstances(newDesc).values().forEach(si
+                        -> ((SurveyInstance) si).setStatus(config.getDefaultStatus()));
+                    }
+            }
+
+            return surveyDesc;
+        } else {
+            throw WegasErrorMessage.error("This is not a survey");
+        }
     }
 
     /**

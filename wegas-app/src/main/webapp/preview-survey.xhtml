@@ -73,7 +73,7 @@
 
                 var descr = Y.Wegas.Facade.Variable.cache.findById(YUI_config.Wegas.dataSelector.val),
                     friendlyName = getFriendlyVarName(descr);
-                Y.all(".wegas-title").setContent('Read-only preview of "' + friendlyName + '"');
+                Y.all(".wegas-title").setContent('<i>Read-only preview of "' + friendlyName + '"</i>');
                 document.title = friendlyName + ' - Wegas';
             });
 

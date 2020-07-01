@@ -9,6 +9,7 @@
 package com.wegas.core;
 
 import ch.albasim.wegas.annotations.ProtectionLevel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hazelcast.core.Cluster;
 import com.hazelcast.core.Member;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -1176,6 +1177,76 @@ public class Helper {
         return email.replaceFirst("([^@]{1,4})[^@]*@(.*)", "$2");
     }
 
+    /**
+     * Class for conveniently passing email attributes by parameter.
+     */
+    public static final class EmailAttributes {
+        private List<String> recipients = new ArrayList<>();
+        private String sender = "";
+        private String subject = "";
+        private String body = "";
+        
+        public EmailAttributes() {
+            // Default constructur required for deserialisation
+        }
+        
+        // Get recipient with the hypothesis that there is only one recipient in the list
+        @JsonIgnore
+        public String getRecipient() {
+            if (recipients.size() != 1){
+                throw WegasErrorMessage.error("There should be only one recipient in the email list.");
+            }
+            
+            return recipients.get(0);
+        }
+        
+        // Set recipient with the hypothesis that there is only one recipient in the list
+        @JsonIgnore
+        public void setRecipient(String recipient) {
+            if (recipients.size() > 1){
+                throw WegasErrorMessage.error("There should be only one recipient in the email list.");
+            }
+            if (recipients.isEmpty()) {
+                this.recipients.add(recipient);
+            } else {
+                this.recipients.set(0, recipient);
+            }
+        }
+
+        public List<String> getRecipients() {
+            return recipients;
+        }
+        
+        public void setRecipients(List<String> recipients) {
+            this.recipients = recipients;
+        }
+
+        public String getSender() {
+            return sender;
+        }
+        
+        public void setSender(String sender) {
+            this.sender = sender;
+        }
+        
+        public String getSubject() {
+            return subject;
+        }
+        
+        public void setSubject(String subject) {
+            this.subject = subject;
+        }
+        
+        public String getBody() {
+            return body;
+        }
+        
+        public void setBody(String body) {
+            this.body = body;
+        }
+        
+    }
+    
     /**
      * Is the subject authenticated or remembered?
      *

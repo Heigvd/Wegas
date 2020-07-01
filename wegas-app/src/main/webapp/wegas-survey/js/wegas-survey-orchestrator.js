@@ -16,11 +16,22 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
     var CONTENTBOX = "contentBox",
         BOUNDINGBOX = "boundingBox",
         SERVER_SCRIPT_PATH = "wegas-app/js/server/",
+        SURVEY_CONTAINER_GAMEMODEL_NAME = "Survey container",
+        SURVEY_CONTAINER_ICON = "ICON_dark-orangine_bar-chart_fa",
+        SURVEY_CONTAINER_PROPERTIES = {
+            scriptUri: SERVER_SCRIPT_PATH,
+            iconUri: SURVEY_CONTAINER_ICON,
+            freeForAll: true
+        },
+        EMPTY_GAMEMODEL_ID = 1,
         WEGAS_MAX_NAME_LENGTH = 255,
         SURVEY_NAME_DATE = "_CrDat_",
         SURVEY_NAME_DATE_REGEXP = /(_CrDat_[0-9]+)$/i,  // Survey name (script alias) must end with this expression.
         PUBLISHED = true,
         UNPUBLISHED = !PUBLISHED,
+        TEAMSCOPE = "TeamScope",
+        PLAYERSCOPE = "PlayerScope",
+        VARSET_IS_WRITEABLE = true,
         Wegas = Y.Wegas,
         SurveyOrchestrator,
         SpinButton,
@@ -33,6 +44,58 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             CLOSED: "CLOSED"
         },
         MAX_LISTABLE_SURVEYS = 20;
+
+    // Displays a nice alert.
+    // @param msg string message
+    // @param modal optional boolean, defaults to false
+    function orchestratorAlert(msg, modal) {
+        var panel = new Y.Wegas.Panel({
+            content: "<div class='icon icon-warn'>" + msg + "</div>",
+            modal: modal === true,
+            width: 400,
+            buttons: {
+                footer: [{
+                        label: I18n.t('global.ok') || 'OK',
+                        action: function() {
+                            panel.exit();
+                        }
+                    }]
+            }
+        }).render();
+        var cb = panel.get(CONTENTBOX);
+        cb.addClass("wegas-orchestrator-alert");
+        // Sometimes the popup may hide the cause of the alert:
+        panel.plug(Y.Plugin.DraggablePanel, {});
+    }
+
+    // Displays a nice success notification
+    // @param msg string message
+    // @param modal optional boolean, defaults to false
+    function orchestratorSuccess(msg, modal) {
+        var panel = new Y.Wegas.Panel({
+            content: "<div class='icon icon-success'>" + msg + "</div>",
+            modal: modal === true,
+            width: 400,
+            buttons: {
+                footer: [{
+                        label: I18n.t('global.ok') || 'OK',
+                        action: function() {
+                            panel.exit();
+                        }
+                    }]
+            }
+        }).render();
+        var cb = panel.get(CONTENTBOX);
+        cb.addClass("wegas-orchestrator-success");
+        panel.plug(Y.Plugin.DraggablePanel, {});
+    }
+    
+    // Syntactical validation of an email address.
+    // Returns null if not valid.
+    function validateEmail(email) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    }
 
     /**
      * @name SpinButton
@@ -144,20 +207,27 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             this.knownSurveys = null;            
             this._monitoredData = {};
             this.datatables = {};
-            this.playedIndividually = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val.freeForAll");
+            this.currentGameId =  Y.Wegas.Facade.Game.cache.getCurrentGame().get("id");
+            var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
+            this.currentGameModelId =  gm.get("id");
+            this.playedIndividually = gm.get("properties").get("val.freeForAll");
+            this.currentPlayerId = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id");
+            this.participants = this.getNbTeamsPlayers();
+            this.playerEmails = [];
+            this.getEmails();
+            this.participantsCallbacks = [];
             this.checkXapiPath();
         },
         
-        // Persists the current gameModel "as is".
-        persistCurrentGameModel: function(successCb, failureCb) {
-            var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
-                gameModelId = gm.get("id"),
+        // Persists the given gameModel "as is".
+        persistGameModel: function(gameModel, successCb, failureCb) {
+            var gameModelId = gameModel.get("id"),
                 config = {
                     request: '/' + gameModelId,
                     cfg: {
                         updateCache: true,
                         method: "PUT",
-                        data: gm
+                        data: gameModel
                     },
                     on: {
                         success: Y.bind(function(e) {
@@ -170,12 +240,34 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             };
             Y.Wegas.Facade.GameModel.sendRequest(config);
         },
+        
+        // Persists the given game "as is".
+        persistGame: function(game, successCb, failureCb) {
+            var gameId = game.get("id"),
+                config = {
+                    request: '/Game/' + gameId,
+                    cfg: {
+                        updateCache: true,
+                        method: "PUT",
+                        data: game
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            successCb && successCb(gameId);
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            failureCb && failureCb(gameId);
+                        }, this)
+                }
+            };
+            Y.Wegas.Facade.GameModel.sendRequest(config);
+        },
 
         // Persists the given SurveyDescriptor "as is".
         // No recursive saving of child sections or inputs.
         persistSurvey: function(surveyDescr, successCb, failureCb) {
             // Full request: /rest/GameModel/<gameModelId>/VariableDescriptor/<variableDescriptorId>
-            var gameModelId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"),
+            var gameModelId = this.currentGameModelId,
                 surveyId = surveyDescr.get("id"),
                 config = {
                     request: '/' + gameModelId + "/VariableDescriptor/" + surveyId,
@@ -196,6 +288,262 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             Y.Wegas.Facade.GameModel.sendRequest(config);
         },
 
+        // Removes the given language from the given gameModel.
+        // @TODO finish implementation of server-side code.
+        /*
+        removeLanguage: function(gameModelId, langCode, successCb, failureCb) {
+            // Full request: /rest/GameModel/<gameModelId>/I18n/Lang/<code>
+            var config = {
+                    request: '/' + gameModelId + "/I18n/Lang/" + langCode,
+                    cfg: {
+                        updateCache: true,
+                        method: "DELETE"
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            successCb && successCb(e);
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            failureCb && failureCb(e);
+                        }, this)
+                }
+            };
+            Y.Wegas.Facade.GameModel.sendRequest(config);
+        },
+        */
+       
+        // Instantiates a new game (or "session") from the given gameModel
+        createGame: function(sourceGameModelId, gameName, successCb, failureCb) {
+            // Full request: /rest/GameModel/<gameModelId>/Game
+            var gameAttrs = {
+                    "@class": "Game",
+                    "access": "OPEN",   // "CLOSE" generates access right issues on debug team at this stage
+                    "gameModelId": sourceGameModelId,
+                    "name": gameName,
+                    "properties": SURVEY_CONTAINER_PROPERTIES
+                },
+                config = {
+                    request: '/' + sourceGameModelId + "/Game",
+                    cfg: {
+                        updateCache: true,
+                        method: "POST",
+                        data: gameAttrs
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            var newGame = e.response.entity;
+                            successCb && successCb(newGame);                            
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            failureCb && failureCb(e);
+                        }, this)
+                }
+            };
+            Y.Wegas.Facade.GameModel.sendRequest(config);
+        },
+        
+        // Creates an empty gameModel with the given name.
+        createEmptyGameModel: function(gameName, successCb, failureCb) {
+            // Full request: /rest/GameModel/<gameModelId>
+            var gameModelId = EMPTY_GAMEMODEL_ID,
+                gameAttrs = {
+                    "@class": "GameModel",
+                    "name": gameName,
+                    // This attribute seems to be ignored: server-side bug?
+                    "properties": SURVEY_CONTAINER_PROPERTIES
+                },
+                config = {
+                    request: '/' + gameModelId,
+                    cfg: {
+                        updateCache: true,
+                        method: "POST",
+                        data: gameAttrs
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            successCb && successCb(e.response.entity);
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            failureCb && failureCb(e);
+                        }, this)
+                }
+            };
+            Y.Wegas.Facade.GameModel.sendRequest(config);
+        },
+
+        // Invites into the current game all LIVE players, either anonymously or linked to accounts.
+        sendInviteToLive: function(surveyIds, btn, emails, linkedToAccount, successCb, failureCb) {
+            // Full request linked: /rest/GameModel/<gameModelId>/Game/InvitePlayersToSurvey/<surveyIds>*
+            // Full request anon: /rest/GameModel/<gameModelId>/Game/InvitePlayersToSurveyAnonymously/<surveyIds>*
+            // Request returns: InvitationResult object { invitedEmails: array of strings }
+            var request = linkedToAccount ? 'InvitePlayersToSurvey' : 'InvitePlayersToSurveyAnonymously',
+                config = {
+                    request: '/' + this.currentGameModelId + '/Game/' + request + '/' + surveyIds,
+                    cfg: {
+                        updateCache: true,
+                        method: "POST",
+                        data: emails
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            var entities = e.serverResponse.get("updatedEntities"),
+                                res = entities.find(
+                                    function(obj) {
+                                        return obj.get("@class") && obj.get("@class").indexOf("InvitationResult");
+                                    });
+                            res = res && res.get("val");
+                            var invitedEmails = (res && res.invitedEmails) || [];
+                            orchestratorSuccess(I18n.t("survey.orchestrator.invitePanel.surveyInvitedFromLive", { number: invitedEmails.length }));
+                            successCb && successCb(invitedEmails);
+                            btn && btn.stopSpinning();
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            try {
+                                var wegasErrorMessage = e.serverResponse.get("events")[0].get("val.exceptions")[0].get("val");
+                                if (wegasErrorMessage.messageId === "WEGAS-INVITE-SURVEY-NO-EMAIL") {
+                                    orchestratorAlert(I18n.t("survey.orchestrator.errors.inviteNoEmails"));
+                                } else {
+                                    orchestratorAlert(wegasErrorMessage.message);
+                                }
+                            } catch(ex) {
+                                orchestratorAlert("Internal error: could not send invitations");
+                            }
+                            failureCb && failureCb(e);
+                            btn && btn.stopSpinning();
+                        }, this)
+                }
+            };
+            Y.Wegas.Facade.GameModel.sendRequest(config);
+        },
+
+        // Invites into the current game the given email owners.
+        sendInviteToList: function(surveyIds, btn, emails, successCb, failureCb) {
+            // Full request: /rest/GameModel/<gameModelId>/Game/inviteEmailsToSurveyAnonymously/<surveyIds>*
+            // Request returns: InvitationResult object { invitedEmails: array of strings }
+            var config = {
+                    request: '/' + this.currentGameModelId + '/Game/inviteEmailsToSurveyAnonymously/' + surveyIds,
+                    cfg: {
+                        updateCache: true,
+                        method: "POST",
+                        data: emails
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            var entities = e.serverResponse.get("updatedEntities"),
+                                res = entities.find(
+                                    function(obj) {
+                                        return obj.get("@class") && obj.get("@class").indexOf("InvitationResult");
+                                    });
+                            res = res && res.get("val");
+                            var invitedEmails = (res && res.invitedEmails) || [];
+                            orchestratorSuccess(I18n.t("survey.orchestrator.invitePanel.surveyInvitedFromList", { number: invitedEmails.length }));
+                            successCb && successCb(invitedEmails);
+                            btn && btn.stopSpinning();
+                        }, this),
+                        failure: Y.bind(function(e) {
+                            try {
+                                var wegasErrorMessage = e.serverResponse.get("events")[0].get("val.exceptions")[0].get("val");
+                                if (wegasErrorMessage.messageId === "WEGAS-INVITE-SURVEY-NO-EMAIL") {
+                                    orchestratorAlert(I18n.t("survey.orchestrator.errors.inviteNoEmails"));
+                                } else {
+                                    orchestratorAlert(wegasErrorMessage.message);
+                                }
+                            } catch(ex) {
+                                orchestratorAlert("Internal error: could not send invitations");
+                            }
+                            failureCb && failureCb(e);
+                            btn && btn.stopSpinning();
+                        }, this)
+                }
+            };
+            Y.Wegas.Facade.GameModel.sendRequest(config);
+        },
+
+        // Returns the promise of an array of emails as strings
+        // @Param team optional
+        getEmails: function(team) {
+            var ctx = this;
+            return new Y.Promise(function(resolve, reject) {
+                var gameId = Y.Wegas.Facade.Game.cache.getCurrentGame().get("id"),
+                    requestURL;
+                if (team) {
+                    requestURL = Y.Wegas.app.get("base") + "rest/Extended/User/Emails/" + gameId + "/" + team.get("id");
+                } else {
+                    requestURL = Y.Wegas.app.get("base") + "rest/Extended/User/Emails/" + gameId;
+                }
+
+                Y.io(requestURL, {
+                    cfg: {
+                        method: "GET",
+                        headers: {
+                            "Managed-Mode": true
+                        }
+                    },
+                    on: {
+                        success: Y.bind(function(rId, xmlHttpRequest) {
+                            var emails = JSON.parse(xmlHttpRequest.response),
+                                guestPos;
+                            // Suppress all occurrences of "Guest"
+                            while ((guestPos = emails.indexOf("Guest")) !== -1) {
+                                emails.splice(guestPos, 1);
+                            }
+                            ctx.playerEmails = emails;
+                            resolve(emails);
+                        }, this),
+                        failure: Y.bind(function(rId, xmlHttpRequest) {
+                            resolve("PERMISSION-ERROR");
+                        }, this)
+                    }
+                });
+            });
+        },
+
+        // Returns the most up-to-date number of live/waiting non-empty teams and players in the current game.
+        // Also counts anonymous "SURVEY" teams and players.
+        // Result: { teams: #, players: #, surveyTeams: #, surveyPlayers: # }
+        // Updates global this.playerEmails when required.
+        getNbTeamsPlayers: function() {
+            var game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
+                teams = game.get("teams"),
+                nbTeams = 0,
+                nbSurveyTeams = 0,
+                nbPlayers = 0,
+                nbSurveyPlayers = 0,
+                players, t, p, currTeam, tStatus, pStatus, empty;
+            for (t in teams) {
+                currTeam = teams[t];
+                if (currTeam.get("@class") === "DebugTeam") { continue; }
+                tStatus = currTeam.get("status");
+                if (tStatus === "LIVE" || tStatus === "SURVEY" || tStatus === "WAITING") {
+                    empty = true;
+                    players = currTeam.get("players");
+                    for (p in players) {
+                        pStatus = players[p].get("status");
+                        if (pStatus === "LIVE" || pStatus === "WAITING") {
+                            nbPlayers++;
+                            empty = false;
+                        } else if (pStatus === "SURVEY") {
+                            nbSurveyPlayers++;
+                            empty = false;                            
+                        }
+                    }
+                    if (!empty) {
+                        if (tStatus === "LIVE") {
+                            nbTeams++;
+                        } else {
+                            nbSurveyTeams++;
+                        }
+                    }
+                }
+            }
+            return {
+                teams: nbTeams,
+                players: nbPlayers,
+                surveyTeams: nbSurveyTeams,
+                surveyPlayers: nbSurveyPlayers
+            };
+        },
+
         // Checks that server script paths enable xAPI logging and updates server script paths if needed.
         // Does nothing if the gameModel has no internal surveys.
         checkXapiPath: function(){
@@ -206,7 +554,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 if (serverScripts.indexOf(SERVER_SCRIPT_PATH) < 0) {
                     serverScripts += (serverScripts ? ';' : '') + SERVER_SCRIPT_PATH;
                     props.set("val.scriptUri", serverScripts);
-                    this.persistCurrentGameModel();
+                    this.persistGameModel(gm);
                 }
             } else {
                 // Remove script path from gameModel properties ?
@@ -217,7 +565,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             var cb = this.get(CONTENTBOX),
                 logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
             if (!logId) {
-                var msg = I18n.t("survey.orchestrator.noLogId");
+                var msg = I18n.t("survey.orchestrator.errors.noLogId");
                 this.get("contentBox").one(".warning").setContent(msg);
             } else {
                 Y.log("Log ID = " + logId);
@@ -238,14 +586,15 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             this.get(BOUNDINGBOX).ancestor().addClass("survey-orchestrator-parent");
         },
         
-        getPlayerSummary: function(surveyId, successCB, failureCB) {
+        // Gets information from server about players who actually entered the given survey.
+        getSurveyPlayers: function(surveyId, successCB, failureCB) {
             var survDescr = Y.Wegas.Facade.Variable.cache.findById(surveyId),
                 refreshButton = this.knownSurveys[surveyId].buttons.refreshButton;
             if (survDescr){
                 successCB || refreshButton.startSpinning();
                 var survName = survDescr.get("name");
                 Y.Wegas.Facade.Variable.sendRequest({
-                    request: "/Script/Run/" + Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id"),
+                    request: "/Script/Run/" + this.currentPlayerId,
                     cfg: {
                         method: "POST",
                         headers: {"Managed-Mode": false},
@@ -258,7 +607,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                         success: Y.bind(function(e) {
                             var currSurv = this.knownSurveys[surveyId],
                                 survData = this._monitoredData[surveyId] = e.response.results;
-                            currSurv.isRunning = (survData.active === true && survData.status !== ORCHESTRATION_PROGRESS.NOT_STARTED);
+                            currSurv.isRunning = (survData.active === true && (survData.status !== ORCHESTRATION_PROGRESS.NOT_STARTED || currSurv.isInviting));
                             currSurv.runStatus = survData.status;
                             successCB && successCB(survData);
                             this.syncTable(surveyId);
@@ -284,7 +633,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             this.handlers.push(Y.Wegas.Facade.Variable.after("updatedDescriptor", this.onUpdatedDescriptor, this));
             this.handlers.push(Y.Wegas.Facade.Variable.after("added", this.onAddedDescriptor, this));
             this.handlers.push(Y.Wegas.Facade.Variable.after("delete", this.onDeletedDescriptor, this));
-                        
+            this.handlers.push(Y.Wegas.Facade.Game.after("update", this.onUpdatedGame, this));
+
             this.tooltip = new Wegas.Tooltip({
                 delegate: cb,
                 delegateSelect: ".survey-comments",
@@ -294,7 +644,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             });
             this.tooltip.plug(Y.Plugin.Injector);
             this.tooltip.on("triggerEnter", this.onInfoTooltip, this);
-            // Raise the tooltip above any runningDetailsPanel:
+            // Raise the tooltip above any pop-up Panel:
             this.tooltip.get(BOUNDINGBOX).setStyle('z-index', 100002);
         },
         
@@ -316,21 +666,16 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         },
         
         // Adds the given survey descriptor to the list of known surveys.
-        // Then updates display (unless this._importUnpublished == true).
         registerInternalSurvey: function(sd) {
             var descrId = sd.get("id"),
                 varSet = {},
                 varList;
-            if (this._importUnpublished) {
-                sd.set("isPublished", false);
-                this._importUnpublished = false;
-            }
             if (!this.knownSurveys[descrId]) {
                 varSet.gameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
                 varSet.game = Y.Wegas.Facade.Game.cache.getCurrentGame();
                 varSet.isExternal = false;
                 varSet.variables = [sd];
-                varList = this.processVarSet([varSet], /* writeable= */ true);
+                varList = this.processVarSet([varSet], VARSET_IS_WRITEABLE);
                 this.knownSurveys[descrId] = varList[descrId];
                 this.syncOwnSurveys();
                 this.syncUI(descrId);
@@ -400,6 +745,47 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             }
         },
 
+        // Registers a callback of type function({ players, teams }) to be invoked
+        // every time a new player or team joins the game.
+        // Returns an ID for later callback unsubscription.
+        subscribeToParticipantUpdates: function(callback) {
+            this.participantsCallbacks.push(callback);
+            return this.participantsCallbacks.length-1;
+        },
+        
+        // Deregister a callback
+        detachParticipantUpdates: function(callbackID) {
+            this.participantsCallbacks.splice(callbackID, 1);
+        },
+
+        // Listens to updates to the current game, especially the number of participants and their emails.
+        // Updates global variables this.participants and this.playerEmails.
+        onUpdatedGame: function(e) {
+            var entity = e.currentTarget.data[0];
+            if (entity.get("id") === this.currentGameId) {
+                var latestCount = this.getNbTeamsPlayers();
+                if (latestCount.players !== this.participants.players ||
+                    latestCount.teams !== this.participants.teams) {
+                    this.participants = latestCount;
+                    Y.all(".wegas-survey-orchestrator-updated-nb-players").setContent(latestCount.players);
+                    Y.all(".wegas-survey-orchestrator-updated-nb-teams").setContent(latestCount.teams);
+                    // Update the list of emails only when needed:
+                    if (Y.one(".wegas-survey-invite")) {
+                        this.getEmails().then(Y.bind(
+                            function(emails) {
+                                for (var cb in this.participantsCallbacks) {
+                                    this.participantsCallbacks[cb](latestCount);
+                                }
+                            }, this));
+                    } else {
+                        for (var cb in this.participantsCallbacks) {
+                            this.participantsCallbacks[cb](latestCount);
+                        }
+                    }
+                }
+            }
+        },
+
         // Opens up the detailed teams/players progress window.
         showProgressDetails: function(surveyId, btn) {
             this.showDetailsPanel(this.knownSurveys[surveyId]);
@@ -446,39 +832,26 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             }
         },
         
-        // Imports given survey into the current gameModel
-        importSurvey: function(surveyId, scope, setPublished, successCb, failureCb) {
-            this._importUnpublished = !setPublished;
+        // Imports given survey into the given gameModel
+        importSurvey: function(surveyId, targetGameModelId, scope, setPublished, successCb, failureCb) {
             return new Y.Promise(Y.bind(function(resolve) {
-                // Full request: /rest/GameModel/<gameModelId>/VariableDescriptor/CherryPick/<variableDescriptorId>/<newName>/<newScopeType>
-                var gameModelId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"),
-                    varName = this.newSurveyName(surveyId),
+                // Full request: /rest/GameModel/<targetGameModelId>/VariableDescriptor/CherryPickSurvey/<variableDescriptorId>/<newName>/<newScopeType>
+                var varName = this.newSurveyName(surveyId),
                     config = {
-                        request: '/' + gameModelId + "/VariableDescriptor/CherryPick/" + surveyId + '/' + varName + (scope ? '/' + scope : ''),
+                        request: '/' + targetGameModelId + "/VariableDescriptor/CherryPickSurvey/" + surveyId + '/' + varName + (scope ? '/' + scope : ''),
                         cfg: {
                             updateCache: true,
-                            method: "POST"
+                            method: "POST",
+                            data: {
+                                published: setPublished
+                            }
                         },
                         on: {
                             success: Y.bind(function(e) {
                                 var newDescr = e.response.entity;
                                 this.registerInternalSurvey(newDescr);
-                                if (!setPublished) {
-                                    newDescr.set("isPublished", false);
-                                    this.persistSurvey(newDescr,
-                                        Y.bind(function() {
-                                            successCb && successCb(newDescr);
-                                            resolve("OK");                                            
-                                        }, this),
-                                        Y.bind(function() {
-                                            failureCb && failureCb(e);
-                                            resolve("Not OK");
-                                        }, this)
-                                    );
-                                } else {
-                                    successCb && successCb(newDescr);
-                                    resolve("OK");                                                                                
-                                }
+                                successCb && successCb(newDescr);
+                                resolve("OK");
                             }, this),
                             failure: Y.bind(function(e) {
                                 failureCb && failureCb(e);
@@ -493,8 +866,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         // Recursively sets the scope of the given variable
         changeScope: function(surveyId, scope, successCb, failureCb) {
             return new Y.Promise(Y.bind(function(resolve) {
-                // Full request: /rest/GameModel/<gameModelId>/VariableDescriptor/<variableDescriptorId>/CherryPick/<newScopeType>
-                var gameModelId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"),
+                // Full request: /rest/GameModel/<gameModelId>/VariableDescriptor/<variableDescriptorId>/changeScope/<newScopeType>
+                var gameModelId = this.currentGameModelId,
                     config = {
                         request: '/' + gameModelId + "/VariableDescriptor/" + surveyId + "/changeScope/" + scope,
                         cfg: {
@@ -520,13 +893,6 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         closeRunnableSurveys: function() {
             var cb = this.get(CONTENTBOX).one(".runnable-surveys");
             cb.hide();
-            /*
-            if (this.knownSurveys) {
-                for (var surveyId in this.knownSurveys) {
-                    this.deregisterSurvey(surveyId);
-                }
-            }
-            */
             cb.all(".list").setHTML('');
         },
         
@@ -539,8 +905,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         // Filters out non-live games and gamemodels from the given array.
         // Returns a new array.
         filterExternalSurveys: function(varSets) {
-            var currGameId = Y.Wegas.Facade.Game.cache.getCurrentGame().get("id"),
-                currGameModelId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"),
+            var currGameId = this.currentGameId,
+                currGameModelId = this.currentGameModelId,
                 res = [],
                 vs, currVarSet, currGameModel, currGame, isSession;
             for (vs in varSets){
@@ -589,7 +955,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         },
         
         // Processes the given array of variable sets to return a 'knownSurveys' compatible list
-        processVarSet: function(varSets, isWriteable) {
+        processVarSet: function(varSets, varSetsAreWriteable) {
             var surveyList = {},
                 currVarSet, vs, sourceGameModel, sourceGame, variables, v, currVar,
                 isSession, createdDate, gameName, runnableHTML, runningHTML = null;
@@ -660,16 +1026,17 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                             surveyId: surveyId,
                             name: name,
                             label: label,
-                            isWriteable: isWriteable,
+                            isWriteable: varSetsAreWriteable,
                             isExternal: currVarSet.isExternal,
                             isPublished: isPublished,
-                            isRunning: false,
+                            isRunning: currVar.get("hasTokens"), // additional conditions must still be fetched from the server
+                            isInviting: currVar.get("hasTokens"),
                             isSession: isSession,
                             sourceGameModelId: sourceGameModel.get("id"),
                             sourceGameId: sourceGame.get("id"),
                             sourceGameName: gameName,
                             createdDate: createdDate,
-                            hasPlayerScope: currVar.get("scopeType") === "PlayerScope",
+                            hasPlayerScope: currVar.get("scopeType") === PLAYERSCOPE,
                             runnableHTML: runnableHTML,
                             runningHTML: runningHTML,
                             comments: comments,
@@ -728,8 +1095,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
 
                     currSurv.buttons.inviteButton = new SpinButton({
                         label: "<i class=\"fa fa-envelope icon\"></i>" + I18n.t("survey.orchestrator.inviteButton"),
-                        autoSpin: true,
-                        onClick: Y.bind(this.onInvite, this),
+                        autoSpin: false,
+                        onClick: Y.bind(this.showInvitePanel, this),
                         surveyId: surveyId
                     }).render(newSurvey.one(".survey-invite"));
                     currSurv.buttons.inviteButton.get(CONTENTBOX).setAttribute("data-surveyid", surveyId);
@@ -758,8 +1125,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 }
             }
 
-            standardList = this.processVarSet(standardSurveys, /* writeable= */ false);
-            ownList = this.processVarSet(writeableSurveys, /* writeable= */ true);
+            standardList = this.processVarSet(standardSurveys, !VARSET_IS_WRITEABLE);
+            ownList = this.processVarSet(writeableSurveys, VARSET_IS_WRITEABLE);
             knownSurveys = this.knownSurveys = Object.assign({}, ownList, standardList);
 
             this.get(CONTENTBOX).one(".search-runnable-surveys").hide();
@@ -933,7 +1300,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     var currSurvey = listCB.one('.running-survey[data-surveyId="' + surveyId + '"] .survey-label');
                     currSurvey.setContent(this.getSurveyTitle(survDescr));
                 }
-                this.getPlayerSummary(surveyId);
+                this.getSurveyPlayers(surveyId);
             }
         },
         
@@ -946,7 +1313,9 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             } else {
                 switch (survey.status) {
                     case ORCHESTRATION_PROGRESS.NOT_STARTED:
-                        return I18n.t("survey.orchestrator.notStarted");
+                        return survey.isInviting ? 
+                            I18n.t("survey.orchestrator.inviting") :
+                            I18n.t("survey.orchestrator.notStarted");
                     case ORCHESTRATION_PROGRESS.REQUESTED:
                         return I18n.t("survey.orchestrator.requested");
                     case ORCHESTRATION_PROGRESS.ONGOING:
@@ -975,9 +1344,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             
             refreshButton.startSpinning();
             
-            // Hide inactive, empty and unstarted surveys from the list of running surveys:
-            if (survData.active === false ||
-                survData.status === ORCHESTRATION_PROGRESS.NOT_STARTED) {
+            // Hide inactive, empty and unstarted, uninviting surveys from the list of running surveys:
+            if (!currSurv.isRunning) {
                 survCB.hide();
                 currSurv.runningDetailsPanel && currSurv.deleteRunningDetailsPanel();
                 this.checkIfEmptyRunningSurveys();
@@ -1056,7 +1424,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         showDetailsPanel: function(survObj) {
             var title = survObj.label,
                 body = survObj.monitoringData,
-                panel, panelCB, handler;
+                panel, cb, handler;
             if (!survObj.runningDetailsPanel) {
                 survObj.runningDetailsPanel = panel = new Y.Wegas.Panel({
                     headerContent: '<h2>' + title + '</h2><button class="yui3-widget yui3-button yui3-button-content close fa fa-times"></button>',
@@ -1064,8 +1432,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     modal: false,
                     width: 600
                 }).render();
-                panelCB = panel.get(CONTENTBOX);
-                panelCB.addClass("wegas-survey-details");
+                cb = panel.get(CONTENTBOX);
+                cb.addClass("wegas-orchestrator-panel wegas-survey-details");
                 panel.plug(Y.Plugin.DraggablePanel, {});
                 
                 survObj.deleteRunningDetailsPanel = Y.bind(function() {
@@ -1076,7 +1444,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     }
                 }, this);
                     
-                handler = panelCB.one(".close").on("click", survObj.deleteRunningDetailsPanel, this);
+                handler = cb.one(".close").on("click", survObj.deleteRunningDetailsPanel, this);
             } else {
                 this.updateDetailsPanel(survObj);
             }
@@ -1111,7 +1479,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         onSettingsTool: function(surveyId) {
             var survObj = this.knownSurveys[surveyId],
                 title = survObj.label,
-                body, panel, panelCB,
+                body, panel, settingsPanel,
                 buttons = {},
                 handlers = [];
             body =
@@ -1125,42 +1493,42 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     modal: false,
                     width: 600
                 }).render();
-                panelCB = panel.get(CONTENTBOX);
-                panelCB.addClass("wegas-survey-settings");
+                settingsPanel = panel.get(CONTENTBOX);
+                settingsPanel.addClass("wegas-orchestrator-panel wegas-survey-settings");
                 
                 buttons.deleteButton = new SpinButton({
                     label: "<i class=\"fa fa-trash icon\"></i>" + I18n.t("survey.orchestrator.deleteButton"),
-                    autoSpin: true,
                     onClick: Y.bind(this.onDelete, this),
+                    autoSpin: true,
                     surveyId: surveyId
-                }).render(panelCB.one(".survey-delete"));
+                }).render(settingsPanel.one(".survey-delete"));
 
                 buttons.renameButton = new SpinButton({
                     label: "<i class=\"fa fa-magic icon\"></i>" + I18n.t("survey.orchestrator.renameButton"),
                     onClick: Y.bind(this.onEdit, this),
                     surveyId: surveyId
-                }).render(panelCB.one(".survey-rename"));
+                }).render(settingsPanel.one(".survey-rename"));
 
                 buttons.shareButton = new SpinButton({
                     label: "<i class=\"fa fa-share-alt-square icon\"></i>" + I18n.t("survey.orchestrator.shareButton"),
-                    autoSpin: false,
                     onClick: Y.bind(this.onShare, this),
+                    autoSpin: true,
                     surveyId: surveyId
-                }).render(panelCB.one(".survey-share"));
+                }).render(settingsPanel.one(".survey-share"));
 
                 buttons.playerScopeButton = new SpinButton({
                     label: "<i class=\"fa fa-user icon\"></i>" + I18n.t("survey.orchestrator.playerScopeButton"),
-                    autoSpin: true,
                     onClick: Y.bind(this.onPlayerScope, this),
+                    autoSpin: true,
                     surveyId: surveyId
-                }).render(panelCB.one(".survey-scope-player"));
+                }).render(settingsPanel.one(".survey-scope-player"));
 
                 buttons.teamScopeButton = new SpinButton({
                     label: "<i class=\"fa fa-users icon\"></i>" + I18n.t("survey.orchestrator.teamScopeButton"),
-                    autoSpin: true,
                     onClick: Y.bind(this.onTeamScope, this),
+                    autoSpin: true,
                     surveyId: surveyId
-                }).render(panelCB.one(".survey-scope-team"));
+                }).render(settingsPanel.one(".survey-scope-team"));
                                 
                 panel.plug(Y.Plugin.DraggablePanel, {});
                 survObj.deleteRunnableSettingsPanel = Y.bind(function() {
@@ -1176,7 +1544,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     }
                 }, this);
                 
-                handlers.push(panelCB.one(".close").on("click", survObj.deleteRunnableSettingsPanel, this));
+                handlers.push(settingsPanel.one(".close").on("click", survObj.deleteRunnableSettingsPanel, this));
             }
         },
 
@@ -1185,7 +1553,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             var currSurv = this.knownSurveys[surveyId],
                 url = currSurv.isWriteable ? 'edit-survey.html' : 'preview-survey.html';
             if (currSurv.isRunning) {
-                this.alert(I18n.t("survey.orchestrator.modifyRunning"));
+                orchestratorAlert(I18n.t("survey.orchestrator.modifyRunning"));
                 return;
             }
             url += '?surveyId=' + surveyId + '&';
@@ -1204,38 +1572,38 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         onPlayerScope: function(surveyId, btn) {
             var currSurv = this.knownSurveys[surveyId];
             if (currSurv.isRunning) {
-                this.alert(I18n.t("survey.orchestrator.modifyRunning"));
+                orchestratorAlert(I18n.t("survey.orchestrator.modifyRunning"));
                 btn.stopSpinning();
                 return;
             }
             this.changeScope(surveyId,
-                "PlayerScope",
+                PLAYERSCOPE,
                 function() {
                     btn.stopSpinning();
                 },
-                function() {
-                    Y.Wegas.Panel.alert("Could not change scope");
+                Y.bind(function() {
+                    orchestratorAlert("Could not change scope");
                     btn.stopSpinning();
-                });
+                }, this));
         },
 
         // Called to set a survey to TeamScope
         onTeamScope: function(surveyId, btn) {
             var currSurv = this.knownSurveys[surveyId];
             if (currSurv.isRunning) {
-                this.alert(I18n.t("survey.orchestrator.modifyRunning"));
+                orchestratorAlert(I18n.t("survey.orchestrator.modifyRunning"));
                 btn.stopSpinning();
                 return;
             }
             this.changeScope(surveyId,
-                "TeamScope",
+                TEAMSCOPE,
                 function() {
                     btn.stopSpinning();
                 },
-                function() {
-                    Y.Wegas.Panel.alert("Could not change scope");
+                Y.bind(function() {
+                    orchestratorAlert("Could not change scope");
                     btn.stopSpinning();
-                });
+                }, this));
         },
         
         // Called when user wants to duplicate a survey.
@@ -1245,41 +1613,39 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             // Importing with CherryPick will also duplicate when needed:
             this.importSurvey(
                 surveyId,
+                this.currentGameModelId,
                 // Set TeamScope in case it's going to be used in-game.
                 // It will be converted back to PlayerScope if launched via the dashboard.
-                "TeamScope",
+                TEAMSCOPE,
                 PUBLISHED,
                 function() {
                     btn.stopSpinning();
                 },
-                function(e) {
-                    Y.Wegas.Panel.alert("Could not import survey<br>" + e);
+                Y.bind(function() {
+                    orchestratorAlert("Internal error: Could not import survey");
                     btn.stopSpinning();
-                }
-            );
+                }, this));
         },
         
-        
-        // Called when user wants to "request" a survey to start now.
-        // First imports the survey as unpublished if it's external.
-        onRequestNow: function(surveyId, btn) {
+        importAsUnpublishedIfExternal_Then_SetPlayerScope: function(surveyId, btn, successCb) {
             var ctx = this,
                 currSurv = this.knownSurveys[surveyId];
             if (currSurv.isRunning) {
-                this.alert(I18n.t("survey.orchestrator.alreadyLaunched"));
+                orchestratorAlert(I18n.t("survey.orchestrator.alreadyLaunched"));
                 btn && btn.stopSpinning();
                 return;
             }
             if (currSurv.isExternal) {
                 this.importSurvey(
                     surveyId,
-                    "PlayerScope",   // Convert to PlayerScope when launched through dashboard
+                    this.currentGameModelId,
+                    PLAYERSCOPE,   // Convert to PlayerScope when launched through dashboard
                     UNPUBLISHED,
                     function(newDescr) {
-                        ctx.onRequestNow(newDescr.get("id"), btn);
+                        ctx.importAsUnpublishedIfExternal_Then_SetPlayerScope(newDescr.get("id"), btn, successCb);
                     },
-                    function(e) {
-                        Y.Wegas.Panel.alert("Could not import survey<br>" + e);
+                    function() {
+                        orchestratorAlert("Internal error: Could not import survey");
                         btn && btn.stopSpinning();
                     }
                 );
@@ -1287,45 +1653,557 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 if (!currSurv.hasPlayerScope) { // The survey is internal but with wrong scope (we could also check recursively)
                     this.changeScope(
                         surveyId,
-                        "PlayerScope",  // Convert to PlayerScope when launched through dashboard
+                        PLAYERSCOPE,  // Convert to PlayerScope when launched through dashboard
                         function(descr) {
                             currSurv.hasPlayerScope = true;
-                            ctx.onRequestNow(descr.get("id"), btn);
+                            ctx.importAsUnpublishedIfExternal_Then_SetPlayerScope(descr.get("id"), btn, successCb);
                         },
-                        function(e) {
-                            Y.Wegas.Panel.alert("Could not change scope of survey<br>" + e);
+                        function() {
+                            orchestratorAlert("Internal error: Could not change scope of survey");
                             btn && btn.stopSpinning();
                         }
                     );
-                    return;
+                } else {
+                    successCb && successCb(surveyId);
                 }
-                btn && btn.stopSpinning(); // The button should anyway be hidden
+            }
+        },
+        
+        // Called when user wants to "request" a survey to start now.
+        // Imports the survey as unpublished if it's external.
+        onRequestNow: function(surveyId, btn) {
+            this.importAsUnpublishedIfExternal_Then_SetPlayerScope(
+                surveyId,
+                btn, 
+                Y.bind(function(newSurveyId) {
+                    // Set default instance to "REQUESTED", idem for any pre-existing instances:
+                    var survDescr = Y.Wegas.Facade.Variable.cache.findById(newSurveyId),
+                        script = "SurveyHelper.request('" + survDescr.get("name") + "')";
+                    survDescr.get("defaultInstance").set("status", ORCHESTRATION_PROGRESS.REQUESTED);
+                    this.persistSurvey(survDescr,
+                        Y.bind(function() {
+                            this.impactSurveyInstances(script, survDescr, I18n.t("survey.orchestrator.surveyLaunched"));
+                            btn && btn.stopSpinning();
+                        }, this),
+                        Y.bind(function() {
+                            orchestratorAlert("Internal error: Could not update survey descriptor. Please try again.");
+                            btn && btn.stopSpinning();
+                        }, this)
+                    );
+                }, this)
+            );
+        },
+        
+        // Opens a dialog for selecting the e-mail message and its recipients.
+        showInvitePanel: function(surveyId) {
+            var survObj = this.knownSurveys[surveyId],
+                title = I18n.t("survey.orchestrator.invitePanel.invitePanelTitle") + ' "' + survObj.label + '"',
+                participants = this.participants,
+                buttons = {},
+                panelBody, mailBody, panel, cb, closeHandler, updateHandler,
+                radioInputs = {},
+                globalChoice, liveChoice = 'LINKED';
+            
+
+
+            if (!survObj.runningInvitePanel) {
+                mailBody =
+                    I18n.t("survey.orchestrator.invitePanel.defaultMailBody", {game: Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("name")})
+                    // Transform into plain textarea-compatible content:
+                    .replace(/<br\s*\/?>/g, '\n\n');
+                panelBody =
+                    '<div class="invitation-selection">' +
+                    '   <div class="section-title">' + I18n.t("survey.orchestrator.invitePanel.currentPlayers") + ': <span class="wegas-survey-orchestrator-updated-nb-players">' + participants.players + '</span></div>' +
+                    '   <div class="action-buttons"><div class="inline-title">' + I18n.t("survey.orchestrator.invitePanel.inviteTitle") + '</div>' +
+                    '   <div class="survey-invite-live global-choice choiceA"></div><div class="survey-invite-list global-choice choiceB"></div><div class="survey-invite-live-and-list global-choice choiceC"></div></div>' +
+                    '   <div class="action-buttons live-choice" style="display:none"><div class="inline-title">' + I18n.t("survey.orchestrator.invitePanel.inviteLiveTitle") + '</div>' +
+                    '   <div class="survey-invite-live-linked live-subchoice"></div><div class="survey-invite-live-anon live-subchoice"></div><div class="survey-invite-live-dummy live-subchoice" style="visibility:hidden;"></div></div>' +
+                    '   <div class="action-buttons invite-send"><div class="survey-invite-send"></div></div>' +
+                    '</div>' +
+                    '<div class="survey-invite-email-form recipients-sections">' +
+                    '  <div class="live-recipients-section">' +
+                    '   <div class="section-title live-recipients-email-title"><span class="option-name" style="display:none">A)&nbsp;&nbsp;</span>' + I18n.t("survey.orchestrator.invitePanel.liveRecipients") +
+                    '     <span style="font-weight:normal;margin-left:4px;font-style: italic;">' + I18n.t("survey.orchestrator.invitePanel.liveRecipientsAutomatic") + '</span></div>' +
+                    '   <div class="editable-email-list live-recipients-email" autocomplete="no" spellcheck="false">' + '</div>' +
+                    '   <div class="email-count">' + I18n.t("survey.orchestrator.invitePanel.countEmails") + '<span class="live-recipients-email-count">0</span></div>' +
+                    '  </div>' +
+                    '  <div class="list-recipients-section" style="display:none">' +
+                    '   <div class="section-title list-recipients-email-title"><span class="option-name" style="display:none">B)&nbsp;&nbsp;</span>' + I18n.t("survey.orchestrator.invitePanel.listRecipients") + '</div>' +
+                    '   <div contenteditable class="editable-email-list list-recipients-email" autocomplete="no" spellcheck="false"></div>' +
+                    '   <div class="email-count">' + I18n.t("survey.orchestrator.invitePanel.countEmails") + '<span class="list-recipients-email-count">0</span></div>' +
+                    '   <div class="action-buttons recipients-cleanup"><div class="survey-invite-cleanup"></div></div>' +
+                    '  </div>' +
+                    '</div>' +
+                    '<div class="survey-invite-email-form">' +
+                    '   <div class="section-title email-sender-title">' + I18n.t("survey.orchestrator.invitePanel.senderName") + '</div>' +
+                    '   <input type="text" class="email-sender" value="' + Y.Wegas.Facade.User.get("currentUser").get("name") + '"/>' +
+                    '   <div class="section-title email-subject-title">' + I18n.t("survey.orchestrator.invitePanel.subject") + '</div>' +
+                    '   <input type="text" class="email-subject" value="' + I18n.t("survey.orchestrator.invitePanel.defaultMailSubject") + '"/>' +
+                    '   <div class="section-title email-body-title">' + I18n.t("survey.orchestrator.invitePanel.body") + '</div>' +
+                    '   <textarea class="email-body" rows="10" autocomplete="no" spellcheck="false">' + mailBody + '</textarea>' +
+                    '</div>';
+                survObj.runningInvitePanel = panel = new Y.Wegas.Panel({
+                    headerContent: '<h2>' + title + '</h2><button class="yui3-widget yui3-button yui3-button-content close fa fa-times"></button>',
+                    content: panelBody,
+                    modal: false,
+                    width: 600
+                }).render();
+                cb = panel.get(CONTENTBOX);
+                cb.addClass("wegas-orchestrator-panel wegas-survey-invite");
+                panel.plug(Y.Plugin.DraggablePanel, {});
                 
-                var survDescr = Y.Wegas.Facade.Variable.cache.findById(surveyId),
-                    script = "SurveyHelper.request('" + survDescr.get("name") + "')";
+                radioInputs.onlyLive = cb.one(".survey-invite-live").setHTML('<label for="choiceA">' + I18n.t("survey.orchestrator.invitePanel.inviteLiveChoice") + '</label><input id="choiceA" name="globalChoice" value="A" type="radio"/>');
+                function selectA() {
+                    globalChoice = 'A';
+                    cb.one(".live-choice").show();
+                    cb.one(".live-recipients-section").show();
+                    cb.one(".list-recipients-section").hide();
+                    cb.all(".option-name").hide();
+                    buttons.inviteLiveAnon.set("disabled", liveChoice === undefined);                    
+                }
+                radioInputs.onlyLive.one("input").on("change", selectA, this);
+                radioInputs.onlyLive.on("click", function(e) {
+                    var r = e.currentTarget.one("input");
+                    r.set("checked", true);
+                    selectA();
+                });
                 
-                survDescr.get("defaultInstance").set("status", ORCHESTRATION_PROGRESS.REQUESTED);
-                this.persistSurvey(survDescr,
-                    Y.bind(function() {
-                        this.impactSurveyInstances(script, survDescr, I18n.t("survey.orchestrator.surveyLaunched"));
-                    }, this),
-                    Y.bind(function() {
-                        this.alert("Internal error: Could not update survey descriptor. Please try again.");
+                radioInputs.onlyList = cb.one(".survey-invite-list").setHTML('<label for="choiceB">' + I18n.t("survey.orchestrator.invitePanel.inviteListChoice") + '</label><input id="choiceB" name="globalChoice" value="B" type="radio"/>');
+                function selectB() {
+                    globalChoice = 'B';
+                    cb.one(".live-choice").hide();
+                    cb.one(".live-recipients-section").hide();
+                    cb.one(".list-recipients-section").show();
+                    cb.one(".recipients-cleanup").hide();
+                    cb.all(".option-name").hide();
+                    buttons.inviteLiveAnon.set("disabled", false);
+                }
+                radioInputs.onlyList.one("input").on("change", selectB, this);
+                radioInputs.onlyList.on("click", function(e) {
+                    var r = e.currentTarget.one("input");
+                    r.set("checked", true);
+                    selectB();
+                });
+
+                radioInputs.liveAndList = cb.one(".survey-invite-live-and-list").setHTML('<label for="choiceC">' + I18n.t("survey.orchestrator.invitePanel.inviteLiveAndListChoice") + '</label><input id="choiceC" name="globalChoice" value="C" type="radio"/>');
+                function selectC() {
+                    globalChoice = 'C';
+                    cb.one(".live-choice").hide();
+                    cb.one(".live-recipients-section").show();
+                    cb.one(".list-recipients-section").show();
+                    cb.one(".recipients-cleanup").show();
+                    cb.all(".option-name").show();
+                    buttons.inviteLiveAnon.set("disabled", false);
+                }
+                radioInputs.liveAndList.one("input").on("change", selectC, this);
+                radioInputs.liveAndList.on("click", function(e) {
+                    var r = e.currentTarget.one("input");
+                    r.set("checked", true);
+                    selectC();
+                });
+
+                radioInputs.liveLinked = cb.one(".survey-invite-live-linked").setHTML('<label for="choiceA1">' + I18n.t("survey.orchestrator.invitePanel.inviteLiveLinkedChoice") + '</label><input id="choiceA1" name="liveChoice" value="LINKED" type="radio" checked="checked"/>');
+                function selectLiveLinked() {
+                    liveChoice = 'LINKED';
+                    buttons.inviteLiveAnon.set("disabled", false);                    
+                }
+                radioInputs.liveLinked.one("input").on("change", selectLiveLinked, this);
+                radioInputs.liveLinked.on("click", function(e) {
+                    var r = e.currentTarget.one("input");
+                    r.set("checked", true);
+                    selectLiveLinked();
+                });
+
+                radioInputs.liveAnon = cb.one(".survey-invite-live-anon").setHTML('<label for="choiceA2">' + I18n.t("survey.orchestrator.invitePanel.inviteLiveAnonChoice") + '</label><input id="choiceA2" name="liveChoice" value="LINKED" type="radio"/>');
+                function selectLiveAnon() {
+                    liveChoice = 'ANON';
+                    buttons.inviteLiveAnon.set("disabled", false);
+                }
+                radioInputs.liveAnon.one("input").on("change", selectLiveAnon, this);
+                radioInputs.liveAnon.on("click", function(e) {
+                    var r = e.currentTarget.one("input");
+                    r.set("checked", true);
+                    selectLiveAnon();
+                });
+
+                buttons.cleanupEmails = new SpinButton({
+                    label: "<i class=\"fa fa-compress icon\"></i>" + I18n.t("survey.orchestrator.invitePanel.cleanupButton"),
+                    onClick: Y.bind(
+                        function(surveyId, btn) {
+                            this.cleanupListEmails(cb);
+                            btn.stopSpinning();
+                        }, this),
+                    autoSpin: true,
+                    surveyId: surveyId,
+                    disabled: false
+                }).render(cb.one(".survey-invite-cleanup"));
+
+                buttons.inviteLiveAnon = new SpinButton({
+                    label: "<i class=\"fa fa-envelope icon\"></i>" + I18n.t("survey.orchestrator.invitePanel.sendButton"),
+                    onClick: Y.bind(
+                        function(surveyId, btn) {
+                            try {
+                                var email = {
+                                    recipients: [], // To be set below depending on the combination selected by the trainer
+                                    sender: this.getSender(cb),
+                                    subject: this.getSubject(cb),
+                                    body: this.getBody(cb)
+                                };
+                            } catch(e) {
+                                orchestratorAlert(e);
+                                btn.stopSpinning();
+                            }
+                            switch (globalChoice) {
+                                case 'A': 
+                                    if (this.getLiveRecipients(cb).length !== 0) {
+                                        this.onInviteLive(surveyId, btn, email, /* linkedToAccount: */ liveChoice === 'LINKED',
+                                            Y.bind(function(invitedEmails) {
+                                                this.setLiveRecipients(cb, invitedEmails);
+                                            }, this)
+                                        );
+                                    } else {
+                                        orchestratorError(I18n.t("survey.orchestrator.errors.noValidPlayers"));                                    
+                                    }
+                                    break;
+                                case 'B':
+                                    email.recipients = this.getListRecipients(cb);
+                                    if (email.recipients.length !== 0) {
+                                        this.onInviteList(surveyId, btn, email,
+                                            function(invitedEmails) {
+                                                //setInvitedEmails(cb, invitedEmails);
+                                            }
+                                        );
+                                    } else {
+                                        orchestratorError(I18n.t("survey.orchestrator.errors.noValidEmails"));
+                                    }
+                                    btn.stopSpinning();
+                                    break;
+                                case 'C':
+                                    if (this.getLiveRecipients(cb).length === 0) {
+                                        orchestratorError(I18n.t("survey.orchestrator.errors.noValidPlayers"));
+                                    } else {
+                                        email.recipients = this.cleanupListEmails(cb);
+                                        if (email.recipients.length !== 0) {
+                                            this.onInviteLiveAndList(surveyId, btn, email, cb,
+                                                function(invitedLive, invitedList) {
+                                                }
+                                            );
+                                        } else {
+                                            orchestratorError(I18n.t("survey.orchestrator.errors.noValidEmails"));
+                                        }
+                                    }
+                                    btn.stopSpinning();
+                                    break;
+                                default:
+                                    alert('internal error');
+                            }
+                        }, this),
+                    autoSpin: true,
+                    surveyId: surveyId,
+                    disabled: true
+                }).render(cb.one(".survey-invite-send"));
+                
+                var mailListOnBlurHandler = cb.one(".list-recipients-email").on("blur", Y.bind(
+                    function(){
+                        var list = this.getListRecipients(cb);
+                        orchestratorSuccess(I18n.t("survey.orchestrator.invitePanel.validationMessage", { number: list.length }));
+                    }, this));
+
+                survObj.deleteRunningInvitePanel = Y.bind(function() {
+                    if (survObj.runningInvitePanel) {
+                        survObj.runningInvitePanel = null;
+                        for (var b in buttons) {
+                            buttons[b].destroy();
+                        }
+                        this.detachParticipantUpdates(updateHandler);
+                        closeHandler.detach();
+                        mailListOnBlurHandler.detach();
+                        panel.destroy();
+                    }
+                }, this);
+                
+                updateHandler = this.subscribeToParticipantUpdates(Y.bind(
+                    function(participants) {
+                        if (participants.players > 0) {
+                            // this.playerEmails has also been updated automatically:
+                            this.setLiveRecipients(cb, this.playerEmails);
+                            
+                            // @TODO also update listRecipients if globalChoice === 'C'
+                            
+                        }
+                    }, this));
+                    
+                closeHandler = cb.one(".close").on("click", survObj.deleteRunningInvitePanel, this);
+                
+                // Just for initializing when creating the panel:
+                this.getEmails().then(Y.bind(
+                    function(emails) {
+                        this.setLiveRecipients(cb, emails);
                     }, this)
                 );
             }
         },
-        
-        // Opens a dialog for selecting the e-mail message and its recipients.
-        onInvite: function(surveyId, btn) {
-            this.alert("Sorry, not yet implemented.");
-            btn.stopSpinning();
+
+        // Returns the cleaned up email list of the form.
+        // Also updates the display.
+        getListRecipients: function(invitePanel) {
+            var text = invitePanel.one(".list-recipients-email"),
+                list = text.getHTML(),
+                // Extract emails, even in the form: "realname" <name@corp.com>
+                emailArray = list.split(/[\n,;<>\(\)\s]+|&lt|&gt/),
+                validEmails = [],
+                cleanList = "",
+                mail;
+
+            for (var i in emailArray) {
+                mail = emailArray[i];
+                if (mail) {
+                    mail = mail.trim();
+                    if (mail && validateEmail(mail)) {
+                        cleanList += mail + "<br>";
+                        // Prevent any duplication:
+                        if (validEmails.indexOf(mail) === -1) {
+                            validEmails.push(mail);
+                        }
+                    }
+                }
+            }
+            // Update displayed list:
+            text.setHTML(cleanList);
+            invitePanel.one(".list-recipients-email-count").setHTML(validEmails.length);
+            return validEmails;
+        },
+
+        setListRecipients: function(invitePanel, emails) {
+            var text = invitePanel.one(".list-recipients-email"),
+                list = '';
+            for (var i in emails) {
+                list += emails[i] + "<br>";
+            }
+            text.setHTML(list);
+            invitePanel.one(".list-recipients-email-count").setHTML(emails.length);
+        },
+
+        getLiveRecipients: function(invitePanel) {
+            var text = invitePanel.one(".live-recipients-email").getHTML(),
+                // Extract emails, even in the form: "realname" <name@corp.com>
+                emailArray = text.split(/[\n,;<>\(\)\s]+|&lt|&gt/),
+                validEmails = [],
+                mail;
+
+            for (var i in emailArray) {
+                mail = emailArray[i];
+                if (mail) {
+                    mail = mail.trim();
+                    if (mail && validateEmail(mail)) {
+                        validEmails.push(mail);
+                    }
+                }
+            }
+            return validEmails;
+        },
+
+        setLiveRecipients: function(invitePanel, emails) {
+            var text = invitePanel.one(".live-recipients-email"),
+                list = '';
+            for (var i in emails) {
+                list += emails[i] + "<br>";
+            }
+            text.setHTML(list);
+            invitePanel.one(".live-recipients-email-count").setHTML(emails.length);
+        },
+
+        // Removes duplicates between LIVE and LIST emails.
+        // Returns the new LIST.
+        cleanupListEmails: function(invitePanel) {
+            var list = this.getListRecipients(invitePanel),
+                live = this.getLiveRecipients(invitePanel),
+                duplicates = [],
+                pos;
+            for (var i in live) {
+                pos = list.indexOf(live[i]);
+                if (pos !== -1) {
+                    list.splice(pos, 1);
+                    duplicates.push(live[i]);
+                }
+            }
+            this.setListRecipients(invitePanel, list);
+            if (duplicates.length !== 0) {
+                orchestratorSuccess("Removed " + duplicates.length + " duplicates from your list:<br>" +
+                    duplicates.join('<br>'));
+            }
+            return list;
+        },
+
+        // Returns the self-assigned name of the trainer.
+        // Throws an error if empty.
+        getSender: function(invitePanel) {
+            var text = invitePanel.one(".email-sender").get("value");
+            if (!text) {
+                throw I18n.t("survey.orchestrator.errors.noValidSender");
+            }
+            return text;
+        },
+
+        // Returns the subject of the mail.
+        // Throws an error if empty.
+        getSubject: function(invitePanel) {
+            var text = invitePanel.one(".email-subject").get("value");
+            if (!text) {
+                throw I18n.t("survey.orchestrator.errors.noValidSubject");
+            }
+            return text;
+        },
+
+        // Returns the body of the mail.
+        // Throws an error if empty or does not contain variables {{link}} or {{player}}.
+        getBody: function(invitePanel) {
+            var body = invitePanel.one(".email-body").get("value");
+            if (!body) {
+                throw I18n.t("survey.orchestrator.errors.noValidBody");
+            }
+            if (body.indexOf("{{link}}") === -1) {
+                throw I18n.t("survey.orchestrator.errors.noLinkInBody");
+            }
+            if (body.indexOf('{{player}}') === -1) {
+                throw I18n.t("survey.orchestrator.errors.noPlayerInBody");
+            }
+            // HTMLize the body:
+            return body.replace(/\n\n/g, "<br>&nbsp;<br>").replace(/[\n]/g, "<br>");
         },
         
-        // Opens a dialog for sharing a survey with another trainer.
+        // Called when user wants to invite LIVE players to a survey (by email).
+        // Imports the survey as unpublished if it's external.
+        onInviteLive: function(surveyId, btn, email, linkedToAccount, successCb) {
+            this.importAsUnpublishedIfExternal_Then_SetPlayerScope(
+                surveyId, 
+                btn, 
+                Y.bind(function(newSurveyId) {
+                    this.sendInviteToLive(newSurveyId, btn, email, linkedToAccount,
+                        function(invitedEmails) {
+                            successCb && successCb(invitedEmails);
+                        });
+                }, this)
+            );
+        },
+        
+        // Called when user provides an email list to invite people to a survey.
+        // Imports the survey as unpublished if it's external.
+        onInviteList: function(surveyId, btn, email, successCb) {
+            this.importAsUnpublishedIfExternal_Then_SetPlayerScope(
+                surveyId, 
+                btn, 
+                Y.bind(function(newSurveyId) {
+                    this.sendInviteToList(newSurveyId, btn, email,
+                        function(invitedEmails) {
+                            successCb && successCb(invitedEmails);
+                        });
+                }, this)
+            );
+        },
+
+        // Called when user provides an email list to invite people to a survey,
+        // IN ADDITION to those who are LIVE.
+        // Imports the survey as unpublished if it's external.
+        onInviteLiveAndList: function(surveyId, btn, email, invitePanel, successCb) {
+            var live = this.getLiveRecipients(invitePanel);
+            this.importAsUnpublishedIfExternal_Then_SetPlayerScope(
+                surveyId, 
+                btn, 
+                Y.bind(function(newSurveyId) {
+                    this.sendInviteToLive(newSurveyId, btn, email, /*linkedToAccount:*/ true,
+                    // First launch LIVE in order to reduce risk of new LIVE players joining during the process:
+                        Y.bind(function(invitedEmailsFromLive) {
+                            if (live.length !== invitedEmailsFromLive.length) {
+                                Y.log("*** Incoherent number of LIVE players...");
+                                this.getEmails().then(Y.bind(
+                                    function(emails) {
+                                        this.setLiveRecipients(invitePanel, emails);
+                                        var newList = this.cleanupListEmails(invitePanel);
+                                        email.recipients = newList;
+                                        this.sendInviteToList(newSurveyId, btn, email,
+                                            Y.bind(function(invitedEmailsFromList) {
+                                                successCb && successCb(invitedEmailsFromLive, invitedEmailsFromList);
+                                            }, this)
+                                        );
+                                    }, this)
+                                );
+                            } else {
+                                this.sendInviteToList(newSurveyId, btn, email,
+                                    Y.bind(function(invitedEmailsFromList) {
+                                        successCb && successCb(invitedEmailsFromList);
+                                    }, this)
+                                );
+                            }
+                        }, this)
+                    );
+                }, this)
+            );
+        },
+
+        // Exports a survey for sharing with other trainers or scenarists.
         onShare: function(surveyId, btn) {
-            this.alert("Sorry, not yet implemented.");
-            btn.stopSpinning();
+            var gameName = this.knownSurveys[surveyId].label,
+                isScenarist = !!Y.Wegas.Facade.User.cache.get("currentUser").get("roles").find(function(role) {
+                    return role.get("name") === "Scenarist";
+                });
+            if (isScenarist) {
+                this.createEmptyGameModel(
+                    gameName,
+                    Y.bind(function(newGameModel) {
+                        this.importSurvey(
+                            surveyId,
+                            newGameModel.get("id"),
+                            TEAMSCOPE,
+                            PUBLISHED,
+                            Y.bind(function() {
+                                orchestratorSuccess(I18n.t("survey.orchestrator.scenarioCreated", { name: gameName } ));
+                                btn.stopSpinning();
+                                newGameModel.set("comments", SURVEY_CONTAINER_GAMEMODEL_NAME);
+                                // @TODO Here we should remove the "DEF" language from the target.
+                                this.persistGameModel(newGameModel);
+                                // Adjust scenario properties
+                                newGameModel.set("properties", SURVEY_CONTAINER_PROPERTIES);
+                                this.persistGameModel(newGameModel);
+                            }, this),
+                            Y.bind(function(e) {
+                                orchestratorAlert("Could not create game scenario");
+                                btn.stopSpinning();
+                            }, this)
+                        );
+                    }, this)
+                );
+            } else { // User has only Trainer rights:
+                this.createGame(
+                    EMPTY_GAMEMODEL_ID,
+                    gameName,
+                    Y.bind(function(newGame) {
+                        this.importSurvey(
+                            surveyId,
+                            newGame.get("parentId"),
+                            TEAMSCOPE,
+                            PUBLISHED,
+                            Y.bind(function() {
+                                orchestratorSuccess(I18n.t("survey.orchestrator.sessionCreated", { name: gameName } ));
+                                btn.stopSpinning();
+                                var newGM = Y.Wegas.Facade.GameModel.cache.find('id', newGame.get("parentId")); // The gamemodel came with the new game
+                                // Adjust scenario name and other properties visible in the lobby:
+                                newGM.set("name", SURVEY_CONTAINER_GAMEMODEL_NAME);
+                                newGM.set("properties", SURVEY_CONTAINER_PROPERTIES);
+                                // @TODO Here we should remove the "DEF" language from the target.
+                                this.persistGameModel(newGM);
+                                // Adjust session properties:
+                                newGame.set("access", "CLOSE");
+                                this.persistGame(newGame);
+                            }, this),
+                            Y.bind(function(e) {
+                                orchestratorAlert("Could not create game");
+                                btn.stopSpinning();
+                            }, this)
+                        );
+                    }, this)
+                );
+            }
         },
 
         // Deletes given survey if it's not running.
@@ -1360,7 +2238,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                         }
                     }, this),
                     failure: Y.bind(function() {
-                        this.alert("Could not delete this survey");
+                        orchestratorAlert("Could not delete this survey");
                     }, this)
                 }
             });
@@ -1375,8 +2253,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
          *   If survey.isPublished == false, delete the hidden surveyDescriptor.
          *   If survey.isPublished == true:
          *     sets all instances, including defaultInstance,
-         *     to status CLOSED (a real reset would have to be recursive, 
-         *     would require player survey Widgets to handle status going "backwards" and 
+         *     to status CLOSED (a real reset would require survey Widgets to 
+         *     handle status going "backwards" and 
          *     would make xAPI logs hardly understandable).
          * 
          * @param {number} surveyId
@@ -1385,7 +2263,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
          */
         onCancelRunningSurvey: function(surveyId, btn) {
             var survDescr = Y.Wegas.Facade.Variable.cache.findById(surveyId);
-            this.getPlayerSummary(
+            this.getSurveyPlayers(
                 surveyId,
                 Y.bind(function(data) {
                     // This data has just been updated:
@@ -1399,7 +2277,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                                     btn && btn.stopSpinning();
                                 }, this),
                                 Y.bind(function() {
-                                    this.alert("Internal error: Could not update survey descriptor. Please try again.");
+                                    orchestratorAlert("Internal error: Could not update survey descriptor. Please try again.");
                                     btn && btn.stopSpinning();
                                 }, this)
                             );
@@ -1420,7 +2298,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                                             btn && btn.stopSpinning();
                                         }, this),
                                         Y.bind(function() {
-                                            this.alert("Internal error: Could not update survey descriptor. Please try again.");
+                                            orchestratorAlert("Internal error: Could not update survey descriptor. Please try again.");
                                             btn && btn.stopSpinning();
                                         }, this)
                                     );
@@ -1439,7 +2317,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     }
                 }, this),
                 Y.bind(function() {
-                    this.alert("Internal error: Could not get updates from server. Please try again.");
+                    orchestratorAlert("Internal error: Could not get updates from server. Please try again.");
                 }, this));
         },
 
@@ -1448,7 +2326,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 surveyData = this.knownSurveys[surveyId],
                 details = '',
                 comments;
-                details += 'Created on ' + new Date(surveyData.createdDate).toLocaleString('en-GB');
+                details += 'Created on ' + new Date(surveyData.createdDate).toLocaleDateString('en-GB');
                 if (e.node.ancestor(function(node) { return node.hasClass("runnable-survey"); })) {
                     details += '<div class="wegas-advanced-feature">';
                     if (surveyData.isSession) {
@@ -1467,10 +2345,13 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     details += '</div>'; // End of wegas-advanced-feature
                 } else {
                     if (!this.playedIndividually) {
-                        details += I18n.t(
-                                        surveyData.hasPlayerScope ?
-                                        "survey.orchestrator.hasPlayerScope" :
-                                        "survey.orchestrator.hasTeamScope") + '<br>';
+                        details +=
+                            '<br>' +
+                            I18n.t(
+                                surveyData.hasPlayerScope ?
+                                "survey.orchestrator.hasPlayerScope" :
+                                "survey.orchestrator.hasTeamScope") +
+                            '<br>';
                     }
                 }
                 details +=
@@ -1534,7 +2415,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
 
             this.runRemoteScript(
                 script,
-                (scopeType === "TeamScope" ?
+                (scopeType === TEAMSCOPE ?
                     getOnePlayerPerTeam(game) :
                     getAllPlayers(game)),
                 successMessage
@@ -1543,7 +2424,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         
         runRemoteScript: function(script, player, successMessage) {
             if (!script) {
-                this.alert("runRemoteScript: script is empty or undefined");
+                orchestratorAlert("runRemoteScript: script is empty or undefined");
                 return;
             }
             // The script is run sequentially on each player of the "player" argument (single object or array).
@@ -1563,9 +2444,9 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                             succeeded++;
                             if (count >= len) { // End of last iteration:
                                 if (failed > 0) {
-                                    this.alert("Errors happened for " + failed + "/" + count + " participants");
+                                    orchestratorAlert("Errors happened for " + failed + "/" + count + " participants");
                                 } else {
-                                    this.success(successMessage);
+                                    orchestratorSuccess(successMessage);
                                     this.syncUI();
                                 }
                             }
@@ -1575,7 +2456,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                             failed++;
                             Y.log("*** Error executing script");
                             if (count >= len) { // End of last iteration:
-                                this.alert("Errors happened for " + failed + "/" + count + " participants");
+                                orchestratorAlert("Errors happened for " + failed + "/" + count + " participants");
                             }
                         }, this)
                     }
@@ -1583,31 +2464,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
 
                 Y.Wegas.Facade.Variable.script.run(script, config, player);
             }
-        },
-        
-        // Displays an alert
-        alert: function(msg) {
-            Y.Wegas.Panel.alert(msg)
-                .get(CONTENTBOX).addClass("wegas-orchestrator-alert");
-        },
+        }        
 
-        // Displays a success notification
-        success: function(msg) {
-            var panel = new Y.Wegas.Panel({
-                content: "<div class='icon icon-success'>" + msg + "</div>",
-                modal: true,
-                width: 400,
-                buttons: {
-                    footer: [{
-                            label: I18n.t('global.ok') || 'OK',
-                            action: function() {
-                                panel.exit();
-                            }
-                        }]
-                }
-            }).render();
-            panel.get(CONTENTBOX).addClass("wegas-orchestrator-success");
-        }
         
     }, {
         EDITORNAME: "Survey Orchestrator",

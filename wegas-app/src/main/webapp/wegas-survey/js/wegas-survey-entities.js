@@ -65,8 +65,8 @@ YUI.add('wegas-survey-entities', function(Y) {
                 type: BOOLEAN,
                 value: true,
                 view: {
-                    label: 'is published',
-                    type: HIDDEN
+                    className: 'wegas-advanced-feature',
+                    label: 'is published'
                 }
             },
             items: {
@@ -77,10 +77,17 @@ YUI.add('wegas-survey-entities', function(Y) {
                     value: {
                         "@class": "SurveySectionDescriptor"
                     },
-                    index: 1,
+                    index: 1
                 },
                 view: {
                     label: 'Sections',
+                    type: HIDDEN
+                }
+            },
+            hasTokens: {
+                type: BOOLEAN,
+                value: false,
+                view: {
                     type: HIDDEN
                 }
             },

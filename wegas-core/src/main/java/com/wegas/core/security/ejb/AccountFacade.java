@@ -9,6 +9,7 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.Helper.EmailAttributes;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
@@ -798,73 +799,58 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
-     * Trainer send invitation to participate in a survey. Such invitation will force to log with an
-     * anonymous guest account.
      *
-     * @param email   email address to send the link to
-     * @param surveys
-     * @param request http request is required to generate the link to send
+     * Trainer send invitation to participate in a survey anonymously.
+     * This invitation will force to log into an anonymous guest account.
+     *
+     * @param email structure with attributes recipients, from, subject and body.
+     * @param surveys survey list
+     * @param request HTTP request is required to generate the link to send
      */
-    public void sendSurveyAnonymousToken(String email, List<SurveyDescriptor> surveys,
+    public void sendSurveyAnonymousTokens(
+        EmailAttributes email,
+        List<SurveyDescriptor> surveys,
         HttpServletRequest request) {
 
-        SurveyToken token = new SurveyToken();
-        token.setToken(Helper.genToken(128));
+        for (String recipient: email.getRecipients()) {
+            SurveyToken token = new SurveyToken();
+            token.setToken(Helper.genToken(128));
 
-        token.setSurveys(surveys);
-        // force anonymous (guest) login
-        token.setAccount(null);
-        token.setAutoLogin(true);
+            token.setSurveys(surveys);
+            // do not link to given account to force guest login
+            token.setAccount(null);
+            token.setAutoLogin(true);
 
-        // never exipire
-        token.setExpiryDate(null);
-        // can be used as many times as desired
-        token.setRemainingUses(null);
+            // never expire
+            token.setExpiryDate(null);
+            // can be used as many times as desired
+            token.setRemainingUses(null);
+            
+            String body = email.getBody();
+            // insert the player email into the text
+            if (body.contains("{{player}}")) {
+                body = body.replaceAll("\\{\\{player\\}\\}", recipient);
+            }
 
-        String sender = requestManager.getCurrentUser().getMainAccount().getName();
-
-        this.persistAndSendDisposableToken(token, request, email, sender,
-            "[Albasim Wegas] Survey",
-            "Hi " + email + ", <br /><br />Click <a href='{{link}}'>here</a> to participate in a survey");
+            this.persistAndSendDisposableToken(token, request,
+                recipient,
+                email.getSender(),  // requestManager.getCurrentUser().getMainAccount().getName();
+                email.getSubject(), // "[Albasim Wegas] Survey",
+                body);              // "Dear " + account.getName() + ", <br /><br />Click <a href='{{link}}'>here</a> to participate in a survey");
+        }
     }
 
     /**
+     * Trainer send invitation to participate in a survey (non-anonymously)
      *
-     * Trainer send invitation to participate in a survey anonymously to all game players
-     *
-     * @param account
-     * @param request http request is required to generate the link to send
+     * @param account recipient's account
+     * @param email structure with attributes to, from, subject and body.
+     * @param surveys survey list
+     * @param request HTTP request is required to generate the link to send
      */
-    public void sendSurveyAnonymousToken(AbstractAccount account, List<SurveyDescriptor> surveys,
-        HttpServletRequest request) {
-
-        SurveyToken token = new SurveyToken();
-        token.setToken(Helper.genToken(128));
-
-        token.setSurveys(surveys);
-        // do not link to given account to force guest login
-        token.setAccount(null);
-        token.setAutoLogin(true);
-
-        // never exipire
-        token.setExpiryDate(null);
-        // can be used as many times as desired
-        token.setRemainingUses(null);
-
-        String sender = requestManager.getCurrentUser().getMainAccount().getName();
-
-        this.persistAndSendDisposableToken(token, request, account.getEmail(), sender,
-            "[Albasim Wegas] Survey",
-            "Hi " + account.getName() + ", <br /><br />Click <a href='{{link}}'>here</a> to participate in a survey");
-    }
-
-    /**
-     * Trainer send invitation to participate in a survey
-     *
-     * @param account
-     * @param request http request is required to generate the link to send
-     */
-    public void sendSurveyToken(AbstractAccount account, List<SurveyDescriptor> surveys,
+    public void sendSurveyToken(AbstractAccount account, 
+        EmailAttributes email,
+        List<SurveyDescriptor> surveys,
         HttpServletRequest request) {
 
         SurveyToken token = new SurveyToken();
@@ -875,16 +861,22 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         token.setAccount(account);
         token.setAutoLogin(true);
 
-        // never exipire
+        // never expire
         token.setExpiryDate(null);
         // can be used as many times as desired
         token.setRemainingUses(null);
+        
+        String body = email.getBody();
+        // insert the player name into the text
+        if (body.contains("{{player}}")) {
+            body = body.replaceAll("\\{\\{player\\}\\}", account.getName());
+        }
 
-        String sender = requestManager.getCurrentUser().getMainAccount().getName();
-
-        this.persistAndSendDisposableToken(token, request, account.getEmail(), sender,
-            "[Albasim Wegas] Survey",
-            "Hi " + account.getName() + ", <br /><br />Click <a href='{{link}}'>here</a> to participate in a survey");
+        this.persistAndSendDisposableToken(token, request,
+            email.getRecipient(),
+            email.getSender(),  // requestManager.getCurrentUser().getMainAccount().getName();
+            email.getSubject(), // "[Albasim Wegas] Survey",
+            body);              // "Hi " + account.getName() + ", <br /><br />Click <a href='{{link}}'>here</a> to participate in a survey");
     }
 
     /**
@@ -929,8 +921,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                 String theLink = Helper.getPublicBaseUrl(request) + "/#/token/" + accountId + "/" + plainToken;
                 // insert the link within the text
                 if (text.contains("{{link}}")) {
-                    // a placeholder is predent in the text, replace it
-                    text = text.replace("{{link}}", theLink);
+                    // a placeholder is present in the text, replace it
+                    text = text.replaceAll("\\{\\{link\\}\\}", theLink);
                 } else {
                     // no placeholder -> append
                     text = text + "<br /><a href='" + theLink + "'>" + theLink + "</a>";

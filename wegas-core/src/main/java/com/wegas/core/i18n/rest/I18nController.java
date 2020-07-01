@@ -87,7 +87,7 @@ public class I18nController {
     @Path("Lang/{lang : [^\\/]*}")
     public GameModel removeLanguage(@PathParam("gameModelId") Long gameModelId, @PathParam("lang") String lang) {
         logger.trace("DELETE new language {} for gameModel #{}", lang, gameModelId);
-        return null;
+        return i18nFacade.deleteLanguage(gameModelId, lang);
     }
 
     @PUT
