@@ -71,7 +71,7 @@ const childHighlightStyle = css({
 });
 
 const childDropZoneIntoCSS = {
-  '&>*>*>.component-dropzone-into': {
+  '&>* .component-dropzone-into': {
     width: '100%',
     height: '100%',
   },
@@ -79,24 +79,24 @@ const childDropZoneIntoCSS = {
 
 const childDropzoneHorizontalStyle = css({
   ...childDropZoneIntoCSS,
-  '&>*>*>.component-dropzone': {
+  '&>* .component-dropzone': {
     maxWidth: '30px',
     width: '30%',
     height: '100%',
   },
-  '&>*>*>.component-dropzone-after': {
+  '&>* .component-dropzone-after': {
     right: 0,
   },
 });
 
 const childDropzoneVerticalStyle = css({
   ...childDropZoneIntoCSS,
-  '&>*>*>.component-dropzone': {
+  '&>* .component-dropzone': {
     maxHeight: '30px',
     width: '100%',
     height: '30%',
   },
-  '&>*>*>.component-dropzone-after': {
+  '&>* .component-dropzone-after': {
     bottom: 0,
   },
 });
@@ -493,6 +493,8 @@ export function ComponentContainer({
 }: ComponentContainerProps) {
   const realPath = path || [];
 
+  debugger;
+
   const wegasComponent = useStore(s => {
     if (!pageId) {
       return undefined;
@@ -502,6 +504,8 @@ export function ComponentContainer({
     if (!page) {
       return undefined;
     }
+
+    debugger;
 
     return getComponentFromPath(page, realPath);
   }, deepDifferent);
@@ -513,9 +517,21 @@ export function ComponentContainer({
   const extras = pick(restProps, defaultExtrasKeys);
   const actions = pick(restProps, defaultWegasComponentActionsKeys);
 
+  const oldType = React.useRef<string>();
+  const oldComponent = React.useRef<{
+    WegasComponent: React.FunctionComponent<WegasComponentProps>;
+    containerType: ContainerTypes;
+    componentName: string;
+  }>();
   const component = usePageComponentStore(
-    s => s[(wegasComponent && wegasComponent.type) || ''],
-    deepDifferent,
+    s => {
+      if (wegasComponent && wegasComponent.type !== oldType.current) {
+        oldType.current = wegasComponent?.type;
+        oldComponent.current = s[(wegasComponent && wegasComponent.type) || ''];
+      }
+      return oldComponent.current;
+    },
+    (a, b) => a?.componentName !== b?.componentName,
   ) as {
     WegasComponent: React.FunctionComponent<WegasComponentProps>;
     containerType: ContainerTypes;
@@ -541,19 +557,21 @@ export function ComponentContainer({
   const { editedPath } = React.useContext(pageEditorCTX);
 
   // const pageId = pageIdPath.slice(0, 1)[0];
-  // const containerPath = [...path];
-  const itemPath = [...realPath].pop();
+  const containerPath = [...(path || [])];
+  const itemIndex = containerPath.pop();
   const isNotFirstComponent = realPath.length > 0;
   const editable = editMode && isNotFirstComponent;
   const showComponent = editable || !extraState.hidden;
   const showLayout = showBorders && containerType != null;
   const computedVertical =
     containerType === 'FLEX'
-      ? restProps.flexDirection === 'column' ||
-        restProps.flexDirection === 'column-reverse'
+      ? restProps.layout?.flexDirection === 'column' ||
+        restProps.layout?.flexDirection === 'column-reverse'
       : containerType === 'LINEAR'
       ? restProps.vertical
       : false;
+
+  // debugger;
   // const showSplitter =
   //   childrenType === 'LINEAR' && !last && (editMode || !noSplitter);
   // const allowResize = childrenType === 'LINEAR' && (editMode || !noResize);
@@ -581,6 +599,7 @@ export function ComponentContainer({
             pageId={pageId}
             path={[...realPath, i]}
             childrenType={containerType}
+            // childrenVertical={computedVertical}
           />
           {showSplitter && !last && (
             <FonkyFlexSplitter notDraggable={!allowResize} />
@@ -589,7 +608,15 @@ export function ComponentContainer({
       );
     }
     return newChildren;
-  }, [nbChildren, pageId, realPath, showSplitter, allowResize, containerType]);
+  }, [
+    nbChildren,
+    pageId,
+    realPath,
+    showSplitter,
+    allowResize,
+    containerType,
+    // computedVertical,
+  ]);
 
   const Container = React.useMemo(() => {
     switch (childrenType) {
@@ -764,7 +791,9 @@ export function ComponentContainer({
         )}
         {dragHoverState && editable && childrenType !== 'ABSOLUTE' && (
           <ComponentDropZone
-            onDrop={dndComponent => onDrop(dndComponent, realPath, itemPath)}
+            onDrop={dndComponent =>
+              onDrop(dndComponent, containerPath, itemIndex)
+            }
             show
             dropPosition="BEFORE"
           />
@@ -784,7 +813,7 @@ export function ComponentContainer({
           />
         )}
         {showComponent && (
-          <ErrorBoundary>
+          <ErrorBoundary key={pageId}>
             <WegasComponent
               // path={realPath}
               // last={last}
@@ -812,8 +841,8 @@ export function ComponentContainer({
             onDrop={dndComponent =>
               onDrop(
                 dndComponent,
-                realPath,
-                itemPath != null ? itemPath + 1 : itemPath,
+                containerPath,
+                itemIndex != null ? itemIndex + 1 : itemIndex,
               )
             }
             show
