@@ -44,7 +44,7 @@ function PlayerPageLoader({
     );
     pageScript = initialSelectedPageId;
   }
-  const pageId = useScript(pageScript ? pageScript.content : '') as string;
+  const pageId = (useScript(pageScript?.content) as string | undefined) || '';
 
   return pageIdPath.includes(pageId) ? (
     <pre>Page {pageId} recursion</pre>

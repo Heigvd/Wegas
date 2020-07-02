@@ -88,12 +88,15 @@ export interface WegasComponentActions {
 
 export const wegasComponentActions: WegasComponentActions = {
   openPage: ({ pageLoaderName, pageId }) => {
-    store.dispatch(
-      ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
-        name: clientScriptEval<string>(pageLoaderName.content),
-        pageId,
-      }),
-    );
+    const name = clientScriptEval<string>(pageLoaderName.content);
+    if (name != null) {
+      store.dispatch(
+        ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
+          name,
+          pageId,
+        }),
+      );
+    }
   },
   openUrl: props => {
     window.open(props.url);
@@ -474,7 +477,7 @@ export function useComputeUnreadCount(
 ): InfoBulletProps | undefined {
   const scriptReturn = useScript<
     string | number | object[] | UnreadCountDescriptorTypes
-  >(unreadCountVariableScript?.content || '');
+  >(unreadCountVariableScript?.content);
 
   let infoBeamMessage: string | number;
   if (typeof scriptReturn === 'number') {

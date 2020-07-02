@@ -1,13 +1,15 @@
 let initialized = false;
 
-export let lastKeyboardEvents: WegasKeyboardEvent;
+export const lastKeyboardEvents: WegasKeyboardEvent = {
+  keyCode: undefined,
+  ctrlKey: undefined,
+  altKey: undefined,
+};
 
 function keyboardEventHandler(e: KeyboardEvent) {
-  lastKeyboardEvents = {
-    keyCode: e.keyCode,
-    ctrlKey: e.ctrlKey,
-    altKey: e.altKey,
-  };
+  lastKeyboardEvents.keyCode = e.keyCode;
+  lastKeyboardEvents.ctrlKey = e.ctrlKey;
+  lastKeyboardEvents.altKey = e.altKey;
 }
 
 if (!initialized) {

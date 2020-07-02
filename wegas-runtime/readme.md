@@ -27,10 +27,10 @@ docker run -p 27017:27017 --name wegas_mongo -d mongo:4.2
 mvn -f .. -DskipTests install
 ```
 
-### Java 8 
-If your default JVM is > 8, you must provide the path to a JVM 8 to maven. E.G:
+### Java 11
+If your default JVM is <> 11, you must provide the path to a JVM-11 to maven. E.G:
 ```shell
-JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/" mvn -DskipTests install
+JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/" mvn -DskipTests install
 ```
 
 
@@ -40,8 +40,8 @@ JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/" mvn -DskipTests install
 ### Start
 Run `./run` to start wegas.
 
-#### Java 8
-Wegas is designed to run on Java 8. If your default JVM is > 8, you must provide the path to a JVM 8 using the -j option.
+#### Java 11
+Wegas is designed to run on Java 11. If your default JVM is <> 11, you must provide the path to a JVM 11 using the -j option.
 
 #### Options
 Option | Default Value | Description 

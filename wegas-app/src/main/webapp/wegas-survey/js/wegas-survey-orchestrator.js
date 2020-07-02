@@ -2143,8 +2143,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
 
         // Exports a survey for sharing with other trainers or scenarists.
         onShare: function(surveyId, btn) {
-            var descr = Y.Wegas.Facade.VariableDescriptor.cache.findById(surveyId),
-                gameName = this.getFriendlyVarLabel(descr),
+            var gameName = this.knownSurveys[surveyId].label,
                 isScenarist = !!Y.Wegas.Facade.User.cache.get("currentUser").get("roles").find(function(role) {
                     return role.get("name") === "Scenarist";
                 });

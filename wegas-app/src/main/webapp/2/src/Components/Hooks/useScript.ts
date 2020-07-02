@@ -172,26 +172,26 @@ export function useGlobals() {
   // wlog(items);
 }
 
-export function clientScriptEval<ReturnValue>(script: string) {
-  return (
-    ((sandbox.contentWindow as unknown) as {
-      eval: (code: string) => ReturnValue;
-    })
-      // 'undefined' so that an empty script don't return '"use strict"'
-      .eval('"use strict";undefined;' + transpile(script))
-  );
+export function clientScriptEval<ReturnValue>(script?: string) {
+  return script != null
+    ? ((sandbox.contentWindow as unknown) as {
+        eval: (code: string) => ReturnValue;
+      })
+        // 'undefined' so that an empty script don't return '"use strict"'
+        .eval('"use strict";undefined;' + transpile(script))
+    : undefined;
 }
 
-export function safeClientScriptEval<ReturnValue>(script: string) {
+export function safeClientScriptEval<ReturnValue>(script?: string) {
   try {
     return clientScriptEval<ReturnValue>(script);
   } catch (e) {
     wwarn(
       `Script error at line ${e.lineNumber} : ${
         e.message
-      }\n\nScript content is :\n${script}\n\nTraspiled content is :\n${transpile(
-        script,
-      )}`,
+      }\n\nScript content is :\n${script}\n\nTraspiled content is :\n${
+        script != null ? transpile(script) : undefined
+      }`,
     );
     return undefined;
   }
@@ -202,11 +202,13 @@ export function safeClientScriptEval<ReturnValue>(script: string) {
  * @param script code to execute
  * @returns Last expression or LocalEvalError in case it errors.
  */
-export function useScript<ReturnValue>(script: string) {
+export function useScript<ReturnValue>(
+  script?: string,
+): ReturnValue | undefined {
   useGlobals();
   const fn = React.useCallback(
     () => safeClientScriptEval<ReturnValue>(script),
     [script],
   );
-  return useStore(fn, deepDifferent);
+  return useStore(fn, deepDifferent) as ReturnValue | undefined;
 }

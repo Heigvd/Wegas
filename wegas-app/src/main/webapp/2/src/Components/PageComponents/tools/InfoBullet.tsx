@@ -41,9 +41,10 @@ export function InfoBullet({
   blinkScript,
   messageScript,
 }: InfoBulletProps) {
-  const show = useScript<boolean>(showScript?.content || 'true');
-  const blink = useScript<boolean>(blinkScript?.content || 'false');
-  const message = useScript<string>(messageScript?.content || '');
+  let show = useScript<boolean>(showScript?.content);
+  show = show == null ? true : false;
+  const blink = useScript<boolean>(blinkScript?.content) || false;
+  const message = useScript<string>(messageScript?.content) || '';
 
   return show !== false ? (
     <div
