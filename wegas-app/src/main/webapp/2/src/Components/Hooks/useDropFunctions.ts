@@ -11,7 +11,7 @@ import * as React from 'react';
  * If the component content changes while dragging, the drag and drop API will be resetted and the onDragLeave and onDragEnd functions won't be called.
  * @returns {onDragEnter, onDragLeave}
  */
-export function useDropFunctions<T extends HTMLElement>(
+export function useDragFunctions<T extends HTMLElement>(
   dragIn: (event: React.DragEvent<T>) => void,
   dragOut: (event: React.DragEvent<T>) => void,
   dragEnd: (event?: React.DragEvent<T>) => void,

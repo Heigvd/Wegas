@@ -93,7 +93,7 @@ const AsyncComponentForm = asyncSFC<EditorProps>(
   ),
 );
 
-interface WegasComponentCommonProperties {
+export interface WegasComponentCommonProperties {
   name?: string;
   className?: string;
   children?: WegasComponent[];
@@ -110,6 +110,7 @@ const defaultLayoutCommonOptions: WegasComponentLayoutCommonOptions = {
   style: undefined,
   themeMode: undefined,
   tooltip: undefined,
+  containerStyle: undefined,
 };
 const defaultLayoutCommonOptionsKeys = Object.keys(defaultLayoutCommonOptions);
 const defaultLayoutOptionsKeys = [

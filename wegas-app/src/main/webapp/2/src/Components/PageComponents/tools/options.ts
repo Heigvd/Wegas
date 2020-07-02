@@ -247,6 +247,7 @@ export interface WegasComponentLayoutCommonOptions {
   tooltip?: string;
   themeMode?: string;
   style?: React.CSSProperties;
+  containerStyle?: React.CSSProperties;
 }
 
 const layoutCommonChoices: HashListChoices = [
@@ -268,6 +269,13 @@ const layoutCommonChoices: HashListChoices = [
     label: 'Style',
     value: {
       prop: 'style',
+      schema: schemaProps.hashlist('Style'),
+    },
+  },
+  {
+    label: 'Container style',
+    value: {
+      prop: 'containerStyle',
       schema: schemaProps.hashlist('Style'),
     },
   },

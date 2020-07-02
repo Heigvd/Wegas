@@ -83,10 +83,8 @@ const defaultPage = {
     layout: {
       flexDirection: 'column',
     },
-    style: {
-      width: '100%',
-      height: '100%',
-      overflow: 'auto',
+    containerStyle: {
+      height: 'max-content',
     },
   },
 };
