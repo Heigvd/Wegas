@@ -36,9 +36,9 @@ export function ComponentExtrasManager({
     lock,
   } = extras;
 
-  const disabled = useScript<boolean>(disableIf?.content || 'undefined;');
-  const hidden = useScript<boolean>(hideIf?.content || 'undefined;');
-  const readOnly = useScript<boolean>(readOnlyIf?.content || 'undefined;');
+  const disabled = useScript<boolean>(disableIf?.content);
+  const hidden = useScript<boolean>(hideIf?.content);
+  const readOnly = useScript<boolean>(readOnlyIf?.content);
   const locked = useStore(s => lock != null && s.global.locks[lock] === true);
 
   const infoBulletProps = useComputeUnreadCount(unreadCount) || infoBullet;

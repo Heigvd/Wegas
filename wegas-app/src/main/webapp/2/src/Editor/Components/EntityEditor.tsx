@@ -12,7 +12,7 @@ import { AvailableViews } from './FormView';
 import { cx } from 'emotion';
 import { flex, grow, flexColumn } from '../../css/classes';
 import { Edition } from '../../data/Reducer/globalState';
-import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
+import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { MessageString } from './MessageString';
 
 export interface EditorProps<T> {
@@ -357,7 +357,7 @@ export default function VariableForm(props: {
           }
         }
       }}
-      shouldUpdate={shallowDifferent}
+      shouldUpdate={deepDifferent}
     >
       {({ state, dispatch }) => {
         if (state == null || state.entity == null) {
