@@ -14,6 +14,9 @@
 YUI.add("wegas-survey-widgets", function(Y) {
     "use strict";
     var CONTENTBOX = "contentBox",
+        SURVEY_PANEL_CLASS = "wegas-survey-panel",
+        SURVEY_PANEL_CONTENT_CLASS = "wegas-survey-panel-content",
+        SURVEY_PANEL_MASK_CLASS = "wegas-survey-panel-mask",
         Wegas = Y.Wegas,
         SurveyWidget,
         SurveyNumberInput, SurveyTextInput, SurveyChoicesInput,
@@ -137,7 +140,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                     var surveyInstance = survey.getInstance();
 
                     // We want to display the first not yet completed survey
-                    if (surveyInstance.get("status") != "COMPLETED") {
+                    if (surveyInstance.get("status") !== "COMPLETED") {
                         // only cares about first not completed survey
 
                         if (!this.currentSurvey || this.currentSurvey.get("id") !== survey.get("id")) {
@@ -185,7 +188,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
      */
     SurveyWidget = Y.Base.create("wegas-survey-widget", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         CONTENT_TEMPLATE: "<div>"
-            + "  <div class=\"title\"></div>"
+            + "  <div class=\"survey-title\"></div>"
             + "  <div class=\"description\"></div>"
             + "  <div class=\"section\">"
             + "    <div class=\"section-useful-contents\">"
@@ -531,7 +534,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
         syncUI: function() {
             var cb = this.get("contentBox"),
                 container = cb.one(".content");
-            cb.one(".title").setContent(this.title);
+            cb.one(".survey-title").setContent(this.title);
             this.removeChildren();
             if (this.surveyStatus === SURVEY_STATUS.EMPTY ||
                 this.surveyStatus === SURVEY_STATUS.COMPLETED ||
@@ -1076,7 +1079,7 @@ YUI.add("wegas-survey-widgets", function(Y) {
                 if (inst.get("status") !== ORCHESTRATION_PROGRESS.COMPLETED) {
                     var unreplied = this.getFirstUnrepliedInput();
                     if (!unreplied) {
-                        Wegas.Panel.confirm(I18n.tCap("survey.global.confirmation"), Y.bind(function() {
+                        var panel = Wegas.Panel.confirm(I18n.tCap("survey.global.confirmation"), Y.bind(function() {
                             Wegas.Panel.confirmPlayerAction(Y.bind(function(e) {
                                 this._validated = true;
                                 this.sendSurveyStatusChange(ORCHESTRATION_PROGRESS.COMPLETED, Y.bind(function(e) {
@@ -1093,41 +1096,56 @@ YUI.add("wegas-survey-widgets", function(Y) {
                                     },
                                     this.get("survey.evaluated").get("name")
                                     );
+                                Y.all('.' + SURVEY_PANEL_MASK_CLASS).remove(true);
                             }, this));
-                        }, this));
+                        }, this),
+                        // Action in case of "cancel":
+                        function() {
+                            Y.all('.' + SURVEY_PANEL_MASK_CLASS).remove(true);
+                        });
+                        Y.one("body").insert('<div class="' + SURVEY_PANEL_MASK_CLASS + '"></div>', 0);
+                        panel.get("contentBox").addClass(SURVEY_PANEL_CONTENT_CLASS);
+                        panel.get("boundingBox").addClass(SURVEY_PANEL_CLASS);
                     } else {
-                        var ctx = this;
-                        this.alert(
-                            I18n.t("survey.errors.incomplete", {question: "<i><b>" + unreplied.msg + "</b></i>"}),
-                            function() {
-                                ctx.currentInputId = unreplied.input.get("id");
-                                ctx.syncUI();
-                            },
-                            I18n.t("survey.errors.returnToQuestion")
-                            );
+                        var ctx = this,
+                            panel = this.alert(
+                                I18n.t("survey.errors.incomplete", {question: "<i><b>" + unreplied.msg + "</b></i>"}),
+                                function() {
+                                    ctx.currentInputId = unreplied.input.get("id");
+                                    ctx.syncUI();
+                                },
+                                I18n.t("survey.errors.returnToQuestion"),
+                                "survey-return-to-incomplete"
+                                );
                     }
                 }
             }, this));
         },
         // Overload Wegas.Panel.alert in order to add a custom cssClass.
+        // CSS class SURVEY_PANEL_CLASS is to ensure visibility on top of any game-level panels.
         alert: function(msg, okCb, okLabel, additionalClass, modal) {
             modal = modal === undefined || modal;
-            var classes = "wegas-survey-panel " + (additionalClass ? additionalClass : "");
+            var classes = additionalClass ? additionalClass : "";
             var panel = new Y.Wegas.Panel({
                 content: msg,
-                modal: modal,
+                modal: false,
                 width: 450,
                 buttons: {
                     footer: [{
                             label: okLabel || I18n.t('global.ok') || 'OK',
                             action: function() {
+                                Y.all('.' + SURVEY_PANEL_MASK_CLASS).remove(true);
                                 panel.exit();
                                 okCb && okCb();
                             }
                         }]
                 }
             }).render();
-            panel.get("contentBox").addClass(classes);
+            if (modal) {
+                Y.one("body").insert('<div class="' + SURVEY_PANEL_MASK_CLASS + '"></div>', 0);
+            }
+            panel.get("contentBox").addClass(classes + " " + SURVEY_PANEL_CONTENT_CLASS);
+            panel.get("boundingBox").addClass(SURVEY_PANEL_CLASS);
             panel.plug(Y.Plugin.DraggablePanel, {});
             return panel;
         }

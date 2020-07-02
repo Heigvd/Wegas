@@ -346,8 +346,9 @@
     border: 3px ridge #8BC34A;
     box-shadow: 2px 2px 6px #555;
     background: white;
-    max-height: 700px;
-    overflow-y: auto;
+    max-height: 800px;
+    height: 100%;
+    overflow-y: hidden;
 }
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel .yui3-widget-hd {
@@ -383,7 +384,10 @@
 }
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel .yui3-widget-bd {
-    margin: 20px auto;
+    margin: auto;
+    padding: 20px 0;
+    height: calc( 100% - 70px );
+    overflow-y: auto;
 }
 
 .yui3-skin-sam.wegas-hostmode .yui3-widget-modal .wegas-panel-content.wegas-orchestrator-panel .yui3-widget-ft {
