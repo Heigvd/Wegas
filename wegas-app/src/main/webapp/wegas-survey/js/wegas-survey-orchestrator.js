@@ -98,12 +98,12 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
     // Adjusts panel height to max 80% of screen size.
     function adjustPanelHeight(panel) {
         var boxHeight = Number.parseInt(panel.get(CONTENTBOX).getComputedStyle("height")),
-            bodyHeight = 0.8*Number.parseInt(Y.one("body").getComputedStyle("height"));
+            bodyHeight = Number.parseInt(Y.one("body").getComputedStyle("height"));
         panel.get(BOUNDINGBOX).setStyle("max-height", "80%");
-        if (boxHeight >= bodyHeight) {
-            panel.get(BOUNDINGBOX).setStyle("height", bodyHeight + "px");
+        if (boxHeight >= 0.8*bodyHeight) {
+            panel.get(BOUNDINGBOX).setStyle("height", (0.8*bodyHeight) + "px");
         } else {
-            panel.get(BOUNDINGBOX).setStyle("height", "80%");
+            panel.get(BOUNDINGBOX).setStyle("height", boxHeight + "px");
         }
     }
     
