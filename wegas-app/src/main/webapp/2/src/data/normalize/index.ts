@@ -1,3 +1,5 @@
+import { IVariableDescriptor, IVariableInstance, IGameModel, IGame, IPlayer, ITeam, IAbstractEntity } from "wegas-ts-api/typings/WegasEntities";
+
 export interface NormalizedData {
   variableDescriptors: {
     [id: string]: IVariableDescriptor;

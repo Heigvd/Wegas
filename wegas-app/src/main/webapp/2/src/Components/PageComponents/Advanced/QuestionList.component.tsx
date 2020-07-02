@@ -18,6 +18,8 @@ import { useStore } from '../../../data/store';
 import { shallowDifferent } from '../../Hooks/storeHookFactory';
 import { entityIs } from '../../../data/entities';
 import { ConnectedQuestionDisplay } from '../../Outputs/Question';
+import { IScript, IQuestionDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { ISListDescriptor } from 'wegas-ts-api/typings/WegasScriptableEntities';
 
 const unreadSignalStyle = css({ margin: '3px' });
 

@@ -1,4 +1,5 @@
 import { getInstance as rawGetInstance } from '../../methods/VariableDescriptorMethods';
+import { IObjectDescriptor, IPlayer } from 'wegas-ts-api/typings/WegasEntities';
 
 export function getProperty(od: IObjectDescriptor) {
   return (self: IPlayer, key: string) => {

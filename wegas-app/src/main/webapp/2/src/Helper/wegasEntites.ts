@@ -1,3 +1,5 @@
+import { WegasClassNames, IScript } from "wegas-ts-api/typings/WegasEntities";
+
 export function toScriptableClassName(classes?: WegasClassNames[]) {
   return classes
     ? classes.map(c => {

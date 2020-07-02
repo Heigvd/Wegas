@@ -13,6 +13,7 @@ import { css } from 'emotion';
 import { entityIs } from '../../data/entities';
 import { focusTabContext } from './LinearTabLayout/LinearLayout';
 import { mainLayoutId } from './Layout';
+import { IVariableDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 interface SearchPanelProps {
   search: State['global']['search'];

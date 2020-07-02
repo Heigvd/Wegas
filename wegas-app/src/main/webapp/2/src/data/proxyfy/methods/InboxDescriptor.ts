@@ -1,4 +1,5 @@
 import { getInstance as rawGetInstance } from '../../methods/VariableDescriptorMethods';
+import { IInboxDescriptor, IPlayer, IBooleanDescriptor, ITranslatableContent, IAttachment } from 'wegas-ts-api/typings/WegasEntities';
 
 export function isEmpty(id: IInboxDescriptor) {
   return (self: IPlayer) => {

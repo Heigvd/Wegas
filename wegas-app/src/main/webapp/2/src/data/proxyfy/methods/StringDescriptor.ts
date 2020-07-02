@@ -1,6 +1,7 @@
 import { getInstance as rawGetInstance } from '../../methods/VariableDescriptorMethods';
 import { TranslatableContent } from '../../i18n';
 import { parseStringValues } from '../instancesHelpers';
+import { IStringDescriptor, IPlayer, ITranslatableContent } from 'wegas-ts-api/typings/WegasEntities';
 
 export function getValue(sd: IStringDescriptor) {
   return (self: IPlayer) => {

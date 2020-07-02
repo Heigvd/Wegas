@@ -1,3 +1,5 @@
+type ISGameModelLanguage = import('wegas-ts-api/typings/WegasScriptableEntities').ISGameModelLanguage;
+
 interface FeaturesSelecta {
   ADVANCED?: boolean;
   INTERNAL?: boolean;

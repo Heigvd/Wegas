@@ -1,6 +1,7 @@
 import {
   getInstance as rawGetInstance,
 } from '../../methods/VariableDescriptorMethods';
+import { ISurveySectionDescriptor, IPlayer } from 'wegas-ts-api/typings/WegasEntities';
 
 
 export function activate(_ssd: ISurveySectionDescriptor) {

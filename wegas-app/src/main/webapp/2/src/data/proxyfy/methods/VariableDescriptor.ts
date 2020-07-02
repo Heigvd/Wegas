@@ -1,6 +1,7 @@
 import { getInstance as rawGetInstance } from '../../methods/VariableDescriptorMethods';
 import { proxyfy } from '..';
 import { TranslatableContent } from '../../i18n';
+import { IVariableInstance, IVariableDescriptor, IPlayer } from 'wegas-ts-api/typings/WegasEntities';
 
 export function getInstance<I extends IVariableInstance>(
   vd: IVariableDescriptor<I>,

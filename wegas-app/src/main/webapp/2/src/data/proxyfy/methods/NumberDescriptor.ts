@@ -1,4 +1,5 @@
 import { getInstance as rawGetInstance } from '../../methods/VariableDescriptorMethods';
+import { INumberDescriptor, IPlayer } from 'wegas-ts-api/typings/WegasEntities';
 
 export function getValue(nd: INumberDescriptor) {
   return (self: IPlayer) => {

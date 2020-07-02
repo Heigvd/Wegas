@@ -10,6 +10,7 @@ import { isSelected, getReply } from '../proxyfy/methods/ChoiceDescriptor';
 import { getInstance } from '../methods/VariableDescriptorMethods';
 import { createScript } from '../../Helper/wegasEntites';
 import { InboxAPI } from '../../API/inbox.api';
+import { IVariableInstance, IScript, IPlayer, IVariableDescriptor, IChoiceDescriptor, IQuestionDescriptor, IMessage, IInboxDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 export interface VariableInstanceState {
   [id: string]: Readonly<IVariableInstance> | undefined;

@@ -9,6 +9,8 @@ import { flex, itemCenter } from '../../css/classes';
 import { readMessage } from '../../data/Reducer/VariableInstanceReducer';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
 import { Text } from './Text';
+import { IMessage } from 'wegas-ts-api/typings/WegasEntities';
+import { ISMessage, ISInboxDescriptor } from 'wegas-ts-api/typings/WegasScriptableEntities';
 
 const unreadSignalStyle = css({ margin: '3px' });
 

@@ -6,6 +6,7 @@ import { editStateMachine, editVariable } from '../data/Reducer/globalState';
 import { ThunkResult } from '../data/store';
 import { TYPESTRING } from 'jsoninput/typings/types';
 import { Icons } from './Components/Views/FontAwesome';
+import { IAbstractEntity, WegasClassNames } from 'wegas-ts-api/typings/WegasEntities';
 
 export type WegasTypeString = TYPESTRING | 'identifier';
 
@@ -103,7 +104,7 @@ async function fetchConfig(
 ): Promise<{ schema: Schema; methods: MethodConfig }> {
   return import(
     /* webpackChunkName: "Config-[request]", webpackPrefetch: true */
-    '../../../generated-schema/' + file
+    'wegas-ts-api/schema/' + file
   );
 }
 type formValidationSchema = Parameters<typeof formValidation>[0];
@@ -147,7 +148,7 @@ function updatedErrored(
 async function injectRef(schema: { $wref?: string }): Promise<Schema> {
   const { $wref, ...restSchema } = schema;
   if (typeof $wref === 'string') {
-    const refSchema = await import('../../../generated-schema/' + $wref).then(
+    const refSchema = await import('wegas-ts-api/schema/' + $wref).then(
       res => res.schema,
     );
     return { ...refSchema, ...restSchema };

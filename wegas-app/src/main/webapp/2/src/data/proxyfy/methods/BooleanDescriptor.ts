@@ -1,4 +1,5 @@
 import { getInstance as rawGetInstance } from '../../methods/VariableDescriptorMethods';
+import { IBooleanDescriptor, IPlayer } from 'wegas-ts-api/typings/WegasEntities';
 
 export function getValue(bd: IBooleanDescriptor) {
   return (self: IPlayer) => {

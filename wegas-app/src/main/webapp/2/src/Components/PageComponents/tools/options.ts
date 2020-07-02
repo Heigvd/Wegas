@@ -17,6 +17,7 @@ import { entityIs } from '../../../data/entities';
 import { getQuestionReplies } from '../../../data/proxyfy/instancesHelpers';
 import { createScript } from '../../../Helper/wegasEntites';
 import { proxyfy } from '../../../data/proxyfy';
+import { IScript, IInboxDescriptor, IDialogueDescriptor, IQuestionDescriptor, IWhQuestionDescriptor, ISurveyDescriptor, IPeerReviewDescriptor, IInboxInstance, IQuestionInstance, IWhQuestionInstance, ISurveyInstance, IPeerReviewInstance, IReview } from 'wegas-ts-api/typings/WegasEntities';
 
 export interface WegasComponentOptionsAction {
   priority?: number;

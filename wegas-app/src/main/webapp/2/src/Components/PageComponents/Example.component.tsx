@@ -8,6 +8,8 @@ import { schemaProps } from './tools/schemaProps';
 import { useComponentScript } from '../Hooks/useComponentScript';
 import { entityIs } from '../../data/entities';
 import { WegasComponentProps } from './tools/EditableComponent';
+import { INumberDescriptor, ITextDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { ISScript } from 'wegas-ts-api/typings/WegasScriptableEntities';
 
 interface ExampleProps extends WegasComponentProps {
   script?: ISScript;

@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -91,13 +92,16 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.reflections.Reflections;
 
-@Mojo(name = "schema", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE)
+@Mojo(name = "wenerator", defaultPhase = LifecyclePhase.PROCESS_CLASSES, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class SchemaGenerator extends AbstractMojo {
 
     private static final ObjectMapper mapper = JacksonMapperProvider.getMapper().enable(
         SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS,
         SerializationFeature.INDENT_OUTPUT
     );
+
+    private static final String STRIP_FROM = "/* STRIP FROM */";
+    private static final String STRIP_TO = "/* STRIP TO */";
 
     private final Class<? extends Mergeable>[] classFilter;
 
@@ -108,17 +112,18 @@ public class SchemaGenerator extends AbstractMojo {
     /**
      * Location of the schemas.
      */
-    @Parameter(defaultValue = "${project.build.directory}/generated/schema", property = "schema.output", required = true)
-    private File outputDirectory;
+    @Parameter(property = "wenerator.output", required = true)
+    private File schemasDirectory;
 
-    @Parameter(defaultValue = "${project.build.directory}/generated/typings", property = "schema.typings", required = true)
-    private File outputTypings;
+    @Parameter(property = "wenerator.typings", required = true)
+    private File typingsDirectory;
 
-    @Parameter(defaultValue = "${project.build.directory}/generated/scriptables", property = "schema.scriptables", required = true)
-    private File outputScriptables;
+    @Parameter(property = "wenerator.scriptables", required = true)
+    private File scriptablesDirectory;
 
-    @Parameter(property = "schema.pkg", required = true)
+    @Parameter(property = "wenerator.pkg", required = true)
     private String[] pkg;
+
     private final Map<String, String> tsInterfaces;
     private final Map<String, String> tsScriptableInterfaces;
     private final Map<String, String> inheritance;
@@ -348,6 +353,15 @@ public class SchemaGenerator extends AbstractMojo {
         }
     }
 
+
+    /**
+     * Generate interface and store its source code (as string) in tsInterfaces or
+     * tsScriptableInterfaces
+     *
+     * @param wEF
+     * @param extraProperties
+     * @param generateScriptableTSClass
+     */
     private void generateTsInterface(WegasEntityFields wEF, Map<Method, WegasExtraProperty> extraProperties, boolean generateScriptableTSClass) {
         Class<? extends Mergeable> c = wEF.getTheClass();
 
@@ -362,7 +376,14 @@ public class SchemaGenerator extends AbstractMojo {
             sb.append(this.formatJSDoc(jDoc.getDoc()));
         }
 
-        sb.append("interface ").append(getTsInterfaceName(c, null, interfaceSuffix));
+
+        /*
+         * such export is used to break the ambient context.
+         * As useGlobalLibs.ts will inject this file we have to make it ambient later.
+         * Surround this statement with special markdown.
+         */
+        sb.append(STRIP_FROM).append(" export ").append(STRIP_TO)
+            .append("interface ").append(getTsInterfaceName(c, null, interfaceSuffix));
         // classname to paramter type map (eg. VariableInstance -> T)
         Map<String, String> genericity = new HashMap<>();
         List<String> genericityOrder = new ArrayList<>();
@@ -429,7 +450,10 @@ public class SchemaGenerator extends AbstractMojo {
                 genericity);
         }
 
-        if (!isAbstract) {
+        if (isAbstract) {
+            // @class hack: string for abstract classes
+            properties.put("@class", "  readonly '@class': string;\n");
+        } else {
             // @class hack: constant value for concrete classes
             properties.put("@class", "  readonly '@class': '" + Mergeable.getJSONClassName(c) + "';\n");
         }
@@ -584,7 +608,7 @@ public class SchemaGenerator extends AbstractMojo {
         }).collect(Collectors.joining(",\n")));
         sb.append("\n}");
 
-        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(outputTypings.getAbsolutePath(), "Inheritance.json"))){
+        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(typingsDirectory.getAbsolutePath(), "Inheritance.json"))) {
             writer.write(sb.toString());
         } catch (IOException ex) {
             throw new WegasWrappedException(ex);
@@ -599,10 +623,10 @@ public class SchemaGenerator extends AbstractMojo {
             sb.append(typeDef).append("\n");
         });
 
-        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(outputTypings.getAbsolutePath(), fileName))){
+        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(typingsDirectory.getAbsolutePath(), fileName))) {
             writer.write(sb.toString());
         } catch (IOException ex) {
-            getLog().error("Failed to write " + fileName + " in " + outputTypings.getAbsolutePath(), ex);
+            getLog().error("Failed to write " + fileName + " in " + typingsDirectory.getAbsolutePath(), ex);
         }
     }
 
@@ -655,6 +679,23 @@ public class SchemaGenerator extends AbstractMojo {
         StringBuilder nsb = new StringBuilder();
         ArrayList<String> intKeys = new ArrayList<String>(tsScriptableInterfaces.keySet());
 
+        /*
+         * such import break the ambient context.
+         * As useGlobalLibs.ts will inject this file we have to make it ambient later.
+         * Surround this statement with special markdown.
+         */
+        sb.append(STRIP_FROM)
+            .append("import {").append("  WithoutAtClass,");
+
+        tsInterfaces.forEach((tsName, _value) -> {
+            sb.append(tsName).append(',');
+        });
+
+        sb.append("} from './WegasEntities'")
+            .append(STRIP_TO)
+            .append(System.lineSeparator())
+            .append(System.lineSeparator());
+
         /**
          * Creating a mergeable interface
          */
@@ -663,7 +704,7 @@ public class SchemaGenerator extends AbstractMojo {
         /**
          * Creating ts interface linking real classes and stringified classes
          */
-        sb.append("interface WegasEntitesNamesAndClasses {");
+        sb.append("interface WegasEntitiesNamesAndClasses {");
         intKeys.forEach(key -> {
             sb.append(System.lineSeparator())
                 .append("  " + key + " : " + key + ";")
@@ -680,32 +721,27 @@ public class SchemaGenerator extends AbstractMojo {
          */
         sb.append("interface WegasClassNameAndScriptableClasses {");
         intKeys.forEach(key -> {
-            sb  .append(System.lineSeparator())
+            sb.append(System.lineSeparator())
                 .append("  " + key.substring(2) + " : " + key + ";");
         });
         sb.append(System.lineSeparator())
             .append("}")
             .append(System.lineSeparator())
             .append(System.lineSeparator());
-        
+
         /**
          * Creating ts type allowing every generated WegasEntities as string
          */
-        sb.append("type ScriptableInterfaceName = keyof WegasEntitesNamesAndClasses;")
+        sb.append("type ScriptableInterfaceName = keyof WegasEntitiesNamesAndClasses;")
             .append(System.lineSeparator())
             .append(System.lineSeparator());
 
         /**
          * Creating ts type allowing every generated WegasEntities
          */
-        sb.append("type ScriptableInterface = WegasEntitesNamesAndClasses[ScriptableInterfaceName];")
+        sb.append("type ScriptableInterface = WegasEntitiesNamesAndClasses[ScriptableInterfaceName];")
             .append(System.lineSeparator())
             .append(System.lineSeparator());
-
-        /**
-         * Creating a mergeable interface
-         */
-        writeMergeable(sb, "IS");
 
         /**
          * Creating all interfaces with callable methods for scripts
@@ -805,20 +841,21 @@ public class SchemaGenerator extends AbstractMojo {
             pkg = new String[]{"com.wegas"};
             classes = new Reflections((Object[]) pkg).getSubTypesOf(Mergeable.class);
 
-            if (outputDirectory.isFile()) {
-                throw new MojoExecutionException(outputDirectory.getAbsolutePath() + " is not a directory");
+            getLog().error(schemasDirectory.getAbsolutePath());
+            if (schemasDirectory.isFile()) {
+                throw new MojoExecutionException(schemasDirectory.getAbsolutePath() + " is not a directory");
             }
-            if (outputTypings.isFile()) {
-                throw new MojoExecutionException(outputTypings.getAbsolutePath() + " is not a directory");
+            if (typingsDirectory.isFile()) {
+                throw new MojoExecutionException(typingsDirectory.getAbsolutePath() + " is not a directory");
             }
-            if (outputScriptables.isFile()) {
-                throw new MojoExecutionException(outputScriptables.getAbsolutePath() + " is not a directory");
+            if (scriptablesDirectory.isFile()) {
+                throw new MojoExecutionException(scriptablesDirectory.getAbsolutePath() + " is not a directory");
             }
 
-            getLog().info("Writing to " + outputDirectory.getAbsolutePath());
-            outputDirectory.mkdirs();
-            outputTypings.mkdirs();
-            outputScriptables.mkdirs();
+            getLog().info("Writing to " + schemasDirectory.getAbsolutePath());
+            schemasDirectory.mkdirs();
+            typingsDirectory.mkdirs();
+            scriptablesDirectory.mkdirs();
         } else {
             getLog().info("DryRun: do not generate any files");
             if (this.classFilter != null) {
@@ -964,15 +1001,15 @@ public class SchemaGenerator extends AbstractMojo {
                     jsonBuiltFileNames.put(jsonFileName, wEF.getTheClass().getName());
 
                     if (!dryRun) {
-                        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(outputDirectory.getAbsolutePath(), jsonFileName))){
+                        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(schemasDirectory.getAbsolutePath(), jsonFileName))) {
                             writer.write(configToString(config, patches));
                         } catch (IOException ex) {
-                            getLog().error("Failed to write " + jsonFileName + " in " + outputDirectory.getAbsolutePath(), ex);
+                            getLog().error("Failed to write " + jsonFileName + " in " + schemasDirectory.getAbsolutePath(), ex);
                         }
-                        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(outputScriptables.getAbsolutePath(), classFileName))){
+                        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(scriptablesDirectory.getAbsolutePath(), classFileName))) {
                             writer.write(getTsScriptableClass(c, allMethods));
                         } catch (IOException ex) {
-                            getLog().error("Failed to write " + classFileName + " in " + outputScriptables.getAbsolutePath(), ex);
+                            getLog().error("Failed to write " + classFileName + " in " + scriptablesDirectory.getAbsolutePath(), ex);
                         }
                     } else {
                         getLog().info(jsonFileName);

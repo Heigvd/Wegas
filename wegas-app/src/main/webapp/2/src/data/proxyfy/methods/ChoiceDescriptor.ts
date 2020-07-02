@@ -3,6 +3,7 @@ import { VariableDescriptor, Player } from '../../selectors';
 import { proxyfy } from '..';
 import { isStillAnswerabled } from './QuestionDescriptor';
 import { getChoiceReplies } from '../instancesHelpers';
+import { IChoiceDescriptor, IPlayer, IQuestionDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 export function setCurrentResult(_cd: IChoiceDescriptor) {
   return (_self: IPlayer, _resultName: string) => {

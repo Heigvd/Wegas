@@ -21,6 +21,7 @@ import {
 import { isSelected } from '../../data/proxyfy/methods/ChoiceDescriptor';
 import { Button } from '../Inputs/Buttons/Button';
 import { themeVar } from '../Style/ThemeVars';
+import { IQuestionDescriptor, IReply, IChoiceDescriptor, IChoiceInstance, IQuestionInstance, IListDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 const unreadSignalStyle = css({ margin: '3px' });
 const choiceContainerStyle = css({

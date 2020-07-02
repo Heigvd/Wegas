@@ -1,4 +1,5 @@
 import { getInstance as rawGetInstance } from '../../methods/VariableDescriptorMethods';
+import { IResourceDescriptor, IPlayer } from 'wegas-ts-api/typings/WegasEntities';
 
 export function addOccupation(_rd: IResourceDescriptor) {
   return (

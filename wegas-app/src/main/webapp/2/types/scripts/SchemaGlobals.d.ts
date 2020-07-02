@@ -1,3 +1,6 @@
+type WegasClassNames = import ("wegas-ts-api/typings/WegasEntities").WegasClassNames;
+type ISMergeable = import ("wegas-ts-api/typings/WegasScriptableEntities").ISMergeable;
+
 type SimpleSchema =
   | {}
   | {

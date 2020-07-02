@@ -1,6 +1,7 @@
 import {
   getInstance as rawGetInstance,
 } from '../../methods/VariableDescriptorMethods';
+import { ISurveyDescriptor, IPlayer } from 'wegas-ts-api/typings/WegasEntities';
 
 
 export function activate(_sd: ISurveyDescriptor) {

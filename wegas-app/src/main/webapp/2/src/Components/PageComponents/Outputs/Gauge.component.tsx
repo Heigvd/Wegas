@@ -7,6 +7,7 @@ import { schemaProps } from '../tools/schemaProps';
 import { StandardGauge } from '../../Outputs/StandardGauge';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { useComponentScript } from '../../Hooks/useComponentScript';
+import { IScript, INumberDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 interface PlayerGaugeProps extends WegasComponentProps {
   /**

@@ -14,6 +14,7 @@ import { flex, grow, flexColumn } from '../../css/classes';
 import { Edition } from '../../data/Reducer/globalState';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { MessageString } from './MessageString';
+import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 export interface EditorProps<T> {
   entity?: T;

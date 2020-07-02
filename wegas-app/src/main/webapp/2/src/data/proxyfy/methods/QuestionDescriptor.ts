@@ -4,6 +4,7 @@ import {
 } from '../../methods/VariableDescriptorMethods';
 import { getQuestionReplies } from '../instancesHelpers';
 import { VariableDescriptor, Player } from '../../selectors';
+import { IQuestionDescriptor, IPlayer, IChoiceDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 export function isReplied(qd: IQuestionDescriptor) {
   return (self: IPlayer) => getQuestionReplies(qd, true, self).length > 0;

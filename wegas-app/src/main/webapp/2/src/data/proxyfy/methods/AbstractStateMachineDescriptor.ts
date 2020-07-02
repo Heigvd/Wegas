@@ -1,4 +1,5 @@
 import { getInstance as rawGetInstance } from '../../methods/VariableDescriptorMethods';
+import { IFSMDescriptor, IPlayer } from 'wegas-ts-api/typings/WegasEntities';
 
 export function disable(_fsmd: IFSMDescriptor) {
   return (_self: IPlayer) => {
@@ -11,6 +12,8 @@ export function enable(_fsmd: IFSMDescriptor) {
     throw Error('This is readonly');
   };
 }
+
+
 
 export function isEnabled(fsmd: IFSMDescriptor) {
   return (self: IPlayer) => {

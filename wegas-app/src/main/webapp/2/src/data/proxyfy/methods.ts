@@ -18,6 +18,7 @@ import * as TaskDescriptor from './methods/TaskDescriptor';
 import * as TextDescriptor from './methods/TextDescriptor';
 import * as VariableDescriptor from './methods/VariableDescriptor';
 import * as WhQuestionDescriptor from './methods/WhQuestionDescriptor';
+import { IAbstractEntity } from 'wegas-ts-api/typings/WegasEntities';
 
 export const methods: {
   [cls: string]: {

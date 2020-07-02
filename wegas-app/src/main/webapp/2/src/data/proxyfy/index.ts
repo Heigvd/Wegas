@@ -1,6 +1,8 @@
 import { inheritanceChain } from '../entities';
 import { methods } from './methods';
 import { deepClone } from 'fast-json-patch/module/core';
+import { IAbstractEntity } from 'wegas-ts-api/typings/WegasEntities';
+import { WegasClassNameAndScriptableClasses } from 'wegas-ts-api/typings/WegasScriptableEntities';
 
 const proxyCache = new WeakMap<IAbstractEntity, IAbstractEntity>();
 

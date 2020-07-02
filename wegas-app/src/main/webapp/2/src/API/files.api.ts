@@ -2,6 +2,8 @@ import { rest } from './rest';
 import { GameModel } from '../data/selectors';
 import { omit } from 'lodash';
 
+import { IAbstractContentDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+
 /**
  * Compute an absolute path for a path and a fileName.
  * @param param0 FileDescriptor like object to compute absolute path from

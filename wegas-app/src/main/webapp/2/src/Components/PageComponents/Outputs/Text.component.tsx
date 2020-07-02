@@ -7,6 +7,7 @@ import {
 import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { useComponentScript } from '../../Hooks/useComponentScript';
+import { IScript, ITextDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 export interface PlayerTextProps extends WegasComponentProps {
   script?: IScript;

@@ -1,5 +1,6 @@
 import { getInstance as rawGetInstance } from '../../methods/VariableDescriptorMethods';
 import { TranslatableContent } from '../../i18n';
+import { IWhQuestionDescriptor, IPlayer, ITranslatableContent } from 'wegas-ts-api/typings/WegasEntities';
 
 export function isReplied(wqd: IWhQuestionDescriptor) {
   return (self: IPlayer) => {

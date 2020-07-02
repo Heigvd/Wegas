@@ -3,6 +3,7 @@
  */
 import { findNearestParent } from "../data/selectors/Helper";
 import { validation } from "./validation";
+import { IAbstractEntity } from "wegas-ts-api/typings/WegasEntities";
 
 type ref = Const | Self | Field;
 interface Const<T = unknown> {

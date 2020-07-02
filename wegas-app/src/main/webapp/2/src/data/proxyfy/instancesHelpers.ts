@@ -1,6 +1,7 @@
 import { VariableDescriptor } from '../selectors';
 import { getInstance } from '../methods/VariableDescriptorMethods';
 import { getValue as getStringValue } from './methods/StringDescriptor';
+import { IChoiceInstance, IQuestionDescriptor, IPlayer, IReply, IChoiceDescriptor, IStringDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 /**
  * INSTANCE METHODS HELPERS (should be moved somewhere else, like I...Instance.ts ???)

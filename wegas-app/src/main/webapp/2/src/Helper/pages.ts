@@ -2,6 +2,7 @@ import { Item } from '../Editor/Components/Tree/TreeSelect';
 import { css } from 'emotion';
 import { cloneDeep } from 'lodash-es';
 import { themeVar } from '../Components/Style/ThemeVars';
+import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 
 export function isPageItem(
   pageItemIndex?: PageIndexItem,

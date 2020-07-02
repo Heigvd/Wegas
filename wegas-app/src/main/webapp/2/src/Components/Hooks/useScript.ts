@@ -10,6 +10,7 @@ import { transpile } from 'typescript';
 import { classesCTX } from '../Contexts/ClassesProvider';
 import { wwarn } from '../../Helper/wegaslog';
 import { deepDifferent } from './storeHookFactory';
+import { IVariableDescriptor, IGameModel, IPlayer, WegasClassNames } from 'wegas-ts-api/typings/WegasEntities';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(

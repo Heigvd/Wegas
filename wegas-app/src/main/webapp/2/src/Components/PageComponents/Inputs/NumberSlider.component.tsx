@@ -13,6 +13,7 @@ import { store } from '../../../data/store';
 import { Actions } from '../../../data';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { WegasComponentProps } from '../tools/EditableComponent';
+import { IScript, INumberDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 interface PlayerNumberSliderProps extends WegasComponentProps {
   /**

@@ -1,4 +1,5 @@
 import { rest } from './rest';
+import { ITeam } from 'wegas-ts-api/typings/WegasEntities';
 
 /*
 GET	/Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{s: /?}Game/{gameId : ([1-9][0-9]*)?}{s2: /?}Team

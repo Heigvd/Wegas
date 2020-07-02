@@ -1,0 +1,9 @@
+{
+    "name": "WegasApi",
+    "version": "1.0.0",
+    "keywords": ["Wegas"],
+    "author": "maxence",
+    "main": "index.js",
+    "contributors": [],
+    "dependencies": {}
+}

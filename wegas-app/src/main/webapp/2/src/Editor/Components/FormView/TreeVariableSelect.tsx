@@ -18,6 +18,7 @@ import {
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 import { scriptEditStyle } from './Script/Script';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
+import { IVariableDescriptor, IScript } from 'wegas-ts-api/typings/WegasEntities';
 
 const treeCss = css({
   padding: '5px 10px',

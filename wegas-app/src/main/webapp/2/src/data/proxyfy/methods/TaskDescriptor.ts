@@ -1,4 +1,5 @@
 import { getInstance as rawGetInstance } from '../../methods/VariableDescriptorMethods';
+import { ITaskDescriptor, IPlayer } from 'wegas-ts-api/typings/WegasEntities';
 
 export function setInstanceProperty(_td: ITaskDescriptor) {
   return (_self: IPlayer, _key: string, _value: string) => {

@@ -80,7 +80,8 @@
     "redux-thunk": "^2.3.0",
     "resize-observer-polyfill": "^1.5.0",
     "tinymce": "^5.2.0",
-    "to-fast-properties": "^3.0.1"
+    "to-fast-properties": "^3.0.1",
+    "wegas-ts-api": "link:../../../../../wegas-ts-api/target/wegas-ts-api"
   },
   "devDependencies": {
     "@types/color": "^3.0.0",

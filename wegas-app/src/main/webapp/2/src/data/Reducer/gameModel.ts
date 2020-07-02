@@ -2,6 +2,7 @@ import { Reducer } from 'redux';
 import u from 'immer';
 import { ActionType, StateActions, ActionCreator } from '../actions';
 import { omit } from 'lodash-es';
+import { IGameModel, IGameModelLanguage } from 'wegas-ts-api/typings/WegasEntities';
 
 export interface GameModelState {
   [id: string]: Readonly<IGameModel>;

@@ -1,4 +1,5 @@
 import { managedModeRequest, rest } from './rest';
+import { IVariableDescriptor, IVariableInstance } from 'wegas-ts-api/typings/WegasEntities';
 
 /*
 GET	/Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescriptor/{variableDescriptorId : ([1-9][0-9]*)?}{sep2: /?}VariableInstance

@@ -4,6 +4,8 @@ import {
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { AbsoluteLayout } from '../../Layouts/Absolute';
+import { ISListDescriptor } from 'wegas-ts-api/typings/WegasScriptableEntities';
+
 
 registerComponent(
   pageComponentFactory(

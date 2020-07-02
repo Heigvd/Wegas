@@ -7,6 +7,8 @@ import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { InboxDisplay } from '../../Outputs/Inbox';
 import { useComponentScript } from '../../Hooks/useComponentScript';
+import { IScript } from 'wegas-ts-api/typings/WegasEntities';
+import { ISInboxDescriptor } from 'wegas-ts-api/typings/WegasScriptableEntities';
 
 interface PlayerInboxProps extends WegasComponentProps {
   inbox?: IScript;

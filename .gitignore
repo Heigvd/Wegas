@@ -49,3 +49,5 @@ Icon?
 Thumbs.db
 
 .vscode
+/wegas-ts-api/target/
+/wegas-app/src/main/webapp/wegas-lobby/bower_components/

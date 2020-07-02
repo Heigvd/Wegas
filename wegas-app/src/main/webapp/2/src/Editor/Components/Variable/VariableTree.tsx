@@ -35,6 +35,7 @@ import {
   localSelection,
   searchSelection,
 } from '../../../css/classes';
+import { IVariableDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
