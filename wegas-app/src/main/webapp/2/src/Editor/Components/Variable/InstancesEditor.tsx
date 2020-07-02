@@ -1,23 +1,22 @@
 import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
-import { StoreDispatch, useStore, getDispatch } from '../../../data/store';
+import { StoreDispatch, useStore, store } from '../../../data/store';
 import { css, cx } from 'emotion';
 import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods';
 import { AsyncVariableForm, getError, EditorProps } from '../EntityEditor';
 import getEditionConfig from '../../editionConfig';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../FormView';
-import { LocalGlobalState } from '../../../data/storeFactory';
 import {
   updateInstance,
   VariableInstanceState,
 } from '../../../data/Reducer/VariableInstanceReducer';
-import { VariableInstanceAPI } from '../../../API/variableInstance.api';
 import { flex, flexColumn, grow, localSelection } from '../../../css/classes';
-import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { MessageString } from '../MessageString';
 import { themeVar } from '../../../Components/Style/ThemeVars';
-import { themeCTX, ThemeComponent } from '../../../Components/Style/Theme';
+import { GlobalState } from '../../../data/Reducer/globalState';
+// import { themeCTX, ThemeComponent } from '../../../Components/Style/Theme';
 
 const listBox = css({
   width: '100%',
@@ -37,62 +36,39 @@ const listItem = css({
   },
 });
 
-export interface InstancesEditorProps extends ThemeComponent {
-  state: LocalGlobalState;
-  dispatch: StoreDispatch;
+export interface InstancesEditorProps /*extends ThemeComponent*/ {
+  editing: Readonly<GlobalState['editing']>;
+  // events: Readonly<WegasEvents[]>;
   actions?: EditorProps<IVariableInstance>['actions'];
+  dispatch: StoreDispatch;
 }
 
 export function InstancesEditor({
-  state,
-  dispatch,
+  // instances,
+  editing,
   actions,
+  // events,
+  dispatch,
 }: InstancesEditorProps) {
-  const editing = state.global.editing;
-  const events = state.global.events;
-
   const [instancesState, setInstancesState] = React.useState<{
-    instances: VariableInstanceState;
     selectedInstance?: string;
     error?: string;
-  }>({ instances: {}, selectedInstance: undefined, error: undefined });
+  }>({ selectedInstance: undefined, error: undefined });
 
-  const dataFetch = React.useCallback(() => {
-    if (
-      editing &&
-      (editing.type === 'Variable' || editing.type === 'VariableFSM') &&
-      editing.entity.id
-    ) {
-      VariableInstanceAPI.getByDescriptor(editing.entity as IVariableDescriptor)
-        .then(res =>
-          setInstancesState(oldState => {
-            const instances = res.reduce(
-              (oldRes, i) => i.id !== undefined && { ...oldRes, [i.id]: i },
-              {},
-            );
-            const selectedInstance =
-              oldState.selectedInstance &&
-              Object.keys(instances).includes(oldState.selectedInstance)
-                ? oldState.selectedInstance
-                : undefined;
-            return {
-              ...oldState,
-              instances,
-              selectedInstance,
-            };
-          }),
+  const { events, instances } = useStore(s => {
+    return {
+      events: s.global.events,
+      instances: Object.entries(s.variableInstances)
+        .filter(
+          ([, instance]) =>
+            editing?.type === 'Variable' &&
+            editing.entity.id === instance?.parentId,
         )
-        .catch(() =>
-          setInstancesState({
-            instances: {},
-            selectedInstance: undefined,
-            error: 'Error occured while fetching variable instances',
-          }),
-        );
-    }
-  }, [editing]);
-
-  React.useEffect(dataFetch, [editing]);
+        .reduce((o, [k, v]) => ({ ...o, [k]: v }), {}) as Readonly<
+        VariableInstanceState
+      >,
+    };
+  }, deepDifferent);
 
   const vanishFN = React.useCallback(
     () =>
@@ -112,40 +88,40 @@ export function InstancesEditor({
             duration={3000}
             onLabelVanish={vanishFN}
           />
-          {instancesState.instances && (
-            <div className={cx(listBox, grow)}>
-              {Object.values(instancesState.instances).map(i => {
-                if (i) {
-                  const scope = getScopeEntity(i);
-                  return (
-                    <div
-                      key={i.id}
-                      className={cx(
-                        listItem,
-                        String(i.id) === instancesState.selectedInstance &&
-                          localSelection,
-                      )}
-                      onClick={() =>
-                        setInstancesState(oldState => ({
-                          ...oldState,
-                          selectedInstance:
-                            oldState.selectedInstance === String(i.id)
-                              ? undefined
-                              : String(i.id),
-                        }))
-                      }
-                    >
-                      {`#${i.id} - ${
-                        scope
-                          ? `${scope.name} (#${scope.id})`
-                          : 'Current game model'
-                      }`}
-                    </div>
-                  );
-                }
-              })}
-            </div>
-          )}
+          <div className={cx(listBox, grow)}>
+            {editing == null
+              ? 'No selected variable descriptor'
+              : Object.values(instances).map(i => {
+                  if (i) {
+                    const scope = getScopeEntity(i);
+                    return (
+                      <div
+                        key={i.id}
+                        className={cx(
+                          listItem,
+                          String(i.id) === instancesState.selectedInstance &&
+                            localSelection,
+                        )}
+                        onClick={() =>
+                          setInstancesState(oldState => ({
+                            ...oldState,
+                            selectedInstance:
+                              oldState.selectedInstance === String(i.id)
+                                ? undefined
+                                : String(i.id),
+                          }))
+                        }
+                      >
+                        {`#${i.id} - ${
+                          scope
+                            ? `${scope.name} (#${scope.id})`
+                            : 'Current game model'
+                        }`}
+                      </div>
+                    );
+                  }
+                })}
+          </div>
         </div>
       </Toolbar.Header>
       <Toolbar.Content>
@@ -155,9 +131,9 @@ export function InstancesEditor({
               getEditionConfig(si) as Promise<Schema<AvailableViews>>
             }
             update={(entity: IVariableInstance) =>
-              dispatch(updateInstance(entity, dataFetch))
+              dispatch(updateInstance(entity))
             }
-            entity={instancesState.instances[instancesState.selectedInstance]}
+            entity={instances[instancesState.selectedInstance]}
             error={getError(events, dispatch)}
             actions={actions}
           />
@@ -167,23 +143,12 @@ export function InstancesEditor({
   );
 }
 
+const dispatch = store.dispatch;
+
 export default function ConnectedInstancesEditor() {
-  const state = useStore(s => {
-    const editing = s.global.editing;
-    if (!editing) {
-      return null;
-    } else {
-      return { global: { editing, events: s.global.events } };
-    }
-  }, shallowDifferent);
+  const editing = useStore(s => {
+    return s.global.editing;
+  }, deepDifferent);
 
-  const { themesState } = React.useContext(themeCTX);
-  const modeName =
-    themesState.themes[themesState.selectedThemes.editor].baseMode;
-
-  const dispatch = getDispatch();
-
-  return state == null || dispatch == null ? null : (
-    <InstancesEditor state={state} dispatch={dispatch} modeName={modeName} />
-  );
+  return <InstancesEditor editing={editing} dispatch={dispatch} />;
 }

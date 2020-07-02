@@ -105,7 +105,7 @@ export function ComponentWithForm({
             </Toolbar.Header>
             <Toolbar.Content>
               <AsyncInstancesEditor
-                state={{ global: localState }}
+                editing={localState.editing}
                 dispatch={localDispatch}
               />
             </Toolbar.Content>

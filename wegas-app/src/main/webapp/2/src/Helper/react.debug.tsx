@@ -58,7 +58,7 @@ function deepCheck(a: unknown, b: unknown, verbose?: boolean) {
     return false;
   }
 }
-function compFNSelection(compType: ComparaisonTypes) {
+export function compFNSelection(compType: ComparaisonTypes) {
   switch (compType) {
     case 'SIMPLE':
       return (a: unknown, b: unknown, _verbose?: boolean) => simpleCheck(a, b);
