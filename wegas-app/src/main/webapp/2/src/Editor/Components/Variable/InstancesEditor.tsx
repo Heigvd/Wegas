@@ -14,7 +14,7 @@ import {
 } from '../../../data/Reducer/VariableInstanceReducer';
 import { VariableInstanceAPI } from '../../../API/variableInstance.api';
 import { flex, flexColumn, grow, localSelection } from '../../../css/classes';
-import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { MessageString } from '../MessageString';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { themeCTX, ThemeComponent } from '../../../Components/Style/Theme';
@@ -175,7 +175,7 @@ export default function ConnectedInstancesEditor() {
     } else {
       return { global: { editing, events: s.global.events } };
     }
-  }, shallowDifferent);
+  }, deepDifferent);
 
   const { themesState } = React.useContext(themeCTX);
   const modeName =

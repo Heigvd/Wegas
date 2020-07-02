@@ -4,5 +4,5 @@ interface ModifierKeysEvent {
 }
 
 interface WegasKeyboardEvent extends ModifierKeysEvent {
-  keyCode: number;
+  keyCode?: number;
 }

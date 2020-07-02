@@ -30,7 +30,7 @@ export interface PageSelectProps extends WidgetProps.BaseProps {
 }
 
 export default function PageSelect(props: PageSelectProps) {
-  const [pageValue, setPageValue] = React.useState<string>('');
+  const [pageValue, setPageValue] = React.useState<string>();
   const [srcMode, setSrcMode] = React.useState(false);
   const index = useStore(s => s.pages.index);
   const pageId = useScript<string>(pageValue);
