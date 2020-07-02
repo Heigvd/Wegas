@@ -15,7 +15,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
     "use strict";
     var CONTENTBOX = "contentBox",
         BOUNDINGBOX = "boundingBox",
-        SERVER_SCRIPT_PATH = "wegas-app/js/server/",
+        SERVER_SCRIPT_PATH = "wegas-app/js/server",
         SURVEY_CONTAINER_GAMEMODEL_NAME = "Survey container",
         SURVEY_CONTAINER_ICON = "ICON_dark-orangine_bar-chart_fa",
         GAMEMODEL_SCENARIO = "SCENARIO",
@@ -102,6 +102,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         panel.get(BOUNDINGBOX).setStyle("max-height", "80%");
         if (boxHeight >= bodyHeight) {
             panel.get(BOUNDINGBOX).setStyle("height", bodyHeight + "px");
+        } else {
+            panel.get(BOUNDINGBOX).setStyle("height", "80%");
         }
     }
     
@@ -576,9 +578,12 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             if (Y.Wegas.Facade.Variable.cache.find("@class", "SurveyDescriptor")) {
                 var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
                     props = gm.get("properties"),
-                    serverScripts = props.get("val.scriptUri");
+                    serverScripts = props.get("val.scriptUri").trim();
                 if (serverScripts.indexOf(SERVER_SCRIPT_PATH) < 0) {
-                    serverScripts += (serverScripts ? ';' : '') + SERVER_SCRIPT_PATH;
+                    if (serverScripts.length > 0 && serverScripts[serverScripts.length-1] !== ';') {
+                        serverScripts += ';';
+                    }
+                    serverScripts += SERVER_SCRIPT_PATH;
                     props.set("val.scriptUri", serverScripts);
                     this.persistGameModel(gm);
                 }
@@ -1955,8 +1960,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     disabled: true
                 }).render(cb.one(".survey-invite-send"));
 
-                adjustPanelHeight(panel);
                 // Rendering is over, adjust the height of the new panel:
+                adjustPanelHeight(panel);
                 
                 var mailListOnBlurHandler = cb.one(".list-recipients-email").on("blur", Y.bind(
                     function(){
