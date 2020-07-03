@@ -7,9 +7,9 @@ import {
 import { schemaProps } from './tools/schemaProps';
 import { useComponentScript } from '../Hooks/useComponentScript';
 import { entityIs } from '../../data/entities';
-import { WegasComponentProps } from './tools/EditableComponent';
+import { WegasFunctionnalComponentProps } from './tools/EditableComponent';
 
-interface ExampleProps extends WegasComponentProps {
+interface ExampleProps extends WegasFunctionnalComponentProps {
   script?: ISScript;
 }
 
@@ -24,7 +24,7 @@ const Example: React.FunctionComponent<ExampleProps> = ({
     <pre>Not found: {content}</pre>
   ) : (
     <div>
-      {entityIs(instance, 'StringInstance')
+      {entityIs(instance, 'TextInstance')
         ? TranslatableContent.toString(instance.trValue)
         : entityIs(instance, 'NumberInstance')
         ? String(instance.value)

@@ -5,10 +5,10 @@ import {
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { useComponentScript } from '../../Hooks/useComponentScript';
-import { WegasComponentProps } from '../tools/EditableComponent';
+import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
 import { ConnectedQuestionDisplay } from '../../Outputs/Question';
 
-interface QuestionDisplayProps extends WegasComponentProps {
+interface QuestionDisplayProps extends WegasFunctionnalComponentProps {
   /**
    * script - a script returning a QuestionDescriptor
    */

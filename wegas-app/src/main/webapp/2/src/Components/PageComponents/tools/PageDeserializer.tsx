@@ -1,9 +1,5 @@
 import * as React from 'react';
-import {
-  ComponentContainer,
-  JSONComponentContainer,
-} from './EditableComponent';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
+import { JSONComponentContainer } from './EditableComponent';
 import { useStore } from '../../../data/store';
 
 interface PageDeserializerProps {
@@ -28,5 +24,4 @@ export function PageDeserializer({
   return (
     <JSONComponentContainer wegasComponent={wegasComponent} pageId={pageId} />
   );
-  // return <ComponentContainer pageId={pageId} />;
 }

@@ -13,9 +13,11 @@ import {
   alignItemsValues,
   alignContentValues,
 } from '../../Layouts/FlexList';
-import { WegasComponentProps } from '../tools/EditableComponent';
+import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
 
-interface PlayerFlexListProps extends FlexListProps, WegasComponentProps {
+interface PlayerFlexListProps
+  extends FlexListProps,
+    WegasFunctionnalComponentProps {
   /**
    * children - the array containing the child components
    */

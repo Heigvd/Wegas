@@ -6,9 +6,9 @@ import {
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { PhasesProgressBar } from '../../Outputs/PhasesProgressBar';
 import { schemaProps } from '../tools/schemaProps';
-import { WegasComponentProps } from '../tools/EditableComponent';
+import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
 
-interface PhasesProgressBarProps extends WegasComponentProps {
+interface PhasesProgressBarProps extends WegasFunctionnalComponentProps {
   /**
    * phase - a script returning a number descriptor containing the current phase
    */

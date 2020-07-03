@@ -14,6 +14,7 @@ import {
   FlexItem,
   FlexListProps,
   defaultFlexLayoutOptionsKeys,
+  FlexItemProps,
 } from '../../Layouts/FlexList';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import { useDebounce } from '../../Hooks/useDebounce';
@@ -41,6 +42,7 @@ import {
 import {
   AbsoluteItem,
   defaultAbsoluteLayoutPropsKeys,
+  AbsoluteItemLayoutProps,
 } from '../../Layouts/Absolute';
 import { InfoBullet } from './InfoBullet';
 import { EditHandle } from './EditHandle';
@@ -441,9 +443,7 @@ export interface PageComponentProps extends EmptyPageComponentProps {
 
 export type WegasComponentOptions = WegasComponentOptionsActions &
   WegasComponentOptionsActionsProperties &
-  WegasComponentExtra & {
-    [options: string]: unknown;
-  };
+  WegasComponentExtra;
 
 const defaultExtras: WegasComponentExtra = {
   disableIf: undefined,
@@ -462,25 +462,24 @@ const defaultExtrasKeys = Object.keys(defaultExtras);
 /**
  * WegasComponentProps - Required props for a Wegas component
  */
-export interface WegasComponentProps
-  extends WegasComponentCommonProperties,
-    WegasComponentOptions {
-  [props: string]: unknown;
-}
+export type WegasComponentProps = WegasComponentCommonProperties &
+  WegasComponentOptions;
 
 /**
  * ExpandedWegasComponentProps - Required props for a Wegas component plus needed specific component props
  */
 export type ExpandedWegasComponentProps = WegasComponentProps &
   FlexListProps &
+  PlayerLinearLayoutChildrenProps &
   FonkyFlexContainerProps;
 
 /**
  * WegasFunctionnalComponentProps - Required props for a Wegas component
  */
-export type WegasFunctionnalComponentProps = React.PropsWithChildren<
-  Omit<WegasComponentProps, 'children'>
->;
+export interface WegasFunctionnalComponentProps
+  extends React.PropsWithChildren<Omit<WegasComponentProps, 'children'>> {
+  path: number[];
+}
 
 /**
  * ExtractedLayoutProps - Extracted props from currently layout containers
@@ -740,14 +739,14 @@ export function ComponentContainer({
             container.current = ref;
           }
         }}
-        {...pick(
+        {...(pick(
           restProps,
           childrenType === 'FLEX'
             ? defaultFlexLayoutOptionsKeys
             : childrenType === 'ABSOLUTE'
             ? defaultAbsoluteLayoutPropsKeys
             : [],
-        )}
+        ) as FlexItemProps | AbsoluteItemLayoutProps)}
         className={cx(handleControlStyle, flex, extraState.themeModeClassName, {
           [layoutHighlightStyle]: showLayout,
           [childHighlightStyle]: showLayout,
@@ -790,7 +789,7 @@ export function ComponentContainer({
           <EditHandle
             name={name}
             stackedHandles={stackedHandles}
-            componentType={componentName}
+            componentName={componentName}
             path={realPath}
             infoMessage={
               extraState.hidden
@@ -802,7 +801,7 @@ export function ComponentContainer({
         )}
         {showComponent && (
           <ErrorBoundary key={pageId}>
-            <WegasComponent {...restProps}>
+            <WegasComponent {...restProps} path={realPath}>
               {editMode && nbChildren === 0 ? (
                 <EmptyComponentContainer
                   childrenType={containerType}
@@ -1044,14 +1043,14 @@ export function JSONComponentContainer({
             container.current = ref;
           }
         }}
-        {...pick(
+        {...(pick(
           restProps,
           childrenType === 'FLEX'
             ? defaultFlexLayoutOptionsKeys
             : childrenType === 'ABSOLUTE'
             ? defaultAbsoluteLayoutPropsKeys
             : [],
-        )}
+        ) as FlexItemProps | AbsoluteItemLayoutProps)}
         className={cx(handleControlStyle, flex, extraState.themeModeClassName, {
           [layoutHighlightStyle]: showLayout,
           [childHighlightStyle]: showLayout,
@@ -1095,7 +1094,7 @@ export function JSONComponentContainer({
           <EditHandle
             name={name}
             stackedHandles={stackedHandles}
-            componentType={componentName}
+            componentName={componentName}
             path={realPath}
             infoMessage={
               extraState.hidden
@@ -1107,7 +1106,7 @@ export function JSONComponentContainer({
         )}
         {showComponent && (
           <ErrorBoundary key={pageId}>
-            <WegasComponent {...restProps}>
+            <WegasComponent {...restProps} path={realPath}>
               {wegasComponent.props.children == null ? null : editMode &&
                 wegasComponent.props.children.length === 0 ? (
                 <EmptyComponentContainer

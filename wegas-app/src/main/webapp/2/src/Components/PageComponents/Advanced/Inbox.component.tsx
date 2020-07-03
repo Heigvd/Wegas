@@ -4,11 +4,11 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { WegasComponentProps } from '../tools/EditableComponent';
+import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
 import { InboxDisplay } from '../../Outputs/Inbox';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 
-interface PlayerInboxProps extends WegasComponentProps {
+interface PlayerInboxProps extends WegasFunctionnalComponentProps {
   inbox?: IScript;
 }
 

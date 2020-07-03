@@ -4,7 +4,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { WegasComponentProps } from '../tools/EditableComponent';
+import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
 import { EntityChooser } from '../../EntityChooser';
 import { TranslatableContent } from '../../../data/i18n';
 import { isUnread } from '../../../data/proxyfy/methods/QuestionDescriptor';
@@ -21,7 +21,7 @@ import { ConnectedQuestionDisplay } from '../../Outputs/Question';
 
 const unreadSignalStyle = css({ margin: '3px' });
 
-interface QuestionListDisplayProps extends WegasComponentProps {
+interface QuestionListDisplayProps extends WegasFunctionnalComponentProps {
   questionList?: IScript;
 }
 

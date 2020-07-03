@@ -9,9 +9,9 @@ import { Actions } from '../../../data';
 import { Toggler } from '../../Inputs/Boolean/Toggler';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
-import { WegasComponentProps } from '../tools/EditableComponent';
+import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
 
-interface PlayerBooleanProps extends WegasComponentProps {
+interface PlayerBooleanProps extends WegasFunctionnalComponentProps {
   /**
    * script - the script that returns the variable to display and modify
    */

@@ -11,7 +11,7 @@ import {
   FonkyFlexContainerProps,
 } from '../../Layouts/FonkyFlex';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
-import { WegasComponentProps } from '../tools/EditableComponent';
+import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
 
 const CONTENT_TYPE = 'LinearLayout';
 
@@ -21,7 +21,7 @@ export interface PlayerLinearLayoutChildrenProps {
 }
 
 export interface PlayerLinearLayoutProps
-  extends WegasComponentProps,
+  extends WegasFunctionnalComponentProps,
     FonkyFlexContainerProps,
     PlayerLinearLayoutChildrenProps {
   children: React.ReactNode[];

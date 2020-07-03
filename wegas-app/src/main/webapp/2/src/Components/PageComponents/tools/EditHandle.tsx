@@ -32,13 +32,13 @@ interface EditorHandleProps {
    */
   name?: WegasComponentProps['name'];
   /**
-   * componentType - The type of component
+   * componentName - The name of component
    */
-  componentType: WegasComponentProps['componentType'];
+  componentName: string;
   /**
    * path - the path of the current component
    */
-  path: WegasComponentProps['path'];
+  path: number[];
   /**
    * stackedHandles - the handles that overlapses with the current one
    */
@@ -55,7 +55,7 @@ interface EditorHandleProps {
 
 export function EditHandle({
   name,
-  componentType,
+  componentName,
   path,
   stackedHandles,
   infoMessage,
@@ -71,8 +71,7 @@ export function EditHandle({
   } = React.useContext(pageCTX);
 
   const HandleContent = React.forwardRef<HTMLDivElement>((_, ref) => {
-    const [{ isDragging }, drag] = useComponentDrag(componentType, path);
-    // const debouncedDragging = useDebounce(isDragging, 50);
+    const [{ isDragging }, drag] = useComponentDrag(componentName, path);
 
     return (
       <div
@@ -82,7 +81,6 @@ export function EditHandle({
         })}
         //Avoiding the container actions to trigger when using handle
         onClick={event => event.stopPropagation()}
-        // style={{ visibility: isDragging ? 'collapse' : 'visible' }}
       >
         <div
           style={{
@@ -92,7 +90,7 @@ export function EditHandle({
             cx(flex, flexRow, textCenter) + ' wegas-component-handle-title'
           }
         >
-          {(name ? name + ' : ' : '') + componentType}
+          {(name ? name + ' : ' : '') + componentName}
         </div>
         {infoMessage && <MessageString type="warning" value={infoMessage} />}
         <div className={cx(flex, flexRow) + ' wegas-component-handle-content'}>

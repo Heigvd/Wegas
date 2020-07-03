@@ -12,9 +12,9 @@ import {
 import { store } from '../../../data/store';
 import { Actions } from '../../../data';
 import { useComponentScript } from '../../Hooks/useComponentScript';
-import { WegasComponentProps } from '../tools/EditableComponent';
+import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
 
-interface PlayerNumberSliderProps extends WegasComponentProps {
+interface PlayerNumberSliderProps extends WegasFunctionnalComponentProps {
   /**
    * script - the script that returns the variable to display and modify
    */

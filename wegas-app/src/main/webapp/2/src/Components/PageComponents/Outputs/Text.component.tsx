@@ -5,10 +5,10 @@ import {
   pageComponentFactory,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { WegasComponentProps } from '../tools/EditableComponent';
+import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 
-export interface PlayerTextProps extends WegasComponentProps {
+export interface PlayerTextProps extends WegasFunctionnalComponentProps {
   script?: IScript;
 }
 

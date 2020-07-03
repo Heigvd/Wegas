@@ -18,9 +18,10 @@ import { useStore, store } from '../../../data/store';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { ActionCreator } from '../../../data/actions';
 import { createScript } from '../../../Helper/wegasEntites';
-import { WegasComponentProps } from '../tools/EditableComponent';
+import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
 
-type PlayerPageLoaderProps = WegasComponentProps & PageLoaderComponentProps;
+type PlayerPageLoaderProps = WegasFunctionnalComponentProps &
+  PageLoaderComponentProps;
 
 const defaultPageAsScript = () =>
   createScript(JSON.stringify(store.getState().pages.index.defaultPageId));

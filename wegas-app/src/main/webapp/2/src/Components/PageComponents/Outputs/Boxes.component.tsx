@@ -4,11 +4,11 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { WegasComponentProps } from '../tools/EditableComponent';
+import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { NumberBox } from '../../Inputs/Number/NumberBox';
 
-interface PlayerBoxesProps extends WegasComponentProps {
+interface PlayerBoxesProps extends WegasFunctionnalComponentProps {
   /**
    * script - the script that returns the variable to display and modify
    */

@@ -6,8 +6,8 @@ import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { useAnyStore } from '../../Hooks/storeHookFactory';
 import {
   ContainerTypes as ContainerType,
-  WegasComponentProps,
   PageComponentProps,
+  WegasFunctionnalComponentProps,
 } from './EditableComponent';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 import { SchemaPropsSchemas } from './schemaProps';
@@ -119,7 +119,7 @@ export function usePageComponentStore<R>(
 }
 
 export function pageComponentFactory<
-  P extends WegasComponentProps,
+  P extends WegasFunctionnalComponentProps,
   T extends keyof WegasScriptEditorNameAndTypes,
   V extends Readonly<WegasScriptEditorNameAndTypes[T]>,
   R extends Omit<P, keyof PageComponentProps>
