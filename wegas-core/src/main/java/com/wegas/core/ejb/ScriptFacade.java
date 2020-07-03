@@ -562,7 +562,9 @@ public class ScriptFacade extends WegasAbstractFacade {
         List<Path> queue = new LinkedList<>();
 
         for (String file : files) {
-            queue.add(Paths.get(root, file));
+            if (!Helper.isNullOrEmpty(file.trim())) {
+                queue.add(Paths.get(root, file));
+            }
         }
 
         List<Path> result = new LinkedList<>();

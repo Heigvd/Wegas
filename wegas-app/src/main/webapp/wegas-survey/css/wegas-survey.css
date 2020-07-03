@@ -6,19 +6,43 @@
 * Licensed under the MIT License
 */
 
+/* Reset styles which could disturb survey layout */
+.yui3-skin-sam .wegas-playerview > .wegas-pageloader-content.wegas-survey-ontop {
+    background: none;
+    margin: 0;
+    padding: 0;
+}
+
 .wegas-surveys-widget,
-.wegas-survey-page,
-.wegas-survey-container {
+.wegas-survey-page {
     background: #7AA1C3;
     height: 100%;
 }
 
 .wegas-survey-overlay {
+    background: #7AA1C3;
     position: absolute;
     height: 100%;
     width: 100%;
+    z-index: 200000; /* i.e. above standard game-level panels, masks, tooltips and tutorials */
 }
 
+.wegas-surveymode .wegas-survey-panel-mask { /* Similar to yui3-widget-mask except the z-index */
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: black;
+    opacity: 0.4;
+    z-index: 200001; /* i.e. right above wegas-survey-overlay */
+}
+
+.wegas-surveymode .wegas-survey-panel {
+    z-index: 200002 !important; /* it's important to override the element's inline style */
+}
+
+/* Don't try to hide game-level panels/pop-ups, as this might block YUI's panel display. */
 .wegas-survey-ontop > *:not(.wegas-survey-overlay) {
     display: none !important;
 }
@@ -33,7 +57,7 @@
     width: max-content;
 }
 
-.wegas-survey-widget .title {
+.wegas-survey-widget .survey-title {
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 10px;
@@ -234,17 +258,17 @@
     padding-left: 5px;
 }
 
-.yui3-skin-sam .wegas-survey-panel {
+.yui3-skin-sam .wegas-survey-panel-content {
     min-width: 450px;
     background: white;
     color: black;
 }
 
-.yui3-skin-sam .wegas-survey-panel .yui3-widget-ft {
+.yui3-skin-sam .wegas-survey-panel-content .yui3-widget-ft {
     margin-top: 15px;
 }
 
-.yui3-skin-sam .wegas-survey-panel .yui3-widget-ft button:after {
+.yui3-skin-sam .wegas-survey-panel-content.survey-return-to-incomplete .yui3-widget-ft button:after {
     content: '\f148';
     padding-left: 7px;
     font-size: 16px;
