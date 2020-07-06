@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { CommonView, CommonViewContainer } from './commonView';
 import { LabeledView, Labeled } from './labeled';
-import { Menu, MenuItem } from '../../../Components/Menu';
+import { DropMenu, DropMenuItem } from '../../../Components/DropMenu';
 import { cx } from 'emotion';
 import { flex, flexRow, grow } from '../../../css/classes';
 import { themeCTX } from '../../../Components/Style/Theme';
@@ -35,7 +35,7 @@ export default function ThemeModeSelect({
   const modes =
     themesState.themes[themesState.selectedThemes[currentContext]].modes;
 
-  const modesKeys: MenuItem<string>[] = Object.keys(modes).map(m => ({
+  const modesKeys: DropMenuItem<string>[] = Object.keys(modes).map(m => ({
     label: m,
     value: m,
   }));
@@ -49,7 +49,7 @@ export default function ThemeModeSelect({
           <>
             {labelNode}
             <div className={cx(flex, flexRow)} id={inputId}>
-              <Menu
+              <DropMenu
                 items={modesKeys}
                 // onSelect={item => {
                 //   onNewMode(item.value);

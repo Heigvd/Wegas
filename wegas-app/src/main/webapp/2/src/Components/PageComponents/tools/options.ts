@@ -535,6 +535,7 @@ const layoutChoices = {
   FLEX: flexlayoutChoices,
   LINEAR: [],
   ABSOLUTE: absolutelayoutChoices,
+  // MENU: menuLayoutChoices,
 };
 
 export const wegasComponentExtraSchema = (containerType: ContainerTypes) => ({

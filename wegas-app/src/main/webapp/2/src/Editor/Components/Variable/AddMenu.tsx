@@ -3,14 +3,18 @@ import produce from 'immer';
 import { Actions } from '../../../data';
 import { getIcon, getLabel, getChildren } from '../../editionConfig';
 import { StoreDispatch, store } from '../../../data/store';
-import { Menu, MenuProps, MenuItem } from '../../../Components/Menu';
+import {
+  DropMenu,
+  DropMenuProps,
+  DropMenuItem,
+} from '../../../Components/DropMenu';
 import { withDefault, IconComp } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { VariableDescriptor } from '../../../data/selectors';
 
 function buildMenuItems(
   variable: IAbstractEntity,
-): Promise<MenuItem<string>[]> {
+): Promise<DropMenuItem<string>[]> {
   return getChildren(variable).then(children => {
     return children.map(i => {
       const Label = asyncSFC(async () => {
@@ -32,7 +36,7 @@ function buildMenuItems(
 
 interface AddMenuProps {
   localDispatch?: StoreDispatch;
-  onSelect?: MenuProps<string, MenuItem<string>>['onSelect'];
+  onSelect?: DropMenuProps<string, DropMenuItem<string>>['onSelect'];
   focusTab?: (tab: string) => void;
 }
 
@@ -50,7 +54,7 @@ export const AddMenuParent = asyncSFC(
   } & AddMenuProps) => {
     const items = await buildMenuItems(variable);
     return (
-      <Menu
+      <DropMenu
         items={items}
         icon="plus"
         onSelect={(i, e) => {
@@ -81,7 +85,7 @@ export const AddMenuChoice = asyncSFC(
   } & AddMenuProps) => {
     const items = await buildMenuItems(variable);
     return (
-      <Menu
+      <DropMenu
         items={items}
         icon="plus"
         onSelect={(i, e) => {
@@ -135,7 +139,7 @@ export const AddMenuFeedback = asyncSFC(
   } & AddMenuProps) => {
     const items = await buildMenuItems(variable);
     return (
-      <Menu
+      <DropMenu
         items={items}
         icon="plus"
         onSelect={(i, e) => {

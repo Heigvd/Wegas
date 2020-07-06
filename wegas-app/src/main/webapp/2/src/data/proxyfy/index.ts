@@ -2,7 +2,7 @@ import { inheritanceChain } from '../entities';
 import { methods } from './methods';
 import { deepClone } from 'fast-json-patch/module/core';
 
-const proxyCache = new WeakMap<IAbstractEntity, IAbstractEntity>();
+const proxyCache = new WeakMap<IAbstractEntity, ISAbstractEntity>();
 
 const traps = {
   get: function (

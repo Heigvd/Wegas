@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Menu } from '../Menu';
+import { DropMenu } from '../DropMenu';
 
 const availableFeatures: FeatureLevel[] = ['ADVANCED', 'INTERNAL'];
 export const featuresCTX = React.createContext<{
@@ -52,7 +52,7 @@ export function FeatureToggler() {
 
   return React.useMemo(
     () => (
-      <Menu
+      <DropMenu
         label={'Features'}
         items={availableFeatures.map(feature => ({
           value: feature,

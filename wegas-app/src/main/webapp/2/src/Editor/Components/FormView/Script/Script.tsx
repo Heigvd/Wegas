@@ -28,7 +28,7 @@ import {
 } from '@babel/types';
 import { parse } from '@babel/parser';
 import generate from '@babel/generator';
-import { Menu } from '../../../../Components/Menu';
+import { DropMenu } from '../../../../Components/DropMenu';
 import { ResizeHandle } from '../../ResizeHandle';
 import { createScript } from '../../../../Helper/wegasEntites';
 
@@ -290,7 +290,7 @@ export function Script({
                 />
               )}
               {isScriptCondition(view.mode) && (
-                <Menu
+                <DropMenu
                   label={operator}
                   items={operators.map(o => ({ label: o, value: o }))}
                   onSelect={({ label }) => onSelectOperator(label)}

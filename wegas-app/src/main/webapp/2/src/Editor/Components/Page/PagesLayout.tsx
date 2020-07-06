@@ -15,7 +15,7 @@ import {
   TREEVIEW_ITEM_TYPE as TREEVIEW_INDEX_ITEM_TYPE,
 } from '../Variable/VariableTree';
 import { omit } from 'lodash-es';
-import { Menu } from '../../../Components/Menu';
+import { DropMenu } from '../../../Components/DropMenu';
 import { TextPrompt } from '../TextPrompt';
 import { isPageItem, isFolderItem } from '../../../Helper/pages';
 import { useStore, store } from '../../../data/store';
@@ -143,7 +143,7 @@ function IndexItemAdder({
 
   return (
     <div className={className} style={style} title={tooltip}>
-      <Menu
+      <DropMenu
         icon="plus"
         items={[
           {
@@ -301,7 +301,7 @@ function ComponentAdder({ className, tooltip, onSelect }: ComponentAdderProps) {
   const components = usePageComponentStore(s => s);
   return (
     <div className={className} title={tooltip}>
-      <Menu
+      <DropMenu
         icon="plus"
         items={Object.values(components).map(v => ({
           label: v.componentName,

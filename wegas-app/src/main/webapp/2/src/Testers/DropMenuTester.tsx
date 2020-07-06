@@ -1,18 +1,25 @@
 import * as React from 'react';
 import { expandBoth, flex, flexColumn } from '../css/classes';
 import { cx } from 'emotion';
-import { Menu, SelectedMenuItem, MenuItem } from '../Components/Menu';
+import {
+  DropMenu,
+  SelectedDropMenuItem,
+  DropMenuItem,
+} from '../Components/DropMenu';
 
-type MenuTesterItemValue = { prop: string; schema: { name: string } };
+type DropMenuTesterItemValue = { prop: string; schema: { name: string } };
 
-export default function MenuTester() {
+export default function DropMenuTester() {
   const [selected, setSelected] = React.useState<
-    SelectedMenuItem<MenuTesterItemValue, MenuItem<MenuTesterItemValue>>
+    SelectedDropMenuItem<
+      DropMenuTesterItemValue,
+      DropMenuItem<DropMenuTesterItemValue>
+    >
   >();
 
   return (
     <div className={cx(flex, expandBoth, flexColumn)}>
-      <Menu
+      <DropMenu
         items={[
           {
             label: '1',

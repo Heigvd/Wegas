@@ -178,6 +178,51 @@ type JustifyContent = typeof justifyContentValues[number];
 export const alignContentValues = ['stretch', ...justifyContentValues] as const;
 type AlignContent = typeof alignContentValues[number];
 
+export const flexListSchema = {
+  layout: schemaProps.hashlist('List layout properties', false, [
+    {
+      label: 'Direction',
+      value: {
+        prop: 'flexDirection',
+        schema: schemaProps.select('Direction', false, flexDirectionValues),
+      },
+    },
+    {
+      label: 'Wrap',
+      value: {
+        prop: 'flexWrap',
+        schema: schemaProps.select('Wrap', false, flexWrapValues, 'string'),
+      },
+    },
+    {
+      label: 'Justify content',
+      value: {
+        prop: 'justifyContent',
+        schema: schemaProps.select(
+          'Justify content',
+          false,
+          justifyContentValues,
+        ),
+      },
+    },
+    {
+      label: 'Align items',
+      value: {
+        prop: 'alignItems',
+        schema: schemaProps.select('Align items', false, alignItemsValues),
+      },
+    },
+    {
+      label: 'Align content',
+      value: {
+        prop: 'alignContent',
+        schema: schemaProps.select('Align content', false, alignContentValues),
+      },
+    },
+  ]),
+  children: schemaProps.hidden(false),
+};
+
 export interface FlexListProps extends ClassAndStyle {
   /**
    * layout : the layout CSS properties

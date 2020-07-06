@@ -20,7 +20,7 @@ import {
 import { ChromePicker, RGBColor } from 'react-color';
 import { useOnClickOutside } from '../Hooks/useOnClickOutside';
 import { IconButton } from '../Inputs/Buttons/IconButton';
-import { Menu } from '../Menu';
+import { DropMenu } from '../DropMenu';
 // import { MessageString } from '../../Editor/Components/MessageString';
 import {
   themeVar,
@@ -296,7 +296,7 @@ function ThemeEdition() {
   return (
     <Toolbar>
       <Toolbar.Header className={cx(flex, flexDistribute, headerStyle)}>
-        <Menu
+        <DropMenu
           label={`Theme : ${editedThemeName}`}
           items={Object.keys(themesState.themes).map(k => ({
             value: k,
@@ -338,7 +338,7 @@ function ThemeEdition() {
             },
           }}
         />
-        <Menu
+        <DropMenu
           label={'Contexts'}
           items={Object.keys(themesState.selectedThemes).map(
             (k: keyof typeof themesState.selectedThemes) => ({
@@ -346,7 +346,7 @@ function ThemeEdition() {
               label: (
                 <>
                   <span style={{ minWidth: '100px' }}>{`${k}'s theme :`}</span>
-                  <Menu
+                  <DropMenu
                     label={themesState.selectedThemes[k]}
                     items={Object.keys(themesState.themes).map(k => ({
                       value: k,
@@ -360,7 +360,7 @@ function ThemeEdition() {
           )}
           onSelect={() => {}}
         />
-        <Menu
+        <DropMenu
           label={'Sections'}
           items={Object.keys(themesState.themes[editedThemeName].values).map(
             (k: keyof Theme['values']) => ({
@@ -488,7 +488,7 @@ function ModeValueModifier({
           return (
             <React.Fragment key={k}>
               <div title={k}>{k} :</div>
-              <Menu
+              <DropMenu
                 label={
                   section === 'colors' && v != null ? (
                     <ModeColorValue label={sectionValue} theme={theme} />
@@ -540,7 +540,7 @@ function ModeEdition() {
   return (
     <Toolbar>
       <Toolbar.Header className={cx(flex, flexDistribute, headerStyle)}>
-        <Menu
+        <DropMenu
           label={`Mode : ${editedMode}`}
           items={Object.keys(currentModes).map(k => ({
             value: k,
@@ -582,7 +582,7 @@ function ModeEdition() {
             },
           }}
         />
-        <Menu
+        <DropMenu
           label={`Component : ${editedComponent}`}
           items={Object.keys(currentComponents).map(k => ({
             value: k,
@@ -592,7 +592,7 @@ function ModeEdition() {
             setEditedComponent(value as ModeComponentNames)
           }
         />
-        <Menu
+        <DropMenu
           label={'Sections'}
           items={Object.keys(themesState.themes[editedThemeName].values).map(
             (k: keyof Theme['values']) => ({

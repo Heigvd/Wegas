@@ -18,8 +18,8 @@ interface GlobalVariableClass {
   ) => Readonly<StronglyTypedEntity<Readonly<T>>> | undefined;
 }
 interface GlobalClasses {
-  gameModel?: Readonly<Readonly<IGameModel>>;
-  self?: Readonly<Readonly<IPlayer>>;
+  gameModel?: Readonly<IGameModel>;
+  self?: Readonly<IPlayer>;
   Variable: GlobalVariableClass;
   Editor: GlobalEditorClass;
   ClientMethods: GlobalClientMethodClass;

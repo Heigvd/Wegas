@@ -20,7 +20,6 @@ const page1JSON = {
                   language: 'JavaScript',
                 },
                 className: 'infoboxPhaseActuelle',
-                options: {},
                 style: {
                   'text-align': 'center',
                 },
@@ -34,10 +33,6 @@ const page1JSON = {
                   content: "Variable.find(gameModel,'phaseMSG')",
                   language: 'JavaScript',
                 },
-                options: {},
-                style: {
-                  width: '50%',
-                },
                 phaseMax: {
                   '@class': 'Script',
                   content: "Variable.find(gameModel,'phaseMax')",
@@ -47,6 +42,9 @@ const page1JSON = {
                   '@class': 'Script',
                   content: "Variable.find(gameModel,'phaseInitiale')",
                   language: 'JavaScript',
+                },
+                containerStyle: {
+                  width: '50%',
                 },
               },
             },
@@ -59,26 +57,19 @@ const page1JSON = {
                   language: 'JavaScript',
                 },
                 label: 'Phase suivante',
-                options: {
-                  upgrades: {
-                    disableIf: {
-                      '@class': 'Script',
-                      content:
-                        'Variable.find(gameModel, "desactiverBoutonPhaseSuivante").getValue(self) || Variable.find(gameModel, "phaseMaxPlayer").getValue(self) <= Variable.find(gameModel, "phaseMSG").getValue(self);',
-                      language: 'JavaScript',
-                    },
-                  },
+                disableIf: {
+                  '@class': 'Script',
+                  content:
+                    'Variable.find(gameModel, "desactiverBoutonPhaseSuivante").getValue(self) || Variable.find(gameModel, "phaseMaxPlayer").getValue(self) <= Variable.find(gameModel, "phaseMSG").getValue(self);',
+                  language: 'JavaScript',
                 },
-                style: {},
               },
             },
           ],
-          options: {},
           layout: {
             justifyContent: 'space-evenly',
             alignItems: 'center',
           },
-          style: {},
         },
       },
       {
@@ -101,24 +92,19 @@ const page1JSON = {
                         language: 'JavaScript',
                       },
                       prefixedLabel: false,
-                      options: {
-                        actions: {
-                          openPage: {
-                            pageId: {
-                              '@class': 'Script',
-                              content: '"2"',
-                              language: 'TypeScript',
-                            },
-                            pageLoaderName: {
-                              '@class': 'Script',
-                              content: '"Main page loader"',
-                              language: 'TypeScript',
-                            },
-                          },
+                      name: 'Accueil',
+                      openPage: {
+                        pageId: {
+                          '@class': 'Script',
+                          content: '"2"',
+                          language: 'TypeScript',
+                        },
+                        pageLoaderName: {
+                          '@class': 'Script',
+                          content: '"Main page loader"',
+                          language: 'TypeScript',
                         },
                       },
-                      style: {},
-                      name: 'Accueil',
                     },
                   },
                   {
@@ -132,30 +118,23 @@ const page1JSON = {
                         language: 'JavaScript',
                       },
                       prefixedLabel: false,
-                      options: {
-                        upgrades: {
-                          unreadCount: {
-                            '@class': 'Script',
-                            content: "Variable.find(gameModel,'inbox')",
-                            language: 'JavaScript',
-                          },
+                      unreadCount: {
+                        '@class': 'Script',
+                        content: "Variable.find(gameModel,'inbox')",
+                        language: 'JavaScript',
+                      },
+                      openPage: {
+                        pageId: {
+                          '@class': 'Script',
+                          content: '"3"',
+                          language: 'TypeScript',
                         },
-                        actions: {
-                          openPage: {
-                            pageId: {
-                              '@class': 'Script',
-                              content: '"3"',
-                              language: 'TypeScript',
-                            },
-                            pageLoaderName: {
-                              '@class': 'Script',
-                              content: '"Main page loader"',
-                              language: 'TypeScript',
-                            },
-                          },
+                        pageLoaderName: {
+                          '@class': 'Script',
+                          content: '"Main page loader"',
+                          language: 'TypeScript',
                         },
                       },
-                      style: {},
                     },
                   },
                   {
@@ -169,109 +148,62 @@ const page1JSON = {
                         language: 'JavaScript',
                       },
                       prefixedLabel: false,
-                      options: {
-                        upgrades: {
-                          unreadCount: {
-                            '@class': 'Script',
-                            content:
-                              "\tconst currentPhase = Variable.find(gameModel,'phaseMSG').getValue(self)\n\tconst currentPeriod = 1;\n\tlet items = []\n\tconst q = Variable.find(gameModel,'questions').items[currentPhase - 1];\t\n\tif (q) {\n\t\tq.items.map((item,i)=>{\n\t\t\tif (item['@class'] === 'QuestionDescriptor' || item['@class'] === 'WhQuestionDescriptor') \n\t\t\t{ \n\t\t\t\titems.push(item); \n\t\t\t} else if (i == currentPeriod - 1 && item['@class'] === 'ListDescriptor') { \n\t\t\t\titems = items.concat(item.flatten());\n\t\t\t}\n\t\t});\n\t}\nitems;",
-                            language: 'JavaScript',
-                          },
+                      unreadCount: {
+                        '@class': 'Script',
+                        content:
+                          "\tconst currentPhase = Variable.find(gameModel,'phaseMSG').getValue(self)\n\tconst currentPeriod = 1;\n\tlet items = []\n\tconst q = Variable.find(gameModel,'questions').items[currentPhase - 1];\t\n\tif (q) {\n\t\tq.items.map((item,i)=>{\n\t\t\tif (item['@class'] === 'QuestionDescriptor' || item['@class'] === 'WhQuestionDescriptor') \n\t\t\t{ \n\t\t\t\titems.push(item); \n\t\t\t} else if (i == currentPeriod - 1 && item['@class'] === 'ListDescriptor') { \n\t\t\t\titems = items.concat(item.flatten());\n\t\t\t}\n\t\t});\n\t}\nitems;",
+                        language: 'JavaScript',
+                      },
+                      openPage: {
+                        pageId: {
+                          '@class': 'Script',
+                          content: '"4"',
+                          language: 'TypeScript',
                         },
-                        actions: {
-                          openPage: {
-                            pageId: {
-                              '@class': 'Script',
-                              content: '"4"',
-                              language: 'TypeScript',
-                            },
-                            pageLoaderName: {
-                              '@class': 'Script',
-                              content: '"Main page loader"',
-                              language: 'TypeScript',
-                            },
-                          },
+                        pageLoaderName: {
+                          '@class': 'Script',
+                          content: '"Main page loader"',
+                          language: 'TypeScript',
                         },
                       },
-                      style: {},
                     },
                   },
                   {
                     type: 'IconButton',
                     props: {
-                      icon: 'clock',
                       label: 'Historique',
                       action: {
                         '@class': 'Script',
                         content: '',
                         language: 'JavaScript',
                       },
+                      icon: 'clock',
                       prefixedLabel: false,
-                      options: {
-                        actions: {
-                          openPage: {
-                            pageId: {
-                              '@class': 'Script',
-                              content: '"5"',
-                              language: 'TypeScript',
-                            },
-                            pageLoaderName: {
-                              '@class': 'Script',
-                              content: '"Main page loader"',
-                              language: 'TypeScript',
-                            },
-                          },
+                      openPage: {
+                        pageLoaderName: {
+                          '@class': 'Script',
+                          content: '"Main page loader"',
+                          language: 'TypeScript',
+                        },
+                        pageId: {
+                          '@class': 'Script',
+                          content: '"5"',
+                          language: 'TypeScript',
                         },
                       },
-                      style: {},
-                    },
-                  },
-                  {
-                    type: 'IconButton',
-                    props: {
-                      icon: 'exclamation',
-                      label: 'Final',
-                      action: {
-                        '@class': 'Script',
-                        content: '',
-                        language: 'JavaScript',
-                      },
-                      options: {
-                        layout: {
-                          order: -1,
-                        },
-                        actions: {
-                          openPage: {
-                            pageLoaderName: {
-                              '@class': 'Script',
-                              content: '"Main page loader"',
-                              language: 'TypeScript',
-                            },
-                            pageId: {
-                              '@class': 'Script',
-                              content: '"6"',
-                              language: 'TypeScript',
-                            },
-                          },
-                        },
-                      },
-                      prefixedLabel: false,
-                      style: {},
                     },
                   },
                 ],
                 layout: {
+                  justifyContent: 'space-evenly',
                   alignItems: 'center',
                   flexDirection: 'column',
                 },
-                options: {},
-                style: {},
               },
             },
             {
               type: 'PageLoader',
               props: {
-                options: {},
                 style: {
                   height: '100%',
                 },
@@ -295,8 +227,6 @@ const page1JSON = {
                   {
                     type: 'Boxes',
                     props: {
-                      options: {},
-                      style: {},
                       name: '',
                       script: {
                         '@class': 'Script',
@@ -311,7 +241,6 @@ const page1JSON = {
                   {
                     type: 'Gauge',
                     props: {
-                      options: {},
                       script: {
                         '@class': 'Script',
                         content: "Variable.find(gameModel,'timeCards')",
@@ -333,7 +262,6 @@ const page1JSON = {
                         content: "Variable.find(gameModel,'caisse')",
                         language: 'JavaScript',
                       },
-                      options: {},
                       style: {
                         width: '100%',
                       },
@@ -349,7 +277,6 @@ const page1JSON = {
                           "Variable.find(gameModel,'depensesMensuelles')",
                         language: 'JavaScript',
                       },
-                      options: {},
                       style: {
                         width: '100%',
                       },
@@ -361,14 +288,11 @@ const page1JSON = {
                   alignItems: 'center',
                   alignContent: 'space-evenly',
                 },
-                options: {},
-                style: {},
               },
             },
           ],
           name: 'corps',
-          flexValues: [456.934, 2034.57, 509.244],
-          options: {},
+          flexValues: [730.97, 1538.11, 733.084],
           style: {
             height: '100%',
             overflow: 'auto',
@@ -387,7 +311,6 @@ const page1JSON = {
     layout: {
       flexDirection: 'column',
     },
-    options: {},
   },
 };
 

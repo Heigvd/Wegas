@@ -33,7 +33,7 @@ export function getParent(vd: IVariableDescriptor): IParentDescriptor {
  */
 const instancesCache = new Map<string, number>();
 
-export function getInstance<I extends IVariableInstance>(
+function getSingleInstance<I extends IVariableInstance>(
   vd: IVariableDescriptor<I>,
   self?: IPlayer,
 ): Readonly<I> | undefined {
@@ -67,6 +67,20 @@ export function getInstance<I extends IVariableInstance>(
     instancesCache.set(cacheKey, instance.id!);
   }
   return instance;
+}
+
+export function getInstance<I extends IVariableInstance>(
+  vd: IVariableDescriptor<I>,
+  self?: IPlayer,
+) {
+  return getSingleInstance(vd, self);
+}
+
+export function getInstances<I extends IVariableInstance>(
+  vd: IVariableDescriptor<I>[],
+  self?: IPlayer,
+) {
+  return vd.map(v => getSingleInstance(v, self));
 }
 
 export function getScopeEntity(

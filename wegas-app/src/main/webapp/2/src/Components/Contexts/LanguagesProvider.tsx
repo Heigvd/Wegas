@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Menu } from '../Menu';
+import { DropMenu } from '../DropMenu';
 import { useGameModel } from '../Hooks/useGameModel';
 
 interface LanguagesProviderProps {
@@ -73,7 +73,7 @@ export const LanguagesProvider = React.memo(LanguagesContext);
 export function LangToggler() {
   const { lang, selectLang, availableLang } = React.useContext(languagesCTX);
   return (
-    <Menu
+    <DropMenu
       label={lang}
       items={availableLang.map(language => ({
         value: language.code,
