@@ -61,6 +61,9 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
         );
       })}
       {props.children}
+      {CurrentGM.properties.clientScriptUri.split(';').map(scriptUrl => (
+        <script key={scriptUrl} type="text/javascript" src={scriptUrl} />
+      ))}
     </>
   );
 }
