@@ -59,6 +59,8 @@ import { useStore } from '../../../data/store';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { usePageComponentStore } from './componentFactory';
 import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
+import { MenuItem, defaultMenuItemKeys } from '../../Layouts/Menu';
+import { wlog } from '../../../Helper/wegaslog';
 
 // Styles
 export const layoutHighlightStyle = css({
@@ -412,7 +414,7 @@ export type ContainerTypes =
   | 'FLEX'
   | 'LINEAR'
   | 'ABSOLUTE'
-  /* | 'MENU'*/
+  | 'MENU'
   | undefined;
 
 /**
@@ -558,6 +560,15 @@ export function ComponentContainer({
   };
 
   const { WegasComponent, containerType, componentName } = component || {};
+  wlog(restProps.name);
+  if (
+    childrenType === 'MENU' ||
+    containerType === 'MENU' ||
+    componentName === 'Menu' ||
+    restProps.name === 'Menutest'
+  ) {
+    debugger;
+  }
 
   const container = React.useRef<HTMLDivElement>();
   const mouseOver = React.useRef<boolean>(false);
@@ -579,7 +590,7 @@ export function ComponentContainer({
     containerType === 'FLEX'
       ? restProps.layout?.flexDirection === 'column' ||
         restProps.layout?.flexDirection === 'column-reverse'
-      : containerType === 'LINEAR'
+      : containerType === 'LINEAR' || containerType === 'MENU'
       ? restProps.vertical
       : false;
 
@@ -622,6 +633,8 @@ export function ComponentContainer({
         return FonkyFlexContent;
       case 'ABSOLUTE':
         return AbsoluteItem;
+      case 'MENU':
+        return MenuItem;
       case 'FLEX':
       default:
         return FlexItem;
@@ -746,7 +759,7 @@ export function ComponentContainer({
         }}
         {...(pick(
           restProps,
-          childrenType === 'FLEX'
+          childrenType === 'FLEX' || childrenType === 'MENU'
             ? defaultFlexLayoutOptionsKeys
             : childrenType === 'ABSOLUTE'
             ? defaultAbsoluteLayoutPropsKeys
@@ -792,7 +805,7 @@ export function ComponentContainer({
         )}
         {editable && (
           <EditHandle
-            name={name}
+            name={restProps.name}
             stackedHandles={stackedHandles}
             componentName={componentName}
             path={realPath}
@@ -928,6 +941,8 @@ export function JSONComponentContainer({
         return FonkyFlexContent;
       case 'ABSOLUTE':
         return AbsoluteItem;
+      case 'MENU':
+        return MenuItem;
       case 'FLEX':
       default:
         return FlexItem;
@@ -1054,6 +1069,8 @@ export function JSONComponentContainer({
             ? defaultFlexLayoutOptionsKeys
             : childrenType === 'ABSOLUTE'
             ? defaultAbsoluteLayoutPropsKeys
+            : childrenType === 'MENU'
+            ? defaultMenuItemKeys
             : [],
         ) as FlexItemProps | AbsoluteItemLayoutProps)}
         className={cx(handleControlStyle, flex, extraState.themeModeClassName, {
@@ -1066,10 +1083,9 @@ export function JSONComponentContainer({
           [disabledStyle]: extraState.disabled,
         })}
         style={{
-          cursor:
-            Object.keys(actions).length > 0 && !extraState.disabled
-              ? 'pointer'
-              : 'initial',
+          ...(Object.keys(actions).length > 0 && !extraState.disabled
+            ? { cursor: 'pointer' }
+            : {}),
           ...restProps.containerStyle,
         }}
         onClick={onClick}
@@ -1097,7 +1113,7 @@ export function JSONComponentContainer({
         )}
         {editable && (
           <EditHandle
-            name={name}
+            name={restProps.name}
             stackedHandles={stackedHandles}
             componentName={componentName}
             path={realPath}

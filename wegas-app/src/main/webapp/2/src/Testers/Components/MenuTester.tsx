@@ -9,14 +9,14 @@ export default function MenuTester() {
       <div className={grow}>
         <Menu>
           <MenuItem>Item1</MenuItem>
-          <MenuItem>Item2</MenuItem>
+          <MenuItem unselectable>Item2 (unselectable)</MenuItem>
           <MenuItem>Item3</MenuItem>
         </Menu>
       </div>
       <div className={grow}>
         <Menu vertical>
           <MenuItem>Item1</MenuItem>
-          <MenuItem>Item2</MenuItem>
+          <MenuItem unselectable>Item2 (unselectable)</MenuItem>
           <MenuItem>Item3</MenuItem>
         </Menu>
       </div>

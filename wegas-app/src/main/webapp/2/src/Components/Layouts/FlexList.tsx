@@ -61,7 +61,7 @@ export const defaultFlexLayoutOptionsKeys = Object.keys(
   defaultFlexLayoutOptions,
 );
 
-export const flexlayoutChoices: HashListChoices = [
+export const flexItemSchema: HashListChoices = [
   {
     label: 'Order',
     value: {
@@ -100,8 +100,9 @@ export const flexlayoutChoices: HashListChoices = [
 ];
 
 export interface FlexItemProps
-  extends WegasComponentItemProps,
-    FlexItemLayoutProps {
+  extends React.PropsWithChildren<
+    WegasComponentItemProps & FlexItemLayoutProps
+  > {
   /**
    * onMouseOut - triggers when the mouse is not more over the element
    */

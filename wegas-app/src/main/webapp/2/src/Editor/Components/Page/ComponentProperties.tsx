@@ -31,6 +31,7 @@ import {
 } from '../../../Components/Layouts/Absolute';
 import { pick, omit } from 'lodash-es';
 import { ContainerTypes } from '../../../Components/PageComponents/tools/EditableComponent';
+import { defaultMenuItemKeys } from '../../../Components/Layouts/Menu';
 
 /**
  * wegasComponentCommonSchema - defines the minimum schema for every WegasComponent
@@ -115,6 +116,7 @@ const defaultLayoutCommonOptions: WegasComponentLayoutCommonOptions = {
 const defaultLayoutCommonOptionsKeys = Object.keys(defaultLayoutCommonOptions);
 const defaultLayoutOptionsKeys = [
   ...defaultFlexLayoutOptionsKeys,
+  ...defaultMenuItemKeys,
   ...defaultAbsoluteLayoutPropsKeys,
   ...defaultLayoutCommonOptionsKeys,
 ];

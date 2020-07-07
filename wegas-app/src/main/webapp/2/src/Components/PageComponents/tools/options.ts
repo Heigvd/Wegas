@@ -10,13 +10,14 @@ import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 import { schemaProps } from './schemaProps';
 import { InfoBulletProps } from './InfoBullet';
-import { flexlayoutChoices } from '../../Layouts/FlexList';
-import { absolutelayoutChoices } from '../../Layouts/Absolute';
+import { flexItemSchema } from '../../Layouts/FlexList';
+import { absoluteItemSchema } from '../../Layouts/Absolute';
 import { ContainerTypes } from './EditableComponent';
 import { entityIs } from '../../../data/entities';
 import { getQuestionReplies } from '../../../data/proxyfy/instancesHelpers';
 import { createScript } from '../../../Helper/wegasEntites';
 import { proxyfy } from '../../../data/proxyfy';
+import { menuItemSchema } from '../../Layouts/Menu';
 
 export interface WegasComponentOptionsAction {
   priority?: number;
@@ -532,10 +533,10 @@ export type WegasComponentExtra = WegasComponentLayoutCommonOptions &
   WegasComponentDecorations;
 
 const layoutChoices = {
-  FLEX: flexlayoutChoices,
+  FLEX: flexItemSchema,
   LINEAR: [],
-  ABSOLUTE: absolutelayoutChoices,
-  // MENU: menuLayoutChoices,
+  ABSOLUTE: absoluteItemSchema,
+  MENU: menuItemSchema,
 };
 
 export const wegasComponentExtraSchema = (containerType: ContainerTypes) => ({

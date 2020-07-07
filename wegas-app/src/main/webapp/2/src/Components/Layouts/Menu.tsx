@@ -1,16 +1,28 @@
 import * as React from 'react';
 import { cx, css } from 'emotion';
 import { classNameOrEmpty } from '../../Helper/className';
-import { flex, flexColumn, flexRow, layoutStyle } from '../../css/classes';
-import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
+import {
+  flex,
+  flexColumn,
+  flexRow,
+  layoutStyle,
+  grow,
+  contentCenter,
+  flexDistribute,
+} from '../../css/classes';
 import { themeVar } from '../Style/ThemeVars';
+import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
+import { HashListChoices } from '../../Editor/Components/FormView/HashList';
+import { schemaProps } from '../PageComponents/tools/schemaProps';
 
 const ITEM_SELECTOR = 'menu-item';
 const VERTICAL_SELECTOR = 'menu-vertical';
 const HORIZONTAL_SELECTOR = 'menu-horizontal';
 const SELECTED_SELECTOR = 'menu-selected';
+const UNSELECTABLE_SELECTOR = 'menu-unselectable';
 
 const menuItemStyle = css({
+  cursor: 'pointer',
   borderStyle: 'solid',
   borderWidth: themeVar.Common.dimensions.BorderWidth,
   borderColor: themeVar.Common.colors.BorderColor,
@@ -26,15 +38,16 @@ const menuItemSelectStyle = css({
   },
 });
 
-export interface MenuProps extends ClassAndStyle {
+export const menuSchema = {
+  vertical: schemaProps.boolean('Vertical'),
+  alwaysSelected: schemaProps.boolean('Always selected'),
+};
+
+export interface MenuProps extends React.PropsWithChildren<ClassAndStyle> {
   selectItem?: number;
   vertical?: boolean;
   alwaysSelected?: boolean;
   onItemSelect?: (item?: number) => void;
-}
-
-interface MenuItemProps extends WegasComponentItemProps {
-  // flexInit?: number;
 }
 
 export function Menu({
@@ -45,8 +58,8 @@ export function Menu({
   className,
   style,
   children,
-}: React.PropsWithChildren<MenuProps>) {
-  const childrenItems = React.useRef<HTMLDivElement[]>([]);
+}: MenuProps) {
+  const childrenItems = React.useRef<HTMLElement[]>([]);
   const [selectedItem, setSelectedItem] = React.useState<number | undefined>(
     selectItem,
   );
@@ -79,21 +92,35 @@ export function Menu({
     (e: React.MouseEvent<HTMLDivElement>) => {
       e.stopPropagation();
       const { target } = e;
-      const divTarget = target as HTMLDivElement;
-      const itemIndex = childrenItems.current.indexOf(divTarget);
+      let divTarget: HTMLElement | null = target as HTMLElement | null;
+      while (
+        divTarget != null &&
+        !divTarget.className.includes(ITEM_SELECTOR)
+      ) {
+        divTarget = divTarget.parentElement as HTMLElement;
+      }
 
-      if (itemIndex !== -1) {
-        if (selectedItem === itemIndex && !alwaysSelected) {
-          setSelectedItem(undefined);
-          onItemSelect && onItemSelect(undefined);
-        } else {
-          setSelectedItem(itemIndex);
-          onItemSelect && onItemSelect(itemIndex);
+      if (divTarget != null) {
+        const itemIndex = childrenItems.current.indexOf(divTarget);
+
+        if (
+          itemIndex !== -1 &&
+          !divTarget.className.includes(UNSELECTABLE_SELECTOR)
+        ) {
+          if (selectedItem === itemIndex && !alwaysSelected) {
+            setSelectedItem(undefined);
+            onItemSelect && onItemSelect(undefined);
+          } else {
+            setSelectedItem(itemIndex);
+            onItemSelect && onItemSelect(itemIndex);
+          }
         }
       }
     },
     [selectedItem, alwaysSelected, onItemSelect],
   );
+
+  // debugger;
 
   return (
     <div
@@ -117,50 +144,68 @@ export function Menu({
       className={
         cx(
           flex,
+          grow,
           vertical ? flexColumn : flexRow,
+          flexDistribute,
           layoutStyle,
           menuItemSelectStyle,
         ) + classNameOrEmpty(className)
       }
-      style={style}
+      style={{
+        // flexDirection,
+        // flexWrap,
+        // justifyContent,
+        // alignItems,
+        // alignContent,
+        ...style,
+      }}
     >
       {children}
     </div>
   );
 }
 
-export const MenuItem = React.forwardRef<
-  HTMLDivElement,
-  React.PropsWithChildren<MenuItemProps>
->((props, ref) => {
-  const {
-    className,
-    style,
-    children,
-    onClick,
-    onMouseOver,
-    onMouseLeave,
-    onDragEnter,
-    onDragLeave,
-    onDragEnd,
-    tooltip,
-  } = props;
-  return (
-    <div
-      ref={ref}
-      className={
-        ITEM_SELECTOR + ' ' + menuItemStyle + classNameOrEmpty(className)
-      }
-      style={style}
-      onClick={onClick}
-      onMouseOver={onMouseOver}
-      onMouseLeave={onMouseLeave}
-      onDragEnter={onDragEnter}
-      onDragLeave={onDragLeave}
-      onDragEnd={onDragEnd}
-      title={tooltip}
-    >
-      {children}
-    </div>
-  );
-});
+export const menuItemSchema: HashListChoices = [
+  {
+    label: 'Unselectable',
+    value: {
+      prop: 'unselectable',
+      schema: schemaProps.boolean('Unselectable'),
+    },
+  },
+];
+
+export const defaultMenuItemProps: MenuItemProps = {
+  unselectable: undefined,
+};
+export const defaultMenuItemKeys = Object.keys(defaultMenuItemProps);
+
+interface MenuItemProps
+  extends React.PropsWithChildren<WegasComponentItemProps> {
+  unselectable?: boolean;
+}
+
+export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
+  (props, ref) => {
+    const { unselectable, className, style, children, ...restProps } = props;
+    return (
+      <div
+        ref={ref}
+        className={
+          ITEM_SELECTOR +
+          ' ' +
+          (unselectable ? UNSELECTABLE_SELECTOR + ' ' : '') +
+          cx(flex, contentCenter, menuItemStyle) +
+          classNameOrEmpty(className)
+        }
+        style={{
+          position: 'relative',
+          ...style,
+        }}
+        {...restProps}
+      >
+        {children}
+      </div>
+    );
+  },
+);
