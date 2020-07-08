@@ -240,6 +240,54 @@ angular.module('wegas.models.users', [])
             };
 
 
+            var postUser = function(user) {
+                // clean local admin modifications
+                if (user.roles) {
+                    for (var i = 0; i < user.roles.length; i++) {
+                        // Additional attribute created in user admin code:
+                        delete user.roles[i].users;
+                    }
+                }
+                var url = "rest/Extended/User/Account/" + user.id;
+                $http.put(ServiceURL + url, user, {
+                    "headers": {
+                        "managed-mode": "true"
+                    }
+                }).success(function(data) {
+                    if (data.events !== undefined && data.events.length === 0) {
+                        /*
+                         $translate('COMMONS-USERS-UPDATE-FLASH-SUCCESS').then(function(message) {
+                         deferred.resolve(Responses.success(message, data.updatedEntities[0]));
+                         });
+                         */
+                        deferred.resolve();
+                        return;
+                    } else {
+                        if (data.events !== undefined) {
+                            console.log("WEGAS LOBBY : Error while updating profile");
+                            console.log(data.events);
+                        }
+                        $translate('COMMONS-USERS-UPDATE-FLASH-ERROR').then(function(message) {
+                            deferred.resolve(Responses.danger(message, false));
+                        });
+                    }
+                }).error(function(data) {
+                    if (data.events !== undefined) {
+                        console.log("WEGAS LOBBY : Error while updating profile");
+                        console.log(data.events);
+                        try {
+                            deferred.resolve(Responses.danger(data.events[0].exceptions[0].localizedMessage, false));
+                            return;
+                        } catch (e) {
+                            // Fall through to generic error message
+                        }
+                    }
+                    $translate('COMMONS-USERS-UPDATE-FLASH-ERROR').then(function(message) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
+                });
+            };
+
             if (isNonLocal || user.email && user.email.length > 0) {
                 if (isNonLocal || relaxed || isUsernameValid(user)) {
                     if (isNonLocal || !user.password || user.password.length >= 3) {
@@ -259,6 +307,7 @@ angular.module('wegas.models.users', [])
                                             return method["@class"] === "JpaAuthentication";
                                         });
                                         if (jpaAuths.length) {
+                                            // using JPA authentication requires to hash the new password
                                             var salt = jpaAuths[0].salt || "";
                                             // salt and hash the password
                                             Auth.digest(jpaAuths[0].mandatoryMethod, salt + user.password)
@@ -274,56 +323,24 @@ angular.module('wegas.models.users', [])
                                                         user.password = "";
                                                     }
 
-                                                    if (user.roles) {
-                                                        for (var i = 0; i < user.roles.length; i++) {
-                                                            // Additional attribute created in user admin code:
-                                                            delete user.roles[i].users;
-                                                        }
-                                                    }
-
-                                                    var url = "rest/Extended/User/Account/" + user.id;
-                                                    $http.put(ServiceURL + url, user, {
-                                                        "headers": {
-                                                            "managed-mode": "true"
-                                                        }
-                                                    }).success(function(data) {
-                                                        if (data.events !== undefined && data.events.length === 0) {
-                                                            /*
-                                                             $translate('COMMONS-USERS-UPDATE-FLASH-SUCCESS').then(function(message) {
-                                                             deferred.resolve(Responses.success(message, data.updatedEntities[0]));
-                                                             });
-                                                             */
-                                                            deferred.resolve();
-                                                            return;
-                                                        } else {
-                                                            if (data.events !== undefined) {
-                                                                console.log("WEGAS LOBBY : Error while updating profile");
-                                                                console.log(data.events);
-                                                            }
-                                                            $translate('COMMONS-USERS-UPDATE-FLASH-ERROR').then(function(message) {
-                                                                deferred.resolve(Responses.danger(message, false));
-                                                            });
-                                                        }
-                                                    }).error(function(data) {
-                                                        if (data.events !== undefined) {
-                                                            console.log("WEGAS LOBBY : Error while updating profile");
-                                                            console.log(data.events);
-                                                            try {
-                                                                deferred.resolve(Responses.danger(data.events[0].exceptions[0].localizedMessage, false));
-                                                                return;
-                                                            } catch (e) {
-                                                                // Fall through to generic error message
-                                                            }
-                                                        }
-                                                        $translate('COMMONS-USERS-UPDATE-FLASH-ERROR').then(function(message) {
-                                                            deferred.resolve(Responses.danger(message, false));
-                                                        });
-                                                    });
+                                                    postUser(user);
                                                 });
                                         } else {
-                                            $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function(message) {
-                                                deferred.resolve(Responses.danger(message, false));
+                                            var aaiAuths = data.filter(function(method) {
+                                                return method["@class"] === "AaiAuthentication";
                                             });
+                                            if (aaiAuths.length) {
+                                                delete user.hash;
+                                                delete user.name;
+                                                delete user.password2;
+                                                delete user.password;
+
+                                                postUser(user);
+                                            } else {
+                                                $translate('COMMONS-AUTH-LOGIN-FLASH-ERROR-CLIENT').then(function(message) {
+                                                    deferred.resolve(Responses.danger(message, false));
+                                                });
+                                            }
                                         }
                                     }).error(function(data) {
                                     // no auth method
