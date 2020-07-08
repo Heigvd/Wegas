@@ -181,7 +181,10 @@ export function clientScriptEval<ReturnValue>(script?: string) {
     : undefined;
 }
 
-export function safeClientScriptEval<ReturnValue>(script?: string) {
+export function safeClientScriptEval<ReturnValue>(
+  script?: string,
+  catchCB?: (e: Error) => void,
+) {
   try {
     return clientScriptEval<ReturnValue>(script);
   } catch (e) {
@@ -192,6 +195,7 @@ export function safeClientScriptEval<ReturnValue>(script?: string) {
         script != null ? transpile(script) : undefined
       }`,
     );
+    catchCB && catchCB(e);
     return undefined;
   }
 }

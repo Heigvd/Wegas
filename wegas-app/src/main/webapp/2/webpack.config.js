@@ -40,7 +40,6 @@ const modules = {
   entry: {
     editor: ['./src/Editor/index.tsx'],
     player: ['./src/player.tsx'],
-    staticScript: ['./src/Testers/testStaticScript.ts'],
   },
   output: {
     path: path.join(__dirname, 'dist'),
