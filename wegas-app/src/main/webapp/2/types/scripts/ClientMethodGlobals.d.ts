@@ -34,7 +34,7 @@ type ArrayedAndNot<T extends {}> = ArrayedTypeMap<T>[keyof ArrayedTypeMap];
  * @param method - the method to add
  */
 type ClientMethodAdd = <
-  PT extends readonly [string, keyof WegasScriptEditorNameAndTypes][],
+  PT extends readonly [readonly string, keyof WegasScriptEditorNameAndTypes][],
   RT extends keyof WegasScriptEditorNameAndTypes,
   ARG extends ExtractTuppleArray<
     PT,

@@ -41,8 +41,10 @@ type ExtractTuppleArray<
   [key in keyof T]: T[key] extends [A1, A2, ...Arest[]] ? T[key][N] : unknown;
 };
 
-// type Test = ExtractTuppleArray<
-//   [['bla', 'bla1'], ['bli', 'number']],
-//   string,
-//   string
-// >;
+type Test = (
+  ...args: ExtractTuppleArray<
+    [['bla', 'bla1'], ['bli', 'number']],
+    string,
+    string
+  >
+) => void;

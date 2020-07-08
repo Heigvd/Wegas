@@ -124,9 +124,8 @@ export function useGlobals() {
     [
       ['arg1', 'boolean'],
       ['arg2', 'number'],
-    ] 
-    as [['arg1', 'boolean'], ['arg2', 'number']]
-    ,
+    ] as const,
+    // as [['arg1', 'boolean'], ['arg2', 'number']]
     ['number', 'string[]'],
     'array',
     (arg1, arg2) => [
