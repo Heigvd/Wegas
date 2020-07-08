@@ -72,9 +72,10 @@ var SurveyHelper = (function() {
             teams = game.getTeams(),
             nbTeams = teams.size(),
             isPlayerScopeSurvey = (sd.getScopeType().toString() === "PlayerScope" ),
-            t, teamId, team,
+            hasTokens = sd.getHasTokens(),
+            t, teamId, team, teamName,
             players, nbPlayers, playerId, p, nbIterations,
-            aPlayer, survInsts, survInst, teamdata, replied, optionalReplied,
+            aPlayer, playerName, survInsts, survInst, teamdata, replied, optionalReplied,
             activeInputs, activeOptionalInputs,
             survActive,
             survStatus = ORCHESTRATION_PROGRESS.NOT_STARTED.name,
@@ -169,6 +170,16 @@ var SurveyHelper = (function() {
         for (t = 0; t < nbTeams; t += 1) {
             team = teams.get(t);
             teamId = new Long(team.getId());
+            if (team.getStatus().toString() === "SURVEY") {
+                teamName = "Survey team";
+                // Case where an anonymous survey player was created for another survey in the same game. 
+                // Ignore this player, since his status will never evolve:
+                if (!hasTokens) {
+                    continue;
+                }
+            } else {
+                teamName = team.getName();
+            }
             players = team.getPlayers();
             nbPlayers = players.size();
            
@@ -195,11 +206,17 @@ var SurveyHelper = (function() {
                     survInst = survInsts[aPlayer];
                 }
 
-                isDebugTeam = aPlayer.getTeam() instanceof com.wegas.core.persistence.game.DebugTeam;
+                isDebugTeam = (aPlayer.getTeam() instanceof com.wegas.core.persistence.game.DebugTeam);
                 if (isDebugTeam && (nbTeams > 1 || !getDebugTeam)) {
                     continue;
                 }
 
+                if (aPlayer.getStatus().toString() === "SURVEY") {
+                    playerName = "Survey guest";
+                } else {
+                    playerName = aPlayer.getName();
+                }
+                
                 survStatus = survInst.getStatus().toString();
                 survActive = survInst.getActive();
                 playerStatus = ORCHESTRATION_PROGRESS[survStatus].id;
@@ -244,10 +261,11 @@ var SurveyHelper = (function() {
                 }
 
                 teamdata = {
-                    name: team.getName(),
+                    name: teamName,
                     teamId: teamId,
                     teamSize: nbPlayers,
-                    playerName: aPlayer.getName(),
+                    playerName: playerName,
+                    playerId: playerId,
                     active: survActive,
                     status: survStatus,
                     replied: replied,

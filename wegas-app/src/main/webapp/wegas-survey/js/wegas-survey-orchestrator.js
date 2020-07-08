@@ -15,9 +15,11 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
     "use strict";
     var CONTENTBOX = "contentBox",
         BOUNDINGBOX = "boundingBox",
-        SERVER_SCRIPT_PATH = "wegas-app/js/server/",
+        SERVER_SCRIPT_PATH = "wegas-app/js/server",
         SURVEY_CONTAINER_GAMEMODEL_NAME = "Survey container",
         SURVEY_CONTAINER_ICON = "ICON_dark-orangine_bar-chart_fa",
+        GAMEMODEL_SCENARIO = "SCENARIO",
+        GAMEMODEL_SESSION = "PLAY",
         SURVEY_CONTAINER_PROPERTIES = {
             scriptUri: SERVER_SCRIPT_PATH,
             iconUri: SURVEY_CONTAINER_ICON,
@@ -64,6 +66,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         }).render();
         var cb = panel.get(CONTENTBOX);
         cb.addClass("wegas-orchestrator-alert");
+        adjustPanelHeight(panel);
+
         // Sometimes the popup may hide the cause of the alert:
         panel.plug(Y.Plugin.DraggablePanel, {});
     }
@@ -87,7 +91,20 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         }).render();
         var cb = panel.get(CONTENTBOX);
         cb.addClass("wegas-orchestrator-success");
+        adjustPanelHeight(panel);
         panel.plug(Y.Plugin.DraggablePanel, {});
+    }
+    
+    // Adjusts panel height to max 80% of screen size.
+    function adjustPanelHeight(panel) {
+        var boxHeight = Number.parseInt(panel.get(CONTENTBOX).getComputedStyle("height")),
+            bodyHeight = Number.parseInt(Y.one("body").getComputedStyle("height"));
+        panel.get(BOUNDINGBOX).setStyle("max-height", "80%");
+        if (boxHeight >= 0.8*bodyHeight) {
+            panel.get(BOUNDINGBOX).setStyle("height", (0.8*bodyHeight) + "px");
+        } else {
+            panel.get(BOUNDINGBOX).setStyle("height", boxHeight + "px");
+        }
     }
     
     // Syntactical validation of an email address.
@@ -221,71 +238,42 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         
         // Persists the given gameModel "as is".
         persistGameModel: function(gameModel, successCb, failureCb) {
-            var gameModelId = gameModel.get("id"),
-                config = {
-                    request: '/' + gameModelId,
-                    cfg: {
-                        updateCache: true,
-                        method: "PUT",
-                        data: gameModel
-                    },
+            Y.Wegas.Facade.GameModel.cache.put(
+                gameModel.toObject(), 
+                {
                     on: {
-                        success: Y.bind(function(e) {
-                            successCb && successCb(gameModelId);
-                        }, this),
-                        failure: Y.bind(function(e) {
-                            failureCb && failureCb(gameModelId);
-                        }, this)
+                        success: successCb,
+                        failure: failureCb
+                    }
                 }
-            };
-            Y.Wegas.Facade.GameModel.sendRequest(config);
+            );
         },
         
         // Persists the given game "as is".
         persistGame: function(game, successCb, failureCb) {
-            var gameId = game.get("id"),
-                config = {
-                    request: '/Game/' + gameId,
-                    cfg: {
-                        updateCache: true,
-                        method: "PUT",
-                        data: game
-                    },
+            Y.Wegas.Facade.Game.cache.put(
+                game.toObject(), 
+                {
                     on: {
-                        success: Y.bind(function(e) {
-                            successCb && successCb(gameId);
-                        }, this),
-                        failure: Y.bind(function(e) {
-                            failureCb && failureCb(gameId);
-                        }, this)
+                        success: successCb,
+                        failure: failureCb
+                    }
                 }
-            };
-            Y.Wegas.Facade.GameModel.sendRequest(config);
+            );
         },
 
         // Persists the given SurveyDescriptor "as is".
         // No recursive saving of child sections or inputs.
         persistSurvey: function(surveyDescr, successCb, failureCb) {
-            // Full request: /rest/GameModel/<gameModelId>/VariableDescriptor/<variableDescriptorId>
-            var gameModelId = this.currentGameModelId,
-                surveyId = surveyDescr.get("id"),
-                config = {
-                    request: '/' + gameModelId + "/VariableDescriptor/" + surveyId,
-                    cfg: {
-                        updateCache: true,
-                        method: "PUT",
-                        data: surveyDescr
-                    },
+            Y.Wegas.Facade.Variable.cache.put(
+                surveyDescr.toObject(),
+                {
                     on: {
-                        success: Y.bind(function(e) {
-                            successCb && successCb(surveyId);
-                        }, this),
-                        failure: Y.bind(function(e) {
-                            failureCb && failureCb(surveyId);
-                        }, this)
+                        success: successCb,
+                        failure: failureCb
+                    }
                 }
-            };
-            Y.Wegas.Facade.GameModel.sendRequest(config);
+            );
         },
 
         // Removes the given language from the given gameModel.
@@ -342,8 +330,48 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             Y.Wegas.Facade.GameModel.sendRequest(config);
         },
         
-        // Creates an empty gameModel with the given name.
-        createEmptyGameModel: function(gameName, successCb, failureCb) {
+        /*
+         * Creates an empty gameModel with the given name.
+         * @Param gameName string
+         * @Param languages array of languages from the source gameModel
+         * @Param type string, either "PLAY" or "SCENARIO"
+         * @Param successCb callback
+         * @Param failureCb callback
+        */
+        createEmptyGameModel: function(gameName, languages, type, successCb, failureCb) {
+            var data = {
+                    "@class": "GameModel",
+                    "name": gameName,
+                    "languages": languages, // [{"@class":"GameModelLanguage","code":"FR","lang":"français","active":true}],
+                    "status": "LIVE",
+                    "type": type,
+                    "comments": SURVEY_CONTAINER_GAMEMODEL_NAME,
+                    "properties":{
+                        "freeForAll": true,
+                        "guestAllowed": false,
+                        "pagesUri": "",
+                        "cssUri": "",
+                        "websocket": "",
+                        "logID": "",
+                        "scriptUri": SERVER_SCRIPT_PATH,
+                        "clientScriptUri": "",
+                        "iconUri": SURVEY_CONTAINER_ICON,
+                        "@class": "GameModelProperties"
+                    },
+                    "uiversion": 1
+                    //"createdByName": "Moi"
+                },
+                callbacks = {
+                    success: Y.bind(function(e) {
+                            successCb && successCb(e.response.entity);
+                        }, this),
+                    failure: Y.bind(function(e) {
+                            failureCb && failureCb(e);
+                        }, this)
+                };
+            Y.Wegas.Facade.GameModel.cache.post(data, null, callbacks);
+            return;
+            
             // Full request: /rest/GameModel/<gameModelId>
             var gameModelId = EMPTY_GAMEMODEL_ID,
                 gameAttrs = {
@@ -550,9 +578,12 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             if (Y.Wegas.Facade.Variable.cache.find("@class", "SurveyDescriptor")) {
                 var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
                     props = gm.get("properties"),
-                    serverScripts = props.get("val.scriptUri");
+                    serverScripts = props.get("val.scriptUri").trim();
                 if (serverScripts.indexOf(SERVER_SCRIPT_PATH) < 0) {
-                    serverScripts += (serverScripts ? ';' : '') + SERVER_SCRIPT_PATH;
+                    if (serverScripts.length > 0 && serverScripts[serverScripts.length-1] !== ';') {
+                        serverScripts += ';';
+                    }
+                    serverScripts += SERVER_SCRIPT_PATH;
                     props.set("val.scriptUri", serverScripts);
                     this.persistGameModel(gm);
                 }
@@ -667,6 +698,9 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         
         // Adds the given survey descriptor to the list of known surveys.
         registerInternalSurvey: function(sd) {
+            if (sd.get("parentId") !== this.currentGameModelId) {
+                return;
+            }
             var descrId = sd.get("id"),
                 varSet = {},
                 varList;
@@ -954,10 +988,28 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             return internals.concat(externals);
         },
         
+        // Returns the core properties of the given array of languages
+        getLanguages: function(languages) {
+            var res = [],
+                currLang,
+                newLang;
+            for (var i in languages){
+                currLang = languages[i];
+                newLang = {
+                    "@class" : currLang.get("@class"),
+                    "code": currLang.get("code"),
+                    "lang": currLang.get("lang"),
+                    "active": currLang.get("active")
+                };
+                res.push(newLang);
+            }
+            return res;
+        },
+        
         // Processes the given array of variable sets to return a 'knownSurveys' compatible list
         processVarSet: function(varSets, varSetsAreWriteable) {
             var surveyList = {},
-                currVarSet, vs, sourceGameModel, sourceGame, variables, v, currVar,
+                currVarSet, vs, sourceGameModel, sourceGame, gmLanguages, variables, v, currVar,
                 isSession, createdDate, gameName, runnableHTML, runningHTML = null;
             
             for (vs in varSets) {
@@ -973,6 +1025,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     createdDate = sourceGameModel.get("createdTime");
                     gameName = sourceGameModel.get("name");
                 }
+                gmLanguages = this.getLanguages(sourceGameModel.get("languages"));
                 for (v in variables) {
                     currVar = variables[v];
                     var name = currVar.get("name"),
@@ -1039,6 +1092,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                             hasPlayerScope: currVar.get("scopeType") === PLAYERSCOPE,
                             runnableHTML: runnableHTML,
                             runningHTML: runningHTML,
+                            languages: gmLanguages,
                             comments: comments,
                             buttons: {}
                         };
@@ -1434,6 +1488,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 }).render();
                 cb = panel.get(CONTENTBOX);
                 cb.addClass("wegas-orchestrator-panel wegas-survey-details");
+                adjustPanelHeight(panel);
                 panel.plug(Y.Plugin.DraggablePanel, {});
                 
                 survObj.deleteRunningDetailsPanel = Y.bind(function() {
@@ -1447,6 +1502,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 handler = cb.one(".close").on("click", survObj.deleteRunningDetailsPanel, this);
             } else {
                 this.updateDetailsPanel(survObj);
+                adjustPanelHeight(panel);
             }
         },
 
@@ -1529,7 +1585,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     autoSpin: true,
                     surveyId: surveyId
                 }).render(settingsPanel.one(".survey-scope-team"));
-                                
+                
+                adjustPanelHeight(panel);
                 panel.plug(Y.Plugin.DraggablePanel, {});
                 survObj.deleteRunnableSettingsPanel = Y.bind(function() {
                     if (survObj.runnableSettingsPanel) {
@@ -1682,7 +1739,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     survDescr.get("defaultInstance").set("status", ORCHESTRATION_PROGRESS.REQUESTED);
                     this.persistSurvey(survDescr,
                         Y.bind(function() {
-                            this.impactSurveyInstances(script, survDescr, I18n.t("survey.orchestrator.surveyLaunched"));
+                            this.impactSurveyInstances(script, survDescr, true, I18n.t("survey.orchestrator.surveyLaunched"));
                             btn && btn.stopSpinning();
                         }, this),
                         Y.bind(function() {
@@ -1902,6 +1959,9 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     surveyId: surveyId,
                     disabled: true
                 }).render(cb.one(".survey-invite-send"));
+
+                // Rendering is over, adjust the height of the new panel:
+                adjustPanelHeight(panel);
                 
                 var mailListOnBlurHandler = cb.one(".list-recipients-email").on("blur", Y.bind(
                     function(){
@@ -2150,6 +2210,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             if (isScenarist) {
                 this.createEmptyGameModel(
                     gameName,
+                    this.knownSurveys[surveyId].languages,
+                    GAMEMODEL_SCENARIO,
                     Y.bind(function(newGameModel) {
                         this.importSurvey(
                             surveyId,
@@ -2159,14 +2221,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                             Y.bind(function() {
                                 orchestratorSuccess(I18n.t("survey.orchestrator.scenarioCreated", { name: gameName } ));
                                 btn.stopSpinning();
-                                newGameModel.set("comments", SURVEY_CONTAINER_GAMEMODEL_NAME);
-                                // @TODO Here we should remove the "DEF" language from the target.
-                                this.persistGameModel(newGameModel);
-                                // Adjust scenario properties
-                                newGameModel.set("properties", SURVEY_CONTAINER_PROPERTIES);
-                                this.persistGameModel(newGameModel);
                             }, this),
-                            Y.bind(function(e) {
+                            Y.bind(function() {
                                 orchestratorAlert("Could not create game scenario");
                                 btn.stopSpinning();
                             }, this)
@@ -2174,35 +2230,36 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                     }, this)
                 );
             } else { // User has only Trainer rights:
-                this.createGame(
-                    EMPTY_GAMEMODEL_ID,
+                this.createEmptyGameModel(
                     gameName,
-                    Y.bind(function(newGame) {
-                        this.importSurvey(
-                            surveyId,
-                            newGame.get("parentId"),
-                            TEAMSCOPE,
-                            PUBLISHED,
-                            Y.bind(function() {
-                                orchestratorSuccess(I18n.t("survey.orchestrator.sessionCreated", { name: gameName } ));
-                                btn.stopSpinning();
-                                var newGM = Y.Wegas.Facade.GameModel.cache.find('id', newGame.get("parentId")); // The gamemodel came with the new game
-                                // Adjust scenario name and other properties visible in the lobby:
-                                newGM.set("name", SURVEY_CONTAINER_GAMEMODEL_NAME);
-                                newGM.set("properties", SURVEY_CONTAINER_PROPERTIES);
-                                // @TODO Here we should remove the "DEF" language from the target.
-                                this.persistGameModel(newGM);
-                                // Adjust session properties:
-                                newGame.set("access", "CLOSE");
-                                this.persistGame(newGame);
-                            }, this),
-                            Y.bind(function(e) {
-                                orchestratorAlert("Could not create game");
-                                btn.stopSpinning();
+                    this.knownSurveys[surveyId].languages,
+                    GAMEMODEL_SESSION,
+                    Y.bind(function(newGameModel) {
+                        this.createGame(
+                            newGameModel.get("id"),
+                            gameName,
+                            Y.bind(function(newGame) {
+                                this.importSurvey(
+                                    surveyId,
+                                    newGame.get("parentId"),
+                                    TEAMSCOPE,
+                                    PUBLISHED,
+                                    Y.bind(function() {
+                                        orchestratorSuccess(I18n.t("survey.orchestrator.sessionCreated", { name: gameName } ));
+                                        btn.stopSpinning();
+                                        // Adjust session properties:
+                                        newGame.set("access", "CLOSE");
+                                        this.persistGame(newGame);
+                                    }, this),
+                                    Y.bind(function(e) {
+                                        orchestratorAlert("Could not create game");
+                                        btn.stopSpinning();
+                                    }, this)
+                                );
                             }, this)
                         );
                     }, this)
-                );
+                )
             }
         },
 
@@ -2294,7 +2351,7 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                                     survDescr.get("defaultInstance").set("status", ORCHESTRATION_PROGRESS.CLOSED);
                                     this.persistSurvey(survDescr,
                                         Y.bind(function() {
-                                            this.impactSurveyInstances(script, survDescr, I18n.t("survey.orchestrator.surveyCancelled"));
+                                            this.impactSurveyInstances(script, survDescr, false, I18n.t("survey.orchestrator.surveyCancelled"));
                                             btn && btn.stopSpinning();
                                         }, this),
                                         Y.bind(function() {
@@ -2370,43 +2427,51 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
         },
         
         
-        impactSurveyInstances: function(script, survDescr, successMessage) {
+        impactSurveyInstances: function(script, survDescr, onlyLivePlayers, successMessage) {
             var game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
                 scopeType = survDescr.get("scopeType");
 
-            // Return one live player for each team which has such a live player
+            // Return one live player for each team which has such a (live) player
             // (in Team mode, we assume impacted variables are shared among team members)
-            function getOnePlayerPerTeam(game) {
-                var gamePlayers = [], player,
-                    i, t, teams = game.get("teams"),
-                    nbTeams = teams.length;
-                for (i = 0; i < nbTeams; i++) {
+            function getOnePlayerPerTeam(game, onlyLivePlayers) {
+                var teams = game.get("teams"),
+                    gamePlayers = [],
+                    i, t, p;
+                for (i in teams) {
                     t = teams[i];
-                    if (t.get("@class") !== "DebugTeam" && t.get("players").length) {
-                        player = t.getLivePlayer();
-                        if (player !== null) {
-                            gamePlayers.push(player);
+                    if (t.get("players").length === 0 ||
+                        t.get("@class") === "DebugTeam" ||
+                        (onlyLivePlayers && t.get("status") === "SURVEY"))
+                    {
+                        continue;
+                    }
+                    p = t.getLivePlayer();
+                    if (p !== null) {
+                        if (!(onlyLivePlayers && p.get("status") === "SURVEY")) {
+                            gamePlayers.push(p);
                         }
                     }
                 }
                 return gamePlayers;
             }
             
-            function getAllPlayers(game) {
-                var gamePlayers = [], player,
-                    i, t, teams = game.get("teams"),
-                    nbTeams = teams.length,
-                    players, nbPlayers, j;
-                for (i = 0; i < nbTeams; i++) {
+            function getAllPlayers(game, onlyLivePlayers) {
+                var teams = game.get("teams"),
+                    gamePlayers = [], 
+                    i, j, t, p,
+                    players;
+                for (i in teams) {
                     t = teams[i];
+                    if (t.get("@class") === "DebugTeam" ||
+                        (onlyLivePlayers && t.get("status") === "SURVEY"))
+                    {
+                        continue;
+                    }
                     players = t.get("players");
-                    nbPlayers = players.length;
-                    if (t.get("@class") !== "DebugTeam" && nbPlayers) {
-                        for (j = 0; j < nbPlayers; j++) {
-                            player = players[j];
-                            if (player !== null) {
-                                gamePlayers.push(player);
-                            }
+                    for (j in players) {
+                        p = players[j];
+                        if (!(onlyLivePlayers && p.get("status") === "SURVEY")) {
+                            gamePlayers.push(p);
                         }
                     }
                 }
@@ -2416,8 +2481,8 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
             this.runRemoteScript(
                 script,
                 (scopeType === TEAMSCOPE ?
-                    getOnePlayerPerTeam(game) :
-                    getAllPlayers(game)),
+                    getOnePlayerPerTeam(game, onlyLivePlayers) :
+                    getAllPlayers(game, onlyLivePlayers)),
                 successMessage
             );
         },
@@ -2433,18 +2498,20 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                 count = 0,
                 succeeded = 0,
                 failed = 0,
+                erroredPlayers = [],
                 player, config;
 
             for (var i = 0; i < len; i++) {
                 player = players[i];
                 config = {
                     on: {
-                        success: Y.bind(function(event) {
+                        success: Y.bind(function(e) {
                             count++;
                             succeeded++;
                             if (count >= len) { // End of last iteration:
                                 if (failed > 0) {
-                                    orchestratorAlert("Errors happened for " + failed + "/" + count + " participants");
+                                    orchestratorAlert("Errors happened for " + failed + "/" + count + " participants:<br>" +
+                                        erroredPlayers.join('<br>'));
                                 } else {
                                     orchestratorSuccess(successMessage);
                                     this.syncUI();
@@ -2454,9 +2521,11 @@ YUI.add("wegas-survey-orchestrator", function(Y) {
                         failure: Y.bind(function(e) {
                             count++;
                             failed++;
+                            erroredPlayers.push(player.get("name"));
                             Y.log("*** Error executing script");
                             if (count >= len) { // End of last iteration:
-                                orchestratorAlert("Errors happened for " + failed + "/" + count + " participants");
+                                orchestratorAlert("Errors happened for " + failed + "/" + count + " participants:<br>" +
+                                    erroredPlayers.join('<br>'));
                             }
                         }, this)
                     }
