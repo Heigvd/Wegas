@@ -8,26 +8,24 @@ import {
 import { useWebsocket } from '../../API/websocket';
 
 export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
-  const [libs, setLibs] = React.useState<{ CSS: ILibraries; JS: ILibraries }>({
-    CSS: {},
-    JS: {},
-  });
+  const [jsLibs, setJSLibs] = React.useState<ILibraries>({});
+  const [cssLibs, setCSSLibs] = React.useState<ILibraries>({});
 
   useGlobals();
 
   // Effect triggers on first rendering only
   React.useEffect(() => {
     LibraryAPI.getAllLibraries('CSS')
-      .then((cssLibs: ILibraries) => {
-        setLibs(oldLibs => ({ ...oldLibs, CSS: cssLibs }));
+      .then((newCSSLibs: ILibraries) => {
+        setCSSLibs(oldLibs => ({ ...oldLibs, ...newCSSLibs }));
       })
       .catch(() => {
         wlog('Cannot get the scripts');
       });
 
     LibraryAPI.getAllLibraries('ClientScript')
-      .then((jsLibs: ILibraries) => {
-        setLibs(oldLibs => ({ ...oldLibs, js: jsLibs }));
+      .then((newJSLibs: ILibraries) => {
+        setJSLibs(oldLibs => ({ ...oldLibs, ...newJSLibs }));
       })
       .catch(() => {
         wlog('Cannot get the scripts');
@@ -58,9 +56,9 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
   const cssEventHandler = React.useCallback((updatedLibraryName: string) => {
     LibraryAPI.getLibrary('CSS', updatedLibraryName).then(
       (library: IGameModelContent) => {
-        setLibs(oldLibs => ({
+        setCSSLibs(oldLibs => ({
           ...oldLibs,
-          CSS: { ...oldLibs.CSS, [updatedLibraryName]: library },
+          [updatedLibraryName]: library,
         }));
       },
     );
@@ -71,9 +69,9 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
     (updatedLibraryName: string) => {
       LibraryAPI.getLibrary('ClientScript', updatedLibraryName).then(
         (library: IGameModelContent) => {
-          setLibs(oldLibs => ({
+          setJSLibs(oldLibs => ({
             ...oldLibs,
-            CSS: { ...oldLibs.CSS, [updatedLibraryName]: library },
+            [updatedLibraryName]: library,
           }));
         },
       );
@@ -83,22 +81,29 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
   useWebsocket('LibraryUpdate-ClientScript', clientScriptEventHandler);
 
   React.useEffect(() => {
-    Object.entries(libs.JS).forEach(([key, lib]) =>
+    Object.entries(jsLibs).forEach(([key, lib]) =>
       safeClientScriptEval(lib.content, () =>
         wwarn(`In client script  : ${key}`),
       ),
     );
-  }, [libs]);
+  }, [jsLibs]);
 
   return (
     <>
-      {Object.entries(libs.CSS).map(([key, lib]) => {
-        return (
-          <style className="WegasStyle" key={'CSS' + key}>
-            {lib.content}
-          </style>
-        );
-      })}
+      {CurrentGM.properties.cssUri.split(';').map(cssUrl => (
+        <link
+          key={cssUrl}
+          className="WegasStaticStyle"
+          rel="stylesheet"
+          type="text/css"
+          href={cssUrl}
+        />
+      ))}
+      {Object.entries(cssLibs).map(([key, lib]) => (
+        <style className="WegasStyle" key={key}>
+          {lib.content}
+        </style>
+      ))}
       {props.children}
     </>
   );
