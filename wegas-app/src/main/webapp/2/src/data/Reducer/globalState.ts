@@ -219,20 +219,15 @@ const global: Reducer<Readonly<GlobalState>> = u(
         state.pusherStatus = action.payload;
         return;
       case ActionType.EDITOR_SET_CLIENT_METHOD:
-        state.clientMethods = {
-          ...state.clientMethods,
-          [action.payload.name]: {
-            returnTypes: action.payload.returnTypes,
-            returnStyle: action.payload.returnStyle,
-            method: action.payload.method,
-          },
+        state.clientMethods[action.payload.name] = {
+          parameters: action.payload.parameters,
+          returnTypes: action.payload.returnTypes,
+          returnStyle: action.payload.returnStyle,
+          method: action.payload.method,
         };
         return;
       case ActionType.EDITOR_REGISTER_SERVER_METHOD:
-        state.serverMethods = {
-          ...state.serverMethods,
-          [action.payload.method]: action.payload.schema,
-        };
+        state.serverMethods[action.payload.method] = action.payload.schema;
         return;
       case ActionType.EDITOR_SET_VARIABLE_SCHEMA: {
         const filters = state.schemas.filtered;
@@ -551,12 +546,14 @@ export function searchUsage(
  */
 export const setClientMethod = (
   name: ClientMethodPayload['name'],
+  parameters: ClientMethodPayload['parameters'],
   types: ClientMethodPayload['returnTypes'],
   array: ClientMethodPayload['returnStyle'],
   method: ClientMethodPayload['method'],
 ) =>
   ActionCreator.EDITOR_SET_CLIENT_METHOD({
     name,
+    parameters,
     returnTypes: types,
     returnStyle: array,
     method,

@@ -34,26 +34,45 @@ type ArrayedAndNot<T extends {}> = ArrayedTypeMap<T>[keyof ArrayedTypeMap];
  * @param method - the method to add
  */
 type ClientMethodAdd = <
+  PT extends readonly [string, keyof WegasScriptEditorNameAndTypes][],
   RT extends keyof WegasScriptEditorNameAndTypes,
+  ARG extends ExtractTuppleArray<
+    PT,
+    string,
+    keyof WegasScriptEditorNameAndTypes
+  >,
+  // extends keyof WegasScriptEditorNameAndTypes[]
+  //   ? WegasScriptEditorNameAndTypes[ExtractTuppleArray<
+  //       PT,
+  //       string,
+  //       keyof WegasScriptEditorNameAndTypes
+  //     >]
+  //   : unknown[],
   ART extends ArrayedTypeMap<Pick<WegasScriptEditorNameAndTypes, RT>>,
-  RA extends keyof ART
+  RA extends keyof ART,
+  MET extends (...arg: ARG) => ART[RA]
 >(
   name: string,
+  parameters: PT,
   returnTypes: RT[],
   returnStyle: RA,
-  method: () => ART[RA],
+  // method: (...args: ARG) => ART[RA],
+  method: MET,
 ) => void;
 
 interface ClientMethodPayload {
   name: string;
+  parameters: [string, keyof WegasScriptEditorNameAndTypes][];
   returnTypes: WegasScriptEditorReturnTypeName[];
   returnStyle: keyof ArrayedTypeMap;
-  method: () => unknown;
+  method: (...elements: unknown[]) => unknown;
 }
 
 interface GlobalClientMethodClass {
   addMethod: ClientMethodAdd;
   getMethod: (
     name: string,
-  ) => () => ArrayedAndNot<WegasScriptEditorNameAndTypes>;
+  ) => (
+    ...elements: WegasScriptEditorNameAndTypes[keyof WegasScriptEditorNameAndTypes][]
+  ) => ArrayedAndNot<WegasScriptEditorNameAndTypes>;
 }

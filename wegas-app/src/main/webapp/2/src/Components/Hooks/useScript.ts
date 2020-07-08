@@ -85,31 +85,60 @@ export function useGlobals() {
       selectLang(typeof lang === 'string' ? lang : lang.code),
   };
 
-  const addMethod: ClientMethodAdd = (name, types, array, method) => {
-    store.dispatch(
-      Actions.EditorActions.setClientMethod(
-        name,
-        types,
-        array as keyof ArrayedTypeMap,
-        method,
-      ),
-    );
+  const addMethod: ClientMethodAdd = (
+    name,
+    parameters,
+    types,
+    array,
+    method,
+  ) => {
+    if (
+      name != null &&
+      parameters != null &&
+      types != null &&
+      parameters != null &&
+      array != null &&
+      parameters != null &&
+      method != null
+    ) {
+      store.dispatch(
+        Actions.EditorActions.setClientMethod(
+          name,
+          parameters,
+          types,
+          array as keyof ArrayedTypeMap,
+          method,
+        ),
+      );
+    }
   };
 
-  // // Test for addMethod
-  // addMethod(
-  //   "Taddaaa",
-  //   ["number","string[]"],
-  //   "array",
-  //   ()=>[
-  //       // Respecting the type
-  //       ["yeah"],
-  //       1234,
-  //       // No respecting the type
-  //       true,
-  //       "nooo",
-  //       [6666]
-  //   ]);
+  const test = [
+    ['arg1', 'boolean'],
+    ['arg2', 'number'],
+  ] as const;
+
+  // Test for addMethod
+  addMethod(
+    'Taddaaa',
+    [
+      ['arg1', 'boolean'],
+      ['arg2', 'number'],
+    ] 
+    as [['arg1', 'boolean'], ['arg2', 'number']]
+    ,
+    ['number', 'string[]'],
+    'array',
+    (arg1, arg2) => [
+      // Respecting the type
+      ['yeah'],
+      1234,
+      // No respecting the type
+      // true,
+      // "nooo",
+      // [6666]
+    ],
+  );
 
   // ClientMethods class
   globals.ClientMethods = {

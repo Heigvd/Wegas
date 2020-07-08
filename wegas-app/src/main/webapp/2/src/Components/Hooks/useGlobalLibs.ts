@@ -73,9 +73,10 @@ export function useGlobalLibs() {
             const isArray = method.returnStyle === 'array';
             return (
               s +
-              `'${k}' : () => ${
-                isArray ? ' (' : ' '
-              } ${method.returnTypes.reduce(
+              `'${k}' : (${Object.entries(method.parameters).reduce(
+                (o, entry) => o + `${entry[0]} : ${entry[1]}`,
+                '',
+              )}) => ${isArray ? ' (' : ' '} ${method.returnTypes.reduce(
                 (s, t, i) => s + (i > 0 ? ' | ' : '') + t,
                 '',
               )} ${isArray ? ')[]' : ''};\n`
