@@ -26,28 +26,19 @@ type WegasScriptEditorReturnType = WegasScriptEditorNameAndTypes[WegasScriptEdit
 
 type ArrayedAndNot<T extends {}> = ArrayedTypeMap<T>[keyof ArrayedTypeMap];
 
-/**
- * Add a custom client method that can be used in client scripts
- * @param name - the name of the method
- * @param types - the returned types of the method
- * @param array - the method will return a signle object or an array of objects
- * @param method - the method to add
- */
 type ClientMethodAdd = <
-  PT extends readonly [readonly string, keyof WegasScriptEditorNameAndTypes][],
-  RT extends keyof WegasScriptEditorNameAndTypes,
+  PT extends readonly ReadonlyTuple<
+    [string, WegasScriptEditorReturnTypeName]
+  >[],
+  RT extends WegasScriptEditorReturnTypeName,
   ARG extends ExtractTuppleArray<
     PT,
     string,
-    keyof WegasScriptEditorNameAndTypes
+    WegasScriptEditorReturnTypeName,
+    any[],
+    '1',
+    WegasScriptEditorNameAndTypes
   >,
-  // extends keyof WegasScriptEditorNameAndTypes[]
-  //   ? WegasScriptEditorNameAndTypes[ExtractTuppleArray<
-  //       PT,
-  //       string,
-  //       keyof WegasScriptEditorNameAndTypes
-  //     >]
-  //   : unknown[],
   ART extends ArrayedTypeMap<Pick<WegasScriptEditorNameAndTypes, RT>>,
   RA extends keyof ART,
   MET extends (...arg: ARG) => ART[RA]
@@ -56,16 +47,17 @@ type ClientMethodAdd = <
   parameters: PT,
   returnTypes: RT[],
   returnStyle: RA,
-  // method: (...args: ARG) => ART[RA],
   method: MET,
 ) => void;
 
 interface ClientMethodPayload {
   name: string;
-  parameters: [string, keyof WegasScriptEditorNameAndTypes][];
+  parameters: readonly ReadonlyTuple<
+    [string, WegasScriptEditorReturnTypeName]
+  >[];
   returnTypes: WegasScriptEditorReturnTypeName[];
   returnStyle: keyof ArrayedTypeMap;
-  method: (...elements: unknown[]) => unknown;
+  method: (...elements: any[]) => any;
 }
 
 interface GlobalClientMethodClass {
@@ -73,6 +65,6 @@ interface GlobalClientMethodClass {
   getMethod: (
     name: string,
   ) => (
-    ...elements: WegasScriptEditorNameAndTypes[keyof WegasScriptEditorNameAndTypes][]
+    ...elements: WegasScriptEditorNameAndTypes[WegasScriptEditorReturnTypeName][]
   ) => ArrayedAndNot<WegasScriptEditorNameAndTypes>;
 }

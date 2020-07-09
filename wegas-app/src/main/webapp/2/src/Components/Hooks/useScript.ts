@@ -85,6 +85,14 @@ export function useGlobals() {
       selectLang(typeof lang === 'string' ? lang : lang.code),
   };
 
+  /**
+   * Add a custom client method that can be used in client scripts
+   * @param name - the name of the method
+   * @param parameters - the parameters of the method. (! always use "[[...],... as const")
+   * @param types - the returned types of the method
+   * @param array - the method will return a signle object or an array of objects
+   * @param method - the method to add
+   */
   const addMethod: ClientMethodAdd = (
     name,
     parameters,
@@ -113,31 +121,40 @@ export function useGlobals() {
     }
   };
 
-  const test = [
-    ['arg1', 'boolean'],
-    ['arg2', 'number'],
-  ] as const;
+  // Test for ExtractTuppleArray
+  // const testParam =  [
+  //   ['arg1', 'boolean'],
+  //   ['arg2', 'number'],
+  // ] as const ;
+
+  // type Test = ExtractTuppleArray<
+  // typeof  testParam,
+  // string,
+  // keyof WegasScriptEditorNameAndTypes,
+  // any[],
+  // "1",
+  // WegasScriptEditorNameAndTypes
+  // >
 
   // Test for addMethod
-  addMethod(
-    'Taddaaa',
-    [
-      ['arg1', 'boolean'],
-      ['arg2', 'number'],
-    ] as const,
-    // as [['arg1', 'boolean'], ['arg2', 'number']]
-    ['number', 'string[]'],
-    'array',
-    (arg1, arg2) => [
-      // Respecting the type
-      ['yeah'],
-      1234,
-      // No respecting the type
-      // true,
-      // "nooo",
-      // [6666]
-    ],
-  );
+  // addMethod(
+  //   'Taddaaa',
+  //   [
+  //     ['arg1', 'boolean'],
+  //     ['arg2', "string"],
+  //   ] as const    ,
+  //   ['number', 'string[]'],
+  //   'array',
+  //   (arg1, arg2) => [
+  //     // Respecting the type
+  //     ['yeah'],
+  //     1234,
+  //     // No respecting the type
+  //     // true,
+  //     // "nooo",
+  //     // [6666]
+  //   ],
+  // );
 
   // ClientMethods class
   globals.ClientMethods = {

@@ -30,21 +30,45 @@ type Push<L extends any[], T> = ((r: any, ...x: L) => void) extends (
   ? { [K in keyof L2]-?: K extends keyof L ? L[K] : T }
   : never;
 
+type ReadonlyTuple<T extends any[]> = {
+  readonly [P in Exclude<keyof T, keyof []>]: T[P];
+} &
+  Iterable<T[number]>;
+
 type ExtractTuppleArray<
-  // T extends [any, any, ...any[]][],
-  T extends readonly [A1, A2, ...Arest[]][],
+  T extends readonly ReadonlyTuple<[A1, A2, ...Arest[]]>[],
   A1,
   A2,
   Arest = [...any[]],
-  N extends number = 1
-> = {
-  [key in keyof T]: T[key] extends [A1, A2, ...Arest[]] ? T[key][N] : unknown;
-};
+  N extends keyof ReadonlyTuple<[A1, A2, ...Arest[]]> = '1',
+  Lookup extends false | {} = false,
+  RET = {
+    [key in keyof T]: N extends keyof T[key] ? T[key][N] : unknown;
+  },
+  RETVAL = ValueOf<RET>
+> = RETVAL extends keyof Lookup
+  ? {
+      [key in keyof RET]: RET[key] extends keyof Lookup
+        ? Lookup[RET[key]]
+        : unknown;
+    }
+  : RET;
+// Lookup
+// {
+//   [key in keyof T]: N extends keyof T[key] ? T[key][N] : unknown;
+// };
+// Lookup extends false
+//   ? RET
+//   : RETVAL extends keyof Lookup
+//   ? {
+//       [key in RETVAL]: Lookup[key];
+//     }
+//   : never;
 
-type Test = (
-  ...args: ExtractTuppleArray<
-    [['bla', 'bla1'], ['bli', 'number']],
-    string,
-    string
-  >
-) => void;
+// type Test = (
+//   ...args: ExtractTuppleArray<
+//     [['bla', 'bla1'], ['bli', 'number']],
+//     string,
+//     string
+//   >
+// ) => void;
