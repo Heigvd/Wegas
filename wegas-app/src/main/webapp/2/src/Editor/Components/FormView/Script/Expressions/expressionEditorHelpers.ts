@@ -4,6 +4,7 @@ import {
   MethodConfig,
   WegasMethod,
   getVariableMethodConfig,
+  WegasMethodReturnType,
 } from '../../../../editionConfig';
 
 import { schemaProps } from '../../../../../Components/PageComponents/tools/schemaProps';
@@ -21,6 +22,7 @@ import {
 import { store } from '../../../../../data/store';
 import { TYPESTRING } from 'jsoninput/typings/types';
 import { safeClientScriptEval } from '../../../../../Components/Hooks/useScript';
+import { isServerMethod } from '../../../../../data/Reducer/globalState';
 
 const booleanOperators = {
   '===': { label: 'equals' },
@@ -227,28 +229,58 @@ export const typeCleaner = (
   }
 };
 
+interface FullNameMethod extends GlobalServerMethod {
+  fullName: string;
+}
+
+function getServerMethods(
+  serverObject: GlobalServerObject | GlobalServerMethod | undefined,
+  path: string[] = [],
+  methods: FullNameMethod[] = [],
+): FullNameMethod[] {
+  if (serverObject == null) {
+    return methods;
+  } else if (isServerMethod(serverObject)) {
+    return [...methods, { ...serverObject, fullName: path.join('.') }];
+  } else {
+    return [
+      ...methods,
+      ...Object.entries(serverObject).reduce((old, [objectName, value]) => {
+        return [...old, ...getServerMethods(value, [...path, objectName])];
+      }, []),
+    ];
+  }
+}
+
 export function genGlobalItems<T = string>(
   mode?: ScriptMode,
   decorateFn?: (value: string) => T,
 ): TreeSelectItem<StringOrT<typeof decorateFn, T>>[] {
-  return Object.entries(store.getState().global.serverMethods)
-    .filter(
-      ([_k, v]) =>
-        v !== undefined &&
-        (isScriptCondition(mode)
-          ? v.returns !== undefined
-          : v.returns === undefined),
+  return getServerMethods(store.getState().global.serverMethods)
+    .filter(method =>
+      isScriptCondition(mode)
+        ? method.returns !== undefined
+        : method.returns === undefined,
     )
-    .map(([k, v]) => ({
-      label: v!.label,
-      value: decorateFn ? decorateFn(k) : k,
+    .map(method => ({
+      label: method.label,
+      value: decorateFn ? decorateFn(method.fullName) : method.fullName,
     }));
 }
 
-export function getGlobalMethodConfig(globalMethod: string) {
-  return {
-    [globalMethod]: store.getState().global.serverMethods[globalMethod],
-  } as MethodConfig;
+export function getGlobalMethodConfig(globalMethod: string): MethodConfig {
+  const foundMethod = getServerMethods(
+    store.getState().global.serverMethods,
+  ).find(method => method.fullName === globalMethod);
+  return foundMethod
+    ? {
+        [globalMethod]: {
+          label: foundMethod.label,
+          parameters: foundMethod.parameters as WegasMethodParameter[],
+          returns: foundMethod.returns as WegasMethodReturnType,
+        },
+      }
+    : {};
 }
 
 interface MethodSearcher {

@@ -165,8 +165,13 @@ export function useGlobals() {
     },
   };
 
-  const registerMethod: ServerMethodRegister = (method, schema) => {
-    store.dispatch(Actions.EditorActions.registerServerMethod(method, schema));
+  const registerMethod: ServerMethodRegister = (objects, method, schema) => {
+    store.dispatch(
+      Actions.EditorActions.registerServerMethod(objects, method, {
+        ...schema,
+        '@class': 'GlobalServerMethod',
+      }),
+    );
   };
 
   // ServerMethods class

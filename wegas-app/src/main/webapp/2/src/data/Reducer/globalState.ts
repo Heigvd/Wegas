@@ -12,6 +12,16 @@ import { FileAPI } from '../../API/files.api';
 import { omit } from 'lodash';
 import { LockEventData } from '../../API/websocket';
 
+export function isServerMethod(
+  serverObject: GlobalServerMethod | GlobalServerObject | undefined,
+): serverObject is GlobalServerMethod {
+  return (
+    typeof serverObject === 'object' &&
+    '@class' in serverObject &&
+    serverObject['@class'] === 'GlobalServerMethod'
+  );
+}
+
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
   save?: (entity: T) => void;
@@ -85,7 +95,7 @@ export interface GlobalState extends EditingState {
   clientMethods: {
     [name: string]: Omit<ClientMethodPayload, 'name'>;
   };
-  serverMethods: GlobalServerMethods;
+  serverMethods: GlobalServerObject;
   schemas: {
     filtered: {
       [classFilter: string]: keyof GlobalState['schemas']['views'];
@@ -226,9 +236,24 @@ const global: Reducer<Readonly<GlobalState>> = u(
           method: action.payload.method,
         };
         return;
-      case ActionType.EDITOR_REGISTER_SERVER_METHOD:
-        state.serverMethods[action.payload.method] = action.payload.schema;
+      case ActionType.EDITOR_REGISTER_SERVER_METHOD: {
+        let objectKey = action.payload.objects.splice(0, 1)[0];
+        let objects = state.serverMethods;
+        while (objectKey != null) {
+          if (
+            objects[objectKey] == null ||
+            isServerMethod(objects[objectKey])
+          ) {
+            objects[objectKey] = {};
+          }
+          objects = objects[objectKey] as GlobalServerObject;
+          objectKey = action.payload.objects.splice(0, 1)[0];
+          if (objectKey == null) {
+            objects[action.payload.method] = action.payload.schema;
+          }
+        }
         return;
+      }
       case ActionType.EDITOR_SET_VARIABLE_SCHEMA: {
         const filters = state.schemas.filtered;
         const views = state.schemas.views;
@@ -561,14 +586,17 @@ export const setClientMethod = (
 
 /**
  * Register a server method that can be used in wysywig
- * @param method - the method to add (ex: "Something.Else.call")
+ * @param objects - the objects containing the method (ex: PMGHelper.MailMethods.<method> => ["PMGHelper","MailMethods"])
+ * @param method - the method to add
  * @param schema - method's schema including : label, return type (optionnal) and the parameter's shemas
  */
 export const registerServerMethod = (
+  objects: ServerMethodPayload['objects'],
   method: ServerMethodPayload['method'],
   schema?: ServerMethodPayload['schema'],
 ) =>
   ActionCreator.EDITOR_REGISTER_SERVER_METHOD({
+    objects,
     method,
     schema,
   });

@@ -20,6 +20,7 @@ import classesGlobalSrc from '!!raw-loader!../../../types/scripts/ClassesGlobals
 import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMethodsGlobals.d.ts';
 
 import { refDifferent } from './storeHookFactory';
+import { wwarn } from '../../Helper/wegaslog';
 
 // We'll keep it for later uses
 // const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
@@ -40,12 +41,14 @@ export function useGlobalLibs() {
 
     const globalMethods = s.global.clientMethods;
     const globalSchemas = s.global.schemas.views;
+    // const globalServerMethods = s.global.serverMethods;
 
     const currentLanguages = Object.values(
       GameModel.selectCurrent().languages,
     ).reduce((lt, l) => `${lt} | '${l.code}'`, '');
 
-    return `
+    try {
+      return `
         declare const gameModel : ISGameModel;
         declare const self : ISPlayer;
         declare const typeFactory: (types: WegasScriptEditorReturnTypeName[]) => GlobalMethodReturnTypesName;
@@ -73,8 +76,11 @@ export function useGlobalLibs() {
             const isArray = method.returnStyle === 'array';
             return (
               s +
-              `'${k}' : (${Object.entries(method.parameters).reduce(
-                (o, entry) => o + `${entry[0]} : ${entry[1]}`,
+              `'${k}' : (${method.parameters.reduce(
+                (o, entry, i, arr) =>
+                  o +
+                  `${entry[0]} : ${entry[1]}` +
+                  (i !== arr.length - 1 ? ',' : ''),
                 '',
               )}) => ${isArray ? ' (' : ' '} ${method.returnTypes.reduce(
                 (s, t, i) => s + (i > 0 ? ' | ' : '') + t,
@@ -115,6 +121,10 @@ export function useGlobalLibs() {
         declare const DelayedEvent : WDelayedEvent;
 
         `;
+    } catch (e) {
+      wwarn(e);
+      return '';
+    }
   }, refDifferent);
 
   React.useEffect(() => {
