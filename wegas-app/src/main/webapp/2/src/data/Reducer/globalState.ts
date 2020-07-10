@@ -11,6 +11,7 @@ import { AvailableViews } from '../../Editor/Components/FormView';
 import { FileAPI } from '../../API/files.api';
 import { omit } from 'lodash';
 import { LockEventData } from '../../API/websocket';
+import { WegasMethodParameter } from '../../Editor/editionConfig';
 
 export function isServerMethod(
   serverObject: GlobalServerMethod | GlobalServerObject | undefined,
@@ -20,6 +21,34 @@ export function isServerMethod(
     '@class' in serverObject &&
     serverObject['@class'] === 'GlobalServerMethod'
   );
+}
+
+export function buildGlobalServerMethods(
+  serverObject: GlobalServerObject,
+): string {
+  return Object.entries(serverObject)
+    .filter(([, value]) => value != null)
+    .reduce((old, [key, value], i, objects) => {
+      if (value == null) {
+        return old + '';
+      } else if (isServerMethod(value)) {
+        return (
+          old +
+          '\n\t' +
+          `${key}: (${(value.parameters as WegasMethodParameter[])
+            .map((p, i) => `arg${i}${p.required ? '' : '?'}: ${p.type}`)
+            .join(', ')}) => ${value.returns ? value.returns : 'void'};${
+            i === objects.length - 1 ? '\n' : ''
+          }`
+        );
+      } else {
+        return (
+          old +
+          (i > 0 ? '\n' : '') +
+          `declare const ${key}: {${buildGlobalServerMethods(value)}}`
+        );
+      }
+    }, '');
 }
 
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;

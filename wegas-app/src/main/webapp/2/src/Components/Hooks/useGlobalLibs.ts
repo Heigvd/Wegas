@@ -20,7 +20,11 @@ import classesGlobalSrc from '!!raw-loader!../../../types/scripts/ClassesGlobals
 import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMethodsGlobals.d.ts';
 
 import { refDifferent } from './storeHookFactory';
-import { wwarn } from '../../Helper/wegaslog';
+import { wwarn, wlog } from '../../Helper/wegaslog';
+import {
+  isServerMethod,
+  buildGlobalServerMethods,
+} from '../../data/Reducer/globalState';
 
 // We'll keep it for later uses
 // const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
@@ -41,11 +45,13 @@ export function useGlobalLibs() {
 
     const globalMethods = s.global.clientMethods;
     const globalSchemas = s.global.schemas.views;
-    // const globalServerMethods = s.global.serverMethods;
+    const globalServerMethods = s.global.serverMethods;
 
     const currentLanguages = Object.values(
       GameModel.selectCurrent().languages,
     ).reduce((lt, l) => `${lt} | '${l.code}'`, '');
+
+    wlog(buildGlobalServerMethods(globalServerMethods));
 
     try {
       return `
@@ -116,10 +122,7 @@ export function useGlobalLibs() {
 
         declare const ServerMethods : GlobalServerMethodClass;
 
-        declare const RequestManager : WRequestManager;
-        declare const Event : WEvent;
-        declare const DelayedEvent : WDelayedEvent;
-
+        ${buildGlobalServerMethods(globalServerMethods)}
         `;
     } catch (e) {
       wwarn(e);
