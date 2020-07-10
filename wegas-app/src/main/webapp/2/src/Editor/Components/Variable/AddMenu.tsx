@@ -11,7 +11,7 @@ import { IAbstractEntity, IListDescriptor, IQuestionDescriptor, IWhQuestionDescr
 
 function buildMenuItems(
   variable: IAbstractEntity,
-): Promise<MenuItem<string>[]> {
+): Promise<MenuItem<IAbstractEntity["@class"]>[]> {
   return getChildren(variable).then(children => {
     return children.map(i => {
       const Label = asyncSFC(async () => {
@@ -62,6 +62,7 @@ export const AddMenuParent = asyncSFC(
           } else {
             focusTab && focusTab('Editor');
           }
+
           dispatch(Actions.EditorActions.createVariable(i.value, variable));
         }}
       />

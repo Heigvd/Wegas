@@ -34,11 +34,11 @@ registerComponent(
     'paragraph',
     {
       script: schemaProps.scriptVariable('Variable', true, [
-        'ISTextDescriptor',
+        'STextDescriptor',
       ]),
       className: schemaProps.string('ClassName', false),
     },
-    ['ISTextDescriptor'],
+    ['STextDescriptor'],
     () => ({}),
   ),
 );

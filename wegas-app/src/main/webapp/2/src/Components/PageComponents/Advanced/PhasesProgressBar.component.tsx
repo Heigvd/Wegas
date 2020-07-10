@@ -53,12 +53,12 @@ function PlayerPhasesProgressBar({
   ) : phaseMaxNotFound ? (
     <pre>Phase max not found: {phaseMaxContent}</pre>
   ) : (
-    <PhasesProgressBar
-      value={phaseInstance!.value}
-      phaseMin={phaseMinInstance!.value}
-      phaseMax={phaseMaxInstance!.value}
-    />
-  );
+          <PhasesProgressBar
+            value={phaseInstance!.value}
+            phaseMin={phaseMinInstance!.value}
+            phaseMax={phaseMaxInstance!.value}
+          />
+        );
 }
 
 registerComponent(
@@ -68,12 +68,12 @@ registerComponent(
     'Phases',
     'ellipsis-h',
     {
-      phase: schemaProps.scriptVariable('Phase', true, ['ISNumberDescriptor']),
+      phase: schemaProps.scriptVariable('Phase', true, ['SNumberDescriptor']),
       phaseMin: schemaProps.scriptVariable('Phase min', true, [
-        'ISNumberDescriptor',
+        'SNumberDescriptor',
       ]),
       phaseMax: schemaProps.scriptVariable('Phase max', true, [
-        'ISNumberDescriptor',
+        'SNumberDescriptor',
       ]),
     },
     ['number'],

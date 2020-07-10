@@ -26,19 +26,28 @@ public @interface Scriptable {
     String label() default "";
 
     /**
-     * Should the annotated method be visible in the wysiwyg editor ?
-     * setting to false will hide the method from the wysiwyg editor but
-     * autocompletion will be available when editing the script source
+     * Should the annotated method be visible in the wysiwyg editor ? setting to false will hide the
+     * method from the wysiwyg editor but autocompletion will be available when editing the script
+     * source
+     *
      * @return
      */
     boolean wysiwyg() default true;
 
     /**
-     * Default auto value auto detect from effective method return type.
-     * VOID indicated the effective return type must be ignored
+     * Default auto value auto detect from effective method return type. VOID indicated the
+     * effective return type must be ignored
+     *
      * @return
      */
     ReturnType returnType() default ReturnType.AUTO;
+
+    /**
+     * May the annotated method returns null values?
+     *
+     * @return true if the annotated method may return null values
+     */
+    boolean nullable() default false;
 
     enum ReturnType {
         /**

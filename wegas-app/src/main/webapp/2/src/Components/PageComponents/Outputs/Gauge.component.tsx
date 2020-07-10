@@ -31,14 +31,14 @@ function PlayerGauge(props: PlayerGaugeProps) {
   return notFound ? (
     <pre>Not found: {content}</pre>
   ) : (
-    <StandardGauge
-      label={props.label}
-      followNeedle={props.followNeedle}
-      min={descriptor!.minValue || 0}
-      max={descriptor!.maxValue || 1}
-      value={instance!.value}
-    />
-  );
+      <StandardGauge
+        label={props.label}
+        followNeedle={props.followNeedle}
+        min={descriptor!.getMinValue() || 0}
+        max={descriptor!.getMaxValue() || 1}
+        value={instance!.value}
+      />
+    );
 }
 
 registerComponent(
@@ -49,7 +49,7 @@ registerComponent(
     'tachometer-alt',
     {
       script: schemaProps.scriptVariable('Variable', false, [
-        'ISNumberDescriptor',
+        'SNumberDescriptor',
       ]),
       label: schemaProps.string('Label', false),
       followNeedle: schemaProps.boolean('Follow needle', false),

@@ -8,7 +8,7 @@
 
 ```typescript
 interface ExampleProps extends PageComponentMandatoryProps {
-  exampleProp1: ISStringDescriptor;
+  exampleProp1: SStringDescriptor;
   exampleProp2?: number;
 }
 
@@ -48,9 +48,9 @@ registerComponent(
       exampleProp2: schemaProps.number('Number', false),
     },
     /* allowed entities for component creation */
-    ['ISStringDescriptor'],
+    ['SStringDescriptor'],
     /* default component props with entity */
-    (sd: ISStringDescriptor) => ({
+    (sd: SStringDescriptor) => ({
       exampleProp1: sd,
       exampleProp2: 10,
     }),

@@ -25,8 +25,8 @@ const variableEditAction = <TA extends ActionTypeValues>(type: TA) => <
   entity: TE;
   config?: Schema<AvailableViews>;
   path?: TA extends ValueOf<typeof ActionType.FSM_EDIT>
-    ? string[]
-    : (string | number)[];
+  ? string[]
+  : (string | number)[];
   actions: {
     save?: (entity: TE) => void;
     more?: {
@@ -67,7 +67,7 @@ export const ActionCreator = {
     cb?: (newEntity: IAbstractContentDescriptor) => void;
   }) => createAction(ActionType.FILE_EDIT, data),
   VARIABLE_CREATE: <T extends IAbstractEntity>(data: {
-    '@class': string;
+    '@class': IAbstractEntity["@class"];
     parentId?: number;
     parentType?: string;
     actions: {
@@ -121,7 +121,7 @@ export const ActionCreator = {
 
 export type StateActions<
   A extends keyof typeof ActionCreator = keyof typeof ActionCreator
-> = ReturnType<typeof ActionCreator[A]>;
+  > = ReturnType<typeof ActionCreator[A]>;
 
 // TOOLS
 
@@ -166,7 +166,7 @@ export function manageResponseHandler(
     if (currentEditingEntity && currentEditingEntity.id !== undefined) {
       const updatedEntity =
         updatedEntities[
-          discriminant(currentEditingEntity) as keyof NormalizedData
+        discriminant(currentEditingEntity) as keyof NormalizedData
         ][currentEditingEntity.id];
       if (
         updatedEntity &&

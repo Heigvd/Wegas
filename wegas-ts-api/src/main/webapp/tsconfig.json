@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "allowJs": false,
+        "module": "esnext",
+        "outDir": "dist",
+        "sourceMap":true,
+        "strict": true,
+        "noUnusedLocals": true,
+        "moduleResolution": "node",
+        "noEmit": true,
+        "allowSyntheticDefaultImports": true,
+        "suppressImplicitAnyIndexErrors": true
+    },
+    "include": [
+        "typings"
+    ],
+    "files": [
+        "src/index.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
+

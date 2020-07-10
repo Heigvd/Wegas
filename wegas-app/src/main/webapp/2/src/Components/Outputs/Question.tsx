@@ -17,8 +17,7 @@ import { flatten } from '../../data/selectors/VariableDescriptorSelector';
 import {
   getChoices,
   isUnread,
-} from '../../data/proxyfy/methods/QuestionDescriptor';
-import { isSelected } from '../../data/proxyfy/methods/ChoiceDescriptor';
+} from '../../data/scriptable/impl/QuestionDescriptor';
 import { Button } from '../Inputs/Buttons/Button';
 import { themeVar } from '../Style/ThemeVars';
 import { IQuestionDescriptor, IReply, IChoiceDescriptor, IChoiceInstance, IQuestionInstance, IListDescriptor } from 'wegas-ts-api/typings/WegasEntities';
@@ -108,8 +107,8 @@ function ReplyDisplay({ reply }: { reply: IReply }) {
               ? TranslatableContent.toString(reply.ignorationAnswer)
               : ''
             : reply.answer
-            ? TranslatableContent.toString(reply.answer)
-            : '',
+              ? TranslatableContent.toString(reply.answer)
+              : '',
         }}
       />
     </div>
@@ -118,7 +117,7 @@ function ReplyDisplay({ reply }: { reply: IReply }) {
 class RepliesDisplay extends React.Component<
   { replies: IReply[] },
   { showAll: boolean }
-> {
+  > {
   state = { showAll: false };
   toggleAll = () => {
     this.setState(state => ({
@@ -142,8 +141,8 @@ class RepliesDisplay extends React.Component<
         {showAll ? (
           replies.map(r => <ReplyDisplay key={r.id} reply={r} />)
         ) : (
-          <ReplyDisplay reply={replies[replies.length - 1]} />
-        )}
+            <ReplyDisplay reply={replies[replies.length - 1]} />
+          )}
       </>
     );
   }
@@ -172,7 +171,7 @@ function ChoiceDisplay({
   const canReply =
     (replyAllowed &&
       (typeof maxReplies !== 'number' || replies.length < maxReplies)) ||
-    (questionDescriptor.cbx && isSelected(descriptor)());
+    (questionDescriptor.cbx && instance.replies.length);
 
   return (
     <div
@@ -201,13 +200,13 @@ function ChoiceDisplay({
             onChange={() => onValidate(descriptor)}
           />
         ) : (
-          <IconButton
-            icon="check"
-            onClick={() => onValidate(descriptor)}
-            disabled={!canReply}
-            label={replies.length ? replies.length : undefined}
-          />
-        )}
+            <IconButton
+              icon="check"
+              onClick={() => onValidate(descriptor)}
+              disabled={!canReply}
+              label={replies.length ? replies.length : undefined}
+            />
+          )}
       </div>
     </div>
   );

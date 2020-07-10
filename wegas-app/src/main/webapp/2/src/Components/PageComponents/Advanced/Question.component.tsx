@@ -24,8 +24,8 @@ function QuestionDisplay({ question }: QuestionDisplayProps) {
   return notFound ? (
     <pre>Not found: {content}</pre>
   ) : (
-    <ConnectedQuestionDisplay entity={descriptor!} />
-  );
+      <ConnectedQuestionDisplay entity={descriptor!.getEntity()} />
+    );
 }
 
 registerComponent(
@@ -36,7 +36,7 @@ registerComponent(
     'question',
     {
       question: schemaProps.scriptVariable('Question', true, [
-        'ISQuestionDescriptor',
+        'SQuestionDescriptor',
       ]),
     },
     ['string'],

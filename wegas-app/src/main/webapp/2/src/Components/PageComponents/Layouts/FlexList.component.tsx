@@ -14,7 +14,7 @@ import {
   alignContentValues,
 } from '../../Layouts/FlexList';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { ISListDescriptor } from 'wegas-ts-api/typings/WegasScriptableEntities';
+import { SListDescriptor } from 'wegas-ts-api/typings/WegasScriptableEntities';
 
 interface PlayerFlexListProps extends FlexListProps, WegasComponentProps {
   /**
@@ -81,16 +81,16 @@ registerComponent(
       ]),
       children: schemaProps.hidden(false),
     },
-    ['ISListDescriptor'],
-    (val?: Readonly<ISListDescriptor>) =>
+    ['SListDescriptor'],
+    (val?: Readonly<SListDescriptor>) =>
       val
         ? {
-            // children:val.itemsIds.map(id=>componentsStore.getComponentByType(VariableDescriptor.select(id)))
-            children: [],
-          }
+          // children:val.itemsIds.map(id=>componentsStore.getComponentByType(VariableDescriptor.select(id)))
+          children: [],
+        }
         : {
-            children: [],
-          },
+          children: [],
+        },
     'FLEX',
   ),
 );

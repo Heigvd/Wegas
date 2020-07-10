@@ -51,20 +51,20 @@ function PlayerBoolean({
   return notFound ? (
     <pre>Not found: {content}</pre>
   ) : (
-    <BooleanComponent
-      label={label}
-      value={instance!.value}
-      disabled={disabled}
-      readOnly={inactive}
-      onChange={v => {
-        store.dispatch(
-          Actions.VariableInstanceActions.runScript(
-            `${content}.setValue(self, ${v});`,
-          ),
-        );
-      }}
-    />
-  );
+      <BooleanComponent
+        label={label}
+        value={instance!.value}
+        disabled={disabled}
+        readOnly={inactive}
+        onChange={v => {
+          store.dispatch(
+            Actions.VariableInstanceActions.runScript(
+              `${content}.setValue(self, ${v});`,
+            ),
+          );
+        }}
+      />
+    );
 }
 
 registerComponent(
@@ -75,14 +75,14 @@ registerComponent(
     'check-square',
     {
       script: schemaProps.scriptVariable('Variable', true, [
-        'ISBooleanDescriptor',
+        'SBooleanDescriptor',
       ]),
       label: schemaProps.string('Label', false),
       type: schemaProps.select('Type', false, ['checkbox', 'toggler']),
       disabled: schemaProps.boolean('Disabled', false),
       inactive: schemaProps.boolean('Inactive', false),
     },
-    ['ISBooleanDescriptor'],
+    ['SBooleanDescriptor'],
     () => ({}),
   ),
 );
