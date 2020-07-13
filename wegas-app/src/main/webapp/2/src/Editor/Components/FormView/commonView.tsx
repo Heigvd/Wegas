@@ -15,6 +15,10 @@ const borderTop = css({
   borderTop: '4px solid',
   paddingTop: '2px',
 });
+const borderBottom = css({
+  borderBottom: '4px solid',
+  marginBottom: '2px',
+});
 const shortInline = css({
   display: 'inline-block',
   marginRight: '2em',
@@ -34,6 +38,7 @@ const LAYOUTS = {
 
 export interface CommonView {
   borderTop?: boolean;
+  borderBottom?: boolean;
   layout?: keyof typeof LAYOUTS;
   index?: number;
   readOnly?: boolean;
@@ -65,6 +70,7 @@ export function CommonViewContainer({
       <div
         className={cx(containerStyle, layout, {
           [`${borderTop}`]: Boolean(view.borderTop),
+          [`${borderBottom}`]: Boolean(view.borderBottom),
         })}
       >
         {children}

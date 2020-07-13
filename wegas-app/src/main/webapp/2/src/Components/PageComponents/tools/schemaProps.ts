@@ -373,12 +373,14 @@ const simpleSchemaProps = {
     index: number = 0,
     layout?: SchemaLayout,
     borderTop?: boolean,
+    borderBottom?: boolean,
   ): TypedProps<TreeVSelectProps<T>> => ({
     required,
     type,
     index,
     view: {
       borderTop,
+      borderBottom,
       index,
       returnType,
       featureLevel,

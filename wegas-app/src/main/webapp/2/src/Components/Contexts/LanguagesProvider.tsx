@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Menu } from '../Menu';
+import { Menu, SelectedMenuItem } from '../Menu';
 import { useGameModel } from '../Hooks/useGameModel';
 
 interface LanguagesProviderProps {
@@ -67,19 +67,50 @@ function LanguagesContext({
  */
 export const LanguagesProvider = React.memo(LanguagesContext);
 
+interface LanguageSelectorProps {
+  language?: string;
+  onSelect: (
+    item: SelectedMenuItem<IGameModelLanguage>,
+    keyEvent: ModifierKeysEvent,
+  ) => void;
+  filterActiveLanguages?: boolean;
+}
+export function LanguageSelector({
+  language,
+  onSelect,
+  filterActiveLanguages,
+}: LanguageSelectorProps) {
+  const { lang, availableLang } = React.useContext(languagesCTX);
+  const [currentLanguage, setCurrentLang] = React.useState(
+    language ? language : lang,
+  );
+  const languages = filterActiveLanguages
+    ? availableLang.filter(language => language.active)
+    : availableLang;
+  return (
+    <Menu
+      label={currentLanguage}
+      items={languages.map(language => ({
+        value: language,
+        label: `${language.code} : ${language.lang}`,
+      }))}
+      onSelect={(item, keys) => {
+        setCurrentLang(item.value.code);
+        onSelect(item, keys);
+      }}
+    />
+  );
+}
+
 /**
  * Language selector allows to select language inside the language context given by the LangProvider
  */
 export function LangToggler() {
-  const { lang, selectLang, availableLang } = React.useContext(languagesCTX);
+  const { lang, selectLang } = React.useContext(languagesCTX);
   return (
-    <Menu
-      label={lang}
-      items={availableLang.map(language => ({
-        value: language.code,
-        label: `${language.code} : ${language.lang}`,
-      }))}
-      onSelect={({ value }) => selectLang(value)}
+    <LanguageSelector
+      language={lang}
+      onSelect={({ value }) => selectLang(value.code)}
     />
   );
 }

@@ -16,12 +16,15 @@ export interface MenuItem<T> extends Item<T> {
   items?: MenuItem<T>[];
 }
 
-export type SelectedMenuItem<T, MItem extends MenuItem<T>> = MItem & {
+export type SelectedMenuItem<
+  T,
+  MItem extends MenuItem<T> = MenuItem<T>
+> = MItem & {
   path: number[];
   value: Exclude<MItem['value'], undefined>;
 };
 
-export interface MenuProps<T, MItem extends MenuItem<T>> {
+export interface MenuProps<T, MItem extends MenuItem<T> = MenuItem<T>> {
   id?: string;
   onSelect: (
     item: SelectedMenuItem<T, MItem>,

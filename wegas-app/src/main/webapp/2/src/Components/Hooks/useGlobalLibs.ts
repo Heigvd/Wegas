@@ -20,11 +20,8 @@ import classesGlobalSrc from '!!raw-loader!../../../types/scripts/ClassesGlobals
 import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMethodsGlobals.d.ts';
 
 import { refDifferent } from './storeHookFactory';
-import { wwarn, wlog } from '../../Helper/wegaslog';
-import {
-  isServerMethod,
-  buildGlobalServerMethods,
-} from '../../data/Reducer/globalState';
+import { wwarn } from '../../Helper/wegaslog';
+import { buildGlobalServerMethods } from '../../data/Reducer/globalState';
 
 // We'll keep it for later uses
 // const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
@@ -51,7 +48,7 @@ export function useGlobalLibs() {
       GameModel.selectCurrent().languages,
     ).reduce((lt, l) => `${lt} | '${l.code}'`, '');
 
-    wlog(buildGlobalServerMethods(globalServerMethods));
+    // wlog(buildGlobalServerMethods(globalServerMethods));
 
     try {
       return `

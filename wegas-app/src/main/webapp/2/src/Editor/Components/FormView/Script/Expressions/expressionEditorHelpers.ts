@@ -375,6 +375,8 @@ export const makeSchemaInitExpression = (
     'DEFAULT',
     0,
     'inline',
+    false,
+    true,
   ),
 });
 
