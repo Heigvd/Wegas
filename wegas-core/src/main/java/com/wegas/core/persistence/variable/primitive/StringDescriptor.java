@@ -259,7 +259,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      *
      * @return position of the value or null if value not present
      */
-    @Scriptable(label = "position of value, starting at 1")
+    @Scriptable(label = "position of value, starting at 1", nullable = true)
     public Integer getPositionOfValue(Player p,
         @Param(view = @View(label = "", value = EntityArrayFiledSelect.StringAllowedValuesSelect.class)) String value) {
         StringInstance instance = this.getInstance(p);

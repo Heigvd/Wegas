@@ -5,6 +5,10 @@ import { LabeledView } from './labeled';
 import { FileFilter, FilePickingType } from '../FileBrowser/FileBrowser';
 import translatable from './translatable';
 import PathSelector from './PathSelector';
+import {
+  IAttachment,
+  ITranslatableContent,
+} from 'wegas-ts-api/typings/WegasEntities';
 
 interface AttachmentSelectProps extends WidgetProps.BaseProps {
   view: CommonView &

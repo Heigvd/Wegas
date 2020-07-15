@@ -1,4 +1,5 @@
 import { store } from '../data/store';
+import { IAbstractEntity } from 'wegas-ts-api/typings/WegasEntities';
 
 type ContentType =
   | 'application/json'

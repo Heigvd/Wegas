@@ -9,6 +9,7 @@ import { schemaProps } from '../tools/schemaProps';
 import { Button } from '../../Inputs/Buttons/Button';
 import { createScript } from '../../../Helper/wegasEntites';
 import { WegasComponentProps } from '../tools/EditableComponent';
+import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 
 export interface PlayerButtonProps extends WegasComponentProps {
   label: string;

@@ -1,4 +1,6 @@
 import { Player } from '../selectors';
+import { ITranslatableContent } from 'wegas-ts-api/typings/WegasEntities';
+import { STranslatableContent } from 'wegas-ts-api/typings/WegasScriptableEntities';
 
 export const TranslatableContent = {
   /**
@@ -7,10 +9,16 @@ export const TranslatableContent = {
    * @param content translatable content
    * @param code force language code
    */
-  toString(content: ITranslatableContent | null, code?: string): string {
-    if (content != null) {
-      const tr = content.translations[code || Player.selectCurrent().lang];
-      return tr ? tr.translation : '';
+  toString<T extends ITranslatableContent | STranslatableContent | null | undefined>(content: T | null, code?: string): string {
+    if (content) {
+      if ("@class" in content) {
+        const tr = content.translations[code || Player.selectCurrent().lang];
+        return tr ? tr.translation : '';
+      } else {
+        // STranslatableConent
+        const tr = content.getTranslations()[code || Player.selectCurrent().lang];
+        return tr ? tr.getTranslation() : '';
+      }
     }
     return '';
   },

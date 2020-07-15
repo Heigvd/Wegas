@@ -3,6 +3,7 @@ import { Schema } from 'jsoninput';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
 import { entityIs } from '../../../data/entities';
 import { LabeledView } from './labeled';
+import { ITranslatableContent, ITranslation } from 'wegas-ts-api/typings/WegasEntities';
 
 interface TranslatableProps {
   value?: ITranslatableContent;

@@ -7,6 +7,7 @@ import { toLower } from 'lodash';
 import { CodeLanguage, scriptEditStyle } from './Script/Script';
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 import { createScript } from '../../../Helper/wegasEntites';
+import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 
 export interface CustomScriptProps
   extends WidgetProps.BaseProps<

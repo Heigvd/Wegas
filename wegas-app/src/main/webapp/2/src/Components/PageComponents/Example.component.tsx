@@ -8,9 +8,10 @@ import { schemaProps } from './tools/schemaProps';
 import { useComponentScript } from '../Hooks/useComponentScript';
 import { entityIs } from '../../data/entities';
 import { WegasComponentProps } from './tools/EditableComponent';
+import { INumberDescriptor, ITextDescriptor, IScript } from 'wegas-ts-api/typings/WegasEntities';
 
 interface ExampleProps extends WegasComponentProps {
-  script?: ISScript;
+  script?: IScript;
 }
 
 const Example: React.FunctionComponent<ExampleProps> = ({
@@ -23,14 +24,14 @@ const Example: React.FunctionComponent<ExampleProps> = ({
   return notFound ? (
     <pre>Not found: {content}</pre>
   ) : (
-    <div>
-      {entityIs(instance, 'StringInstance')
-        ? TranslatableContent.toString(instance.trValue)
-        : entityIs(instance, 'NumberInstance')
-        ? String(instance.value)
-        : 'The found variable is neither a StringInstance nore a NumberInstance'}
-    </div>
-  );
+      <div>
+        {entityIs(instance, 'StringInstance')
+          ? TranslatableContent.toString(instance.trValue)
+          : entityIs(instance, 'NumberInstance')
+            ? String(instance.value)
+            : 'The found variable is neither a StringInstance nor a NumberInstance'}
+      </div>
+    );
 };
 
 registerComponent(
@@ -41,11 +42,11 @@ registerComponent(
     'ambulance',
     {
       script: schemaProps.scriptVariable('Variable', true, [
-        'ISTextDescriptor',
-        'ISNumberDescriptor',
+        'STextDescriptor',
+        'SNumberDescriptor',
       ]),
     },
-    ['ISNumberDescriptor', 'ISStringDescriptor'],
+    ['SNumberDescriptor', 'SStringDescriptor'],
     () => ({}),
   ),
 );

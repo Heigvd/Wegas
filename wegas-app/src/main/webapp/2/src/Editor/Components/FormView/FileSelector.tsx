@@ -13,6 +13,7 @@ import { cx } from 'emotion';
 import { flexRow, flex } from '../../../css/classes';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { wwarn } from '../../../Helper/wegaslog';
+import { IAbstractContentDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 interface AllowedTypes {
   string: string;

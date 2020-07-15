@@ -13,6 +13,7 @@ import { store } from '../../../data/store';
 import { Actions } from '../../../data';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { WegasComponentProps } from '../tools/EditableComponent';
+import { IScript, INumberDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 interface PlayerNumberSliderProps extends WegasComponentProps {
   /**
@@ -41,22 +42,22 @@ function PlayerNumberSlider(props: PlayerNumberSliderProps) {
   return notFound ? (
     <pre>Not found: {content}</pre>
   ) : (
-    <NumberSlider
-      {...props}
-      value={instance!.value}
-      onChange={(v, i) => {
-        if (i === 'DragEnd') {
-          store.dispatch(
-            Actions.VariableInstanceActions.runScript(
-              `${content}.setValue(self, ${v});`,
-            ),
-          );
-        }
-      }}
-      min={descriptor!.minValue || 0}
-      max={descriptor!.maxValue || 1}
-    />
-  );
+      <NumberSlider
+        {...props}
+        value={instance!.value}
+        onChange={(v, i) => {
+          if (i === 'DragEnd') {
+            store.dispatch(
+              Actions.VariableInstanceActions.runScript(
+                `${content}.setValue(self, ${v});`,
+              ),
+            );
+          }
+        }}
+        min={descriptor!.getMinValue() || 0}
+        max={descriptor!.getMaxValue() || 1}
+      />
+    );
 }
 
 registerComponent(
@@ -67,7 +68,7 @@ registerComponent(
     'sliders-h',
     {
       script: schemaProps.scriptVariable('Variable', true, [
-        'ISNumberDescriptor',
+        'SNumberDescriptor',
       ]),
       steps: schemaProps.number('Steps', false),
       displayValues: schemaProps.select('Display value', false, displayModes),

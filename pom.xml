@@ -15,6 +15,7 @@
     <modules>
         <module>build-tools</module>
         <module>wegas-core</module>
+        <module>wegas-ts-api</module>
         <module>wegas-app</module>
         <module>wegas-resources</module>
         <!--<module>wegas-mcq</module>-->
@@ -835,6 +836,12 @@
                             <version>1.0</version>
                         </dependency>
                     </dependencies>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>3.0.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>

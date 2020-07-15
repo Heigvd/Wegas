@@ -12,6 +12,20 @@ import { FileAPI } from '../../API/files.api';
 import { omit } from 'lodash';
 import { LockEventData } from '../../API/websocket';
 import { WegasMethodParameter } from '../../Editor/editionConfig';
+import {
+  IAbstractEntity,
+  IAbstractContentDescriptor,
+  IUser,
+  IScript,
+  IVariableDescriptor,
+  IFSMDescriptor,
+  IListDescriptor,
+  IQuestionDescriptor,
+  IChoiceDescriptor,
+  IWhQuestionDescriptor,
+  IPeerReviewDescriptor,
+  WegasClassNames,
+} from 'wegas-ts-api/typings/WegasEntities';
 
 export function isServerMethod(
   serverObject: GlobalServerMethod | GlobalServerObject | undefined,
@@ -72,7 +86,7 @@ export type Edition =
     }
   | {
       type: 'VariableCreate';
-      '@class': string;
+      '@class': IVariableDescriptor['@class'];
       parentId?: number;
       parentType?: string;
       config?: Schema<AvailableViews>;
@@ -88,7 +102,7 @@ export type Edition =
   | {
       type: 'File';
       entity: IAbstractContentDescriptor;
-      cb?: (updatedValue: IAbstractEntity) => void;
+      cb?: (updatedValue: IMergeable) => void;
     };
 export interface EditingState {
   editing?: Readonly<Edition>;
@@ -204,7 +218,7 @@ export const editorManagement = (
     case ActionType.VARIABLE_CREATE:
       return {
         type: 'VariableCreate',
-        '@class': action.payload['@class'],
+        '@class': action.payload['@class'] as IVariableDescriptor['@class'],
         parentId: action.payload.parentId,
         parentType: action.payload.parentType,
         actions: action.payload.actions,
@@ -466,7 +480,7 @@ export function editFile(
  * @returns
  */
 export function createVariable(
-  cls: string,
+  cls: IAbstractEntity['@class'],
   parent?:
     | IListDescriptor
     | IQuestionDescriptor
@@ -495,7 +509,7 @@ export function createVariable(
  * @param {IAbstractEntity} value
  * @returns {ThunkResult}
  */
-export function saveEditor(value: IAbstractEntity): ThunkResult {
+export function saveEditor(value: IMergeable): ThunkResult {
   return function save(dispatch, getState) {
     const editMode = getState().global.editing;
     if (editMode == null) {

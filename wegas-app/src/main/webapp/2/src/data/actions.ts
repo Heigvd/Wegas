@@ -1,13 +1,14 @@
-import { normalizeDatas, NormalizedData, discriminant } from './normalize';
-import { IManagedResponse } from '../API/rest';
-import * as ActionType from './actionTypes';
 import { Schema } from 'jsoninput';
-import { AvailableViews } from '../Editor/Components/FormView';
-import { StoreDispatch } from './store';
-import { EditingState, closeEditor, Edition } from './Reducer/globalState';
-import { getEntityActions } from '../Editor/editionConfig';
-import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
+import { IAbstractContentDescriptor, IAbstractEntity, IGame, IGameModel, IGameModelLanguage, IScript, ITeam, WegasClassNames } from 'wegas-ts-api/typings/WegasEntities';
+import { IManagedResponse } from '../API/rest';
 import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
+import { AvailableViews } from '../Editor/Components/FormView';
+import { getEntityActions } from '../Editor/editionConfig';
+import * as ActionType from './actionTypes';
+import { discriminant, normalizeDatas, NormalizedData } from './normalize';
+import { closeEditor, EditingState, Edition } from './Reducer/globalState';
+import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
+import { StoreDispatch } from './store';
 
 export { ActionType };
 export type ActionTypeValues = ValueOf<typeof ActionType>;
@@ -24,8 +25,8 @@ const variableEditAction = <TA extends ActionTypeValues>(type: TA) => <
   entity: TE;
   config?: Schema<AvailableViews>;
   path?: TA extends ValueOf<typeof ActionType.FSM_EDIT>
-    ? string[]
-    : (string | number)[];
+  ? string[]
+  : (string | number)[];
   actions: {
     save?: (entity: TE) => void;
     more?: {
@@ -66,7 +67,7 @@ export const ActionCreator = {
     cb?: (newEntity: IAbstractContentDescriptor) => void;
   }) => createAction(ActionType.FILE_EDIT, data),
   VARIABLE_CREATE: <T extends IAbstractEntity>(data: {
-    '@class': string;
+    '@class': IAbstractEntity["@class"];
     parentId?: number;
     parentType?: string;
     actions: {
@@ -120,7 +121,7 @@ export const ActionCreator = {
 
 export type StateActions<
   A extends keyof typeof ActionCreator = keyof typeof ActionCreator
-> = ReturnType<typeof ActionCreator[A]>;
+  > = ReturnType<typeof ActionCreator[A]>;
 
 // TOOLS
 
@@ -165,7 +166,7 @@ export function manageResponseHandler(
     if (currentEditingEntity && currentEditingEntity.id !== undefined) {
       const updatedEntity =
         updatedEntities[
-          discriminant(currentEditingEntity) as keyof NormalizedData
+        discriminant(currentEditingEntity) as keyof NormalizedData
         ][currentEditingEntity.id];
       if (
         updatedEntity &&

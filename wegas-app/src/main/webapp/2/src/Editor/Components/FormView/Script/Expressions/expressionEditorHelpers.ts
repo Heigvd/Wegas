@@ -23,6 +23,7 @@ import { store } from '../../../../../data/store';
 import { TYPESTRING } from 'jsoninput/typings/types';
 import { safeClientScriptEval } from '../../../../../Components/Hooks/useScript';
 import { isServerMethod } from '../../../../../data/Reducer/globalState';
+import { IVariableDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 const booleanOperators = {
   '===': { label: 'equals' },
