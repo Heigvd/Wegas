@@ -10,9 +10,16 @@ import { transpile } from 'typescript';
 import { classesCTX } from '../Contexts/ClassesProvider';
 import { wwarn } from '../../Helper/wegaslog';
 import { deepDifferent } from './storeHookFactory';
-import { IVariableDescriptor, WegasClassNames } from 'wegas-ts-api/typings/WegasEntities';
-import { SGameModel, SPlayer } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import {
+  IVariableDescriptor,
+  WegasClassNames,
+} from 'wegas-ts-api/typings/WegasEntities';
+import {
+  SGameModel,
+  SPlayer,
+} from 'wegas-ts-api/src/generated/WegasScriptableEntities';
 import { ScriptableEntity } from 'wegas-ts-api/src/index';
+import { modalDispatch, addModal, ModalActionCreator } from '../ModalManager';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -30,6 +37,7 @@ interface GlobalClasses {
   ServerMethods: GlobalServerMethodClass;
   Schemas: GlobalSchemaClass;
   Classes: GlobalClassesClass;
+  Modals: GlobalModalClass;
 }
 
 export function createSandbox<T = unknown>() {
@@ -209,6 +217,15 @@ export function useGlobals() {
     removeClass,
   };
 
+  globals.Modals = {
+    addModal: (id, message, duration) => {
+      if (id != null && message != null) {
+        modalDispatch(addModal(id, message, duration));
+      }
+    },
+    removeGlobal: id => modalDispatch(ModalActionCreator.REMOVE_MODAL({ id })),
+  };
+
   // TEST
   //   const currentPhase = globals.Variable.find(gameModel,'phaseMSG')?.getValue(self)
   // 	const currentPeriod = 1;
@@ -231,10 +248,10 @@ export function useGlobals() {
 export function clientScriptEval<ReturnValue>(script?: string) {
   return script != null
     ? ((sandbox.contentWindow as unknown) as {
-      eval: (code: string) => ReturnValue;
-    })
-      // 'undefined' so that an empty script don't return '"use strict"'
-      .eval('"use strict";undefined;' + transpile(script))
+        eval: (code: string) => ReturnValue;
+      })
+        // 'undefined' so that an empty script don't return '"use strict"'
+        .eval('"use strict";undefined;' + transpile(script))
     : undefined;
 }
 
@@ -247,9 +264,9 @@ export function safeClientScriptEval<ReturnValue>(
   } catch (e) {
     wwarn(
       `Script error at line ${e.lineNumber} : ${
-      e.message
+        e.message
       }\n\nScript content is :\n${script}\n\nTraspiled content is :\n${
-      script != null ? transpile(script) : undefined
+        script != null ? transpile(script) : undefined
       }`,
     );
     catchCB && catchCB(e);

@@ -32,7 +32,8 @@ const Eval = React.memo(function Eval({ script }: { script: string }) {
 });
 Eval.displayName = 'Eval';
 
-const testScript = 'Variable.find(gameModel,"initGroups")';
+// const testScript = 'Variable.find(gameModel,"initGroups");';
+const testScript = 'Modals.addModal("TESUS","TESTICULUS MACOUILE!!!");';
 
 export default function PlayLocal() {
   const [script, setScript] = React.useState(testScript);

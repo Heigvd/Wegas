@@ -17,6 +17,8 @@ import schemaGlobalSrc from '!!raw-loader!../../../types/scripts/SchemaGlobals.d
 // @ts-ignore
 import classesGlobalSrc from '!!raw-loader!../../../types/scripts/ClassesGlobals.d.ts';
 // @ts-ignore
+import modalsGlobalSrc from '!!raw-loader!../../../types/scripts/ModalsGlobals.d.ts';
+// @ts-ignore
 import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMethodsGlobals.d.ts';
 
 import { refDifferent } from './storeHookFactory';
@@ -127,6 +129,8 @@ export function useGlobalLibs() {
 
         declare const ServerMethods : GlobalServerMethodClass;
 
+        declare const Modals : GlobalModalClass;
+
         ${buildGlobalServerMethods(globalServerMethods)}
         `;
     } catch (e) {
@@ -145,6 +149,7 @@ export function useGlobalLibs() {
             ${serverMethodGlobalSrc}\n
             ${schemaGlobalSrc}\n
             ${classesGlobalSrc}\n
+            ${modalsGlobalSrc}\n
             ${libs}\n
           `,
         name: 'VariablesTypes.d.ts',

@@ -71,7 +71,7 @@ function NotificationMenu(/*{}: NotificationMenuProps*/) {
               </div>
               <div>{message}</div>
               <IconButton
-                icon="trash"
+                icon="times"
                 onClick={e => {
                   e.stopPropagation();
                   store.dispatch(editorEventRemove(event.timestamp));
