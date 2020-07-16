@@ -37,7 +37,7 @@ export interface IManagedResponse {
   '@class': 'ManagedResponse';
   deletedEntities: IAbstractEntity[];
   updatedEntities: IAbstractEntity[];
-  events: WegasEvents[];
+  events: WegasEvent[];
 }
 
 export function rest(

@@ -26,6 +26,7 @@ import {
   IPeerReviewDescriptor,
   WegasClassNames,
 } from 'wegas-ts-api/typings/WegasEntities';
+import { cloneDeep } from 'lodash-es';
 
 export function isServerMethod(
   serverObject: GlobalServerMethod | GlobalServerObject | undefined,
@@ -106,7 +107,7 @@ export type Edition =
     };
 export interface EditingState {
   editing?: Readonly<Edition>;
-  events: Readonly<WegasEvents[]>;
+  events: Readonly<WegasEvent[]>;
 }
 export interface GlobalState extends EditingState {
   currentGameModelId: number;
@@ -160,33 +161,41 @@ export interface GlobalState extends EditingState {
 export const eventManagement = (
   state: EditingState,
   action: StateActions,
-): readonly WegasEvents[] => {
+): readonly WegasEvent[] => {
   switch (action.type) {
-    case ActionType.EDITOR_ERROR_REMOVE: {
+    case ActionType.EDITOR_EVENT_REMOVE: {
       const newEvents = [...state.events];
-      if (newEvents.length > 0) {
-        const currentEvent = newEvents[0];
-        switch (currentEvent['@class']) {
-          case 'ClientEvent':
-            newEvents.pop();
-            break;
-          case 'ExceptionEvent': {
-            if (currentEvent.exceptions.length > 0) {
-              currentEvent.exceptions.pop();
-            }
-            if (currentEvent.exceptions.length === 0) {
-              newEvents.pop();
-            }
-            break;
-          }
-        }
+      const indexOfRemoved = newEvents.findIndex(
+        e => e.timestamp === action.payload.timestamp,
+      );
+      if (indexOfRemoved !== -1) {
+        newEvents.splice(indexOfRemoved, 1);
       }
       return newEvents;
     }
-    case ActionType.EDITOR_ERROR:
+    case ActionType.EDITOR_EVENT_READ: {
+      const readEventIndex = state.events.findIndex(
+        e => e.timestamp === action.payload.timestamp,
+      );
+      if (readEventIndex !== -1) {
+        const event = cloneDeep(state.events[readEventIndex]);
+        const before = state.events.slice(0, readEventIndex);
+        const after = state.events.slice(readEventIndex + 1);
+        const ret = [...before, { ...event, unread: false }, ...after];
+        return ret;
+      } else {
+        return state.events;
+      }
+    }
+    case ActionType.EDITOR_EVENT:
       return [
         ...state.events,
-        { '@class': 'ClientEvent', error: action.payload.error },
+        {
+          '@class': 'ClientEvent',
+          error: action.payload.error,
+          timestamp: new Date().getTime(),
+          unread: true,
+        },
       ];
     case ActionType.MANAGED_RESPONSE_ACTION:
       return [...state.events, ...action.payload.events];
@@ -540,7 +549,7 @@ export function saveEditor(value: IMergeable): ThunkResult {
               editMode.cb && editMode.cb(res);
             })
             .catch((res: Error) => {
-              dispatch(ACTIONS.EditorActions.editorError(res.message));
+              dispatch(ACTIONS.EditorActions.editorEvent(res.message));
             });
         });
     }
@@ -555,12 +564,16 @@ export function closeEditor() {
   return ActionCreator.CLOSE_EDITOR();
 }
 
-export function editorError(error: string) {
-  return ActionCreator.EDITOR_ERROR({ error });
+export function editorEvent(error: string) {
+  return ActionCreator.EDITOR_EVENT({ error });
 }
 
-export function editorErrorRemove() {
-  return ActionCreator.EDITOR_ERROR_REMOVE();
+export function editorEventRemove(timestamp: number) {
+  return ActionCreator.EDITOR_EVENT_REMOVE({ timestamp });
+}
+
+export function editorEventRead(timestamp: number) {
+  return ActionCreator.EDITOR_EVENT_READ({ timestamp });
 }
 
 /**
@@ -581,7 +594,7 @@ export function searchGlobal(value: string): ThunkResult {
       .then(result => {
         return dispatch(ActionCreator.SEARCH_GLOBAL({ search: value, result }));
       })
-      .catch((res: Response) => dispatch(editorError(res.statusText)));
+      .catch((res: Response) => dispatch(editorEvent(res.statusText)));
   };
 }
 /**
@@ -601,7 +614,7 @@ export function searchUsage(
           ActionCreator.SEARCH_USAGE({ variableId: variable.id, result }),
         );
       })
-      .catch((res: Response) => dispatch(editorError(res.statusText)));
+      .catch((res: Response) => dispatch(editorEvent(res.statusText)));
   };
 }
 

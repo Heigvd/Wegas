@@ -66,9 +66,7 @@ const subMenuContainer = css({
   color: themeVar.Common.colors.TextColor,
   backgroundColor: themeVar.Common.colors.BackgroundColor,
   position: 'absolute',
-  display: 'inline-block',
-  padding: '5px',
-  zIndex: 1,
+  zIndex: 10000,
   whiteSpace: 'nowrap',
   margin: '2px',
   boxShadow: `0px 0px 4px 1px ${themeVar.Common.colors.BorderColor}`,
@@ -76,14 +74,24 @@ const subMenuContainer = css({
     padding: '1px',
     borderRadius: '3px',
   },
-  '>div:hover': {
-    backgroundColor: themeVar.Common.colors.HoverColor,
-    color: themeVar.Common.colors.HoverTextColor,
-  },
   [`& .${containerStyle}`]: {
     width: '100%',
   },
 });
+const subMenuItemContainer = cx(
+  flex,
+  flexRow,
+  itemCenter,
+  css({
+    marginLeft: '5px',
+    marginRight: '5px',
+    ':hover': {
+      backgroundColor: themeVar.Common.colors.HoverColor,
+      color: themeVar.Common.colors.HoverTextColor,
+    },
+  }),
+);
+
 const DIR = {
   right: css(subMenuContainer, { left: '100%', top: 0 }),
   left: css(subMenuContainer, { right: '100%', top: 0 }),
@@ -110,7 +118,6 @@ export function Menu<T, MItem extends MenuItem<T>>({
   deleter,
 }: MenuProps<T, MItem>) {
   const realDirection = direction ? direction : 'down';
-
   const onStateChange = React.useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (changes: StateChangeOptions<any>) => {
@@ -146,7 +153,13 @@ export function Menu<T, MItem extends MenuItem<T>>({
             <IconButton
               label={label}
               prefixedLabel
-              icon={withDefault(icon, `caret-${realDirection}` as IconName)}
+              icon={withDefault(
+                icon,
+                !adder && items.length === 0
+                  ? { icon: 'circle', size: 'sm' }
+                  : { icon: `caret-${realDirection}` as IconName },
+                // : (`caret-${realDirection}` as IconName)) as Icon,
+              )}
               onClick={ev => {
                 ev.stopPropagation();
                 toggleMenu();
@@ -166,32 +179,80 @@ export function Menu<T, MItem extends MenuItem<T>>({
                   const {
                     left,
                     top,
-                    width,
-                    height,
+                    width: preWidth,
+                    height: preHeight,
                   } = n.getBoundingClientRect();
                   const { innerWidth, innerHeight } = window;
                   const {
                     width: pWidth,
                     height: pHeight,
+                    top: pTop,
+                    left: pLeft,
+                    bottom: pBottom,
+                    right: pRight,
                   } = n.parentElement!.getBoundingClientRect();
-                  let finalLeft = left;
+
+                  const allowedWitdh =
+                    realDirection === 'down' || realDirection === 'top'
+                      ? innerWidth
+                      : realDirection === 'left'
+                      ? pLeft
+                      : innerWidth - pLeft - pWidth;
+                  const allowedHeight =
+                    realDirection === 'left' || realDirection === 'right'
+                      ? innerHeight
+                      : realDirection === 'top'
+                      ? pTop
+                      : innerHeight - pTop - pHeight;
+
+                  const width =
+                    preWidth > allowedWitdh
+                      ? allowedWitdh
+                      : preWidth < pWidth
+                      ? pWidth
+                      : preWidth;
+
+                  const height =
+                    preHeight > allowedHeight ? allowedHeight : preHeight;
+
                   let finalTop = top;
+                  let finalLeft = left;
+
+                  if (left + width > allowedWitdh) {
+                    finalLeft -= left + width - allowedWitdh;
+                  }
+                  if (top + height > allowedHeight) {
+                    finalTop -= top + height - allowedHeight;
+                  }
 
                   // Out of window check (right and bottom)
-                  if (left + width > innerWidth) {
-                    finalLeft -= pWidth + width;
-                  }
-                  if (top + height > innerHeight) {
-                    finalTop -= pHeight + height;
+                  switch (realDirection) {
+                    case 'top':
+                      n.style.setProperty('top', `${pTop}px`);
+                      n.style.setProperty('left', `${finalLeft}px`);
+                      break;
+                    case 'left':
+                      n.style.setProperty('top', `${finalTop}px`);
+                      n.style.setProperty('right', `${pRight}px`);
+                      break;
+                    case 'down':
+                      n.style.setProperty('top', `${pBottom}px`);
+                      n.style.setProperty('left', `${finalLeft}px`);
+                      break;
+                    case 'right':
+                      n.style.setProperty('top', `${finalTop}px`);
+                      n.style.setProperty('left', `${pLeft}px`);
+                      break;
                   }
 
-                  n.style.setProperty('left', `${finalLeft}px`);
-                  n.style.setProperty('top', `${finalTop}px`);
+                  n.style.setProperty('overflow', 'auto');
+                  n.style.setProperty('max-width', `${allowedWitdh}px`);
+                  n.style.setProperty('max-height', `${allowedHeight}px`);
                   n.style.setProperty('position', 'fixed');
                 }
               }}
             >
-              {adder}
+              {adder && <div className={subMenuItemContainer}>{adder}</div>}
               {items.map((item: MItem, index: number) => {
                 const newPath = [...(path ? path : []), index];
                 const trasher =
@@ -201,9 +262,7 @@ export function Menu<T, MItem extends MenuItem<T>>({
                       onAction={() => deleter.onDelete(item)}
                     />
                   ) : null;
-                const itemClassName =
-                  cx(flex, flexRow, itemCenter) +
-                  classNameOrEmpty(item.className);
+
                 if (Array.isArray(item.items)) {
                   return (
                     <div
@@ -214,7 +273,9 @@ export function Menu<T, MItem extends MenuItem<T>>({
                             onClick: stopPropagation,
                           })
                         : undefined)}
-                      className={itemClassName}
+                      className={
+                        subMenuItemContainer + classNameOrEmpty(item.className)
+                      }
                       style={item.style}
                     >
                       <Menu
@@ -226,7 +287,7 @@ export function Menu<T, MItem extends MenuItem<T>>({
                           );
                         }}
                         items={item.items}
-                        direction="right"
+                        direction={realDirection === 'right' ? 'left' : 'right'}
                         label={item.label}
                         path={newPath}
                       />
@@ -244,7 +305,9 @@ export function Menu<T, MItem extends MenuItem<T>>({
                           onClick: stopPropagation,
                         })
                       : undefined)}
-                    className={itemClassName}
+                    className={
+                      subMenuItemContainer + classNameOrEmpty(item.className)
+                    }
                   >
                     {item.label}
                     {trasher}

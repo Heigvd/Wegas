@@ -3,22 +3,22 @@ import { Toolbar } from '../../../Components/Toolbar';
 import { StoreDispatch, useStore, getDispatch } from '../../../data/store';
 import { css, cx } from 'emotion';
 import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods';
-import { AsyncVariableForm, getError, EditorProps } from '../EntityEditor';
+import {
+  AsyncVariableForm,
+  parseEventFromIndex,
+  EditorProps,
+} from '../EntityEditor';
 import getEditionConfig from '../../editionConfig';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../FormView';
 import { LocalGlobalState } from '../../../data/storeFactory';
-import {
-  updateInstance,
-  VariableInstanceState,
-} from '../../../data/Reducer/VariableInstanceReducer';
-import { VariableInstanceAPI } from '../../../API/variableInstance.api';
+import { updateInstance } from '../../../data/Reducer/VariableInstanceReducer';
 import { flex, flexColumn, grow, localSelection } from '../../../css/classes';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { MessageString } from '../MessageString';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { themeCTX, ThemeComponent } from '../../../Components/Style/Theme';
-import { IVariableInstance, IVariableDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { IVariableInstance } from 'wegas-ts-api/typings/WegasEntities';
+import { VariableInstance } from '../../../data/selectors';
 
 const listBox = css({
   width: '100%',
@@ -52,114 +52,70 @@ export function InstancesEditor({
   const editing = state.global.editing;
   const events = state.global.events;
 
-  const [instancesState, setInstancesState] = React.useState<{
-    instances: VariableInstanceState;
-    selectedInstance?: string;
-    error?: string;
-  }>({ instances: {}, selectedInstance: undefined, error: undefined });
+  const [selectedInstanceId, setSelectedInstanceId] = React.useState<
+    number | undefined
+  >();
 
-  const dataFetch = React.useCallback(() => {
+  const instances = useStore(() => {
     if (
       editing &&
       (editing.type === 'Variable' || editing.type === 'VariableFSM') &&
       editing.entity.id
     ) {
-      VariableInstanceAPI.getByDescriptor(editing.entity as IVariableDescriptor)
-        .then(res =>
-          setInstancesState(oldState => {
-            const instances = res.reduce(
-              (oldRes, i) => i.id !== undefined && { ...oldRes, [i.id]: i },
-              {},
-            );
-            const selectedInstance =
-              oldState.selectedInstance &&
-              Object.keys(instances).includes(oldState.selectedInstance)
-                ? oldState.selectedInstance
-                : undefined;
-            return {
-              ...oldState,
-              instances,
-              selectedInstance,
-            };
-          }),
-        )
-        .catch(() =>
-          setInstancesState({
-            instances: {},
-            selectedInstance: undefined,
-            error: 'Error occured while fetching variable instances',
-          }),
-        );
+      return VariableInstance.all('parentId', editing.entity.id);
     }
-  }, [editing]);
+    return [];
+  }, deepDifferent);
 
-  React.useEffect(dataFetch, [editing]);
+  const selectedInstance =
+    selectedInstanceId != null
+      ? instances.find(i => i.id === selectedInstanceId)
+      : undefined;
 
-  const vanishFN = React.useCallback(
-    () =>
-      setInstancesState(oldState => ({
-        ...oldState,
-        error: undefined,
-      })),
-    [],
-  );
   return (
     <Toolbar>
       <Toolbar.Header>
         <div className={cx(flex, flexColumn)}>
-          <MessageString
-            value={instancesState.error}
-            type={'error'}
-            duration={3000}
-            onLabelVanish={vanishFN}
-          />
-          {instancesState.instances && (
-            <div className={cx(listBox, grow)}>
-              {Object.values(instancesState.instances).map(i => {
-                if (i) {
-                  const scope = getScopeEntity(i);
-                  return (
-                    <div
-                      key={i.id}
-                      className={cx(
-                        listItem,
-                        String(i.id) === instancesState.selectedInstance &&
-                          localSelection,
-                      )}
-                      onClick={() =>
-                        setInstancesState(oldState => ({
-                          ...oldState,
-                          selectedInstance:
-                            oldState.selectedInstance === String(i.id)
-                              ? undefined
-                              : String(i.id),
-                        }))
-                      }
-                    >
-                      {`#${i.id} - ${
-                        scope
-                          ? `${scope.name} (#${scope.id})`
-                          : 'Current game model'
-                      }`}
-                    </div>
-                  );
-                }
-              })}
-            </div>
-          )}
+          <div className={cx(listBox, grow)}>
+            {instances.map(i => {
+              if (i) {
+                const scope = getScopeEntity(i);
+                return (
+                  <div
+                    key={i.id}
+                    className={cx(
+                      listItem,
+                      i.id === selectedInstanceId && localSelection,
+                    )}
+                    onClick={() =>
+                      setSelectedInstanceId(oldState =>
+                        oldState === i.id ? undefined : i.id,
+                      )
+                    }
+                  >
+                    {`#${i.id} - ${
+                      scope
+                        ? `${scope.name} (#${scope.id})`
+                        : 'Current game model'
+                    }`}
+                  </div>
+                );
+              }
+            })}
+          </div>
         </div>
       </Toolbar.Header>
       <Toolbar.Content>
-        {instancesState.selectedInstance && (
+        {selectedInstance != null && (
           <AsyncVariableForm
             getConfig={si =>
               getEditionConfig(si) as Promise<Schema<AvailableViews>>
             }
             update={(entity: IVariableInstance) =>
-              dispatch(updateInstance(entity, dataFetch))
+              dispatch(updateInstance(entity))
             }
-            entity={instancesState.instances[instancesState.selectedInstance]}
-            error={getError(events, dispatch)}
+            entity={selectedInstance}
+            error={parseEventFromIndex(events)}
             actions={actions}
           />
         )}

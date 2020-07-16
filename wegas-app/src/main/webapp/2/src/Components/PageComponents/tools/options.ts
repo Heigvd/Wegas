@@ -9,7 +9,7 @@ import { wlog } from '../../../Helper/wegaslog';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 import { schemaProps } from './schemaProps';
-import { InfoBulletProps } from './InfoBullet';
+import { PlayerInfoBulletProps } from './InfoBullet';
 import { flexlayoutChoices } from '../../Layouts/FlexList';
 import { absolutelayoutChoices } from '../../Layouts/Absolute';
 import { ContainerTypes } from './EditableComponent';
@@ -328,7 +328,7 @@ const layoutConditionnalChoices: HashListChoices = [
 
 // OPTIONS -> DECORATIONS
 export interface WegasComponentDecorations {
-  infoBullet?: InfoBulletProps;
+  infoBullet?: PlayerInfoBulletProps;
   unreadCount?: IScript;
 }
 
@@ -455,7 +455,7 @@ function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
 
 export function useComputeUnreadCount(
   unreadCountVariableScript: IScript | undefined,
-): InfoBulletProps | undefined {
+): PlayerInfoBulletProps | undefined {
   const scriptReturn = useScript<
     string | number | object[] | UnreadCountDescriptorTypes
   >(unreadCountVariableScript?.content);

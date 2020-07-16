@@ -1,5 +1,14 @@
 import { Schema } from 'jsoninput';
-import { IAbstractContentDescriptor, IAbstractEntity, IGame, IGameModel, IGameModelLanguage, IScript, ITeam, WegasClassNames } from 'wegas-ts-api/typings/WegasEntities';
+import {
+  IAbstractContentDescriptor,
+  IAbstractEntity,
+  IGame,
+  IGameModel,
+  IGameModelLanguage,
+  IScript,
+  ITeam,
+  WegasClassNames,
+} from 'wegas-ts-api/typings/WegasEntities';
 import { IManagedResponse } from '../API/rest';
 import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
 import { AvailableViews } from '../Editor/Components/FormView';
@@ -25,8 +34,8 @@ const variableEditAction = <TA extends ActionTypeValues>(type: TA) => <
   entity: TE;
   config?: Schema<AvailableViews>;
   path?: TA extends ValueOf<typeof ActionType.FSM_EDIT>
-  ? string[]
-  : (string | number)[];
+    ? string[]
+    : (string | number)[];
   actions: {
     save?: (entity: TE) => void;
     more?: {
@@ -44,9 +53,12 @@ const variableEditAction = <TA extends ActionTypeValues>(type: TA) => <
 export const ActionCreator = {
   // ENTITY_UPDATE: (data: NormalizedData) =>
   //   createAction(ActionType.ENTITY_UPDATE, data),
-  EDITOR_ERROR_REMOVE: () => createAction(ActionType.EDITOR_ERROR_REMOVE, {}),
-  EDITOR_ERROR: (data: { error: string }) =>
-    createAction(ActionType.EDITOR_ERROR, data),
+  EDITOR_EVENT_REMOVE: (data: { timestamp: number }) =>
+    createAction(ActionType.EDITOR_EVENT_REMOVE, data),
+  EDITOR_EVENT_READ: (data: { timestamp: number }) =>
+    createAction(ActionType.EDITOR_EVENT_READ, data),
+  EDITOR_EVENT: (data: { error: string }) =>
+    createAction(ActionType.EDITOR_EVENT, data),
   EDITOR_SET_CLIENT_METHOD: (data: ClientMethodPayload) =>
     createAction(ActionType.EDITOR_SET_CLIENT_METHOD, data),
   EDITOR_REGISTER_SERVER_METHOD: (data: ServerMethodPayload) =>
@@ -67,7 +79,7 @@ export const ActionCreator = {
     cb?: (newEntity: IAbstractContentDescriptor) => void;
   }) => createAction(ActionType.FILE_EDIT, data),
   VARIABLE_CREATE: <T extends IAbstractEntity>(data: {
-    '@class': IAbstractEntity["@class"];
+    '@class': IAbstractEntity['@class'];
     parentId?: number;
     parentType?: string;
     actions: {
@@ -82,7 +94,7 @@ export const ActionCreator = {
       [K in keyof NormalizedData]: { [id: string]: IAbstractEntity };
     };
     updatedEntities: NormalizedData;
-    events: WegasEvents[];
+    events: WegasEvent[];
   }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
   // PAGE_EDIT_MODE: (data: boolean) =>
   //   createAction(ActionType.PAGE_EDIT_MODE, data),
@@ -121,7 +133,7 @@ export const ActionCreator = {
 
 export type StateActions<
   A extends keyof typeof ActionCreator = keyof typeof ActionCreator
-  > = ReturnType<typeof ActionCreator[A]>;
+> = ReturnType<typeof ActionCreator[A]>;
 
 // TOOLS
 
@@ -138,13 +150,8 @@ export const closeEditorWhenDeletedVariable = (
 
 export function manageResponseHandler(
   payload: IManagedResponse,
-  localDispatch?: StoreDispatch,
+  localDispatch: StoreDispatch,
   localState?: EditingState,
-  cb?: (payload: {
-    updatedEntities: NormalizedData;
-    deletedEntities: NormalizedData;
-    events: WegasEvents[];
-  }) => void,
 ) {
   const deletedEntities = normalizeDatas(payload.deletedEntities);
   if (localDispatch && localState) {
@@ -166,7 +173,7 @@ export function manageResponseHandler(
     if (currentEditingEntity && currentEditingEntity.id !== undefined) {
       const updatedEntity =
         updatedEntities[
-        discriminant(currentEditingEntity) as keyof NormalizedData
+          discriminant(currentEditingEntity) as keyof NormalizedData
         ][currentEditingEntity.id];
       if (
         updatedEntity &&
@@ -185,20 +192,24 @@ export function manageResponseHandler(
       }
     }
   }
-  const managedValues = {
+
+  const managetValuesOnly = {
     deletedEntities,
     updatedEntities,
-    events: payload.events,
+    events: [],
   };
-  cb && cb(managedValues);
 
-  const managedResponcePayload = ActionCreator.MANAGED_RESPONSE_ACTION(
-    managedValues,
-  );
-  localDispatch && localDispatch(managedResponcePayload);
+  const managedValues = {
+    ...managetValuesOnly,
+    events: payload.events.map(event => ({
+      ...event,
+      timestamp: new Date().getTime(),
+      unread: true,
+    })),
+  };
 
-  // TODO : Event should be filtered here and global event should be kept in the global response
-  const globalResponse = managedResponcePayload;
-  globalResponse.payload.events = [];
-  return globalResponse;
+  localDispatch &&
+    localDispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
+
+  return ActionCreator.MANAGED_RESPONSE_ACTION(managetValuesOnly);
 }

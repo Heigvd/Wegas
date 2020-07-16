@@ -44,4 +44,7 @@ interface ClientEvent {
   error: string;
 }
 
-type WegasEvents = ExceptionEvent | ClientEvent;
+type WegasEvent = (ExceptionEvent | ClientEvent) & {
+  timestamp: number;
+  unread: boolean;
+};
