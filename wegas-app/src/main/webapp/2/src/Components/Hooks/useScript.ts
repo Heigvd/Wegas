@@ -20,6 +20,7 @@ import {
 } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
 import { ScriptableEntity } from 'wegas-ts-api/src/index';
 import { modalDispatch, addModal, ModalActionCreator } from '../ModalManager';
+import { ActionCreator } from '../../data/actions';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -38,7 +39,10 @@ interface GlobalClasses {
   Schemas: GlobalSchemaClass;
   Classes: GlobalClassesClass;
   Modals: GlobalModalClass;
+  WegasEvents: WegasEventClass;
 }
+
+const globalDispatch = store.dispatch;
 
 export function createSandbox<T = unknown>() {
   const sandbox = document.createElement('iframe');
@@ -124,7 +128,7 @@ export function useGlobals() {
       parameters != null &&
       method != null
     ) {
-      store.dispatch(
+      globalDispatch(
         Actions.EditorActions.setClientMethod(
           name,
           parameters,
@@ -181,7 +185,7 @@ export function useGlobals() {
   };
 
   const registerMethod: ServerMethodRegister = (objects, method, schema) => {
-    store.dispatch(
+    globalDispatch(
       Actions.EditorActions.registerServerMethod(objects, method, {
         ...schema,
         '@class': 'GlobalServerMethod',
@@ -201,12 +205,12 @@ export function useGlobals() {
       schemaFN: CustomSchemaFN,
       simpleFilter?: WegasClassNames,
     ) => {
-      store.dispatch(
+      globalDispatch(
         Actions.EditorActions.setSchema(name, schemaFN, simpleFilter),
       );
     },
     removeSchema: (name: string) => {
-      store.dispatch(Actions.EditorActions.setSchema(name));
+      globalDispatch(Actions.EditorActions.setSchema(name));
     },
   };
 
@@ -224,6 +228,32 @@ export function useGlobals() {
       }
     },
     removeGlobal: id => modalDispatch(ModalActionCreator.REMOVE_MODAL({ id })),
+  };
+
+  globals.WegasEvents = {
+    addEventHandler: (id, type, cb) => {
+      if (id != null && type != null && cb != null) {
+        if (store.getState().global.eventsHandlers[type][id] == null) {
+          globalDispatch(
+            ActionCreator.EDITOR_ADD_EVENT_HANDLER({
+              id,
+              type,
+              cb: (cb as unknown) as WegasEventHandler,
+            }),
+          );
+        }
+      }
+    },
+    removeEventHandler: (id, type) => {
+      if (id != null && type != null) {
+        7;
+        if (store.getState().global.eventsHandlers[type][id] != null) {
+          globalDispatch(
+            ActionCreator.EDITOR_REMOVE_EVENT_HANDLER({ id, type }),
+          );
+        }
+      }
+    },
   };
 
   // TEST

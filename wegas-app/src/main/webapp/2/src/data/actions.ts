@@ -17,7 +17,7 @@ import * as ActionType from './actionTypes';
 import { discriminant, normalizeDatas, NormalizedData } from './normalize';
 import { closeEditor, EditingState, Edition } from './Reducer/globalState';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
-import { StoreDispatch } from './store';
+import { StoreDispatch, store } from './store';
 
 export { ActionType };
 export type ActionTypeValues = ValueOf<typeof ActionType>;
@@ -57,8 +57,17 @@ export const ActionCreator = {
     createAction(ActionType.EDITOR_EVENT_REMOVE, data),
   EDITOR_EVENT_READ: (data: { timestamp: number }) =>
     createAction(ActionType.EDITOR_EVENT_READ, data),
-  EDITOR_EVENT: (data: { error: string }) =>
+  EDITOR_EVENT: (data: WegasEvent) =>
     createAction(ActionType.EDITOR_EVENT, data),
+  EDITOR_ADD_EVENT_HANDLER: (data: {
+    id: string;
+    type: keyof WegasEvents;
+    cb: WegasEventHandler;
+  }) => createAction(ActionType.EDITOR_ADD_EVENT_HANDLER, data),
+  EDITOR_REMOVE_EVENT_HANDLER: (data: {
+    id: string;
+    type: WegasEvent['@class'];
+  }) => createAction(ActionType.EDITOR_REMOVE_EVENT_HANDLER, data),
   EDITOR_SET_CLIENT_METHOD: (data: ClientMethodPayload) =>
     createAction(ActionType.EDITOR_SET_CLIENT_METHOD, data),
   EDITOR_REGISTER_SERVER_METHOD: (data: ServerMethodPayload) =>
@@ -148,6 +157,14 @@ export const closeEditorWhenDeletedVariable = (
   Object.keys(deletedVariables).includes(String(editing.entity.id)) &&
   dispatch(closeEditor());
 
+export function triggerEventHandlers(event: WegasEvent) {
+  Object.values(store.getState().global.eventsHandlers[event['@class']]).map(
+    handler => {
+      handler(event);
+    },
+  );
+}
+
 export function manageResponseHandler(
   payload: IManagedResponse,
   localDispatch: StoreDispatch,
@@ -201,11 +218,16 @@ export function manageResponseHandler(
 
   const managedValues = {
     ...managetValuesOnly,
-    events: payload.events.map(event => ({
-      ...event,
-      timestamp: new Date().getTime(),
-      unread: true,
-    })),
+    events: payload.events.map(event => {
+      const timedEvent: WegasEvent = {
+        ...event,
+        timestamp: new Date().getTime(),
+        unread: true,
+      };
+      triggerEventHandlers(timedEvent);
+
+      return timedEvent;
+    }),
   };
 
   localDispatch &&

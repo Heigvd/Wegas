@@ -33,7 +33,21 @@ const Eval = React.memo(function Eval({ script }: { script: string }) {
 Eval.displayName = 'Eval';
 
 // const testScript = 'Variable.find(gameModel,"initGroups");';
-const testScript = 'Modals.addModal("TESUS","TESTICULUS MACOUILE!!!");';
+// const testScript = `Modals.addModal("TESUS","Hello there!");`;
+const testScript = `
+WegasEvents.addEventHandler('manageOutOfBound', 'ExceptionEvent', event => {
+  Modals.addModal('test', 'Registered');
+  event.exceptions
+    .filter(ex => ex['@class'] === 'WegasOutOfBoundException')
+    .map((ex: WegasOutOfBoundException) => {
+      if (ex.variableName === 'timeCards') {
+        Modals.addModal('notime', 'No more time');
+      } else if (ex.variableName === 'caisse') {
+        Modals.addModal('nomoney', 'No more money');
+      }
+    });
+});
+`;
 
 export default function PlayLocal() {
   const [script, setScript] = React.useState(testScript);

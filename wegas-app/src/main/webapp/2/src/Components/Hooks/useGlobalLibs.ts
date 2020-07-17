@@ -9,17 +9,19 @@ import { classesCTX } from '../Contexts/ClassesProvider';
 // @ts-ignore
 import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasScriptableEntities.d.ts';
 // @ts-ignore
-import editorGlobalSrc from '!!raw-loader!../../../types/scripts/EditorGlobals.d.ts';
+import editorGlobalSrc from '../../../types/scripts/EditorGlobals.d.ts';
 // @ts-ignore
-import clientMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ClientMethodGlobals.d.ts';
+import clientMethodGlobalSrc from '../../../types/scripts/ClientMethodGlobals.d.ts';
 // @ts-ignore
-import schemaGlobalSrc from '!!raw-loader!../../../types/scripts/SchemaGlobals.d.ts';
+import schemaGlobalSrc from '../../../types/scripts/SchemaGlobals.d.ts';
 // @ts-ignore
-import classesGlobalSrc from '!!raw-loader!../../../types/scripts/ClassesGlobals.d.ts';
+import classesGlobalSrc from '../../../types/scripts/ClassesGlobals.d.ts';
 // @ts-ignore
-import modalsGlobalSrc from '!!raw-loader!../../../types/scripts/ModalsGlobals.d.ts';
+import modalsGlobalSrc from '../../../types/scripts/ModalsGlobals.d.ts';
 // @ts-ignore
-import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMethodsGlobals.d.ts';
+import wegasEventsGlobalSrc from '../../../types/scripts/WegasEventsGlobals.d.ts';
+// @ts-ignore
+import serverMethodGlobalSrc from '../../../types/scripts/ServerMethodsGlobals.d.ts';
 
 import { refDifferent } from './storeHookFactory';
 import { wwarn } from '../../Helper/wegaslog';
@@ -131,6 +133,8 @@ export function useGlobalLibs() {
 
         declare const Modals : GlobalModalClass;
 
+        declare const WegasEvents : WegasEventClass;
+
         ${buildGlobalServerMethods(globalServerMethods)}
         `;
     } catch (e) {
@@ -150,6 +154,7 @@ export function useGlobalLibs() {
             ${schemaGlobalSrc}\n
             ${classesGlobalSrc}\n
             ${modalsGlobalSrc}\n
+            ${wegasEventsGlobalSrc}\n
             ${libs}\n
           `,
         name: 'VariablesTypes.d.ts',

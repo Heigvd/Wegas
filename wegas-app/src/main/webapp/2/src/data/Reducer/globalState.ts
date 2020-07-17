@@ -1,6 +1,11 @@
 import u from 'immer';
 import { Actions as ACTIONS, Actions } from '..';
-import { ActionCreator, ActionType, StateActions } from '../actions';
+import {
+  ActionCreator,
+  ActionType,
+  StateActions,
+  triggerEventHandlers,
+} from '../actions';
 import { VariableDescriptor } from '../selectors';
 import { ThunkResult, store } from '../store';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
@@ -106,8 +111,9 @@ export type Edition =
       cb?: (updatedValue: IMergeable) => void;
     };
 export interface EditingState {
-  editing?: Readonly<Edition>;
-  events: Readonly<WegasEvent[]>;
+  editing?: Edition;
+  events: WegasEvent[];
+  eventsHandlers: WegasEventHandlers;
 }
 export interface GlobalState extends EditingState {
   currentGameModelId: number;
@@ -118,7 +124,7 @@ export interface GlobalState extends EditingState {
   currentPageId?: string;
   // pageEdit: Readonly<boolean>;
   // pageSrc: Readonly<boolean>;
-  pageError?: Readonly<string>;
+  pageError?: string;
   search:
     | {
         type: 'GLOBAL';
@@ -161,8 +167,10 @@ export interface GlobalState extends EditingState {
 export const eventManagement = (
   state: EditingState,
   action: StateActions,
-): readonly WegasEvent[] => {
+): WegasEvent[] => {
   switch (action.type) {
+    case ActionType.MANAGED_RESPONSE_ACTION:
+      return [...state.events, ...action.payload.events];
     case ActionType.EDITOR_EVENT_REMOVE: {
       const newEvents = [...state.events];
       const indexOfRemoved = newEvents.findIndex(
@@ -188,17 +196,7 @@ export const eventManagement = (
       }
     }
     case ActionType.EDITOR_EVENT:
-      return [
-        ...state.events,
-        {
-          '@class': 'ClientEvent',
-          error: action.payload.error,
-          timestamp: new Date().getTime(),
-          unread: true,
-        },
-      ];
-    case ActionType.MANAGED_RESPONSE_ACTION:
-      return [...state.events, ...action.payload.events];
+      return [...state.events, action.payload];
     default:
       return state.events;
   }
@@ -343,6 +341,16 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.LOCK_SET:
         state.locks[action.payload.token] = action.payload.locked;
         return;
+      case ActionType.EDITOR_ADD_EVENT_HANDLER:
+        state.eventsHandlers[action.payload.type][action.payload.id] =
+          action.payload.cb;
+        break;
+      case ActionType.EDITOR_REMOVE_EVENT_HANDLER:
+        state.eventsHandlers[action.payload.type] = omit(
+          state.eventsHandlers[action.payload.type],
+          action.payload.id,
+        );
+        return;
       default:
         state.events = eventManagement(state, action);
         state.editing = editorManagement(state, action);
@@ -358,6 +366,7 @@ const global: Reducer<Readonly<GlobalState>> = u(
     pusherStatus: { status: 'disconnected' },
     search: { type: 'NONE' },
     events: [],
+    eventsHandlers: { ExceptionEvent: {}, ClientEvent: {} },
     clientMethods: {},
     serverMethods: {},
     schemas: {
@@ -565,7 +574,14 @@ export function closeEditor() {
 }
 
 export function editorEvent(error: string) {
-  return ActionCreator.EDITOR_EVENT({ error });
+  const event: WegasEvent = {
+    '@class': 'ClientEvent',
+    error,
+    timestamp: new Date().getTime(),
+    unread: true,
+  };
+  triggerEventHandlers(event);
+  return ActionCreator.EDITOR_EVENT(event);
 }
 
 export function editorEventRemove(timestamp: number) {
