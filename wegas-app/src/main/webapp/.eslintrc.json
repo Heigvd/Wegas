@@ -1,15 +1,41 @@
 {
-    "root": true,
-    "extends": "eslint:recommended",
-    "parserOptions": {
-        "ecmaVersion": 5,
-        "sourceType": "script"
-    },
-    "env": {
-        "browser": true
-    },
-    "globals": {
-        "YUI": true,
-        "Y": true
+  "root": true,
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 5,
+    "sourceType": "script"
+  },
+  "env": {
+    "browser": true
+  },
+  "globals": {
+    "YUI": true,
+    "Y": true
+    // "ServerMethods": true
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.d.ts"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module",
+        "ecmaFeatures": {
+          "jsx": true
+        },
+        "warnOnUnsupportedTypeScriptVersion": true
+      },
+      "rules": {
+        "no-undef": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/explicit-member-accessibility": "off",
+        "@typescript-eslint/interface-name-prefix": "off",
+        "@typescript-eslint/no-use-before-define": "off",
+        "@typescript-eslint/camelcase": "off",
+        "@typescript-eslint/no-object-literal-type-assertion": "off"
+      }
     }
+  ]
 }
