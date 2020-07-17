@@ -4,6 +4,7 @@ import {
   editorManagement,
   EditingState,
   eventManagement,
+  eventHandlersManagement,
 } from './Reducer/globalState';
 import { StateActions } from './actions';
 import { composeEnhancers } from './store';
@@ -11,11 +12,15 @@ import thunk, { ThunkMiddleware } from 'redux-thunk';
 
 const editing: Reducer<Readonly<EditingState>> = u(
   (state: EditingState, action: StateActions) => {
+    state.eventsHandlers = eventHandlersManagement(state, action);
     state.events = eventManagement(state, action);
     state.editing = editorManagement(state, action);
     return state;
   },
-  { events: [] },
+  {
+    events: [],
+    eventsHandlers: { ClientEvent: {}, ExceptionEvent: {} },
+  } as EditingState,
 );
 
 export interface LocalGlobalState {

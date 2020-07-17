@@ -159,15 +159,34 @@ export interface GlobalState extends EditingState {
   locks: { [token: string]: boolean };
 }
 
+export function eventHandlersManagement(
+  state: EditingState,
+  action: StateActions,
+): WegasEventHandlers {
+  switch (action.type) {
+    case ActionType.EDITOR_ADD_EVENT_HANDLER:
+      state.eventsHandlers[action.payload.type][action.payload.id] =
+        action.payload.cb;
+      break;
+    case ActionType.EDITOR_REMOVE_EVENT_HANDLER:
+      state.eventsHandlers[action.payload.type] = omit(
+        state.eventsHandlers[action.payload.type],
+        action.payload.id,
+      );
+      break;
+  }
+  return state.eventsHandlers;
+}
+
 /**
  *
  * @param state
  * @param action
  */
-export const eventManagement = (
+export function eventManagement(
   state: EditingState,
   action: StateActions,
-): WegasEvent[] => {
+): WegasEvent[] {
   switch (action.type) {
     case ActionType.MANAGED_RESPONSE_ACTION:
       return [...state.events, ...action.payload.events];
@@ -200,17 +219,17 @@ export const eventManagement = (
     default:
       return state.events;
   }
-};
+}
 
 /**
  *  This is a separate switch-case only for editor actions management
  * @param state
  * @param action
  */
-export const editorManagement = (
+export function editorManagement(
   state: EditingState,
   action: StateActions,
-): Edition | undefined => {
+): Edition | undefined {
   switch (action.type) {
     case ActionType.VARIABLE_EDIT:
     case ActionType.FSM_EDIT:
@@ -240,7 +259,7 @@ export const editorManagement = (
     default:
       return state.editing;
   }
-};
+}
 
 /**
  * Reducer for editor's state
@@ -341,21 +360,22 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.LOCK_SET:
         state.locks[action.payload.token] = action.payload.locked;
         return;
-      case ActionType.EDITOR_ADD_EVENT_HANDLER:
-        state.eventsHandlers[action.payload.type][action.payload.id] =
-          action.payload.cb;
-        break;
-      case ActionType.EDITOR_REMOVE_EVENT_HANDLER:
-        state.eventsHandlers[action.payload.type] = omit(
-          state.eventsHandlers[action.payload.type],
-          action.payload.id,
-        );
-        return;
+      // case ActionType.EDITOR_ADD_EVENT_HANDLER:
+      //   state.eventsHandlers[action.payload.type][action.payload.id] =
+      //     action.payload.cb;
+      //   return;
+      // case ActionType.EDITOR_REMOVE_EVENT_HANDLER:
+      //   state.eventsHandlers[action.payload.type] = omit(
+      //     state.eventsHandlers[action.payload.type],
+      //     action.payload.id,
+      //   );
+      //   return;
       default:
+        state.eventsHandlers = eventHandlersManagement(state, action);
         state.events = eventManagement(state, action);
         state.editing = editorManagement(state, action);
     }
-    return state;
+    // return state;
   },
   {
     currentGameModelId: CurrentGM.id!,

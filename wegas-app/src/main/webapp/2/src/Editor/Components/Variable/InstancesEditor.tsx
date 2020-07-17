@@ -130,7 +130,13 @@ export default function ConnectedInstancesEditor() {
     if (!editing) {
       return null;
     } else {
-      return { global: { editing, events: s.global.events } };
+      return {
+        global: {
+          editing,
+          events: s.global.events,
+          eventsHandlers: s.global.eventsHandlers,
+        },
+      };
     }
   }, deepDifferent);
 
