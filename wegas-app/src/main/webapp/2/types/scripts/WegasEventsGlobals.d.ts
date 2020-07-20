@@ -1,38 +1,61 @@
-interface IWegasConflictException {
-  '@class': 'WegasConflictException';
-}
-interface WegasErrorMessage {
-  '@class': 'WegasErrorMessage';
-  level: string;
+type IDestroyedEntity = import('wegas-ts-api/typings/WegasEntities').IDestroyedEntity;
+type IUser = import('wegas-ts-api/typings/WegasEntities').IUser;
+
+interface RuntimeException {
   message: string;
 }
-interface WegasNotFoundException {
+interface WegasAccessDenied extends RuntimeException {
+  '@class': 'WegasAccessDenied';
+  entity: {};
+  mode: string;
+  user: IUser;
+}
+
+interface WegasConflictException extends RuntimeException {
+  '@class': 'WegasConflictException';
+}
+interface WegasErrorMessage extends RuntimeException {
+  '@class': 'WegasErrorMessage';
+  level: 'info' | 'warn' | 'error';
+  messageId: string;
+}
+interface WegasIncompatibleType extends RuntimeException {
+  '@class': 'WegasIncompatibleType';
+}
+interface WegasNotFoundException extends RuntimeException {
   '@class': 'WegasNotFoundException';
   message: string;
 }
-interface WegasOutOfBoundException {
+interface WegasOutOfBoundException extends RuntimeException {
   '@class': 'WegasOutOfBoundException';
   min?: number;
   max?: number;
   variableName: string;
   value: number;
+  label: string;
 }
-interface WegasScriptException {
+interface WegasScriptException extends RuntimeException {
   '@class': 'WegasScriptException';
-  message: string;
   lineNumber: number;
   script: string;
 }
-interface WegasWrappedException {
+interface WegasWrappedException extends RuntimeException {
   '@class': 'WegasWrappedException';
   message: string;
 }
+interface WegasUniqueConstraintException extends RuntimeException {
+  '@class': 'WegasUniqueConstraintException';
+}
+
 type WegasExceptions =
-  | IWegasConflictException
+  | WegasAccessDenied
+  | WegasConflictException
   | WegasErrorMessage
+  | WegasIncompatibleType
   | WegasNotFoundException
   | WegasOutOfBoundException
   | WegasScriptException
+  | WegasUniqueConstraintException
   | WegasWrappedException;
 
 interface ExceptionEvent {
@@ -43,10 +66,31 @@ interface ClientEvent {
   '@class': 'ClientEvent';
   error: string;
 }
+interface CustomEvent {
+  '@class': 'CustomEvent';
+  type: string;
+  payload: {};
+}
+interface EntityDestroyedEvent {
+  '@class': 'EntityDestroyedEvent';
+  destroyedEntities: IDestroyedEntity[];
+}
+interface EntityUpdatedEvent {
+  '@class': 'EntityUpdatedEvent';
+  updatedEntites: IAbstractEntity[];
+}
+interface OutdatedEntitiesEvent {
+  '@class': 'OutdatedEntitiesEvent';
+  outdated: { type: string; id: number }[];
+}
 
 interface WegasEvents {
   ExceptionEvent: ExceptionEvent;
   ClientEvent: ClientEvent;
+  CustomEvent: CustomEvent;
+  EntityDestroyedEvent: EntityDestroyedEvent;
+  EntityUpdatedEvent: EntityUpdatedEvent;
+  OutdatedEntitiesEvent: OutdatedEntitiesEvent;
 }
 
 type WegasEvent = WegasEvents[keyof WegasEvents] & {
@@ -56,10 +100,14 @@ type WegasEvent = WegasEvents[keyof WegasEvents] & {
 
 type WegasEventHandler = (event: WegasEvent) => void;
 
-interface WegasEventHandlers {
-  ExceptionEvent: { [handlerId: string]: WegasEventHandler };
-  ClientEvent: { [handlerId: string]: WegasEventHandler };
-}
+type WegasEventHandlers = {
+  [key in keyof WegasEvents]: { [handlerId: string]: WegasEventHandler };
+};
+
+// interface WegasEventHandlers {
+//   ExceptionEvent: { [handlerId: string]: WegasEventHandler };
+//   ClientEvent: { [handlerId: string]: WegasEventHandler };
+// }
 
 interface WegasEventClass {
   /**

@@ -19,7 +19,14 @@ const editing: Reducer<Readonly<EditingState>> = u(
   },
   {
     events: [],
-    eventsHandlers: { ClientEvent: {}, ExceptionEvent: {} },
+    eventsHandlers: {
+      ExceptionEvent: {},
+      ClientEvent: {},
+      CustomEvent: {},
+      EntityDestroyedEvent: {},
+      EntityUpdatedEvent: {},
+      OutdatedEntitiesEvent: {},
+    },
   } as EditingState,
 );
 

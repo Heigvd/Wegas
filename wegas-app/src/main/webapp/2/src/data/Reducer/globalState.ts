@@ -386,7 +386,7 @@ const global: Reducer<Readonly<GlobalState>> = u(
     pusherStatus: { status: 'disconnected' },
     search: { type: 'NONE' },
     events: [],
-    eventsHandlers: { ExceptionEvent: {}, ClientEvent: {} },
+    eventsHandlers: { ExceptionEvent: {}, ClientEvent: {}, CustomEvent:{}, EntityDestroyedEvent:{}, EntityUpdatedEvent:{}, OutdatedEntitiesEvent:{} },
     clientMethods: {},
     serverMethods: {},
     schemas: {
