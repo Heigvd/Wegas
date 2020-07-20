@@ -5,10 +5,13 @@ import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { createStoreConnector } from '../data/connectStore';
 import u from 'immer';
 import { IconButton } from './Inputs/Buttons/IconButton';
-import { flexColumn, flex, itemCenter } from '../css/classes';
+import { flexColumn, flex, itemCenter, flexRow } from '../css/classes';
 import { cx, css } from 'emotion';
 import { omit } from 'lodash-es';
 import { ITranslatableContent } from 'wegas-ts-api/typings/WegasEntities';
+import { translate } from '../Editor/Components/FormView/translatable';
+import { languagesCTX } from './Contexts/LanguagesProvider';
+import { themeVar } from './Style/ThemeVars';
 
 const popupBackgroundStyle = css({
   zIndex: 100000,
@@ -18,9 +21,15 @@ const popupBackgroundStyle = css({
   visibility: 'hidden',
 });
 
-const popupPanelStyle = css({
-  backgroundColor: 'red',
+const popupStyle = css({
+  margin: '5px',
+  padding: '2px',
+  backgroundColor: themeVar.Common.colors.HeaderColor,
   visibility: 'visible',
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  borderWidth: themeVar.Common.dimensions.BorderWidth,
+  borderStyle: 'solid',
+  borderColor: themeVar.Common.colors.MainColor,
 });
 
 interface Popup {
@@ -99,13 +108,20 @@ export const popupDispatch = getDispatch();
 
 export function PopupManager({ children }: React.PropsWithChildren<{}>) {
   const popups = useStore(s => s.popups);
+  const { lang } = React.useContext(languagesCTX);
   return (
     <>
       <div className={cx(flex, flexColumn, itemCenter, popupBackgroundStyle)}>
-        <div className={cx(flex, flexColumn, popupPanelStyle)}>
+        <div className={cx(flex, flexColumn)}>
           {Object.entries(popups).map(([id, { message, timestamp }]) => (
-            <div key={id}>
-              {`${timestamp} : ${message}`}
+            <div key={id} className={cx(flex, flexRow, itemCenter, popupStyle)}>
+              <div>
+                {`${new Date(timestamp).toLocaleTimeString(undefined, {
+                  hour: 'numeric',
+                  minute: 'numeric',
+                  second: 'numeric',
+                })} : ${translate(message, lang)}`}
+              </div>
               <IconButton
                 icon="times"
                 onClick={() =>

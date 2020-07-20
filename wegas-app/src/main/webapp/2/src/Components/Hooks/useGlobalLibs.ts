@@ -131,7 +131,7 @@ export function useGlobalLibs() {
 
         declare const ServerMethods : GlobalServerMethodClass;
 
-        declare const Popup : GlobalPopupClass;
+        declare const Popups : GlobalPopupClass;
 
         declare const WegasEvents : WegasEventClass;
 
