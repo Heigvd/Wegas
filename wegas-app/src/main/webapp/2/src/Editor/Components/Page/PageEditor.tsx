@@ -198,7 +198,7 @@ function SourceEditor() {
                   throw Error('No selected page');
                 }
               } catch (e) {
-                return { status: 'error', text: e };
+                return { status: 'error', text: (e as Error).message };
               }
             }}
           />
