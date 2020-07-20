@@ -17,7 +17,7 @@ import schemaGlobalSrc from '!!raw-loader!../../../types/scripts/SchemaGlobals.d
 // @ts-ignore
 import classesGlobalSrc from '!!raw-loader!../../../types/scripts/ClassesGlobals.d.ts';
 // @ts-ignore
-import modalsGlobalSrc from '!!raw-loader!../../../types/scripts/ModalsGlobals.d.ts';
+import popupsGlobalSrc from '!!raw-loader!../../../types/scripts/PopupsGlobals.d.ts';
 // @ts-ignore
 import wegasEventsGlobalSrc from '!!raw-loader!../../../types/scripts/WegasEventsGlobals.d.ts';
 // @ts-ignore
@@ -131,7 +131,7 @@ export function useGlobalLibs() {
 
         declare const ServerMethods : GlobalServerMethodClass;
 
-        declare const Modals : GlobalModalClass;
+        declare const Popup : GlobalPopupClass;
 
         declare const WegasEvents : WegasEventClass;
 
@@ -153,7 +153,7 @@ export function useGlobalLibs() {
             ${serverMethodGlobalSrc}\n
             ${schemaGlobalSrc}\n
             ${classesGlobalSrc}\n
-            ${modalsGlobalSrc}\n
+            ${popupsGlobalSrc}\n
             ${wegasEventsGlobalSrc}\n
             ${libs}\n
           `,

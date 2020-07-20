@@ -33,17 +33,49 @@ const Eval = React.memo(function Eval({ script }: { script: string }) {
 Eval.displayName = 'Eval';
 
 // const testScript = 'Variable.find(gameModel,"initGroups");';
-// const testScript = `Modals.addModal("TESUS","Hello there!");`;
 const testScript = `
-WegasEvents.addEventHandler('manageOutOfBound', 'ExceptionEvent', event => {
-  Modals.addModal('test', 'Registered');
+Popups.addPopup('testmodal', {
+  '@class': 'TranslatableContent',
+  translations: {
+    FR: {
+      '@class': 'Translation',
+      lang: 'FR',
+      translation: "Ceci est une modale",
+      status: '',
+    },
+  },
+  version: 0,
+});
+WegasEvents.addEventHandler('manageOutOfBound', 'ExceptionEvent', (event) => {
   event.exceptions
-    .filter(ex => ex['@class'] === 'WegasOutOfBoundException')
+    .filter((ex) => ex['@class'] === 'WegasOutOfBoundException')
     .map((ex: WegasOutOfBoundException) => {
       if (ex.variableName === 'timeCards') {
-        Modals.addModal('notime', 'No more time');
+        Popups.addPopup('notime', {
+          '@class': 'TranslatableContent',
+          translations: {
+            FR: {
+              '@class': 'Translation',
+              lang: 'FR',
+              translation: "Il ne vous reste plus de carte temps",
+              status: '',
+            },
+          },
+          version: 0,
+        });
       } else if (ex.variableName === 'caisse') {
-        Modals.addModal('nomoney', 'No more money');
+        Popups.addPopup('nomoney', {
+          '@class': 'TranslatableContent',
+          translations: {
+            FR: {
+              '@class': 'Translation',
+              lang: 'FR',
+              translation: "Il ne vous reste plus d'argent",
+              status: '',
+            },
+          },
+          version: 0,
+        });
       }
     });
 });

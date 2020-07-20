@@ -19,7 +19,7 @@ import {
   SPlayer,
 } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
 import { ScriptableEntity } from 'wegas-ts-api/src/index';
-import { modalDispatch, addModal, ModalActionCreator } from '../ModalManager';
+import { popupDispatch, addPopup, PopupActionCreator } from '../PopupManager';
 import { ActionCreator } from '../../data/actions';
 
 interface GlobalVariableClass {
@@ -38,7 +38,7 @@ interface GlobalClasses {
   ServerMethods: GlobalServerMethodClass;
   Schemas: GlobalSchemaClass;
   Classes: GlobalClassesClass;
-  Modals: GlobalModalClass;
+  Popups: GlobalPopupClass;
   WegasEvents: WegasEventClass;
 }
 
@@ -221,13 +221,13 @@ export function useGlobals() {
     removeClass,
   };
 
-  globals.Modals = {
-    addModal: (id, message, duration) => {
+  globals.Popups = {
+    addPopup: (id, message, duration) => {
       if (id != null && message != null) {
-        modalDispatch(addModal(id, message, duration));
+        popupDispatch(addPopup(id, message, duration));
       }
     },
-    removeGlobal: id => modalDispatch(ModalActionCreator.REMOVE_MODAL({ id })),
+    removePopup: id => popupDispatch(PopupActionCreator.REMOVE_POPUP({ id })),
   };
 
   globals.WegasEvents = {
