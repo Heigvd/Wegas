@@ -2,15 +2,16 @@ import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
 import { css } from 'emotion';
 import { Modal } from '../../../Components/Modal';
-import SrcEditor, {
-  MonacoEditor,
-  MonacoSCodeEditor,
-  MonacoEditorSimpleToken,
-} from './SrcEditor';
+import SrcEditor from './SrcEditor';
 import { WegasScriptEditor } from './WegasScriptEditor';
 import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { MessageString, MessageStringStyle } from '../MessageString';
+import {
+  MonacoEditor,
+  MonacoSCodeEditor,
+  MonacoEditorSimpleToken,
+} from './editorHelpers';
 
 const infoDuration = 5000;
 

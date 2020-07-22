@@ -5,7 +5,6 @@ import { LabeledView, Labeled } from './labeled';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { scriptEditStyle } from './Script/Script';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
-import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 import { createScript } from '../../../Helper/wegasEntites';
 import { useStore } from '../../../data/store';
 import {
@@ -18,6 +17,7 @@ import { Menu } from '../../../Components/Menu';
 import { cx, css } from 'emotion';
 import { flex, flexRow, grow } from '../../../css/classes';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
+import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 
 const updateScript = (scriptContent: string, currentScript?: IScript) =>
   currentScript

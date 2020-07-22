@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useStore } from '../../data/store';
 import { State } from '../../data/Reducer/reducers';
 import { GameModel } from '../../data/selectors';
-import { MonacoDefinitionsLibraries } from '../../Editor/Components/ScriptEditors/SrcEditor';
 import { classesCTX } from '../Contexts/ClassesProvider';
 
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
@@ -26,6 +25,7 @@ import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMet
 import { refDifferent } from './storeHookFactory';
 import { wwarn } from '../../Helper/wegaslog';
 import { buildGlobalServerMethods } from '../../data/Reducer/globalState';
+import { MonacoDefinitionsLibraries } from '../../Editor/Components/ScriptEditors/editorHelpers';
 
 const stripRegex = /\/\* STRIP FROM \*\/[\s\S]*?\/\* STRIP TO \*\//gm;
 

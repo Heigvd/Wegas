@@ -144,96 +144,132 @@ export const wegasComponentActions: WegasComponentActions = {
   },
 };
 
-const actionsChoices: HashListChoices = [
+export const actionsChoices: HashListChoices = [
   {
     label: 'Open Page',
     value: {
       prop: 'openPage',
-      schema: schemaProps.object('Open Page', {
-        pageLoaderName: schemaProps.pageLoaderSelect('Page loader', true),
-        pageId: schemaProps.pageSelect('Page', true),
-        priority: schemaProps.number('Priority', false),
-      }),
+      schema: schemaProps.object(
+        'Open Page',
+        {
+          pageLoaderName: schemaProps.pageLoaderSelect('Page loader', true),
+          pageId: schemaProps.pageSelect('Page', true),
+          priority: schemaProps.number('Priority', false),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Open Url',
     value: {
       prop: 'openUrl',
-      schema: schemaProps.object('Open Url', {
-        url: schemaProps.string('Url', true),
-        priority: schemaProps.number('Priority', false),
-      }),
+      schema: schemaProps.object(
+        'Open Url',
+        {
+          url: schemaProps.string('Url', true),
+          priority: schemaProps.number('Priority', false),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Open File',
     value: {
       prop: 'openFile',
-      schema: schemaProps.object('Open File', {
-        fileDescriptor: schemaProps.path('File', true),
-        priority: schemaProps.number('Priority', false),
-      }),
+      schema: schemaProps.object(
+        'Open File',
+        {
+          fileDescriptor: schemaProps.path('File', true),
+          priority: schemaProps.number('Priority', false),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Impact variable',
     value: {
       prop: 'impactVariable',
-      schema: schemaProps.object('Impact variable', {
-        impact: schemaProps.script('Impact', true),
-        priority: schemaProps.number('Priority', false),
-      }),
+      schema: schemaProps.object(
+        'Impact variable',
+        {
+          impact: schemaProps.script('Impact', true),
+          priority: schemaProps.number('Priority', false),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Local script eval',
     value: {
       prop: 'localScriptEval',
-      schema: schemaProps.object('Local script eval', {
-        script: schemaProps.code('Local script', true, 'TypeScript'),
-        priority: schemaProps.number('Priority', false),
-      }),
+      schema: schemaProps.object(
+        'Local script eval',
+        {
+          script: schemaProps.code('Local script', true, 'TypeScript'),
+          priority: schemaProps.number('Priority', false),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Open popup page',
     value: {
       prop: 'openPopupPage',
-      schema: schemaProps.object('Open popup page', {
-        pageId: schemaProps.pageSelect('Page', true),
-        priority: schemaProps.number('Priority', false),
-      }),
+      schema: schemaProps.object(
+        'Open popup page',
+        {
+          pageId: schemaProps.pageSelect('Page', true),
+          priority: schemaProps.number('Priority', false),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Play sound',
     value: {
       prop: 'playSound',
-      schema: schemaProps.object('Play sound', {
-        fileDescriptor: schemaProps.path('File', true, 'FILE', {
-          filterType: 'grey',
-          fileType: 'audio',
-        }),
-        priority: schemaProps.number('Priority', false),
-      }),
+      schema: schemaProps.object(
+        'Play sound',
+        {
+          fileDescriptor: schemaProps.path('File', true, 'FILE', {
+            filterType: 'grey',
+            fileType: 'audio',
+          }),
+          priority: schemaProps.number('Priority', false),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Print variable',
     value: {
       prop: 'printVariable',
-      schema: schemaProps.object('Print variable', {
-        variableName: schemaProps.variable('Variable', true),
-        priority: schemaProps.number('Priority', false),
-      }),
+      schema: schemaProps.object(
+        'Print variable',
+        {
+          variableName: schemaProps.variable('Variable', true),
+          priority: schemaProps.number('Priority', false),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Confirm click',
     value: {
       prop: 'confirmClick',
-      schema: schemaProps.string('Confirmation message', true, 'Are you sure?'),
+      schema: schemaProps.string(
+        'Confirmation message',
+        false,
+        'Are you sure?',
+      ),
     },
   },
 ];
@@ -245,26 +281,26 @@ export interface WegasComponentLayoutCommonOptions {
   style?: React.CSSProperties;
 }
 
-const layoutCommonChoices: HashListChoices = [
+export const layoutCommonChoices: HashListChoices = [
   {
     label: 'Tooltip',
     value: {
       prop: 'tooltip',
-      schema: schemaProps.string('Tooltip'),
+      schema: schemaProps.string('Tooltip', false),
     },
   },
   {
     label: 'Theme mode',
     value: {
       prop: 'themeMode',
-      schema: schemaProps.themeModeSelect('Theme mode'),
+      schema: schemaProps.themeModeSelect('Theme mode', false),
     },
   },
   {
     label: 'Style',
     value: {
       prop: 'style',
-      schema: schemaProps.hashlist('Style'),
+      schema: schemaProps.hashlist('Style', false),
     },
   },
 ];
@@ -277,7 +313,7 @@ export interface WegasComponentLayoutConditionnalOptions {
   lock?: string;
 }
 
-const layoutConditionnalChoices: HashListChoices = [
+export const layoutConditionnalChoices: HashListChoices = [
   {
     label: 'Disable If',
     value: {
@@ -321,7 +357,7 @@ const layoutConditionnalChoices: HashListChoices = [
     label: 'Lock',
     value: {
       prop: 'lock',
-      schema: schemaProps.string('Lock', true),
+      schema: schemaProps.string('Lock', false),
     },
   },
 ];
@@ -332,41 +368,45 @@ export interface WegasComponentDecorations {
   unreadCount?: IScript;
 }
 
-const decorationsChoices: HashListChoices = [
+export const decorationsChoices: HashListChoices = [
   {
     label: 'Info Bullet',
     value: {
       prop: 'infoBullet',
-      schema: schemaProps.object('Info Bullet', {
-        showScript: schemaProps.script(
-          'Show',
-          false,
-          'GET',
-          'TypeScript',
-          'true',
-        ),
-        blinkScript: schemaProps.script(
-          'Blink',
-          false,
-          'GET',
-          'TypeScript',
-          'false',
-        ),
-        messageScript: schemaProps.customScript(
-          'Message',
-          false,
-          ['string'],
-          'TypeScript',
-        ),
-        // messageScript: schemaProps.code('Message', false, 'TypeScript'),
-      }),
+      schema: schemaProps.object(
+        'Info Bullet',
+        {
+          showScript: schemaProps.script(
+            'Show',
+            false,
+            'GET',
+            'TypeScript',
+            'true',
+          ),
+          blinkScript: schemaProps.script(
+            'Blink',
+            false,
+            'GET',
+            'TypeScript',
+            'false',
+          ),
+          messageScript: schemaProps.customScript(
+            'Message',
+            false,
+            ['string'],
+            'TypeScript',
+          ),
+          // messageScript: schemaProps.code('Message', false, 'TypeScript'),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Unread count',
     value: {
       prop: 'unreadCount',
-      schema: schemaProps.scriptVariable('Count in', true, [
+      schema: schemaProps.scriptVariable('Count in', false, [
         'number',
         'string',
         'object[]',
@@ -488,7 +528,7 @@ export type WegasComponentExtra = WegasComponentLayoutCommonOptions &
   WegasComponentLayoutConditionnalOptions &
   WegasComponentDecorations;
 
-const layoutChoices = {
+export const layoutChoices = {
   FLEX: flexlayoutChoices,
   LINEAR: [],
   ABSOLUTE: absolutelayoutChoices,

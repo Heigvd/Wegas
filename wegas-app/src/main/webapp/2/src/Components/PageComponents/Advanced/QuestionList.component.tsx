@@ -18,7 +18,10 @@ import { useStore } from '../../../data/store';
 import { shallowDifferent } from '../../Hooks/storeHookFactory';
 import { entityIs } from '../../../data/entities';
 import { ConnectedQuestionDisplay } from '../../Outputs/Question';
-import { IScript, IQuestionDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import {
+  IScript,
+  IQuestionDescriptor,
+} from 'wegas-ts-api/typings/WegasEntities';
 import { SListDescriptor } from 'wegas-ts-api/typings/WegasScriptableEntities';
 
 const unreadSignalStyle = css({ margin: '3px' });
@@ -27,7 +30,9 @@ interface QuestionListDisplayProps extends WegasComponentProps {
   questionList?: IScript;
 }
 
-function QuestionListDisplay({ questionList }: QuestionListDisplayProps) {
+export default function QuestionListDisplay({
+  questionList,
+}: QuestionListDisplayProps) {
   const entities = useStore(() => {
     const descriptor = safeClientScriptEval<SListDescriptor>(
       entityIs(questionList, 'Script')
