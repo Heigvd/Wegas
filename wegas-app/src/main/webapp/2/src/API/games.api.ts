@@ -1,4 +1,5 @@
 import { rest } from './rest';
+import { IGame } from 'wegas-ts-api/typings/WegasEntities';
 
 /*
 DELETE	/Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}{sep: /?}Game

@@ -23,6 +23,7 @@ import {
 } from '../../../Components/Hooks/useScript';
 import { DropMenu } from '../../../Components/DropMenu';
 import { MessageString } from '../MessageString';
+import { IAbstractContentDescriptor, IGameModelContent } from 'wegas-ts-api/typings/WegasEntities';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [

@@ -22,6 +22,7 @@ import { MessageString } from '../MessageString';
 import { FilePickingType, FileFilter } from './FileBrowser';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { themeVar } from '../../../Components/Style/ThemeVars';
+import { IAbstractContentDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 const clickableStyle = css({
   cursor: 'pointer',
@@ -469,7 +470,7 @@ export function FileBrowserNode({
       <div className={cx(block, grow)}>
         <div
           className={cx(flex, grow, {
-            [clickableStyle]: typeFilterApproved,
+            [clickableStyle]: typeFilterApproved && pickApproved,
             [disabledStyle]: greyFiltered,
             [dropZoneStyle]:
               isDirectory(currentFile) && dropZoneProps.isShallowOver,

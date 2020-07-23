@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useScript } from '../../Hooks/useScript';
 import { useComputeUnreadCount, WegasComponentExtra } from './options';
-import { InfoBulletProps } from './InfoBullet';
+import { PlayerInfoBulletProps } from './InfoBullet';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { themeCTX } from '../../Style/Theme';
 import { useStore } from '../../../data/store';
@@ -11,7 +11,7 @@ export interface ExtrasState {
   hidden?: boolean;
   readOnly?: boolean;
   locked?: boolean;
-  infoBulletProps?: InfoBulletProps;
+  infoBulletProps?: PlayerInfoBulletProps;
   tooltip?: string;
   themeModeClassName?: string;
 }

@@ -50,6 +50,25 @@ export type HashListChoice = DropMenuItem<HashListItem> & {
 
 export type HashListChoices = HashListChoice[];
 
+export function hashListChoicesToSchema(
+  choices?: HashListChoices,
+): { [prop: string]: SchemaPropsSchemas } {
+  return choices
+    ? choices.reduce(
+        (o, choice) => ({
+          ...o,
+          [choice.value.prop]: isHashListValue(choice.value)
+            ? choice.value.schema
+            : {
+                type: 'object',
+                properties: hashListChoicesToSchema(choice.items),
+              },
+        }),
+        {},
+      )
+    : {};
+}
+
 function isIntermediateKey(
   key?: string,
   choices?: HashListChoices,

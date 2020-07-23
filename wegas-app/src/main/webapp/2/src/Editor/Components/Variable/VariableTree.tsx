@@ -35,6 +35,7 @@ import {
   localSelection,
   searchSelection,
 } from '../../../css/classes';
+import { IVariableDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -85,6 +86,7 @@ function TreeView({ variables, localState, localDispatch }: TreeProps) {
               e.ctrlKey && localDispatch ? localDispatch : globalDispatch;
             dispatch(Actions.EditorActions.createVariable(i.value));
           }}
+          // direction="right"
         />
         <SearchTool />
       </Toolbar.Header>

@@ -7,6 +7,7 @@ import { schemaProps } from '../tools/schemaProps';
 import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { NumberBox } from '../../Inputs/Number/NumberBox';
+import { IScript, INumberDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 interface PlayerBoxesProps extends WegasFunctionnalComponentProps {
   /**
@@ -39,15 +40,15 @@ function PlayerBoxes({
   return notFound ? (
     <pre>Not found: {content}</pre>
   ) : (
-    <NumberBox
-      value={instance?.value}
-      minValue={1}
-      maxValue={descriptor?.maxValue == null ? undefined : descriptor?.maxValue}
-      label={label}
-      hideBoxValue={hideBoxValue}
-      showLabelValue={showLabelValue}
-    />
-  );
+      <NumberBox
+        value={instance?.value}
+        minValue={1}
+        maxValue={descriptor?.getMaxValue() != null ? descriptor.getMaxValue() as number : undefined}
+        label={label}
+        hideBoxValue={hideBoxValue}
+        showLabelValue={showLabelValue}
+      />
+    );
 }
 
 registerComponent(
@@ -58,7 +59,7 @@ registerComponent(
     'box',
     {
       script: schemaProps.scriptVariable('Variable', false, [
-        'ISNumberDescriptor',
+        'SNumberDescriptor',
       ]),
       label: schemaProps.string('Label', false),
       hideBoxValue: schemaProps.boolean('Hide value in boxes', false),

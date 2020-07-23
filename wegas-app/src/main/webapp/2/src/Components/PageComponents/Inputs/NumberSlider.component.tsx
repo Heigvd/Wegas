@@ -13,6 +13,7 @@ import { store } from '../../../data/store';
 import { Actions } from '../../../data';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
+import { IScript, INumberDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 interface PlayerNumberSliderProps extends WegasFunctionnalComponentProps {
   /**
@@ -53,8 +54,8 @@ function PlayerNumberSlider(props: PlayerNumberSliderProps) {
           );
         }
       }}
-      min={descriptor!.minValue || 0}
-      max={descriptor!.maxValue || 1}
+      min={descriptor!.getMinValue() || 0}
+      max={descriptor!.getMaxValue() || 1}
     />
   );
 }
@@ -67,7 +68,7 @@ registerComponent(
     'sliders-h',
     {
       script: schemaProps.scriptVariable('Variable', true, [
-        'ISNumberDescriptor',
+        'SNumberDescriptor',
       ]),
       steps: schemaProps.number('Steps', false),
       displayValues: schemaProps.select('Display value', false, displayModes),

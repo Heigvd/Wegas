@@ -2,6 +2,7 @@ import * as React from 'react';
 import { css, keyframes, cx } from 'emotion';
 import { useScript } from '../../Hooks/useScript';
 import { themeVar } from '../../Style/ThemeVars';
+import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 
 const infoBeamStyle = css({
   position: 'absolute',
@@ -22,29 +23,21 @@ const blinkStyle = css(`
 
 export interface InfoBulletProps {
   /**
-   * showScript - the condition that determines if the info beam must be visible or not
+   * show - the condition that determines if the info beam must be visible or not
+   * If not set, the component will be shown
    */
-  showScript?: IScript;
+  show?: boolean;
   /**
-   * blinkScript - the condition that determines if the info beam must be blinking or not
+   * blink - the condition that determines if the info beam must be blinking or not
    */
-  blinkScript?: IScript;
+  blink?: boolean;
   /**
-   * messageScript - the script that returns the message to be displayed in the info beam
+   * message - the message to be displayed in the info beam
    */
-  messageScript?: IScript;
+  message?: string;
 }
 
-export function InfoBullet({
-  showScript,
-  blinkScript,
-  messageScript,
-}: InfoBulletProps) {
-  let show = useScript<boolean>(showScript?.content);
-  show = show == null ? true : false;
-  const blink = useScript<boolean>(blinkScript?.content) || false;
-  const message = useScript<string>(messageScript?.content) || '';
-
+export function InfoBullet({ show, blink, message }: InfoBulletProps) {
   return show !== false ? (
     <div
       ref={container => {
@@ -61,4 +54,32 @@ export function InfoBullet({
       {message}
     </div>
   ) : null;
+}
+
+export interface PlayerInfoBulletProps {
+  /**
+   * showScript - the condition that determines if the info beam must be visible or not
+   */
+  showScript?: IScript;
+  /**
+   * blinkScript - the condition that determines if the info beam must be blinking or not
+   */
+  blinkScript?: IScript;
+  /**
+   * messageScript - the script that returns the message to be displayed in the info beam
+   */
+  messageScript?: IScript;
+}
+
+export function PlayerInfoBullet({
+  showScript,
+  blinkScript,
+  messageScript,
+}: PlayerInfoBulletProps) {
+  let show = useScript<boolean>(showScript?.content);
+  show = show == null ? true : false;
+  const blink = useScript<boolean>(blinkScript?.content) || false;
+  const message = useScript<string>(messageScript?.content) || '';
+
+  return <InfoBullet show={show} blink={blink} message={message} />;
 }

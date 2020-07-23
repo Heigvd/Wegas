@@ -11,9 +11,9 @@ interface WEvent {
 interface WDelayedEvent {
   delayedFire: (minutes: number, second: number, eventName: string) => void;
 }
-///
 
 interface GlobalServerMethod {
+  '@class': 'GlobalServerMethod';
   label: string;
   returns?: string;
   parameters: {}[];
@@ -23,17 +23,24 @@ interface GlobalServerMethods {
   [method: string]: GlobalServerMethod | undefined;
 }
 
+interface GlobalServerObject {
+  [object: string]: GlobalServerObject | GlobalServerMethod | undefined;
+}
+
 interface ServerMethodPayload {
+  objects: [string, ...string[]];
   method: string;
   schema?: GlobalServerMethod;
 }
 
 /**
  * Register a server method that can be used in wysywig
- * @param method - the method to add (ex: "Something.Else.call")
+ * @param objects - the objects containing the method (ex: PMGHelper.MailMethods.<method> => ["PMGHelper","MailMethods"])
+ * @param method - the method to add
  * @param schema - method's schema including : label, return type (optionnal) and the parameter's shemas
  */
 type ServerMethodRegister = (
+  objects: [string, ...string[]],
   method: string,
   schema: {
     label: string;

@@ -11,10 +11,21 @@ import {
 import { withDefault, IconComp } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { VariableDescriptor } from '../../../data/selectors';
+import {
+  IAbstractEntity,
+  IListDescriptor,
+  IQuestionDescriptor,
+  IWhQuestionDescriptor,
+  IChoiceDescriptor,
+  IResult,
+  IEvaluationDescriptorContainer,
+  IPeerReviewDescriptor,
+  IEvaluationDescriptor,
+} from 'wegas-ts-api/typings/WegasEntities';
 
 function buildMenuItems(
   variable: IAbstractEntity,
-): Promise<DropMenuItem<string>[]> {
+): Promise<DropMenuItem<IAbstractEntity['@class']>[]> {
   return getChildren(variable).then(children => {
     return children.map(i => {
       const Label = asyncSFC(async () => {
@@ -65,6 +76,7 @@ export const AddMenuParent = asyncSFC(
           } else {
             focusTab && focusTab('Editor');
           }
+
           dispatch(Actions.EditorActions.createVariable(i.value, variable));
         }}
       />

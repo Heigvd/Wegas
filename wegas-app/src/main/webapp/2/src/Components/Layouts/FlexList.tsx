@@ -61,40 +61,40 @@ export const defaultFlexLayoutOptionsKeys = Object.keys(
   defaultFlexLayoutOptions,
 );
 
-export const flexItemSchema: HashListChoices = [
+export const flexItemChoices: HashListChoices = [
   {
     label: 'Order',
     value: {
       prop: 'order',
-      schema: schemaProps.number('Order', true, 0),
+      schema: schemaProps.number('Order', false, 0),
     },
   },
   {
     label: 'Align Self',
     value: {
       prop: 'alignSelf',
-      schema: schemaProps.select('Align self', true, alignSelfValues, 'auto'),
+      schema: schemaProps.select('Align self', false, alignSelfValues, 'auto'),
     },
   },
   {
     label: 'Flex grow',
     value: {
       prop: 'flexGrow',
-      schema: schemaProps.number('Flex grow', true, 0),
+      schema: schemaProps.number('Flex grow', false, 0),
     },
   },
   {
     label: 'Flex shrink',
     value: {
       prop: 'flexShrink',
-      schema: schemaProps.number('Flex shrink', true, 1),
+      schema: schemaProps.number('Flex shrink', false, 1),
     },
   },
   {
     label: 'Flex basis',
     value: {
       prop: 'flexBasis',
-      schema: schemaProps.string('Flex basis', true, 'auto'),
+      schema: schemaProps.string('Flex basis', false, 'auto'),
     },
   },
 ];

@@ -4,6 +4,7 @@ import {
   useVariableDescriptor,
   useVariableInstance,
 } from '../../Hooks/useVariable';
+import { INumberDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 export default function NumberValue(props: { variable: string }) {
   const descriptor = useVariableDescriptor<INumberDescriptor>(props.variable);

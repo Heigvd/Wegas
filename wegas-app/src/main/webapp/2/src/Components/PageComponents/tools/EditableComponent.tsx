@@ -44,11 +44,10 @@ import {
   defaultAbsoluteLayoutPropsKeys,
   AbsoluteItemLayoutProps,
 } from '../../Layouts/Absolute';
-import { InfoBullet } from './InfoBullet';
+import { PlayerInfoBullet } from './InfoBullet';
 import { EditHandle } from './EditHandle';
 import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
 import { ExtrasState, ComponentExtrasManager } from './ExtrasComponent';
-// import { ActionsState, ComponentActionsManager } from './ActionsComponent';
 import {
   PlayerLinearLayoutProps,
   PlayerLinearLayoutChildrenProps,
@@ -832,7 +831,7 @@ export function ComponentContainer({
           </ErrorBoundary>
         )}
         {extraState.infoBulletProps && (
-          <InfoBullet {...extraState.infoBulletProps} />
+          <PlayerInfoBullet {...extraState.infoBulletProps} />
         )}
         {dragHoverState && editable && childrenType !== 'ABSOLUTE' && (
           <ComponentDropZone
@@ -1155,7 +1154,7 @@ export function JSONComponentContainer({
           </ErrorBoundary>
         )}
         {extraState.infoBulletProps && (
-          <InfoBullet {...extraState.infoBulletProps} />
+          <PlayerInfoBullet {...extraState.infoBulletProps} />
         )}
         {dragHoverState && editable && childrenType !== 'ABSOLUTE' && (
           <ComponentDropZone

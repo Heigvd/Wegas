@@ -1,4 +1,5 @@
 import { managedModeRequest } from './rest';
+import { IChoiceDescriptor, IReply, IQuestionInstance } from 'wegas-ts-api/typings/WegasEntities';
 
 const QD_BASE = (gameModelId: number) =>
   `/GameModel/${gameModelId}/VariableDescriptor/QuestionDescriptor/`;

@@ -6,10 +6,21 @@ import { ThunkResult, store } from '../store';
 import { Player } from '../selectors';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { QuestionDescriptorAPI } from '../../API/questionDescriptor.api';
-import { isSelected, getReply } from '../proxyfy/methods/ChoiceDescriptor';
 import { getInstance } from '../methods/VariableDescriptorMethods';
 import { createScript } from '../../Helper/wegasEntites';
 import { InboxAPI } from '../../API/inbox.api';
+import {
+  IVariableInstance,
+  IScript,
+  IPlayer,
+  IVariableDescriptor,
+  IChoiceDescriptor,
+  IChoiceInstance,
+  IQuestionDescriptor,
+  IMessage,
+  IInboxDescriptor,
+  IReply,
+} from 'wegas-ts-api/typings/WegasEntities';
 
 export interface VariableInstanceState {
   [id: string]: Readonly<IVariableInstance> | undefined;
@@ -46,14 +57,12 @@ export default variableInstances;
 
 export function updateInstance(
   variableInstance: IVariableInstance,
-  cb?: () => void,
 ): ThunkResult<Promise<StateActions | void>> {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableInstanceAPI.update(variableInstance, gameModelId).then(res =>
-      store.dispatch(
-        manageResponseHandler(res, dispatch, getState().global, cb),
-      ),
+      // Dispatching changes to global store and passing local store that manages editor state
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
 }
@@ -152,14 +161,10 @@ export function selectChoice(
   };
 }
 
-export function cancelReply(
-  choice: IChoiceDescriptor,
-  player?: IPlayer,
-): ThunkResult {
+export function cancelReply(reply: IReply, player?: IPlayer): ThunkResult {
   return function (dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
-    const reply = getReply(choice)(p);
     if (p.id == null || !reply) {
       throw Error('Missing persisted player');
     }
@@ -173,13 +178,21 @@ export function cancelReply(
   };
 }
 
+/**
+ * MCQ cbx question
+ */
 export function toggleReply(
   choice: IChoiceDescriptor,
   player?: IPlayer,
 ): ThunkResult {
   const p = player != null ? player : Player.selectCurrent();
-  if (isSelected(choice)(p)) {
-    return cancelReply(choice, p);
+
+  const ci = getInstance<IChoiceInstance>(choice, p);
+  const reply = ci?.replies.find(r => !r.validated);
+
+  if (reply && !reply?.ignored) {
+    // cancel not yet validated reply
+    return cancelReply(reply, p);
   } else {
     return selectChoice(choice, p);
   }

@@ -1,12 +1,15 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
+import { LanguageSelector } from '../../../Components/Contexts/LanguagesProvider';
 
 export interface LabeledView {
   label?: React.ReactNode;
   description?: string;
   index?: number;
+  onLanguage?: (lang: string) => void;
 }
+
 interface LabeledProps extends LabeledView {
   children: (inputProps: {
     inputId: string;
@@ -30,6 +33,7 @@ export const Labeled: React.FunctionComponent<LabeledProps> = ({
   children,
   description,
   index,
+  onLanguage,
 }: LabeledProps) => {
   const internalId = React.useRef(`__labelInput__${id++}`);
   const { currentFeatures } = React.useContext(featuresCTX);
@@ -46,6 +50,9 @@ export const Labeled: React.FunctionComponent<LabeledProps> = ({
           {label}
           {currentFeatures.includes('ADVANCED') && index != null && (
             <span style={{ marginLeft: '1em' }}>{index}</span>
+          )}
+          {onLanguage && (
+            <LanguageSelector onSelect={item => onLanguage(item.value.code)} />
           )}
         </span>
       </label>

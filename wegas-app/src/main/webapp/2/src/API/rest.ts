@@ -1,4 +1,5 @@
 import { store } from '../data/store';
+import { IAbstractEntity } from 'wegas-ts-api/typings/WegasEntities';
 
 type ContentType =
   | 'application/json'
@@ -36,7 +37,7 @@ export interface IManagedResponse {
   '@class': 'ManagedResponse';
   deletedEntities: IAbstractEntity[];
   updatedEntities: IAbstractEntity[];
-  events: WegasEvents[];
+  events: WegasEvent[];
 }
 
 export function rest(

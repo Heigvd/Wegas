@@ -200,7 +200,7 @@ function formToWegasComponent(
   };
 }
 
-function wegasComponentSchema(
+export function wegasComponentSchema(
   pageComponentSchema: {
     description: string;
     properties: {

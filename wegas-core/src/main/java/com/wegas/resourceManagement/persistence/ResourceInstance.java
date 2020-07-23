@@ -88,7 +88,7 @@ public class ResourceInstance extends VariableInstance implements Propertable {
     /**
      *
      */
-    @WegasEntityProperty(view = @View(label = "Active"))
+    @WegasEntityProperty(view = @View(label = "Active"), nullable = false, optional = false)
     private boolean active = true;
     /**
      *

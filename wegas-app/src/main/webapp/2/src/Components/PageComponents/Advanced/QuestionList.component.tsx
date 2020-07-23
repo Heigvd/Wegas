@@ -7,7 +7,7 @@ import { schemaProps } from '../tools/schemaProps';
 import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
 import { EntityChooser } from '../../EntityChooser';
 import { TranslatableContent } from '../../../data/i18n';
-import { isUnread } from '../../../data/proxyfy/methods/QuestionDescriptor';
+import { isUnread } from '../../../data/scriptable/impl/QuestionDescriptor';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
 import { cx, css } from 'emotion';
@@ -18,6 +18,11 @@ import { useStore } from '../../../data/store';
 import { shallowDifferent } from '../../Hooks/storeHookFactory';
 import { entityIs } from '../../../data/entities';
 import { ConnectedQuestionDisplay } from '../../Outputs/Question';
+import {
+  IScript,
+  IQuestionDescriptor,
+} from 'wegas-ts-api/typings/WegasEntities';
+import { SListDescriptor } from 'wegas-ts-api/typings/WegasScriptableEntities';
 
 const unreadSignalStyle = css({ margin: '3px' });
 
@@ -25,9 +30,11 @@ interface QuestionListDisplayProps extends WegasFunctionnalComponentProps {
   questionList?: IScript;
 }
 
-function QuestionListDisplay({ questionList }: QuestionListDisplayProps) {
+export default function QuestionListDisplay({
+  questionList,
+}: QuestionListDisplayProps) {
   const entities = useStore(() => {
-    const descriptor = safeClientScriptEval<ISListDescriptor>(
+    const descriptor = safeClientScriptEval<SListDescriptor>(
       entityIs(questionList, 'Script')
         ? questionList
           ? questionList.content
@@ -35,11 +42,11 @@ function QuestionListDisplay({ questionList }: QuestionListDisplayProps) {
         : '',
     );
 
-    if (descriptor == null || descriptor.name == null) {
+    if (descriptor == null || descriptor.getName() == null) {
       return [];
     }
     return flatten<IQuestionDescriptor>(
-      descriptor,
+      descriptor.getEntity(),
       'QuestionDescriptor',
     ).filter(q => {
       const instance = getInstance(q);
@@ -81,7 +88,7 @@ registerComponent(
     'bars',
     {
       questionList: schemaProps.scriptVariable('Question list', true, [
-        'ISListDescriptor',
+        'SListDescriptor',
       ]),
     },
     ['string'],

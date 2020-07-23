@@ -1,13 +1,9 @@
 import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { CommonView, CommonViewContainer } from './commonView';
-import { LabeledView, Labeled } from './labeled';
-import {
-  FileBrowser,
-  FileFilter,
-  FilePickingType,
-} from '../FileBrowser/FileBrowser';
-import { generateAbsolutePath } from '../../../API/files.api';
+import { CommonView } from './commonView';
+import { LabeledView } from './labeled';
+import { FileFilter, FilePickingType } from '../FileBrowser/FileBrowser';
+import { CustomFileSelector } from './FileSelector';
 
 interface PathSelectProps extends WidgetProps.BaseProps {
   view: CommonView &
@@ -17,23 +13,5 @@ interface PathSelectProps extends WidgetProps.BaseProps {
 }
 
 export default function PathSelector(props: PathSelectProps) {
-  const { errorMessage, view, value, onChange } = props;
-  return (
-    <CommonViewContainer view={view} errorMessage={errorMessage}>
-      <Labeled {...view}>
-        {({ inputId, labelNode }) => (
-          <>
-            {labelNode}
-            <FileBrowser
-              id={inputId}
-              filter={view.filter}
-              selectedGlobalPaths={value ? [value] : undefined}
-              onFileClick={file => onChange(generateAbsolutePath(file))}
-              pick={view.pick}
-            />
-          </>
-        )}
-      </Labeled>
-    </CommonViewContainer>
-  );
+  return <CustomFileSelector {...props} valueType="string" />;
 }

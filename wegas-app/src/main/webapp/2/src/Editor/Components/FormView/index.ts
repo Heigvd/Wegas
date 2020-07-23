@@ -31,6 +31,7 @@ import FileSelector from './FileSelector';
 import { CustomScript } from './CustomScript';
 import ThemeModeSelect from './ThemeModeSelect';
 import PathSelector from './PathSelector';
+import AttachmentSelector from './AttachmentSelector';
 
 export const DEFINED_VIEWS = {
   hidden,
@@ -64,6 +65,7 @@ export const DEFINED_VIEWS = {
   thememodeselect: ThemeModeSelect,
   file: FileSelector,
   path: PathSelector,
+  attachment: AttachmentSelector,
 };
 setDefaultWidgets(DEFINED_VIEWS);
 

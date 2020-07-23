@@ -10,6 +10,7 @@ import { MessageString } from '../MessageString';
 import { css } from 'emotion';
 import { focusTabContext } from '../LinearTabLayout/LinearLayout';
 import { mainLayoutId } from '../Layout';
+import { IAbstractContentDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 // import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const fileBrowserStyle = css({

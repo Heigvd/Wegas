@@ -10,6 +10,10 @@ import { Toggler } from '../../Inputs/Boolean/Toggler';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
+import {
+  IScript,
+  IBooleanDescriptor,
+} from 'wegas-ts-api/typings/WegasEntities';
 
 interface PlayerBooleanProps extends WegasFunctionnalComponentProps {
   /**
@@ -74,14 +78,14 @@ registerComponent(
     'check-square',
     {
       script: schemaProps.scriptVariable('Variable', true, [
-        'ISBooleanDescriptor',
+        'SBooleanDescriptor',
       ]),
       label: schemaProps.string('Label', false),
       type: schemaProps.select('Type', false, ['checkbox', 'toggler']),
       disabled: schemaProps.boolean('Disabled', false),
       inactive: schemaProps.boolean('Inactive', false),
     },
-    ['ISBooleanDescriptor'],
+    ['SBooleanDescriptor'],
     () => ({}),
   ),
 );

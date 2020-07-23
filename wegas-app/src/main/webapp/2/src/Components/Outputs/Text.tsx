@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useTranslate } from '../../Editor/Components/FormView/translatable';
+import { ITranslatableContent } from 'wegas-ts-api/typings/WegasEntities';
 
 export interface TextProps extends ClassAndStyle {
   htmlTranslatableContent: ITranslatableContent;

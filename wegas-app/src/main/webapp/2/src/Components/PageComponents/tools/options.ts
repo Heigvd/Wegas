@@ -9,15 +9,28 @@ import { wlog } from '../../../Helper/wegaslog';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 import { schemaProps } from './schemaProps';
-import { InfoBulletProps } from './InfoBullet';
-import { flexItemSchema } from '../../Layouts/FlexList';
-import { absoluteItemSchema } from '../../Layouts/Absolute';
+import { PlayerInfoBulletProps } from './InfoBullet';
+import { flexItemChoices } from '../../Layouts/FlexList';
+import { absoluteItemChoices } from '../../Layouts/Absolute';
 import { ContainerTypes } from './EditableComponent';
-import { entityIs } from '../../../data/entities';
-import { getQuestionReplies } from '../../../data/proxyfy/instancesHelpers';
 import { createScript } from '../../../Helper/wegasEntites';
-import { proxyfy } from '../../../data/proxyfy';
-import { menuItemSchema } from '../../Layouts/Menu';
+import { IScript } from 'wegas-ts-api/typings/WegasEntities';
+import { instantiate } from '../../../data/scriptable';
+import {
+  SDialogueDescriptor,
+  SFSMInstance,
+  SInboxInstance,
+  SQuestionInstance,
+  SQuestionDescriptor,
+  SWhQuestionInstance,
+  SSurveyInstance,
+  SPeerReviewInstance,
+  SInboxDescriptor,
+  SWhQuestionDescriptor,
+  SSurveyDescriptor,
+  SPeerReviewDescriptor,
+} from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { menuItemChoices } from '../../Layouts/Menu';
 
 export interface WegasComponentOptionsAction {
   priority?: number;
@@ -149,96 +162,132 @@ export const wegasComponentActions: WegasComponentActions = {
   },
 };
 
-const actionsChoices: HashListChoices = [
+export const actionsChoices: HashListChoices = [
   {
     label: 'Open Page',
     value: {
       prop: 'openPage',
-      schema: schemaProps.object('Open Page', {
-        pageLoaderName: schemaProps.pageLoaderSelect('Page loader', true),
-        pageId: schemaProps.pageSelect('Page', true),
-        priority: schemaProps.number('Priority', false),
-      }),
+      schema: schemaProps.object(
+        'Open Page',
+        {
+          pageLoaderName: schemaProps.pageLoaderSelect('Page loader', true),
+          pageId: schemaProps.pageSelect('Page', true),
+          priority: schemaProps.number('Priority', false),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Open Url',
     value: {
       prop: 'openUrl',
-      schema: schemaProps.object('Open Url', {
-        url: schemaProps.string('Url', true),
-        priority: schemaProps.number('Priority', false),
-      }),
+      schema: schemaProps.object(
+        'Open Url',
+        {
+          url: schemaProps.string('Url', true),
+          priority: schemaProps.number('Priority', false),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Open File',
     value: {
       prop: 'openFile',
-      schema: schemaProps.object('Open File', {
-        fileDescriptor: schemaProps.path('File', true),
-        priority: schemaProps.number('Priority', false),
-      }),
+      schema: schemaProps.object(
+        'Open File',
+        {
+          fileDescriptor: schemaProps.path('File', true),
+          priority: schemaProps.number('Priority', false),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Impact variable',
     value: {
       prop: 'impactVariable',
-      schema: schemaProps.object('Impact variable', {
-        impact: schemaProps.script('Impact', true),
-        priority: schemaProps.number('Priority', false),
-      }),
+      schema: schemaProps.object(
+        'Impact variable',
+        {
+          impact: schemaProps.script('Impact', true),
+          priority: schemaProps.number('Priority', false),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Local script eval',
     value: {
       prop: 'localScriptEval',
-      schema: schemaProps.object('Local script eval', {
-        script: schemaProps.code('Local script', true, 'TypeScript'),
-        priority: schemaProps.number('Priority', false),
-      }),
+      schema: schemaProps.object(
+        'Local script eval',
+        {
+          script: schemaProps.code('Local script', true, 'TypeScript'),
+          priority: schemaProps.number('Priority', false),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Open popup page',
     value: {
       prop: 'openPopupPage',
-      schema: schemaProps.object('Open popup page', {
-        pageId: schemaProps.pageSelect('Page', true),
-        priority: schemaProps.number('Priority', false),
-      }),
+      schema: schemaProps.object(
+        'Open popup page',
+        {
+          pageId: schemaProps.pageSelect('Page', true),
+          priority: schemaProps.number('Priority', false),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Play sound',
     value: {
       prop: 'playSound',
-      schema: schemaProps.object('Play sound', {
-        fileDescriptor: schemaProps.path('File', true, 'FILE', {
-          filterType: 'grey',
-          fileType: 'audio',
-        }),
-        priority: schemaProps.number('Priority', false),
-      }),
+      schema: schemaProps.object(
+        'Play sound',
+        {
+          fileDescriptor: schemaProps.path('File', true, 'FILE', {
+            filterType: 'grey',
+            fileType: 'audio',
+          }),
+          priority: schemaProps.number('Priority', false),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Print variable',
     value: {
       prop: 'printVariable',
-      schema: schemaProps.object('Print variable', {
-        variableName: schemaProps.variable('Variable', true),
-        priority: schemaProps.number('Priority', false),
-      }),
+      schema: schemaProps.object(
+        'Print variable',
+        {
+          variableName: schemaProps.variable('Variable', true),
+          priority: schemaProps.number('Priority', false),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Confirm click',
     value: {
       prop: 'confirmClick',
-      schema: schemaProps.string('Confirmation message', true, 'Are you sure?'),
+      schema: schemaProps.string(
+        'Confirmation message',
+        false,
+        'Are you sure?',
+      ),
     },
   },
 ];
@@ -251,26 +300,26 @@ export interface WegasComponentLayoutCommonOptions {
   containerStyle?: React.CSSProperties;
 }
 
-const layoutCommonChoices: HashListChoices = [
+export const layoutCommonChoices: HashListChoices = [
   {
     label: 'Tooltip',
     value: {
       prop: 'tooltip',
-      schema: schemaProps.string('Tooltip'),
+      schema: schemaProps.string('Tooltip', false),
     },
   },
   {
     label: 'Theme mode',
     value: {
       prop: 'themeMode',
-      schema: schemaProps.themeModeSelect('Theme mode'),
+      schema: schemaProps.themeModeSelect('Theme mode', false),
     },
   },
   {
     label: 'Style',
     value: {
       prop: 'style',
-      schema: schemaProps.hashlist('Style'),
+      schema: schemaProps.hashlist('Style', false),
     },
   },
   {
@@ -290,7 +339,7 @@ export interface WegasComponentLayoutConditionnalOptions {
   lock?: string;
 }
 
-const layoutConditionnalChoices: HashListChoices = [
+export const layoutConditionnalChoices: HashListChoices = [
   {
     label: 'Disable If',
     value: {
@@ -334,172 +383,145 @@ const layoutConditionnalChoices: HashListChoices = [
     label: 'Lock',
     value: {
       prop: 'lock',
-      schema: schemaProps.string('Lock', true),
+      schema: schemaProps.string('Lock', false),
     },
   },
 ];
 
 // OPTIONS -> DECORATIONS
 export interface WegasComponentDecorations {
-  infoBullet?: InfoBulletProps;
+  infoBullet?: PlayerInfoBulletProps;
   unreadCount?: IScript;
 }
 
-const decorationsChoices: HashListChoices = [
+export const decorationsChoices: HashListChoices = [
   {
     label: 'Info Bullet',
     value: {
       prop: 'infoBullet',
-      schema: schemaProps.object('Info Bullet', {
-        showScript: schemaProps.script(
-          'Show',
-          false,
-          'GET',
-          'TypeScript',
-          'true',
-        ),
-        blinkScript: schemaProps.script(
-          'Blink',
-          false,
-          'GET',
-          'TypeScript',
-          'false',
-        ),
-        messageScript: schemaProps.customScript(
-          'Message',
-          false,
-          ['string'],
-          'TypeScript',
-        ),
-        // messageScript: schemaProps.code('Message', false, 'TypeScript'),
-      }),
+      schema: schemaProps.object(
+        'Info Bullet',
+        {
+          showScript: schemaProps.script(
+            'Show',
+            false,
+            'GET',
+            'TypeScript',
+            'true',
+          ),
+          blinkScript: schemaProps.script(
+            'Blink',
+            false,
+            'GET',
+            'TypeScript',
+            'false',
+          ),
+          messageScript: schemaProps.customScript(
+            'Message',
+            false,
+            ['string'],
+            'TypeScript',
+          ),
+          // messageScript: schemaProps.code('Message', false, 'TypeScript'),
+        },
+        false,
+      ),
     },
   },
   {
     label: 'Unread count',
     value: {
       prop: 'unreadCount',
-      schema: schemaProps.scriptVariable('Count in', true, [
+      schema: schemaProps.scriptVariable('Count in', false, [
         'number',
         'string',
         'object[]',
-        'ISInboxDescriptor',
-        'ISDialogueDescriptor',
-        'ISQuestionDescriptor',
-        'ISWhQuestionDescriptor',
-        'ISSurveyDescriptor',
-        'ISPeerReviewDescriptor',
+        'SInboxDescriptor',
+        'SDialogueDescriptor',
+        'SQuestionDescriptor',
+        'SWhQuestionDescriptor',
+        'SSurveyDescriptor',
+        'SPeerReviewDescriptor',
       ]),
     },
   },
 ];
 
-function extractUnreadCount(
-  descriptor?:
-    | IInboxDescriptor
-    | IDialogueDescriptor
-    | IQuestionDescriptor
-    | IWhQuestionDescriptor
-    | ISurveyDescriptor
-    | IPeerReviewDescriptor,
-): number {
-  if (descriptor == null) {
+type UnreadCountDescriptorTypes =
+  | SInboxDescriptor
+  | SDialogueDescriptor
+  | SQuestionDescriptor
+  | SWhQuestionDescriptor
+  | SSurveyDescriptor
+  | SPeerReviewDescriptor;
+
+function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
+  if (!descriptor) {
     return 0;
   } else {
-    const proxyfiedDescriptor = proxyfy(descriptor);
-    const instance = proxyfiedDescriptor?.getInstance(Player.selectCurrent());
-    if (instance == null) {
+    const self = instantiate(Player.selectCurrent());
+    const instance = descriptor?.getInstance(self);
+
+    if (!instance) {
       return 0;
     } else {
       if (
-        entityIs(descriptor, 'DialogueDescriptor') &&
-        entityIs(instance, 'FSMInstance')
+        descriptor instanceof SDialogueDescriptor &&
+        instance instanceof SFSMInstance
       ) {
-        if (!instance.enabled) {
+        if (
+          instance.getEnabled() &&
+          descriptor.getStates()[instance.getCurrentStateId()].getTransitions()
+            .length > 0
+        ) {
+          return 1;
+        } else {
+          return 0;
+        }
+      } else if (instance instanceof SInboxInstance) {
+        return instance.getMessages().filter(m => m.getUnread()).length;
+      } else if (
+        descriptor instanceof SQuestionDescriptor &&
+        instance instanceof SQuestionInstance
+      ) {
+        if (instance.isValidated() || !instance.getActive()) {
           return 0;
         } else {
-          return descriptor.states[instance.currentStateId].transitions.length >
-            0
-            ? 1
-            : 0;
-        }
-      }
-      // Idk what happens here. TS should infer type from @class prop in switch case but it doesnt so i had to cast all types manually
-      // The most strange thing is that VSCode does the inference but not ts ...
-      switch (
-        ((instance as unknown) as Readonly<
-          | IInboxInstance
-          | IQuestionInstance
-          | IWhQuestionInstance
-          | ISurveyInstance
-          | IPeerReviewInstance
-        >)['@class']
-      ) {
-        case 'InboxInstance': {
-          const ii = (instance as unknown) as Readonly<IInboxInstance>;
-          const nbUnread = ii.messages.filter(m => m.unread).length;
-          if (nbUnread > 0) {
-            return nbUnread;
-          }
-          return 0;
-        }
-        case 'QuestionInstance': {
-          const qi = (instance as unknown) as Readonly<IQuestionInstance>;
-          const questionDescriptor = descriptor as IQuestionDescriptor;
-          if (questionDescriptor.cbx) {
-            return qi.active && !qi.validated ? 1 : 0;
+          if (descriptor.getCbx()) {
+            // active and not validated cbx always return 1
+            return 1;
           } else {
-            const replies = getQuestionReplies(questionDescriptor, true);
-            return replies.length === 0 && !qi.validated && qi.active ? 1 : 0;
+            // non-cbx must have 0 reply
+            return descriptor.isReplied(self) ? 0 : 1;
           }
         }
-        case 'WhQuestionInstance': {
-          const wqi = (instance as unknown) as Readonly<IWhQuestionInstance>;
-          return wqi.active && !wqi.validated ? 1 : 0;
-        }
-        case 'SurveyInstance': {
-          const si = (instance as unknown) as Readonly<ISurveyInstance>;
-          return si.active &&
-            (si.status === 'REQUESTED' || si.status === 'ONGOING')
-            ? 1
-            : 0;
-        }
-        case 'PeerReviewInstance': {
-          const pri = (instance as unknown) as Readonly<IPeerReviewInstance>;
-          const types: ['toReview', 'reviewed'] = ['toReview', 'reviewed'];
-          return types.reduce(
-            (ot, t) =>
-              ot +
-              (pri[t] as IReview[]).reduce(
-                (or, r) =>
-                  or +
-                  ((t === 'toReview' && r.reviewState === 'DISPATCHED') ||
-                  (t === 'reviewed' && r.reviewState === 'NOTIFIED')
-                    ? 1
-                    : 0),
-                0,
-              ),
-            0,
-          );
-        }
-        default:
-          return 0;
+      } else if (instance instanceof SWhQuestionInstance) {
+        return instance.getActive && !instance.isValidated() ? 1 : 0;
+      } else if (instance instanceof SSurveyInstance) {
+        return instance.getActive() &&
+          (instance.getStatus() === 'REQUESTED' ||
+            instance.getStatus() === 'ONGOING')
+          ? 1
+          : 0;
+      } else if (instance instanceof SPeerReviewInstance) {
+        return instance
+          .getToReview()
+          .filter(review => review.getReviewState() == 'DISPATCHED')
+          .concat(
+            instance
+              .getReviewed()
+              .filter(review => review.getReviewState() == 'NOTIFIED'),
+          ).length;
+      } else {
+        return 0;
       }
     }
   }
 }
 
-type UnreadCountDescriptorTypes =
-  | IInboxDescriptor
-  | IDialogueDescriptor
-  | IQuestionDescriptor
-  | IWhQuestionDescriptor
-  | ISurveyDescriptor
-  | IPeerReviewDescriptor;
-
 export function useComputeUnreadCount(
   unreadCountVariableScript: IScript | undefined,
-): InfoBulletProps | undefined {
+): PlayerInfoBulletProps | undefined {
   const scriptReturn = useScript<
     string | number | object[] | UnreadCountDescriptorTypes
   >(unreadCountVariableScript?.content);
@@ -532,11 +554,11 @@ export type WegasComponentExtra = WegasComponentLayoutCommonOptions &
   WegasComponentLayoutConditionnalOptions &
   WegasComponentDecorations;
 
-const layoutChoices = {
-  FLEX: flexItemSchema,
+export const layoutChoices = {
+  FLEX: flexItemChoices,
   LINEAR: [],
-  ABSOLUTE: absoluteItemSchema,
-  MENU: menuItemSchema,
+  ABSOLUTE: absoluteItemChoices,
+  MENU: menuItemChoices,
 };
 
 export const wegasComponentExtraSchema = (containerType: ContainerTypes) => ({

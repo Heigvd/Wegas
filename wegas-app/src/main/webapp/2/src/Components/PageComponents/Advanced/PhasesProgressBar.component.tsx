@@ -7,6 +7,7 @@ import { useComponentScript } from '../../Hooks/useComponentScript';
 import { PhasesProgressBar } from '../../Outputs/PhasesProgressBar';
 import { schemaProps } from '../tools/schemaProps';
 import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
+import { IScript, INumberDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 interface PhasesProgressBarProps extends WegasFunctionnalComponentProps {
   /**
@@ -23,7 +24,7 @@ interface PhasesProgressBarProps extends WegasFunctionnalComponentProps {
   phaseMax?: IScript;
 }
 
-function PlayerPhasesProgressBar({
+export default function PlayerPhasesProgressBar({
   phase,
   phaseMin,
   phaseMax,
@@ -67,12 +68,12 @@ registerComponent(
     'Phases',
     'ellipsis-h',
     {
-      phase: schemaProps.scriptVariable('Phase', true, ['ISNumberDescriptor']),
+      phase: schemaProps.scriptVariable('Phase', true, ['SNumberDescriptor']),
       phaseMin: schemaProps.scriptVariable('Phase min', true, [
-        'ISNumberDescriptor',
+        'SNumberDescriptor',
       ]),
       phaseMax: schemaProps.scriptVariable('Phase max', true, [
-        'ISNumberDescriptor',
+        'SNumberDescriptor',
       ]),
     },
     ['number'],

@@ -80,7 +80,7 @@ export const AbsoluteItem = React.forwardRef<HTMLDivElement, AbsoluteItemProps>(
   },
 );
 
-export const absoluteItemSchema: HashListChoices = [
+export const absoluteItemChoices: HashListChoices = [
   {
     label: 'Position',
     value: { prop: 'position' },

@@ -1,21 +1,21 @@
 import * as React from 'react';
-import SrcEditor, {
-  MonacoSCodeEditor,
-  textToArray,
-  arrayToText,
-  MonacoEditor,
-  MonacoCodeEditor,
-  SrcEditorAction,
-  MonacoEditorCursorEvent,
-  MonacoEditorSimpleRange,
-  MonacoDefinitionsLibraries,
-} from './SrcEditor';
-import { SrcEditorProps } from './SrcEditor';
+import SrcEditor, { SrcEditorProps } from './SrcEditor';
 import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
 import { useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
 import { libes5 } from '../../../Helper/libs';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { ResizeHandle } from '../ResizeHandle';
+import {
+  textToArray,
+  arrayToText,
+  MonacoSCodeEditor,
+  MonacoEditorSimpleRange,
+  MonacoDefinitionsLibraries,
+  MonacoEditorCursorEvent,
+  SrcEditorAction,
+  MonacoEditor,
+  MonacoCodeEditor,
+} from './editorHelpers';
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
   clientScript?: boolean;

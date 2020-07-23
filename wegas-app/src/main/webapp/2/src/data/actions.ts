@@ -1,13 +1,23 @@
-import { normalizeDatas, NormalizedData, discriminant } from './normalize';
-import { IManagedResponse } from '../API/rest';
-import * as ActionType from './actionTypes';
 import { Schema } from 'jsoninput';
-import { AvailableViews } from '../Editor/Components/FormView';
-import { StoreDispatch } from './store';
-import { EditingState, closeEditor, Edition } from './Reducer/globalState';
-import { getEntityActions } from '../Editor/editionConfig';
-import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
+import {
+  IAbstractContentDescriptor,
+  IAbstractEntity,
+  IGame,
+  IGameModel,
+  IGameModelLanguage,
+  IScript,
+  ITeam,
+  WegasClassNames,
+} from 'wegas-ts-api/typings/WegasEntities';
+import { IManagedResponse } from '../API/rest';
 import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
+import { AvailableViews } from '../Editor/Components/FormView';
+import { getEntityActions } from '../Editor/editionConfig';
+import * as ActionType from './actionTypes';
+import { discriminant, normalizeDatas, NormalizedData } from './normalize';
+import { closeEditor, EditingState, Edition } from './Reducer/globalState';
+import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
+import { StoreDispatch, store } from './store';
 
 export { ActionType };
 export type ActionTypeValues = ValueOf<typeof ActionType>;
@@ -43,9 +53,21 @@ const variableEditAction = <TA extends ActionTypeValues>(type: TA) => <
 export const ActionCreator = {
   // ENTITY_UPDATE: (data: NormalizedData) =>
   //   createAction(ActionType.ENTITY_UPDATE, data),
-  EDITOR_ERROR_REMOVE: () => createAction(ActionType.EDITOR_ERROR_REMOVE, {}),
-  EDITOR_ERROR: (data: { error: string }) =>
-    createAction(ActionType.EDITOR_ERROR, data),
+  EDITOR_EVENT_REMOVE: (data: { timestamp: number }) =>
+    createAction(ActionType.EDITOR_EVENT_REMOVE, data),
+  EDITOR_EVENT_READ: (data: { timestamp: number }) =>
+    createAction(ActionType.EDITOR_EVENT_READ, data),
+  EDITOR_EVENT: (data: WegasEvent) =>
+    createAction(ActionType.EDITOR_EVENT, data),
+  EDITOR_ADD_EVENT_HANDLER: (data: {
+    id: string;
+    type: keyof WegasEvents;
+    cb: WegasEventHandler;
+  }) => createAction(ActionType.EDITOR_ADD_EVENT_HANDLER, data),
+  EDITOR_REMOVE_EVENT_HANDLER: (data: {
+    id: string;
+    type: WegasEvent['@class'];
+  }) => createAction(ActionType.EDITOR_REMOVE_EVENT_HANDLER, data),
   EDITOR_SET_CLIENT_METHOD: (data: ClientMethodPayload) =>
     createAction(ActionType.EDITOR_SET_CLIENT_METHOD, data),
   EDITOR_REGISTER_SERVER_METHOD: (data: ServerMethodPayload) =>
@@ -66,7 +88,7 @@ export const ActionCreator = {
     cb?: (newEntity: IAbstractContentDescriptor) => void;
   }) => createAction(ActionType.FILE_EDIT, data),
   VARIABLE_CREATE: <T extends IAbstractEntity>(data: {
-    '@class': string;
+    '@class': IAbstractEntity['@class'];
     parentId?: number;
     parentType?: string;
     actions: {
@@ -81,7 +103,7 @@ export const ActionCreator = {
       [K in keyof NormalizedData]: { [id: string]: IAbstractEntity };
     };
     updatedEntities: NormalizedData;
-    events: WegasEvents[];
+    events: WegasEvent[];
   }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
   // PAGE_EDIT_MODE: (data: boolean) =>
   //   createAction(ActionType.PAGE_EDIT_MODE, data),
@@ -135,15 +157,18 @@ export const closeEditorWhenDeletedVariable = (
   Object.keys(deletedVariables).includes(String(editing.entity.id)) &&
   dispatch(closeEditor());
 
+export function triggerEventHandlers(event: WegasEvent) {
+  Object.values(store.getState().global.eventsHandlers[event['@class']]).map(
+    handler => {
+      handler(event);
+    },
+  );
+}
+
 export function manageResponseHandler(
   payload: IManagedResponse,
-  localDispatch?: StoreDispatch,
+  localDispatch: StoreDispatch,
   localState?: EditingState,
-  cb?: (payload: {
-    updatedEntities: NormalizedData;
-    deletedEntities: NormalizedData;
-    events: WegasEvents[];
-  }) => void,
 ) {
   const deletedEntities = normalizeDatas(payload.deletedEntities);
   if (localDispatch && localState) {
@@ -184,20 +209,29 @@ export function manageResponseHandler(
       }
     }
   }
-  const managedValues = {
+
+  const managetValuesOnly = {
     deletedEntities,
     updatedEntities,
-    events: payload.events,
+    events: [],
   };
-  cb && cb(managedValues);
 
-  const managedResponcePayload = ActionCreator.MANAGED_RESPONSE_ACTION(
-    managedValues,
-  );
-  localDispatch && localDispatch(managedResponcePayload);
+  const managedValues = {
+    ...managetValuesOnly,
+    events: payload.events.map(event => {
+      const timedEvent: WegasEvent = {
+        ...event,
+        timestamp: new Date().getTime(),
+        unread: true,
+      };
+      triggerEventHandlers(timedEvent);
 
-  // TODO : Event should be filtered here and global event should be kept in the global response
-  const globalResponse = managedResponcePayload;
-  globalResponse.payload.events = [];
-  return globalResponse;
+      return timedEvent;
+    }),
+  };
+
+  localDispatch &&
+    localDispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
+
+  return ActionCreator.MANAGED_RESPONSE_ACTION(managetValuesOnly);
 }

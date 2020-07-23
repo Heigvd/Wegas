@@ -7,18 +7,19 @@ import { schemaProps } from '../tools/schemaProps';
 import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
 import { InboxDisplay } from '../../Outputs/Inbox';
 import { useComponentScript } from '../../Hooks/useComponentScript';
+import { IScript, IInboxDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 
 interface PlayerInboxProps extends WegasFunctionnalComponentProps {
   inbox?: IScript;
 }
 
-function PlayerInbox({ inbox }: PlayerInboxProps) {
-  const { descriptor } = useComponentScript<ISInboxDescriptor>(inbox);
+export default function PlayerInbox({ inbox }: PlayerInboxProps) {
+  const { descriptor } = useComponentScript<IInboxDescriptor>(inbox);
   if (descriptor === undefined) {
     return <pre>No selected list</pre>;
   }
 
-  return <InboxDisplay inbox={descriptor} />;
+  return <InboxDisplay inbox={descriptor.getEntity()} />;
 }
 
 registerComponent(
@@ -28,7 +29,7 @@ registerComponent(
     'Inbox',
     'envelope',
     {
-      inbox: schemaProps.scriptVariable('Mailbox', true, ['ISInboxDescriptor']),
+      inbox: schemaProps.scriptVariable('Mailbox', true, ['SInboxDescriptor']),
     },
     ['string'],
     () => ({

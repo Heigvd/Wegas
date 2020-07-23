@@ -32,7 +32,33 @@ const Eval = React.memo(function Eval({ script }: { script: string }) {
 });
 Eval.displayName = 'Eval';
 
-const testScript = 'Variable.find(gameModel,"initGroups")';
+// const testScript = 'Variable.find(gameModel,"initGroups");';
+const testScript = `
+Popups.addPopup('testpopup', {
+  '@class': 'TranslatableContent',
+  translations: {
+    FR: {
+      '@class': 'Translation',
+      lang: 'FR',
+      translation: "Ceci est un popup",
+      status: '',
+    },
+  },
+  version: 0,
+});
+Popups.addPopup('testpopup2', {
+  '@class': 'TranslatableContent',
+  translations: {
+    FR: {
+      '@class': 'Translation',
+      lang: 'FR',
+      translation: "Ceci est un popup d'une durée de 10 secondes",
+      status: '',
+    },
+  },
+  version: 0,
+},10000);
+`;
 
 export default function PlayLocal() {
   const [script, setScript] = React.useState(testScript);

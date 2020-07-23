@@ -9,6 +9,8 @@ import { flex, itemCenter } from '../../css/classes';
 import { readMessage } from '../../data/Reducer/VariableInstanceReducer';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
 import { Text } from './Text';
+import { IMessage, IInboxDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 
 const unreadSignalStyle = css({ margin: '3px' });
 
@@ -32,7 +34,7 @@ function MessageLabel({ message }: MessageLabelProps) {
 }
 
 interface MessageDisplayProps {
-  entity: ISMessage;
+  entity: IMessage;
 }
 
 function MessageDisplay({ entity }: MessageDisplayProps) {
@@ -48,12 +50,12 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
 }
 
 interface InboxDisplayProps {
-  inbox: ISInboxDescriptor;
+  inbox: IInboxDescriptor;
 }
 
 export function InboxDisplay({ inbox }: InboxDisplayProps) {
   const messages = useStore(() => {
-    return inbox.getInstance(Player.selectCurrent()).messages;
+    return getInstance(inbox, Player.selectCurrent())!.messages;
   }, deepDifferent);
 
   return (

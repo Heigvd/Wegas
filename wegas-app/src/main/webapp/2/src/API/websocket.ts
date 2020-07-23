@@ -6,6 +6,7 @@ import { manageResponseHandler } from '../data/actions';
 import { Actions } from '../data';
 import * as React from 'react';
 import { wlog } from '../Helper/wegaslog';
+import { IAbstractEntity } from 'wegas-ts-api/typings/WegasEntities';
 
 const CHANNEL_PREFIX = {
   Admin: 'private-Admin',
@@ -223,12 +224,15 @@ class WebSocketListener {
       case 'EntityDestroyedEvent':
       case 'CustomEvent':
         return store.dispatch(
-          manageResponseHandler({
-            '@class': 'ManagedResponse',
-            deletedEntities: (data as ICustomEventData).deletedEntities,
-            updatedEntities: (data as ICustomEventData).updatedEntities,
-            events: (data as ICustomEventData).events,
-          }),
+          manageResponseHandler(
+            {
+              '@class': 'ManagedResponse',
+              deletedEntities: (data as ICustomEventData).deletedEntities,
+              updatedEntities: (data as ICustomEventData).updatedEntities,
+              events: (data as ICustomEventData).events,
+            },
+            store.dispatch,
+          ),
         );
       case 'PageUpdate':
         store.dispatch(Actions.PageActions.get(data as string));

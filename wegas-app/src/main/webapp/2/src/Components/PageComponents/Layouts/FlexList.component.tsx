@@ -9,6 +9,7 @@ import {
   flexListSchema,
 } from '../../Layouts/FlexList';
 import { WegasFunctionnalComponentProps } from '../tools/EditableComponent';
+import { SListDescriptor } from 'wegas-ts-api/typings/WegasScriptableEntities';
 
 interface PlayerFlexListProps
   extends FlexListProps,
@@ -30,8 +31,8 @@ registerComponent(
     'FlexList',
     'bars',
     flexListSchema,
-    ['ISListDescriptor'],
-    (val?: Readonly<ISListDescriptor>) =>
+    ['SListDescriptor'],
+    (val?: Readonly<SListDescriptor>) =>
       val
         ? {
             // children:val.itemsIds.map(id=>componentsStore.getComponentByType(VariableDescriptor.select(id)))

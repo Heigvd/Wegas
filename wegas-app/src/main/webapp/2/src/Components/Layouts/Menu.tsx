@@ -165,7 +165,7 @@ export function Menu({
   );
 }
 
-export const menuItemSchema: HashListChoices = [
+export const menuItemChoices: HashListChoices = [
   {
     label: 'Unselectable',
     value: {

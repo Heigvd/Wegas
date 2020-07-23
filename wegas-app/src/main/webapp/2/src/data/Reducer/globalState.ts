@@ -1,6 +1,11 @@
 import u from 'immer';
 import { Actions as ACTIONS, Actions } from '..';
-import { ActionCreator, ActionType, StateActions } from '../actions';
+import {
+  ActionCreator,
+  ActionType,
+  StateActions,
+  triggerEventHandlers,
+} from '../actions';
 import { VariableDescriptor } from '../selectors';
 import { ThunkResult, store } from '../store';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
@@ -11,6 +16,60 @@ import { AvailableViews } from '../../Editor/Components/FormView';
 import { FileAPI } from '../../API/files.api';
 import { omit } from 'lodash';
 import { LockEventData } from '../../API/websocket';
+import { WegasMethodParameter } from '../../Editor/editionConfig';
+import {
+  IAbstractEntity,
+  IAbstractContentDescriptor,
+  IUser,
+  IScript,
+  IVariableDescriptor,
+  IFSMDescriptor,
+  IListDescriptor,
+  IQuestionDescriptor,
+  IChoiceDescriptor,
+  IWhQuestionDescriptor,
+  IPeerReviewDescriptor,
+  WegasClassNames,
+} from 'wegas-ts-api/typings/WegasEntities';
+import { cloneDeep } from 'lodash-es';
+
+export function isServerMethod(
+  serverObject: GlobalServerMethod | GlobalServerObject | undefined,
+): serverObject is GlobalServerMethod {
+  return (
+    typeof serverObject === 'object' &&
+    '@class' in serverObject &&
+    serverObject['@class'] === 'GlobalServerMethod'
+  );
+}
+
+export function buildGlobalServerMethods(
+  serverObject: GlobalServerObject,
+): string {
+  return Object.entries(serverObject)
+    .filter(([, value]) => value != null)
+    .reduce((old, [key, value], i, objects) => {
+      if (value == null) {
+        return old + '';
+      } else if (isServerMethod(value)) {
+        return (
+          old +
+          '\n\t' +
+          `${key}: (${(value.parameters as WegasMethodParameter[])
+            .map((p, i) => `arg${i}${p.required ? '' : '?'}: ${p.type}`)
+            .join(', ')}) => ${value.returns ? value.returns : 'void'};${
+            i === objects.length - 1 ? '\n' : ''
+          }`
+        );
+      } else {
+        return (
+          old +
+          (i > 0 ? '\n' : '') +
+          `declare const ${key}: {${buildGlobalServerMethods(value)}}`
+        );
+      }
+    }, '');
+}
 
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
@@ -33,7 +92,7 @@ export type Edition =
     }
   | {
       type: 'VariableCreate';
-      '@class': string;
+      '@class': IVariableDescriptor['@class'];
       parentId?: number;
       parentType?: string;
       config?: Schema<AvailableViews>;
@@ -49,11 +108,12 @@ export type Edition =
   | {
       type: 'File';
       entity: IAbstractContentDescriptor;
-      cb?: (updatedValue: IAbstractEntity) => void;
+      cb?: (updatedValue: IMergeable) => void;
     };
 export interface EditingState {
-  editing?: Readonly<Edition>;
-  events: Readonly<WegasEvents[]>;
+  editing?: Edition;
+  events: WegasEvent[];
+  eventsHandlers: WegasEventHandlers;
 }
 export interface GlobalState extends EditingState {
   currentGameModelId: number;
@@ -64,7 +124,7 @@ export interface GlobalState extends EditingState {
   currentPageId?: string;
   // pageEdit: Readonly<boolean>;
   // pageSrc: Readonly<boolean>;
-  pageError?: Readonly<string>;
+  pageError?: string;
   search:
     | {
         type: 'GLOBAL';
@@ -85,7 +145,7 @@ export interface GlobalState extends EditingState {
   clientMethods: {
     [name: string]: Omit<ClientMethodPayload, 'name'>;
   };
-  serverMethods: GlobalServerMethods;
+  serverMethods: GlobalServerObject;
   schemas: {
     filtered: {
       [classFilter: string]: keyof GlobalState['schemas']['views'];
@@ -99,58 +159,77 @@ export interface GlobalState extends EditingState {
   locks: { [token: string]: boolean };
 }
 
+export function eventHandlersManagement(
+  state: EditingState,
+  action: StateActions,
+): WegasEventHandlers {
+  switch (action.type) {
+    case ActionType.EDITOR_ADD_EVENT_HANDLER:
+      state.eventsHandlers[action.payload.type][action.payload.id] =
+        action.payload.cb;
+      break;
+    case ActionType.EDITOR_REMOVE_EVENT_HANDLER:
+      state.eventsHandlers[action.payload.type] = omit(
+        state.eventsHandlers[action.payload.type],
+        action.payload.id,
+      );
+      break;
+  }
+  return state.eventsHandlers;
+}
+
 /**
  *
  * @param state
  * @param action
  */
-export const eventManagement = (
+export function eventManagement(
   state: EditingState,
   action: StateActions,
-): readonly WegasEvents[] => {
+): WegasEvent[] {
   switch (action.type) {
-    case ActionType.EDITOR_ERROR_REMOVE: {
+    case ActionType.MANAGED_RESPONSE_ACTION:
+      return [...state.events, ...action.payload.events];
+    case ActionType.EDITOR_EVENT_REMOVE: {
       const newEvents = [...state.events];
-      if (newEvents.length > 0) {
-        const currentEvent = newEvents[0];
-        switch (currentEvent['@class']) {
-          case 'ClientEvent':
-            newEvents.pop();
-            break;
-          case 'ExceptionEvent': {
-            if (currentEvent.exceptions.length > 0) {
-              currentEvent.exceptions.pop();
-            }
-            if (currentEvent.exceptions.length === 0) {
-              newEvents.pop();
-            }
-            break;
-          }
-        }
+      const indexOfRemoved = newEvents.findIndex(
+        e => e.timestamp === action.payload.timestamp,
+      );
+      if (indexOfRemoved !== -1) {
+        newEvents.splice(indexOfRemoved, 1);
       }
       return newEvents;
     }
-    case ActionType.EDITOR_ERROR:
-      return [
-        ...state.events,
-        { '@class': 'ClientEvent', error: action.payload.error },
-      ];
-    case ActionType.MANAGED_RESPONSE_ACTION:
-      return [...state.events, ...action.payload.events];
+    case ActionType.EDITOR_EVENT_READ: {
+      const readEventIndex = state.events.findIndex(
+        e => e.timestamp === action.payload.timestamp,
+      );
+      if (readEventIndex !== -1) {
+        const event = cloneDeep(state.events[readEventIndex]);
+        const before = state.events.slice(0, readEventIndex);
+        const after = state.events.slice(readEventIndex + 1);
+        const ret = [...before, { ...event, unread: false }, ...after];
+        return ret;
+      } else {
+        return state.events;
+      }
+    }
+    case ActionType.EDITOR_EVENT:
+      return [...state.events, action.payload];
     default:
       return state.events;
   }
-};
+}
 
 /**
  *  This is a separate switch-case only for editor actions management
  * @param state
  * @param action
  */
-export const editorManagement = (
+export function editorManagement(
   state: EditingState,
   action: StateActions,
-): Edition | undefined => {
+): Edition | undefined {
   switch (action.type) {
     case ActionType.VARIABLE_EDIT:
     case ActionType.FSM_EDIT:
@@ -165,7 +244,7 @@ export const editorManagement = (
     case ActionType.VARIABLE_CREATE:
       return {
         type: 'VariableCreate',
-        '@class': action.payload['@class'],
+        '@class': action.payload['@class'] as IVariableDescriptor['@class'],
         parentId: action.payload.parentId,
         parentType: action.payload.parentType,
         actions: action.payload.actions,
@@ -180,7 +259,7 @@ export const editorManagement = (
     default:
       return state.editing;
   }
-};
+}
 
 /**
  * Reducer for editor's state
@@ -219,21 +298,31 @@ const global: Reducer<Readonly<GlobalState>> = u(
         state.pusherStatus = action.payload;
         return;
       case ActionType.EDITOR_SET_CLIENT_METHOD:
-        state.clientMethods = {
-          ...state.clientMethods,
-          [action.payload.name]: {
-            returnTypes: action.payload.returnTypes,
-            returnStyle: action.payload.returnStyle,
-            method: action.payload.method,
-          },
+        state.clientMethods[action.payload.name] = {
+          parameters: action.payload.parameters,
+          returnTypes: action.payload.returnTypes,
+          returnStyle: action.payload.returnStyle,
+          method: action.payload.method,
         };
         return;
-      case ActionType.EDITOR_REGISTER_SERVER_METHOD:
-        state.serverMethods = {
-          ...state.serverMethods,
-          [action.payload.method]: action.payload.schema,
-        };
+      case ActionType.EDITOR_REGISTER_SERVER_METHOD: {
+        let objectKey = action.payload.objects.splice(0, 1)[0];
+        let objects = state.serverMethods;
+        while (objectKey != null) {
+          if (
+            objects[objectKey] == null ||
+            isServerMethod(objects[objectKey])
+          ) {
+            objects[objectKey] = {};
+          }
+          objects = objects[objectKey] as GlobalServerObject;
+          objectKey = action.payload.objects.splice(0, 1)[0];
+          if (objectKey == null) {
+            objects[action.payload.method] = action.payload.schema;
+          }
+        }
         return;
+      }
       case ActionType.EDITOR_SET_VARIABLE_SCHEMA: {
         const filters = state.schemas.filtered;
         const views = state.schemas.views;
@@ -271,11 +360,22 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.LOCK_SET:
         state.locks[action.payload.token] = action.payload.locked;
         return;
+      // case ActionType.EDITOR_ADD_EVENT_HANDLER:
+      //   state.eventsHandlers[action.payload.type][action.payload.id] =
+      //     action.payload.cb;
+      //   return;
+      // case ActionType.EDITOR_REMOVE_EVENT_HANDLER:
+      //   state.eventsHandlers[action.payload.type] = omit(
+      //     state.eventsHandlers[action.payload.type],
+      //     action.payload.id,
+      //   );
+      //   return;
       default:
+        state.eventsHandlers = eventHandlersManagement(state, action);
         state.events = eventManagement(state, action);
         state.editing = editorManagement(state, action);
     }
-    return state;
+    // return state;
   },
   {
     currentGameModelId: CurrentGM.id!,
@@ -286,6 +386,7 @@ const global: Reducer<Readonly<GlobalState>> = u(
     pusherStatus: { status: 'disconnected' },
     search: { type: 'NONE' },
     events: [],
+    eventsHandlers: { ExceptionEvent: {}, ClientEvent: {}, CustomEvent:{}, EntityDestroyedEvent:{}, EntityUpdatedEvent:{}, OutdatedEntitiesEvent:{} },
     clientMethods: {},
     serverMethods: {},
     schemas: {
@@ -417,7 +518,7 @@ export function editFile(
  * @returns
  */
 export function createVariable(
-  cls: string,
+  cls: IAbstractEntity['@class'],
   parent?:
     | IListDescriptor
     | IQuestionDescriptor
@@ -446,7 +547,7 @@ export function createVariable(
  * @param {IAbstractEntity} value
  * @returns {ThunkResult}
  */
-export function saveEditor(value: IAbstractEntity): ThunkResult {
+export function saveEditor(value: IMergeable): ThunkResult {
   return function save(dispatch, getState) {
     const editMode = getState().global.editing;
     if (editMode == null) {
@@ -477,7 +578,7 @@ export function saveEditor(value: IAbstractEntity): ThunkResult {
               editMode.cb && editMode.cb(res);
             })
             .catch((res: Error) => {
-              dispatch(ACTIONS.EditorActions.editorError(res.message));
+              dispatch(ACTIONS.EditorActions.editorEvent(res.message));
             });
         });
     }
@@ -492,12 +593,23 @@ export function closeEditor() {
   return ActionCreator.CLOSE_EDITOR();
 }
 
-export function editorError(error: string) {
-  return ActionCreator.EDITOR_ERROR({ error });
+export function editorEvent(error: string) {
+  const event: WegasEvent = {
+    '@class': 'ClientEvent',
+    error,
+    timestamp: new Date().getTime(),
+    unread: true,
+  };
+  triggerEventHandlers(event);
+  return ActionCreator.EDITOR_EVENT(event);
 }
 
-export function editorErrorRemove() {
-  return ActionCreator.EDITOR_ERROR_REMOVE();
+export function editorEventRemove(timestamp: number) {
+  return ActionCreator.EDITOR_EVENT_REMOVE({ timestamp });
+}
+
+export function editorEventRead(timestamp: number) {
+  return ActionCreator.EDITOR_EVENT_READ({ timestamp });
 }
 
 /**
@@ -518,7 +630,7 @@ export function searchGlobal(value: string): ThunkResult {
       .then(result => {
         return dispatch(ActionCreator.SEARCH_GLOBAL({ search: value, result }));
       })
-      .catch((res: Response) => dispatch(editorError(res.statusText)));
+      .catch((res: Response) => dispatch(editorEvent(res.statusText)));
   };
 }
 /**
@@ -538,7 +650,7 @@ export function searchUsage(
           ActionCreator.SEARCH_USAGE({ variableId: variable.id, result }),
         );
       })
-      .catch((res: Response) => dispatch(editorError(res.statusText)));
+      .catch((res: Response) => dispatch(editorEvent(res.statusText)));
   };
 }
 
@@ -551,12 +663,14 @@ export function searchUsage(
  */
 export const setClientMethod = (
   name: ClientMethodPayload['name'],
+  parameters: ClientMethodPayload['parameters'],
   types: ClientMethodPayload['returnTypes'],
   array: ClientMethodPayload['returnStyle'],
   method: ClientMethodPayload['method'],
 ) =>
   ActionCreator.EDITOR_SET_CLIENT_METHOD({
     name,
+    parameters,
     returnTypes: types,
     returnStyle: array,
     method,
@@ -564,14 +678,17 @@ export const setClientMethod = (
 
 /**
  * Register a server method that can be used in wysywig
- * @param method - the method to add (ex: "Something.Else.call")
+ * @param objects - the objects containing the method (ex: PMGHelper.MailMethods.<method> => ["PMGHelper","MailMethods"])
+ * @param method - the method to add
  * @param schema - method's schema including : label, return type (optionnal) and the parameter's shemas
  */
 export const registerServerMethod = (
+  objects: ServerMethodPayload['objects'],
   method: ServerMethodPayload['method'],
   schema?: ServerMethodPayload['schema'],
 ) =>
   ActionCreator.EDITOR_REGISTER_SERVER_METHOD({
+    objects,
     method,
     schema,
   });

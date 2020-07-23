@@ -2,7 +2,7 @@ import * as React from 'react';
 import { storeFactory, LocalGlobalState } from '../../../data/storeFactory';
 import {
   AsyncVariableForm,
-  getError,
+  parseEventFromIndex,
   getConfig,
   getUpdate,
   getEntity,
@@ -90,7 +90,7 @@ export function ComponentWithForm({
             update={getUpdate(localState.editing, localDispatch)}
             actions={actions}
             entity={localEntity}
-            error={getError(localState.events, localDispatch)}
+            error={parseEventFromIndex(localState.events, localDispatch)}
           />
         </div>
       )}
@@ -105,7 +105,7 @@ export function ComponentWithForm({
             </Toolbar.Header>
             <Toolbar.Content>
               <AsyncInstancesEditor
-                editing={localState.editing}
+                state={{ global: localState }}
                 dispatch={localDispatch}
               />
             </Toolbar.Content>
