@@ -25,61 +25,11 @@ export class WegasClient {
 
     /**
      * Create a Scriptable Entity from a IAbstractEntity.
+     * Create a Scriptable Entity Array from a IAbstractEntity[].
+     * Create a Scriptable Entity Map from a IAbstractEntity map.
      *
-     * @param entity IAbstractEntity
+     * @param entity entity or entites to instantiate
      */
-    //instantiate<T extends IMergeable>(entity: T): Readonly<StronglyTypedEntity<T>>;
-    //instantiate(entity?: null): undefined;
-
-    oldInstantiate<T extends IMergeable | undefined | null>(entity: T): T extends IMergeable ? ScriptableEntity<T> : undefined {
-        if (entity) {
-            if (entity["@class"] in mapAtClassToConcreteClasses) {
-                const atClass = entity["@class"] as keyof AtClassToConcreteClasses;
-                return new mapAtClassToConcreteClasses[atClass](this, entity as any) as any;
-            } else if (entity["@class"] in this.implementations) {
-                const atClass = entity["@class"] as keyof AtClassToConcrtetableClasses;
-                return new this.implementations[atClass]!(this, entity as any) as any;
-            } else {
-                throw Error("Cannot instantiate abstract class " + entity["@class"] + "!");
-            }
-        }
-        return undefined as any;
-    }
-
-    //instantiateArray<T extends IMergeable>(entities: T[]): Readonly<ScriptableEntity<T>>[];
-    //instantiateArray(entities?: null): undefined;
-
-    oldInstantiateArray<T extends IMergeable[] | null | undefined>(entities: T):
-        T extends (infer U)[] ?
-        U extends IMergeable ?
-        ScriptableEntity<U>[]
-        : undefined
-        : undefined {
-        if (entities) {
-            return entities.map(e => this.instantiate(e)) as any;
-        }
-        return undefined as any;
-    }
-
-    oldInstantiateMap<T extends MapOf<IMergeable> | null | undefined>(entities: T)
-        : T extends MapOf<infer U>
-        ? (U extends IMergeable
-            ? Readonly<MapOf<ScriptableEntity<U>>>
-            : undefined)
-        : undefined {
-        if (entities) {
-            // one would set any to U...
-            const result: MapOf<ScriptableEntity<any>> = {};
-            for (const key in entities) {
-                if (entities[key]) {
-                    result[key] = this.instantiate(entities[key]);
-                }
-            }
-            return result as any;
-        }
-        return undefined as any;
-    }
-
     instantiate<T extends IMergeable | IMergeable[] | MapOf<IMergeable> | null | undefined>(entities: T):
         T extends IMergeable // entity as-is
         ? ScriptableEntity<T>  // -> return a ScriptableEntity
