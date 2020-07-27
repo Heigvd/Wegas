@@ -14,9 +14,22 @@ import { flexlayoutChoices } from '../../Layouts/FlexList';
 import { absolutelayoutChoices } from '../../Layouts/Absolute';
 import { ContainerTypes } from './EditableComponent';
 import { createScript } from '../../../Helper/wegasEntites';
-import { IScript, IInboxDescriptor, IDialogueDescriptor, IQuestionDescriptor, IWhQuestionDescriptor, ISurveyDescriptor, IPeerReviewDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import { instantiate } from '../../../data/scriptable';
-import { SDialogueDescriptor, SFSMInstance, SInboxInstance, SQuestionInstance, SQuestionDescriptor, SWhQuestionInstance, SSurveyInstance, SPeerReviewInstance } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import {
+  SDialogueDescriptor,
+  SFSMInstance,
+  SInboxInstance,
+  SQuestionInstance,
+  SQuestionDescriptor,
+  SWhQuestionInstance,
+  SSurveyInstance,
+  SPeerReviewInstance,
+  SInboxDescriptor,
+  SWhQuestionDescriptor,
+  SSurveyDescriptor,
+  SPeerReviewDescriptor,
+} from 'wegas-ts-api/src/generated/WegasScriptableEntities';
 
 export interface WegasComponentOptionsAction {
   priority?: number;
@@ -368,72 +381,77 @@ const decorationsChoices: HashListChoices = [
   },
 ];
 
-function extractUnreadCount(
-  descriptor?:
-    | IInboxDescriptor
-    | IDialogueDescriptor
-    | IQuestionDescriptor
-    | IWhQuestionDescriptor
-    | ISurveyDescriptor
-    | IPeerReviewDescriptor,
-): number {
+type UnreadCountDescriptorTypes =
+  | SInboxDescriptor
+  | SDialogueDescriptor
+  | SQuestionDescriptor
+  | SWhQuestionDescriptor
+  | SSurveyDescriptor
+  | SPeerReviewDescriptor;
+
+function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
   if (!descriptor) {
     return 0;
   } else {
     const self = instantiate(Player.selectCurrent());
-    const sDesc = instantiate(descriptor!);
-
-    const instance = sDesc?.getInstance(self);
+    const instance = descriptor?.getInstance(self);
 
     if (!instance) {
       return 0;
     } else {
-      if (sDesc instanceof SDialogueDescriptor && instance instanceof SFSMInstance) {
-        if (instance.getEnabled()
-          && sDesc.getStates()[instance.getCurrentStateId()].getTransitions().length > 0) {
+      if (
+        descriptor instanceof SDialogueDescriptor &&
+        instance instanceof SFSMInstance
+      ) {
+        if (
+          instance.getEnabled() &&
+          descriptor.getStates()[instance.getCurrentStateId()].getTransitions()
+            .length > 0
+        ) {
           return 1;
         } else {
           return 0;
         }
       } else if (instance instanceof SInboxInstance) {
         return instance.getMessages().filter(m => m.getUnread()).length;
-      } else if (sDesc instanceof SQuestionDescriptor
-        && instance instanceof SQuestionInstance) {
+      } else if (
+        descriptor instanceof SQuestionDescriptor &&
+        instance instanceof SQuestionInstance
+      ) {
         if (instance.isValidated() || !instance.getActive()) {
           return 0;
         } else {
-          if (sDesc.getCbx()) {
+          if (descriptor.getCbx()) {
             // active and not validated cbx always return 1
             return 1;
           } else {
             // non-cbx must have 0 reply
-            return sDesc.isReplied(self) ? 0 : 1;
+            return descriptor.isReplied(self) ? 0 : 1;
           }
         }
       } else if (instance instanceof SWhQuestionInstance) {
         return instance.getActive && !instance.isValidated() ? 1 : 0;
       } else if (instance instanceof SSurveyInstance) {
-        return instance.getActive()
-          && (instance.getStatus() === "REQUESTED"
-            || instance.getStatus() === "ONGOING") ? 1 : 0;
+        return instance.getActive() &&
+          (instance.getStatus() === 'REQUESTED' ||
+            instance.getStatus() === 'ONGOING')
+          ? 1
+          : 0;
       } else if (instance instanceof SPeerReviewInstance) {
-        return instance.getToReview().filter(review => review.getReviewState() == "DISPATCHED").concat(
-          instance.getReviewed().filter(review => review.getReviewState() == "NOTIFIED")
-        ).length;
+        return instance
+          .getToReview()
+          .filter(review => review.getReviewState() == 'DISPATCHED')
+          .concat(
+            instance
+              .getReviewed()
+              .filter(review => review.getReviewState() == 'NOTIFIED'),
+          ).length;
       } else {
         return 0;
       }
     }
   }
 }
-
-type UnreadCountDescriptorTypes =
-  | IInboxDescriptor
-  | IDialogueDescriptor
-  | IQuestionDescriptor
-  | IWhQuestionDescriptor
-  | ISurveyDescriptor
-  | IPeerReviewDescriptor;
 
 export function useComputeUnreadCount(
   unreadCountVariableScript: IScript | undefined,
@@ -458,11 +476,11 @@ export function useComputeUnreadCount(
 
   return infoBeamMessage
     ? {
-      messageScript:
-        infoBeamMessage === 0
-          ? undefined
-          : createScript(JSON.stringify(String(infoBeamMessage))),
-    }
+        messageScript:
+          infoBeamMessage === 0
+            ? undefined
+            : createScript(JSON.stringify(String(infoBeamMessage))),
+      }
     : undefined;
 }
 

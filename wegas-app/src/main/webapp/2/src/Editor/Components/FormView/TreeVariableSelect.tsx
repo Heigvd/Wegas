@@ -18,7 +18,10 @@ import {
 import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 import { scriptEditStyle } from './Script/Script';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
-import { IVariableDescriptor, IScript } from 'wegas-ts-api/typings/WegasEntities';
+import {
+  IVariableDescriptor,
+  IScript,
+} from 'wegas-ts-api/typings/WegasEntities';
 
 const treeCss = css({
   padding: '5px 10px',
@@ -220,6 +223,7 @@ export function TreeVariableSelect(
   props: TreeVariableSelectProps,
 ): JSX.Element {
   const items = useStore(() => GameModel.selectCurrent().itemsIds);
+
   const varItems = genVarItems(
     items,
     undefined,
