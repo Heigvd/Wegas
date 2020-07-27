@@ -59,7 +59,6 @@ import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { usePageComponentStore } from './componentFactory';
 import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
 import { MenuItem, defaultMenuItemKeys } from '../../Layouts/Menu';
-import { wlog } from '../../../Helper/wegaslog';
 
 // Styles
 export const layoutHighlightStyle = css({
@@ -559,16 +558,6 @@ export function ComponentContainer({
   };
 
   const { WegasComponent, containerType, componentName } = component || {};
-  wlog(restProps.name);
-  if (
-    childrenType === 'MENU' ||
-    containerType === 'MENU' ||
-    componentName === 'Menu' ||
-    restProps.name === 'Menutest'
-  ) {
-    debugger;
-  }
-
   const container = React.useRef<HTMLDivElement>();
   const mouseOver = React.useRef<boolean>(false);
   const [dragHoverState, setDragHoverState] = React.useState<boolean>(false);
@@ -920,7 +909,7 @@ export function JSONComponentContainer({
     containerType === 'FLEX'
       ? restProps.layout?.flexDirection === 'column' ||
         restProps.layout?.flexDirection === 'column-reverse'
-      : containerType === 'LINEAR'
+      : containerType === 'LINEAR' || containerType === 'MENU'
       ? restProps.vertical
       : false;
 

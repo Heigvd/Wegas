@@ -326,7 +326,7 @@ export const layoutCommonChoices: HashListChoices = [
     label: 'Container style',
     value: {
       prop: 'containerStyle',
-      schema: schemaProps.hashlist('Style'),
+      schema: schemaProps.hashlist('Container style', false),
     },
   },
 ];

@@ -32,7 +32,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
         wlog('Cannot get the scripts');
       });
 
-    CurrentGM.properties.clientScriptUri.split(';').map(scriptUrl => {
+    CurrentGM.properties.clientScriptUri?.split(';').map(scriptUrl => {
       if (scriptUrl !== '') {
         fetch(scriptUrl)
           .then(res => {
@@ -91,7 +91,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
 
   return (
     <>
-      {CurrentGM.properties.cssUri.split(';').map(cssUrl => (
+      {CurrentGM.properties.cssUri?.split(';').map(cssUrl => (
         <link
           key={cssUrl}
           className="WegasStaticStyle"

@@ -170,7 +170,7 @@ export const menuItemChoices: HashListChoices = [
     label: 'Unselectable',
     value: {
       prop: 'unselectable',
-      schema: schemaProps.boolean('Unselectable'),
+      schema: schemaProps.boolean('Unselectable', false),
     },
   },
 ];
