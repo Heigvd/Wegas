@@ -8,7 +8,7 @@ import {
   getInstance,
   editorLabel,
 } from '../../../data/methods/VariableDescriptorMethods';
-import { IVariableDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { IVariableDescriptor } from 'wegas-ts-api';
 
 interface IName {
   values: string[];

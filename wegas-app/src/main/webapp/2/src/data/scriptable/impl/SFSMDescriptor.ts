@@ -1,6 +1,6 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
 
-import { SFSMDescriptor, SFSMInstance, SPlayer, STriggerDescriptor, SDialogueDescriptor } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { SFSMDescriptor, SFSMInstance, SPlayer, STriggerDescriptor, SDialogueDescriptor } from 'wegas-ts-api';
 
 export class SFSMDescriptorImpl extends SFSMDescriptor {
   public enable(_p: Readonly<SPlayer>): void {

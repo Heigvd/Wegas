@@ -1,4 +1,4 @@
-type IAbstractEntity = import('wegas-ts-api/typings/WegasEntities').IAbstractEntity;
+type IAbstractEntity = import('wegas-ts-api').IAbstractEntity;
 
 interface IParentDescriptor extends IAbstractEntity {
     itemsIds: number[];

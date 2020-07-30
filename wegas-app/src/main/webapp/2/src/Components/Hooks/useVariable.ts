@@ -3,7 +3,7 @@ import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { Player, VariableDescriptor } from '../../data/selectors';
 import { useStore } from '../../data/store';
 import { shallowDifferent, deepDifferent } from './storeHookFactory';
-import { IVariableDescriptor, IPlayer } from 'wegas-ts-api/typings/WegasEntities';
+import { IVariableDescriptor, IPlayer } from 'wegas-ts-api';
 
 type instanceOf<D> = D extends IVariableDescriptor<infer U> ? U : never;
 /**

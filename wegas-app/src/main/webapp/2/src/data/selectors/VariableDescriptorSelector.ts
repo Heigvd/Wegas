@@ -1,7 +1,7 @@
 import { store } from '../store';
 import { isMatch } from 'lodash-es';
 import { varIsList } from '../entities';
-import { IVariableDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { IVariableDescriptor } from 'wegas-ts-api';
 
 /**
  * Find a variableDescriptor for an id

@@ -7,7 +7,7 @@ import { schemaProps } from '../tools/schemaProps';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { ConnectedQuestionDisplay } from '../../Outputs/Question';
-import { IScript, IQuestionDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { IScript, IQuestionDescriptor } from 'wegas-ts-api';
 
 interface QuestionDisplayProps extends WegasComponentProps {
   /**

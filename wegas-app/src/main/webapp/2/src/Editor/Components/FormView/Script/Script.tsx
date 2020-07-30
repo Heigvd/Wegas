@@ -31,7 +31,7 @@ import generate from '@babel/generator';
 import { Menu } from '../../../../Components/Menu';
 import { ResizeHandle } from '../../ResizeHandle';
 import { createScript } from '../../../../Helper/wegasEntites';
-import { IScript, IVariableDescriptor, IVariableInstance } from 'wegas-ts-api/typings/WegasEntities';
+import { IScript, IVariableDescriptor, IVariableInstance } from 'wegas-ts-api';
 
 export const scriptEditStyle = css({
   minHeight: '5em',

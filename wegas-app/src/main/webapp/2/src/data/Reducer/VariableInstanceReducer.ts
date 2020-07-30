@@ -9,7 +9,7 @@ import { QuestionDescriptorAPI } from '../../API/questionDescriptor.api';
 import { getInstance } from '../methods/VariableDescriptorMethods';
 import { createScript } from '../../Helper/wegasEntites';
 import { InboxAPI } from '../../API/inbox.api';
-import { IVariableInstance, IScript, IPlayer, IVariableDescriptor, IChoiceDescriptor, IChoiceInstance, IQuestionDescriptor, IMessage, IInboxDescriptor, IReply } from 'wegas-ts-api/typings/WegasEntities';
+import { IVariableInstance, IScript, IPlayer, IVariableDescriptor, IChoiceDescriptor, IChoiceInstance, IQuestionDescriptor, IMessage, IInboxDescriptor, IReply } from 'wegas-ts-api';
 
 export interface VariableInstanceState {
     [id: string]: Readonly<IVariableInstance> | undefined;

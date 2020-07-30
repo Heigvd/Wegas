@@ -18,7 +18,7 @@ import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { MessageString } from '../MessageString';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { themeCTX, ThemeComponent } from '../../../Components/Style/Theme';
-import { IVariableInstance, IVariableDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { IVariableInstance, IVariableDescriptor } from 'wegas-ts-api';
 
 const listBox = css({
   width: '100%',

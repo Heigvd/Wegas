@@ -1,6 +1,6 @@
 import { useScript } from './useScript';
 import { useVariableInstance } from './useVariable';
-import { IVariableDescriptor, IScript } from 'wegas-ts-api/typings/WegasEntities';
+import { IVariableDescriptor, IScript } from 'wegas-ts-api';
 import { ScriptableEntity } from 'wegas-ts-api';
 
 export function useComponentScript<T extends IVariableDescriptor>(

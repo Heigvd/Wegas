@@ -1,13 +1,14 @@
 {
-    "name": "WegasApiMain",
+    "name": "wegas-ts-api-webapp",
     "version": "1.0.0",
     "keywords": ["Wegas"],
     "author": "maxence",
-    "main": "src/index.ts",
+    "main": "dist/index.js",
     "private": true,
     "scripts": {
-      "build": "tsc",
-      "test": "jest"
+      "build": "rimraf dist && tsc",
+      "test": "jest",
+      "lint": "eslint 'src' --ext '.js,.ts,.tsx'"
     },
     "contributors": [],
     "dependencies": {},
@@ -15,6 +16,7 @@
         "jest": "^24.8.0",
         "rimraf": "^3.0.0",
         "typescript": "^3.7.5",
-        "tslint" : "^5.1.0"
+        "tslint" : "^5.1.0",
+        "copyfiles": "^2.3.0"
   }
 }

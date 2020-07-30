@@ -1,5 +1,5 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { SInboxDescriptor, SPlayer, STranslatableContent, SAttachment, SInboxInstance } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { SInboxDescriptor, SPlayer, STranslatableContent, SAttachment, SInboxInstance } from 'wegas-ts-api';
 
 export class SInboxDescriptorImpl extends SInboxDescriptor {
   public isEmpty(p: Readonly<SPlayer>): boolean {
@@ -13,7 +13,7 @@ export class SInboxDescriptorImpl extends SInboxDescriptor {
     _body: Readonly<STranslatableContent>,
     _token: string,
     _attachments: readonly SAttachment[])
-    : Readonly<import("wegas-ts-api/src/generated/WegasScriptableEntities").SMessage> {
+    : Readonly<import("wegas-ts-api").SMessage> {
     throw Error('This is readonly');
   }
   public isTokenMarkedAsRead(self: Readonly<SPlayer>, token: string): boolean {

@@ -1,4 +1,4 @@
-type IGameModelLanguage = import('wegas-ts-api/typings/WegasEntities').IGameModelLanguage;
+type IGameModelLanguage = import('wegas-ts-api').IGameModelLanguage;
 
 interface FeaturesSelecta {
   ADVANCED?: boolean;

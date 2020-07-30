@@ -1,4 +1,4 @@
-import { IAbstractEntity, WegasClassNames, WegasClassNamesAndClasses } from 'wegas-ts-api/typings/WegasEntities';
+import { IAbstractEntity, WegasClassNames, WegasClassNamesAndClasses } from 'wegas-ts-api';
 
 const InheritanceTable = require('wegas-ts-api/typings/Inheritance.json') as typeof import('wegas-ts-api/typings/Inheritance.json');
 

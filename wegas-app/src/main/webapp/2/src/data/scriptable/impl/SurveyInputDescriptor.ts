@@ -1,5 +1,5 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { SSurveyChoicesDescriptor, SPlayer, SSurveyInputInstance, SSurveyTextDescriptor, SSurveyNumberDescriptor } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { SSurveyChoicesDescriptor, SPlayer, SSurveyInputInstance, SSurveyTextDescriptor, SSurveyNumberDescriptor } from 'wegas-ts-api';
 
 export class SSurveyChoicesDescriptorImpl extends SSurveyChoicesDescriptor {
   public activate(_p: Readonly<SPlayer>): void {

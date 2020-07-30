@@ -11,7 +11,7 @@ import { AvailableViews } from '../../Editor/Components/FormView';
 import { FileAPI } from '../../API/files.api';
 import { omit } from 'lodash';
 import { LockEventData } from '../../API/websocket';
-import { IAbstractEntity, IAbstractContentDescriptor, IUser, IScript, IVariableDescriptor, IFSMDescriptor, IListDescriptor, IQuestionDescriptor, IChoiceDescriptor, IWhQuestionDescriptor, IPeerReviewDescriptor, WegasClassNames } from 'wegas-ts-api/typings/WegasEntities';
+import { IAbstractEntity, IAbstractContentDescriptor, IUser, IScript, IVariableDescriptor, IFSMDescriptor, IListDescriptor, IQuestionDescriptor, IChoiceDescriptor, IWhQuestionDescriptor, IPeerReviewDescriptor, WegasClassNames } from 'wegas-ts-api';
 
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {

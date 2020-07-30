@@ -1,5 +1,5 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { SBurndownDescriptor, SBurndownInstance, SPlayer } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { SBurndownDescriptor, SBurndownInstance, SPlayer } from 'wegas-ts-api';
 
 export class SBurndownDescriptorImpl extends SBurndownDescriptor {
 

@@ -7,7 +7,7 @@ import { Menu, MenuProps, MenuItem } from '../../../Components/Menu';
 import { withDefault, IconComp } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { VariableDescriptor } from '../../../data/selectors';
-import { IAbstractEntity, IListDescriptor, IQuestionDescriptor, IWhQuestionDescriptor, IChoiceDescriptor, IResult, IEvaluationDescriptorContainer, IPeerReviewDescriptor, IEvaluationDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { IAbstractEntity, IListDescriptor, IQuestionDescriptor, IWhQuestionDescriptor, IChoiceDescriptor, IResult, IEvaluationDescriptorContainer, IPeerReviewDescriptor, IEvaluationDescriptor } from 'wegas-ts-api';
 
 function buildMenuItems(
   variable: IAbstractEntity,

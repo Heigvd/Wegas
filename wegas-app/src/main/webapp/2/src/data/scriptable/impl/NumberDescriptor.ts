@@ -1,5 +1,5 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { SNumberDescriptor, SPlayer, SNumberInstance } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { SNumberDescriptor, SPlayer, SNumberInstance } from 'wegas-ts-api';
 
 export class SNumberDescriptorImpl extends SNumberDescriptor {
   public add(_p: SPlayer, _value: number): void {

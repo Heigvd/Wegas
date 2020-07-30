@@ -10,8 +10,8 @@ import { transpile } from 'typescript';
 import { classesCTX } from '../Contexts/ClassesProvider';
 import { wwarn } from '../../Helper/wegaslog';
 import { deepDifferent } from './storeHookFactory';
-import { IVariableDescriptor, WegasClassNames } from 'wegas-ts-api/typings/WegasEntities';
-import { SGameModel, SPlayer } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { IVariableDescriptor, WegasClassNames } from 'wegas-ts-api';
+import { SGameModel, SPlayer } from 'wegas-ts-api';
 import { ScriptableEntity } from 'wegas-ts-api/src/index';
 
 interface GlobalVariableClass {

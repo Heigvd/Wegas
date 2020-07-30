@@ -1069,6 +1069,13 @@ public class SchemaGenerator extends AbstractMojo {
         StringBuilder sb = new StringBuilder();
         ArrayList<String> intKeys = new ArrayList<String>(tsInterfaces.keySet());
 
+        //Avoid ts and linter error for unused variable when the module imported (happends with ununes templates)
+        sb.append("/* tslint:disable:no-unused-variable */")
+            .append(System.lineSeparator())
+            .append("// @ts-nocheck")
+            .append(System.lineSeparator())
+            .append(System.lineSeparator());
+        
 //        sb.append("/**\n" + " * Remove specified keys.\n" + " */\n" + "type WithoutAtClass<Type> = Pick<\n"
 //            + "    Type,\n" + "    Exclude<keyof Type, '@class'>\n" + ">;");
         writeMergeableInterface(sb);
@@ -1095,7 +1102,7 @@ public class SchemaGenerator extends AbstractMojo {
 
         writeInterfaces(sb, tsInterfaces, this.otherObjectsInterfaceTypeD);
 
-        writeInterfacesToFile(typingsDirectory, sb, "WegasEntities.d.ts");
+        writeInterfacesToFile(typingsDirectory, sb, "WegasEntities.ts");
     }
 
     private void writeClassNameMapDecl(List<String> atClasses, String name, StringBuilder sb) {
@@ -1142,7 +1149,7 @@ public class SchemaGenerator extends AbstractMojo {
          * Surround this statement with special markdown.
          */
         implBuilder.append(STRIP_FROM)
-            .append("import { WegasClient } from '..';")
+            .append("import { WegasClient } from '../../src';")
             .append(STRIP_TO).append(System.lineSeparator());
 
         implBuilder.append(STRIP_FROM).append("import {")
@@ -1159,12 +1166,12 @@ public class SchemaGenerator extends AbstractMojo {
         /**
          * Declaration starts to differ
          */
-        declBuilder.append(implBuilder);
+        // declBuilder.append(implBuilder);
 
-        implBuilder.append("} from '../../typings/WegasEntities';").append(STRIP_TO)
+        implBuilder.append("} from '../..';").append(STRIP_TO)
             .append(System.lineSeparator());
-        declBuilder.append("} from './WegasEntities';").append(STRIP_TO)
-            .append(System.lineSeparator());
+        //declBuilder.append("} from './WegasEntities';").append(STRIP_TO)
+        //    .append(System.lineSeparator());
 
         /**
          * Creating top-level SMergeable class
@@ -1175,37 +1182,61 @@ public class SchemaGenerator extends AbstractMojo {
         /**
          * Creating ts interface linking real classes and stringified classes
          */
-        declBuilder.append(EXPORT_TOSTRIP).append("interface WegasEntitiesNamesAndClasses {");
+        implBuilder.append(EXPORT_TOSTRIP).append("interface WegasEntitiesNamesAndClasses {");
         intKeys.forEach(key -> {
             String sKey = "S" + key;
-            declBuilder.append(System.lineSeparator())
+            implBuilder.append(System.lineSeparator())
                 .append("  " + sKey + " : " + sKey + ";")
                 .append(System.lineSeparator())
                 .append("  '" + sKey + "[]' : " + sKey + "[];");
         });
 
-        declBuilder.append(System.lineSeparator())
+        implBuilder.append(System.lineSeparator())
             .append("}")
             .append(System.lineSeparator())
             .append(System.lineSeparator());
+        
+        //declBuilder.append(EXPORT_TOSTRIP).append("interface WegasEntitiesNamesAndClasses {");
+        //intKeys.forEach(key -> {
+        //    String sKey = "S" + key;
+        //    declBuilder.append(System.lineSeparator())
+        //        .append("  " + sKey + " : " + sKey + ";")
+        //        .append(System.lineSeparator())
+        //        .append("  '" + sKey + "[]' : " + sKey + "[];");
+        //});
+
+        //declBuilder.append(System.lineSeparator())
+        //    .append("}")
+        //    .append(System.lineSeparator())
+        //    .append(System.lineSeparator());
 
         writeInterfaces(declBuilder, tsScriptableDeclarations, this.otherObjectsScriptableTypeD);
         writeInterfaces(implBuilder, tsScriptableClasses, this.otherObjectsScriptableTypeD);
 
         this.writeClassNameMapDecl(abstractClasses, "AtClassToAbstractTypes", declBuilder);
         this.writeClassNameMap(abstractClasses, "AtClassToAbstractClasses", implBuilder);
+        this.writeClassNameMapDecl(abstractClasses, "AtClassToAbstractTypes", implBuilder);
 
         this.writeClassNameMapDecl(concreteableClasses, "AtClassToConcrtetableTypes", declBuilder);
         this.writeClassNameMap(concreteableClasses, "AtClassToConcrtetableClasses", implBuilder);
+        this.writeClassNameMapDecl(concreteableClasses, "AtClassToConcrtetableTypes", implBuilder);
 
         this.writeClassNameMapDecl(concreteClasses, "AtClassToConcreteTypes", declBuilder);
         this.writeClassNameMap(concreteClasses, "AtClassToConcreteClasses", implBuilder);
+        this.writeClassNameMapDecl(concreteClasses, "AtClassToConcreteTypes", implBuilder);
 
         implBuilder.append(EXPORT_TOSTRIP)
             .append(" type AtClassToClasses = "
                 + "AtClassToAbstractClasses & AtClassToConcrtetableClasses & AtClassToConcreteClasses;")
             .append(System.lineSeparator())
             .append(System.lineSeparator());
+        
+        implBuilder.append(EXPORT_TOSTRIP)
+            .append(" type WegasClassNameAndScriptableTypes = "
+                + "AtClassToAbstractTypes & AtClassToConcrtetableTypes & AtClassToConcreteTypes;")
+            .append(System.lineSeparator())
+            .append(System.lineSeparator());
+
 
         /**
          * Creating ts interface linking WegasEntites @class and ScriptableWegasEntites classes
@@ -1235,7 +1266,7 @@ public class SchemaGenerator extends AbstractMojo {
         /**
          * Creating all interfaces with callable methods for scripts
          */
-        writeInterfacesToFile(typingsDirectory, declBuilder, "WegasScriptableEntities.d.ts");
+        writeInterfacesToFile(typingsDirectory, declBuilder, "WegasScriptableEntities.d.ts.mlib");
         writeInterfacesToFile(srcDirectory, implBuilder, "WegasScriptableEntities.ts");
     }
 

@@ -1,5 +1,5 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { SBooleanDescriptor, SPlayer, SBooleanInstance } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { SBooleanDescriptor, SPlayer, SBooleanInstance } from 'wegas-ts-api';
 
 export class SBooleanDescriptorImpl extends SBooleanDescriptor {
   public getValue(p: SPlayer,): Readonly<boolean> {

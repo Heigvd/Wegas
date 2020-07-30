@@ -31,7 +31,7 @@ import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { createTranslatableContent } from './FormView/translatable';
 import { createScript } from '../../Helper/wegasEntites';
 import { themeVar } from '../../Components/Style/ThemeVars';
-import { IDialogueDescriptor, IFSMInstance, IFSMDescriptor, IAbstractStateMachineDescriptor, ITransition, IDialogueTransition, IAbstractTransition, IAbstractState, IState, IDialogueState } from 'wegas-ts-api/typings/WegasEntities';
+import { IDialogueDescriptor, IFSMInstance, IFSMDescriptor, IAbstractStateMachineDescriptor, ITransition, IDialogueTransition, IAbstractTransition, IAbstractState, IState, IDialogueState } from 'wegas-ts-api';
 
 const editorStyle = css({
   position: 'relative',

@@ -1,5 +1,5 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { STaskDescriptor, SPlayer, STaskInstance } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { STaskDescriptor, SPlayer, STaskInstance } from 'wegas-ts-api';
 
 export class STaskDescriptorImpl extends STaskDescriptor {
   public activate(_p: Readonly<SPlayer>): void {

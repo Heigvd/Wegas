@@ -1,5 +1,5 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { SSurveyDescriptor, SSurveyInstance, SPlayer } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { SSurveyDescriptor, SSurveyInstance, SPlayer } from 'wegas-ts-api';
 
 export class SSurveyDescriptorImpl extends SSurveyDescriptor {
 

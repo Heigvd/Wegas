@@ -1,6 +1,6 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
 import { TranslatableContent } from '../../i18n';
-import { SStringDescriptor, SStringInstance, SPlayer, STranslatableContent } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { SStringDescriptor, SStringInstance, SPlayer, STranslatableContent } from 'wegas-ts-api';
 
 export class SStringDescriptorImpl extends SStringDescriptor {
   public getValue(p: Readonly<SPlayer>): string {

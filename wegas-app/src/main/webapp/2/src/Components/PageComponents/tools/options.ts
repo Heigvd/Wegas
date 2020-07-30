@@ -14,7 +14,7 @@ import { flexlayoutChoices } from '../../Layouts/FlexList';
 import { absolutelayoutChoices } from '../../Layouts/Absolute';
 import { ContainerTypes } from './EditableComponent';
 import { createScript } from '../../../Helper/wegasEntites';
-import { IScript } from 'wegas-ts-api/typings/WegasEntities';
+import { IScript } from 'wegas-ts-api';
 import { instantiate } from '../../../data/scriptable';
 import {
   SDialogueDescriptor,
@@ -29,7 +29,7 @@ import {
   SWhQuestionDescriptor,
   SSurveyDescriptor,
   SPeerReviewDescriptor,
-} from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+} from 'wegas-ts-api';
 
 export interface WegasComponentOptionsAction {
   priority?: number;

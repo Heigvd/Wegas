@@ -6,9 +6,8 @@
  * Licensed under the MIT License
  */
 
-import {IMergeable, ITeam, IListDescriptor} from '../typings/WegasEntities';
-import {AtClassToConcrtetableClasses, mapAtClassToConcreteClasses, AtClassToConcreteClasses} from './generated/WegasScriptableEntities';
-import {WegasClassNameAndScriptableTypes} from '../typings/WegasScriptableEntities';
+import {IMergeable, ITeam, IListDescriptor} from '..';
+import {AtClassToConcrtetableClasses, mapAtClassToConcreteClasses, AtClassToConcreteClasses, WegasClassNameAndScriptableTypes} from './generated/WegasScriptableEntities';
 
 export type ScriptableEntity<T extends IMergeable> = WegasClassNameAndScriptableTypes[T['@class']];
 
@@ -61,7 +60,7 @@ export class WegasClient {
       }
     } else if (Array.isArray(entities)) {
       return entities.map(e => this.instantiate(e)) as any;
-    } else {typeof entities === "object"} {
+    } else if (typeof entities === "object") {
       // one would set any to U...
       const result: MapOf<ScriptableEntity<any>> = {};
       for (const key in entities) {
@@ -122,3 +121,5 @@ export class WegasClient {
     console.log(sMap);
   }
 }
+
+export * from "./generated/WegasScriptableEntities"

@@ -1,6 +1,6 @@
 import { Player } from '../selectors';
-import { ITranslatableContent } from 'wegas-ts-api/typings/WegasEntities';
-import { STranslatableContent } from 'wegas-ts-api/typings/WegasScriptableEntities';
+import { ITranslatableContent } from 'wegas-ts-api';
+import { STranslatableContent } from 'wegas-ts-api';
 
 export const TranslatableContent = {
   /**

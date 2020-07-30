@@ -21,7 +21,7 @@ import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import {
   IVariableDescriptor,
   IScript,
-} from 'wegas-ts-api/typings/WegasEntities';
+} from 'wegas-ts-api';
 
 const treeCss = css({
   padding: '5px 10px',

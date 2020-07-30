@@ -1,5 +1,5 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { SListDescriptor, SListInstance, SPlayer } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { SListDescriptor, SListInstance, SPlayer } from 'wegas-ts-api';
 
 export class SListDescriptorImpl extends SListDescriptor {
 
