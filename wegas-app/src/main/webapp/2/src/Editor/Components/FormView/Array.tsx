@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
-import { WidgetProps } from 'jsoninput/typings/types';
+import { WidgetProps, TYPESTRING } from 'jsoninput/typings/types';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { Menu, MenuItem, SelectedMenuItem } from '../../../Components/Menu';
 import { CommonViewContainer, CommonView } from './commonView';
@@ -10,6 +10,7 @@ import { dropZoneFocusCss } from '../../../Components/Contexts/DefaultDndProvide
 import { array_move } from '../../../Helper/tools';
 import { Item } from '../Tree/TreeSelect';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { typeCleaner } from './Script/Expressions/expressionEditorHelpers';
 
 const transparentStyle = css({
   opacity: 0,
@@ -237,18 +238,14 @@ export function DragDropArray<T>({
   return (
     <>
       {label}
-      {!unsortable &&
-        maxItems > valueLength &&
-        !disabled &&
-        !readOnly &&
-        onChildAdd && (
-          <Adder
-            id={inputId}
-            onChildAdd={onChildAdd}
-            choices={choices}
-            tooltip={tooltip}
-          />
-        )}
+      {maxItems > valueLength && !disabled && !readOnly && onChildAdd && (
+        <Adder
+          id={inputId}
+          onChildAdd={onChildAdd}
+          choices={choices}
+          tooltip={tooltip}
+        />
+      )}
       {React.Children.map(children, (c, i) => (
         <>
           {onMove && !unsortable && (
@@ -310,7 +307,23 @@ function ArrayWidget({
     sortable,
   } = view;
   const { maxItems, minItems } = schema;
-  const onNewChild = userOnChildAdd ? userOnChildAdd : onChildAdd;
+  const defaultItem = Array.isArray(schema.items)
+    ? schema.items[0].value
+    : schema.items?.value;
+  let itemType = Array.isArray(schema.items)
+    ? schema.items[0].type
+    : schema.items?.type;
+  while (Array.isArray(itemType)) {
+    itemType = itemType[0];
+  }
+  const singleItemType: Exclude<typeof itemType, TYPESTRING[]> = itemType;
+  const defaultNewChild: (newValue?: {} | undefined) => void = newValue =>
+    onChange([
+      ...(value || []),
+      typeCleaner(newValue, singleItemType || 'object', true, defaultItem),
+    ]);
+  const onNewChild: (value?: {} | undefined) => void =
+    (userOnChildAdd ? userOnChildAdd : onChildAdd) || defaultNewChild;
   return (
     <CommonViewContainer errorMessage={errorMessage} view={view}>
       <Labeled label={label} description={description}>

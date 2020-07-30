@@ -470,7 +470,7 @@ export function FileBrowserNode({
       <div className={cx(block, grow)}>
         <div
           className={cx(flex, grow, {
-            [clickableStyle]: typeFilterApproved,
+            [clickableStyle]: typeFilterApproved && pickApproved,
             [disabledStyle]: greyFiltered,
             [dropZoneStyle]:
               isDirectory(currentFile) && dropZoneProps.isShallowOver,

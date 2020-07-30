@@ -10,9 +10,15 @@ import { transpile } from 'typescript';
 import { classesCTX } from '../Contexts/ClassesProvider';
 import { wwarn } from '../../Helper/wegaslog';
 import { deepDifferent } from './storeHookFactory';
-import { IVariableDescriptor, WegasClassNames } from 'wegas-ts-api';
-import { SGameModel, SPlayer } from 'wegas-ts-api';
-import { ScriptableEntity } from 'wegas-ts-api/src/index';
+import {
+  IVariableDescriptor,
+  WegasClassNames,
+  SGameModel,
+  SPlayer,
+} from 'wegas-ts-api';
+import { ScriptableEntity } from 'wegas-ts-api';
+import { popupDispatch, addPopup, PopupActionCreator } from '../PopupManager';
+import { ActionCreator } from '../../data/actions';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -30,7 +36,11 @@ interface GlobalClasses {
   ServerMethods: GlobalServerMethodClass;
   Schemas: GlobalSchemaClass;
   Classes: GlobalClassesClass;
+  Popups: GlobalPopupClass;
+  WegasEvents: WegasEventClass;
 }
+
+const globalDispatch = store.dispatch;
 
 export function createSandbox<T = unknown>() {
   const sandbox = document.createElement('iframe');
@@ -92,31 +102,76 @@ export function useGlobals() {
       selectLang(typeof lang === 'string' ? lang : lang.code),
   };
 
-  const addMethod: ClientMethodAdd = (name, types, array, method) => {
-    store.dispatch(
-      Actions.EditorActions.setClientMethod(
-        name,
-        types,
-        array as keyof ArrayedTypeMap,
-        method,
-      ),
-    );
+  /**
+   * Add a custom client method that can be used in client scripts
+   * @param name - the name of the method
+   * @param parameters - the parameters of the method. (! always use "[[...],... as const")
+   * @param types - the returned types of the method
+   * @param array - the method will return a signle object or an array of objects
+   * @param method - the method to add
+   */
+  const addMethod: ClientMethodAdd = (
+    name,
+    parameters,
+    types,
+    array,
+    method,
+  ) => {
+    if (
+      name != null &&
+      parameters != null &&
+      types != null &&
+      parameters != null &&
+      array != null &&
+      parameters != null &&
+      method != null
+    ) {
+      globalDispatch(
+        Actions.EditorActions.setClientMethod(
+          name,
+          parameters,
+          types,
+          array as keyof ArrayedTypeMap,
+          method,
+        ),
+      );
+    }
   };
 
-  // // Test for addMethod
+  // Test for ExtractTuppleArray
+  // const testParam =  [
+  //   ['arg1', 'boolean'],
+  //   ['arg2', 'number'],
+  // ] as const ;
+
+  // type Test = ExtractTuppleArray<
+  // typeof  testParam,
+  // string,
+  // keyof WegasScriptEditorNameAndTypes,
+  // any[],
+  // "1",
+  // WegasScriptEditorNameAndTypes
+  // >
+
+  // Test for addMethod
   // addMethod(
-  //   "Taddaaa",
-  //   ["number","string[]"],
-  //   "array",
-  //   ()=>[
-  //       // Respecting the type
-  //       ["yeah"],
-  //       1234,
-  //       // No respecting the type
-  //       true,
-  //       "nooo",
-  //       [6666]
-  //   ]);
+  //   'Taddaaa',
+  //   [
+  //     ['arg1', 'boolean'],
+  //     ['arg2', "string"],
+  //   ] as const    ,
+  //   ['number', 'string[]'],
+  //   'array',
+  //   (arg1, arg2) => [
+  //     // Respecting the type
+  //     ['yeah'],
+  //     1234,
+  //     // No respecting the type
+  //     // true,
+  //     // "nooo",
+  //     // [6666]
+  //   ],
+  // );
 
   // ClientMethods class
   globals.ClientMethods = {
@@ -127,8 +182,13 @@ export function useGlobals() {
     },
   };
 
-  const registerMethod: ServerMethodRegister = (method, schema) => {
-    store.dispatch(Actions.EditorActions.registerServerMethod(method, schema));
+  const registerMethod: ServerMethodRegister = (objects, method, schema) => {
+    globalDispatch(
+      Actions.EditorActions.registerServerMethod(objects, method, {
+        ...schema,
+        '@class': 'GlobalServerMethod',
+      }),
+    );
   };
 
   // ServerMethods class
@@ -143,12 +203,12 @@ export function useGlobals() {
       schemaFN: CustomSchemaFN,
       simpleFilter?: WegasClassNames,
     ) => {
-      store.dispatch(
+      globalDispatch(
         Actions.EditorActions.setSchema(name, schemaFN, simpleFilter),
       );
     },
     removeSchema: (name: string) => {
-      store.dispatch(Actions.EditorActions.setSchema(name));
+      globalDispatch(Actions.EditorActions.setSchema(name));
     },
   };
 
@@ -157,6 +217,41 @@ export function useGlobals() {
   globals.Classes = {
     addClass,
     removeClass,
+  };
+
+  globals.Popups = {
+    addPopup: (id, message, duration) => {
+      if (id != null && message != null) {
+        popupDispatch(addPopup(id, message, duration));
+      }
+    },
+    removePopup: id => popupDispatch(PopupActionCreator.REMOVE_POPUP({ id })),
+  };
+
+  globals.WegasEvents = {
+    addEventHandler: (id, type, cb) => {
+      if (id != null && type != null && cb != null) {
+        if (store.getState().global.eventsHandlers[type][id] == null) {
+          globalDispatch(
+            ActionCreator.EDITOR_ADD_EVENT_HANDLER({
+              id,
+              type,
+              cb: (cb as unknown) as WegasEventHandler,
+            }),
+          );
+        }
+      }
+    },
+    removeEventHandler: (id, type) => {
+      if (id != null && type != null) {
+        7;
+        if (store.getState().global.eventsHandlers[type][id] != null) {
+          globalDispatch(
+            ActionCreator.EDITOR_REMOVE_EVENT_HANDLER({ id, type }),
+          );
+        }
+      }
+    },
   };
 
   // TEST
@@ -181,24 +276,28 @@ export function useGlobals() {
 export function clientScriptEval<ReturnValue>(script?: string) {
   return script != null
     ? ((sandbox.contentWindow as unknown) as {
-      eval: (code: string) => ReturnValue;
-    })
-      // 'undefined' so that an empty script don't return '"use strict"'
-      .eval('"use strict";undefined;' + transpile(script))
+        eval: (code: string) => ReturnValue;
+      })
+        // 'undefined' so that an empty script don't return '"use strict"'
+        .eval('"use strict";undefined;' + transpile(script))
     : undefined;
 }
 
-export function safeClientScriptEval<ReturnValue>(script?: string) {
+export function safeClientScriptEval<ReturnValue>(
+  script?: string,
+  catchCB?: (e: Error) => void,
+) {
   try {
     return clientScriptEval<ReturnValue>(script);
   } catch (e) {
     wwarn(
       `Script error at line ${e.lineNumber} : ${
-      e.message
+        e.message
       }\n\nScript content is :\n${script}\n\nTraspiled content is :\n${
-      script != null ? transpile(script) : undefined
+        script != null ? transpile(script) : undefined
       }`,
     );
+    catchCB && catchCB(e);
     return undefined;
   }
 }

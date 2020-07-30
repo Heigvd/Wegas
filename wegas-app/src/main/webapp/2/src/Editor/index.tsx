@@ -10,6 +10,7 @@ import { FeaturesProvider } from '../Components/Contexts/FeaturesProvider';
 import { ThemeProvider } from '../Components/Style/Theme';
 import '../data/store';
 import { importPageComponents } from '../Components/PageComponents/tools/componentFactory';
+import { PopupManager } from '../Components/PopupManager';
 
 importPageComponents();
 
@@ -20,7 +21,9 @@ function mount() {
         <ClassesProvider>
           <LibrariesLoader>
             <ThemeProvider contextName="editor">
-              <Layout />
+              <PopupManager>
+                <Layout />
+              </PopupManager>
             </ThemeProvider>
           </LibrariesLoader>
         </ClassesProvider>

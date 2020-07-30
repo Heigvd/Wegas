@@ -7,8 +7,9 @@ import {
   DiffEditorDidMount,
   monaco,
 } from '@monaco-editor/react';
-import { MonacoEditorProperties, gutter, addExtraLib } from './SrcEditor';
-import schemas from '../../../page-schema.build';
+import { gutter, addExtraLib } from './SrcEditor';
+import { MonacoEditorProperties } from './editorHelpers';
+import { useJSONSchema } from './useJSONSchema';
 
 const overflowHide = css({
   overflow: 'hidden',
@@ -216,6 +217,8 @@ function WegasDiffEditor({
     }
   }, [navigator, idx]);
 
+  const schema = useJSONSchema(language === 'json');
+
   React.useEffect(() => {
     if (reactMonaco) {
       if (language === 'javascript') {
@@ -245,13 +248,13 @@ function WegasDiffEditor({
             {
               fileMatch: ['page.json'],
               uri: 'internal://page-schema.json',
-              schema: (schemas as any).schema,
+              schema,
             },
           ],
         });
       }
     }
-  }, [extraLibs, language, reactMonaco]);
+  }, [extraLibs, language, reactMonaco, schema]);
 
   React.useEffect(() => {
     if (reactMonaco) {

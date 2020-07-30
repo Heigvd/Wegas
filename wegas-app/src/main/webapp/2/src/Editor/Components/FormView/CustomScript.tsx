@@ -5,9 +5,9 @@ import { CommonView, CommonViewContainer } from './commonView';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { toLower } from 'lodash';
 import { CodeLanguage, scriptEditStyle } from './Script/Script';
-import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 import { createScript } from '../../../Helper/wegasEntites';
 import { IScript } from 'wegas-ts-api';
+import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 
 export interface CustomScriptProps
   extends WidgetProps.BaseProps<

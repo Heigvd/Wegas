@@ -11,6 +11,7 @@
     "build": "cross-env NODE_ENV=production gulp"
   },
   "devDependencies": {
+    "wegas-ts-api": "link:../wegas-ts-api/target/wegas-ts-api",
     "bower": "^1.8.4",
     "browser-sync": "2.26.3",
     "chalk": "~0.5.1",

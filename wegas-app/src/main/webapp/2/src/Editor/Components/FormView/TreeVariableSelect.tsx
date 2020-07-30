@@ -15,13 +15,13 @@ import {
   scriptableClassNameToClassFilter,
   createScript,
 } from '../../../Helper/wegasEntites';
-import { SrcEditorLanguages } from '../ScriptEditors/SrcEditor';
 import { scriptEditStyle } from './Script/Script';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import {
   IVariableDescriptor,
   IScript,
 } from 'wegas-ts-api';
+import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 
 const treeCss = css({
   padding: '5px 10px',

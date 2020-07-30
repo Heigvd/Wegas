@@ -24,14 +24,14 @@ const Example: React.FunctionComponent<ExampleProps> = ({
   return notFound ? (
     <pre>Not found: {content}</pre>
   ) : (
-      <div>
-        {entityIs(instance, 'StringInstance')
-          ? TranslatableContent.toString(instance.trValue)
-          : entityIs(instance, 'NumberInstance')
-            ? String(instance.value)
-            : 'The found variable is neither a StringInstance nor a NumberInstance'}
-      </div>
-    );
+    <div>
+      {entityIs(instance, 'StringInstance')
+        ? TranslatableContent.toString(instance.trValue)
+        : entityIs(instance, 'NumberInstance')
+        ? String(instance.value)
+        : 'The found variable is neither a StringInstance nor a NumberInstance'}
+    </div>
+  );
 };
 
 registerComponent(

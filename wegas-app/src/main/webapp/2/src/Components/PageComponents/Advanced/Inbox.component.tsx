@@ -13,7 +13,7 @@ interface PlayerInboxProps extends WegasComponentProps {
   inbox?: IScript;
 }
 
-function PlayerInbox({ inbox }: PlayerInboxProps) {
+export default function PlayerInbox({ inbox }: PlayerInboxProps) {
   const { descriptor } = useComponentScript<IInboxDescriptor>(inbox);
   if (descriptor === undefined) {
     return <pre>No selected list</pre>;

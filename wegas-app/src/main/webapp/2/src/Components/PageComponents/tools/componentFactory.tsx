@@ -70,17 +70,17 @@ type PageComponentAction<
   A extends keyof typeof PageComponentActionCreator = keyof typeof PageComponentActionCreator
 > = ReturnType<typeof PageComponentActionCreator[A]>;
 
-const pageComponentReducer: Reducer<Readonly<PageComponentsState>> = u(
-  (state: PageComponentsState, action: PageComponentAction) => {
-    switch (action.type) {
-      case PageComponentActionTypes.ADD_COMPONENT: {
-        state[action.payload.componentName] = action.payload.component;
-        break;
-      }
+const pageComponentReducer: Reducer<
+  Readonly<PageComponentsState>,
+  PageComponentAction
+> = u((state: PageComponentsState, action: PageComponentAction) => {
+  switch (action.type) {
+    case PageComponentActionTypes.ADD_COMPONENT: {
+      state[action.payload.componentName] = action.payload.component;
+      break;
     }
-  },
-  {},
-);
+  }
+}, {});
 
 /**
  * importPageComponents will import all pages component in the project. This function must be called in the entry file.

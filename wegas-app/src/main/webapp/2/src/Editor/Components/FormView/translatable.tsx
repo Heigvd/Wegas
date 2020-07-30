@@ -70,9 +70,11 @@ export default function translatable<P extends EndProps>(
   ) {
     const { lang, availableLang } = React.useContext(languagesCTX);
 
+    const [currentLanguage, setCurrentLanguage] = React.useState<string>(lang);
+
     // Updade label
     const curCode = (
-      availableLang.find(l => l.code === lang) || {
+      availableLang.find(l => l.code === currentLanguage) || {
         code: '',
       }
     ).code;
@@ -85,6 +87,7 @@ export default function translatable<P extends EndProps>(
             {props.view.label !== undefined && <span>[{curCode}]</span>}
           </span>
         ),
+        onLanguage: setCurrentLanguage,
       }),
       [props.view, curCode],
     );
@@ -93,13 +96,13 @@ export default function translatable<P extends EndProps>(
       entityIs(props.value, 'TranslatableContent')
         ? props.value
         : createTranslatableContent(
-            lang,
+            currentLanguage,
             typeof props.value === 'string'
               ? props.value
               : JSON.stringify(props.value),
           );
 
-    const currTranslation = pvalue.translations[lang];
+    const currTranslation = pvalue.translations[currentLanguage];
     return (
       <Comp
         {...(props as any)} // https://github.com/Microsoft/TypeScript/issues/28748
@@ -110,11 +113,11 @@ export default function translatable<P extends EndProps>(
             ...pvalue,
             translations: {
               ...pvalue.translations,
-              [lang]: {
-                ...pvalue.translations[lang],
+              [currentLanguage]: {
+                ...pvalue.translations[currentLanguage],
                 status: '',
                 translation: value,
-                lang,
+                lang: currentLanguage,
               },
             },
           };

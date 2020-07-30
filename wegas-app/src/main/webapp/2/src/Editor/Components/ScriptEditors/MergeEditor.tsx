@@ -6,9 +6,9 @@ import WegasDiffEditor, {
   ExtendedDiffNavigator,
   DiffEditorLineChanges,
 } from './WegasDiffEditor';
-import { arrayToText, textToArray } from './SrcEditor';
 import { MessageString } from '../MessageString';
 import { themeVar } from '../../../Components/Style/ThemeVars';
+import { arrayToText, textToArray } from './editorHelpers';
 
 const diffLabel = css({
   color: themeVar.Common.colors.TextColor,

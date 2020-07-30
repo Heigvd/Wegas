@@ -16,7 +16,7 @@ interface QuestionDisplayProps extends WegasComponentProps {
   question?: IScript;
 }
 
-function QuestionDisplay({ question }: QuestionDisplayProps) {
+export default function QuestionDisplay({ question }: QuestionDisplayProps) {
   const { content, descriptor, notFound } = useComponentScript<
     IQuestionDescriptor
   >(question);
@@ -24,8 +24,8 @@ function QuestionDisplay({ question }: QuestionDisplayProps) {
   return notFound ? (
     <pre>Not found: {content}</pre>
   ) : (
-      <ConnectedQuestionDisplay entity={descriptor!.getEntity()} />
-    );
+    <ConnectedQuestionDisplay entity={descriptor!.getEntity()} />
+  );
 }
 
 registerComponent(

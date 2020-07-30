@@ -24,7 +24,7 @@ interface PhasesProgressBarProps extends WegasComponentProps {
   phaseMax?: IScript;
 }
 
-function PlayerPhasesProgressBar({
+export default function PlayerPhasesProgressBar({
   phase,
   phaseMin,
   phaseMax,
@@ -53,12 +53,12 @@ function PlayerPhasesProgressBar({
   ) : phaseMaxNotFound ? (
     <pre>Phase max not found: {phaseMaxContent}</pre>
   ) : (
-          <PhasesProgressBar
-            value={phaseInstance!.value}
-            phaseMin={phaseMinInstance!.value}
-            phaseMax={phaseMaxInstance!.value}
-          />
-        );
+    <PhasesProgressBar
+      value={phaseInstance!.value}
+      phaseMin={phaseMinInstance!.value}
+      phaseMax={phaseMaxInstance!.value}
+    />
+  );
 }
 
 registerComponent(

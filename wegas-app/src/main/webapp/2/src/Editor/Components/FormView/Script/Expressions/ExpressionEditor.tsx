@@ -222,7 +222,6 @@ export function ExpressionEditor({
               schemaProperties.comparator.value,
             );
           }
-
           const statement = generateStatement(newAttributes, schema, mode);
 
           setFormState({

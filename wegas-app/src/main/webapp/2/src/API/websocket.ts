@@ -224,12 +224,15 @@ class WebSocketListener {
       case 'EntityDestroyedEvent':
       case 'CustomEvent':
         return store.dispatch(
-          manageResponseHandler({
-            '@class': 'ManagedResponse',
-            deletedEntities: (data as ICustomEventData).deletedEntities,
-            updatedEntities: (data as ICustomEventData).updatedEntities,
-            events: (data as ICustomEventData).events,
-          }),
+          manageResponseHandler(
+            {
+              '@class': 'ManagedResponse',
+              deletedEntities: (data as ICustomEventData).deletedEntities,
+              updatedEntities: (data as ICustomEventData).updatedEntities,
+              events: (data as ICustomEventData).events,
+            },
+            store.dispatch,
+          ),
         );
       case 'PageUpdate':
         store.dispatch(Actions.PageActions.get(data as string));

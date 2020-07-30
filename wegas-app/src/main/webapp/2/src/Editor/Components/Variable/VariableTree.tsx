@@ -86,6 +86,7 @@ function TreeView({ variables, localState, localDispatch }: TreeProps) {
               e.ctrlKey && localDispatch ? localDispatch : globalDispatch;
             dispatch(Actions.EditorActions.createVariable(i.value));
           }}
+          // direction="right"
         />
         <SearchTool />
       </Toolbar.Header>

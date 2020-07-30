@@ -38,7 +38,7 @@ import {
   AbsoluteItem,
   defaultAbsoluteLayoutPropsKeys,
 } from '../../Layouts/Absolute';
-import { InfoBullet } from './InfoBullet';
+import { PlayerInfoBullet } from './InfoBullet';
 import { EditHandle } from './EditHandle';
 import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
 import { OptionsState, ComponentOptionsManager } from './OptionsComponent';
@@ -707,7 +707,7 @@ export function ComponentContainer({
         )}
         {showComponent && <ErrorBoundary>{children}</ErrorBoundary>}
         {extraState.infoBulletProps && (
-          <InfoBullet {...extraState.infoBulletProps} />
+          <PlayerInfoBullet {...extraState.infoBulletProps} />
         )}
         {dragHoverState && editable && childrenType !== 'ABSOLUTE' && (
           <ComponentDropZone
