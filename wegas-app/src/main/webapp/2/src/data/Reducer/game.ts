@@ -4,6 +4,7 @@ import { ActionType, StateActions, ActionCreator } from '../actions';
 import { omit } from 'lodash-es';
 import { store, ThunkResult } from '../store';
 import { GameAPI } from '../../API/games.api';
+import { IGame } from 'wegas-ts-api';
 // import normalizeData from '../normalize/index';
 
 export interface GameState {

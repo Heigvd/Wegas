@@ -1,4 +1,5 @@
 import { validation } from './validation';
+import { IAbstractEntity } from 'wegas-ts-api';
 type ref = Const | Self | Field;
 interface Const<T = unknown> {
   type: 'Const';

@@ -10,6 +10,7 @@
 import { get, isMatch } from 'lodash-es';
 import { discriminant } from '../normalize';
 import { Game, GameModel, Player, Team, VariableDescriptor, VariableInstance } from '../selectors';
+import { IAbstractEntity } from 'wegas-ts-api';
 
 function findNearestParentInFormVal<T extends IAbstractEntity = IAbstractEntity>(
   formVal: IAbstractEntity,

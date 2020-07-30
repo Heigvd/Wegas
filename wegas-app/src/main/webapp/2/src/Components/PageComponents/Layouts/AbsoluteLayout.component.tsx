@@ -4,6 +4,8 @@ import {
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { AbsoluteLayout } from '../../Layouts/Absolute';
+import { SListDescriptor } from 'wegas-ts-api';
+
 
 registerComponent(
   pageComponentFactory(
@@ -15,16 +17,16 @@ registerComponent(
       name: schemaProps.string('Name', false),
       children: schemaProps.hidden(false),
     },
-    ['ISListDescriptor'],
-    (val?: Readonly<ISListDescriptor>) =>
+    ['SListDescriptor'],
+    (val?: Readonly<SListDescriptor>) =>
       val
         ? {
-            // children:val.itemsIds.map(id=>componentsStore.getComponentByType(VariableDescriptor.select(id)))
-            children: [],
-          }
+          // children:val.itemsIds.map(id=>componentsStore.getComponentByType(VariableDescriptor.select(id)))
+          children: [],
+        }
         : {
-            children: [],
-          },
+          children: [],
+        },
     'ABSOLUTE',
   ),
 );

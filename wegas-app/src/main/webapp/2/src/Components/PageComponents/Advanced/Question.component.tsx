@@ -7,6 +7,7 @@ import { schemaProps } from '../tools/schemaProps';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { ConnectedQuestionDisplay } from '../../Outputs/Question';
+import { IScript, IQuestionDescriptor } from 'wegas-ts-api';
 
 interface QuestionDisplayProps extends WegasComponentProps {
   /**
@@ -23,8 +24,8 @@ function QuestionDisplay({ question }: QuestionDisplayProps) {
   return notFound ? (
     <pre>Not found: {content}</pre>
   ) : (
-    <ConnectedQuestionDisplay entity={descriptor!} />
-  );
+      <ConnectedQuestionDisplay entity={descriptor!.getEntity()} />
+    );
 }
 
 registerComponent(
@@ -35,7 +36,7 @@ registerComponent(
     'question',
     {
       question: schemaProps.scriptVariable('Question', true, [
-        'ISQuestionDescriptor',
+        'SQuestionDescriptor',
       ]),
     },
     ['string'],

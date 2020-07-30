@@ -1,3 +1,5 @@
+type IGameModelLanguage = import('wegas-ts-api').IGameModelLanguage;
+
 interface FeaturesSelecta {
   ADVANCED?: boolean;
   INTERNAL?: boolean;
@@ -9,6 +11,6 @@ type FeatureLevel = keyof FeaturesSelecta;
 interface GlobalEditorClass {
   getFeatures: () => FeaturesSelecta;
   setFeatures: (features: FeaturesSelecta) => void;
-  getLanguage: () => ISGameModelLanguage | undefined;
-  setLanguage: (lang: { code: ISGameModelLanguage['code'] } | string) => void;
+  getLanguage: () => IGameModelLanguage | undefined;
+  setLanguage: (lang: { code: IGameModelLanguage['code'] } | string) => void;
 }

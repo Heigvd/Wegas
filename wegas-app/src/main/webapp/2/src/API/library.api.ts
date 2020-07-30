@@ -1,5 +1,6 @@
 import { rest } from './rest';
 import { GameModel } from '../data/selectors';
+import { IGameModelContent, IAbstractContentDescriptor } from 'wegas-ts-api';
 
 export type LibType = 'CSS' | 'ClientScript' | 'ServerScript';
 export type NewLibErrors = 'NOTNEW' | 'UNKNOWN';

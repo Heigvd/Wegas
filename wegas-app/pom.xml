@@ -70,6 +70,14 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wegas-ts-api</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- WEGAS-CORE TEST DEP-->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -266,7 +274,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+            <!--<plugin>
                 <groupId>ch.albasim.wegas</groupId>
                 <artifactId>wenerator-maven-plugin</artifactId>
                 <version>${project.version}</version>
@@ -286,7 +294,7 @@
                         <param>com.wegas</param>
                     </pkg>
                 </configuration>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>

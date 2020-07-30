@@ -21,6 +21,7 @@ import {
 import { store } from '../../../../../data/store';
 import { TYPESTRING } from 'jsoninput/typings/types';
 import { safeClientScriptEval } from '../../../../../Components/Hooks/useScript';
+import { IVariableDescriptor } from 'wegas-ts-api';
 
 const booleanOperators = {
   '===': { label: 'equals' },

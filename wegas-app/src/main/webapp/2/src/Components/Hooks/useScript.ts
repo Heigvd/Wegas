@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { proxyfy, StronglyTypedEntity } from '../../data/proxyfy';
+import { instantiate } from '../../data/scriptable';
 import { Player, VariableDescriptor as VDSelect } from '../../data/selectors';
 import { useStore, store } from '../../data/store';
 import { featuresCTX } from '../Contexts/FeaturesProvider';
@@ -10,16 +10,20 @@ import { transpile } from 'typescript';
 import { classesCTX } from '../Contexts/ClassesProvider';
 import { wwarn } from '../../Helper/wegaslog';
 import { deepDifferent } from './storeHookFactory';
+import { IVariableDescriptor, WegasClassNames } from 'wegas-ts-api';
+import { SGameModel, SPlayer } from 'wegas-ts-api';
+import { ScriptableEntity } from 'wegas-ts-api/src/index';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
     _gm: unknown,
     name: string,
-  ) => Readonly<StronglyTypedEntity<Readonly<T>>> | undefined;
+  ) => ScriptableEntity<T> | undefined;
 }
+
 interface GlobalClasses {
-  gameModel?: Readonly<Readonly<IGameModel>>;
-  self?: Readonly<Readonly<IPlayer>>;
+  gameModel?: Readonly<SGameModel>;
+  self?: Readonly<SPlayer>;
   Variable: GlobalVariableClass;
   Editor: GlobalEditorClass;
   ClientMethods: GlobalClientMethodClass;
@@ -55,13 +59,16 @@ export function useGlobals() {
   const { lang, selectLang } = React.useContext(languagesCTX);
 
   // Global variables
-  globals.gameModel = proxyfy(gameModel);
-  globals.self = proxyfy(player);
+  globals.gameModel = instantiate(gameModel);
+  globals.self = instantiate(player);
 
   // Variable class
   globals.Variable = {
     find: <T extends IVariableDescriptor>(_gm: unknown, name: string) => {
-      return proxyfy(VDSelect.findByName<T>(name));
+      const iDesc = VDSelect.findByName<T>(name);
+      if (iDesc) {
+        return instantiate(iDesc) as any;
+      }
     },
   };
 
@@ -174,10 +181,10 @@ export function useGlobals() {
 export function clientScriptEval<ReturnValue>(script?: string) {
   return script != null
     ? ((sandbox.contentWindow as unknown) as {
-        eval: (code: string) => ReturnValue;
-      })
-        // 'undefined' so that an empty script don't return '"use strict"'
-        .eval('"use strict";undefined;' + transpile(script))
+      eval: (code: string) => ReturnValue;
+    })
+      // 'undefined' so that an empty script don't return '"use strict"'
+      .eval('"use strict";undefined;' + transpile(script))
     : undefined;
 }
 
@@ -187,9 +194,9 @@ export function safeClientScriptEval<ReturnValue>(script?: string) {
   } catch (e) {
     wwarn(
       `Script error at line ${e.lineNumber} : ${
-        e.message
+      e.message
       }\n\nScript content is :\n${script}\n\nTraspiled content is :\n${
-        script != null ? transpile(script) : undefined
+      script != null ? transpile(script) : undefined
       }`,
     );
     return undefined;

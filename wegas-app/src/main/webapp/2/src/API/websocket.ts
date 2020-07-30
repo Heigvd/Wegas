@@ -6,6 +6,7 @@ import { manageResponseHandler } from '../data/actions';
 import { Actions } from '../data';
 import * as React from 'react';
 import { wlog } from '../Helper/wegaslog';
+import { IAbstractEntity } from 'wegas-ts-api';
 
 const CHANNEL_PREFIX = {
   Admin: 'private-Admin',

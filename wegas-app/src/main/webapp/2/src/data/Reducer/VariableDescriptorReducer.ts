@@ -5,6 +5,7 @@ import { Actions as Act } from '..';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { deepRemove } from '../updateUtils';
 import { ThunkResult, store } from '../store';
+import { IVariableDescriptor } from 'wegas-ts-api';
 
 export interface VariableDescriptorState {
   [id: string]: Readonly<IVariableDescriptor> | undefined;

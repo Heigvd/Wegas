@@ -11,6 +11,7 @@ import { createScript } from '../Helper/wegasEntites';
 //It's really important to import index.ts in order to have the widjets allready registered before using Form
 import '../Editor/Components/FormView';
 import { themeVar } from '../Components/Style/ThemeVars';
+import { IScript, IAbstractContentDescriptor } from 'wegas-ts-api';
 
 const testSchema = {
   hidden: schemaProps.hidden(),

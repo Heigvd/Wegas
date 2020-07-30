@@ -1,5 +1,6 @@
 import { rest } from './rest';
 import { GameModel } from '../data/selectors';
+import { IGameModelLanguage, IGameModel } from 'wegas-ts-api';
 
 /*
 PUT     /Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}I18n/BatchUpdate

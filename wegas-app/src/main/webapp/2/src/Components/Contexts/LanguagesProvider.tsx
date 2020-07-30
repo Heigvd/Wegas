@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Menu } from '../Menu';
 import { useGameModel } from '../Hooks/useGameModel';
+import { IGameModelLanguage } from 'wegas-ts-api';
 
 interface LanguagesProviderProps {
   lang?: string;

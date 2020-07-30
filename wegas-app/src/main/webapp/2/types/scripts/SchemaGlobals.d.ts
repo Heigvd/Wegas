@@ -1,18 +1,17 @@
+type IMergeable = import('wegas-ts-api').IMergeable;
+type WegasClassNames = import('wegas-ts-api').WegasClassNames;
+
 type SimpleSchema =
   | {}
   | {
-      properties?: {
-        [props: string]: SimpleSchema;
-      };
-      additionalProperties?: SimpleSchema;
-    }
+    properties?: {
+      [props: string]: SimpleSchema;
+    };
+    additionalProperties?: SimpleSchema;
+  }
   | { items?: SimpleSchema[] | SimpleSchema };
 
-interface TypedEntity extends ISMergeable {
-  '@class': WegasClassNames;
-}
-
-type CustomSchemaFN = <T extends TypedEntity>(
+type CustomSchemaFN = <T extends IMergeable>(
   entity: T,
   // eslint-disable-next-line
   baseSchema: any,

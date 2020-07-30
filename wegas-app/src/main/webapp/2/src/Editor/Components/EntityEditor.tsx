@@ -14,6 +14,7 @@ import { flex, grow, flexColumn } from '../../css/classes';
 import { Edition } from '../../data/Reducer/globalState';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { MessageString } from './MessageString';
+import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
 
 export interface EditorProps<T> {
   entity?: T;
@@ -185,7 +186,7 @@ async function WindowedEditor<T extends IMergeable>({
   const simpleCustomSchemaName = customSchemas.filtered[pathEntity['@class']];
   if (simpleCustomSchemaName !== undefined) {
     const nfSchema = customSchemas.views[simpleCustomSchemaName](
-      pathEntity as TypedEntity,
+      pathEntity,
       schema,
     );
     if (nfSchema !== undefined) {
@@ -195,7 +196,7 @@ async function WindowedEditor<T extends IMergeable>({
   // Then try to get schema from complex filters
   for (const schemaName of customSchemas.unfiltered) {
     const nfSchema = customSchemas.views[schemaName](
-      pathEntity as TypedEntity,
+      pathEntity,
       schema,
     );
     if (nfSchema !== undefined) {
@@ -229,7 +230,7 @@ async function WindowedEditor<T extends IMergeable>({
     </div>
   );
 }
-export const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(
+export const AsyncVariableForm = asyncSFC<EditorProps<IMergeable>>(
   WindowedEditor,
   () => <div>load...</div>,
   ({ err }: { err: Error }) => (
@@ -314,8 +315,8 @@ export const getUpdate = (state: Readonly<Edition>, dispatch: StoreDispatch) =>
   'actions' in state && state.actions.save
     ? state.actions.save
     : (entity: IAbstractEntity) => {
-        dispatch(Actions.EditorActions.saveEditor(entity));
-      };
+      dispatch(Actions.EditorActions.saveEditor(entity));
+    };
 
 export const getEntity = (state?: Readonly<Edition>) => {
   if (!state) {

@@ -11,6 +11,7 @@ import { AvailableViews } from '../../Editor/Components/FormView';
 import { FileAPI } from '../../API/files.api';
 import { omit } from 'lodash';
 import { LockEventData } from '../../API/websocket';
+import { IAbstractEntity, IAbstractContentDescriptor, IUser, IScript, IVariableDescriptor, IFSMDescriptor, IListDescriptor, IQuestionDescriptor, IChoiceDescriptor, IWhQuestionDescriptor, IPeerReviewDescriptor, WegasClassNames } from 'wegas-ts-api';
 
 type actionFn<T extends IAbstractEntity> = (entity: T, path?: string[]) => void;
 export interface EditorAction<T extends IAbstractEntity> {
@@ -25,32 +26,32 @@ export interface EditorAction<T extends IAbstractEntity> {
 }
 export type Edition =
   | {
-      type: 'Variable' | 'VariableFSM';
-      entity: IAbstractEntity;
-      config?: Schema<AvailableViews>;
-      path?: (string | number)[];
-      actions: EditorAction<IAbstractEntity>;
-    }
+    type: 'Variable' | 'VariableFSM';
+    entity: IAbstractEntity;
+    config?: Schema<AvailableViews>;
+    path?: (string | number)[];
+    actions: EditorAction<IAbstractEntity>;
+  }
   | {
-      type: 'VariableCreate';
-      '@class': string;
-      parentId?: number;
-      parentType?: string;
-      config?: Schema<AvailableViews>;
-      actions: EditorAction<IAbstractEntity>;
-    }
+    type: 'VariableCreate';
+    '@class': IVariableDescriptor["@class"];
+    parentId?: number;
+    parentType?: string;
+    config?: Schema<AvailableViews>;
+    actions: EditorAction<IAbstractEntity>;
+  }
   | {
-      type: 'Component';
-      page: string;
-      path: (string | number)[];
-      config?: Schema<AvailableViews>;
-      actions: EditorAction<IAbstractEntity>;
-    }
+    type: 'Component';
+    page: string;
+    path: (string | number)[];
+    config?: Schema<AvailableViews>;
+    actions: EditorAction<IAbstractEntity>;
+  }
   | {
-      type: 'File';
-      entity: IAbstractContentDescriptor;
-      cb?: (updatedValue: IAbstractEntity) => void;
-    };
+    type: 'File';
+    entity: IAbstractContentDescriptor;
+    cb?: (updatedValue: IMergeable) => void;
+  };
 export interface EditingState {
   editing?: Readonly<Edition>;
   events: Readonly<WegasEvents[]>;
@@ -66,18 +67,18 @@ export interface GlobalState extends EditingState {
   // pageSrc: Readonly<boolean>;
   pageError?: Readonly<string>;
   search:
-    | {
-        type: 'GLOBAL';
-        value: string;
-        result: number[];
-      }
-    | {
-        type: 'USAGE';
-        value: number;
-        result: number[];
-      }
-    | { type: 'ONGOING' }
-    | { type: 'NONE' };
+  | {
+    type: 'GLOBAL';
+    value: string;
+    result: number[];
+  }
+  | {
+    type: 'USAGE';
+    value: number;
+    result: number[];
+  }
+  | { type: 'ONGOING' }
+  | { type: 'NONE' };
   pusherStatus: {
     status: string;
     socket_id?: string;
@@ -165,7 +166,7 @@ export const editorManagement = (
     case ActionType.VARIABLE_CREATE:
       return {
         type: 'VariableCreate',
-        '@class': action.payload['@class'],
+        '@class': action.payload['@class'] as IVariableDescriptor["@class"],
         parentId: action.payload.parentId,
         parentType: action.payload.parentType,
         actions: action.payload.actions,
@@ -318,29 +319,29 @@ export function editVariable(
       actions != null
         ? actions
         : {
-            more: {
-              delete: {
-                label: 'Delete',
-                action: (entity: IVariableDescriptor, path?: string[]) => {
-                  dispatch(
-                    Actions.VariableDescriptorActions.deleteDescriptor(
-                      entity,
-                      path,
-                    ),
-                  );
-                },
-                confirm: true,
+          more: {
+            delete: {
+              label: 'Delete',
+              action: (entity: IVariableDescriptor, path?: string[]) => {
+                dispatch(
+                  Actions.VariableDescriptorActions.deleteDescriptor(
+                    entity,
+                    path,
+                  ),
+                );
               },
-              findUsage: {
-                label: 'Find usage',
-                action: (entity: IVariableDescriptor) => {
-                  if (entityIsPersisted(entity)) {
-                    dispatch(Actions.EditorActions.searchUsage(entity));
-                  }
-                },
+              confirm: true,
+            },
+            findUsage: {
+              label: 'Find usage',
+              action: (entity: IVariableDescriptor) => {
+                if (entityIsPersisted(entity)) {
+                  dispatch(Actions.EditorActions.searchUsage(entity));
+                }
               },
             },
-          };
+          },
+        };
     dispatch(
       ActionCreator.VARIABLE_EDIT({
         entity,
@@ -417,7 +418,7 @@ export function editFile(
  * @returns
  */
 export function createVariable(
-  cls: string,
+  cls: IAbstractEntity["@class"],
   parent?:
     | IListDescriptor
     | IQuestionDescriptor
@@ -446,7 +447,7 @@ export function createVariable(
  * @param {IAbstractEntity} value
  * @returns {ThunkResult}
  */
-export function saveEditor(value: IAbstractEntity): ThunkResult {
+export function saveEditor(value: IMergeable): ThunkResult {
   return function save(dispatch, getState) {
     const editMode = getState().global.editing;
     if (editMode == null) {
@@ -465,8 +466,8 @@ export function saveEditor(value: IAbstractEntity): ThunkResult {
           ACTIONS.VariableDescriptorActions.createDescriptor(
             value as IVariableDescriptor,
             VariableDescriptor.select(editMode.parentId) as
-              | IParentDescriptor
-              | undefined,
+            | IParentDescriptor
+            | undefined,
           ),
         );
       case 'File':

@@ -1,4 +1,6 @@
-const InheritanceTable = require('../../types/generated/Inheritance.json') as typeof import('../../types/generated/Inheritance.json');
+import { IAbstractEntity, WegasClassNames, WegasClassNamesAndClasses } from 'wegas-ts-api';
+
+const InheritanceTable = require('wegas-ts-api/typings/Inheritance.json') as typeof import('wegas-ts-api/typings/Inheritance.json');
 
 type Mergeable = keyof typeof InheritanceTable;
 

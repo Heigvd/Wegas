@@ -14,6 +14,7 @@ import { overrideSchema } from './EntityEditor';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { flex, grow, justifyCenter, flexColumn } from '../../css/classes';
 import { themeVar } from '../../Components/Style/ThemeVars';
+import { IGameModelLanguage } from 'wegas-ts-api';
 
 const edition = { color: themeVar.Common.colors.ActiveColor };
 const simple = { color: themeVar.Common.colors.TextColor };

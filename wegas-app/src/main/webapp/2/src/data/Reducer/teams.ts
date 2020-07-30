@@ -4,6 +4,7 @@ import { ActionType, StateActions, ActionCreator } from '../actions';
 import { omit } from 'lodash-es';
 import { ThunkResult, store } from '../store';
 import { TeamAPI } from '../../API/teams.api';
+import { ITeam } from 'wegas-ts-api';
 
 export interface TeamState {
   [id: string]: Readonly<ITeam>;

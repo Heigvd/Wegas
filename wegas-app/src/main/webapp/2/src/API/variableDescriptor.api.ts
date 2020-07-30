@@ -1,4 +1,5 @@
 import { managedModeRequest, rest } from './rest';
+import { IVariableDescriptor, IScript } from 'wegas-ts-api';
 
 const VD_BASE = (gameModelId: number) =>
   `/GameModel/${gameModelId}/VariableDescriptor/`;

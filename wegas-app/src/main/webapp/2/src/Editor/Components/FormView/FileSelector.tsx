@@ -8,6 +8,7 @@ import {
   FilePickingType,
 } from '../FileBrowser/FileBrowser';
 import { generateAbsolutePath } from '../../../API/files.api';
+import { IAbstractContentDescriptor } from 'wegas-ts-api';
 
 interface FileSelectProps extends WidgetProps.BaseProps {
   view: CommonView &

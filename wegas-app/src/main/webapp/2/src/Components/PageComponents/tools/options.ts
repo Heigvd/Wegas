@@ -13,10 +13,23 @@ import { InfoBulletProps } from './InfoBullet';
 import { flexlayoutChoices } from '../../Layouts/FlexList';
 import { absolutelayoutChoices } from '../../Layouts/Absolute';
 import { ContainerTypes } from './EditableComponent';
-import { entityIs } from '../../../data/entities';
-import { getQuestionReplies } from '../../../data/proxyfy/instancesHelpers';
 import { createScript } from '../../../Helper/wegasEntites';
-import { proxyfy } from '../../../data/proxyfy';
+import { IScript } from 'wegas-ts-api';
+import { instantiate } from '../../../data/scriptable';
+import {
+  SDialogueDescriptor,
+  SFSMInstance,
+  SInboxInstance,
+  SQuestionInstance,
+  SQuestionDescriptor,
+  SWhQuestionInstance,
+  SSurveyInstance,
+  SPeerReviewInstance,
+  SInboxDescriptor,
+  SWhQuestionDescriptor,
+  SSurveyDescriptor,
+  SPeerReviewDescriptor,
+} from 'wegas-ts-api';
 
 export interface WegasComponentOptionsAction {
   priority?: number;
@@ -357,119 +370,88 @@ const decorationsChoices: HashListChoices = [
         'number',
         'string',
         'object[]',
-        'ISInboxDescriptor',
-        'ISDialogueDescriptor',
-        'ISQuestionDescriptor',
-        'ISWhQuestionDescriptor',
-        'ISSurveyDescriptor',
-        'ISPeerReviewDescriptor',
+        'SInboxDescriptor',
+        'SDialogueDescriptor',
+        'SQuestionDescriptor',
+        'SWhQuestionDescriptor',
+        'SSurveyDescriptor',
+        'SPeerReviewDescriptor',
       ]),
     },
   },
 ];
 
-function extractUnreadCount(
-  descriptor?:
-    | IInboxDescriptor
-    | IDialogueDescriptor
-    | IQuestionDescriptor
-    | IWhQuestionDescriptor
-    | ISurveyDescriptor
-    | IPeerReviewDescriptor,
-): number {
-  if (descriptor == null) {
+type UnreadCountDescriptorTypes =
+  | SInboxDescriptor
+  | SDialogueDescriptor
+  | SQuestionDescriptor
+  | SWhQuestionDescriptor
+  | SSurveyDescriptor
+  | SPeerReviewDescriptor;
+
+function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
+  if (!descriptor) {
     return 0;
   } else {
-    const proxyfiedDescriptor = proxyfy(descriptor);
-    const instance = proxyfiedDescriptor?.getInstance(Player.selectCurrent());
-    if (instance == null) {
+    const self = instantiate(Player.selectCurrent());
+    const instance = descriptor?.getInstance(self);
+
+    if (!instance) {
       return 0;
     } else {
       if (
-        entityIs(descriptor, 'DialogueDescriptor') &&
-        entityIs(instance, 'FSMInstance')
+        descriptor instanceof SDialogueDescriptor &&
+        instance instanceof SFSMInstance
       ) {
-        if (!instance.enabled) {
+        if (
+          instance.getEnabled() &&
+          descriptor.getStates()[instance.getCurrentStateId()].getTransitions()
+            .length > 0
+        ) {
+          return 1;
+        } else {
+          return 0;
+        }
+      } else if (instance instanceof SInboxInstance) {
+        return instance.getMessages().filter(m => m.getUnread()).length;
+      } else if (
+        descriptor instanceof SQuestionDescriptor &&
+        instance instanceof SQuestionInstance
+      ) {
+        if (instance.isValidated() || !instance.getActive()) {
           return 0;
         } else {
-          return descriptor.states[instance.currentStateId].transitions.length >
-            0
-            ? 1
-            : 0;
-        }
-      }
-      // Idk what happens here. TS should infer type from @class prop in switch case but it doesnt so i had to cast all types manually
-      // The most strange thing is that VSCode does the inference but not ts ...
-      switch (
-        ((instance as unknown) as Readonly<
-          | IInboxInstance
-          | IQuestionInstance
-          | IWhQuestionInstance
-          | ISurveyInstance
-          | IPeerReviewInstance
-        >)['@class']
-      ) {
-        case 'InboxInstance': {
-          const ii = (instance as unknown) as Readonly<IInboxInstance>;
-          const nbUnread = ii.messages.filter(m => m.unread).length;
-          if (nbUnread > 0) {
-            return nbUnread;
-          }
-          return 0;
-        }
-        case 'QuestionInstance': {
-          const qi = (instance as unknown) as Readonly<IQuestionInstance>;
-          const questionDescriptor = descriptor as IQuestionDescriptor;
-          if (questionDescriptor.cbx) {
-            return qi.active && !qi.validated ? 1 : 0;
+          if (descriptor.getCbx()) {
+            // active and not validated cbx always return 1
+            return 1;
           } else {
-            const replies = getQuestionReplies(questionDescriptor, true);
-            return replies.length === 0 && !qi.validated && qi.active ? 1 : 0;
+            // non-cbx must have 0 reply
+            return descriptor.isReplied(self) ? 0 : 1;
           }
         }
-        case 'WhQuestionInstance': {
-          const wqi = (instance as unknown) as Readonly<IWhQuestionInstance>;
-          return wqi.active && !wqi.validated ? 1 : 0;
-        }
-        case 'SurveyInstance': {
-          const si = (instance as unknown) as Readonly<ISurveyInstance>;
-          return si.active &&
-            (si.status === 'REQUESTED' || si.status === 'ONGOING')
-            ? 1
-            : 0;
-        }
-        case 'PeerReviewInstance': {
-          const pri = (instance as unknown) as Readonly<IPeerReviewInstance>;
-          const types: ['toReview', 'reviewed'] = ['toReview', 'reviewed'];
-          return types.reduce(
-            (ot, t) =>
-              ot +
-              (pri[t] as IReview[]).reduce(
-                (or, r) =>
-                  or +
-                  ((t === 'toReview' && r.reviewState === 'DISPATCHED') ||
-                  (t === 'reviewed' && r.reviewState === 'NOTIFIED')
-                    ? 1
-                    : 0),
-                0,
-              ),
-            0,
-          );
-        }
-        default:
-          return 0;
+      } else if (instance instanceof SWhQuestionInstance) {
+        return instance.getActive && !instance.isValidated() ? 1 : 0;
+      } else if (instance instanceof SSurveyInstance) {
+        return instance.getActive() &&
+          (instance.getStatus() === 'REQUESTED' ||
+            instance.getStatus() === 'ONGOING')
+          ? 1
+          : 0;
+      } else if (instance instanceof SPeerReviewInstance) {
+        return instance
+          .getToReview()
+          .filter(review => review.getReviewState() == 'DISPATCHED')
+          .concat(
+            instance
+              .getReviewed()
+              .filter(review => review.getReviewState() == 'NOTIFIED'),
+          ).length;
+      } else {
+        return 0;
       }
     }
   }
 }
-
-type UnreadCountDescriptorTypes =
-  | IInboxDescriptor
-  | IDialogueDescriptor
-  | IQuestionDescriptor
-  | IWhQuestionDescriptor
-  | ISurveyDescriptor
-  | IPeerReviewDescriptor;
 
 export function useComputeUnreadCount(
   unreadCountVariableScript: IScript | undefined,
