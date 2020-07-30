@@ -1,5 +1,5 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { SObjectDescriptor, SObjectInstance, SPlayer } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { SObjectDescriptor, SObjectInstance, SPlayer } from 'wegas-ts-api';
 
 export class SObjectDescriptorImpl extends SObjectDescriptor {
   public getProperty(p: Readonly<SPlayer>, key: string): string {

@@ -13,12 +13,10 @@ import { deepDifferent } from './storeHookFactory';
 import {
   IVariableDescriptor,
   WegasClassNames,
-} from 'wegas-ts-api/typings/WegasEntities';
-import {
   SGameModel,
   SPlayer,
-} from 'wegas-ts-api/src/generated/WegasScriptableEntities';
-import { ScriptableEntity } from 'wegas-ts-api/src/index';
+} from 'wegas-ts-api';
+import { ScriptableEntity } from 'wegas-ts-api';
 import { popupDispatch, addPopup, PopupActionCreator } from '../PopupManager';
 import { ActionCreator } from '../../data/actions';
 

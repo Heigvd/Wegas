@@ -1,20 +1,23 @@
 {
-    "name": "WegasApi",
-    "version": "1.0.0",
-    "keywords": ["Wegas"],
-    "author": "maxence",
-    "scripts": {
-      "clean": "rimraf src/main/webapp/src/generated src/main/webapp/typings"
-    },
-    "workspaces": [
-        "target/wegas-ts-api"
-    ],
-    "private": true,
-    "contributors": [],
-    "dependencies": {},
-      "devDependencies": {
-        "jest": "^24.8.0",
-        "rimraf": "^3.0.0",
-        "typescript": "^3.7.5"
+  "name": "wegas-ts-api",
+  "version": "1.0.0",
+  "keywords": [
+    "Wegas"
+  ],
+  "author": "maxence",
+  "scripts": {
+    "clean": "rimraf src/main/webapp/src/generated src/main/webapp/typings"
+  },
+  "workspaces": [
+    "target/wegas-ts-api"
+  ],
+  "private": true,
+  "contributors": [],
+  "dependencies": {},
+  "devDependencies": {
+    "copyfiles": "^2.3.0",
+    "jest": "^24.8.0",
+    "rimraf": "^3.0.0",
+    "typescript": "^3.7.5"
   }
 }

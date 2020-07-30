@@ -1,6 +1,6 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
 import { TranslatableContent } from '../../i18n';
-import { STextDescriptor, STextInstance, SPlayer, STranslatableContent } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { STextDescriptor, STextInstance, SPlayer, STranslatableContent } from 'wegas-ts-api';
 
 
 export class STextDescriptorImpl extends STextDescriptor {

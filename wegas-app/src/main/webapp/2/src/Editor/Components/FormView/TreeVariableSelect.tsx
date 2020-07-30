@@ -20,7 +20,7 @@ import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import {
   IVariableDescriptor,
   IScript,
-} from 'wegas-ts-api/typings/WegasEntities';
+} from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 
 const treeCss = css({

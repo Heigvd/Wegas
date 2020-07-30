@@ -8,7 +8,7 @@ import PathSelector from './PathSelector';
 import {
   IAttachment,
   ITranslatableContent,
-} from 'wegas-ts-api/typings/WegasEntities';
+} from 'wegas-ts-api';
 
 interface AttachmentSelectProps extends WidgetProps.BaseProps {
   view: CommonView &

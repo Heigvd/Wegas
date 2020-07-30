@@ -27,7 +27,7 @@ import {
   FilePickingType,
 } from '../../../Editor/Components/FileBrowser/FileBrowser';
 import { CustomScriptProps } from '../../../Editor/Components/FormView/CustomScript';
-import { IAbstractContentDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { IAbstractContentDescriptor } from 'wegas-ts-api';
 
 type TypedProps<T extends { view: {} }> = Schema<
   T['view'] & {

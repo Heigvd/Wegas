@@ -8,7 +8,7 @@ import { IconButton } from './Inputs/Buttons/IconButton';
 import { flexColumn, flex, itemCenter, flexRow } from '../css/classes';
 import { cx, css } from 'emotion';
 import { omit } from 'lodash-es';
-import { ITranslatableContent } from 'wegas-ts-api/typings/WegasEntities';
+import { ITranslatableContent } from 'wegas-ts-api';
 import { translate } from '../Editor/Components/FormView/translatable';
 import { languagesCTX } from './Contexts/LanguagesProvider';
 import { themeVar } from './Style/ThemeVars';

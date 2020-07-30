@@ -20,7 +20,7 @@ import {
 } from '../../data/scriptable/impl/QuestionDescriptor';
 import { Button } from '../Inputs/Buttons/Button';
 import { themeVar } from '../Style/ThemeVars';
-import { IQuestionDescriptor, IReply, IChoiceDescriptor, IChoiceInstance, IQuestionInstance, IListDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { IQuestionDescriptor, IReply, IChoiceDescriptor, IChoiceInstance, IQuestionInstance, IListDescriptor } from 'wegas-ts-api';
 
 const unreadSignalStyle = css({ margin: '3px' });
 const choiceContainerStyle = css({

@@ -10,7 +10,7 @@ import { Toggler } from '../../Inputs/Boolean/Toggler';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { IScript, IBooleanDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { IScript, IBooleanDescriptor } from 'wegas-ts-api';
 
 interface PlayerBooleanProps extends WegasComponentProps {
   /**

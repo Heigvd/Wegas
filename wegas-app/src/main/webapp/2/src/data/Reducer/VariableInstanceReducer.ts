@@ -20,7 +20,7 @@ import {
   IMessage,
   IInboxDescriptor,
   IReply,
-} from 'wegas-ts-api/typings/WegasEntities';
+} from 'wegas-ts-api';
 
 export interface VariableInstanceState {
   [id: string]: Readonly<IVariableInstance> | undefined;

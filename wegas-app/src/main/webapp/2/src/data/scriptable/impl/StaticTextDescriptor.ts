@@ -1,5 +1,5 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { SStaticTextDescriptor, SStaticTextInstance, SPlayer } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { SStaticTextDescriptor, SStaticTextInstance, SPlayer } from 'wegas-ts-api';
 
 export class SStaticTextDescriptorImpl extends SStaticTextDescriptor {
 

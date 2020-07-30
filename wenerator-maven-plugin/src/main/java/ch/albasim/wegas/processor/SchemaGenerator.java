@@ -166,6 +166,12 @@ public class SchemaGenerator extends AbstractMojo {
 
     private final Map<String, ClassDoc> javadoc;
 
+    private final Map<Type, String> otherObjectsInterfaceTypeD = new HashMap<>();
+
+    private final Map<Type, String> otherObjectsScriptableTypeD = new HashMap<>();
+
+    private final Map<Type, JSONExtendedSchema> otherObjectsSchemas = new HashMap<>();
+
     public SchemaGenerator() {
         this(false);
     }
@@ -444,7 +450,7 @@ public class SchemaGenerator extends AbstractMojo {
             for (Type t : c.getTypeParameters()) {
                 String typeName = t.getTypeName();
                 Type reified = TypeResolver.reify(t, c);
-                String tsType = javaToTSType(reified, null, "S");
+                String tsType = javaToTSType(reified, null, "S", this.otherObjectsScriptableTypeD);
                 genericity.put(tsType, typeName);
                 genericityOrder.add(tsType);
             }
@@ -471,7 +477,7 @@ public class SchemaGenerator extends AbstractMojo {
                     sb.append("<");
                     Arrays.stream(gTypes).forEach(t -> {
                         sb.append(
-                            javaToTSType(TypeResolver.reify(t, c), genericity, "S")).append(",");
+                            javaToTSType(TypeResolver.reify(t, c), genericity, "S", this.otherObjectsScriptableTypeD)).append(",");
                     });
                     // delete last comma
                     sb.deleteCharAt(sb.length() - 1);
@@ -705,7 +711,7 @@ public class SchemaGenerator extends AbstractMojo {
             for (Type t : c.getTypeParameters()) {
                 String typeName = t.getTypeName();
                 Type reified = TypeResolver.reify(t, c);
-                String tsType = javaToTSType(reified, null, "I");
+                String tsType = javaToTSType(reified, null, "I", this.otherObjectsInterfaceTypeD);
                 genericity.put(tsType, typeName);
                 genericityOrder.add(tsType);
             }
@@ -729,7 +735,7 @@ public class SchemaGenerator extends AbstractMojo {
                 if (gTypes != null && gTypes.length > 0) {
                     sb.append("<");
                     Arrays.stream(gTypes).forEach(t -> {
-                        sb.append(javaToTSType(TypeResolver.reify(t, c), genericity, "I")).append(",");
+                        sb.append(javaToTSType(TypeResolver.reify(t, c), genericity, "I", this.otherObjectsInterfaceTypeD)).append(",");
                     });
                     sb.deleteCharAt(sb.length() - 1);
                     sb.append(">");
@@ -825,7 +831,7 @@ public class SchemaGenerator extends AbstractMojo {
         boolean deprecated,
         Map<String, String> genericity) {
         Type reified = TypeResolver.reify(returnType, c);
-        String tsType = javaToTSType(reified, genericity, "I");
+        String tsType = javaToTSType(reified, genericity, "I", this.otherObjectsInterfaceTypeD);
         if (genericity.containsKey(tsType)) {
             tsType = genericity.get(tsType);
         }
@@ -882,7 +888,7 @@ public class SchemaGenerator extends AbstractMojo {
         Map<String, String> genericity) {
 
         Type reified = TypeResolver.reify(returnType, c);
-        String tsType = javaToTSType(reified, genericity, "S");
+        String tsType = javaToTSType(reified, genericity, "S", this.otherObjectsScriptableTypeD);
         if (genericity.containsKey(tsType)) {
             tsType = genericity.get(tsType);
         }
@@ -994,7 +1000,8 @@ public class SchemaGenerator extends AbstractMojo {
         }
     }
 
-    private void writeInterfaces(StringBuilder sb, Map<String, String> interfaces) {
+    private void writeInterfaces(StringBuilder sb, Map<String, String> interfaces,
+        Map<Type, String> otherObjectsTypeD) {
         for (String name : inheritanceOrder) {
             String iface = interfaces.get(name);
             if (iface != null) {
@@ -1004,7 +1011,7 @@ public class SchemaGenerator extends AbstractMojo {
             }
         }
 
-        this.otherObjectsTypeD.forEach((klass, typeDef) -> {
+        otherObjectsTypeD.forEach((klass, typeDef) -> {
             sb.append("/*\n * ").append(((Class) klass).getSimpleName()).append("\n */\n");
             sb.append(typeDef).append("\n");
         });
@@ -1062,6 +1069,13 @@ public class SchemaGenerator extends AbstractMojo {
         StringBuilder sb = new StringBuilder();
         ArrayList<String> intKeys = new ArrayList<String>(tsInterfaces.keySet());
 
+        //Avoid ts and linter error for unused variable when the module imported (happends with ununes templates)
+        sb.append("/* tslint:disable:no-unused-variable */")
+            .append(System.lineSeparator())
+            .append("// @ts-nocheck")
+            .append(System.lineSeparator())
+            .append(System.lineSeparator());
+        
 //        sb.append("/**\n" + " * Remove specified keys.\n" + " */\n" + "type WithoutAtClass<Type> = Pick<\n"
 //            + "    Type,\n" + "    Exclude<keyof Type, '@class'>\n" + ">;");
         writeMergeableInterface(sb);
@@ -1086,9 +1100,9 @@ public class SchemaGenerator extends AbstractMojo {
             .append(System.lineSeparator())
             .append(System.lineSeparator());
 
-        writeInterfaces(sb, tsInterfaces);
+        writeInterfaces(sb, tsInterfaces, this.otherObjectsInterfaceTypeD);
 
-        writeInterfacesToFile(typingsDirectory, sb, "WegasEntities.d.ts");
+        writeInterfacesToFile(typingsDirectory, sb, "WegasEntities.ts");
     }
 
     private void writeClassNameMapDecl(List<String> atClasses, String name, StringBuilder sb) {
@@ -1135,7 +1149,7 @@ public class SchemaGenerator extends AbstractMojo {
          * Surround this statement with special markdown.
          */
         implBuilder.append(STRIP_FROM)
-            .append("import { WegasClient } from '..';")
+            .append("import { WegasClient } from '../../src';")
             .append(STRIP_TO).append(System.lineSeparator());
 
         implBuilder.append(STRIP_FROM).append("import {")
@@ -1152,12 +1166,12 @@ public class SchemaGenerator extends AbstractMojo {
         /**
          * Declaration starts to differ
          */
-        declBuilder.append(implBuilder);
+        // declBuilder.append(implBuilder);
 
-        implBuilder.append("} from '../../typings/WegasEntities';").append(STRIP_TO)
+        implBuilder.append("} from '../..';").append(STRIP_TO)
             .append(System.lineSeparator());
-        declBuilder.append("} from './WegasEntities';").append(STRIP_TO)
-            .append(System.lineSeparator());
+        //declBuilder.append("} from './WegasEntities';").append(STRIP_TO)
+        //    .append(System.lineSeparator());
 
         /**
          * Creating top-level SMergeable class
@@ -1168,37 +1182,61 @@ public class SchemaGenerator extends AbstractMojo {
         /**
          * Creating ts interface linking real classes and stringified classes
          */
-        declBuilder.append(EXPORT_TOSTRIP).append("interface WegasEntitiesNamesAndClasses {");
+        implBuilder.append(EXPORT_TOSTRIP).append("interface WegasEntitiesNamesAndClasses {");
         intKeys.forEach(key -> {
             String sKey = "S" + key;
-            declBuilder.append(System.lineSeparator())
+            implBuilder.append(System.lineSeparator())
                 .append("  " + sKey + " : " + sKey + ";")
                 .append(System.lineSeparator())
                 .append("  '" + sKey + "[]' : " + sKey + "[];");
         });
 
-        declBuilder.append(System.lineSeparator())
+        implBuilder.append(System.lineSeparator())
             .append("}")
             .append(System.lineSeparator())
             .append(System.lineSeparator());
+        
+        //declBuilder.append(EXPORT_TOSTRIP).append("interface WegasEntitiesNamesAndClasses {");
+        //intKeys.forEach(key -> {
+        //    String sKey = "S" + key;
+        //    declBuilder.append(System.lineSeparator())
+        //        .append("  " + sKey + " : " + sKey + ";")
+        //        .append(System.lineSeparator())
+        //        .append("  '" + sKey + "[]' : " + sKey + "[];");
+        //});
 
-        writeInterfaces(declBuilder, tsScriptableDeclarations);
-        writeInterfaces(implBuilder, tsScriptableClasses);
+        //declBuilder.append(System.lineSeparator())
+        //    .append("}")
+        //    .append(System.lineSeparator())
+        //    .append(System.lineSeparator());
+
+        writeInterfaces(declBuilder, tsScriptableDeclarations, this.otherObjectsScriptableTypeD);
+        writeInterfaces(implBuilder, tsScriptableClasses, this.otherObjectsScriptableTypeD);
 
         this.writeClassNameMapDecl(abstractClasses, "AtClassToAbstractTypes", declBuilder);
         this.writeClassNameMap(abstractClasses, "AtClassToAbstractClasses", implBuilder);
+        this.writeClassNameMapDecl(abstractClasses, "AtClassToAbstractTypes", implBuilder);
 
         this.writeClassNameMapDecl(concreteableClasses, "AtClassToConcrtetableTypes", declBuilder);
         this.writeClassNameMap(concreteableClasses, "AtClassToConcrtetableClasses", implBuilder);
+        this.writeClassNameMapDecl(concreteableClasses, "AtClassToConcrtetableTypes", implBuilder);
 
         this.writeClassNameMapDecl(concreteClasses, "AtClassToConcreteTypes", declBuilder);
         this.writeClassNameMap(concreteClasses, "AtClassToConcreteClasses", implBuilder);
+        this.writeClassNameMapDecl(concreteClasses, "AtClassToConcreteTypes", implBuilder);
 
         implBuilder.append(EXPORT_TOSTRIP)
             .append(" type AtClassToClasses = "
                 + "AtClassToAbstractClasses & AtClassToConcrtetableClasses & AtClassToConcreteClasses;")
             .append(System.lineSeparator())
             .append(System.lineSeparator());
+        
+        implBuilder.append(EXPORT_TOSTRIP)
+            .append(" type WegasClassNameAndScriptableTypes = "
+                + "AtClassToAbstractTypes & AtClassToConcrtetableTypes & AtClassToConcreteTypes;")
+            .append(System.lineSeparator())
+            .append(System.lineSeparator());
+
 
         /**
          * Creating ts interface linking WegasEntites @class and ScriptableWegasEntites classes
@@ -1228,7 +1266,7 @@ public class SchemaGenerator extends AbstractMojo {
         /**
          * Creating all interfaces with callable methods for scripts
          */
-        writeInterfacesToFile(typingsDirectory, declBuilder, "WegasScriptableEntities.d.ts");
+        writeInterfacesToFile(typingsDirectory, declBuilder, "WegasScriptableEntities.d.ts.mlib");
         writeInterfacesToFile(srcDirectory, implBuilder, "WegasScriptableEntities.ts");
     }
 
@@ -1251,18 +1289,18 @@ public class SchemaGenerator extends AbstractMojo {
             Arrays.stream(method.getParameters()).forEach(p -> {
                 Type type = p.getParameterizedType();
                 Type reified = TypeResolver.reify(type, method.getDeclaringClass());
-                builder.append(p.getName()).append(": Readonly<").append(javaToTSType(reified, null, "S"));
+                builder.append(p.getName()).append(": Readonly<").append(javaToTSType(reified, null, "S", this.otherObjectsScriptableTypeD));
                 builder.append(">, ");
             });
             builder.append(")");
 
             Type genericReturnType = method.getGenericReturnType();
             Type reified = TypeResolver.reify(genericReturnType, klass);
-            String tsReturnType = javaToTSType(reified, null, "S");
+            String tsReturnType = javaToTSType(reified, null, "S", this.otherObjectsScriptableTypeD);
 
             builder.append(" : Readonly<").append(tsReturnType).append(">");
 
-            if (v.nullable){
+            if (v.nullable) {
                 builder.append(" | null");
             }
 
@@ -1617,7 +1655,8 @@ public class SchemaGenerator extends AbstractMojo {
         return MAP_TYPE.isSupertypeOf(type);
     }
 
-    private String javaToTSType(Type type, Map<String, String> genericity, String prefix) {
+    private String javaToTSType(Type type, Map<String, String> genericity, String prefix,
+        Map<Type, String> otherObjectsTypeD) {
         if (type instanceof Class) {
             Class<?> returnType = wrap((Class<?>) type);
             if (Number.class.isAssignableFrom(returnType) || Calendar.class.isAssignableFrom(returnType)
@@ -1632,8 +1671,8 @@ public class SchemaGenerator extends AbstractMojo {
 
         if (isMap(type)) { // Dictionary
             Type[] typeArguments = ((ParameterizedType) type).getActualTypeArguments();
-            String keyType = javaToTSType(typeArguments[0], genericity, prefix);
-            String valueType = javaToTSType(typeArguments[1], genericity, prefix);
+            String keyType = javaToTSType(typeArguments[0], genericity, prefix, otherObjectsTypeD);
+            String valueType = javaToTSType(typeArguments[1], genericity, prefix, otherObjectsTypeD);
 
             return "{\n  [key: " + keyType + "] :" + valueType + "\n}";
         }
@@ -1641,10 +1680,10 @@ public class SchemaGenerator extends AbstractMojo {
         if (isCollection(type)) { // List / Set
             Type[] types = ((ParameterizedType) type).getActualTypeArguments();
             if (types.length == 1) {
-                return javaToTSType(types[0], genericity, prefix) + "[]";
+                return javaToTSType(types[0], genericity, prefix, otherObjectsTypeD) + "[]";
             } else {
                 for (Type t : types) {
-                    String javaToTSType = javaToTSType(t, genericity, prefix);
+                    String javaToTSType = javaToTSType(t, genericity, prefix, otherObjectsTypeD);
                     getLog().info("ArrayType:" + javaToTSType);
                 }
                 return "any[]";
@@ -1668,12 +1707,12 @@ public class SchemaGenerator extends AbstractMojo {
         if (type instanceof Class) {
             String className = ((Class) type).getSimpleName();
             if (otherObjectsTypeD.containsKey(type)) {
-                return className;
+                return prefix + className;
             } else if (isMergeable(type)) {
                 return getTsInterfaceName((Class<? extends Mergeable>) type, genericity, prefix);
             } else {
                 if (className != "void") {
-                    String typeDef = "interface " + className + "{\n";
+                    String typeDef = "interface " + prefix + className + "{\n";
                     for (Field f : ((Class<?>) type).getDeclaredFields()) {
                         PropertyDescriptor propertyDescriptor;
                         try {
@@ -1682,10 +1721,11 @@ public class SchemaGenerator extends AbstractMojo {
                             continue;
                         }
                         typeDef += "  " + f.getName() + ": "
-                            + javaToTSType(propertyDescriptor.getReadMethod().getGenericReturnType(), genericity, prefix) + ";\n";
+                            + javaToTSType(propertyDescriptor.getReadMethod().getGenericReturnType(), genericity, prefix, otherObjectsTypeD) + ";\n";
                     }
                     typeDef += "}\n";
                     otherObjectsTypeD.put(type, typeDef);
+                    return prefix + className;
                 }
                 return className;
             }
@@ -1796,10 +1836,6 @@ public class SchemaGenerator extends AbstractMojo {
             return null;
         }
     }
-
-    private final Map<Type, String> otherObjectsTypeD = new HashMap<>();
-
-    private final Map<Type, JSONExtendedSchema> otherObjectsSchemas = new HashMap<>();
 
     /**
      * Class which describe a method. To be serialised as JSON.

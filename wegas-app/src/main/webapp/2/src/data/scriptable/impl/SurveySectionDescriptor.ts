@@ -1,5 +1,5 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { SSurveySectionDescriptor, SSurveySectionInstance, SPlayer } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { SSurveySectionDescriptor, SSurveySectionInstance, SPlayer } from 'wegas-ts-api';
 
 export class SSurveySectionDescriptorImpl extends SSurveySectionDescriptor {
   public activate(_p: Readonly<SPlayer>): void {

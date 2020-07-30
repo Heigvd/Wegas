@@ -7,7 +7,7 @@ import { useComponentScript } from '../../Hooks/useComponentScript';
 import { PhasesProgressBar } from '../../Outputs/PhasesProgressBar';
 import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { IScript, INumberDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { IScript, INumberDescriptor } from 'wegas-ts-api';
 
 interface PhasesProgressBarProps extends WegasComponentProps {
   /**

@@ -1,5 +1,5 @@
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { SPeerReviewDescriptor, SPeerReviewInstance, SPlayer } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { SPeerReviewDescriptor, SPeerReviewInstance, SPlayer } from 'wegas-ts-api';
 
 export class SPeerReviewDescriptorImpl extends SPeerReviewDescriptor {
 	public setState(_p: Readonly<SPlayer>, _stateName: string): void {

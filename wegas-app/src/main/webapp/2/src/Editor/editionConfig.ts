@@ -1,6 +1,6 @@
 import { Schema } from 'jsoninput';
 import { TYPESTRING } from 'jsoninput/typings/types';
-import { IAbstractEntity, IMergeable, WegasClassNames } from 'wegas-ts-api/typings/WegasEntities';
+import { IAbstractEntity, IMergeable, WegasClassNames } from 'wegas-ts-api';
 import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/globalState';
 import { ThunkResult } from '../data/store';

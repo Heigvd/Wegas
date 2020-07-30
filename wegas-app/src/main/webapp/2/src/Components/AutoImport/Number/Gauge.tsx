@@ -7,7 +7,7 @@ import { TranslatableContent } from '../../../data/i18n';
 import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
 import { css } from 'emotion';
 import { themeVar } from '../../Style/ThemeVars';
-import { INumberDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { INumberDescriptor } from 'wegas-ts-api';
 
 const containerStyle = css({
   minWidth: '8em',

@@ -22,7 +22,7 @@ import { MessageString } from '../MessageString';
 import { FilePickingType, FileFilter } from './FileBrowser';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { themeVar } from '../../../Components/Style/ThemeVars';
-import { IAbstractContentDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { IAbstractContentDescriptor } from 'wegas-ts-api';
 
 const clickableStyle = css({
   cursor: 'pointer',

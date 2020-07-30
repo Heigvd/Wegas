@@ -1,9 +1,9 @@
 import { VariableDescriptor } from '../../selectors';
 import { instantiate } from '..';
-import { IQuestionDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { IQuestionDescriptor } from 'wegas-ts-api';
 
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { SChoiceDescriptor, SChoiceInstance, SPlayer, SSingleResultChoiceDescriptor } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { SChoiceDescriptor, SChoiceInstance, SPlayer, SSingleResultChoiceDescriptor } from 'wegas-ts-api';
 
 export class SChoiceDescriptorImpl extends SChoiceDescriptor {
   public setCurrentResult(_player: Readonly<SPlayer>, _resultName: string): void {

@@ -6,7 +6,7 @@ import {
   safeClientScriptEval,
 } from '../../Components/Hooks/useScript';
 import { useWebsocket } from '../../API/websocket';
-import { IGameModelContent } from 'wegas-ts-api/typings/WegasEntities';
+import { IGameModelContent } from 'wegas-ts-api';
 
 export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
   const [jsLibs, setJSLibs] = React.useState<ILibraries>({});

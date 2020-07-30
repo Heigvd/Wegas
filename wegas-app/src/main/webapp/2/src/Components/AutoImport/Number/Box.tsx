@@ -6,7 +6,7 @@ import {
   useVariableInstance,
 } from '../../Hooks/useVariable';
 import { themeVar } from '../../Style/ThemeVars';
-import { INumberDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { INumberDescriptor } from 'wegas-ts-api';
 
 const boxStyle = css({
   backgroundColor: themeVar.Common.colors.HeaderColor,

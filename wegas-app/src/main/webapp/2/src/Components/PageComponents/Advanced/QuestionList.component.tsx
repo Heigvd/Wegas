@@ -21,8 +21,8 @@ import { ConnectedQuestionDisplay } from '../../Outputs/Question';
 import {
   IScript,
   IQuestionDescriptor,
-} from 'wegas-ts-api/typings/WegasEntities';
-import { SListDescriptor } from 'wegas-ts-api/typings/WegasScriptableEntities';
+  SListDescriptor 
+} from 'wegas-ts-api';
 
 const unreadSignalStyle = css({ margin: '3px' });
 

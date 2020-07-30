@@ -1,4 +1,4 @@
-type ITranslatableContent = import('wegas-ts-api/typings/WegasEntities').ITranslatableContent;
+type ITranslatableContent = import('wegas-ts-api').ITranslatableContent;
 
 interface GlobalPopupClass {
   addPopup: (

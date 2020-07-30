@@ -1,8 +1,7 @@
-import { IMergeable } from 'wegas-ts-api/typings/WegasEntities';
-
+import { IMergeable, MapOf } from 'wegas-ts-api';
 import * as WegasApiConnector from 'wegas-ts-api';
+
 import { SBooleanDescriptorImpl } from './impl/BooleanDescriptor';
-import { MapOf } from 'wegas-ts-api';
 import { SNumberDescriptorImpl } from './impl/NumberDescriptor';
 import { SWhQuestionDescriptorImpl } from './impl/WhQuestionDescriptor';
 import { STextDescriptorImpl } from './impl/TextDescriptor';

@@ -1,6 +1,6 @@
 import { rest, managedModeRequest } from './rest';
 import { GameModel } from '../data/selectors';
-import { IMessage } from 'wegas-ts-api/typings/WegasEntities';
+import { IMessage } from 'wegas-ts-api';
 
 /*
 PUT     /Wegas/rest/GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/Inbox/Message/Read/{messageId : [1-9][0-9]*}/{playerId : [1-9][0-9]*}

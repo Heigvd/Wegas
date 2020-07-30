@@ -16,7 +16,7 @@ import { useScript } from '../../../Components/Hooks/useScript';
 import { Menu } from '../../../Components/Menu';
 import { cx, css } from 'emotion';
 import { flex, flexRow, grow } from '../../../css/classes';
-import { IScript } from 'wegas-ts-api/typings/WegasEntities';
+import { IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 
 const updateScript = (scriptContent: string, currentScript?: IScript) =>

@@ -1,9 +1,9 @@
 import { getInstance } from '../../methods/VariableDescriptorMethods';
 import { VariableDescriptor, Player } from '../../selectors';
-import { IQuestionDescriptor, IPlayer, IChoiceDescriptor, IReply } from 'wegas-ts-api/typings/WegasEntities';
+import { IQuestionDescriptor, IPlayer, IChoiceDescriptor, IReply } from 'wegas-ts-api';
 
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { SQuestionDescriptor, SQuestionInstance, SPlayer } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { SQuestionDescriptor, SQuestionInstance, SPlayer } from 'wegas-ts-api';
 
 export class SQuestionDescriptorImpl extends SQuestionDescriptor {
 

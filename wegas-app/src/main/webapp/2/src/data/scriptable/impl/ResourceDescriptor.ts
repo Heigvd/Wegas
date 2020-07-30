@@ -1,6 +1,6 @@
 import { getInstance as rawGetInstance, getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { IResourceDescriptor, IPlayer } from 'wegas-ts-api/typings/WegasEntities';
-import { SResourceDescriptor, SResourceInstance, SPlayer } from 'wegas-ts-api/src/generated/WegasScriptableEntities';
+import { IResourceDescriptor, IPlayer } from 'wegas-ts-api';
+import { SResourceDescriptor, SResourceInstance, SPlayer } from 'wegas-ts-api';
 
 export function addOccupation(_rd: IResourceDescriptor) {
   return (

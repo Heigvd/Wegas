@@ -14,7 +14,7 @@ import {
   alignContentValues,
 } from '../../Layouts/FlexList';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { SListDescriptor } from 'wegas-ts-api/typings/WegasScriptableEntities';
+import { SListDescriptor } from 'wegas-ts-api';
 
 interface PlayerFlexListProps extends FlexListProps, WegasComponentProps {
   /**

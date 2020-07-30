@@ -6,7 +6,7 @@ import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { toLower } from 'lodash';
 import { CodeLanguage, scriptEditStyle } from './Script/Script';
 import { createScript } from '../../../Helper/wegasEntites';
-import { IScript } from 'wegas-ts-api/typings/WegasEntities';
+import { IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 
 export interface CustomScriptProps

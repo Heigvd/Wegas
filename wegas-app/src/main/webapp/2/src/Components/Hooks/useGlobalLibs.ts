@@ -6,7 +6,7 @@ import { classesCTX } from '../Contexts/ClassesProvider';
 
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
-import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasScriptableEntities.d.ts';
+import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasScriptableEntities.d.ts.mlib';
 // @ts-ignore
 import editorGlobalSrc from '!!raw-loader!../../../types/scripts/EditorGlobals.d.ts';
 // @ts-ignore

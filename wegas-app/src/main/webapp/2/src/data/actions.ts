@@ -1,14 +1,5 @@
 import { Schema } from 'jsoninput';
-import {
-  IAbstractContentDescriptor,
-  IAbstractEntity,
-  IGame,
-  IGameModel,
-  IGameModelLanguage,
-  IScript,
-  ITeam,
-  WegasClassNames,
-} from 'wegas-ts-api/typings/WegasEntities';
+import { IAbstractContentDescriptor, IAbstractEntity, IGame, IGameModel, IGameModelLanguage, IScript, ITeam, WegasClassNames } from 'wegas-ts-api';
 import { IManagedResponse } from '../API/rest';
 import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
 import { AvailableViews } from '../Editor/Components/FormView';

@@ -7,7 +7,7 @@ import * as VariableDescriptor from '../../../data/selectors/VariableDescriptorS
 import * as GameModel from '../../../data/selectors/GameModel';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { entityIs } from '../../../data/entities';
-import { IVariableDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { IVariableDescriptor } from 'wegas-ts-api';
 
 interface IFlatVariableSelectProps extends WidgetProps.BaseProps {
   view: {

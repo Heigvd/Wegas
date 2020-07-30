@@ -30,7 +30,7 @@ import {
   IWhQuestionDescriptor,
   IPeerReviewDescriptor,
   WegasClassNames,
-} from 'wegas-ts-api/typings/WegasEntities';
+} from 'wegas-ts-api';
 import { cloneDeep } from 'lodash-es';
 
 export function isServerMethod(
