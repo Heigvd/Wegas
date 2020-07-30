@@ -17,7 +17,8 @@ import { flex, flexColumn, grow, localSelection } from '../../../css/classes';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { themeCTX, ThemeComponent } from '../../../Components/Style/Theme';
-import { IVariableInstance, IVariableDescriptor } from 'wegas-ts-api';
+import { IVariableInstance } from 'wegas-ts-api';
+import { VariableInstance } from '../../../data/selectors';
 
 const listBox = css({
   width: '100%',
