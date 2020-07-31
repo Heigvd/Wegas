@@ -4,7 +4,6 @@ import {
   IconPrefix,
   IconDefinition,
   IconName,
-  IconLookup,
 } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon, Props } from '@fortawesome/react-fontawesome';
@@ -12,10 +11,7 @@ import { far } from '@fortawesome/free-regular-svg-icons';
 import { omit } from 'lodash-es';
 
 // These icon definitions MUST be added to library in order for React-Fontawsome to work properly
-library.add({
-  ...fas,
-  ...Object.keys(far).reduce((o, k) => ({ ...o, [k + 'r']: far[k] }), {}),
-});
+library.add(fas, far);
 
 export interface IconString {
   value: string;
@@ -24,7 +20,7 @@ export interface IconString {
   fontWeight?: React.CSSProperties['fontWeight'];
 }
 
-export type Icon = IconName | IconLookup | Props | IconString;
+export type Icon = IconName| Props | IconString;
 export type Icons = Icon | Icon[];
 
 export const prefixes = [
