@@ -273,22 +273,26 @@ export function useGlobals() {
   // wlog(items);
 }
 
-export function clientScriptEval<ReturnValue>(script?: string) {
+export type ReturnType = object | number | boolean | string | undefined;
+
+export function clientScriptEval<T extends ReturnType>(
+  script?: string,
+): T extends IMergeable ? unknown : T {
   return script != null
-    ? ((sandbox.contentWindow as unknown) as {
-        eval: (code: string) => ReturnValue;
+    ? (((sandbox.contentWindow as unknown) as {
+        eval: (code: string) => T;
       })
         // 'undefined' so that an empty script don't return '"use strict"'
-        .eval('"use strict";undefined;' + transpile(script))
+        .eval('"use strict";undefined;' + transpile(script)) as any)
     : undefined;
 }
 
-export function safeClientScriptEval<ReturnValue>(
+export function safeClientScriptEval<T extends ReturnType>(
   script?: string,
   catchCB?: (e: Error) => void,
-) {
+): T extends IMergeable ? unknown : T {
   try {
-    return clientScriptEval<ReturnValue>(script);
+    return clientScriptEval<T>(script);
   } catch (e) {
     wwarn(
       `Script error at line ${e.lineNumber} : ${
@@ -298,8 +302,23 @@ export function safeClientScriptEval<ReturnValue>(
       }`,
     );
     catchCB && catchCB(e);
-    return undefined;
+    return undefined as any;
   }
+}
+
+/**
+ * Hook, execute a script locally.
+ * @param script code to execute
+ * @returns Last expression or undefined in case it errors.
+ */
+export function useScript<T extends ReturnType>(
+  script?: string,
+  catchCB?: (e: Error) => void,
+): T extends IMergeable ? unknown : T {
+  useGlobals();
+  const fn = React.useCallback(
+    () => safeClientScriptEval<T>(script, catchCB), [script]);
+  return useStore(fn, deepDifferent) as any;
 }
 
 /**
@@ -307,13 +326,11 @@ export function safeClientScriptEval<ReturnValue>(
  * @param script code to execute
  * @returns Last expression or LocalEvalError in case it errors.
  */
-export function useScript<ReturnValue>(
+export function useUnsafeScript<T extends ReturnType>(
   script?: string,
-): ReturnValue | undefined {
+): T extends IMergeable ? unknown : T {
   useGlobals();
   const fn = React.useCallback(
-    () => safeClientScriptEval<ReturnValue>(script),
-    [script],
-  );
-  return useStore(fn, deepDifferent) as ReturnValue | undefined;
+    () => clientScriptEval<T>(script), [script]);
+  return useStore(fn, deepDifferent) as any;
 }
