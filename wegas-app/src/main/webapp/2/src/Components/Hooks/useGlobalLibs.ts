@@ -58,7 +58,7 @@ export function useGlobalLibs() {
 
     const currentLanguages = Object.values(
       GameModel.selectCurrent().languages,
-    ).reduce((lt, l) => `${lt} | '${l.code}'`, '');
+    ).map(l => l.code).join(' | ');
 
     // wlog(buildGlobalServerMethods(globalServerMethods));
 
@@ -68,10 +68,12 @@ export function useGlobalLibs() {
         declare const self : SPlayer;
         declare const typeFactory: (types: WegasScriptEditorReturnTypeName[]) => GlobalMethodReturnTypesName;
 
-        interface VariableClasses {${Object.keys(variableClasses).reduce(
-          (s, k) => s + k + ':S' + variableClasses[k] + ';\n',
-          '',
-        )}}
+        interface VariableClasses {
+          ${Object.keys(variableClasses)
+            .map(k => `${k}: S${variableClasses[k]};`)
+            .join('\n')}
+        }
+
         class Variable {
           static find: <T extends keyof VariableClasses>(
             gameModel: SGameModel,
@@ -85,45 +87,41 @@ export function useGlobalLibs() {
         }
         declare const Editor: EditorClass;
 
-        interface ClientMethods {\n${Object.keys(globalMethods).reduce(
-          (s, k) => {
-            const method = globalMethods[k];
-            const isArray = method.returnStyle === 'array';
-            return (
-              s +
-              `'${k}' : (${method.parameters.reduce(
-                (o, entry, i, arr) =>
-                  o +
-                  `${entry[0]} : ${entry[1]}` +
-                  (i !== arr.length - 1 ? ',' : ''),
-                '',
-              )}) => ${isArray ? ' (' : ' '} ${method.returnTypes.reduce(
-                (s, t, i) => s + (i > 0 ? ' | ' : '') + t,
-                '',
-              )} ${isArray ? ')[]' : ''};\n`
-            );
-          },
-          '',
-        )}}
+        interface ClientMethods {
+          ${Object.keys(globalMethods)
+            .map(k => {
+              const method = globalMethods[k];
+              const isArray = method.returnStyle === 'array';
+              return `'${k}' : (${method.parameters
+                .map(p => `${p[0]} : ${p[1]}`)
+                .join(', ')}) => ${
+                isArray ? '(' : ''
+              } ${method.returnTypes.join(' | ')}
+               ${isArray ? ')[]' : ''};
+              `;
+            })
+            .join('\n')}
+        }
+
         interface ClientMethodClass extends GlobalClientMethodClass {
           getMethod: <T extends keyof ClientMethods>(name : T) => ClientMethods[T];
         }
         declare const ClientMethods : ClientMethodClass;
 
-        type GlobalSchemas = ${Object.keys(globalSchemas).reduce(
-          (s, k) => s + `\n  | '${k}'`,
-          '',
-        )}}
+        type GlobalSchemas =
+          ${
+            Object.keys(globalSchemas).length
+              ? Object.keys(globalSchemas).join('\n|')
+              : 'never'
+          };
+
         interface SchemaClass extends GlobalSchemaClass {
           removeSchema: (name: GlobalSchemas) => void;
         }
         declare const Schemas : SchemaClass;
 
-        type GlobalClasses = ${
-          classes.length === 0
-            ? 'never'
-            : classes.reduce((oc, c) => oc + `\n  | '${c}'`, '')
-        }}
+        type GlobalClasses =
+        ${classes.length === 0 ? 'never' : classes.join('\n| ')};
         interface ClassesClass extends GlobalClassesClass{
           removeClass: (className: GlobalClasses) => void;
         }
