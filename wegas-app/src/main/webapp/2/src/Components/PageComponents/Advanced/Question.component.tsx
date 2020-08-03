@@ -8,6 +8,7 @@ import { useComponentScript } from '../../Hooks/useComponentScript';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { ConnectedQuestionDisplay } from '../../Outputs/Question';
 import { IScript, IQuestionDescriptor } from 'wegas-ts-api';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
 
 interface QuestionDisplayProps extends WegasComponentProps {
   /**
@@ -29,17 +30,19 @@ export default function QuestionDisplay({ question }: QuestionDisplayProps) {
 }
 
 registerComponent(
-  pageComponentFactory(
-    QuestionDisplay,
-    'Advanced',
-    'Question',
-    'question',
-    {
+  pageComponentFactory({
+    component: QuestionDisplay,
+    componentType: 'Advanced',
+    name: 'Question',
+    icon: 'question',
+    schema: {
       question: schemaProps.scriptVariable('Question', true, [
         'SQuestionDescriptor',
       ]),
     },
-    ['string'],
-    () => ({}),
-  ),
+    allowedVariables: ['QuestionDescriptor'],
+    getComputedPropsFromVariable: v => ({
+      question: createFindVariableScript(v),
+    }),
+  }),
 );

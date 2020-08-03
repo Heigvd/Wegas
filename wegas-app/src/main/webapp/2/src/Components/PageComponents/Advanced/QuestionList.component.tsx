@@ -18,11 +18,8 @@ import { useStore } from '../../../data/store';
 import { shallowDifferent } from '../../Hooks/storeHookFactory';
 import { entityIs } from '../../../data/entities';
 import { ConnectedQuestionDisplay } from '../../Outputs/Question';
-import {
-  IScript,
-  IQuestionDescriptor,
-  SListDescriptor 
-} from 'wegas-ts-api';
+import { IScript, IQuestionDescriptor, SListDescriptor } from 'wegas-ts-api';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
 
 const unreadSignalStyle = css({ margin: '3px' });
 
@@ -34,6 +31,7 @@ export default function QuestionListDisplay({
   questionList,
 }: QuestionListDisplayProps) {
   const entities = useStore(() => {
+    // TODO add support for arrays of list/question
     const descriptor = safeClientScriptEval<SListDescriptor>(
       entityIs(questionList, 'Script')
         ? questionList
@@ -81,21 +79,25 @@ export default function QuestionListDisplay({
 }
 
 registerComponent(
-  pageComponentFactory(
-    QuestionListDisplay,
-    'Advanced',
-    'QuestionList',
-    'bars',
-    {
+  pageComponentFactory({
+    component: QuestionListDisplay,
+    componentType: 'Advanced',
+    name: 'QuestionList',
+    icon: 'bars',
+    schema: {
       questionList: schemaProps.scriptVariable('Question list', true, [
         'SListDescriptor',
+        'SQuestionDescriptor',
+        'SListDescriptor[]',
+        'SQuestionDescriptor[]',
       ]),
     },
-    ['string'],
-    () => ({
+    allowedVariables: ['ListDescriptor', 'QuestionDescriptor'],
+    getComputedPropsFromVariable: v => ({
+      questionList: createFindVariableScript(v),
       style: {
         overflow: 'auto',
       },
     }),
-  ),
+  }),
 );

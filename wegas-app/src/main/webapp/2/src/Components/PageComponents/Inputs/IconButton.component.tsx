@@ -29,21 +29,20 @@ function PlayerIconButton(props: PlayerIconButtonProps) {
 }
 
 registerComponent(
-  pageComponentFactory(
-    PlayerIconButton,
-    'Input',
-    'IconButton',
-    'cube',
-    {
+  pageComponentFactory({
+    component: PlayerIconButton,
+    componentType: 'Input',
+    name: 'IconButton',
+    icon: 'cube',
+    schema: {
       ...buttonSchema,
       icon: schemaProps.select('Icon', true, Object.keys(icons)),
       prefixedLabel: schemaProps.boolean('Prefixed label', false),
     },
-    [],
-    () => ({
+    getComputedPropsFromVariable: () => ({
       icon: 'cube' as IconName,
       label: 'IconButton',
       action: createScript(),
     }),
-  ),
+  }),
 );

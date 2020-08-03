@@ -61,18 +61,17 @@ function PlayerPageLoader({
 }
 
 registerComponent(
-  pageComponentFactory(
-    PlayerPageLoader,
-    'Layout',
-    PAGE_LOADER_COMPONENT_TYPE,
-    'window-maximize',
-    {
+  pageComponentFactory({
+    component: PlayerPageLoader,
+    componentType: 'Layout',
+    name: PAGE_LOADER_COMPONENT_TYPE,
+    icon: 'window-maximize',
+    schema: {
       name: schemaProps.string('Page', true),
       initialSelectedPageId: schemaProps.pageSelect('Page', false),
     },
-    [],
-    () => ({
+    getComputedPropsFromVariable: () => ({
       initialSelectedPageId: defaultPageAsScript(),
     }),
-  ),
+  }),
 );

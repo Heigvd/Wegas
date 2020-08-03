@@ -14,6 +14,7 @@ import { Actions } from '../../../data';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, INumberDescriptor } from 'wegas-ts-api';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
 
 interface PlayerNumberSliderProps extends WegasComponentProps {
   /**
@@ -42,31 +43,31 @@ function PlayerNumberSlider(props: PlayerNumberSliderProps) {
   return notFound ? (
     <pre>Not found: {content}</pre>
   ) : (
-      <NumberSlider
-        {...props}
-        value={instance!.value}
-        onChange={(v, i) => {
-          if (i === 'DragEnd') {
-            store.dispatch(
-              Actions.VariableInstanceActions.runScript(
-                `${content}.setValue(self, ${v});`,
-              ),
-            );
-          }
-        }}
-        min={descriptor!.getMinValue() || 0}
-        max={descriptor!.getMaxValue() || 1}
-      />
-    );
+    <NumberSlider
+      {...props}
+      value={instance!.value}
+      onChange={(v, i) => {
+        if (i === 'DragEnd') {
+          store.dispatch(
+            Actions.VariableInstanceActions.runScript(
+              `${content}.setValue(self, ${v});`,
+            ),
+          );
+        }
+      }}
+      min={descriptor!.getMinValue() || 0}
+      max={descriptor!.getMaxValue() || 1}
+    />
+  );
 }
 
 registerComponent(
-  pageComponentFactory(
-    PlayerNumberSlider,
-    'Input',
-    'NumberSlider',
-    'sliders-h',
-    {
+  pageComponentFactory({
+    component: PlayerNumberSlider,
+    componentType: 'Input',
+    name: 'NumberSlider',
+    icon: 'sliders-h',
+    schema: {
       script: schemaProps.scriptVariable('Variable', true, [
         'SNumberDescriptor',
       ]),
@@ -74,7 +75,9 @@ registerComponent(
       displayValues: schemaProps.select('Display value', false, displayModes),
       disabled: schemaProps.boolean('Disabled', false),
     },
-    [],
-    () => ({}),
-  ),
+    allowedVariables: ['NumberDescriptor'],
+    getComputedPropsFromVariable: v => ({
+      script: createFindVariableScript(v),
+    }),
+  }),
 );

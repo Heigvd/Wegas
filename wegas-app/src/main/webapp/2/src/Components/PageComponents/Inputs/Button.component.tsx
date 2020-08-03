@@ -38,16 +38,15 @@ export const buttonSchema = {
 };
 
 registerComponent(
-  pageComponentFactory(
-    PlayerButton,
-    'Input',
-    'Button',
-    'cube',
-    buttonSchema,
-    [],
-    () => ({
+  pageComponentFactory({
+    component: PlayerButton,
+    componentType: 'Input',
+    name: 'Button',
+    icon: 'hand-pointer',
+    schema: buttonSchema,
+    getComputedPropsFromVariable: () => ({
       action: createScript(),
       label: 'Button',
     }),
-  ),
+  }),
 );

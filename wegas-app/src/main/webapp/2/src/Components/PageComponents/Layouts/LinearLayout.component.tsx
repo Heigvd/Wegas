@@ -59,22 +59,21 @@ function PlayerLinearLayout({
   );
 }
 
-const test = pageComponentFactory(
-  PlayerLinearLayout,
-  'Layout',
-  CONTENT_TYPE,
-  'bars',
-  {
+const test = pageComponentFactory({
+  component: PlayerLinearLayout,
+  componentType: 'Layout',
+  containerType: 'LINEAR',
+  name: CONTENT_TYPE,
+  icon: 'columns',
+  schema: {
     vertical: schemaProps.boolean('Vertical', false),
     noSplitter: schemaProps.boolean('No splitter', false),
     noResize: schemaProps.boolean('No resize', false),
     flexValues: schemaProps.hidden(false, 'array'),
   },
-  [],
-  () => ({
+  getComputedPropsFromVariable: () => ({
     children: [],
   }),
-  'LINEAR',
-);
+});
 
 registerComponent(test);

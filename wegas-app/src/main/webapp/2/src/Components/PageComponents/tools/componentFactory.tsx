@@ -11,6 +11,10 @@ import {
 } from './EditableComponent';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 import { SchemaPropsSchemas } from './schemaProps';
+import {
+  IVariableDescriptor,
+  WegasClassNameAndScriptableTypes,
+} from 'wegas-ts-api';
 
 export const componentTypes = [
   'Layout',
@@ -21,7 +25,10 @@ export const componentTypes = [
 
 export type ComponentType = typeof componentTypes[number];
 
-export interface PageComponent<P extends {} = {}> {
+export interface PageComponent<
+  P extends {} = {},
+  T extends IVariableDescriptor['@class'] = IVariableDescriptor['@class']
+> {
   WegasComponent: React.FunctionComponent<P>;
   containerType: ContainerType;
   componentType: ComponentType;
@@ -31,12 +38,15 @@ export interface PageComponent<P extends {} = {}> {
     description: string;
     properties: { [prop: string]: SchemaPropsSchemas };
   };
-  allowedVariables: (keyof WegasScriptEditorNameAndTypes)[];
+  /**
+   * indicates for which kind of variables this component suits well
+   */
+  allowedVariables?: T[];
   /**
    * gives a computed list of props from variable, if the variable is undefined, gives default props
    */
-  getComputedPropsFromVariable: (
-    variable?: WegasScriptEditorReturnType,
+  getComputedPropsFromVariable?: (
+    variable?: WegasClassNameAndScriptableTypes[T],
   ) => Omit<P, keyof PageComponentProps>;
 }
 
@@ -120,31 +130,31 @@ export function usePageComponentStore<R>(
 
 export function pageComponentFactory<
   P extends WegasComponentProps,
-  T extends keyof WegasScriptEditorNameAndTypes,
-  V extends Readonly<WegasScriptEditorNameAndTypes[T]>,
-  R extends Omit<P, keyof PageComponentProps>
->(
-  WegasComponent: React.FunctionComponent<P>,
-  componentType: ComponentType,
-  componentName: string,
-  icon: Icon,
-  schema: { [prop: string]: SchemaPropsSchemas },
-  allowedVariables: T[],
-  getComputedPropsFromVariable: (variable?: V) => R,
-  containerType?: ContainerType,
-): PageComponent<P> {
+  T extends IVariableDescriptor['@class']
+>(param: {
+  component: React.FunctionComponent<P>;
+  componentType: ComponentType;
+  name: string;
+  icon: Icon;
+  schema: { [prop: string]: SchemaPropsSchemas };
+  allowedVariables?: T[];
+  getComputedPropsFromVariable?: (
+    variable?: WegasClassNameAndScriptableTypes[T],
+  ) => Omit<P, keyof PageComponentProps>;
+  containerType?: ContainerType;
+}): PageComponent {
   return {
-    WegasComponent,
-    componentType,
-    containerType,
-    icon,
-    componentName,
+    WegasComponent: param.component,
+    componentType: param.componentType,
+    containerType: param.containerType,
+    icon: param.icon,
+    componentName: param.name,
     schema: {
-      description: componentName,
-      properties: schema,
+      description: param.name,
+      properties: param.schema,
     },
-    allowedVariables,
-    getComputedPropsFromVariable,
+    allowedVariables: param.allowedVariables,
+    getComputedPropsFromVariable: param.getComputedPropsFromVariable,
   };
 }
 

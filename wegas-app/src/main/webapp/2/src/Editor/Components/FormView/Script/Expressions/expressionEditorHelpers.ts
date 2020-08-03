@@ -23,7 +23,7 @@ import { store } from '../../../../../data/store';
 import { TYPESTRING } from 'jsoninput/typings/types';
 import { safeClientScriptEval } from '../../../../../Components/Hooks/useScript';
 import { isServerMethod } from '../../../../../data/Reducer/globalState';
-import { IVariableDescriptor } from 'wegas-ts-api';
+import { SVariableDescriptor } from 'wegas-ts-api';
 
 const booleanOperators = {
   '===': { label: 'equals' },
@@ -293,7 +293,7 @@ interface GlobalMethodSearcher extends MethodSearcher {
 }
 interface VariableMethodSearcher extends MethodSearcher {
   type: 'variable';
-  value?: IVariableDescriptor;
+  value?: SVariableDescriptor;
   mode?: ScriptMode;
 }
 interface BooleanMethodSearcher extends MethodSearcher {
@@ -503,7 +503,7 @@ export const generateSchema = async (
   if (attributes.initExpression) {
     const type = attributes.initExpression.type;
     const script = attributes.initExpression.script;
-    const variable = safeClientScriptEval<IVariableDescriptor>(script);
+    const variable = safeClientScriptEval<SVariableDescriptor>(script);
     let configArg: MethodSearchers;
     switch (type) {
       case 'global':

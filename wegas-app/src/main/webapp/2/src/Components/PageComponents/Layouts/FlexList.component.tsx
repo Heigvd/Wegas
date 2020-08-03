@@ -14,7 +14,7 @@ import {
   alignContentValues,
 } from '../../Layouts/FlexList';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { SListDescriptor } from 'wegas-ts-api';
+//import { SListDescriptor } from 'wegas-ts-api';
 
 interface PlayerFlexListProps extends FlexListProps, WegasComponentProps {
   /**
@@ -28,12 +28,13 @@ function PlayerFlexList(props: PlayerFlexListProps) {
 }
 
 registerComponent(
-  pageComponentFactory(
-    PlayerFlexList,
-    'Layout',
-    'FlexList',
-    'bars',
-    {
+  pageComponentFactory({
+    component: PlayerFlexList,
+    componentType: 'Layout',
+    containerType: 'FLEX',
+    name: 'FlexList',
+    icon: 'bars',
+    schema: {
       layout: schemaProps.hashlist('List layout properties', false, [
         {
           label: 'Direction',
@@ -81,16 +82,14 @@ registerComponent(
       ]),
       children: schemaProps.hidden(false),
     },
-    ['SListDescriptor'],
-    (val?: Readonly<SListDescriptor>) =>
-      val
-        ? {
-          // children:val.itemsIds.map(id=>componentsStore.getComponentByType(VariableDescriptor.select(id)))
-          children: [],
-        }
-        : {
-          children: [],
-        },
-    'FLEX',
-  ),
+    //  allowedVariables: ['ListDescriptor'],
+    //    get: (val?: Readonly<SListDescriptor>) =>
+    //      val
+    //        ? {
+    //          children:val.itemsIds.map(id=>componentsStore.getComponentByType(VariableDescriptor.select(id)))
+    //        }
+    //        : {
+    //          children: [],
+    //        },
+  }),
 );

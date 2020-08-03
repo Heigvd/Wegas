@@ -8,6 +8,7 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { NumberBox } from '../../Inputs/Number/NumberBox';
 import { IScript, INumberDescriptor } from 'wegas-ts-api';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
 
 interface PlayerBoxesProps extends WegasComponentProps {
   /**
@@ -40,24 +41,28 @@ function PlayerBoxes({
   return notFound ? (
     <pre>Not found: {content}</pre>
   ) : (
-      <NumberBox
-        value={instance?.value}
-        minValue={1}
-        maxValue={descriptor?.getMaxValue() != null ? descriptor.getMaxValue() as number : undefined}
-        label={label}
-        hideBoxValue={hideBoxValue}
-        showLabelValue={showLabelValue}
-      />
-    );
+    <NumberBox
+      value={instance?.value}
+      minValue={1}
+      maxValue={
+        descriptor?.getMaxValue() != null
+          ? (descriptor.getMaxValue() as number)
+          : undefined
+      }
+      label={label}
+      hideBoxValue={hideBoxValue}
+      showLabelValue={showLabelValue}
+    />
+  );
 }
 
 registerComponent(
-  pageComponentFactory(
-    PlayerBoxes,
-    'Output',
-    'Boxes',
-    'box',
-    {
+  pageComponentFactory({
+    component: PlayerBoxes,
+    componentType: 'Output',
+    name: 'Boxes',
+    icon: 'ellipsis-h',
+    schema: {
       script: schemaProps.scriptVariable('Variable', false, [
         'SNumberDescriptor',
       ]),
@@ -65,7 +70,9 @@ registerComponent(
       hideBoxValue: schemaProps.boolean('Hide value in boxes', false),
       showLabelValue: schemaProps.boolean('Show value in label', false),
     },
-    [],
-    () => ({}),
-  ),
+    allowedVariables: ['NumberDescriptor', 'TextDescriptor'],
+    getComputedPropsFromVariable: v => ({
+      script: createFindVariableScript(v),
+    }),
+  }),
 );

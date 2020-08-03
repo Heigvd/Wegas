@@ -1,6 +1,11 @@
 import { Schema } from 'jsoninput';
 import { TYPESTRING } from 'jsoninput/typings/types';
-import { IAbstractEntity, IMergeable, WegasClassNames } from 'wegas-ts-api';
+import {
+  IAbstractEntity,
+  SAbstractEntity,
+  IMergeable,
+  WegasClassNames,
+} from 'wegas-ts-api';
 import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/globalState';
 import { ThunkResult } from '../data/store';
@@ -146,13 +151,12 @@ function updatedErrored(
  * @param schema schema to update
  */
 
-
 async function injectRef(schema: { $wref?: string }): Promise<Schema> {
   const { $wref, ...restSchema } = schema;
   if (typeof $wref === 'string') {
-    const refSchema = await import('wegas-ts-api/src/generated/schemas/' + $wref).then(
-      res => res.schema,
-    );
+    const refSchema = await import(
+      'wegas-ts-api/src/generated/schemas/' + $wref
+    ).then(res => res.schema);
     return { ...refSchema, ...restSchema };
   }
   return restSchema;
@@ -191,17 +195,15 @@ export async function getEntityActions(
   return { edit: editVariable };
 }
 
-export async function getVariableMethodConfig<T extends IAbstractEntity>(
+export async function getVariableMethodConfig<T extends SAbstractEntity>(
   entity: T,
 ): Promise<MethodConfig> {
-  return fetchConfig(entity['@class'] + '.json').then(res =>
+  return fetchConfig(entity.getJSONClassName() + '.json').then(res =>
     methodConfigUpdater(res.methods, injectRef),
   );
 }
 
-export function getIcon<T extends IMergeable>(
-  entity: T,
-): Icons | undefined {
+export function getIcon<T extends IMergeable>(entity: T): Icons | undefined {
   switch (entity['@class'] as WegasClassNames) {
     case 'ChoiceDescriptor':
       return 'check-square';
@@ -250,9 +252,7 @@ export function getIcon<T extends IMergeable>(
   }
 }
 
-export function getLabel<T extends IMergeable>(
-  entity: T,
-): string | undefined {
+export function getLabel<T extends IMergeable>(entity: T): string | undefined {
   switch (entity['@class'] as WegasClassNames) {
     case 'ChoiceDescriptor':
       return 'Choice';
@@ -334,7 +334,7 @@ const EvaluationDescriptorContainerChild = [
 const ChoiceDescriptorChild = ['Result'] as const;
 export async function getChildren<T extends IAbstractEntity>(
   entity: T,
-): Promise<readonly IAbstractEntity["@class"][]> {
+): Promise<readonly IAbstractEntity['@class'][]> {
   switch (entity['@class']) {
     case 'ListDescriptor':
       return ListDescriptorChild;

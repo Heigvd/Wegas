@@ -11,6 +11,7 @@ import { useComponentScript } from '../../Hooks/useComponentScript';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, IBooleanDescriptor } from 'wegas-ts-api';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
 
 interface PlayerBooleanProps extends WegasComponentProps {
   /**
@@ -51,29 +52,29 @@ function PlayerBoolean({
   return notFound ? (
     <pre>Not found: {content}</pre>
   ) : (
-      <BooleanComponent
-        label={label}
-        value={instance!.value}
-        disabled={disabled}
-        readOnly={inactive}
-        onChange={v => {
-          store.dispatch(
-            Actions.VariableInstanceActions.runScript(
-              `${content}.setValue(self, ${v});`,
-            ),
-          );
-        }}
-      />
-    );
+    <BooleanComponent
+      label={label}
+      value={instance!.value}
+      disabled={disabled}
+      readOnly={inactive}
+      onChange={v => {
+        store.dispatch(
+          Actions.VariableInstanceActions.runScript(
+            `${content}.setValue(self, ${v});`,
+          ),
+        );
+      }}
+    />
+  );
 }
 
 registerComponent(
-  pageComponentFactory(
-    PlayerBoolean,
-    'Input',
-    'Boolean',
-    'check-square',
-    {
+  pageComponentFactory({
+    component: PlayerBoolean,
+    componentType: 'Input',
+    name: 'Boolean',
+    icon: 'check-square',
+    schema: {
       script: schemaProps.scriptVariable('Variable', true, [
         'SBooleanDescriptor',
       ]),
@@ -82,7 +83,9 @@ registerComponent(
       disabled: schemaProps.boolean('Disabled', false),
       inactive: schemaProps.boolean('Inactive', false),
     },
-    ['SBooleanDescriptor'],
-    () => ({}),
-  ),
+    allowedVariables: ['BooleanDescriptor'],
+    getComputedPropsFromVariable: v => ({
+      script: createFindVariableScript(v),
+    }),
+  }),
 );

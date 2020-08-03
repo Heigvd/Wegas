@@ -8,6 +8,7 @@ import { PhasesProgressBar } from '../../Outputs/PhasesProgressBar';
 import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, INumberDescriptor } from 'wegas-ts-api';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
 
 interface PhasesProgressBarProps extends WegasComponentProps {
   /**
@@ -62,12 +63,12 @@ export default function PlayerPhasesProgressBar({
 }
 
 registerComponent(
-  pageComponentFactory(
-    PlayerPhasesProgressBar,
-    'Advanced',
-    'Phases',
-    'ellipsis-h',
-    {
+  pageComponentFactory({
+    component: PlayerPhasesProgressBar,
+    componentType: 'Advanced',
+    name: 'Phases',
+    icon: 'ellipsis-h',
+    schema: {
       phase: schemaProps.scriptVariable('Phase', true, ['SNumberDescriptor']),
       phaseMin: schemaProps.scriptVariable('Phase min', true, [
         'SNumberDescriptor',
@@ -76,7 +77,9 @@ registerComponent(
         'SNumberDescriptor',
       ]),
     },
-    ['number'],
-    () => ({}),
-  ),
+    allowedVariables: ['NumberDescriptor'],
+    getComputedPropsFromVariable: v => ({
+      phase: createFindVariableScript(v),
+    }),
+  }),
 );

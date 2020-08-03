@@ -9,6 +9,7 @@ import { useComponentScript } from '../Hooks/useComponentScript';
 import { entityIs } from '../../data/entities';
 import { WegasComponentProps } from './tools/EditableComponent';
 import { INumberDescriptor, ITextDescriptor, IScript } from 'wegas-ts-api';
+import { createFindVariableScript } from '../../Helper/wegasEntites';
 
 interface ExampleProps extends WegasComponentProps {
   script?: IScript;
@@ -35,18 +36,20 @@ const Example: React.FunctionComponent<ExampleProps> = ({
 };
 
 registerComponent(
-  pageComponentFactory(
-    Example,
-    'Advanced',
-    'Example',
-    'ambulance',
-    {
+  pageComponentFactory({
+    component: Example,
+    componentType: 'Advanced',
+    name: 'Example',
+    icon: 'ambulance',
+    schema: {
       script: schemaProps.scriptVariable('Variable', true, [
         'STextDescriptor',
         'SNumberDescriptor',
       ]),
     },
-    ['SNumberDescriptor', 'SStringDescriptor'],
-    () => ({}),
-  ),
+    allowedVariables: ['NumberDescriptor', 'StringDescriptor'],
+    getComputedPropsFromVariable: v => ({
+      script: createFindVariableScript(v),
+    }),
+  }),
 );

@@ -8,6 +8,7 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import { InboxDisplay } from '../../Outputs/Inbox';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { IScript, IInboxDescriptor } from 'wegas-ts-api';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
 
 interface PlayerInboxProps extends WegasComponentProps {
   inbox?: IScript;
@@ -23,19 +24,20 @@ export default function PlayerInbox({ inbox }: PlayerInboxProps) {
 }
 
 registerComponent(
-  pageComponentFactory(
-    PlayerInbox,
-    'Advanced',
-    'Inbox',
-    'envelope',
-    {
+  pageComponentFactory({
+    component: PlayerInbox,
+    componentType: 'Advanced',
+    name: 'Inbox',
+    icon: 'envelope',
+    schema: {
       inbox: schemaProps.scriptVariable('Mailbox', true, ['SInboxDescriptor']),
     },
-    ['string'],
-    () => ({
+    allowedVariables: ['InboxDescriptor'],
+    getComputedPropsFromVariable: v => ({
+      inbox: createFindVariableScript(v),
       style: {
         overflow: 'auto',
       },
     }),
-  ),
+  }),
 );

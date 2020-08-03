@@ -8,6 +8,7 @@ import { StandardGauge } from '../../Outputs/StandardGauge';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { IScript, INumberDescriptor } from 'wegas-ts-api';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
 
 interface PlayerGaugeProps extends WegasComponentProps {
   /**
@@ -31,30 +32,32 @@ function PlayerGauge(props: PlayerGaugeProps) {
   return notFound ? (
     <pre>Not found: {content}</pre>
   ) : (
-      <StandardGauge
-        label={props.label}
-        followNeedle={props.followNeedle}
-        min={descriptor!.getMinValue() || 0}
-        max={descriptor!.getMaxValue() || 1}
-        value={instance!.value}
-      />
-    );
+    <StandardGauge
+      label={props.label}
+      followNeedle={props.followNeedle}
+      min={descriptor!.getMinValue() || 0}
+      max={descriptor!.getMaxValue() || 1}
+      value={instance!.value}
+    />
+  );
 }
 
 registerComponent(
-  pageComponentFactory(
-    PlayerGauge,
-    'Output',
-    'Gauge',
-    'tachometer-alt',
-    {
+  pageComponentFactory({
+    component: PlayerGauge,
+    componentType: 'Output',
+    name: 'Gauge',
+    icon: 'tachometer-alt',
+    schema: {
       script: schemaProps.scriptVariable('Variable', false, [
         'SNumberDescriptor',
       ]),
       label: schemaProps.string('Label', false),
       followNeedle: schemaProps.boolean('Follow needle', false),
     },
-    [],
-    () => ({}),
-  ),
+    allowedVariables: ['NumberDescriptor'],
+    getComputedPropsFromVariable: v => ({
+      script: createFindVariableScript(v),
+    }),
+  }),
 );
