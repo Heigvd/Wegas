@@ -25,7 +25,7 @@ import {
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { IconComp } from '../Views/FontAwesome';
-import { pageCTX } from './PageEditor';
+import { pageCTX, PageEditionToolbar } from './PageEditor';
 
 const headerStyle = css({
   padding: '20px',
@@ -187,7 +187,11 @@ function ComponentElement({
   );
 }
 
-export function ComponentPalette() {
+export function ComponentPalette({
+  setEditMode,
+}: {
+  setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const [currentType, setCurrentType] = React.useState<ComponentType>();
 
   const { editMode } = React.useContext(pageCTX);
@@ -199,6 +203,7 @@ export function ComponentPalette() {
   );
   return (
     <div className={cx(flex, flexColumn, expandBoth)}>
+      <PageEditionToolbar setEditMode={setEditMode} />
       {!editMode && (
         <div className={headerStyle}>
           Edit mode must be enabled to use the palette

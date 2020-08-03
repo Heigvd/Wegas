@@ -139,7 +139,11 @@ function isMatch(variableId: number, search: string): boolean {
   if (variable == null) {
     return false;
   }
-  if (editorLabel(variable).toLowerCase().includes(search.toLowerCase())) {
+  if (
+    editorLabel(variable)
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  ) {
     return true;
   }
   if (varIsList(variable)) {
@@ -161,9 +165,9 @@ function isEditing(
   );
 }
 
-const SELECTED_STYLE_WIDTH = 4;
+//const SELECTED_STYLE_WIDTH = 4;
 const headerStyle = css({
-  borderLeft: `${SELECTED_STYLE_WIDTH}px solid transparent`,
+  //  borderLeft: `${SELECTED_STYLE_WIDTH}px solid transparent`,
 });
 export const nodeContentStyle = css({
   cursor: 'pointer',

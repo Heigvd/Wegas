@@ -3,7 +3,10 @@ import { Toolbar } from '../../../Components/Toolbar';
 import { JSONandJSEditor } from '../ScriptEditors/JSONandJSEditor';
 import { deepClone } from 'fast-json-patch';
 import { ComponentPalette, DnDComponent } from './ComponentPalette';
-import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
+import {
+  usePageComponentStore,
+  PageComponent,
+} from '../../../Components/PageComponents/tools/componentFactory';
 import { MainLinearLayout } from '../LinearTabLayout/LinearLayout';
 import ComponentProperties from './ComponentProperties';
 import { PageLoader } from './PageLoader';
@@ -18,14 +21,16 @@ import { store, useStore } from '../../../data/store';
 import { Actions } from '../../../data';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { flex, grow, expandBoth } from '../../../css/classes';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { mergeDeep } from '../../../Helper/tools';
 import { findComponent } from '../../../Helper/pages';
+import {
+  WegasClassNameAndScriptableTypes,
+  IVariableDescriptor,
+} from 'wegas-ts-api';
 
-const innerButtonStyle = css({
-  margin: '2px auto 2px auto',
-  width: 'fit-content',
+const toggleButtonStyle = css({
+  display: 'flex',
 });
 
 export interface Handles {
@@ -214,13 +219,53 @@ interface PageDisplayProps {
   setShowBorders: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+const toolbarStyle = css({
+  display: flex,
+});
+
+export function PageEditionToolbar({
+  setShowBorders,
+  setEditMode,
+  setShowControls,
+}: Partial<PageDisplayProps>) {
+  const { editMode, showControls, showBorders } = React.useContext(pageCTX);
+  return (
+    <div className={toolbarStyle}>
+      {setShowControls && editMode && (
+        <Toggler
+          className={toggleButtonStyle}
+          label="Show controls: "
+          value={showControls}
+          onChange={() => setShowControls(c => !c)}
+        />
+      )}
+
+      {setEditMode && (
+        <Toggler
+          className={toggleButtonStyle}
+          label="Edit mode:"
+          value={editMode}
+          onChange={() => setEditMode(!editMode)}
+        />
+      )}
+      {setShowBorders && editMode && (
+        <Toggler
+          className={toggleButtonStyle}
+          label="Toggle borders: "
+          value={showBorders}
+          onChange={() => setShowBorders(b => !b)}
+        />
+      )}
+    </div>
+  );
+}
+
 function PageDisplay({
   setShowBorders,
   setEditMode,
   setShowControls,
 }: PageDisplayProps) {
   const { selectedPageId, loading } = React.useContext(pageEditorCTX);
-  const { editMode, showControls, showBorders } = React.useContext(pageCTX);
 
   if (loading) {
     return <pre>Loading the pages</pre>;
@@ -229,39 +274,11 @@ function PageDisplay({
   return (
     <Toolbar className={expandBoth + ' PAGE-DISPLAY'}>
       <Toolbar.Header>
-        <div style={{ margin: 'auto' }}>
-          {editMode && (
-            <Button label={'Toggle controls'} disableBorders={{ right: true }}>
-              <div className={innerButtonStyle}>
-                <Toggler
-                  value={showControls}
-                  onChange={() => setShowControls(c => !c)}
-                />
-              </div>
-            </Button>
-          )}
-          <Button
-            label={'Toggle edit mode'}
-            disableBorders={{ right: editMode, left: editMode }}
-          >
-            <div className={innerButtonStyle}>
-              <Toggler
-                value={editMode}
-                onChange={() => setEditMode(!editMode)}
-              />
-            </div>
-          </Button>
-          {editMode && (
-            <Button label={'Toggle borders'} disableBorders={{ left: true }}>
-              <div className={innerButtonStyle}>
-                <Toggler
-                  value={showBorders}
-                  onChange={() => setShowBorders(b => !b)}
-                />
-              </div>
-            </Button>
-          )}
-        </div>
+        <PageEditionToolbar
+          setShowBorders={setShowBorders}
+          setShowControls={setShowControls}
+          setEditMode={setEditMode}
+        />
       </Toolbar.Header>
       <Toolbar.Content>
         <PageLoader selectedPageId={selectedPageId} displayFrame />
@@ -424,6 +441,20 @@ export default function PageEditor() {
     [onEdit],
   );
 
+  const computeProps = (
+    component: PageComponent,
+    props?: WegasComponent['props'],
+    variable?: WegasClassNameAndScriptableTypes[IVariableDescriptor['@class']],
+  ) => {
+    if (props) {
+      return props;
+    } else if (component.getComputedPropsFromVariable) {
+      return component.getComputedPropsFromVariable(variable);
+    } else {
+      return {};
+    }
+  };
+
   const onDrop = React.useCallback(
     (
       dndComponent: PageEditorComponent,
@@ -451,13 +482,16 @@ export default function PageEditor() {
       if (selectedPageId != null && selectedPage != null) {
         // Dropping new component
         if (componentPath == null && componentName != null) {
+          const computedProps = computeProps(
+            components[componentName],
+            props,
+            undefined,
+          );
           const newComponent = createComponent(
             selectedPage,
             path,
             componentName,
-            props
-              ? props
-              : components[componentName].getComputedPropsFromVariable(),
+            computedProps,
             index,
           );
           if (newComponent) {
@@ -516,12 +550,12 @@ export default function PageEditor() {
   );
 
   const onNewLayoutComponent = React.useCallback(
-    (pageId, page, path, type) => {
+    (pageId, page, path, componentTypeName) => {
       const newComponent = createComponent(
         page,
         path,
-        type,
-        components[type]?.getComputedPropsFromVariable(),
+        componentTypeName,
+        computeProps(components[componentTypeName], undefined, undefined),
       );
       if (newComponent) {
         patchPage(pageId, newComponent.newPage);
@@ -552,7 +586,7 @@ export default function PageEditor() {
           setPageEditorState={setPageEditorState}
         />
       ),
-      'Component Palette': <ComponentPalette />,
+      'Component Palette': <ComponentPalette setEditMode={setEditMode} />,
       'Page Display': (
         <PageDisplay
           setEditMode={setEditMode}

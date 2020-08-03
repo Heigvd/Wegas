@@ -22,7 +22,7 @@ const page1JSON = {
                 className: 'infoboxPhaseActuelle',
                 options: {},
                 style: {
-                  'text-align': 'center',
+                  textAlign: 'center',
                 },
               },
             },

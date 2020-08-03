@@ -17,6 +17,7 @@ import {
   autoScroll,
   headerStyle,
   contentStyle,
+  hatchedBackground,
 } from '../../../css/classes';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { themeVar } from '../../../Components/Style/ThemeVars';
@@ -31,11 +32,7 @@ const tabButton = css({
   },
 });
 
-const dropZoneFocus = css({
-  background:
-    'repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, #eeeeee80 10px, #eeeeee80 20px);',
-  zIndex: 1000,
-});
+const dropZoneFocus = hatchedBackground;
 
 const dropLeftZone = css({
   position: 'absolute',

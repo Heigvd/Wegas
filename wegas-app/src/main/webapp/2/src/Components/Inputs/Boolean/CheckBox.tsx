@@ -69,7 +69,21 @@ export function CheckBox({
     >
       {label && <Value value={label} />}
       <IconButton
-        icon={checked ? 'check-square' : 'square'}
+        icon={
+          checked
+            ? {
+                icon: {
+                  prefix: 'far',
+                  iconName: 'check-square',
+                },
+              }
+            : {
+                icon: {
+                  prefix: 'far',
+                  iconName: 'square',
+                },
+              }
+        }
         onClick={e => {
           e.stopPropagation();
           !disabled &&

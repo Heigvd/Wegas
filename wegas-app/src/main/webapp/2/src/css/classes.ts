@@ -1,3 +1,4 @@
+//import * as Color from 'color';
 import { css, cx } from 'emotion';
 import { themeVar } from '../Components/Style/ThemeVars';
 
@@ -157,10 +158,11 @@ export const localSelection = css({
   backgroundColor: themeVar.Common.colors.HeaderColor,
 });
 export const globalSelection = css({
-  borderStyle: 'solid',
-  borderWidth: '2px',
-  borderColor: themeVar.Common.colors.BorderColor,
+  //  borderStyle: 'solid',
+  //  borderWidth: '2px',
+  //  borderColor: themeVar.Common.colors.BorderColor,
   borderRadius: themeVar.Common.dimensions.BorderRadius,
+  boxShadow: `0px 0px 0px 1px ${themeVar.Common.colors.BorderColor}`,
 });
 export const searchSelection = css({
   backgroundColor: themeVar.Common.colors.HighlightColor,
@@ -178,4 +180,35 @@ export const headerStyle = css({
 export const contentStyle = css({
   margin: '5px',
   // backgroundColor: themeVar.Common.colors.BackgroundColor,
+});
+
+export const hoverColorInsetShadow = css({
+  boxShadow: 'inset 0 0 0 2px var(--common-colors-hovercolor)',
+});
+
+export const thinHoverColorInsetShadow = css({
+  boxShadow: 'inset 0 0 0 1px var(--common-colors-hovercolor)',
+});
+
+export const highlightColorInsetShadow = css({
+  boxShadow: 'inset 0 0 0 2px var(--common-colors-highlightcolor)',
+});
+
+export const hatchedBackground = css({
+  background:
+    'repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, var(--common-colors-hovercolor) 10px,  var(--common-colors-hovercolor) 20px);',
+  zIndex: 1000,
+});
+
+export const thinHatchedBackground = css({
+  background:
+    'repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 5px, var(--common-colors-hovercolor) 5px,  var(--common-colors-hovercolor) 10px);',
+  zIndex: 1000,
+});
+
+export const highlightedHatchedBackground = css({
+  background:
+    //`repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, ${Color(themeVar.Common.colors.HoverColor).darken(0.5).toString()} 10px, ${Color(themeVar.Common.colors.HoverColor).darken(0.5).toString()} 20px);`,
+    `repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, var(--common-colors-highlightcolor) 10px, var(--common-colors-highlightcolor) 20px);`,
+  zIndex: 1000,
 });

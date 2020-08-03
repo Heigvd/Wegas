@@ -6,7 +6,7 @@ import { Menu, MenuItem, SelectedMenuItem } from '../../../Components/Menu';
 import { CommonViewContainer, CommonView } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 import { useDrag, useDrop } from 'react-dnd';
-import { dropZoneFocusCss } from '../../../Components/Contexts/DefaultDndProvider';
+import { dropZoneFocus } from '../../../Components/Contexts/DefaultDndProvider';
 import { array_move } from '../../../Helper/tools';
 import { Item } from '../Tree/TreeSelect';
 import { classNameOrEmpty } from '../../../Helper/className';
@@ -35,10 +35,12 @@ const listElementStyle = css({
   },
 });
 
-const dropZoneStyle = css({
-  ...dropZoneFocusCss,
-  transition: 'min-height .5s .1s',
-});
+const dropZoneStyle = cx(
+  dropZoneFocus,
+  css({
+    transition: 'min-height .5s .1s',
+  }),
+);
 
 const handleStyle = css({
   display: 'inline-grid',

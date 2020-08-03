@@ -6,19 +6,15 @@ import { PageDeserializer } from '../../../Components/PageComponents/tools/PageD
 import { useStore } from '../../../data/store';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { css, cx } from 'emotion';
-import { pageCTX } from './PageEditor';
 import { flex, expandHeight } from '../../../css/classes';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 
-const editStyle = (editMode?: boolean) =>
-  css({
-    borderStyle: 'solid',
-    borderWidth: '30px',
-    borderColor: editMode
-      ? themeVar.Common.colors.MainColor
-      : themeVar.Common.colors.BorderColor,
-    overflow: 'auto',
-  });
+const editStyle = css({
+  borderStyle: 'solid',
+  borderWidth: '5px',
+  borderColor: themeVar.Common.colors.BorderColor,
+  overflow: 'auto',
+});
 
 interface PageLoaderProps {
   selectedPageId?: string;
@@ -35,7 +31,7 @@ export function PageLoader({
     s => (selectedPageId ? s.pages[selectedPageId] : undefined),
     deepDifferent,
   );
-  const { editMode } = React.useContext(pageCTX);
+  //const { editMode } = React.useContext(pageCTX);
   const { currentContext, currentMode = themeMode } = React.useContext(
     themeCTX,
   );
@@ -44,11 +40,7 @@ export function PageLoader({
       <ThemeProvider contextName={currentContext} modeName={currentMode}>
         <React.Suspense fallback={<TextLoader text="Building World!" />}>
           <div
-            className={cx(
-              flex,
-              { [editStyle(editMode)]: displayFrame },
-              expandHeight,
-            )}
+            className={cx(flex, { [editStyle]: displayFrame }, expandHeight)}
           >
             {selectedPage ? (
               <PageDeserializer pageId={selectedPageId} />

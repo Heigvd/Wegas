@@ -9,7 +9,13 @@ import {
   PageEditorComponent,
   pageEditorCTX,
 } from '../../../Editor/Components/Page/PageEditor';
-import { flex } from '../../../css/classes';
+import {
+  flex,
+  hatchedBackground,
+  hoverColorInsetShadow,
+  highlightColorInsetShadow,
+  thinHoverColorInsetShadow,
+} from '../../../css/classes';
 import {
   FlexItem,
   FlexListProps,
@@ -51,20 +57,21 @@ import { useDropFunctions } from '../../Hooks/useDropFunctions';
 import { themeVar } from '../../Style/ThemeVars';
 
 // Styles
-export const layoutHighlightStyle = css({
-  borderStyle: 'solid',
-  borderWidth: '2px',
-  borderColor: themeVar.Common.colors.HighlightColor,
-});
+export const layoutHighlightStyle = hatchedBackground;
+//export const layoutHighlightStyle = css({
+//  borderStyle: 'solid',
+//  borderWidth: '2px',
+//  borderColor: themeVar.Common.colors.HighlightColor,
+//});
 
-export const childHighlightCSS = {
-  borderStyle: 'dotted',
-  borderWidth: '1px',
-  borderColor: themeVar.Common.colors.HighlightColor,
-};
+//const childHighlightCSS = {
+//  borderStyle: 'dotted',
+//  borderWidth: '1px',
+//  borderColor: themeVar.Common.colors.HighlightColor,
+//};
 
 const childHighlightStyle = css({
-  '&>*>*': childHighlightCSS,
+  '&>*>*': thinHoverColorInsetShadow,
 });
 
 const childDropZoneIntoCSS = {
@@ -115,17 +122,10 @@ const disabledStyle = css({
   backgroundColor: themeVar.Common.colors.DisabledColor,
 });
 
-const focusedComponentStyle = css({
-  backgroundColor: themeVar.Common.colors.HoverColor,
-});
+const focusedComponentStyle = hoverColorInsetShadow;
+const selectedComponentStyle = highlightColorInsetShadow;
 
-const handleControlHoverStyle = css({
-  ':hover': {
-    borderStyle: 'solid',
-    borderWidth: '1px',
-    borderColor: themeVar.Common.colors.HoverColor,
-  },
-});
+const handleControlHoverStyle = hoverColorInsetShadow;
 
 const emptyLayoutItemStyle: React.CSSProperties = {
   textAlign: 'center',
@@ -501,6 +501,7 @@ export function ComponentContainer({
   const showComponent = editable || !extraState.hidden;
   const showLayout = showBorders && containerType != null;
   const computedVertical =
+    // BUG HERE
     containerType === 'FLEX'
       ? layout?.flexDirection === 'column' ||
         layout?.flexDirection === 'column-reverse'
@@ -658,7 +659,8 @@ export function ComponentContainer({
             [layoutHighlightStyle]: showLayout,
             [childHighlightStyle]: showLayout,
             [handleControlHoverStyle]: editMode,
-            [focusedComponentStyle]: isFocused || isSelected,
+            [focusedComponentStyle]: isFocused,
+            [selectedComponentStyle]: isSelected,
             [childDropzoneHorizontalStyle]: !computedVertical,
             [childDropzoneVerticalStyle]: computedVertical,
             [disabledStyle]: extraState.disabled,
