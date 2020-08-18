@@ -960,15 +960,17 @@ YUI.add('wegas-dashboard', function(Y) {
          ** Opens a new tab where the given data is posted:
          */
         post: function(url, postData) {
-            var tabWindowId = window.open('about:blank', '_blank');
-            tabWindowId.document.title = postData.title;
-            var form = tabWindowId.document.createElement("form");
+            //var tabWindowId = window.open('about:blank', '_blank');
+            //tabWindowId.document.title = postData.title;
+            var form = window.document.createElement("form");
+            //form.setAttribute("style", 'display: none;');
             form.setAttribute("method", "post");
             form.setAttribute("action", url);
+            form.setAttribute("target", "_blank");
 
             for (var key in postData) {
                 if (postData.hasOwnProperty(key)) {
-                    var hiddenField = tabWindowId.document.createElement("input");
+                    var hiddenField = window.document.createElement("input");
                     hiddenField.setAttribute("type", "hidden");
                     hiddenField.setAttribute("name", key);
                     hiddenField.setAttribute("value", postData[key]);
@@ -976,8 +978,9 @@ YUI.add('wegas-dashboard', function(Y) {
                 }
             }
             // var btn = tabWindowId.document.createElement("button"); btn.appendChild(tabWindowId.document.createTextNode("SUBMIT")); form.appendChild(btn);
-            tabWindowId.document.body.appendChild(form);
+            window.document.body.appendChild(form);
             form.submit();
+            form.remove();
         },
         // Convert characters to HTML entities to protect against encoding issues:
         toEntities: function(text) {
