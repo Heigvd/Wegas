@@ -11,23 +11,23 @@ import { ConfirmButton } from './Inputs/Buttons/ConfirmButton';
 import { flexRow, flex, itemCenter } from '../css/classes';
 import { lastKeyboardEvents } from '../Helper/keyboardEvents';
 
-export interface MenuItem<T> extends Item<T> {
+export interface DropMenuItem<T> extends Item<T> {
   disabled?: true;
-  items?: MenuItem<T>[];
+  items?: DropMenuItem<T>[];
 }
 
-export type SelectedMenuItem<
+export type SelecteDropdMenuItem<
   T,
-  MItem extends MenuItem<T> = MenuItem<T>
+  MItem extends DropMenuItem<T> = DropMenuItem<T>
 > = MItem & {
   path: number[];
   value: Exclude<MItem['value'], undefined>;
 };
 
-export interface MenuProps<T, MItem extends MenuItem<T> = MenuItem<T>> {
+export interface DropMenuProps<T, MItem extends DropMenuItem<T> = DropMenuItem<T>> {
   id?: string;
   onSelect: (
-    item: SelectedMenuItem<T, MItem>,
+    item: SelecteDropdMenuItem<T, MItem>,
     keyEvent: ModifierKeysEvent,
   ) => void;
   onOpen?: () => void;
@@ -102,7 +102,7 @@ function stopPropagation(ev: React.MouseEvent<HTMLElement>) {
   ev.stopPropagation();
 }
 
-export function Menu<T, MItem extends MenuItem<T>>({
+export function DropMenu<T, MItem extends DropMenuItem<T>>({
   id,
   onOpen,
   onSelect,
@@ -116,7 +116,7 @@ export function Menu<T, MItem extends MenuItem<T>>({
   listClassName,
   adder,
   deleter,
-}: MenuProps<T, MItem>) {
+}: DropMenuProps<T, MItem>) {
   const realDirection = direction ? direction : 'down';
   const onStateChange = React.useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -278,11 +278,11 @@ export function Menu<T, MItem extends MenuItem<T>>({
                       }
                       style={item.style}
                     >
-                      <Menu
+                      <DropMenu
                         onSelect={(v, e) => {
                           closeMenu();
                           onSelect(
-                            v as Parameters<MenuProps<T, MItem>['onSelect']>[0],
+                            v as Parameters<DropMenuProps<T, MItem>['onSelect']>[0],
                             e,
                           );
                         }}

@@ -17,7 +17,7 @@ import {
 import { Title } from '../../Components/Inputs/String/Title';
 import { mainLayoutId } from './Layout';
 import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
-import { Menu } from '../../Components/Menu';
+import { DropMenu } from '../../Components/DropMenu';
 import { parseEvent } from './EntityEditor';
 import { editorEventRemove } from '../../data/Reducer/globalState';
 import { themeVar } from '../../Components/Style/ThemeVars';
@@ -35,7 +35,7 @@ function NotificationMenu(/*{}: NotificationMenuProps*/) {
       .length > 0;
 
   return (
-    <Menu
+    <DropMenu
       onOpen={() => setRecievedEvents(wegasEvents.map(e => e.timestamp))}
       label={
         <div>

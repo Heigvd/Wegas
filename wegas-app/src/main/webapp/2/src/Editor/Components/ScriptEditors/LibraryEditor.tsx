@@ -21,7 +21,7 @@ import {
   clientScriptEval,
   useGlobals,
 } from '../../../Components/Hooks/useScript';
-import { Menu } from '../../../Components/Menu';
+import { DropMenu } from '../../../Components/DropMenu';
 import { MessageString } from '../MessageString';
 import { IAbstractContentDescriptor, IGameModelContent } from 'wegas-ts-api';
 
@@ -582,7 +582,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
         )}
         {librariesState.selected && (
           <>
-            <Menu
+            <DropMenu
               label={
                 librariesState.selected
                   ? librariesState.selected
@@ -601,7 +601,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                 })
               }
             />
-            <Menu
+            <DropMenu
               label={getLibraryVisibility(librariesState)}
               items={visibilities
                 .filter(v => isVisibilityAllowed(librariesState, v))

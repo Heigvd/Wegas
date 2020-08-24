@@ -10,7 +10,7 @@ import {
 } from '../../../Components/PageComponents/tools/schemaProps';
 import { LabeledView, Labeled } from './labeled';
 import { DragDropArray } from './Array';
-import { MenuItem } from '../../../Components/Menu';
+import { DropMenuItem } from '../../../Components/DropMenu';
 import { setEntry, getEntry } from '../../../Helper/tools';
 import { legendStyle, reset, borderTopStyle } from './Object';
 import { cx } from 'emotion';
@@ -43,7 +43,7 @@ function isHashListValue(item: HashListItem): item is HashListValue {
   return 'schema' in item && item.schema != null;
 }
 
-export type HashListChoice = MenuItem<HashListItem> & {
+export type HashListChoice = DropMenuItem<HashListItem> & {
   value: HashListItem;
   items?: HashListChoices;
 };

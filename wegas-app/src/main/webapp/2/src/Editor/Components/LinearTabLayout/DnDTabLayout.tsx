@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useDrop, DropTargetMonitor } from 'react-dnd';
 import { Tab, DragTab, DropTab } from './DnDTabs';
 import { Toolbar } from '../../../Components/Toolbar';
-import { Menu } from '../../../Components/Menu';
+import { DropMenu } from '../../../Components/DropMenu';
 import { Reparentable } from '../Reparentable';
 import { cx, css } from 'emotion';
 import { DropActionType } from './LinearLayout';
@@ -255,7 +255,7 @@ export function DnDTabLayout({
           {renderTabs()}
           {selectItems && Object.keys(selectItems).length > 0 && (
             <Tab key={'-1'}>
-              <Menu
+              <DropMenu
                 items={Object.keys(selectItems).map(label => ({
                   label: label,
                   value: label,

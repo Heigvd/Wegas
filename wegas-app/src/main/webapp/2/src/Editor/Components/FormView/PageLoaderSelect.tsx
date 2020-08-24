@@ -14,7 +14,7 @@ import {
   PageLoaderComponentProps,
 } from '../../../Helper/pages';
 import { useScript } from '../../../Components/Hooks/useScript';
-import { Menu, MenuItem } from '../../../Components/Menu';
+import { DropMenu, DropMenuItem } from '../../../Components/DropMenu';
 import { cx, css } from 'emotion';
 import { flex, flexRow, grow } from '../../../css/classes';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
@@ -37,7 +37,7 @@ export default function PageLoaderSelect(props: PageSelectProps) {
   const [loaderValue, setPageLoader] = React.useState<string>();
   const [srcMode, setSrcMode] = React.useState(false);
   const pageLoaders = useStore(s => {
-    const loaders: MenuItem<
+    const loaders: DropMenuItem<
       { pageId: string } & PageLoaderComponentProps
     >[] = [];
     Object.entries(s.pages)
@@ -112,7 +112,7 @@ export default function PageLoaderSelect(props: PageSelectProps) {
                       />
                     </div>
                   ) : (
-                    <Menu
+                    <DropMenu
                       items={pageLoaders}
                       onSelect={item => {
                         onPageLoaderChange(item.value.name);

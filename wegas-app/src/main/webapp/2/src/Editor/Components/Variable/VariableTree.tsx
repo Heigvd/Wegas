@@ -16,7 +16,7 @@ import {
 import { StoreDispatch, useStore, store } from '../../../data/store';
 import { css, cx } from 'emotion';
 import { shallowIs } from '../../../Helper/shallowIs';
-import { Menu } from '../../../Components/Menu';
+import { DropMenu } from '../../../Components/DropMenu';
 import { withDefault, IconComp } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { AddMenuParent, AddMenuChoice, AddMenuFeedback } from './AddMenu';
@@ -78,7 +78,7 @@ function TreeView({ variables, localState, localDispatch }: TreeProps) {
             setSearch(ev.target.value);
           }}
         />
-        <Menu
+        <DropMenu
           items={data || []}
           icon="plus"
           onSelect={(i, e) => {

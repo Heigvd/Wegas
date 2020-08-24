@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { expandBoth, flex, flexColumn } from '../css/classes';
 import { cx } from 'emotion';
-import { Menu, SelectedMenuItem, MenuItem } from '../Components/Menu';
+import { DropMenu, SelecteDropdMenuItem, DropMenuItem } from '../Components/DropMenu';
 
 type MenuTesterItemValue = { prop: string; schema: { name: string } };
 
 export default function MenuTester() {
   const [selected, setSelected] = React.useState<
-    SelectedMenuItem<MenuTesterItemValue, MenuItem<MenuTesterItemValue>>
+    SelecteDropdMenuItem<MenuTesterItemValue, DropMenuItem<MenuTesterItemValue>>
   >();
 
   return (
     <div className={cx(flex, expandBoth, flexColumn)}>
-      <Menu
+      <DropMenu
         items={[
           {
             label: '1',

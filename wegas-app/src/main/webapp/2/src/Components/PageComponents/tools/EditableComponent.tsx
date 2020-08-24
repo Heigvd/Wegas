@@ -371,7 +371,7 @@ export interface WegasComponentItemProps extends ClassAndStyle {
 /**
  * ContainerTypes - the types of layouts that can be used in a page
  */
-export type ContainerTypes = 'FLEX' | 'LINEAR' | 'ABSOLUTE' | undefined;
+export type ContainerTypes = 'FLEX' | 'LINEAR' | 'ABSOLUTE' | 'MENU' | undefined;
 
 /**
  * EmptyPageComponentProps - The props needed for a virtual component (used in a layout when no children)

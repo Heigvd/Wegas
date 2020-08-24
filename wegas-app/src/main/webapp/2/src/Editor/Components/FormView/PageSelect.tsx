@@ -13,7 +13,7 @@ import {
   getPageIndexItem,
 } from '../../../Helper/pages';
 import { useScript } from '../../../Components/Hooks/useScript';
-import { Menu } from '../../../Components/Menu';
+import { DropMenu } from '../../../Components/DropMenu';
 import { cx, css } from 'emotion';
 import { flex, flexRow, grow } from '../../../css/classes';
 import { IScript } from 'wegas-ts-api';
@@ -89,7 +89,7 @@ export default function PageSelect(props: PageSelectProps) {
                   />
                 </div>
               ) : (
-                <Menu
+                <DropMenu
                   items={indexToTree(index)}
                   onSelect={item => {
                     isPageItem(item.value) && onPageChange(item.value.id);

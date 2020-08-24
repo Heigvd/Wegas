@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Menu, SelectedMenuItem } from '../Menu';
+import { DropMenu, SelecteDropdMenuItem } from '../DropMenu';
 import { useGameModel } from '../Hooks/useGameModel';
 import { IGameModelLanguage } from 'wegas-ts-api';
 
@@ -71,7 +71,7 @@ export const LanguagesProvider = React.memo(LanguagesContext);
 interface LanguageSelectorProps {
   language?: string;
   onSelect: (
-    item: SelectedMenuItem<IGameModelLanguage>,
+    item: SelecteDropdMenuItem<IGameModelLanguage>,
     keyEvent: ModifierKeysEvent,
   ) => void;
   filterActiveLanguages?: boolean;
@@ -89,7 +89,7 @@ export function LanguageSelector({
     ? availableLang.filter(language => language.active)
     : availableLang;
   return (
-    <Menu
+    <DropMenu
       label={currentLanguage}
       items={languages.map(language => ({
         value: language,

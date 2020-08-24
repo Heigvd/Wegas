@@ -2,7 +2,7 @@ import * as React from 'react';
 import { css, cx } from 'emotion';
 import { WidgetProps, TYPESTRING } from 'jsoninput/typings/types';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
-import { Menu, MenuItem, SelectedMenuItem } from '../../../Components/Menu';
+import { DropMenu, DropMenuItem, SelecteDropdMenuItem } from '../../../Components/DropMenu';
 import { CommonViewContainer, CommonView } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 import { useDrag, useDrop } from 'react-dnd';
@@ -47,8 +47,8 @@ const handleStyle = css({
 });
 
 interface AdderProps<T> {
-  onChildAdd: (value?: SelectedMenuItem<T, MenuItem<T>>) => void;
-  choices?: MenuItem<T>[];
+  onChildAdd: (value?: SelecteDropdMenuItem<T, DropMenuItem<T>>) => void;
+  choices?: DropMenuItem<T>[];
   id?: string;
   tooltip?: string;
 }
@@ -56,7 +56,7 @@ interface AdderProps<T> {
 function Adder<T>({ onChildAdd, choices, id, tooltip }: AdderProps<T>) {
   if (Array.isArray(choices)) {
     return (
-      <Menu
+      <DropMenu
         items={choices}
         icon="plus-circle"
         onSelect={item => onChildAdd(item)}
@@ -206,8 +206,8 @@ interface DropArrayProps<T> {
   array?: {}[];
   onMove?: (array?: {}[]) => void;
   onChildRemove?: (index: number) => void;
-  onChildAdd?: (value?: SelectedMenuItem<T, MenuItem<T>>) => void;
-  choices?: MenuItem<T>[];
+  onChildAdd?: (value?: SelecteDropdMenuItem<T, DropMenuItem<T>>) => void;
+  choices?: DropMenuItem<T>[];
   tooltip?: string;
   label?: React.ReactNode;
   maxItems?: number;

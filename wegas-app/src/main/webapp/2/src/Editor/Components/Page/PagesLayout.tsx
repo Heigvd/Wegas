@@ -15,7 +15,7 @@ import {
   TREEVIEW_ITEM_TYPE as TREEVIEW_INDEX_ITEM_TYPE,
 } from '../Variable/VariableTree';
 import { omit } from 'lodash-es';
-import { Menu } from '../../../Components/Menu';
+import { DropMenu } from '../../../Components/DropMenu';
 import { TextPrompt } from '../TextPrompt';
 import { isPageItem, isFolderItem } from '../../../Helper/pages';
 import { useStore, store } from '../../../data/store';
@@ -112,6 +112,17 @@ export interface ComponentNodeId {
 
 type NodeId = IndexNodeId | ComponentNodeId;
 
+function isWegasComponent(component:unknown):component is WegasComponent{
+  if(typeof component !== "object" || component == null || !("type" in component) || !("props" in component)){
+    return false;
+  }
+  const objectComponent = component as {type:unknown; props:unknown};
+  if(typeof  objectComponent.type !== "string" || typeof objectComponent.props !== "object"){
+    return false;
+  }
+  return true;
+}
+
 function isComponentNodeId(nodeId: NodeId): nodeId is ComponentNodeId {
   return 'pageId' in nodeId;
 }
@@ -145,7 +156,7 @@ function IndexItemAdder({
 
   return (
     <div className={className} style={style} title={tooltip}>
-      <Menu
+      <DropMenu
         icon="plus"
         items={[
           {
@@ -303,7 +314,7 @@ function ComponentAdder({ className, tooltip, onSelect }: ComponentAdderProps) {
   const components = usePageComponentStore(s => s);
   return (
     <div className={className} title={tooltip}>
-      <Menu
+      <DropMenu
         icon="plus"
         items={Object.values(components).map(v => ({
           label: v.componentName,
@@ -385,7 +396,6 @@ interface WegasComponentTitleProps {
   componentPath: number[];
   selectedComponentPath?: number[];
   componentControls: ComponentControls;
-  // isDragging?: boolean;
 }
 
 function WegasComponentTitle({
@@ -396,7 +406,7 @@ function WegasComponentTitle({
   componentPath,
   selectedComponentPath,
   componentControls,
-}: // isDragging,
+}:
 WegasComponentTitleProps) {
   const registeredComponent = usePageComponentStore(s => s[component.type]);
   const { editMode } = React.useContext(pageCTX);
@@ -421,13 +431,6 @@ WegasComponentTitleProps) {
   const isFocused = usePagesStateStore(
     isComponentFocused(editMode, pageId, componentPath),
   );
-
-  // React.useEffect(() => {
-  //   if (isDragging) {
-  //     wlog('DRAGGING IN PROGRESS');
-  //     pageDispatch(PageStateAction.unsetFocused());
-  //   }
-  // }, [isDragging]);
 
   return (
     <LayoutNodeTitle
@@ -502,21 +505,16 @@ function WegasComponentNode({
   componentControls,
 }: WegasComponentNodeProps) {
   const page = useStore(s => s.pages[pageId], deepDifferent);
-  //const [isDragging, setIsDragging] = React.useState<boolean>(false);
   const id: ComponentNodeId = { pageId, page, componentPath };
   const parentProps = getParentProps();
+
+  if(              !isWegasComponent(component)   ){
+    return <LayoutNodeTitle icon="exclamation-circle" title="The component is unknown" />
+  }
 
   return (
     <TreeNode
       {...parentProps}
-      // draggingMonitor={{
-      //   isDragging: setIsDragging,
-      //   monitorTypes: [
-      //     TREEVIEW_COMPONENT_TYPE,
-      //     TREEVIEW_INDEX_ITEM_TYPE,
-      //     PAGEEDITOR_COMPONENT_TYPE,
-      //   ],
-      // }}
       title={
         <WegasComponentTitle
           component={component}

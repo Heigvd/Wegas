@@ -30,6 +30,7 @@ import {
   SSurveyDescriptor,
   SPeerReviewDescriptor,
 } from 'wegas-ts-api';
+import { menuItemSchema } from '../../Layouts/Menu';
 
 export interface WegasComponentOptionsAction {
   priority?: number;
@@ -532,6 +533,7 @@ export const layoutChoices = {
   FLEX: flexlayoutChoices,
   LINEAR: [],
   ABSOLUTE: absolutelayoutChoices,
+  MENU: menuItemSchema,
 };
 
 export const wegasComponentExtraSchema = (containerType: ContainerTypes) => ({
