@@ -1744,9 +1744,8 @@ YUI.add('pact-level', function(Y) {
                     type: ARRAY,
                     value: [],
                     view: {
-                        label: 'Invites',
-                        description: 'Make NPC yell',
-                        className: 'wegas-advanced-feature',
+                        label: 'Hints',
+                        description: 'Hints from NPC'
                     },
                 },
                 maxTurns: {
