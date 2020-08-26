@@ -1744,9 +1744,15 @@ YUI.add('pact-level', function(Y) {
                     type: ARRAY,
                     value: [],
                     view: {
-                        label: 'Hints',
-                        description: 'Hints from NPC'
+                        label: 'Hints from NPC',
+                        description: 'Help given by blond character'
                     },
+                    items: {
+                        type: STRING,
+                        view: {
+                            type: STRING
+                        }
+                    }
                 },
                 maxTurns: {
                     type: NUMBER,
