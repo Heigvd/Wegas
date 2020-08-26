@@ -1,5 +1,5 @@
 ### Wegas
-A Web Game Authoring System for rapid development of serious games without programming skills. Wegas runs on a JEE server (Payara 4.1.2) and uses YUI 3 for the html client.
+A Web Game Authoring System for rapid development of serious games without programming skills. Wegas runs on a JEE server (Payara Micro) and uses JavaScript on the HTML client.
 
 ### Links
 * [Demonstration](http://wegas.albasim.ch/)
@@ -19,5 +19,5 @@ A Web Game Authoring System for rapid development of serious games without progr
 *   Anthony Geiser anthony.geiser@he-arc.ch
 
 ### License
-Copyright (C) 2013-2018 School of Business and Engineering, University of Applied Sciences of Western Switzerland.
+Copyright (C) 2013-2020 School of Business and Engineering, University of Applied Sciences of Western Switzerland.
 Wegas is released under the [MIT License](http://www.opensource.org/licenses/MIT)
