@@ -127,6 +127,30 @@ const simpleSchemaProps = {
       readOnly,
     },
   }),
+  html: (
+    label?: string,
+    required: boolean = true,
+    value?: ITranslatableContent,
+    featureLevel: FeatureLevel = 'DEFAULT',
+    index: number = 0,
+    layout?: SchemaLayout,
+    borderTop?: boolean,
+    readOnly?: boolean,
+  ) => ({
+    required,
+    type: 'object',
+    value,
+    index,
+    view: {
+      borderTop,
+      index,
+      layout,
+      featureLevel,
+      label,
+      type: 'i18nhtml',
+      readOnly,
+    }
+  }),
   custom: <T extends keyof typeof DEFINED_VIEWS>(
     label?: string,
     required: boolean = true,

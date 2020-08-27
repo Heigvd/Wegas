@@ -11,16 +11,26 @@ import { PlayerButtonProps, buttonSchema } from './Button.component';
 import { createScript } from '../../../Helper/wegasEntites';
 import { store } from '../../../data/store';
 import { Actions } from '../../../data';
+import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { translate } from '../../../Editor/Components/FormView/translatable';
 
 interface PlayerIconButtonProps extends PlayerButtonProps {
   icon: IconName;
   prefixedLabel?: boolean;
 }
 
-function PlayerIconButton(props: PlayerIconButtonProps) {
+function PlayerIconButton({label,...props}: PlayerIconButtonProps) {
+  const { lang } = React.useContext(languagesCTX);
+  let computedLabel: React.ReactNode;
+  if (typeof label === 'string') {
+    computedLabel = label;
+  } else {
+    computedLabel = <div dangerouslySetInnerHTML={{__html:translate(label, lang)}}></div>;
+  }
   return (
     <IconButton
       {...props}
+      label = {computedLabel}
       onClick={() =>
         store.dispatch(Actions.VariableInstanceActions.runScript(props.action!))
       }
