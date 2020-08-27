@@ -7,13 +7,80 @@ import {
 } from '../../Components/Hooks/useScript';
 import { useWebsocket } from '../../API/websocket';
 import { IGameModelContent } from 'wegas-ts-api';
-import * as less from 'less';
+// import * as less from 'less';
+
+// const lesstest = less
+//   .render(
+//     `.wegas {
+//       @MainColor: blue;
+//       @DisabledColor: grey;
+//       @TextColor: white;
+
+//       &.wegas-btn {
+//         background-color: @MainColor;
+//         color: @TextColor;
+//         border-style: none;
+//         padding-left: 5px;
+//         padding-right: 5px;
+//         padding-top: 2px;
+//         padding-bottom: 2px;
+//         cursor: pointer;
+//         &.disabled {
+//           background-color: @DisabledColor;
+//           cursor: initial;
+//         }
+//       }
+//     }`,
+//   )
+//   .then(output => output.css)
+//   .catch(error => {
+//     wlog(error);
+//     return '';
+//   });
+
+// wlog(lesstest);
 
 export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
   const [jsLibs, setJSLibs] = React.useState<ILibraries>({});
   const [cssLibs, setCSSLibs] = React.useState<ILibraries>({});
+  const [lessLibs, setLessLibs] = React.useState<string>();
 
   useGlobals();
+
+  // It's VERY important to import less library dynamically to avoid breaking the import flow of the components of the layout when less in rendering
+  import('less').then(less => {
+    const lesstest = less
+      .render(
+        `.wegas {
+        @MainColor: blue;
+        @DisabledColor: grey;
+        @TextColor: white;
+  
+        &.wegas-btn {
+          background-color: @MainColor;
+          color: @TextColor;
+          border-style: none;
+          padding-left: 5px;
+          padding-right: 5px;
+          padding-top: 2px;
+          padding-bottom: 2px;
+          cursor: pointer;
+          &.disabled {
+            background-color: @DisabledColor;
+            cursor: initial;
+          }
+        }
+      }`,
+      )
+      .then(output => {
+        setLessLibs(output.css);
+      })
+      .catch(error => {
+        wlog(error);
+      });
+
+    wlog(lesstest);
+  });
 
   // Effect triggers on first rendering only
   React.useEffect(() => {
@@ -90,42 +157,10 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
     );
   }, [jsLibs]);
 
-  React.useEffect(() => {
-    less.watch();
-    less
-      // .render(require('../../css/defaultStyle.less').default, {
-      .render(
-        `.wegas {
-        @MainColor: blue;
-        @DisabledColor: grey;
-        @TextColor: white;
-      
-        &.wegas-btn {
-          background-color: @MainColor;
-          color: @TextColor;
-          border-style: none;
-          padding-left: 5px;
-          padding-right: 5px;
-          padding-top: 2px;
-          padding-bottom: 2px;
-          cursor: pointer;
-          &.disabled {
-            background-color: @DisabledColor;
-            cursor: initial;
-          }
-        }
-      }`,
-      )
-      .then(output => output.css)
-      .catch(error => {
-        wlog(error);
-        return '';
-      });
-  }, []);
-
   return (
     <>
       {/* <link rel="stylesheet/less" href={'../../css/defaultStyle.less'} /> */}
+      <style type="text/css">{lessLibs}</style>
       {CurrentGM.properties.cssUri.split(';').map(cssUrl => (
         <link
           key={cssUrl}
