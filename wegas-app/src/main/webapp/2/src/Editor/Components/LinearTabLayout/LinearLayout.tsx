@@ -935,11 +935,25 @@ export function MainLinearLayout<T extends ComponentMap>(
               // Orientation is inverted to keep same logic in TabLayoutNode and ReflexLayoutNode (vertical==true : v, vertical==false : >)
               orientation={currentLayout.vertical ? 'horizontal' : 'vertical'}
             >
-              {rendered}
+              {rendered.length === 0 ? (
+                <ReflexElement>
+                  <div>Loading...</div>
+                </ReflexElement>
+              ) : (
+                rendered
+              )}
             </ReflexContainer>
           );
         }
       }
+    } else {
+      return (
+        <ReflexContainer>
+          <ReflexElement>
+            <div>Nothing inside</div>
+          </ReflexElement>
+        </ReflexContainer>
+      );
     }
   };
 

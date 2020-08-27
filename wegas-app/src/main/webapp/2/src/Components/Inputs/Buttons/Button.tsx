@@ -115,13 +115,15 @@ export function Button({
     <button
       id={id}
       className={
-        buttonStyle(
-          disabled,
-          noHover,
-          disableBorders,
-          onClick == null,
-          customColor,
-        ) + classNameOrEmpty(className)
+        // buttonStyle(
+        //   disabled,
+        //   noHover,
+        //   disableBorders,
+        //   onClick == null,
+        //   customColor,
+        // )
+        'wegas wegas-btn' + cx({ ['disabled']: disabled })
+        // + classNameOrEmpty(className)
       }
       style={style}
       onClick={onClick}

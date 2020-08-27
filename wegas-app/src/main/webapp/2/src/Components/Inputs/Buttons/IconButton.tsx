@@ -125,19 +125,22 @@ export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
             ? event => !disabled && onMouseMove(event)
             : onMouseMove
         }
-        className={cx(
-          shapeStyle,
-          className
-            ? className
-            : label
-            ? labeledStyle(noHover, customColor)
-            : colorStyle(noHover, customColor),
-          {
-            [noClickStyle]: !onClick && !onMouseDown && !onMouseUp,
-            [disabledStyle]: Boolean(disabled),
-            [defaultActiveStyle]: Boolean(pressed),
-          },
-        )}
+        className={
+          //   cx(
+          //   shapeStyle,
+          //   className
+          //     ? className
+          //     : label
+          //     ? labeledStyle(noHover, customColor)
+          //     : colorStyle(noHover, customColor),
+          //   {
+          //     [noClickStyle]: !onClick && !onMouseDown && !onMouseUp,
+          //     [disabledStyle]: Boolean(disabled),
+          //     [defaultActiveStyle]: Boolean(pressed),
+          //   },
+          // )
+          'wegas wegas-btn' + cx({ ['disabled']: disabled })
+        }
       >
         {prefixedLabel && <div style={{ marginRight: '3px' }}>{label}</div>}
         <IconComp icon={icon} />

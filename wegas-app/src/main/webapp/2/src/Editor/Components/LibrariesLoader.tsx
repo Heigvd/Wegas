@@ -7,6 +7,7 @@ import {
 } from '../../Components/Hooks/useScript';
 import { useWebsocket } from '../../API/websocket';
 import { IGameModelContent } from 'wegas-ts-api';
+import * as less from 'less';
 
 export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
   const [jsLibs, setJSLibs] = React.useState<ILibraries>({});
@@ -89,8 +90,42 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
     );
   }, [jsLibs]);
 
+  React.useEffect(() => {
+    less.watch();
+    less
+      // .render(require('../../css/defaultStyle.less').default, {
+      .render(
+        `.wegas {
+        @MainColor: blue;
+        @DisabledColor: grey;
+        @TextColor: white;
+      
+        &.wegas-btn {
+          background-color: @MainColor;
+          color: @TextColor;
+          border-style: none;
+          padding-left: 5px;
+          padding-right: 5px;
+          padding-top: 2px;
+          padding-bottom: 2px;
+          cursor: pointer;
+          &.disabled {
+            background-color: @DisabledColor;
+            cursor: initial;
+          }
+        }
+      }`,
+      )
+      .then(output => output.css)
+      .catch(error => {
+        wlog(error);
+        return '';
+      });
+  }, []);
+
   return (
     <>
+      {/* <link rel="stylesheet/less" href={'../../css/defaultStyle.less'} /> */}
       {CurrentGM.properties.cssUri.split(';').map(cssUrl => (
         <link
           key={cssUrl}
@@ -106,6 +141,17 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
         </style>
       ))}
       {props.children}
+      {/* <style type="text/css">
+        {less
+          .render(require('../../css/defaultStyle.less').default, {
+            syncImport: true,
+          })
+          .then(output => output.css)
+          .catch(error => {
+            wlog(error);
+            return '';
+          })}
+      </style> */}
     </>
   );
 }
