@@ -1,42 +1,9 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { cx } from 'emotion';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
-import { textCenter, flex, shrinkWidth } from '../../../css/classes';
-import { themeVar } from '../../Style/ThemeVars';
-
-const togglerStyle = (
-  disabled?: boolean,
-  readOnly?: boolean,
-  checked?: boolean,
-) =>
-  css({
-    minWidth: '50px',
-    width: 'fit-content',
-    height: '24px',
-    boxSizing: 'border-box',
-    borderRadius: '24px',
-    borderStyle: 'solid',
-    borderWidth: '2px',
-    borderColor: disabled
-      ? themeVar.Common.colors.DisabledColor
-      : themeVar.Common.colors.BorderColor,
-    backgroundColor: checked
-      ? themeVar.Common.colors.SuccessColor
-      : themeVar.Common.colors.ErrorColor,
-    cursor: disabled || readOnly ? 'default' : 'pointer',
-    margin: 'auto',
-  });
-
-const handleStyle = (disabled?: boolean) =>
-  css({
-    borderRadius: '20px',
-    minWidth: '20px',
-    height: '20px',
-    backgroundColor: disabled
-      ? themeVar.Common.colors.DisabledColor
-      : themeVar.Common.colors.MainColor,
-  });
+import { textCenter, shrinkWidth } from '../../../css/classes';
+import { classOrNothing, classNameOrEmpty } from '../../../Helper/className';
 
 export interface TogglerProps extends InputProps<boolean> {
   /**
@@ -97,11 +64,13 @@ export function Toggler({
     <div id={id} className={cx(textCenter, className, shrinkWidth)}>
       {label && <Value value={label} />}
       <div
-        className={cx(
-          togglerStyle(disabled, readOnly, checked),
-          flex,
-          togglerClassName,
-        )}
+        className={
+          'wegas wegas-toggler' +
+          classOrNothing('disabled', disabled) +
+          classOrNothing('readOnly', readOnly) +
+          classOrNothing('checked', checked) +
+          classNameOrEmpty(togglerClassName)
+        }
         onClick={e => {
           e.stopPropagation();
           !disabled &&
@@ -119,7 +88,11 @@ export function Toggler({
           </div>
         )}
         <div
-          className={cx(handleStyle(disabled), handlerClassName)}
+          className={
+            'wegas wegas-toggler-handle' +
+            classOrNothing('disabled', disabled) +
+            classNameOrEmpty(handlerClassName)
+          }
           title={hint}
         />
         {checked && (
