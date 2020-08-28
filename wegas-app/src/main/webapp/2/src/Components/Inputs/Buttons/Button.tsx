@@ -50,6 +50,7 @@ export interface ButtonProps extends ClassAndStyle {
   label?: React.ReactNode;
   onClick?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   disabled?: boolean;
+  readOnly?: boolean;
   tabIndex?: number;
   tooltip?: string;
   noHover?: boolean;
@@ -60,7 +61,7 @@ export interface ButtonProps extends ClassAndStyle {
   pressed?: boolean;
   prefixedLabel?: boolean;
   noBackground?: boolean;
-  buttonModes?: 'success' | 'warning' | 'error';
+  mode?: 'active' | 'success' | 'warning' | 'error';
 }
 
 export const Button = React.forwardRef<
@@ -72,6 +73,7 @@ export const Button = React.forwardRef<
       label,
       onClick,
       disabled,
+      readOnly,
       noHover,
       disableBorders,
       className,
@@ -85,7 +87,7 @@ export const Button = React.forwardRef<
       pressed,
       prefixedLabel,
       noBackground,
-      buttonModes,
+      mode: buttonModes,
     },
     ref,
   ) => {
@@ -111,6 +113,7 @@ export const Button = React.forwardRef<
         className={
           'wegas wegas-btn ' +
           classOrNothing('disabled', disabled) +
+          classOrNothing('readOnly', readOnly) +
           classOrNothing('noHover', noHover) +
           disableBorderToSelector(disableBorders) +
           classOrNothing('noClick', onClick == null) +

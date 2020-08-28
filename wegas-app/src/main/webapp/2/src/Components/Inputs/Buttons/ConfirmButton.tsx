@@ -92,7 +92,7 @@ export function ConfirmButton({
     >
       <Button
         label="Accept"
-        buttonModes="warning"
+        mode="warning"
         disableBorders={{ right: true }}
         onClick={onConfirm(true)}
         disabled={disabled}

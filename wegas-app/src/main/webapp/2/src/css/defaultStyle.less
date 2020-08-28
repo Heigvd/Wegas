@@ -32,7 +32,7 @@
     cursor: pointer;
     font-family: @TextFont2;
     border-radius: @BorderRadius;
-    &:hover {
+    &:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):hover {
       color: @HoverTextColor;
       background-color: @ActiveColor;
       outline: none;
@@ -40,19 +40,15 @@
     &:focus {
       outline: none;
     }
-    &.noHover {
-      &:hover {
-        color: unset;
-        background-color: unset;
-      }
-    }
-    &.disabled {
-      .noHover;
-      background-color: @DisabledColor;
+    &.readOnly {
       cursor: initial;
     }
+    &.disabled {
+      .readOnly;
+      background-color: @DisabledColor;
+    }
     &.noBackground {
-      &:hover {
+      &:not(.disabled):not(.readOnly):hover {
         color: @HoverColor;
       }
       background-color: transparent;
@@ -63,13 +59,8 @@
     &.iconOnly {
       color: @TextColor;
       background-color: transparent;
-      &:hover {
+      &:not(.disabled):not(.readOnly):hover {
         color: @ActiveColor;
-      }
-      &.disabled {
-        &:hover {
-          color: @DisabledColor;
-        }
       }
     }
     &.disabledBorders {
@@ -92,6 +83,13 @@
       text-align: center;
       display: inline-block;
       width: max-content;
+    }
+    &.active {
+      background-color: @ActiveColor;
+      &.iconOnly &.noBackground {
+        background-color: transparent;
+        color: @ActiveColor;
+      }
     }
     &.success {
       background-color: @SuccessColor;

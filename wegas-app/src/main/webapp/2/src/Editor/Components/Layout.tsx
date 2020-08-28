@@ -21,7 +21,7 @@ const ThemeEditor = React.lazy(
 );
 
 const Tester = React.lazy(
-  () => import('../../Testers/Components/BooleanInputTester'),
+  () => import('../../Testers/Components/MultipleChoicesTester'),
 );
 
 const layout = css({
