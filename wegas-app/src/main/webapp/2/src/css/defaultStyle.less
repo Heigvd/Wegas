@@ -170,4 +170,41 @@
       background-color: @DisabledColor;
     }
   }
+
+  &.wegas-numberBox {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  &.wegas-numberBox-sqare {
+    border-color: @BorderColor;
+    color: @TextColor;
+    border-style: solid;
+    border-radius: 2px;
+    width: 1.5em;
+    height: 1.5em;
+    line-height: 1.25em;
+    font-size: 1em;
+    text-align: center;
+    cursor: default;
+
+    &.active {
+      background-color: @MainColor;
+      color: @SecondaryTextColor;
+    }
+
+    &.clickable {
+      cursor: pointer;
+      &:not(.disabled):hover {
+        border-color: @MainColor;
+      }
+    }
+
+    &.disabled {
+      background-color: @DisabledColor;
+    }
+  }
 }

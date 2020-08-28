@@ -3,10 +3,10 @@ import { NumberBox } from '../../Components/Inputs/Number/NumberBox';
 import { css } from 'emotion';
 
 export default function NumberBoxTester({
-  value,
+  value = 5,
   onChange,
 }: {
-  value: number;
+  value?: number;
   onChange?: (value: number) => void;
 }) {
   const [currentValue, setValue] = React.useState(value);
@@ -34,7 +34,14 @@ export default function NumberBoxTester({
           setValue(v);
           onChange && onChange(v);
         }}
-        activeClassName={css({ backgroundColor: 'lime' })}
+        boxClassName={css`
+          background-color: darkgreen !important;
+          color: white !important;
+          &.active {
+            background-color: lime !important;
+            color: darkgreen !important;
+          }
+        `}
       />
       <NumberBox
         value={currentValue}

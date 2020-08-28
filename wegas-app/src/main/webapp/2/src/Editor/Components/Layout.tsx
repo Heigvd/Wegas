@@ -21,7 +21,7 @@ const ThemeEditor = React.lazy(
 );
 
 const Tester = React.lazy(
-  () => import('../../Testers/Components/MultipleChoicesTester'),
+  () => import('../../Testers/Components/NumberBoxTester'),
 );
 
 const layout = css({
