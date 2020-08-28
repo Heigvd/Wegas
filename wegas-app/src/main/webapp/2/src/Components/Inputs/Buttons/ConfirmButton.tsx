@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import { Button, ButtonProps, disableBorderToSelector } from './Button';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { themeVar } from '../../Style/ThemeVars';
 import { flex } from '../../../css/classes';
 
 interface ConfirmButtonProps extends ButtonProps {
@@ -93,7 +92,7 @@ export function ConfirmButton({
     >
       <Button
         label="Accept"
-        customColor={{ backgroundColor: themeVar.Common.colors.WarningColor }}
+        buttonModes="warning"
         disableBorders={{ right: true }}
         onClick={onConfirm(true)}
         disabled={disabled}

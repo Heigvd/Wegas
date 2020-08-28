@@ -7,8 +7,8 @@ const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageEditor = React.lazy(() => import('./Page/PageEditor'));
 const TreeView = React.lazy(() => import('./Variable/VariableTree'));
 const EntityEditor = React.lazy(() => import('./EntityEditor'));
-const FileBrowserWithMeta = React.lazy(() =>
-  import('./FileBrowser/FileBrowser'),
+const FileBrowserWithMeta = React.lazy(
+  () => import('./FileBrowser/FileBrowser'),
 );
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
 const LanguageEditor = React.lazy(() => import('./LanguageEditor'));
@@ -16,11 +16,13 @@ const PlayLocal = React.lazy(() => import('./PlayLocal'));
 const PlayServer = React.lazy(() => import('./PlayServer'));
 const InstancesEditor = React.lazy(() => import('./Variable/InstancesEditor'));
 const HTMLEditor = React.lazy(() => import('../../Components/HTMLEditor'));
-const ThemeEditor = React.lazy(() =>
-  import('../../Components/Style/ThemeEditor'),
+const ThemeEditor = React.lazy(
+  () => import('../../Components/Style/ThemeEditor'),
 );
 
-const Tester = React.lazy(() => import('../../Testers/LessTester'));
+const Tester = React.lazy(
+  () => import('../../Testers/Components/BooleanInputTester'),
+);
 
 const layout = css({
   display: 'flex',

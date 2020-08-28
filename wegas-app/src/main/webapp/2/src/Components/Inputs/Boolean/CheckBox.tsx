@@ -1,20 +1,10 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { cx } from 'emotion';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
 import { textCenter, shrinkWidth } from '../../../css/classes';
-import { themeVar } from '../../Style/ThemeVars';
 import { Button } from '../Buttons/Button';
-
-const checkboxStyle = (disabled?: boolean, readOnly?: boolean) =>
-  css({
-    cursor: disabled || readOnly ? 'default' : 'pointer',
-    color: disabled
-      ? themeVar.Common.colors.DisabledColor
-      : readOnly
-      ? themeVar.Common.colors.HeaderColor
-      : themeVar.Common.colors.TextColor,
-  });
+import { classOrNothing, classNameOrEmpty } from '../../../Helper/className';
 
 export interface CheckBoxProps extends InputProps<boolean> {
   /**
@@ -64,7 +54,7 @@ export function CheckBox({
   return (
     <div
       id={id}
-      className={cx(textCenter, className, shrinkWidth)}
+      className={cx(textCenter, shrinkWidth) + classNameOrEmpty(className)}
       title={hint}
     >
       {label && <Value value={label} />}
@@ -93,7 +83,12 @@ export function CheckBox({
               return !v;
             });
         }}
-        className={cx(checkboxStyle(disabled, readOnly), checkBoxClassName)}
+        className={
+          'wegas wegas-cbx' +
+          classOrNothing('disabled', disabled) +
+          classOrNothing('readOnly', readOnly) +
+          classNameOrEmpty(checkBoxClassName)
+        }
         disabled={disabled}
         noHover={disabled}
       />

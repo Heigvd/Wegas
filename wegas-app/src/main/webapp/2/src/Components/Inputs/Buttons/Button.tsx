@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
+import { arrayRemoveDuplicates } from '../../../Helper/tools';
 
 export interface DisableBorders {
   top?: boolean;
@@ -16,25 +17,32 @@ export interface DisableBorders {
 export function disableBorderToSelector(disableBorders?: DisableBorders) {
   return disableBorders != null
     ? ' disabledBorders' +
-        Object.entries(disableBorders).map(
-          ([border, disabled]) =>
-            classOrNothing(
-              'borderTopLeft',
-              disabled && ['topLeft', 'left', 'top'].includes(border),
-            ) +
-            classOrNothing(
-              'borderTopRight',
-              disabled && ['topRight', 'right', 'top'].includes(border),
-            ) +
-            classOrNothing(
-              'borderBottomLeft',
-              disabled && ['bottomLeft', 'left', 'bottom'].includes(border),
-            ) +
-            classOrNothing(
-              'borderBottomRight',
-              disabled && ['bottomRight', 'right', 'bottom'].includes(border),
-            ),
-        )
+        arrayRemoveDuplicates(
+          Object.entries(disableBorders)
+            .map(([border, disabled]) => {
+              return (
+                classOrNothing(
+                  'borderTopLeft',
+                  disabled && ['topLeft', 'left', 'top'].includes(border),
+                ) +
+                classOrNothing(
+                  'borderTopRight',
+                  disabled && ['topRight', 'right', 'top'].includes(border),
+                ) +
+                classOrNothing(
+                  'borderBottomLeft',
+                  disabled && ['bottomLeft', 'left', 'bottom'].includes(border),
+                ) +
+                classOrNothing(
+                  'borderBottomRight',
+                  disabled &&
+                    ['bottomRight', 'right', 'bottom'].includes(border),
+                )
+              );
+            })
+            .join('')
+            .split(' '),
+        ).join(' ')
     : '';
 }
 
@@ -47,12 +55,12 @@ export interface ButtonProps extends ClassAndStyle {
   noHover?: boolean;
   type?: 'submit' | 'reset' | 'button';
   id?: string;
-  customColor?: { textColor?: string; backgroundColor?: string };
   disableBorders?: DisableBorders;
   icon?: Icons;
   pressed?: boolean;
   prefixedLabel?: boolean;
   noBackground?: boolean;
+  buttonModes?: 'success' | 'warning' | 'error';
 }
 
 export const Button = React.forwardRef<
@@ -77,6 +85,7 @@ export const Button = React.forwardRef<
       pressed,
       prefixedLabel,
       noBackground,
+      buttonModes,
     },
     ref,
   ) => {
@@ -107,6 +116,7 @@ export const Button = React.forwardRef<
           classOrNothing('noClick', onClick == null) +
           classOrNothing('iconOnly', !label && !children && !noBackground) +
           classOrNothing('noBackground', noBackground) +
+          classNameOrEmpty(buttonModes) +
           classNameOrEmpty(className)
         }
         style={style}

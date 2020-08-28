@@ -1,11 +1,19 @@
 .wegas {
   @MainColor: var(--common-colors-maincolor);
   @DisabledColor: var(--common-colors-disabledcolor);
-  @TextColor: var(--common-colors-secondarytextcolor);
+
+  @TextColor: var(--common-colors-textcolor);
+  @SecondaryTextColor: var(--common-colors-secondarytextcolor);
+
   @HoverColor: var(--common-colors-hovercolor);
   @HoverTextColor: var(--common-colors-hovertextcolor);
+
   @ActiveColor: var(--common-colors-activecolor);
   @HeaderColor: var(--common-colors-headercolor);
+
+  @SuccessColor: var(--common-colors-successcolor);
+  @WarningColor: var(--common-colors-warningcolor);
+  @ErrorColor: var(--common-colors-errorcolor);
 
   @BorderRadius: var(--common-dimensions-borderradius);
 
@@ -13,7 +21,7 @@
 
   &.wegas-btn {
     background-color: @MainColor;
-    color: @TextColor;
+    color: @SecondaryTextColor;
     border-style: none;
     padding-left: 5px;
     padding-right: 5px;
@@ -51,10 +59,15 @@
       cursor: inherit;
     }
     &.iconOnly {
-      color: @MainColor;
+      color: @TextColor;
       background-color: transparent;
       &:hover {
         color: @ActiveColor;
+      }
+      &.disabled {
+        &:hover {
+          color: @DisabledColor;
+        }
       }
     }
     &.disabledBorders {
@@ -77,6 +90,50 @@
       text-align: center;
       display: inline-block;
       width: max-content;
+    }
+    &.success {
+      background-color: @SuccessColor;
+      &.iconOnly &.noBackground {
+        background-color: transparent;
+        color: @SuccessColor;
+      }
+    }
+    &.warning {
+      background-color: @WarningColor;
+      &.iconOnly &.noBackground {
+        background-color: transparent;
+        color: @WarningColor;
+      }
+    }
+    &.error {
+      background-color: @ErrorColor;
+      &.iconOnly &.noBackground {
+        background-color: transparent;
+        color: @ErrorColor;
+      }
+    }
+  }
+
+  &.wegas-cbx {
+    cursor: pointer;
+    color: @TextColor;
+
+    &.disabled {
+      cursor: default;
+      color: @DisabledColor;
+      &:hover {
+        cursor: default;
+        color: @DisabledColor;
+      }
+    }
+
+    &.readOnly {
+      cursor: default;
+      color: @HeaderColor;
+      &:hover {
+        cursor: default;
+        color: @HeaderColor;
+      }
     }
   }
 }

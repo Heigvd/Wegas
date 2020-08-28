@@ -12,17 +12,21 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript } from 'wegas-ts-api';
 import { translate } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import { icons } from '../../../Editor/Components/Views/FontAwesome';
+import { icons, Icons } from '../../../Editor/Components/Views/FontAwesome';
 
 export interface PlayerButtonProps extends WegasComponentProps {
   label: string | ITranslatableContent;
   action: IScript;
+  icon?: Icons;
+  prefixedLabel?: boolean;
 }
 
 const PlayerButton: React.FunctionComponent<PlayerButtonProps> = ({
   label,
   action,
   style,
+  icon,
+  prefixedLabel,
 }: PlayerButtonProps) => {
   const { lang } = React.useContext(languagesCTX);
   let computedLabel: React.ReactNode;
@@ -40,6 +44,8 @@ const PlayerButton: React.FunctionComponent<PlayerButtonProps> = ({
         store.dispatch(Actions.VariableInstanceActions.runScript(action!))
       }
       style={{ margin: 'auto', ...style }}
+      icon={icon}
+      prefixedLabel={prefixedLabel}
     />
   );
 };
