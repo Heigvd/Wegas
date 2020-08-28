@@ -1,42 +1,22 @@
 import * as React from 'react';
-import { IconButton } from './IconButton';
 import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
-import { css, cx } from 'emotion';
-import {
-  Button,
-  DisableBorders,
-  disableBordersCSS,
-  ButtonProps,
-} from './Button';
-import { Icon } from '../../../Editor/Components/Views/FontAwesome';
+import { Button, ButtonProps, disableBorderToSelector } from './Button';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { themeVar } from '../../Style/ThemeVars';
 import { flex } from '../../../css/classes';
 
-const buttonZone = (disableBorders?: DisableBorders) =>
-  css({
-    // margin: '5px',
-    padding: '5px',
-    ...disableBordersCSS(disableBorders),
-    backgroundColor: themeVar.Common.colors.HeaderColor,
-    textAlign: 'center',
-    display: 'inline-block',
-    width: 'max-content',
-  });
-
 interface ConfirmButtonProps extends ButtonProps {
-  icon?: Icon;
   onAction?: (success: boolean) => void;
   onBlur?: () => void;
   defaultConfirm?: boolean;
   dontResetOnBlur?: boolean;
-  disableBorders?: DisableBorders;
   buttonClassName?: string;
 }
 
 export function ConfirmButton({
   label,
   icon,
+  prefixedLabel,
   onClick,
   onAction,
   onBlur,
@@ -87,28 +67,17 @@ export function ConfirmButton({
 
   return !confirmation ? (
     <div tabIndex={tabIndex} ref={confirmButton} id={id} className={className}>
-      {icon ? (
-        <IconButton
-          label={label}
-          icon={icon}
-          onClick={onClickVerify}
-          tooltip={tooltip}
-          disabled={disabled}
-          noHover={noHover}
-          prefixedLabel
-          className={buttonClassName}
-        />
-      ) : (
-        <Button
-          label={label}
-          onClick={onClickVerify}
-          disableBorders={disableBorders}
-          tooltip={tooltip}
-          disabled={disabled}
-          noHover={noHover}
-          className={buttonClassName}
-        />
-      )}
+      <Button
+        label={label}
+        prefixedLabel={prefixedLabel}
+        icon={icon}
+        onClick={onClickVerify}
+        disableBorders={disableBorders}
+        tooltip={tooltip}
+        disabled={disabled}
+        noHover={noHover}
+        className={buttonClassName}
+      />
     </div>
   ) : (
     <div
@@ -116,7 +85,10 @@ export function ConfirmButton({
       tabIndex={tabIndex}
       id={id}
       className={
-        cx(buttonZone(disableBorders), flex) + classNameOrEmpty(className)
+        'wegas wegas-btn confirmBtn ' +
+        flex +
+        disableBorderToSelector(disableBorders) +
+        +classNameOrEmpty(className)
       }
     >
       <Button

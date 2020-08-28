@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { Modal } from '../../Components/Modal';
 import { Actions } from '../../data';
 import { editorLabel } from '../../data/methods/VariableDescriptorMethods';
@@ -14,6 +13,7 @@ import { entityIs } from '../../data/entities';
 import { focusTabContext } from './LinearTabLayout/LinearLayout';
 import { mainLayoutId } from './Layout';
 import { IVariableDescriptor } from 'wegas-ts-api';
+import { Button } from '../../Components/Inputs/Buttons/Button';
 
 interface SearchPanelProps {
   search: State['global']['search'];
@@ -146,7 +146,7 @@ class SearchPanel extends React.Component<
                 value={this.state.searchField}
                 onChange={this.searchChange}
               />
-              <IconButton
+              <Button
                 tooltip="Submit"
                 icon="check"
                 type="submit"
@@ -159,7 +159,7 @@ class SearchPanel extends React.Component<
             </>
           )}
           {search.type !== 'NONE' && (
-            <IconButton
+            <Button
               tooltip="Reset search"
               icon="eraser"
               onClick={() =>
@@ -177,7 +177,7 @@ class SearchPanel extends React.Component<
   render() {
     return (
       <>
-        <IconButton
+        <Button
           icon={{ icon: 'search', mask: 'cloud' }}
           tooltip="Cloud search"
           onClick={this.togglePanel}

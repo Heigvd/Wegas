@@ -2,7 +2,6 @@ import { css, cx } from 'emotion';
 import produce from 'immer';
 import { Connection, Defaults, jsPlumbInstance } from 'jsplumb';
 import * as React from 'react';
-import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { VariableDescriptor } from '../../data/selectors';
 import { StoreDispatch, useStore } from '../../data/store';
 import { entityIs } from '../../data/entities';
@@ -31,7 +30,19 @@ import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { createTranslatableContent } from './FormView/translatable';
 import { createScript } from '../../Helper/wegasEntites';
 import { themeVar } from '../../Components/Style/ThemeVars';
-import { IDialogueDescriptor, IFSMInstance, IFSMDescriptor, IAbstractStateMachineDescriptor, ITransition, IDialogueTransition, IAbstractTransition, IAbstractState, IState, IDialogueState } from 'wegas-ts-api';
+import {
+  IDialogueDescriptor,
+  IFSMInstance,
+  IFSMDescriptor,
+  IAbstractStateMachineDescriptor,
+  ITransition,
+  IDialogueTransition,
+  IAbstractTransition,
+  IAbstractState,
+  IState,
+  IDialogueState,
+} from 'wegas-ts-api';
+import { Button } from '../../Components/Inputs/Buttons/Button';
 
 const editorStyle = css({
   position: 'relative',
@@ -139,7 +150,7 @@ interface StateMachineEditorState {
 class StateMachineEditor extends React.Component<
   StateMachineEditorProps,
   StateMachineEditorState
-  > {
+> {
   static contextType = languagesCTX;
 
   static getDerivedStateFromProps(
@@ -180,23 +191,23 @@ class StateMachineEditor extends React.Component<
   ): ITransition | IDialogueTransition {
     return entityIs(stateMachine, 'FSMDescriptor', true)
       ? {
-        '@class': 'Transition',
-        label: '',
-        nextStateId,
-        triggerCondition: createScript(),
-        preStateImpact: createScript(),
-        index: 0,
-        version: 0,
-      }
+          '@class': 'Transition',
+          label: '',
+          nextStateId,
+          triggerCondition: createScript(),
+          preStateImpact: createScript(),
+          index: 0,
+          version: 0,
+        }
       : {
-        '@class': 'DialogueTransition',
-        nextStateId,
-        triggerCondition: createScript(),
-        preStateImpact: createScript(),
-        index: 0,
-        version: 0,
-        actionText: createTranslatableContent(this.context.lang),
-      };
+          '@class': 'DialogueTransition',
+          nextStateId,
+          triggerCondition: createScript(),
+          preStateImpact: createScript(),
+          index: 0,
+          version: 0,
+          actionText: createTranslatableContent(this.context.lang),
+        };
   }
 
   produceTransition = ({ from, to }: { from: number; to: number }) => {
@@ -224,8 +235,8 @@ class StateMachineEditor extends React.Component<
         if (info.originalSourceId === info.newSourceId) {
           const tr = (states[Number(info.originalSourceId)]
             .transitions as IAbstractTransition[]).find(
-              t => t.id === transition.id,
-            );
+            t => t.id === transition.id,
+          );
           if (tr != null) {
             tr.nextStateId = Number(info.newTargetId);
           }
@@ -239,8 +250,8 @@ class StateMachineEditor extends React.Component<
           );
           (states[Number(info.newSourceId)]
             .transitions as IAbstractTransition[]).push({
-              ...transition,
-            });
+            ...transition,
+          });
         }
       }),
     );
@@ -254,8 +265,8 @@ class StateMachineEditor extends React.Component<
         for (const s in states) {
           (states[s] as IAbstractState).transitions = (states[s]
             .transitions as IAbstractTransition[]).filter(
-              t => t.nextStateId !== id,
-            );
+            t => t.nextStateId !== id,
+          );
         }
       }),
     );
@@ -279,23 +290,23 @@ class StateMachineEditor extends React.Component<
       'FSMDescriptor',
     )
       ? {
-        '@class': 'State',
-        version: 0,
-        onEnterEvent: createScript(),
-        x: position.left >= 10 ? position.left : 10,
-        y: position.top >= 10 ? position.top : 10,
-        label: '',
-        transitions: [],
-      }
+          '@class': 'State',
+          version: 0,
+          onEnterEvent: createScript(),
+          x: position.left >= 10 ? position.left : 10,
+          y: position.top >= 10 ? position.top : 10,
+          label: '',
+          transitions: [],
+        }
       : {
-        '@class': 'DialogueState',
-        version: 0,
-        onEnterEvent: createScript(),
-        x: position.left >= 10 ? position.left : 10,
-        y: position.top >= 10 ? position.top : 10,
-        text: createTranslatableContent(lang),
-        transitions: [],
-      };
+          '@class': 'DialogueState',
+          version: 0,
+          onEnterEvent: createScript(),
+          x: position.left >= 10 ? position.left : 10,
+          y: position.top >= 10 ? position.top : 10,
+          text: createTranslatableContent(lang),
+          transitions: [],
+        };
 
     this.setState(
       produce((store: StateMachineEditorState) => {
@@ -308,8 +319,8 @@ class StateMachineEditor extends React.Component<
         if (transitionSource != undefined) {
           (store.stateMachine.states[transitionSource]
             .transitions as IAbstractTransition[]).push(
-              this.createTransition(store.stateMachine, nextId),
-            );
+            this.createTransition(store.stateMachine, nextId),
+          );
         }
         return;
       }),
@@ -413,8 +424,8 @@ class StateMachineEditor extends React.Component<
           const transition:
             | ITransition
             | IDialogueTransition = (info.connection as any).getParameter(
-              'transition',
-            );
+            'transition',
+          );
           this.moveTransition(info, transition);
         }
       });
@@ -590,8 +601,8 @@ function getValue(state: IState | IDialogueState, lang: string): string {
   return entityIs(state, 'State')
     ? state.label
     : state.text.translations[lang]
-      ? state.text.translations[lang].translation
-      : '';
+    ? state.text.translations[lang].translation
+    : '';
 }
 
 class State extends React.Component<{
@@ -675,7 +686,7 @@ class State extends React.Component<{
             {getValue(this.props.state, this.context.lang)}
           </Toolbar.Content>
           <Toolbar.Header>
-            <IconButton
+            <Button
               icon="edit"
               onClick={(e: ModifierKeysEvent) => this.onClickEdit(e)}
             />
@@ -683,7 +694,7 @@ class State extends React.Component<{
               <FontAwesome icon="project-diagram" />
             </div>
             {!initialState && (
-              <IconButton
+              <Button
                 icon="trash"
                 onClick={() => this.props.deleteState(this.props.id)}
               />

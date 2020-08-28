@@ -3,8 +3,8 @@ import { css, cx } from 'emotion';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
 import { textCenter, shrinkWidth } from '../../../css/classes';
-import { IconButton } from '../Buttons/IconButton';
 import { themeVar } from '../../Style/ThemeVars';
+import { Button } from '../Buttons/Button';
 
 const checkboxStyle = (disabled?: boolean, readOnly?: boolean) =>
   css({
@@ -68,7 +68,7 @@ export function CheckBox({
       title={hint}
     >
       {label && <Value value={label} />}
-      <IconButton
+      <Button
         icon={
           checked
             ? {

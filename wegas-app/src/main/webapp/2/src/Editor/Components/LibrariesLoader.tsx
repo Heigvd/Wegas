@@ -7,38 +7,9 @@ import {
 } from '../../Components/Hooks/useScript';
 import { useWebsocket } from '../../API/websocket';
 import { IGameModelContent } from 'wegas-ts-api';
-// import * as less from 'less';
 
-// const lesstest = less
-//   .render(
-//     `.wegas {
-//       @MainColor: blue;
-//       @DisabledColor: grey;
-//       @TextColor: white;
-
-//       &.wegas-btn {
-//         background-color: @MainColor;
-//         color: @TextColor;
-//         border-style: none;
-//         padding-left: 5px;
-//         padding-right: 5px;
-//         padding-top: 2px;
-//         padding-bottom: 2px;
-//         cursor: pointer;
-//         &.disabled {
-//           background-color: @DisabledColor;
-//           cursor: initial;
-//         }
-//       }
-//     }`,
-//   )
-//   .then(output => output.css)
-//   .catch(error => {
-//     wlog(error);
-//     return '';
-//   });
-
-// wlog(lesstest);
+// @ts-ignore
+import mainStyle from '!!raw-loader!../../css/defaultStyle.less';
 
 export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
   const [jsLibs, setJSLibs] = React.useState<ILibraries>({});
@@ -51,26 +22,27 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
   import('less').then(less => {
     const lesstest = less
       .render(
-        `.wegas {
-        @MainColor: blue;
-        @DisabledColor: grey;
-        @TextColor: white;
-  
-        &.wegas-btn {
-          background-color: @MainColor;
-          color: @TextColor;
-          border-style: none;
-          padding-left: 5px;
-          padding-right: 5px;
-          padding-top: 2px;
-          padding-bottom: 2px;
-          cursor: pointer;
-          &.disabled {
-            background-color: @DisabledColor;
-            cursor: initial;
-          }
-        }
-      }`,
+        //   `.wegas {
+        //   @MainColor: blue;
+        //   @DisabledColor: grey;
+        //   @TextColor: white;
+
+        //   &.wegas-btn {
+        //     background-color: @MainColor;
+        //     color: @TextColor;
+        //     border-style: none;
+        //     padding-left: 5px;
+        //     padding-right: 5px;
+        //     padding-top: 2px;
+        //     padding-bottom: 2px;
+        //     cursor: pointer;
+        //     &.disabled {
+        //       background-color: @DisabledColor;
+        //       cursor: initial;
+        //     }
+        //   }
+        // }`,
+        mainStyle,
       )
       .then(output => {
         setLessLibs(output.css);

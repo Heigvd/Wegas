@@ -1,9 +1,6 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
-import { CSSProperties } from 'react';
-import { classNameOrEmpty } from '../../../Helper/className';
-import { themeVar } from '../../Style/ThemeVars';
-import { ThemeComponent, useModeSwitch } from '../../Style/Theme';
+import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
+import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
 
 export interface DisableBorders {
   top?: boolean;
@@ -16,71 +13,32 @@ export interface DisableBorders {
   bottomRight?: boolean;
 }
 
-export const disableBordersCSS = (
-  disableBorders?: DisableBorders,
-): CSSProperties => ({
-  borderTopLeftRadius:
-    disableBorders &&
-    (disableBorders.topLeft || disableBorders.left || disableBorders.top)
-      ? undefined
-      : themeVar.Common.dimensions.BorderRadius,
-  borderTopRightRadius:
-    disableBorders &&
-    (disableBorders.topRight || disableBorders.right || disableBorders.top)
-      ? undefined
-      : themeVar.Common.dimensions.BorderRadius,
-  borderBottomLeftRadius:
-    disableBorders &&
-    (disableBorders.bottomLeft || disableBorders.left || disableBorders.bottom)
-      ? undefined
-      : themeVar.Common.dimensions.BorderRadius,
-  borderBottomRightRadius:
-    disableBorders &&
-    (disableBorders.bottomRight ||
-      disableBorders.right ||
-      disableBorders.bottom)
-      ? undefined
-      : themeVar.Common.dimensions.BorderRadius,
-});
+export function disableBorderToSelector(disableBorders?: DisableBorders) {
+  return disableBorders != null
+    ? ' disabledBorders' +
+        Object.entries(disableBorders).map(
+          ([border, disabled]) =>
+            classOrNothing(
+              'borderTopLeft',
+              disabled && ['topLeft', 'left', 'top'].includes(border),
+            ) +
+            classOrNothing(
+              'borderTopRight',
+              disabled && ['topRight', 'right', 'top'].includes(border),
+            ) +
+            classOrNothing(
+              'borderBottomLeft',
+              disabled && ['bottomLeft', 'left', 'bottom'].includes(border),
+            ) +
+            classOrNothing(
+              'borderBottomRight',
+              disabled && ['bottomRight', 'right', 'bottom'].includes(border),
+            ),
+        )
+    : '';
+}
 
-export const buttonStyle = (
-  disabled?: boolean,
-  noHover?: boolean,
-  disableBorders?: DisableBorders,
-  noClick?: boolean,
-  customColor?: { textColor?: string; backgroundColor?: string },
-) =>
-  css({
-    backgroundColor: disabled
-      ? themeVar.Common.colors.DisabledColor
-      : customColor?.backgroundColor
-      ? customColor.backgroundColor
-      : themeVar.Common.colors.MainColor,
-    color: customColor?.textColor
-      ? customColor.textColor
-      : themeVar.Common.colors.SecondaryTextColor,
-    borderStyle: 'none',
-    ...disableBordersCSS(disableBorders),
-    paddingLeft: '5px',
-    paddingRight: '5px',
-    paddingTop: '2px',
-    paddingBottom: '2px',
-    cursor: disabled ? 'initial' : noClick ? 'inherit' : 'pointer',
-    fontFamily: themeVar.Common.others.TextFont2,
-    ':hover':
-      disabled || noHover
-        ? undefined
-        : {
-            color: themeVar.Common.colors.HoverTextColor,
-            backgroundColor: themeVar.Common.colors.ActiveColor,
-            outline: 'none',
-          },
-    ':focus': {
-      outline: 'none',
-    },
-  });
-
-export interface CommonButtonProps extends ClassAndStyle {
+export interface ButtonProps extends ClassAndStyle {
   label?: React.ReactNode;
   onClick?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   disabled?: boolean;
@@ -90,95 +48,80 @@ export interface CommonButtonProps extends ClassAndStyle {
   type?: 'submit' | 'reset' | 'button';
   id?: string;
   customColor?: { textColor?: string; backgroundColor?: string };
-}
-
-export interface ButtonProps extends CommonButtonProps {
   disableBorders?: DisableBorders;
+  icon?: Icons;
+  pressed?: boolean;
+  prefixedLabel?: boolean;
+  noBackground?: boolean;
 }
 
-export function Button({
-  label,
-  onClick,
-  disabled,
-  noHover,
-  disableBorders,
-  className,
-  style,
-  children,
-  tabIndex,
-  tooltip,
-  type,
-  id,
-  customColor,
-}: React.PropsWithChildren<ButtonProps>) {
-  return (
-    <button
-      id={id}
-      className={
-        // buttonStyle(
-        //   disabled,
-        //   noHover,
-        //   disableBorders,
-        //   onClick == null,
-        //   customColor,
-        // )
-        'wegas wegas-btn' + cx({ ['disabled']: disabled })
-        // + classNameOrEmpty(className)
-      }
-      style={style}
-      onClick={onClick}
-      disabled={disabled}
-      tabIndex={tabIndex}
-      title={tooltip}
-      type={type}
-    >
-      {label}
-      {children}
-    </button>
-  );
-}
+export const Button = React.forwardRef<
+  HTMLButtonElement,
+  React.PropsWithChildren<ButtonProps>
+>(
+  (
+    {
+      label,
+      onClick,
+      disabled,
+      noHover,
+      disableBorders,
+      className,
+      style,
+      children,
+      tabIndex,
+      tooltip,
+      type,
+      id,
+      icon,
+      pressed,
+      prefixedLabel,
+      noBackground,
+    },
+    ref,
+  ) => {
+    const computedLabel =
+      icon && (label || children) ? (
+        <div
+          style={prefixedLabel ? { marginRight: '3px' } : { marginLeft: '3px' }}
+        >
+          {label}
+          {children}
+        </div>
+      ) : (
+        <>
+          {label}
+          {children}
+        </>
+      );
 
-export function SwitchingModeButton({
-  label,
-  onClick,
-  disabled,
-  noHover,
-  disableBorders,
-  className,
-  style,
-  children,
-  tabIndex,
-  tooltip,
-  type,
-  id,
-  modeName,
-}: React.PropsWithChildren<ButtonProps & ThemeComponent>) {
-  const {
-    currentModeClassName,
-    childrenModeClassName,
-    childrenNode,
-    switcher,
-  } = useModeSwitch(modeName, children);
-
-  return (
-    <button
-      ref={switcher}
-      id={id}
-      className={
-        cx(buttonStyle(disabled, noHover, disableBorders, onClick == null)) +
-        classNameOrEmpty(currentModeClassName) +
-        classNameOrEmpty(childrenModeClassName) +
-        classNameOrEmpty(className)
-      }
-      style={style}
-      onClick={onClick}
-      disabled={disabled}
-      tabIndex={tabIndex}
-      title={tooltip}
-      type={type}
-    >
-      {label}
-      {childrenNode}
-    </button>
-  );
-}
+    return (
+      <button
+        ref={ref}
+        id={id}
+        className={
+          'wegas wegas-btn ' +
+          classOrNothing('disabled', disabled) +
+          classOrNothing('noHover', noHover) +
+          disableBorderToSelector(disableBorders) +
+          classOrNothing('noClick', onClick == null) +
+          classOrNothing('iconOnly', !label && !children && !noBackground) +
+          classOrNothing('noBackground', noBackground) +
+          classNameOrEmpty(className)
+        }
+        style={style}
+        onClick={onClick}
+        disabled={disabled}
+        tabIndex={tabIndex}
+        title={tooltip}
+        aria-label={tooltip}
+        aria-pressed={pressed}
+        type={type}
+      >
+        {prefixedLabel && computedLabel}
+        {icon && <IconComp icon={icon} />}
+        {!prefixedLabel && computedLabel}
+      </button>
+    );
+  },
+);

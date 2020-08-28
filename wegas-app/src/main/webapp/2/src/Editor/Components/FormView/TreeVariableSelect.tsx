@@ -9,7 +9,6 @@ import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { CommonViewContainer, CommonView } from './commonView';
 import { LabeledView, Labeled } from './labeled';
 import { css } from 'emotion';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import {
   scriptableClassNameToClassFilter,
@@ -17,11 +16,9 @@ import {
 } from '../../../Helper/wegasEntites';
 import { scriptEditStyle } from './Script/Script';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
-import {
-  IVariableDescriptor,
-  IScript,
-} from 'wegas-ts-api';
+import { IVariableDescriptor, IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 const treeCss = css({
   padding: '5px 10px',
@@ -293,7 +290,7 @@ export function ScripableVariableSelect(
 
   return (
     <>
-      <IconButton icon="code" onClick={() => setSrcMode(sm => !sm)} />
+      <Button icon="code" onClick={() => setSrcMode(sm => !sm)} />
       {srcMode ? (
         <div className={scriptEditStyle}>
           <WegasScriptEditor

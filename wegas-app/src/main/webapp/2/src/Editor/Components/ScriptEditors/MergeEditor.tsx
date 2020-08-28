@@ -1,7 +1,6 @@
 import { css } from 'emotion';
 import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import WegasDiffEditor, {
   ExtendedDiffNavigator,
   DiffEditorLineChanges,
@@ -9,6 +8,7 @@ import WegasDiffEditor, {
 import { MessageString } from '../MessageString';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { arrayToText, textToArray } from './editorHelpers';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 const diffLabel = css({
   color: themeVar.Common.colors.TextColor,
@@ -305,35 +305,35 @@ function MergeEditor({
       <Toolbar.Header>
         {mergeState.diffs.length > 0 ? (
           <>
-            <IconButton
+            <Button
               icon="arrow-left"
               tooltip="Navigate to previous difference"
               onClick={() => onNavigate(false)}
             />
             <div className={diffLabel}>Difference : #{mergeState.idx}</div>
-            <IconButton
+            <Button
               icon="arrow-right"
               tooltip="Navigate to next difference"
               onClick={() => onNavigate(true)}
             />
-            <IconButton
+            <Button
               icon="hand-point-left"
               tooltip="Accept remote diff"
               onClick={() => onKeepOne(true)}
             />
-            <IconButton
+            <Button
               icon="hand-point-right"
               tooltip="Accept local diff"
               onClick={() => onKeepOne(false)}
             />
-            <IconButton
+            <Button
               icon="balance-scale"
               tooltip="Accept both"
               onClick={onKeepAll}
             />
           </>
         ) : (
-          <IconButton
+          <Button
             icon="save"
             tooltip="Save current state"
             onClick={() => {

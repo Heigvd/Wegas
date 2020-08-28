@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Downshift, { StateChangeOptions } from 'downshift';
 import { css, cx } from 'emotion';
-import { IconButton } from './Inputs/Buttons/IconButton';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { Item } from '../Editor/Components/Tree/TreeSelect';
@@ -10,6 +9,7 @@ import { classNameOrEmpty } from '../Helper/className';
 import { ConfirmButton } from './Inputs/Buttons/ConfirmButton';
 import { flexRow, flex, itemCenter } from '../css/classes';
 import { lastKeyboardEvents } from '../Helper/keyboardEvents';
+import { Button } from './Inputs/Buttons/Button';
 
 export interface DropMenuItem<T> extends Item<T> {
   disabled?: true;
@@ -24,7 +24,10 @@ export type SelecteDropdMenuItem<
   value: Exclude<MItem['value'], undefined>;
 };
 
-export interface DropMenuProps<T, MItem extends DropMenuItem<T> = DropMenuItem<T>> {
+export interface DropMenuProps<
+  T,
+  MItem extends DropMenuItem<T> = DropMenuItem<T>
+> {
   id?: string;
   onSelect: (
     item: SelecteDropdMenuItem<T, MItem>,
@@ -44,6 +47,7 @@ export interface DropMenuProps<T, MItem extends DropMenuItem<T> = DropMenuItem<T
     filter?: (item: MItem) => boolean;
     onDelete: (item: MItem) => void;
   };
+  noBackground?: boolean;
 }
 /**
  * returns an empty string
@@ -116,6 +120,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
   listClassName,
   adder,
   deleter,
+  noBackground,
 }: DropMenuProps<T, MItem>) {
   const realDirection = direction ? direction : 'down';
   const onStateChange = React.useCallback(
@@ -150,7 +155,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
           className={containerStyle + classNameOrEmpty(containerClassName)}
         >
           <div className={itemStyle} onClick={() => toggleMenu()}>
-            <IconButton
+            <Button
               label={label}
               prefixedLabel
               icon={withDefault(
@@ -165,6 +170,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                 toggleMenu();
               }}
               className={buttonClassName}
+              noBackground={noBackground}
             />
           </div>
 
@@ -282,7 +288,9 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                         onSelect={(v, e) => {
                           closeMenu();
                           onSelect(
-                            v as Parameters<DropMenuProps<T, MItem>['onSelect']>[0],
+                            v as Parameters<
+                              DropMenuProps<T, MItem>['onSelect']
+                            >[0],
                             e,
                           );
                         }}

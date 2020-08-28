@@ -1,8 +1,11 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { WidgetProps, TYPESTRING } from 'jsoninput/typings/types';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
-import { DropMenu, DropMenuItem, SelecteDropdMenuItem } from '../../../Components/DropMenu';
+import {
+  DropMenu,
+  DropMenuItem,
+  SelecteDropdMenuItem,
+} from '../../../Components/DropMenu';
 import { CommonViewContainer, CommonView } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 import { useDrag, useDrop } from 'react-dnd';
@@ -11,6 +14,7 @@ import { array_move } from '../../../Helper/tools';
 import { Item } from '../Tree/TreeSelect';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { typeCleaner } from './Script/Expressions/expressionEditorHelpers';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 const transparentStyle = css({
   opacity: 0,
@@ -64,7 +68,7 @@ function Adder<T>({ onChildAdd, choices, id, tooltip }: AdderProps<T>) {
     );
   }
   return (
-    <IconButton
+    <Button
       id={id}
       icon="plus-circle"
       onClick={() => onChildAdd()}
@@ -131,7 +135,7 @@ function ArrayItem({
       <div className={listElementStyle}>{children}</div>
       <div className={cx(handleStyle, transparentStyle)}>
         {onChildRemove ? (
-          <IconButton
+          <Button
             icon="trash"
             onClick={() => onChildRemove(index)}
             tooltip="Delete this group"
@@ -139,7 +143,7 @@ function ArrayItem({
         ) : null}
         {!unmovable && (
           <div ref={drag}>
-            <IconButton icon="arrows-alt" />
+            <Button icon="arrows-alt" />
           </div>
         )}
       </div>

@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { useOnClickOutside } from '../../Components/Hooks/useOnClickOutside';
 import { css } from 'emotion';
+import { Button } from '../../Components/Inputs/Buttons/Button';
 
 const buttonZone = css({
   margin: '5px',
@@ -72,7 +72,7 @@ export function TextPrompt({
         }}
       />
       <div className={buttonZone}>
-        <IconButton
+        <Button
           icon={'check'}
           label={'Accept'}
           onClick={event => {
@@ -80,7 +80,7 @@ export function TextPrompt({
             onAction(true, inputValue.current);
           }}
         />
-        <IconButton
+        <Button
           icon={'times'}
           label={'Cancel'}
           onClick={event => {

@@ -1,7 +1,15 @@
 .wegas {
-  @MainColor: blue;
-  @DisabledColor: grey;
-  @TextColor: white;
+  @MainColor: var(--common-colors-maincolor);
+  @DisabledColor: var(--common-colors-disabledcolor);
+  @TextColor: var(--common-colors-secondarytextcolor);
+  @HoverColor: var(--common-colors-hovercolor);
+  @HoverTextColor: var(--common-colors-hovertextcolor);
+  @ActiveColor: var(--common-colors-activecolor);
+  @HeaderColor: var(--common-colors-headercolor);
+
+  @BorderRadius: var(--common-dimensions-borderradius);
+
+  @TextFont2: var(--common-others-textfont2);
 
   &.wegas-btn {
     background-color: @MainColor;
@@ -12,9 +20,63 @@
     padding-top: 2px;
     padding-bottom: 2px;
     cursor: pointer;
+    font-family: @TextFont2;
+    border-radius: @BorderRadius;
+    &:hover {
+      color: @HoverTextColor;
+      background-color: @ActiveColor;
+      outline: none;
+    }
+    &:focus {
+      outline: none;
+    }
+    &.noHover {
+      &:hover {
+        color: unset;
+        background-color: unset;
+      }
+    }
     &.disabled {
+      .noHover;
       background-color: @DisabledColor;
       cursor: initial;
+    }
+    &.noBackground {
+      &:hover {
+        color: @HoverColor;
+      }
+      background-color: transparent;
+    }
+    &.noClick {
+      cursor: inherit;
+    }
+    &.iconOnly {
+      color: @MainColor;
+      background-color: transparent;
+      &:hover {
+        color: @ActiveColor;
+      }
+    }
+    &.disabledBorders {
+      &.borderTopLeft {
+        border-top-left-radius: unset;
+      }
+      &.borderTopRight {
+        border-top-right-radius: unset;
+      }
+      &.borderBottomLeft {
+        border-bottom-left-radius: unset;
+      }
+      &.borderBottomRight {
+        border-bottom-right-radius: unset;
+      }
+    }
+    &.confirmBtn {
+      padding: 5px;
+      background-color: @HeaderColor;
+      text-align: center;
+      display: inline-block;
+      width: max-content;
     }
   }
 }

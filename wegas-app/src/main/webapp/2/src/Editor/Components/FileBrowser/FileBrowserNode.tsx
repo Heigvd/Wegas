@@ -3,7 +3,6 @@ import { useDrop, DragObjectWithType, DropTargetMonitor } from 'react-dnd';
 import { css, cx } from 'emotion';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
 import { generateAbsolutePath, FileAPI, fileURL } from '../../../API/files.api';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { TextPrompt } from '../TextPrompt';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import { GameModel } from '../../../data/selectors';
@@ -23,6 +22,7 @@ import { FilePickingType, FileFilter } from './FileBrowser';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 const clickableStyle = css({
   cursor: 'pointer',
@@ -457,7 +457,7 @@ export function FileBrowserNode({
       )}
       {isDirectory(currentFile) && !noBracket && (
         <div className={css({ verticalAlign: 'top' })}>
-          <IconButton
+          <Button
             icon={open ? 'caret-down' : 'caret-right'}
             onClick={event => {
               event.stopPropagation();
@@ -488,7 +488,7 @@ export function FileBrowserNode({
             }
           }}
         >
-          <IconButton
+          <Button
             disabled={greyFiltered}
             icon={getIconForFileType(currentFile.mimeType)}
           />
@@ -535,7 +535,7 @@ export function FileBrowserNode({
               !pick &&
               (isDirectory(currentFile) ? (
                 <>
-                  <IconButton
+                  <Button
                     icon={'folder-plus'}
                     tooltip={'Add new directory in folder'}
                     disabled={!isUploadAllowed(currentFile)}
@@ -544,7 +544,7 @@ export function FileBrowserNode({
                       setModalState({ type: 'filename' });
                     }}
                   />
-                  <IconButton
+                  <Button
                     icon={'file-upload'}
                     tooltip={'Upload file in the folder'}
                     disabled={!isUploadAllowed(currentFile)}
@@ -553,7 +553,7 @@ export function FileBrowserNode({
                 </>
               ) : (
                 <>
-                  <IconButton
+                  <Button
                     icon={'external-link-alt'}
                     tooltip={'Open file'}
                     onClick={event => {
@@ -561,7 +561,7 @@ export function FileBrowserNode({
                       openFile(currentFile);
                     }}
                   />
-                  <IconButton
+                  <Button
                     icon={'file-import'}
                     tooltip={'Upload new version'}
                     disabled={!isUploadAllowed(currentFile)}
