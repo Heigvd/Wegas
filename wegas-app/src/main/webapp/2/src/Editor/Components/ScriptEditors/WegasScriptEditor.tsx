@@ -242,7 +242,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       extraLibs={extraLibs}
       value={content}
       onEditorReady={editorLock}
-      onChange={handleChange}
+      onChange={v => handleChange(v)}
       onBlur={handleBlur}
       onSave={handleSave}
       defaultActions={actions}

@@ -57,6 +57,19 @@ export const buttonSchema = {
   prefixedLabel: schemaProps.boolean('Prefixed label', false),
 };
 
+const defaultLabel: ITranslatableContent = {
+  '@class': 'TranslatableContent',
+  translations: {
+    EN: {
+      '@class': 'Translation',
+      lang: 'EN',
+      status: '',
+      translation: 'Button',
+    },
+  },
+  version: 0,
+};
+
 registerComponent(
   pageComponentFactory({
     component: PlayerButton,
@@ -66,7 +79,7 @@ registerComponent(
     schema: buttonSchema,
     getComputedPropsFromVariable: () => ({
       action: createScript(),
-      label: 'Button',
+      label: defaultLabel,
     }),
   }),
 );
