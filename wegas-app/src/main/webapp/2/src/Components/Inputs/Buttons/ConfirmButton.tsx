@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import { Button, ButtonProps, disableBorderToSelector } from './Button';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { flex } from '../../../css/classes';
 
 interface ConfirmButtonProps extends ButtonProps {
   onAction?: (success: boolean) => void;
@@ -85,9 +84,8 @@ export function ConfirmButton({
       id={id}
       className={
         'wegas wegas-btn confirmBtn ' +
-        flex +
         disableBorderToSelector(disableBorders) +
-        +classNameOrEmpty(className)
+        classNameOrEmpty(className)
       }
     >
       <Button

@@ -32,6 +32,7 @@ import {
   WegasClassNames,
 } from 'wegas-ts-api';
 import { cloneDeep } from 'lodash-es';
+import { commonServerMethods } from '../methods/CommonServerMethods';
 
 export function isServerMethod(
   serverObject: GlobalServerMethod | GlobalServerObject | undefined,
@@ -386,9 +387,16 @@ const global: Reducer<Readonly<GlobalState>> = u(
     pusherStatus: { status: 'disconnected' },
     search: { type: 'NONE' },
     events: [],
-    eventsHandlers: { ExceptionEvent: {}, ClientEvent: {}, CustomEvent:{}, EntityDestroyedEvent:{}, EntityUpdatedEvent:{}, OutdatedEntitiesEvent:{} },
+    eventsHandlers: {
+      ExceptionEvent: {},
+      ClientEvent: {},
+      CustomEvent: {},
+      EntityDestroyedEvent: {},
+      EntityUpdatedEvent: {},
+      OutdatedEntitiesEvent: {},
+    },
     clientMethods: {},
-    serverMethods: {},
+    serverMethods: { ...commonServerMethods },
     schemas: {
       filtered: {},
       unfiltered: [],

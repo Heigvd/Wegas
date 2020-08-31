@@ -22,6 +22,8 @@
   @TextFont2: var(--common-others-textfont2);
 
   &.wegas-btn {
+    display: flex;
+    align-items: center;
     background-color: @MainColor;
     color: @SecondaryTextColor;
     border-style: none;
@@ -32,7 +34,7 @@
     cursor: pointer;
     font-family: @TextFont2;
     border-radius: @BorderRadius;
-    &:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):hover {
+    &:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):not(.confirmBtn):hover {
       color: @HoverTextColor;
       background-color: @ActiveColor;
       outline: none;
@@ -78,10 +80,10 @@
       }
     }
     &.confirmBtn {
+      display: flex;
       padding: 5px;
       background-color: @HeaderColor;
       text-align: center;
-      display: inline-block;
       width: max-content;
     }
     &.active {
