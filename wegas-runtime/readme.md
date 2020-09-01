@@ -11,6 +11,9 @@ brew install node
 npm install -g n 
 n 11.10.1
 
+#Install yarn
+brew install yarn
+
 #Install maven
 brew install maven
 
