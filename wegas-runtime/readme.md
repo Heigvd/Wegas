@@ -16,11 +16,6 @@ brew install maven
 
 #Install docker
 brew install docker
-
-#Install postgress
-brew install postgresql
-brew services start postgresql
-psql postgres
 ```
 
 ## Install services
