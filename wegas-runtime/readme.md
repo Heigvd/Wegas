@@ -19,6 +19,7 @@ brew install maven
 
 #Install docker
 brew cask install docker
+#Press ⌘ + Space to bring up Spotlight Search and enter "Docker" to launch Docker
 
 #Install OpenJDK 11
 brew tap AdoptOpenJDK/openjdk
