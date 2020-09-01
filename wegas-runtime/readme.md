@@ -19,7 +19,7 @@ brew install docker
 
 #Install OpenJDK 11
 brew tap AdoptOpenJDK/openjdk
-$ brew cask install adoptopenjdk11
+brew cask install adoptopenjdk11
 ```
 
 ## Install services
