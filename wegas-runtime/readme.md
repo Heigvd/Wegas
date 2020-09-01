@@ -1,5 +1,20 @@
 # Running Wegas
 
+## Install tools
+### Mac OS
+```
+#Install brew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
+#Install node and change version to 11.10.1
+brew install node
+npm install -g n 
+n 11.10.1
+
+#Install maven
+brew install maven
+```
+
 ## Install services
 
 ### PostgreSQL
