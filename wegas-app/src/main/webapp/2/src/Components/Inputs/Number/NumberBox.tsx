@@ -1,16 +1,53 @@
 import * as React from 'react';
 import { debounce } from 'lodash-es';
-import { cx } from 'emotion';
+import { cx, css } from 'emotion';
 import {
   flex,
   flexColumn,
   expandWidth,
   itemCenter,
+  flexRow,
+  flexWrap,
+  justifyCenter,
 } from '../../../css/classes';
 import { CheckMinMax } from './numberComponentHelper';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
+import { themeVar } from '../../Style/ThemeVars';
+
+const numberBoxStyle = css({
+  padding: '10px',
+});
+
+const numberBoxSquareStyle = css({
+  borderColor: themeVar.Common.colors.BorderColor,
+  color: themeVar.Common.colors.TextColor,
+  borderStyle: 'solid',
+  borderRadius: '2px',
+  width: '1.5em',
+  height: '1.5em',
+  lineHeight: '1.25em',
+  fontSize: '1em',
+  textAlign: 'center',
+  cursor: 'default',
+
+  ['&.active']: {
+    backgroundColor: themeVar.Common.colors.MainColor,
+    color: themeVar.Common.colors.SecondaryTextColor,
+  },
+
+  ['&.clickable']: {
+    cursor: 'pointer',
+    ['&:not(.disabled):hover']: {
+      borderColor: themeVar.Common.colors.MainColor,
+    },
+  },
+
+  ['&.disabled']: {
+    backgroundColor: themeVar.Common.colors.DisabledColor,
+  },
+});
 
 interface NumberSquareProps extends ClassAndStyle {
   value?: number | string;
@@ -35,7 +72,9 @@ function NumberSquare({
     <div
       onClick={e => !disabled && !readOnly && onClick && onClick(e)}
       className={
-        'wegas wegas-numberBox-sqare' +
+        'wegas-numberBox-sqare ' +
+        numberBoxSquareStyle +
+        ' ' +
         classOrNothing('active', active) +
         classOrNothing('disabled', !active && disabled) +
         classOrNothing('clickable', !disabled && !readOnly) +
@@ -152,7 +191,14 @@ export function NumberBox({
         max={computedMaxValue}
         value={currentValue}
       />
-      <div className={'wegas wegas-numberBox'}>{squares}</div>
+      <div
+        className={
+          'wegas wegas-numberBox ' +
+          cx(flex, flexRow, flexWrap, justifyCenter, numberBoxStyle)
+        }
+      >
+        {squares}
+      </div>
     </div>
   );
 }

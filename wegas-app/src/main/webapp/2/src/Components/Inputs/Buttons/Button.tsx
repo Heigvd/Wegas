@@ -2,6 +2,112 @@ import * as React from 'react';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { Icons, IconComp } from '../../../Editor/Components/Views/FontAwesome';
 import { arrayRemoveDuplicates } from '../../../Helper/tools';
+import { css } from 'emotion';
+import { themeVar } from '../../Style/ThemeVars';
+
+const buttonStyle = css({
+  display: 'flex',
+  alignItems: 'center',
+  backgroundColor: themeVar.Common.colors.MainColor,
+  color: themeVar.Common.colors.SecondaryTextColor,
+  ['&.dark']: {
+    backgroundColor: themeVar.Common.colors.SecondaryTextColor,
+    color: themeVar.Common.colors.MainColor,
+  },
+  borderStyle: 'none',
+  paddingLeft: '5px',
+  paddingRight: '5px',
+  paddingTop: '2px',
+  paddingBottom: '2px',
+  cursor: 'pointer',
+  fontFamily: themeVar.Common.others.TextFont2,
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
+
+  ['&:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):not(.confirmBtn):hover']: {
+    color: themeVar.Common.colors.HoverTextColor,
+    backgroundColor: themeVar.Common.colors.ActiveColor,
+    outline: 'none',
+  },
+  ['&:focus']: {
+    outline: 'none',
+  },
+  ['&.readOnly']: {
+    cursor: 'initial',
+  },
+  ['&.disabled']: {
+    cursor: 'initial',
+    backgroundColor: themeVar.Common.colors.DisabledColor,
+  },
+  ['&.noBackground']: {
+    ['&:not(.disabled):not(.readOnly):hover']: {
+      color: themeVar.Common.colors.HoverColor,
+    },
+    backgroundColor: 'transparent',
+  },
+  ['&.noClick']: {
+    cursor: 'inherit',
+  },
+  ['&.iconOnly']: {
+    color: themeVar.Common.colors.TextColor,
+    backgroundColor: 'transparent',
+    ['&:not(.disabled):not(.readOnly):hover']: {
+      color: themeVar.Common.colors.ActiveColor,
+    },
+  },
+  ['&.disabledBorders']: {
+    ['&.borderTopLeft']: {
+      borderTopLeftRadius: 'unset',
+    },
+    ['&.borderTopRight']: {
+      borderTopRightRadius: 'unset',
+    },
+    ['&.borderBottomLeft']: {
+      borderBottomLeftRadius: 'unset',
+    },
+    ['&.borderBottomRight']: {
+      borderBottomRightRadius: 'unset',
+    },
+  },
+  ['&.confirmBtn']: {
+    display: 'flex',
+    padding: '5px',
+    backgroundColor: themeVar.Common.colors.HeaderColor,
+    textAlign: 'center',
+    width: 'max-content',
+  },
+  ['&.active ']: {
+    ['&:not(.iconOnly) &:not(noBackground)']: {
+      backgroundColor: themeVar.Common.colors.ActiveColor,
+    },
+    ['&.iconOnly &.noBackground']: {
+      color: themeVar.Common.colors.ActiveColor,
+    },
+  },
+  ['&.success']: {
+    ['&:not(.iconOnly) &:not(noBackground)']: {
+      backgroundColor: themeVar.Common.colors.SuccessColor,
+    },
+    ['&.iconOnly &.noBackground']: {
+      color: themeVar.Common.colors.SuccessColor,
+    },
+  },
+  ['&.warning']: {
+    ['&:not(.iconOnly) &:not(noBackground)']: {
+      backgroundColor: themeVar.Common.colors.WarningColor,
+    },
+    ['&.iconOnly &.noBackground']: {
+      color: themeVar.Common.colors.WarningColor,
+    },
+  },
+  ['&.error']: {
+    ['&:not(.iconOnly) &:not(noBackground)']: {
+      backgroundColor: themeVar.Common.colors.ErrorColor,
+    },
+    ['&.iconOnly &.noBackground']: {
+      color: themeVar.Common.colors.ErrorColor,
+    },
+  },
+});
 
 export interface DisableBorders {
   top?: boolean;
@@ -62,6 +168,7 @@ export interface ButtonProps extends ClassAndStyle {
   prefixedLabel?: boolean;
   noBackground?: boolean;
   mode?: 'active' | 'success' | 'warning' | 'error';
+  dark?: boolean;
 }
 
 export const Button = React.forwardRef<
@@ -88,6 +195,7 @@ export const Button = React.forwardRef<
       prefixedLabel,
       noBackground,
       mode: buttonModes,
+      dark,
     },
     ref,
   ) => {
@@ -112,6 +220,8 @@ export const Button = React.forwardRef<
         id={id}
         className={
           'wegas wegas-btn ' +
+          buttonStyle +
+          ' ' +
           classOrNothing('disabled', disabled) +
           classOrNothing('readOnly', readOnly) +
           classOrNothing('noHover', noHover) +
@@ -119,6 +229,7 @@ export const Button = React.forwardRef<
           classOrNothing('noClick', onClick == null) +
           classOrNothing('iconOnly', !label && !children && !noBackground) +
           classOrNothing('noBackground', noBackground) +
+          classOrNothing('dark', dark) +
           classNameOrEmpty(buttonModes) +
           classNameOrEmpty(className)
         }

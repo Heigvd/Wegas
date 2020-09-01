@@ -1,10 +1,28 @@
 import * as React from 'react';
-import { cx } from 'emotion';
+import { cx, css } from 'emotion';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
-import { textCenter, shrinkWidth } from '../../../css/classes';
+import {
+  shrinkWidth,
+  flexColumn,
+  itemCenter,
+  flex,
+} from '../../../css/classes';
 import { Button } from '../Buttons/Button';
 import { classOrNothing, classNameOrEmpty } from '../../../Helper/className';
+import { themeVar } from '../../Style/ThemeVars';
+
+const cbxStyle = css({
+  cursor: 'pointer',
+  color: themeVar.Common.colors.TextColor,
+  textAlign: 'center',
+  ['$:not(.disabled):not(.readonly):hover']: {
+    backgroundColor: themeVar.Common.colors.HoverColor,
+  },
+  ['&.disabled &.readOnly']: {
+    cursor: 'default',
+  },
+});
 
 export interface CheckBoxProps extends InputProps<boolean> {
   /**
@@ -54,7 +72,10 @@ export function CheckBox({
   return (
     <div
       id={id}
-      className={cx(textCenter, shrinkWidth) + classNameOrEmpty(className)}
+      className={
+        cx(flex, flexColumn, itemCenter, shrinkWidth) +
+        classNameOrEmpty(className)
+      }
       title={hint}
     >
       {label && <Value value={label} />}
@@ -85,6 +106,8 @@ export function CheckBox({
         }}
         className={
           'wegas wegas-cbx' +
+          cbxStyle +
+          ' ' +
           classOrNothing('disabled', disabled) +
           classOrNothing('readOnly', readOnly) +
           classNameOrEmpty(checkBoxClassName)

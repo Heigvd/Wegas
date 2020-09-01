@@ -35,15 +35,11 @@ export default function NumberBoxTester({
           onChange && onChange(v);
         }}
         boxClassName={css`
-          &.wegas {
-            &.wegas-numberBox-sqare {
-              background-color: darkgreen;
-              color: white;
-              &.active {
-                background-color: lime;
-                color: darkgreen;
-              }
-            }
+          background-color: darkgreen;
+          color: white;
+          &.active {
+            background-color: lime;
+            color: darkgreen;
           }
         `}
       />

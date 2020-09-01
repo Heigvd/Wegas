@@ -1,211 +1,240 @@
 .wegas {
   @MainColor: var(--common-colors-maincolor);
-  @DisabledColor: var(--common-colors-disabledcolor);
-
+  @ActiveColor: var(--common-colors-activecolor);
+  @BackgroundColor: var(--common-colors-backgroundcolor);
   @TextColor: var(--common-colors-textcolor);
   @SecondaryTextColor: var(--common-colors-secondarytextcolor);
-
+  @DisabledColor: var(--common-colors-disabledcolor);
+  @BorderColor: var(--common-colors-bordercolor);
+  @highlightcolor:var (--common-colors-highlightcolor);
+  @HeaderColor: var(--common-colors-headercolor);
   @HoverColor: var(--common-colors-hovercolor);
   @HoverTextColor: var(--common-colors-hovertextcolor);
-
-  @ActiveColor: var(--common-colors-activecolor);
-  @HeaderColor: var(--common-colors-headercolor);
-
-  @SuccessColor: var(--common-colors-successcolor);
   @WarningColor: var(--common-colors-warningcolor);
+  @SuccessColor: var(--common-colors-successcolor);
   @ErrorColor: var(--common-colors-errorcolor);
 
-  @BorderColor: var(--common-colors-bordercolor);
-
+  @BorderWidth: var(--common-dimensions-borderwidth);
   @BorderRadius: var(--common-dimensions-borderradius);
 
+  @TextFont1: var(--common-others-textfont1);
   @TextFont2: var(--common-others-textfont2);
 
-  &.wegas-btn {
-    display: flex;
-    align-items: center;
-    background-color: @MainColor;
-    color: @SecondaryTextColor;
-    border-style: none;
-    padding-left: 5px;
-    padding-right: 5px;
-    padding-top: 2px;
-    padding-bottom: 2px;
-    cursor: pointer;
-    font-family: @TextFont2;
-    border-radius: @BorderRadius;
-    &:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):not(.confirmBtn):hover {
-      color: @HoverTextColor;
-      background-color: @ActiveColor;
-      outline: none;
-    }
-    &:focus {
-      outline: none;
-    }
-    &.readOnly {
-      cursor: initial;
-    }
-    &.disabled {
-      .readOnly;
-      background-color: @DisabledColor;
-    }
-    &.noBackground {
-      &:not(.disabled):not(.readOnly):hover {
-        color: @HoverColor;
-      }
-      background-color: transparent;
-    }
-    &.noClick {
-      cursor: inherit;
-    }
-    &.iconOnly {
-      color: @TextColor;
-      background-color: transparent;
-      &:not(.disabled):not(.readOnly):hover {
-        color: @ActiveColor;
-      }
-    }
-    &.disabledBorders {
-      &.borderTopLeft {
-        border-top-left-radius: unset;
-      }
-      &.borderTopRight {
-        border-top-right-radius: unset;
-      }
-      &.borderBottomLeft {
-        border-bottom-left-radius: unset;
-      }
-      &.borderBottomRight {
-        border-bottom-right-radius: unset;
-      }
-    }
-    &.confirmBtn {
-      display: flex;
-      padding: 5px;
-      background-color: @HeaderColor;
-      text-align: center;
-      width: max-content;
-    }
-    &.active {
-      background-color: @ActiveColor;
-      &.iconOnly &.noBackground {
-        background-color: transparent;
-        color: @ActiveColor;
-      }
-    }
-    &.success {
-      background-color: @SuccessColor;
-      &.iconOnly &.noBackground {
-        background-color: transparent;
-        color: @SuccessColor;
-      }
-    }
-    &.warning {
-      background-color: @WarningColor;
-      &.iconOnly &.noBackground {
-        background-color: transparent;
-        color: @WarningColor;
-      }
-    }
-    &.error {
-      background-color: @ErrorColor;
-      &.iconOnly &.noBackground {
-        background-color: transparent;
-        color: @ErrorColor;
-      }
-    }
-  }
+  ///////////////////////////////////////
+  // Button
+  ///////////////////////////////////////
+  // &.wegas-btn {
+  //   display: flex;
+  //   align-items: center;
+  //   background-color: @MainColor;
+  //   color: @SecondaryTextColor;
+  //   border-style: none;
+  //   padding-left: 5px;
+  //   padding-right: 5px;
+  //   padding-top: 2px;
+  //   padding-bottom: 2px;
+  //   cursor: pointer;
+  //   font-family: @TextFont2;
+  //   border-radius: @BorderRadius;
+  //   &:not(.disabled):not(.readOnly):not(.iconOnly):not(.noBackground):not(.confirmBtn):hover {
+  //     color: @HoverTextColor;
+  //     background-color: @ActiveColor;
+  //     outline: none;
+  //   }
+  //   &:focus {
+  //     outline: none;
+  //   }
+  //   &.readOnly {
+  //     cursor: initial;
+  //   }
+  //   &.disabled {
+  //     .readOnly;
+  //     background-color: @DisabledColor;
+  //   }
+  //   &.noBackground {
+  //     &:not(.disabled):not(.readOnly):hover {
+  //       color: @HoverColor;
+  //     }
+  //     background-color: transparent;
+  //   }
+  //   &.noClick {
+  //     cursor: inherit;
+  //   }
+  //   &.iconOnly {
+  //     color: @TextColor;
+  //     background-color: transparent;
+  //     &:not(.disabled):not(.readOnly):hover {
+  //       color: @ActiveColor;
+  //     }
+  //   }
+  //   &.disabledBorders {
+  //     &.borderTopLeft {
+  //       border-top-left-radius: unset;
+  //     }
+  //     &.borderTopRight {
+  //       border-top-right-radius: unset;
+  //     }
+  //     &.borderBottomLeft {
+  //       border-bottom-left-radius: unset;
+  //     }
+  //     &.borderBottomRight {
+  //       border-bottom-right-radius: unset;
+  //     }
+  //   }
+  //   &.confirmBtn {
+  //     display: flex;
+  //     padding: 5px;
+  //     background-color: @HeaderColor;
+  //     text-align: center;
+  //     width: max-content;
+  //   }
+  //   &.active {
+  //     background-color: @ActiveColor;
+  //     &.iconOnly &.noBackground {
+  //       background-color: transparent;
+  //       color: @ActiveColor;
+  //     }
+  //   }
+  //   &.success {
+  //     background-color: @SuccessColor;
+  //     &.iconOnly &.noBackground {
+  //       background-color: transparent;
+  //       color: @SuccessColor;
+  //     }
+  //   }
+  //   &.warning {
+  //     background-color: @WarningColor;
+  //     &.iconOnly &.noBackground {
+  //       background-color: transparent;
+  //       color: @WarningColor;
+  //     }
+  //   }
+  //   &.error {
+  //     background-color: @ErrorColor;
+  //     &.iconOnly &.noBackground {
+  //       background-color: transparent;
+  //       color: @ErrorColor;
+  //     }
+  //   }
+  // }
 
-  &.wegas-cbx {
-    cursor: pointer;
-    color: @TextColor;
+  ///////////////////////////////////////
+  // Checkbox
+  ///////////////////////////////////////
+  // &.wegas-cbx {
+  //   cursor: pointer;
+  //   color: @TextColor;
 
-    &.disabled {
-      cursor: default;
-      color: @DisabledColor;
-      &:hover {
-        cursor: default;
-        color: @DisabledColor;
-      }
-    }
+  //   &.disabled {
+  //     cursor: default;
+  //     color: @DisabledColor;
+  //     &:hover {
+  //       cursor: default;
+  //       color: @DisabledColor;
+  //     }
+  //   }
 
-    &.readOnly {
-      cursor: default;
-      color: @HeaderColor;
-      &:hover {
-        cursor: default;
-        color: @HeaderColor;
-      }
-    }
-  }
+  //   &.readOnly {
+  //     cursor: default;
+  //     color: @HeaderColor;
+  //     &:hover {
+  //       cursor: default;
+  //       color: @HeaderColor;
+  //     }
+  //   }
+  // }
 
-  &.wegas-toggler {
-    display: flex;
-    width: 50px;
-    height: 24px;
-    box-sizing: border-box;
-    border-radius: 24px;
-    border-style: solid;
-    border-width: 2px;
-    border-color: @BorderColor;
-    background-color: @ErrorColor;
-    cursor: pointer;
-    margin: auto;
-    &.disabled {
-      border-color: @DisabledColor;
-      cursor: default;
-    }
-    &.readOnly {
-      cursor: default;
-    }
-    &.checked {
-      background-color: @SuccessColor;
-    }
-  }
-  &.wegas-toggler-handle {
-    border-radius: 20px;
-    width: 20px;
-    height: 20px;
-    background-color: @MainColor;
-    &.disabled {
-      background-color: @DisabledColor;
-    }
-  }
+  ///////////////////////////////////////
+  // Toggler
+  ///////////////////////////////////////
+  // &.wegas-toggler-container {
+  //   display: flex;
+  //   width: 50px;
+  //   height: 24px;
+  //   box-sizing: border-box;
+  //   border-radius: 24px;
+  //   border-style: solid;
+  //   border-width: 2px;
+  //   border-color: @BorderColor;
+  //   background-color: @ErrorColor;
+  //   cursor: pointer;
+  //   margin: auto;
+  //   &.disabled {
+  //     border-color: @DisabledColor;
+  //     cursor: default;
+  //   }
+  //   &.readOnly {
+  //     cursor: default;
+  //   }
+  //   &.checked {
+  //     background-color: @SuccessColor;
+  //   }
+  //   & > .wegas-toggler-handle {
+  //     border-radius: 20px;
+  //     width: 20px;
+  //     height: 20px;
+  //     background-color: @MainColor;
+  //     &.disabled {
+  //       background-color: @DisabledColor;
+  //     }
+  //   }
+  // }
 
-  &.wegas-numberBox {
-    padding: 10px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+  ///////////////////////////////////////
+  // Number box
+  ///////////////////////////////////////
+  // &.wegas-numberBox {
+  //   padding: 10px;
+  //   display: flex;
+  //   flex-direction: row;
+  //   flex-wrap: wrap;
+  //   justify-content: center;
 
-  &.wegas-numberBox-sqare {
-    border-color: @BorderColor;
-    color: @TextColor;
-    border-style: solid;
-    border-radius: 2px;
-    width: 1.5em;
-    height: 1.5em;
-    line-height: 1.25em;
-    font-size: 1em;
-    text-align: center;
-    cursor: default;
+  //   & > .wegas-numberBox-sqare {
+  //     border-color: @BorderColor;
+  //     color: @TextColor;
+  //     border-style: solid;
+  //     border-radius: 2px;
+  //     width: 1.5em;
+  //     height: 1.5em;
+  //     line-height: 1.25em;
+  //     font-size: 1em;
+  //     text-align: center;
+  //     cursor: default;
 
-    &.active {
-      background-color: @MainColor;
-      color: @SecondaryTextColor;
-    }
+  //     &.active {
+  //       background-color: @MainColor;
+  //       color: @SecondaryTextColor;
+  //     }
 
-    &.clickable {
-      cursor: pointer;
-      &:not(.disabled):hover {
-        border-color: @MainColor;
-      }
-    }
+  //     &.clickable {
+  //       cursor: pointer;
+  //       &:not(.disabled):hover {
+  //         border-color: @MainColor;
+  //       }
+  //     }
 
-    &.disabled {
-      background-color: @DisabledColor;
-    }
-  }
+  //     &.disabled {
+  //       background-color: @DisabledColor;
+  //     }
+  //   }
+  // }
+
+  ///////////////////////////////////////
+  // Phase progress bar
+  ///////////////////////////////////////
+  // &.wegas-phaseProgessBar {
+  //   & > .phasePathStyle {
+  //     flex: 1 1 auto;
+  //     height: 0.5em;
+  //     background-color: @BorderColor;
+  //   }
+
+  //   & > .phaseDotStyle {
+  //     border-radius: 50%;
+  //     border-style: solid;
+  //     border-width: 5px;
+  //     border-color: @BorderColor;
+  //   }
+  // }
 }
