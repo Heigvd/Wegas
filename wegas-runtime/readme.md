@@ -18,7 +18,7 @@ brew install yarn
 brew install maven
 
 #Install docker
-brew install docker
+brew cask install docker
 
 #Install OpenJDK 11
 brew tap AdoptOpenJDK/openjdk
