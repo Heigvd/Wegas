@@ -11,6 +11,16 @@ export const testerSectionStyle = css({
   margin: '2px',
 });
 
+const styledButtonStyle = css`
+  background-color: green !important;
+  &:hover {
+    background-color: lightgreen !important;
+  }
+  &.active {
+    background-color: darkgreen !important;
+  }
+`;
+
 const testChoices = {
   choice1: 'choice1',
   choice2: 'choice2',
@@ -36,17 +46,12 @@ export default function MultipleChoicesTester() {
         onChange={setChosen}
         className={css({
           backgroundColor: '#009c00',
-          margin: '2px',
+          padding: '2px',
           ':hover': {
             backgroundColor: 'darkgreen',
           },
         })}
-        selectedClassName={css({
-          backgroundColor: 'darkgreen',
-          ':hover': {
-            backgroundColor: 'darkgreen',
-          },
-        })}
+        buttonsClassName={styledButtonStyle}
       />
       Disabled
       <MultipleChoice

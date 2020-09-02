@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { Item } from './TreeSelect';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 const pointerStyle = css({
   cursor: 'pointer',
@@ -173,7 +173,7 @@ export default function TreeNode<T>(props: TreeNodeProps<T>): JSX.Element {
   return (
     <li className={`${className || ''} ${treeNodeContainerStyle}`}>
       {items ? (
-        <IconButton
+        <Button
           icon={expanded ? 'caret-down' : 'caret-right'}
           tabIndex={-1}
           onClick={toggle}

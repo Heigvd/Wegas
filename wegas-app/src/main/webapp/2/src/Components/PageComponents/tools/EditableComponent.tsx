@@ -55,6 +55,7 @@ import {
 } from '../Layouts/LinearLayout.component';
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
 import { themeVar } from '../../Style/ThemeVars';
+import { MenuItem } from '../../Layouts/Menu';
 
 // Styles
 export const layoutHighlightStyle = hatchedBackground;
@@ -371,7 +372,12 @@ export interface WegasComponentItemProps extends ClassAndStyle {
 /**
  * ContainerTypes - the types of layouts that can be used in a page
  */
-export type ContainerTypes = 'FLEX' | 'LINEAR' | 'ABSOLUTE' | 'MENU' | undefined;
+export type ContainerTypes =
+  | 'FLEX'
+  | 'LINEAR'
+  | 'ABSOLUTE'
+  | 'MENU'
+  | undefined;
 
 /**
  * EmptyPageComponentProps - The props needed for a virtual component (used in a layout when no children)
@@ -523,6 +529,8 @@ export function ComponentContainer({
         return FonkyFlexContent;
       case 'ABSOLUTE':
         return AbsoluteItem;
+      case 'MENU':
+        return MenuItem;
       case 'FLEX':
       default:
         return FlexItem;
@@ -749,6 +757,8 @@ export function EmptyComponentContainer({
         return FonkyFlexContent;
       case 'ABSOLUTE':
         return AbsoluteItem;
+      case 'MENU':
+        return MenuItem;
       case 'FLEX':
       default:
         return FlexItem;

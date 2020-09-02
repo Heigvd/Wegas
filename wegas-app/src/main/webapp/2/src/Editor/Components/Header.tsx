@@ -2,7 +2,6 @@ import * as React from 'react';
 import { GameModel, Global } from '../../data/selectors';
 import { css, cx } from 'emotion';
 import { StoreConsumer, useStore, store } from '../../data/store';
-import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { Actions } from '../../data';
 import { FontAwesome } from './Views/FontAwesome';
 import { FeatureToggler } from '../../Components/Contexts/FeaturesProvider';
@@ -21,6 +20,7 @@ import { DropMenu } from '../../Components/DropMenu';
 import { parseEvent } from './EntityEditor';
 import { editorEventRemove } from '../../data/Reducer/globalState';
 import { themeVar } from '../../Components/Style/ThemeVars';
+import { Button } from '../../Components/Inputs/Buttons/Button';
 
 // May be moved in a proper file to allow wider usage
 // interface NotificationMenuProps {}
@@ -61,7 +61,7 @@ function NotificationMenu(/*{}: NotificationMenuProps*/) {
                 }
               }}
             >
-              {event.unread && <IconButton icon="exclamation" noHover />}
+              {event.unread && <Button icon="exclamation" noHover />}
               <div>
                 {new Date(event.timestamp).toLocaleTimeString(undefined, {
                   hour: 'numeric',
@@ -70,7 +70,7 @@ function NotificationMenu(/*{}: NotificationMenuProps*/) {
                 })}
               </div>
               <div>{message}</div>
-              <IconButton
+              <Button
                 icon="times"
                 onClick={e => {
                   e.stopPropagation();
@@ -108,12 +108,12 @@ export default function Header() {
           <NotificationMenu />
           <FontAwesome icon="user" />
           <span>{user.name}</span>
-          <IconButton
+          <Button
             icon="undo"
             tooltip="Restart"
             onClick={() => dispatch(Actions.VariableDescriptorActions.reset())}
           />
-          <IconButton
+          <Button
             icon={[{ icon: 'undo' }, { icon: 'window-restore', size: 'xs' }]}
             tooltip="Reset layout"
             onClick={() => {

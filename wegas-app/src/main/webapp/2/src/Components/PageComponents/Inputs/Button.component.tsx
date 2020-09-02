@@ -12,23 +12,30 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript } from 'wegas-ts-api';
 import { translate } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { icons, Icons } from '../../../Editor/Components/Views/FontAwesome';
 
 export interface PlayerButtonProps extends WegasComponentProps {
   label: string | ITranslatableContent;
   action: IScript;
+  icon?: Icons;
+  prefixedLabel?: boolean;
 }
 
 const PlayerButton: React.FunctionComponent<PlayerButtonProps> = ({
   label,
   action,
   style,
+  icon,
+  prefixedLabel,
 }: PlayerButtonProps) => {
   const { lang } = React.useContext(languagesCTX);
   let computedLabel: React.ReactNode;
   if (typeof label === 'string') {
     computedLabel = label;
   } else {
-    computedLabel = <div dangerouslySetInnerHTML={{__html:translate(label, lang)}}></div>;
+    computedLabel = (
+      <div dangerouslySetInnerHTML={{ __html: translate(label, lang) }}></div>
+    );
   }
   return (
     <Button
@@ -37,13 +44,30 @@ const PlayerButton: React.FunctionComponent<PlayerButtonProps> = ({
         store.dispatch(Actions.VariableInstanceActions.runScript(action!))
       }
       style={{ margin: 'auto', ...style }}
+      icon={icon}
+      prefixedLabel={prefixedLabel}
     />
   );
 };
 
 export const buttonSchema = {
   action: schemaProps.script('Action', undefined, 'SET'),
-  label: schemaProps.html('Label', false)
+  label: schemaProps.html('Label', false),
+  icon: schemaProps.select('Icon', true, Object.keys(icons)),
+  prefixedLabel: schemaProps.boolean('Prefixed label', false),
+};
+
+const defaultLabel: ITranslatableContent = {
+  '@class': 'TranslatableContent',
+  translations: {
+    EN: {
+      '@class': 'Translation',
+      lang: 'EN',
+      status: '',
+      translation: 'Button',
+    },
+  },
+  version: 0,
 };
 
 registerComponent(
@@ -55,7 +79,7 @@ registerComponent(
     schema: buttonSchema,
     getComputedPropsFromVariable: () => ({
       action: createScript(),
-      label: 'Button',
+      label: defaultLabel,
     }),
   }),
 );

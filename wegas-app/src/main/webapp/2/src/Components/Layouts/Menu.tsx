@@ -15,7 +15,7 @@ import { WegasComponentItemProps } from '../PageComponents/tools/EditableCompone
 import { HashListChoices } from '../../Editor/Components/FormView/HashList';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 
-const ITEM_SELECTOR = 'menu-item';
+const MENU_ITEM_SELECTOR = 'menu-item';
 const VERTICAL_SELECTOR = 'menu-vertical';
 const HORIZONTAL_SELECTOR = 'menu-horizontal';
 const SELECTED_SELECTOR = 'menu-selected';
@@ -33,7 +33,7 @@ const menuItemStyle = css({
 });
 
 const menuItemSelectStyle = css({
-  [`&>.${ITEM_SELECTOR}.${SELECTED_SELECTOR}`]: {
+  [`&>.${MENU_ITEM_SELECTOR}.${SELECTED_SELECTOR}`]: {
     borderColor: themeVar.Common.colors.ActiveColor,
   },
 });
@@ -95,7 +95,7 @@ export function Menu({
       let divTarget: HTMLElement | null = target as HTMLElement | null;
       while (
         divTarget != null &&
-        !divTarget.className.includes(ITEM_SELECTOR)
+        !divTarget.className.includes(MENU_ITEM_SELECTOR)
       ) {
         divTarget = divTarget.parentElement as HTMLElement;
       }
@@ -120,14 +120,12 @@ export function Menu({
     [selectedItem, alwaysSelected, onItemSelect],
   );
 
-  // debugger;
-
   return (
     <div
       ref={e => {
         e?.childNodes.forEach(v => {
           const child = v as HTMLDivElement;
-          if (child.className.includes(ITEM_SELECTOR)) {
+          if (child.className.includes(MENU_ITEM_SELECTOR)) {
             if (vertical && !child.className.includes(VERTICAL_SELECTOR)) {
               child.className += ' ' + VERTICAL_SELECTOR;
             } else if (
@@ -192,7 +190,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
       <div
         ref={ref}
         className={
-          ITEM_SELECTOR +
+          MENU_ITEM_SELECTOR +
           ' ' +
           (unselectable ? UNSELECTABLE_SELECTOR + ' ' : '') +
           cx(flex, contentCenter, menuItemStyle) +

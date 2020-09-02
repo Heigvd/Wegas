@@ -6,7 +6,6 @@ import { EntityChooser } from '../EntityChooser';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { css, cx } from 'emotion';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
-import { IconButton } from '../Inputs/Buttons/IconButton';
 import {
   selectAndValidate,
   toggleReply,
@@ -20,7 +19,14 @@ import {
 } from '../../data/scriptable/impl/QuestionDescriptor';
 import { Button } from '../Inputs/Buttons/Button';
 import { themeVar } from '../Style/ThemeVars';
-import { IQuestionDescriptor, IReply, IChoiceDescriptor, IChoiceInstance, IQuestionInstance, IListDescriptor } from 'wegas-ts-api';
+import {
+  IQuestionDescriptor,
+  IReply,
+  IChoiceDescriptor,
+  IChoiceInstance,
+  IQuestionInstance,
+  IListDescriptor,
+} from 'wegas-ts-api';
 
 const unreadSignalStyle = css({ margin: '3px' });
 const choiceContainerStyle = css({
@@ -61,22 +67,6 @@ function questionInfo(question: IQuestionDescriptor) {
   };
 }
 
-// /**
-//  * Count replies for a given question (current user)
-//  */
-// function repliesCount(question: IQuestionDescriptor) {
-//   const choices = VariableDescriptor.select<IChoiceDescriptor>(
-//     question.itemsIds,
-//   );
-//   return choices.reduce<number>((p, c) => {
-//     if (c == null) return p;
-
-//     const cI = getInstance(c);
-//     if (cI == null) return p;
-//     return p + cI.replies.length;
-//   }, 0);
-// }
-
 function UnreadSignal() {
   return <FontAwesome className={unreadSignalStyle} icon="exclamation" />;
 }
@@ -107,8 +97,8 @@ function ReplyDisplay({ reply }: { reply: IReply }) {
               ? TranslatableContent.toString(reply.ignorationAnswer)
               : ''
             : reply.answer
-              ? TranslatableContent.toString(reply.answer)
-              : '',
+            ? TranslatableContent.toString(reply.answer)
+            : '',
         }}
       />
     </div>
@@ -117,7 +107,7 @@ function ReplyDisplay({ reply }: { reply: IReply }) {
 class RepliesDisplay extends React.Component<
   { replies: IReply[] },
   { showAll: boolean }
-  > {
+> {
   state = { showAll: false };
   toggleAll = () => {
     this.setState(state => ({
@@ -133,7 +123,7 @@ class RepliesDisplay extends React.Component<
     return (
       <>
         {replies.length > 1 && (
-          <IconButton
+          <Button
             icon={showAll ? 'caret-square-up' : 'caret-square-down'}
             onClick={this.toggleAll}
           />
@@ -141,8 +131,8 @@ class RepliesDisplay extends React.Component<
         {showAll ? (
           replies.map(r => <ReplyDisplay key={r.id} reply={r} />)
         ) : (
-            <ReplyDisplay reply={replies[replies.length - 1]} />
-          )}
+          <ReplyDisplay reply={replies[replies.length - 1]} />
+        )}
       </>
     );
   }
@@ -200,13 +190,13 @@ function ChoiceDisplay({
             onChange={() => onValidate(descriptor)}
           />
         ) : (
-            <IconButton
-              icon="check"
-              onClick={() => onValidate(descriptor)}
-              disabled={!canReply}
-              label={replies.length ? replies.length : undefined}
-            />
-          )}
+          <Button
+            icon="check"
+            onClick={() => onValidate(descriptor)}
+            disabled={!canReply}
+            label={replies.length ? replies.length : undefined}
+          />
+        )}
       </div>
     </div>
   );

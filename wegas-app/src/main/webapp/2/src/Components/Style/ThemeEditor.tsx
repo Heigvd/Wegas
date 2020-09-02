@@ -19,9 +19,7 @@ import {
 } from '../../css/classes';
 import { ChromePicker, RGBColor } from 'react-color';
 import { useOnClickOutside } from '../Hooks/useOnClickOutside';
-import { IconButton } from '../Inputs/Buttons/IconButton';
 import { DropMenu } from '../DropMenu';
-// import { MessageString } from '../../Editor/Components/MessageString';
 import {
   themeVar,
   ModeComponents,
@@ -248,7 +246,7 @@ function ThemeValueModifier({
                 {k} :
               </label>
               {!Object.keys(defaultThemeValues[section]).includes(k) && (
-                <IconButton icon="trash" onClick={() => onChange(k, null)} />
+                <Button icon="trash" onClick={() => onChange(k, null)} />
               )}
             </div>
             {section === 'colors' ? (

@@ -2,7 +2,6 @@ import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonView, CommonViewContainer } from './commonView';
 import { LabeledView, Labeled } from './labeled';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { scriptEditStyle } from './Script/Script';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { createScript } from '../../../Helper/wegasEntites';
@@ -18,6 +17,7 @@ import { cx, css } from 'emotion';
 import { flex, flexRow, grow } from '../../../css/classes';
 import { IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 const updateScript = (scriptContent: string, currentScript?: IScript) =>
   currentScript
@@ -60,7 +60,7 @@ export default function PageSelect(props: PageSelectProps) {
           <>
             {labelNode}
             <div className={cx(flex, flexRow)} id={inputId}>
-              <IconButton
+              <Button
                 icon="code"
                 onClick={() => setSrcMode(sm => !sm)}
                 className={css({ flex: '0 1 auto' })}

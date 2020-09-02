@@ -8,7 +8,7 @@ import {
   justifyCenter,
   shrinkWidth,
 } from '../../css/classes';
-import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
+import { Button } from '../../Components/Inputs/Buttons/Button';
 
 interface ResizeHandleProps {
   minSize: number;
@@ -44,7 +44,7 @@ export function ResizeHandle({
       <div className={cx(flex, grow, expandBoth)}>{children}</div>
       <div className={cx(flex, justifyCenter)}>
         <div className={cx(shrinkWidth)}>
-          <IconButton
+          <Button
             icon={open ? 'angle-up' : 'angle-down'}
             onClick={() => setOpen(o => !o)}
           />
