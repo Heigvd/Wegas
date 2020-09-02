@@ -26,6 +26,7 @@
         "warnOnUnsupportedTypeScriptVersion": true
       },
       "rules": {
+        "no-debugger": "warn",
         "no-undef": "off",
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/no-non-null-assertion": "off",

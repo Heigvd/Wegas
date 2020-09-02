@@ -149,7 +149,7 @@ const simpleSchemaProps = {
       label,
       type: 'i18nhtml',
       readOnly,
-    }
+    },
   }),
   custom: <T extends keyof typeof DEFINED_VIEWS>(
     label?: string,
@@ -571,7 +571,7 @@ const simpleSchemaProps = {
       featureLevel,
       index,
       label,
-      type: 'file',
+      type: 'path',
       layout,
       borderTop,
     },
