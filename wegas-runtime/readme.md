@@ -1,5 +1,31 @@
 # Running Wegas
 
+## Install tools
+### Mac OS
+```
+#Install brew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
+#Install node and change version to 11.10.1
+brew install node
+npm install -g n 
+n 11.10.1
+
+#Install yarn
+brew install yarn
+
+#Install maven
+brew install maven
+
+#Install docker
+brew cask install docker
+#Press ⌘ + Space to bring up Spotlight Search and enter "Docker" to launch Docker
+
+#Install OpenJDK 11
+brew tap AdoptOpenJDK/openjdk
+brew cask install adoptopenjdk11
+```
+
 ## Install services
 
 ### PostgreSQL
