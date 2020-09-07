@@ -42,9 +42,9 @@ export function createTranslatableContent(
   };
 }
 
-export function useTranslate(translatable: ITranslatableContent) {
+export function useTranslate(translatable?: ITranslatableContent | null) {
   const { lang } = React.useContext(languagesCTX);
-  return translate(translatable, lang);
+  return translatable ? translate(translatable, lang) : '';
 }
 
 export function translate(translatable: ITranslatableContent, lang: string) {

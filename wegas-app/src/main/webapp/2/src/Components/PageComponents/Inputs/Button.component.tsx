@@ -9,37 +9,37 @@ import { schemaProps } from '../tools/schemaProps';
 import { Button } from '../../Inputs/Buttons/Button';
 import { createScript } from '../../../Helper/wegasEntites';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { IScript } from 'wegas-ts-api';
-import { translate } from '../../../Editor/Components/FormView/translatable';
-import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { IScript, ITextDescriptor } from 'wegas-ts-api';
 import { icons, Icons } from '../../../Editor/Components/Views/FontAwesome';
+import { useComponentScript } from '../../Hooks/useComponentScript';
+import { useTranslate } from '../../../Editor/Components/FormView/translatable';
 
 export interface PlayerButtonProps extends WegasComponentProps {
-  label: string | ITranslatableContent;
   action: IScript;
+  label?: IScript;
   icon?: Icons;
   prefixedLabel?: boolean;
 }
 
-const PlayerButton: React.FunctionComponent<PlayerButtonProps> = ({
+function PlayerButton({
   label,
   action,
   style,
   icon,
   prefixedLabel,
-}: PlayerButtonProps) => {
-  const { lang } = React.useContext(languagesCTX);
-  let computedLabel: React.ReactNode;
-  if (typeof label === 'string') {
-    computedLabel = label;
-  } else {
-    computedLabel = (
-      <div dangerouslySetInnerHTML={{ __html: translate(label, lang) }}></div>
-    );
-  }
+}: PlayerButtonProps) {
+  const { instance } = useComponentScript<ITextDescriptor>(label);
+  const translation = useTranslate(instance?.trValue);
+  debugger;
   return (
     <Button
-      label={computedLabel}
+      label={
+        <div
+          dangerouslySetInnerHTML={{
+            __html: translation,
+          }}
+        ></div>
+      }
       onClick={() =>
         store.dispatch(Actions.VariableInstanceActions.runScript(action!))
       }
@@ -48,11 +48,11 @@ const PlayerButton: React.FunctionComponent<PlayerButtonProps> = ({
       prefixedLabel={prefixedLabel}
     />
   );
-};
+}
 
 export const buttonSchema = {
-  action: schemaProps.script('Action', undefined, 'SET'),
-  label: schemaProps.html('Label', false),
+  action: schemaProps.script('Action', false, 'SET'),
+  label: schemaProps.scriptVariable('Label', false, ['STextDescriptor']),
   icon: schemaProps.select('Icon', true, Object.keys(icons)),
   prefixedLabel: schemaProps.boolean('Prefixed label', false),
 };

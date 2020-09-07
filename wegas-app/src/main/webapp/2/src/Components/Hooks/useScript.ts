@@ -314,10 +314,11 @@ export function safeClientScriptEval<T extends ReturnType>(
 export function useScript<T extends ReturnType>(
   script?: string,
   catchCB?: (e: Error) => void,
-): T extends IMergeable ? unknown : T {
+): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
   useGlobals();
-  const fn = React.useCallback(
-    () => safeClientScriptEval<T>(script, catchCB), [script]);
+  const fn = React.useCallback(() => safeClientScriptEval<T>(script, catchCB), [
+    script,
+  ]);
   return useStore(fn, deepDifferent) as any;
 }
 
@@ -330,7 +331,6 @@ export function useUnsafeScript<T extends ReturnType>(
   script?: string,
 ): T extends IMergeable ? unknown : T {
   useGlobals();
-  const fn = React.useCallback(
-    () => clientScriptEval<T>(script), [script]);
+  const fn = React.useCallback(() => clientScriptEval<T>(script), [script]);
   return useStore(fn, deepDifferent) as any;
 }

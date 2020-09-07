@@ -257,7 +257,7 @@ export function ScripableVariableSelect(
    * Effect that forces srcMode in case the script is too complex to be parsed
    */
   React.useEffect(() => {
-    if (props.value === undefined) {
+    if (!props.value || !props.value.content) {
       setTreeValue('');
     } else {
       const regexStart = /^(Variable\.find\(gameModel,("|')?)/;
