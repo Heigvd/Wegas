@@ -52,7 +52,10 @@ function PlayerButton({
 
 export const buttonSchema = {
   action: schemaProps.script('Action', false, 'SET'),
-  label: schemaProps.scriptVariable('Label', false, ['STextDescriptor']),
+  label: schemaProps.scriptVariable('Label', false, [
+    'STextDescriptor',
+    'SStaticTextDescriptor',
+  ]),
   icon: schemaProps.select('Icon', true, Object.keys(icons)),
   prefixedLabel: schemaProps.boolean('Prefixed label', false),
 };

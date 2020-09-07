@@ -86,12 +86,13 @@ function TreeView({ variables, localState, localDispatch }: TreeProps) {
           items={data || []}
           icon="plus"
           onSelect={(i, e) => {
-            const dispatch =
-              e.ctrlKey && localDispatch ? localDispatch : globalDispatch;
-            dispatch(Actions.EditorActions.createVariable(i.value));
-            focusTab('Editor', mainLayoutId);
+            if (e.ctrlKey && localDispatch) {
+              localDispatch(Actions.EditorActions.createVariable(i.value));
+            } else {
+              globalDispatch(Actions.EditorActions.createVariable(i.value));
+              focusTab('Editor', mainLayoutId);
+            }
           }}
-          // direction="right"
         />
         <SearchTool />
       </Toolbar.Header>
