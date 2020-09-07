@@ -35,7 +35,10 @@ import {
   localSelection,
   searchSelection,
 } from '../../../css/classes';
-import { IVariableDescriptor } from 'wegas-ts-api';
+import {
+  IVariableDescriptor,
+  IEvaluationDescriptorContainer,
+} from 'wegas-ts-api';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -65,6 +68,7 @@ function TreeView({ variables, localState, localDispatch }: TreeProps) {
   const [search, setSearch] = React.useState('');
   const { data } = useAsync(itemsPromise);
   const globalDispatch = store.dispatch;
+  const focusTab = React.useContext(focusTabContext);
 
   return (
     <Toolbar>
@@ -85,6 +89,7 @@ function TreeView({ variables, localState, localDispatch }: TreeProps) {
             const dispatch =
               e.ctrlKey && localDispatch ? localDispatch : globalDispatch;
             dispatch(Actions.EditorActions.createVariable(i.value));
+            focusTab('Editor', mainLayoutId);
           }}
           // direction="right"
         />
@@ -139,11 +144,7 @@ function isMatch(variableId: number, search: string): boolean {
   if (variable == null) {
     return false;
   }
-  if (
-    editorLabel(variable)
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  ) {
+  if (editorLabel(variable).toLowerCase().includes(search.toLowerCase())) {
     return true;
   }
   if (varIsList(variable)) {
@@ -192,16 +193,25 @@ function CTree(
 ): JSX.Element | null {
   const focusTab = React.useContext(focusTabContext);
   const { searching, editing, variable, match } = useStore(state => {
-    let variable = VariableDescriptor.select(props.variableId);
+    let variable:
+      | undefined
+      | IVariableDescriptor
+      | IEvaluationDescriptorContainer = VariableDescriptor.select(
+      props.variableId,
+    );
     if (Array.isArray(props.subPath) && props.subPath.length > 0) {
-      variable = get(variable, props.subPath) as IVariableDescriptor;
+      variable = get(variable, props.subPath) as
+        | IVariableDescriptor
+        | IEvaluationDescriptorContainer;
     }
+
     return {
       variable: variable,
       match: isMatch(props.variableId, props.search),
       editing: isEditing(props.variableId, props.subPath, state.global.editing),
       searching:
         (variable &&
+          entityIs(variable, 'VariableDescriptor') &&
           state.global.search.type === 'GLOBAL' &&
           state.global.search.value.includes(editorLabel(variable))) ||
         false,
@@ -219,12 +229,12 @@ function CTree(
       return (
         <span className={nodeContentStyle}>
           <IconComp icon={withDefault(icon, 'question')} />
-          {entityIs(variable, 'EvaluationDescriptorContainer') &&
-          props.subPath &&
-          props.subPath.length === 1
-            ? props.subPath[0] === 'feedback'
-              ? 'Feedback'
-              : 'Feedback comment'
+          {entityIs(variable, 'EvaluationDescriptorContainer')
+            ? props.subPath && props.subPath.length === 1
+              ? props.subPath[0] === 'feedback'
+                ? 'Feedback'
+                : 'Feedback comment'
+              : 'Unreachable code'
             : editorLabel(variable)}
         </span>
       );
