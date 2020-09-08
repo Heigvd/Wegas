@@ -48,7 +48,7 @@ export const Labeled: React.FunctionComponent<LabeledProps> = ({
       >
         <span style={{ display: 'inline-flex' }}>
           {label}
-          {currentFeatures.includes('ADVANCED') && index != null && (
+          {currentFeatures.includes('INTERNAL') && index != null && (
             <span style={{ marginLeft: '1em' }}>{index}</span>
           )}
           {onLanguage && (

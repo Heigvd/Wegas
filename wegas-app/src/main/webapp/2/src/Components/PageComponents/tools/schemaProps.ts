@@ -437,6 +437,27 @@ const simpleSchemaProps = {
       layout,
     },
   }),
+  scriptString: (
+    label?: string,
+    required: boolean = true,
+    featureLevel: FeatureLevel = 'DEFAULT',
+    index: number = 0,
+    layout?: SchemaLayout,
+    borderTop?: boolean,
+  ): TypedProps<ScripableVariableSelectProps> => ({
+    required,
+    type: 'object',
+    index,
+    view: {
+      borderTop,
+      index,
+      returnType: ['string'],
+      featureLevel,
+      label,
+      type: 'scriptableString',
+      layout,
+    },
+  }),
   array: (
     label?: string,
     itemShema: {} = {},

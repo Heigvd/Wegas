@@ -2,6 +2,7 @@ import * as React from 'react';
 import { css, cx } from 'emotion';
 import { Item } from './TreeSelect';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { flexRow, flex, flexColumn } from '../../../css/classes';
 
 const pointerStyle = css({
   cursor: 'pointer',
@@ -171,31 +172,37 @@ export default function TreeNode<T>(props: TreeNodeProps<T>): JSX.Element {
   }
 
   return (
-    <li className={`${className || ''} ${treeNodeContainerStyle}`}>
-      {items ? (
-        <Button
-          icon={expanded ? 'caret-down' : 'caret-right'}
-          tabIndex={-1}
-          onClick={toggle}
-        />
-      ) : null}
-      <a
-        tabIndex={match ? 0 : -1}
-        onClick={handleSelect}
-        onKeyDown={handleKeyDown}
-        className={`${treeHeadStyle} ${cx({
-          [noSelectStyle]: !selectable,
-          [pointerStyle]: selectable,
-          [selectedStyle]:
-            !!selected && JSON.stringify(selected) === JSON.stringify(value),
-        })}`}
-      >
-        {label !== undefined
-          ? label
-          : typeof value === 'string'
-          ? value
-          : JSON.stringify(value)}
-      </a>
+    <li
+      className={
+        `${className || ''} ${treeNodeContainerStyle} ` + cx(flex, flexColumn)
+      }
+    >
+      <div className={cx(flex, flexRow)}>
+        {items ? (
+          <Button
+            icon={expanded ? 'caret-down' : 'caret-right'}
+            tabIndex={-1}
+            onClick={toggle}
+          />
+        ) : null}
+        <a
+          tabIndex={match ? 0 : -1}
+          onClick={handleSelect}
+          onKeyDown={handleKeyDown}
+          className={`${treeHeadStyle} ${cx({
+            [noSelectStyle]: !selectable,
+            [pointerStyle]: selectable,
+            [selectedStyle]:
+              !!selected && JSON.stringify(selected) === JSON.stringify(value),
+          })}`}
+        >
+          {label !== undefined
+            ? label
+            : typeof value === 'string'
+            ? value
+            : JSON.stringify(value)}
+        </a>
+      </div>
       {items ? (
         <ul
           className={cx({

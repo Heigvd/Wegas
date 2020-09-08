@@ -33,7 +33,7 @@ export function TreeSelect<T>({
     setUpdatedItems(items);
   }, [items]);
   return (
-    <HandleUpDown selector={'.' + treeHeadStyle}>
+    <HandleUpDown selector={treeHeadStyle}>
       {[
         updatedItems.map((item, index) => (
           <TreeNode

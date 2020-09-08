@@ -20,9 +20,7 @@ const ThemeEditor = React.lazy(
   () => import('../../Components/Style/ThemeEditor'),
 );
 
-const Tester = React.lazy(
-  () => import('../../Testers/Components/NumberBoxTester'),
-);
+const Tester = React.lazy(() => import('../../Testers/SchemaPropsTester'));
 
 const layout = css({
   display: 'flex',

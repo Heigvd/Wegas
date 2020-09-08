@@ -35,7 +35,7 @@ import { Button } from '../../../../Components/Inputs/Buttons/Button';
 
 export const scriptEditStyle = css({
   minHeight: '5em',
-  marginTop: '0.8em',
+  // marginTop: '0.8em',
   width: '500px',
 });
 

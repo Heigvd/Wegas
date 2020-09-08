@@ -14,16 +14,18 @@ import { themeVar } from '../../Style/ThemeVars';
 
 const togglerStyle = css({
   display: 'flex',
-  width: '50px',
+  minWidth: '50px',
   height: '24px',
   boxSizing: 'border-box',
   borderRadius: '24px',
   borderStyle: 'solid',
   borderWidth: '2px',
+  color: themeVar.Common.colors.SecondaryTextColor,
   borderColor: themeVar.Common.colors.BorderColor,
   backgroundColor: themeVar.Common.colors.ErrorColor,
   cursor: 'pointer',
   margin: 'auto',
+  flexDirection: 'row',
   ['&.disabled']: {
     borderColor: themeVar.Common.colors.DisabledColor,
     cursor: 'default',
@@ -33,6 +35,7 @@ const togglerStyle = css({
   },
   ['&.checked']: {
     backgroundColor: themeVar.Common.colors.SuccessColor,
+    flexDirection: 'row-reverse',
   },
 });
 
@@ -44,6 +47,12 @@ const togglerHandleStyle = css({
   ['&.disabled']: {
     backgroundColor: themeVar.Common.colors.DisabledColor,
   },
+});
+
+const togglerTextStyle = css({
+  marginLeft: '8px',
+  marginRight: '8px',
+  textAlign: 'center',
 });
 
 export interface TogglerProps extends InputProps<boolean> {
@@ -131,11 +140,14 @@ export function Toggler({
         }}
         title={hint}
       >
-        {!checked && (
-          <div className={grow} title={hint}>
+        {/* {!checked && (
+          <div
+            className={'wegas-toggler-text ' + cx(grow, togglerTextStyle)}
+            title={hint}
+          >
             {labels ? labels.off : ''}
           </div>
-        )}
+        )} */}
         <div
           className={
             'wegas-toggler-handle ' +
@@ -146,9 +158,12 @@ export function Toggler({
           }
           title={hint}
         />
-        {checked && (
-          <div className={grow} title={hint}>
-            {labels ? labels.on : ''}
+        {labels && (
+          <div
+            className={'wegas-toggler-text ' + cx(grow, togglerTextStyle)}
+            title={hint}
+          >
+            {checked ? labels.on : labels.off}
           </div>
         )}
       </div>

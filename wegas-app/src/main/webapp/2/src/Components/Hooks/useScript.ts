@@ -15,10 +15,15 @@ import {
   WegasClassNames,
   SGameModel,
   SPlayer,
+  STranslatableContent,
+  SStringDescriptor,
+  STextDescriptor,
+  SStaticTextDescriptor,
 } from 'wegas-ts-api';
 import { ScriptableEntity } from 'wegas-ts-api';
 import { popupDispatch, addPopup, PopupActionCreator } from '../PopupManager';
 import { ActionCreator } from '../../data/actions';
+import { translate } from '../../Editor/Components/FormView/translatable';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -38,6 +43,7 @@ interface GlobalClasses {
   Classes: GlobalClassesClass;
   Popups: GlobalPopupClass;
   WegasEvents: WegasEventClass;
+  I18n: GlobalI18nClass;
 }
 
 const globalDispatch = store.dispatch;
@@ -57,6 +63,7 @@ const { sandbox, globals } = createSandbox<GlobalClasses>();
 export function useGlobals() {
   // Hooks
   const player = useStore(Player.selectCurrent);
+  const splayer = instantiate(player);
   const gameModel = useGameModel();
   const defaultFeatures: FeaturesSelecta = {
     DEFAULT: true,
@@ -251,6 +258,35 @@ export function useGlobals() {
           );
         }
       }
+    },
+  };
+
+  globals.I18n = {
+    toString: entity => {
+      let translatableEntity: STranslatableContent | undefined;
+      switch (entity.getEntity()['@class']) {
+        case 'StringDescriptor': {
+          translatableEntity = (entity as SStringDescriptor)
+            .getInstance(splayer)
+            .getTrValue();
+          break;
+        }
+        case 'TextDescriptor': {
+          translatableEntity = (entity as STextDescriptor)
+            .getInstance(splayer)
+            .getTrValue();
+          break;
+        }
+        case 'StaticTextDescriptor': {
+          translatableEntity = (entity as SStaticTextDescriptor).getText();
+          break;
+        }
+        default: {
+          translatableEntity = entity.getLabel();
+          break;
+        }
+      }
+      return translate(translatableEntity, lang);
     },
   };
 

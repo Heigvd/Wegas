@@ -16,6 +16,7 @@ import {
   MonacoEditor,
   MonacoCodeEditor,
 } from './editorHelpers';
+import { wlog } from '../../../Helper/wegaslog';
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
   clientScript?: boolean;
@@ -46,7 +47,7 @@ const formatScriptToFunction = (
   val: string,
   returnType?: WegasScriptEditorReturnTypeName[],
 ) => {
-  if (returnType !== undefined) {
+  if (returnType !== undefined && returnType.length > 0) {
     let newValue = val;
     // Removing first tab if exists
     if (newValue.length > 0 && newValue[0] === '\t') {
@@ -105,7 +106,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     returnType?: WegasScriptEditorReturnTypeName[],
   ) => {
     const newVal = val ? val : '';
-    if (returnType !== undefined) {
+    if (returnType !== undefined && returnType.length > 0) {
       const lines = textToArray(newVal);
       if (
         // Header protection
@@ -133,7 +134,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const trimFunctionToScript = React.useCallback(
     (val?: string, fn?: (val: string) => void) => {
       let newValue = val ? val : '';
-      if (returnType !== undefined) {
+      if (returnType !== undefined && returnType.length > 0) {
         if (acceptFunctionStyle(newValue, returnType)) {
           const newLines = textToArray(newValue)
             /* Removes header and footer */
@@ -167,13 +168,17 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     [returnType, toggleRefresh],
   );
 
+  const globalLibs = useGlobalLibs();
+
   const extraLibs: MonacoDefinitionsLibraries[] = [
     ...(newExtraLibs || []),
-    ...useGlobalLibs(),
+    ...globalLibs,
     { name: 'defaultLib:lib.d.ts', content: libes5 },
   ];
 
-  if (returnType !== undefined) {
+  wlog(globalLibs);
+
+  if (returnType !== undefined && returnType.length > 0) {
     editorLock = (editor: MonacoSCodeEditor) => {
       editorRef.current = editor;
       // Allow to make lines of the editor readonly
@@ -198,7 +203,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   }
 
   const actions: SrcEditorAction[] =
-    returnType && monaco
+    returnType && returnType.length > 0 && monaco
       ? [
           {
             id: 'SelectAllWithScriptFunction',

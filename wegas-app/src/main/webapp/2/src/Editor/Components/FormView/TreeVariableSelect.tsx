@@ -8,7 +8,7 @@ import { VariableDescriptor, GameModel } from '../../../data/selectors';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { CommonViewContainer, CommonView } from './commonView';
 import { LabeledView, Labeled } from './labeled';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import {
   scriptableClassNameToClassFilter,
@@ -19,6 +19,8 @@ import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { IVariableDescriptor, IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { flexRow, flex, itemCenter } from '../../../css/classes';
+import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
 
 const treeCss = css({
   padding: '5px 10px',
@@ -114,7 +116,8 @@ function labelForValue<T>(items: TreeSelectItem<T>[], value?: T) {
   }
   return '';
 }
-export interface TreeVSelectProps<T>
+
+export interface LabeledTreeVSelectProps<T>
   extends WidgetProps.BaseProps<
     CommonView &
       LabeledView & {
@@ -123,6 +126,11 @@ export interface TreeVSelectProps<T>
       }
   > {
   value?: T;
+}
+
+export interface TreeVSelectProps<T> extends LabeledTreeVSelectProps<T> {
+  labelNode?: React.ReactNode;
+  inputId?: string;
 }
 
 export class TreeVSelect<T> extends React.Component<
@@ -154,59 +162,88 @@ export class TreeVSelect<T> extends React.Component<
     const { items: viewItems = [] } = this.props.view;
     const allItems = [...valueItems, ...viewItems];
     return (
+      <div
+        onBlur={ev => {
+          const me = ev.currentTarget;
+          requestAnimationFrame(() => {
+            if (!me.contains(document.activeElement)) {
+              this.setState({
+                searching: false,
+              });
+            }
+          });
+        }}
+      >
+        {this.props.labelNode}
+        <div className={cx(flex, flexRow, itemCenter)}>
+          <SimpleInput
+            id={this.props.inputId}
+            value={
+              this.state.searching
+                ? this.state.search || ''
+                : labelForValue(allItems, this.props.value)
+            }
+            onChange={v =>
+              this.setState({
+                search: String(v),
+              })
+            }
+            onFocus={this.inputFocus}
+            readOnly={this.props.view.readOnly}
+          />
+          <Button
+            icon={
+              this.state.searching
+                ? ['circle', { icon: 'search', color: 'white', size: 'xs' }]
+                : 'search'
+            }
+            onClick={() => {
+              this.setState(current => ({
+                ...current,
+                searching: !current.searching,
+              }));
+            }}
+          />
+        </div>
+        {this.state.searching && (
+          <div className={treeCss}>
+            <SearchableItems
+              match={(item, s) => {
+                return item.label.toLowerCase().includes(s.toLowerCase());
+              }}
+              search={this.state.search}
+              items={allItems}
+              render={({ items }) => (
+                <TreeSelect
+                  selected={this.props.value}
+                  items={items}
+                  onSelect={this.handleOnSelect}
+                />
+              )}
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
+}
+
+export class LabeledTreeVSelect<T> extends React.Component<
+  LabeledTreeVSelectProps<T> & { items: TreeSelectItem<T>[] }
+> {
+  render(): React.ReactNode {
+    return (
       <CommonViewContainer
         view={this.props.view}
         errorMessage={this.props.errorMessage}
       >
         <Labeled {...this.props.view}>
           {({ labelNode, inputId }) => (
-            <div
-              onBlur={ev => {
-                const me = ev.currentTarget;
-                requestAnimationFrame(() => {
-                  if (!me.contains(document.activeElement)) {
-                    this.setState({
-                      searching: false,
-                    });
-                  }
-                });
-              }}
-            >
-              {labelNode}
-              <SimpleInput
-                id={inputId}
-                value={
-                  this.state.searching
-                    ? this.state.search || ''
-                    : labelForValue(allItems, this.props.value)
-                }
-                onChange={v =>
-                  this.setState({
-                    search: String(v),
-                  })
-                }
-                onFocus={this.inputFocus}
-                readOnly={this.props.view.readOnly}
-              />
-              {this.state.searching && (
-                <div className={treeCss}>
-                  <SearchableItems
-                    match={(item, s) => {
-                      return item.label.toLowerCase().includes(s.toLowerCase());
-                    }}
-                    search={this.state.search}
-                    items={allItems}
-                    render={({ items }) => (
-                      <TreeSelect
-                        selected={this.props.value}
-                        items={items}
-                        onSelect={this.handleOnSelect}
-                      />
-                    )}
-                  />
-                </div>
-              )}
-            </div>
+            <TreeVSelect
+              {...this.props}
+              labelNode={labelNode}
+              inputId={inputId}
+            />
           )}
         </Labeled>
       </CommonViewContainer>
@@ -214,7 +251,9 @@ export class TreeVSelect<T> extends React.Component<
   }
 }
 
-export type TreeVariableSelectProps = TreeVSelectProps<string>;
+export type TreeVariableSelectProps = TreeVSelectProps<string> & {
+  noLabel?: boolean;
+};
 
 export function TreeVariableSelect(
   props: TreeVariableSelectProps,
@@ -237,13 +276,28 @@ export function TreeVariableSelect(
         ...props.view.items,
       ]
     : varItems;
-  return <TreeVSelect {...props} items={filteredItems} />;
+  return props.noLabel ? (
+    <TreeVSelect
+      {...props}
+      items={filteredItems}
+      labelNode={undefined}
+      inputId={undefined}
+    />
+  ) : (
+    <LabeledTreeVSelect {...props} items={filteredItems} />
+  );
 }
 
-export interface ScripableVariableSelectProps
+export interface LabeledScripableVariableSelectProps
   extends Omit<TreeVariableSelectProps, 'value' | 'onChange'> {
   value?: IScript;
   onChange: (code: IScript) => void;
+}
+
+export interface ScripableVariableSelectProps
+  extends LabeledScripableVariableSelectProps {
+  labelNode?: React.ReactNode;
+  inputId?: string;
 }
 
 export function ScripableVariableSelect(
@@ -252,6 +306,8 @@ export function ScripableVariableSelect(
   const script = props.value ? props.value.content : '';
   const [srcMode, setSrcMode] = React.useState(false);
   const [treeValue, setTreeValue] = React.useState('');
+
+  const { currentFeatures } = React.useContext(featuresCTX);
 
   /**
    * Effect that forces srcMode in case the script is too complex to be parsed
@@ -290,7 +346,19 @@ export function ScripableVariableSelect(
 
   return (
     <>
-      <Button icon="code" onClick={() => setSrcMode(sm => !sm)} />
+      <div className={cx(flex, flexRow, itemCenter)}>
+        {props.labelNode}
+        {currentFeatures.includes('ADVANCED') && (
+          <Button
+            icon={
+              srcMode
+                ? ['circle', { icon: 'code', color: 'white', size: 'xs' }]
+                : 'code'
+            }
+            onClick={() => setSrcMode(sm => !sm)}
+          />
+        )}
+      </div>
       {srcMode ? (
         <div className={scriptEditStyle}>
           <WegasScriptEditor
@@ -318,8 +386,28 @@ export function ScripableVariableSelect(
           {...props}
           value={treeValue}
           onChange={onTreeChange}
+          inputId={props.inputId}
+          noLabel
         />
       )}
     </>
+  );
+}
+
+export function LabeledScripableVariableSelect(
+  props: LabeledScripableVariableSelectProps,
+): JSX.Element {
+  return (
+    <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
+      <Labeled {...props.view}>
+        {({ labelNode, inputId }) => (
+          <ScripableVariableSelect
+            {...props}
+            labelNode={labelNode}
+            inputId={inputId}
+          />
+        )}
+      </Labeled>
+    </CommonViewContainer>
   );
 }
