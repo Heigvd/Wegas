@@ -32,9 +32,15 @@ import { classesCTX } from './Contexts/ClassesProvider';
 import { flexColumn, flex } from '../css/classes';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { debounce } from 'lodash-es';
+import { classNameOrEmpty } from '../Helper/className';
+import { inputStyleCSS } from './Inputs/inputStyles';
 
 const toolbar = css({
   width: '300px',
+});
+
+const editorStyle = css({
+  '& .mce-content-body': inputStyleCSS,
 });
 
 type CallbackFN = (url: string) => void;
@@ -222,7 +228,11 @@ export default function HTMLEditor({
   const toolBarId = 'externalEditorToolbar' + String(HTMLEditorID++);
 
   return (
-    <div className={className} style={style} id={id}>
+    <div
+      className={editorStyle + classNameOrEmpty(className)}
+      style={style}
+      id={id}
+    >
       <div style={{ visibility: fileBrowsing.fn ? 'hidden' : 'visible' }}>
         <div id={toolBarId} className={toolbar}>
           {!editorFocus && (
@@ -245,6 +255,7 @@ export default function HTMLEditor({
           onEditorChange={onEditorChange}
           onFocus={() => setEditorFocus(true)}
           onBlur={() => setEditorFocus(false)}
+          // textareaName={editorStyle}
         />
       </div>
       {fileBrowsing.fn && (

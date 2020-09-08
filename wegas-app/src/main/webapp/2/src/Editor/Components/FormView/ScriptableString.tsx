@@ -14,6 +14,10 @@ import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { DropMenu } from '../../../Components/DropMenu';
 import HTMLEditor from '../../../Components/HTMLEditor';
 
+const labelStyle = css({
+  marginBottom: '5px',
+});
+
 export interface ScriptableStringProps
   extends WidgetProps.BaseProps<CommonView & LabeledView> {
   value?: IScript;
@@ -72,7 +76,7 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
       <Labeled {...props.view}>
         {({ labelNode, inputId }) => (
           <>
-            <div className={cx(flex, flexRow, itemCenter)}>
+            <div className={cx(flex, flexRow, itemCenter, labelStyle)}>
               {labelNode}
               {currentFeatures.includes('ADVANCED') && (
                 <Button
@@ -115,7 +119,6 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
                         : createScript(value),
                     )
                   }
-                  // language={'typescript'}
                   minimap={false}
                   noGutter
                   resizable
