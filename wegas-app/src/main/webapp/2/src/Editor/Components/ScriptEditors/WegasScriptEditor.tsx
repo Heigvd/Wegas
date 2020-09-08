@@ -16,7 +16,6 @@ import {
   MonacoEditor,
   MonacoCodeEditor,
 } from './editorHelpers';
-import { wlog } from '../../../Helper/wegaslog';
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
   clientScript?: boolean;
@@ -175,8 +174,6 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     ...globalLibs,
     { name: 'defaultLib:lib.d.ts', content: libes5 },
   ];
-
-  wlog(globalLibs);
 
   if (returnType !== undefined && returnType.length > 0) {
     editorLock = (editor: MonacoSCodeEditor) => {

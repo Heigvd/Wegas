@@ -9,10 +9,9 @@ import { schemaProps } from '../tools/schemaProps';
 import { Button } from '../../Inputs/Buttons/Button';
 import { createScript } from '../../../Helper/wegasEntites';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { IScript, ITextDescriptor } from 'wegas-ts-api';
+import { IScript } from 'wegas-ts-api';
 import { icons, Icons } from '../../../Editor/Components/Views/FontAwesome';
-import { useComponentScript } from '../../Hooks/useComponentScript';
-import { useTranslate } from '../../../Editor/Components/FormView/translatable';
+import { useScript } from '../../Hooks/useScript';
 
 export interface PlayerButtonProps extends WegasComponentProps {
   action: IScript;
@@ -28,9 +27,7 @@ function PlayerButton({
   icon,
   prefixedLabel,
 }: PlayerButtonProps) {
-  const { instance } = useComponentScript<ITextDescriptor>(label);
-  const translation = useTranslate(instance?.trValue);
-  debugger;
+  const translation = useScript<string>(label) || '';
   return (
     <Button
       label={
@@ -52,10 +49,7 @@ function PlayerButton({
 
 export const buttonSchema = {
   action: schemaProps.script('Action', false, 'SET'),
-  label: schemaProps.scriptVariable('Label', false, [
-    'STextDescriptor',
-    'SStaticTextDescriptor',
-  ]),
+  label: schemaProps.scriptString('Label', false),
   icon: schemaProps.select('Icon', true, Object.keys(icons)),
   prefixedLabel: schemaProps.boolean('Prefixed label', false),
 };
