@@ -7,7 +7,12 @@ import { LabeledView, Labeled } from './labeled';
 import { TreeVariableSelect } from './TreeVariableSelect';
 import { createScript } from '../../../Helper/wegasEntites';
 import { cx, css } from 'emotion';
-import { flex, flexRow, itemCenter } from '../../../css/classes';
+import {
+  flex,
+  flexRow,
+  itemCenter,
+  componentMarginLeft,
+} from '../../../css/classes';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { scriptEditStyle } from './Script/Script';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
@@ -104,7 +109,7 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
                       break;
                   }
                 }}
-                containerClassName={css({ marginLeft: '5px' })}
+                containerClassName={componentMarginLeft}
               />
             </div>
             {srcMode ? (

@@ -98,6 +98,14 @@ export const foregroundContent = css({
 });
 
 /* Spaces */
+export const componentMarginLeft = css({
+  marginLeft: '5px',
+});
+
+export const componentMarginRight = css({
+  marginRight: '5px',
+});
+
 export const defaultMarginLeft = css({
   marginLeft: '10px',
 });

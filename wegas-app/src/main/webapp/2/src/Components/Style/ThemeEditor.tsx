@@ -16,6 +16,7 @@ import {
   headerStyle,
   contentStyle,
   justifyCenter,
+  componentMarginLeft,
 } from '../../css/classes';
 import { ChromePicker, RGBColor } from 'react-color';
 import { useOnClickOutside } from '../Hooks/useOnClickOutside';
@@ -73,13 +74,15 @@ const colorInnerButton = (color: string) =>
     backgroundColor: color,
   });
 
-const modeColorSelectorSample = css({
-  ...borderStyle,
-  borderWidth: '2px',
-  minWidth: '12px',
-  minHeight: '12px',
-  marginLeft: '5px',
-});
+const modeColorSelectorSample = cx(
+  css({
+    ...borderStyle,
+    borderWidth: '2px',
+    minWidth: '12px',
+    minHeight: '12px',
+  }),
+  componentMarginLeft,
+);
 
 interface ThemeEditorContextValues {
   editedThemeName: string;

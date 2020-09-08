@@ -48,6 +48,7 @@ export interface DropMenuProps<
     onDelete: (item: MItem) => void;
   };
   noBackground?: boolean;
+  style?: React.CSSProperties;
 }
 /**
  * returns an empty string
@@ -121,6 +122,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
   adder,
   deleter,
   noBackground,
+  style,
 }: DropMenuProps<T, MItem>) {
   const realDirection = direction ? direction : 'down';
   const onStateChange = React.useCallback(
@@ -153,6 +155,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
         <div
           id={id}
           className={containerStyle + classNameOrEmpty(containerClassName)}
+          style={style}
         >
           <div className={itemStyle} onClick={() => toggleMenu()}>
             <Button
