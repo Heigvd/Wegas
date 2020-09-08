@@ -22,6 +22,8 @@ const popupBackgroundStyle = css({
 });
 
 const popupStyle = css({
+  width: 'min-content',
+  whiteSpace: 'nowrap',
   margin: '5px',
   padding: '2px',
   backgroundColor: themeVar.Common.colors.HeaderColor,
@@ -112,7 +114,7 @@ export function PopupManager({ children }: React.PropsWithChildren<{}>) {
   return (
     <>
       <div className={cx(flex, flexColumn, itemCenter, popupBackgroundStyle)}>
-        <div className={cx(flex, flexColumn)}>
+        <div className={cx(flex, flexColumn, itemCenter)}>
           {Object.entries(popups).map(([id, { message, timestamp }]) => (
             <div key={id} className={cx(flex, flexRow, itemCenter, popupStyle)}>
               <div>

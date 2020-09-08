@@ -90,7 +90,7 @@ function TreeView({ variables, localState, localDispatch }: TreeProps) {
               localDispatch(Actions.EditorActions.createVariable(i.value));
             } else {
               globalDispatch(Actions.EditorActions.createVariable(i.value));
-              focusTab('Editor', mainLayoutId);
+              focusTab('Variable Properties', mainLayoutId);
             }
           }}
         />
@@ -263,9 +263,9 @@ function CTree(
                   entityIs(variable, 'FSMDescriptor') ||
                   entityIs(variable, 'DialogueDescriptor')
                 ) {
-                  focusTab('StateMachine', mainLayoutId);
+                  focusTab('State Machine', mainLayoutId);
                 }
-                focusTab('Editor', mainLayoutId);
+                focusTab('Variable Properties', mainLayoutId);
               }
               getEntityActions(variable!).then(({ edit }) =>
                 dispatch(

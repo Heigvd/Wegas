@@ -43,7 +43,7 @@ function SearchResult({
       className={resultStyle}
       onClick={() => {
         if (entityIs(variable, 'AbstractStateMachineDescriptor')) {
-          focusTab('StateMachine', mainLayoutId);
+          focusTab('State Machine', mainLayoutId);
         }
         onClick();
       }}
