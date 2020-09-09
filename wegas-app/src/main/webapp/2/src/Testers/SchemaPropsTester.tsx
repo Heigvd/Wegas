@@ -78,7 +78,7 @@ interface SchemaPropsTesterState {
 export default function SchemaPropsTester() {
   const [values, setValues] = React.useState<SchemaPropsTesterState>({
     variable: createScript(),
-    translated: createScript(),
+    translated: createScript("\"<p>&nbsp;I18n.toString(Variable.find(gameModel,'infoboxPhaseActuelle'))</p>\""),
     hidden: ['hidden'],
     boolean: false,
     number: 0,

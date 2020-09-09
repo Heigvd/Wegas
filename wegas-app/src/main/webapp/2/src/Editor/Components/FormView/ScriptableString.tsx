@@ -23,6 +23,9 @@ const labelStyle = css({
   marginBottom: '5px',
 });
 
+const inputModes = ["Text", "Variable", "New Variable"] as const;
+type InputMode = ValueOf<typeof inputModes>;
+
 export interface ScriptableStringProps
   extends WidgetProps.BaseProps<CommonView & LabeledView> {
   value?: IScript;
@@ -32,7 +35,7 @@ export interface ScriptableStringProps
 export function ScriptableString(props: ScriptableStringProps): JSX.Element {
   const script = props.value ? props.value.content : '';
   const [srcMode, setSrcMode] = React.useState(false);
-  const [textMode, setTextMode] = React.useState(true);
+  const [inputMode, setInputMode] = React.useState<InputMode>("Text");
   const [treeValue, setTreeValue] = React.useState('');
 
   const { currentFeatures } = React.useContext(featuresCTX);
@@ -48,6 +51,12 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
    * Effect that forces srcMode in case the script is too complex to be parsed
    */
   React.useEffect(() => {
+    try {
+      JSON.parse(script);
+      setInputMode("Text");
+    } catch(e) {
+      setInputMode("Variable");
+    }
     if (!props.value || !props.value.content) {
       setTreeValue('');
     } else {
@@ -94,21 +103,9 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
                 />
               )}
               <DropMenu
-                label={textMode ? 'Text' : 'Variable'}
-                items={[
-                  { label: 'Text', value: 'Text' },
-                  { label: 'Variable', value: 'Variable' },
-                ]}
-                onSelect={item => {
-                  switch (item.value) {
-                    case 'Text':
-                      setTextMode(true);
-                      break;
-                    case 'Variable':
-                      setTextMode(false);
-                      break;
-                  }
-                }}
+                label={inputMode}
+                items={inputModes.map(mode => ({label: mode, value: mode}))}
+                onSelect={item => {setInputMode(item.value)}}
                 containerClassName={componentMarginLeft}
               />
             </div>
@@ -129,7 +126,7 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
                   resizable
                 />
               </div>
-            ) : textMode ? (
+            ) : inputMode==="Text" ? (
               <HTMLEditor
                 value={textContent}
                 onChange={value => {
@@ -141,7 +138,7 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
                   );
                 }}
               />
-            ) : (
+            ) : inputMode==="Variable" ? (
               <TreeVariableSelect
                 {...props}
                 value={treeValue}
@@ -149,7 +146,9 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
                 inputId={inputId}
                 noLabel
               />
-            )}
+            ) : <span>
+                Take a break !
+              </span>}
           </>
         )}
       </Labeled>
