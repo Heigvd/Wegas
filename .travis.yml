@@ -22,6 +22,7 @@ env:
 before_install:
   - echo "MAVEN_OPTS='-Xms800m -Xmx800m'" > ~/.mavenrc
   - echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
+  - cat ~/.netrc 
   - git submodule update --init --recursive
   - nvm install $NODE_VERSION
   - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version $YARN_VERSION
