@@ -4,22 +4,9 @@ import { CommonViewContainer, CommonView } from './commonView';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { Labeled, LabeledView } from './labeled';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
-import {
-  flex,
-  flexColumn,
-  flexRow,
-  itemCenter,
-  grow,
-} from '../../../css/classes';
+import { flex, flexColumn } from '../../../css/classes';
 import { ListDescriptorChild } from '../../editionConfig';
-import {
-  inputStyleCSS,
-  inputStyle,
-} from '../../../Components/Inputs/inputStyles';
-import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { SearchableItems } from '../Tree/searchable';
-import { TreeSelect } from '../Tree/TreeSelect';
+import { inputStyleCSS } from '../../../Components/Inputs/inputStyles';
 
 export interface Choice {
   value?: {};
@@ -129,74 +116,8 @@ export function Selector({
   );
 }
 
-function SearchableSelector() {
-  return choices.length > 1 ? (
-    <div
-      onBlur={ev => {
-        const me = ev.currentTarget;
-        requestAnimationFrame(() => {
-          if (!me.contains(document.activeElement)) {
-            this.setState({
-              searching: false,
-            });
-          }
-        });
-      }}
-    >
-      {this.props.labelNode}
-      <div className={cx(flex, flexRow, itemCenter, inputStyle)}>
-        <SimpleInput
-          id={this.props.inputId}
-          value={
-            this.state.searching
-              ? this.state.search || ''
-              : labelForValue(allItems, this.props.value)
-          }
-          onChange={v =>
-            this.setState({
-              search: String(v),
-            })
-          }
-          onFocus={this.inputFocus}
-          readOnly={this.props.view.readOnly}
-          className={cx(css({ borderStyle: 'none' }, grow))}
-        />
-        <Button
-          icon={this.state.searching ? 'caret-up' : 'caret-dpwn'}
-          onClick={() => {
-            this.setState(current => ({
-              ...current,
-              searching: !current.searching,
-            }));
-          }}
-        />
-      </div>
-      {this.state.searching && (
-        <div className={treeCss}>
-          <SearchableItems
-            match={(item, s) => {
-              return item.label.toLowerCase().includes(s.toLowerCase());
-            }}
-            search={this.state.search}
-            items={allItems}
-            render={({ items }) => (
-              <TreeSelect
-                selected={this.props.value}
-                items={items}
-                onSelect={this.handleOnSelect}
-              />
-            )}
-          />
-        </div>
-      )}
-    </div>
-  ) : (
-    <span className={selectStyle}>
-      {'string' === typeof choices[0]
-        ? choices[0]
-        : (choices[0] as Choice).label}
-    </span>
-  );
+export function SearchableSelector() {
+  return <span>To implement</span>;
 }
 
 function SelectView(props: ISelectProps) {

@@ -183,7 +183,7 @@ export function Searcher<T>({
           className={cx(css({ borderStyle: 'none' }, grow))}
         />
         <Button
-          icon={searching ? 'caret-up' : 'caret-dpwn'}
+          icon={searching ? 'caret-up' : 'caret-down'}
           onClick={() => setSearching(searching => !searching)}
         />
       </div>
@@ -221,98 +221,6 @@ export function TreeVSelect<T>(
   props: TreeVSelectProps<T> & { items: TreeSelectItem<T>[] },
 ) {
   return <Searcher {...props} ChildrenComp={TreeSelect} />;
-}
-
-export class TreeVSelect2<T> extends React.Component<
-  TreeVSelectProps<T> & { items: TreeSelectItem<T>[] },
-  { search: string; searching: boolean }
-> {
-  state = {
-    searching: false,
-    search: '',
-  };
-  handleOnSelect = (value: T) => {
-    this.setState(
-      {
-        searching: false,
-      },
-      () => this.props.onChange(value),
-    );
-  };
-  handleSearch = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      search: ev.target.value,
-    });
-  };
-  inputFocus = () => {
-    this.setState({ searching: true });
-  };
-  render(): React.ReactNode {
-    const { items: valueItems = [] } = this.props;
-    const { items: viewItems = [] } = this.props.view;
-    const allItems = [...valueItems, ...viewItems];
-    return (
-      <div
-        onBlur={ev => {
-          const me = ev.currentTarget;
-          requestAnimationFrame(() => {
-            if (!me.contains(document.activeElement)) {
-              this.setState({
-                searching: false,
-              });
-            }
-          });
-        }}
-      >
-        {this.props.labelNode}
-        <div className={cx(flex, flexRow, itemCenter, inputStyle)}>
-          <SimpleInput
-            id={this.props.inputId}
-            value={
-              this.state.searching
-                ? this.state.search || ''
-                : labelForValue(allItems, this.props.value)
-            }
-            onChange={v =>
-              this.setState({
-                search: String(v),
-              })
-            }
-            onFocus={this.inputFocus}
-            readOnly={this.props.view.readOnly}
-            className={cx(css({ borderStyle: 'none' }, grow))}
-          />
-          <Button
-            icon={this.state.searching ? 'caret-up' : 'caret-dpwn'}
-            onClick={() => {
-              this.setState(current => ({
-                ...current,
-                searching: !current.searching,
-              }));
-            }}
-          />
-        </div>
-        {this.state.searching && (
-          <div className={treeCss}>
-            <SearchableItems
-              match={(item, s) => {
-                return item.label.toLowerCase().includes(s.toLowerCase());
-              }}
-              search={this.state.search}
-              items={allItems}
-              render={({ items }) => (
-                <TreeSelect
-                  selected={this.props.value}
-                  items={items}
-                  onSelect={this.handleOnSelect}
-                />
-              )}
-            />
-          </div>
-        )}
-      </div>
-    );
-  }
 }
 
 export class LabeledTreeVSelect<T> extends React.Component<

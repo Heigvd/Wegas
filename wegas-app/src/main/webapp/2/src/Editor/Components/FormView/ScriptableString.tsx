@@ -23,7 +23,7 @@ const labelStyle = css({
   marginBottom: '5px',
 });
 
-const inputModes = ["Text", "Variable", "New Variable"] as const;
+const inputModes = ['Text', 'Variable', 'New Variable'] as const;
 type InputMode = ValueOf<typeof inputModes>;
 
 export interface ScriptableStringProps
@@ -35,7 +35,7 @@ export interface ScriptableStringProps
 export function ScriptableString(props: ScriptableStringProps): JSX.Element {
   const script = props.value ? props.value.content : '';
   const [srcMode, setSrcMode] = React.useState(false);
-  const [inputMode, setInputMode] = React.useState<InputMode>("Text");
+  const [inputMode, setInputMode] = React.useState<InputMode>('Text');
   const [treeValue, setTreeValue] = React.useState('');
 
   const { currentFeatures } = React.useContext(featuresCTX);
@@ -53,9 +53,9 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
   React.useEffect(() => {
     try {
       JSON.parse(script);
-      setInputMode("Text");
-    } catch(e) {
-      setInputMode("Variable");
+      setInputMode('Text');
+    } catch (e) {
+      setInputMode('Variable');
     }
     if (!props.value || !props.value.content) {
       setTreeValue('');
@@ -71,7 +71,7 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
         );
       }
     }
-  }, [props.value]);
+  }, [props.value, script]);
 
   const onTreeChange = React.useCallback(
     (value?: string) => {
@@ -104,8 +104,10 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
               )}
               <DropMenu
                 label={inputMode}
-                items={inputModes.map(mode => ({label: mode, value: mode}))}
-                onSelect={item => {setInputMode(item.value)}}
+                items={inputModes.map(mode => ({ label: mode, value: mode }))}
+                onSelect={item => {
+                  setInputMode(item.value);
+                }}
                 containerClassName={componentMarginLeft}
               />
             </div>
@@ -126,7 +128,7 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
                   resizable
                 />
               </div>
-            ) : inputMode==="Text" ? (
+            ) : inputMode === 'Text' ? (
               <HTMLEditor
                 value={textContent}
                 onChange={value => {
@@ -138,7 +140,7 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
                   );
                 }}
               />
-            ) : inputMode==="Variable" ? (
+            ) : inputMode === 'Variable' ? (
               <TreeVariableSelect
                 {...props}
                 value={treeValue}
@@ -146,9 +148,9 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
                 inputId={inputId}
                 noLabel
               />
-            ) : <span>
-                Take a break !
-              </span>}
+            ) : (
+              <span>Take a break !</span>
+            )}
           </>
         )}
       </Labeled>
