@@ -19,8 +19,9 @@ import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { IVariableDescriptor, IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { flexRow, flex, itemCenter } from '../../../css/classes';
+import { flexRow, flex, itemCenter, grow } from '../../../css/classes';
 import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
+import { inputStyle } from '../../../Components/Inputs/inputStyles';
 
 const treeCss = css({
   padding: '5px 10px',
@@ -128,12 +129,101 @@ export interface LabeledTreeVSelectProps<T>
   value?: T;
 }
 
+interface SearcherProps<T>
+  extends WidgetProps.BaseProps<
+    CommonView &
+      LabeledView & {
+        items?: TreeSelectItem<T>[];
+      }
+  > {
+  value?: T;
+  items?: TreeSelectItem<T>[];
+  labelNode?: React.ReactNode;
+  inputId?: string;
+  ChildrenComp: React.FunctionComponent<{
+    selected?: T;
+    onSelect: (selected: T) => void;
+    items: Item<T>[];
+  }>;
+}
+
+export function Searcher<T>({
+  onChange,
+  value,
+  items: valueItems = [],
+  labelNode,
+  inputId,
+  view,
+  ChildrenComp,
+}: SearcherProps<T>) {
+  const [searching, setSearching] = React.useState(false);
+  const [search, setSearch] = React.useState('');
+
+  const allItems = [...valueItems, ...(view.items || [])];
+
+  return (
+    <div
+      onBlur={ev => {
+        const me = ev.currentTarget;
+        requestAnimationFrame(() => {
+          if (!me.contains(document.activeElement)) {
+            setSearching(false);
+          }
+        });
+      }}
+    >
+      {labelNode}
+      <div className={cx(flex, flexRow, itemCenter, inputStyle)}>
+        <SimpleInput
+          id={inputId}
+          value={searching ? search || '' : labelForValue(allItems, value)}
+          onChange={v => setSearch(String(v))}
+          onFocus={() => setSearching(true)}
+          readOnly={view.readOnly}
+          className={cx(css({ borderStyle: 'none' }, grow))}
+        />
+        <Button
+          icon={searching ? 'caret-up' : 'caret-dpwn'}
+          onClick={() => setSearching(searching => !searching)}
+        />
+      </div>
+      {searching && (
+        <div className={treeCss}>
+          <SearchableItems
+            match={(item, s) => {
+              return item.label.toLowerCase().includes(s.toLowerCase());
+            }}
+            search={search}
+            items={allItems}
+            render={({ items }) => (
+              <ChildrenComp
+                selected={value}
+                items={items}
+                onSelect={(value: T) => {
+                  setSearching(false);
+                  onChange(value);
+                }}
+              />
+            )}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export interface TreeVSelectProps<T> extends LabeledTreeVSelectProps<T> {
   labelNode?: React.ReactNode;
   inputId?: string;
 }
 
-export class TreeVSelect<T> extends React.Component<
+export function TreeVSelect<T>(
+  props: TreeVSelectProps<T> & { items: TreeSelectItem<T>[] },
+) {
+  return <Searcher {...props} ChildrenComp={TreeSelect} />;
+}
+
+export class TreeVSelect2<T> extends React.Component<
   TreeVSelectProps<T> & { items: TreeSelectItem<T>[] },
   { search: string; searching: boolean }
 > {
@@ -175,7 +265,7 @@ export class TreeVSelect<T> extends React.Component<
         }}
       >
         {this.props.labelNode}
-        <div className={cx(flex, flexRow, itemCenter)}>
+        <div className={cx(flex, flexRow, itemCenter, inputStyle)}>
           <SimpleInput
             id={this.props.inputId}
             value={
@@ -190,13 +280,10 @@ export class TreeVSelect<T> extends React.Component<
             }
             onFocus={this.inputFocus}
             readOnly={this.props.view.readOnly}
+            className={cx(css({ borderStyle: 'none' }, grow))}
           />
           <Button
-            icon={
-              this.state.searching
-                ? ['circle', { icon: 'search', color: 'white', size: 'xs' }]
-                : 'search'
-            }
+            icon={this.state.searching ? 'caret-up' : 'caret-dpwn'}
             onClick={() => {
               this.setState(current => ({
                 ...current,

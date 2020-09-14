@@ -1,4 +1,4 @@
-import { css, Interpolation } from 'emotion';
+import { css, ObjectInterpolation } from 'emotion';
 import { themeVar } from '../Style/ThemeVars';
 
 export const inputDefaultCSS = {
@@ -6,7 +6,7 @@ export const inputDefaultCSS = {
   minHeight: '1.6em',
 };
 
-export const inputStyleCSS: Interpolation = {
+export const inputStyleCSS: ObjectInterpolation<undefined> = {
   ...inputDefaultCSS,
   resize: 'vertical',
   borderStyle: 'inset',

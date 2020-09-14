@@ -34,6 +34,7 @@ import {
   globalSelection,
   localSelection,
   searchSelection,
+  componentMarginLeft,
 } from '../../../css/classes';
 import {
   IVariableDescriptor,
@@ -171,14 +172,16 @@ function isEditing(
 const headerStyle = css({
   //  borderLeft: `${SELECTED_STYLE_WIDTH}px solid transparent`,
 });
-export const nodeContentStyle = css({
-  cursor: 'pointer',
-  marginLeft: '5px',
-  marginRight: '5px',
-  ':hover': {
-    backgroundColor: themeVar.Common.colors.HoverColor,
-  },
-});
+export const nodeContentStyle = cx(
+  css({
+    cursor: 'pointer',
+    marginRight: '5px',
+    ':hover': {
+      backgroundColor: themeVar.Common.colors.HoverColor,
+    },
+  }),
+  componentMarginLeft,
+);
 
 export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_DRAG_ITEM';
 
