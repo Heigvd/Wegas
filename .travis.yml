@@ -39,4 +39,4 @@ after_success:
   rm -f .id_rsa;
   export WAR=/tmp/Wegas_${BRANCH}_${TRAVIS_BUILD_NUMBER}.war;
   cp wegas-app/target/Wegas.war ${WAR};
-  curl --insecure -F "war=@${WAR}" -H "Authorization: token ${WAR_MANAGER_ADMIN_TOKEN}" https://manager.albasim.ch/api/branch/upload;
+  curl --insecure -F "war=@${WAR}" -H "Authorization:token ${WAR_MANAGER_ADMIN_TOKEN}" https://manager.albasim.ch/api/branch/upload;
