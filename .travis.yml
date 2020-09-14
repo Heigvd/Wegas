@@ -37,3 +37,6 @@ after_success:
 - openssl aes-256-cbc -K $encrypted_fb8fa6aea355_key -iv $encrypted_fb8fa6aea355_iv -in .id_rsa.enc -out .id_rsa -d; chmod 400 .id_rsa;
   scp -B -i .id_rsa wegas-app/target/Wegas.war "$RANCHER_USER@rancher01.albasim.ch:autodeploy/Wegas_${BRANCH}_${TRAVIS_BUILD_NUMBER}.war";
   rm -f .id_rsa;
+  export WAR=~/Wegas_${BRANCH}_${TRAVIS_BUILD_NUMBER}.war;
+  cp wegas-app/target/Wegas.war ${WAR};
+  curl --insecure -F 'war=@${WAR}' -H "Authorization: token ${WAR_MANAGER_ADMIN_TOKEN}" https://manager.albasim.ch/api/branch/upload;
