@@ -73,6 +73,9 @@ export const flexColumn = css({
 export const flexRow = css({
   flexDirection: 'row',
 });
+export const flexRowReverse = css({
+  flexDirection: 'row-reverse',
+});
 export const flexWrap = css({
   flexWrap: 'wrap',
 });

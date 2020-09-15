@@ -19,8 +19,13 @@ import {
   IQuestionDescriptor,
   IMessage,
   IInboxDescriptor,
+  IFSMDescriptor,
+  ITransition,
   IReply,
+  IDialogueDescriptor,
+  IDialogueTransition,
 } from 'wegas-ts-api';
+import { FSM_API } from '../../API/FSM.api';
 
 export interface VariableInstanceState {
   [id: string]: Readonly<IVariableInstance> | undefined;
@@ -249,6 +254,23 @@ export function readMessages(
       throw Error('Missing persisted player');
     }
     return InboxAPI.readMessages(inbox.id, p.id).then(res =>
+      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
+
+export function applyFSMTransition(
+  stateMachine: IFSMDescriptor | IDialogueDescriptor,
+  transition: ITransition | IDialogueTransition,
+): ThunkResult {
+  return function (dispatch, getState) {
+    if (stateMachine.id == null) {
+      throw Error('Missing statemachine id');
+    }
+    if (transition.id == null) {
+      throw Error('Missing transition id');
+    }
+    return FSM_API.applyTransition(stateMachine.id, transition.id).then(res =>
       dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };

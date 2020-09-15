@@ -30,20 +30,19 @@ function PlayerButton({
   const translation = useScript<string>(label) || '';
   return (
     <Button
-      label={
-        <div
-          dangerouslySetInnerHTML={{
-            __html: translation,
-          }}
-        ></div>
-      }
       onClick={() =>
         store.dispatch(Actions.VariableInstanceActions.runScript(action!))
       }
       style={{ margin: 'auto', ...style }}
       icon={icon}
       prefixedLabel={prefixedLabel}
-    />
+    >
+      <div
+        dangerouslySetInnerHTML={{
+          __html: translation,
+        }}
+      ></div>
+    </Button>
   );
 }
 
