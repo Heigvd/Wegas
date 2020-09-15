@@ -21,17 +21,23 @@ export interface WegasScriptEditorProps extends SrcEditorProps {
   clientScript?: boolean;
   returnType?: WegasScriptEditorReturnTypeName[];
   resizable?: boolean;
+  args?: [string, WegasScriptEditorReturnTypeName[]][];
 }
 
-const header = (type?: string[]) => {
-  const cleanType =
-    type !== undefined
-      ? type.reduce(
+const header = (
+  returnType?: string[],
+  args?: [string, WegasScriptEditorReturnTypeName[]][],
+) => {
+  const cleanArgs =
+    args !== undefined ? args.map(arg => arg.join(':')).join(',') : '';
+  const cleanReturnType =
+    returnType !== undefined
+      ? returnType.reduce(
           (o, t, i) => o + (i ? '|' : '') + t.replace(/\r?\n/, ''),
           '',
         )
       : '';
-  return `/*\n *\tPlease always respect the return type : ${cleanType}\n *\tPlease only write in JS even if the editor let you write in TS\n */\n() : ${cleanType} => {\n\t`;
+  return `/*\n *\tPlease always respect the return type : ${cleanReturnType}\n *\tPlease only write in JS even if the editor let you write in TS\n */\n(${cleanArgs}) : ${cleanReturnType} => {\n\t`;
 };
 const headerSize = textToArray(header()).length;
 const footer = () => `\n};`;
@@ -45,6 +51,7 @@ const footerSize = textToArray(footer()).length - 1;
 const formatScriptToFunction = (
   val: string,
   returnType?: WegasScriptEditorReturnTypeName[],
+  args?: [string, WegasScriptEditorReturnTypeName[]][],
 ) => {
   if (returnType !== undefined && returnType.length > 0) {
     let newValue = val;
@@ -63,7 +70,7 @@ const formatScriptToFunction = (
       );
     }
     newValue = arrayToText(lines);
-    return `${header(returnType)}${newValue}${footer()}`;
+    return `${header(returnType, args)}${newValue}${footer()}`;
   }
   return val;
 };
@@ -72,7 +79,9 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const {
     value,
     returnType,
-    /*TODO : allow non server methods here clientScript,*/ onChange,
+    args,
+    /*TODO : allow non server methods here clientScript,*/
+    onChange,
     onBlur,
     onSave,
     resizable,
@@ -103,6 +112,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const acceptFunctionStyle = (
     val?: string,
     returnType?: WegasScriptEditorReturnTypeName[],
+    args?: [string, WegasScriptEditorReturnTypeName[]][],
   ) => {
     const newVal = val ? val : '';
     if (returnType !== undefined && returnType.length > 0) {
@@ -110,7 +120,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       if (
         // Header protection
         arrayToText(lines.slice(0, headerSize - 1)) !==
-          header(returnType).slice(0, -2) ||
+          header(returnType, args).slice(0, -2) ||
         // Footer protection
         (lines.length > 0 &&
           lines[lines.length - footerSize] !== footer().substr(1)) ||
@@ -134,7 +144,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     (val?: string, fn?: (val: string) => void) => {
       let newValue = val ? val : '';
       if (returnType !== undefined && returnType.length > 0) {
-        if (acceptFunctionStyle(newValue, returnType)) {
+        if (acceptFunctionStyle(newValue, returnType, args)) {
           const newLines = textToArray(newValue)
             /* Removes header and footer */
             .filter(
@@ -235,7 +245,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     [onSave, trimFunctionToScript],
   );
 
-  const content = formatScriptToFunction(value || '', returnType);
+  const content = formatScriptToFunction(value || '', returnType, args);
   const editor = (
     <SrcEditor
       key={Number(refresh)}

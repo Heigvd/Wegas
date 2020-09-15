@@ -48,7 +48,6 @@ import { PlayerInfoBullet } from './InfoBullet';
 import { EditHandle } from './EditHandle';
 import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
 import { OptionsState, ComponentOptionsManager } from './OptionsComponent';
-// import { ActionsState, ComponentActionsManager } from './ActionsComponent';
 import {
   PlayerLinearLayoutProps,
   PlayerLinearLayoutChildrenProps,
@@ -59,17 +58,6 @@ import { MenuItem } from '../../Layouts/Menu';
 
 // Styles
 export const layoutHighlightStyle = hatchedBackground;
-//export const layoutHighlightStyle = css({
-//  borderStyle: 'solid',
-//  borderWidth: '2px',
-//  borderColor: themeVar.Common.colors.HighlightColor,
-//});
-
-//const childHighlightCSS = {
-//  borderStyle: 'dotted',
-//  borderWidth: '1px',
-//  borderColor: themeVar.Common.colors.HighlightColor,
-//};
 
 const childHighlightStyle = css({
   '&>*>*': thinHoverColorInsetShadow,
@@ -310,7 +298,6 @@ function ComponentDropZone({
         (dropPosition === 'AFTER' ? ' component-dropzone-after' : '')
       }
       style={{
-        // visibility: show ? 'visible' : 'collapse',
         ...(show ? {} : { display: 'none' }),
         position: 'absolute',
       }}

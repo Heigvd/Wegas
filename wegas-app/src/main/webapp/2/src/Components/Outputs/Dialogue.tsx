@@ -20,10 +20,12 @@ import { store, useStore } from '../../data/store';
 import { useTranslate } from '../../Editor/Components/FormView/translatable';
 import { classOrNothing } from '../../Helper/className';
 import { Button } from '../Inputs/Buttons/Button';
+import { themeVar } from '../Style/ThemeVars';
 
 const dialogEntryStyle = css({
   '&>.player': {
     alignSelf: 'flex-end',
+    backgroundColor: themeVar.Common.colors.HeaderColor,
   },
 });
 

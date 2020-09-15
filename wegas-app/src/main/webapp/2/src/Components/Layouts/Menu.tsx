@@ -40,19 +40,26 @@ const menuItemSelectStyle = css({
 
 export const menuSchema = {
   vertical: schemaProps.boolean('Vertical'),
-  alwaysSelected: schemaProps.boolean('Always selected'),
+  onItemSelect: schemaProps.customScript(
+    'On item select',
+    false,
+    ['void'],
+    'TypeScript',
+    [['item', ['number']]],
+  ),
+  // alwaysSelected: schemaProps.boolean('Always selected',true,true),
 };
 
 export interface MenuProps extends React.PropsWithChildren<ClassAndStyle> {
   selectItem?: number;
   vertical?: boolean;
-  alwaysSelected?: boolean;
+  // alwaysSelected?: boolean;
   onItemSelect?: (item?: number) => void;
 }
 
 export function Menu({
   vertical,
-  alwaysSelected,
+  // alwaysSelected,
   onItemSelect,
   selectItem,
   className,
@@ -107,17 +114,19 @@ export function Menu({
           itemIndex !== -1 &&
           !divTarget.className.includes(UNSELECTABLE_SELECTOR)
         ) {
-          if (selectedItem === itemIndex && !alwaysSelected) {
+          /* if (selectedItem === itemIndex && !alwaysSelected) {
             setSelectedItem(undefined);
             onItemSelect && onItemSelect(undefined);
-          } else {
+          } else
+          */
+          {
             setSelectedItem(itemIndex);
             onItemSelect && onItemSelect(itemIndex);
           }
         }
       }
     },
-    [selectedItem, alwaysSelected, onItemSelect],
+    [/*selectedItem, alwaysSelected,*/ onItemSelect],
   );
 
   return (
