@@ -32,8 +32,7 @@ import { CommonView, CommonViewContainer } from '../../commonView';
 import { LabeledView, Labeled } from '../../labeled';
 import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
 import { pick } from 'lodash-es';
-import { CallExpression } from '@babel/types';
-import { StringLiteral } from '@babel/types';
+import { CallExpression, StringLiteral, emptyStatement } from '@babel/types';
 import { themeVar } from '../../../../../Components/Style/ThemeVars';
 import { Button } from '../../../../../Components/Inputs/Buttons/Button';
 
@@ -89,7 +88,10 @@ export function ExpressionEditor({
         generate(formState.statement).code !== generate(statement).code
       ) {
         try {
-          const { attributes, error } = parseStatement(statement, mode);
+          const { attributes, error } = parseStatement(
+            statement || emptyStatement(),
+            mode,
+          );
           if (error !== undefined) {
             setError(error);
           }
@@ -111,7 +113,6 @@ export function ExpressionEditor({
                 }
               }
             }
-
             setFormState({
               attributes,
               schema,
@@ -256,6 +257,9 @@ export function ExpressionEditor({
     },
     [onChange],
   );
+
+  // const test = formState.attributes;
+  // debugger;
 
   return (
     <div id={id} className={expressionEditorStyle}>
