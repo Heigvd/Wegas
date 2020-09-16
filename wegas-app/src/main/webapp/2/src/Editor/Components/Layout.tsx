@@ -14,7 +14,9 @@ const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
 const LanguageEditor = React.lazy(() => import('./LanguageEditor'));
 const PlayLocal = React.lazy(() => import('./PlayLocal'));
 const PlayServer = React.lazy(() => import('./PlayServer'));
-const InstancesEditor = React.lazy(() => import('./Variable/InstancesEditor'));
+const InstancesEditor = React.lazy(
+  () => import('./Variable/InstanceProperties'),
+);
 const ThemeEditor = React.lazy(
   () => import('../../Components/Style/ThemeEditor'),
 );

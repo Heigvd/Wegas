@@ -83,34 +83,43 @@ export interface EditorAction<T extends IAbstractEntity> {
     };
   };
 }
+
+export interface VariableEdition {
+  type: 'Variable' | 'VariableFSM';
+  entity: IAbstractEntity;
+  config?: Schema<AvailableViews>;
+  path?: (string | number)[];
+  actions: EditorAction<IAbstractEntity>;
+}
+
+export interface VariableCreateEdition {
+  type: 'VariableCreate';
+  '@class': IVariableDescriptor['@class'];
+  parentId?: number;
+  parentType?: string;
+  config?: Schema<AvailableViews>;
+  actions: EditorAction<IAbstractEntity>;
+}
+
+export interface ComponentEdition {
+  type: 'Component';
+  page: string;
+  path: (string | number)[];
+  config?: Schema<AvailableViews>;
+  actions: EditorAction<IAbstractEntity>;
+}
+
+export interface FileEdition {
+  type: 'File';
+  entity: IAbstractContentDescriptor;
+  cb?: (updatedValue: IMergeable) => void;
+}
+
 export type Edition =
-  | {
-      type: 'Variable' | 'VariableFSM';
-      entity: IAbstractEntity;
-      config?: Schema<AvailableViews>;
-      path?: (string | number)[];
-      actions: EditorAction<IAbstractEntity>;
-    }
-  | {
-      type: 'VariableCreate';
-      '@class': IVariableDescriptor['@class'];
-      parentId?: number;
-      parentType?: string;
-      config?: Schema<AvailableViews>;
-      actions: EditorAction<IAbstractEntity>;
-    }
-  | {
-      type: 'Component';
-      page: string;
-      path: (string | number)[];
-      config?: Schema<AvailableViews>;
-      actions: EditorAction<IAbstractEntity>;
-    }
-  | {
-      type: 'File';
-      entity: IAbstractContentDescriptor;
-      cb?: (updatedValue: IMergeable) => void;
-    };
+  | VariableEdition
+  | VariableCreateEdition
+  | ComponentEdition
+  | FileEdition;
 export interface EditingState {
   editing?: Edition;
   events: WegasEvent[];

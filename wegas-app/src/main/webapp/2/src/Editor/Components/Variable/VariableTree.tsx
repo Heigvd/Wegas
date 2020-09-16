@@ -60,6 +60,31 @@ const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
     }),
 );
 
+interface VariableTreeTitleProps extends ClassAndStyle {
+  variable?: IVariableDescriptor | IEvaluationDescriptorContainer;
+  subPath?: (string | number)[];
+}
+
+export function VariableTreeTitle({
+  variable,
+  subPath,
+  className,
+  style,
+}: VariableTreeTitleProps) {
+  return (
+    <div className={className} style={style}>
+      <IconComp icon={withDefault(getIcon(variable!), 'question')} />
+      {entityIs(variable, 'EvaluationDescriptorContainer')
+        ? subPath && subPath.length === 1
+          ? String(subPath[0]) === 'feedback'
+            ? 'Feedback'
+            : 'Feedback comment'
+          : 'Unreachable code'
+        : editorLabel(variable)}
+    </div>
+  );
+}
+
 interface TreeProps {
   variables: number[];
   localState?: Readonly<Edition> | undefined;
@@ -154,6 +179,7 @@ function isMatch(variableId: number, search: string): boolean {
   }
   return false;
 }
+
 function isEditing(
   variableId: number,
   subPath?: string[],
@@ -172,6 +198,7 @@ function isEditing(
 const headerStyle = css({
   //  borderLeft: `${SELECTED_STYLE_WIDTH}px solid transparent`,
 });
+
 export const nodeContentStyle = cx(
   css({
     cursor: 'pointer',
@@ -228,21 +255,20 @@ function CTree(
     props.localState,
   );
   if (variable) {
-    const Title = asyncSFC(async () => {
-      const icon = getIcon(variable!);
-      return (
-        <span className={nodeContentStyle}>
-          <IconComp icon={withDefault(icon, 'question')} />
-          {entityIs(variable, 'EvaluationDescriptorContainer')
-            ? props.subPath && props.subPath.length === 1
-              ? props.subPath[0] === 'feedback'
-                ? 'Feedback'
-                : 'Feedback comment'
-              : 'Unreachable code'
-            : editorLabel(variable)}
-        </span>
-      );
-    });
+    // const Title = asyncSFC(async () => {
+    //   return (
+    //     <span className={nodeContentStyle}>
+    //       <IconComp icon={withDefault(getIcon(variable!), 'question')} />
+    //       {entityIs(variable, 'EvaluationDescriptorContainer')
+    //         ? props.subPath && props.subPath.length === 1
+    //           ? props.subPath[0] === 'feedback'
+    //             ? 'Feedback'
+    //             : 'Feedback comment'
+    //           : 'Unreachable code'
+    //         : editorLabel(variable)}
+    //     </span>
+    //   );
+    // });
     if (!match) {
       return null;
     }
@@ -280,7 +306,11 @@ function CTree(
               );
             }}
           >
-            <Title />
+            <VariableTreeTitle
+              variable={variable}
+              subPath={props.subPath}
+              className={nodeContentStyle}
+            />
             {entityIs(variable, 'ListDescriptor') ||
             entityIs(variable, 'QuestionDescriptor') ||
             entityIs(variable, 'WhQuestionDescriptor') ? (

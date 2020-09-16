@@ -18,7 +18,9 @@ import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { themeCTX, ThemeComponent } from '../../../Components/Style/Theme';
 import { IVariableInstance } from 'wegas-ts-api';
-import { VariableInstance } from '../../../data/selectors';
+import { VariableDescriptor, VariableInstance } from '../../../data/selectors';
+import { Edition, VariableEdition } from '../../../data/Reducer/globalState';
+import { VariableTreeTitle } from './VariableTree';
 
 const listBox = css({
   width: '100%',
@@ -38,17 +40,31 @@ const listItem = css({
   },
 });
 
-export interface InstancesEditorProps extends ThemeComponent {
+const titleStyle = css({
+  textAlign: 'center',
+  margin: '5px',
+  backgroundColor: themeVar.Common.colors.HeaderColor,
+});
+
+function isEditingVariable(editing?: Edition): editing is VariableEdition {
+  return (
+    editing != null &&
+    (editing.type === 'Variable' || editing.type === 'VariableFSM') &&
+    editing.entity.id != null
+  );
+}
+
+export interface InstancePropertiesProps extends ThemeComponent {
   state: LocalGlobalState;
   dispatch: StoreDispatch;
   actions?: EditorProps<IVariableInstance>['actions'];
 }
 
-export function InstancesEditor({
+export function InstanceProperties({
   state,
   dispatch,
   actions,
-}: InstancesEditorProps) {
+}: InstancePropertiesProps) {
   const editing = state.global.editing;
   const events = state.global.events;
 
@@ -57,11 +73,7 @@ export function InstancesEditor({
   >();
 
   const instances = useStore(() => {
-    if (
-      editing &&
-      (editing.type === 'Variable' || editing.type === 'VariableFSM') &&
-      editing.entity.id
-    ) {
+    if (isEditingVariable(editing)) {
       return VariableInstance.all('parentId', editing.entity.id);
     }
     return [];
@@ -72,10 +84,26 @@ export function InstancesEditor({
       ? instances.find(i => i.id === selectedInstanceId)
       : undefined;
 
+  const descriptor = isEditingVariable(editing)
+    ? VariableDescriptor.select(editing.entity.id)
+    : undefined;
+
+  const subpath = isEditingVariable(editing) ? editing.path : undefined;
+  const title = descriptor ? (
+    <VariableTreeTitle
+      variable={descriptor}
+      subPath={subpath}
+      className={cx(grow, titleStyle)}
+    />
+  ) : (
+    'No descriptor is beeing edited'
+  );
+
   return (
     <Toolbar>
       <Toolbar.Header>
         <div className={cx(flex, flexColumn)}>
+          <div>{title}</div>
           <div className={cx(listBox, grow)}>
             {instances.map(i => {
               if (i) {
@@ -147,6 +175,6 @@ export default function ConnectedInstancesEditor() {
   const dispatch = getDispatch();
 
   return state == null || dispatch == null ? null : (
-    <InstancesEditor state={state} dispatch={dispatch} modeName={modeName} />
+    <InstanceProperties state={state} dispatch={dispatch} modeName={modeName} />
   );
 }
