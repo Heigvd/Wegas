@@ -8,6 +8,7 @@ import {
   ITranslation,
   STranslatableContent,
 } from 'wegas-ts-api';
+import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
 
 interface TranslatableProps {
   value?: ITranslatableContent;
@@ -90,16 +91,9 @@ export default function translatable<P extends EndProps>(
   function Translated(
     props: TranslatableProps & Omit<P, 'value' | 'onChange'>,
   ) {
-    const { lang /*, availableLang */ } = React.useContext(languagesCTX);
-
+    const { lang } = React.useContext(languagesCTX);
     const [currentLanguage, setCurrentLanguage] = React.useState<string>(lang);
 
-    // Updade label
-    // const curCode = (
-    //   availableLang.find(l => l.code === currentLanguage) || {
-    //     code: '',
-    //   }
-    // ).code;
     const view = React.useMemo(
       () => ({
         ...props.view,

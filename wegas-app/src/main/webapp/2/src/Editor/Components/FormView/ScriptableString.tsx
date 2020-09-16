@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
-import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
+import {
+  featuresCTX,
+  isFeatureEnabled,
+} from '../../../Components/Contexts/FeaturesProvider';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonView, CommonViewContainer } from './commonView';
 import { LabeledView, Labeled } from './labeled';
@@ -92,7 +95,7 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
           <>
             <div className={cx(flex, flexRow, itemCenter, labelStyle)}>
               {labelNode}
-              {currentFeatures.includes('ADVANCED') && (
+              {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
                 <Button
                   icon={
                     srcMode

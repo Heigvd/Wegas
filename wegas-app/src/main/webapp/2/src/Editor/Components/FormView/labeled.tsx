@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { css } from 'emotion';
-import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
+import {
+  featuresCTX,
+  isFeatureEnabled,
+} from '../../../Components/Contexts/FeaturesProvider';
 import { LanguageSelector } from '../../../Components/Contexts/LanguagesProvider';
 import { componentMarginLeft } from '../../../css/classes';
 
@@ -51,10 +54,10 @@ export const Labeled: React.FunctionComponent<LabeledProps> = ({
       >
         <span style={{ display: 'inline-flex' }}>
           {label}
-          {currentFeatures.includes('INTERNAL') && index != null && (
+          {isFeatureEnabled(currentFeatures, 'INTERNAL') && index != null && (
             <span style={{ marginLeft: '1em' }}>{index}</span>
           )}
-          {onLanguage && (
+          {onLanguage && isFeatureEnabled(currentFeatures, 'ADVANCED') && (
             <LanguageSelector
               onSelect={item => onLanguage(item.value.code)}
               className={componentMarginLeft}

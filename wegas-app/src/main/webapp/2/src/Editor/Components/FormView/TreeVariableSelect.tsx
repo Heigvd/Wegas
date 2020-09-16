@@ -20,7 +20,10 @@ import { IVariableDescriptor, IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { flexRow, flex, itemCenter, grow } from '../../../css/classes';
-import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
+import {
+  featuresCTX,
+  isFeatureEnabled,
+} from '../../../Components/Contexts/FeaturesProvider';
 import { inputStyle } from '../../../Components/Inputs/inputStyles';
 
 const treeCss = css({
@@ -343,7 +346,7 @@ export function ScripableVariableSelect(
     <>
       <div className={cx(flex, flexRow, itemCenter)}>
         {props.labelNode}
-        {currentFeatures.includes('ADVANCED') && (
+        {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
           <Button
             icon={
               srcMode

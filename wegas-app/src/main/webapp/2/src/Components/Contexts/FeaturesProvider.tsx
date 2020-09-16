@@ -8,6 +8,13 @@ export const featuresCTX = React.createContext<{
   removeFeature: (feature: FeatureLevel) => void;
 }>({ currentFeatures: [], setFeature: () => {}, removeFeature: () => {} });
 
+export function isFeatureEnabled(
+  currentFeatures: FeatureLevel[],
+  feature: FeatureLevel,
+) {
+  return currentFeatures.includes(feature);
+}
+
 function FeaturesContext({ children }: React.PropsWithChildren<{}>) {
   const [features, setFeature] = React.useState<FeatureLevel[]>(['DEFAULT']);
   return (
@@ -41,7 +48,7 @@ export function FeatureToggler({ className, style }: ClassAndStyle) {
 
   const selectFeature = React.useCallback(
     (feature: FeatureLevel) => {
-      if (currentFeatures.includes(feature)) {
+      if (isFeatureEnabled(currentFeatures, feature)) {
         removeFeature(feature);
       } else {
         setFeature(feature);
@@ -60,7 +67,7 @@ export function FeatureToggler({ className, style }: ClassAndStyle) {
             <>
               <input
                 type="checkbox"
-                defaultChecked={currentFeatures.includes(feature)}
+                defaultChecked={isFeatureEnabled(currentFeatures, feature)}
                 onChange={() => selectFeature(feature)}
                 onClick={e => e.stopPropagation()}
               />

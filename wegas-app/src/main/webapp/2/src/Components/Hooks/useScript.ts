@@ -2,7 +2,7 @@ import * as React from 'react';
 import { instantiate } from '../../data/scriptable';
 import { Player, VariableDescriptor as VDSelect } from '../../data/selectors';
 import { useStore, store } from '../../data/store';
-import { featuresCTX } from '../Contexts/FeaturesProvider';
+import { featuresCTX, isFeatureEnabled } from '../Contexts/FeaturesProvider';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
 import { useGameModel } from './useGameModel';
 import { Actions } from '../../data';
@@ -94,7 +94,10 @@ export function useGlobals() {
   globals.Editor = {
     getFeatures: () =>
       Object.keys(defaultFeatures).reduce(
-        (fs, f: FeatureLevel) => ({ ...fs, [f]: currentFeatures.includes(f) }),
+        (fs, f: FeatureLevel) => ({
+          ...fs,
+          [f]: isFeatureEnabled(currentFeatures, f),
+        }),
         defaultFeatures,
       ),
     setFeatures: (features: FeaturesSelecta) =>

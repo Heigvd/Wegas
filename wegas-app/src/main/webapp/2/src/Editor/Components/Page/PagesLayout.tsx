@@ -23,7 +23,10 @@ import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { Actions } from '../../../data';
 import { MessageString } from '../MessageString';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
-import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
+import {
+  featuresCTX,
+  isFeatureEnabled,
+} from '../../../Components/Contexts/FeaturesProvider';
 import { pageEditorCTX, pageCTX } from './PageEditor';
 import {
   Tree,
@@ -367,7 +370,7 @@ function LayoutNodeTitle({
   const { currentFeatures } = React.useContext(featuresCTX);
 
   const newTitle =
-    currentFeatures.includes('ADVANCED') && advancedTitle != null
+    isFeatureEnabled(currentFeatures, 'ADVANCED') && advancedTitle != null
       ? advancedTitle
       : title;
 
