@@ -120,7 +120,7 @@ interface NodeProps extends DragDropProps {
   children: (passProps: { nodeProps: () => any }) => React.ReactChild[] | null;
 }
 const childrenContainer = css({
-  marginLeft: '2em',
+  marginLeft: '1em',
   ':empty:after': {
     content: '"empty"',
     opacity: 0.5,
@@ -130,7 +130,6 @@ const childrenContainer = css({
 const toggle = css({
   padding: '0 0.3em',
   width: '1em',
-  display: 'inline-block',
   cursor: 'pointer',
 });
 const isDraggingStyle = css({
@@ -249,13 +248,14 @@ class TreeNode extends React.Component<
                     )}
                     {separator(
                       <div className={cx(flex, grow, flexRow, itemCenter)}>
-                        <span className={toggle} onClick={this.toggleExpand}>
-                          {isNode && (
+                        {isNode && (
+                          <div className={toggle} onClick={this.toggleExpand}>
                             <FontAwesome
                               icon={expanded ? 'caret-down' : 'caret-right'}
                             />
-                          )}
-                        </span>
+                          </div>
+                        )}
+
                         {header}
                       </div>,
                     )}

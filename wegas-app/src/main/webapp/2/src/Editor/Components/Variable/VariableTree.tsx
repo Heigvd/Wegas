@@ -35,6 +35,9 @@ import {
   localSelection,
   searchSelection,
   componentMarginLeft,
+  flex,
+  grow,
+  flexColumn,
 } from '../../../css/classes';
 import {
   IVariableDescriptor,
@@ -140,7 +143,7 @@ function TreeView({ variables, localState, localDispatch }: TreeProps) {
           }}
         >
           {({ nodeProps }) => (
-            <div style={{ height: '100%' }}>
+            <div className={cx(flex, grow, flexColumn)}>
               {variables ? (
                 variables.map(v => (
                   <CTree
@@ -255,20 +258,6 @@ function CTree(
     props.localState,
   );
   if (variable) {
-    // const Title = asyncSFC(async () => {
-    //   return (
-    //     <span className={nodeContentStyle}>
-    //       <IconComp icon={withDefault(getIcon(variable!), 'question')} />
-    //       {entityIs(variable, 'EvaluationDescriptorContainer')
-    //         ? props.subPath && props.subPath.length === 1
-    //           ? props.subPath[0] === 'feedback'
-    //             ? 'Feedback'
-    //             : 'Feedback comment'
-    //           : 'Unreachable code'
-    //         : editorLabel(variable)}
-    //     </span>
-    //   );
-    // });
     if (!match) {
       return null;
     }
@@ -277,8 +266,8 @@ function CTree(
         dragId={TREEVIEW_ITEM_TYPE}
         {...props.nodeProps()}
         header={
-          <span
-            className={cx(headerStyle, {
+          <div
+            className={cx(headerStyle, flex, {
               [globalSelection]: editing,
               [localSelection]: localEditing,
               [searchSelection]: searching,
@@ -333,7 +322,7 @@ function CTree(
                 path={props.subPath![0] as 'feedback' | 'fbComments'}
               />
             ) : null}
-          </span>
+          </div>
         }
         id={variable}
       >
