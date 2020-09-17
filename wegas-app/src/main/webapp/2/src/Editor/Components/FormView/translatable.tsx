@@ -8,7 +8,6 @@ import {
   ITranslation,
   STranslatableContent,
 } from 'wegas-ts-api';
-import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
 
 interface TranslatableProps {
   value?: ITranslatableContent;
