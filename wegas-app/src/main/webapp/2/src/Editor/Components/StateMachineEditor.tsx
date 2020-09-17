@@ -25,7 +25,6 @@ import {
   expandBoth,
   showOverflow,
   flexDistribute,
-  autoScroll,
 } from '../../css/classes';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
