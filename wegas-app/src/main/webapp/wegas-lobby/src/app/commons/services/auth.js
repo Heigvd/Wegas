@@ -273,6 +273,7 @@ angular.module('wegas.service.auth', [
                                         $translate('CREATE-ACCOUNT-FLASH-MUST-AGREE').then(function(message) {
                                             deferred.resolve(Responses.info(message, false, {agreed: false}));
                                         });
+                                        service.logout();
                                     } else {
                                         authenticatedUser = null;
                                         $translate('COMMONS-AUTH-LOGIN-FLASH-SUCCESS').then(function(message) {
