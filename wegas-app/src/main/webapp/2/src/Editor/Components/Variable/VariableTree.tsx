@@ -125,7 +125,7 @@ function TreeView({ variables, localState, localDispatch }: TreeProps) {
         />
         <SearchTool />
       </Toolbar.Header>
-      <Toolbar.Content>
+      <Toolbar.Content style={{ paddingTop: '1px' }}>
         <Container
           onDropResult={({ source, target, id }) => {
             if (

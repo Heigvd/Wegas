@@ -21,7 +21,7 @@ import { deepDifferent } from '../../../../Components/Hooks/storeHookFactory';
 import { omit } from 'lodash-es';
 import { Button } from '../../../../Components/Inputs/Buttons/Button';
 
-const treeNodeStyle = cx(flex, flexColumn);
+const treeNodeStyle = cx(flex, flexColumn, css({ marginTop: '1px' }));
 const childrenStyle = css({ marginLeft: '2em' });
 
 export interface NodeBasicInfo<T> {

@@ -5,7 +5,7 @@ import { arrayRemoveDuplicates } from '../../../Helper/tools';
 import { css } from 'emotion';
 import { themeVar } from '../../Style/ThemeVars';
 
-const buttonStyle = css({
+export const buttonStyle = css({
   display: 'flex',
   alignItems: 'center',
   backgroundColor: themeVar.Common.colors.MainColor,
@@ -50,8 +50,10 @@ const buttonStyle = css({
   ['&.iconOnly']: {
     color: themeVar.Common.colors.TextColor,
     backgroundColor: 'transparent',
-    ['&:not(.disabled):not(.readOnly):hover']: {
-      color: themeVar.Common.colors.ActiveColor,
+    ['&:not(.disabled),&:not(.readOnly)']: {
+      [':hover']: {
+        color: themeVar.Common.colors.ActiveColor,
+      },
     },
   },
   ['&.disabledBorders']: {
@@ -75,35 +77,36 @@ const buttonStyle = css({
     textAlign: 'center',
     width: 'max-content',
   },
-  ['&.active ']: {
-    ['&:not(.iconOnly) &:not(noBackground)']: {
+  ['&.active']: {
+    ['&:not(.iconOnly),&:not(noBackground)']: {
       backgroundColor: themeVar.Common.colors.ActiveColor,
     },
-    ['&.iconOnly &.noBackground']: {
+    ['&.iconOnly,&.noBackground']: {
       color: themeVar.Common.colors.ActiveColor,
     },
   },
   ['&.success']: {
-    ['&:not(.iconOnly) &:not(noBackground)']: {
+    ['&:not(.iconOnly),&:not(.noBackground)']: {
       backgroundColor: themeVar.Common.colors.SuccessColor,
     },
-    ['&.iconOnly &.noBackground']: {
+    ['&.iconOnly,&.noBackground']: {
       color: themeVar.Common.colors.SuccessColor,
     },
   },
   ['&.warning']: {
-    ['&:not(.iconOnly) &:not(noBackground)']: {
+    // backgroundColor: themeVar.Common.colors.WarningColor,
+    ['&:not(.iconOnly),&:not(.noBackground)']: {
       backgroundColor: themeVar.Common.colors.WarningColor,
     },
-    ['&.iconOnly &.noBackground']: {
+    ['&.iconOnly,&.noBackground']: {
       color: themeVar.Common.colors.WarningColor,
     },
   },
   ['&.error']: {
-    ['&:not(.iconOnly) &:not(noBackground)']: {
+    ['&:not(.iconOnly),&:not(.noBackground)']: {
       backgroundColor: themeVar.Common.colors.ErrorColor,
     },
-    ['&.iconOnly &.noBackground']: {
+    ['&.iconOnly,&.noBackground']: {
       color: themeVar.Common.colors.ErrorColor,
     },
   },

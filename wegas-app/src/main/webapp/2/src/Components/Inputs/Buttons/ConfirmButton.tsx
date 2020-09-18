@@ -1,6 +1,11 @@
 import * as React from 'react';
 import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
-import { Button, ButtonProps, disableBorderToSelector } from './Button';
+import {
+  Button,
+  ButtonProps,
+  buttonStyle,
+  disableBorderToSelector,
+} from './Button';
 import { classNameOrEmpty } from '../../../Helper/className';
 
 interface ConfirmButtonProps extends ButtonProps {
@@ -83,7 +88,7 @@ export function ConfirmButton({
       tabIndex={tabIndex}
       id={id}
       className={
-        'wegas wegas-btn confirmBtn ' +
+        `wegas wegas-btn confirmBtn ${buttonStyle} ` +
         disableBorderToSelector(disableBorders) +
         classNameOrEmpty(className)
       }
