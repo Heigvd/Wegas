@@ -13,8 +13,6 @@ import {
   flex,
   hatchedBackground,
   hoverColorInsetShadow,
-  highlightColorInsetShadow,
-  thinHoverColorInsetShadow,
 } from '../../../css/classes';
 import {
   FlexItem,
@@ -55,13 +53,6 @@ import {
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
 import { themeVar } from '../../Style/ThemeVars';
 import { MenuItem } from '../../Layouts/Menu';
-
-// Styles
-export const layoutHighlightStyle = hatchedBackground;
-
-const childHighlightStyle = css({
-  '&>*>*': thinHoverColorInsetShadow,
-});
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {
@@ -111,11 +102,6 @@ const disabledStyle = css({
   backgroundColor: themeVar.Common.colors.DisabledColor,
 });
 
-const focusedComponentStyle = hoverColorInsetShadow;
-const selectedComponentStyle = highlightColorInsetShadow;
-
-const handleControlHoverStyle = hoverColorInsetShadow;
-
 const emptyLayoutItemStyle: React.CSSProperties = {
   textAlign: 'center',
   verticalAlign: 'middle',
@@ -126,6 +112,11 @@ const emptyLayoutItemStyle: React.CSSProperties = {
   overflowWrap: 'normal',
   zIndex: 0,
 };
+
+const showBordersStyle = css({
+  borderStyle: 'solid',
+  borderColor: themeVar.Common.colors.HighlightColor,
+});
 
 // Helper functions
 
@@ -492,7 +483,7 @@ export function ComponentContainer({
   const isNotFirstComponent = path.length > 0;
   const editable = editMode && isNotFirstComponent;
   const showComponent = editable || !extraState.hidden;
-  const showLayout = showBorders && containerType != null;
+  // const showLayout = showBorders; /*&& containerType != null*/
   const computedVertical =
     // BUG HERE
     containerType === 'FLEX'
@@ -651,11 +642,10 @@ export function ComponentContainer({
         )}
         className={
           cx(handleControlStyle, flex, extraState.themeModeClassName, {
-            [layoutHighlightStyle]: showLayout,
-            [childHighlightStyle]: showLayout,
-            [handleControlHoverStyle]: editMode,
-            [focusedComponentStyle]: isFocused,
-            [selectedComponentStyle]: isSelected,
+            [showBordersStyle]: showBorders && containerType != null,
+            [hoverColorInsetShadow]: editMode || isSelected,
+            [hatchedBackground]: isFocused,
+            // [selectedComponentStyle]: isSelected,
             [childDropzoneHorizontalStyle]: !computedVertical,
             [childDropzoneVerticalStyle]: computedVertical,
             [disabledStyle]: extraState.disabled,

@@ -448,12 +448,7 @@ function WegasComponentTitle({
       title={title}
       advancedTitle={title + ' ' + JSON.stringify(componentPath)}
       tooltip={registeredComponent == null ? 'Unknown component' : undefined}
-      onMouseUp={() =>
-        onEdit(
-          isSelected ? undefined : pageId,
-          isSelected ? undefined : componentPath,
-        )
-      }
+      onMouseUp={() => onEdit(pageId, componentPath)}
       onMouseOver={e => {
         if (editMode /*&& !isDragging*/) {
           e.stopPropagation();
