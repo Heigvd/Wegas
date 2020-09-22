@@ -4,7 +4,6 @@ import { composeEnhancers } from '../data/store';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { createStoreConnector } from '../data/connectStore';
 import u from 'immer';
-import { IconButton } from './Inputs/Buttons/IconButton';
 import { flexColumn, flex, itemCenter, flexRow } from '../css/classes';
 import { cx, css } from 'emotion';
 import { omit } from 'lodash-es';
@@ -12,6 +11,7 @@ import { ITranslatableContent } from 'wegas-ts-api';
 import { translate } from '../Editor/Components/FormView/translatable';
 import { languagesCTX } from './Contexts/LanguagesProvider';
 import { themeVar } from './Style/ThemeVars';
+import { Button } from './Inputs/Buttons/Button';
 
 const popupBackgroundStyle = css({
   zIndex: 100000,
@@ -22,6 +22,8 @@ const popupBackgroundStyle = css({
 });
 
 const popupStyle = css({
+  width: 'min-content',
+  whiteSpace: 'nowrap',
   margin: '5px',
   padding: '2px',
   backgroundColor: themeVar.Common.colors.HeaderColor,
@@ -112,7 +114,7 @@ export function PopupManager({ children }: React.PropsWithChildren<{}>) {
   return (
     <>
       <div className={cx(flex, flexColumn, itemCenter, popupBackgroundStyle)}>
-        <div className={cx(flex, flexColumn)}>
+        <div className={cx(flex, flexColumn, itemCenter)}>
           {Object.entries(popups).map(([id, { message, timestamp }]) => (
             <div key={id} className={cx(flex, flexRow, itemCenter, popupStyle)}>
               <div>
@@ -122,7 +124,7 @@ export function PopupManager({ children }: React.PropsWithChildren<{}>) {
                   second: 'numeric',
                 })} : ${translate(message, lang)}`}
               </div>
-              <IconButton
+              <Button
                 icon="times"
                 onClick={() =>
                   popupDispatch(PopupActionCreator.REMOVE_POPUP({ id }))

@@ -3,15 +3,30 @@ import produce from 'immer';
 import { Actions } from '../../../data';
 import { getIcon, getLabel, getChildren } from '../../editionConfig';
 import { StoreDispatch, store } from '../../../data/store';
-import { DropMenu, DropMenuProps, DropMenuItem } from '../../../Components/DropMenu';
+import {
+  DropMenu,
+  DropMenuProps,
+  DropMenuItem,
+} from '../../../Components/DropMenu';
 import { withDefault, IconComp } from '../Views/FontAwesome';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { VariableDescriptor } from '../../../data/selectors';
-import { IAbstractEntity, IListDescriptor, IQuestionDescriptor, IWhQuestionDescriptor, IChoiceDescriptor, IResult, IEvaluationDescriptorContainer, IPeerReviewDescriptor, IEvaluationDescriptor } from 'wegas-ts-api';
+import {
+  IAbstractEntity,
+  IListDescriptor,
+  IQuestionDescriptor,
+  IWhQuestionDescriptor,
+  IChoiceDescriptor,
+  IResult,
+  IEvaluationDescriptorContainer,
+  IPeerReviewDescriptor,
+  IEvaluationDescriptor,
+} from 'wegas-ts-api';
+import { AvailableLayoutTab } from '../Layout';
 
 function buildMenuItems(
   variable: IAbstractEntity,
-): Promise<DropMenuItem<IAbstractEntity["@class"]>[]> {
+): Promise<DropMenuItem<IAbstractEntity['@class']>[]> {
   return getChildren(variable).then(children => {
     return children.map(i => {
       const Label = asyncSFC(async () => {
@@ -34,7 +49,7 @@ function buildMenuItems(
 interface AddMenuProps {
   localDispatch?: StoreDispatch;
   onSelect?: DropMenuProps<string, DropMenuItem<string>>['onSelect'];
-  focusTab?: (tab: string) => void;
+  focusTab?: (tab: AvailableLayoutTab) => void;
 }
 
 /**
@@ -60,7 +75,7 @@ export const AddMenuParent = asyncSFC(
           if (e.ctrlKey && localDispatch) {
             dispatch = localDispatch;
           } else {
-            focusTab && focusTab('Editor');
+            focusTab && focusTab('Variable Properties');
           }
 
           dispatch(Actions.EditorActions.createVariable(i.value, variable));
@@ -93,7 +108,7 @@ export const AddMenuChoice = asyncSFC(
           if (e.ctrlKey && localDispatch) {
             dispatch = localDispatch;
           } else {
-            focusTab && focusTab('Editor');
+            focusTab && focusTab('Variable Properties');
           }
 
           dispatch(
@@ -147,7 +162,7 @@ export const AddMenuFeedback = asyncSFC(
           if (e.ctrlKey && localDispatch) {
             dispatch = localDispatch;
           } else {
-            focusTab && focusTab('Editor');
+            focusTab && focusTab('Variable Properties');
           }
 
           const parent = VariableDescriptor.select(

@@ -12,7 +12,7 @@ import { Edition, closeEditor } from '../../../data/Reducer/globalState';
 import { StoreDispatch } from '../../../data/store';
 import { createStoreConnector } from '../../../data/connectStore';
 import { flex, grow, autoScroll } from '../../../css/classes';
-import { InstancesEditorProps } from '../Variable/InstancesEditor';
+import { InstancePropertiesProps } from '../Variable/InstanceProperties';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { Toolbar } from '../../../Components/Toolbar';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
@@ -34,11 +34,11 @@ interface ComponentWithFormProps {
   entityEditor?: boolean;
 }
 
-const AsyncInstancesEditor = asyncSFC<InstancesEditorProps>(
-  async (props: InstancesEditorProps) => {
+const AsyncInstancesEditor = asyncSFC<InstancePropertiesProps>(
+  async (props: InstancePropertiesProps) => {
     const InstancesEditor = await Promise.resolve<
-      typeof import('../Variable/InstancesEditor')['InstancesEditor']
-    >(import('../Variable/InstancesEditor').then(m => m.InstancesEditor));
+      typeof import('../Variable/InstanceProperties')['InstanceProperties']
+    >(import('../Variable/InstanceProperties').then(m => m.InstanceProperties));
     return <InstancesEditor {...props} />;
   },
 );

@@ -3,7 +3,11 @@ import { Schema } from 'jsoninput';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
 import { entityIs } from '../../../data/entities';
 import { LabeledView } from './labeled';
-import { ITranslatableContent, ITranslation } from 'wegas-ts-api';
+import {
+  ITranslatableContent,
+  ITranslation,
+  STranslatableContent,
+} from 'wegas-ts-api';
 
 interface TranslatableProps {
   value?: ITranslatableContent;
@@ -42,17 +46,35 @@ export function createTranslatableContent(
   };
 }
 
-export function useTranslate(translatable: ITranslatableContent) {
+export function useTranslate(
+  translatable?: ITranslatableContent | STranslatableContent | null,
+) {
   const { lang } = React.useContext(languagesCTX);
-  return translate(translatable, lang);
+  return translatable ? translate(translatable, lang) : '';
 }
 
-export function translate(translatable: ITranslatableContent, lang: string) {
-  const translation = translatable.translations[lang];
-  if (Object.keys(translatable.translations).length === 0) {
+export function translate(
+  translatable: ITranslatableContent | STranslatableContent | undefined,
+  lang: string,
+) {
+  let translations: { [lang: string]: ITranslation };
+  if (!translatable) {
+    return '';
+  }
+  if ('translations' in translatable) {
+    translations = translatable.translations;
+  } else {
+    translations = Object.entries(translatable.getTranslations()).reduce(
+      (o, t) => ({ ...o, [t[0]]: t[1].getEntity() }),
+      {},
+    );
+  }
+  const translation = translations[lang];
+
+  if (Object.keys(translations).length === 0) {
     return '';
   } else if (translation === undefined) {
-    return translatable.translations[0]?.translation || '';
+    return translations[0]?.translation || '';
   } else {
     return translation.translation;
   }
@@ -68,28 +90,16 @@ export default function translatable<P extends EndProps>(
   function Translated(
     props: TranslatableProps & Omit<P, 'value' | 'onChange'>,
   ) {
-    const { lang, availableLang } = React.useContext(languagesCTX);
-
+    const { lang } = React.useContext(languagesCTX);
     const [currentLanguage, setCurrentLanguage] = React.useState<string>(lang);
 
-    // Updade label
-    const curCode = (
-      availableLang.find(l => l.code === currentLanguage) || {
-        code: '',
-      }
-    ).code;
     const view = React.useMemo(
       () => ({
         ...props.view,
-        label: (
-          <span>
-            {props.view.label}{' '}
-            {props.view.label !== undefined && <span>[{curCode}]</span>}
-          </span>
-        ),
+        label: <span>{`${props.view.label}`}</span>,
         onLanguage: setCurrentLanguage,
       }),
-      [props.view, curCode],
+      [props.view],
     );
     const pvalue: ITranslatableContent =
       typeof props.value === 'object' &&

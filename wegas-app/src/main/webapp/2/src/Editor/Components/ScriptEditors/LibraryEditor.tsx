@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { TabLayout } from '../../../Components/Tabs';
 import { Toolbar } from '../../../Components/Toolbar';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import {
   LibraryAPI,
   NewLibErrors,
@@ -24,6 +23,7 @@ import {
 import { DropMenu } from '../../../Components/DropMenu';
 import { MessageString } from '../MessageString';
 import { IAbstractContentDescriptor, IGameModelContent } from 'wegas-ts-api';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [
@@ -572,7 +572,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             applyOnEnter
           />
         ) : (
-          <IconButton
+          <Button
             icon="plus"
             tooltip="Add a new script"
             onClick={() => {
@@ -619,7 +619,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
             {!isLibraryOutdated(libEntry) && (
               <>
                 {isEditAllowed(librariesState) && (
-                  <IconButton
+                  <Button
                     icon="save"
                     tooltip="Save the script"
                     onClick={onSaveLibrary}

@@ -26,16 +26,15 @@ import { useStore } from '../../../../../data/store';
 import { GameModel } from '../../../../../data/selectors';
 import { parseStatement, generateStatement } from './astManagement';
 import { WegasTypeString } from '../../../../editionConfig';
-import { IconButton } from '../../../../../Components/Inputs/Buttons/IconButton';
 import { MessageString } from '../../../MessageString';
 import { WegasScriptEditor } from '../../../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
 import { LabeledView, Labeled } from '../../labeled';
 import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
 import { pick } from 'lodash-es';
-import { CallExpression } from '@babel/types';
-import { StringLiteral } from '@babel/types';
+import { CallExpression, StringLiteral, emptyStatement } from '@babel/types';
 import { themeVar } from '../../../../../Components/Style/ThemeVars';
+import { Button } from '../../../../../Components/Inputs/Buttons/Button';
 
 const expressionEditorStyle = css({
   backgroundColor: themeVar.Common.colors.HeaderColor,
@@ -89,7 +88,10 @@ export function ExpressionEditor({
         generate(formState.statement).code !== generate(statement).code
       ) {
         try {
-          const { attributes, error } = parseStatement(statement, mode);
+          const { attributes, error } = parseStatement(
+            statement || emptyStatement(),
+            mode,
+          );
           if (error !== undefined) {
             setError(error);
           }
@@ -111,7 +113,6 @@ export function ExpressionEditor({
                 }
               }
             }
-
             setFormState({
               attributes,
               schema,
@@ -257,10 +258,13 @@ export function ExpressionEditor({
     [onChange],
   );
 
+  // const test = formState.attributes;
+  // debugger;
+
   return (
     <div id={id} className={expressionEditorStyle}>
       {newSrc === undefined && error === undefined && (
-        <IconButton
+        <Button
           icon="code"
           pressed={error !== undefined}
           onClick={() => setSrcMode(sm => !sm)}
@@ -270,10 +274,7 @@ export function ExpressionEditor({
         <div className={scriptEditStyle}>
           <MessageString type="error" value={error} duration={10000} />
           {newSrc !== undefined && (
-            <IconButton
-              icon="check"
-              onClick={() => onScripEditorSave(newSrc)}
-            />
+            <Button icon="check" onClick={() => onScripEditorSave(newSrc)} />
           )}
           <WegasScriptEditor
             value={

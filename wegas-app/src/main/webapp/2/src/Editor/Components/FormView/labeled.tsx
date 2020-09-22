@@ -1,7 +1,22 @@
 import * as React from 'react';
 import { css } from 'emotion';
-import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
+import {
+  featuresCTX,
+  isFeatureEnabled,
+} from '../../../Components/Contexts/FeaturesProvider';
 import { LanguageSelector } from '../../../Components/Contexts/LanguagesProvider';
+import { componentMarginLeft } from '../../../css/classes';
+
+export const titleStyle = css({
+  marginBottom: '5px',
+  display: 'flex',
+  '[title]': {
+    display: 'inline-block',
+    borderBottom: '1px dotted',
+    marginBottom: '2px',
+    cursor: 'help',
+  },
+});
 
 export interface LabeledView {
   label?: React.ReactNode;
@@ -16,15 +31,6 @@ interface LabeledProps extends LabeledView {
     labelNode: JSX.Element;
   }) => React.ReactNode;
 }
-export const titleStyle = css({
-  display: 'flex',
-  '[title]': {
-    display: 'inline-block',
-    borderBottom: '1px dotted',
-    marginBottom: '2px',
-    cursor: 'help',
-  },
-});
 let id = 0;
 
 /** Handle view's label and description  */
@@ -48,11 +54,14 @@ export const Labeled: React.FunctionComponent<LabeledProps> = ({
       >
         <span style={{ display: 'inline-flex' }}>
           {label}
-          {currentFeatures.includes('ADVANCED') && index != null && (
+          {isFeatureEnabled(currentFeatures, 'INTERNAL') && index != null && (
             <span style={{ marginLeft: '1em' }}>{index}</span>
           )}
-          {onLanguage && (
-            <LanguageSelector onSelect={item => onLanguage(item.value.code)} />
+          {onLanguage && isFeatureEnabled(currentFeatures, 'ADVANCED') && (
+            <LanguageSelector
+              onSelect={item => onLanguage(item.value.code)}
+              className={componentMarginLeft}
+            />
           )}
         </span>
       </label>

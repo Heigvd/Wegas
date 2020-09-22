@@ -6,20 +6,27 @@ import {
   Player,
 } from '../selectors';
 import { store } from '../store';
-import { ITranslatableContent, IVariableDescriptor, IVariableInstance, IPlayer, ITeam, IGameModel } from 'wegas-ts-api';
+import {
+  ITranslatableContent,
+  IVariableDescriptor,
+  IVariableInstance,
+  IPlayer,
+  ITeam,
+  IGameModel,
+} from 'wegas-ts-api';
 import { SVariableDescriptor, SVariableInstance, SPlayer } from 'wegas-ts-api';
 import { instantiate } from '../scriptable';
 
-export function editorLabel(vd: {
+export function editorLabel(vd?: {
   label: ITranslatableContent;
   editorTag?: string | null;
   name?: string;
 }) {
-  const label = TranslatableContent.toString(vd.label);
-  if (vd.editorTag && label) {
+  const label = TranslatableContent.toString(vd?.label);
+  if (vd && vd.editorTag && label) {
     return `${vd.editorTag} - ${label}`;
   }
-  return vd.editorTag || label || vd.name || '';
+  return (vd && (vd.editorTag || label || vd.name)) || '';
 }
 
 export function getParent(vd: IVariableDescriptor): IParentDescriptor {
@@ -36,13 +43,16 @@ export function getParent(vd: IVariableDescriptor): IParentDescriptor {
  */
 const instancesCache = new Map<string, number>();
 
-export function getScriptableInstance<T extends SVariableInstance>(vd: SVariableDescriptor<T>, player: Readonly<SPlayer>): T {
+export function getScriptableInstance<T extends SVariableInstance>(
+  vd: SVariableDescriptor<T>,
+  player: Readonly<SPlayer>,
+): T {
   const instance = instantiate(getInstance(vd.getEntity(), player.getEntity()));
   if (instance) {
     // Should be typed better but we know it works
-    return instance as unknown as T;
+    return (instance as unknown) as T;
   } else {
-    throw Error("No Instance found");
+    throw Error('No Instance found');
   }
 }
 
@@ -58,8 +68,8 @@ export function getInstance<I extends IVariableInstance>(
     scopeType === 'PlayerScope'
       ? player.id
       : scopeType === 'TeamScope'
-        ? player.parentId
-        : 0;
+      ? player.parentId
+      : 0;
   const cacheKey = `${parentId}${scopeType}${scopeKey}`;
 
   const id = instancesCache.get(cacheKey);

@@ -15,6 +15,7 @@ export interface CustomScriptProps
       CommonView & {
         language?: CodeLanguage;
         returnType?: WegasScriptEditorReturnTypeName[];
+        args?: [string, WegasScriptEditorReturnTypeName[]][];
       }
   > {
   value?: IScript;
@@ -28,6 +29,7 @@ export function CustomScript({ view, value, onChange }: CustomScriptProps) {
     },
     [onChange, view.language],
   );
+
   return (
     <CommonViewContainer view={view}>
       <Labeled label={view.label} description={view.description} /*{...view}*/>
@@ -43,6 +45,7 @@ export function CustomScript({ view, value, onChange }: CustomScriptProps) {
                       : view.language
                   }
                   returnType={view.returnType}
+                  args={view.args}
                   value={value ? value.content : ''}
                   onBlur={onValueChange}
                   onChange={onValueChange}

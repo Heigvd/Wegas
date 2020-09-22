@@ -7,10 +7,10 @@ import {
 import { useComponentDrag } from '../../../Editor/Components/Page/ComponentPalette';
 import { cx, css } from 'emotion';
 import { flex, flexColumn, flexRow, textCenter } from '../../../css/classes';
-import { IconButton } from '../../Inputs/Buttons/IconButton';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 import { MessageString } from '../../../Editor/Components/MessageString';
 import { themeVar } from '../../Style/ThemeVars';
+import { Button } from '../../Inputs/Buttons/Button';
 
 const handleContentStyle = css({
   borderRadius: themeVar.Common.dimensions.BorderRadius,
@@ -96,11 +96,11 @@ export function EditHandle({
         </div>
         {infoMessage && <MessageString type="warning" value={infoMessage} />}
         <div className={cx(flex, flexRow) + ' wegas-component-handle-content'}>
-          <IconButton
+          <Button
             icon="edit"
             onClick={() => onEdit(isSelected ? undefined : path)}
           />
-          <IconButton icon="arrows-alt" ref={drag} />
+          <Button icon="arrows-alt" ref={drag} />
           <ConfirmButton
             icon="trash"
             onAction={success => {

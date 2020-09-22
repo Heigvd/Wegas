@@ -502,6 +502,19 @@ export const parseStatement = (
       },
       error,
     };
+  } else if (isEmptyStatement(statement)) {
+    if (isScriptCondition(mode)) {
+      return {
+        attributes: {
+          initExpression: {
+            type: 'boolean',
+            script: 'true',
+          },
+        },
+      };
+    } else {
+      return { attributes: {} };
+    }
   } else {
     const newAttributes = methodParse(statement, 'Variable');
     if (newAttributes) {

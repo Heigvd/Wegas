@@ -68,7 +68,7 @@ function LanguagesContext({
  */
 export const LanguagesProvider = React.memo(LanguagesContext);
 
-interface LanguageSelectorProps {
+interface LanguageSelectorProps extends ClassAndStyle {
   language?: string;
   onSelect: (
     item: SelecteDropdMenuItem<IGameModelLanguage>,
@@ -80,6 +80,8 @@ export function LanguageSelector({
   language,
   onSelect,
   filterActiveLanguages,
+  style,
+  className,
 }: LanguageSelectorProps) {
   const { lang, availableLang } = React.useContext(languagesCTX);
   const [currentLanguage, setCurrentLang] = React.useState(
@@ -99,6 +101,8 @@ export function LanguageSelector({
         setCurrentLang(item.value.code);
         onSelect(item, keys);
       }}
+      style={style}
+      containerClassName={className}
     />
   );
 }
@@ -106,10 +110,11 @@ export function LanguageSelector({
 /**
  * Language selector allows to select language inside the language context given by the LangProvider
  */
-export function LangToggler() {
+export function LangToggler(props: ClassAndStyle) {
   const { lang, selectLang } = React.useContext(languagesCTX);
   return (
     <LanguageSelector
+      {...props}
       language={lang}
       onSelect={({ value }) => selectLang(value.code)}
     />

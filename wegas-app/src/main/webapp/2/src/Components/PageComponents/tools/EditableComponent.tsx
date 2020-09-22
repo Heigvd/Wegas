@@ -13,8 +13,6 @@ import {
   flex,
   hatchedBackground,
   hoverColorInsetShadow,
-  highlightColorInsetShadow,
-  thinHoverColorInsetShadow,
 } from '../../../css/classes';
 import {
   FlexItem,
@@ -48,31 +46,13 @@ import { PlayerInfoBullet } from './InfoBullet';
 import { EditHandle } from './EditHandle';
 import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
 import { OptionsState, ComponentOptionsManager } from './OptionsComponent';
-// import { ActionsState, ComponentActionsManager } from './ActionsComponent';
 import {
   PlayerLinearLayoutProps,
   PlayerLinearLayoutChildrenProps,
 } from '../Layouts/LinearLayout.component';
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
 import { themeVar } from '../../Style/ThemeVars';
-
-// Styles
-export const layoutHighlightStyle = hatchedBackground;
-//export const layoutHighlightStyle = css({
-//  borderStyle: 'solid',
-//  borderWidth: '2px',
-//  borderColor: themeVar.Common.colors.HighlightColor,
-//});
-
-//const childHighlightCSS = {
-//  borderStyle: 'dotted',
-//  borderWidth: '1px',
-//  borderColor: themeVar.Common.colors.HighlightColor,
-//};
-
-const childHighlightStyle = css({
-  '&>*>*': thinHoverColorInsetShadow,
-});
+import { MenuItem } from '../../Layouts/Menu';
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {
@@ -122,11 +102,6 @@ const disabledStyle = css({
   backgroundColor: themeVar.Common.colors.DisabledColor,
 });
 
-const focusedComponentStyle = hoverColorInsetShadow;
-const selectedComponentStyle = highlightColorInsetShadow;
-
-const handleControlHoverStyle = hoverColorInsetShadow;
-
 const emptyLayoutItemStyle: React.CSSProperties = {
   textAlign: 'center',
   verticalAlign: 'middle',
@@ -137,6 +112,11 @@ const emptyLayoutItemStyle: React.CSSProperties = {
   overflowWrap: 'normal',
   zIndex: 0,
 };
+
+const showBordersStyle = css({
+  borderStyle: 'solid',
+  borderColor: themeVar.Common.colors.HighlightColor,
+});
 
 // Helper functions
 
@@ -309,7 +289,6 @@ function ComponentDropZone({
         (dropPosition === 'AFTER' ? ' component-dropzone-after' : '')
       }
       style={{
-        // visibility: show ? 'visible' : 'collapse',
         ...(show ? {} : { display: 'none' }),
         position: 'absolute',
       }}
@@ -371,7 +350,12 @@ export interface WegasComponentItemProps extends ClassAndStyle {
 /**
  * ContainerTypes - the types of layouts that can be used in a page
  */
-export type ContainerTypes = 'FLEX' | 'LINEAR' | 'ABSOLUTE' | 'MENU' | undefined;
+export type ContainerTypes =
+  | 'FLEX'
+  | 'LINEAR'
+  | 'ABSOLUTE'
+  | 'MENU'
+  | undefined;
 
 /**
  * EmptyPageComponentProps - The props needed for a virtual component (used in a layout when no children)
@@ -499,7 +483,7 @@ export function ComponentContainer({
   const isNotFirstComponent = path.length > 0;
   const editable = editMode && isNotFirstComponent;
   const showComponent = editable || !extraState.hidden;
-  const showLayout = showBorders && containerType != null;
+  // const showLayout = showBorders; /*&& containerType != null*/
   const computedVertical =
     // BUG HERE
     containerType === 'FLEX'
@@ -523,6 +507,8 @@ export function ComponentContainer({
         return FonkyFlexContent;
       case 'ABSOLUTE':
         return AbsoluteItem;
+      case 'MENU':
+        return MenuItem;
       case 'FLEX':
       default:
         return FlexItem;
@@ -656,11 +642,10 @@ export function ComponentContainer({
         )}
         className={
           cx(handleControlStyle, flex, extraState.themeModeClassName, {
-            [layoutHighlightStyle]: showLayout,
-            [childHighlightStyle]: showLayout,
-            [handleControlHoverStyle]: editMode,
-            [focusedComponentStyle]: isFocused,
-            [selectedComponentStyle]: isSelected,
+            [showBordersStyle]: showBorders && containerType != null,
+            [hoverColorInsetShadow]: editMode || isSelected,
+            [hatchedBackground]: isFocused,
+            // [selectedComponentStyle]: isSelected,
             [childDropzoneHorizontalStyle]: !computedVertical,
             [childDropzoneVerticalStyle]: computedVertical,
             [disabledStyle]: extraState.disabled,
@@ -749,6 +734,8 @@ export function EmptyComponentContainer({
         return FonkyFlexContent;
       case 'ABSOLUTE':
         return AbsoluteItem;
+      case 'MENU':
+        return MenuItem;
       case 'FLEX':
       default:
         return FlexItem;

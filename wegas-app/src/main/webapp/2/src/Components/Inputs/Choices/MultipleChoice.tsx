@@ -1,38 +1,7 @@
 import * as React from 'react';
 import { Button } from '../Buttons/Button';
 import { debounce, omit } from 'lodash-es';
-import { cx, css } from 'emotion';
 import { InputProps } from '../SimpleInput';
-import { themeVar } from '../../Style/ThemeVars';
-
-const choiceStyle = css({
-  backgroundColor: themeVar.Common.colors.MainColor,
-  margin: '2px',
-  ':hover': {
-    backgroundColor: themeVar.Common.colors.MainColor,
-  },
-});
-
-const usableChoiceStyle = css({
-  cursor: 'pointer',
-});
-
-const unusableChoiceStyle = css({
-  cursor: 'default',
-});
-
-const selectedChoiceStyle = css({
-  backgroundColor: themeVar.Common.colors.ActiveColor,
-  ':hover': {
-    backgroundColor: themeVar.Common.colors.HoverColor,
-  },
-});
-const disabledChoiceStyle = css({
-  backgroundColor: themeVar.Common.colors.DisabledColor,
-  // ':hover': {
-  //   backgroundColor: themeVar.Common.colors.DisabledChoiceHoverColor,
-  // },
-});
 
 export interface Choices<T> {
   [label: string]: T;
@@ -44,13 +13,9 @@ export interface MultipleChoiceProps<T> extends InputProps<Choices<T>> {
    */
   choices: Choices<T>;
   /**
-   * selectedClassName - the class to apply on an active choice
+   * buttonsClassName - the class to apply on the buttons
    */
-  selectedClassName?: string;
-  /**
-   * disabledClassName - the class to apply on a disabled choice
-   */
-  disabledClassName?: string;
+  buttonsClassName?: string;
 }
 
 export function MultipleChoice<T>({
@@ -59,8 +24,7 @@ export function MultipleChoice<T>({
   onChange,
   disabled,
   readOnly,
-  selectedClassName,
-  disabledClassName,
+  buttonsClassName,
   className,
   style,
   id,
@@ -101,16 +65,10 @@ export function MultipleChoice<T>({
                 debouncedOnChange(newSet);
               }
             }}
-            className={cx(className ? className : choiceStyle, {
-              [selectedClassName
-                ? selectedClassName
-                : selectedChoiceStyle]: selected,
-              [disabledClassName ? disabledClassName : disabledChoiceStyle]:
-                disabled && !selected,
-              [unusableChoiceStyle]: disabled || readOnly,
-              [usableChoiceStyle]: disabled && readOnly,
-            })}
+            mode={selected ? 'active' : undefined}
             disabled={disabled}
+            readOnly={readOnly}
+            className={buttonsClassName}
           />
         );
       })}

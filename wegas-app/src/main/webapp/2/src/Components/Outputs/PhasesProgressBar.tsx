@@ -16,6 +16,7 @@ import { themeVar } from '../Style/ThemeVars';
 
 const phasePathStyle = css({
   height: '0.5em',
+  width: '100%',
   backgroundColor: themeVar.Common.colors.BorderColor,
 });
 
@@ -39,7 +40,7 @@ interface PhaseComponentProps {
 
 function SimplePhaseComponent({ value, phase }: PhaseComponentProps) {
   return (
-    <div className={phaseDotStyle}>
+    <div className={'phaseDotStyle ' + phaseDotStyle}>
       <IconComp
         icon={{
           icon: phase < value ? 'check-circle' : 'dot-circle',
@@ -58,7 +59,7 @@ function SimplePhaseComponent({ value, phase }: PhaseComponentProps) {
 }
 
 function SimpleInterPhaseComponent(_props: PhaseComponentProps) {
-  return <div className={cx(phasePathStyle, grow)}></div>;
+  return <div className={'phasePathStyle ' + phasePathStyle}></div>;
 }
 
 function drawBar(
@@ -125,6 +126,7 @@ export function CustomPhasesProgressBar({
   return (
     <div
       className={
+        'wegas wegas-phaseProgessBar ' +
         cx(flex, textCenter, justifyCenter, flexColumn, grow) +
         classNameOrEmpty(className)
       }

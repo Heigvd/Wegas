@@ -6,7 +6,7 @@ import { Labeled, LabeledView } from './labeled';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { flex, flexColumn } from '../../../css/classes';
 import { ListDescriptorChild } from '../../editionConfig';
-import { inputDefaultCSS } from '../../../Components/Inputs/inputStyles';
+import { inputStyleCSS } from '../../../Components/Inputs/inputStyles';
 
 export interface Choice {
   value?: {};
@@ -35,11 +35,11 @@ export interface IAsyncSelectProps extends WidgetProps.BaseProps {
     LabeledView;
 }
 const selectStyle = css({
-  ...inputDefaultCSS,
-  display: 'inline-block',
+  ...inputStyleCSS,
+  // display: 'inline-block',
   padding: '2px 4px',
-  border: '1px solid lightgray',
-  backgroundColor: 'lightgray',
+  // border: '1px solid lightgray',
+  // backgroundColor: 'lightgray',
   textAlign: 'center',
   alignItems: 'center',
 });
@@ -114,6 +114,10 @@ export function Selector({
         : (choices[0] as Choice).label}
     </span>
   );
+}
+
+export function SearchableSelector() {
+  return <span>To implement</span>;
 }
 
 function SelectView(props: ISelectProps) {

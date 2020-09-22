@@ -4,47 +4,49 @@ import { cx, css } from 'emotion';
 import {
   flex,
   flexColumn,
-  flexRow,
   expandWidth,
-  flexWrap,
   itemCenter,
+  flexRow,
+  flexWrap,
   justifyCenter,
 } from '../../../css/classes';
 import { CheckMinMax } from './numberComponentHelper';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
-import { classNameOrEmpty } from '../../../Helper/className';
+import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { themeVar } from '../../Style/ThemeVars';
 
-const numberSquareStyle = css({
+const numberBoxStyle = css({
+  padding: '10px',
+});
+
+const numberBoxSquareStyle = css({
   borderColor: themeVar.Common.colors.BorderColor,
+  color: themeVar.Common.colors.TextColor,
   borderStyle: 'solid',
   borderRadius: '2px',
-  width: '1em',
-  height: '1em',
-  lineHeight: '1em',
-  fontsize: '0.5em',
+  width: '1.5em',
+  height: '1.5em',
+  lineHeight: '1.25em',
+  fontSize: '1em',
   textAlign: 'center',
   cursor: 'default',
-});
 
-const activeNumberSquareStyle = css({
-  backgroundColor: themeVar.Common.colors.MainColor,
-});
-
-const clickableNumberSquareStyle = css({
-  cursor: 'pointer',
-  ':hover': {
-    borderColor: themeVar.Common.colors.MainColor,
+  ['&.active']: {
+    backgroundColor: themeVar.Common.colors.MainColor,
+    color: themeVar.Common.colors.SecondaryTextColor,
   },
-});
 
-const disabledNumberSquareStyle = css({
-  backgroundColor: themeVar.Common.colors.DisabledColor,
-});
+  ['&.clickable']: {
+    cursor: 'pointer',
+    ['&:not(.disabled):hover']: {
+      borderColor: themeVar.Common.colors.MainColor,
+    },
+  },
 
-const squareFrameStyle = css({
-  padding: '10px',
+  ['&.disabled']: {
+    backgroundColor: themeVar.Common.colors.DisabledColor,
+  },
 });
 
 interface NumberSquareProps extends ClassAndStyle {
@@ -54,7 +56,6 @@ interface NumberSquareProps extends ClassAndStyle {
   disabled?: boolean;
   readOnly?: boolean;
   hideValue?: boolean;
-  activeClassName?: string;
 }
 
 function NumberSquare({
@@ -64,7 +65,6 @@ function NumberSquare({
   disabled,
   readOnly,
   hideValue,
-  activeClassName,
   className,
   style,
 }: NumberSquareProps) {
@@ -72,11 +72,13 @@ function NumberSquare({
     <div
       onClick={e => !disabled && !readOnly && onClick && onClick(e)}
       className={
-        cx(numberSquareStyle, {
-          [activeClassName ? activeClassName : activeNumberSquareStyle]: active,
-          [clickableNumberSquareStyle]: !disabled && !readOnly,
-          [disabledNumberSquareStyle]: disabled && active,
-        }) + classNameOrEmpty(className)
+        'wegas-numberBox-sqare ' +
+        numberBoxSquareStyle +
+        ' ' +
+        classOrNothing('active', active) +
+        classOrNothing('disabled', !active && disabled) +
+        classOrNothing('clickable', !disabled && !readOnly) +
+        classNameOrEmpty(className)
       }
       style={style}
     >
@@ -107,10 +109,6 @@ export interface NumberBoxProps extends InputProps<number> {
    */
   showQuantity?: boolean;
   /**
-   * activeClassName - the class to apply on an active box
-   */
-  activeClassName?: string;
-  /**
    * boxClassName - the class to apply on the boxes
    */
   boxClassName?: string;
@@ -127,7 +125,6 @@ export function NumberBox({
   hideBoxValue,
   showLabelValue,
   showQuantity,
-  activeClassName,
   boxClassName,
   className,
   id,
@@ -172,7 +169,7 @@ export function NumberBox({
         disabled={disabled}
         readOnly={readonly}
         hideValue={hideBoxValue}
-        activeClassName={activeClassName}
+        // activeClassName={activeClassName}
         className={boxClassName}
       />,
     );
@@ -195,7 +192,10 @@ export function NumberBox({
         value={currentValue}
       />
       <div
-        className={cx(flex, flexRow, flexWrap, justifyCenter, squareFrameStyle)}
+        className={
+          'wegas wegas-numberBox ' +
+          cx(flex, flexRow, flexWrap, justifyCenter, numberBoxStyle)
+        }
       >
         {squares}
       </div>

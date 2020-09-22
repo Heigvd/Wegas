@@ -7,11 +7,11 @@ import {
   itemCenter,
   layoutStyle,
 } from '../../../css/classes';
-import { IconButton } from '../Buttons/IconButton';
 import { cx, css } from 'emotion';
 import { MessageString } from '../../../Editor/Components/MessageString';
 import { themeVar } from '../../Style/ThemeVars';
 import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
+import { Button } from '../Buttons/Button';
 
 const newModeStyle = css({
   borderColor: themeVar.Common.colors.MainColor,
@@ -73,7 +73,7 @@ export function ConfirmAdder<T>({
   return (
     <div ref={container} className={flex}>
       {modalState === 'close' ? (
-        <IconButton
+        <Button
           icon="plus"
           label={label}
           onClick={() => setModalState('new')}
@@ -100,7 +100,7 @@ export function ConfirmAdder<T>({
           )}
           {children(setValue)}
           <div className={cx(flex, flexRow)}>
-            <IconButton
+            <Button
               icon="save"
               disabled={error != null || !accept || accept(inputValue) != null}
               tooltip={(accept && accept(inputValue)) || error}
@@ -110,7 +110,7 @@ export function ConfirmAdder<T>({
                 setModalState('close');
               }}
             />
-            <IconButton icon="times" tooltip={'cancel'} onClick={onCancel} />
+            <Button icon="times" tooltip={'cancel'} onClick={onCancel} />
           </div>
         </div>
       )}

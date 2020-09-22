@@ -14,8 +14,8 @@ import { Script } from './Script/Script';
 import { Code } from './Code';
 import {
   TreeVariableSelect,
-  ScripableVariableSelect,
   TreeVSelect,
+  LabeledScripableVariableSelect,
 } from './TreeVariableSelect';
 import translatable from './translatable';
 import EntityArrayFieldSelect from './EntityArrayFieldSelect';
@@ -32,6 +32,7 @@ import { CustomScript } from './CustomScript';
 import ThemeModeSelect from './ThemeModeSelect';
 import PathSelector from './PathSelector';
 import AttachmentSelector from './AttachmentSelector';
+import { ScriptableString } from './ScriptableString';
 
 export const DEFINED_VIEWS = {
   hidden,
@@ -53,7 +54,8 @@ export const DEFINED_VIEWS = {
   customscript: CustomScript,
   code: Code,
   variableselect: TreeVariableSelect,
-  scriptableVariableSelect: ScripableVariableSelect,
+  scriptableVariableSelect: LabeledScripableVariableSelect,
+  scriptableString: ScriptableString,
   variableInput: VariableInput,
   entityarrayfieldselect: EntityArrayFieldSelect,
   flatvariableselect: FlatVariableSelect,

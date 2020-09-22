@@ -7,17 +7,18 @@ const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageEditor = React.lazy(() => import('./Page/PageEditor'));
 const TreeView = React.lazy(() => import('./Variable/VariableTree'));
 const EntityEditor = React.lazy(() => import('./EntityEditor'));
-const FileBrowserWithMeta = React.lazy(() =>
-  import('./FileBrowser/FileBrowser'),
+const FileBrowserWithMeta = React.lazy(
+  () => import('./FileBrowser/FileBrowser'),
 );
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
 const LanguageEditor = React.lazy(() => import('./LanguageEditor'));
 const PlayLocal = React.lazy(() => import('./PlayLocal'));
 const PlayServer = React.lazy(() => import('./PlayServer'));
-const InstancesEditor = React.lazy(() => import('./Variable/InstancesEditor'));
-const HTMLEditor = React.lazy(() => import('../../Components/HTMLEditor'));
-const ThemeEditor = React.lazy(() =>
-  import('../../Components/Style/ThemeEditor'),
+const InstancesEditor = React.lazy(
+  () => import('./Variable/InstanceProperties'),
+);
+const ThemeEditor = React.lazy(
+  () => import('../../Components/Style/ThemeEditor'),
 );
 
 const Tester = React.lazy(() => import('../../Testers/SchemaPropsTester'));
@@ -30,21 +31,20 @@ const layout = css({
 
 export const availableLayoutTabs = {
   Variables: <TreeView />,
-  StateMachine: <StateMachineEditor />,
-  Editor: <EntityEditor />,
+  'State Machine': <StateMachineEditor />,
+  'Variable Properties': <EntityEditor />,
   Files: <FileBrowserWithMeta />,
   Scripts: <LibraryEditor />,
-  LanguageEditor: <LanguageEditor />,
-  PlayLocal: <PlayLocal />,
-  PlayServer: <PlayServer />,
-  InstancesEditor: <InstancesEditor />,
-  TestHTMLEditor: (
-    <HTMLEditor value={'<div class="testClass">Testing testClass</div>'} />
-  ),
+  'Language Editor': <LanguageEditor />,
+  'Play Local': <PlayLocal />,
+  'Play Server': <PlayServer />,
+  'Instances Editor': <InstancesEditor />,
   Tester: <Tester />,
-  ThemeEditor: <ThemeEditor />,
-  PageEditor: <PageEditor />,
-};
+  'Theme Editor': <ThemeEditor />,
+  'Page Editor': <PageEditor />,
+} as const;
+
+export type AvailableLayoutTab = keyof typeof availableLayoutTabs;
 
 export const mainLayoutId = 'MainEditorLayout';
 
@@ -66,8 +66,8 @@ export default class AppLayout extends React.Component<
           tabs={availableLayoutTabs}
           layout={[
             ['Variables'],
-            [['PlayLocal'], [['StateMachine'], ['Files']]],
-            ['Editor'],
+            [['Play Local'], [['State Machine'], ['Files']]],
+            ['Variable Properties'],
           ]}
           layoutId={mainLayoutId}
         />

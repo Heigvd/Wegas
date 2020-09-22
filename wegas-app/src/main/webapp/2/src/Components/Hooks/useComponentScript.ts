@@ -6,8 +6,10 @@ import { ScriptableEntity } from 'wegas-ts-api';
 export function useComponentScript<T extends IVariableDescriptor>(
   script?: IScript,
 ) {
-  const descriptor = useScript<ScriptableEntity<T>>(script?.content);
-  const instance = useVariableInstance<T>(descriptor?.getEntity() as unknown as T);
+  const descriptor = useScript<ScriptableEntity<T>>(script);
+  const instance = useVariableInstance<T>(
+    (descriptor?.getEntity() as unknown) as T,
+  );
   const notFound = descriptor == null || instance == null;
   return { content: script?.content, descriptor, instance, notFound };
 }

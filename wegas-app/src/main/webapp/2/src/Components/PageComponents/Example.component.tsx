@@ -44,6 +44,7 @@ registerComponent(
     schema: {
       script: schemaProps.scriptVariable('Variable', true, [
         'STextDescriptor',
+        'SStaticTextDescriptor',
         'SNumberDescriptor',
       ]),
     },

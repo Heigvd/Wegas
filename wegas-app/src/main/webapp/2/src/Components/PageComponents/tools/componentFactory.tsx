@@ -17,6 +17,7 @@ import {
 } from 'wegas-ts-api';
 
 export const componentTypes = [
+  'Other',
   'Layout',
   'Input',
   'Output',
