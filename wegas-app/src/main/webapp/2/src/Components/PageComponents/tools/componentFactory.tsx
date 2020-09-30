@@ -22,6 +22,7 @@ export const componentTypes = [
   'Input',
   'Output',
   'Advanced',
+  'Programmatic',
 ] as const;
 
 export type ComponentType = typeof componentTypes[number];
