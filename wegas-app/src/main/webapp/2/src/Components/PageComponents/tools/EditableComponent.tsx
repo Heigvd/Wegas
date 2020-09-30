@@ -355,6 +355,7 @@ export type ContainerTypes =
   | 'LINEAR'
   | 'ABSOLUTE'
   | 'MENU'
+  | 'FOREACH'
   | undefined;
 
 /**
@@ -486,7 +487,7 @@ export function ComponentContainer({
   // const showLayout = showBorders; /*&& containerType != null*/
   const computedVertical =
     // BUG HERE
-    containerType === 'FLEX'
+    containerType === 'FLEX' || containerType === 'FOREACH'
       ? layout?.flexDirection === 'column' ||
         layout?.flexDirection === 'column-reverse'
       : containerType === 'LINEAR'
@@ -510,6 +511,7 @@ export function ComponentContainer({
       case 'MENU':
         return MenuItem;
       case 'FLEX':
+      case 'FOREACH':
       default:
         return FlexItem;
     }
@@ -737,6 +739,7 @@ export function EmptyComponentContainer({
       case 'MENU':
         return MenuItem;
       case 'FLEX':
+      case 'FOREACH':
       default:
         return FlexItem;
     }

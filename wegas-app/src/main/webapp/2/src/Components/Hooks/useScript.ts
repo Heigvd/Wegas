@@ -32,6 +32,10 @@ interface GlobalVariableClass {
     _gm: unknown,
     name: string,
   ) => ScriptableEntity<T> | undefined;
+  // select: <T extends IVariableDescriptor>(
+  //   _gm: unknown,
+  //   id: string,
+  // ) => ScriptableEntity<T> | undefined;
 }
 
 interface GlobalClasses {

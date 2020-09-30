@@ -5,5 +5,5 @@ import * as React from 'react';
  * Values are to be injected in the local scriptEval context
  */
 export const ScriptContext = React.createContext<{
-  identifiers: { [identifier: string]: any };
+  identifiers: { [identifier: string]: object };
 }>({ identifiers: {} });
