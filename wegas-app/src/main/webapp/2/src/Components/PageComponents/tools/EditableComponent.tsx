@@ -11,8 +11,9 @@ import {
 } from '../../../Editor/Components/Page/PageEditor';
 import {
   flex,
-  hatchedBackground,
+  foregroundContent,
   hoverColorInsetShadow,
+  thinHoverColorInsetShadow,
 } from '../../../css/classes';
 import {
   FlexItem,
@@ -646,7 +647,7 @@ export function ComponentContainer({
           cx(handleControlStyle, flex, extraState.themeModeClassName, {
             [showBordersStyle]: showBorders && containerType != null,
             [hoverColorInsetShadow]: editMode || isSelected,
-            [hatchedBackground]: isFocused,
+            [cx(foregroundContent, thinHoverColorInsetShadow)]: isFocused,
             // [selectedComponentStyle]: isSelected,
             [childDropzoneHorizontalStyle]: !computedVertical,
             [childDropzoneVerticalStyle]: computedVertical,

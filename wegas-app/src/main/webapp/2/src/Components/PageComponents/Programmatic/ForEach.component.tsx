@@ -1,7 +1,13 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
-import { ScriptContext } from '../../Contexts/ScriptContext';
+import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import { ScriptCTX } from '../../Contexts/ScriptContext';
 import { useScript } from '../../Hooks/useScript';
+import {
+  FlexListProps,
+  FlexList,
+  flexListSchema,
+} from '../../Layouts/FlexList';
 import {
   registerComponent,
   pageComponentFactory,
@@ -9,35 +15,45 @@ import {
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
 
-interface ForEachProps extends WegasComponentProps {
+interface ForEachProps extends WegasComponentProps, FlexListProps {
   getItemsFn?: IScript;
   exposeAs: string;
 }
 
-function ForEach({ getItemsFn, exposeAs, children }: ForEachProps) {
-  const { identifiers } = React.useContext(ScriptContext);
+function ForEach({
+  getItemsFn,
+  exposeAs,
+  children,
+  ...flexListProps
+}: ForEachProps) {
+  const { identifiers } = React.useContext(ScriptCTX);
+  const { editMode } = React.useContext(pageCTX);
+  let items = useScript<object[]>(getItemsFn);
 
-  const items = useScript<any[]>(getItemsFn);
+  if (editMode) {
+    items = items == null || items.length === 0 ? undefined : [items[0]];
+  }
 
   return (
-    <>
-      {items &&
-        items.map(item => {
-          return (
-            /* For each item, create a new script context.
-             * Such context expose current item as "exposeAs" name.
-             */
-            <ScriptContext.Provider
-              value={{
-                identifiers: { ...identifiers, [exposeAs]: item },
-              }}
-              key={JSON.stringify(item)}
-            >
-              {children}
-            </ScriptContext.Provider>
-          );
-        })}
-    </>
+    <FlexList {...flexListProps}>
+      {items == null
+        ? children
+        : items.map(item => {
+            return (
+              /* For each item, create a new script context.
+               * Such context expose current item as "exposeAs" name.
+               */
+              <ScriptCTX.Provider
+                value={{
+                  identifiers: { ...identifiers, [exposeAs]: item },
+                }}
+                key={JSON.stringify(item)}
+              >
+                {children}
+              </ScriptCTX.Provider>
+            );
+          })}
+    </FlexList>
   );
 }
 
@@ -45,10 +61,14 @@ registerComponent(
   pageComponentFactory({
     component: ForEach,
     componentType: 'Programmatic',
+    containerType: 'FOREACH',
     name: 'For each',
     icon: 'code',
     schema: {
-      getItemsFn: schemaProps.script('Items', false),
+      ...flexListSchema,
+      getItemsFn: schemaProps.customScript('Items', false, [
+        'Readonly<object[]>',
+      ]),
       exposeAs: schemaProps.string('Expose as', false, 'item'),
     },
     allowedVariables: ['TextDescriptor'],

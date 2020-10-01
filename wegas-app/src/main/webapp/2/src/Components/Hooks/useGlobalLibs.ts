@@ -135,6 +135,10 @@ export function useGlobalLibs() {
 
         declare const I18n : GlobalI18nClass;
 
+        declare const Context : {
+          [id:string]:any;
+        }
+
         ${buildGlobalServerMethods(globalServerMethods)}
         `;
     } catch (e) {

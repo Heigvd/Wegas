@@ -1188,7 +1188,10 @@ public class SchemaGenerator extends AbstractMojo {
             implBuilder.append(System.lineSeparator())
                 .append("  " + sKey + " : " + sKey + ";")
                 .append(System.lineSeparator())
-                .append("  '" + sKey + "[]' : " + sKey + "[];");
+                .append("  '" + sKey + "[]' : " + sKey + "[];")
+                .append("  'Readonly<" + sKey + ">' : Readonly<" + sKey + ">;")
+                .append(System.lineSeparator())
+                .append("  'Readonly<" + sKey + "[]>' : Readonly<" + sKey + "[]>;");
         });
 
         implBuilder.append(System.lineSeparator())

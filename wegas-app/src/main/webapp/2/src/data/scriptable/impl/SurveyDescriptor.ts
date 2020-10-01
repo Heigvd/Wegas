@@ -1,9 +1,15 @@
-import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { SSurveyDescriptor, SSurveyInstance, SPlayer } from 'wegas-ts-api';
+import {
+  getItems,
+  getScriptableInstance,
+} from '../../methods/VariableDescriptorMethods';
+import {
+  SSurveyDescriptor,
+  SSurveyInstance,
+  SPlayer,
+  SSurveySectionDescriptor,
+} from 'wegas-ts-api';
 
 export class SSurveyDescriptorImpl extends SSurveyDescriptor {
-
-
   public isActive(p: Readonly<SPlayer>): boolean {
     return this.getInstance(p).getActive();
   }
@@ -12,7 +18,7 @@ export class SSurveyDescriptorImpl extends SSurveyDescriptor {
   }
 
   public isOngoing(p: Readonly<SPlayer>): boolean {
-    return this.getInstance(p).getStatus() === "ONGOING";
+    return this.getInstance(p).getStatus() === 'ONGOING';
   }
 
   public isNotOngoing(p: Readonly<SPlayer>): boolean {
@@ -20,7 +26,7 @@ export class SSurveyDescriptorImpl extends SSurveyDescriptor {
   }
 
   public isCompleted(p: Readonly<SPlayer>): boolean {
-    return this.getInstance(p).getStatus() === "COMPLETED";
+    return this.getInstance(p).getStatus() === 'COMPLETED';
   }
 
   public isNotCompleted(p: Readonly<SPlayer>): boolean {
@@ -28,7 +34,7 @@ export class SSurveyDescriptorImpl extends SSurveyDescriptor {
   }
 
   public isClosed(p: Readonly<SPlayer>): boolean {
-    return this.getInstance(p).getStatus() === "CLOSED";
+    return this.getInstance(p).getStatus() === 'CLOSED';
   }
 
   public isNotClosed(p: Readonly<SPlayer>): boolean {
@@ -50,8 +56,10 @@ export class SSurveyDescriptorImpl extends SSurveyDescriptor {
   public close(_p: Readonly<SPlayer>): void {
     throw Error('This is readonly');
   }
-
   public getInstance(player: Readonly<SPlayer>): Readonly<SSurveyInstance> {
     return getScriptableInstance<SSurveyInstance>(this, player);
+  }
+  public getItems() {
+    return getItems<SSurveySectionDescriptor>(this.entity.itemsIds);
   }
 }

@@ -24,18 +24,14 @@ import { ScriptableEntity } from 'wegas-ts-api';
 import { popupDispatch, addPopup, PopupActionCreator } from '../PopupManager';
 import { ActionCreator } from '../../data/actions';
 import { translate } from '../../Editor/Components/FormView/translatable';
-import { wwarn } from '../../Helper/wegaslog';
-import { ScriptContext } from '../Contexts/ScriptContext';
+import { wlog, wwarn } from '../../Helper/wegaslog';
+import { ScriptCTX } from '../Contexts/ScriptContext';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
     _gm: unknown,
     name: string,
   ) => ScriptableEntity<T> | undefined;
-  // select: <T extends IVariableDescriptor>(
-  //   _gm: unknown,
-  //   id: string,
-  // ) => ScriptableEntity<T> | undefined;
 }
 
 interface GlobalClasses {
@@ -274,6 +270,9 @@ export function useGlobals() {
   };
 
   globals.I18n = {
+    translate: translatable => {
+      return translate(translatable, lang);
+    },
     toString: entity => {
       let translatableEntity: STranslatableContent | undefined;
       switch (entity.getEntity()['@class']) {
@@ -357,7 +356,7 @@ export function safeClientScriptEval<T extends ReturnType>(
 }
 
 function useScriptContext() {
-  const { identifiers } = React.useContext(ScriptContext);
+  const { identifiers } = React.useContext(ScriptCTX);
   globals.Context = identifiers;
 }
 
@@ -388,6 +387,11 @@ export function useUnsafeScript<T extends ReturnType>(
   script?: string | IScript,
 ): T extends IMergeable ? unknown : T {
   useGlobals();
+  useScriptContext();
+
+  wlog(globals);
+  // debugger;
+
   const fn = React.useCallback(() => clientScriptEval<T>(script), [script]);
   return useStore(fn, deepDifferent) as any;
 }

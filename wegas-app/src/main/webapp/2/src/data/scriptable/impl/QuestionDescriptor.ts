@@ -1,12 +1,17 @@
-import { getInstance } from '../../methods/VariableDescriptorMethods';
+import { getInstance, getItems } from '../../methods/VariableDescriptorMethods';
 import { VariableDescriptor, Player } from '../../selectors';
-import { IQuestionDescriptor, IPlayer, IChoiceDescriptor, IReply } from 'wegas-ts-api';
+import {
+  IQuestionDescriptor,
+  IPlayer,
+  IChoiceDescriptor,
+  SChoiceDescriptor,
+  IReply,
+} from 'wegas-ts-api';
 
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
 import { SQuestionDescriptor, SQuestionInstance, SPlayer } from 'wegas-ts-api';
 
 export class SQuestionDescriptorImpl extends SQuestionDescriptor {
-
   private getReplies(self: Readonly<SPlayer>, onlyValidated?: boolean) {
     let replies: IReply[] = [];
     getChoices(this.getEntity()).map(cd => {
@@ -33,8 +38,9 @@ export class SQuestionDescriptorImpl extends SQuestionDescriptor {
       return false;
     }
     if (max) {
-      return this.getReplies(p, true)
-        .filter(r => !r.getIgnored()).length >= max;
+      return (
+        this.getReplies(p, true).filter(r => !r.getIgnored()).length >= max
+      );
     }
     return true;
   }
@@ -55,6 +61,9 @@ export class SQuestionDescriptorImpl extends SQuestionDescriptor {
   }
   public getInstance(player: Readonly<SPlayer>): Readonly<SQuestionInstance> {
     return getScriptableInstance<SQuestionInstance>(this, player);
+  }
+  public getItems() {
+    return getItems<SChoiceDescriptor>(this.entity.itemsIds);
   }
 }
 
