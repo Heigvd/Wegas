@@ -672,15 +672,18 @@ export function ComponentContainer({
             dropPosition="INTO"
           />
         )}
-        {dragHoverState && editable && childrenType !== 'ABSOLUTE' && (
-          <ComponentDropZone
-            onDrop={dndComponent =>
-              onDrop(dndComponent, containerPath, itemPath)
-            }
-            show
-            dropPosition="BEFORE"
-          />
-        )}
+        {dragHoverState &&
+          editable &&
+          childrenType !== 'ABSOLUTE' &&
+          childrenType !== 'FOREACH' && (
+            <ComponentDropZone
+              onDrop={dndComponent =>
+                onDrop(dndComponent, containerPath, itemPath)
+              }
+              show
+              dropPosition="BEFORE"
+            />
+          )}
         {editable && (
           <EditHandle
             name={name}
@@ -699,19 +702,22 @@ export function ComponentContainer({
         {extraState.infoBulletProps && (
           <PlayerInfoBullet {...extraState.infoBulletProps} />
         )}
-        {dragHoverState && editable && childrenType !== 'ABSOLUTE' && (
-          <ComponentDropZone
-            onDrop={dndComponent =>
-              onDrop(
-                dndComponent,
-                containerPath,
-                itemPath != null ? itemPath + 1 : itemPath,
-              )
-            }
-            show
-            dropPosition="AFTER"
-          />
-        )}
+        {dragHoverState &&
+          editable &&
+          childrenType !== 'ABSOLUTE' &&
+          childrenType !== 'FOREACH' && (
+            <ComponentDropZone
+              onDrop={dndComponent =>
+                onDrop(
+                  dndComponent,
+                  containerPath,
+                  itemPath != null ? itemPath + 1 : itemPath,
+                )
+              }
+              show
+              dropPosition="AFTER"
+            />
+          )}
         <LockedOverlay
           locked={(extraState.disabled || extraState.locked) === true}
         />

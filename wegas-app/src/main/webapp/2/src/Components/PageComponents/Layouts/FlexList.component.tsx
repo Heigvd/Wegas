@@ -30,6 +30,7 @@ registerComponent(
     name: 'FlexList',
     icon: 'bars',
     schema: flexListSchema,
+    getComputedPropsFromVariable: () => ({ children: [] }),
     //  allowedVariables: ['ListDescriptor'],
     //    get: (val?: Readonly<SListDescriptor>) =>
     //      val

@@ -131,20 +131,30 @@ export function usePageComponentStore<R>(
 }
 
 export function pageComponentFactory<
+  C extends ContainerType,
   P extends WegasComponentProps,
   T extends IVariableDescriptor['@class']
->(param: {
-  component: React.FunctionComponent<P>;
-  componentType: ComponentType;
-  name: string;
-  icon: Icon;
-  schema: { [prop: string]: SchemaPropsSchemas };
-  allowedVariables?: T[];
-  getComputedPropsFromVariable?: (
-    variable?: WegasClassNameAndScriptableTypes[T],
-  ) => Omit<P, keyof PageComponentProps>;
-  containerType?: ContainerType;
-}): PageComponent {
+>(
+  param: {
+    component: React.FunctionComponent<P>;
+    componentType: ComponentType;
+    containerType?: C;
+    name: string;
+    icon: Icon;
+    schema: { [prop: string]: SchemaPropsSchemas };
+    allowedVariables?: T[];
+  } & (C extends undefined
+    ? {
+        getComputedPropsFromVariable?: (
+          variable?: WegasClassNameAndScriptableTypes[T],
+        ) => Omit<P, keyof PageComponentProps>;
+      }
+    : {
+        getComputedPropsFromVariable: (
+          variable?: WegasClassNameAndScriptableTypes[T],
+        ) => Omit<P, keyof PageComponentProps>;
+      }),
+): PageComponent {
   return {
     WegasComponent: param.component,
     componentType: param.componentType,
