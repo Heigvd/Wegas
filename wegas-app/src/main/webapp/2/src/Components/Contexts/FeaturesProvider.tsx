@@ -8,6 +8,13 @@ export const featuresCTX = React.createContext<{
   removeFeature: (feature: FeatureLevel) => void;
 }>({ currentFeatures: [], setFeature: () => {}, removeFeature: () => {} });
 
+export function isFeatureEnabled(
+  currentFeatures: FeatureLevel[],
+  feature: FeatureLevel,
+) {
+  return currentFeatures.includes(feature);
+}
+
 function FeaturesContext({ children }: React.PropsWithChildren<{}>) {
   const [features, setFeature] = React.useState<FeatureLevel[]>(['DEFAULT']);
   return (
@@ -34,14 +41,14 @@ export const FeaturesProvider = React.memo(FeaturesContext);
 /**
  * Features selector allows to select features inside the feature context given by the FeatureProvider
  */
-export function FeatureToggler() {
+export function FeatureToggler({ className, style }: ClassAndStyle) {
   const { currentFeatures, setFeature, removeFeature } = React.useContext(
     featuresCTX,
   );
 
   const selectFeature = React.useCallback(
     (feature: FeatureLevel) => {
-      if (currentFeatures.includes(feature)) {
+      if (isFeatureEnabled(currentFeatures, feature)) {
         removeFeature(feature);
       } else {
         setFeature(feature);
@@ -60,7 +67,7 @@ export function FeatureToggler() {
             <>
               <input
                 type="checkbox"
-                defaultChecked={currentFeatures.includes(feature)}
+                defaultChecked={isFeatureEnabled(currentFeatures, feature)}
                 onChange={() => selectFeature(feature)}
                 onClick={e => e.stopPropagation()}
               />
@@ -69,8 +76,10 @@ export function FeatureToggler() {
           ),
         }))}
         onSelect={({ value: feature }) => selectFeature(feature)}
+        containerClassName={className}
+        style={style}
       />
     ),
-    [currentFeatures, selectFeature],
+    [currentFeatures, selectFeature, className, style],
   );
 }

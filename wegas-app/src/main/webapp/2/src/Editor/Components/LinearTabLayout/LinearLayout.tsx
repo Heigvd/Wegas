@@ -11,6 +11,7 @@ import { wlog } from '../../../Helper/wegaslog';
 import 'react-reflex/styles.css';
 import { flex, noOverflow, grow } from '../../../css/classes';
 import { themeVar } from '../../../Components/Style/ThemeVars';
+import { AvailableLayoutTab } from '../Layout';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
@@ -41,7 +42,7 @@ export const splitter = css({
 });
 
 export const focusTabContext = React.createContext<
-  (id: string, layoutId: string) => void
+  (id: AvailableLayoutTab, layoutId: string) => void
 >(() => undefined);
 
 type LayoutType = 'ReflexLayoutNode' | 'TabLayoutNode';
@@ -935,11 +936,25 @@ export function MainLinearLayout<T extends ComponentMap>(
               // Orientation is inverted to keep same logic in TabLayoutNode and ReflexLayoutNode (vertical==true : v, vertical==false : >)
               orientation={currentLayout.vertical ? 'horizontal' : 'vertical'}
             >
-              {rendered}
+              {rendered.length === 0 ? (
+                <ReflexElement>
+                  <div>Loading...</div>
+                </ReflexElement>
+              ) : (
+                rendered
+              )}
             </ReflexContainer>
           );
         }
       }
+    } else {
+      return (
+        <ReflexContainer>
+          <ReflexElement>
+            <div>Nothing inside</div>
+          </ReflexElement>
+        </ReflexContainer>
+      );
     }
   };
 

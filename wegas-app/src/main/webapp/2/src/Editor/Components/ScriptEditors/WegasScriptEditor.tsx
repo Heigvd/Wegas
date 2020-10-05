@@ -21,17 +21,23 @@ export interface WegasScriptEditorProps extends SrcEditorProps {
   clientScript?: boolean;
   returnType?: WegasScriptEditorReturnTypeName[];
   resizable?: boolean;
+  args?: [string, WegasScriptEditorReturnTypeName[]][];
 }
 
-const header = (type?: string[]) => {
-  const cleanType =
-    type !== undefined
-      ? type.reduce(
+const header = (
+  returnType?: string[],
+  args?: [string, WegasScriptEditorReturnTypeName[]][],
+) => {
+  const cleanArgs =
+    args !== undefined ? args.map(arg => arg.join(':')).join(',') : '';
+  const cleanReturnType =
+    returnType !== undefined
+      ? returnType.reduce(
           (o, t, i) => o + (i ? '|' : '') + t.replace(/\r?\n/, ''),
           '',
         )
       : '';
-  return `/*\n *\tPlease always respect the return type : ${cleanType}\n *\tPlease only write in JS even if the editor let you write in TS\n */\n() : ${cleanType} => {\n\t`;
+  return `/*\n *\tPlease always respect the return type : ${cleanReturnType}\n *\tPlease only write in JS even if the editor let you write in TS\n */\n(${cleanArgs}) : ${cleanReturnType} => {\n\t`;
 };
 const headerSize = textToArray(header()).length;
 const footer = () => `\n};`;
@@ -45,8 +51,9 @@ const footerSize = textToArray(footer()).length - 1;
 const formatScriptToFunction = (
   val: string,
   returnType?: WegasScriptEditorReturnTypeName[],
+  args?: [string, WegasScriptEditorReturnTypeName[]][],
 ) => {
-  if (returnType !== undefined) {
+  if (returnType !== undefined && returnType.length > 0) {
     let newValue = val;
     // Removing first tab if exists
     if (newValue.length > 0 && newValue[0] === '\t') {
@@ -63,7 +70,7 @@ const formatScriptToFunction = (
       );
     }
     newValue = arrayToText(lines);
-    return `${header(returnType)}${newValue}${footer()}`;
+    return `${header(returnType, args)}${newValue}${footer()}`;
   }
   return val;
 };
@@ -72,7 +79,9 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const {
     value,
     returnType,
-    /*TODO : allow non server methods here clientScript,*/ onChange,
+    args,
+    /*TODO : allow non server methods here clientScript,*/
+    onChange,
     onBlur,
     onSave,
     resizable,
@@ -103,14 +112,15 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const acceptFunctionStyle = (
     val?: string,
     returnType?: WegasScriptEditorReturnTypeName[],
+    args?: [string, WegasScriptEditorReturnTypeName[]][],
   ) => {
     const newVal = val ? val : '';
-    if (returnType !== undefined) {
+    if (returnType !== undefined && returnType.length > 0) {
       const lines = textToArray(newVal);
       if (
         // Header protection
         arrayToText(lines.slice(0, headerSize - 1)) !==
-          header(returnType).slice(0, -2) ||
+          header(returnType, args).slice(0, -2) ||
         // Footer protection
         (lines.length > 0 &&
           lines[lines.length - footerSize] !== footer().substr(1)) ||
@@ -133,8 +143,8 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const trimFunctionToScript = React.useCallback(
     (val?: string, fn?: (val: string) => void) => {
       let newValue = val ? val : '';
-      if (returnType !== undefined) {
-        if (acceptFunctionStyle(newValue, returnType)) {
+      if (returnType !== undefined && returnType.length > 0) {
+        if (acceptFunctionStyle(newValue, returnType, args)) {
           const newLines = textToArray(newValue)
             /* Removes header and footer */
             .filter(
@@ -167,13 +177,15 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     [returnType, toggleRefresh],
   );
 
+  const globalLibs = useGlobalLibs();
+
   const extraLibs: MonacoDefinitionsLibraries[] = [
     ...(newExtraLibs || []),
-    ...useGlobalLibs(),
+    ...globalLibs,
     { name: 'defaultLib:lib.d.ts', content: libes5 },
   ];
 
-  if (returnType !== undefined) {
+  if (returnType !== undefined && returnType.length > 0) {
     editorLock = (editor: MonacoSCodeEditor) => {
       editorRef.current = editor;
       // Allow to make lines of the editor readonly
@@ -198,7 +210,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   }
 
   const actions: SrcEditorAction[] =
-    returnType && monaco
+    returnType && returnType.length > 0 && monaco
       ? [
           {
             id: 'SelectAllWithScriptFunction',
@@ -233,7 +245,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     [onSave, trimFunctionToScript],
   );
 
-  const content = formatScriptToFunction(value || '', returnType);
+  const content = formatScriptToFunction(value || '', returnType, args);
   const editor = (
     <SrcEditor
       key={Number(refresh)}
@@ -242,7 +254,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       extraLibs={extraLibs}
       value={content}
       onEditorReady={editorLock}
-      onChange={handleChange}
+      onChange={v => handleChange(v)}
       onBlur={handleBlur}
       onSave={handleSave}
       defaultActions={actions}

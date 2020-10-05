@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { cx } from 'emotion';
 import { Toolbar } from '../../Components/Toolbar';
-import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { LanguagesAPI } from '../../API/languages.api';
 import { useGameModel } from '../../Components/Hooks/useGameModel';
 import { GameModel } from '../../data/selectors';
@@ -15,6 +14,7 @@ import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { flex, grow, justifyCenter, flexColumn } from '../../css/classes';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { IGameModelLanguage } from 'wegas-ts-api';
+import { Button } from '../../Components/Inputs/Buttons/Button';
 
 const edition = { color: themeVar.Common.colors.ActiveColor };
 const simple = { color: themeVar.Common.colors.TextColor };
@@ -54,7 +54,7 @@ export default function LanguageEditor() {
       <Toolbar>
         <Toolbar.Header>
           <div className={cx(flex, grow)}>{title}</div>
-          <IconButton
+          <Button
             icon={{
               icon: 'cog',
               style: editMode ? edition : simple,
@@ -71,7 +71,7 @@ export default function LanguageEditor() {
                   <React.Fragment key={language.code}>
                     {index > 0 && (
                       <div className={cx(flex, grow, justifyCenter)}>
-                        <IconButton
+                        <Button
                           icon="arrows-alt-h"
                           tooltip="Priorize language on the right"
                           onClick={() => {

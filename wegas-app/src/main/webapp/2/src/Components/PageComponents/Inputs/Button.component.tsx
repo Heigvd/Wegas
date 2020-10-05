@@ -10,40 +10,60 @@ import { Button } from '../../Inputs/Buttons/Button';
 import { createScript } from '../../../Helper/wegasEntites';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript } from 'wegas-ts-api';
-import { translate } from '../../../Editor/Components/FormView/translatable';
-import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { icons, Icons } from '../../../Editor/Components/Views/FontAwesome';
+import { useScript } from '../../Hooks/useScript';
 
 export interface PlayerButtonProps extends WegasComponentProps {
-  label: string | ITranslatableContent;
   action: IScript;
+  label?: IScript;
+  icon?: Icons;
+  prefixedLabel?: boolean;
 }
 
-const PlayerButton: React.FunctionComponent<PlayerButtonProps> = ({
+function PlayerButton({
   label,
   action,
   style,
-}: PlayerButtonProps) => {
-  const { lang } = React.useContext(languagesCTX);
-  let computedLabel: React.ReactNode;
-  if (typeof label === 'string') {
-    computedLabel = label;
-  } else {
-    computedLabel = <div dangerouslySetInnerHTML={{__html:translate(label, lang)}}></div>;
-  }
+  icon,
+  prefixedLabel,
+}: PlayerButtonProps) {
+  const translation = useScript<string>(label) || '';
   return (
     <Button
-      label={computedLabel}
       onClick={() =>
         store.dispatch(Actions.VariableInstanceActions.runScript(action!))
       }
       style={{ margin: 'auto', ...style }}
-    />
+      icon={icon}
+      prefixedLabel={prefixedLabel}
+    >
+      <div
+        dangerouslySetInnerHTML={{
+          __html: translation,
+        }}
+      ></div>
+    </Button>
   );
-};
+}
 
 export const buttonSchema = {
-  action: schemaProps.script('Action', undefined, 'SET'),
-  label: schemaProps.html('Label', false)
+  action: schemaProps.script('Action', false, 'SET'),
+  label: schemaProps.scriptString('Label', false),
+  icon: schemaProps.select('Icon', true, Object.keys(icons)),
+  prefixedLabel: schemaProps.boolean('Prefixed label', false),
+};
+
+const defaultLabel: ITranslatableContent = {
+  '@class': 'TranslatableContent',
+  translations: {
+    EN: {
+      '@class': 'Translation',
+      lang: 'EN',
+      status: '',
+      translation: 'Button',
+    },
+  },
+  version: 0,
 };
 
 registerComponent(
@@ -55,7 +75,7 @@ registerComponent(
     schema: buttonSchema,
     getComputedPropsFromVariable: () => ({
       action: createScript(),
-      label: 'Button',
+      label: defaultLabel,
     }),
   }),
 );

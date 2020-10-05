@@ -227,6 +227,8 @@ export function getIcon<T extends IMergeable>(entity: T): Icons | undefined {
       return 'font';
     case 'TextDescriptor':
       return 'paragraph';
+    case 'StaticTextDescriptor':
+      return ['square-full', { icon: 'paragraph', color: 'white', size: 'xs' }];
     case 'TriggerDescriptor':
       return 'random';
     case 'WhQuestionDescriptor':
@@ -276,6 +278,8 @@ export function getLabel<T extends IMergeable>(entity: T): string | undefined {
       return 'String';
     case 'TextDescriptor':
       return 'Text';
+    case 'StaticTextDescriptor':
+      return 'Static text';
     case 'TriggerDescriptor':
       return 'Trigger';
     case 'WhQuestionDescriptor':
@@ -304,6 +308,7 @@ export const ListDescriptorChild = [
   'StringDescriptor',
   'ListDescriptor',
   'TextDescriptor',
+  'StaticTextDescriptor',
   'TaskDescriptor',
   'BooleanDescriptor',
   'ObjectDescriptor',

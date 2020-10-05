@@ -11,9 +11,9 @@ import { generateAbsolutePath, FileAPI } from '../../../API/files.api';
 import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { cx } from 'emotion';
 import { flexRow, flex } from '../../../css/classes';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { wwarn } from '../../../Helper/wegaslog';
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 interface AllowedTypes {
   string: string;
@@ -73,7 +73,7 @@ export function CustomFileSelector<T extends keyof AllowedTypes>(
                   }
                 }}
               />
-              <IconButton
+              <Button
                 icon="folder"
                 onClick={() => setShowBrowser(sb => !sb)}
                 tooltip="Browse file"

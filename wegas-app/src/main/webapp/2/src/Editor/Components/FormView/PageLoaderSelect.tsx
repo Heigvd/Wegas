@@ -2,7 +2,6 @@ import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonView, CommonViewContainer } from './commonView';
 import { LabeledView, Labeled } from './labeled';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { scriptEditStyle } from './Script/Script';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { createScript } from '../../../Helper/wegasEntites';
@@ -21,6 +20,7 @@ import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { MessageString } from '../MessageString';
 import { IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 const updateScript = (scriptContent: string, currentScript?: IScript) =>
   currentScript
@@ -83,7 +83,7 @@ export default function PageLoaderSelect(props: PageSelectProps) {
                 <MessageString value="No page loader found" />
               ) : (
                 <>
-                  <IconButton
+                  <Button
                     icon="code"
                     onClick={() => setSrcMode(sm => !sm)}
                     className={css({ flex: '0 1 auto' })}

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { instantiate } from '../../data/scriptable';
 import { Player, VariableDescriptor as VDSelect } from '../../data/selectors';
 import { useStore, store } from '../../data/store';
-import { featuresCTX } from '../Contexts/FeaturesProvider';
+import { featuresCTX, isFeatureEnabled } from '../Contexts/FeaturesProvider';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
 import { useGameModel } from './useGameModel';
 import { Actions } from '../../data';
@@ -15,10 +15,16 @@ import {
   WegasClassNames,
   SGameModel,
   SPlayer,
+  STranslatableContent,
+  SStringDescriptor,
+  STextDescriptor,
+  SStaticTextDescriptor,
+  IScript,
 } from 'wegas-ts-api';
 import { ScriptableEntity } from 'wegas-ts-api';
 import { popupDispatch, addPopup, PopupActionCreator } from '../PopupManager';
 import { ActionCreator } from '../../data/actions';
+import { translate } from '../../Editor/Components/FormView/translatable';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -38,6 +44,7 @@ interface GlobalClasses {
   Classes: GlobalClassesClass;
   Popups: GlobalPopupClass;
   WegasEvents: WegasEventClass;
+  I18n: GlobalI18nClass;
 }
 
 const globalDispatch = store.dispatch;
@@ -57,6 +64,7 @@ const { sandbox, globals } = createSandbox<GlobalClasses>();
 export function useGlobals() {
   // Hooks
   const player = useStore(Player.selectCurrent);
+  const splayer = instantiate(player);
   const gameModel = useGameModel();
   const defaultFeatures: FeaturesSelecta = {
     DEFAULT: true,
@@ -86,7 +94,10 @@ export function useGlobals() {
   globals.Editor = {
     getFeatures: () =>
       Object.keys(defaultFeatures).reduce(
-        (fs, f: FeatureLevel) => ({ ...fs, [f]: currentFeatures.includes(f) }),
+        (fs, f: FeatureLevel) => ({
+          ...fs,
+          [f]: isFeatureEnabled(currentFeatures, f),
+        }),
         defaultFeatures,
       ),
     setFeatures: (features: FeaturesSelecta) =>
@@ -254,6 +265,35 @@ export function useGlobals() {
     },
   };
 
+  globals.I18n = {
+    toString: entity => {
+      let translatableEntity: STranslatableContent | undefined;
+      switch (entity.getEntity()['@class']) {
+        case 'StringDescriptor': {
+          translatableEntity = (entity as SStringDescriptor)
+            .getInstance(splayer)
+            .getTrValue();
+          break;
+        }
+        case 'TextDescriptor': {
+          translatableEntity = (entity as STextDescriptor)
+            .getInstance(splayer)
+            .getTrValue();
+          break;
+        }
+        case 'StaticTextDescriptor': {
+          translatableEntity = (entity as SStaticTextDescriptor).getText();
+          break;
+        }
+        default: {
+          translatableEntity = entity.getLabel();
+          break;
+        }
+      }
+      return translate(translatableEntity, lang);
+    },
+  };
+
   // TEST
   //   const currentPhase = globals.Variable.find(gameModel,'phaseMSG')?.getValue(self)
   // 	const currentPeriod = 1;
@@ -276,29 +316,31 @@ export function useGlobals() {
 export type ReturnType = object | number | boolean | string | undefined;
 
 export function clientScriptEval<T extends ReturnType>(
-  script?: string,
+  script?: string | IScript,
 ): T extends IMergeable ? unknown : T {
-  return script != null
+  const scriptContent = typeof script === 'string' ? script : script?.content;
+  return scriptContent != null
     ? (((sandbox.contentWindow as unknown) as {
         eval: (code: string) => T;
       })
         // 'undefined' so that an empty script don't return '"use strict"'
-        .eval('"use strict";undefined;' + transpile(script)) as any)
+        .eval('"use strict";undefined;' + transpile(scriptContent)) as any)
     : undefined;
 }
 
 export function safeClientScriptEval<T extends ReturnType>(
-  script?: string,
+  script?: string | IScript,
   catchCB?: (e: Error) => void,
 ): T extends IMergeable ? unknown : T {
   try {
     return clientScriptEval<T>(script);
   } catch (e) {
+    const scriptContent = typeof script === 'string' ? script : script?.content;
     wwarn(
       `Script error at line ${e.lineNumber} : ${
         e.message
-      }\n\nScript content is :\n${script}\n\nTraspiled content is :\n${
-        script != null ? transpile(script) : undefined
+      }\n\nScript content is :\n${scriptContent}\n\nTraspiled content is :\n${
+        scriptContent != null ? transpile(scriptContent) : undefined
       }`,
     );
     catchCB && catchCB(e);
@@ -312,12 +354,14 @@ export function safeClientScriptEval<T extends ReturnType>(
  * @returns Last expression or undefined in case it errors.
  */
 export function useScript<T extends ReturnType>(
-  script?: string,
+  script?: string | IScript,
   catchCB?: (e: Error) => void,
-): T extends IMergeable ? unknown : T {
+): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
   useGlobals();
-  const fn = React.useCallback(
-    () => safeClientScriptEval<T>(script, catchCB), [script]);
+  const fn = React.useCallback(() => safeClientScriptEval<T>(script, catchCB), [
+    script,
+    catchCB,
+  ]);
   return useStore(fn, deepDifferent) as any;
 }
 
@@ -327,10 +371,9 @@ export function useScript<T extends ReturnType>(
  * @returns Last expression or LocalEvalError in case it errors.
  */
 export function useUnsafeScript<T extends ReturnType>(
-  script?: string,
+  script?: string | IScript,
 ): T extends IMergeable ? unknown : T {
   useGlobals();
-  const fn = React.useCallback(
-    () => clientScriptEval<T>(script), [script]);
+  const fn = React.useCallback(() => clientScriptEval<T>(script), [script]);
   return useStore(fn, deepDifferent) as any;
 }

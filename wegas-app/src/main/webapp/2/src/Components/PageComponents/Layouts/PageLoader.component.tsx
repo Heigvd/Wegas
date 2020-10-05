@@ -44,7 +44,7 @@ function PlayerPageLoader({
     );
     pageScript = initialSelectedPageId;
   }
-  const pageId = (useScript(pageScript?.content) as string | undefined) || '';
+  const pageId = (useScript(pageScript) as string | undefined) || '';
 
   return pageIdPath.includes(pageId) ? (
     <pre>Page {pageId} recursion</pre>
@@ -67,7 +67,6 @@ registerComponent(
     name: PAGE_LOADER_COMPONENT_TYPE,
     icon: 'window-maximize',
     schema: {
-      name: schemaProps.string('Page', true),
       initialSelectedPageId: schemaProps.pageSelect('Page', false),
     },
     getComputedPropsFromVariable: () => ({

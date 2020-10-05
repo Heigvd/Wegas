@@ -11,6 +11,10 @@
     "build": "cross-env NODE_ENV=production gulp"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-react-hooks": "^2.4.0",
     "wegas-ts-api": "link:../wegas-ts-api/target/wegas-ts-api",
     "bower": "^1.8.4",
     "browser-sync": "2.26.3",

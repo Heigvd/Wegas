@@ -10,6 +10,8 @@ import {
   expandBoth,
   contentCenter,
   justifyCenter,
+  itemCenter,
+  textCenter,
 } from '../../../css/classes';
 import {
   usePageComponentStore,
@@ -25,7 +27,8 @@ import {
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { IconComp } from '../Views/FontAwesome';
-import { pageCTX, PageEditionToolbar } from './PageEditor';
+import { pageCTX } from './PageEditor';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 const headerStyle = css({
   padding: '20px',
@@ -198,15 +201,16 @@ export function ComponentPalette({
 
   const componentNames = usePageComponentStore(
     s => Object.keys(s),
-    // s => Object.entries(s).filter(([,v])=>v.componentType === currentType).map(([k])=>k),
     deepDifferent,
   );
   return (
     <div className={cx(flex, flexColumn, expandBoth)}>
-      <PageEditionToolbar setEditMode={setEditMode} />
       {!editMode && (
-        <div className={headerStyle}>
-          Edit mode must be enabled to use the palette
+        <div className={cx(headerStyle, flex, itemCenter, flexColumn)}>
+          <p className={textCenter}>
+            Edit mode must be enabled to use the palette.
+          </p>
+          <Button onClick={() => setEditMode(true)}>Enable edit mode</Button>
         </div>
       )}
       <div className={cx(flex, flexColumn, grow, paletteStyle(editMode))}>

@@ -1,12 +1,7 @@
-import { MethodConfig } from '../../../../editionConfig';
-
-interface ScriptStore {
-  impact: MethodConfig;
-  condition: MethodConfig;
-}
-export const SCRIPTS: ScriptStore = {
-  impact: {
-    'RequestManager.sendCustomEvent': {
+export const commonServerMethods: GlobalServerObject = {
+  RequestManager: {
+    sendCustomEvent: {
+      '@class': 'GlobalServerMethod',
       label: 'Send popup',
       parameters: [
         {
@@ -30,7 +25,10 @@ export const SCRIPTS: ScriptStore = {
         },
       ],
     },
-    'Event.fire': {
+  },
+  Event: {
+    fire: {
+      '@class': 'GlobalServerMethod',
       label: 'Fire event',
       parameters: [
         {
@@ -39,7 +37,21 @@ export const SCRIPTS: ScriptStore = {
         },
       ],
     },
-    'DelayedEvent.delayedFire': {
+    fired: {
+      '@class': 'GlobalServerMethod',
+      returns: 'boolean',
+      label: 'Event has been fired',
+      parameters: [
+        {
+          type: 'string',
+          required: true,
+        },
+      ],
+    },
+  },
+  DelayedEvent: {
+    delayedFire: {
+      '@class': 'GlobalServerMethod',
       label: 'Fire delayed event',
       parameters: [
         {
@@ -56,18 +68,6 @@ export const SCRIPTS: ScriptStore = {
           type: 'string',
           required: true,
           view: { label: 'Event name' },
-        },
-      ],
-    },
-  },
-  condition: {
-    'Event.fired': {
-      returns: 'boolean',
-      label: 'Event has been fired',
-      parameters: [
-        {
-          type: 'string',
-          required: true,
         },
       ],
     },

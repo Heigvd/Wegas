@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import Form from 'jsoninput';
 import { schemaProps } from '../../../../Components/PageComponents/tools/schemaProps';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { LabeledView } from '../labeled';
 import { CommonView } from '../commonView';
+import { Button } from '../../../../Components/Inputs/Buttons/Button';
 
 interface VariableInputProps
   extends WidgetProps.BaseProps<
@@ -32,7 +32,7 @@ export function VariableInput(props: VariableInputProps) {
   const [srcMode, setSrcMode] = React.useState(false);
   return (
     <div>
-      <IconButton icon="code" onClick={() => setSrcMode(sm => !sm)} />
+      <Button icon="code" onClick={() => setSrcMode(sm => !sm)} />
       <div>
         {srcMode ? (
           <WegasScriptEditor

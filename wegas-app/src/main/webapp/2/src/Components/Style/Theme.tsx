@@ -113,6 +113,7 @@ export const defaultThemeValues: ThemeValues = {
     'Main color': '#1565C0',
     'Secondary color': '#00499c',
     'Background color': 'white',
+    'Border color': 'rgba(96,169,255,1.0)',
     'Secondary background color': 'rgba(208,224,243,1.0)',
     'Text color': '#1565C0',
     'Secondary text color': 'white',

@@ -140,3 +140,14 @@ export function mergeDeep(target: any, ...sources: any): any {
 
   return mergeDeep(target, ...sources);
 }
+
+/**
+ * arrayRemoveDuplicates - Removes the duplicates  in an array
+ * Warning, it's not efficient at all, use it on samll arrays and not in loops.
+ * @param a - the array to trim
+ */
+export function arrayRemoveDuplicates(a: unknown[]) {
+  return a.filter(function (item, pos) {
+    return a.indexOf(item) == pos;
+  });
+}

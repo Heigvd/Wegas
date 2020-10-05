@@ -1,12 +1,7 @@
 import * as React from 'react';
 import JSONForm, { Schema } from 'jsoninput';
 import { Toolbar } from '../../Components/Toolbar';
-import {
-  defaultMargin,
-  expandBoth,
-  noOverflow,
-  expandHeight,
-} from '../../css/classes';
+import { defaultMargin, noOverflow, expandHeight } from '../../css/classes';
 import './FormView';
 import { Button, ButtonProps } from '../../Components/Inputs/Buttons/Button';
 import { wlog } from '../../Helper/wegaslog';
@@ -63,7 +58,7 @@ export class Form<T> extends React.Component<
   }
   render() {
     return (
-      <Toolbar className={expandBoth}>
+      <Toolbar>
         <Toolbar.Header>
           {this.props.update && (
             <Button

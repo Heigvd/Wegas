@@ -39,9 +39,9 @@ export function ComponentOptionsManager({
     lock,
   } = options;
 
-  const disabled = useScript<boolean>(disableIf?.content);
-  const hidden = useScript<boolean>(hideIf?.content);
-  const readOnly = useScript<boolean>(readOnlyIf?.content);
+  const disabled = useScript<boolean>(disableIf);
+  const hidden = useScript<boolean>(hideIf);
+  const readOnly = useScript<boolean>(readOnlyIf);
   const locked = useStore(s => lock != null && s.global.locks[lock] === true);
 
   const infoBulletProps = useComputeUnreadCount(unreadCount) || infoBullet;

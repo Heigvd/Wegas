@@ -160,9 +160,5 @@ export type PageLoaderComponent = WegasComponent & {
 export function isPageLoaderComponent(
   component?: WegasComponent,
 ): component is PageLoaderComponent {
-  return (
-    component != null &&
-    component.type === PAGE_LOADER_COMPONENT_TYPE &&
-    'selectedPageId' in component.props
-  );
+  return component != null && component.type === PAGE_LOADER_COMPONENT_TYPE;
 }

@@ -1,20 +1,28 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { cx, css } from 'emotion';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
-import { textCenter, shrinkWidth } from '../../../css/classes';
-import { IconButton } from '../Buttons/IconButton';
+import {
+  shrinkWidth,
+  flexColumn,
+  itemCenter,
+  flex,
+} from '../../../css/classes';
+import { Button } from '../Buttons/Button';
+import { classOrNothing, classNameOrEmpty } from '../../../Helper/className';
 import { themeVar } from '../../Style/ThemeVars';
 
-const checkboxStyle = (disabled?: boolean, readOnly?: boolean) =>
-  css({
-    cursor: disabled || readOnly ? 'default' : 'pointer',
-    color: disabled
-      ? themeVar.Common.colors.DisabledColor
-      : readOnly
-      ? themeVar.Common.colors.HeaderColor
-      : themeVar.Common.colors.TextColor,
-  });
+const cbxStyle = css({
+  cursor: 'pointer',
+  color: themeVar.Common.colors.TextColor,
+  textAlign: 'center',
+  ['$:not(.disabled):not(.readonly):hover']: {
+    backgroundColor: themeVar.Common.colors.HoverColor,
+  },
+  ['&.disabled &.readOnly']: {
+    cursor: 'default',
+  },
+});
 
 export interface CheckBoxProps extends InputProps<boolean> {
   /**
@@ -64,11 +72,14 @@ export function CheckBox({
   return (
     <div
       id={id}
-      className={cx(textCenter, className, shrinkWidth)}
+      className={
+        cx(flex, flexColumn, itemCenter, shrinkWidth) +
+        classNameOrEmpty(className)
+      }
       title={hint}
     >
       {label && <Value value={label} />}
-      <IconButton
+      <Button
         icon={
           checked
             ? {
@@ -93,7 +104,14 @@ export function CheckBox({
               return !v;
             });
         }}
-        className={cx(checkboxStyle(disabled, readOnly), checkBoxClassName)}
+        className={
+          'wegas wegas-cbx' +
+          cbxStyle +
+          ' ' +
+          classOrNothing('disabled', disabled) +
+          classOrNothing('readOnly', readOnly) +
+          classNameOrEmpty(checkBoxClassName)
+        }
         disabled={disabled}
         noHover={disabled}
       />

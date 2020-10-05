@@ -499,7 +499,7 @@ export function useComputeUnreadCount(
 ): PlayerInfoBulletProps | undefined {
   const scriptReturn = useScript<
     string | number | object[] | UnreadCountDescriptorTypes
-  >(unreadCountVariableScript?.content);
+  >(unreadCountVariableScript);
 
   let infoBeamMessage: string | number;
   if (typeof scriptReturn === 'number') {

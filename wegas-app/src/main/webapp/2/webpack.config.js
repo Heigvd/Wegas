@@ -8,6 +8,7 @@ const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 const smp = new SpeedMeasurePlugin();
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin;
+const CopyPlugin = require('copy-webpack-plugin');
 
 const PROD = process.env.NODE_ENV === 'production';
 const PREPROD = process.env.NODE_ENV === 'pre-production';
@@ -23,6 +24,9 @@ const plugins = [
   // }),
   new ForkTsCheckerWebpackPlugin({
     formatter: 'codeframe',
+  }),
+  new CopyPlugin({
+    patterns: [{ from: 'src/**/*.less' }],
   }),
 ];
 if (!isCI && PREPROD) {
@@ -115,10 +119,34 @@ const modules = {
           },
         ],
       },
+      // {
+      //   test: /\.less$/,
+      //   use: [
+      //     {
+      //       loader: 'url-loader',
+      //       options: {
+      //         name: 'css/[hash]-[name].[ext]',
+      //       },
+      //     },
+      //   ],
+      // },
+
       {
         test: /\.txt$/i,
         use: 'raw-loader',
       },
+      {
+        test: /\.less$/i,
+        use: 'raw-loader',
+      },
+      // {
+      //   test: /\.less$/,
+      //   use: [
+      //     { loader: 'style-loader' },
+      //     { loader: 'css-loader' },
+      //     { loader: 'less-loader' },
+      //   ],
+      // },
     ],
   },
   devServer: {

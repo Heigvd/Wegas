@@ -2,7 +2,6 @@ import * as React from 'react';
 import { GameModel, Global } from '../../data/selectors';
 import { css, cx } from 'emotion';
 import { StoreConsumer, useStore, store } from '../../data/store';
-import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { Actions } from '../../data';
 import { FontAwesome } from './Views/FontAwesome';
 import { FeatureToggler } from '../../Components/Contexts/FeaturesProvider';
@@ -13,6 +12,8 @@ import {
   grow,
   foregroundContent,
   flexRow,
+  componentMarginLeft,
+  componentMarginRight,
 } from '../../css/classes';
 import { Title } from '../../Components/Inputs/String/Title';
 import { mainLayoutId } from './Layout';
@@ -21,10 +22,11 @@ import { DropMenu } from '../../Components/DropMenu';
 import { parseEvent } from './EntityEditor';
 import { editorEventRemove } from '../../data/Reducer/globalState';
 import { themeVar } from '../../Components/Style/ThemeVars';
+import { Button } from '../../Components/Inputs/Buttons/Button';
 
 // May be moved in a proper file to allow wider usage
 // interface NotificationMenuProps {}
-function NotificationMenu(/*{}: NotificationMenuProps*/) {
+function NotificationMenu({ className, style }: ClassAndStyle) {
   const wegasEvents = useStore(s => s.global.events);
   const [recievedEvents, setRecievedEvents] = React.useState<number[]>([]);
 
@@ -61,7 +63,7 @@ function NotificationMenu(/*{}: NotificationMenuProps*/) {
                 }
               }}
             >
-              {event.unread && <IconButton icon="exclamation" noHover />}
+              {event.unread && <Button icon="exclamation" noHover />}
               <div>
                 {new Date(event.timestamp).toLocaleTimeString(undefined, {
                   hour: 'numeric',
@@ -70,7 +72,7 @@ function NotificationMenu(/*{}: NotificationMenuProps*/) {
                 })}
               </div>
               <div>{message}</div>
-              <IconButton
+              <Button
                 icon="times"
                 onClick={e => {
                   e.stopPropagation();
@@ -84,6 +86,8 @@ function NotificationMenu(/*{}: NotificationMenuProps*/) {
       onSelect={(_item, _keys) => {
         // Could be used to open a tab to an event log
       }}
+      containerClassName={className}
+      style={style}
     />
   );
 }
@@ -104,16 +108,19 @@ export default function Header() {
         <div className={cx(flex, itemCenter, foregroundContent, headerStyle)}>
           <Title className={grow}>{gameModel.name}</Title>
           <LangToggler />
-          <FeatureToggler />
-          <NotificationMenu />
+          <FeatureToggler className={componentMarginLeft} />
+          <NotificationMenu
+            className={cx(componentMarginLeft, componentMarginRight)}
+          />
           <FontAwesome icon="user" />
-          <span>{user.name}</span>
-          <IconButton
+          <span className={componentMarginLeft}>{user.name}</span>
+          <Button
             icon="undo"
             tooltip="Restart"
             onClick={() => dispatch(Actions.VariableDescriptorActions.reset())}
+            className={componentMarginLeft}
           />
-          <IconButton
+          <Button
             icon={[{ icon: 'undo' }, { icon: 'window-restore', size: 'xs' }]}
             tooltip="Reset layout"
             onClick={() => {
@@ -122,6 +129,7 @@ export default function Header() {
               );
               window.location.reload();
             }}
+            className={componentMarginLeft}
           />
         </div>
       )}

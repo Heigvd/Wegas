@@ -1,42 +1,59 @@
 import * as React from 'react';
-import { css, cx } from 'emotion';
+import { cx, css } from 'emotion';
 import { InputProps } from '../SimpleInput';
 import { Value } from '../../Outputs/Value';
-import { textCenter, flex, shrinkWidth } from '../../../css/classes';
+import {
+  shrinkWidth,
+  grow,
+  flex,
+  flexColumn,
+  itemCenter,
+} from '../../../css/classes';
+import { classOrNothing, classNameOrEmpty } from '../../../Helper/className';
 import { themeVar } from '../../Style/ThemeVars';
 
-const togglerStyle = (
-  disabled?: boolean,
-  readOnly?: boolean,
-  checked?: boolean,
-) =>
-  css({
-    minWidth: '50px',
-    width: 'fit-content',
-    height: '24px',
-    boxSizing: 'border-box',
-    borderRadius: '24px',
-    borderStyle: 'solid',
-    borderWidth: '2px',
-    borderColor: disabled
-      ? themeVar.Common.colors.DisabledColor
-      : themeVar.Common.colors.BorderColor,
-    backgroundColor: checked
-      ? themeVar.Common.colors.SuccessColor
-      : themeVar.Common.colors.ErrorColor,
-    cursor: disabled || readOnly ? 'default' : 'pointer',
-    margin: 'auto',
-  });
+const togglerStyle = css({
+  display: 'flex',
+  minWidth: '50px',
+  height: '24px',
+  boxSizing: 'border-box',
+  borderRadius: '24px',
+  borderStyle: 'solid',
+  borderWidth: '2px',
+  color: themeVar.Common.colors.SecondaryTextColor,
+  borderColor: themeVar.Common.colors.BorderColor,
+  backgroundColor: themeVar.Common.colors.ErrorColor,
+  cursor: 'pointer',
+  margin: 'auto',
+  flexDirection: 'row',
+  ['&.disabled']: {
+    borderColor: themeVar.Common.colors.DisabledColor,
+    cursor: 'default',
+  },
+  ['&.readOnly']: {
+    cursor: 'default',
+  },
+  ['&.checked']: {
+    backgroundColor: themeVar.Common.colors.SuccessColor,
+    flexDirection: 'row-reverse',
+  },
+});
 
-const handleStyle = (disabled?: boolean) =>
-  css({
-    borderRadius: '20px',
-    minWidth: '20px',
-    height: '20px',
-    backgroundColor: disabled
-      ? themeVar.Common.colors.DisabledColor
-      : themeVar.Common.colors.MainColor,
-  });
+const togglerHandleStyle = css({
+  borderRadius: '20px',
+  width: '20px',
+  height: '20px',
+  backgroundColor: themeVar.Common.colors.MainColor,
+  ['&.disabled']: {
+    backgroundColor: themeVar.Common.colors.DisabledColor,
+  },
+});
+
+const togglerTextStyle = css({
+  marginLeft: '8px',
+  marginRight: '8px',
+  textAlign: 'center',
+});
 
 export interface TogglerProps extends InputProps<boolean> {
   /**
@@ -94,14 +111,24 @@ export function Toggler({
   }, [value]);
 
   return (
-    <div id={id} className={cx(textCenter, className, shrinkWidth)}>
+    <div
+      id={id}
+      className={
+        cx(flex, flexColumn, itemCenter, shrinkWidth) +
+        classNameOrEmpty(className)
+      }
+    >
       {label && <Value value={label} />}
       <div
-        className={cx(
-          togglerStyle(disabled, readOnly, checked),
-          flex,
-          togglerClassName,
-        )}
+        className={
+          'wegas wegas-toggler ' +
+          togglerStyle +
+          ' ' +
+          classOrNothing('disabled', disabled) +
+          classOrNothing('readOnly', readOnly) +
+          classOrNothing('checked', checked) +
+          classNameOrEmpty(togglerClassName)
+        }
         onClick={e => {
           e.stopPropagation();
           !disabled &&
@@ -113,18 +140,30 @@ export function Toggler({
         }}
         title={hint}
       >
-        {!checked && (
-          <div style={{ flex: '1 1 auto' }} title={hint}>
+        {/* {!checked && (
+          <div
+            className={'wegas-toggler-text ' + cx(grow, togglerTextStyle)}
+            title={hint}
+          >
             {labels ? labels.off : ''}
           </div>
-        )}
+        )} */}
         <div
-          className={cx(handleStyle(disabled), handlerClassName)}
+          className={
+            'wegas-toggler-handle ' +
+            togglerHandleStyle +
+            ' ' +
+            classOrNothing('disabled', disabled) +
+            classNameOrEmpty(handlerClassName)
+          }
           title={hint}
         />
-        {checked && (
-          <div style={{ flex: '1 1 auto' }} title={hint}>
-            {labels ? labels.on : ''}
+        {labels && (
+          <div
+            className={'wegas-toggler-text ' + cx(grow, togglerTextStyle)}
+            title={hint}
+          >
+            {checked ? labels.on : labels.off}
           </div>
         )}
       </div>

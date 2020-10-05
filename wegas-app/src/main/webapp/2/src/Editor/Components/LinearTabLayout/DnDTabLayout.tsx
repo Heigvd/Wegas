@@ -19,8 +19,8 @@ import {
   contentStyle,
   hatchedBackground,
 } from '../../../css/classes';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { themeVar } from '../../../Components/Style/ThemeVars';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 const tabButton = css({
   color: themeVar.Common.colors.SecondaryTextColor,
@@ -221,11 +221,12 @@ export function DnDTabLayout({
             layoutId={layoutId}
           >
             {label}
-            <IconButton
+            <Button
               icon="times"
               tooltip="Remove tab"
               onClick={() => onDeleteTab(label)}
               className={tabButton}
+              noBackground
             />
           </DragTab>
         </DropTab>,
@@ -266,6 +267,7 @@ export function DnDTabLayout({
                   onNewTab(String(i.value));
                 }}
                 buttonClassName={tabButton}
+                noBackground
               />
             </Tab>
           )}

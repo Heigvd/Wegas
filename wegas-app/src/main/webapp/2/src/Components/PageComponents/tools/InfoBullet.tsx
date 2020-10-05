@@ -76,10 +76,10 @@ export function PlayerInfoBullet({
   blinkScript,
   messageScript,
 }: PlayerInfoBulletProps) {
-  let show = useScript<boolean>(showScript?.content);
+  let show = useScript<boolean>(showScript);
   show = show == null ? true : false;
-  const blink = useScript<boolean>(blinkScript?.content) || false;
-  const message = useScript<string>(messageScript?.content) || '';
+  const blink = useScript<boolean>(blinkScript) || false;
+  const message = useScript<string>(messageScript) || '';
 
   return <InfoBullet show={show} blink={blink} message={message} />;
 }

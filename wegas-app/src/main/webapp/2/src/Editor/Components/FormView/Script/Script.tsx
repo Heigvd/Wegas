@@ -2,7 +2,6 @@ import * as React from 'react';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { LabeledView, Labeled } from '../labeled';
 import { CommonView, CommonViewContainer } from '../commonView';
-import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import { css } from 'emotion';
 import { store } from '../../../../data/store';
@@ -32,10 +31,11 @@ import { DropMenu } from '../../../../Components/DropMenu';
 import { ResizeHandle } from '../../ResizeHandle';
 import { createScript } from '../../../../Helper/wegasEntites';
 import { IScript, IVariableDescriptor, IVariableInstance } from 'wegas-ts-api';
+import { Button } from '../../../../Components/Inputs/Buttons/Button';
 
 export const scriptEditStyle = css({
   minHeight: '5em',
-  marginTop: '0.8em',
+  // marginTop: '0.8em',
   width: '500px',
 });
 
@@ -278,14 +278,14 @@ export function Script({
             <>
               {labelNode}
               {!error && (
-                <IconButton
+                <Button
                   icon="code"
                   pressed={error !== undefined}
                   onClick={() => setSrcMode(sm => !sm)}
                 />
               )}
               {isServerScript && (
-                <IconButton
+                <Button
                   icon="play"
                   onClick={() => testScript(script.current)}
                 />
