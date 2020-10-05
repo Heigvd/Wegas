@@ -66,6 +66,7 @@ public class UIGameModel extends UIComponentBase {
 
     private boolean editorMode;
     private boolean defaultValues;
+    private boolean includeInactive;
     private I18nFacade i18nFacade;
 
     @Override
@@ -87,6 +88,7 @@ public class UIGameModel extends UIComponentBase {
         Player player = (Player) getAttributes().get("player");
         String root = (String) getAttributes().get("root");
         String modeParam = (String) getAttributes().get("mode");
+        String inactiveParam = (String) getAttributes().get("inactive");
         String title = (String) getAttributes().get("title");
         String defVal = (String) getAttributes().get("defaultValues");
         Boolean displayPath = "true".equals((String) getAttributes().get("displayPath"));
@@ -96,6 +98,7 @@ public class UIGameModel extends UIComponentBase {
         // editor mode and default values only allowedif current user has edit permission on gamemodel
         defaultValues = "true".equals(defVal) && hasEditRightOnGameModel;
         editorMode = "editor".equals(modeParam) && hasEditRightOnGameModel;
+        includeInactive = "true".equals(inactiveParam) && hasEditRightOnGameModel;
 
         ResponseWriter writer = context.getResponseWriter();
 
@@ -197,7 +200,7 @@ public class UIGameModel extends UIComponentBase {
         }
 
         for (VariableDescriptor vd : vds) {
-            UIVariableDescriptor uiVd = new UIVariableDescriptor(vd, player, editorMode, defaultValues);
+            UIVariableDescriptor uiVd = new UIVariableDescriptor(vd, player, editorMode, defaultValues, includeInactive);
             uiVd.encodeAll(context);
         }
 
