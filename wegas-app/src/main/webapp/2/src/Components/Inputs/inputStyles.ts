@@ -1,4 +1,4 @@
-import { css } from 'emotion';
+import { css, ObjectInterpolation } from 'emotion';
 import { themeVar } from '../Style/ThemeVars';
 
 export const inputDefaultCSS = {
@@ -6,10 +6,10 @@ export const inputDefaultCSS = {
   minHeight: '1.6em',
 };
 
-export const inputStyle = css({
+export const inputStyleCSS: ObjectInterpolation<undefined> = {
   ...inputDefaultCSS,
   resize: 'vertical',
-  borderStyle: 'thin solid',
+  borderStyle: 'inset',
   borderColor: themeVar.Common.colors.BorderColor,
   borderRadius: themeVar.Common.dimensions.BorderRadius,
   '::placeholder': {
@@ -19,4 +19,6 @@ export const inputStyle = css({
     color: themeVar.Common.colors.HoverTextColor,
     backgroundColor: themeVar.Common.colors.HoverColor,
   },
-});
+};
+
+export const inputStyle = css(inputStyleCSS);

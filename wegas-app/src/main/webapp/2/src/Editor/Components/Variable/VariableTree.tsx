@@ -34,8 +34,15 @@ import {
   globalSelection,
   localSelection,
   searchSelection,
+  componentMarginLeft,
+  flex,
+  grow,
+  flexColumn,
 } from '../../../css/classes';
-import { IVariableDescriptor } from 'wegas-ts-api';
+import {
+  IVariableDescriptor,
+  IEvaluationDescriptorContainer,
+} from 'wegas-ts-api';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -56,6 +63,31 @@ const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
     }),
 );
 
+interface VariableTreeTitleProps extends ClassAndStyle {
+  variable?: IVariableDescriptor | IEvaluationDescriptorContainer;
+  subPath?: (string | number)[];
+}
+
+export function VariableTreeTitle({
+  variable,
+  subPath,
+  className,
+  style,
+}: VariableTreeTitleProps) {
+  return (
+    <div className={className} style={style}>
+      <IconComp icon={withDefault(getIcon(variable!), 'question')} />
+      {entityIs(variable, 'EvaluationDescriptorContainer')
+        ? subPath && subPath.length === 1
+          ? String(subPath[0]) === 'feedback'
+            ? 'Feedback'
+            : 'Feedback comment'
+          : 'Unreachable code'
+        : editorLabel(variable)}
+    </div>
+  );
+}
+
 interface TreeProps {
   variables: number[];
   localState?: Readonly<Edition> | undefined;
@@ -65,6 +97,7 @@ function TreeView({ variables, localState, localDispatch }: TreeProps) {
   const [search, setSearch] = React.useState('');
   const { data } = useAsync(itemsPromise);
   const globalDispatch = store.dispatch;
+  const focusTab = React.useContext(focusTabContext);
 
   return (
     <Toolbar>
@@ -82,15 +115,17 @@ function TreeView({ variables, localState, localDispatch }: TreeProps) {
           items={data || []}
           icon="plus"
           onSelect={(i, e) => {
-            const dispatch =
-              e.ctrlKey && localDispatch ? localDispatch : globalDispatch;
-            dispatch(Actions.EditorActions.createVariable(i.value));
+            if (e.ctrlKey && localDispatch) {
+              localDispatch(Actions.EditorActions.createVariable(i.value));
+            } else {
+              globalDispatch(Actions.EditorActions.createVariable(i.value));
+              focusTab('Variable Properties', mainLayoutId);
+            }
           }}
-          // direction="right"
         />
         <SearchTool />
       </Toolbar.Header>
-      <Toolbar.Content>
+      <Toolbar.Content style={{ paddingTop: '1px' }}>
         <Container
           onDropResult={({ source, target, id }) => {
             if (
@@ -108,7 +143,7 @@ function TreeView({ variables, localState, localDispatch }: TreeProps) {
           }}
         >
           {({ nodeProps }) => (
-            <div style={{ height: '100%' }}>
+            <div className={cx(flex, grow, flexColumn)}>
               {variables ? (
                 variables.map(v => (
                   <CTree
@@ -139,11 +174,7 @@ function isMatch(variableId: number, search: string): boolean {
   if (variable == null) {
     return false;
   }
-  if (
-    editorLabel(variable)
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  ) {
+  if (editorLabel(variable).toLowerCase().includes(search.toLowerCase())) {
     return true;
   }
   if (varIsList(variable)) {
@@ -151,6 +182,7 @@ function isMatch(variableId: number, search: string): boolean {
   }
   return false;
 }
+
 function isEditing(
   variableId: number,
   subPath?: string[],
@@ -169,14 +201,17 @@ function isEditing(
 const headerStyle = css({
   //  borderLeft: `${SELECTED_STYLE_WIDTH}px solid transparent`,
 });
-export const nodeContentStyle = css({
-  cursor: 'pointer',
-  marginLeft: '5px',
-  marginRight: '5px',
-  ':hover': {
-    backgroundColor: themeVar.Common.colors.HoverColor,
-  },
-});
+
+export const nodeContentStyle = cx(
+  css({
+    cursor: 'pointer',
+    marginRight: '5px',
+    ':hover': {
+      backgroundColor: themeVar.Common.colors.HoverColor,
+    },
+  }),
+  componentMarginLeft,
+);
 
 export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_DRAG_ITEM';
 
@@ -192,16 +227,25 @@ function CTree(
 ): JSX.Element | null {
   const focusTab = React.useContext(focusTabContext);
   const { searching, editing, variable, match } = useStore(state => {
-    let variable = VariableDescriptor.select(props.variableId);
+    let variable:
+      | undefined
+      | IVariableDescriptor
+      | IEvaluationDescriptorContainer = VariableDescriptor.select(
+      props.variableId,
+    );
     if (Array.isArray(props.subPath) && props.subPath.length > 0) {
-      variable = get(variable, props.subPath) as IVariableDescriptor;
+      variable = get(variable, props.subPath) as
+        | IVariableDescriptor
+        | IEvaluationDescriptorContainer;
     }
+
     return {
       variable: variable,
       match: isMatch(props.variableId, props.search),
       editing: isEditing(props.variableId, props.subPath, state.global.editing),
       searching:
         (variable &&
+          entityIs(variable, 'VariableDescriptor') &&
           state.global.search.type === 'GLOBAL' &&
           state.global.search.value.includes(editorLabel(variable))) ||
         false,
@@ -214,21 +258,6 @@ function CTree(
     props.localState,
   );
   if (variable) {
-    const Title = asyncSFC(async () => {
-      const icon = getIcon(variable!);
-      return (
-        <span className={nodeContentStyle}>
-          <IconComp icon={withDefault(icon, 'question')} />
-          {entityIs(variable, 'EvaluationDescriptorContainer') &&
-          props.subPath &&
-          props.subPath.length === 1
-            ? props.subPath[0] === 'feedback'
-              ? 'Feedback'
-              : 'Feedback comment'
-            : editorLabel(variable)}
-        </span>
-      );
-    });
     if (!match) {
       return null;
     }
@@ -237,8 +266,8 @@ function CTree(
         dragId={TREEVIEW_ITEM_TYPE}
         {...props.nodeProps()}
         header={
-          <span
-            className={cx(headerStyle, {
+          <div
+            className={cx(headerStyle, flex, {
               [globalSelection]: editing,
               [localSelection]: localEditing,
               [searchSelection]: searching,
@@ -252,9 +281,9 @@ function CTree(
                   entityIs(variable, 'FSMDescriptor') ||
                   entityIs(variable, 'DialogueDescriptor')
                 ) {
-                  focusTab('StateMachine', mainLayoutId);
+                  focusTab('State Machine', mainLayoutId);
                 }
-                focusTab('Editor', mainLayoutId);
+                focusTab('Variable Properties', mainLayoutId);
               }
               getEntityActions(variable!).then(({ edit }) =>
                 dispatch(
@@ -266,7 +295,11 @@ function CTree(
               );
             }}
           >
-            <Title />
+            <VariableTreeTitle
+              variable={variable}
+              subPath={props.subPath}
+              className={nodeContentStyle}
+            />
             {entityIs(variable, 'ListDescriptor') ||
             entityIs(variable, 'QuestionDescriptor') ||
             entityIs(variable, 'WhQuestionDescriptor') ? (
@@ -289,7 +322,7 @@ function CTree(
                 path={props.subPath![0] as 'feedback' | 'fbComments'}
               />
             ) : null}
-          </span>
+          </div>
         }
         id={variable}
       >

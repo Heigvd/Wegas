@@ -4,6 +4,7 @@ export interface DefaultThemeColors {
   'Main color': ColorType;
   'Secondary color': ColorType;
   'Background color': ColorType;
+  'Border color': ColorType;
   'Secondary background color': ColorType;
   'Text color': ColorType;
   'Secondary text color': ColorType;
@@ -130,7 +131,7 @@ export const defaultLightMode: Mode = {
         MainColor: 'Main color',
         ActiveColor: 'Secondary color',
         BackgroundColor: 'Background color',
-        BorderColor: 'Secondary background color',
+        BorderColor: 'Border color',
         DisabledColor: 'Disabled color',
         HeaderColor: 'Secondary background color',
         HighlightColor: 'Highlight color',

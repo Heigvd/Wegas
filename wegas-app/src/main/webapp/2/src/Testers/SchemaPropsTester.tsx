@@ -14,12 +14,14 @@ import { themeVar } from '../Components/Style/ThemeVars';
 import { IScript, IAbstractContentDescriptor } from 'wegas-ts-api';
 
 const testSchema = {
-  hidden: schemaProps.hidden(),
-  boolean: schemaProps.boolean('Boolean'),
-  number: schemaProps.number('Number'),
-  string: schemaProps.string('String'),
-  script: schemaProps.script('Script'),
-  code: schemaProps.code('Code'),
+  variable: schemaProps.scriptVariable('Variable', false),
+  translated: schemaProps.scriptString('Translated', false),
+  hidden: schemaProps.hidden(false),
+  boolean: schemaProps.boolean('Boolean', false),
+  number: schemaProps.number('Number', false),
+  string: schemaProps.string('String', false),
+  script: schemaProps.script('Script', false),
+  code: schemaProps.code('Code', false),
   select: schemaProps.select('Select', true, [
     'Option 1',
     'Option 2',
@@ -48,14 +50,16 @@ const testSchema = {
     },
   ]),
   // customizedMultilevelHashList: wegasComponentExtraSchema('FLEX').options,
-  file: schemaProps.file('File', true),
-  greyFilterfile: schemaProps.file('Filtered audio file', true, 'FILE', {
+  file: schemaProps.file('File', false),
+  greyFilterfile: schemaProps.file('Filtered audio file', false, 'FILE', {
     filterType: 'grey',
     fileType: 'audio',
   }),
 };
 
 interface SchemaPropsTesterState {
+  variable: IScript;
+  translated: IScript;
   hidden: string[];
   boolean: boolean;
   number: number;
@@ -73,6 +77,8 @@ interface SchemaPropsTesterState {
 
 export default function SchemaPropsTester() {
   const [values, setValues] = React.useState<SchemaPropsTesterState>({
+    variable: createScript(),
+    translated: createScript("\"<p>&nbsp;I18n.toString(Variable.find(gameModel,'infoboxPhaseActuelle'))</p>\""),
     hidden: ['hidden'],
     boolean: false,
     number: 0,

@@ -115,7 +115,7 @@ export default function FileBrowserWithMeta() {
                 : []
             }
             localDispatch={localDispatch}
-            onFileClick={() => focusTab('Editor', mainLayoutId)}
+            onFileClick={() => focusTab('Variable Properties', mainLayoutId)}
           />
         );
       }}

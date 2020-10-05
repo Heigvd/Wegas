@@ -23,8 +23,10 @@ import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { Actions } from '../../../data';
 import { MessageString } from '../MessageString';
 import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
-import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
-import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
+import {
+  featuresCTX,
+  isFeatureEnabled,
+} from '../../../Components/Contexts/FeaturesProvider';
 import { pageEditorCTX, pageCTX } from './PageEditor';
 import {
   Tree,
@@ -42,6 +44,7 @@ import {
 import { PAGEEDITOR_COMPONENT_TYPE, isDnDComponent } from './ComponentPalette';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 const bulletCSS = {
   width: '1em',
@@ -112,12 +115,20 @@ export interface ComponentNodeId {
 
 type NodeId = IndexNodeId | ComponentNodeId;
 
-function isWegasComponent(component:unknown):component is WegasComponent{
-  if(typeof component !== "object" || component == null || !("type" in component) || !("props" in component)){
+function isWegasComponent(component: unknown): component is WegasComponent {
+  if (
+    typeof component !== 'object' ||
+    component == null ||
+    !('type' in component) ||
+    !('props' in component)
+  ) {
     return false;
   }
-  const objectComponent = component as {type:unknown; props:unknown};
-  if(typeof  objectComponent.type !== "string" || typeof objectComponent.props !== "object"){
+  const objectComponent = component as { type: unknown; props: unknown };
+  if (
+    typeof objectComponent.type !== 'string' ||
+    typeof objectComponent.props !== 'object'
+  ) {
     return false;
   }
   return true;
@@ -257,7 +268,7 @@ function IndexItemModifer({
 
   return (
     <div className={className} title={tooltip}>
-      <IconButton
+      <Button
         icon="edit"
         tooltip={`Edit ${isPageItem(indexItem) ? 'page' : 'folder'} name`}
         onClick={() => {
@@ -359,7 +370,7 @@ function LayoutNodeTitle({
   const { currentFeatures } = React.useContext(featuresCTX);
 
   const newTitle =
-    currentFeatures.includes('ADVANCED') && advancedTitle != null
+    isFeatureEnabled(currentFeatures, 'ADVANCED') && advancedTitle != null
       ? advancedTitle
       : title;
 
@@ -406,8 +417,7 @@ function WegasComponentTitle({
   componentPath,
   selectedComponentPath,
   componentControls,
-}:
-WegasComponentTitleProps) {
+}: WegasComponentTitleProps) {
   const registeredComponent = usePageComponentStore(s => s[component.type]);
   const { editMode } = React.useContext(pageCTX);
 
@@ -438,12 +448,7 @@ WegasComponentTitleProps) {
       title={title}
       advancedTitle={title + ' ' + JSON.stringify(componentPath)}
       tooltip={registeredComponent == null ? 'Unknown component' : undefined}
-      onMouseUp={() =>
-        onEdit(
-          isSelected ? undefined : pageId,
-          isSelected ? undefined : componentPath,
-        )
-      }
+      onMouseUp={() => onEdit(pageId, componentPath)}
       onMouseOver={e => {
         if (editMode /*&& !isDragging*/) {
           e.stopPropagation();
@@ -508,8 +513,13 @@ function WegasComponentNode({
   const id: ComponentNodeId = { pageId, page, componentPath };
   const parentProps = getParentProps();
 
-  if(              !isWegasComponent(component)   ){
-    return <LayoutNodeTitle icon="exclamation-circle" title="The component is unknown" />
+  if (!isWegasComponent(component)) {
+    return (
+      <LayoutNodeTitle
+        icon="exclamation-circle"
+        title="The component is unknown"
+      />
+    );
   }
 
   return (
@@ -597,7 +607,7 @@ function PageIndexTitle({
       )}
       {isPageItem(indexItem) && (
         <>
-          <IconButton
+          <Button
             icon={
               indexItem.id === defaultPageId
                 ? {
@@ -614,7 +624,7 @@ function PageIndexTitle({
               [CONTROLS_CLASSNAME]: indexItem.id !== defaultPageId,
             })}
           />
-          <IconButton
+          <Button
             icon={
               indexItem.scenaristPage
                 ? {
@@ -634,7 +644,7 @@ function PageIndexTitle({
             tooltip="Scenarist page"
             className={CONTROLS_CLASSNAME}
           />
-          <IconButton
+          <Button
             icon={
               indexItem.trainerPage
                 ? {

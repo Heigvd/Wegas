@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
-import { featuresCTX } from '../../../Components/Contexts/FeaturesProvider';
+import {
+  featuresCTX,
+  isFeatureEnabled,
+} from '../../../Components/Contexts/FeaturesProvider';
 
 const containerStyle = css({
   position: 'relative',
@@ -64,7 +67,7 @@ export function CommonViewContainer({
 
   if (
     view.featureLevel === undefined ||
-    currentFeatures.includes(view.featureLevel)
+    isFeatureEnabled(currentFeatures, view.featureLevel)
   ) {
     return (
       <div

@@ -8,7 +8,7 @@ import { cx, css } from 'emotion';
 import { flex, itemCenter } from '../../css/classes';
 import { readMessage } from '../../data/Reducer/VariableInstanceReducer';
 import { FontAwesome } from '../../Editor/Components/Views/FontAwesome';
-import { Text } from './Text';
+import { TranslatableText } from './Text';
 import { IMessage, IInboxDescriptor } from 'wegas-ts-api';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 
@@ -44,7 +44,7 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <div>{date}</div>
       <div>{from}</div>
-      <Text htmlTranslatableContent={entity.body} />
+      <TranslatableText htmlTranslatableContent={entity.body} />
     </div>
   );
 }

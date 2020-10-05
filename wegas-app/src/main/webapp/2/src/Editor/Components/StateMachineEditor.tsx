@@ -2,7 +2,6 @@ import { css, cx } from 'emotion';
 import produce from 'immer';
 import { Connection, Defaults, jsPlumbInstance } from 'jsplumb';
 import * as React from 'react';
-import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
 import { VariableDescriptor } from '../../data/selectors';
 import { StoreDispatch, useStore } from '../../data/store';
 import { entityIs } from '../../data/entities';
@@ -25,17 +24,31 @@ import {
   relative,
   expandBoth,
   showOverflow,
+  flexDistribute,
 } from '../../css/classes';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
-import { createTranslatableContent } from './FormView/translatable';
+import { createTranslatableContent, translate } from './FormView/translatable';
 import { createScript } from '../../Helper/wegasEntites';
 import { themeVar } from '../../Components/Style/ThemeVars';
-import { IDialogueDescriptor, IFSMInstance, IFSMDescriptor, IAbstractStateMachineDescriptor, ITransition, IDialogueTransition, IAbstractTransition, IAbstractState, IState, IDialogueState } from 'wegas-ts-api';
+import {
+  IDialogueDescriptor,
+  IFSMInstance,
+  IFSMDescriptor,
+  IAbstractStateMachineDescriptor,
+  ITransition,
+  IDialogueTransition,
+  IAbstractTransition,
+  IAbstractState,
+  IState,
+  IDialogueState,
+} from 'wegas-ts-api';
+import { Button } from '../../Components/Inputs/Buttons/Button';
 
 const editorStyle = css({
   position: 'relative',
   '& .jtk-connector': {
+    cursor: 'pointer',
     zIndex: 1,
     '&.jtk-hover': {
       zIndex: 9,
@@ -43,6 +56,7 @@ const editorStyle = css({
   },
   '& .jtk-endpoint': {
     color: 'transparent',
+    cursor: 'grabbing',
     zIndex: 2,
     ':hover': {
       color: 'tomato',
@@ -57,7 +71,9 @@ const editorStyle = css({
     backgroundColor: 'white',
     maxWidth: '120px',
     maxHeight: '5em',
-    overflow: 'hidden',
+    overflow: 'auto',
+    userSelect: 'none',
+    cursor: 'pointer',
 
     '&.jtk-hover': {
       zIndex: 10,
@@ -77,7 +93,7 @@ const searchHighlighted = css({
 export const searchWithState = (
   search: RState['global']['search'],
   searched: string,
-) => {
+): boolean => {
   let value = '';
   if (search.type === 'GLOBAL') {
     value = search.value;
@@ -87,7 +103,7 @@ export const searchWithState = (
       value = `Variable.find(gameModel, "${variable.name}")`;
     }
   }
-  return value && searched.indexOf(value) >= 0;
+  return value !== '' && searched.indexOf(value) >= 0;
 };
 
 const JS_PLUMB_OPTIONS: Defaults = {
@@ -139,7 +155,7 @@ interface StateMachineEditorState {
 class StateMachineEditor extends React.Component<
   StateMachineEditorProps,
   StateMachineEditorState
-  > {
+> {
   static contextType = languagesCTX;
 
   static getDerivedStateFromProps(
@@ -180,23 +196,23 @@ class StateMachineEditor extends React.Component<
   ): ITransition | IDialogueTransition {
     return entityIs(stateMachine, 'FSMDescriptor', true)
       ? {
-        '@class': 'Transition',
-        label: '',
-        nextStateId,
-        triggerCondition: createScript(),
-        preStateImpact: createScript(),
-        index: 0,
-        version: 0,
-      }
+          '@class': 'Transition',
+          label: '',
+          nextStateId,
+          triggerCondition: createScript(),
+          preStateImpact: createScript(),
+          index: 0,
+          version: 0,
+        }
       : {
-        '@class': 'DialogueTransition',
-        nextStateId,
-        triggerCondition: createScript(),
-        preStateImpact: createScript(),
-        index: 0,
-        version: 0,
-        actionText: createTranslatableContent(this.context.lang),
-      };
+          '@class': 'DialogueTransition',
+          nextStateId,
+          triggerCondition: createScript(),
+          preStateImpact: createScript(),
+          index: 0,
+          version: 0,
+          actionText: createTranslatableContent(this.context.lang),
+        };
   }
 
   produceTransition = ({ from, to }: { from: number; to: number }) => {
@@ -224,8 +240,8 @@ class StateMachineEditor extends React.Component<
         if (info.originalSourceId === info.newSourceId) {
           const tr = (states[Number(info.originalSourceId)]
             .transitions as IAbstractTransition[]).find(
-              t => t.id === transition.id,
-            );
+            t => t.id === transition.id,
+          );
           if (tr != null) {
             tr.nextStateId = Number(info.newTargetId);
           }
@@ -239,8 +255,8 @@ class StateMachineEditor extends React.Component<
           );
           (states[Number(info.newSourceId)]
             .transitions as IAbstractTransition[]).push({
-              ...transition,
-            });
+            ...transition,
+          });
         }
       }),
     );
@@ -254,8 +270,8 @@ class StateMachineEditor extends React.Component<
         for (const s in states) {
           (states[s] as IAbstractState).transitions = (states[s]
             .transitions as IAbstractTransition[]).filter(
-              t => t.nextStateId !== id,
-            );
+            t => t.nextStateId !== id,
+          );
         }
       }),
     );
@@ -279,23 +295,23 @@ class StateMachineEditor extends React.Component<
       'FSMDescriptor',
     )
       ? {
-        '@class': 'State',
-        version: 0,
-        onEnterEvent: createScript(),
-        x: position.left >= 10 ? position.left : 10,
-        y: position.top >= 10 ? position.top : 10,
-        label: '',
-        transitions: [],
-      }
+          '@class': 'State',
+          version: 0,
+          onEnterEvent: createScript(),
+          x: position.left >= 10 ? position.left : 10,
+          y: position.top >= 10 ? position.top : 10,
+          label: '',
+          transitions: [],
+        }
       : {
-        '@class': 'DialogueState',
-        version: 0,
-        onEnterEvent: createScript(),
-        x: position.left >= 10 ? position.left : 10,
-        y: position.top >= 10 ? position.top : 10,
-        text: createTranslatableContent(lang),
-        transitions: [],
-      };
+          '@class': 'DialogueState',
+          version: 0,
+          onEnterEvent: createScript(),
+          x: position.left >= 10 ? position.left : 10,
+          y: position.top >= 10 ? position.top : 10,
+          text: createTranslatableContent(lang),
+          transitions: [],
+        };
 
     this.setState(
       produce((store: StateMachineEditorState) => {
@@ -308,8 +324,8 @@ class StateMachineEditor extends React.Component<
         if (transitionSource != undefined) {
           (store.stateMachine.states[transitionSource]
             .transitions as IAbstractTransition[]).push(
-              this.createTransition(store.stateMachine, nextId),
-            );
+            this.createTransition(store.stateMachine, nextId),
+          );
         }
         return;
       }),
@@ -413,8 +429,8 @@ class StateMachineEditor extends React.Component<
           const transition:
             | ITransition
             | IDialogueTransition = (info.connection as any).getParameter(
-              'transition',
-            );
+            'transition',
+          );
           this.moveTransition(info, transition);
         }
       });
@@ -564,14 +580,21 @@ export default function StateMachineEditorWithMeta() {
 }
 
 const stateStyle = css({
-  width: '10em',
-  height: '5em',
-  border: '2px solid',
+  minWidth: '10em',
+  minHeight: '5em',
+  maxWidth: '20em',
+  maxHeight: '10em',
   zIndex: 2,
-  backgroundColor: 'rgba(255, 255, 255, 0.8)',
+  opacity: 0.8,
+});
+const contentStyle = css({
+  borderStyle: 'solid',
+  borderWidth: '6px',
+  cursor: 'grabbing',
+  flex: '1 1 auto',
 });
 const initialStateStyle = css({
-  border: '6px double',
+  borderStyle: 'double',
 });
 const activeStateStyle = css({
   borderColor: themeVar.Common.colors.BorderColor,
@@ -586,12 +609,18 @@ const sourceStyle = css({
   },
 });
 
+const toolbarStyle = css({
+  cursor: 'initial',
+  userSelect: 'none',
+  backgroundColor: 'rgba(255,255,255,0.2)',
+});
+
 function getValue(state: IState | IDialogueState, lang: string): string {
   return entityIs(state, 'State')
     ? state.label
     : state.text.translations[lang]
-      ? state.text.translations[lang].translation
-      : '';
+    ? state.text.translations[lang].translation
+    : '';
 }
 
 class State extends React.Component<{
@@ -616,6 +645,7 @@ class State extends React.Component<{
   componentDidMount() {
     const { plumb } = this.props;
     plumb.draggable(this.container!, {
+      start: () => wlog('DragStart'),
       stop: params => {
         this.props.moveState(this.props.id, params.pos);
       },
@@ -655,10 +685,12 @@ class State extends React.Component<{
         className={cx(
           stateStyle,
           {
-            [initialStateStyle]: initialState,
-            [activeStateStyle]: currentState,
+            // [initialStateStyle]: initialState,
+            // [activeStateStyle]: currentState,
+            [searchHighlighted]: this.isBeingSearched(),
           },
-          this.isBeingSearched() && searchHighlighted,
+          flex,
+          // this.isBeingSearched() && searchHighlighted,
         )}
         id={String(this.props.id)}
         ref={n => {
@@ -670,37 +702,51 @@ class State extends React.Component<{
           top: state.y,
         }}
       >
-        <Toolbar vertical>
-          <Toolbar.Content className="content">
-            {getValue(this.props.state, this.context.lang)}
-          </Toolbar.Content>
-          <Toolbar.Header>
-            <IconButton
-              icon="edit"
-              onClick={(e: ModifierKeysEvent) => this.onClickEdit(e)}
-            />
-            <div className={sourceStyle}>
-              <FontAwesome icon="project-diagram" />
-            </div>
-            {!initialState && (
-              <IconButton
-                icon="trash"
-                onClick={() => this.props.deleteState(this.props.id)}
+        <div
+          className={
+            'content ' +
+            cx(contentStyle, grow, flex, {
+              [initialStateStyle]: initialState,
+              [activeStateStyle]: currentState,
+            })
+          }
+        >
+          <Toolbar vertical className={cx(grow, toolbarStyle)}>
+            <Toolbar.Content>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: getValue(this.props.state, this.context.lang),
+                }}
               />
-            )}
-          </Toolbar.Header>
-        </Toolbar>
-        {(state.transitions as IAbstractTransition[]).map((t, i) => (
-          <Transition
-            key={`${this.props.id}-${t.nextStateId}-${t.id}`}
-            plumb={this.props.plumb}
-            transition={t as ITransition | IDialogueTransition}
-            position={i}
-            parent={this.props.id}
-            editTransition={this.props.editTransition}
-            search={this.props.search}
-          />
-        ))}
+            </Toolbar.Content>
+            <Toolbar.Header className={flexDistribute}>
+              <Button
+                icon="edit"
+                onClick={(e: ModifierKeysEvent) => this.onClickEdit(e)}
+              />
+              <div className={sourceStyle}>
+                <FontAwesome icon="project-diagram" />
+              </div>
+              {!initialState && (
+                <Button
+                  icon="trash"
+                  onClick={() => this.props.deleteState(this.props.id)}
+                />
+              )}
+            </Toolbar.Header>
+          </Toolbar>
+          {(state.transitions as IAbstractTransition[]).map((t, i) => (
+            <Transition
+              key={`${this.props.id}-${t.nextStateId}-${t.id}`}
+              plumb={this.props.plumb}
+              transition={t as ITransition | IDialogueTransition}
+              position={i}
+              parent={this.props.id}
+              editTransition={this.props.editTransition}
+              search={this.props.search}
+            />
+          ))}
+        </div>
       </div>
     );
   }
@@ -718,6 +764,8 @@ class Transition extends React.Component<{
   ) => void;
   search: RState['global']['search'];
 }> {
+  static contextType = languagesCTX;
+
   connection: Connection | null = null;
   isBeingSearched = () => {
     const { triggerCondition, preStateImpact } = this.props.transition;
@@ -775,7 +823,22 @@ class Transition extends React.Component<{
             preStateImpact ? preStateImpact.content : '',
           ),
         );
+      } else if (entityIs(this.props.transition, 'DialogueTransition')) {
+        this.connection!.setLabel(
+          this.buildLabel(
+            translate(this.props.transition.actionText, this.context.lang),
+            triggerCondition ? triggerCondition.content : '',
+            preStateImpact ? preStateImpact.content : '',
+          ),
+        );
       }
+
+      // const className = (this.connection! as any).getLabelOverlay().getElement()
+      //   .className;
+      // if (!className.includes(transitionLabelStyle)) {
+      //   (this.connection! as any).getLabelOverlay().getElement().className +=
+      //     ' ' + transitionLabelStyle;
+      // }
 
       // "(this.connection! as any)" is compulsory since jsPlumb is not fully implemented for TS
       if (this.isBeingSearched()) {

@@ -12,16 +12,17 @@ import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, IBooleanDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { useScript } from '../../Hooks/useScript';
 
 interface PlayerBooleanProps extends WegasComponentProps {
   /**
    * script - the script that returns the variable to display and modify
    */
-  script?: IScript;
+  value?: IScript;
   /**
    * label - The label to display with the component
    */
-  label?: string;
+  label?: IScript;
   /**
    * type - the behaviour and style of the component
    */
@@ -37,30 +38,33 @@ interface PlayerBooleanProps extends WegasComponentProps {
 }
 
 function PlayerBoolean({
-  script,
+  value,
   type,
   label,
   disabled,
   inactive,
 }: PlayerBooleanProps) {
-  const { content, instance, notFound } = useComponentScript<
-    IBooleanDescriptor
-  >(script);
+  const {
+    content: valueScript,
+    instance: valueInstance,
+    notFound: valueNotFound,
+  } = useComponentScript<IBooleanDescriptor>(value);
+  const strLabel = useScript<string>(label);
 
   const BooleanComponent = type === 'toggler' ? Toggler : CheckBox;
 
-  return notFound ? (
-    <pre>Not found: {content}</pre>
+  return valueNotFound ? (
+    <pre>Not found: {valueScript}</pre>
   ) : (
     <BooleanComponent
-      label={label}
-      value={instance!.value}
+      label={strLabel}
+      value={valueInstance!.value}
       disabled={disabled}
       readOnly={inactive}
       onChange={v => {
         store.dispatch(
           Actions.VariableInstanceActions.runScript(
-            `${content}.setValue(self, ${v});`,
+            `${valueScript}.setValue(self, ${v});`,
           ),
         );
       }}
@@ -75,10 +79,10 @@ registerComponent(
     name: 'Boolean',
     icon: 'check-square',
     schema: {
-      script: schemaProps.scriptVariable('Variable', true, [
+      value: schemaProps.scriptVariable('Variable', true, [
         'SBooleanDescriptor',
       ]),
-      label: schemaProps.string('Label', false),
+      label: schemaProps.scriptString('Label', false),
       type: schemaProps.select('Type', false, ['checkbox', 'toggler']),
       disabled: schemaProps.boolean('Disabled', false),
       inactive: schemaProps.boolean('Inactive', false),

@@ -21,11 +21,12 @@ import popupsGlobalSrc from '!!raw-loader!../../../types/scripts/PopupsGlobals.d
 import wegasEventsGlobalSrc from '!!raw-loader!../../../types/scripts/WegasEventsGlobals.d.ts';
 // @ts-ignore
 import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMethodsGlobals.d.ts';
+// @ts-ignore
+import i18nGlobalSrc from '!!raw-loader!../../../types/scripts/I18nGlobals.d.ts';
 
-import { refDifferent } from './storeHookFactory';
+import { deepDifferent } from './storeHookFactory';
 import { wwarn } from '../../Helper/wegaslog';
 import { buildGlobalServerMethods } from '../../data/Reducer/globalState';
-import { MonacoDefinitionsLibraries } from '../../Editor/Components/ScriptEditors/editorHelpers';
 
 const stripRegex = /\/\* STRIP FROM \*\/[\s\S]*?\/\* STRIP TO \*\//gm;
 
@@ -39,7 +40,6 @@ const ambientEntitiesSrc = makeAmbient(entitiesSrc);
 // const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
 
 export function useGlobalLibs() {
-  const globalLibs = React.useRef<MonacoDefinitionsLibraries[]>([]);
   const { classes } = React.useContext(classesCTX);
 
   const libs = useStore((s: State) => {
@@ -56,9 +56,9 @@ export function useGlobalLibs() {
     const globalSchemas = s.global.schemas.views;
     const globalServerMethods = s.global.serverMethods;
 
-    const currentLanguages = Object.values(
-      GameModel.selectCurrent().languages,
-    ).map(l => l.code).join(' | ');
+    const currentLanguages = Object.values(GameModel.selectCurrent().languages)
+      .map(l => l.code)
+      .join(' | ');
 
     // wlog(buildGlobalServerMethods(globalServerMethods));
 
@@ -133,32 +133,36 @@ export function useGlobalLibs() {
 
         declare const WegasEvents : WegasEventClass;
 
+        declare const I18n : GlobalI18nClass;
+
         ${buildGlobalServerMethods(globalServerMethods)}
         `;
     } catch (e) {
       wwarn(e);
       return '';
     }
-  }, refDifferent);
+  }, deepDifferent);
 
-  React.useEffect(() => {
-    globalLibs.current = [
+  const globalLibs = React.useMemo(
+    () => [
       {
         content: `
-            ${ambientEntitiesSrc}\n
-            ${editorGlobalSrc}\n
-            ${clientMethodGlobalSrc}\n
-            ${serverMethodGlobalSrc}\n
-            ${schemaGlobalSrc}\n
-            ${classesGlobalSrc}\n
-            ${popupsGlobalSrc}\n
-            ${wegasEventsGlobalSrc}\n
-            ${libs}\n
-          `,
+        ${ambientEntitiesSrc}\n
+        ${editorGlobalSrc}\n
+        ${clientMethodGlobalSrc}\n
+        ${serverMethodGlobalSrc}\n
+        ${schemaGlobalSrc}\n
+        ${classesGlobalSrc}\n
+        ${popupsGlobalSrc}\n
+        ${wegasEventsGlobalSrc}\n
+        ${i18nGlobalSrc}\n
+        ${libs}\n
+      `,
         name: 'VariablesTypes.d.ts',
       },
-    ];
-  }, [libs]);
+    ],
+    [libs],
+  );
 
-  return globalLibs.current;
+  return globalLibs;
 }

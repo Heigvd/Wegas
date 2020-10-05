@@ -10,7 +10,6 @@ import {
   itemCenter,
 } from '../../../../css/classes';
 import { cx, css } from 'emotion';
-import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
 import {
   useDrag,
   useDrop,
@@ -20,8 +19,9 @@ import {
 import { classNameOrEmpty } from '../../../../Helper/className';
 import { deepDifferent } from '../../../../Components/Hooks/storeHookFactory';
 import { omit } from 'lodash-es';
+import { Button } from '../../../../Components/Inputs/Buttons/Button';
 
-const treeNodeStyle = cx(flex, flexColumn);
+const treeNodeStyle = cx(flex, flexColumn, css({ marginTop: '1px' }));
 const childrenStyle = css({ marginLeft: '2em' });
 
 export interface NodeBasicInfo<T> {
@@ -507,7 +507,7 @@ export function TreeNode<T>({
           <div ref={preview} className={cx(flex, relative, itemCenter)}>
             {children != null && (
               <div>
-                <IconButton
+                <Button
                   icon={expanded ? 'caret-down' : 'caret-right'}
                   onClick={() => setExpanded(e => !e)}
                 />
