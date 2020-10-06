@@ -8,7 +8,6 @@ import { useGameModel } from './useGameModel';
 import { Actions } from '../../data';
 import { transpile } from 'typescript';
 import { classesCTX } from '../Contexts/ClassesProvider';
-import { wwarn } from '../../Helper/wegaslog';
 import { deepDifferent } from './storeHookFactory';
 import {
   IVariableDescriptor,
@@ -25,6 +24,8 @@ import { ScriptableEntity } from 'wegas-ts-api';
 import { popupDispatch, addPopup, PopupActionCreator } from '../PopupManager';
 import { ActionCreator } from '../../data/actions';
 import { translate } from '../../Editor/Components/FormView/translatable';
+import { wlog, wwarn } from '../../Helper/wegaslog';
+import { ScriptCTX } from '../Contexts/ScriptContext';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -45,6 +46,9 @@ interface GlobalClasses {
   Popups: GlobalPopupClass;
   WegasEvents: WegasEventClass;
   I18n: GlobalI18nClass;
+  Context: {
+    [name: string]: any;
+  };
 }
 
 const globalDispatch = store.dispatch;
@@ -266,6 +270,9 @@ export function useGlobals() {
   };
 
   globals.I18n = {
+    translate: translatable => {
+      return translate(translatable, lang);
+    },
     toString: entity => {
       let translatableEntity: STranslatableContent | undefined;
       switch (entity.getEntity()['@class']) {
@@ -348,6 +355,11 @@ export function safeClientScriptEval<T extends ReturnType>(
   }
 }
 
+function useScriptContext() {
+  const { identifiers } = React.useContext(ScriptCTX);
+  globals.Context = identifiers;
+}
+
 /**
  * Hook, execute a script locally.
  * @param script code to execute
@@ -358,6 +370,7 @@ export function useScript<T extends ReturnType>(
   catchCB?: (e: Error) => void,
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
   useGlobals();
+  useScriptContext();
   const fn = React.useCallback(() => safeClientScriptEval<T>(script, catchCB), [
     script,
     catchCB,
@@ -374,6 +387,11 @@ export function useUnsafeScript<T extends ReturnType>(
   script?: string | IScript,
 ): T extends IMergeable ? unknown : T {
   useGlobals();
+  useScriptContext();
+
+  wlog(globals);
+  // debugger;
+
   const fn = React.useCallback(() => clientScriptEval<T>(script), [script]);
   return useStore(fn, deepDifferent) as any;
 }

@@ -11,8 +11,9 @@ import {
 } from '../../../Editor/Components/Page/PageEditor';
 import {
   flex,
-  hatchedBackground,
+  foregroundContent,
   hoverColorInsetShadow,
+  thinHoverColorInsetShadow,
 } from '../../../css/classes';
 import {
   FlexItem,
@@ -355,6 +356,7 @@ export type ContainerTypes =
   | 'LINEAR'
   | 'ABSOLUTE'
   | 'MENU'
+  | 'FOREACH'
   | undefined;
 
 /**
@@ -486,7 +488,7 @@ export function ComponentContainer({
   // const showLayout = showBorders; /*&& containerType != null*/
   const computedVertical =
     // BUG HERE
-    containerType === 'FLEX'
+    containerType === 'FLEX' || containerType === 'FOREACH'
       ? layout?.flexDirection === 'column' ||
         layout?.flexDirection === 'column-reverse'
       : containerType === 'LINEAR'
@@ -510,6 +512,7 @@ export function ComponentContainer({
       case 'MENU':
         return MenuItem;
       case 'FLEX':
+      case 'FOREACH':
       default:
         return FlexItem;
     }
@@ -644,7 +647,7 @@ export function ComponentContainer({
           cx(handleControlStyle, flex, extraState.themeModeClassName, {
             [showBordersStyle]: showBorders && containerType != null,
             [hoverColorInsetShadow]: editMode || isSelected,
-            [hatchedBackground]: isFocused,
+            [cx(foregroundContent, thinHoverColorInsetShadow)]: isFocused,
             // [selectedComponentStyle]: isSelected,
             [childDropzoneHorizontalStyle]: !computedVertical,
             [childDropzoneVerticalStyle]: computedVertical,
@@ -669,15 +672,18 @@ export function ComponentContainer({
             dropPosition="INTO"
           />
         )}
-        {dragHoverState && editable && childrenType !== 'ABSOLUTE' && (
-          <ComponentDropZone
-            onDrop={dndComponent =>
-              onDrop(dndComponent, containerPath, itemPath)
-            }
-            show
-            dropPosition="BEFORE"
-          />
-        )}
+        {dragHoverState &&
+          editable &&
+          childrenType !== 'ABSOLUTE' &&
+          childrenType !== 'FOREACH' && (
+            <ComponentDropZone
+              onDrop={dndComponent =>
+                onDrop(dndComponent, containerPath, itemPath)
+              }
+              show
+              dropPosition="BEFORE"
+            />
+          )}
         {editable && (
           <EditHandle
             name={name}
@@ -696,19 +702,22 @@ export function ComponentContainer({
         {extraState.infoBulletProps && (
           <PlayerInfoBullet {...extraState.infoBulletProps} />
         )}
-        {dragHoverState && editable && childrenType !== 'ABSOLUTE' && (
-          <ComponentDropZone
-            onDrop={dndComponent =>
-              onDrop(
-                dndComponent,
-                containerPath,
-                itemPath != null ? itemPath + 1 : itemPath,
-              )
-            }
-            show
-            dropPosition="AFTER"
-          />
-        )}
+        {dragHoverState &&
+          editable &&
+          childrenType !== 'ABSOLUTE' &&
+          childrenType !== 'FOREACH' && (
+            <ComponentDropZone
+              onDrop={dndComponent =>
+                onDrop(
+                  dndComponent,
+                  containerPath,
+                  itemPath != null ? itemPath + 1 : itemPath,
+                )
+              }
+              show
+              dropPosition="AFTER"
+            />
+          )}
         <LockedOverlay
           locked={(extraState.disabled || extraState.locked) === true}
         />
@@ -737,6 +746,7 @@ export function EmptyComponentContainer({
       case 'MENU':
         return MenuItem;
       case 'FLEX':
+      case 'FOREACH':
       default:
         return FlexItem;
     }

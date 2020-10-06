@@ -344,6 +344,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
      */
     @Override
     @JsonView(Views.ExportI.class)
+    @Scriptable(label = "getItems",wysiwyg = false)
     public List<ChoiceDescriptor> getItems() {
         return items;
     }

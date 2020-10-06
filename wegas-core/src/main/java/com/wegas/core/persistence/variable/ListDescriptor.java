@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable;
 
 import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasCallback;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
@@ -117,6 +118,7 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
      */
     @Override
     @JsonView(Views.ExportI.class)
+    @Scriptable(label = "getItems",wysiwyg = false)
     public List<VariableDescriptor> getItems() {
         return this.items;
     }

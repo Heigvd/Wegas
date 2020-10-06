@@ -545,7 +545,10 @@ function WegasComponentNode({
         PAGEEDITOR_COMPONENT_TYPE,
       ]}
       noDrag={componentPath.length === 0}
-      noDrop={component.props?.children == null}
+      noDrop={
+        component.props?.children == null ||
+        (component.props.children.length === 1 && component.type === 'For each')
+      }
     >
       {component.props?.children
         ? getParentProps =>

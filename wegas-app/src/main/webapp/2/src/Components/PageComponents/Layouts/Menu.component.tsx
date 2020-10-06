@@ -24,6 +24,7 @@ registerComponent(
     containerType: 'MENU',
     name: 'Menu',
     icon: 'bars',
-    schema: menuSchema
-  })
+    schema: menuSchema,
+    getComputedPropsFromVariable: () => ({ children: [] }),
+  }),
 );
