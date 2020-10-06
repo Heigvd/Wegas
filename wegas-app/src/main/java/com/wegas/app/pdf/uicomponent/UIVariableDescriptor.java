@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -97,17 +98,19 @@ public class UIVariableDescriptor extends UIComponentBase {
         super();
     }
 
-    public UIVariableDescriptor(VariableDescriptor vd, Player player, Boolean editorMode, Boolean defaultValue) {
+    public UIVariableDescriptor(VariableDescriptor vd, Player player, Boolean editorMode, Boolean defaultValue, Boolean includeInactive) {
         super();
         getAttributes().put("value", vd);
         getAttributes().put("player", player);
         getAttributes().put("editorMode", editorMode);
+        getAttributes().put("includeInactive", includeInactive);
         getAttributes().put("defaultValues", defaultValue);
     }
 
     Player player;
     Boolean editorMode;
     Boolean defaultValues;
+    Boolean includeInactive;
 
     private I18nFacade i18nFacade;
 
@@ -136,6 +139,7 @@ public class UIVariableDescriptor extends UIComponentBase {
         player = (Player) getAttributes().get("player");
         editorMode = (Boolean) getAttributes().get("editorMode");
         defaultValues = (Boolean) getAttributes().get("defaultValues");
+        includeInactive = (Boolean) getAttributes().get("includeInactive");
 
         if (vd != null) {
             ResponseWriter responseWriter = context.getResponseWriter();
@@ -342,7 +346,7 @@ public class UIVariableDescriptor extends UIComponentBase {
         TaskInstance instance = task.getInstance(defaultValues, player);
 
         // dont't print inactive tasks for players, but always print them for editors
-        if (editorMode || instance.getActive()) {
+        if (editorMode || includeInactive || instance.getActive()) {
             //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, task, editorMode);
 
@@ -413,7 +417,7 @@ public class UIVariableDescriptor extends UIComponentBase {
         ResourceInstance instance = resource.getInstance(defaultValues, player);
 
         // Hide inactive resources for players
-        if (editorMode || instance.getActive()) {
+        if (editorMode || includeInactive || instance.getActive()) {
             //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, resource, editorMode);
             UIHelper.printProperty(context, writer, UIHelper.TEXT_LABEL, resource.getLabel());
@@ -478,7 +482,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_FOLDER);
             for (VariableDescriptor vd : list.getItems()) {
 
-                UIVariableDescriptor uiVd = new UIVariableDescriptor(vd, player, editorMode, defaultValues);
+                UIVariableDescriptor uiVd = new UIVariableDescriptor(vd, player, editorMode, defaultValues, includeInactive);
                 uiVd.encodeAll(context);
             }
             UIHelper.endDiv(writer);
@@ -499,7 +503,7 @@ public class UIVariableDescriptor extends UIComponentBase {
         WhQuestionInstance instance = question.getInstance(defaultValues, player);
 
         // dont't print inactive questions for players, but always print them for editors
-        if (editorMode || instance.getActive()) {
+        if (editorMode || includeInactive || instance.getActive()) {
             //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, question, editorMode);
 
@@ -529,7 +533,7 @@ public class UIVariableDescriptor extends UIComponentBase {
         QuestionInstance instance = question.getInstance(defaultValues, player);
 
         // dont't print inactive questions for players, but always print them for editors
-        if (editorMode || instance.getActive()) {
+        if (editorMode || includeInactive || instance.getActive()) {
             //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, question, editorMode);
 
@@ -598,7 +602,7 @@ public class UIVariableDescriptor extends UIComponentBase {
     public void encode(FacesContext context, ResponseWriter writer, ChoiceDescriptor choice) throws IOException {
         ChoiceInstance instance = choice.getInstance(defaultValues, player);
         // dont't print inactive choices for players, but always print them for editors
-        if (editorMode || instance.getActive()) {
+        if (editorMode || includeInactive || instance.getActive()) {
 
             //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, choice, editorMode);

@@ -543,12 +543,9 @@ public class UserController {
             return new AaiLoginResponse("Sorry, AAI login is currently not possible.", false, false);
         }
 
-        String server = AaiConfigInfo.getAaiServer(); // Ignored if empty !
         String secret = AaiConfigInfo.getAaiSecret(); // Ignored if empty !
-        if (server.length() != 0 && !getRequestingIP(request).equals(server)
-            || secret.length() != 0 && !userDetails.getSecret().equals(secret)) {
+        if (secret.length() != 0 && !userDetails.getSecret().equals(secret)) {
             logger.trace("Real secret: {}, expected:{}", userDetails.getSecret(), secret);
-            logger.trace("Real remote host : {}, expected: {}", getRequestingIP(request), server);
             Enumeration<String> headerNames = request.getHeaderNames();
             if (headerNames != null) {
                 while (headerNames.hasMoreElements()) {
