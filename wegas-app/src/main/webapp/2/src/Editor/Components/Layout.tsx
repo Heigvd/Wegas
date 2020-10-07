@@ -21,7 +21,9 @@ const ThemeEditor = React.lazy(
   () => import('../../Components/Style/ThemeEditor'),
 );
 
-const Tester = React.lazy(() => import('../../Testers/SchemaPropsTester'));
+const Tester = React.lazy(
+  () => import('../../Testers/WegasScriptEditorTester'),
+);
 
 const layout = css({
   display: 'flex',
