@@ -335,7 +335,7 @@ export const makeSchemaInitExpression = (
   mode?: ScriptMode,
   scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
 ) => ({
-  variableName: schemaProps.hidden(false, 'string', 1000),
+  variableName: schemaProps.hidden({ type: 'string', index: 1000 }),
   initExpression: schemaProps.tree(
     undefined,
     [
@@ -443,15 +443,13 @@ export const makeSchemaConditionAttributes = (
           method.parameters.length + index,
           'inline',
         ),
-        comparator: schemaProps.custom(
-          undefined,
-          false,
-          method.returns,
-          method.returns,
-          undefined,
-          method.parameters.length + index,
-          'inline',
-        ),
+        comparator: schemaProps.custom({
+          label: undefined,
+          type: method.returns,
+          viewType: method.returns,
+          index: method.parameters.length + index,
+          layout: 'inline',
+        }),
       }
     : {}),
 });

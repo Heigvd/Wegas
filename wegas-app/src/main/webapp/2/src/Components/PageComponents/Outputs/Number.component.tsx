@@ -34,7 +34,7 @@ registerComponent(
       script: schemaProps.scriptVariable('Variable', true, [
         'SNumberDescriptor',
       ]),
-      className: schemaProps.string('ClassName', false),
+      className: schemaProps.string({ label: 'ClassName' }),
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({

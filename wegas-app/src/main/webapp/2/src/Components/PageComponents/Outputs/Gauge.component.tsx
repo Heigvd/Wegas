@@ -52,8 +52,8 @@ registerComponent(
       script: schemaProps.scriptVariable('Variable', false, [
         'SNumberDescriptor',
       ]),
-      label: schemaProps.string('Label', false),
-      followNeedle: schemaProps.boolean('Follow needle', false),
+      label: schemaProps.string({ label: 'Label' }),
+      followNeedle: schemaProps.boolean({ label: 'Follow needle' }),
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({

@@ -69,7 +69,11 @@ registerComponent(
       getItemsFn: schemaProps.customScript('Items', false, [
         'Readonly<object[]>',
       ]),
-      exposeAs: schemaProps.string('Expose as', false, 'item'),
+      exposeAs: schemaProps.string({
+        label: 'Expose as',
+        required: true,
+        value: 'item',
+      }),
     },
     allowedVariables: ['TextDescriptor'],
     getComputedPropsFromVariable: () => ({ exposeAs: 'item' }),

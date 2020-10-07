@@ -31,7 +31,7 @@ registerComponent(
     icon: 'paragraph',
     schema: {
       text: schemaProps.scriptString('Text', true),
-      className: schemaProps.string('ClassName', false),
+      className: schemaProps.string({ label: 'ClassName' }),
     },
     allowedVariables: ['TextDescriptor'],
     getComputedPropsFromVariable: v => ({

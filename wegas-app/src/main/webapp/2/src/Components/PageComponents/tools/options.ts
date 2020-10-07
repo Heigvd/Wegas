@@ -155,7 +155,7 @@ export const actionsChoices: HashListChoices = [
         {
           pageLoaderName: schemaProps.pageLoaderSelect('Page loader', true),
           pageId: schemaProps.pageSelect('Page', true),
-          priority: schemaProps.number('Priority', false),
+          priority: schemaProps.number({ label: 'Priority' }),
         },
         false,
       ),
@@ -168,8 +168,8 @@ export const actionsChoices: HashListChoices = [
       schema: schemaProps.object(
         'Open Url',
         {
-          url: schemaProps.string('Url', true),
-          priority: schemaProps.number('Priority', false),
+          url: schemaProps.string({ label: 'Url', required: true }),
+          priority: schemaProps.number({ label: 'Priority' }),
         },
         false,
       ),
@@ -183,7 +183,7 @@ export const actionsChoices: HashListChoices = [
         'Open File',
         {
           fileDescriptor: schemaProps.path('File', true),
-          priority: schemaProps.number('Priority', false),
+          priority: schemaProps.number({ label: 'Priority' }),
         },
         false,
       ),
@@ -196,8 +196,8 @@ export const actionsChoices: HashListChoices = [
       schema: schemaProps.object(
         'Impact variable',
         {
-          impact: schemaProps.script('Impact', true),
-          priority: schemaProps.number('Priority', false),
+          impact: schemaProps.script({ label: 'Impact', required: true }),
+          priority: schemaProps.number({ label: 'Priority' }),
         },
         false,
       ),
@@ -211,7 +211,7 @@ export const actionsChoices: HashListChoices = [
         'Local script eval',
         {
           script: schemaProps.code('Local script', true, 'TypeScript'),
-          priority: schemaProps.number('Priority', false),
+          priority: schemaProps.number({ label: 'Priority' }),
         },
         false,
       ),
@@ -225,7 +225,7 @@ export const actionsChoices: HashListChoices = [
         'Open popup page',
         {
           pageId: schemaProps.pageSelect('Page', true),
-          priority: schemaProps.number('Priority', false),
+          priority: schemaProps.number({ label: 'Priority' }),
         },
         false,
       ),
@@ -242,7 +242,7 @@ export const actionsChoices: HashListChoices = [
             filterType: 'grey',
             fileType: 'audio',
           }),
-          priority: schemaProps.number('Priority', false),
+          priority: schemaProps.number({ label: 'Priority' }),
         },
         false,
       ),
@@ -256,7 +256,7 @@ export const actionsChoices: HashListChoices = [
         'Print variable',
         {
           variableName: schemaProps.variable('Variable', true),
-          priority: schemaProps.number('Priority', false),
+          priority: schemaProps.number({ label: 'Priority' }),
         },
         false,
       ),
@@ -266,11 +266,10 @@ export const actionsChoices: HashListChoices = [
     label: 'Confirm click',
     value: {
       prop: 'confirmClick',
-      schema: schemaProps.string(
-        'Confirmation message',
-        false,
-        'Are you sure?',
-      ),
+      schema: schemaProps.string({
+        label: 'Confirmation message',
+        value: 'Are you sure?',
+      }),
     },
   },
 ];
@@ -287,7 +286,7 @@ export const layoutCommonChoices: HashListChoices = [
     label: 'Tooltip',
     value: {
       prop: 'tooltip',
-      schema: schemaProps.string('Tooltip', false),
+      schema: schemaProps.string({ label: 'Tooltip' }),
     },
   },
   {
@@ -319,46 +318,43 @@ export const layoutConditionnalChoices: HashListChoices = [
     label: 'Disable If',
     value: {
       prop: 'disableIf',
-      schema: schemaProps.script(
-        'Disable If',
-        false,
-        'GET',
-        'TypeScript',
-        'false',
-      ),
+      schema: schemaProps.script({
+        label: 'Disable If',
+        mode: 'GET',
+        language: 'TypeScript',
+        value: 'false',
+      }),
     },
   },
   {
     label: 'Hide If',
     value: {
       prop: 'hideIf',
-      schema: schemaProps.script(
-        'Hide If',
-        false,
-        'GET',
-        'TypeScript',
-        'false',
-      ),
+      schema: schemaProps.script({
+        label: 'Hide If',
+        mode: 'GET',
+        language: 'TypeScript',
+        value: 'false',
+      }),
     },
   },
   {
     label: 'Readonly If',
     value: {
       prop: 'readOnlyIf',
-      schema: schemaProps.script(
-        'Readonly If',
-        false,
-        'GET',
-        'TypeScript',
-        'false',
-      ),
+      schema: schemaProps.script({
+        label: 'Readonly If',
+        mode: 'GET',
+        language: 'TypeScript',
+        value: 'false',
+      }),
     },
   },
   {
     label: 'Lock',
     value: {
       prop: 'lock',
-      schema: schemaProps.string('Lock', false),
+      schema: schemaProps.string({ label: 'Lock' }),
     },
   },
 ];
@@ -377,20 +373,18 @@ export const decorationsChoices: HashListChoices = [
       schema: schemaProps.object(
         'Info Bullet',
         {
-          showScript: schemaProps.script(
-            'Show',
-            false,
-            'GET',
-            'TypeScript',
-            'true',
-          ),
-          blinkScript: schemaProps.script(
-            'Blink',
-            false,
-            'GET',
-            'TypeScript',
-            'false',
-          ),
+          showScript: schemaProps.script({
+            label: 'Show',
+            mode: 'GET',
+            language: 'TypeScript',
+            value: 'true',
+          }),
+          blinkScript: schemaProps.script({
+            label: 'Blink',
+            mode: 'GET',
+            language: 'TypeScript',
+            value: 'false',
+          }),
           messageScript: schemaProps.customScript(
             'Message',
             false,

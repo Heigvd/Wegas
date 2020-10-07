@@ -43,11 +43,15 @@ export interface SelectItem {
 }
 
 const simpleSchemaProps = {
-  hidden: (
-    required: boolean = true,
-    type: TYPESTRING | TYPESTRING[] = 'array',
-    index: number = 0,
-  ): TypedProps<WidgetProps.BaseProps> => ({
+  hidden: ({
+    required = false,
+    type = 'array',
+    index = 0,
+  }: {
+    required?: boolean;
+    type?: TYPESTRING | TYPESTRING[];
+    index?: number;
+  }): TypedProps<WidgetProps.BaseProps> => ({
     required,
     type,
     index,
@@ -55,16 +59,25 @@ const simpleSchemaProps = {
       type: 'hidden',
     },
   }),
-  boolean: (
-    label?: string,
-    required: boolean = true,
-    value?: boolean,
-    readOnly: boolean = false,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ): TypedProps<BooleanProps> => ({
+  boolean: ({
+    label,
+    required = false,
+    value,
+    readOnly = false,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: {
+    label?: string;
+    required?: boolean;
+    value?: boolean;
+    readOnly?: boolean;
+    featureLevel?: FeatureLevel;
+    index?: number;
+    layout?: SchemaLayout;
+    borderTop?: boolean;
+  }): TypedProps<BooleanProps> => ({
     required,
     type: 'boolean',
     value,
@@ -79,16 +92,25 @@ const simpleSchemaProps = {
       type: 'boolean',
     },
   }),
-  number: (
-    label?: string,
-    required: boolean = true,
-    value?: number,
-    readOnly: boolean = false,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ): TypedProps<StringInputProps> => ({
+  number: ({
+    label,
+    required = true,
+    value,
+    readOnly = false,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: {
+    label?: string;
+    required?: boolean;
+    value?: number;
+    readOnly?: boolean;
+    featureLevel?: FeatureLevel;
+    index?: number;
+    layout?: SchemaLayout;
+    borderTop?: boolean;
+  }): TypedProps<StringInputProps> => ({
     required,
     type: 'number',
     value,
@@ -103,16 +125,25 @@ const simpleSchemaProps = {
       type: 'number',
     },
   }),
-  string: (
-    label?: string,
-    required: boolean = true,
-    value?: string,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-    readOnly?: boolean,
-  ): TypedProps<StringInputProps> => ({
+  string: ({
+    label,
+    required = true,
+    value,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+    readOnly,
+  }: {
+    label?: string;
+    required?: boolean;
+    value?: string;
+    featureLevel?: FeatureLevel;
+    index?: number;
+    layout?: SchemaLayout;
+    borderTop?: boolean;
+    readOnly?: boolean;
+  }): TypedProps<StringInputProps> => ({
     required,
     type: 'string',
     value,
@@ -127,16 +158,25 @@ const simpleSchemaProps = {
       readOnly,
     },
   }),
-  html: (
-    label?: string,
-    required: boolean = true,
-    value?: ITranslatableContent,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-    readOnly?: boolean,
-  ) => ({
+  html: ({
+    label,
+    required = true,
+    value,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+    readOnly,
+  }: {
+    label?: string;
+    required?: boolean;
+    value?: ITranslatableContent;
+    featureLevel?: FeatureLevel;
+    index?: number;
+    layout?: SchemaLayout;
+    borderTop?: boolean;
+    readOnly?: boolean;
+  }) => ({
     required,
     type: 'object',
     value,
@@ -151,18 +191,29 @@ const simpleSchemaProps = {
       readOnly,
     },
   }),
-  custom: <T extends keyof typeof DEFINED_VIEWS>(
-    label?: string,
-    required: boolean = true,
-    type?: WegasMethod['returns'],
-    viewType?: T,
-    value?: number,
-    index: number = 0,
-    layout?: SchemaLayout,
-    readOnly: boolean = false,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    borderTop?: boolean,
-  ) =>
+  custom: <T extends keyof typeof DEFINED_VIEWS>({
+    label,
+    required = true,
+    type,
+    viewType,
+    value,
+    index = 0,
+    layout,
+    readOnly = false,
+    featureLevel = 'DEFAULT',
+    borderTop,
+  }: {
+    label?: string;
+    required?: boolean;
+    type?: WegasMethod['returns'];
+    viewType?: T;
+    value?: number;
+    index?: number;
+    layout?: SchemaLayout;
+    readOnly?: boolean;
+    featureLevel?: FeatureLevel;
+    borderTop?: boolean;
+  }) =>
     /* TODO : Improve  */
     /*: TypedProps<Parameters<typeof DEFINED_VIEWS[T]>[0]>*/
     ({
@@ -181,17 +232,27 @@ const simpleSchemaProps = {
         type: viewType,
       },
     }),
-  script: (
-    label?: string,
-    required: boolean = true,
-    mode: ScriptMode = 'SET',
-    language?: 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS',
-    value?: string,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ): TypedProps<ScriptProps> => ({
+  script: ({
+    label,
+    required = false,
+    mode = 'SET',
+    language,
+    value,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: {
+    label?: string;
+    required?: boolean;
+    mode?: ScriptMode;
+    language?: 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS';
+    value?: string;
+    featureLevel?: FeatureLevel;
+    index?: number;
+    layout?: SchemaLayout;
+    borderTop?: boolean;
+  }): TypedProps<ScriptProps> => ({
     required,
     type: 'object',
     value: createScript(value, language),

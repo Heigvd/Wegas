@@ -84,8 +84,8 @@ registerComponent(
       ]),
       label: schemaProps.scriptString('Label', false),
       type: schemaProps.select('Type', false, ['checkbox', 'toggler']),
-      disabled: schemaProps.boolean('Disabled', false),
-      inactive: schemaProps.boolean('Inactive', false),
+      disabled: schemaProps.boolean({ label: 'Disabled' }),
+      inactive: schemaProps.boolean({ label: 'Inactive' }),
     },
     allowedVariables: ['BooleanDescriptor'],
     getComputedPropsFromVariable: v => ({

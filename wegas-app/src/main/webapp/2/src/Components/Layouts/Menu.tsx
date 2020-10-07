@@ -39,7 +39,7 @@ const menuItemSelectStyle = css({
 });
 
 export const menuSchema = {
-  vertical: schemaProps.boolean('Vertical'),
+  vertical: schemaProps.boolean({ label: 'Vertical' }),
   onItemSelect: schemaProps.customScript(
     'On item select',
     false,
@@ -177,7 +177,7 @@ export const menuItemSchema: HashListChoices = [
     label: 'Unselectable',
     value: {
       prop: 'unselectable',
-      schema: schemaProps.boolean('Unselectable'),
+      schema: schemaProps.boolean({ label: 'Unselectable' }),
     },
   },
 ];

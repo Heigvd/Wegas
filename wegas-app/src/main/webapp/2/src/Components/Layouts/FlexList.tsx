@@ -66,7 +66,7 @@ export const flexlayoutChoices: HashListChoices = [
     label: 'Order',
     value: {
       prop: 'order',
-      schema: schemaProps.number('Order', false, 0),
+      schema: schemaProps.number({ label: 'Order', value: 0 }),
     },
   },
   {
@@ -80,21 +80,21 @@ export const flexlayoutChoices: HashListChoices = [
     label: 'Flex grow',
     value: {
       prop: 'flexGrow',
-      schema: schemaProps.number('Flex grow', false, 0),
+      schema: schemaProps.number({ label: 'Flex grow', value: 0 }),
     },
   },
   {
     label: 'Flex shrink',
     value: {
       prop: 'flexShrink',
-      schema: schemaProps.number('Flex shrink', false, 1),
+      schema: schemaProps.number({ label: 'Flex shrink', value: 1 }),
     },
   },
   {
     label: 'Flex basis',
     value: {
       prop: 'flexBasis',
-      schema: schemaProps.string('Flex basis', false, 'auto'),
+      schema: schemaProps.string({ label: 'Flex basis', value: 'auto' }),
     },
   },
 ];
@@ -220,7 +220,7 @@ export const flexListSchema = {
       },
     },
   ]),
-  children: schemaProps.hidden(false),
+  children: schemaProps.hidden({}),
 };
 
 export interface FlexListProps extends ClassAndStyle {

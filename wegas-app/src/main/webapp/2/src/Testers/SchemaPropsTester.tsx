@@ -16,11 +16,11 @@ import { IScript, IAbstractContentDescriptor } from 'wegas-ts-api';
 const testSchema = {
   variable: schemaProps.scriptVariable('Variable', false),
   translated: schemaProps.scriptString('Translated', false),
-  hidden: schemaProps.hidden(false),
-  boolean: schemaProps.boolean('Boolean', false),
-  number: schemaProps.number('Number', false),
-  string: schemaProps.string('String', false),
-  script: schemaProps.script('Script', false),
+  hidden: schemaProps.hidden({}),
+  boolean: schemaProps.boolean({ label: 'Boolean' }),
+  number: schemaProps.number({ label: 'Number' }),
+  string: schemaProps.string({ label: 'String' }),
+  script: schemaProps.script({ label: 'Script' }),
   code: schemaProps.code('Code', false),
   select: schemaProps.select('Select', true, [
     'Option 1',
@@ -78,7 +78,9 @@ interface SchemaPropsTesterState {
 export default function SchemaPropsTester() {
   const [values, setValues] = React.useState<SchemaPropsTesterState>({
     variable: createScript(),
-    translated: createScript("\"<p>&nbsp;I18n.toString(Variable.find(gameModel,'infoboxPhaseActuelle'))</p>\""),
+    translated: createScript(
+      '"<p>&nbsp;I18n.toString(Variable.find(gameModel,\'infoboxPhaseActuelle\'))</p>"',
+    ),
     hidden: ['hidden'],
     boolean: false,
     number: 0,

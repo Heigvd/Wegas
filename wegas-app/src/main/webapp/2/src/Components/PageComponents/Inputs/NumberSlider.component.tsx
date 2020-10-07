@@ -71,9 +71,9 @@ registerComponent(
       script: schemaProps.scriptVariable('Variable', true, [
         'SNumberDescriptor',
       ]),
-      steps: schemaProps.number('Steps', false),
+      steps: schemaProps.number({ label: 'Steps' }),
       displayValues: schemaProps.select('Display value', false, displayModes),
-      disabled: schemaProps.boolean('Disabled', false),
+      disabled: schemaProps.boolean({ label: 'Disabled' }),
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({
