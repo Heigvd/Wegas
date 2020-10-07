@@ -38,7 +38,10 @@ export interface SrcEditorProps {
    * cursorOffset - the position of the cursor in the text
    */
   cursorOffset?: number;
-
+  /**
+   * timeout - the timeout before changes applies
+   */
+  timeout?: number | undefined;
   /**
    * onChange - this function is fired each time the content of the editor is changed by the user
    */
@@ -129,6 +132,7 @@ function SrcEditor({
   extraLibs,
   noGutter,
   defaultProperties,
+  timeout = 100,
   onEditorReady,
   onBlur,
   onChange,
@@ -141,6 +145,8 @@ function SrcEditor({
   const getValue = React.useRef<() => string>();
   const editorValue = React.useRef(value || '');
   const mounted = React.useRef<boolean>(false);
+  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
   React.useEffect(() => {
     mounted.current = true;
     return () => {
@@ -271,7 +277,16 @@ function SrcEditor({
             if (newVal !== editorValue.current) {
               editorValue.current = newVal;
               if (onChange) {
-                onChange(newVal);
+                if (timeout) {
+                  if (timeoutRef.current != null) {
+                    clearTimeout(timeoutRef.current);
+                  }
+                  timeoutRef.current = setTimeout(() => {
+                    onChange(newVal);
+                  }, timeout);
+                } else {
+                  onChange(newVal);
+                }
               }
             }
           }
@@ -282,6 +297,7 @@ function SrcEditor({
     cursorOffset,
     defaultFocus,
     editor,
+    timeout,
     onBlur,
     onChange,
     onEditorReady,
