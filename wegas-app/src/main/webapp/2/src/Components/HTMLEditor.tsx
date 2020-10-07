@@ -17,6 +17,8 @@ import 'tinymce/plugins/paste';
 import 'tinymce/plugins/advlist';
 // Skin must also be imported
 import 'tinymce/skins/ui/oxide/skin.min.css';
+// Icons are imported too
+import 'tinymce/icons/default';
 
 import { Editor as TinyEditor } from '@tinymce/tinymce-react';
 import { Modal } from './Modal';
@@ -45,16 +47,27 @@ const editorStyle = css({
 
 type CallbackFN = (url: string) => void;
 
-interface ExtraButton {
+interface StyleButton {
+  name: string;
   block?: 'span' | 'div';
   className: string;
-  cssIcon?: TinyMCEIcons;
+  icon?: TinyMCEIcons;
   text?: string;
   tooltip?: string;
 }
 
-interface ExtraButtons {
-  [name: string]: ExtraButton;
+interface ActionButton {
+  name: string;
+  text?: string;
+  icon?: TinyMCEIcons;
+  tooltip?: string;
+  disabled?: boolean;
+  active?: boolean;
+  onSetup?: (
+    api: TinyMCEButtonAPI,
+    editor: TinyMCEEditor,
+  ) => (api: TinyMCEButtonAPI) => void;
+  onAction: (api: TinyMCEButtonAPI, editor: TinyMCEEditor) => void;
 }
 
 interface HTMLEditorProps extends ClassAndStyle {
@@ -94,118 +107,152 @@ export default function HTMLEditor({
   const HTMLEditor = React.useRef<{ focus: () => void }>();
   const { classes } = React.useContext(classesCTX);
 
-  const config = (
-    toolBarContainerId: string,
-    extraButtons: ExtraButtons = {},
-  ) => {
-    const extraButtonsKeys = Object.keys(extraButtons);
-    return {
-      theme: 'silver',
-      inline: true,
-      browser_spellcheck: true,
-      plugins: [
-        `${onSave ? 'save' : ''} autolink link image lists code media table`,
-        'paste advlist',
-      ],
-      toolbar: `${
-        onSave ? 'save' : ''
-      } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link | ${extraButtonsKeys.join(
-        ' ',
-      )} | code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
-      toolbar_drawer: 'floating',
-      menubar: false,
-      resize: 'both',
-      statusbar: true,
-      branding: false,
-      relative_urls: false,
-      toolbar_items_size: 'small',
-      file_picker_callback: (callback: CallbackFN) =>
-        setFileBrowsing({ fn: callback }),
-      save_onsavecallback: () => onSave && onSave(HTMLContent.current),
-      fixed_toolbar_container: '#' + toolBarContainerId,
-      style_formats: [
-        // {
-        //   title: 'Headers',
-        //   items: [
-        //     { title: 'h1', block: 'h1' },
-        //     { title: 'h2', block: 'h2' },
-        //     { title: 'h3', block: 'h3' },
-        //     { title: 'h4', block: 'h4' },
-        //     { title: 'h5', block: 'h5' },
-        //     { title: 'h6', block: 'h6' },
-        //   ],
-        // },
-        // {
-        //   title: 'Containers',
-        //   items: [
-        //     { title: 'div', block: 'div' },
-        //     { title: 'span', block: 'span' },
-        //   ],
-        // },
+  const config = React.useMemo(
+    () => (toolBarContainerId: string) => {
+      const extraStyleButton: StyleButton[] = [
         {
-          title: 'Wegas styles',
-          items: classes.map(c => ({ title: c, block: 'div', classes: c })),
-          // [
-          //   { title: 'primary', block: 'div', classes: primary },
-          //   { title: 'primaryDark', block: 'div', classes: primaryDark },
-          //   { title: 'primaryLight', block: 'div', classes: primaryLight },
-          // ],
+          name: 'testbutton',
+          text: 'test',
+          className: 'testclass',
         },
+      ];
+      const extraActionButton: ActionButton[] = [
         {
-          title: 'User styles',
-          items: extraButtonsKeys.map(btnName => ({
-            title: btnName,
-            block: extraButtons[btnName].block
-              ? extraButtons[btnName].block
-              : 'span',
-            classes: extraButtons[btnName].className,
-          })),
-        },
-      ],
-      setup: function (editor: TinyMCEEditor) {
-        let formatter: TinyMCEEditorFormatter | undefined;
-        editor.on('init', () => {
-          formatter = editor.formatter;
-        });
-        // editor.on('blur', () => {
-        //   // TODO : find a way to close the expended toolbar to avoid bug
-        //   // editor.execCommand('commandName');
-        //   // wlog(e);
-        //   // debugger;
-        // });
-        extraButtonsKeys.forEach(btnName => {
-          editor.ui.registry.addToggleButton(btnName, {
-            text: extraButtons[btnName].text,
-            icon: extraButtons[btnName].cssIcon,
-            onAction: () => {
-              formatter && formatter.toggle(`custom-${btnName}`);
-              editor.fire('change', {
-                event: {
-                  target: {
-                    getContent: editor.getContent,
-                  },
-                },
-              });
-            },
-            onSetup: function (buttonApi) {
-              // Getting the class of the current token to define button state
-              const editorEventCallback = (
-                eventApi: TinyMCENodeChangeEvent,
-              ) => {
-                buttonApi.setActive(
-                  eventApi.element.className.includes(
-                    extraButtons[btnName].className,
-                  ),
+          name: 'addDivImage',
+          icon: 'image',
+          onAction: (_api, editor) => {
+            setFileBrowsing({
+              fn: path => {
+                editor.insertContent(
+                  `<div style="background-image:url(${path}); width:100%; height:100%; background-position: center; background-size: contain; background-repeat: no-repeat;"></div>`,
                 );
-              };
-              editor.on('nodechange', editorEventCallback);
-              return () => editor.off('nodechange', editorEventCallback);
-            },
+              },
+            });
+          },
+        },
+      ];
+
+      return {
+        theme: 'silver',
+        inline: true,
+        browser_spellcheck: true,
+        plugins: [
+          `${onSave ? 'save' : ''} autolink link image lists code media table`,
+          'paste advlist',
+        ],
+        toolbar: `${
+          onSave ? 'save' : ''
+        } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link | ${[
+          ...extraStyleButton,
+          ...extraActionButton,
+        ]
+          .map(btn => btn.name)
+          .join(
+            ' ',
+          )} | code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
+        toolbar_drawer: 'floating',
+        menubar: false,
+        resize: 'both',
+        statusbar: true,
+        branding: false,
+        relative_urls: false,
+        toolbar_items_size: 'small',
+        file_picker_callback: (callback: CallbackFN) =>
+          setFileBrowsing({ fn: callback }),
+        save_onsavecallback: () => onSave && onSave(HTMLContent.current),
+        fixed_toolbar_container: '#' + toolBarContainerId,
+        style_formats: [
+          // {
+          //   title: 'Headers',
+          //   items: [
+          //     { title: 'h1', block: 'h1' },
+          //     { title: 'h2', block: 'h2' },
+          //     { title: 'h3', block: 'h3' },
+          //     { title: 'h4', block: 'h4' },
+          //     { title: 'h5', block: 'h5' },
+          //     { title: 'h6', block: 'h6' },
+          //   ],
+          // },
+          // {
+          //   title: 'Containers',
+          //   items: [
+          //     { title: 'div', block: 'div' },
+          //     { title: 'span', block: 'span' },
+          //   ],
+          // },
+          {
+            title: 'Wegas styles',
+            items: classes.map(c => ({ title: c, block: 'div', classes: c })),
+            // [
+            //   { title: 'primary', block: 'div', classes: primary },
+            //   { title: 'primaryDark', block: 'div', classes: primaryDark },
+            //   { title: 'primaryLight', block: 'div', classes: primaryLight },
+            // ],
+          },
+          {
+            title: 'User styles',
+            items: extraStyleButton.map(btn => ({
+              title: btn.name,
+              block: btn.block ? btn.block : 'span',
+              classes: btn.className,
+            })),
+          },
+        ],
+        // forced_root_block: '',
+        setup: function (editor: TinyMCEEditor) {
+          let formatter: EditorFormatter | undefined;
+          editor.on('init', () => {
+            formatter = editor.formatter;
           });
-        });
-      },
-    };
-  };
+          // editor.on('blur', () => {
+          //   // TODO : find a way to close the expended toolbar to avoid bug
+          //   // editor.execCommand('commandName');
+          //   // wlog(e);
+          //   // debugger;
+          // });
+          extraStyleButton.forEach(btn => {
+            editor.ui.registry.addToggleButton(btn.name, {
+              text: btn.text,
+              icon: btn.icon,
+              tooltip: btn.tooltip,
+              onAction: () => {
+                formatter && formatter.toggle(`custom-${btn.name}`);
+                editor.fire('change', {
+                  event: {
+                    target: {
+                      getContent: editor.getContent,
+                    },
+                  },
+                });
+              },
+              onSetup: (buttonApi: TinyMCEToggleButtonAPI) => {
+                // Getting the class of the current token to define button state
+                const editorEventCallback = (
+                  eventApi: TinyMCENodeChangeEvent,
+                ) => {
+                  buttonApi.setActive(
+                    eventApi.element.className.includes(btn.className),
+                  );
+                };
+                editor.on('nodechange', editorEventCallback);
+                return () => editor.off('nodechange', editorEventCallback);
+              },
+            });
+          });
+
+          extraActionButton.forEach(btn => {
+            editor.ui.registry.addButton(btn.name, {
+              ...btn,
+              onAction: api => btn.onAction(api, editor),
+              onSetup: api =>
+                btn.onSetup ? btn.onSetup(api, editor) : () => {},
+            });
+          });
+        },
+      };
+    },
+    [classes, onSave],
+  );
 
   React.useEffect(() => {
     // Ugly workaround...
@@ -248,9 +295,7 @@ export default function HTMLEditor({
         </div>
         <TinyEditor
           value={value}
-          init={config(toolBarId, {
-            testbutton: { text: 'test', className: 'testclass' },
-          })}
+          init={config(toolBarId)}
           onInit={editor => (HTMLEditor.current = editor.target)}
           onEditorChange={onEditorChange}
           onFocus={() => setEditorFocus(true)}
