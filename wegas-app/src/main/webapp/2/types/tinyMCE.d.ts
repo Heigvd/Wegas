@@ -1,35 +1,37 @@
-// Keep this while all the types are not defined in TinyMCEEventsCallback
-// type TinyMCEEditorEventType =
-//   | 'click'
-//   | 'dblclick'
-//   | 'mousedown'
-//   | 'mouseup'
-//   | 'mousemove'
-//   | 'mouseover'
-//   | 'mouseout'
-//   | 'mouseenter'
-//   | 'mouseleave'
-//   | 'keydown'
-//   | 'keypress'
-//   | 'keyup'
-//   | 'contextmenu'
-//   | 'paste'
-//   | 'init'
-//   | 'focus'
-//   | 'blur'
-//   | 'beforesetcontent'
-//   | 'setcontent'
-//   | 'getcontent'
-//   | 'preprocess'
-//   | 'postprocess'
-//   | 'undo'
-//   | 'redo'
-//   | 'change'
-//   | 'dirty'
-//   | 'remove'
-//   | 'execcommand'
-//   | 'pastepreprocess'
-//   | 'pastepostprocess';
+type TinyMCEEditor = import('tinymce/tinymce').Editor;
+
+// // Keep this while all the types are not defined in TinyMCEEventsCallback
+// // type EditorEventType =
+// //   | 'click'
+// //   | 'dblclick'
+// //   | 'mousedown'
+// //   | 'mouseup'
+// //   | 'mousemove'
+// //   | 'mouseover'
+// //   | 'mouseout'
+// //   | 'mouseenter'
+// //   | 'mouseleave'
+// //   | 'keydown'
+// //   | 'keypress'
+// //   | 'keyup'
+// //   | 'contextmenu'
+// //   | 'paste'
+// //   | 'init'
+// //   | 'focus'
+// //   | 'blur'
+// //   | 'beforesetcontent'
+// //   | 'setcontent'
+// //   | 'getcontent'
+// //   | 'preprocess'
+// //   | 'postprocess'
+// //   | 'undo'
+// //   | 'redo'
+// //   | 'change'
+// //   | 'dirty'
+// //   | 'remove'
+// //   | 'execcommand'
+// //   | 'pastepreprocess'
+// //   | 'pastepostprocess';
 
 type TinyMCEIcons =
   | 'accessibility-check'
@@ -195,7 +197,7 @@ interface TinyMCEEvent {
   stopImmediatePropagation: () => void;
   stopPropagation: () => void;
   target: TinyMCEEditor;
-  type: TinyMCEEditorEventType;
+  type: EditorEventType;
 }
 
 interface TinyMCENodeChangeEvent {
@@ -218,9 +220,9 @@ interface TinyMCEEventsCallback {
   blur: TinyMCEEvent;
 }
 
-type TinyMCEEditorEventType = keyof TinyMCEEventsCallback;
+type EditorEventType = keyof TinyMCEEventsCallback;
 
-interface TinyMCEEditorFormatter {
+interface EditorFormatter {
   toggle: (style_format_name: string) => void;
 }
 
@@ -243,27 +245,35 @@ interface TinyMCEUi {
   };
 }
 
-interface TinyMCEToggleButtonAPI {
-  isDisabled: () => boolean;
-  setDisabled: (state: boolean) => void;
-  isActive: () => boolean;
-  setActive: (state: boolean) => void;
-}
+type TinyMCEToggleButtonAPI = Parameters<
+  Parameters<TinyMCEEditor['ui']['registry']['addToggleButton']>[1]['onAction']
+>[0];
 
-interface TinyMCEEditor {
-  on: <T extends TinyMCEEditorEventType>(
-    event: T,
-    callback: (event?: TinyMCEEventsCallback[T]) => void,
-  ) => void;
-  off: <T extends TinyMCEEditorEventType>(
-    event: T,
-    callback: (event?: TinyMCEEventsCallback[T]) => void,
-  ) => void;
-  fire: <T extends TinyMCEEditorEventType>(
-    event: T,
-    data?: TinyMCEEventsCallback[T],
-  ) => void;
-  formatter?: TinyMCEEditorFormatter;
-  ui: TinyMCEUi;
-  getContent: () => string;
-}
+type TinyMCEButtonAPI = Parameters<
+  Parameters<TinyMCEEditor['ui']['registry']['addButton']>[1]['onAction']
+>[0];
+
+// interface TinyMCEToggleButtonAPI {
+//   isDisabled: () => boolean;
+//   setDisabled: (state: boolean) => void;
+//   isActive: () => boolean;
+//   setActive: (state: boolean) => void;
+// }
+
+// interface Editor {
+//   on: <T extends EditorEventType>(
+//     event: T,
+//     callback: (event?: TinyMCEEventsCallback[T]) => void,
+//   ) => void;
+//   off: <T extends EditorEventType>(
+//     event: T,
+//     callback: (event?: TinyMCEEventsCallback[T]) => void,
+//   ) => void;
+//   fire: <T extends EditorEventType>(
+//     event: T,
+//     data?: TinyMCEEventsCallback[T],
+//   ) => void;
+//   formatter?: EditorFormatter;
+//   ui: TinyMCEUi;
+//   getContent: () => string;
+// }
