@@ -19,11 +19,7 @@ function PlayerText({ text, className, style }: PlayerTextProps) {
   return !text ? (
     <span>No text</span>
   ) : (
-    <Text
-      style={{ margin: 'auto', ...style }}
-      className={className}
-      text={content}
-    />
+    <Text style={style} className={className} text={content} />
   );
 }
 

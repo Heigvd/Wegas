@@ -6,12 +6,15 @@ import {
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
 import { fileURL } from '../../../API/files.api';
+import { IScript } from 'wegas-ts-api';
+import { useScript } from '../../Hooks/useScript';
 
 interface SvgLoaderProps extends WegasComponentProps {
-  src?: string;
+  script?: IScript;
 }
 
-function Image({ src }: SvgLoaderProps) {
+function Image({ script }: SvgLoaderProps) {
+  const src = useScript<string>(script?.content);
   return <img src={src ? fileURL(src) : undefined} />;
 }
 
@@ -22,7 +25,7 @@ registerComponent(
     name: 'Image',
     icon: 'image',
     schema: {
-      src: schemaProps.path('Source', false, 'FILE', {
+      script: schemaProps.scriptablePath('Source', false, 'FILE', {
         fileType: 'image',
         filterType: 'show',
       }),
