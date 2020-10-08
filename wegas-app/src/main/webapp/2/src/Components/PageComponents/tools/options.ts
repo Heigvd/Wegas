@@ -150,9 +150,9 @@ export const actionsChoices: HashListChoices = [
     label: 'Open Page',
     value: {
       prop: 'openPage',
-      schema: schemaProps.object(
-        'Open Page',
-        {
+      schema: schemaProps.object({
+        label: 'Open Page',
+        properties: {
           pageLoaderName: schemaProps.pageLoaderSelect({
             label: 'Page loader',
             required: true,
@@ -160,59 +160,55 @@ export const actionsChoices: HashListChoices = [
           pageId: schemaProps.pageSelect({ label: 'Page', required: true }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
-        false,
-      ),
+      }),
     },
   },
   {
     label: 'Open Url',
     value: {
       prop: 'openUrl',
-      schema: schemaProps.object(
-        'Open Url',
-        {
+      schema: schemaProps.object({
+        label: 'Open Url',
+        properties: {
           url: schemaProps.string({ label: 'Url', required: true }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
-        false,
-      ),
+      }),
     },
   },
   {
     label: 'Open File',
     value: {
       prop: 'openFile',
-      schema: schemaProps.object(
-        'Open File',
-        {
+      schema: schemaProps.object({
+        label: 'Open File',
+        properties: {
           fileDescriptor: schemaProps.path({ label: 'File', required: true }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
-        false,
-      ),
+      }),
     },
   },
   {
     label: 'Impact variable',
     value: {
       prop: 'impactVariable',
-      schema: schemaProps.object(
-        'Impact variable',
-        {
+      schema: schemaProps.object({
+        label: 'Impact variable',
+        properties: {
           impact: schemaProps.script({ label: 'Impact', required: true }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
-        false,
-      ),
+      }),
     },
   },
   {
     label: 'Local script eval',
     value: {
       prop: 'localScriptEval',
-      schema: schemaProps.object(
-        'Local script eval',
-        {
+      schema: schemaProps.object({
+        label: 'Local script eval',
+        properties: {
           script: schemaProps.code({
             label: 'Local script',
             required: true,
@@ -220,31 +216,29 @@ export const actionsChoices: HashListChoices = [
           }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
-        false,
-      ),
+      }),
     },
   },
   {
     label: 'Open popup page',
     value: {
       prop: 'openPopupPage',
-      schema: schemaProps.object(
-        'Open popup page',
-        {
+      schema: schemaProps.object({
+        label: 'Open popup page',
+        properties: {
           pageId: schemaProps.pageSelect({ label: 'Page', required: true }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
-        false,
-      ),
+      }),
     },
   },
   {
     label: 'Play sound',
     value: {
       prop: 'playSound',
-      schema: schemaProps.object(
-        'Play sound',
-        {
+      schema: schemaProps.object({
+        label: 'Play sound',
+        properties: {
           fileDescriptor: schemaProps.path({
             label: 'File',
             required: true,
@@ -256,25 +250,23 @@ export const actionsChoices: HashListChoices = [
           }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
-        false,
-      ),
+      }),
     },
   },
   {
     label: 'Print variable',
     value: {
       prop: 'printVariable',
-      schema: schemaProps.object(
-        'Print variable',
-        {
+      schema: schemaProps.object({
+        label: 'Print variable',
+        properties: {
           variableName: schemaProps.variable({
             label: 'Variable',
             required: true,
           }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
-        false,
-      ),
+      }),
     },
   },
   {
@@ -385,9 +377,9 @@ export const decorationsChoices: HashListChoices = [
     label: 'Info Bullet',
     value: {
       prop: 'infoBullet',
-      schema: schemaProps.object(
-        'Info Bullet',
-        {
+      schema: schemaProps.object({
+        label: 'Info Bullet',
+        properties: {
           showScript: schemaProps.script({
             label: 'Show',
             mode: 'GET',
@@ -407,8 +399,7 @@ export const decorationsChoices: HashListChoices = [
           }),
           // messageScript: schemaProps.code('Message', false, 'TypeScript'),
         },
-        false,
-      ),
+      }),
     },
   },
   {

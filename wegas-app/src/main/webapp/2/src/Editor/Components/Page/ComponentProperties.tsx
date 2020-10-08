@@ -208,16 +208,16 @@ export function wegasComponentSchema(
   return {
     description: pageComponentSchema.description,
     properties: {
-      commonProperties: schemaProps.object(
-        'Common properties',
-        wegasComponentCommonSchema,
-      ),
-      componentProperties: schemaProps.object(
-        'Component properties',
-        (pageComponentSchema.properties || {}) as {
+      commonProperties: schemaProps.object({
+        label: 'Common properties',
+        properties: wegasComponentCommonSchema,
+      }),
+      componentProperties: schemaProps.object({
+        label: 'Component properties',
+        properties: (pageComponentSchema.properties || {}) as {
           [key: string]: SimpleSchemaPropsSchemas;
         },
-      ),
+      }),
       ...wegasComponentExtraSchema(parentContainerType),
     },
   };
