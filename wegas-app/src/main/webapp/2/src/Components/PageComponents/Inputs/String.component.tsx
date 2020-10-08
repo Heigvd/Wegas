@@ -63,10 +63,12 @@ registerComponent(
     name: 'String',
     icon: 'paragraph',
     schema: {
-      script: schemaProps.scriptVariable('Variable', true, [
-        'SStringDescriptor',
-      ]),
-      placeholder: schemaProps.scriptString('Placeholder', false),
+      script: schemaProps.scriptVariable({
+        label: 'Variable',
+        required: true,
+        returnType: ['SStringDescriptor'],
+      }),
+      placeholder: schemaProps.scriptString({ label: 'Placeholder' }),
     },
     allowedVariables: ['StringDescriptor'],
     getComputedPropsFromVariable: v => ({

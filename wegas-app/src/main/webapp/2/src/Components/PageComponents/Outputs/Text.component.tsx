@@ -30,7 +30,7 @@ registerComponent(
     name: 'Text',
     icon: 'paragraph',
     schema: {
-      text: schemaProps.scriptString('Text', true),
+      text: schemaProps.scriptString({ label: 'Text' }),
       className: schemaProps.string({ label: 'ClassName' }),
     },
     allowedVariables: ['TextDescriptor'],

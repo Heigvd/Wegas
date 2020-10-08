@@ -79,11 +79,16 @@ registerComponent(
     name: 'Boolean',
     icon: 'check-square',
     schema: {
-      value: schemaProps.scriptVariable('Variable', true, [
-        'SBooleanDescriptor',
-      ]),
-      label: schemaProps.scriptString('Label', false),
-      type: schemaProps.select('Type', false, ['checkbox', 'toggler']),
+      value: schemaProps.scriptVariable({
+        label: 'Variable',
+        required: true,
+        returnType: ['SBooleanDescriptor'],
+      }),
+      label: schemaProps.scriptString({ label: 'Label' }),
+      type: schemaProps.select({
+        label: 'Type',
+        values: ['checkbox', 'toggler'],
+      }),
       disabled: schemaProps.boolean({ label: 'Disabled' }),
       inactive: schemaProps.boolean({ label: 'Inactive' }),
     },

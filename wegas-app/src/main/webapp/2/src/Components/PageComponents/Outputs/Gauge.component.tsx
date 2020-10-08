@@ -49,9 +49,11 @@ registerComponent(
     name: 'Gauge',
     icon: 'tachometer-alt',
     schema: {
-      script: schemaProps.scriptVariable('Variable', false, [
-        'SNumberDescriptor',
-      ]),
+      script: schemaProps.scriptVariable({
+        label: 'Variable',
+        required: false,
+        returnType: ['SNumberDescriptor'],
+      }),
       label: schemaProps.string({ label: 'Label' }),
       followNeedle: schemaProps.boolean({ label: 'Follow needle' }),
     },

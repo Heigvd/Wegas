@@ -30,9 +30,11 @@ registerComponent(
     name: 'Dialogue',
     icon: 'comments',
     schema: {
-      dialogue: schemaProps.scriptVariable('Dialogue', true, [
-        'SDialogueDescriptor',
-      ]),
+      dialogue: schemaProps.scriptVariable({
+        label: 'Dialogue',
+        required: true,
+        returnType: ['SDialogueDescriptor'],
+      }),
     },
     allowedVariables: ['DialogueDescriptor'],
     getComputedPropsFromVariable: v => ({

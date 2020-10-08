@@ -40,13 +40,13 @@ const menuItemSelectStyle = css({
 
 export const menuSchema = {
   vertical: schemaProps.boolean({ label: 'Vertical' }),
-  onItemSelect: schemaProps.customScript(
-    'On item select',
-    false,
-    ['void'],
-    'TypeScript',
-    [['item', ['number']]],
-  ),
+  onItemSelect: schemaProps.customScript({
+    label: 'On item select',
+
+    returnType: ['void'],
+    language: 'TypeScript',
+    args: [['item', ['number']]],
+  }),
   // alwaysSelected: schemaProps.boolean('Always selected',true,true),
 };
 

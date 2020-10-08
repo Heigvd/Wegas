@@ -22,9 +22,13 @@ registerComponent(
     name: 'Image',
     icon: 'image',
     schema: {
-      script: schemaProps.path('Source', false, 'FILE', {
-        fileType: 'image',
-        filterType: 'show',
+      script: schemaProps.path({
+        label: 'Source',
+        pick: 'FILE',
+        filter: {
+          fileType: 'image',
+          filterType: 'show',
+        },
       }),
     },
   }),

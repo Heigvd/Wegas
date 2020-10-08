@@ -73,7 +73,11 @@ export const flexlayoutChoices: HashListChoices = [
     label: 'Align Self',
     value: {
       prop: 'alignSelf',
-      schema: schemaProps.select('Align self', false, alignSelfValues, 'auto'),
+      schema: schemaProps.select({
+        label: 'Align self',
+        values: alignSelfValues,
+        value: 'auto',
+      }),
     },
   },
   {
@@ -179,47 +183,59 @@ export const alignContentValues = ['stretch', ...justifyContentValues] as const;
 type AlignContent = typeof alignContentValues[number];
 
 export const flexListSchema = {
-  layout: schemaProps.hashlist('List layout properties', false, [
-    {
-      label: 'Direction',
-      value: {
-        prop: 'flexDirection',
-        schema: schemaProps.select('Direction', false, flexDirectionValues),
+  layout: schemaProps.hashlist({
+    label: 'List layout properties',
+    choices: [
+      {
+        label: 'Direction',
+        value: {
+          prop: 'flexDirection',
+          schema: schemaProps.select({
+            label: 'Direction',
+            values: flexDirectionValues,
+            value: 'row',
+          }),
+        },
       },
-    },
-    {
-      label: 'Wrap',
-      value: {
-        prop: 'flexWrap',
-        schema: schemaProps.select('Wrap', false, flexWrapValues, 'string'),
+      {
+        label: 'Wrap',
+        value: {
+          prop: 'flexWrap',
+          schema: schemaProps.select({ label: 'Wrap', values: flexWrapValues }),
+        },
       },
-    },
-    {
-      label: 'Justify content',
-      value: {
-        prop: 'justifyContent',
-        schema: schemaProps.select(
-          'Justify content',
-          false,
-          justifyContentValues,
-        ),
+      {
+        label: 'Justify content',
+        value: {
+          prop: 'justifyContent',
+          schema: schemaProps.select({
+            label: 'Justify content',
+            values: justifyContentValues,
+          }),
+        },
       },
-    },
-    {
-      label: 'Align items',
-      value: {
-        prop: 'alignItems',
-        schema: schemaProps.select('Align items', false, alignItemsValues),
+      {
+        label: 'Align items',
+        value: {
+          prop: 'alignItems',
+          schema: schemaProps.select({
+            label: 'Align items',
+            values: alignItemsValues,
+          }),
+        },
       },
-    },
-    {
-      label: 'Align content',
-      value: {
-        prop: 'alignContent',
-        schema: schemaProps.select('Align content', false, alignContentValues),
+      {
+        label: 'Align content',
+        value: {
+          prop: 'alignContent',
+          schema: schemaProps.select({
+            label: 'Align content',
+            values: alignContentValues,
+          }),
+        },
       },
-    },
-  ]),
+    ],
+  }),
   children: schemaProps.hidden({}),
 };
 

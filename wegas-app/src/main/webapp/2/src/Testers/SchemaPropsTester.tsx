@@ -14,46 +14,64 @@ import { themeVar } from '../Components/Style/ThemeVars';
 import { IScript, IAbstractContentDescriptor } from 'wegas-ts-api';
 
 const testSchema = {
-  variable: schemaProps.scriptVariable('Variable', false),
-  translated: schemaProps.scriptString('Translated', false),
+  variable: schemaProps.scriptVariable({ label: 'Variable' }),
+  translated: schemaProps.scriptString({ label: 'Translated' }),
   hidden: schemaProps.hidden({}),
   boolean: schemaProps.boolean({ label: 'Boolean' }),
   number: schemaProps.number({ label: 'Number' }),
   string: schemaProps.string({ label: 'String' }),
   script: schemaProps.script({ label: 'Script' }),
-  code: schemaProps.code('Code', false),
-  select: schemaProps.select('Select', true, [
-    'Option 1',
-    'Option 2',
-    'Option 3',
-  ]),
-  undefSelect: schemaProps.select('Undefined select', false, [
-    'Option 1',
-    'Option 2',
-    'Option 3',
-  ]),
-  simpleHashList: schemaProps.hashlist('Simple hashlist', true),
-  customizedHashList: schemaProps.hashlist('Customized hashlist', true, [
-    {
-      label: 'Attribute1',
-      value: {
-        prop: 'Attribute1',
-        schema: schemaProps.select('Attribute1', true, ['1', '2', '3']),
+  code: schemaProps.code({ label: 'Code' }),
+  select: schemaProps.select({
+    label: 'Select',
+    required: true,
+    values: ['Option 1', 'Option 2', 'Option 3'],
+  }),
+  undefSelect: schemaProps.select({
+    label: 'Undefined select',
+    values: ['Option 1', 'Option 2', 'Option 3'],
+  }),
+  simpleHashList: schemaProps.hashlist({
+    label: 'Simple hashlist',
+    required: true,
+  }),
+  customizedHashList: schemaProps.hashlist({
+    label: 'Customized hashlist',
+    required: true,
+    choices: [
+      {
+        label: 'Attribute1',
+        value: {
+          prop: 'Attribute1',
+          schema: schemaProps.select({
+            label: 'Attribute1',
+            required: true,
+            values: ['1', '2', '3'],
+          }),
+        },
       },
-    },
-    {
-      label: 'Attribute2',
-      value: {
-        prop: 'Attribute2',
-        schema: schemaProps.select('Attribute2', true, ['A', 'B', 'C']),
+      {
+        label: 'Attribute2',
+        value: {
+          prop: 'Attribute2',
+          schema: schemaProps.select({
+            label: 'Attribute2',
+            required: true,
+            values: ['A', 'B', 'C'],
+          }),
+        },
       },
-    },
-  ]),
+    ],
+  }),
   // customizedMultilevelHashList: wegasComponentExtraSchema('FLEX').options,
-  file: schemaProps.file('File', false),
-  greyFilterfile: schemaProps.file('Filtered audio file', false, 'FILE', {
-    filterType: 'grey',
-    fileType: 'audio',
+  file: schemaProps.file({ label: 'File' }),
+  greyFilterfile: schemaProps.file({
+    label: 'Filtered audio file',
+    pick: 'FILE',
+    filter: {
+      filterType: 'grey',
+      fileType: 'audio',
+    },
   }),
 };
 

@@ -336,9 +336,8 @@ export const makeSchemaInitExpression = (
   scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
 ) => ({
   variableName: schemaProps.hidden({ type: 'string', index: 1000 }),
-  initExpression: schemaProps.tree(
-    undefined,
-    [
+  initExpression: schemaProps.tree({
+    items: [
       {
         label: 'Variables',
         items: genVarItems(
@@ -370,34 +369,24 @@ export const makeSchemaInitExpression = (
           ]
         : []),
     ],
-    false,
-    undefined,
-    'object',
-    'DEFAULT',
-    0,
-    'inline',
-    false,
-    true,
-  ),
+    type: 'object',
+    layout: 'inline',
+    borderBottom: true,
+  }),
 });
 
 export const makeSchemaMethodSelector = (methods?: MethodConfig) => ({
   ...(methods && Object.keys(methods).length > 0
     ? {
-        methodName: schemaProps.select(
-          undefined,
-          false,
-          Object.keys(methods).map(k => ({
+        methodName: schemaProps.select({
+          values: Object.keys(methods).map(k => ({
             label: methods[k].label,
             value: k,
           })),
-          'string',
-          undefined,
-          undefined,
-          'DEFAULT',
-          1,
-          'inline',
-        ),
+          returnType: 'string',
+          index: 1,
+          layout: 'inline',
+        }),
       }
     : {}),
 });
@@ -432,17 +421,12 @@ export const makeSchemaConditionAttributes = (
 ) => ({
   ...(method && isScriptCondition(mode) && method.returns !== 'boolean'
     ? {
-        operator: schemaProps.select(
-          undefined,
-          false,
-          filterOperators(method.returns),
-          'string',
-          undefined,
-          undefined,
-          'DEFAULT',
-          method.parameters.length + index,
-          'inline',
-        ),
+        operator: schemaProps.select({
+          values: filterOperators(method.returns),
+          returnType: 'string',
+          index: method.parameters.length + index,
+          layout: 'inline',
+        }),
         comparator: schemaProps.custom({
           label: undefined,
           type: method.returns,

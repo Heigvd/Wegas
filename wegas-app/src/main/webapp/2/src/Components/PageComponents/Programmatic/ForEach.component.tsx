@@ -66,9 +66,10 @@ registerComponent(
     icon: 'code',
     schema: {
       ...flexListSchema,
-      getItemsFn: schemaProps.customScript('Items', false, [
-        'Readonly<object[]>',
-      ]),
+      getItemsFn: schemaProps.customScript({
+        label: 'Items',
+        returnType: ['Readonly<object[]>'],
+      }),
       exposeAs: schemaProps.string({
         label: 'Expose as',
         required: true,
