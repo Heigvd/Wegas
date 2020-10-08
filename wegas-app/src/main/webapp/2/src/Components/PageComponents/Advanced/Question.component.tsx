@@ -36,9 +36,11 @@ registerComponent(
     name: 'Question',
     icon: 'question',
     schema: {
-      question: schemaProps.scriptVariable('Question', true, [
-        'SQuestionDescriptor',
-      ]),
+      question: schemaProps.scriptVariable({
+        label: 'Question',
+        required: true,
+        returnType: ['SQuestionDescriptor'],
+      }),
     },
     allowedVariables: ['QuestionDescriptor'],
     getComputedPropsFromVariable: v => ({

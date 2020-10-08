@@ -13,8 +13,8 @@ registerComponent(
     name: 'AbsoluteLayout',
     icon: 'images',
     schema: {
-      name: schemaProps.string('Name', false),
-      children: schemaProps.hidden(false),
+      name: schemaProps.string({ label: 'Name' }),
+      children: schemaProps.hidden({}),
     },
     getComputedPropsFromVariable: () => ({ children: [] }),
   }),

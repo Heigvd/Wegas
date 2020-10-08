@@ -66,10 +66,10 @@ const test = pageComponentFactory({
   name: CONTENT_TYPE,
   icon: 'columns',
   schema: {
-    vertical: schemaProps.boolean('Vertical', false),
-    noSplitter: schemaProps.boolean('No splitter', false),
-    noResize: schemaProps.boolean('No resize', false),
-    flexValues: schemaProps.hidden(false, 'array'),
+    vertical: schemaProps.boolean({ label: 'Vertical' }),
+    noSplitter: schemaProps.boolean({ label: 'No splitter' }),
+    noResize: schemaProps.boolean({ label: 'No resize' }),
+    flexValues: schemaProps.hidden({ type: 'array' }),
   },
   getComputedPropsFromVariable: () => ({
     children: [],

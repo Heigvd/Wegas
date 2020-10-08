@@ -42,11 +42,15 @@ registerComponent(
     name: 'Example',
     icon: 'ambulance',
     schema: {
-      script: schemaProps.scriptVariable('Variable', true, [
-        'STextDescriptor',
-        'SStaticTextDescriptor',
-        'SNumberDescriptor',
-      ]),
+      script: schemaProps.scriptVariable({
+        label: 'Variable',
+        required: true,
+        returnType: [
+          'STextDescriptor',
+          'SStaticTextDescriptor',
+          'SNumberDescriptor',
+        ],
+      }),
     },
     allowedVariables: ['NumberDescriptor', 'StringDescriptor'],
     getComputedPropsFromVariable: v => ({

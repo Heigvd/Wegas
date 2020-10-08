@@ -39,14 +39,14 @@ const menuItemSelectStyle = css({
 });
 
 export const menuSchema = {
-  vertical: schemaProps.boolean('Vertical'),
-  onItemSelect: schemaProps.customScript(
-    'On item select',
-    false,
-    ['void'],
-    'TypeScript',
-    [['item', ['number']]],
-  ),
+  vertical: schemaProps.boolean({ label: 'Vertical' }),
+  onItemSelect: schemaProps.customScript({
+    label: 'On item select',
+
+    returnType: ['void'],
+    language: 'TypeScript',
+    args: [['item', ['number']]],
+  }),
   // alwaysSelected: schemaProps.boolean('Always selected',true,true),
 };
 
@@ -177,7 +177,7 @@ export const menuItemSchema: HashListChoices = [
     label: 'Unselectable',
     value: {
       prop: 'unselectable',
-      schema: schemaProps.boolean('Unselectable'),
+      schema: schemaProps.boolean({ label: 'Unselectable' }),
     },
   },
 ];

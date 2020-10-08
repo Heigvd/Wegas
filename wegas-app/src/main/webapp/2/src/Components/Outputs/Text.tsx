@@ -8,14 +8,13 @@ interface TextProps extends ClassAndStyle {
 
 export function Text({ text, className, style }: TextProps) {
   return (
-    <div className={className} style={style}>
-      <div
-        style={{ display: 'inline-block' }}
-        dangerouslySetInnerHTML={{
-          __html: text || '',
-        }}
-      />
-    </div>
+    <div
+      className={className}
+      style={style}
+      dangerouslySetInnerHTML={{
+        __html: text || '',
+      }}
+    />
   );
 }
 

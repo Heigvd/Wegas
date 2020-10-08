@@ -36,9 +36,9 @@ import { ContainerTypes } from '../../../Components/PageComponents/tools/Editabl
  * wegasComponentCommonSchema - defines the minimum schema for every WegasComponent
  */
 export const wegasComponentCommonSchema = {
-  name: schemaProps.string('Name', false, undefined, undefined, -1),
-  className: schemaProps.string('Classes', false, undefined, 'ADVANCED'),
-  children: schemaProps.hidden(false, 'array', 1003),
+  name: schemaProps.string({ label: 'Name', index: -1 }),
+  className: schemaProps.string({ label: 'Classes', featureLevel: 'ADVANCED' }),
+  children: schemaProps.hidden({ type: 'array', index: 1003 }),
 };
 
 interface EditorProps<T = WegasComponentForm> {
@@ -208,16 +208,16 @@ export function wegasComponentSchema(
   return {
     description: pageComponentSchema.description,
     properties: {
-      commonProperties: schemaProps.object(
-        'Common properties',
-        wegasComponentCommonSchema,
-      ),
-      componentProperties: schemaProps.object(
-        'Component properties',
-        (pageComponentSchema.properties || {}) as {
+      commonProperties: schemaProps.object({
+        label: 'Common properties',
+        properties: wegasComponentCommonSchema,
+      }),
+      componentProperties: schemaProps.object({
+        label: 'Component properties',
+        properties: (pageComponentSchema.properties || {}) as {
           [key: string]: SimpleSchemaPropsSchemas;
         },
-      ),
+      }),
       ...wegasComponentExtraSchema(parentContainerType),
     },
   };

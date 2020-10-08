@@ -19,12 +19,11 @@ interface VariableInputProps
 const schema = (scriptableClassFilter?: WegasScriptEditorReturnTypeName[]) => ({
   description: 'booleanExpressionSchema',
   properties: {
-    variableName: schemaProps.scriptVariable(
-      'Variable',
-      false,
-      scriptableClassFilter,
+    variableName: schemaProps.scriptVariable({
+      label: 'Variable',
+      returnType: scriptableClassFilter,
       // && scriptableClassFilter.map(sf => sf.substr(2) as WegasClassNames),
-    ),
+    }),
   },
 });
 

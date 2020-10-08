@@ -66,35 +66,39 @@ export const flexlayoutChoices: HashListChoices = [
     label: 'Order',
     value: {
       prop: 'order',
-      schema: schemaProps.number('Order', false, 0),
+      schema: schemaProps.number({ label: 'Order', value: 0 }),
     },
   },
   {
     label: 'Align Self',
     value: {
       prop: 'alignSelf',
-      schema: schemaProps.select('Align self', false, alignSelfValues, 'auto'),
+      schema: schemaProps.select({
+        label: 'Align self',
+        values: alignSelfValues,
+        value: 'auto',
+      }),
     },
   },
   {
     label: 'Flex grow',
     value: {
       prop: 'flexGrow',
-      schema: schemaProps.number('Flex grow', false, 0),
+      schema: schemaProps.number({ label: 'Flex grow', value: 0 }),
     },
   },
   {
     label: 'Flex shrink',
     value: {
       prop: 'flexShrink',
-      schema: schemaProps.number('Flex shrink', false, 1),
+      schema: schemaProps.number({ label: 'Flex shrink', value: 1 }),
     },
   },
   {
     label: 'Flex basis',
     value: {
       prop: 'flexBasis',
-      schema: schemaProps.string('Flex basis', false, 'auto'),
+      schema: schemaProps.string({ label: 'Flex basis', value: 'auto' }),
     },
   },
 ];
@@ -179,48 +183,60 @@ export const alignContentValues = ['stretch', ...justifyContentValues] as const;
 type AlignContent = typeof alignContentValues[number];
 
 export const flexListSchema = {
-  layout: schemaProps.hashlist('List layout properties', false, [
-    {
-      label: 'Direction',
-      value: {
-        prop: 'flexDirection',
-        schema: schemaProps.select('Direction', false, flexDirectionValues),
+  layout: schemaProps.hashlist({
+    label: 'List layout properties',
+    choices: [
+      {
+        label: 'Direction',
+        value: {
+          prop: 'flexDirection',
+          schema: schemaProps.select({
+            label: 'Direction',
+            values: flexDirectionValues,
+            value: 'row',
+          }),
+        },
       },
-    },
-    {
-      label: 'Wrap',
-      value: {
-        prop: 'flexWrap',
-        schema: schemaProps.select('Wrap', false, flexWrapValues, 'string'),
+      {
+        label: 'Wrap',
+        value: {
+          prop: 'flexWrap',
+          schema: schemaProps.select({ label: 'Wrap', values: flexWrapValues }),
+        },
       },
-    },
-    {
-      label: 'Justify content',
-      value: {
-        prop: 'justifyContent',
-        schema: schemaProps.select(
-          'Justify content',
-          false,
-          justifyContentValues,
-        ),
+      {
+        label: 'Justify content',
+        value: {
+          prop: 'justifyContent',
+          schema: schemaProps.select({
+            label: 'Justify content',
+            values: justifyContentValues,
+          }),
+        },
       },
-    },
-    {
-      label: 'Align items',
-      value: {
-        prop: 'alignItems',
-        schema: schemaProps.select('Align items', false, alignItemsValues),
+      {
+        label: 'Align items',
+        value: {
+          prop: 'alignItems',
+          schema: schemaProps.select({
+            label: 'Align items',
+            values: alignItemsValues,
+          }),
+        },
       },
-    },
-    {
-      label: 'Align content',
-      value: {
-        prop: 'alignContent',
-        schema: schemaProps.select('Align content', false, alignContentValues),
+      {
+        label: 'Align content',
+        value: {
+          prop: 'alignContent',
+          schema: schemaProps.select({
+            label: 'Align content',
+            values: alignContentValues,
+          }),
+        },
       },
-    },
-  ]),
-  children: schemaProps.hidden(false),
+    ],
+  }),
+  children: schemaProps.hidden({}),
 };
 
 export interface FlexListProps extends ClassAndStyle {

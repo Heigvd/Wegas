@@ -20,7 +20,7 @@ export interface IconString {
   fontWeight?: React.CSSProperties['fontWeight'];
 }
 
-export type Icon = IconName| Props | IconString;
+export type Icon = IconName | Props | IconString;
 export type Icons = Icon | Icon[];
 
 export const prefixes = [
@@ -28,13 +28,16 @@ export const prefixes = [
   /*'fab',*/ 'far' /*'fal', 'fad'*/,
 ] as IconPrefix[];
 
-export const icons = Object.values(fas).reduce(
-  (o: {}, v: IconDefinition) =>
-    typeof v === 'object' && 'iconName' in v && v.iconName !== undefined
-      ? { ...o, [v.iconName]: v }
-      : o,
-  {},
-);
+export const icons = {
+  undefined: undefined,
+  ...Object.values(fas).reduce(
+    (o: {}, v: IconDefinition) =>
+      typeof v === 'object' && 'iconName' in v && v.iconName !== undefined
+        ? { ...o, [v.iconName]: v }
+        : o,
+    {},
+  ),
+};
 
 export function isProps(icon: Icons): icon is Props {
   return !Array.isArray(icon) && typeof icon === 'object' && 'icon' in icon;
