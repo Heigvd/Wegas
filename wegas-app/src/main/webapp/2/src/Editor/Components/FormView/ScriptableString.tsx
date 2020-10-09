@@ -1,9 +1,5 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
-import {
-  featuresCTX,
-  isFeatureEnabled,
-} from '../../../Components/Contexts/FeaturesProvider';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { CommonView, CommonViewContainer } from './commonView';
 import { LabeledView, Labeled } from './labeled';
@@ -16,18 +12,88 @@ import {
   itemCenter,
   componentMarginLeft,
 } from '../../../css/classes';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { scriptEditStyle } from './Script/Script';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { DropMenu } from '../../../Components/DropMenu';
 import HTMLEditor from '../../../Components/HTMLEditor';
+import {
+  createSourceFile,
+  ScriptTarget,
+  isSourceFile,
+  isCallExpression,
+  isExpressionStatement,
+  isIdentifier,
+  isStringLiteral,
+  isPropertyAccessExpression,
+} from 'typescript';
 
 const labelStyle = css({
   marginBottom: '5px',
 });
 
-const inputModes = ['Text', 'Variable', 'New Variable'] as const;
+const inputModes = ['Text', 'Variable', 'Code'] as const;
 type InputMode = ValueOf<typeof inputModes>;
+
+function parseScript(script: string): InputMode {
+  const sourceFile = createSourceFile(
+    'Testedfile',
+    script,
+    ScriptTarget.ESNext,
+    /*setParentNodes */ true,
+  );
+
+  if (isSourceFile(sourceFile)) {
+    const initStatement = sourceFile.statements[0];
+    if (initStatement != null && isExpressionStatement(initStatement)) {
+      const initExpression = initStatement.expression;
+      if (isStringLiteral(initExpression)) {
+        return 'Text';
+      } else if (isCallExpression(initExpression)) {
+        const propertyAccess = initExpression.expression;
+        if (isPropertyAccessExpression(propertyAccess)) {
+          const callee = propertyAccess.expression;
+          const name = propertyAccess.name;
+          if (
+            isIdentifier(callee) &&
+            callee.text === 'I18n' &&
+            isIdentifier(name) &&
+            name.text === 'toString'
+          ) {
+            const toStringArgument = initExpression.arguments[0];
+            if (
+              toStringArgument != null &&
+              isCallExpression(toStringArgument)
+            ) {
+              const toStringExpression = toStringArgument.expression;
+              if (isPropertyAccessExpression(toStringExpression)) {
+                const argumentCallee = toStringExpression.expression;
+                const argumentName = toStringExpression.name;
+                if (
+                  isIdentifier(argumentCallee) &&
+                  argumentCallee.text === 'Variable' &&
+                  isIdentifier(argumentName) &&
+                  argumentName.text === 'find'
+                ) {
+                  const [findGameModel, findName] = toStringArgument.arguments;
+                  if (
+                    findGameModel != null &&
+                    isIdentifier(findGameModel) &&
+                    findGameModel.text === 'gameModel' &&
+                    findName != null &&
+                    isStringLiteral(findName)
+                  ) {
+                    return 'Variable';
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return 'Code';
+}
 
 export interface ScriptableStringProps
   extends WidgetProps.BaseProps<CommonView & LabeledView> {
@@ -37,44 +103,29 @@ export interface ScriptableStringProps
 
 export function ScriptableString(props: ScriptableStringProps): JSX.Element {
   const script = props.value ? props.value.content : '';
-  const [srcMode, setSrcMode] = React.useState(false);
-  const [inputMode, setInputMode] = React.useState<InputMode>('Text');
-  const [treeValue, setTreeValue] = React.useState('');
+  // const [srcMode, setSrcMode] = React.useState(false);
+  const [inputMode, setInputMode] = React.useState<InputMode>(
+    parseScript(script),
+  );
+  let treeValue = '';
+  let textValue = '';
 
-  const { currentFeatures } = React.useContext(featuresCTX);
-
-  let textContent: string | undefined;
-  try {
-    textContent = JSON.parse(props?.value?.content || '""');
-  } catch (_e) {
-    textContent = props?.value?.content;
-  }
-
-  /**
-   * Effect that forces srcMode in case the script is too complex to be parsed
-   */
-  React.useEffect(() => {
-    try {
-      JSON.parse(script);
-      setInputMode('Text');
-    } catch (e) {
-      setInputMode('Variable');
-    }
-    if (!props.value || !props.value.content) {
-      setTreeValue('');
-    } else {
+  switch (inputMode) {
+    case 'Variable': {
       const regexStart = /^(I18n\.toString\(Variable\.find\(gameModel,("|')?)/;
       const regexEnd = /(("|')?\)\))(;?)$/;
-      const simpleVarFindRegex = new RegExp(
-        regexStart.source + `.*` + regexEnd.source,
-      );
-      if (props.value.content.match(simpleVarFindRegex)) {
-        setTreeValue(
-          props.value.content.replace(regexStart, '').replace(regexEnd, ''),
-        );
-      }
+      treeValue = script.replace(regexStart, '').replace(regexEnd, '');
+      break;
     }
-  }, [props.value, script]);
+    case 'Text': {
+      try {
+        textValue = JSON.parse(script);
+      } catch (e) {
+        textValue = script;
+      }
+      break;
+    }
+  }
 
   const onTreeChange = React.useCallback(
     (value?: string) => {
@@ -95,16 +146,6 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
           <>
             <div className={cx(flex, flexRow, itemCenter, labelStyle)}>
               {labelNode}
-              {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
-                <Button
-                  icon={
-                    srcMode
-                      ? ['circle', { icon: 'code', color: 'white', size: 'xs' }]
-                      : 'code'
-                  }
-                  onClick={() => setSrcMode(sm => !sm)}
-                />
-              )}
               <DropMenu
                 label={inputMode}
                 items={inputModes.map(mode => ({ label: mode, value: mode }))}
@@ -114,7 +155,7 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
                 containerClassName={componentMarginLeft}
               />
             </div>
-            {srcMode ? (
+            {inputMode === 'Code' ? (
               <div className={scriptEditStyle}>
                 <WegasScriptEditor
                   value={script}
@@ -133,7 +174,7 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
               </div>
             ) : inputMode === 'Text' ? (
               <HTMLEditor
-                value={textContent}
+                value={textValue}
                 onChange={value => {
                   const stringified = JSON.stringify(value);
                   props.onChange(

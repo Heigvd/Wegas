@@ -48,17 +48,16 @@ export function WyswygScriptEditor({
         schema={{
           description: 'multipleStatementForm',
           properties: {
-            statements: schemaProps.array(
-              undefined,
-              {
-                statement: schemaProps.statement(undefined, true, mode),
+            statements: schemaProps.array({
+              itemSchema: {
+                statement: schemaProps.statement({ required: true, mode }),
               },
-              () =>
+              userOnChildAdd: () =>
                 onChange([
                   ...forceEmptyExpressions(expr, mode),
                   createNewExpression(mode),
                 ]),
-            ),
+            }),
           },
         }}
         value={{

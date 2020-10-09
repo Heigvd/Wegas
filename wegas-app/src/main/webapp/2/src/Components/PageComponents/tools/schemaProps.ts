@@ -10,7 +10,10 @@ import { emptyStatement, Statement } from '@babel/types';
 import { BooleanProps } from '../../../Editor/Components/FormView/Boolean';
 import { StringInputProps } from '../../../Editor/Components/FormView/String';
 import { CodeProps } from '../../../Editor/Components/FormView/Code';
-import { IAsyncSelectProps } from '../../../Editor/Components/FormView/Select';
+import {
+  Choices,
+  IAsyncSelectProps,
+} from '../../../Editor/Components/FormView/Select';
 import { PageSelectProps } from '../../../Editor/Components/FormView/PageSelect';
 import {
   TreeVariableSelectProps,
@@ -42,12 +45,34 @@ export interface SelectItem {
   value: {};
 }
 
+interface SimpleSchemaProps {
+  required?: boolean;
+  index?: number;
+}
+
+interface CommonSchemaProps extends SimpleSchemaProps {
+  label?: string;
+  featureLevel?: FeatureLevel;
+  layout?: SchemaLayout;
+  borderTop?: boolean;
+}
+
+interface ReadOnlySchemaProps {
+  readOnly?: boolean;
+}
+
+interface ValueSchemaProps<T> {
+  value?: T;
+}
+
 const simpleSchemaProps = {
-  hidden: (
-    required: boolean = true,
-    type: TYPESTRING | TYPESTRING[] = 'array',
-    index: number = 0,
-  ): TypedProps<WidgetProps.BaseProps> => ({
+  hidden: ({
+    required = false,
+    type = 'array',
+    index = 0,
+  }: {
+    type?: TYPESTRING | TYPESTRING[];
+  } & SimpleSchemaProps): TypedProps<WidgetProps.BaseProps> => ({
     required,
     type,
     index,
@@ -55,16 +80,18 @@ const simpleSchemaProps = {
       type: 'hidden',
     },
   }),
-  boolean: (
-    label?: string,
-    required: boolean = true,
-    value?: boolean,
-    readOnly: boolean = false,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ): TypedProps<BooleanProps> => ({
+  boolean: ({
+    label,
+    required = false,
+    value,
+    readOnly = false,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: CommonSchemaProps &
+    ReadOnlySchemaProps &
+    ValueSchemaProps<boolean>): TypedProps<BooleanProps> => ({
     required,
     type: 'boolean',
     value,
@@ -79,16 +106,18 @@ const simpleSchemaProps = {
       type: 'boolean',
     },
   }),
-  number: (
-    label?: string,
-    required: boolean = true,
-    value?: number,
-    readOnly: boolean = false,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ): TypedProps<StringInputProps> => ({
+  number: ({
+    label,
+    required = true,
+    value,
+    readOnly = false,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: CommonSchemaProps &
+    ReadOnlySchemaProps &
+    ValueSchemaProps<number>): TypedProps<StringInputProps> => ({
     required,
     type: 'number',
     value,
@@ -103,16 +132,18 @@ const simpleSchemaProps = {
       type: 'number',
     },
   }),
-  string: (
-    label?: string,
-    required: boolean = true,
-    value?: string,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-    readOnly?: boolean,
-  ): TypedProps<StringInputProps> => ({
+  string: ({
+    label,
+    required = true,
+    value,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+    readOnly,
+  }: CommonSchemaProps &
+    ReadOnlySchemaProps &
+    ValueSchemaProps<string>): TypedProps<StringInputProps> => ({
     required,
     type: 'string',
     value,
@@ -127,16 +158,18 @@ const simpleSchemaProps = {
       readOnly,
     },
   }),
-  html: (
-    label?: string,
-    required: boolean = true,
-    value?: ITranslatableContent,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-    readOnly?: boolean,
-  ) => ({
+  html: ({
+    label,
+    required = true,
+    value,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+    readOnly,
+  }: CommonSchemaProps &
+    ReadOnlySchemaProps &
+    ValueSchemaProps<ITranslatableContent>) => ({
     required,
     type: 'object',
     value,
@@ -151,18 +184,25 @@ const simpleSchemaProps = {
       readOnly,
     },
   }),
-  custom: <T extends keyof typeof DEFINED_VIEWS>(
-    label?: string,
-    required: boolean = true,
-    type?: WegasMethod['returns'],
-    viewType?: T,
-    value?: number,
-    index: number = 0,
-    layout?: SchemaLayout,
-    readOnly: boolean = false,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    borderTop?: boolean,
-  ) =>
+  custom: <T extends keyof typeof DEFINED_VIEWS>({
+    label,
+    required = true,
+    type,
+    viewType,
+    value,
+    index = 0,
+    layout,
+    readOnly = false,
+    featureLevel = 'DEFAULT',
+    borderTop,
+  }: {
+    type?: WegasMethod['returns'];
+    viewType?: T;
+  } & CommonSchemaProps &
+    ReadOnlySchemaProps &
+    ValueSchemaProps<
+      WegasScriptEditorNameAndTypes[Exclude<WegasMethod['returns'], undefined>]
+    >) =>
     /* TODO : Improve  */
     /*: TypedProps<Parameters<typeof DEFINED_VIEWS[T]>[0]>*/
     ({
@@ -181,17 +221,21 @@ const simpleSchemaProps = {
         type: viewType,
       },
     }),
-  script: (
-    label?: string,
-    required: boolean = true,
-    mode: ScriptMode = 'SET',
-    language?: 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS',
-    value?: string,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ): TypedProps<ScriptProps> => ({
+  script: ({
+    label,
+    required = false,
+    mode = 'SET',
+    language,
+    value,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: {
+    mode?: ScriptMode;
+    language?: 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS';
+  } & CommonSchemaProps &
+    ValueSchemaProps<string>): TypedProps<ScriptProps> => ({
     required,
     type: 'object',
     value: createScript(value, language),
@@ -206,18 +250,23 @@ const simpleSchemaProps = {
       layout,
     },
   }),
-  customScript: (
-    label?: string,
-    required: boolean = true,
-    returnType?: WegasScriptEditorReturnTypeName[],
-    language?: 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS',
-    args?: [string, WegasScriptEditorReturnTypeName[]][],
-    value?: string,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ): TypedProps<CustomScriptProps> => ({
+  customScript: ({
+    label,
+    required = false,
+    returnType,
+    language,
+    args,
+    value,
+    featureLevel,
+    index = 0,
+    layout,
+    borderTop,
+  }: {
+    returnType?: WegasScriptEditorReturnTypeName[];
+    language?: 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS';
+    args?: [string, WegasScriptEditorReturnTypeName[]][];
+  } & CommonSchemaProps &
+    ValueSchemaProps<string>): TypedProps<CustomScriptProps> => ({
     required,
     type: 'object',
     value: createScript(value, language),
@@ -233,16 +282,19 @@ const simpleSchemaProps = {
       layout,
     },
   }),
-  code: (
-    label?: string,
-    required: boolean = true,
-    language: CodeLanguage = 'JavaScript',
-    value?: {} | string,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ): TypedProps<CodeProps> => ({
+  code: ({
+    label,
+    required = true,
+    language = 'JavaScript',
+    value,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: {
+    language?: CodeLanguage;
+  } & CommonSchemaProps &
+    ValueSchemaProps<{} | string>): TypedProps<CodeProps> => ({
     required,
     type: 'object',
     value,
@@ -257,27 +309,34 @@ const simpleSchemaProps = {
       layout,
     },
   }),
-  select: (
-    label?: string,
-    required: boolean = true,
-    values: readonly (string | SelectItem)[] = [],
-    value?: {} | string,
-    returnType: TYPESTRING | TYPESTRING[] = 'string',
-    openChoices: boolean = false,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ): TypedProps<IAsyncSelectProps> & { enum: readonly unknown[] } => {
+  select: <V extends string | SelectItem>({
+    label,
+    required = false,
+    values = [],
+    value,
+    returnType = 'string',
+    openChoices = false,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: {
+    values?: readonly V[];
+    returnType?: TYPESTRING | TYPESTRING[];
+    openChoices?: boolean;
+  } & CommonSchemaProps &
+    ValueSchemaProps<V>): TypedProps<IAsyncSelectProps> & {
+    enum: readonly unknown[];
+  } => {
     let enumerator: readonly unknown[] = [];
-    let choices: SelectItem[] = [];
+    let choices: readonly SelectItem[] = [];
     if (values.length > 0) {
       if (typeof values[0] === 'string') {
         enumerator = values;
-        choices = values.map((v: string) => ({ label: v, value: v }));
+        choices = values.map(v => ({ label: v as string, value: v }));
       } else {
-        enumerator = values.map((v: SelectItem) => v.value);
-        choices = values as SelectItem[];
+        enumerator = values.map(v => (v as SelectItem).value);
+        choices = values as readonly SelectItem[];
       }
     }
 
@@ -290,7 +349,7 @@ const simpleSchemaProps = {
       view: {
         borderTop,
         index,
-        choices,
+        choices: choices as (() => Promise<Choices>) | Choices,
         featureLevel,
         label,
         type: 'select',
@@ -300,14 +359,14 @@ const simpleSchemaProps = {
       },
     };
   },
-  pageSelect: (
-    label?: string,
-    required: boolean = true,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ): TypedProps<PageSelectProps> => {
+  pageSelect: ({
+    label,
+    required = false,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: CommonSchemaProps): TypedProps<PageSelectProps> => {
     return {
       required,
       type: 'object',
@@ -322,14 +381,14 @@ const simpleSchemaProps = {
       },
     };
   },
-  pageLoaderSelect: (
-    label?: string,
-    required: boolean = true,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ): TypedProps<PageSelectProps> => {
+  pageLoaderSelect: ({
+    label,
+    required = false,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: CommonSchemaProps): TypedProps<PageSelectProps> => {
     return {
       required,
       type: 'object',
@@ -344,14 +403,14 @@ const simpleSchemaProps = {
       },
     };
   },
-  themeModeSelect: (
-    label?: string,
-    required: boolean = true,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ): TypedProps<PageSelectProps> => {
+  themeModeSelect: ({
+    label,
+    required = false,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: CommonSchemaProps): TypedProps<PageSelectProps> => {
     return {
       required,
       type: 'string',
@@ -366,16 +425,19 @@ const simpleSchemaProps = {
       },
     };
   },
-  variable: (
-    label?: string,
-    required: boolean = true,
-    returnType: WegasScriptEditorReturnTypeName[] = [],
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    items?: TreeSelectItem<string>[],
-    borderTop?: boolean,
-  ): TypedProps<TreeVariableSelectProps> => ({
+  variable: ({
+    label,
+    required = true,
+    returnType = [],
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    items,
+    borderTop,
+  }: {
+    returnType?: WegasScriptEditorReturnTypeName[];
+    items?: TreeSelectItem<string>[];
+  } & CommonSchemaProps): TypedProps<TreeVariableSelectProps> => ({
     required,
     type: 'string',
     index,
@@ -390,18 +452,23 @@ const simpleSchemaProps = {
       items,
     },
   }),
-  tree: <T>(
-    label?: string,
-    items?: TreeSelectItem<T>[],
-    required: boolean = true,
-    returnType: WegasScriptEditorReturnTypeName[] = [],
-    type: TYPESTRING | TYPESTRING[] = 'string',
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-    borderBottom?: boolean,
-  ): TypedProps<TreeVSelectProps<T>> => ({
+  tree: <T>({
+    label,
+    items,
+    required = false,
+    returnType = [],
+    type = 'string',
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+    borderBottom,
+  }: {
+    items?: TreeSelectItem<T>[];
+    returnType?: WegasScriptEditorReturnTypeName[];
+    type?: TYPESTRING | TYPESTRING[];
+    borderBottom?: boolean;
+  } & CommonSchemaProps): TypedProps<TreeVSelectProps<T>> => ({
     required,
     type,
     index,
@@ -417,15 +484,17 @@ const simpleSchemaProps = {
       items,
     },
   }),
-  scriptVariable: (
-    label?: string,
-    required: boolean = true,
-    returnType: WegasScriptEditorReturnTypeName[] = [],
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ): TypedProps<ScripableVariableSelectProps> => ({
+  scriptVariable: ({
+    label,
+    required = true,
+    returnType = [],
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: {
+    returnType?: WegasScriptEditorReturnTypeName[];
+  } & CommonSchemaProps): TypedProps<ScripableVariableSelectProps> => ({
     required,
     type: 'object',
     index,
@@ -439,14 +508,14 @@ const simpleSchemaProps = {
       layout,
     },
   }),
-  scriptString: (
-    label?: string,
-    required: boolean = true,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ): TypedProps<ScripableVariableSelectProps> => ({
+  scriptString: ({
+    label,
+    required = false,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: CommonSchemaProps): TypedProps<ScripableVariableSelectProps> => ({
     required,
     type: 'object',
     index,
@@ -460,29 +529,33 @@ const simpleSchemaProps = {
       layout,
     },
   }),
-  array: (
-    label?: string,
-    itemShema: {} = {},
-    userOnChildAdd?: (value?: {}) => void,
-    // onChildRemove?: (index: number) => void,
-    requiredItems: boolean = false,
-    itemType: TYPESTRING = 'object',
-    required: boolean = true,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    highlight: boolean = true,
-    sortable: boolean = true,
-    borderTop?: boolean,
-  ): TypedProps<IArrayProps> => ({
+  array: ({
+    label,
+    itemSchema = {},
+    userOnChildAdd,
+    requiredItems = false,
+    itemType = 'object',
+    required = false,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    highlight = true,
+    sortable = true,
+    borderTop,
+  }: {
+    itemSchema: {};
+    userOnChildAdd?: (value?: {}) => void;
+    requiredItems?: boolean;
+    itemType?: TYPESTRING;
+    highlight?: boolean;
+    sortable?: boolean;
+  } & CommonSchemaProps): TypedProps<IArrayProps> => ({
     required,
     items: {
-      // description:"shemaprops.array.items",
-      properties: itemShema,
+      properties: itemSchema,
       required: requiredItems,
       type: itemType,
     },
-    // onChildRemove,
     type: 'array',
     index,
     view: {
@@ -497,16 +570,19 @@ const simpleSchemaProps = {
       userOnChildAdd,
     },
   }),
-  statement: (
-    label?: string,
-    required: boolean = true,
-    mode: ScriptMode = 'SET',
-    value: Statement = emptyStatement(),
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ): TypedProps<StatementViewProps> => ({
+  statement: ({
+    label,
+    required = false,
+    mode = 'SET',
+    value = emptyStatement(),
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: {
+    mode?: ScriptMode;
+  } & CommonSchemaProps &
+    ValueSchemaProps<Statement>): TypedProps<StatementViewProps> => ({
     required,
     type: 'object',
     index,
@@ -521,17 +597,21 @@ const simpleSchemaProps = {
       mode,
     },
   }),
-  hashlist: (
-    label?: string,
-    required: boolean = true,
-    choices?: HashListChoices,
-    value: object = {},
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-    objectViewStyle?: boolean,
-  ) => ({
+  hashlist: ({
+    label,
+    required = false,
+    choices,
+    value = {},
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+    objectViewStyle,
+  }: {
+    choices?: HashListChoices;
+    objectViewStyle?: boolean;
+  } & CommonSchemaProps &
+    ValueSchemaProps<object>) => ({
     required,
     type: 'object',
     value,
@@ -547,17 +627,21 @@ const simpleSchemaProps = {
       objectViewStyle,
     },
   }),
-  file: (
-    label?: string,
-    required: boolean = true,
-    pick: FilePickingType = 'FILE',
-    filter?: FileFilter,
-    value?: IAbstractContentDescriptor,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ) => ({
+  file: ({
+    label,
+    required = false,
+    pick = 'FILE',
+    filter,
+    value,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: {
+    pick?: FilePickingType;
+    filter?: FileFilter;
+  } & CommonSchemaProps &
+    ValueSchemaProps<IAbstractContentDescriptor>) => ({
     required,
     type: 'object',
     value,
@@ -573,17 +657,21 @@ const simpleSchemaProps = {
       borderTop,
     },
   }),
-  path: (
-    label?: string,
-    required: boolean = true,
-    pick: FilePickingType = 'FILE',
-    filter?: FileFilter,
-    value?: string,
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ) => ({
+  path: ({
+    label,
+    required = false,
+    pick = 'FILE',
+    filter,
+    value,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: {
+    pick?: FilePickingType;
+    filter?: FileFilter;
+  } & CommonSchemaProps &
+    ValueSchemaProps<string>) => ({
     required,
     type: 'string',
     value,
@@ -608,20 +696,22 @@ export type SimpleSchemaPropsSchemas = ReturnType<
 >;
 
 const objectSchemaProps = {
-  object: (
-    label?: string,
-    properties: { [key: string]: SimpleSchemaPropsSchemas } = {},
-    required: boolean = true,
-    value: object = {},
-    featureLevel: FeatureLevel = 'DEFAULT',
-    index: number = 0,
-    layout?: SchemaLayout,
-    borderTop?: boolean,
-  ) => ({
+  object: ({
+    label,
+    properties = {},
+    required = false,
+    value = {},
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: {
+    properties?: { [key: string]: SimpleSchemaPropsSchemas };
+  } & CommonSchemaProps &
+    ValueSchemaProps<object>) => ({
     description: 'com.wegas.core.persistence.variable.primitive.NumberInstance',
     properties,
     value,
-    // protectionLevel: "INTERNAL"
     required,
     type: 'object',
     index,

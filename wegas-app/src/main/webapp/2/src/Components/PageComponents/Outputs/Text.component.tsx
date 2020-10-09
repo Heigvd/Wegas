@@ -19,11 +19,7 @@ function PlayerText({ text, className, style }: PlayerTextProps) {
   return !text ? (
     <span>No text</span>
   ) : (
-    <Text
-      style={{ margin: 'auto', ...style }}
-      className={className}
-      text={content}
-    />
+    <Text style={style} className={className} text={content} />
   );
 }
 
@@ -34,8 +30,8 @@ registerComponent(
     name: 'Text',
     icon: 'paragraph',
     schema: {
-      text: schemaProps.scriptString('Text', true),
-      className: schemaProps.string('ClassName', false),
+      text: schemaProps.scriptString({ label: 'Text' }),
+      className: schemaProps.string({ label: 'ClassName' }),
     },
     allowedVariables: ['TextDescriptor'],
     getComputedPropsFromVariable: v => ({

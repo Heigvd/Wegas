@@ -150,127 +150,133 @@ export const actionsChoices: HashListChoices = [
     label: 'Open Page',
     value: {
       prop: 'openPage',
-      schema: schemaProps.object(
-        'Open Page',
-        {
-          pageLoaderName: schemaProps.pageLoaderSelect('Page loader', true),
-          pageId: schemaProps.pageSelect('Page', true),
-          priority: schemaProps.number('Priority', false),
+      schema: schemaProps.object({
+        label: 'Open Page',
+        properties: {
+          pageLoaderName: schemaProps.pageLoaderSelect({
+            label: 'Page loader',
+            required: true,
+          }),
+          pageId: schemaProps.pageSelect({ label: 'Page', required: true }),
+          priority: schemaProps.number({ label: 'Priority' }),
         },
-        false,
-      ),
+      }),
     },
   },
   {
     label: 'Open Url',
     value: {
       prop: 'openUrl',
-      schema: schemaProps.object(
-        'Open Url',
-        {
-          url: schemaProps.string('Url', true),
-          priority: schemaProps.number('Priority', false),
+      schema: schemaProps.object({
+        label: 'Open Url',
+        properties: {
+          url: schemaProps.string({ label: 'Url', required: true }),
+          priority: schemaProps.number({ label: 'Priority' }),
         },
-        false,
-      ),
+      }),
     },
   },
   {
     label: 'Open File',
     value: {
       prop: 'openFile',
-      schema: schemaProps.object(
-        'Open File',
-        {
-          fileDescriptor: schemaProps.path('File', true),
-          priority: schemaProps.number('Priority', false),
+      schema: schemaProps.object({
+        label: 'Open File',
+        properties: {
+          fileDescriptor: schemaProps.path({ label: 'File', required: true }),
+          priority: schemaProps.number({ label: 'Priority' }),
         },
-        false,
-      ),
+      }),
     },
   },
   {
     label: 'Impact variable',
     value: {
       prop: 'impactVariable',
-      schema: schemaProps.object(
-        'Impact variable',
-        {
-          impact: schemaProps.script('Impact', true),
-          priority: schemaProps.number('Priority', false),
+      schema: schemaProps.object({
+        label: 'Impact variable',
+        properties: {
+          impact: schemaProps.script({ label: 'Impact', required: true }),
+          priority: schemaProps.number({ label: 'Priority' }),
         },
-        false,
-      ),
+      }),
     },
   },
   {
     label: 'Local script eval',
     value: {
       prop: 'localScriptEval',
-      schema: schemaProps.object(
-        'Local script eval',
-        {
-          script: schemaProps.code('Local script', true, 'TypeScript'),
-          priority: schemaProps.number('Priority', false),
+      schema: schemaProps.object({
+        label: 'Local script eval',
+        properties: {
+          script: schemaProps.code({
+            label: 'Local script',
+            required: true,
+            language: 'TypeScript',
+          }),
+          priority: schemaProps.number({ label: 'Priority' }),
         },
-        false,
-      ),
+      }),
     },
   },
   {
     label: 'Open popup page',
     value: {
       prop: 'openPopupPage',
-      schema: schemaProps.object(
-        'Open popup page',
-        {
-          pageId: schemaProps.pageSelect('Page', true),
-          priority: schemaProps.number('Priority', false),
+      schema: schemaProps.object({
+        label: 'Open popup page',
+        properties: {
+          pageId: schemaProps.pageSelect({ label: 'Page', required: true }),
+          priority: schemaProps.number({ label: 'Priority' }),
         },
-        false,
-      ),
+      }),
     },
   },
   {
     label: 'Play sound',
     value: {
       prop: 'playSound',
-      schema: schemaProps.object(
-        'Play sound',
-        {
-          fileDescriptor: schemaProps.path('File', true, 'FILE', {
-            filterType: 'grey',
-            fileType: 'audio',
+      schema: schemaProps.object({
+        label: 'Play sound',
+        properties: {
+          fileDescriptor: schemaProps.path({
+            label: 'File',
+            required: true,
+            pick: 'FILE',
+            filter: {
+              filterType: 'grey',
+              fileType: 'audio',
+            },
           }),
-          priority: schemaProps.number('Priority', false),
+          priority: schemaProps.number({ label: 'Priority' }),
         },
-        false,
-      ),
+      }),
     },
   },
   {
     label: 'Print variable',
     value: {
       prop: 'printVariable',
-      schema: schemaProps.object(
-        'Print variable',
-        {
-          variableName: schemaProps.variable('Variable', true),
-          priority: schemaProps.number('Priority', false),
+      schema: schemaProps.object({
+        label: 'Print variable',
+        properties: {
+          variableName: schemaProps.variable({
+            label: 'Variable',
+            required: true,
+          }),
+          priority: schemaProps.number({ label: 'Priority' }),
         },
-        false,
-      ),
+      }),
     },
   },
   {
     label: 'Confirm click',
     value: {
       prop: 'confirmClick',
-      schema: schemaProps.string(
-        'Confirmation message',
-        false,
-        'Are you sure?',
-      ),
+      schema: schemaProps.string({
+        label: 'Confirmation message',
+        value: 'Are you sure?',
+      }),
     },
   },
 ];
@@ -287,21 +293,21 @@ export const layoutCommonChoices: HashListChoices = [
     label: 'Tooltip',
     value: {
       prop: 'tooltip',
-      schema: schemaProps.string('Tooltip', false),
+      schema: schemaProps.string({ label: 'Tooltip' }),
     },
   },
   {
     label: 'Theme mode',
     value: {
       prop: 'themeMode',
-      schema: schemaProps.themeModeSelect('Theme mode', false),
+      schema: schemaProps.themeModeSelect({ label: 'Theme mode' }),
     },
   },
   {
     label: 'Style',
     value: {
       prop: 'style',
-      schema: schemaProps.hashlist('Style', false),
+      schema: schemaProps.hashlist({ label: 'Style' }),
     },
   },
 ];
@@ -319,46 +325,43 @@ export const layoutConditionnalChoices: HashListChoices = [
     label: 'Disable If',
     value: {
       prop: 'disableIf',
-      schema: schemaProps.script(
-        'Disable If',
-        false,
-        'GET',
-        'TypeScript',
-        'false',
-      ),
+      schema: schemaProps.script({
+        label: 'Disable If',
+        mode: 'GET',
+        language: 'TypeScript',
+        value: 'false',
+      }),
     },
   },
   {
     label: 'Hide If',
     value: {
       prop: 'hideIf',
-      schema: schemaProps.script(
-        'Hide If',
-        false,
-        'GET',
-        'TypeScript',
-        'false',
-      ),
+      schema: schemaProps.script({
+        label: 'Hide If',
+        mode: 'GET',
+        language: 'TypeScript',
+        value: 'false',
+      }),
     },
   },
   {
     label: 'Readonly If',
     value: {
       prop: 'readOnlyIf',
-      schema: schemaProps.script(
-        'Readonly If',
-        false,
-        'GET',
-        'TypeScript',
-        'false',
-      ),
+      schema: schemaProps.script({
+        label: 'Readonly If',
+        mode: 'GET',
+        language: 'TypeScript',
+        value: 'false',
+      }),
     },
   },
   {
     label: 'Lock',
     value: {
       prop: 'lock',
-      schema: schemaProps.string('Lock', false),
+      schema: schemaProps.string({ label: 'Lock' }),
     },
   },
 ];
@@ -374,50 +377,49 @@ export const decorationsChoices: HashListChoices = [
     label: 'Info Bullet',
     value: {
       prop: 'infoBullet',
-      schema: schemaProps.object(
-        'Info Bullet',
-        {
-          showScript: schemaProps.script(
-            'Show',
-            false,
-            'GET',
-            'TypeScript',
-            'true',
-          ),
-          blinkScript: schemaProps.script(
-            'Blink',
-            false,
-            'GET',
-            'TypeScript',
-            'false',
-          ),
-          messageScript: schemaProps.customScript(
-            'Message',
-            false,
-            ['string'],
-            'TypeScript',
-          ),
+      schema: schemaProps.object({
+        label: 'Info Bullet',
+        properties: {
+          showScript: schemaProps.script({
+            label: 'Show',
+            mode: 'GET',
+            language: 'TypeScript',
+            value: 'true',
+          }),
+          blinkScript: schemaProps.script({
+            label: 'Blink',
+            mode: 'GET',
+            language: 'TypeScript',
+            value: 'false',
+          }),
+          messageScript: schemaProps.customScript({
+            label: 'Message',
+            returnType: ['string'],
+            language: 'TypeScript',
+          }),
           // messageScript: schemaProps.code('Message', false, 'TypeScript'),
         },
-        false,
-      ),
+      }),
     },
   },
   {
     label: 'Unread count',
     value: {
       prop: 'unreadCount',
-      schema: schemaProps.scriptVariable('Count in', false, [
-        'number',
-        'string',
-        'object[]',
-        'SInboxDescriptor',
-        'SDialogueDescriptor',
-        'SQuestionDescriptor',
-        'SWhQuestionDescriptor',
-        'SSurveyDescriptor',
-        'SPeerReviewDescriptor',
-      ]),
+      schema: schemaProps.scriptVariable({
+        label: 'Count in',
+        returnType: [
+          'number',
+          'string',
+          'object[]',
+          'SInboxDescriptor',
+          'SDialogueDescriptor',
+          'SQuestionDescriptor',
+          'SWhQuestionDescriptor',
+          'SSurveyDescriptor',
+          'SPeerReviewDescriptor',
+        ],
+      }),
     },
   },
 ];
@@ -538,51 +540,27 @@ export const layoutChoices = {
 };
 
 export const wegasComponentExtraSchema = (containerType: ContainerTypes) => ({
-  layoutOptions: schemaProps.hashlist(
-    'Layout options',
-    false,
-    [
+  layoutOptions: schemaProps.hashlist({
+    label: 'Layout options',
+    choices: [
       ...(containerType ? layoutChoices[containerType] : []),
       ...layoutCommonChoices,
     ],
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    true,
-  ),
-  layoutConditions: schemaProps.hashlist(
-    'Layout conditions',
-    false,
-    layoutConditionnalChoices,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    true,
-  ),
-  actions: schemaProps.hashlist(
-    'OnClick Actions',
-    false,
-    actionsChoices,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    true,
-  ),
-  decorations: schemaProps.hashlist(
-    'Decorations',
-    false,
-    decorationsChoices,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    true,
-  ),
+    objectViewStyle: true,
+  }),
+  layoutConditions: schemaProps.hashlist({
+    label: 'Layout conditions',
+    choices: layoutConditionnalChoices,
+    objectViewStyle: true,
+  }),
+  actions: schemaProps.hashlist({
+    label: 'OnClick Actions',
+    choices: actionsChoices,
+    objectViewStyle: true,
+  }),
+  decorations: schemaProps.hashlist({
+    label: 'Decorations',
+    choices: decorationsChoices,
+    objectViewStyle: true,
+  }),
 });

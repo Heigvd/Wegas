@@ -79,6 +79,9 @@ export function useGlobalLibs() {
             gameModel: SGameModel,
             name: T
           ) => VariableClasses[T];
+          static getItems: <T = SVariableDescriptor<SVariableInstance>>(
+            itemsIds: number[],
+          ) => Readonly<T[]>;        
         }
 
         type CurrentLanguages = ${currentLanguages};

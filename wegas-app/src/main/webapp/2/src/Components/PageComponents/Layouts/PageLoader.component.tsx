@@ -67,7 +67,7 @@ registerComponent(
     name: PAGE_LOADER_COMPONENT_TYPE,
     icon: 'window-maximize',
     schema: {
-      initialSelectedPageId: schemaProps.pageSelect('Page', false),
+      initialSelectedPageId: schemaProps.pageSelect({ label: 'Page' }),
     },
     getComputedPropsFromVariable: () => ({
       initialSelectedPageId: defaultPageAsScript(),

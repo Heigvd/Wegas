@@ -47,10 +47,10 @@ function PlayerButton({
 }
 
 export const buttonSchema = {
-  action: schemaProps.script('Action', false, 'SET'),
-  label: schemaProps.scriptString('Label', false),
-  icon: schemaProps.select('Icon', true, Object.keys(icons)),
-  prefixedLabel: schemaProps.boolean('Prefixed label', false),
+  action: schemaProps.script({ label: 'Action', mode: 'SET' }),
+  label: schemaProps.scriptString({ label: 'Label' }),
+  icon: schemaProps.select({ label: 'Icon', values: Object.keys(icons) }),
+  prefixedLabel: schemaProps.boolean({ label: 'Prefixed label' }),
 };
 
 const defaultLabel: ITranslatableContent = {

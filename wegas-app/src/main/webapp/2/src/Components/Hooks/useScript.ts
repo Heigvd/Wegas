@@ -19,6 +19,8 @@ import {
   STextDescriptor,
   SStaticTextDescriptor,
   IScript,
+  SVariableDescriptor,
+  SVariableInstance,
 } from 'wegas-ts-api';
 import { ScriptableEntity } from 'wegas-ts-api';
 import { popupDispatch, addPopup, PopupActionCreator } from '../PopupManager';
@@ -26,12 +28,16 @@ import { ActionCreator } from '../../data/actions';
 import { translate } from '../../Editor/Components/FormView/translatable';
 import { wlog, wwarn } from '../../Helper/wegaslog';
 import { ScriptCTX } from '../Contexts/ScriptContext';
+import { getItems } from '../../data/methods/VariableDescriptorMethods';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
     _gm: unknown,
     name: string,
   ) => ScriptableEntity<T> | undefined;
+  getItems: <T = SVariableDescriptor<SVariableInstance>>(
+    itemsIds: number[],
+  ) => Readonly<T[]>;
 }
 
 interface GlobalClasses {
@@ -47,7 +53,7 @@ interface GlobalClasses {
   WegasEvents: WegasEventClass;
   I18n: GlobalI18nClass;
   Context: {
-    [name: string]: any;
+    [name: string]: unknown;
   };
 }
 
@@ -89,9 +95,10 @@ export function useGlobals() {
     find: <T extends IVariableDescriptor>(_gm: unknown, name: string) => {
       const iDesc = VDSelect.findByName<T>(name);
       if (iDesc) {
-        return instantiate(iDesc) as any;
+        return instantiate(iDesc) as ScriptableEntity<T> | undefined;
       }
     },
+    getItems,
   };
 
   // Editor class

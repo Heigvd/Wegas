@@ -31,10 +31,12 @@ registerComponent(
     name: 'Number',
     icon: 'calculator',
     schema: {
-      script: schemaProps.scriptVariable('Variable', true, [
-        'SNumberDescriptor',
-      ]),
-      className: schemaProps.string('ClassName', false),
+      script: schemaProps.scriptVariable({
+        label: 'Variable',
+        required: true,
+        returnType: ['SNumberDescriptor'],
+      }),
+      className: schemaProps.string({ label: 'ClassName' }),
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({

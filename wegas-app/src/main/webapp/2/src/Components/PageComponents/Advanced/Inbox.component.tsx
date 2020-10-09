@@ -30,7 +30,11 @@ registerComponent(
     name: 'Inbox',
     icon: 'envelope',
     schema: {
-      inbox: schemaProps.scriptVariable('Mailbox', true, ['SInboxDescriptor']),
+      inbox: schemaProps.scriptVariable({
+        label: 'Mailbox',
+        required: true,
+        returnType: ['SInboxDescriptor'],
+      }),
     },
     allowedVariables: ['InboxDescriptor'],
     getComputedPropsFromVariable: v => ({

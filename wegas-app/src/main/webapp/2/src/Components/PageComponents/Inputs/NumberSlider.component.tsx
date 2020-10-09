@@ -68,12 +68,17 @@ registerComponent(
     name: 'NumberSlider',
     icon: 'sliders-h',
     schema: {
-      script: schemaProps.scriptVariable('Variable', true, [
-        'SNumberDescriptor',
-      ]),
-      steps: schemaProps.number('Steps', false),
-      displayValues: schemaProps.select('Display value', false, displayModes),
-      disabled: schemaProps.boolean('Disabled', false),
+      script: schemaProps.scriptVariable({
+        label: 'Variable',
+        required: true,
+        returnType: ['SNumberDescriptor'],
+      }),
+      steps: schemaProps.number({ label: 'Steps' }),
+      displayValues: schemaProps.select({
+        label: 'Display value',
+        values: displayModes,
+      }),
+      disabled: schemaProps.boolean({ label: 'Disabled' }),
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({
