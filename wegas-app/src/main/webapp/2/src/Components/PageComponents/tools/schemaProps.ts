@@ -108,7 +108,7 @@ const simpleSchemaProps = {
   }),
   number: ({
     label,
-    required = true,
+    required = false,
     value,
     readOnly = false,
     featureLevel = 'DEFAULT',
@@ -134,7 +134,7 @@ const simpleSchemaProps = {
   }),
   string: ({
     label,
-    required = true,
+    required = false,
     value,
     featureLevel = 'DEFAULT',
     index = 0,
@@ -160,7 +160,7 @@ const simpleSchemaProps = {
   }),
   html: ({
     label,
-    required = true,
+    required = false,
     value,
     featureLevel = 'DEFAULT',
     index = 0,
@@ -186,7 +186,7 @@ const simpleSchemaProps = {
   }),
   custom: <T extends keyof typeof DEFINED_VIEWS>({
     label,
-    required = true,
+    required = false,
     type,
     viewType,
     value,
@@ -284,7 +284,7 @@ const simpleSchemaProps = {
   }),
   code: ({
     label,
-    required = true,
+    required = false,
     language = 'JavaScript',
     value,
     featureLevel = 'DEFAULT',
@@ -427,7 +427,7 @@ const simpleSchemaProps = {
   },
   variable: ({
     label,
-    required = true,
+    required = false,
     returnType = [],
     featureLevel = 'DEFAULT',
     index = 0,
@@ -486,7 +486,7 @@ const simpleSchemaProps = {
   }),
   scriptVariable: ({
     label,
-    required = true,
+    required = false,
     returnType = [],
     featureLevel = 'DEFAULT',
     index = 0,

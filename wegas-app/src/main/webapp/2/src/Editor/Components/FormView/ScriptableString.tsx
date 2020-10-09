@@ -34,7 +34,7 @@ const labelStyle = css({
 const inputModes = ['Text', 'Variable', 'Code'] as const;
 type InputMode = ValueOf<typeof inputModes>;
 
-function parseScript(script: string): InputMode {
+function parseScript(script: string = ""): InputMode {
   const sourceFile = createSourceFile(
     'Testedfile',
     script,
@@ -46,7 +46,7 @@ function parseScript(script: string): InputMode {
     const initStatement = sourceFile.statements[0];
     if (initStatement != null && isExpressionStatement(initStatement)) {
       const initExpression = initStatement.expression;
-      if (isStringLiteral(initExpression)) {
+      if (initExpression == null || isStringLiteral(initExpression)) {
         return 'Text';
       } else if (isCallExpression(initExpression)) {
         const propertyAccess = initExpression.expression;
@@ -90,6 +90,9 @@ function parseScript(script: string): InputMode {
           }
         }
       }
+    }
+    else{
+      return 'Text';
     }
   }
   return 'Code';
