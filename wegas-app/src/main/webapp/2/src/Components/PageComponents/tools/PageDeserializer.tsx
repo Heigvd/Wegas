@@ -12,6 +12,7 @@ import { useStore } from '../../../data/store';
 import { cloneDeep } from 'lodash-es';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { PlayerLinearLayoutChildrenProps } from '../Layouts/LinearLayout.component';
+import { useScript } from '../../Hooks/useScript';
 
 function getComponentFromPath(page: WegasComponent, path: number[]) {
   const newPath = [...path];
@@ -39,6 +40,9 @@ interface PageDeserializerProps {
   childrenType?: ContainerTypes;
   last?: boolean;
   linearChildrenProps?: ExtractedLayoutProps['linearChildrenProps'];
+  context?: {
+    [name: string]: unknown;
+  };
 }
 
 export function PageDeserializer({
@@ -48,6 +52,7 @@ export function PageDeserializer({
   childrenType,
   last,
   linearChildrenProps,
+  context,
 }: PageDeserializerProps): JSX.Element {
   const realPath = path ? path : [];
 
@@ -90,24 +95,45 @@ export function PageDeserializer({
     path,
   });
 
+  const exposed = restProps.exposeAs;
+  const items = useScript<object[]>(restProps.getItemsFn);
+
   const childrenPack = React.useMemo(() => {
     oldRef.current = { containerType, pageId, uneditable, path };
-    const newChildren = [];
+    let newChildren: JSX.Element[] = [];
     for (let i = 0; i < nbChildren; ++i) {
-      newChildren.push(
-        <PageDeserializer
-          key={JSON.stringify([...(path ? path : []), i])}
-          pageId={pageId}
-          path={[...(path ? path : []), i]}
-          uneditable={uneditable}
-          childrenType={containerType}
-          linearChildrenProps={linearProps}
-          last={i === nbChildren - 1}
-        />,
-      );
+      if (items) {
+        newChildren = items.map((item, id) => {
+          const newContext = { ...context, [exposed]: item }
+          return <PageDeserializer
+            key={JSON.stringify([...(path ? path : []), id])}
+            pageId={pageId}
+            path={[...(path ? path : []), i]}
+            uneditable={uneditable}
+            childrenType={containerType}
+            linearChildrenProps={linearProps}
+            last={i === nbChildren - 1}
+            context={newContext}
+          />
+        });
+      }
+      else {
+        newChildren.push(
+          <PageDeserializer
+            key={JSON.stringify([...(path ? path : []), i])}
+            pageId={pageId}
+            path={[...(path ? path : []), i]}
+            uneditable={uneditable}
+            childrenType={containerType}
+            linearChildrenProps={linearProps}
+            last={i === nbChildren - 1}
+            context={context}
+          />,
+        );
+      }
     }
     return newChildren;
-  }, [nbChildren, containerType, pageId, uneditable, path, linearProps]);
+  }, [nbChildren, containerType, pageId, uneditable, path, linearProps, context, exposed, items]);
 
   if (!wegasComponent) {
     return <pre>JSON error in page</pre>;
@@ -127,6 +153,7 @@ export function PageDeserializer({
       containerType={containerType}
       childrenType={childrenType}
       linearChildrenProps={linearChildrenProps}
+      context={context}
       {...restProps}
     >
       <WegasComponent
@@ -135,6 +162,7 @@ export function PageDeserializer({
         componentType={componentName}
         containerType={containerType}
         childrenType={childrenType}
+        context={context}
         {...restProps}
       >
         {editMode && children.length === 0 ? (
@@ -142,9 +170,10 @@ export function PageDeserializer({
             childrenType={containerType}
             path={realPath}
           />
-        ) : (
-          childrenPack
-        )}
+        ) : editMode && containerType === "FOREACH" ?
+            childrenPack.slice(0, 1)
+            : childrenPack
+        }
       </WegasComponent>
     </ComponentContainer>
   );

@@ -25,7 +25,7 @@ import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMet
 import i18nGlobalSrc from '!!raw-loader!../../../types/scripts/I18nGlobals.d.ts';
 
 import { deepDifferent } from './storeHookFactory';
-import { wwarn } from '../../Helper/wegaslog';
+import { wlog, wwarn } from '../../Helper/wegaslog';
 import { buildGlobalServerMethods } from '../../data/Reducer/globalState';
 
 const stripRegex = /\/\* STRIP FROM \*\/[\s\S]*?\/\* STRIP TO \*\//gm;
@@ -149,6 +149,8 @@ export function useGlobalLibs() {
       return '';
     }
   }, deepDifferent);
+
+  wlog(ambientEntitiesSrc);
 
   const globalLibs = React.useMemo(
     () => [

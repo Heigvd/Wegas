@@ -91,6 +91,9 @@ function parseScript(script: string = ""): InputMode {
         }
       }
     }
+    else if(initStatement != null){
+      return 'Code';
+    }
     else{
       return 'Text';
     }

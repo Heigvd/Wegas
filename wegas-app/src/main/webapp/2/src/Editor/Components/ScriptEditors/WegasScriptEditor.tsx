@@ -227,7 +227,9 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       : [];
 
   const handleChange = React.useCallback(
-    val => trimFunctionToScript(val, onChange),
+    val => {        
+      return trimFunctionToScript(val, onChange)
+    },
     [onChange, trimFunctionToScript],
   );
   const handleBlur = React.useCallback(

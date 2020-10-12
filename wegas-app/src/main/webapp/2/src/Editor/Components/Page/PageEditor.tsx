@@ -270,7 +270,6 @@ function PageDisplay({
   if (loading) {
     return <pre>Loading the pages</pre>;
   }
-
   return (
     <Toolbar className={expandBoth + ' PAGE-DISPLAY'}>
       <Toolbar.Header>
@@ -346,7 +345,7 @@ export default function PageEditor() {
   const focusTab = React.useRef<(tabId: string, layoutId: string) => void>();
   const [{ selectedPageId, editedPath }, setPageEditorState] = React.useState<
     PageEditorState
-  >({});
+  >({selectedPageId: store.getState().pages.index ? store.getState().pages.index.defaultPageId : undefined});
 
   const [editMode, setEditMode] = React.useState(false);
   const [showBorders, setShowBorders] = React.useState(false);
@@ -367,7 +366,7 @@ export default function PageEditor() {
       setPageEditorState(os => ({
         ...os,
         selectedPageId: defaultPageId,
-        loading: defaultPageId == null,
+        //loading: defaultPageId == null,
       }));
     }
   }, [defaultPageId, selectedPageId]);
@@ -604,6 +603,9 @@ export default function PageEditor() {
       onNewLayoutComponent,
     ],
   );
+
+
+  // useComparator({selectedPageId,editedPath})
 
   return Object.keys(availableLayoutTabs).length === 0 ? (
     <pre>Loading...</pre>

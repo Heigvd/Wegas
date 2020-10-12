@@ -54,6 +54,8 @@ import {
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
 import { themeVar } from '../../Style/ThemeVars';
 import { MenuItem } from '../../Layouts/Menu';
+import { parseAndRunScript } from '../../Hooks/useScript';
+import { IScript } from 'wegas-ts-api';
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {
@@ -156,14 +158,14 @@ function useDndComponentDrop(
     dndMonitor: DropTargetMonitor,
   ) => void,
 ): [
-  {
-    isOver: boolean;
-    isOverCurrent: boolean;
-    canDrop: boolean;
-    item: PageEditorComponent | null;
-  },
-  DragElementWrapper<{}>,
-] {
+    {
+      isOver: boolean;
+      isOverCurrent: boolean;
+      canDrop: boolean;
+      item: PageEditorComponent | null;
+    },
+    DragElementWrapper<{}>,
+  ] {
   const [dropZoneProps, dropZone] = useDrop<
     PageEditorComponent,
     void,
@@ -371,6 +373,13 @@ export interface EmptyPageComponentProps {
    * childrenType - the item type of the component
    */
   childrenType: ContainerTypes;
+  /**
+   * context - data that can be generated with programmatic components
+   */
+  context?: {
+    [name: string]: unknown;
+  };
+
 }
 /**
  * PageComponentProps - The props that are needed by the ComponentContainer
@@ -401,8 +410,8 @@ export type WegasComponentOptions = WegasComponentOptionsActions &
  */
 export interface WegasComponentProps
   extends React.PropsWithChildren<ClassAndStyle>,
-    PageComponentProps,
-    WegasComponentOptions {
+  PageComponentProps,
+  WegasComponentOptions {
   // /**
   //  * name - The name of the component in the page
   //  */
@@ -454,6 +463,7 @@ export function ComponentContainer({
   className,
   style = {},
   children,
+  context,
   ...options
 }: ComponentContainerProps) {
   const container = React.useRef<HTMLDivElement>();
@@ -490,10 +500,10 @@ export function ComponentContainer({
     // BUG HERE
     containerType === 'FLEX' || containerType === 'FOREACH'
       ? layout?.flexDirection === 'column' ||
-        layout?.flexDirection === 'column-reverse'
+      layout?.flexDirection === 'column-reverse'
       : containerType === 'LINEAR'
-      ? vertical
-      : false;
+        ? vertical
+        : false;
   const showSplitter =
     childrenType === 'LINEAR' && !last && (editMode || !noSplitter);
   const allowResize = childrenType === 'LINEAR' && (editMode || !noResize);
@@ -545,11 +555,15 @@ export function ComponentContainer({
           ) =>
             (v1.priority ? v1.priority : 0) - (v2.priority ? v2.priority : 0),
         )
-        .forEach(([k, v]) =>
-          wegasComponentActions[k as keyof WegasComponentOptionsActions](v),
+        .forEach(([k, v]) => {
+          if (k === "impactVariable") {
+            return wegasComponentActions.impactVariable({ impact: parseAndRunScript(v.impact, context) as IScript })
+          }
+          return wegasComponentActions[k as keyof WegasComponentOptionsActions](v);
+        }
         );
     }
-  }, [options]);
+  }, [options, context]);
 
   const onMouseOver = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -640,8 +654,8 @@ export function ComponentContainer({
           childrenType === 'FLEX'
             ? defaultFlexLayoutOptionsKeys
             : childrenType === 'ABSOLUTE'
-            ? defaultAbsoluteLayoutPropsKeys
-            : [],
+              ? defaultAbsoluteLayoutPropsKeys
+              : [],
         )}
         className={
           cx(handleControlStyle, flex, extraState.themeModeClassName, {

@@ -519,11 +519,11 @@ export function useComputeUnreadCount(
 
   return infoBeamMessage
     ? {
-        messageScript:
-          infoBeamMessage === 0
-            ? undefined
-            : createScript(JSON.stringify(String(infoBeamMessage))),
-      }
+      messageScript:
+        infoBeamMessage === 0
+          ? undefined
+          : createScript(JSON.stringify(String(infoBeamMessage))),
+    }
     : undefined;
 }
 
