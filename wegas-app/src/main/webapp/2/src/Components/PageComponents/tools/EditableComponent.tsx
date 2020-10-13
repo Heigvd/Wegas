@@ -16,7 +16,6 @@ import {
   thinHoverColorInsetShadow,
 } from '../../../css/classes';
 import {
-  FlexItem,
   FlexListProps,
   defaultFlexLayoutOptionsKeys,
 } from '../../Layouts/FlexList';
@@ -24,7 +23,7 @@ import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import { useDebounce } from '../../Hooks/useDebounce';
 import { pick } from 'lodash-es';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { FonkyFlexContent, FonkyFlexSplitter } from '../../Layouts/FonkyFlex';
+import { defaultFonkyFlexLayoutPropsKeys } from '../../Layouts/FonkyFlex';
 import {
   pagesStateStore,
   usePagesStateStore,
@@ -40,7 +39,6 @@ import {
   wegasComponentActions,
 } from './options';
 import {
-  AbsoluteItem,
   defaultAbsoluteLayoutPropsKeys,
 } from '../../Layouts/Absolute';
 import { PlayerInfoBullet } from './InfoBullet';
@@ -53,7 +51,7 @@ import {
 } from '../Layouts/LinearLayout.component';
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
 import { themeVar } from '../../Style/ThemeVars';
-import { MenuItem } from '../../Layouts/Menu';
+import { defaultMenuItemKeys } from '../../Layouts/Menu';
 import { parseAndRunScript } from '../../Hooks/useScript';
 import { IScript } from 'wegas-ts-api';
 
@@ -361,6 +359,32 @@ export type ContainerTypes =
   | 'FOREACH'
   | undefined;
 
+export type ChildrenDeserializerProps<P = {}> = P & {
+  editMode: boolean;
+  nbChildren: number;
+  path?: number[];
+  pageId?: string;
+  uneditable?: boolean;
+  context?: { [exposeAs: string]: any }
+}
+
+/**
+ * ContainerComponent - Defines the type and management of a container component
+ */
+export interface ContainerComponent<P = {}> {
+  type: ContainerTypes;
+  isVertical: (props?: P) => boolean | undefined;
+  ChildrenDeserializer: React.FunctionComponent<ChildrenDeserializerProps<P>>;
+}
+
+/**
+ * DropZones - the different zones in which a component can be dropped
+ */
+export interface DropZones {
+  side?: boolean;
+  notEmpty?: boolean;
+}
+
 /**
  * EmptyPageComponentProps - The props needed for a virtual component (used in a layout when no children)
  */
@@ -379,7 +403,14 @@ export interface EmptyPageComponentProps {
   context?: {
     [name: string]: unknown;
   };
-
+  /**
+   * Container - the container that is used to wrap the component
+   */
+  Container: ItemContainer;
+  /**
+   * dropzones - the dropzone to enable when a component is dragged over
+   */
+  dropzones: DropZones
 }
 /**
  * PageComponentProps - The props that are needed by the ComponentContainer
@@ -393,10 +424,6 @@ export interface PageComponentProps extends EmptyPageComponentProps {
    * containerType - the container type of the component
    */
   containerType: ContainerTypes;
-  /**
-   * last - is this component the last of the list
-   */
-  last?: boolean;
 }
 
 export type WegasComponentOptions = WegasComponentOptionsActions &
@@ -412,20 +439,13 @@ export interface WegasComponentProps
   extends React.PropsWithChildren<ClassAndStyle>,
   PageComponentProps,
   WegasComponentOptions {
-  // /**
-  //  * name - The name of the component in the page
-  //  */
-  // name?: string;
-  /**
-   * options - Various options that can be defined on every component of a page
-   */
-  // options?: WegasComponentOptions;
-  // extra?: {
-  //   actions?: WegasComponentOptionsActions & WegasComponentActionsProperties;
-  //   upgrades?: WegasComponentUpgrades;
-  //   [options: string]: unknown;
-  // };
 }
+
+export type ItemContainer = React.ForwardRefExoticComponent<WegasComponentItemProps & {
+  children?: React.ReactNode;
+} & React.RefAttributes<HTMLDivElement>>
+
+export type ItemContainerPropsKeys = typeof defaultAbsoluteLayoutPropsKeys | typeof defaultFlexLayoutOptionsKeys | typeof defaultMenuItemKeys | typeof defaultFonkyFlexLayoutPropsKeys;
 
 /**
  * ExtractedLayoutProps - Extracted props from currently layout containers
@@ -435,16 +455,10 @@ export interface ExtractedLayoutProps {
   layout?: FlexListProps['layout'];
   vertical?: PlayerLinearLayoutProps['vertical'];
   linearChildrenProps?: PlayerLinearLayoutChildrenProps;
+  containerPropsKeys?: ItemContainerPropsKeys;
 }
 
-// const defaultUpgradesState: ExtraState = {
-//   disabled: false,
-//   hidden: false,
-// };
-// const defaultActionsState: ActionsState = {
-//   locked: false,
-// };
-
+// TODO : CLEAN THIS INTERFACE!
 type ComponentContainerProps = WegasComponentProps & ExtractedLayoutProps;
 
 const pageDispatch = pagesStateStore.dispatch;
@@ -454,9 +468,7 @@ export function ComponentContainer({
   path,
   childrenType,
   containerType,
-  last,
   name,
-  // options,
   layout,
   vertical,
   linearChildrenProps,
@@ -464,6 +476,9 @@ export function ComponentContainer({
   style = {},
   children,
   context,
+  Container,
+  containerPropsKeys = [],
+  dropzones,
   ...options
 }: ComponentContainerProps) {
   const container = React.useRef<HTMLDivElement>();
@@ -471,13 +486,8 @@ export function ComponentContainer({
   const [dragHoverState, setDragHoverState] = React.useState<boolean>(false);
   const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
   const [extraState, setExtraState] = React.useState<OptionsState>({});
-  // const [actionsState, setActionsState] = React.useState<ActionsState>(
-  //   defaultActionsState,
-  // );
-  // const upgrades =
-  //   options?.upgrades == null ? defaultUpgradesState : upgradesState;
-  // const actions = options?.actions == null ? defaultActionsState : actionsState;
-  const { noSplitter, noResize } = linearChildrenProps || {};
+
+  // const { noSplitter, noResize } = linearChildrenProps || {};
 
   const {
     onDrop,
@@ -495,44 +505,11 @@ export function ComponentContainer({
   const isNotFirstComponent = path.length > 0;
   const editable = editMode && isNotFirstComponent;
   const showComponent = editable || !extraState.hidden;
-  // const showLayout = showBorders; /*&& containerType != null*/
-  const computedVertical =
-    // BUG HERE
-    containerType === 'FLEX' || containerType === 'FOREACH'
-      ? layout?.flexDirection === 'column' ||
-      layout?.flexDirection === 'column-reverse'
-      : containerType === 'LINEAR'
-        ? vertical
-        : false;
-  const showSplitter =
-    childrenType === 'LINEAR' && !last && (editMode || !noSplitter);
-  const allowResize = childrenType === 'LINEAR' && (editMode || !noResize);
-  // const isDisabled = (actions.locked || upgrades.disabled) === true;
+
   const isSelected = JSON.stringify(path) === JSON.stringify(editedPath);
   const isFocused = usePagesStateStore(
     isComponentFocused(editMode, pageId, path),
   );
-
-  const Container = React.useMemo(() => {
-    switch (childrenType) {
-      case 'LINEAR':
-        return FonkyFlexContent;
-      case 'ABSOLUTE':
-        return AbsoluteItem;
-      case 'MENU':
-        return MenuItem;
-      case 'FLEX':
-      case 'FOREACH':
-      default:
-        return FlexItem;
-    }
-  }, [childrenType]);
-
-  // const onClick = React.useCallback(() => {
-  //   if (!isDisabled && actions.onClick != null) {
-  //     actions.onClick();
-  //   }
-  // }, [isDisabled, actions]);
 
   const onClick = React.useCallback(() => {
     if (
@@ -651,11 +628,12 @@ export function ComponentContainer({
         }}
         {...pick(
           options,
-          childrenType === 'FLEX'
-            ? defaultFlexLayoutOptionsKeys
-            : childrenType === 'ABSOLUTE'
-              ? defaultAbsoluteLayoutPropsKeys
-              : [],
+          containerPropsKeys,
+          // childrenType === 'FLEX'
+          //   ? defaultFlexLayoutOptionsKeys
+          //   : childrenType === 'ABSOLUTE'
+          //     ? defaultAbsoluteLayoutPropsKeys
+          //     : [],
         )}
         className={
           cx(handleControlStyle, flex, extraState.themeModeClassName, {
@@ -663,8 +641,8 @@ export function ComponentContainer({
             [hoverColorInsetShadow]: editMode || isSelected,
             [cx(foregroundContent, thinHoverColorInsetShadow)]: isFocused,
             // [selectedComponentStyle]: isSelected,
-            [childDropzoneHorizontalStyle]: !computedVertical,
-            [childDropzoneVerticalStyle]: computedVertical,
+            [childDropzoneHorizontalStyle]: !vertical,
+            [childDropzoneVerticalStyle]: vertical,
             [disabledStyle]: extraState.disabled,
           }) + classNameOrEmpty(className)
         }
@@ -679,7 +657,7 @@ export function ComponentContainer({
         {...dropFunctions}
         tooltip={extraState.tooltip}
       >
-        {dragHoverState && editable && containerType === 'ABSOLUTE' && (
+        {dragHoverState && editable && /*containerType === 'ABSOLUTE'*/ dropzones.notEmpty && (
           <ComponentDropZone
             onDrop={onEditableComponentDrop}
             show
@@ -736,35 +714,21 @@ export function ComponentContainer({
           locked={(extraState.disabled || extraState.locked) === true}
         />
       </Container>
-      {showSplitter && <FonkyFlexSplitter notDraggable={!allowResize} />}
+      {/* {showSplitter && <FonkyFlexSplitter notDraggable={!allowResize} />} */}
     </>
   );
 }
 
 export function EmptyComponentContainer({
   path,
-  childrenType,
+  Container,
+  dropzones
 }: EmptyPageComponentProps) {
   const container = React.useRef<HTMLDivElement>();
 
   const [{ isOver }, dropZone] = useDndComponentDrop();
 
   const { onDrop, editMode } = React.useContext(pageCTX);
-
-  const Container = React.useMemo(() => {
-    switch (childrenType) {
-      case 'LINEAR':
-        return FonkyFlexContent;
-      case 'ABSOLUTE':
-        return AbsoluteItem;
-      case 'MENU':
-        return MenuItem;
-      case 'FLEX':
-      case 'FOREACH':
-      default:
-        return FlexItem;
-    }
-  }, [childrenType]);
 
   return (
     <Container
@@ -777,7 +741,7 @@ export function EmptyComponentContainer({
       className={flex}
       style={emptyLayoutItemStyle}
     >
-      {editMode && childrenType !== 'ABSOLUTE' && (
+      {editMode && dropzones.notEmpty && (
         <ComponentDropZone
           onDrop={dndComponent => {
             onDrop(dndComponent, path);

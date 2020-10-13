@@ -30,7 +30,7 @@ import {
   defaultAbsoluteLayoutPropsKeys,
 } from '../../../Components/Layouts/Absolute';
 import { pick, omit } from 'lodash-es';
-import { ContainerTypes } from '../../../Components/PageComponents/tools/EditableComponent';
+import { ContainerComponent } from '../../../Components/PageComponents/tools/EditableComponent';
 
 /**
  * wegasComponentCommonSchema - defines the minimum schema for every WegasComponent
@@ -152,7 +152,7 @@ interface WegasComponentForm {
     [prop: string]: unknown;
   };
   layoutOptions: WegasComponentLayoutCommonOptions &
-    (FlexItemLayoutProps | AbsoluteItemLayoutProps);
+  (FlexItemLayoutProps | AbsoluteItemLayoutProps);
   layoutConditions: WegasComponentLayoutConditionnalOptions;
   actions: WegasComponentOptionsActions & WegasComponentActionsProperties;
   decorations: WegasComponentDecorations;
@@ -203,7 +203,7 @@ export function wegasComponentSchema(
       [prop: string]: SchemaPropsSchemas;
     };
   },
-  parentContainerType: ContainerTypes,
+  parentContainer?: ContainerComponent,
 ) {
   return {
     description: pageComponentSchema.description,
@@ -218,7 +218,7 @@ export function wegasComponentSchema(
           [key: string]: SimpleSchemaPropsSchemas;
         },
       }),
-      ...wegasComponentExtraSchema(parentContainerType),
+      ...wegasComponentExtraSchema(parentContainer?.type),
     },
   };
 }
@@ -244,7 +244,7 @@ export function ComponentProperties({
 
     return wegasComponentSchema(
       baseSchema,
-      parent ? s[parent.type].containerType : undefined,
+      parent ? s[parent.type].container : undefined,
     ) as Schema<BaseView>;
   }, deepDifferent);
   if (entity === undefined || schema === undefined) {

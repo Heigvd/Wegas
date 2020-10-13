@@ -5,9 +5,10 @@ import { composeEnhancers } from '../../../data/store';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { useAnyStore } from '../../Hooks/storeHookFactory';
 import {
-  ContainerTypes as ContainerType,
   WegasComponentProps,
   PageComponentProps,
+  ContainerComponent,
+  DropZones,
 } from './EditableComponent';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
 import { SchemaPropsSchemas } from './schemaProps';
@@ -28,14 +29,15 @@ export const componentTypes = [
 export type ComponentType = typeof componentTypes[number];
 
 export interface PageComponent<
-  P extends {} = {},
+  P extends WegasComponentProps = WegasComponentProps,
   T extends IVariableDescriptor['@class'] = IVariableDescriptor['@class']
-> {
+  > {
   WegasComponent: React.FunctionComponent<P>;
-  containerType: ContainerType;
+  container?: ContainerComponent<P>;
   componentType: ComponentType;
   componentName: string;
   icon: Icon;
+  dropzones?: DropZones;
   schema: {
     description: string;
     properties: { [prop: string]: SchemaPropsSchemas };
@@ -80,7 +82,7 @@ export const PageComponentActionCreator = {
 
 type PageComponentAction<
   A extends keyof typeof PageComponentActionCreator = keyof typeof PageComponentActionCreator
-> = ReturnType<typeof PageComponentActionCreator[A]>;
+  > = ReturnType<typeof PageComponentActionCreator[A]>;
 
 const pageComponentReducer: Reducer<
   Readonly<PageComponentsState>,
@@ -131,35 +133,37 @@ export function usePageComponentStore<R>(
 }
 
 export function pageComponentFactory<
-  C extends ContainerType,
+  C extends ContainerComponent<P> | undefined,
   P extends WegasComponentProps,
   T extends IVariableDescriptor['@class']
 >(
   param: {
     component: React.FunctionComponent<P>;
     componentType: ComponentType;
-    containerType?: C;
+    container?: C;
     name: string;
     icon: Icon;
+    dropzones?: DropZones;
     schema: { [prop: string]: SchemaPropsSchemas };
     allowedVariables?: T[];
   } & (C extends undefined
     ? {
-        getComputedPropsFromVariable?: (
-          variable?: WegasClassNameAndScriptableTypes[T],
-        ) => Omit<P, keyof PageComponentProps>;
-      }
+      getComputedPropsFromVariable?: (
+        variable?: WegasClassNameAndScriptableTypes[T],
+      ) => Omit<P, keyof PageComponentProps>;
+    }
     : {
-        getComputedPropsFromVariable: (
-          variable?: WegasClassNameAndScriptableTypes[T],
-        ) => Omit<P, keyof PageComponentProps>;
-      }),
-): PageComponent {
+      getComputedPropsFromVariable: (
+        variable?: WegasClassNameAndScriptableTypes[T],
+      ) => Omit<P, keyof PageComponentProps>;
+    }),
+): PageComponent<P> {
   return {
     WegasComponent: param.component,
     componentType: param.componentType,
-    containerType: param.containerType,
+    container: param.container,
     icon: param.icon,
+    dropzones: param.dropzones,
     componentName: param.name,
     schema: {
       description: param.name,

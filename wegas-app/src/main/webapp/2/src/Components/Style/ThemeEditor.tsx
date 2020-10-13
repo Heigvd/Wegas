@@ -36,7 +36,7 @@ import {
   FonkyFlexSplitter,
 } from '../Layouts/FonkyFlex';
 import { SimpleInput } from '../Inputs/SimpleInput';
-import { PageExamples } from './PageExample';
+// import { PageExamples } from './PageExample';
 import { wlog } from '../../Helper/wegaslog';
 import { ConfirmStringAdder } from '../Inputs/String/ConfirmStringAdder';
 import { Title } from '../Inputs/String/Title';
@@ -105,9 +105,8 @@ function stringToRGBA(color?: string): RGBColor {
 }
 
 function rgbaToString(color?: RGBColor): string {
-  return `rgba(${color?.r || 0},${color?.g || 0},${color?.b || 0}${
-    color?.a ? `,${color.a}` : ''
-  })`;
+  return `rgba(${color?.r || 0},${color?.g || 0},${color?.b || 0}${color?.a ? `,${color.a}` : ''
+    })`;
 }
 
 interface MyColorPickerProps {
@@ -140,24 +139,24 @@ function MyColorPicker({ initColor = 'black', onChange }: MyColorPickerProps) {
           onClick={() => setDisplayed(old => !old)}
         />
       ) : (
-        <div className={cx(flex, flexColumn, itemCenter)}>
-          <ChromePicker
-            color={color}
-            onChangeComplete={newColor => {
-              setColor(newColor.rgb);
-            }}
-          />
-          <div style={{ margin: themeVar.Common.dimensions.BorderWidth }}>
-            <Button
-              label="Accept"
-              onClick={() => {
-                setDisplayed(false);
-                onChange && onChange(color);
+          <div className={cx(flex, flexColumn, itemCenter)}>
+            <ChromePicker
+              color={color}
+              onChangeComplete={newColor => {
+                setColor(newColor.rgb);
               }}
             />
+            <div style={{ margin: themeVar.Common.dimensions.BorderWidth }}>
+              <Button
+                label="Accept"
+                onClick={() => {
+                  setDisplayed(false);
+                  onChange && onChange(color);
+                }}
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 }
@@ -177,16 +176,16 @@ function ThemeValueModifier({
     name?: string;
     value: string;
   }) => string | undefined = value =>
-    value?.name == null || value.name === ''
-      ? 'You have to enter a name'
-      : undefined;
+      value?.name == null || value.name === ''
+        ? 'You have to enter a name'
+        : undefined;
 
   const validator: (
     value?:
       | {
-          name?: string;
-          value: string;
-        }
+        name?: string;
+        value: string;
+      }
       | undefined,
   ) => string | undefined = value => {
     if (Object.keys(theme.values[section]).includes(value?.name || '')) {
@@ -225,14 +224,14 @@ function ThemeValueModifier({
                   }}
                 />
               ) : (
-                <SimpleInput
-                  placeholder="Theme value"
-                  className={valueStyle}
-                  onChange={v =>
-                    onNewValue(ov => ({ ...ov, value: String(v) }))
-                  }
-                />
-              )}
+                  <SimpleInput
+                    placeholder="Theme value"
+                    className={valueStyle}
+                    onChange={v =>
+                      onNewValue(ov => ({ ...ov, value: String(v) }))
+                    }
+                  />
+                )}
             </>
           )}
         </ConfirmAdder>
@@ -260,12 +259,12 @@ function ThemeValueModifier({
                 }}
               />
             ) : (
-              <SimpleInput
-                className={valueStyle}
-                value={v}
-                onChange={v => onChange(k, String(v))}
-              />
-            )}
+                <SimpleInput
+                  className={valueStyle}
+                  value={v}
+                  onChange={v => onChange(k, String(v))}
+                />
+              )}
           </div>
         ))}
       </div>
@@ -359,7 +358,7 @@ function ThemeEdition() {
               ),
             }),
           )}
-          onSelect={() => {}}
+          onSelect={() => { }}
         />
         <DropMenu
           label={'Sections'}
@@ -494,8 +493,8 @@ function ModeValueModifier({
                   section === 'colors' && v != null ? (
                     <ModeColorValue label={sectionValue} theme={theme} />
                   ) : (
-                    sectionValue
-                  )
+                      sectionValue
+                    )
                 }
                 items={themeValuesWithUndefined.map(k => ({
                   value: k,
@@ -503,8 +502,8 @@ function ModeValueModifier({
                     section === 'colors' && k !== 'undefined' ? (
                       <ModeColorValue label={k} theme={theme} />
                     ) : (
-                      k
-                    ),
+                        k
+                      ),
                 }))}
                 onSelect={({ value: themeValue }) => onChange(k, themeValue)}
               />
@@ -675,7 +674,7 @@ function ModeEdition() {
           </FonkyFlexContent>
           <FonkyFlexSplitter />
           <FonkyFlexContent>
-            <PageExamples modeName={editedMode} />
+            {/* <PageExamples modeName={editedMode} /> */}
           </FonkyFlexContent>
         </FonkyFlexContainer>
       </Toolbar.Content>

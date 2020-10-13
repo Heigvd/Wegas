@@ -71,6 +71,14 @@ interface FonkyFlexContentProps extends WegasComponentItemProps {
   flexInit?: number;
 }
 
+export const defaultFonkyFlexLayoutProps: FonkyFlexContentProps = {
+  flexInit: undefined,
+};
+
+export const defaultFonkyFlexLayoutPropsKeys = Object.keys(
+  defaultFonkyFlexLayoutProps,
+) as (keyof FonkyFlexContentProps)[];
+
 // TODO : Rename with resize "something"
 
 export function FonkyFlexContainer({

@@ -7,9 +7,12 @@ import {
   FlexListProps,
   FlexList,
   flexListSchema,
+  isVertical,
+  FlexItem,
+  defaultFlexLayoutOptionsKeys
 } from '../../Layouts/FlexList';
-import { WegasComponentProps } from '../tools/EditableComponent';
-//import { SListDescriptor } from 'wegas-ts-api';
+import { ChildrenDeserializerProps, ContainerTypes, DropZones, ItemContainer, ItemContainerPropsKeys, WegasComponentProps } from '../tools/EditableComponent';
+import { PageDeserializer } from '../tools/PageDeserializer';
 
 interface PlayerFlexListProps extends FlexListProps, WegasComponentProps {
   /**
@@ -22,23 +25,40 @@ function PlayerFlexList(props: PlayerFlexListProps) {
   return <FlexList {...props} />;
 }
 
+const flexListItemDropZones: DropZones = {
+  side: true,
+}
+
+export function childrenDeserializerFactory(childrenType: ContainerTypes, Container: ItemContainer = FlexItem, containerPropsKeys: ItemContainerPropsKeys = defaultFlexLayoutOptionsKeys, dropzones: DropZones = flexListItemDropZones) {
+  return function ChildrenDeserializer({ nbChildren, path, pageId, uneditable, context }: ChildrenDeserializerProps<{}>) {
+    const newChildren: JSX.Element[] = [];
+    for (let i = 0; i < nbChildren; ++i) {
+      newChildren.push(
+        <PageDeserializer
+          key={JSON.stringify([...(path ? path : []), i])}
+          pageId={pageId}
+          path={[...(path ? path : []), i]}
+          uneditable={uneditable}
+          childrenType={childrenType}
+          context={context}
+          Container={Container}
+          containerPropsKeys={containerPropsKeys}
+          dropzones={dropzones}
+        />,
+      );
+    }
+    return <>{newChildren}</>;
+  }
+}
+
 registerComponent(
   pageComponentFactory({
     component: PlayerFlexList,
     componentType: 'Layout',
-    containerType: 'FLEX',
+    container: { type: 'FLEX', isVertical, ChildrenDeserializer: childrenDeserializerFactory("FLEX") },
     name: 'FlexList',
     icon: 'bars',
     schema: flexListSchema,
     getComputedPropsFromVariable: () => ({ children: [] }),
-    //  allowedVariables: ['ListDescriptor'],
-    //    get: (val?: Readonly<SListDescriptor>) =>
-    //      val
-    //        ? {
-    //          children:val.itemsIds.map(id=>componentsStore.getComponentByType(VariableDescriptor.select(id)))
-    //        }
-    //        : {
-    //          children: [],
-    //        },
   }),
 );

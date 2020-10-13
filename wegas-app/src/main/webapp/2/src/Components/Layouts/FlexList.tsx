@@ -59,7 +59,7 @@ export const defaultFlexLayoutOptions: FlexItemLayoutProps = {
 };
 export const defaultFlexLayoutOptionsKeys = Object.keys(
   defaultFlexLayoutOptions,
-);
+) as (keyof FlexItemLayoutProps)[];
 
 export const flexlayoutChoices: HashListChoices = [
   {
@@ -105,7 +105,7 @@ export const flexlayoutChoices: HashListChoices = [
 
 export interface FlexItemProps
   extends WegasComponentItemProps,
-    FlexItemLayoutProps {
+  FlexItemLayoutProps {
   /**
    * onMouseOut - triggers when the mouse is not more over the element
    */
@@ -134,28 +134,30 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
       ...layout
     },
     ref,
-  ) => (
-    <div
-      ref={ref}
-      onClick={onClick}
-      onMouseOver={onMouseOver}
-      onMouseOut={onMouseOut}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      onDragEnter={onDragEnter}
-      onDragLeave={onDragLeave}
-      onDragEnd={onDragEnd}
-      className={className}
-      style={{
-        position: 'relative',
-        ...layout,
-        ...style,
-      }}
-      title={tooltip}
-    >
-      {children}
-    </div>
-  ),
+  ) => {
+    return (
+      <div
+        ref={ref}
+        onClick={onClick}
+        onMouseOver={onMouseOver}
+        onMouseOut={onMouseOut}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        onDragEnter={onDragEnter}
+        onDragLeave={onDragLeave}
+        onDragEnd={onDragEnd}
+        className={className}
+        style={{
+          position: 'relative',
+          ...layout,
+          ...style,
+        }}
+        title={tooltip}
+      >
+        {children}
+      </div>
+    )
+  },
 );
 
 export const flexDirectionValues = [
@@ -292,4 +294,9 @@ export function FlexList({
       {children}
     </div>
   );
+}
+
+export function isVertical(props?: FlexListProps) {
+  return props?.layout?.flexDirection === 'column' ||
+    props?.layout?.flexDirection === 'column-reverse';
 }

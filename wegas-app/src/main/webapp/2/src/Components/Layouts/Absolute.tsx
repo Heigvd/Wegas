@@ -33,7 +33,7 @@ export const defaultAbsoluteLayoutProps: AbsoluteItemLayoutProps = {
 };
 export const defaultAbsoluteLayoutPropsKeys = Object.keys(
   defaultAbsoluteLayoutProps,
-);
+) as (keyof AbsoluteItemLayoutProps)[];
 
 interface AbsoluteItemProps
   extends React.PropsWithChildren<WegasComponentItemProps> {
