@@ -26,7 +26,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerMenu,
     componentType: 'Layout',
-    container: { type: 'MENU', isVertical, ChildrenDeserializer: childrenDeserializerFactory("MENU", MenuItem, defaultMenuItemKeys) },
+    container: { type: 'MENU', isVertical, ChildrenDeserializer: childrenDeserializerFactory(MenuItem, defaultMenuItemKeys) },
     dropzones: {},
     name: 'Menu',
     icon: 'bars',

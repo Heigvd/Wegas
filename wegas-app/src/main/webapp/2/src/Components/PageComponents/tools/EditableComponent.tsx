@@ -382,7 +382,7 @@ export interface ContainerComponent<P = {}> {
  */
 export interface DropZones {
   side?: boolean;
-  notEmpty?: boolean;
+  center?: boolean;
 }
 
 /**
@@ -393,10 +393,6 @@ export interface EmptyPageComponentProps {
    * path - the path of the current component
    */
   path: number[];
-  /**
-   * childrenType - the item type of the component
-   */
-  childrenType: ContainerTypes;
   /**
    * context - data that can be generated with programmatic components
    */
@@ -466,12 +462,10 @@ const pageDispatch = pagesStateStore.dispatch;
 export function ComponentContainer({
   componentType,
   path,
-  childrenType,
   containerType,
   name,
   layout,
   vertical,
-  linearChildrenProps,
   className,
   style = {},
   children,
@@ -486,8 +480,6 @@ export function ComponentContainer({
   const [dragHoverState, setDragHoverState] = React.useState<boolean>(false);
   const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
   const [extraState, setExtraState] = React.useState<OptionsState>({});
-
-  // const { noSplitter, noResize } = linearChildrenProps || {};
 
   const {
     onDrop,
@@ -602,9 +594,7 @@ export function ComponentContainer({
         const [relX, relY] = [absX - srcX, absY - srcY];
 
         onDrop(dndComponent, path, undefined, {
-          options: {
-            layout: { position: { left: relX, top: relY } },
-          },
+          position: { left: relX, top: relY }
         });
       }
     },
@@ -629,18 +619,12 @@ export function ComponentContainer({
         {...pick(
           options,
           containerPropsKeys,
-          // childrenType === 'FLEX'
-          //   ? defaultFlexLayoutOptionsKeys
-          //   : childrenType === 'ABSOLUTE'
-          //     ? defaultAbsoluteLayoutPropsKeys
-          //     : [],
         )}
         className={
           cx(handleControlStyle, flex, extraState.themeModeClassName, {
             [showBordersStyle]: showBorders && containerType != null,
             [hoverColorInsetShadow]: editMode || isSelected,
             [cx(foregroundContent, thinHoverColorInsetShadow)]: isFocused,
-            // [selectedComponentStyle]: isSelected,
             [childDropzoneHorizontalStyle]: !vertical,
             [childDropzoneVerticalStyle]: vertical,
             [disabledStyle]: extraState.disabled,
@@ -657,7 +641,7 @@ export function ComponentContainer({
         {...dropFunctions}
         tooltip={extraState.tooltip}
       >
-        {dragHoverState && editable && /*containerType === 'ABSOLUTE'*/ dropzones.notEmpty && (
+        {dragHoverState && editable && dropzones.center && (
           <ComponentDropZone
             onDrop={onEditableComponentDrop}
             show
@@ -666,8 +650,7 @@ export function ComponentContainer({
         )}
         {dragHoverState &&
           editable &&
-          childrenType !== 'ABSOLUTE' &&
-          childrenType !== 'FOREACH' && (
+          dropzones.side && (
             <ComponentDropZone
               onDrop={dndComponent =>
                 onDrop(dndComponent, containerPath, itemPath)
@@ -676,7 +659,7 @@ export function ComponentContainer({
               dropPosition="BEFORE"
             />
           )}
-        {editable && (
+        {!dragHoverState && editable && (
           <EditHandle
             name={name}
             stackedHandles={stackedHandles}
@@ -696,8 +679,7 @@ export function ComponentContainer({
         )}
         {dragHoverState &&
           editable &&
-          childrenType !== 'ABSOLUTE' &&
-          childrenType !== 'FOREACH' && (
+          dropzones.side && (
             <ComponentDropZone
               onDrop={dndComponent =>
                 onDrop(
@@ -741,7 +723,7 @@ export function EmptyComponentContainer({
       className={flex}
       style={emptyLayoutItemStyle}
     >
-      {editMode && dropzones.notEmpty && (
+      {editMode && !dropzones.center && (
         <ComponentDropZone
           onDrop={dndComponent => {
             onDrop(dndComponent, path);

@@ -15,12 +15,12 @@ registerComponent(
     component: AbsoluteLayout,
     componentType: 'Layout',
     container: {
-      type: 'ABSOLUTE', isVertical, ChildrenDeserializer: childrenDeserializerFactory("ABSOLUTE", AbsoluteItem, defaultAbsoluteLayoutPropsKeys, {})
+      type: 'ABSOLUTE', isVertical, ChildrenDeserializer: childrenDeserializerFactory(AbsoluteItem, defaultAbsoluteLayoutPropsKeys, {})
     },
     name: 'AbsoluteLayout',
     icon: 'images',
     dropzones: {
-      notEmpty: true
+      center: true,
     },
     schema: {
       name: schemaProps.string({ label: 'Name' }),

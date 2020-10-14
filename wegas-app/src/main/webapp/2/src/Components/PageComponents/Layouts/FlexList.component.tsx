@@ -11,7 +11,7 @@ import {
   FlexItem,
   defaultFlexLayoutOptionsKeys
 } from '../../Layouts/FlexList';
-import { ChildrenDeserializerProps, ContainerTypes, DropZones, ItemContainer, ItemContainerPropsKeys, WegasComponentProps } from '../tools/EditableComponent';
+import { ChildrenDeserializerProps, DropZones, ItemContainer, ItemContainerPropsKeys, WegasComponentProps } from '../tools/EditableComponent';
 import { PageDeserializer } from '../tools/PageDeserializer';
 
 interface PlayerFlexListProps extends FlexListProps, WegasComponentProps {
@@ -29,7 +29,7 @@ const flexListItemDropZones: DropZones = {
   side: true,
 }
 
-export function childrenDeserializerFactory(childrenType: ContainerTypes, Container: ItemContainer = FlexItem, containerPropsKeys: ItemContainerPropsKeys = defaultFlexLayoutOptionsKeys, dropzones: DropZones = flexListItemDropZones) {
+export function childrenDeserializerFactory(Container: ItemContainer = FlexItem, containerPropsKeys: ItemContainerPropsKeys = defaultFlexLayoutOptionsKeys, dropzones: DropZones = flexListItemDropZones) {
   return function ChildrenDeserializer({ nbChildren, path, pageId, uneditable, context }: ChildrenDeserializerProps<{}>) {
     const newChildren: JSX.Element[] = [];
     for (let i = 0; i < nbChildren; ++i) {
@@ -39,7 +39,6 @@ export function childrenDeserializerFactory(childrenType: ContainerTypes, Contai
           pageId={pageId}
           path={[...(path ? path : []), i]}
           uneditable={uneditable}
-          childrenType={childrenType}
           context={context}
           Container={Container}
           containerPropsKeys={containerPropsKeys}
@@ -55,7 +54,7 @@ registerComponent(
   pageComponentFactory({
     component: PlayerFlexList,
     componentType: 'Layout',
-    container: { type: 'FLEX', isVertical, ChildrenDeserializer: childrenDeserializerFactory("FLEX") },
+    container: { type: 'FLEX', isVertical, ChildrenDeserializer: childrenDeserializerFactory() },
     name: 'FlexList',
     icon: 'bars',
     schema: flexListSchema,

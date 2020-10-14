@@ -35,15 +35,11 @@ export const defaultAbsoluteLayoutPropsKeys = Object.keys(
   defaultAbsoluteLayoutProps,
 ) as (keyof AbsoluteItemLayoutProps)[];
 
-interface AbsoluteItemProps
-  extends React.PropsWithChildren<WegasComponentItemProps> {
-  layout?: AbsoluteItemLayoutProps;
-}
+type AbsoluteItemProps = React.PropsWithChildren<WegasComponentItemProps & AbsoluteItemLayoutProps>;
 
 export const AbsoluteItem = React.forwardRef<HTMLDivElement, AbsoluteItemProps>(
   (
     {
-      layout,
       tooltip,
       style,
       className,
@@ -54,6 +50,7 @@ export const AbsoluteItem = React.forwardRef<HTMLDivElement, AbsoluteItemProps>(
       onDragLeave,
       onDragEnd,
       children,
+      ...layout
     },
     ref,
   ) => {

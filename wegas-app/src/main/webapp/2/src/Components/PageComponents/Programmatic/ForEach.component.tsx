@@ -20,12 +20,11 @@ import { schemaProps } from '../tools/schemaProps';
 interface ForEachProps extends WegasComponentProps, FlexListProps {
   getItemsFn?: IScript;
   exposeAs: string;
+  itemsOnly?: boolean;
 }
 
-function ForEach(props: ForEachProps) {
-
-
-  return (
+function ForEach({ itemsOnly, ...props }: ForEachProps) {
+  return itemsOnly ? <>{props.children}</> : (
     <FlexList {...props} />
   );
 }
@@ -42,7 +41,6 @@ function ChildrenDeserializer({ path, pageId, uneditable, context, exposeAs, get
         pageId={pageId}
         path={[...(path ? path : []), 0]}
         uneditable={uneditable}
-        childrenType="FOREACH"
         context={newContext}
         Container={FlexItem}
         containerPropsKeys={defaultFlexLayoutOptionsKeys}
@@ -60,7 +58,6 @@ registerComponent(
     container: { type: 'FOREACH', isVertical, ChildrenDeserializer },
     name: 'For each',
     icon: 'code',
-    dropzones: {},
     schema: {
       ...flexListSchema,
       getItemsFn: schemaProps.customScript({
@@ -72,6 +69,7 @@ registerComponent(
         required: true,
         value: 'item',
       }),
+      itemsOnly: schemaProps.boolean({ label: "Items only" })
     },
     allowedVariables: ['TextDescriptor'],
     getComputedPropsFromVariable: () => ({ exposeAs: 'item' }),

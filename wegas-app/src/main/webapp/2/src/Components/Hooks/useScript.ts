@@ -35,6 +35,10 @@ interface GlobalVariableClass {
     _gm: unknown,
     name: string,
   ) => ScriptableEntity<T> | undefined;
+  select: <T extends SVariableDescriptor>(
+    _gm: unknown,
+    id: number,
+  ) => T | undefined;
   getItems: <T = SVariableDescriptor<SVariableInstance>>(
     itemsIds: number[],
   ) => Readonly<T[]>;
@@ -96,6 +100,12 @@ export function useGlobals() {
       const iDesc = VDSelect.findByName<T>(name);
       if (iDesc) {
         return instantiate(iDesc) as ScriptableEntity<T> | undefined;
+      }
+    },
+    select: <T extends SVariableDescriptor>(_gm: unknown, id: number) => {
+      const iDesc = VDSelect.select<IVariableDescriptor>(id);
+      if (iDesc) {
+        return instantiate(iDesc) as unknown as T | undefined;
       }
     },
     getItems,

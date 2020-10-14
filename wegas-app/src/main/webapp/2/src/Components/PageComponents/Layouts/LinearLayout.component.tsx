@@ -81,7 +81,6 @@ export function ChildrenDeserializer({ nbChildren, path, pageId, uneditable, con
         pageId={pageId}
         path={[...(path ? path : []), i]}
         uneditable={uneditable}
-        childrenType="LINEAR"
         context={context}
         Container={FonkyFlexContent}
         containerPropsKeys={defaultFonkyFlexLayoutPropsKeys}

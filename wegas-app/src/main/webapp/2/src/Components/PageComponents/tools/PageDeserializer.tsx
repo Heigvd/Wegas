@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { PageComponent, usePageComponentStore } from './componentFactory';
 import {
-  ContainerTypes,
   ComponentContainer,
   EmptyComponentContainer,
   WegasComponentProps,
@@ -42,7 +41,6 @@ interface PageDeserializerProps {
   pageId?: string;
   path?: number[];
   uneditable?: boolean;
-  childrenType?: ContainerTypes;
   context?: {
     [name: string]: unknown;
   };
@@ -59,9 +57,9 @@ export function PageDeserializer({
   pageId,
   path,
   uneditable,
-  childrenType,
   context,
   Container,
+  containerPropsKeys,
   dropzones
 }: PageDeserializerProps): JSX.Element {
   const realPath = path ? path : [];
@@ -107,26 +105,25 @@ export function PageDeserializer({
       path={realPath}
       componentType={componentName}
       containerType={container?.type}
-      childrenType={childrenType}
       context={context}
       vertical={container?.isVertical(wegasComponent.props as WegasComponentProps)}
       Container={Container}
-      dropzones={{ ...component.dropzones, ...dropzones }}
+      containerPropsKeys={containerPropsKeys}
       {...restProps}
+      dropzones={{ ...component.dropzones, ...dropzones }}
     >
       <WegasComponent
         path={realPath}
         componentType={componentName}
         containerType={container?.type}
-        childrenType={childrenType}
         context={context}
         Container={Container}
-        dropzones={{ ...component.dropzones, ...dropzones }}
+        containerPropsKeys={containerPropsKeys}
         {...restProps}
+        dropzones={{ ...component.dropzones, ...dropzones }}
       >
         {editMode && children.length === 0 ? (
           <EmptyComponentContainer
-            childrenType={container?.type}
             path={realPath}
             Container={Container}
             dropzones={{ ...component.dropzones, ...dropzones }}

@@ -25,7 +25,7 @@ import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMet
 import i18nGlobalSrc from '!!raw-loader!../../../types/scripts/I18nGlobals.d.ts';
 
 import { deepDifferent } from './storeHookFactory';
-import { wlog, wwarn } from '../../Helper/wegaslog';
+import { wwarn } from '../../Helper/wegaslog';
 import { buildGlobalServerMethods } from '../../data/Reducer/globalState';
 
 const stripRegex = /\/\* STRIP FROM \*\/[\s\S]*?\/\* STRIP TO \*\//gm;
@@ -70,8 +70,8 @@ export function useGlobalLibs() {
 
         interface VariableClasses {
           ${Object.keys(variableClasses)
-            .map(k => `${k}: S${variableClasses[k]};`)
-            .join('\n')}
+          .map(k => `${k}: S${variableClasses[k]};`)
+          .join('\n')}
         }
 
         class Variable {
@@ -79,6 +79,10 @@ export function useGlobalLibs() {
             gameModel: SGameModel,
             name: T
           ) => VariableClasses[T];
+          static select: <T extends SVariableDescriptor>(
+            _gm: unknown,
+            id: number,
+          ) => T | undefined;        
           static getItems: <T = SVariableDescriptor<SVariableInstance>>(
             itemsIds: number[],
           ) => Readonly<T[]>;        
@@ -92,18 +96,17 @@ export function useGlobalLibs() {
 
         interface ClientMethods {
           ${Object.keys(globalMethods)
-            .map(k => {
-              const method = globalMethods[k];
-              const isArray = method.returnStyle === 'array';
-              return `'${k}' : (${method.parameters
-                .map(p => `${p[0]} : ${p[1]}`)
-                .join(', ')}) => ${
-                isArray ? '(' : ''
+          .map(k => {
+            const method = globalMethods[k];
+            const isArray = method.returnStyle === 'array';
+            return `'${k}' : (${method.parameters
+              .map(p => `${p[0]} : ${p[1]}`)
+              .join(', ')}) => ${isArray ? '(' : ''
               } ${method.returnTypes.join(' | ')}
                ${isArray ? ')[]' : ''};
               `;
-            })
-            .join('\n')}
+          })
+          .join('\n')}
         }
 
         interface ClientMethodClass extends GlobalClientMethodClass {
@@ -112,11 +115,10 @@ export function useGlobalLibs() {
         declare const ClientMethods : ClientMethodClass;
 
         type GlobalSchemas =
-          ${
-            Object.keys(globalSchemas).length
-              ? Object.keys(globalSchemas).join('\n|')
-              : 'never'
-          };
+          ${Object.keys(globalSchemas).length
+          ? Object.keys(globalSchemas).join('\n|')
+          : 'never'
+        };
 
         interface SchemaClass extends GlobalSchemaClass {
           removeSchema: (name: GlobalSchemas) => void;
@@ -142,6 +144,8 @@ export function useGlobalLibs() {
           [id:string]:any;
         }
 
+        declare function runClientScript<T extends any = any>(clientScript:any) : T;
+
         ${buildGlobalServerMethods(globalServerMethods)}
         `;
     } catch (e) {
@@ -149,8 +153,6 @@ export function useGlobalLibs() {
       return '';
     }
   }, deepDifferent);
-
-  wlog(ambientEntitiesSrc);
 
   const globalLibs = React.useMemo(
     () => [
