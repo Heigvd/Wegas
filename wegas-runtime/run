@@ -10,7 +10,7 @@ NB_POPULATORS=1
 HZ_CLUSTER_NAME="wegasDev_$(hostname)"
 
 BASE_DOMAIN_XML=./src/main/resources/domain.xml
-DOMAIN_XML=`mktemp target/domain_XXX.xml`
+DOMAIN_XML=`mktemp target/domain.xml_XXX`
 
 HEAP=2G
 
