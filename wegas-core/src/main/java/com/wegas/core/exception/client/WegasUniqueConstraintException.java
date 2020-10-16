@@ -15,6 +15,10 @@ public class WegasUniqueConstraintException extends WegasRuntimeException {
 
     private static final long serialVersionUID = 6279387286731157409L;
 
+    public WegasUniqueConstraintException(String message){
+        super(message);
+    }
+
     public WegasUniqueConstraintException(Throwable cause){
         super(cause);
     }
