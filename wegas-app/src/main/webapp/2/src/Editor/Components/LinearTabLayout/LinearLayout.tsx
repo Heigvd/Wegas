@@ -9,7 +9,7 @@ import { DnDTabLayout, ComponentMap, filterMap } from './DnDTabLayout';
 import { wlog } from '../../../Helper/wegaslog';
 
 import 'react-reflex/styles.css';
-import { flex, noOverflow, grow } from '../../../css/classes';
+import { flex, noOverflow, grow, expandHeight } from '../../../css/classes';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { AvailableLayoutTab } from '../Layout';
 
@@ -1044,7 +1044,7 @@ export function MainLinearLayout<T extends ComponentMap>(
   return (
     <focusTabContext.Provider value={focusTab}>
       <ReparentableRoot>
-        <div className={cx(flex, grow)}>{renderLayouts()}</div>
+        <div className={cx(flex, grow, expandHeight)}>{renderLayouts()}</div>
       </ReparentableRoot>
     </focusTabContext.Provider>
   );
