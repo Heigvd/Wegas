@@ -36,8 +36,8 @@ import { ContainerComponent } from '../../../Components/PageComponents/tools/Edi
  * wegasComponentCommonSchema - defines the minimum schema for every WegasComponent
  */
 export const wegasComponentCommonSchema = {
-  name: schemaProps.string({ label: 'Name', index: -1 }),
-  className: schemaProps.string({ label: 'Classes', featureLevel: 'ADVANCED' }),
+  name: schemaProps.string({ label: 'Name', index: -2 }),
+  className: schemaProps.string({ label: 'Classes', index: -1 }),
   children: schemaProps.hidden({ type: 'array', index: 1003 }),
 };
 

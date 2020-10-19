@@ -576,29 +576,24 @@ export default function PageEditor() {
 
   const availableLayoutTabs = React.useMemo(
     () => ({
-      'Pages Layout': {
-        component: (
-          <Layout
-            onDeleteLayoutComponent={onDeleteLayoutComponent}
-            onEdit={onEdit}
-            onMoveLayoutComponent={onMoveLayoutComponent}
-            onNewLayoutComponent={onNewLayoutComponent}
-            setPageEditorState={setPageEditorState}
-          />
-        )
-      },
-      'Component Palette': { component: <ComponentPalette setEditMode={setEditMode} /> },
-      'Page Display': {
-        component: (
-          <PageDisplay
-            setEditMode={setEditMode}
-            setShowBorders={setShowBorders}
-            setShowControls={setShowControls}
-          />
-        )
-      },
-      'Source Editor': { component: <SourceEditor /> },
-      'Component Properties': { component: <ComponentProperties /> },
+      'Pages Layout':
+        <Layout
+          onDeleteLayoutComponent={onDeleteLayoutComponent}
+          onEdit={onEdit}
+          onMoveLayoutComponent={onMoveLayoutComponent}
+          onNewLayoutComponent={onNewLayoutComponent}
+          setPageEditorState={setPageEditorState}
+        />
+      ,
+      'Component Palette': <ComponentPalette setEditMode={setEditMode} />,
+      'Page Display':
+        <PageDisplay
+          setEditMode={setEditMode}
+          setShowBorders={setShowBorders}
+          setShowControls={setShowControls}
+        />
+      , 'Source Editor': <SourceEditor />,
+      'Component Properties': <ComponentProperties />,
     }),
     [
       onDeleteLayoutComponent,
