@@ -193,21 +193,21 @@ function SourceEditor() {
         loading ? (
           <pre>Loading the pages</pre>
         ) : (
-          <JSONandJSEditor
-            content={JSON.stringify(selectedPage, null, 2)}
-            onSave={content => {
-              try {
-                if (selectedPageId) {
-                  patchPage(selectedPageId, JSON.parse(content));
-                } else {
-                  throw Error('No selected page');
+            <JSONandJSEditor
+              content={JSON.stringify(selectedPage, null, 2)}
+              onSave={content => {
+                try {
+                  if (selectedPageId) {
+                    patchPage(selectedPageId, JSON.parse(content));
+                  } else {
+                    throw Error('No selected page');
+                  }
+                } catch (e) {
+                  return { status: 'error', text: (e as Error).message };
                 }
-              } catch (e) {
-                return { status: 'error', text: (e as Error).message };
-              }
-            }}
-          />
-        )
+              }}
+            />
+          )
       }
     </pageEditorCTX.Consumer>
   );
@@ -345,7 +345,7 @@ export default function PageEditor() {
   const focusTab = React.useRef<(tabId: string, layoutId: string) => void>();
   const [{ selectedPageId, editedPath }, setPageEditorState] = React.useState<
     PageEditorState
-  >({selectedPageId: store.getState().pages.index ? store.getState().pages.index.defaultPageId : undefined});
+  >({ selectedPageId: store.getState().pages.index ? store.getState().pages.index.defaultPageId : undefined });
 
   const [editMode, setEditMode] = React.useState(false);
   const [showBorders, setShowBorders] = React.useState(false);
@@ -576,25 +576,29 @@ export default function PageEditor() {
 
   const availableLayoutTabs = React.useMemo(
     () => ({
-      'Pages Layout': (
-        <Layout
-          onDeleteLayoutComponent={onDeleteLayoutComponent}
-          onEdit={onEdit}
-          onMoveLayoutComponent={onMoveLayoutComponent}
-          onNewLayoutComponent={onNewLayoutComponent}
-          setPageEditorState={setPageEditorState}
-        />
-      ),
-      'Component Palette': <ComponentPalette setEditMode={setEditMode} />,
-      'Page Display': (
-        <PageDisplay
-          setEditMode={setEditMode}
-          setShowBorders={setShowBorders}
-          setShowControls={setShowControls}
-        />
-      ),
-      'Source Editor': <SourceEditor />,
-      'Component Properties': <ComponentProperties />,
+      'Pages Layout': {
+        component: (
+          <Layout
+            onDeleteLayoutComponent={onDeleteLayoutComponent}
+            onEdit={onEdit}
+            onMoveLayoutComponent={onMoveLayoutComponent}
+            onNewLayoutComponent={onNewLayoutComponent}
+            setPageEditorState={setPageEditorState}
+          />
+        )
+      },
+      'Component Palette': { component: <ComponentPalette setEditMode={setEditMode} /> },
+      'Page Display': {
+        component: (
+          <PageDisplay
+            setEditMode={setEditMode}
+            setShowBorders={setShowBorders}
+            setShowControls={setShowControls}
+          />
+        )
+      },
+      'Source Editor': { component: <SourceEditor /> },
+      'Component Properties': { component: <ComponentProperties /> },
     }),
     [
       onDeleteLayoutComponent,
@@ -610,45 +614,45 @@ export default function PageEditor() {
   return Object.keys(availableLayoutTabs).length === 0 ? (
     <pre>Loading...</pre>
   ) : (
-    <div className={cx(flex, grow) + ' PAGE-EDITOR'}>
-      <pageEditorCTX.Provider
-        value={{
-          selectedPageId,
-          selectedPage,
-          editedPath,
-          loading,
-        }}
-      >
-        <pageCTX.Provider
+      <div className={cx(flex, grow) + ' PAGE-EDITOR'}>
+        <pageEditorCTX.Provider
           value={{
-            editMode,
-            showControls,
-            showBorders: showBorders /*|| (editMode && isAnythingDragged)*/,
-            pageIdPath: selectedPageId
-              ? [selectedPageId]
-              : defaultPageId
-              ? [defaultPageId]
-              : [],
-            handles: handles.current,
-            onDrop,
-            onDelete,
-            onEdit: path => onEdit(selectedPageId, path),
-            onUpdate,
+            selectedPageId,
+            selectedPage,
+            editedPath,
+            loading,
           }}
         >
-          <MainLinearLayout
-            tabs={availableLayoutTabs}
-            layout={[
-              [['Pages Layout'], ['Component Palette']],
-              ['Page Display'],
-            ]}
-            layoutId={PAGE_EDITOR_LAYOUT_ID}
-            onFocusTab={ft => {
-              focusTab.current = ft;
+          <pageCTX.Provider
+            value={{
+              editMode,
+              showControls,
+              showBorders: showBorders /*|| (editMode && isAnythingDragged)*/,
+              pageIdPath: selectedPageId
+                ? [selectedPageId]
+                : defaultPageId
+                  ? [defaultPageId]
+                  : [],
+              handles: handles.current,
+              onDrop,
+              onDelete,
+              onEdit: path => onEdit(selectedPageId, path),
+              onUpdate,
             }}
-          />
-        </pageCTX.Provider>
-      </pageEditorCTX.Provider>
-    </div>
-  );
+          >
+            <MainLinearLayout
+              tabs={availableLayoutTabs}
+              layout={[
+                [['Pages Layout'], ['Component Palette']],
+                ['Page Display'],
+              ]}
+              layoutId={PAGE_EDITOR_LAYOUT_ID}
+              onFocusTab={ft => {
+                focusTab.current = ft;
+              }}
+            />
+          </pageCTX.Provider>
+        </pageEditorCTX.Provider>
+      </div>
+    );
 }

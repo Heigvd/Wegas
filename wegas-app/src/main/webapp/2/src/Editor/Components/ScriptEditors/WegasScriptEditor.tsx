@@ -105,6 +105,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     value,
     returnType,
     args,
+    clientScript,
     /*TODO : allow non server methods here clientScript,*/
     onChange,
     onBlur,
@@ -196,7 +197,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     [returnType, args],
   );
 
-  const globalLibs = useGlobalLibs();
+  const globalLibs = useGlobalLibs(clientScript === true);
 
   const extraLibs: MonacoDefinitionsLibraries[] = [
     ...(newExtraLibs || []),

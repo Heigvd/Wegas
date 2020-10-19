@@ -39,7 +39,7 @@ const ambientEntitiesSrc = makeAmbient(entitiesSrc);
 // We'll keep it for later uses
 // const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
 
-export function useGlobalLibs() {
+export function useGlobalLibs(clientScript: boolean) {
   const { classes } = React.useContext(classesCTX);
 
   const libs = useStore((s: State) => {
@@ -60,8 +60,6 @@ export function useGlobalLibs() {
       .map(l => l.code)
       .join(' | ');
 
-    // wlog(buildGlobalServerMethods(globalServerMethods));
-
     try {
       return `
         declare const gameModel : SGameModel;
@@ -79,16 +77,16 @@ export function useGlobalLibs() {
             gameModel: SGameModel,
             name: T
           ) => VariableClasses[T];
-          static select: <T extends SVariableDescriptor>(
+          ${clientScript ? `static select: <T extends SVariableDescriptor>(
             _gm: unknown,
             id: number,
           ) => T | undefined;        
           static getItems: <T = SVariableDescriptor<SVariableInstance>>(
             itemsIds: number[],
-          ) => Readonly<T[]>;        
+          ) => Readonly<T[]>;` : ''}       
         }
 
-        type CurrentLanguages = ${currentLanguages};
+        ${clientScript ? `type CurrentLanguages = ${currentLanguages};
         interface EditorClass extends GlobalEditorClass {
           setLanguage: (lang: { code: SGameModelLanguage['code'] } | CurrentLanguages) => void;
         }
@@ -96,17 +94,17 @@ export function useGlobalLibs() {
 
         interface ClientMethods {
           ${Object.keys(globalMethods)
-          .map(k => {
-            const method = globalMethods[k];
-            const isArray = method.returnStyle === 'array';
-            return `'${k}' : (${method.parameters
-              .map(p => `${p[0]} : ${p[1]}`)
-              .join(', ')}) => ${isArray ? '(' : ''
-              } ${method.returnTypes.join(' | ')}
+            .map(k => {
+              const method = globalMethods[k];
+              const isArray = method.returnStyle === 'array';
+              return `'${k}' : (${method.parameters
+                .map(p => `${p[0]} : ${p[1]}`)
+                .join(', ')}) => ${isArray ? '(' : ''
+                } ${method.returnTypes.join(' | ')}
                ${isArray ? ')[]' : ''};
               `;
-          })
-          .join('\n')}
+            })
+            .join('\n')}
         }
 
         interface ClientMethodClass extends GlobalClientMethodClass {
@@ -116,9 +114,9 @@ export function useGlobalLibs() {
 
         type GlobalSchemas =
           ${Object.keys(globalSchemas).length
-          ? Object.keys(globalSchemas).join('\n|')
-          : 'never'
-        };
+            ? Object.keys(globalSchemas).join('\n|')
+            : 'never'
+          };
 
         interface SchemaClass extends GlobalSchemaClass {
           removeSchema: (name: GlobalSchemas) => void;
@@ -142,11 +140,10 @@ export function useGlobalLibs() {
 
         declare const Context : {
           [id:string]:any;
-        }
-
+        }` : `
         declare function runClientScript<T extends any = any>(clientScript:any) : T;
 
-        ${buildGlobalServerMethods(globalServerMethods)}
+        ${buildGlobalServerMethods(globalServerMethods)}`}
         `;
     } catch (e) {
       wwarn(e);
