@@ -637,7 +637,7 @@ export default function PageEditor() {
           >
             <MainLinearLayout
               tabs={availableLayoutTabs}
-              layout={[
+              initialLayout={[
                 [['Pages Layout'], ['Component Palette']],
                 ['Page Display'],
               ]}

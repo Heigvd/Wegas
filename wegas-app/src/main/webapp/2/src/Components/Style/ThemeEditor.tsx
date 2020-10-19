@@ -699,7 +699,7 @@ export default function ThemeEditor() {
           Themes: <ThemeEdition />,
           Modes: <ModeEdition />,
         }}
-        layout={['Themes', 'Modes']}
+        initialLayout={['Themes', 'Modes']}
         layoutId={THEME_EDITOR_LAYOUT_ID}
       />
     </themeEditorCTX.Provider>

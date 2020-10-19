@@ -27,6 +27,15 @@ export function isPageIndex(
   );
 }
 
+export function visitIndex<T>(item: PageIndexItem, visitorFN: (item: PageIndexPage) => T): T[] {
+  if (isFolderItem(item)) {
+    return item.items.reduce((o, i) => [...o, ...visitIndex(i, visitorFN)], []);
+  }
+  else {
+    return [visitorFN(item)];
+  }
+}
+
 export function isWegasComponent(
   page?: PageIndex | WegasComponent,
 ): page is WegasComponent {
