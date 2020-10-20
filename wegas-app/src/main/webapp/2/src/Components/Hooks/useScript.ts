@@ -170,41 +170,6 @@ export function useGlobals() {
     }
   };
 
-  // Test for ExtractTuppleArray
-  // const testParam =  [
-  //   ['arg1', 'boolean'],
-  //   ['arg2', 'number'],
-  // ] as const ;
-
-  // type Test = ExtractTuppleArray<
-  // typeof  testParam,
-  // string,
-  // keyof WegasScriptEditorNameAndTypes,
-  // any[],
-  // "1",
-  // WegasScriptEditorNameAndTypes
-  // >
-
-  // Test for addMethod
-  // addMethod(
-  //   'Taddaaa',
-  //   [
-  //     ['arg1', 'boolean'],
-  //     ['arg2', "string"],
-  //   ] as const    ,
-  //   ['number', 'string[]'],
-  //   'array',
-  //   (arg1, arg2) => [
-  //     // Respecting the type
-  //     ['yeah'],
-  //     1234,
-  //     // No respecting the type
-  //     // true,
-  //     // "nooo",
-  //     // [6666]
-  //   ],
-  // );
-
   // ClientMethods class
   globals.ClientMethods = {
     addMethod: addMethod,
@@ -317,24 +282,6 @@ export function useGlobals() {
       return translate(translatableEntity, lang);
     },
   };
-
-  // TEST
-  //   const currentPhase = globals.Variable.find(gameModel,'phaseMSG')?.getValue(self)
-  // 	const currentPeriod = 1;
-  // 	let items = []
-  // 	const q = globals.Variable.find(gameModel,'questions').item(currentPhase - 1);
-  // 	if (q) {
-  // 		for (const i in q.get('items')) {
-  // 			const item = q.item(i);
-  // 			if (item.get('@class') === 'QuestionDescriptor' || item.get('@class') === 'WhQuestionDescriptor')
-  // 			{
-  // 				items.push(item);
-  // 			} else if (i == currentPeriod - 1 && item.get('@class') === 'ListDescriptor') {
-  // 				items = items.concat(item.flatten());
-  // 			}
-  // 		}
-  // 	}
-  // wlog(items);
 }
 
 export type ReturnType = object | number | boolean | string | undefined;
@@ -377,11 +324,6 @@ export function safeClientScriptEval<T extends ReturnType>(
   }
 }
 
-// function useScriptContext() {
-//   const { identifiers } = React.useContext(ScriptCTX);
-//   globals.Context = identifiers;
-// }
-
 /**
  * Hook, execute a script locally.
  * @param script code to execute
@@ -416,24 +358,19 @@ export function useUnsafeScript<T extends ReturnType>(
   },
 ): T extends IMergeable ? unknown : T {
   useGlobals();
-  // useScriptContext();
-
-  //wlog(globals);
-  // debugger;
 
   const fn = React.useCallback(() => clientScriptEval<T>(script, context), [script, context]);
   return useStore(fn, deepDifferent) as any;
 }
 
 
-export function parseAndRunScript(
+export function parseAndRunClientScript(
   script: string | IScript,
   context?: {
     [name: string]: unknown;
   },
 ) {
   let scriptContent = 'string' === typeof script ? script : script.content;
-  //////////////////////////////////////////////////////////////////
 
   /*
   const test1 = runClientScript("JKJKJ")
@@ -441,8 +378,8 @@ export function parseAndRunScript(
   const test3 = runClientScript(ohmama())
    */
 
-  const regexStart = /(runClientScript\()/g;
-  const regexEnd = /(\))/;
+  const regexStart = /(runClientScript\(["|'|`])/g;
+  const regexEnd = /(["|'|`]\))/g;
   const simpleVarFindRegex = new RegExp(
     regexStart.source + `.*` + regexEnd.source,
   );
@@ -454,10 +391,10 @@ export function parseAndRunScript(
     matched = scriptContent.substr(index).match(simpleVarFindRegex);
     if (matched) {
       index += (matched.index == null ? scriptContent.length : matched.index);
-      const matchedCode = matched[0].replace(regexStart, "").slice(0, -1);
+      const matchedCode = matched[0].replace(regexStart, "").slice(0, -2);
       const matchedValue = String(safeClientScriptEval<string>(matchedCode, context));
 
-      scriptContent = replace(scriptContent, index, matched[0].length, matchedValue);
+      scriptContent = replace(scriptContent, index, matched[0].length + 1, matchedValue);
 
       index += matchedValue.length;
     }
@@ -466,4 +403,8 @@ export function parseAndRunScript(
 
 
   return 'string' === typeof script ? scriptContent : { ...script, content: scriptContent };
+}
+
+export function serverScriptEval() {
+
 }

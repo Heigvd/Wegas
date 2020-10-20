@@ -8,15 +8,17 @@ import { CodeLanguage, scriptEditStyle } from './Script/Script';
 import { createScript } from '../../../Helper/wegasEntites';
 import { IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
+import { ScriptContext } from '../../../Components/Hooks/useGlobalLibs';
 
 export interface CustomScriptProps
   extends WidgetProps.BaseProps<
-    LabeledView &
-      CommonView & {
-        language?: CodeLanguage;
-        returnType?: WegasScriptEditorReturnTypeName[];
-        args?: [string, WegasScriptEditorReturnTypeName[]][];
-      }
+  LabeledView &
+  CommonView & {
+    language?: CodeLanguage;
+    returnType?: WegasScriptEditorReturnTypeName[];
+    args?: [string, WegasScriptEditorReturnTypeName[]][];
+    scriptContext?: ScriptContext;
+  }
   > {
   value?: IScript;
   onChange: (code?: IScript) => void;
@@ -47,11 +49,11 @@ export function CustomScript({ view, value, onChange }: CustomScriptProps) {
                   returnType={view.returnType}
                   args={view.args}
                   value={value ? value.content : ''}
-                  onBlur={onValueChange}
                   onChange={onValueChange}
                   minimap={false}
                   noGutter={true}
                   resizable
+                  scriptContext={view.scriptContext}
                 />
               </div>
             </>

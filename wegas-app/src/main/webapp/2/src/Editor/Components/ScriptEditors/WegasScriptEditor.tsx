@@ -1,11 +1,7 @@
 import * as React from 'react';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
-import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
-import { useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
+import { ScriptContext, useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
 
-
-
-[1, 2, 3].reduce
 // @ts-ignore
 import libes5 from "!!raw-loader!typescript/lib/lib.es5.d.ts";
 // @ts-ignore
@@ -41,9 +37,10 @@ import {
   MonacoEditor,
   MonacoCodeEditor,
 } from './editorHelpers';
+import { Monaco } from '@monaco-editor/react';
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
-  clientScript?: boolean;
+  scriptContext?: ScriptContext;
   returnType?: WegasScriptEditorReturnTypeName[];
   resizable?: boolean;
   args?: [string, WegasScriptEditorReturnTypeName[]][];
@@ -105,13 +102,13 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     value,
     returnType,
     args,
-    clientScript,
-    /*TODO : allow non server methods here clientScript,*/
+    scriptContext = "Client",
     onChange,
     onBlur,
     onSave,
     resizable,
     extraLibs: newExtraLibs,
+    defaultActions,
   } = props;
   const language = props.language ? props.language : 'typescript';
   let editorLock: ((editor: MonacoSCodeEditor) => void) | undefined = undefined;
@@ -122,8 +119,6 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     startLineNumber: headerSize,
     endLineNumber: headerSize,
   });
-  // const [currentValue, setCurrentValue] = React.useState<string>(value || '');
-  const monaco = useMonacoEditor();
 
   /**
    * acceptFunctionStyle - Returning false if return type needed and function is not parsable
@@ -197,8 +192,7 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     [returnType, args],
   );
 
-  const globalLibs = useGlobalLibs(clientScript === true);
-
+  const globalLibs = useGlobalLibs(scriptContext);
   const extraLibs: MonacoDefinitionsLibraries[] = [
     ...(newExtraLibs || []),
     ...globalLibs,
@@ -241,28 +235,29 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     };
   }
 
-  const actions: SrcEditorAction[] =
-    returnType && returnType.length > 0 && monaco
-      ? [
-        {
-          id: 'SelectAllWithScriptFunction',
-          label: 'Ctrl + A avoiding header and footer',
-          keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_A],
-          run: (_monaco: MonacoEditor, editor: MonacoCodeEditor) => {
-            const editorLines = textToArray(editor.getValue());
-            const lastEditableLine =
-              textToArray(editor.getValue()).length - footerSize;
-            const range = {
-              startColumn: 1,
-              endColumn: editorLines[lastEditableLine - 1].length,
-              startLineNumber: headerSize,
-              endLineNumber: lastEditableLine,
-            };
-            editor.setSelection(range);
+  const actions: (monaco: Monaco) => SrcEditorAction[] =
+    monaco =>
+      [...(defaultActions ? defaultActions(monaco) : []), ...(returnType && returnType.length > 0
+        ? [
+          {
+            id: 'SelectAllWithScriptFunction',
+            label: 'Ctrl + A avoiding header and footer',
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_A],
+            run: (_monaco: MonacoEditor, editor: MonacoCodeEditor) => {
+              const editorLines = textToArray(editor.getValue());
+              const lastEditableLine =
+                textToArray(editor.getValue()).length - footerSize;
+              const range = {
+                startColumn: 1,
+                endColumn: editorLines[lastEditableLine - 1].length,
+                startLineNumber: headerSize,
+                endLineNumber: lastEditableLine,
+              };
+              editor.setSelection(range);
+            },
           },
-        },
-      ]
-      : [];
+        ]
+        : [])];
 
   const handleChange = React.useCallback(
     val => {
@@ -280,25 +275,24 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   );
 
   const content = formatScriptToFunction(value || '', returnType, args);
-  const editor = (
-    <SrcEditor
-      {...props}
-      language={language}
-      extraLibs={extraLibs}
-      value={content}
-      onEditorReady={editorLock}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      onSave={handleSave}
-      defaultActions={actions}
-    />
-  );
+
+  const editorProps: SrcEditorProps = {
+    ...props,
+    language,
+    extraLibs,
+    value: content,
+    onEditorReady: editorLock,
+    onChange: handleChange,
+    onBlur: handleBlur,
+    onSave: handleSave,
+    defaultActions: actions
+  }
 
   return resizable ? (
     <ResizeHandle minSize={100} textContent={content}>
-      {editor}
+      <SrcEditor {...editorProps} />
     </ResizeHandle>
   ) : (
-      editor
+      <SrcEditor {...editorProps} />
     );
 }

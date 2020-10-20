@@ -52,7 +52,7 @@ import {
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
 import { themeVar } from '../../Style/ThemeVars';
 import { defaultMenuItemKeys } from '../../Layouts/Menu';
-import { parseAndRunScript } from '../../Hooks/useScript';
+import { parseAndRunClientScript } from '../../Hooks/useScript';
 import { IScript } from 'wegas-ts-api';
 
 const childDropZoneIntoCSS = {
@@ -526,7 +526,7 @@ export function ComponentContainer({
         )
         .forEach(([k, v]) => {
           if (k === "impactVariable") {
-            return wegasComponentActions.impactVariable({ impact: parseAndRunScript(v.impact, context) as IScript })
+            return wegasComponentActions.impactVariable({ impact: parseAndRunClientScript(v.impact, context) as IScript })
           }
           return wegasComponentActions[k as keyof WegasComponentOptionsActions](v);
         }

@@ -683,7 +683,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           />
         ) : librariesState.selected ? (
           getScriptLanguage(scriptType) === 'typescript' ? (
-            <WegasScriptEditor {...editorProps} clientScript={scriptType === "ClientScript"} />
+            <WegasScriptEditor {...editorProps} scriptContext={scriptType === "ServerScript" ? "Server external" : "Client"} />
           ) : (
               <SrcEditor {...editorProps} language="css" />
             )

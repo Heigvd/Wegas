@@ -35,6 +35,7 @@ import { pick } from 'lodash-es';
 import { CallExpression, StringLiteral, emptyStatement } from '@babel/types';
 import { themeVar } from '../../../../../Components/Style/ThemeVars';
 import { Button } from '../../../../../Components/Inputs/Buttons/Button';
+import { EmbeddedSrcEditor } from '../../../ScriptEditors/EmbeddedSrcEditor';
 
 const expressionEditorStyle = css({
   backgroundColor: themeVar.Common.colors.HeaderColor,
@@ -154,11 +155,11 @@ export function ExpressionEditor({
     (attributes: IInitAttributes) => {
       let newAttributes: Partial<IConditionAttributes> =
         formState.attributes &&
-        attributes.initExpression.type === 'global' &&
-        deepDifferent(
-          formState.attributes.initExpression,
-          attributes.initExpression,
-        )
+          attributes.initExpression.type === 'global' &&
+          deepDifferent(
+            formState.attributes.initExpression,
+            attributes.initExpression,
+          )
           ? pick(attributes, 'initExpression')
           : attributes;
 
@@ -276,7 +277,7 @@ export function ExpressionEditor({
           {newSrc !== undefined && (
             <Button icon="check" onClick={() => onScripEditorSave(newSrc)} />
           )}
-          <WegasScriptEditor
+          <EmbeddedSrcEditor
             value={
               newSrc === undefined
                 ? formState.statement
@@ -290,30 +291,33 @@ export function ExpressionEditor({
             returnType={returnTypes(mode)}
             onSave={onScripEditorSave}
             resizable
+            scriptContext={mode === "SET" ? "Server external" : "Client"}
+            Editor={WegasScriptEditor}
+            EmbeddedEditor={WegasScriptEditor}
           />
         </div>
       ) : (
-        <Form
-          value={formState.attributes}
-          schema={formState.schema}
-          onChange={(v, e) => {
-            if (deepDifferent(v, formState.attributes)) {
-              if (e && e.length > 0) {
-                setFormState(fs => ({
-                  ...fs,
-                  attributes: v,
-                  statement: fs.schema
-                    ? generateStatement(v, fs.schema, mode)
-                    : undefined,
-                }));
-              } else {
-                computeState(v);
+          <Form
+            value={formState.attributes}
+            schema={formState.schema}
+            onChange={(v, e) => {
+              if (deepDifferent(v, formState.attributes)) {
+                if (e && e.length > 0) {
+                  setFormState(fs => ({
+                    ...fs,
+                    attributes: v,
+                    statement: fs.schema
+                      ? generateStatement(v, fs.schema, mode)
+                      : undefined,
+                  }));
+                } else {
+                  computeState(v);
+                }
               }
-            }
-          }}
-          context={formState.attributes}
-        />
-      )}
+            }}
+            context={formState.attributes}
+          />
+        )}
     </div>
   );
 }

@@ -196,7 +196,7 @@ export const actionsChoices: HashListChoices = [
       schema: schemaProps.object({
         label: 'Impact variable',
         properties: {
-          impact: schemaProps.script({ label: 'Impact', required: true }),
+          impact: schemaProps.script({ label: 'Impact', required: true, }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
       }),

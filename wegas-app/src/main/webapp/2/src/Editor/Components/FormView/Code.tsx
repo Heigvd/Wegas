@@ -9,7 +9,7 @@ import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 
 export interface CodeProps
   extends WidgetProps.BaseProps<
-    LabeledView & CommonView & { language?: CodeLanguage }
+  LabeledView & CommonView & { language?: CodeLanguage }
   > {
   value?: {} | string;
   onChange: (code?: {} | string) => void;
@@ -45,7 +45,6 @@ export function Code({ view, value, onChange }: CodeProps) {
                   value={
                     typeof value === 'string' ? value : JSON.stringify(value)
                   }
-                  onBlur={onValueChange}
                   onChange={onValueChange}
                   minimap={false}
                   noGutter={true}

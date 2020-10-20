@@ -1,7 +1,7 @@
 import { css } from 'emotion';
 import * as React from 'react';
 import { SizedDiv } from '../../../Components/SizedDiv';
-import Editor, { monaco } from '@monaco-editor/react';
+import Editor, { Monaco, monaco } from '@monaco-editor/react';
 import {
   MonacoEditor,
   SrcEditorLanguages,
@@ -62,7 +62,7 @@ export interface SrcEditorProps {
   /**
    * defaultKeyEvents - a list of key event to be caught in the editor
    */
-  defaultActions?: SrcEditorAction[];
+  defaultActions?: (monaco: Monaco) => SrcEditorAction[];
   /**
    * defaultFocus - force editor to focus on first render
    */
@@ -107,16 +107,16 @@ export const gutter: (
   noGutter?: boolean,
 ) => Pick<MonacoEditorProperties, 'lineNumbers' | 'glyphMargin' | 'folding'> = (
   noGutter?: boolean,
-) => {
-  if (noGutter) {
-    return {
-      lineNumbers: 'off',
-      glyphMargin: false,
-      folding: false,
-    };
-  }
-  return {};
-};
+  ) => {
+    if (noGutter) {
+      return {
+        lineNumbers: 'off',
+        glyphMargin: false,
+        folding: false,
+      };
+    }
+    return {};
+  };
 
 /**
  * SrcEditor is a component uses monaco-editor to create a code edition panel
@@ -318,7 +318,7 @@ function SrcEditor({
           },
         });
         if (defaultActions) {
-          defaultActions.forEach(action => {
+          defaultActions(reactMonaco).forEach(action => {
             editor.addAction({
               ...action,
               run: editor => action.run(reactMonaco, editor),
