@@ -136,7 +136,7 @@ export function methodParameterParse(node: Node | null) {
       return typeMethods.parser(node, methodParameterParse);
     }
   }
-  throw Error(`Argument's node ${JSON.stringify(node)} cannot be parsed`);
+  throw Error(`Argument's node ${node?.type} cannot be parsed`);
 }
 
 export function methodParse(
@@ -603,8 +603,8 @@ export const generateStatement = (
             comparatorExpectedType
               ? comparatorExpectedType
               : isWegasMethodReturnType(comparatorCurrentType)
-              ? comparatorCurrentType
-              : 'string',
+                ? comparatorCurrentType
+                : 'string',
             true,
           );
         } else {

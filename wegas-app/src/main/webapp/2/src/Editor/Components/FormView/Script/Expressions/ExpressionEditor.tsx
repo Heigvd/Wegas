@@ -68,7 +68,7 @@ export function ExpressionEditor({
   const [error, setError] = React.useState<string>();
   const [srcMode, setSrcMode] = React.useState(false);
   const [newSrc, setNewSrc] = React.useState<string>();
-  const [formState, setFormState] = React.useState<ExpressionEditorState>({});
+  const [formState, setFormState] = React.useState<ExpressionEditorState>({ statement });
 
   // Getting variables id
   // First it was done with GameModel.selectCurrent().itemsIds but this array is always full even if the real object are not loaded yet
@@ -84,15 +84,16 @@ export function ExpressionEditor({
 
   React.useEffect(
     () => {
-      if (
-        !formState.statement ||
-        generate(formState.statement).code !== generate(statement).code
-      ) {
-        try {
-          const { attributes, error } = parseStatement(
-            statement || emptyStatement(),
-            mode,
-          );
+      try {
+        const { attributes, error } = parseStatement(
+          statement || emptyStatement(),
+          mode,
+        );
+        if (
+          !formState.statement ||
+          generate(formState.statement).code !== generate(statement).code
+        ) {
+
           if (error !== undefined) {
             setError(error);
           }
@@ -120,9 +121,12 @@ export function ExpressionEditor({
               statement,
             });
           });
-        } catch (e) {
-          setError(e.message);
         }
+      } catch (e) {
+        setError(e.message);
+        setFormState({
+          statement,
+        });
       }
     },
     /* eslint-disable react-hooks/exhaustive-deps */
@@ -291,7 +295,7 @@ export function ExpressionEditor({
             returnType={returnTypes(mode)}
             onSave={onScripEditorSave}
             resizable
-            scriptContext={mode === "SET" ? "Server external" : "Client"}
+            scriptContext={mode === "SET" ? "Server internal" : "Client"}
             Editor={WegasScriptEditor}
             EmbeddedEditor={WegasScriptEditor}
           />
