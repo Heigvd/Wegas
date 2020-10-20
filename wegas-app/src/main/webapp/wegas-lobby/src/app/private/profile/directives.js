@@ -20,6 +20,7 @@ angular
                                 response.flash();
                             } else {
                                 $scope.user = response.data;
+                                $scope.currentEmail = $scope.user.account.email;
                                 $scope.oldUsername = $scope.user.account.username;
                                 if ($scope.originalUser === false) {
                                     $scope.originalUsername = $scope.user.account.firstname + ' ' + $scope.user.account.lastname;
@@ -34,7 +35,7 @@ angular
                 });
 
                 ctrl.updateInformations = function() {
-                    UsersModel.updateUser($scope.user.account).then(function(response) {
+                    UsersModel.updateUser($scope.currentEmail, $scope.user.account).then(function(response) {
                         if (response) {
                             response.flash();
                         }

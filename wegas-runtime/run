@@ -10,7 +10,7 @@ NB_POPULATORS=1
 HZ_CLUSTER_NAME="wegasDev_$(hostname)"
 
 BASE_DOMAIN_XML=./src/main/resources/domain.xml
-DOMAIN_XML=`mktemp target/domain_XXX.xml`
+DOMAIN_XML=`mktemp target/domain.xml_XXX`
 
 HEAP=2G
 
@@ -110,6 +110,7 @@ if [ $? -eq 0 ]; then
         --add-opens=java.management/sun.management=ALL-UNNAMED 
         --add-opens=java.base/sun.net.www.protocol.jrt=ALL-UNNAMED"
     GC="-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
+    GC="-XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1MaxNewSizePercent=75 -XX:G1NewSizePercent=40 -XX:MaxGCPauseMillis=2500"
 # -XX:ConcGCThreads=<number> – Basic logging: -Xlog:gc – Detailed logging useful when tuning: -Xlog:gc* 
 else
     echo JAVA 8 detected

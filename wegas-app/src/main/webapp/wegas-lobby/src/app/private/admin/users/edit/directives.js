@@ -15,6 +15,7 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
         UsersModel.getFullUser($stateParams.id).then(function(response) {
             if (!response.isErroneous()) {
                 ctrl.user = response.data;
+                ctrl.currentEmail = ctrl.user.account.email;
                 ctrl.user.isNonLocal = (ctrl.user.account["@class"] === "AaiAccount");
             }else{
                 $state.go("^");
@@ -31,7 +32,7 @@ angular.module('private.admin.users.edit.directives', ['wegas.directive.permissi
         };
 
         ctrl.save = function () {
-            UsersModel.updateUser(ctrl.user.account, /* relaxed checking: */ true).then(function (response) {
+            UsersModel.updateUser(ctrl.currentEmail, ctrl.user.account, /* relaxed checking: */ true).then(function (response) {
                 if (response && response.isErroneous()) {
                     response.flash();
                 }
