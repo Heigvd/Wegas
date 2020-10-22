@@ -84,25 +84,31 @@ export const absolutelayoutChoices: HashListChoices = [
     items: [
       {
         label: 'Left',
-        value: { prop: 'left', schema: schemaProps.number('Left') },
+        value: { prop: 'left', schema: schemaProps.number({ label: 'Left' }) },
       },
       {
         label: 'Right',
-        value: { prop: 'right', schema: schemaProps.number('Right') },
+        value: {
+          prop: 'right',
+          schema: schemaProps.number({ label: 'Right' }),
+        },
       },
       {
         label: 'Top',
-        value: { prop: 'top', schema: schemaProps.number('Top') },
+        value: { prop: 'top', schema: schemaProps.number({ label: 'Top' }) },
       },
       {
         label: 'Bottom',
-        value: { prop: 'bottom', schema: schemaProps.number('Bottom') },
+        value: {
+          prop: 'bottom',
+          schema: schemaProps.number({ label: 'Bottom' }),
+        },
       },
       {
         label: 'Foreground index',
         value: {
           prop: 'zIndex',
-          schema: schemaProps.number('Foreground index'),
+          schema: schemaProps.number({ label: 'Foreground index' }),
         },
       },
     ],
@@ -113,11 +119,17 @@ export const absolutelayoutChoices: HashListChoices = [
     items: [
       {
         label: 'Width',
-        value: { prop: 'width', schema: schemaProps.number('Width') },
+        value: {
+          prop: 'width',
+          schema: schemaProps.number({ label: 'Width' }),
+        },
       },
       {
         label: 'Height',
-        value: { prop: 'height', schema: schemaProps.number('Height') },
+        value: {
+          prop: 'height',
+          schema: schemaProps.number({ label: 'Height' }),
+        },
       },
     ],
   },

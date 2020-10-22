@@ -109,3 +109,11 @@ export function getScopeEntity(
       return state.gameModels[vi.scopeKey];
   }
 }
+
+export function getItems<T = SVariableDescriptor<SVariableInstance>>(
+  itemsIds: number[],
+): Readonly<T[]> {
+  return (itemsIds
+    .map(itemId => instantiate(VariableDescriptor.select(itemId)))
+    .filter(items => items != null) as unknown) as Readonly<T[]>;
+}

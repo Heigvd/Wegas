@@ -1,5 +1,13 @@
-import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
-import { SSurveySectionDescriptor, SSurveySectionInstance, SPlayer } from 'wegas-ts-api';
+import {
+  getItems,
+  getScriptableInstance,
+} from '../../methods/VariableDescriptorMethods';
+import {
+  SSurveySectionDescriptor,
+  SSurveySectionInstance,
+  SPlayer,
+  SSurveyInputDescriptor,
+} from 'wegas-ts-api';
 
 export class SSurveySectionDescriptorImpl extends SSurveySectionDescriptor {
   public activate(_p: Readonly<SPlayer>): void {
@@ -14,8 +22,12 @@ export class SSurveySectionDescriptorImpl extends SSurveySectionDescriptor {
   public deactivate(_p: Readonly<SPlayer>): void {
     throw Error('This is readonly');
   }
-
-  public getInstance(player: Readonly<SPlayer>): Readonly<SSurveySectionInstance> {
+  public getInstance(
+    player: Readonly<SPlayer>,
+  ): Readonly<SSurveySectionInstance> {
     return getScriptableInstance<SSurveySectionInstance>(this, player);
+  }
+  public getItems() {
+    return getItems<SSurveyInputDescriptor>(this.entity.itemsIds);
   }
 }

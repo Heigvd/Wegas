@@ -8,7 +8,6 @@ import { useGameModel } from './useGameModel';
 import { Actions } from '../../data';
 import { transpile } from 'typescript';
 import { classesCTX } from '../Contexts/ClassesProvider';
-import { wwarn } from '../../Helper/wegaslog';
 import { deepDifferent } from './storeHookFactory';
 import {
   IVariableDescriptor,
@@ -20,17 +19,25 @@ import {
   STextDescriptor,
   SStaticTextDescriptor,
   IScript,
+  SVariableDescriptor,
+  SVariableInstance,
 } from 'wegas-ts-api';
 import { ScriptableEntity } from 'wegas-ts-api';
 import { popupDispatch, addPopup, PopupActionCreator } from '../PopupManager';
 import { ActionCreator } from '../../data/actions';
 import { translate } from '../../Editor/Components/FormView/translatable';
+import { wlog, wwarn } from '../../Helper/wegaslog';
+import { ScriptCTX } from '../Contexts/ScriptContext';
+import { getItems } from '../../data/methods/VariableDescriptorMethods';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
     _gm: unknown,
     name: string,
   ) => ScriptableEntity<T> | undefined;
+  getItems: <T = SVariableDescriptor<SVariableInstance>>(
+    itemsIds: number[],
+  ) => Readonly<T[]>;
 }
 
 interface GlobalClasses {
@@ -45,6 +52,9 @@ interface GlobalClasses {
   Popups: GlobalPopupClass;
   WegasEvents: WegasEventClass;
   I18n: GlobalI18nClass;
+  Context: {
+    [name: string]: unknown;
+  };
 }
 
 const globalDispatch = store.dispatch;
@@ -85,9 +95,10 @@ export function useGlobals() {
     find: <T extends IVariableDescriptor>(_gm: unknown, name: string) => {
       const iDesc = VDSelect.findByName<T>(name);
       if (iDesc) {
-        return instantiate(iDesc) as any;
+        return instantiate(iDesc) as ScriptableEntity<T> | undefined;
       }
     },
+    getItems,
   };
 
   // Editor class
@@ -266,6 +277,9 @@ export function useGlobals() {
   };
 
   globals.I18n = {
+    translate: translatable => {
+      return translate(translatable, lang);
+    },
     toString: entity => {
       let translatableEntity: STranslatableContent | undefined;
       switch (entity.getEntity()['@class']) {
@@ -348,6 +362,11 @@ export function safeClientScriptEval<T extends ReturnType>(
   }
 }
 
+function useScriptContext() {
+  const { identifiers } = React.useContext(ScriptCTX);
+  globals.Context = identifiers;
+}
+
 /**
  * Hook, execute a script locally.
  * @param script code to execute
@@ -358,6 +377,7 @@ export function useScript<T extends ReturnType>(
   catchCB?: (e: Error) => void,
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
   useGlobals();
+  useScriptContext();
   const fn = React.useCallback(() => safeClientScriptEval<T>(script, catchCB), [
     script,
     catchCB,
@@ -374,6 +394,11 @@ export function useUnsafeScript<T extends ReturnType>(
   script?: string | IScript,
 ): T extends IMergeable ? unknown : T {
   useGlobals();
+  useScriptContext();
+
+  wlog(globals);
+  // debugger;
+
   const fn = React.useCallback(() => clientScriptEval<T>(script), [script]);
   return useStore(fn, deepDifferent) as any;
 }

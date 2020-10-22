@@ -69,13 +69,21 @@ registerComponent(
     name: 'Phases',
     icon: 'ellipsis-h',
     schema: {
-      phase: schemaProps.scriptVariable('Phase', true, ['SNumberDescriptor']),
-      phaseMin: schemaProps.scriptVariable('Phase min', true, [
-        'SNumberDescriptor',
-      ]),
-      phaseMax: schemaProps.scriptVariable('Phase max', true, [
-        'SNumberDescriptor',
-      ]),
+      phase: schemaProps.scriptVariable({
+        label: 'Phase',
+        required: true,
+        returnType: ['SNumberDescriptor'],
+      }),
+      phaseMin: schemaProps.scriptVariable({
+        label: 'Phase min',
+        required: true,
+        returnType: ['SNumberDescriptor'],
+      }),
+      phaseMax: schemaProps.scriptVariable({
+        label: 'Phase max',
+        required: true,
+        returnType: ['SNumberDescriptor'],
+      }),
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({

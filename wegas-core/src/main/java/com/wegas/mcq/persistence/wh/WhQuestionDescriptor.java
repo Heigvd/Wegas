@@ -89,6 +89,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      */
     @Override
     @JsonView(Views.ExportI.class)
+    @Scriptable(label = "getItems",wysiwyg = false)
     public List<VariableDescriptor> getItems() {
         return this.items;
     }

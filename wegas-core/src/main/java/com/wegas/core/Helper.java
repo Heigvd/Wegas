@@ -48,6 +48,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.subject.Subject;
+import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
@@ -1181,29 +1182,30 @@ public class Helper {
      * Class for conveniently passing email attributes by parameter.
      */
     public static final class EmailAttributes {
+
         private List<String> recipients = new ArrayList<>();
         private String sender = "";
         private String subject = "";
         private String body = "";
-        
+
         public EmailAttributes() {
             // Default constructur required for deserialisation
         }
-        
+
         // Get recipient with the hypothesis that there is only one recipient in the list
         @JsonIgnore
         public String getRecipient() {
-            if (recipients.size() != 1){
+            if (recipients.size() != 1) {
                 throw WegasErrorMessage.error("There should be only one recipient in the email list.");
             }
-            
+
             return recipients.get(0);
         }
-        
+
         // Set recipient with the hypothesis that there is only one recipient in the list
         @JsonIgnore
         public void setRecipient(String recipient) {
-            if (recipients.size() > 1){
+            if (recipients.size() > 1) {
                 throw WegasErrorMessage.error("There should be only one recipient in the email list.");
             }
             if (recipients.isEmpty()) {
@@ -1216,7 +1218,7 @@ public class Helper {
         public List<String> getRecipients() {
             return recipients;
         }
-        
+
         public void setRecipients(List<String> recipients) {
             this.recipients = recipients;
         }
@@ -1224,29 +1226,29 @@ public class Helper {
         public String getSender() {
             return sender;
         }
-        
+
         public void setSender(String sender) {
             this.sender = sender;
         }
-        
+
         public String getSubject() {
             return subject;
         }
-        
+
         public void setSubject(String subject) {
             this.subject = subject;
         }
-        
+
         public String getBody() {
             return body;
         }
-        
+
         public void setBody(String body) {
             this.body = body;
         }
-        
+
     }
-    
+
     /**
      * Is the subject authenticated or remembered?
      *
@@ -1256,5 +1258,18 @@ public class Helper {
      */
     public static boolean isLoggedIn(Subject subject) {
         return subject.isAuthenticated() || subject.isRemembered();
+    }
+
+    public static String prettyPrintPSQLException(PSQLException ex) {
+        String message = ex.getMessage();
+
+        Pattern p = Pattern.compile("ERROR: duplicate key value violates unique constraint \".*\"\\s+Detail: Key \\((.*)\\)=\\((.*)\\) already exists\\.");
+        Matcher m = p.matcher(message);
+
+        if (m !=null && m.matches()){
+            return m.group(1) + " " + m.group(2) + " already exists";
+        } else {
+            return message;
+        }
     }
 }

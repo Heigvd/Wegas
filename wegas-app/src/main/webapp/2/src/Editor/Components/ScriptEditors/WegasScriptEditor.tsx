@@ -97,10 +97,6 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     endLineNumber: headerSize,
   });
   // const [currentValue, setCurrentValue] = React.useState<string>(value || '');
-  const [refresh, setRefresh] = React.useState<boolean>(false);
-  const toggleRefresh = React.useCallback(() => setRefresh(old => !old), [
-    setRefresh,
-  ]);
   const monaco = useMonacoEditor();
 
   /**
@@ -167,14 +163,12 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
           // setCurrentValue(newValue);
           return fn && fn(newValue);
         }
-        // If the user deleted the function's header, footer or return statement, the value is rolled back
-        toggleRefresh();
         return;
       }
       // setCurrentValue(newValue);
       return fn && fn(newValue);
     },
-    [returnType, toggleRefresh],
+    [returnType, args],
   );
 
   const globalLibs = useGlobalLibs();
@@ -248,13 +242,12 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const content = formatScriptToFunction(value || '', returnType, args);
   const editor = (
     <SrcEditor
-      key={Number(refresh)}
       {...props}
       language={language}
       extraLibs={extraLibs}
       value={content}
       onEditorReady={editorLock}
-      onChange={v => handleChange(v)}
+      onChange={handleChange}
       onBlur={handleBlur}
       onSave={handleSave}
       defaultActions={actions}

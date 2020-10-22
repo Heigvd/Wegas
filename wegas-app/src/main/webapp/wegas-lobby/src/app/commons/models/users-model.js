@@ -220,7 +220,7 @@ angular.module('wegas.models.users', [])
             });
             return deferred.promise;
         };
-        model.updateUser = function(oUser, relaxed) {
+        model.updateUser = function(currentEmail, oUser, relaxed) {
             // clone object to prevent unwanted UI update
             var user = JSON.parse(JSON.stringify(oUser));
 
@@ -301,7 +301,7 @@ angular.module('wegas.models.users', [])
                                  * the server. The server must be asked for the hash function
                                  * and the salt to be used.
                                  */
-                                $http.get(window.ServiceURL + "rest/User/AuthMethod/" + user.email)
+                                $http.get(window.ServiceURL + "rest/User/AuthMethod/" + currentEmail)
                                     .success(function(data) {
                                         var jpaAuths = data.filter(function(method) {
                                             return method["@class"] === "JpaAuthentication";

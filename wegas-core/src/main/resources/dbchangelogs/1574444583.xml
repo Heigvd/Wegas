@@ -32,6 +32,19 @@
  
     </changeSet>
 
+    <changeSet author="maxence" id="1574444594990-1terA">
+        <dropIndex indexName="index_accountdetails_email" tableName="accountdetails" />
+    </changeSet>
+
+    <changeSet author="maxence" id="1574444594990-1terB">
+        <createIndex indexName="index_accountdetails_email" tableName="accountdetails" unique="true">
+            <column name="email"/>
+        </createIndex>
+        <modifySql>
+            <append value=" WHERE (checkuniqueness AND email IS NOT NULL AND email != '')" />
+        </modifySql>
+    </changeSet>
+
     <changeSet author="maxence (generated)" id="1574444594990-2">
         <sql>
             -- Populate AccountDetails

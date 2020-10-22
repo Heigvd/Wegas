@@ -7,6 +7,7 @@
  */
 package com.wegas.core.rest.exception;
 
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasUniqueConstraintException;
@@ -71,7 +72,10 @@ public abstract class AbstractExceptionMapper {
         } else if (exception instanceof PSQLException) {
             PSQLException pex = (PSQLException) exception;
             if (pex.getSQLState().equals("23505")) {
-                return Response.status(Response.Status.BAD_REQUEST).entity(new WegasUniqueConstraintException(pex)).build();
+                return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(new WegasUniqueConstraintException(Helper.prettyPrintPSQLException(pex)))
+                    .build();
             } else {
                 return Response.status(Response.Status.BAD_REQUEST).entity(pex).build();
             }

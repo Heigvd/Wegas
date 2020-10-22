@@ -121,6 +121,7 @@ public class SurveySectionDescriptor extends VariableDescriptor<SurveySectionIns
      */
     @Override
     @JsonView(Views.ExportI.class)
+    @Scriptable(label = "getItems",wysiwyg = false)
     public List<SurveyInputDescriptor> getItems() {
         return this.items;
     }

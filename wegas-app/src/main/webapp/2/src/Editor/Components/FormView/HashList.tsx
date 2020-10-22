@@ -104,37 +104,26 @@ export function EntryView<T>({
         description: 'EntryView',
         properties: {
           prop: schema
-            ? schemaProps.hidden(true, 'string')
-            : schemaProps.string(
-                'Key',
-                true,
-                prop,
-                'DEFAULT',
-                undefined,
-                'shortInline',
-                false,
-              ),
+            ? schemaProps.hidden({ required: true, type: 'string' })
+            : schemaProps.string({
+                label: 'Key',
+                required: true,
+                value: prop,
+                layout: 'shortInline',
+              }),
           value: schema
             ? schema
-            : // {
-              //   ...schema,
-              //   view: {
-              //     ...schema.view,
-              //     layout: 'shortInline',
-              //   },
-              // }
-              schemaProps.string(
-                'Value',
-                true,
-                value === undefined
-                  ? ''
-                  : typeof value === 'string'
-                  ? value
-                  : JSON.stringify(value),
-                'DEFAULT',
-                undefined,
-                'shortInline',
-              ),
+            : schemaProps.string({
+                label: 'Value',
+                required: true,
+                value:
+                  value === undefined
+                    ? ''
+                    : typeof value === 'string'
+                    ? value
+                    : JSON.stringify(value),
+                layout: 'shortInline',
+              }),
         },
       }}
       value={{ prop, value }}

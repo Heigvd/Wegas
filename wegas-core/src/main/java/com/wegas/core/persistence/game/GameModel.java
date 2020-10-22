@@ -10,6 +10,7 @@ package com.wegas.core.persistence.game;
 
 import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.INTERNAL;
 import ch.albasim.wegas.annotations.ProtectionLevel;
+import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;

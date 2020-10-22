@@ -3,18 +3,32 @@ type WegasEntitiesNamesAndClasses = import('wegas-ts-api').WegasEntitiesNamesAnd
 interface WegasScriptEditorNameAndTypes extends WegasEntitiesNamesAndClasses {
   boolean: boolean;
   'boolean[]': boolean[];
+  'Readonly<boolean>': Readonly<boolean>;
+  'Readonly<boolean[]>': Readonly<boolean[]>;
   number: number;
   'number[]': number[];
+  'Readonly<number>': Readonly<number>;
+  'Readonly<number[]>': Readonly<number[]>;
   string: string;
   'string[]': string[];
+  'Readonly<string>': Readonly<string>;
+  'Readonly<string[]>': Readonly<string[]>;
   object: object;
   'object[]': object[];
+  'Readonly<object>': Readonly<object>;
+  'Readonly<object[]>': Readonly<object[]>;
   never: never;
   'never[]': never[];
+  'Readonly<never>': Readonly<never>;
+  'Readonly<never[]>': Readonly<never[]>;
   void: void;
   'void[]': void[];
+  'Readonly<void>': Readonly<void>;
+  'Readonly<void[]>': Readonly<void[]>;
   undefined: undefined;
   'undefined[]': undefined[];
+  'Readonly<undefined>': Readonly<undefined>;
+  'Readonly<undefined[]>': Readonly<undefined[]>;
 }
 
 interface ArrayedTypeMap<T = {}> {

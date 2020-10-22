@@ -63,12 +63,14 @@ registerComponent(
     name: 'Boxes',
     icon: 'ellipsis-h',
     schema: {
-      script: schemaProps.scriptVariable('Variable', false, [
-        'SNumberDescriptor',
-      ]),
-      label: schemaProps.string('Label', false),
-      hideBoxValue: schemaProps.boolean('Hide value in boxes', false),
-      showLabelValue: schemaProps.boolean('Show value in label', false),
+      script: schemaProps.scriptVariable({
+        label: 'Variable',
+        required: false,
+        returnType: ['SNumberDescriptor'],
+      }),
+      label: schemaProps.string({ label: 'Label' }),
+      hideBoxValue: schemaProps.boolean({ label: 'Hide value in boxes' }),
+      showLabelValue: schemaProps.boolean({ label: 'Show value in label' }),
     },
     allowedVariables: ['NumberDescriptor', 'TextDescriptor'],
     getComputedPropsFromVariable: v => ({

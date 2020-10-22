@@ -936,7 +936,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                     text, Message.RecipientType.TO,
                     "text/html; charset=utf-8", true);
             } catch (MessagingException ex) {
-                logger.error("Error while sending validation email to {}", recipientAddress);
+                logger.error("Error while sending email to {}, {}", recipientAddress, ex);
             } finally {
                 requestManager.getEntityManager().flush();
                 requestManager.releaseSu();

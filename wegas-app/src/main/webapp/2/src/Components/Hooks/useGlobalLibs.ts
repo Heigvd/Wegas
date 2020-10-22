@@ -79,6 +79,9 @@ export function useGlobalLibs() {
             gameModel: SGameModel,
             name: T
           ) => VariableClasses[T];
+          static getItems: <T = SVariableDescriptor<SVariableInstance>>(
+            itemsIds: number[],
+          ) => Readonly<T[]>;        
         }
 
         type CurrentLanguages = ${currentLanguages};
@@ -134,6 +137,10 @@ export function useGlobalLibs() {
         declare const WegasEvents : WegasEventClass;
 
         declare const I18n : GlobalI18nClass;
+
+        declare const Context : {
+          [id:string]:any;
+        }
 
         ${buildGlobalServerMethods(globalServerMethods)}
         `;
