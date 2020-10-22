@@ -218,6 +218,13 @@
             <artifactId>payara-embedded-all</artifactId>
         </dependency>
 
+        <!-- required by arq-suite-ext -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

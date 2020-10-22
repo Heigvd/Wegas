@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<domain application-root="${com.sun.aas.instanceRoot}/applications" version="512" log-root="${com.sun.aas.instanceRoot}/logs">
+<domain application-root="${com.sun.aas.instanceRoot}/applications" version="942" log-root="${com.sun.aas.instanceRoot}/logs">
   <hazelcast-runtime-configuration/>
   <security-configurations>
     <authentication-service default="true" name="adminAuth" use-password-credential="true">
@@ -23,7 +23,7 @@
     </authorization-service>
   </security-configurations>
   <managed-job-config/>
-  <monitoring-console-configuration/>
+  <!--<monitoring-console-configuration/>-->
   <system-applications>
     <application context-root="" object-type="system-admin" name="__admingui" directory-deployed="true" location="${com.sun.aas.installRootURI}/lib/install/applications/__admingui">
       <module name="__admingui">
@@ -41,8 +41,6 @@
     <jdbc-connection-pool is-isolation-level-guaranteed="false" datasource-classname="org.h2.jdbcx.JdbcDataSource" name="H2Pool" res-type="javax.sql.DataSource">
       <property name="URL" value="jdbc:h2:${com.sun.aas.instanceRoot}/lib/databases/embedded_default;AUTO_SERVER=TRUE"/>
     </jdbc-connection-pool>
-    <managed-executor-service object-type="system-all" jndi-name="concurrent/__defaultManagedExecutorService"/>
-    <managed-scheduled-executor-service object-type="system-all" jndi-name="concurrent/__defaultManagedScheduledExecutorService"/>
     <connector-connection-pool resource-adapter-name="jmsra" max-pool-size="250" steady-pool-size="1" name="jms/__defaultConnectionFactory-Connection-Pool" connection-definition-name="javax.jms.ConnectionFactory"/>
     <connector-resource pool-name="jms/__defaultConnectionFactory-Connection-Pool" object-type="system-all-req" jndi-name="jms/__defaultConnectionFactory"/>
     <managed-executor-service jndi-name="timeoutExecutorService" object-type="system-all" core-pool-size="1"/>
@@ -52,8 +50,6 @@
       <application-ref ref="__admingui" virtual-servers="__asadmin"/>
       <resource-ref ref="jdbc/__TimerPool"/>
       <resource-ref ref="jdbc/__default"/>
-      <resource-ref ref="concurrent/__defaultManagedExecutorService"/>
-      <resource-ref ref="concurrent/__defaultManagedScheduledExecutorService"/>
       <resource-ref ref="jms/__defaultConnectionFactory"/>
       <resource-ref ref="timeoutExecutorService"/>
     </server>
@@ -99,26 +95,33 @@
       </ejb-container>
       <asadmin-recorder-configuration/>
       <request-tracing-service-configuration>
-        <log-notifier/>
+        <notifier>log-notifier</notifier>
       </request-tracing-service-configuration>
       <notification-service-configuration enabled="true">
         <log-notifier-configuration enabled="true"/>
+        <jms-notifier-configuration/>
+        <cdi-eventbus-notifier-configuration/>
+        <eventbus-notifier-configuration/>
       </notification-service-configuration>
       <batch-runtime-configuration data-source-lookup-name="jdbc/__default"/>
-      <monitoring-service-configuration/>
+      <monitoring-service-configuration>
+        <notifier>log-notifier</notifier>
+      </monitoring-service-configuration>
       <microprofile-metrics-configuration/>
-      <zendesk-support-configuration/>
+      <health-check-service-configuration>
+        <notifier>log-notifier</notifier>
+      </health-check-service-configuration>
+      <admin-audit-configuration>
+        <notifier>log-notifier</notifier>
+      </admin-audit-configuration>
+      <phone-home-runtime-configuration phone-home-id="0bc8d2e0-3b6d-4db2-a912-356c54d22ad7"/>
+      <!--<zendesk-support-configuration/>-->
+      <stuck-threads-checker/>
       <metrics-health-check-configuration/>
-      <admin-audit-configuration/>
       <microprofile-config/>
       <amx-configuration/>
       <ejb-invoker-configuration/>
-      <health-check-service-configuration>
-        <log-notifier/>
-      </health-check-service-configuration>
-      <stuck-threads-checker/>
       <microprofile-openapi-configuration/>
-      <phone-home-runtime-configuration phone-home-id="9d5e341b-92ce-441e-b07c-e0c830909ea6"/>
       <microprofile-fault-tolerance-configuration/>
       <rest-monitoring-configuration/>
       <jms-service default-jms-host="default_JMS_host" type="EMBEDDED">
@@ -209,28 +212,28 @@
         <jvm-options>-XX:MetaspaceSize=256m</jvm-options>
         <jvm-options>-XX:MaxMetaspaceSize=2g</jvm-options>
         <jvm-options>-XX:+UnlockDiagnosticVMOptions</jvm-options>
+        <jvm-options>-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory</jvm-options>
         <jvm-options>-Djava.awt.headless=true</jvm-options>
-        <jvm-options>-Djdk.corba.allowOutputStreamSubclass=true</jvm-options>
-        <jvm-options>-Djavax.xml.accessExternalSchema=all</jvm-options>
-        <jvm-options>-Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy</jvm-options>
         <jvm-options>-Djava.security.auth.login.config=${com.sun.aas.instanceRoot}/config/login.conf</jvm-options>
+        <jvm-options>-Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy</jvm-options>
         <jvm-options>-Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/keystore.jks</jvm-options>
         <jvm-options>-Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks</jvm-options>
+        <jvm-options>-Djavax.xml.accessExternalSchema=all</jvm-options>
         <jvm-options>-Djdbc.drivers=org.h2.Driver</jvm-options>
-        <jvm-options>-DANTLR_USE_DIRECT_CLASS_LOADING=true</jvm-options>
-        <jvm-options>-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory</jvm-options>
+        <jvm-options>-Djdk.corba.allowOutputStreamSubclass=true</jvm-options>
         <jvm-options>-Djdk.tls.rejectClientInitiatedRenegotiation=true</jvm-options>
-        <jvm-options>-Dorg.jboss.weld.serialization.beanIdentifierIndexOptimization=false</jvm-options>
+        <jvm-options>-DANTLR_USE_DIRECT_CLASS_LOADING=true</jvm-options>
         <jvm-options>-Dorg.glassfish.grizzly.DEFAULT_MEMORY_MANAGER=org.glassfish.grizzly.memory.HeapMemoryManager</jvm-options>
         <jvm-options>-Dorg.glassfish.grizzly.nio.DefaultSelectorHandler.force-selector-spin-detection=true</jvm-options>
+        <jvm-options>-Dorg.jboss.weld.serialization.beanIdentifierIndexOptimization=false</jvm-options>
+        <jvm-options>[|8]-Djava.endorsed.dirs=${com.sun.aas.installRoot}/modules/endorsed${path.separator}${com.sun.aas.installRoot}/lib/endorsed</jvm-options>
+        <jvm-options>[|8]-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext</jvm-options>
         <jvm-options>[1.8.0|1.8.0u120]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.6.jar</jvm-options>
         <jvm-options>[1.8.0u121|1.8.0u160]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.7.jar</jvm-options>
         <jvm-options>[1.8.0u161|1.8.0u190]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.8.jar</jvm-options>
-        <jvm-options>[1.8.0u191|1.8.0u500]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.8.1.jar</jvm-options>
-        <jvm-options>[9|]-Xbootclasspath/a:${com.sun.aas.installRoot}/lib/grizzly-npn-api.jar</jvm-options>
-        <jvm-options>[|8]-Djava.endorsed.dirs=${com.sun.aas.installRoot}/modules/endorsed${path.separator}${com.sun.aas.installRoot}/lib/endorsed</jvm-options>
-        <jvm-options>[|8]-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext</jvm-options>
-        <jvm-options>[Azul-1.8.0u222|1.8.0u500]-XX:+UseOpenJSSE</jvm-options>
+        <jvm-options>[1.8.0u191|1.8.0u250]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.8.1.jar</jvm-options>
+        <jvm-options>[1.8.0u251|]-Xbootclasspath/a:${com.sun.aas.installRoot}/lib/grizzly-npn-api.jar</jvm-options>
+        <jvm-options>[Azul-1.8.0u222|1.8.0u260]-XX:+UseOpenJSSE</jvm-options>
       </java-config>
       <availability-service>
         <web-container-availability/>
@@ -385,13 +388,21 @@
       </transaction-service>
       <hazelcast-config-specific-configuration config-specific-data-grid-start-port="${HZ_LISTENER_PORT}"/>
       <request-tracing-service-configuration>
-        <log-notifier/>
+        <notifier>log-notifier</notifier>
       </request-tracing-service-configuration>
       <notification-service-configuration enabled="true">
         <log-notifier-configuration enabled="true"/>
       </notification-service-configuration>
-      <monitoring-service-configuration/>
+      <monitoring-service-configuration>
+        <notifier>log-notifier</notifier>
+      </monitoring-service-configuration>
       <microprofile-metrics-configuration/>
+      <health-check-service-configuration>
+        <notifier>log-notifier</notifier>
+      </health-check-service-configuration>
+      <admin-audit-configuration>
+        <notifier>log-notifier</notifier>
+      </admin-audit-configuration>
       <diagnostic-service/>
       <java-config classpath-suffix="" debug-options="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=${JAVA_DEBUGGER_PORT}" system-classpath="">
         <jvm-options>[9|]--add-opens=java.base/jdk.internal.loader=ALL-UNNAMED</jvm-options>
@@ -413,30 +424,30 @@
         <jvm-options>-XX:+UseG1GC</jvm-options>
         <jvm-options>-XX:+UseStringDeduplication</jvm-options>
         <jvm-options>-XX:MaxGCPauseMillis=500</jvm-options>
-        <jvm-options>-XX:MetaspaceSize=256m</jvm-options>
         <jvm-options>-XX:MaxMetaspaceSize=2g</jvm-options>
+        <jvm-options>-XX:MetaspaceSize=256m</jvm-options>
         <jvm-options>-XX:+UnlockDiagnosticVMOptions</jvm-options>
+        <jvm-options>-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory</jvm-options>
         <jvm-options>-Djava.awt.headless=true</jvm-options>
-        <jvm-options>-Djdk.corba.allowOutputStreamSubclass=true</jvm-options>
-        <jvm-options>-Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy</jvm-options>
         <jvm-options>-Djava.security.auth.login.config=${com.sun.aas.instanceRoot}/config/login.conf</jvm-options>
+        <jvm-options>-Djava.security.policy=${com.sun.aas.instanceRoot}/config/server.policy</jvm-options>
         <jvm-options>-Djavax.net.ssl.keyStore=${com.sun.aas.instanceRoot}/config/keystore.jks</jvm-options>
         <jvm-options>-Djavax.net.ssl.trustStore=${com.sun.aas.instanceRoot}/config/cacerts.jks</jvm-options>
         <jvm-options>-Djdbc.drivers=org.h2.Driver</jvm-options>
-        <jvm-options>-DANTLR_USE_DIRECT_CLASS_LOADING=true</jvm-options>
-        <jvm-options>-Dcom.sun.enterprise.config.config_environment_factory_class=com.sun.enterprise.config.serverbeans.AppserverConfigEnvironmentFactory</jvm-options>
+        <jvm-options>-Djdk.corba.allowOutputStreamSubclass=true</jvm-options>
         <jvm-options>-Djdk.tls.rejectClientInitiatedRenegotiation=true</jvm-options>
-        <jvm-options>-Dorg.jboss.weld.serialization.beanIdentifierIndexOptimization=false</jvm-options>
+        <jvm-options>-DANTLR_USE_DIRECT_CLASS_LOADING=true</jvm-options>
         <jvm-options>-Dorg.glassfish.grizzly.DEFAULT_MEMORY_MANAGER=org.glassfish.grizzly.memory.HeapMemoryManager</jvm-options>
         <jvm-options>-Dorg.glassfish.grizzly.nio.DefaultSelectorHandler.force-selector-spin-detection=true</jvm-options>
+        <jvm-options>-Dorg.jboss.weld.serialization.beanIdentifierIndexOptimization=false</jvm-options>
+        <jvm-options>[|8]-Djava.endorsed.dirs=${com.sun.aas.installRoot}/modules/endorsed${path.separator}${com.sun.aas.installRoot}/lib/endorsed</jvm-options>
+        <jvm-options>[|8]-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext</jvm-options>
         <jvm-options>[1.8.0|1.8.0u120]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.6.jar</jvm-options>
         <jvm-options>[1.8.0u121|1.8.0u160]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.7.jar</jvm-options>
         <jvm-options>[1.8.0u161|1.8.0u190]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.8.jar</jvm-options>
-        <jvm-options>[1.8.0u191|1.8.0u500]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.8.1.jar</jvm-options>
-        <jvm-options>[9|]-Xbootclasspath/a:${com.sun.aas.installRoot}/lib/grizzly-npn-api.jar</jvm-options>
-        <jvm-options>[|8]-Djava.endorsed.dirs=${com.sun.aas.installRoot}/modules/endorsed${path.separator}${com.sun.aas.installRoot}/lib/endorsed</jvm-options>
-        <jvm-options>[|8]-Djava.ext.dirs=${com.sun.aas.javaRoot}/lib/ext${path.separator}${com.sun.aas.javaRoot}/jre/lib/ext${path.separator}${com.sun.aas.instanceRoot}/lib/ext</jvm-options>
-        <jvm-options>[Azul-1.8.0u222|1.8.0u500]-XX:+UseOpenJSSE</jvm-options>
+        <jvm-options>[1.8.0u191|1.8.0u250]-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap-1.8.1.jar</jvm-options>
+        <jvm-options>[1.8.0u251|]-Xbootclasspath/a:${com.sun.aas.installRoot}/lib/grizzly-npn-api.jar</jvm-options>
+        <jvm-options>[Azul-1.8.0u222|1.8.0u260]-XX:+UseOpenJSSE</jvm-options>
       </java-config>
       <availability-service>
         <web-container-availability/>
@@ -505,7 +516,7 @@
       <system-property name="JMX_SYSTEM_CONNECTOR_PORT" value="28686"/>
       <system-property name="OSGI_SHELL_TELNET_PORT" value="26666"/>
       <system-property name="JAVA_DEBUGGER_PORT" value="29009"/>
-      <system-property name="HZ_LISTENER_PORT" value=""/>
+      <system-property name="HZ_LISTENER_PORT" value="5900"/>
       <system-property name="fish.payara.classloading.delegate" value="false"/>
       <system-property name="org.jboss.weld.clustering.rollingUpgradesIdDelimiter" value=".."/>
       <monitoring-service>
@@ -514,7 +525,7 @@
     </config>
   </configs>
   <property name="administrative.domain.name" value="production"/>
-  <secure-admin special-admin-indicator="3cf5951d-fd4e-44a6-b80d-15a79ab4d256">
+  <secure-admin special-admin-indicator="8dfb08bf-b5e8-4876-ab10-abd5b43db44b">
     <secure-admin-principal dn="CN=localhost,OU=Payara,O=Payara Foundation,L=Great Malvern,ST=Worcestershire,C=UK"/>
     <secure-admin-principal dn="CN=localhost-instance,OU=Payara,O=Payara Foundation,L=Great Malvern,ST=Worcestershire,C=UK"/>
   </secure-admin>
