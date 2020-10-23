@@ -17,6 +17,7 @@
     <properties>
         <skip.yarn>${skipYarn}</skip.yarn>
         <skip.surefire.tests>${skipTests}</skip.surefire.tests>
+        <skip.surefire.category>${skipCategory}</skip.surefire.category>
         <netbeans.hint.license>license</netbeans.hint.license>
     </properties>
 
@@ -456,6 +457,8 @@
                         <java.util.logging.config.file>${project.basedir}/../wegas-core/src/test/resources/logging.properties</java.util.logging.config.file>
                         <arquillian.launch>glassfish-embedded</arquillian.launch>
                     </systemProperties>
+                    <!--<excludedGroups>com.wegas.unit.PrivateRelatedTest</excludedGroups>-->
+                    <excludedGroups>${skip.surefire.category}</excludedGroups>
                     <skipTests>${skip.surefire.tests}</skipTests>
                 </configuration>
             </plugin>
