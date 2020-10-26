@@ -185,7 +185,7 @@ export const menuItemSchema: HashListChoices = [
 export const defaultMenuItemProps: MenuItemProps = {
   unselectable: undefined,
 };
-export const defaultMenuItemKeys = Object.keys(defaultMenuItemProps);
+export const defaultMenuItemKeys = Object.keys(defaultMenuItemProps) as (keyof MenuItemProps)[];
 
 interface MenuItemProps
   extends React.PropsWithChildren<WegasComponentItemProps> {

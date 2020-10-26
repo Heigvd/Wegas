@@ -20,7 +20,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
 
   // It's VERY important to import less library dynamically to avoid breaking the import flow of the components of the layout when less in rendering
   import('less').then(less => {
-    const lesstest = less
+    less
       .render(
         //   `.wegas {
         //   @MainColor: blue;
@@ -51,7 +51,6 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
         wlog(error);
       });
 
-    wlog(lesstest);
   });
 
   // Effect triggers on first rendering only
@@ -72,7 +71,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
         wlog('Cannot get the scripts');
       });
 
-    CurrentGM.properties.clientScriptUri.split(';').map(scriptUrl => {
+    CurrentGM.properties.clientScriptUri?.split(';').map(scriptUrl => {
       if (scriptUrl !== '') {
         fetch(scriptUrl)
           .then(res => {
@@ -83,7 +82,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
             }
           })
           .then(res => {
-            safeClientScriptEval(res.text, () =>
+            safeClientScriptEval(res.text,undefined, () =>
               wwarn(`In static client script : ${res.scriptUrl}`),
             );
           })
@@ -123,7 +122,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
 
   React.useEffect(() => {
     Object.entries(jsLibs).forEach(([key, lib]) =>
-      safeClientScriptEval(lib.content, () =>
+      safeClientScriptEval(lib.content, undefined,() =>
         wwarn(`In client script  : ${key}`),
       ),
     );
@@ -133,7 +132,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
     <>
       {/* <link rel="stylesheet/less" href={'../../css/defaultStyle.less'} /> */}
       <style type="text/css">{lessLibs}</style>
-      {CurrentGM.properties.cssUri.split(';').map(cssUrl => (
+      {CurrentGM.properties.cssUri?.split(';').map(cssUrl => (
         <link
           key={cssUrl}
           className="WegasStaticStyle"

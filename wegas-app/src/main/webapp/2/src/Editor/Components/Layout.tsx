@@ -2,6 +2,11 @@ import * as React from 'react';
 import { css } from 'emotion';
 import Header from './Header';
 import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
+import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
+import { useStore } from '../../data/store';
+import { visitIndex } from '../../Helper/pages';
+import { PageLoader } from './Page/PageLoader';
+import { ComponentMap } from './LinearTabLayout/DnDTabLayout';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageEditor = React.lazy(() => import('./Page/PageEditor'));
@@ -21,7 +26,7 @@ const ThemeEditor = React.lazy(
   () => import('../../Components/Style/ThemeEditor'),
 );
 
-const Tester = React.lazy(() => import('../../Testers/SchemaPropsTester'));
+const Tester = React.lazy(() => import('../../Testers/WegasScriptEditorTester'));
 
 const layout = css({
   display: 'flex',
@@ -48,30 +53,25 @@ export type AvailableLayoutTab = keyof typeof availableLayoutTabs;
 
 export const mainLayoutId = 'MainEditorLayout';
 
-export default class AppLayout extends React.Component<
-  {},
-  { editable: boolean }
-> {
-  constructor(props: {}) {
-    super(props);
-    this.state = {
-      editable: false,
-    };
-  }
-  render() {
-    return (
-      <div className={layout}>
-        <Header />
-        <DndLinearLayout
-          tabs={availableLayoutTabs}
-          layout={[
-            ['Variables'],
-            [['Play Local'], [['State Machine'], ['Files']]],
-            ['Variable Properties'],
-          ]}
-          layoutId={mainLayoutId}
-        />
-      </div>
-    );
-  }
+export default function Layout() {
+  const scenaristPages: ComponentMap = useStore(s => {
+    return s.pages.index ? visitIndex(s.pages.index.root,
+      item => item).filter(item => item.scenaristPage) : []
+  }, deepDifferent)
+    .reduce((o, i) => ({ ...o, [i.name]: <PageLoader selectedPageId={i.id} /> }), {});
+
+  return (
+    <div className={layout}>
+      <Header />
+      <DndLinearLayout
+        tabs={{ ...availableLayoutTabs, ...scenaristPages }}
+        initialLayout={[
+          ['Variables'],
+          [['Play Local'], [['State Machine'], ['Files']]],
+          ['Variable Properties'],
+        ]}
+        layoutId={mainLayoutId}
+      />
+    </div>
+  );
 }

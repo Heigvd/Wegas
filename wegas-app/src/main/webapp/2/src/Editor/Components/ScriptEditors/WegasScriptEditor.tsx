@@ -1,8 +1,29 @@
 import * as React from 'react';
 import SrcEditor, { SrcEditorProps } from './SrcEditor';
-import { useMonacoEditor } from '../../../Components/Hooks/useMonacoEditor';
-import { useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
-import { libes5 } from '../../../Helper/libs';
+import { ScriptContext, useGlobalLibs } from '../../../Components/Hooks/useGlobalLibs';
+
+// @ts-ignore
+import libes5 from "!!raw-loader!typescript/lib/lib.es5.d.ts";
+// @ts-ignore
+// import libes2015_core from "!!raw-loader!typescript/lib/lib.es2015.core.d.ts";
+// @ts-ignore
+// import libes2015_collection from "!!raw-loader!typescript/lib/lib.es2015.collection.d.ts";
+// @ts-ignore
+// import libes2015_iterable from "!!raw-loader!typescript/lib/lib.es2015.iterable.d.ts";
+// @ts-ignore
+// import libes2015_generator from "!!raw-loader!typescript/lib/lib.es2015.generator.d.ts";
+// @ts-ignore
+// import libes2015_promise from "!!raw-loader!typescript/lib/lib.es2015.promise.d.ts";
+// @ts-ignore
+// import libes2015_proxy from "!!raw-loader!typescript/lib/lib.es2015.proxy.d.ts";
+// @ts-ignore
+// import libes2015_reflect from "!!raw-loader!typescript/lib/lib.es2015.reflect.d.ts";
+// @ts-ignore
+// import libes2015_symbol from "!!raw-loader!typescript/lib/lib.es2015.symbol.d.ts";
+// @ts-ignore
+// import libes2015_symbol_wellknown from "!!raw-loader!typescript/lib/lib.es2015.symbol.wellknown.d.ts";
+
+
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { ResizeHandle } from '../ResizeHandle';
 import {
@@ -16,9 +37,10 @@ import {
   MonacoEditor,
   MonacoCodeEditor,
 } from './editorHelpers';
+import { Monaco } from '@monaco-editor/react';
 
 export interface WegasScriptEditorProps extends SrcEditorProps {
-  clientScript?: boolean;
+  scriptContext?: ScriptContext;
   returnType?: WegasScriptEditorReturnTypeName[];
   resizable?: boolean;
   args?: [string, WegasScriptEditorReturnTypeName[]][];
@@ -33,9 +55,9 @@ const header = (
   const cleanReturnType =
     returnType !== undefined
       ? returnType.reduce(
-          (o, t, i) => o + (i ? '|' : '') + t.replace(/\r?\n/, ''),
-          '',
-        )
+        (o, t, i) => o + (i ? '|' : '') + t.replace(/\r?\n/, ''),
+        '',
+      )
       : '';
   return `/*\n *\tPlease always respect the return type : ${cleanReturnType}\n *\tPlease only write in JS even if the editor let you write in TS\n */\n(${cleanArgs}) : ${cleanReturnType} => {\n\t`;
 };
@@ -80,12 +102,13 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     value,
     returnType,
     args,
-    /*TODO : allow non server methods here clientScript,*/
+    scriptContext = "Client",
     onChange,
     onBlur,
     onSave,
     resizable,
     extraLibs: newExtraLibs,
+    defaultActions,
   } = props;
   const language = props.language ? props.language : 'typescript';
   let editorLock: ((editor: MonacoSCodeEditor) => void) | undefined = undefined;
@@ -96,8 +119,6 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     startLineNumber: headerSize,
     endLineNumber: headerSize,
   });
-  // const [currentValue, setCurrentValue] = React.useState<string>(value || '');
-  const monaco = useMonacoEditor();
 
   /**
    * acceptFunctionStyle - Returning false if return type needed and function is not parsable
@@ -116,14 +137,14 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
       if (
         // Header protection
         arrayToText(lines.slice(0, headerSize - 1)) !==
-          header(returnType, args).slice(0, -2) ||
+        header(returnType, args).slice(0, -2) ||
         // Footer protection
         (lines.length > 0 &&
           lines[lines.length - footerSize] !== footer().substr(1)) ||
         // Return protection
         (lines.length > 1 &&
           lines[lines.length - footerSize - 1].search(/(\t|\n| )(return )/) ===
-            -1)
+          -1)
       ) {
         return false;
       }
@@ -171,12 +192,23 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     [returnType, args],
   );
 
-  const globalLibs = useGlobalLibs();
-
+  const globalLibs = useGlobalLibs(scriptContext);
   const extraLibs: MonacoDefinitionsLibraries[] = [
     ...(newExtraLibs || []),
     ...globalLibs,
-    { name: 'defaultLib:lib.d.ts', content: libes5 },
+    {
+      name: 'defaultLib:lib.d.ts', content:
+        libes5
+      // + libes2015_collection
+      // + libes2015_core
+      // + libes2015_generator
+      // + libes2015_iterable
+      // + libes2015_promise 
+      // + libes2015_proxy 
+      // + libes2015_reflect 
+      // + libes2015_symbol
+      // + libes2015_symbol_wellknown
+    },
   ];
 
   if (returnType !== undefined && returnType.length > 0) {
@@ -203,9 +235,10 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
     };
   }
 
-  const actions: SrcEditorAction[] =
-    returnType && returnType.length > 0 && monaco
-      ? [
+  const actions: (monaco: Monaco) => SrcEditorAction[] =
+    monaco =>
+      [...(defaultActions ? defaultActions(monaco) : []), ...(returnType && returnType.length > 0
+        ? [
           {
             id: 'SelectAllWithScriptFunction',
             label: 'Ctrl + A avoiding header and footer',
@@ -224,10 +257,12 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
             },
           },
         ]
-      : [];
+        : [])];
 
   const handleChange = React.useCallback(
-    val => trimFunctionToScript(val, onChange),
+    val => {
+      return trimFunctionToScript(val, onChange)
+    },
     [onChange, trimFunctionToScript],
   );
   const handleBlur = React.useCallback(
@@ -240,25 +275,24 @@ export function WegasScriptEditor(props: WegasScriptEditorProps) {
   );
 
   const content = formatScriptToFunction(value || '', returnType, args);
-  const editor = (
-    <SrcEditor
-      {...props}
-      language={language}
-      extraLibs={extraLibs}
-      value={content}
-      onEditorReady={editorLock}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      onSave={handleSave}
-      defaultActions={actions}
-    />
-  );
+
+  const editorProps: SrcEditorProps = {
+    ...props,
+    language,
+    extraLibs,
+    value: content,
+    onEditorReady: editorLock,
+    onChange: handleChange,
+    onBlur: handleBlur,
+    onSave: handleSave,
+    defaultActions: actions
+  }
 
   return resizable ? (
     <ResizeHandle minSize={100} textContent={content}>
-      {editor}
+      <SrcEditor {...editorProps} />
     </ResizeHandle>
   ) : (
-    editor
-  );
+      <SrcEditor {...editorProps} />
+    );
 }

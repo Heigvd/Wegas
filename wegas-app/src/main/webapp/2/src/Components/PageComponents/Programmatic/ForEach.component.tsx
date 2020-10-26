@@ -1,67 +1,61 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
-import { ScriptCTX } from '../../Contexts/ScriptContext';
 import { useScript } from '../../Hooks/useScript';
 import {
   FlexListProps,
   FlexList,
   flexListSchema,
+  isVertical,
+  FlexItem,
+  defaultFlexLayoutOptionsKeys
 } from '../../Layouts/FlexList';
 import {
   registerComponent,
   pageComponentFactory,
 } from '../tools/componentFactory';
-import { WegasComponentProps } from '../tools/EditableComponent';
+import { ChildrenDeserializerProps, WegasComponentProps } from '../tools/EditableComponent';
+import { PageDeserializer } from '../tools/PageDeserializer';
 import { schemaProps } from '../tools/schemaProps';
 
 interface ForEachProps extends WegasComponentProps, FlexListProps {
   getItemsFn?: IScript;
   exposeAs: string;
+  itemsOnly?: boolean;
 }
 
-function ForEach({
-  getItemsFn,
-  exposeAs,
-  children,
-  ...flexListProps
-}: ForEachProps) {
-  const { identifiers } = React.useContext(ScriptCTX);
-  const { editMode } = React.useContext(pageCTX);
-  let items = useScript<object[]>(getItemsFn);
-
-  if (editMode) {
-    items = items == null || items.length === 0 ? undefined : [items[0]];
-  }
-
-  return (
-    <FlexList {...flexListProps}>
-      {items == null
-        ? children
-        : items.map(item => {
-            return (
-              /* For each item, create a new script context.
-               * Such context expose current item as "exposeAs" name.
-               */
-              <ScriptCTX.Provider
-                value={{
-                  identifiers: { ...identifiers, [exposeAs]: item },
-                }}
-                key={JSON.stringify(item)}
-              >
-                {children}
-              </ScriptCTX.Provider>
-            );
-          })}
-    </FlexList>
+function ForEach({ itemsOnly, ...props }: ForEachProps) {
+  return itemsOnly ? <>{props.children}</> : (
+    <FlexList {...props} />
   );
+}
+
+function ChildrenDeserializer({ path, pageId, uneditable, context, exposeAs, getItemsFn, editMode }: ChildrenDeserializerProps<ForEachProps>) {
+  const items = useScript<object[]>(getItemsFn);
+  let children: JSX.Element[] = [];
+
+  if (items) {
+    children = items.map((item, id) => {
+      const newContext = { ...context, [exposeAs]: item }
+      return <PageDeserializer
+        key={JSON.stringify([...(path ? path : []), id])}
+        pageId={pageId}
+        path={[...(path ? path : []), 0]}
+        uneditable={uneditable}
+        context={newContext}
+        Container={FlexItem}
+        containerPropsKeys={defaultFlexLayoutOptionsKeys}
+        dropzones={{}}
+      />
+    });
+  }
+  return <>{editMode === false ? children : children.slice(0, 1)}</>;
 }
 
 registerComponent(
   pageComponentFactory({
     component: ForEach,
     componentType: 'Programmatic',
-    containerType: 'FOREACH',
+    container: { type: 'FOREACH', isVertical, ChildrenDeserializer },
     name: 'For each',
     icon: 'code',
     schema: {
@@ -75,6 +69,7 @@ registerComponent(
         required: true,
         value: 'item',
       }),
+      itemsOnly: schemaProps.boolean({ label: "Items only" })
     },
     allowedVariables: ['TextDescriptor'],
     getComputedPropsFromVariable: () => ({ exposeAs: 'item' }),

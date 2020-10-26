@@ -56,7 +56,7 @@ export function useJSONSchema(enabled: boolean = true) {
     return {
       type: 'object',
       required: ['type', 'props'],
-      containerType: component.containerType,
+      containerType: component.container ? component.container.type : undefined,
       properties: {
         type: {
           type: 'string',

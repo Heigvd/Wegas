@@ -151,3 +151,8 @@ export function arrayRemoveDuplicates(a: unknown[]) {
     return a.indexOf(item) == pos;
   });
 }
+
+
+export function replace(str:string, index:number, length:number, replacement:string) {
+  return str.substr(0, index) + replacement + str.substr(index + length - 1);
+}

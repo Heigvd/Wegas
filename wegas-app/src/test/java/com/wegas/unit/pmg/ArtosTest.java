@@ -7,7 +7,9 @@
  */
 package com.wegas.unit.pmg;
 
+import com.wegas.unit.PrivateRelatedTest;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  *
@@ -16,6 +18,7 @@ import org.junit.Test;
 public class ArtosTest extends PMGameAbstractTest {
 
     @Test
+    @Category(PrivateRelatedTest.class)
     public void testArtos() {
         //this.evalScript("testArtos()");
         this.evalScript("PMGTest.testAll()");

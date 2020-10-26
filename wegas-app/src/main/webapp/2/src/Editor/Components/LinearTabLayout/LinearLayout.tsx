@@ -745,7 +745,7 @@ const reduceChildren = <T extends ComponentMap>(
   let newLayoutMap: ManagedLayoutMap = layoutMap
     ? layoutMap
     : // Deepcopy
-      JSON.parse(JSON.stringify(defaultLayout));
+    JSON.parse(JSON.stringify(defaultLayout));
   const key = newLayoutMap.lastKey;
   if (children && children.length > 0) {
     if (typeof children[0] === 'string') {
@@ -775,7 +775,7 @@ const layoutTabMissing = (layout: LayoutMap | null, tabs: ComponentMap) =>
 
 // eslint-disable-next-line
 interface LayoutItem<T extends ComponentMap>
-  extends Array<LayoutItem<T> | keyof T> {}
+  extends Array<LayoutItem<T> | keyof T> { }
 type LayoutItems<T extends ComponentMap> = LayoutItem<T> | LayoutItem<T>[];
 
 interface LinearLayoutProps<T extends ComponentMap> {
@@ -784,10 +784,10 @@ interface LinearLayoutProps<T extends ComponentMap> {
    */
   tabs: T;
   /**
-   * layout - the layout initial disposition
+   * initialLayout - the layout initial disposition
    * If a layout is saved in the browser, this won't be taken in account unless the saved layout is reset
    */
-  layout?: LayoutItems<T>;
+  initialLayout?: LayoutItems<T>;
   /**
    * layoutId - The token that filter the drop actions
    */
@@ -802,20 +802,20 @@ interface LinearLayoutProps<T extends ComponentMap> {
  * MainLinearLayout is a component that allows to chose the position and size of its children
  */
 export function MainLinearLayout<T extends ComponentMap>(
-  props: LinearLayoutProps<T>,
+  { layoutId, initialLayout, tabs, onFocusTab }: LinearLayoutProps<T>,
 ) {
-  const tabs = React.useRef<ComponentMap>(props.tabs ? props.tabs : {});
+  // const tabs = React.useRef<ComponentMap>(tabs ? tabs : {});
   const savedLayoutJSON = window.localStorage.getItem(
-    `DnDGridLayoutData.${props.layoutId}`,
+    `DnDGridLayoutData.${layoutId}`,
   );
   const savedLayout = savedLayoutJSON
     ? (JSON.parse(savedLayoutJSON) as ManagedLayoutMap)
     : null;
   const [layout, dispatchLayout] = React.useReducer(
-    setLayout(props.layoutId),
-    savedLayout && !layoutTabMissing(savedLayout.layoutMap, tabs.current)
+    setLayout(layoutId),
+    savedLayout && !layoutTabMissing(savedLayout.layoutMap, tabs)
       ? savedLayout
-      : reduceChildren(props.layout),
+      : reduceChildren(initialLayout),
   );
 
   const onDrop = (layoutKey: string) => (type: DropActionType) => (item: {
@@ -861,16 +861,16 @@ export function MainLinearLayout<T extends ComponentMap>(
 
   const focusTab = React.useCallback(
     (id: string, layoutId: string) => {
-      if (props.layoutId === layoutId) {
+      if (layoutId === layoutId) {
         dispatchLayout({ type: 'EXTERNALSELECT', tabKey: id });
       }
     },
-    [props.layoutId],
+    [],
   );
 
   React.useEffect(() => {
-    props.onFocusTab && props.onFocusTab(focusTab);
-  }, [props, focusTab]);
+    onFocusTab && onFocusTab(focusTab);
+  }, [onFocusTab, focusTab]);
 
   /**
    * renderLayouts is a recursvie function that renders the linearLayout.
@@ -888,8 +888,8 @@ export function MainLinearLayout<T extends ComponentMap>(
           return (
             <DnDTabLayout
               key={currentLayoutKey}
-              components={makeTabMap(currentLayout.children, tabs.current)}
-              selectItems={getUnusedTabs(layout.layoutMap, tabs.current)}
+              components={makeTabMap(currentLayout.children, tabs)}
+              selectItems={getUnusedTabs(layout.layoutMap, tabs)}
               vertical={currentLayout.vertical}
               onDrop={onDrop(currentLayoutKey)}
               onDropTab={onDropTab(currentLayoutKey)}
@@ -897,7 +897,7 @@ export function MainLinearLayout<T extends ComponentMap>(
               onNewTab={onNewTab(currentLayoutKey)}
               defaultActiveLabel={currentLayout.defaultActive}
               onSelect={onSelect}
-              layoutId={props.layoutId}
+              layoutId={layoutId}
             />
           );
         }
@@ -941,8 +941,8 @@ export function MainLinearLayout<T extends ComponentMap>(
                   <div>Loading...</div>
                 </ReflexElement>
               ) : (
-                rendered
-              )}
+                  rendered
+                )}
             </ReflexContainer>
           );
         }
@@ -974,8 +974,8 @@ export function MainLinearLayout<T extends ComponentMap>(
   //         return (
   //           <DnDTabLayout
   //             key={currentLayoutKey}
-  //             components={makeTabMap(currentLayout.children, tabs.current)}
-  //             selectItems={getUnusedTabs(layout.layoutMap, tabs.current)}
+  //             components={makeTabMap(currentLayout.children, tabs)}
+  //             selectItems={getUnusedTabs(layout.layoutMap, tabs)}
   //             vertical={currentLayout.vertical}
   //             onDrop={onDrop(currentLayoutKey)}
   //             onDropTab={onDropTab(currentLayoutKey)}
@@ -983,7 +983,7 @@ export function MainLinearLayout<T extends ComponentMap>(
   //             onNewTab={onNewTab(currentLayoutKey)}
   //             defaultActiveLabel={currentLayout.defaultActive}
   //             onSelect={onSelect}
-  //             layoutId={props.layoutId}
+  //             layoutId={layoutId}
   //           />
   //         );
   //       }
@@ -1008,7 +1008,7 @@ export function MainLinearLayout<T extends ComponentMap>(
   //               //   dispatchLayout({
   //               //     type: 'RESIZE',
   //               //     layoutKey: childKey,
-  //               //     flex: component.props.flex,
+  //               //     flex: component.flex,
   //               //   })
   //               // }
   //               // minSize={50}

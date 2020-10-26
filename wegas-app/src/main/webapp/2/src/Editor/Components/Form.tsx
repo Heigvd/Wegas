@@ -4,7 +4,7 @@ import { Toolbar } from '../../Components/Toolbar';
 import { defaultMargin, noOverflow, expandHeight } from '../../css/classes';
 import './FormView';
 import { Button, ButtonProps } from '../../Components/Inputs/Buttons/Button';
-import { wlog } from '../../Helper/wegaslog';
+import {  wwarn } from '../../Helper/wegaslog';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 
@@ -68,7 +68,7 @@ export class Form<T> extends React.Component<
                 if (this.state.val !== this.props.entity && this.form) {
                   const validation = this.form.validate();
                   if (validation.length) {
-                    wlog(this.state.val, JSON.stringify(validation, null, 2));
+                    wwarn(this.state.val, JSON.stringify(validation, null, 2));
                   } else {
                     this.props.update!(this.state.val);
                   }

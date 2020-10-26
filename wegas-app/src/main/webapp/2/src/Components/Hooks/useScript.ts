@@ -26,15 +26,19 @@ import { ScriptableEntity } from 'wegas-ts-api';
 import { popupDispatch, addPopup, PopupActionCreator } from '../PopupManager';
 import { ActionCreator } from '../../data/actions';
 import { translate } from '../../Editor/Components/FormView/translatable';
-import { wlog, wwarn } from '../../Helper/wegaslog';
-import { ScriptCTX } from '../Contexts/ScriptContext';
+import { wwarn } from '../../Helper/wegaslog';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
+import { replace } from '../../Helper/tools';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
     _gm: unknown,
     name: string,
   ) => ScriptableEntity<T> | undefined;
+  select: <T extends SVariableDescriptor>(
+    _gm: unknown,
+    id: number,
+  ) => T | undefined;
   getItems: <T = SVariableDescriptor<SVariableInstance>>(
     itemsIds: number[],
   ) => Readonly<T[]>;
@@ -98,6 +102,12 @@ export function useGlobals() {
         return instantiate(iDesc) as ScriptableEntity<T> | undefined;
       }
     },
+    select: <T extends SVariableDescriptor>(_gm: unknown, id: number) => {
+      const iDesc = VDSelect.select<IVariableDescriptor>(id);
+      if (iDesc) {
+        return instantiate(iDesc) as unknown as T | undefined;
+      }
+    },
     getItems,
   };
 
@@ -159,41 +169,6 @@ export function useGlobals() {
       );
     }
   };
-
-  // Test for ExtractTuppleArray
-  // const testParam =  [
-  //   ['arg1', 'boolean'],
-  //   ['arg2', 'number'],
-  // ] as const ;
-
-  // type Test = ExtractTuppleArray<
-  // typeof  testParam,
-  // string,
-  // keyof WegasScriptEditorNameAndTypes,
-  // any[],
-  // "1",
-  // WegasScriptEditorNameAndTypes
-  // >
-
-  // Test for addMethod
-  // addMethod(
-  //   'Taddaaa',
-  //   [
-  //     ['arg1', 'boolean'],
-  //     ['arg2', "string"],
-  //   ] as const    ,
-  //   ['number', 'string[]'],
-  //   'array',
-  //   (arg1, arg2) => [
-  //     // Respecting the type
-  //     ['yeah'],
-  //     1234,
-  //     // No respecting the type
-  //     // true,
-  //     // "nooo",
-  //     // [6666]
-  //   ],
-  // );
 
   // ClientMethods class
   globals.ClientMethods = {
@@ -307,64 +282,46 @@ export function useGlobals() {
       return translate(translatableEntity, lang);
     },
   };
-
-  // TEST
-  //   const currentPhase = globals.Variable.find(gameModel,'phaseMSG')?.getValue(self)
-  // 	const currentPeriod = 1;
-  // 	let items = []
-  // 	const q = globals.Variable.find(gameModel,'questions').item(currentPhase - 1);
-  // 	if (q) {
-  // 		for (const i in q.get('items')) {
-  // 			const item = q.item(i);
-  // 			if (item.get('@class') === 'QuestionDescriptor' || item.get('@class') === 'WhQuestionDescriptor')
-  // 			{
-  // 				items.push(item);
-  // 			} else if (i == currentPeriod - 1 && item.get('@class') === 'ListDescriptor') {
-  // 				items = items.concat(item.flatten());
-  // 			}
-  // 		}
-  // 	}
-  // wlog(items);
 }
 
 export type ReturnType = object | number | boolean | string | undefined;
 
 export function clientScriptEval<T extends ReturnType>(
   script?: string | IScript,
+  context?: {
+    [name: string]: unknown;
+  }
 ): T extends IMergeable ? unknown : T {
+  globals.Context = context || {};
   const scriptContent = typeof script === 'string' ? script : script?.content;
   return scriptContent != null
     ? (((sandbox.contentWindow as unknown) as {
-        eval: (code: string) => T;
-      })
-        // 'undefined' so that an empty script don't return '"use strict"'
-        .eval('"use strict";undefined;' + transpile(scriptContent)) as any)
+      eval: (code: string) => T;
+    })
+      // 'undefined' so that an empty script don't return '"use strict"'
+      .eval('"use strict";undefined;' + transpile(scriptContent)) as any)
     : undefined;
 }
 
 export function safeClientScriptEval<T extends ReturnType>(
   script?: string | IScript,
+  context?: {
+    [name: string]: unknown;
+  },
   catchCB?: (e: Error) => void,
 ): T extends IMergeable ? unknown : T {
   try {
-    return clientScriptEval<T>(script);
+    return clientScriptEval<T>(script, context);
   } catch (e) {
     const scriptContent = typeof script === 'string' ? script : script?.content;
     wwarn(
-      `Script error at line ${e.lineNumber} : ${
-        e.message
-      }\n\nScript content is :\n${scriptContent}\n\nTraspiled content is :\n${
-        scriptContent != null ? transpile(scriptContent) : undefined
+      `Script error at line ${e.lineNumber} : ${e.message
+      }\n\nScript content is :\n${scriptContent}\n\nTranspiled content is :\n${scriptContent != null ? transpile(scriptContent) : undefined
       }`,
     );
     catchCB && catchCB(e);
     return undefined as any;
   }
-}
-
-function useScriptContext() {
-  const { identifiers } = React.useContext(ScriptCTX);
-  globals.Context = identifiers;
 }
 
 /**
@@ -374,12 +331,16 @@ function useScriptContext() {
  */
 export function useScript<T extends ReturnType>(
   script?: string | IScript,
+  context?: {
+    [name: string]: unknown;
+  },
   catchCB?: (e: Error) => void,
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
   useGlobals();
-  useScriptContext();
-  const fn = React.useCallback(() => safeClientScriptEval<T>(script, catchCB), [
+  // useScriptContext();
+  const fn = React.useCallback(() => safeClientScriptEval<T>(script, context, catchCB), [
     script,
+    context,
     catchCB,
   ]);
   return useStore(fn, deepDifferent) as any;
@@ -392,13 +353,58 @@ export function useScript<T extends ReturnType>(
  */
 export function useUnsafeScript<T extends ReturnType>(
   script?: string | IScript,
+  context?: {
+    [name: string]: unknown;
+  },
 ): T extends IMergeable ? unknown : T {
   useGlobals();
-  useScriptContext();
 
-  wlog(globals);
-  // debugger;
-
-  const fn = React.useCallback(() => clientScriptEval<T>(script), [script]);
+  const fn = React.useCallback(() => clientScriptEval<T>(script, context), [script, context]);
   return useStore(fn, deepDifferent) as any;
+}
+
+
+export function parseAndRunClientScript(
+  script: string | IScript,
+  context?: {
+    [name: string]: unknown;
+  },
+) {
+  let scriptContent = 'string' === typeof script ? script : script.content;
+
+  /*
+  const test1 = runClientScript("JKJKJ")
+  const test2 = runClientScript(const salut = 2;)
+  const test3 = runClientScript(ohmama())
+   */
+
+  const regexStart = /(runClientScript\(["|'|`])/g;
+  const regexEnd = /(["|'|`]\))/g;
+  const simpleVarFindRegex = new RegExp(
+    regexStart.source + `.*` + regexEnd.source,
+  );
+  let matched;
+  let index = 0;
+
+
+  do {
+    matched = scriptContent.substr(index).match(simpleVarFindRegex);
+    if (matched) {
+      index += (matched.index == null ? scriptContent.length : matched.index);
+      const matchedCode = matched[0].replace(regexStart, "").slice(0, -2);
+      const matchedValue = String(safeClientScriptEval<string>(matchedCode, context));
+
+      scriptContent = replace(scriptContent, index, matched[0].length + 1, matchedValue);
+
+      index += matchedValue.length;
+    }
+  }
+  while (matched)
+
+
+  return 'string' === typeof script ? scriptContent : { ...script, content: scriptContent };
+}
+
+export function serverScriptEval() {
+
 }
