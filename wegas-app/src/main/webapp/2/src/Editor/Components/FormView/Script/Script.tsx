@@ -306,7 +306,7 @@ export function Script({
                     minimap={false}
                     noGutter={true}
                     returnType={returnTypes(view.mode)}
-                    scriptContext={view.mode === "SET" ? "Server external" : "Client"}
+                    scriptContext={view.mode === "SET" ? "Server internal" : "Client"}
                     Editor={WegasScriptEditor}
                     EmbeddedEditor={WegasScriptEditor}
                   />
