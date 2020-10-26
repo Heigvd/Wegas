@@ -39,7 +39,21 @@ const ambientEntitiesSrc = makeAmbient(entitiesSrc);
 // We'll keep it for later uses
 // const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
 
-export function useGlobalLibs() {
+/**
+ * ScriptContext - Depending on where the script will be executed different context can be chosen.
+ *  Client : Client script, executed in client only
+ *  Server internal : Server script, executed in server only
+ *  Server external : Server script, executed in server but triggered by client.
+ * 
+ * A script in a server external context can execute client script just before beeing 
+ * sent to server for execution with the help of runClientScript method. 
+ * The argument of this method should be string. The method will be parsed and the return value of the client 
+ * script will be injected into the server script.
+ * In order for this trick to work, the server script must be passed in parseAndRunClientScript before beeing sent to the server.
+ */
+export type ScriptContext = "Client" | "Server internal" | "Server external"
+
+export function useGlobalLibs(scriptContext: ScriptContext) {
   const { classes } = React.useContext(classesCTX);
 
   const libs = useStore((s: State) => {
@@ -60,8 +74,6 @@ export function useGlobalLibs() {
       .map(l => l.code)
       .join(' | ');
 
-    // wlog(buildGlobalServerMethods(globalServerMethods));
-
     try {
       return `
         declare const gameModel : SGameModel;
@@ -70,8 +82,8 @@ export function useGlobalLibs() {
 
         interface VariableClasses {
           ${Object.keys(variableClasses)
-            .map(k => `${k}: S${variableClasses[k]};`)
-            .join('\n')}
+          .map(k => `${k}: S${variableClasses[k]};`)
+          .join('\n')}
         }
 
         class Variable {
@@ -79,12 +91,19 @@ export function useGlobalLibs() {
             gameModel: SGameModel,
             name: T
           ) => VariableClasses[T];
+          ${scriptContext === "Client" ? `static select: <T extends SVariableDescriptor>(
+            _gm: unknown,
+            id: number,
+          ) => T | undefined;        
           static getItems: <T = SVariableDescriptor<SVariableInstance>>(
             itemsIds: number[],
-          ) => Readonly<T[]>;        
+          ) => Readonly<T[]>;` : ""}       
         }
 
-        type CurrentLanguages = ${currentLanguages};
+        ${scriptContext === "Server internal" ? `
+        declare function runClientScript<T extends any = any>(clientScript:string) : T;`
+          : ""}
+        ${scriptContext === "Client" ? `type CurrentLanguages = ${currentLanguages};
         interface EditorClass extends GlobalEditorClass {
           setLanguage: (lang: { code: SGameModelLanguage['code'] } | CurrentLanguages) => void;
         }
@@ -97,9 +116,8 @@ export function useGlobalLibs() {
               const isArray = method.returnStyle === 'array';
               return `'${k}' : (${method.parameters
                 .map(p => `${p[0]} : ${p[1]}`)
-                .join(', ')}) => ${
-                isArray ? '(' : ''
-              } ${method.returnTypes.join(' | ')}
+                .join(', ')}) => ${isArray ? '(' : ''
+                } ${method.returnTypes.join(' | ')}
                ${isArray ? ')[]' : ''};
               `;
             })
@@ -112,10 +130,9 @@ export function useGlobalLibs() {
         declare const ClientMethods : ClientMethodClass;
 
         type GlobalSchemas =
-          ${
-            Object.keys(globalSchemas).length
-              ? Object.keys(globalSchemas).join('\n|')
-              : 'never'
+          ${Object.keys(globalSchemas).length
+            ? Object.keys(globalSchemas).join('\n|')
+            : 'never'
           };
 
         interface SchemaClass extends GlobalSchemaClass {
@@ -140,9 +157,7 @@ export function useGlobalLibs() {
 
         declare const Context : {
           [id:string]:any;
-        }
-
-        ${buildGlobalServerMethods(globalServerMethods)}
+        }` : `${buildGlobalServerMethods(globalServerMethods)}`}
         `;
     } catch (e) {
       wwarn(e);

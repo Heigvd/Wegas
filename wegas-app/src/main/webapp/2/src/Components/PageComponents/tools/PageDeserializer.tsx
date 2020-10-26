@@ -1,17 +1,17 @@
 import * as React from 'react';
-import { usePageComponentStore } from './componentFactory';
+import { PageComponent, usePageComponentStore } from './componentFactory';
 import {
-  ContainerTypes,
   ComponentContainer,
   EmptyComponentContainer,
   WegasComponentProps,
-  ExtractedLayoutProps,
+  ChildrenDeserializerProps,
+  ItemContainer,
+  ItemContainerPropsKeys,
 } from './EditableComponent';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { useStore } from '../../../data/store';
 import { cloneDeep } from 'lodash-es';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
-import { PlayerLinearLayoutChildrenProps } from '../Layouts/LinearLayout.component';
 
 function getComponentFromPath(page: WegasComponent, path: number[]) {
   const newPath = [...path];
@@ -32,22 +32,35 @@ function getComponentFromPath(page: WegasComponent, path: number[]) {
   return component;
 }
 
+function DefaultChildren(_: ChildrenDeserializerProps) {
+  return null;
+}
+
+
 interface PageDeserializerProps {
   pageId?: string;
   path?: number[];
   uneditable?: boolean;
-  childrenType?: ContainerTypes;
-  last?: boolean;
-  linearChildrenProps?: ExtractedLayoutProps['linearChildrenProps'];
+  context?: {
+    [name: string]: unknown;
+  };
+  Container: ItemContainer;
+  containerPropsKeys?: ItemContainerPropsKeys;
+  dropzones: {
+    side?: boolean;
+    center?: boolean;
+    empty?: boolean;
+  }
 }
 
 export function PageDeserializer({
   pageId,
   path,
   uneditable,
-  childrenType,
-  last,
-  linearChildrenProps,
+  context,
+  Container,
+  containerPropsKeys,
+  dropzones
 }: PageDeserializerProps): JSX.Element {
   const realPath = path ? path : [];
 
@@ -71,43 +84,9 @@ export function PageDeserializer({
   const component = usePageComponentStore(
     s => s[(wegasComponent && wegasComponent.type) || ''],
     deepDifferent,
-  ) as {
-    WegasComponent: React.FunctionComponent<WegasComponentProps>;
-    containerType: ContainerTypes;
-    componentName: string;
-  };
+  ) as PageComponent
 
-  const { WegasComponent, containerType, componentName } = component || {};
-  const linearProps: PlayerLinearLayoutChildrenProps =
-    containerType === 'LINEAR'
-      ? { noSplitter: restProps.noSplitter, noResize: restProps.noResize }
-      : {};
-
-  const oldRef = React.useRef({
-    containerType,
-    pageId,
-    uneditable,
-    path,
-  });
-
-  const childrenPack = React.useMemo(() => {
-    oldRef.current = { containerType, pageId, uneditable, path };
-    const newChildren = [];
-    for (let i = 0; i < nbChildren; ++i) {
-      newChildren.push(
-        <PageDeserializer
-          key={JSON.stringify([...(path ? path : []), i])}
-          pageId={pageId}
-          path={[...(path ? path : []), i]}
-          uneditable={uneditable}
-          childrenType={containerType}
-          linearChildrenProps={linearProps}
-          last={i === nbChildren - 1}
-        />,
-      );
-    }
-    return newChildren;
-  }, [nbChildren, containerType, pageId, uneditable, path, linearProps]);
+  const { WegasComponent, container, componentName } = component || {};
 
   if (!wegasComponent) {
     return <pre>JSON error in page</pre>;
@@ -116,35 +95,42 @@ export function PageDeserializer({
     return <div>{`Unknown component : ${wegasComponent.type}`}</div>;
   }
 
+  const Children = container ? container.ChildrenDeserializer : DefaultChildren as React.FunctionComponent<ChildrenDeserializerProps>
+
   return (
     <ComponentContainer
       // the key is set in order to force rerendering when page change
       //(if not, if an error occures and the page's strucutre is the same it won't render the new component)
       key={pageId}
       path={realPath}
-      last={last}
       componentType={componentName}
-      containerType={containerType}
-      childrenType={childrenType}
-      linearChildrenProps={linearChildrenProps}
+      containerType={container?.type}
+      context={context}
+      vertical={container?.isVertical(wegasComponent.props as WegasComponentProps)}
+      Container={Container}
+      containerPropsKeys={containerPropsKeys}
       {...restProps}
+      dropzones={{ ...component.dropzones, ...dropzones }}
     >
       <WegasComponent
         path={realPath}
-        last={last}
         componentType={componentName}
-        containerType={containerType}
-        childrenType={childrenType}
+        containerType={container?.type}
+        context={context}
+        Container={Container}
+        containerPropsKeys={containerPropsKeys}
         {...restProps}
+        dropzones={{ ...component.dropzones, ...dropzones }}
       >
         {editMode && children.length === 0 ? (
           <EmptyComponentContainer
-            childrenType={containerType}
             path={realPath}
+            Container={Container}
+            dropzones={{ ...component.dropzones, ...dropzones }}
           />
-        ) : (
-          childrenPack
-        )}
+        ) :
+          <Children {...wegasComponent?.props} nbChildren={nbChildren} path={(path ? path : [])} pageId={pageId} uneditable={uneditable} context={context} editMode={editMode} />
+        }
       </WegasComponent>
     </ComponentContainer>
   );

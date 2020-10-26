@@ -8,6 +8,7 @@ import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { css, cx } from 'emotion';
 import { flex, expandHeight } from '../../../css/classes';
 import { themeVar } from '../../../Components/Style/ThemeVars';
+import { FlexItem } from '../../../Components/Layouts/FlexList';
 
 const editStyle = css({
   borderStyle: 'solid',
@@ -43,10 +44,10 @@ export function PageLoader({
             className={cx(flex, { [editStyle]: displayFrame }, expandHeight)}
           >
             {selectedPage ? (
-              <PageDeserializer pageId={selectedPageId} />
+              <PageDeserializer pageId={selectedPageId} Container={FlexItem} dropzones={{}} />
             ) : (
-              <pre>{`The page is undefined`}</pre>
-            )}
+                <pre>{`The page is undefined`}</pre>
+              )}
           </div>
         </React.Suspense>
       </ThemeProvider>

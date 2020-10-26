@@ -30,14 +30,14 @@ import {
   defaultAbsoluteLayoutPropsKeys,
 } from '../../../Components/Layouts/Absolute';
 import { pick, omit } from 'lodash-es';
-import { ContainerTypes } from '../../../Components/PageComponents/tools/EditableComponent';
+import { ContainerComponent } from '../../../Components/PageComponents/tools/EditableComponent';
 
 /**
  * wegasComponentCommonSchema - defines the minimum schema for every WegasComponent
  */
 export const wegasComponentCommonSchema = {
-  name: schemaProps.string({ label: 'Name', index: -1 }),
-  className: schemaProps.string({ label: 'Classes', featureLevel: 'ADVANCED' }),
+  name: schemaProps.string({ label: 'Name', index: -2 }),
+  className: schemaProps.string({ label: 'Classes', index: -1 }),
   children: schemaProps.hidden({ type: 'array', index: 1003 }),
 };
 
@@ -152,7 +152,7 @@ interface WegasComponentForm {
     [prop: string]: unknown;
   };
   layoutOptions: WegasComponentLayoutCommonOptions &
-    (FlexItemLayoutProps | AbsoluteItemLayoutProps);
+  (FlexItemLayoutProps | AbsoluteItemLayoutProps);
   layoutConditions: WegasComponentLayoutConditionnalOptions;
   actions: WegasComponentOptionsActions & WegasComponentActionsProperties;
   decorations: WegasComponentDecorations;
@@ -203,7 +203,7 @@ export function wegasComponentSchema(
       [prop: string]: SchemaPropsSchemas;
     };
   },
-  parentContainerType: ContainerTypes,
+  parentContainer?: ContainerComponent,
 ) {
   return {
     description: pageComponentSchema.description,
@@ -218,7 +218,7 @@ export function wegasComponentSchema(
           [key: string]: SimpleSchemaPropsSchemas;
         },
       }),
-      ...wegasComponentExtraSchema(parentContainerType),
+      ...wegasComponentExtraSchema(parentContainer?.type),
     },
   };
 }
@@ -244,7 +244,7 @@ export function ComponentProperties({
 
     return wegasComponentSchema(
       baseSchema,
-      parent ? s[parent.type].containerType : undefined,
+      parent ? s[parent.type].container : undefined,
     ) as Schema<BaseView>;
   }, deepDifferent);
   if (entity === undefined || schema === undefined) {

@@ -32,6 +32,7 @@ import { ResizeHandle } from '../../ResizeHandle';
 import { createScript } from '../../../../Helper/wegasEntites';
 import { IScript, IVariableDescriptor, IVariableInstance } from 'wegas-ts-api';
 import { Button } from '../../../../Components/Inputs/Buttons/Button';
+import { EmbeddedSrcEditor } from '../../ScriptEditors/EmbeddedSrcEditor';
 
 export const scriptEditStyle = css({
   minHeight: '5em',
@@ -299,23 +300,26 @@ export function Script({
               )}
               {srcMode ? (
                 <ResizeHandle minSize={200}>
-                  <WegasScriptEditor
+                  <EmbeddedSrcEditor
                     value={script.current}
                     onChange={onCodeChange}
                     minimap={false}
                     noGutter={true}
                     returnType={returnTypes(view.mode)}
+                    scriptContext={view.mode === "SET" ? "Server external" : "Client"}
+                    Editor={WegasScriptEditor}
+                    EmbeddedEditor={WegasScriptEditor}
                   />
                 </ResizeHandle>
               ) : (
-                <WyswygScriptEditor
-                  expressions={statements}
-                  onChange={e => {
-                    onStatementsChange(e, operator);
-                  }}
-                  mode={view.mode}
-                />
-              )}
+                  <WyswygScriptEditor
+                    expressions={statements}
+                    onChange={e => {
+                      onStatementsChange(e, operator);
+                    }}
+                    mode={view.mode}
+                  />
+                )}
             </>
           );
         }}
