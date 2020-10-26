@@ -140,16 +140,15 @@ export default function HTMLEditor({
           `${onSave ? 'save' : ''} autolink link image lists code media table`,
           'paste advlist',
         ],
-        toolbar: `${
-          onSave ? 'save' : ''
-        } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link | ${[
-          ...extraStyleButton,
-          ...extraActionButton,
-        ]
-          .map(btn => btn.name)
-          .join(
-            ' ',
-          )} | code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
+        toolbar: `${onSave ? 'save' : ''
+          } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link | ${[
+            ...extraStyleButton,
+            ...extraActionButton,
+          ]
+            .map(btn => btn.name)
+            .join(
+              ' ',
+            )} | code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
         toolbar_drawer: 'floating',
         menubar: false,
         resize: 'both',
@@ -162,24 +161,24 @@ export default function HTMLEditor({
         save_onsavecallback: () => onSave && onSave(HTMLContent.current),
         fixed_toolbar_container: '#' + toolBarContainerId,
         style_formats: [
-          // {
-          //   title: 'Headers',
-          //   items: [
-          //     { title: 'h1', block: 'h1' },
-          //     { title: 'h2', block: 'h2' },
-          //     { title: 'h3', block: 'h3' },
-          //     { title: 'h4', block: 'h4' },
-          //     { title: 'h5', block: 'h5' },
-          //     { title: 'h6', block: 'h6' },
-          //   ],
-          // },
-          // {
-          //   title: 'Containers',
-          //   items: [
-          //     { title: 'div', block: 'div' },
-          //     { title: 'span', block: 'span' },
-          //   ],
-          // },
+          {
+            title: 'Headers',
+            items: [
+              { title: 'h1', block: 'h1' },
+              { title: 'h2', block: 'h2' },
+              { title: 'h3', block: 'h3' },
+              { title: 'h4', block: 'h4' },
+              { title: 'h5', block: 'h5' },
+              { title: 'h6', block: 'h6' },
+            ],
+          },
+          {
+            title: 'Containers',
+            items: [
+              { title: 'div', block: 'div' },
+              { title: 'span', block: 'span' },
+            ],
+          },
           {
             title: 'Wegas styles',
             items: classes.map(c => ({ title: c, block: 'div', classes: c })),
@@ -245,7 +244,7 @@ export default function HTMLEditor({
               ...btn,
               onAction: api => btn.onAction(api, editor),
               onSetup: api =>
-                btn.onSetup ? btn.onSetup(api, editor) : () => {},
+                btn.onSetup ? btn.onSetup(api, editor) : () => { },
             });
           });
         },
@@ -300,7 +299,7 @@ export default function HTMLEditor({
           onEditorChange={onEditorChange}
           onFocus={() => setEditorFocus(true)}
           onBlur={() => setEditorFocus(false)}
-          // textareaName={editorStyle}
+        // textareaName={editorStyle}
         />
       </div>
       {fileBrowsing.fn && (
@@ -312,7 +311,7 @@ export default function HTMLEditor({
                 fileBrowsing.fn &&
                 fileBrowsing.fn(
                   document.location.origin +
-                    fileURL(generateAbsolutePath(file)),
+                  fileURL(generateAbsolutePath(file)),
                 );
             }}
             pick={'FILE'}
@@ -330,7 +329,7 @@ const labeledHTMLEditorStyle = css({
 
 interface HtmlProps
   extends WidgetProps.BaseProps<
-    { placeholder?: string } & CommonView & LabeledView
+  { placeholder?: string } & CommonView & LabeledView
   > {
   value?: string;
 }
