@@ -76,7 +76,7 @@ public class WegasTest {
     private static TestAuthenticationInformation trainer;
     private static TestAuthenticationInformation user;
 
-    GameModel artos;
+    GameModel dummyGameModel;
 
     @Deployment(name = "wegas1")
     //@OverProtocol("Local")
@@ -127,7 +127,7 @@ public class WegasTest {
         logger.info("LOGIN as root");
         client.login(root);
         client.get("/rest/Utils/SetPopulatingSynchronous");
-        loadArtos();
+        loadDummyGameModel();
     }
 
     @AfterClass
@@ -154,9 +154,9 @@ public class WegasTest {
         client.put("/rest/User/Account/" + trainerUser.getMainAccount().getId(), trainerUser.getMainAccount());
     }
 
-    private void loadArtos() throws IOException {
-        logger.info("LOAD ARTOS");
-        artos = client.postJSONFromFile("/rest/GameModel", "../wegas-app/src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json", GameModel.class);
+    private void loadDummyGameModel() throws IOException {
+        logger.info("LOAD DUMMY GAME-MODEL");
+        dummyGameModel = client.postJSONFromFile("/rest/GameModel", "./src/test/resources/dummy.json", GameModel.class);
     }
 
     private Player getTestPlayer(GameModel gameModel) throws IOException {
@@ -175,30 +175,30 @@ public class WegasTest {
         }
     }
 
-    private String getArtosBaseURL() {
-        return "/rest/Editor/GameModel/" + artos.getId();
+    private String getDummyBaseURL() {
+        return "/rest/Editor/GameModel/" + dummyGameModel.getId();
     }
 
     @Test
     public void testCacheCoordination() throws IOException {
-        String artosUrl = getArtosBaseURL();
+        String dummGmUrl = getDummyBaseURL();
 
-        Player testPlayer = getTestPlayer(artos);
+        Player testPlayer = getTestPlayer(dummyGameModel);
 
-        String runURL = artosUrl + "/VariableDescriptor/Script/Run/" + testPlayer.getId();
+        String runURL = dummGmUrl + "/VariableDescriptor/Script/Run/" + testPlayer.getId();
 
         client.login(root);
         client2.login(root);
 
         // Load managementApproval on both instances
-        Script fetchVar = new Script("JavaScript", "Variable.find(gameModel, 'managementApproval');");
+        Script fetchVar = new Script("JavaScript", "Variable.find(gameModel, 'aBoundedNumber');");
         NumberDescriptor var1 = client.post(runURL, fetchVar, NumberDescriptor.class);
         NumberDescriptor var2 = client2.post(runURL, fetchVar, NumberDescriptor.class);
         Assert.assertEquals("Min bounds do not match", var1.getMinValue(), var2.getMinValue(), 0.001);
 
         // update min bound on instance #1
         var1.setMinValue(-100.0);
-        var1 = client.put(artosUrl + "/VariableDescriptor/" + var1.getId(), var1, NumberDescriptor.class);
+        var1 = client.put(dummGmUrl + "/VariableDescriptor/" + var1.getId(), var1, NumberDescriptor.class);
         Assert.assertEquals("Min bounds do not match", -100, var1.getMinValue(), 0.001);
 
         // update the min bound in database
@@ -212,8 +212,8 @@ public class WegasTest {
         }
 
         // assert both instsances do not read the min bounds from database
-        var1 = client.get(artosUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
-        var2 = client2.get(artosUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
+        var1 = client.get(dummGmUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
+        var2 = client2.get(dummGmUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
         Assert.assertEquals("Min bounds do not match", -100, var1.getMinValue(), 0.001);
         Assert.assertEquals("Min bounds do not match", -100, var2.getMinValue(), 0.001);
 
@@ -222,69 +222,69 @@ public class WegasTest {
         client2.delete("/rest/Utils/LocalEmCache");
 
         // assert both instsances DO read the min bounds from database
-        var1 = client.get(artosUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
-        var2 = client2.get(artosUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
+        var1 = client.get(dummGmUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
+        var2 = client2.get(dummGmUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
         Assert.assertEquals("Min bounds do not match", -9999, var1.getMinValue(), 0.001);
         Assert.assertEquals("Min bounds do not match", -9999, var2.getMinValue(), 0.001);
     }
 
     @Test
     public void testCollectionChangeRecordIssue() throws IOException {
-        String artosUrl = getArtosBaseURL();
+        String dummyGmUrl = getDummyBaseURL();
 
-        Player testPlayer = getTestPlayer(artos);
+        Player testPlayer = getTestPlayer(dummyGameModel);
 
-        String runURL = artosUrl + "/VariableDescriptor/Script/Run/" + testPlayer.getId();
-        String assignUrl = artosUrl + "/VariableDescriptor/ResourceDescriptor/Assign/";
-        String moveUrl = artosUrl + "/VariableDescriptor/ResourceDescriptor/MoveAssignment/";
+        String runURL = dummyGmUrl + "/VariableDescriptor/Script/Run/" + testPlayer.getId();
+        String assignUrl = dummyGmUrl + "/VariableDescriptor/ResourceDescriptor/Assign/";
+        String moveUrl = dummyGmUrl + "/VariableDescriptor/ResourceDescriptor/MoveAssignment/";
 
         client.login(root);
         client2.login(root);
 
         /*
          * DELETE	/Assign/{assignmentId}
-         * POST	/Assign/{resourceId}/{taskInstanceId} 
+         * POST	/Assign/{resourceId}/{taskInstanceId}
          * PUT * /MoveAssignment/{assignmentId}/{index}
          */
         // Load resource and task from botch instance
-        Script fetchTask1 = new Script("JavaScript", "Variable.find(gameModel, 'ChoixEnvironnementDéveloppement').getInstance(self);");
+        Script fetchTask1 = new Script("JavaScript", "Variable.find(gameModel, 'analyse').getInstance(self);");
         TaskInstance task1 = client.post(runURL, fetchTask1, TaskInstance.class);
 
-        Script fetchTask2 = new Script("JavaScript", "Variable.find(gameModel, 'AnalyseExistant').getInstance(self);");
+        Script fetchTask2 = new Script("JavaScript", "Variable.find(gameModel, 'implementation').getInstance(self);");
         TaskInstance task2 = client.post(runURL, fetchTask2, TaskInstance.class);
 
-        Script fetchResource = new Script("JavaScript", "Variable.find(gameModel, 'Gaelle').getInstance(self);");
-        ResourceInstance gaelle_a = client.post(runURL, fetchResource, ResourceInstance.class);
-        ResourceInstance gaelle_b = client2.post(runURL, fetchResource, ResourceInstance.class);
+        Script fetchResource = new Script("JavaScript", "Variable.find(gameModel, 'john').getInstance(self);");
+        ResourceInstance john_a = client.post(runURL, fetchResource, ResourceInstance.class);
+        ResourceInstance john_b = client2.post(runURL, fetchResource, ResourceInstance.class);
 
-        Assert.assertArrayEquals(gaelle_a.getAssignments().toArray(), gaelle_b.getAssignments().toArray());
+        Assert.assertArrayEquals(john_a.getAssignments().toArray(), john_b.getAssignments().toArray());
 
         // assign gaelle to task3, task2 and task1
-        client.post(assignUrl + gaelle_a.getId() + "/" + task1.getId(), null);
-        client.post(assignUrl + gaelle_a.getId() + "/" + task2.getId(), null);
+        client.post(assignUrl + john_a.getId() + "/" + task1.getId(), null);
+        client.post(assignUrl + john_a.getId() + "/" + task2.getId(), null);
 
         // assert both instances have the same list
-        gaelle_a = client.post(runURL, fetchResource, ResourceInstance.class);
-        gaelle_b = client2.post(runURL, fetchResource, ResourceInstance.class);
+        john_a = client.post(runURL, fetchResource, ResourceInstance.class);
+        john_b = client2.post(runURL, fetchResource, ResourceInstance.class);
 
-        Assert.assertArrayEquals(gaelle_a.getAssignments().toArray(), gaelle_b.getAssignments().toArray());
+        Assert.assertArrayEquals(john_a.getAssignments().toArray(), john_b.getAssignments().toArray());
 
         // move assignment
-        Assignment a = gaelle_a.getAssignments().get(1);
+        Assignment a = john_a.getAssignments().get(1);
         client.put(moveUrl + a.getId() + "/0");
 
         // assert both instances have the same list
-        gaelle_a = client.post(runURL, fetchResource, ResourceInstance.class);
-        gaelle_b = client2.post(runURL, fetchResource, ResourceInstance.class);
+        john_a = client.post(runURL, fetchResource, ResourceInstance.class);
+        john_b = client2.post(runURL, fetchResource, ResourceInstance.class);
 
-        Assert.assertArrayEquals(gaelle_a.getAssignments().toArray(), gaelle_b.getAssignments().toArray());
+        Assert.assertArrayEquals(john_a.getAssignments().toArray(), john_b.getAssignments().toArray());
     }
 
     @Test
     public void testStandardProcess() throws IOException {
         logger.info("root share to Scenarist");
         client.login(root);
-        client.post("/rest/User/ShareGameModel/" + artos.getId() + "/View,Edit,Delete,Instantiate,Duplicate/" + scenarist.getAccountId(), null);
+        client.post("/rest/User/ShareGameModel/" + dummyGameModel.getId() + "/View,Edit,Delete,Instantiate,Duplicate/" + scenarist.getAccountId(), null);
 
         logger.info("scenarist share to trainer");
         client.login(scenarist);
@@ -292,8 +292,8 @@ public class WegasTest {
         });
 
         logger.info("# gamemodels scen:" + gameModels.size());
-        Assert.assertEquals(2, gameModels.size()); // Artos  + _empty
-        client.post("/rest/User/ShareGameModel/" + artos.getId() + "/Instantiate/" + trainer.getAccountId(), null);
+        Assert.assertEquals(2, gameModels.size()); // Dummy  + Empty gameModels
+        client.post("/rest/User/ShareGameModel/" + dummyGameModel.getId() + "/Instantiate/" + trainer.getAccountId(), null);
 
         client.login(trainer);
 
@@ -301,21 +301,21 @@ public class WegasTest {
         });
         logger.info("# gamemodels trainer:" + gameModels.size());
         // Get
-        Assert.assertEquals(2, gameModels.size()); // artos +empty
+        Assert.assertEquals(2, gameModels.size()); // dummyGameModel +empty
 
         //create a game
-        Game myGame = client.postJSON_asString("/rest/GameModel/" + artos.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + artos.getId() + "\",\"access\":\"OPEN\",\"name\":\"ArtosGame\"}", Game.class);
+        Game myGame = client.postJSON_asString("/rest/GameModel/" + dummyGameModel.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + dummyGameModel.getId() + "\",\"access\":\"OPEN\",\"name\":\"DummyGame\"}", Game.class);
         String token = myGame.getToken();
 
         List<Game> games = client.get("/rest/GameModel/Game/status/LIVE", new TypeReference<List<Game>>() {
         });
-        Assert.assertEquals(1, games.size()); // artos +empty
+        Assert.assertEquals(1, games.size()); // dummyGameModel +empty
 
         client.login(user);
 
         Game gameToJoin = client.get("/rest/GameModel/Game/FindByToken/" + token, Game.class);
 
-        gameToJoin.setGameModel(artos); //Hack
+        gameToJoin.setGameModel(dummyGameModel); //Hack
 
         Team teamToCreate = new Team();
         teamToCreate.setDeclaredSize(1);
@@ -335,7 +335,7 @@ public class WegasTest {
         List<Team> userTeams = client.get("/rest/User/Current/Team", new TypeReference<List<Team>>() {
         });
 
-        Assert.assertEquals(1, userTeams.size()); // artos +empty
+        Assert.assertEquals(1, userTeams.size()); // dummyGameModel +empty
     }
 
     @Test
@@ -361,8 +361,8 @@ public class WegasTest {
 
     @Test
     public void createGameTest() throws IOException {
-        Game myGame = client.postJSON_asString("/rest/GameModel/" + this.artos.getId() + "/Game",
-            "{\"@class\":\"Game\",\"gameModelId\":\"" + this.artos.getId() + "\",\"access\":\"OPEN\",\"name\":\"My Artos Game\"}", Game.class);
+        Game myGame = client.postJSON_asString("/rest/GameModel/" + this.dummyGameModel.getId() + "/Game",
+            "{\"@class\":\"Game\",\"gameModelId\":\"" + this.dummyGameModel.getId() + "\",\"access\":\"OPEN\",\"name\":\"My Dummy Game\"}", Game.class);
 
         /* Use Editor view to load teams: */
         Game myGameFromGet = client.get("/rest/Editor/GameModel/Game/" + myGame.getId(), Game.class);
@@ -377,10 +377,9 @@ public class WegasTest {
     public void getVariableDescriptor() throws IOException {
         List<VariableDescriptor> descs;
 
-        descs = (List<VariableDescriptor>) (client.get("/rest/GameModel/" + this.artos.getId() + "/VariableDescriptor", new TypeReference<List<VariableDescriptor>>() {
+        descs = (List<VariableDescriptor>) (client.get("/rest/GameModel/" + this.dummyGameModel.getId() + "/VariableDescriptor", new TypeReference<List<VariableDescriptor>>() {
         }));
-
-        Assert.assertTrue("Seems there is not enough descriptor here...", descs.size() > 10);
+        Assert.assertEquals("Number of descriptor does not match...", 6, descs.size());
     }
 
     @Test
