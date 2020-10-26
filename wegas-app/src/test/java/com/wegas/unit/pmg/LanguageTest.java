@@ -7,7 +7,9 @@
  */
 package com.wegas.unit.pmg;
 
+import com.wegas.unit.PrivateRelatedTest;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  *
@@ -16,6 +18,7 @@ import org.junit.Test;
 public class LanguageTest extends PMGameAbstractTest {
 
     @Test
+    @Category(PrivateRelatedTest.class)
     public void testLanguage() {
         this.evalScript("PMGTest.testAll()");
     }
@@ -24,7 +27,7 @@ public class LanguageTest extends PMGameAbstractTest {
     protected String getGameModelPath() {
         return "src/main/webapp/wegas-private/wegas-pmg/db/wegas-pmg-gamemodel-language.json";
     }
-    
+
     @Override
     protected String getScriptTestPath() {
         return "test-scripts/wegas-pmg-server-test-language.js";

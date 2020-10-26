@@ -129,7 +129,7 @@
         <payara.version>5.201</payara.version>
         <payara.micro.version>5.201.albasim-p1</payara.micro.version>
         <payara-api.version>5.201</payara-api.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <arquillian.version>1.4.1.Final</arquillian.version>
         <exec.plugin.version>1.2</exec.plugin.version>
 
