@@ -59,7 +59,19 @@ If your default JVM is <> 11, you must provide the path to a JVM-11 to maven. E.
 JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/" mvn -DskipTests install
 ```
 
+## Test
 
+### Private access
+```bash
+mvn -f .. test
+```
+
+### Public access
+Since some tests require data from our private repository, please set `skipCategory` to `com.wegas.unit.PrivateRelatedTest` to skip them:
+
+```bash
+mvn -f .. -DskipCategory=com.wegas.unit.PrivateRelatedTest clean install
+```
 
 ## Run
 
@@ -81,10 +93,10 @@ Option | Default Value | Description
 -w | ../wegas-app/target/Wegas | war to deploy
 
 #### Clustering
-Running several instance at the same time will automatically create a cluster.
+Running several instance (localhost) at the same time will automatically create a cluster.
 
 #### Custom Properties
-First run create `src/main/resources/wegas-override.properties` file.
+First run creates `src/main/resources/wegas-override.properties` file.
 Feel free to modify it.
 
 #### Reload after wegas-core changes
@@ -92,3 +104,4 @@ Feel free to modify it.
 mvn -f .. -pl wegas-app -am -DskipTests -DskipYarn install
 touch ../wegas-app/target/Wegas/.reload
 ```
+
