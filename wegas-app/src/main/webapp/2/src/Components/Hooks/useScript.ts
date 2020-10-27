@@ -29,14 +29,7 @@ import { translate } from '../../Editor/Components/FormView/translatable';
 import { wwarn } from '../../Helper/wegaslog';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { replace } from '../../Helper/tools';
-
-/**
- * These methods will work only in editor context
- */
-// interface APIMethodsClass{
-//   createVariable:(type:)=>void;
-//   updateInstance:()
-// }
+import { APIScriptMethods } from '../../API/clientScriptHelper';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -68,7 +61,7 @@ interface GlobalClasses {
   Context: {
     [name: string]: unknown;
   };
-  // API
+  APIMethods: APIMethodsClass;
 }
 
 const globalDispatch = store.dispatch;
@@ -292,6 +285,8 @@ export function useGlobals() {
       return translate(translatableEntity, lang);
     },
   };
+
+  globals.APIMethods = APIScriptMethods;
 }
 
 export type ReturnType = object | number | boolean | string | undefined;

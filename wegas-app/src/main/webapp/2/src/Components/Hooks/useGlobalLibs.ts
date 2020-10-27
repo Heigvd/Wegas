@@ -23,6 +23,8 @@ import wegasEventsGlobalSrc from '!!raw-loader!../../../types/scripts/WegasEvent
 import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMethodsGlobals.d.ts';
 // @ts-ignore
 import i18nGlobalSrc from '!!raw-loader!../../../types/scripts/I18nGlobals.d.ts';
+// @ts-ignore
+import APIMethodsGlobalSrc from '!!raw-loader!../../../types/scripts/APIMethodsGlobals.d.ts';
 
 import { deepDifferent } from './storeHookFactory';
 import { wwarn } from '../../Helper/wegaslog';
@@ -170,7 +172,10 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
 
         declare const Context : {
           [id:string]:any;
-        }`
+        }
+        
+        declare const APIMethods : APIMethodsClass;
+        `
             : `${buildGlobalServerMethods(globalServerMethods)}`
         }
         `;
@@ -193,6 +198,7 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         ${popupsGlobalSrc}\n
         ${wegasEventsGlobalSrc}\n
         ${i18nGlobalSrc}\n
+        ${APIMethodsGlobalSrc}\n
         ${libs}\n
       `,
         name: 'VariablesTypes.d.ts',
