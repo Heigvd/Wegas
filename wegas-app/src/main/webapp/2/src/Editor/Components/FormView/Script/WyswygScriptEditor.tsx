@@ -42,6 +42,7 @@ export function WyswygScriptEditor({
   React.useEffect(() => {
     setExpr(expressions);
   }, [expressions]);
+
   return (
     <div className={scriptStyle}>
       <Form
