@@ -18,7 +18,6 @@ import {
 import {
   FlexListProps,
   defaultFlexLayoutOptionsKeys,
-  isVertical,
 } from '../../Layouts/FlexList';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import { useDebounce } from '../../Hooks/useDebounce';
@@ -508,39 +507,45 @@ export function ComponentContainer({
     isComponentFocused(editMode, pageId, path),
   );
 
-  const onClick = React.useCallback(() => {
-    if (
-      options != null &&
-      (!options.confirmClick ||
-        // TODO : Find a better way to do that than a modal!!!
-        // eslint-disable-next-line no-alert
-        confirm(options.confirmClick))
-    ) {
-      Object.entries(
-        pick(
-          options,
-          Object.keys(defaultWegasComponentOptionsActions),
-        ) as WegasComponentOptionsActions,
-      )
-        .sort(
-          (
-            [, v1]: [string, WegasComponentOptionsAction],
-            [, v2]: [string, WegasComponentOptionsAction],
-          ) =>
-            (v1.priority ? v1.priority : 0) - (v2.priority ? v2.priority : 0),
+  const onClick = React.useCallback(
+    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (options.stopPropagation) {
+        event.stopPropagation();
+      }
+      if (
+        options != null &&
+        (!options.confirmClick ||
+          // TODO : Find a better way to do that than a modal!!!
+          // eslint-disable-next-line no-alert
+          confirm(options.confirmClick))
+      ) {
+        Object.entries(
+          pick(
+            options,
+            Object.keys(defaultWegasComponentOptionsActions),
+          ) as WegasComponentOptionsActions,
         )
-        .forEach(([k, v]) => {
-          if (k === 'impactVariable') {
-            return wegasComponentActions.impactVariable({
-              impact: parseAndRunClientScript(v.impact, context) as IScript,
-            });
-          }
-          return wegasComponentActions[k as keyof WegasComponentOptionsActions](
-            v,
-          );
-        });
-    }
-  }, [options, context]);
+          .sort(
+            (
+              [, v1]: [string, WegasComponentOptionsAction],
+              [, v2]: [string, WegasComponentOptionsAction],
+            ) =>
+              (v1.priority ? v1.priority : 0) - (v2.priority ? v2.priority : 0),
+          )
+          .forEach(([k, v]) => {
+            if (k === 'impactVariable') {
+              return wegasComponentActions.impactVariable({
+                impact: parseAndRunClientScript(v.impact, context) as IScript,
+              });
+            }
+            return wegasComponentActions[
+              k as keyof WegasComponentOptionsActions
+            ]({ ...v, context });
+          });
+      }
+    },
+    [options, context],
+  );
 
   const onMouseOver = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

@@ -51,6 +51,7 @@ interface ImpactVariableAction {
 }
 interface LoaclScriptEvalAction {
   script: string;
+  context?: { [item: string]: any };
 }
 interface OpenPopupPageAction {
   pageId: IScript;
@@ -86,6 +87,7 @@ export const defaultWegasComponentOptionsActions: WegasComponentOptionsActions =
 
 export interface WegasComponentActionsProperties {
   confirmClick?: string;
+  stopPropagation?: boolean;
 }
 
 export interface WegasComponentActions {
@@ -126,7 +128,7 @@ export const wegasComponentActions: WegasComponentActions = {
     }
   },
   localScriptEval: props => {
-    clientScriptEval(props.script);
+    clientScriptEval(props.script, props.context);
   },
   openPopupPage: props => {
     //TODO : Discuss that with Maxence
@@ -196,7 +198,7 @@ export const actionsChoices: HashListChoices = [
       schema: schemaProps.object({
         label: 'Impact variable',
         properties: {
-          impact: schemaProps.script({ label: 'Impact', required: true, }),
+          impact: schemaProps.script({ label: 'Impact', required: true }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
       }),
@@ -276,6 +278,16 @@ export const actionsChoices: HashListChoices = [
       schema: schemaProps.string({
         label: 'Confirmation message',
         value: 'Are you sure?',
+      }),
+    },
+  },
+  {
+    label: 'Stop propagation',
+    value: {
+      prop: 'stopPropagation',
+      schema: schemaProps.boolean({
+        label: 'Stop propagation',
+        value: false,
       }),
     },
   },
@@ -519,11 +531,11 @@ export function useComputeUnreadCount(
 
   return infoBeamMessage
     ? {
-      messageScript:
-        infoBeamMessage === 0
-          ? undefined
-          : createScript(JSON.stringify(String(infoBeamMessage))),
-    }
+        messageScript:
+          infoBeamMessage === 0
+            ? undefined
+            : createScript(JSON.stringify(String(infoBeamMessage))),
+      }
     : undefined;
 }
 
