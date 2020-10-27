@@ -4,8 +4,6 @@ jdk:
   - openjdk11
 addons:
   postgresql: 10
-  ssh_known_hosts: 
-  - rancher01.albasim.ch
 services: postgresql
 cache:
   directories:
@@ -34,10 +32,7 @@ install:
 script:
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo ${TRAVIS_PULL_REQUEST}_${TRAVIS_PULL_REQUEST_BRANCH}; fi)
 after_success:
-- openssl aes-256-cbc -K $encrypted_fb8fa6aea355_key -iv $encrypted_fb8fa6aea355_iv -in .id_rsa.enc -out .id_rsa -d; chmod 400 .id_rsa;
-  scp -B -i .id_rsa wegas-app/target/Wegas.war "$RANCHER_USER@rancher01.albasim.ch:autodeploy/Wegas_${BRANCH}_${TRAVIS_BUILD_NUMBER}.war";
-  rm -f .id_rsa;
-  export WAR=/tmp/Wegas_${BRANCH}_${TRAVIS_BUILD_NUMBER}.war;
+- export WAR=/tmp/Wegas_${BRANCH}_${TRAVIS_BUILD_NUMBER}.war;
   cp wegas-app/target/Wegas.war ${WAR};
-  curl --insecure -F "war=@${WAR}" -H "Authorization:token ${WAR_MANAGER_ADMIN_TOKEN}" https://manager.albasim.ch/api/branch/upload;
+  curl -s --insecure -F "war=@${WAR}" -H "Authorization:token ${WAR_MANAGER_ADMIN_TOKEN}" https://manager.albasim.ch/api/branch/upload > /dev/null;
 
