@@ -203,7 +203,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                         request: "/QuestionDescriptor/Read/" +
                             Wegas.Facade.Game.get('currentPlayerId') + "/" + whQuestion.get("id"),
                         cfg: {
-                            method: "PUT"
+                            method: "PUT",
+                            responseEvent: false
                         }
                     });
                 }
@@ -621,7 +622,9 @@ YUI.add('wegas-mcq-view', function(Y) {
                         request: "/QuestionDescriptor/Read/" +
                             Y.Wegas.Facade.Game.get('currentPlayerId') + "/" + choice.get("id"),
                         cfg: {
-                            method: "PUT"
+                            method: "PUT",
+                            updateEvent: false,
+                            responseEvent: false
                         }
                     });
                 }
@@ -1209,7 +1212,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                             request: "/QuestionDescriptor/Read/" +
                                 Wegas.Facade.Game.get('currentPlayerId') + "/" + questionDescriptor.get("id"),
                             cfg: {
-                                method: "PUT"
+                                method: "PUT",
+                                responseEvent: false
                             }
                         });
                     }
