@@ -26,7 +26,7 @@ const ThemeEditor = React.lazy(
   () => import('../../Components/Style/ThemeEditor'),
 );
 
-const Tester = React.lazy(() => import('../../Testers/WegasScriptEditorTester'));
+const Tester = React.lazy(() => import('../../Testers/SchemaPropsTester'));
 
 const layout = css({
   display: 'flex',
@@ -55,10 +55,15 @@ export const mainLayoutId = 'MainEditorLayout';
 
 export default function Layout() {
   const scenaristPages: ComponentMap = useStore(s => {
-    return s.pages.index ? visitIndex(s.pages.index.root,
-      item => item).filter(item => item.scenaristPage) : []
-  }, deepDifferent)
-    .reduce((o, i) => ({ ...o, [i.name]: <PageLoader selectedPageId={i.id} /> }), {});
+    return s.pages.index
+      ? visitIndex(s.pages.index.root, item => item).filter(
+          item => item.scenaristPage,
+        )
+      : [];
+  }, deepDifferent).reduce(
+    (o, i) => ({ ...o, [i.name]: <PageLoader selectedPageId={i.id} /> }),
+    {},
+  );
 
   return (
     <div className={layout}>

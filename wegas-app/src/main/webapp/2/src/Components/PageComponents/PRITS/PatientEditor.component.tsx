@@ -4,13 +4,15 @@ import * as React from 'react';
 import {
   IListDescriptor,
   IStringDescriptor,
+  IStringInstance,
+  ITextInstance,
   IVariableDescriptor,
   IVariableInstance,
   SListDescriptor,
   SStringDescriptor,
-  STextDescriptor,
 } from 'wegas-ts-api';
 import { ITextDescriptor } from 'wegas-ts-api/typings/WegasEntities';
+import { fileURL, generateAbsolutePath } from '../../../API/files.api';
 import { VariableDescriptorAPI } from '../../../API/variableDescriptor.api';
 import {
   expandHeight,
@@ -27,10 +29,21 @@ import { updateInstance } from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
 import { GameModel, Player, VariableDescriptor } from '../../../data/selectors';
 import { store, useStore } from '../../../data/store';
-import { createTranslatableContent } from '../../../Editor/Components/FormView/translatable';
+import { FileBrowser } from '../../../Editor/Components/FileBrowser/FileBrowser';
+import {
+  createTranslatableContent,
+  translate,
+} from '../../../Editor/Components/FormView/translatable';
+import { TextPrompt } from '../../../Editor/Components/TextPrompt';
+import { wlog } from '../../../Helper/wegaslog';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { deepDifferent } from '../../Hooks/storeHookFactory';
+import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import HTMLEditor from '../../HTMLEditor';
 import { Button } from '../../Inputs/Buttons/Button';
+import { inputStyle } from '../../Inputs/inputStyles';
+import { SimpleInput } from '../../Inputs/SimpleInput';
+import { Modal } from '../../Modal';
 import { themeVar } from '../../Style/ThemeVars';
 import {
   registerComponent,
@@ -42,8 +55,6 @@ import { schemaProps } from '../tools/schemaProps';
 const patientListStyle = css({
   margin: '5px',
   padding: '2px',
-  borderStyle: 'inset',
-  borderColor: themeVar.Common.colors.BorderColor,
 });
 
 const patientListItemStyle = css({
@@ -83,7 +94,7 @@ function PatientList({
   return (
     <div className={cx(flex, flexColumn, expandHeight, expandWidth)}>
       <h2 className={textCenter}>Patients</h2>
-      <div className={cx(flex, flexColumn, grow, patientListStyle)}>
+      <div className={cx(flex, flexColumn, grow, patientListStyle, inputStyle)}>
         <div
           className={cx(patientListItemStyle, newPatientStyle)}
           onClick={() => onItemClick(undefined)}
@@ -113,8 +124,73 @@ function PatientList({
 
 const patientEditionFormStyle = css({
   display: 'grid',
-  gridTemplateColumns: '50% 50%',
+  gridTemplateColumns: '30% 70%',
+  gridAutoRows: '100px',
+  alignItems: 'center',
 });
+
+const leftGridCellStyle = css({
+  justifySelf: 'center',
+});
+
+const portraitStyle = css({
+  position: 'relative',
+  width: '200px',
+  height: '200px',
+  borderRadius: '100px',
+  overflow: 'hidden',
+  '&>div': {
+    height: '100%',
+  },
+});
+
+const portraitClickStyle = css({
+  position: 'absolute',
+  display: 'flex',
+  top: 0,
+  width: '100%',
+  height: '100%',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+// interface PatientHistoryListProps {}
+
+function PatientHistoryList(/*props: PatientHistoryListProps*/) {
+  const newHistoryButton = React.useRef(null);
+  const [newHistory, setNewHistory] = React.useState<boolean>(false);
+
+  useOnClickOutside(newHistoryButton, () => setNewHistory(false));
+
+  return (
+    <div>
+      <h3 className={cx(grow, textCenter)}>Histoires</h3>
+      <div className={cx(flex, flexColumn, inputStyle)}>
+        {newHistory ? (
+          <div
+            className={cx(flex, flexRow, patientListItemStyle, newPatientStyle)}
+          >
+            Nom :
+            <TextPrompt
+              className={cx(flex, flexRow, grow)}
+              onAction={() => {
+                setNewHistory(false);
+              }}
+            />
+          </div>
+        ) : (
+          <div
+            ref={newHistoryButton}
+            className={cx(patientListItemStyle, newPatientStyle)}
+            onClick={() => setNewHistory(true)}
+          >
+            Ajouter une nouvelle histoire
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 interface PatientEditionProps {
   patientId: number;
@@ -122,39 +198,120 @@ interface PatientEditionProps {
 }
 
 function PatientEdition({ patientId, onClickBack }: PatientEditionProps) {
+  const [browsingFile, setBrowsingFile] = React.useState<boolean>(false);
   const { lang } = React.useContext(languagesCTX);
   const player = instantiate(useStore(Player.selectCurrent));
-  const patient = instantiate(
-    useStore(() => VariableDescriptor.select<IListDescriptor>(patientId)),
-  );
 
-  const description = patient
-    ?.getItems()
-    .find(item => item.getEditorTag() === 'description') as STextDescriptor;
+  const { portrait, nom, description } = useStore(() => {
+    const patient = instantiate(
+      VariableDescriptor.select<IListDescriptor>(patientId),
+    );
+    const portrait = patient
+      ?.getItems()
+      .find(item => item.getEditorTag() === 'portrait')
+      ?.getInstance(player)
+      ?.getEntity() as ITextInstance;
+    const nom = patient
+      ?.getItems()
+      .find(item => item.getEditorTag() === 'nom')
+      ?.getInstance(player)
+      ?.getEntity() as IStringInstance;
+    const description = patient
+      ?.getItems()
+      .find(item => item.getEditorTag() === 'description')
+      ?.getInstance(player)
+      ?.getEntity() as ITextInstance;
+
+    wlog(translate(nom?.trValue, lang));
+
+    return { portrait, nom, description };
+  }, deepDifferent);
 
   return (
-    <div className={cx(flex, flexColumn, expandHeight, expandWidth)}>
+    <div
+      className={cx(
+        flex,
+        flexColumn,
+        expandHeight,
+        expandWidth,
+        css({ padding: '5px' }),
+      )}
+    >
       <div className={cx(flex, flexRow, itemCenter)}>
         <Button icon="arrow-left" onClick={onClickBack} />
         <h2 className={cx(grow, textCenter)}>Patient</h2>
       </div>
 
       <div className={cx(grow, patientEditionFormStyle)}>
+        {browsingFile && (
+          <Modal onExit={() => setBrowsingFile(false)}>
+            <FileBrowser
+              onFileClick={file => {
+                setBrowsingFile(false);
+                if (file) {
+                  dispatch(
+                    updateInstance({
+                      ...portrait,
+                      trValue: createTranslatableContent(
+                        lang,
+                        `<div style="background-image: url('${fileURL(
+                          generateAbsolutePath(file),
+                        )}'); width: 100%; height: 100%; background-position: center; background-size: contain; background-repeat: no-repeat;">&nbsp;</div>`,
+                      ),
+                    } as IVariableInstance),
+                  );
+                }
+              }}
+              pick={'FILE'}
+              filter={{ fileType: 'image', filterType: 'show' }}
+            />
+          </Modal>
+        )}
         <div>Id</div>
-        <div>{patientId}</div>
+        <div className={leftGridCellStyle}>{patientId}</div>
+        <div>Portrait</div>
+        <div className={cx(leftGridCellStyle, portraitStyle)}>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: translate(portrait.trValue, lang) || '',
+            }}
+          />
+          <div className={portraitClickStyle}>
+            <Button
+              icon={{ icon: 'download', size: '5x' }}
+              onClick={() => setBrowsingFile(true)}
+            />
+          </div>
+          {/* <div className={portraitClickStyle}>Insert image</div> */}
+        </div>
+        <div>Nom</div>
+        <SimpleInput
+          className={leftGridCellStyle}
+          value={translate(nom.trValue, lang)}
+          onChange={value => {
+            dispatch(
+              updateInstance({
+                ...nom,
+                trValue: createTranslatableContent(lang, String(value)),
+              } as IVariableInstance),
+            );
+          }}
+        />
         <div>Description</div>
         <HTMLEditor
-          value={description?.getValue(player)}
+          className={leftGridCellStyle}
+          value={translate(description.trValue, lang)}
           onChange={value =>
             dispatch(
               updateInstance({
-                ...description.getInstance(player).getEntity(),
+                ...description,
                 trValue: createTranslatableContent(lang, value),
               } as IVariableInstance),
             )
           }
         />
       </div>
+      <PatientHistoryList />
     </div>
   );
 }
