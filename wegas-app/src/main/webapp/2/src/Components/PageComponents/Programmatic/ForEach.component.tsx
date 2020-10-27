@@ -7,13 +7,16 @@ import {
   flexListSchema,
   isVertical,
   FlexItem,
-  defaultFlexLayoutOptionsKeys
+  defaultFlexLayoutOptionsKeys,
 } from '../../Layouts/FlexList';
 import {
   registerComponent,
   pageComponentFactory,
 } from '../tools/componentFactory';
-import { ChildrenDeserializerProps, WegasComponentProps } from '../tools/EditableComponent';
+import {
+  ChildrenDeserializerProps,
+  WegasComponentProps,
+} from '../tools/EditableComponent';
 import { PageDeserializer } from '../tools/PageDeserializer';
 import { schemaProps } from '../tools/schemaProps';
 
@@ -24,38 +27,55 @@ interface ForEachProps extends WegasComponentProps, FlexListProps {
 }
 
 function ForEach({ itemsOnly, ...props }: ForEachProps) {
-  return itemsOnly ? <>{props.children}</> : (
-    <FlexList {...props} />
-  );
+  return itemsOnly ? <>{props.children}</> : <FlexList {...props} />;
 }
 
-function ChildrenDeserializer({ path, pageId, uneditable, context, exposeAs, getItemsFn, editMode }: ChildrenDeserializerProps<ForEachProps>) {
+function ChildrenDeserializer({
+  path,
+  pageId,
+  uneditable,
+  context,
+  exposeAs,
+  getItemsFn,
+  editMode,
+}: ChildrenDeserializerProps<ForEachProps>) {
   const items = useScript<object[]>(getItemsFn);
   let children: JSX.Element[] = [];
 
   if (items) {
     children = items.map((item, id) => {
-      const newContext = { ...context, [exposeAs]: item }
-      return <PageDeserializer
-        key={JSON.stringify([...(path ? path : []), id])}
-        pageId={pageId}
-        path={[...(path ? path : []), 0]}
-        uneditable={uneditable}
-        context={newContext}
-        Container={FlexItem}
-        containerPropsKeys={defaultFlexLayoutOptionsKeys}
-        dropzones={{}}
-      />
+      const newContext = { ...context, [exposeAs]: item };
+      return (
+        <PageDeserializer
+          key={JSON.stringify([...(path ? path : []), id])}
+          pageId={pageId}
+          path={[...(path ? path : []), 0]}
+          uneditable={uneditable}
+          context={newContext}
+          Container={FlexItem}
+          containerPropsKeys={defaultFlexLayoutOptionsKeys}
+          dropzones={{}}
+        />
+      );
     });
   }
   return <>{editMode === false ? children : children.slice(0, 1)}</>;
+}
+
+function noContainer(props: ForEachProps) {
+  return props.itemsOnly === true;
 }
 
 registerComponent(
   pageComponentFactory({
     component: ForEach,
     componentType: 'Programmatic',
-    container: { type: 'FOREACH', isVertical, ChildrenDeserializer },
+    container: {
+      type: 'FOREACH',
+      isVertical,
+      ChildrenDeserializer,
+      noContainer,
+    },
     name: 'For each',
     icon: 'code',
     schema: {
@@ -69,7 +89,7 @@ registerComponent(
         required: true,
         value: 'item',
       }),
-      itemsOnly: schemaProps.boolean({ label: "Items only" })
+      itemsOnly: schemaProps.boolean({ label: 'Items only' }),
     },
     allowedVariables: ['TextDescriptor'],
     getComputedPropsFromVariable: () => ({ exposeAs: 'item' }),
