@@ -2,7 +2,6 @@ import { omit, pick } from 'lodash-es';
 import { manageResponseHandler } from '../data/actions';
 import {
   deleteDescriptor,
-  moveDescriptor,
   updateDescriptor,
 } from '../data/Reducer/VariableDescriptorReducer';
 import { updateInstance } from '../data/Reducer/VariableInstanceReducer';
