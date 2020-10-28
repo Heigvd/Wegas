@@ -1029,7 +1029,8 @@ public class SchemaGenerator extends AbstractMojo {
         sb.append("\n/*\n"
             + " * IMergeable\n"
             + " */\n"
-            + "export interface IMergeable {\n"
+            + EXPORT_TOSTRIP
+            + " interface IMergeable {\n"
             + "  readonly \"@class\": keyof WegasClassNamesAndClasses;\n"
             + "  refId?: string;\n"
             + "  readonly parentType?: string;\n"
@@ -1083,7 +1084,7 @@ public class SchemaGenerator extends AbstractMojo {
         /**
          * Creating ts interface linking real classes and stringified classes
          */
-        sb.append(System.lineSeparator()).append("export interface WegasClassNamesAndClasses {");
+        sb.append(System.lineSeparator()).append(EXPORT_TOSTRIP + " interface WegasClassNamesAndClasses {");
         intKeys.forEach(key -> {
             sb.append(System.lineSeparator())
                 .append("  " + key + " : I" + key + ";");
@@ -1096,7 +1097,7 @@ public class SchemaGenerator extends AbstractMojo {
         /**
          * Creating ts type allowing every generated WegasEntities as string
          */
-        sb.append("export type WegasClassNames = keyof WegasClassNamesAndClasses;")
+        sb.append(EXPORT_TOSTRIP + " type WegasClassNames = keyof WegasClassNamesAndClasses;")
             .append(System.lineSeparator())
             .append(System.lineSeparator());
 
