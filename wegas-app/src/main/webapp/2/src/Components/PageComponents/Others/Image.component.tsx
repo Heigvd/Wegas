@@ -6,13 +6,20 @@ import {
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
 import { fileURL } from '../../../API/files.api';
+import { classAndStyleShema } from '../tools/options';
 
 interface SvgLoaderProps extends WegasComponentProps {
   src?: string;
 }
 
-function Image({ src }: SvgLoaderProps) {
-  return <img src={src ? fileURL(src) : undefined} />;
+function Image({ src, style, className }: SvgLoaderProps) {
+  return (
+    <img
+      src={src ? fileURL(src) : undefined}
+      style={style}
+      className={className}
+    />
+  );
 }
 
 registerComponent(
@@ -22,13 +29,14 @@ registerComponent(
     name: 'Image',
     icon: 'image',
     schema: {
-      script: schemaProps.path({
+      src: schemaProps.path({
         label: 'Source',
         pick: 'FILE',
         filter: {
           fileType: 'image',
           filterType: 'show',
         },
+        ...classAndStyleShema,
       }),
     },
   }),

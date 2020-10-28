@@ -10,8 +10,19 @@ interface APIMethodsClass {
     gameModelId: number,
     variableDescriptor: IVariableDescriptor,
     parent?: IParentDescriptor,
-    callback?: (res?: SAbstractEntity) => void,
+    callback?: (res?: SVariableDescriptor) => void,
   ) => void;
+  duplicateVariable: (
+    variable: IVariableDescriptor,
+    callback?: (res?: SVariableDescriptor) => void,
+  ) => void;
+  moveVariable: (
+    variable: IVariableDescriptor,
+    parent: IParentDescriptor,
+    index: number,
+    callback?: (res?: SVariableDescriptor) => void,
+  ) => void;
+  updateVariable: (instance: IVariableDescriptor) => void;
   deleteVariable: (variable: IVariableDescriptor) => void;
-  updateInstance: (instance: IVariableInstance) => void;
+  updateInstance: (variable: IVariableInstance) => void;
 }

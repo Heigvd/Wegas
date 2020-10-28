@@ -36,7 +36,7 @@ export interface WegasComponentOptionsAction {
   priority?: number;
 }
 
-interface OpenPageAction {
+export interface OpenPageAction {
   pageLoaderName: IScript;
   pageId: IScript;
 }
@@ -297,7 +297,6 @@ export const actionsChoices: HashListChoices = [
 export interface WegasComponentLayoutCommonOptions {
   tooltip?: string;
   themeMode?: string;
-  style?: React.CSSProperties;
 }
 
 export const layoutCommonChoices: HashListChoices = [
@@ -313,13 +312,6 @@ export const layoutCommonChoices: HashListChoices = [
     value: {
       prop: 'themeMode',
       schema: schemaProps.themeModeSelect({ label: 'Theme mode' }),
-    },
-  },
-  {
-    label: 'Style',
-    value: {
-      prop: 'style',
-      schema: schemaProps.hashlist({ label: 'Style' }),
     },
   },
 ];
@@ -576,3 +568,11 @@ export const wegasComponentExtraSchema = (containerType: ContainerTypes) => ({
     objectViewStyle: true,
   }),
 });
+
+/**
+ * classAndStyleShema - defines the schema to be used to edit classes and style of a component
+ */
+export const classAndStyleShema = {
+  style: schemaProps.hashlist({ label: 'Style' }),
+  className: schemaProps.hidden({ type: 'array', index: 1003 }),
+};

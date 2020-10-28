@@ -105,7 +105,7 @@ export const flexlayoutChoices: HashListChoices = [
 
 export interface FlexItemProps
   extends WegasComponentItemProps,
-  FlexItemLayoutProps {
+    FlexItemLayoutProps {
   /**
    * onMouseOut - triggers when the mouse is not more over the element
    */
@@ -156,7 +156,7 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
       >
         {children}
       </div>
-    )
+    );
   },
 );
 
@@ -297,6 +297,8 @@ export function FlexList({
 }
 
 export function isVertical(props?: FlexListProps) {
-  return props?.layout?.flexDirection === 'column' ||
-    props?.layout?.flexDirection === 'column-reverse';
+  return (
+    props?.layout?.flexDirection === 'column' ||
+    props?.layout?.flexDirection === 'column-reverse'
+  );
 }

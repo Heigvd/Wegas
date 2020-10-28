@@ -9,10 +9,17 @@ import {
   flexListSchema,
   isVertical,
   FlexItem,
-  defaultFlexLayoutOptionsKeys
+  defaultFlexLayoutOptionsKeys,
 } from '../../Layouts/FlexList';
-import { ChildrenDeserializerProps, DropZones, ItemContainer, ItemContainerPropsKeys, WegasComponentProps } from '../tools/EditableComponent';
+import {
+  ChildrenDeserializerProps,
+  DropZones,
+  ItemContainer,
+  ItemContainerPropsKeys,
+  WegasComponentProps,
+} from '../tools/EditableComponent';
 import { PageDeserializer } from '../tools/PageDeserializer';
+import { classAndStyleShema } from '../tools/options';
 
 interface PlayerFlexListProps extends FlexListProps, WegasComponentProps {
   /**
@@ -27,10 +34,20 @@ function PlayerFlexList(props: PlayerFlexListProps) {
 
 const flexListItemDropZones: DropZones = {
   side: true,
-}
+};
 
-export function childrenDeserializerFactory(Container: ItemContainer = FlexItem, containerPropsKeys: ItemContainerPropsKeys = defaultFlexLayoutOptionsKeys, dropzones: DropZones = flexListItemDropZones) {
-  return function ChildrenDeserializer({ nbChildren, path, pageId, uneditable, context }: ChildrenDeserializerProps<{}>) {
+export function childrenDeserializerFactory(
+  Container: ItemContainer = FlexItem,
+  containerPropsKeys: ItemContainerPropsKeys = defaultFlexLayoutOptionsKeys,
+  dropzones: DropZones = flexListItemDropZones,
+) {
+  return function ChildrenDeserializer({
+    nbChildren,
+    path,
+    pageId,
+    uneditable,
+    context,
+  }: ChildrenDeserializerProps<{}>) {
     const newChildren: JSX.Element[] = [];
     for (let i = 0; i < nbChildren; ++i) {
       newChildren.push(
@@ -47,17 +64,21 @@ export function childrenDeserializerFactory(Container: ItemContainer = FlexItem,
       );
     }
     return <>{newChildren}</>;
-  }
+  };
 }
 
 registerComponent(
   pageComponentFactory({
     component: PlayerFlexList,
     componentType: 'Layout',
-    container: { type: 'FLEX', isVertical, ChildrenDeserializer: childrenDeserializerFactory() },
+    container: {
+      type: 'FLEX',
+      isVertical,
+      ChildrenDeserializer: childrenDeserializerFactory(),
+    },
     name: 'FlexList',
     icon: 'bars',
-    schema: flexListSchema,
+    schema: { ...flexListSchema, ...classAndStyleShema },
     getComputedPropsFromVariable: () => ({ children: [] }),
   }),
 );

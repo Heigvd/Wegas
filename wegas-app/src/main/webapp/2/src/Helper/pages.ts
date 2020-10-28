@@ -27,11 +27,13 @@ export function isPageIndex(
   );
 }
 
-export function visitIndex<T>(item: PageIndexItem, visitorFN: (item: PageIndexPage) => T): T[] {
+export function visitIndex<T>(
+  item: PageIndexItem,
+  visitorFN: (item: PageIndexPage) => T,
+): T[] {
   if (isFolderItem(item)) {
     return item.items.reduce((o, i) => [...o, ...visitIndex(i, visitorFN)], []);
-  }
-  else {
+  } else {
     return [visitorFN(item)];
   }
 }
@@ -144,7 +146,7 @@ export const findComponent = (
   let parent: WegasComponent | undefined = undefined;
   let component: WegasComponent = newPage;
   while (browsePath.length > 0) {
-    if (component.props.children) {
+    if (component?.props.children) {
       parent = component;
       component = component.props.children[browsePath[0]];
       browsePath.splice(0, 1);

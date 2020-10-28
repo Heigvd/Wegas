@@ -15,10 +15,7 @@ import {
   hoverColorInsetShadow,
   thinHoverColorInsetShadow,
 } from '../../../css/classes';
-import {
-  FlexListProps,
-  defaultFlexLayoutOptionsKeys,
-} from '../../Layouts/FlexList';
+import { defaultFlexLayoutOptionsKeys } from '../../Layouts/FlexList';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import { useDebounce } from '../../Hooks/useDebounce';
 import { pick } from 'lodash-es';
@@ -43,15 +40,12 @@ import { PlayerInfoBullet } from './InfoBullet';
 import { EditHandle } from './EditHandle';
 import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
 import { OptionsState, ComponentOptionsManager } from './OptionsComponent';
-import {
-  PlayerLinearLayoutProps,
-  PlayerLinearLayoutChildrenProps,
-} from '../Layouts/LinearLayout.component';
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
 import { themeVar } from '../../Style/ThemeVars';
 import { defaultMenuItemKeys } from '../../Layouts/Menu';
 import { parseAndRunClientScript } from '../../Hooks/useScript';
 import { IScript } from 'wegas-ts-api';
+import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {
@@ -432,6 +426,7 @@ export type WegasComponentOptions = WegasComponentOptionsActions &
  */
 export interface WegasComponentProps
   extends React.PropsWithChildren<ClassAndStyle>,
+    Omit<WegasComponentCommonProperties, 'children'>,
     PageComponentProps,
     WegasComponentOptions {}
 
@@ -447,19 +442,10 @@ export type ItemContainerPropsKeys =
   | typeof defaultMenuItemKeys
   | typeof defaultFonkyFlexLayoutPropsKeys;
 
-/**
- * ExtractedLayoutProps - Extracted props from currently layout containers
- * Needed to define the orientation of the container
- */
-export interface ExtractedLayoutProps {
-  layout?: FlexListProps['layout'];
-  vertical?: PlayerLinearLayoutProps['vertical'];
-  linearChildrenProps?: PlayerLinearLayoutChildrenProps;
+interface ComponentContainerProps extends WegasComponentProps {
+  vertical?: boolean;
   containerPropsKeys?: ItemContainerPropsKeys;
 }
-
-// TODO : CLEAN THIS INTERFACE!
-type ComponentContainerProps = WegasComponentProps & ExtractedLayoutProps;
 
 const pageDispatch = pagesStateStore.dispatch;
 
@@ -470,8 +456,8 @@ export function ComponentContainer({
   name,
   layout,
   vertical,
-  className,
-  style = {},
+  layoutClassName,
+  layoutStyle = {},
   children,
   context,
   Container,
@@ -633,17 +619,17 @@ export function ComponentContainer({
         className={
           cx(handleControlStyle, flex, extraState.themeModeClassName, {
             [showBordersStyle]: showBorders && containerType != null,
-            [hoverColorInsetShadow]: editMode || isSelected,
+            [hoverColorInsetShadow]: editMode && isSelected,
             [cx(foregroundContent, thinHoverColorInsetShadow)]: isFocused,
             [childDropzoneHorizontalStyle]: !vertical,
             [childDropzoneVerticalStyle]: vertical,
             [disabledStyle]: extraState.disabled,
-          }) + classNameOrEmpty(className)
+          }) + classNameOrEmpty(layoutClassName)
         }
         style={{
           cursor:
             options?.actions && !extraState.disabled ? 'pointer' : 'initial',
-          ...style,
+          ...layoutStyle,
         }}
         onClick={onClick}
         onMouseOver={onMouseOver}

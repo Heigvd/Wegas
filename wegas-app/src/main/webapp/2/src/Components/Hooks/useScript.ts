@@ -25,7 +25,10 @@ import {
 import { ScriptableEntity } from 'wegas-ts-api';
 import { popupDispatch, addPopup, PopupActionCreator } from '../PopupManager';
 import { ActionCreator } from '../../data/actions';
-import { translate } from '../../Editor/Components/FormView/translatable';
+import {
+  createTranslatableContent,
+  translate,
+} from '../../Editor/Components/FormView/translatable';
 import { wwarn } from '../../Helper/wegaslog';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { replace } from '../../Helper/tools';
@@ -283,6 +286,9 @@ export function useGlobals() {
         }
       }
       return translate(translatableEntity, lang);
+    },
+    createTranslatableContent: value => {
+      return createTranslatableContent(lang, value);
     },
   };
 

@@ -1,10 +1,28 @@
 import { omit, pick } from 'lodash-es';
 import { manageResponseHandler } from '../data/actions';
-import { deleteDescriptor } from '../data/Reducer/VariableDescriptorReducer';
+import {
+  deleteDescriptor,
+  moveDescriptor,
+  updateDescriptor,
+} from '../data/Reducer/VariableDescriptorReducer';
 import { updateInstance } from '../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../data/scriptable';
 import { store } from '../data/store';
+import { IManagedResponse } from './rest';
 import { VariableDescriptorAPI } from './variableDescriptor.api';
+
+function getNewVariable(
+  variable: IVariableDescriptor,
+  res: IManagedResponse,
+): SVariableDescriptor {
+  const trimmedVD = omit(variable, ['id', 'defaultInstance', 'version']);
+  return instantiate(
+    res.updatedEntities.find(e => {
+      const pickedDescriptor = pick(e, Object.keys(trimmedVD));
+      return compareVariables(trimmedVD, pickedDescriptor);
+    }),
+  ) as SVariableDescriptor;
+}
 
 const dispatch = store.dispatch;
 
@@ -36,26 +54,49 @@ function compareVariables(
 }
 
 export const APIScriptMethods: APIMethodsClass = {
-  createVariable: (gameModelId, variableDescriptor, parent, callback) => {
-    return VariableDescriptorAPI.post(
+  createVariable: (gameModelId, variable, parent, callback) => {
+    VariableDescriptorAPI.post(gameModelId, variable, parent).then(res => {
+      dispatch(manageResponseHandler(res));
+      if (callback) {
+        callback(getNewVariable(variable, res));
+      }
+    });
+  },
+  duplicateVariable: (variable, callback) => {
+    const gameModelId = store.getState().global.currentGameModelId;
+    VariableDescriptorAPI.duplicate(gameModelId, variable).then(res => {
+      dispatch(manageResponseHandler(res));
+      if (callback) {
+        callback(
+          instantiate<IVariableDescriptor>(
+            res.updatedEntities[0] as IVariableDescriptor,
+          ),
+        );
+      }
+    });
+  },
+  moveVariable: (variable, parent, index, callback) => {
+    // dispatch(moveDescriptor(variable, index, parent))
+    const gameModelId = store.getState().global.currentGameModelId;
+    return VariableDescriptorAPI.move(
       gameModelId,
-      variableDescriptor,
+      variable,
+      index,
       parent,
     ).then(res => {
       dispatch(manageResponseHandler(res));
-      const trimmedVD = omit(variableDescriptor, [
-        'id',
-        'defaultInstance',
-        'version',
-      ]);
-      const newVariable = res.updatedEntities.find(e => {
-        const pickedDescriptor = pick(e, Object.keys(trimmedVD));
-        const test = compareVariables(trimmedVD, pickedDescriptor);
-        return test;
-      });
-      callback && callback(instantiate(newVariable));
+      if (callback) {
+        callback(
+          instantiate<IVariableDescriptor>(
+            res.updatedEntities.find(
+              entity => entity.id === variable.id,
+            ) as IVariableDescriptor,
+          ),
+        );
+      }
     });
   },
-  updateInstance: instance => dispatch(updateInstance(instance)),
+  updateVariable: variable => dispatch(updateDescriptor(variable)),
   deleteVariable: variable => dispatch(deleteDescriptor(variable)),
+  updateInstance: instance => dispatch(updateInstance(instance)),
 };

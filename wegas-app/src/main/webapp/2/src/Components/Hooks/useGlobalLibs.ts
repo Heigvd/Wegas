@@ -6,7 +6,9 @@ import { classesCTX } from '../Contexts/ClassesProvider';
 
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
-import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasScriptableEntities.d.ts.mlib';
+import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasEntities.ts';
+// @ts-ignore
+import scriptableEntitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasScriptableEntities.d.ts.mlib';
 // @ts-ignore
 import editorGlobalSrc from '!!raw-loader!../../../types/scripts/EditorGlobals.d.ts';
 // @ts-ignore
@@ -25,6 +27,8 @@ import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMet
 import i18nGlobalSrc from '!!raw-loader!../../../types/scripts/I18nGlobals.d.ts';
 // @ts-ignore
 import APIMethodsGlobalSrc from '!!raw-loader!../../../types/scripts/APIMethodsGlobals.d.ts';
+// @ts-ignore
+import generalTypes from '!!raw-loader!../../../types/general-types.d.ts';
 
 import { deepDifferent } from './storeHookFactory';
 import { wwarn } from '../../Helper/wegaslog';
@@ -37,6 +41,7 @@ function makeAmbient(source: string) {
 }
 
 const ambientEntitiesSrc = makeAmbient(entitiesSrc);
+const ambientScriptableEntitiesSrc = makeAmbient(scriptableEntitiesSrc);
 
 // We'll keep it for later uses
 // const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
@@ -190,6 +195,8 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
       {
         content: `
         ${ambientEntitiesSrc}\n
+        ${ambientScriptableEntitiesSrc}\n
+        ${generalTypes}\n
         ${editorGlobalSrc}\n
         ${clientMethodGlobalSrc}\n
         ${serverMethodGlobalSrc}\n

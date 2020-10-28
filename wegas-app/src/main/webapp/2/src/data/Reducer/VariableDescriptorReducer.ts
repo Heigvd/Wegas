@@ -90,9 +90,11 @@ export function moveDescriptor(
       variableDescriptor,
       index,
       parent,
-    ).then(res =>
-      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
-    );
+    ).then(res => {
+      return store.dispatch(
+        manageResponseHandler(res, dispatch, getState().global),
+      );
+    });
   };
 }
 export function createDescriptor(

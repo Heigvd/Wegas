@@ -6,7 +6,7 @@ interface TextProps extends ClassAndStyle {
   text?: string;
 }
 
-export function Text({ text, className, style }: TextProps) {
+export function Text({ text, style, className }: TextProps) {
   return (
     <div
       className={className}

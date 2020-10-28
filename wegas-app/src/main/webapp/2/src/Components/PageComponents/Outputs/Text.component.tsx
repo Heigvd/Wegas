@@ -9,18 +9,19 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
+import { classAndStyleShema } from '../tools/options';
 
 export interface PlayerTextProps extends WegasComponentProps {
   text?: IScript;
 }
 
-function PlayerText({ text, className, style, context }: PlayerTextProps) {
-  const content = useScript<string>(text,context);
+function PlayerText({ text, context, className, style }: PlayerTextProps) {
+  const content = useScript<string>(text, context);
   // wlog(useScript<string>("Context.item.getEditorTag()"));
   return !text ? (
     <span>No text</span>
   ) : (
-    <Text style={style} className={className} text={content} />
+    <Text text={content} className={className} style={style} />
   );
 }
 
@@ -32,7 +33,7 @@ registerComponent(
     icon: 'paragraph',
     schema: {
       text: schemaProps.scriptString({ label: 'Text' }),
-      className: schemaProps.string({ label: 'ClassName' }),
+      ...classAndStyleShema,
     },
     allowedVariables: ['TextDescriptor'],
     getComputedPropsFromVariable: v => ({

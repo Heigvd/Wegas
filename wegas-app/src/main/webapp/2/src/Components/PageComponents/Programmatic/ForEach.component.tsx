@@ -17,6 +17,7 @@ import {
   ChildrenDeserializerProps,
   WegasComponentProps,
 } from '../tools/EditableComponent';
+import { classAndStyleShema } from '../tools/options';
 import { PageDeserializer } from '../tools/PageDeserializer';
 import { schemaProps } from '../tools/schemaProps';
 
@@ -90,6 +91,7 @@ registerComponent(
         value: 'item',
       }),
       itemsOnly: schemaProps.boolean({ label: 'Items only' }),
+      ...classAndStyleShema,
     },
     allowedVariables: ['TextDescriptor'],
     getComputedPropsFromVariable: () => ({ exposeAs: 'item' }),
