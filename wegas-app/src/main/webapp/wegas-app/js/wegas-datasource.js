@@ -400,7 +400,9 @@ YUI.add('wegas-datasource', function(Y) {
          */
         onResponseRevived: function(e) {
             var i, entity, evtPayload, response = e.serverResponse,
-                toUpdate = !e.cfg || e.cfg.updateCache !== false, collector = {};
+                toUpdate = !e.cfg || e.cfg.updateCache !== false,
+                fireResponseEvent = !e.cfg || e.cfg.responseEvent !== false,
+                collector = {};
 
             if (Lang.isArray(response)) { // Non-managed response: we apply the operation for each object in the returned array
                 if (toUpdate) { // No Update ? No-update...
@@ -433,13 +435,23 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                 }
 
-                if (response.get("events")) {
-                    for (i = 0; i < response.get("events").length; i += 1) {
-                        evtPayload = Y.mix({
-                            serverEvent: response.get("events")[i]
-                        }, e);
-                        this.fire(evtPayload.serverEvent.get(CLASS), evtPayload);
-                        //this.fire("serverEvent", evtPayload);
+                if (response.get("events") && response.get("events").length) {
+                    if (fireResponseEvent) {
+                        for (i = 0; i < response.get("events").length; i += 1) {
+                            evtPayload = Y.mix({
+                                serverEvent: response.get("events")[i]
+                            }, e);
+                            this.fire(evtPayload.serverEvent.get(CLASS), evtPayload);
+                            //this.fire("serverEvent", evtPayload);
+                        }
+                    } else {
+                        Y.log("Silent some events:");
+                        for (i = 0; i < response.get("events").length; i += 1) {
+                            evtPayload = Y.mix({
+                                serverEvent: response.get("events")[i]
+                            }, e);
+                            Y.log(" - " + evtPayload.serverEvent.get(CLASS) + ": " + JSON.stringify(evtPayload));
+                        }
                     }
                 }
             }

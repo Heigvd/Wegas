@@ -45,7 +45,7 @@ type ServerMethodRegister = (
   schema: {
     label: string;
     returns?: string;
-    parameters: {}[];
+    parameters: { type: string, required: boolean }[];
   },
 ) => void;
 

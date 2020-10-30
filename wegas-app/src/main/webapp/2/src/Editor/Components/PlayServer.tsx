@@ -5,6 +5,7 @@ import { Button } from '../../Components/Inputs/Buttons/Button';
 import { Player } from '../../data/selectors';
 import { store } from '../../data/store';
 import { runScript } from '../../data/Reducer/VariableInstanceReducer';
+import { parseAndRunClientScript } from '../../Components/Hooks/useScript';
 
 const container = css({ width: '100%' });
 const editor = css({ width: '100%', height: '400px' });
@@ -17,7 +18,7 @@ export default function PlayServer() {
 
   const playScript = React.useCallback(() => {
     try {
-      store.dispatch(runScript(script, Player.selectCurrent()));
+      store.dispatch(runScript(parseAndRunClientScript(script), Player.selectCurrent()));
       setError(undefined);
     } catch (error) {
       setError(error.message);
@@ -30,7 +31,7 @@ export default function PlayServer() {
         <WegasScriptEditor
           value={script}
           onChange={e => setScript(e)}
-          // returnType={['number']}
+          scriptContext="Server internal"
         />
         <Button onClick={playScript} label="Run script" />
         {error}

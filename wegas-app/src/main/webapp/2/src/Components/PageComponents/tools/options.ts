@@ -196,7 +196,7 @@ export const actionsChoices: HashListChoices = [
       schema: schemaProps.object({
         label: 'Impact variable',
         properties: {
-          impact: schemaProps.script({ label: 'Impact', required: true }),
+          impact: schemaProps.script({ label: 'Impact', required: true, }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
       }),
@@ -519,11 +519,11 @@ export function useComputeUnreadCount(
 
   return infoBeamMessage
     ? {
-        messageScript:
-          infoBeamMessage === 0
-            ? undefined
-            : createScript(JSON.stringify(String(infoBeamMessage))),
-      }
+      messageScript:
+        infoBeamMessage === 0
+          ? undefined
+          : createScript(JSON.stringify(String(infoBeamMessage))),
+    }
     : undefined;
 }
 

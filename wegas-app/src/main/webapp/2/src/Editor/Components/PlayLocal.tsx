@@ -28,7 +28,7 @@ class ErrorBoundary extends React.Component<Record<string, unknown>> {
 
 const Eval = React.memo(function Eval({ script }: { script: string }) {
   const val = useUnsafeScript(script);
-    return <pre>{JSON.stringify(val, null, 2)}</pre>;
+  return <pre>{JSON.stringify(val, null, 2)}</pre>;
 });
 Eval.displayName = 'Eval';
 
@@ -61,20 +61,20 @@ Popups.addPopup('testpopup2', {
 `;
 
 export default function PlayLocal() {
-    const [script, setScript] = React.useState(testScript);
-    const debouncedScript = useDebounce(script, 300);
-    return (
-        <div className={container}>
-            <div className={editor}>
-                <WegasScriptEditor
-                    value={script}
-                    onChange={e => setScript(e)}
-                // returnType={['number']}
-                />
-            </div>
+  const [script, setScript] = React.useState(testScript);
+  const debouncedScript = useDebounce(script, 300);
+  return (
+    <div className={container}>
+      <div className={editor}>
+        <WegasScriptEditor
+          value={script}
+          onChange={e => setScript(e)}
+        // returnType={['number']}
+        />
+      </div>
       <ErrorBoundary script={debouncedScript}>
-            <Eval script={debouncedScript} />
+        <Eval script={debouncedScript} />
       </ErrorBoundary>
-        </div>
-    );
+    </div>
+  );
 }
