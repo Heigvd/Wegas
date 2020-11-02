@@ -61,6 +61,8 @@ export function translate(
   if (!translatable) {
     return '';
   }
+
+  // récupère les translations sous forme de ITranslation
   if ('translations' in translatable) {
     translations = translatable.translations;
   } else {
@@ -74,7 +76,7 @@ export function translate(
   if (Object.keys(translations).length === 0) {
     return '';
   } else if (translation === undefined) {
-    return translations[0]?.translation || '';
+    return Object.values(translations)[0]?.translation || '';
   } else {
     return translation.translation;
   }
