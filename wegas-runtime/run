@@ -20,7 +20,8 @@ DEBUG_PORT=9009
 DEBUG="false"
 DEBUG_OPTS=
 
-JAVA_HOME=/usr/bin/
+JAVA_HOME=""
+JAVA_EXECUTABLE=""
 
 WEGAS_PROPERTIES=./src/main/resources/wegas-override.properties
 DEFAULT_WEGAS_PROPERTIES=./src/main/resources/default_wegas.properties
@@ -89,8 +90,12 @@ trap 'echo "TERM";kill -TERM $PID;' TERM INT
 # to enable http2 support
 HTTP2_OPTS=-Xbootclasspath/a:grizzly-npn-bootstrap.jar
 
+#if java home is empty, use java, if not, use JAVA_HOME/java
+if [ "${JAVA_HOME}xxx" = "xxx" ]; then JAVA_EXECUTABLE=java; else JAVA_EXECUTABLE="${JAVA_HOME}/java"; fi
+
+
 # if java has the list-modules options, it's java 9+
-${JAVA_HOME}/java --list-modules > /dev/null 2> /dev/null
+${JAVA_EXECUTABLE} --list-modules > /dev/null 2> /dev/null
 
 if [ $? -eq 0 ]; then
     echo JAVA 9+ detected: enable extra options
@@ -138,7 +143,7 @@ fi
 cp ${DEFAULT_WEGAS_PROPERTIES} ${DEFAULT_WEGAS_PROPERTIES_ORI}
 
 
-${JAVA_HOME}/java ${DEBUG_OPTS} ${JDK_EXTRA_OPTS} ${SSL_OPTS} ${GC} ${HTTP2_OPTS} \
+${JAVA_EXECUTABLE} ${DEBUG_OPTS} ${JDK_EXTRA_OPTS} ${SSL_OPTS} ${GC} ${HTTP2_OPTS} \
     -XX:+UseStringDeduplication -XX:+UnlockDiagnosticVMOptions \
     -Dproduct.name= -XX:+ParallelRefProcEnabled -XX:+UseCompressedOops -XX:-UseLoopPredicate \
     -Xms${HEAP} -Xmx${HEAP} \
