@@ -524,49 +524,65 @@ export function ConnectedStateMachineEditor({
 }: {
   localDispatch?: StateMachineEditorProps['localDispatch'];
 }) {
-  const stateMachine = React.useRef<IFSMDescriptor | IDialogueDescriptor>();
   const globalState = useStore(s => {
+    let editedVariable:
+      | IFSMDescriptor
+      | IDialogueDescriptor
+      | undefined = undefined;
     if (
       s.global.editing &&
       (s.global.editing.type === 'VariableFSM' ||
         // The following condition seems stupid, need to be tested ans documented
         s.global.editing.type === 'Variable')
     ) {
-      stateMachine.current = s.global.editing.entity as
+      editedVariable = s.global.editing.entity as
         | IFSMDescriptor
         | IDialogueDescriptor;
       const lastFSM = VariableDescriptor.select(s.global.editing.entity.id) as
         | IFSMDescriptor
         | IDialogueDescriptor;
-      if (shallowDifferent(stateMachine.current, lastFSM))
-        stateMachine.current = lastFSM;
+      if (shallowDifferent(editedVariable, lastFSM)) {
+        editedVariable = lastFSM;
+      }
     }
-    const instance = stateMachine.current
-      ? getInstance(stateMachine.current)
-      : undefined;
+    const instance = editedVariable ? getInstance(editedVariable) : undefined;
     if (
-      !entityIs(stateMachine.current, 'TriggerDescriptor', true) &&
-      entityIs(stateMachine.current, 'AbstractStateMachineDescriptor', true) &&
+      !entityIs(editedVariable, 'TriggerDescriptor', true) &&
+      entityIs(editedVariable, 'AbstractStateMachineDescriptor', true) &&
       entityIs(instance, 'FSMInstance', true)
     ) {
       return {
-        descriptor: stateMachine.current,
+        descriptor: editedVariable,
         instance,
         search: s.global.search,
+      };
+    } else {
+      return {
+        variable: editedVariable,
       };
     }
   }, shallowDifferent);
 
-  return globalState ? (
-    <div className={cx(grow, forceScroll)}>
-      <StateMachineEditor
-        stateMachine={globalState.descriptor}
-        stateMachineInstance={globalState.instance}
-        localDispatch={localDispatch}
-        search={globalState.search}
-      />
-    </div>
-  ) : null;
+  if ('variable' in globalState) {
+    if (globalState.variable == null) {
+      return <span>Select a variable to display</span>;
+    } else {
+      return (
+        <span>The selected variable is not some kind of state machine</span>
+      );
+    }
+  } else {
+    return (
+      <div className={cx(grow, forceScroll)}>
+        <StateMachineEditor
+          stateMachine={globalState.descriptor}
+          stateMachineInstance={globalState.instance}
+          localDispatch={localDispatch}
+          search={globalState.search}
+        />
+      </div>
+    );
+  }
 }
 
 export default function StateMachineEditorWithMeta() {
