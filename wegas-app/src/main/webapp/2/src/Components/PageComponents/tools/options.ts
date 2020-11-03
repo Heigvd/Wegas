@@ -574,5 +574,5 @@ export const wegasComponentExtraSchema = (containerType: ContainerTypes) => ({
  */
 export const classAndStyleShema = {
   style: schemaProps.hashlist({ label: 'Style' }),
-  className: schemaProps.hidden({ type: 'array', index: 1003 }),
+  className: schemaProps.string({ label: 'Classes' }),
 };
