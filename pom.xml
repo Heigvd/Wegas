@@ -33,10 +33,13 @@
             <email>maxence.laurent@gmail.com</email>
         </developer>
         <developer>
-            <name>Jarle Hulaas</name>
+            <name>Pierr-Benjamin Monaco</name>
         </developer>
         <developer>
-            <name>Pierr-Benjamin Monaco</name>
+            <name>Sandra Monnier</name>
+        </developer>
+        <developer>
+            <name>Audrey Huguening</name>
         </developer>
     </developers>
     <contributors>
@@ -48,6 +51,9 @@
             <name>Francois-Xavier Aeberhard</name>
             <email>fx@red-agent.com</email>
             <url>http://www.red-agent.com</url>
+        </contributor>
+        <contributor>
+            <name>Jarle Hulaas</name>
         </contributor>
         <contributor>
             <name>Raphaël Schmutz</name>
@@ -126,21 +132,22 @@
         <jakarta.version>8.0.0</jakarta.version>
 
         <shiro.version>1.5.2</shiro.version>
-        <payara.version>5.201</payara.version>
-        <payara.micro.version>5.201.albasim-p1</payara.micro.version>
-        <payara-api.version>5.201</payara-api.version>
+        <payara.version>5.2020.5</payara.version>
+        <!--<payara.micro.version>5.201.albasim-p1</payara.micro.version>-->
+        <payara.micro.version>5.2020.5-albasim-p1</payara.micro.version>
+        <payara-api.version>5.2020.5</payara-api.version>
         <junit.version>4.13.1</junit.version>
-        <arquillian.version>1.4.1.Final</arquillian.version>
+        <arquillian.version>1.6.0.Final</arquillian.version>
         <exec.plugin.version>1.2</exec.plugin.version>
 
         <jackson.version>2.10.2</jackson.version>
         <jackson.scope>provided</jackson.scope>
 
-        <jersey.version>2.30.payara-p1</jersey.version>
+        <jersey.version>2.30.payara-p3</jersey.version>
 
         <eclipselink.scope>provided</eclipselink.scope>
-        <eclipselink.version>2.7.4</eclipselink.version>
-        <eclipselink.pversion>2.7.4.payara-p2</eclipselink.pversion>
+        <eclipselink.version>2.7.7</eclipselink.version>
+        <eclipselink.pversion>2.7.7.payara-p2</eclipselink.pversion>
 
         <slf4j.version>1.7.28</slf4j.version>
         <logback.version>1.2.3</logback.version>
@@ -364,16 +371,17 @@
                 <version>1.0.0</version>
             </dependency>
 
-            <!-- Neo4j driver -->
-            <dependency>
-                <groupId>org.neo4j.driver</groupId>
-                <artifactId>neo4j-java-driver</artifactId>
-                <version>1.2.1</version>
-            </dependency>
-
             <!--
                 Provided by payara micro
             -->
+            <dependency>
+                <groupId>org.eclipse.microprofile.metrics</groupId>
+                <artifactId>microprofile-metrics-api</artifactId>
+                <version>2.3</version>
+                <type>jar</type>
+                <scope>provided</scope>
+            </dependency>
+
             <dependency>
                 <groupId>fish.payara.api</groupId>
                 <artifactId>payara-api</artifactId>
@@ -505,7 +513,7 @@
             <dependency>
                 <groupId>fish.payara.arquillian</groupId>
                 <artifactId>arquillian-payara-server-embedded</artifactId>
-                <version>1.1</version>
+                <version>2.3.1</version>
                 <scope>test</scope>
             </dependency>
 
@@ -521,6 +529,15 @@
                 <groupId>org.eu.ingwar.tools</groupId>
                 <artifactId>arquillian-suite-extension</artifactId>
                 <version>1.2.0</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- required by arq-suite-ext -->
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.6</version>
+                <type>jar</type>
                 <scope>test</scope>
             </dependency>
 
