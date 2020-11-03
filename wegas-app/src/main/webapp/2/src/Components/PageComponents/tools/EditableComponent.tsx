@@ -628,7 +628,7 @@ export function ComponentContainer({
         }
         style={{
           cursor:
-            options?.actions && !extraState.disabled ? 'pointer' : 'initial',
+            options?.actions && !extraState.disabled ? 'pointer' : 'inherit',
           ...layoutStyle,
         }}
         onClick={onClick}

@@ -27,7 +27,6 @@ import {
   translate,
   createTranslatableContent,
 } from '../../../Editor/Components/FormView/translatable';
-import { wlog } from '../../../Helper/wegaslog';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { clientScriptEval } from '../../Hooks/useScript';
@@ -46,7 +45,7 @@ import { schemaProps } from '../tools/schemaProps';
 const patientEditionFormStyle = css({
   display: 'grid',
   gridTemplateColumns: '30% 70%',
-  gridAutoRows: '100px',
+  gridRowGap: '20px',
   alignItems: 'center',
 });
 
@@ -106,8 +105,6 @@ function PatientEdition({ patientId, onClickBack }: PatientEditionProps) {
       .find(item => item.getEditorTag() === 'description')
       ?.getInstance(player)
       ?.getEntity() as ITextInstance;
-
-    wlog(translate(nom?.trValue, lang));
 
     return { portrait, nom, description };
   }, deepDifferent);

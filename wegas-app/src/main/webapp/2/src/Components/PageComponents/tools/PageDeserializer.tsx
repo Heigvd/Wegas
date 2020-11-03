@@ -144,11 +144,7 @@ export function PageDeserializer({
         Container={Container}
         containerPropsKeys={containerPropsKeys}
         {...restProps}
-        style={
-          restProps.style == null
-            ? { width: '100%', height: '100%' }
-            : restProps.style
-        }
+        style={restProps.style}
         dropzones={{ ...component.dropzones, ...dropzones }}
       >
         {editMode && children.length === 0 ? (

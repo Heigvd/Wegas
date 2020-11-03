@@ -49,8 +49,8 @@ interface OpenFileAction {
 interface ImpactVariableAction {
   impact: IScript;
 }
-interface LoaclScriptEvalAction {
-  script: string;
+interface LocalScriptEvalAction {
+  script: IScript;
   context?: { [item: string]: any };
 }
 interface OpenPopupPageAction {
@@ -68,7 +68,7 @@ export interface WegasComponentOptionsActions {
   openUrl?: OpenURLAction & WegasComponentOptionsAction;
   openFile?: OpenFileAction & WegasComponentOptionsAction;
   impactVariable?: ImpactVariableAction & WegasComponentOptionsAction;
-  localScriptEval?: LoaclScriptEvalAction & WegasComponentOptionsAction;
+  localScriptEval?: LocalScriptEvalAction & WegasComponentOptionsAction;
   openPopupPage?: OpenPopupPageAction & WegasComponentOptionsAction;
   playSound?: PlaySoundAction & WegasComponentOptionsAction;
   printVariable?: PrintVariableAction & WegasComponentOptionsAction;
@@ -95,7 +95,7 @@ export interface WegasComponentActions {
   openUrl: (props: OpenURLAction) => void;
   openFile: (props: OpenFileAction) => void;
   impactVariable: (props: ImpactVariableAction) => void;
-  localScriptEval: (props: LoaclScriptEvalAction) => void;
+  localScriptEval: (props: LocalScriptEvalAction) => void;
   openPopupPage: (props: OpenPopupPageAction) => void;
   playSound: (props: PlaySoundAction) => void;
   printVariable: (props: PrintVariableAction) => void;
