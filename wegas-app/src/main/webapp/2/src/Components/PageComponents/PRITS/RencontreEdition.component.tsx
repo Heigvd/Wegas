@@ -29,7 +29,7 @@ import {
   createTranslatableContent,
 } from '../../../Editor/Components/FormView/translatable';
 import { mainLayoutId } from '../../../Editor/Components/Layout';
-import { focusTabContext } from '../../../Editor/Components/LinearTabLayout/LinearLayout';
+import { focusTab } from '../../../Editor/Components/LinearTabLayout/LinearLayout';
 import { getEntityActions } from '../../../Editor/editionConfig';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
@@ -88,7 +88,6 @@ const dispatch = store.dispatch;
 
 function RencontreEdition({ rencontreId, onClickBack }: RencontreEditionProps) {
   const [browsingFile, setBrowsingFile] = React.useState<boolean>(false);
-  const focusTab = React.useContext(focusTabContext);
   const { lang } = React.useContext(languagesCTX);
   const player = instantiate(useStore(Player.selectCurrent));
 
@@ -239,7 +238,7 @@ function RencontreEdition({ rencontreId, onClickBack }: RencontreEditionProps) {
             getEntityActions(dialogue).then(({ edit }) =>
               dispatch(edit(dialogue)),
             );
-            focusTab('State Machine', mainLayoutId);
+            focusTab(mainLayoutId, 'State Machine');
           }}
         />
       )}

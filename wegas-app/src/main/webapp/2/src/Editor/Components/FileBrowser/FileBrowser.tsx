@@ -8,9 +8,9 @@ import { grow } from '../../../css/classes';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { MessageString } from '../MessageString';
 import { css } from 'emotion';
-import { focusTabContext } from '../LinearTabLayout/LinearLayout';
 import { mainLayoutId } from '../Layout';
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
+import { focusTab } from '../LinearTabLayout/LinearLayout';
 // import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const fileBrowserStyle = css({
@@ -99,8 +99,6 @@ export default function FileBrowserWithMeta() {
     shallowDifferent,
   );
 
-  const focusTab = React.useContext(focusTabContext);
-
   return (
     <ComponentWithForm>
       {({ localState, localDispatch }) => {
@@ -115,7 +113,7 @@ export default function FileBrowserWithMeta() {
                 : []
             }
             localDispatch={localDispatch}
-            onFileClick={() => focusTab('Variable Properties', mainLayoutId)}
+            onFileClick={() => focusTab(mainLayoutId, 'Variable Properties')}
           />
         );
       }}
