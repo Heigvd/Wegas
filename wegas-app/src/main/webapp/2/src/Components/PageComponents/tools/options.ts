@@ -573,6 +573,6 @@ export const wegasComponentExtraSchema = (containerType: ContainerTypes) => ({
  * classAndStyleShema - defines the schema to be used to edit classes and style of a component
  */
 export const classAndStyleShema = {
-  style: schemaProps.hashlist({ label: 'Style' }),
   className: schemaProps.string({ label: 'Classes' }),
+  style: schemaProps.hashlist({ label: 'Style' }),
 };

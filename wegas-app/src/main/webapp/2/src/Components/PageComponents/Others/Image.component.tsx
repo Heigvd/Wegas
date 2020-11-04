@@ -36,8 +36,8 @@ registerComponent(
           fileType: 'image',
           filterType: 'show',
         },
-        ...classAndStyleShema,
       }),
+      ...classAndStyleShema,
     },
   }),
 );
