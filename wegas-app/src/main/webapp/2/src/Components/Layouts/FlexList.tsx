@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { HashListChoices } from '../../Editor/Components/FormView/HashList';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
-import { cx } from 'emotion';
+import { css, cx } from 'emotion';
 import { flex, grow, layoutStyle } from '../../css/classes';
 import { classNameOrEmpty } from '../../Helper/className';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
@@ -103,6 +103,10 @@ export const flexlayoutChoices: HashListChoices = [
   },
 ];
 
+const flexItemDefaultStyle = css({
+  padding: '5px',
+});
+
 export interface FlexItemProps
   extends WegasComponentItemProps,
     FlexItemLayoutProps {
@@ -146,7 +150,7 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
         onDragEnd={onDragEnd}
-        className={className}
+        className={flexItemDefaultStyle + classNameOrEmpty(className)}
         style={{
           position: 'relative',
           ...layout,

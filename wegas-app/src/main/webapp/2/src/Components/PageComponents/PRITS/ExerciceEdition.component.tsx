@@ -6,6 +6,7 @@ import {
   INumberDescriptor,
   IStringInstance,
   ITextInstance,
+  SListDescriptor,
 } from 'wegas-ts-api';
 import { fileURL, generateAbsolutePath } from '../../../API/files.api';
 import {
@@ -28,9 +29,7 @@ import {
   translate,
   createTranslatableContent,
 } from '../../../Editor/Components/FormView/translatable';
-import { mainLayoutId } from '../../../Editor/Components/Layout';
-import { focusTab } from '../../../Editor/Components/LinearTabLayout/LinearLayout';
-import { getEntityActions } from '../../../Editor/editionConfig';
+import { CTree } from '../../../Editor/Components/Variable/VariableTree';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { clientScriptEval } from '../../Hooks/useScript';
@@ -39,6 +38,7 @@ import { Toggler } from '../../Inputs/Boolean/Toggler';
 import { Button } from '../../Inputs/Buttons/Button';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { Modal } from '../../Modal';
+import { themeVar } from '../../Style/ThemeVars';
 import {
   registerComponent,
   pageComponentFactory,
@@ -87,56 +87,64 @@ const portraitImgStyle = css({
   width: '100%',
 });
 
-interface RencontreEditionProps {
-  rencontreId: number;
+const exerciceEditionStyle = css({
+  borderRadius: '5px',
+  borderStyle: 'solid',
+  borderColor: themeVar.Common.colors.BorderColor,
+  padding: '5px',
+});
+
+interface ExerciceEditionProps {
+  exerciceId: number;
   onClickBack: () => void;
 }
 
 const dispatch = store.dispatch;
 
-function RencontreEdition({ rencontreId, onClickBack }: RencontreEditionProps) {
+function ExerciceEdition({ exerciceId, onClickBack }: ExerciceEditionProps) {
   const [browsingFile, setBrowsingFile] = React.useState<boolean>(false);
   const { lang } = React.useContext(languagesCTX);
   const player = instantiate(useStore(Player.selectCurrent));
 
-  const rencontreValues = useStore(() => {
-    const rencontre = instantiate(
-      VariableDescriptor.select<IListDescriptor>(rencontreId),
+  const exerciceValues = useStore(() => {
+    const exercice = instantiate(
+      VariableDescriptor.select<IListDescriptor>(exerciceId),
     );
 
-    if (!rencontre) {
+    if (!exercice) {
       return undefined;
     }
 
-    const titre = rencontre
+    const titre = exercice
       ?.getItems()
       .find(item => item.getEditorTag() === 'titre')
       ?.getInstance(player)
       ?.getEntity() as IStringInstance;
-    const description = rencontre
+    const description = exercice
       ?.getItems()
       .find(item => item.getEditorTag() === 'description')
       ?.getInstance(player)
       ?.getEntity() as ITextInstance;
-    const image = rencontre
+    const image = exercice
       ?.getItems()
       .find(item => item.getEditorTag() === 'image')
       ?.getInstance(player)
-      ?.getEntity() as ITextInstance;
-    const dialogue = rencontre
+      ?.getEntity() as IStringInstance;
+    const exercices = (exercice
       ?.getItems()
-      .find(item => item.getEditorTag() === 'dialogue')
-      ?.getEntity();
-    const active = rencontre
+      .find(
+        item => item.getEditorTag() === 'exercices',
+      ) as SListDescriptor).getId();
+    const active = exercice
       ?.getItems()
       .find(item => item.getEditorTag() === 'active')
       ?.getInstance(player)
       ?.getEntity() as IBooleanInstance;
 
-    return { titre, description, image, dialogue, active };
+    return { titre, description, image, exercices, active };
   }, deepDifferent);
 
-  const dialogue = rencontreValues?.dialogue;
+  const exercices = exerciceValues?.exercices;
 
   return (
     <div
@@ -150,10 +158,10 @@ function RencontreEdition({ rencontreId, onClickBack }: RencontreEditionProps) {
     >
       <div className={cx(flex, flexRow, itemCenter)}>
         <Button icon="arrow-left" onClick={onClickBack} />
-        <h2 className={cx(grow, textCenter)}>Rencontre</h2>
+        <h2 className={cx(grow, textCenter)}>Exercice</h2>
       </div>
 
-      {!rencontreValues ? (
+      {!exerciceValues ? (
         <span>Something went wrong. Please go back and try again.</span>
       ) : (
         <div className={cx(grow, patientEditionFormStyle)}>
@@ -165,7 +173,7 @@ function RencontreEdition({ rencontreId, onClickBack }: RencontreEditionProps) {
                   if (file) {
                     dispatch(
                       updateInstance({
-                        ...rencontreValues.image,
+                        ...exerciceValues.image,
                         trValue: createTranslatableContent(
                           lang,
                           fileURL(generateAbsolutePath(file)),
@@ -180,15 +188,15 @@ function RencontreEdition({ rencontreId, onClickBack }: RencontreEditionProps) {
             </Modal>
           )}
           <div>Id</div>
-          <div className={leftGridCellStyle}>{rencontreId}</div>
+          <div className={leftGridCellStyle}>{exerciceId}</div>
           <div>Titre</div>
           <SimpleInput
             className={leftGridCellStyle}
-            value={translate(rencontreValues.titre.trValue, lang)}
+            value={translate(exerciceValues.titre.trValue, lang)}
             onChange={value => {
               dispatch(
                 updateInstance({
-                  ...rencontreValues.titre,
+                  ...exerciceValues.titre,
                   trValue: createTranslatableContent(lang, String(value)),
                 } as IVariableInstance),
               );
@@ -198,7 +206,7 @@ function RencontreEdition({ rencontreId, onClickBack }: RencontreEditionProps) {
           <div className={cx(leftGridCellStyle, portraitStyle)}>
             <img
               className={portraitImgStyle}
-              src={translate(rencontreValues.image.trValue, lang)}
+              src={translate(exerciceValues.image.trValue, lang)}
             />
             <div className={portraitClickStyle}>
               <Button
@@ -210,11 +218,11 @@ function RencontreEdition({ rencontreId, onClickBack }: RencontreEditionProps) {
           <div>Description</div>
           <HTMLEditor
             className={leftGridCellStyle}
-            value={translate(rencontreValues.description.trValue, lang)}
+            value={translate(exerciceValues.description.trValue, lang)}
             onChange={value =>
               dispatch(
                 updateInstance({
-                  ...rencontreValues.description,
+                  ...exerciceValues.description,
                   trValue: createTranslatableContent(lang, value),
                 } as IVariableInstance),
               )
@@ -222,44 +230,36 @@ function RencontreEdition({ rencontreId, onClickBack }: RencontreEditionProps) {
           />
           <div>Actif</div>
           <Toggler
-            value={rencontreValues.active.value}
+            value={exerciceValues.active.value}
             onChange={value =>
               dispatch(
                 updateInstance({
-                  ...rencontreValues.active,
+                  ...exerciceValues.active,
                   value,
                 } as IVariableInstance),
               )
             }
             className={leftGridCellStyle}
           />
-          <div>Editer dialogue</div>
-          {dialogue != null && (
-            <Button
-              // label="Editer dialogue"
-              icon="pen"
-              onClick={() => {
-                getEntityActions(dialogue).then(({ edit }) =>
-                  dispatch(edit(dialogue)),
-                );
-                focusTab(mainLayoutId, 'State Machine');
-              }}
-              className={leftGridCellStyle}
-            />
-          )}
+          <div>Editer les exercices</div>
+          <div className={exerciceEditionStyle}>
+            {exercices != null && (
+              <CTree variableId={exercices} nodeProps={() => ({})} />
+            )}
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-function PlayerRencontreEdition({
+function PlayerExerciceEdition({
   onClickBack,
 }: { onClickBack: OpenPageAction } & WegasComponentProps) {
   const player = instantiate(useStore(Player.selectCurrent));
-  const rencontreId = useStore(() =>
+  const exerciceId = useStore(() =>
     instantiate(
-      VariableDescriptor.findByName<INumberDescriptor>('rencontreCourante'),
+      VariableDescriptor.findByName<INumberDescriptor>('exerciceCourant'),
     )?.getValue(player),
   );
 
@@ -276,8 +276,8 @@ function PlayerRencontreEdition({
   }, [onClickBack]);
 
   return (
-    <RencontreEdition
-      rencontreId={rencontreId || 0}
+    <ExerciceEdition
+      exerciceId={exerciceId || 0}
       onClickBack={onClickBackAction}
     />
   );
@@ -285,9 +285,9 @@ function PlayerRencontreEdition({
 
 registerComponent(
   pageComponentFactory({
-    component: PlayerRencontreEdition,
+    component: PlayerExerciceEdition,
     componentType: 'Other',
-    name: 'PRITS Rencontre edition',
+    name: 'PRITS Exercice edition',
     icon: 'pen',
     schema: {
       onClickBack: schemaProps.object({

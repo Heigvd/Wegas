@@ -64,7 +64,15 @@ const portraitStyle = css({
   },
 });
 
+const portraitImgStyle = css({
+  width: '100%',
+});
+
 const portraitClickStyle = css({
+  opacity: 0,
+  ';hover': {
+    opacity: 1,
+  },
   position: 'absolute',
   display: 'flex',
   top: 0,
@@ -94,7 +102,7 @@ function PatientEdition({ patientId, onClickBack }: PatientEditionProps) {
       ?.getItems()
       .find(item => item.getEditorTag() === 'portrait')
       ?.getInstance(player)
-      ?.getEntity() as ITextInstance;
+      ?.getEntity() as IStringInstance;
     const nom = patient
       ?.getItems()
       .find(item => item.getEditorTag() === 'nom')
@@ -136,9 +144,7 @@ function PatientEdition({ patientId, onClickBack }: PatientEditionProps) {
                       ...portrait,
                       trValue: createTranslatableContent(
                         lang,
-                        `<div style="background-image: url('${fileURL(
-                          generateAbsolutePath(file),
-                        )}'); width: 100%; height: 100%; background-position: center; background-size: contain; background-repeat: no-repeat;">&nbsp;</div>`,
+                        fileURL(generateAbsolutePath(file)),
                       ),
                     } as IVariableInstance),
                   );
@@ -153,10 +159,9 @@ function PatientEdition({ patientId, onClickBack }: PatientEditionProps) {
         <div className={leftGridCellStyle}>{patientId}</div>
         <div>Portrait</div>
         <div className={cx(leftGridCellStyle, portraitStyle)}>
-          <div
-            dangerouslySetInnerHTML={{
-              __html: translate(portrait.trValue, lang) || '',
-            }}
+          <img
+            className={portraitImgStyle}
+            src={translate(portrait.trValue, lang)}
           />
           <div className={portraitClickStyle}>
             <Button
@@ -164,7 +169,6 @@ function PatientEdition({ patientId, onClickBack }: PatientEditionProps) {
               onClick={() => setBrowsingFile(true)}
             />
           </div>
-          {/* <div className={portraitClickStyle}>Insert image</div> */}
         </div>
         <div>Nom</div>
         <SimpleInput

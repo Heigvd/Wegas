@@ -93,7 +93,7 @@ interface TreeProps {
   localState?: Readonly<Edition> | undefined;
   localDispatch?: StoreDispatch;
 }
-function TreeView({ variables, localState, localDispatch }: TreeProps) {
+export function TreeView({ variables, localState, localDispatch }: TreeProps) {
   const [search, setSearch] = React.useState('');
   const { data } = useAsync(itemsPromise);
   const globalDispatch = store.dispatch;
@@ -217,11 +217,11 @@ export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_DRAG_ITEM';
 interface CTreeProps {
   variableId: number;
   subPath?: string[];
-  search: string;
+  search?: string;
   nodeProps: () => {};
 }
 
-function CTree(
+export function CTree(
   props: Omit<CTreeProps & TreeProps, 'variables'>,
 ): JSX.Element | null {
   const { searching, editing, variable, match } = useStore(state => {
@@ -239,7 +239,7 @@ function CTree(
 
     return {
       variable: variable,
-      match: isMatch(props.variableId, props.search),
+      match: isMatch(props.variableId, props.search || ''),
       editing: isEditing(props.variableId, props.subPath, state.global.editing),
       searching:
         (variable &&

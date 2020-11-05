@@ -8,14 +8,25 @@ import { schemaProps } from '../tools/schemaProps';
 import { classAndStyleShema } from '../tools/options';
 import { IScript } from 'wegas-ts-api';
 import { useScript } from '../../Hooks/useScript';
+import { css } from 'emotion';
+
+const initialImageStyle = css({
+  width: '100%',
+});
 
 interface SvgLoaderProps extends WegasComponentProps {
   script?: IScript;
 }
 
-function Image({ script, style, className }: SvgLoaderProps) {
-  const path = useScript<string>(script);
-  return <img src={path} style={style} className={className} />;
+function Image({ script, style, className, context }: SvgLoaderProps) {
+  const path = useScript<string>(script, context);
+  return (
+    <img
+      src={path}
+      style={style}
+      className={className ? className : initialImageStyle}
+    />
+  );
 }
 
 registerComponent(
