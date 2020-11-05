@@ -228,19 +228,21 @@ function RencontreEdition({ rencontreId, onClickBack }: RencontreEditionProps) {
             }
             className={leftGridCellStyle}
           />
+          <div>Editer dialogue</div>
+          {dialogue != null && (
+            <Button
+              // label="Editer dialogue"
+              icon="pen"
+              onClick={() => {
+                getEntityActions(dialogue).then(({ edit }) =>
+                  dispatch(edit(dialogue)),
+                );
+                focusTab(mainLayoutId, 'State Machine');
+              }}
+              className={leftGridCellStyle}
+            />
+          )}
         </div>
-      )}
-      {dialogue != null && (
-        <Button
-          label="Editer dialogue"
-          icon="pen"
-          onClick={() => {
-            getEntityActions(dialogue).then(({ edit }) =>
-              dispatch(edit(dialogue)),
-            );
-            focusTab(mainLayoutId, 'State Machine');
-          }}
-        />
       )}
     </div>
   );

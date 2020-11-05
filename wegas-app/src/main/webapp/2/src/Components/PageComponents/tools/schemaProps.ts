@@ -679,7 +679,7 @@ const simpleSchemaProps = {
   } & CommonSchemaProps &
     ValueSchemaProps<string>) => ({
     required,
-    type: 'string',
+    type: scriptable ? 'object' : 'string',
     value,
     index,
     view: {

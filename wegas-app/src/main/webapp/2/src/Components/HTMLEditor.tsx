@@ -33,7 +33,6 @@ import { css, cx } from 'emotion';
 import { classesCTX } from './Contexts/ClassesProvider';
 import { flexColumn, flex } from '../css/classes';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { debounce } from 'lodash-es';
 import { classNameOrEmpty } from '../Helper/className';
 import { inputStyleCSS } from './Inputs/inputStyles';
 
