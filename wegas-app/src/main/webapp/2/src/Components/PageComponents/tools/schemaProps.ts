@@ -93,20 +93,20 @@ const simpleSchemaProps = {
   }: CommonSchemaProps &
     ReadOnlySchemaProps &
     ValueSchemaProps<boolean>): TypedProps<BooleanProps> => ({
-      required,
-      type: 'boolean',
-      value,
+    required,
+    type: 'boolean',
+    value,
+    index,
+    view: {
+      borderTop,
       index,
-      view: {
-        borderTop,
-        index,
-        readOnly,
-        featureLevel,
-        label,
-        layout,
-        type: 'boolean',
-      },
-    }),
+      readOnly,
+      featureLevel,
+      label,
+      layout,
+      type: 'boolean',
+    },
+  }),
   number: ({
     label,
     required = false,
@@ -119,20 +119,20 @@ const simpleSchemaProps = {
   }: CommonSchemaProps &
     ReadOnlySchemaProps &
     ValueSchemaProps<number>): TypedProps<StringInputProps> => ({
-      required,
-      type: 'number',
-      value,
+    required,
+    type: 'number',
+    value,
+    index,
+    view: {
+      borderTop,
       index,
-      view: {
-        borderTop,
-        index,
-        featureLevel,
-        label,
-        layout,
-        readOnly,
-        type: 'number',
-      },
-    }),
+      featureLevel,
+      label,
+      layout,
+      readOnly,
+      type: 'number',
+    },
+  }),
   string: ({
     label,
     required = false,
@@ -145,20 +145,20 @@ const simpleSchemaProps = {
   }: CommonSchemaProps &
     ReadOnlySchemaProps &
     ValueSchemaProps<string>): TypedProps<StringInputProps> => ({
-      required,
-      type: 'string',
-      value,
+    required,
+    type: 'string',
+    value,
+    index,
+    view: {
+      borderTop,
       index,
-      view: {
-        borderTop,
-        index,
-        layout,
-        featureLevel,
-        label,
-        type: 'string',
-        readOnly,
-      },
-    }),
+      layout,
+      featureLevel,
+      label,
+      type: 'string',
+      readOnly,
+    },
+  }),
   html: ({
     label,
     required = false,
@@ -171,20 +171,20 @@ const simpleSchemaProps = {
   }: CommonSchemaProps &
     ReadOnlySchemaProps &
     ValueSchemaProps<ITranslatableContent>) => ({
-      required,
-      type: 'object',
-      value,
+    required,
+    type: 'object',
+    value,
+    index,
+    view: {
+      borderTop,
       index,
-      view: {
-        borderTop,
-        index,
-        layout,
-        featureLevel,
-        label,
-        type: 'i18nhtml',
-        readOnly,
-      },
-    }),
+      layout,
+      featureLevel,
+      label,
+      type: 'i18nhtml',
+      readOnly,
+    },
+  }),
   custom: <T extends keyof typeof DEFINED_VIEWS>({
     label,
     required = false,
@@ -237,20 +237,20 @@ const simpleSchemaProps = {
     language?: 'JavaScript' | 'JSON' | 'TypeScript' | 'CSS';
   } & CommonSchemaProps &
     ValueSchemaProps<string>): TypedProps<ScriptProps> => ({
-      required,
-      type: 'object',
-      value: createScript(value, language),
+    required,
+    type: 'object',
+    value: createScript(value, language),
+    index,
+    view: {
+      borderTop,
       index,
-      view: {
-        borderTop,
-        index,
-        featureLevel,
-        label,
-        mode,
-        type: 'script',
-        layout,
-      },
-    }),
+      featureLevel,
+      label,
+      mode,
+      type: 'script',
+      layout,
+    },
+  }),
   customScript: ({
     label,
     required = false,
@@ -270,22 +270,22 @@ const simpleSchemaProps = {
     scriptContext?: ScriptContext;
   } & CommonSchemaProps &
     ValueSchemaProps<string>): TypedProps<CustomScriptProps> => ({
-      required,
-      type: 'object',
-      value: createScript(value, language),
+    required,
+    type: 'object',
+    value: createScript(value, language),
+    index,
+    view: {
+      borderTop,
       index,
-      view: {
-        borderTop,
-        index,
-        featureLevel,
-        label,
-        returnType,
-        args,
-        type: 'customscript',
-        layout,
-        scriptContext,
-      },
-    }),
+      featureLevel,
+      label,
+      returnType,
+      args,
+      type: 'customscript',
+      layout,
+      scriptContext,
+    },
+  }),
   code: ({
     label,
     required = false,
@@ -299,20 +299,20 @@ const simpleSchemaProps = {
     language?: CodeLanguage;
   } & CommonSchemaProps &
     ValueSchemaProps<{} | string>): TypedProps<CodeProps> => ({
-      required,
-      type: 'object',
-      value,
+    required,
+    type: 'object',
+    value,
+    index,
+    view: {
+      borderTop,
       index,
-      view: {
-        borderTop,
-        index,
-        featureLevel,
-        label,
-        language,
-        type: 'code',
-        layout,
-      },
-    }),
+      featureLevel,
+      label,
+      language,
+      type: 'code',
+      layout,
+    },
+  }),
   select: <V extends string | SelectItem>({
     label,
     required = false,
@@ -330,8 +330,8 @@ const simpleSchemaProps = {
     openChoices?: boolean;
   } & CommonSchemaProps &
     ValueSchemaProps<V>): TypedProps<IAsyncSelectProps> & {
-      enum: readonly unknown[];
-    } => {
+    enum: readonly unknown[];
+  } => {
     let enumerator: readonly unknown[] = [];
     let choices: readonly SelectItem[] = [];
     if (values.length > 0) {
@@ -587,20 +587,20 @@ const simpleSchemaProps = {
     mode?: ScriptMode;
   } & CommonSchemaProps &
     ValueSchemaProps<Statement>): TypedProps<StatementViewProps> => ({
-      required,
-      type: 'object',
+    required,
+    type: 'object',
+    index,
+    value,
+    view: {
+      borderTop,
       index,
-      value,
-      view: {
-        borderTop,
-        index,
-        featureLevel,
-        label,
-        type: 'statement',
-        layout,
-        mode,
-      },
-    }),
+      featureLevel,
+      label,
+      type: 'statement',
+      layout,
+      mode,
+    },
+  }),
   hashlist: ({
     label,
     required = false,
@@ -616,21 +616,21 @@ const simpleSchemaProps = {
     objectViewStyle?: boolean;
   } & CommonSchemaProps &
     ValueSchemaProps<object>) => ({
-      required,
-      type: 'object',
-      value,
+    required,
+    type: 'object',
+    value,
+    index,
+    view: {
+      choices,
+      featureLevel,
       index,
-      view: {
-        choices,
-        featureLevel,
-        index,
-        label,
-        type: 'hashlist',
-        layout,
-        borderTop,
-        objectViewStyle,
-      },
-    }),
+      label,
+      type: 'hashlist',
+      layout,
+      borderTop,
+      objectViewStyle,
+    },
+  }),
   file: ({
     label,
     required = false,
@@ -646,21 +646,21 @@ const simpleSchemaProps = {
     filter?: FileFilter;
   } & CommonSchemaProps &
     ValueSchemaProps<IAbstractContentDescriptor>) => ({
-      required,
-      type: 'object',
-      value,
+    required,
+    type: 'object',
+    value,
+    index,
+    view: {
+      pick,
+      filter,
+      featureLevel,
       index,
-      view: {
-        pick,
-        filter,
-        featureLevel,
-        index,
-        label,
-        type: 'file',
-        layout,
-        borderTop,
-      },
-    }),
+      label,
+      type: 'file',
+      layout,
+      borderTop,
+    },
+  }),
   path: ({
     label,
     required = false,
@@ -671,26 +671,28 @@ const simpleSchemaProps = {
     index = 0,
     layout,
     borderTop,
+    scriptable,
   }: {
     pick?: FilePickingType;
     filter?: FileFilter;
+    scriptable?: boolean;
   } & CommonSchemaProps &
     ValueSchemaProps<string>) => ({
-      required,
-      type: 'string',
-      value,
+    required,
+    type: 'string',
+    value,
+    index,
+    view: {
+      pick,
+      filter,
+      featureLevel,
       index,
-      view: {
-        pick,
-        filter,
-        featureLevel,
-        index,
-        label,
-        type: 'path',
-        layout,
-        borderTop,
-      },
-    }),
+      label,
+      type: scriptable ? 'scriptablepath' : 'path',
+      layout,
+      borderTop,
+    },
+  }),
 };
 
 type SimpleSchemaPropsValues = keyof typeof simpleSchemaProps;
@@ -713,14 +715,14 @@ const objectSchemaProps = {
     properties?: { [key: string]: SimpleSchemaPropsSchemas };
   } & CommonSchemaProps &
     ValueSchemaProps<object>) => ({
-      description: 'com.wegas.core.persistence.variable.primitive.NumberInstance',
-      properties,
-      value,
-      required,
-      type: 'object',
-      index,
-      view: { featureLevel, index, label, layout, borderTop },
-    }),
+    description: 'com.wegas.core.persistence.variable.primitive.NumberInstance',
+    properties,
+    value,
+    required,
+    type: 'object',
+    index,
+    view: { featureLevel, index, label, layout, borderTop },
+  }),
 };
 
 type ObjectSchemaPropsValues = keyof typeof objectSchemaProps;

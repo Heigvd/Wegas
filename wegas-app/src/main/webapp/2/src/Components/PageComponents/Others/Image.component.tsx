@@ -25,7 +25,7 @@ function Image({ src, style, className }: SvgLoaderProps) {
 registerComponent(
   pageComponentFactory({
     component: Image,
-    componentType: 'Other',
+    componentType: 'Output',
     name: 'Image',
     icon: 'image',
     schema: {
@@ -36,6 +36,7 @@ registerComponent(
           fileType: 'image',
           filterType: 'show',
         },
+        scriptable: true,
       }),
       ...classAndStyleShema,
     },
