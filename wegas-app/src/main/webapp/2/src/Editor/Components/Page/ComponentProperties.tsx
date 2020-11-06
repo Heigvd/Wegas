@@ -37,7 +37,8 @@ import { ContainerComponent } from '../../../Components/PageComponents/tools/Edi
  */
 export const wegasComponentCommonSchema = {
   name: schemaProps.string({ label: 'Name', index: -2 }),
-  className: schemaProps.string({ label: 'Classes', index: -1 }),
+  layoutClassName: schemaProps.string({ label: 'Classes', index: -1 }),
+  layoutStyle: schemaProps.hashlist({ label: 'Style' }),
   children: schemaProps.hidden({ type: 'array', index: 1003 }),
 };
 
@@ -93,21 +94,23 @@ const AsyncComponentForm = asyncSFC<EditorProps>(
   ),
 );
 
-interface WegasComponentCommonProperties {
+export interface WegasComponentCommonProperties {
   name?: string;
   className?: string;
   children?: WegasComponent[];
+  layoutClassName?: string;
+  layoutStyle?: React.CSSProperties;
 }
 
 const defaultCommonProperties: WegasComponentCommonProperties = {
   name: undefined,
   children: undefined,
-  className: undefined,
+  layoutClassName: undefined,
+  layoutStyle: undefined,
 };
 const defaultCommonPropertiesKeys = Object.keys(defaultCommonProperties);
 
 const defaultLayoutCommonOptions: WegasComponentLayoutCommonOptions = {
-  style: undefined,
   themeMode: undefined,
   tooltip: undefined,
 };
@@ -152,7 +155,7 @@ interface WegasComponentForm {
     [prop: string]: unknown;
   };
   layoutOptions: WegasComponentLayoutCommonOptions &
-  (FlexItemLayoutProps | AbsoluteItemLayoutProps);
+    (FlexItemLayoutProps | AbsoluteItemLayoutProps);
   layoutConditions: WegasComponentLayoutConditionnalOptions;
   actions: WegasComponentOptionsActions & WegasComponentActionsProperties;
   decorations: WegasComponentDecorations;

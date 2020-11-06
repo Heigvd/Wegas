@@ -33,7 +33,6 @@ import { css, cx } from 'emotion';
 import { classesCTX } from './Contexts/ClassesProvider';
 import { flexColumn, flex } from '../css/classes';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { debounce } from 'lodash-es';
 import { classNameOrEmpty } from '../Helper/className';
 import { inputStyleCSS } from './Inputs/inputStyles';
 
@@ -140,15 +139,16 @@ export default function HTMLEditor({
           `${onSave ? 'save' : ''} autolink link image lists code media table`,
           'paste advlist',
         ],
-        toolbar: `${onSave ? 'save' : ''
-          } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link | ${[
-            ...extraStyleButton,
-            ...extraActionButton,
-          ]
-            .map(btn => btn.name)
-            .join(
-              ' ',
-            )} | code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
+        toolbar: `${
+          onSave ? 'save' : ''
+        } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link | ${[
+          ...extraStyleButton,
+          ...extraActionButton,
+        ]
+          .map(btn => btn.name)
+          .join(
+            ' ',
+          )} | code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
         toolbar_drawer: 'floating',
         menubar: false,
         resize: 'both',
@@ -244,7 +244,7 @@ export default function HTMLEditor({
               ...btn,
               onAction: api => btn.onAction(api, editor),
               onSetup: api =>
-                btn.onSetup ? btn.onSetup(api, editor) : () => { },
+                btn.onSetup ? btn.onSetup(api, editor) : () => {},
             });
           });
         },
@@ -264,10 +264,10 @@ export default function HTMLEditor({
   }, [fileBrowsing.fn]);
 
   const onEditorChange = React.useCallback(
-    debounce((value: string) => {
+    value => {
       HTMLContent.current = value;
       onChange && onChange(HTMLContent.current);
-    }, 500),
+    },
     [onChange],
   );
 
@@ -299,7 +299,7 @@ export default function HTMLEditor({
           onEditorChange={onEditorChange}
           onFocus={() => setEditorFocus(true)}
           onBlur={() => setEditorFocus(false)}
-        // textareaName={editorStyle}
+          // textareaName={editorStyle}
         />
       </div>
       {fileBrowsing.fn && (
@@ -311,7 +311,7 @@ export default function HTMLEditor({
                 fileBrowsing.fn &&
                 fileBrowsing.fn(
                   document.location.origin +
-                  fileURL(generateAbsolutePath(file)),
+                    fileURL(generateAbsolutePath(file)),
                 );
             }}
             pick={'FILE'}
@@ -329,7 +329,7 @@ const labeledHTMLEditorStyle = css({
 
 interface HtmlProps
   extends WidgetProps.BaseProps<
-  { placeholder?: string } & CommonView & LabeledView
+    { placeholder?: string } & CommonView & LabeledView
   > {
   value?: string;
 }

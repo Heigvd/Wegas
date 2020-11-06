@@ -32,7 +32,7 @@ import {
   SSurveyNumberDescriptorImpl,
 } from './impl/SurveyInputDescriptor';
 
-export const apiConnector = new WegasApiConnector.WegasClient({
+const apiConnector = new WegasApiConnector.WegasClient({
   BooleanDescriptor: SBooleanDescriptorImpl,
   BurndownDescriptor: SBurndownDescriptorImpl,
   ChoiceDescriptor: SChoiceDescriptorImpl,

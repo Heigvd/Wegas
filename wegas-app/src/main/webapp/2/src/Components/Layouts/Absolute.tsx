@@ -8,9 +8,15 @@ import { schemaProps } from '../PageComponents/tools/schemaProps';
 import { classNameOrEmpty } from '../../Helper/className';
 import { layoutStyle } from '../../css/classes';
 
-export function AbsoluteLayout({ className, children }: WegasComponentProps) {
+export function AbsoluteLayout({
+  className,
+  style,
+  children,
+}: WegasComponentProps) {
   return (
-    <div className={layoutStyle + classNameOrEmpty(className)}>{children}</div>
+    <div className={layoutStyle + classNameOrEmpty(className)} style={style}>
+      {children}
+    </div>
   );
 }
 
@@ -35,7 +41,9 @@ export const defaultAbsoluteLayoutPropsKeys = Object.keys(
   defaultAbsoluteLayoutProps,
 ) as (keyof AbsoluteItemLayoutProps)[];
 
-type AbsoluteItemProps = React.PropsWithChildren<WegasComponentItemProps & AbsoluteItemLayoutProps>;
+type AbsoluteItemProps = React.PropsWithChildren<
+  WegasComponentItemProps & AbsoluteItemLayoutProps
+>;
 
 export const AbsoluteItem = React.forwardRef<HTMLDivElement, AbsoluteItemProps>(
   (

@@ -26,6 +26,12 @@ export const VariableDescriptorAPI = {
       },
     );
   },
+  duplicate(gameModelId: number, variableDescriptor: IVariableDescriptor) {
+    return managedModeRequest(
+      `${VD_BASE(gameModelId)}${variableDescriptor.id}/Duplicate/`,
+      { method: 'POST' },
+    );
+  },
   delete(gameModelId: number, variableDescriptor: IVariableDescriptor) {
     return managedModeRequest(
       `${VD_BASE(gameModelId)}${variableDescriptor.id}`,

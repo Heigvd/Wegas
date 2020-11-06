@@ -25,10 +25,14 @@ import {
 import { ScriptableEntity } from 'wegas-ts-api';
 import { popupDispatch, addPopup, PopupActionCreator } from '../PopupManager';
 import { ActionCreator } from '../../data/actions';
-import { translate } from '../../Editor/Components/FormView/translatable';
+import {
+  createTranslatableContent,
+  translate,
+} from '../../Editor/Components/FormView/translatable';
 import { wwarn } from '../../Helper/wegaslog';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { replace } from '../../Helper/tools';
+import { APIScriptMethods } from '../../API/clientScriptHelper';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -47,6 +51,7 @@ interface GlobalVariableClass {
 interface GlobalClasses {
   gameModel?: Readonly<SGameModel>;
   self?: Readonly<SPlayer>;
+  API_VIEW: View;
   Variable: GlobalVariableClass;
   Editor: GlobalEditorClass;
   ClientMethods: GlobalClientMethodClass;
@@ -59,6 +64,7 @@ interface GlobalClasses {
   Context: {
     [name: string]: unknown;
   };
+  APIMethods: APIMethodsClass;
 }
 
 const globalDispatch = store.dispatch;
@@ -93,7 +99,7 @@ export function useGlobals() {
   // Global variables
   globals.gameModel = instantiate(gameModel);
   globals.self = instantiate(player);
-
+  globals.API_VIEW = API_VIEW;
   // Variable class
   globals.Variable = {
     find: <T extends IVariableDescriptor>(_gm: unknown, name: string) => {
@@ -105,7 +111,7 @@ export function useGlobals() {
     select: <T extends SVariableDescriptor>(_gm: unknown, id: number) => {
       const iDesc = VDSelect.select<IVariableDescriptor>(id);
       if (iDesc) {
-        return instantiate(iDesc) as unknown as T | undefined;
+        return (instantiate(iDesc) as unknown) as T | undefined;
       }
     },
     getItems,
@@ -281,7 +287,12 @@ export function useGlobals() {
       }
       return translate(translatableEntity, lang);
     },
+    createTranslatableContent: value => {
+      return createTranslatableContent(lang, value);
+    },
   };
+
+  globals.APIMethods = APIScriptMethods;
 }
 
 export type ReturnType = object | number | boolean | string | undefined;
@@ -290,16 +301,16 @@ export function clientScriptEval<T extends ReturnType>(
   script?: string | IScript,
   context?: {
     [name: string]: unknown;
-  }
+  },
 ): T extends IMergeable ? unknown : T {
   globals.Context = context || {};
   const scriptContent = typeof script === 'string' ? script : script?.content;
   return scriptContent != null
     ? (((sandbox.contentWindow as unknown) as {
-      eval: (code: string) => T;
-    })
-      // 'undefined' so that an empty script don't return '"use strict"'
-      .eval('"use strict";undefined;' + transpile(scriptContent)) as any)
+        eval: (code: string) => T;
+      })
+        // 'undefined' so that an empty script don't return '"use strict"'
+        .eval('"use strict";undefined;' + transpile(scriptContent)) as any)
     : undefined;
 }
 
@@ -315,8 +326,10 @@ export function safeClientScriptEval<T extends ReturnType>(
   } catch (e) {
     const scriptContent = typeof script === 'string' ? script : script?.content;
     wwarn(
-      `Script error at line ${e.lineNumber} : ${e.message
-      }\n\nScript content is :\n${scriptContent}\n\nTranspiled content is :\n${scriptContent != null ? transpile(scriptContent) : undefined
+      `Script error at line ${e.lineNumber} : ${
+        e.message
+      }\n\nScript content is :\n${scriptContent}\n\nTranspiled content is :\n${
+        scriptContent != null ? transpile(scriptContent) : undefined
       }`,
     );
     catchCB && catchCB(e);
@@ -338,11 +351,10 @@ export function useScript<T extends ReturnType>(
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
   useGlobals();
   // useScriptContext();
-  const fn = React.useCallback(() => safeClientScriptEval<T>(script, context, catchCB), [
-    script,
-    context,
-    catchCB,
-  ]);
+  const fn = React.useCallback(
+    () => safeClientScriptEval<T>(script, context, catchCB),
+    [script, context, catchCB],
+  );
   return useStore(fn, deepDifferent) as any;
 }
 
@@ -359,10 +371,12 @@ export function useUnsafeScript<T extends ReturnType>(
 ): T extends IMergeable ? unknown : T {
   useGlobals();
 
-  const fn = React.useCallback(() => clientScriptEval<T>(script, context), [script, context]);
+  const fn = React.useCallback(() => clientScriptEval<T>(script, context), [
+    script,
+    context,
+  ]);
   return useStore(fn, deepDifferent) as any;
 }
-
 
 export function parseAndRunClientScript(
   script: string | IScript,
@@ -386,25 +400,29 @@ export function parseAndRunClientScript(
   let matched;
   let index = 0;
 
-
   do {
     matched = scriptContent.substr(index).match(simpleVarFindRegex);
     if (matched) {
-      index += (matched.index == null ? scriptContent.length : matched.index);
-      const matchedCode = matched[0].replace(regexStart, "").slice(0, -2);
-      const matchedValue = String(safeClientScriptEval<string>(matchedCode, context));
+      index += matched.index == null ? scriptContent.length : matched.index;
+      const matchedCode = matched[0].replace(regexStart, '').slice(0, -2);
+      const matchedValue = String(
+        safeClientScriptEval<string>(matchedCode, context),
+      );
 
-      scriptContent = replace(scriptContent, index, matched[0].length + 1, matchedValue);
+      scriptContent = replace(
+        scriptContent,
+        index,
+        matched[0].length + 1,
+        matchedValue,
+      );
 
       index += matchedValue.length;
     }
-  }
-  while (matched)
+  } while (matched);
 
-
-  return 'string' === typeof script ? scriptContent : { ...script, content: scriptContent };
+  return 'string' === typeof script
+    ? scriptContent
+    : { ...script, content: scriptContent };
 }
 
-export function serverScriptEval() {
-
-}
+export function serverScriptEval() {}

@@ -86,7 +86,7 @@ const defaultPage = {
     layout: {
       flexDirection: 'column',
     },
-    style: {
+    layoutStyle: {
       width: '100%',
       height: '100%',
       overflow: 'auto',
@@ -687,6 +687,22 @@ function PageIndexTitle({
         }
         className={CONTROLS_CLASSNAME}
       />
+      {indexItem['@class'] === 'Page' && (
+        <Button
+          icon="copy"
+          onClick={() => {
+            const currentPage = store.getState().pages[indexItem.id!];
+            dispatch(
+              Actions.PageActions.createItem(
+                newPath.slice(0, -1),
+                { ...indexItem, name: indexItem.name + ' - copy' },
+                currentPage,
+              ),
+            );
+          }}
+          className={CONTROLS_CLASSNAME}
+        />
+      )}
     </LayoutNodeTitle>
   );
 }

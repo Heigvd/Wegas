@@ -15,10 +15,7 @@ import {
   hoverColorInsetShadow,
   thinHoverColorInsetShadow,
 } from '../../../css/classes';
-import {
-  FlexListProps,
-  defaultFlexLayoutOptionsKeys,
-} from '../../Layouts/FlexList';
+import { defaultFlexLayoutOptionsKeys } from '../../Layouts/FlexList';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import { useDebounce } from '../../Hooks/useDebounce';
 import { pick } from 'lodash-es';
@@ -38,22 +35,17 @@ import {
   WegasComponentOptionsAction,
   wegasComponentActions,
 } from './options';
-import {
-  defaultAbsoluteLayoutPropsKeys,
-} from '../../Layouts/Absolute';
+import { defaultAbsoluteLayoutPropsKeys } from '../../Layouts/Absolute';
 import { PlayerInfoBullet } from './InfoBullet';
 import { EditHandle } from './EditHandle';
 import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
 import { OptionsState, ComponentOptionsManager } from './OptionsComponent';
-import {
-  PlayerLinearLayoutProps,
-  PlayerLinearLayoutChildrenProps,
-} from '../Layouts/LinearLayout.component';
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
 import { themeVar } from '../../Style/ThemeVars';
 import { defaultMenuItemKeys } from '../../Layouts/Menu';
 import { parseAndRunClientScript } from '../../Hooks/useScript';
 import { IScript } from 'wegas-ts-api';
+import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {
@@ -156,14 +148,14 @@ function useDndComponentDrop(
     dndMonitor: DropTargetMonitor,
   ) => void,
 ): [
-    {
-      isOver: boolean;
-      isOverCurrent: boolean;
-      canDrop: boolean;
-      item: PageEditorComponent | null;
-    },
-    DragElementWrapper<{}>,
-  ] {
+  {
+    isOver: boolean;
+    isOverCurrent: boolean;
+    canDrop: boolean;
+    item: PageEditorComponent | null;
+  },
+  DragElementWrapper<{}>,
+] {
   const [dropZoneProps, dropZone] = useDrop<
     PageEditorComponent,
     void,
@@ -365,8 +357,8 @@ export type ChildrenDeserializerProps<P = {}> = P & {
   path?: number[];
   pageId?: string;
   uneditable?: boolean;
-  context?: { [exposeAs: string]: any }
-}
+  context?: { [exposeAs: string]: any };
+};
 
 /**
  * ContainerComponent - Defines the type and management of a container component
@@ -375,6 +367,7 @@ export interface ContainerComponent<P = {}> {
   type: ContainerTypes;
   isVertical: (props?: P) => boolean | undefined;
   ChildrenDeserializer: React.FunctionComponent<ChildrenDeserializerProps<P>>;
+  noContainer?: (props?: P) => boolean | undefined;
 }
 
 /**
@@ -406,7 +399,7 @@ export interface EmptyPageComponentProps {
   /**
    * dropzones - the dropzone to enable when a component is dragged over
    */
-  dropzones: DropZones
+  dropzones: DropZones;
 }
 /**
  * PageComponentProps - The props that are needed by the ComponentContainer
@@ -433,29 +426,26 @@ export type WegasComponentOptions = WegasComponentOptionsActions &
  */
 export interface WegasComponentProps
   extends React.PropsWithChildren<ClassAndStyle>,
-  PageComponentProps,
-  WegasComponentOptions {
-}
+    Omit<WegasComponentCommonProperties, 'children'>,
+    PageComponentProps,
+    WegasComponentOptions {}
 
-export type ItemContainer = React.ForwardRefExoticComponent<WegasComponentItemProps & {
-  children?: React.ReactNode;
-} & React.RefAttributes<HTMLDivElement>>
+export type ItemContainer = React.ForwardRefExoticComponent<
+  WegasComponentItemProps & {
+    children?: React.ReactNode;
+  } & React.RefAttributes<HTMLDivElement>
+>;
 
-export type ItemContainerPropsKeys = typeof defaultAbsoluteLayoutPropsKeys | typeof defaultFlexLayoutOptionsKeys | typeof defaultMenuItemKeys | typeof defaultFonkyFlexLayoutPropsKeys;
+export type ItemContainerPropsKeys =
+  | typeof defaultAbsoluteLayoutPropsKeys
+  | typeof defaultFlexLayoutOptionsKeys
+  | typeof defaultMenuItemKeys
+  | typeof defaultFonkyFlexLayoutPropsKeys;
 
-/**
- * ExtractedLayoutProps - Extracted props from currently layout containers
- * Needed to define the orientation of the container
- */
-export interface ExtractedLayoutProps {
-  layout?: FlexListProps['layout'];
-  vertical?: PlayerLinearLayoutProps['vertical'];
-  linearChildrenProps?: PlayerLinearLayoutChildrenProps;
+interface ComponentContainerProps extends WegasComponentProps {
+  vertical?: boolean;
   containerPropsKeys?: ItemContainerPropsKeys;
 }
-
-// TODO : CLEAN THIS INTERFACE!
-type ComponentContainerProps = WegasComponentProps & ExtractedLayoutProps;
 
 const pageDispatch = pagesStateStore.dispatch;
 
@@ -466,8 +456,8 @@ export function ComponentContainer({
   name,
   layout,
   vertical,
-  className,
-  style = {},
+  layoutClassName,
+  layoutStyle = {},
   children,
   context,
   Container,
@@ -503,36 +493,45 @@ export function ComponentContainer({
     isComponentFocused(editMode, pageId, path),
   );
 
-  const onClick = React.useCallback(() => {
-    if (
-      options != null &&
-      (!options.confirmClick ||
-        // TODO : Find a better way to do that than a modal!!!
-        // eslint-disable-next-line no-alert
-        confirm(options.confirmClick))
-    ) {
-      Object.entries(
-        pick(
-          options,
-          Object.keys(defaultWegasComponentOptionsActions),
-        ) as WegasComponentOptionsActions,
-      )
-        .sort(
-          (
-            [, v1]: [string, WegasComponentOptionsAction],
-            [, v2]: [string, WegasComponentOptionsAction],
-          ) =>
-            (v1.priority ? v1.priority : 0) - (v2.priority ? v2.priority : 0),
+  const onClick = React.useCallback(
+    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (options.stopPropagation) {
+        event.stopPropagation();
+      }
+      if (
+        options != null &&
+        (!options.confirmClick ||
+          // TODO : Find a better way to do that than a modal!!!
+          // eslint-disable-next-line no-alert
+          confirm(options.confirmClick))
+      ) {
+        Object.entries(
+          pick(
+            options,
+            Object.keys(defaultWegasComponentOptionsActions),
+          ) as WegasComponentOptionsActions,
         )
-        .forEach(([k, v]) => {
-          if (k === "impactVariable") {
-            return wegasComponentActions.impactVariable({ impact: parseAndRunClientScript(v.impact, context) as IScript })
-          }
-          return wegasComponentActions[k as keyof WegasComponentOptionsActions](v);
-        }
-        );
-    }
-  }, [options, context]);
+          .sort(
+            (
+              [, v1]: [string, WegasComponentOptionsAction],
+              [, v2]: [string, WegasComponentOptionsAction],
+            ) =>
+              (v1.priority ? v1.priority : 0) - (v2.priority ? v2.priority : 0),
+          )
+          .forEach(([k, v]) => {
+            if (k === 'impactVariable') {
+              return wegasComponentActions.impactVariable({
+                impact: parseAndRunClientScript(v.impact, context) as IScript,
+              });
+            }
+            return wegasComponentActions[
+              k as keyof WegasComponentOptionsActions
+            ]({ ...v, context });
+          });
+      }
+    },
+    [options, context],
+  );
 
   const onMouseOver = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -594,7 +593,7 @@ export function ComponentContainer({
         const [relX, relY] = [absX - srcX, absY - srcY];
 
         onDrop(dndComponent, path, undefined, {
-          position: { left: relX, top: relY }
+          position: { left: relX, top: relY },
         });
       }
     },
@@ -616,24 +615,21 @@ export function ComponentContainer({
             container.current = ref;
           }
         }}
-        {...pick(
-          options,
-          containerPropsKeys,
-        )}
+        {...pick(options, containerPropsKeys)}
         className={
           cx(handleControlStyle, flex, extraState.themeModeClassName, {
             [showBordersStyle]: showBorders && containerType != null,
-            [hoverColorInsetShadow]: editMode || isSelected,
+            [hoverColorInsetShadow]: editMode && isSelected,
             [cx(foregroundContent, thinHoverColorInsetShadow)]: isFocused,
             [childDropzoneHorizontalStyle]: !vertical,
             [childDropzoneVerticalStyle]: vertical,
             [disabledStyle]: extraState.disabled,
-          }) + classNameOrEmpty(className)
+          }) + classNameOrEmpty(layoutClassName)
         }
         style={{
           cursor:
-            options?.actions && !extraState.disabled ? 'pointer' : 'initial',
-          ...style,
+            options?.actions && !extraState.disabled ? 'pointer' : 'inherit',
+          ...layoutStyle,
         }}
         onClick={onClick}
         onMouseOver={onMouseOver}
@@ -648,17 +644,15 @@ export function ComponentContainer({
             dropPosition="INTO"
           />
         )}
-        {dragHoverState &&
-          editable &&
-          dropzones.side && (
-            <ComponentDropZone
-              onDrop={dndComponent =>
-                onDrop(dndComponent, containerPath, itemPath)
-              }
-              show
-              dropPosition="BEFORE"
-            />
-          )}
+        {dragHoverState && editable && dropzones.side && (
+          <ComponentDropZone
+            onDrop={dndComponent =>
+              onDrop(dndComponent, containerPath, itemPath)
+            }
+            show
+            dropPosition="BEFORE"
+          />
+        )}
         {!dragHoverState && editable && (
           <EditHandle
             name={name}
@@ -677,21 +671,19 @@ export function ComponentContainer({
         {extraState.infoBulletProps && (
           <PlayerInfoBullet {...extraState.infoBulletProps} />
         )}
-        {dragHoverState &&
-          editable &&
-          dropzones.side && (
-            <ComponentDropZone
-              onDrop={dndComponent =>
-                onDrop(
-                  dndComponent,
-                  containerPath,
-                  itemPath != null ? itemPath + 1 : itemPath,
-                )
-              }
-              show
-              dropPosition="AFTER"
-            />
-          )}
+        {dragHoverState && editable && dropzones.side && (
+          <ComponentDropZone
+            onDrop={dndComponent =>
+              onDrop(
+                dndComponent,
+                containerPath,
+                itemPath != null ? itemPath + 1 : itemPath,
+              )
+            }
+            show
+            dropPosition="AFTER"
+          />
+        )}
         <LockedOverlay
           locked={(extraState.disabled || extraState.locked) === true}
         />
@@ -704,7 +696,7 @@ export function ComponentContainer({
 export function EmptyComponentContainer({
   path,
   Container,
-  dropzones
+  dropzones,
 }: EmptyPageComponentProps) {
   const container = React.useRef<HTMLDivElement>();
 

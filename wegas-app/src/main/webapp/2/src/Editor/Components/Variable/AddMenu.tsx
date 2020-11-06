@@ -23,26 +23,34 @@ import {
   IEvaluationDescriptor,
 } from 'wegas-ts-api';
 import { AvailableLayoutTab } from '../Layout';
+import { entityIs } from '../../../data/entities';
 
 function buildMenuItems(
   variable: IAbstractEntity,
 ): Promise<DropMenuItem<IAbstractEntity['@class']>[]> {
   return getChildren(variable).then(children => {
-    return children.map(i => {
-      const Label = asyncSFC(async () => {
-        const entity = { '@class': i };
-        return (
-          <>
-            <IconComp icon={withDefault(getIcon(entity), 'question')} />
-            {getLabel(entity)}
-          </>
-        );
-      });
-      return {
-        label: <Label />,
-        value: i,
-      };
-    });
+    return children
+      .map(i => {
+        const Label = asyncSFC(async () => {
+          const entity = { '@class': i };
+          return (
+            <>
+              <IconComp icon={withDefault(getIcon(entity), 'question')} />
+              {getLabel(entity)}
+            </>
+          );
+        });
+        return {
+          label: <Label />,
+          value: i,
+        };
+      })
+      .filter(
+        item =>
+          !entityIs(variable, 'ListDescriptor') ||
+          variable.allowedTypes.length === 0 ||
+          variable.allowedTypes.includes(item.value),
+      );
   });
 }
 

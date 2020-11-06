@@ -6,6 +6,9 @@ import { themeVar } from '../Components/Style/ThemeVars';
 export const flex = css({
   display: 'flex',
 });
+export const grid = css({
+  display: 'grid',
+});
 export const block = css({
   display: 'block',
 });
@@ -75,6 +78,7 @@ export const flexRow = css({
 });
 export const flexRowReverse = css({
   flexDirection: 'row-reverse',
+  width: 'fit-content',
 });
 export const flexWrap = css({
   flexWrap: 'wrap',

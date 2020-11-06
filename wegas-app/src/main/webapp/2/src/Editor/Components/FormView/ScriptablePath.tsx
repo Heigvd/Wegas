@@ -15,7 +15,6 @@ import {
 import { scriptEditStyle } from './Script/Script';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { DropMenu } from '../../../Components/DropMenu';
-import HTMLEditor from '../../../Components/HTMLEditor';
 import {
   createSourceFile,
   ScriptTarget,
@@ -26,12 +25,15 @@ import {
   isStringLiteral,
   isPropertyAccessExpression,
 } from 'typescript';
+import { CustomFileSelector } from './FileSelector';
+import { FilePickingType, FileFilter } from '../FileBrowser/FileBrowser';
+import { fileURL } from '../../../API/files.api';
 
 const labelStyle = css({
   marginBottom: '5px',
 });
 
-const inputModes = ['Text', 'Variable', 'Code'] as const;
+const inputModes = ['File', 'Variable', 'Code'] as const;
 type InputMode = ValueOf<typeof inputModes>;
 
 function parseScript(script: string = ''): InputMode {
@@ -39,7 +41,7 @@ function parseScript(script: string = ''): InputMode {
     'Testedfile',
     script,
     ScriptTarget.ESNext,
-    /*setParentNodes */ true,
+    true,
   );
 
   if (isSourceFile(sourceFile)) {
@@ -47,7 +49,7 @@ function parseScript(script: string = ''): InputMode {
     if (initStatement != null && isExpressionStatement(initStatement)) {
       const initExpression = initStatement.expression;
       if (initExpression == null || isStringLiteral(initExpression)) {
-        return 'Text';
+        return 'File';
       } else if (isCallExpression(initExpression)) {
         const propertyAccess = initExpression.expression;
         if (isPropertyAccessExpression(propertyAccess)) {
@@ -93,19 +95,21 @@ function parseScript(script: string = ''): InputMode {
     } else if (initStatement != null) {
       return 'Code';
     } else {
-      return 'Text';
+      return 'File';
     }
   }
   return 'Code';
 }
 
-export interface ScriptableStringProps
-  extends WidgetProps.BaseProps<CommonView & LabeledView> {
+export interface ScriptablePathProps
+  extends WidgetProps.BaseProps<
+    CommonView & LabeledView & { pick: FilePickingType; filter?: FileFilter }
+  > {
   value?: IScript;
   onChange: (IScript: IScript) => void;
 }
 
-export function ScriptableString(props: ScriptableStringProps): JSX.Element {
+export function ScriptablePath(props: ScriptablePathProps): JSX.Element {
   const script = props.value ? props.value.content : '';
   const [inputMode, setInputMode] = React.useState<InputMode>(
     parseScript(script),
@@ -120,7 +124,7 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
       treeValue = script.replace(regexStart, '').replace(regexEnd, '');
       break;
     }
-    case 'Text': {
+    case 'File': {
       try {
         textValue = JSON.parse(script);
       } catch (e) {
@@ -175,17 +179,20 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
                   resizable
                 />
               </div>
-            ) : inputMode === 'Text' ? (
-              <HTMLEditor
+            ) : inputMode === 'File' ? (
+              <CustomFileSelector
                 value={textValue}
                 onChange={value => {
-                  const stringified = JSON.stringify(value);
+                  const stringified = JSON.stringify(fileURL(value));
                   props.onChange(
                     props.value
                       ? { ...props.value, content: stringified }
                       : createScript(stringified),
                   );
                 }}
+                valueType="string"
+                pick={props.view.pick}
+                filter={props.view.filter}
               />
             ) : inputMode === 'Variable' ? (
               <TreeVariableSelect

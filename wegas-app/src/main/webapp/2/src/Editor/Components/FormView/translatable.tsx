@@ -54,7 +54,7 @@ export function useTranslate(
 }
 
 export function translate(
-  translatable: ITranslatableContent | STranslatableContent | undefined,
+  translatable: ITranslatableContent | STranslatableContent | undefined | null,
   lang: string,
 ) {
   let translations: { [lang: string]: ITranslation };
