@@ -20,10 +20,6 @@ import { IVariableDescriptor, IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { flexRow, flex, itemCenter, grow } from '../../../css/classes';
-import {
-  featuresCTX,
-  isFeatureEnabled,
-} from '../../../Components/Contexts/FeaturesProvider';
 import { inputStyle } from '../../../Components/Inputs/inputStyles';
 
 const treeCss = css({
@@ -305,8 +301,6 @@ export function ScripableVariableSelect(
   const [srcMode, setSrcMode] = React.useState(false);
   const [treeValue, setTreeValue] = React.useState('');
 
-  const { currentFeatures } = React.useContext(featuresCTX);
-
   /**
    * Effect that forces srcMode in case the script is too complex to be parsed
    */
@@ -346,16 +340,14 @@ export function ScripableVariableSelect(
     <>
       <div className={cx(flex, flexRow, itemCenter)}>
         {props.labelNode}
-        {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
-          <Button
-            icon={
-              srcMode
-                ? ['circle', { icon: 'code', color: 'white', size: 'xs' }]
-                : 'code'
-            }
-            onClick={() => setSrcMode(sm => !sm)}
-          />
-        )}
+        <Button
+          icon={
+            srcMode
+              ? ['circle', { icon: 'code', color: 'white', size: 'xs' }]
+              : 'code'
+          }
+          onClick={() => setSrcMode(sm => !sm)}
+        />
       </div>
       {srcMode ? (
         <div className={scriptEditStyle}>

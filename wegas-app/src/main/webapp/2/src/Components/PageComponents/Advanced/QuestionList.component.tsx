@@ -16,7 +16,6 @@ import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import { useStore } from '../../../data/store';
 import { shallowDifferent } from '../../Hooks/storeHookFactory';
-import { entityIs } from '../../../data/entities';
 import { ConnectedQuestionDisplay } from '../../Outputs/Question';
 import { IScript, IQuestionDescriptor, SListDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
@@ -32,13 +31,7 @@ export default function QuestionListDisplay({
 }: QuestionListDisplayProps) {
   const entities = useStore(() => {
     // TODO add support for arrays of list/question
-    const descriptor = safeClientScriptEval<SListDescriptor>(
-      entityIs(questionList, 'Script')
-        ? questionList
-          ? questionList.content
-          : ''
-        : '',
-    );
+    const descriptor = safeClientScriptEval<SListDescriptor>(questionList);
 
     if (descriptor == null || descriptor.getName() == null) {
       return [];

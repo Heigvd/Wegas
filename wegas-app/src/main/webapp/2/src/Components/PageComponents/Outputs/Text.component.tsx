@@ -17,7 +17,6 @@ export interface PlayerTextProps extends WegasComponentProps {
 
 function PlayerText({ text, context, className, style }: PlayerTextProps) {
   const content = useScript<string>(text, context);
-  // wlog(useScript<string>("Context.item.getEditorTag()"));
   return !text ? (
     <span className={className} style={style}>
       No text
