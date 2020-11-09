@@ -68,7 +68,9 @@ export function ExpressionEditor({
   const [error, setError] = React.useState<string>();
   const [srcMode, setSrcMode] = React.useState(false);
   const [newSrc, setNewSrc] = React.useState<string>();
-  const [formState, setFormState] = React.useState<ExpressionEditorState>({ statement });
+  const [formState, setFormState] = React.useState<ExpressionEditorState>({
+    statement,
+  });
 
   // Getting variables id
   // First it was done with GameModel.selectCurrent().itemsIds but this array is always full even if the real object are not loaded yet
@@ -93,7 +95,6 @@ export function ExpressionEditor({
           !formState.statement ||
           generate(formState.statement).code !== generate(statement).code
         ) {
-
           if (error !== undefined) {
             setError(error);
           }
@@ -159,11 +160,11 @@ export function ExpressionEditor({
     (attributes: IInitAttributes) => {
       let newAttributes: Partial<IConditionAttributes> =
         formState.attributes &&
-          attributes.initExpression.type === 'global' &&
-          deepDifferent(
-            formState.attributes.initExpression,
-            attributes.initExpression,
-          )
+        attributes.initExpression.type === 'global' &&
+        deepDifferent(
+          formState.attributes.initExpression,
+          attributes.initExpression,
+        )
           ? pick(attributes, 'initExpression')
           : attributes;
 
@@ -295,33 +296,33 @@ export function ExpressionEditor({
             returnType={returnTypes(mode)}
             onSave={onScripEditorSave}
             resizable
-            scriptContext={mode === "SET" ? "Server internal" : "Client"}
+            scriptContext={mode === 'SET' ? 'Server internal' : 'Client'}
             Editor={WegasScriptEditor}
             EmbeddedEditor={WegasScriptEditor}
           />
         </div>
       ) : (
-          <Form
-            value={formState.attributes}
-            schema={formState.schema}
-            onChange={(v, e) => {
-              if (deepDifferent(v, formState.attributes)) {
-                if (e && e.length > 0) {
-                  setFormState(fs => ({
-                    ...fs,
-                    attributes: v,
-                    statement: fs.schema
-                      ? generateStatement(v, fs.schema, mode)
-                      : undefined,
-                  }));
-                } else {
-                  computeState(v);
-                }
+        <Form
+          value={formState.attributes}
+          schema={formState.schema}
+          onChange={(v, e) => {
+            if (deepDifferent(v, formState.attributes)) {
+              if (e && e.length > 0) {
+                setFormState(fs => ({
+                  ...fs,
+                  attributes: v,
+                  statement: fs.schema
+                    ? generateStatement(v, fs.schema, mode)
+                    : undefined,
+                }));
+              } else {
+                computeState(v);
               }
-            }}
-            context={formState.attributes}
-          />
-        )}
+            }
+          }}
+          context={formState.attributes}
+        />
+      )}
     </div>
   );
 }

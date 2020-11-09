@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { HashListChoices } from '../../Editor/Components/FormView/HashList';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
-import { cx } from 'emotion';
+import { css, cx } from 'emotion';
 import { flex, grow, layoutStyle } from '../../css/classes';
 import { classNameOrEmpty } from '../../Helper/className';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
@@ -103,9 +103,13 @@ export const flexlayoutChoices: HashListChoices = [
   },
 ];
 
+const flexItemDefaultStyle = css({
+  padding: '5px',
+});
+
 export interface FlexItemProps
   extends WegasComponentItemProps,
-  FlexItemLayoutProps {
+    FlexItemLayoutProps {
   /**
    * onMouseOut - triggers when the mouse is not more over the element
    */
@@ -146,7 +150,7 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
         onDragEnd={onDragEnd}
-        className={className}
+        className={flexItemDefaultStyle + classNameOrEmpty(className)}
         style={{
           position: 'relative',
           ...layout,
@@ -156,7 +160,7 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
       >
         {children}
       </div>
-    )
+    );
   },
 );
 
@@ -297,6 +301,8 @@ export function FlexList({
 }
 
 export function isVertical(props?: FlexListProps) {
-  return props?.layout?.flexDirection === 'column' ||
-    props?.layout?.flexDirection === 'column-reverse';
+  return (
+    props?.layout?.flexDirection === 'column' ||
+    props?.layout?.flexDirection === 'column-reverse'
+  );
 }

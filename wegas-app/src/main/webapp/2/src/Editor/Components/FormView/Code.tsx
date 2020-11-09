@@ -6,27 +6,27 @@ import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { toLower } from 'lodash';
 import { CodeLanguage, scriptEditStyle } from './Script/Script';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
+import { IScript } from 'wegas-ts-api';
+import { createScript } from '../../../Helper/wegasEntites';
 
 export interface CodeProps
   extends WidgetProps.BaseProps<
-  LabeledView & CommonView & { language?: CodeLanguage }
+    LabeledView & CommonView & { language?: CodeLanguage }
   > {
-  value?: {} | string;
-  onChange: (code?: {} | string) => void;
+  value?: IScript | string;
+  onChange: (code?: IScript) => void;
 }
 
 export function Code({ view, value, onChange }: CodeProps) {
   const onValueChange = React.useCallback(
     (val: string) => {
-      onChange(
-        view.language === 'JSON'
-          ? val === ''
-            ? undefined
-            : JSON.parse(val)
-          : val,
-      );
+      if (value == null || typeof value === 'string') {
+        onChange(createScript(val, view.language));
+      } else {
+        onChange({ ...value, content: val });
+      }
     },
-    [onChange, view.language],
+    [onChange, view.language, value],
   );
   return (
     <CommonViewContainer view={view}>
@@ -43,7 +43,7 @@ export function Code({ view, value, onChange }: CodeProps) {
                       : view.language
                   }
                   value={
-                    typeof value === 'string' ? value : JSON.stringify(value)
+                    typeof value === 'string' ? value : value?.content || ''
                   }
                   onChange={onValueChange}
                   minimap={false}

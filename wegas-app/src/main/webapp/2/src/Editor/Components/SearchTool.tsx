@@ -10,10 +10,10 @@ import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { withDefault, IconComp } from './Views/FontAwesome';
 import { css } from 'emotion';
 import { entityIs } from '../../data/entities';
-import { focusTabContext } from './LinearTabLayout/LinearLayout';
 import { mainLayoutId } from './Layout';
 import { IVariableDescriptor } from 'wegas-ts-api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { focusTab } from './LinearTabLayout/LinearLayout';
 
 interface SearchPanelProps {
   search: State['global']['search'];
@@ -33,7 +33,6 @@ function SearchResult({
   onClick: () => void;
   variable: IVariableDescriptor;
 }) {
-  const focusTab = React.useContext(focusTabContext);
   const Title = asyncSFC(async () => (
     <IconComp icon={withDefault(getIcon(variable!), 'question')} />
   ));
@@ -43,7 +42,7 @@ function SearchResult({
       className={resultStyle}
       onClick={() => {
         if (entityIs(variable, 'AbstractStateMachineDescriptor')) {
-          focusTab('State Machine', mainLayoutId);
+          focusTab(mainLayoutId, 'State Machine');
         }
         onClick();
       }}

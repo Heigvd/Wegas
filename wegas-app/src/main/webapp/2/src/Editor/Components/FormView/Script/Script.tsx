@@ -306,20 +306,22 @@ export function Script({
                     minimap={false}
                     noGutter={true}
                     returnType={returnTypes(view.mode)}
-                    scriptContext={view.mode === "SET" ? "Server internal" : "Client"}
+                    scriptContext={
+                      view.mode === 'SET' ? 'Server internal' : 'Client'
+                    }
                     Editor={WegasScriptEditor}
                     EmbeddedEditor={WegasScriptEditor}
                   />
                 </ResizeHandle>
               ) : (
-                  <WyswygScriptEditor
-                    expressions={statements}
-                    onChange={e => {
-                      onStatementsChange(e, operator);
-                    }}
-                    mode={view.mode}
-                  />
-                )}
+                <WyswygScriptEditor
+                  expressions={statements}
+                  onChange={e => {
+                    onStatementsChange(e, operator);
+                  }}
+                  mode={view.mode}
+                />
+              )}
             </>
           );
         }}

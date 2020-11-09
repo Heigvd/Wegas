@@ -42,10 +42,10 @@ type WegasScriptEditorReturnType = WegasScriptEditorNameAndTypes[WegasScriptEdit
 
 type ArrayedAndNot<T extends {}> = ArrayedTypeMap<T>[keyof ArrayedTypeMap];
 
+type ArgumentsType = [string, WegasScriptEditorReturnTypeName][];
+
 type ClientMethodAdd = <
-  PT extends readonly ReadonlyTuple<
-    [string, WegasScriptEditorReturnTypeName]
-  >[],
+  PT extends ArgumentsType,
   RT extends WegasScriptEditorReturnTypeName,
   ARG extends ExtractTuppleArray<
     PT,

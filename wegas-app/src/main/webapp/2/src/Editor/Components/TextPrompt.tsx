@@ -1,15 +1,14 @@
 import * as React from 'react';
 import { useOnClickOutside } from '../../Components/Hooks/useOnClickOutside';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { flex, flexRow } from '../../css/classes';
 
 const buttonZone = css({
   margin: '5px',
-  textAlign: 'center',
-  display: 'inline-block',
 });
 
-interface TextPromptProps {
+interface TextPromptProps extends ClassAndStyle {
   /**
    * label - The label to display net to the input
    */
@@ -43,6 +42,8 @@ export function TextPrompt({
   onBlur,
   applyOnEnter,
   defaultFocus,
+  className,
+  style,
 }: TextPromptProps) {
   const inputValue = React.useRef('');
   const input = React.useRef<HTMLInputElement>(null);
@@ -57,7 +58,11 @@ export function TextPrompt({
   useOnClickOutside(textPrompt, () => onBlur && onBlur());
 
   return (
-    <div ref={textPrompt}>
+    <div
+      ref={textPrompt}
+      className={cx(flex, flexRow, className)}
+      style={style}
+    >
       {label}
       <input
         ref={input}
@@ -71,8 +76,9 @@ export function TextPrompt({
           }
         }}
       />
-      <div className={buttonZone}>
+      <div className={cx(flex, flexRow)}>
         <Button
+          className={buttonZone}
           icon={'check'}
           label={'Accept'}
           onClick={event => {
@@ -81,6 +87,7 @@ export function TextPrompt({
           }}
         />
         <Button
+          className={buttonZone}
           icon={'times'}
           label={'Cancel'}
           onClick={event => {

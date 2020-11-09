@@ -5,20 +5,34 @@ import {
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
-import { fileURL } from '../../../API/files.api';
+import { classAndStyleShema } from '../tools/options';
+import { IScript } from 'wegas-ts-api';
+import { useScript } from '../../Hooks/useScript';
+import { css } from 'emotion';
+
+const initialImageStyle = css({
+  width: '100%',
+});
 
 interface SvgLoaderProps extends WegasComponentProps {
-  src?: string;
+  script?: IScript;
 }
 
-function Image({ src }: SvgLoaderProps) {
-  return <img src={src ? fileURL(src) : undefined} />;
+function Image({ script, style, className, context }: SvgLoaderProps) {
+  const path = useScript<string>(script, context);
+  return (
+    <img
+      src={path}
+      style={style}
+      className={className ? className : initialImageStyle}
+    />
+  );
 }
 
 registerComponent(
   pageComponentFactory({
     component: Image,
-    componentType: 'Other',
+    componentType: 'Output',
     name: 'Image',
     icon: 'image',
     schema: {
@@ -29,7 +43,9 @@ registerComponent(
           fileType: 'image',
           filterType: 'show',
         },
+        scriptable: true,
       }),
+      ...classAndStyleShema,
     },
   }),
 );

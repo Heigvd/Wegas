@@ -1,4 +1,4 @@
-type View = 'Editor' | 'Instance' | 'Export';
+type View = 'Editor' | 'Instance' | 'Export' | 'Public';
 
 // Injected Variables
 declare const CurrentUser: import('wegas-ts-api').IUser;

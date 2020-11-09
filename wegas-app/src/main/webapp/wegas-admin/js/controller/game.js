@@ -99,10 +99,14 @@ define(["ember"], function(Ember) {
             return this.get('model').get('id') + 'charged';
         }.property("gameId"),
         declaredSize: function() {
-            var count=0;
+            var count = 0;
             var teams = this.get("teams");
-            for (var i=0; i<teams.length; i++){
-                count += teams[i].declaredSize;
+            if (teams) {
+                for (var i = 0; i < teams.length; i++) {
+                    count += teams[i].declaredSize;
+                }
+            } else {
+                count = "n/a";
             }
             return count;
         }.property("declaredSize")

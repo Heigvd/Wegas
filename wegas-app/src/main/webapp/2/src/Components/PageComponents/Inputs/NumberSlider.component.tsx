@@ -15,6 +15,7 @@ import { useComponentScript } from '../../Hooks/useComponentScript';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, INumberDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { classAndStyleShema } from '../tools/options';
 
 interface PlayerNumberSliderProps extends WegasComponentProps {
   /**
@@ -79,6 +80,7 @@ registerComponent(
         values: displayModes,
       }),
       disabled: schemaProps.boolean({ label: 'Disabled' }),
+      ...classAndStyleShema,
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({

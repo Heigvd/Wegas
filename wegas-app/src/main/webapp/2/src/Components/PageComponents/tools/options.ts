@@ -36,7 +36,7 @@ export interface WegasComponentOptionsAction {
   priority?: number;
 }
 
-interface OpenPageAction {
+export interface OpenPageAction {
   pageLoaderName: IScript;
   pageId: IScript;
 }
@@ -49,8 +49,9 @@ interface OpenFileAction {
 interface ImpactVariableAction {
   impact: IScript;
 }
-interface LoaclScriptEvalAction {
-  script: string;
+interface LocalScriptEvalAction {
+  script: IScript;
+  context?: { [item: string]: any };
 }
 interface OpenPopupPageAction {
   pageId: IScript;
@@ -67,7 +68,7 @@ export interface WegasComponentOptionsActions {
   openUrl?: OpenURLAction & WegasComponentOptionsAction;
   openFile?: OpenFileAction & WegasComponentOptionsAction;
   impactVariable?: ImpactVariableAction & WegasComponentOptionsAction;
-  localScriptEval?: LoaclScriptEvalAction & WegasComponentOptionsAction;
+  localScriptEval?: LocalScriptEvalAction & WegasComponentOptionsAction;
   openPopupPage?: OpenPopupPageAction & WegasComponentOptionsAction;
   playSound?: PlaySoundAction & WegasComponentOptionsAction;
   printVariable?: PrintVariableAction & WegasComponentOptionsAction;
@@ -86,6 +87,7 @@ export const defaultWegasComponentOptionsActions: WegasComponentOptionsActions =
 
 export interface WegasComponentActionsProperties {
   confirmClick?: string;
+  stopPropagation?: boolean;
 }
 
 export interface WegasComponentActions {
@@ -93,7 +95,7 @@ export interface WegasComponentActions {
   openUrl: (props: OpenURLAction) => void;
   openFile: (props: OpenFileAction) => void;
   impactVariable: (props: ImpactVariableAction) => void;
-  localScriptEval: (props: LoaclScriptEvalAction) => void;
+  localScriptEval: (props: LocalScriptEvalAction) => void;
   openPopupPage: (props: OpenPopupPageAction) => void;
   playSound: (props: PlaySoundAction) => void;
   printVariable: (props: PrintVariableAction) => void;
@@ -126,7 +128,7 @@ export const wegasComponentActions: WegasComponentActions = {
     }
   },
   localScriptEval: props => {
-    clientScriptEval(props.script);
+    clientScriptEval(props.script, props.context);
   },
   openPopupPage: props => {
     //TODO : Discuss that with Maxence
@@ -196,7 +198,7 @@ export const actionsChoices: HashListChoices = [
       schema: schemaProps.object({
         label: 'Impact variable',
         properties: {
-          impact: schemaProps.script({ label: 'Impact', required: true, }),
+          impact: schemaProps.script({ label: 'Impact', required: true }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
       }),
@@ -279,13 +281,22 @@ export const actionsChoices: HashListChoices = [
       }),
     },
   },
+  {
+    label: 'Stop propagation',
+    value: {
+      prop: 'stopPropagation',
+      schema: schemaProps.boolean({
+        label: 'Stop propagation',
+        value: false,
+      }),
+    },
+  },
 ];
 
 // OPTIONS -> LAYOUT COMMON
 export interface WegasComponentLayoutCommonOptions {
   tooltip?: string;
   themeMode?: string;
-  style?: React.CSSProperties;
 }
 
 export const layoutCommonChoices: HashListChoices = [
@@ -301,13 +312,6 @@ export const layoutCommonChoices: HashListChoices = [
     value: {
       prop: 'themeMode',
       schema: schemaProps.themeModeSelect({ label: 'Theme mode' }),
-    },
-  },
-  {
-    label: 'Style',
-    value: {
-      prop: 'style',
-      schema: schemaProps.hashlist({ label: 'Style' }),
     },
   },
 ];
@@ -519,11 +523,11 @@ export function useComputeUnreadCount(
 
   return infoBeamMessage
     ? {
-      messageScript:
-        infoBeamMessage === 0
-          ? undefined
-          : createScript(JSON.stringify(String(infoBeamMessage))),
-    }
+        messageScript:
+          infoBeamMessage === 0
+            ? undefined
+            : createScript(JSON.stringify(String(infoBeamMessage))),
+      }
     : undefined;
 }
 
@@ -564,3 +568,11 @@ export const wegasComponentExtraSchema = (containerType: ContainerTypes) => ({
     objectViewStyle: true,
   }),
 });
+
+/**
+ * classAndStyleShema - defines the schema to be used to edit classes and style of a component
+ */
+export const classAndStyleShema = {
+  className: schemaProps.string({ label: 'Classes' }),
+  style: schemaProps.hashlist({ label: 'Style' }),
+};

@@ -107,16 +107,16 @@ export const gutter: (
   noGutter?: boolean,
 ) => Pick<MonacoEditorProperties, 'lineNumbers' | 'glyphMargin' | 'folding'> = (
   noGutter?: boolean,
-  ) => {
-    if (noGutter) {
-      return {
-        lineNumbers: 'off',
-        glyphMargin: false,
-        folding: false,
-      };
-    }
-    return {};
-  };
+) => {
+  if (noGutter) {
+    return {
+      lineNumbers: 'off',
+      glyphMargin: false,
+      folding: false,
+    };
+  }
+  return {};
+};
 
 /**
  * SrcEditor is a component uses monaco-editor to create a code edition panel

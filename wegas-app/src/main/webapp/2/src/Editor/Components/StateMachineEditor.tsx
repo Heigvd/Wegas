@@ -28,7 +28,11 @@ import {
 } from '../../css/classes';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
-import { createTranslatableContent, translate } from './FormView/translatable';
+import {
+  createTranslatableContent,
+  createTranslation,
+  translate,
+} from './FormView/translatable';
 import { createScript } from '../../Helper/wegasEntites';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import {
@@ -44,6 +48,12 @@ import {
   IDialogueState,
 } from 'wegas-ts-api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { focusTab } from './LinearTabLayout/LinearLayout';
+import { mainLayoutId } from './Layout';
+import { SimpleInput } from '../../Components/Inputs/SimpleInput';
+import HTMLEditor from '../../Components/HTMLEditor';
+import { useOnClickOutside } from '../../Components/Hooks/useOnClickOutside';
+import { cloneDeep } from 'lodash-es';
 
 const editorStyle = css({
   position: 'relative',
@@ -360,7 +370,21 @@ class StateMachineEditor extends React.Component<
         },
       ),
     );
+    focusTab(mainLayoutId, 'Variable Properties');
   };
+  editStateContent = (key: number, newState: IState | IDialogueState) => {
+    const newStateMachine: IFSMDescriptor | IDialogueDescriptor = {
+      ...this.props.stateMachine,
+      states: {
+        ...this.props.stateMachine.states,
+        [String(key)]: newState,
+      },
+    };
+    store.dispatch(
+      Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
+    );
+  };
+
   editTransition = (e: ModifierKeysEvent, path: [number, number]) => {
     const stateId = path[0];
     const transitionIndex = path[1];
@@ -495,6 +519,7 @@ class StateMachineEditor extends React.Component<
                 return (
                   <State
                     editState={this.editState}
+                    editStateContent={this.editStateContent}
                     state={stateMachine.states[key]}
                     currentState={
                       Number(key) === stateMachineInstance.currentStateId
@@ -631,6 +656,10 @@ const toolbarStyle = css({
   backgroundColor: 'rgba(255,255,255,0.2)',
 });
 
+const stateTextStyle = css({
+  cursor: 'text',
+});
+
 function getValue(state: IState | IDialogueState, lang: string): string {
   return entityIs(state, 'State')
     ? state.label
@@ -639,13 +668,14 @@ function getValue(state: IState | IDialogueState, lang: string): string {
     : '';
 }
 
-class State extends React.Component<{
+interface StateProps {
   state: IState | IDialogueState;
   id: number;
   initialState: boolean;
   plumb: jsPlumbInstance;
   currentState: boolean;
   editState: (e: ModifierKeysEvent, id: number) => void;
+  editStateContent: (key: number, newState: IState | IDialogueState) => void;
   deleteState: (id: number) => void;
   moveState: (id: number, pos: [number, number]) => void;
   editTransition: (
@@ -654,118 +684,167 @@ class State extends React.Component<{
     transition: ITransition | IDialogueTransition,
   ) => void;
   search: RState['global']['search'];
-}> {
-  static contextType = languagesCTX;
+}
 
-  container: Element | null = null;
-  componentDidMount() {
-    const { plumb } = this.props;
-    plumb.draggable(this.container!, {
+function State({
+  plumb,
+  id,
+  state,
+  search,
+  initialState,
+  currentState,
+  moveState,
+  editState,
+  editStateContent,
+  deleteState,
+  editTransition,
+}: StateProps) {
+  const [editingText, setEditingText] = React.useState(false);
+  const { lang } = React.useContext(languagesCTX);
+  const container = React.useRef<HTMLDivElement>(null);
+  const [newValue, setNewValue] = React.useState('');
+
+  const textValue = getValue(state, lang);
+
+  useOnClickOutside(container, () => {
+    setEditingText(false);
+    if (entityIs(state, 'State')) {
+      editStateContent(id, {
+        ...state,
+        label: newValue,
+      });
+    } else {
+      const newState = cloneDeep(state);
+      newState.text.translations[lang] = createTranslation(lang, newValue);
+      editStateContent(id, newState);
+    }
+  });
+
+  React.useEffect(() => {
+    const currentContainer = container.current;
+    plumb.draggable(container.current!, {
       start: () => wlog('DragStart'),
       stop: params => {
-        this.props.moveState(this.props.id, params.pos);
+        moveState(id, params.pos);
       },
       //@ts-ignore
       handle: '.content',
     });
-    plumb.makeSource(this.container!, { filter: `.${sourceStyle}` });
-    plumb.makeTarget(this.container!, {});
-  }
-  componentWillUnmount() {
-    if (this.container != null) {
-      const { plumb } = this.props;
-      plumb.unmakeSource(this.container);
-      plumb.unmakeTarget(this.container);
-      plumb.removeAllEndpoints(this.container);
-      /*
-      @HACK Alter internal managedElements, make jsplumb forget about this node.
-      Allows to reuse a node with same id.
-      */
-      //@ts-ignore
-      delete plumb.getManagedElements()[this.props.id];
-    }
-  }
-  onClickEdit = (e: ModifierKeysEvent) =>
-    this.props.editState(e, this.props.id);
-  isBeingSearched = () => {
-    const value = getValue(this.props.state, this.context.lang);
-    const { onEnterEvent } = this.props.state;
+    plumb.makeSource(currentContainer!, { filter: `.${sourceStyle}` });
+    plumb.makeTarget(currentContainer!, {});
+    return () => {
+      if (currentContainer != null) {
+        plumb.unmakeSource(currentContainer);
+        plumb.unmakeTarget(currentContainer);
+        plumb.removeAllEndpoints(currentContainer);
+        /*
+        @HACK Alter internal managedElements, make jsplumb forget about this node.
+        Allows to reuse a node with same id.
+        */
+        //@ts-ignore
+        delete plumb.getManagedElements()[id];
+      }
+    };
+  }, [id, moveState, plumb]);
+
+  const onClickEdit = React.useCallback(
+    (e: ModifierKeysEvent) => editState(e, id),
+    [id, editState],
+  );
+
+  const isBeingSearched = React.useCallback(() => {
+    const { onEnterEvent } = state;
     const searched =
-      (value ? value : '') + (onEnterEvent ? onEnterEvent.content : '');
-    return searchWithState(this.props.search, searched);
-  };
-  render() {
-    const { state, initialState, currentState } = this.props;
-    return (
+      (textValue ? textValue : '') + (onEnterEvent ? onEnterEvent.content : '');
+    return searchWithState(search, searched);
+  }, [textValue, state, search]);
+
+  return (
+    <div
+      className={cx(
+        stateStyle,
+        {
+          // [initialStateStyle]: initialState,
+          // [activeStateStyle]: currentState,
+          [searchHighlighted]: isBeingSearched(),
+        },
+        flex,
+        // isBeingSearched() && searchHighlighted,
+      )}
+      id={String(id)}
+      ref={container}
+      style={{
+        position: 'absolute',
+        left: state.x,
+        top: state.y,
+      }}
+    >
       <div
-        className={cx(
-          stateStyle,
-          {
-            // [initialStateStyle]: initialState,
-            // [activeStateStyle]: currentState,
-            [searchHighlighted]: this.isBeingSearched(),
-          },
-          flex,
-          // this.isBeingSearched() && searchHighlighted,
-        )}
-        id={String(this.props.id)}
-        ref={n => {
-          this.container = n;
-        }}
-        style={{
-          position: 'absolute',
-          left: state.x,
-          top: state.y,
-        }}
+        className={
+          'content ' +
+          cx(contentStyle, grow, flex, {
+            [initialStateStyle]: initialState,
+            [activeStateStyle]: currentState,
+          })
+        }
       >
-        <div
-          className={
-            'content ' +
-            cx(contentStyle, grow, flex, {
-              [initialStateStyle]: initialState,
-              [activeStateStyle]: currentState,
-            })
-          }
-        >
-          <Toolbar vertical className={cx(grow, toolbarStyle)}>
-            <Toolbar.Content>
+        <Toolbar vertical className={cx(grow, toolbarStyle)}>
+          <Toolbar.Content>
+            {editingText ? (
+              <div onClick={e => e.stopPropagation()}>
+                {entityIs(state, 'State') ? (
+                  <SimpleInput
+                    placeholder="State label"
+                    value={textValue}
+                    onChange={value => setNewValue(String(value))}
+                  />
+                ) : (
+                  <HTMLEditor value={textValue} onChange={setNewValue} />
+                )}
+              </div>
+            ) : textValue === '' ? (
+              <div onClick={() => setEditingText(true)}>
+                {`Click here to edit ${
+                  entityIs(state, 'State') ? 'State label' : 'Dialog text'
+                }`}
+              </div>
+            ) : (
               <div
+                onClick={() => setEditingText(true)}
+                className={stateTextStyle}
                 dangerouslySetInnerHTML={{
-                  __html: getValue(this.props.state, this.context.lang),
+                  __html: textValue,
                 }}
               />
-            </Toolbar.Content>
-            <Toolbar.Header className={flexDistribute}>
-              <Button
-                icon="edit"
-                onClick={(e: ModifierKeysEvent) => this.onClickEdit(e)}
-              />
-              <div className={sourceStyle}>
-                <FontAwesome icon="project-diagram" />
-              </div>
-              {!initialState && (
-                <Button
-                  icon="trash"
-                  onClick={() => this.props.deleteState(this.props.id)}
-                />
-              )}
-            </Toolbar.Header>
-          </Toolbar>
-          {(state.transitions as IAbstractTransition[]).map((t, i) => (
-            <Transition
-              key={`${this.props.id}-${t.nextStateId}-${t.id}`}
-              plumb={this.props.plumb}
-              transition={t as ITransition | IDialogueTransition}
-              position={i}
-              parent={this.props.id}
-              editTransition={this.props.editTransition}
-              search={this.props.search}
+            )}
+          </Toolbar.Content>
+          <Toolbar.Header className={flexDistribute}>
+            <Button
+              icon="edit"
+              onClick={(e: ModifierKeysEvent) => onClickEdit(e)}
             />
-          ))}
-        </div>
+            <div className={sourceStyle}>
+              <FontAwesome icon="project-diagram" />
+            </div>
+            {!initialState && (
+              <Button icon="trash" onClick={() => deleteState(id)} />
+            )}
+          </Toolbar.Header>
+        </Toolbar>
+        {(state.transitions as IAbstractTransition[]).map((t, i) => (
+          <Transition
+            key={`${id}-${t.nextStateId}-${t.id}`}
+            plumb={plumb}
+            transition={t as ITransition | IDialogueTransition}
+            position={i}
+            parent={id}
+            editTransition={editTransition}
+            search={search}
+          />
+        ))}
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 class Transition extends React.Component<{
