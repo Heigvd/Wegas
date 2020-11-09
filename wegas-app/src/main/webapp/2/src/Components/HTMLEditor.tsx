@@ -35,6 +35,7 @@ import { flexColumn, flex } from '../css/classes';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { classNameOrEmpty } from '../Helper/className';
 import { inputStyleCSS } from './Inputs/inputStyles';
+import { debounce } from 'lodash-es';
 
 const toolbar = css({
   width: '300px',
@@ -86,6 +87,10 @@ interface HTMLEditorProps extends ClassAndStyle {
    * id - the id of the main container
    */
   id?: string;
+  /**
+   * delay - timeout to avoid frequent onChange updates
+   */
+  delay?: number;
 }
 
 let HTMLEditorID = 0;
@@ -97,6 +102,7 @@ export default function HTMLEditor({
   className,
   style,
   id,
+  delay = 1000,
 }: HTMLEditorProps) {
   const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>(
     {},
@@ -263,11 +269,10 @@ export default function HTMLEditor({
     }
   }, [fileBrowsing.fn]);
 
-  const onEditorChange = React.useCallback(
-    value => {
-      HTMLContent.current = value;
-      onChange && onChange(HTMLContent.current);
-    },
+  const debouncedOnChange = React.useCallback(
+    debounce((value: string) => {
+      onChange && onChange(value);
+    }, delay),
     [onChange],
   );
 
@@ -296,7 +301,7 @@ export default function HTMLEditor({
           value={value}
           init={config(toolBarId)}
           onInit={editor => (HTMLEditor.current = editor.target)}
-          onEditorChange={onEditorChange}
+          onEditorChange={debouncedOnChange}
           onFocus={() => setEditorFocus(true)}
           onBlur={() => setEditorFocus(false)}
           // textareaName={editorStyle}
