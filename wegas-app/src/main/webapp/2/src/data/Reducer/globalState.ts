@@ -499,7 +499,7 @@ export function editStateMachine(
         actions: {
           more: {
             delete: {
-              label: 'delete',
+              label: 'Delete',
               action: (entity: IFSMDescriptor, path?: string[]) => {
                 dispatch(
                   Actions.VariableDescriptorActions.deleteDescriptor(
@@ -510,7 +510,7 @@ export function editStateMachine(
               },
             },
             findUsage: {
-              label: 'findUsage',
+              label: 'Find usage',
               action: (entity: IFSMDescriptor) => {
                 if (entityIsPersisted(entity)) {
                   dispatch(Actions.EditorActions.searchUsage(entity));

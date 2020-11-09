@@ -347,7 +347,7 @@ class StateMachineEditor extends React.Component<
     >['more'] = {};
     if (id !== this.props.stateMachine.defaultInstance.currentStateId) {
       actions.delete = {
-        label: 'delete',
+        label: 'Delete',
         action: (
           _entity: IFSMDescriptor | IDialogueDescriptor,
           path?: (string | number)[],
@@ -400,7 +400,7 @@ class StateMachineEditor extends React.Component<
         {
           more: {
             delete: {
-              label: 'delete',
+              label: 'Delete',
               action: (_entity, path) => {
                 if (path != null) {
                   this.removeTransition({
