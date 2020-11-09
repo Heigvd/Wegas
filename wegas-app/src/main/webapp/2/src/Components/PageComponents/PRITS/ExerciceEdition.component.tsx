@@ -176,7 +176,7 @@ function ExerciceEdition({ exerciceId, onClickBack }: ExerciceEditionProps) {
                         ...exerciceValues.image,
                         trValue: createTranslatableContent(
                           lang,
-                          fileURL(generateAbsolutePath(file)),
+                          generateAbsolutePath(file),
                         ),
                       } as IVariableInstance),
                     );
@@ -206,7 +206,7 @@ function ExerciceEdition({ exerciceId, onClickBack }: ExerciceEditionProps) {
           <div className={cx(leftGridCellStyle, portraitStyle)}>
             <img
               className={portraitImgStyle}
-              src={translate(exerciceValues.image.trValue, lang)}
+              src={fileURL(translate(exerciceValues.image.trValue, lang))}
             />
             <div className={portraitClickStyle}>
               <Button

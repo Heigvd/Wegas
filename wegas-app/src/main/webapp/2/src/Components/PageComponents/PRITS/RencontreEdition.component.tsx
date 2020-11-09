@@ -168,7 +168,7 @@ function RencontreEdition({ rencontreId, onClickBack }: RencontreEditionProps) {
                         ...rencontreValues.image,
                         trValue: createTranslatableContent(
                           lang,
-                          fileURL(generateAbsolutePath(file)),
+                          generateAbsolutePath(file),
                         ),
                       } as IVariableInstance),
                     );
@@ -198,7 +198,7 @@ function RencontreEdition({ rencontreId, onClickBack }: RencontreEditionProps) {
           <div className={cx(leftGridCellStyle, portraitStyle)}>
             <img
               className={portraitImgStyle}
-              src={translate(rencontreValues.image.trValue, lang)}
+              src={fileURL(translate(rencontreValues.image.trValue, lang))}
             />
             <div className={portraitClickStyle}>
               <Button

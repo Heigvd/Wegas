@@ -144,7 +144,7 @@ function PatientEdition({ patientId, onClickBack }: PatientEditionProps) {
                       ...portrait,
                       trValue: createTranslatableContent(
                         lang,
-                        fileURL(generateAbsolutePath(file)),
+                        generateAbsolutePath(file),
                       ),
                     } as IVariableInstance),
                   );
@@ -161,7 +161,7 @@ function PatientEdition({ patientId, onClickBack }: PatientEditionProps) {
         <div className={cx(leftGridCellStyle, portraitStyle)}>
           <img
             className={portraitImgStyle}
-            src={translate(portrait.trValue, lang)}
+            src={fileURL(translate(portrait.trValue, lang))}
           />
           <div className={portraitClickStyle}>
             <Button

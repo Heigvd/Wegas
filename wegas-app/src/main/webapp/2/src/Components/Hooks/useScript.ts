@@ -430,5 +430,3 @@ export function parseAndRunClientScript(
     ? scriptContent
     : { ...script, content: scriptContent };
 }
-
-export function serverScriptEval() {}
