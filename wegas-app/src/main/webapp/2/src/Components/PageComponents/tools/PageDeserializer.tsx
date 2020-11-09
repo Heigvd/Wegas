@@ -10,8 +10,14 @@ import {
 } from './EditableComponent';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { useStore } from '../../../data/store';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep, pick } from 'lodash-es';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import {
+  ComponentOptionsManager,
+  defaultOptions,
+  OptionsState,
+} from './OptionsComponent';
+import { classNameOrEmpty } from '../../../Helper/className';
 
 function getComponentFromPath(page: WegasComponent, path: number[]) {
   const newPath = [...path];
@@ -61,6 +67,8 @@ export function PageDeserializer({
   containerPropsKeys,
   dropzones,
 }: PageDeserializerProps): JSX.Element {
+  const [optionsState, setOptionsState] = React.useState<OptionsState>({});
+
   const realPath = path ? path : [];
 
   const { editMode } = React.useContext(pageCTX);
@@ -85,6 +93,8 @@ export function PageDeserializer({
     deepDifferent,
   ) as PageComponent;
 
+  const options = pick(restProps, defaultOptions);
+
   const { WegasComponent, container, componentName } = component || {};
 
   if (!wegasComponent) {
@@ -98,73 +108,88 @@ export function PageDeserializer({
     ? container.ChildrenDeserializer
     : (DefaultChildren as React.FunctionComponent<ChildrenDeserializerProps>);
 
-  return container?.noContainer &&
-    container?.noContainer(wegasComponent.props as WegasComponentProps) ? (
+  return (
     <>
-      {editMode && children.length === 0 ? (
-        <EmptyComponentContainer
-          path={realPath}
-          Container={Container}
-          dropzones={{ ...component.dropzones, ...dropzones }}
-        />
-      ) : (
-        <Children
-          {...wegasComponent?.props}
-          nbChildren={nbChildren}
-          path={path ? path : []}
-          pageId={pageId}
-          uneditable={uneditable}
+      {Object.keys(options).length > 0 && (
+        <ComponentOptionsManager
+          options={options}
           context={context}
-          editMode={editMode}
+          setUpgradesState={setOptionsState}
         />
+      )}
+      {container?.noContainer &&
+      container?.noContainer(wegasComponent.props as WegasComponentProps) ? (
+        <>
+          {editMode && children.length === 0 ? (
+            <EmptyComponentContainer
+              path={realPath}
+              Container={Container}
+              dropzones={{ ...component.dropzones, ...dropzones }}
+            />
+          ) : (
+            <Children
+              {...wegasComponent?.props}
+              nbChildren={nbChildren}
+              path={path ? path : []}
+              pageId={pageId}
+              uneditable={uneditable}
+              context={context}
+              editMode={editMode}
+            />
+          )}
+        </>
+      ) : (
+        <ComponentContainer
+          // the key is set in order to force rerendering when page change
+          //(if not, if an error occures and the page's strucutre is the same it won't render the new component)
+          key={pageId}
+          path={realPath}
+          componentType={componentName}
+          containerType={container?.type}
+          context={context}
+          vertical={container?.isVertical(
+            wegasComponent.props as WegasComponentProps,
+          )}
+          Container={Container}
+          containerPropsKeys={containerPropsKeys}
+          {...restProps}
+          dropzones={{ ...component.dropzones, ...dropzones }}
+          options={optionsState}
+        >
+          <WegasComponent
+            path={realPath}
+            componentType={componentName}
+            containerType={container?.type}
+            context={context}
+            Container={Container}
+            containerPropsKeys={containerPropsKeys}
+            {...restProps}
+            className={
+              classNameOrEmpty(restProps.className) +
+              classNameOrEmpty(optionsState.conditionnalClassName)
+            }
+            dropzones={{ ...component.dropzones, ...dropzones }}
+          >
+            {editMode && children.length === 0 ? (
+              <EmptyComponentContainer
+                path={realPath}
+                Container={Container}
+                dropzones={{ ...component.dropzones, ...dropzones }}
+              />
+            ) : (
+              <Children
+                {...wegasComponent?.props}
+                nbChildren={nbChildren}
+                path={path ? path : []}
+                pageId={pageId}
+                uneditable={uneditable}
+                context={context}
+                editMode={editMode}
+              />
+            )}
+          </WegasComponent>
+        </ComponentContainer>
       )}
     </>
-  ) : (
-    <ComponentContainer
-      // the key is set in order to force rerendering when page change
-      //(if not, if an error occures and the page's strucutre is the same it won't render the new component)
-      key={pageId}
-      path={realPath}
-      componentType={componentName}
-      containerType={container?.type}
-      context={context}
-      vertical={container?.isVertical(
-        wegasComponent.props as WegasComponentProps,
-      )}
-      Container={Container}
-      containerPropsKeys={containerPropsKeys}
-      {...restProps}
-      dropzones={{ ...component.dropzones, ...dropzones }}
-    >
-      <WegasComponent
-        path={realPath}
-        componentType={componentName}
-        containerType={container?.type}
-        context={context}
-        Container={Container}
-        containerPropsKeys={containerPropsKeys}
-        {...restProps}
-        style={restProps.style}
-        dropzones={{ ...component.dropzones, ...dropzones }}
-      >
-        {editMode && children.length === 0 ? (
-          <EmptyComponentContainer
-            path={realPath}
-            Container={Container}
-            dropzones={{ ...component.dropzones, ...dropzones }}
-          />
-        ) : (
-          <Children
-            {...wegasComponent?.props}
-            nbChildren={nbChildren}
-            path={path ? path : []}
-            pageId={pageId}
-            uneditable={uneditable}
-            context={context}
-            editMode={editMode}
-          />
-        )}
-      </WegasComponent>
-    </ComponentContainer>
   );
 }

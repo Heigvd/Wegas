@@ -316,8 +316,14 @@ export const layoutCommonChoices: HashListChoices = [
   },
 ];
 
+export interface WegasConditionnalClassName {
+  className?: string;
+  condition?: IScript;
+}
+
 // OPTIONS -> LAYOUT CONDITIONNAL
 export interface WegasComponentLayoutConditionnalOptions {
+  conditionnalClassNames?: WegasConditionnalClassName[];
   disableIf?: IScript;
   hideIf?: IScript;
   readOnlyIf?: IScript;
@@ -325,6 +331,24 @@ export interface WegasComponentLayoutConditionnalOptions {
 }
 
 export const layoutConditionnalChoices: HashListChoices = [
+  {
+    label: 'Conditionnal classes',
+    value: {
+      prop: 'conditionnalClassNames',
+      schema: schemaProps.array({
+        label: 'Conditionnal classes',
+        itemSchema: {
+          className: schemaProps.string({ label: 'Class' }),
+          condition: schemaProps.script({
+            label: 'Condition',
+            mode: 'GET',
+            language: 'TypeScript',
+            value: 'false',
+          }),
+        },
+      }),
+    },
+  },
   {
     label: 'Disable If',
     value: {

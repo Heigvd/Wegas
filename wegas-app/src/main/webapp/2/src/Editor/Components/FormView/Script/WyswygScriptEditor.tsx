@@ -53,11 +53,7 @@ export function WyswygScriptEditor({
               itemSchema: {
                 statement: schemaProps.statement({ required: true, mode }),
               },
-              userOnChildAdd: () =>
-                onChange([
-                  ...forceEmptyExpressions(expr, mode),
-                  createNewExpression(mode),
-                ]),
+              userOnChildAdd: () => ({ statement: createNewExpression(mode) }),
             }),
           },
         }}

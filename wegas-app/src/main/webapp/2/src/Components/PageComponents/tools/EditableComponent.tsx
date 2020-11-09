@@ -39,7 +39,7 @@ import { defaultAbsoluteLayoutPropsKeys } from '../../Layouts/Absolute';
 import { PlayerInfoBullet } from './InfoBullet';
 import { EditHandle } from './EditHandle';
 import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
-import { OptionsState, ComponentOptionsManager } from './OptionsComponent';
+import { OptionsState } from './OptionsComponent';
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
 import { themeVar } from '../../Style/ThemeVars';
 import { defaultMenuItemKeys } from '../../Layouts/Menu';
@@ -445,6 +445,7 @@ export type ItemContainerPropsKeys =
 interface ComponentContainerProps extends WegasComponentProps {
   vertical?: boolean;
   containerPropsKeys?: ItemContainerPropsKeys;
+  options: OptionsState;
 }
 
 const pageDispatch = pagesStateStore.dispatch;
@@ -463,13 +464,17 @@ export function ComponentContainer({
   Container,
   containerPropsKeys = [],
   dropzones,
-  ...options
+  options,
+  stopPropagation,
+  confirmClick,
+  actions,
+  ...restProps
 }: ComponentContainerProps) {
   const container = React.useRef<HTMLDivElement>();
   const mouseOver = React.useRef<boolean>(false);
   const [dragHoverState, setDragHoverState] = React.useState<boolean>(false);
   const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
-  const [extraState, setExtraState] = React.useState<OptionsState>({});
+  // const [options, setoptions] = React.useState<OptionsState>({});
 
   const {
     onDrop,
@@ -486,31 +491,32 @@ export function ComponentContainer({
   const itemPath = containerPath.pop();
   const isNotFirstComponent = path.length > 0;
   const editable = editMode && isNotFirstComponent;
-  const showComponent = editable || !extraState.hidden;
+  const showComponent = editable || !options.hidden;
 
   const isSelected = JSON.stringify(path) === JSON.stringify(editedPath);
   const isFocused = usePagesStateStore(
     isComponentFocused(editMode, pageId, path),
   );
 
+  const onClickActions = Object.entries(
+    pick(
+      restProps,
+      Object.keys(defaultWegasComponentOptionsActions),
+    ) as WegasComponentOptionsActions,
+  );
+
   const onClick = React.useCallback(
     (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (options.stopPropagation) {
+      if (stopPropagation) {
         event.stopPropagation();
       }
       if (
-        options != null &&
-        (!options.confirmClick ||
-          // TODO : Find a better way to do that than a modal!!!
-          // eslint-disable-next-line no-alert
-          confirm(options.confirmClick))
+        !confirmClick ||
+        // TODO : Find a better way to do that than a modal!!!
+        // eslint-disable-next-line no-alert
+        confirm(confirmClick)
       ) {
-        Object.entries(
-          pick(
-            options,
-            Object.keys(defaultWegasComponentOptionsActions),
-          ) as WegasComponentOptionsActions,
-        )
+        onClickActions
           .sort(
             (
               [, v1]: [string, WegasComponentOptionsAction],
@@ -530,7 +536,7 @@ export function ComponentContainer({
           });
       }
     },
-    [options, context],
+    [stopPropagation, confirmClick, onClickActions, context],
   );
 
   const onMouseOver = React.useCallback(
@@ -601,95 +607,84 @@ export function ComponentContainer({
   );
 
   return (
-    <>
-      {Object.keys(options).length > 0 && (
-        <ComponentOptionsManager
-          options={options}
-          setUpgradesState={setExtraState}
+    <Container
+      ref={ref => {
+        // dropZone(ref);
+        if (ref != null) {
+          container.current = ref;
+        }
+      }}
+      {...pick(options, containerPropsKeys)}
+      className={
+        cx(handleControlStyle, flex, options.themeModeClassName, {
+          [showBordersStyle]: showBorders && containerType != null,
+          [hoverColorInsetShadow]: editMode && isSelected,
+          [cx(foregroundContent, thinHoverColorInsetShadow)]: isFocused,
+          [childDropzoneHorizontalStyle]: !vertical,
+          [childDropzoneVerticalStyle]: vertical,
+          [disabledStyle]: options.disabled,
+        }) + classNameOrEmpty(layoutClassName)
+      }
+      style={{
+        cursor:
+          onClickActions.length > 0 && !options.disabled
+            ? 'pointer'
+            : 'inherit',
+        ...layoutStyle,
+      }}
+      onClick={onClick}
+      onMouseOver={onMouseOver}
+      onMouseLeave={onMouseLeave}
+      {...dropFunctions}
+      tooltip={options.tooltip}
+    >
+      {dragHoverState && editable && dropzones.center && (
+        <ComponentDropZone
+          onDrop={onEditableComponentDrop}
+          show
+          dropPosition="INTO"
         />
       )}
-      <Container
-        ref={ref => {
-          // dropZone(ref);
-          if (ref != null) {
-            container.current = ref;
-          }
-        }}
-        {...pick(options, containerPropsKeys)}
-        className={
-          cx(handleControlStyle, flex, extraState.themeModeClassName, {
-            [showBordersStyle]: showBorders && containerType != null,
-            [hoverColorInsetShadow]: editMode && isSelected,
-            [cx(foregroundContent, thinHoverColorInsetShadow)]: isFocused,
-            [childDropzoneHorizontalStyle]: !vertical,
-            [childDropzoneVerticalStyle]: vertical,
-            [disabledStyle]: extraState.disabled,
-          }) + classNameOrEmpty(layoutClassName)
-        }
-        style={{
-          cursor:
-            options?.actions && !extraState.disabled ? 'pointer' : 'inherit',
-          ...layoutStyle,
-        }}
-        onClick={onClick}
-        onMouseOver={onMouseOver}
-        onMouseLeave={onMouseLeave}
-        {...dropFunctions}
-        tooltip={extraState.tooltip}
-      >
-        {dragHoverState && editable && dropzones.center && (
-          <ComponentDropZone
-            onDrop={onEditableComponentDrop}
-            show
-            dropPosition="INTO"
-          />
-        )}
-        {dragHoverState && editable && dropzones.side && (
-          <ComponentDropZone
-            onDrop={dndComponent =>
-              onDrop(dndComponent, containerPath, itemPath)
-            }
-            show
-            dropPosition="BEFORE"
-          />
-        )}
-        {!dragHoverState && editable && (
-          <EditHandle
-            name={name}
-            stackedHandles={stackedHandles}
-            componentType={componentType}
-            path={path}
-            infoMessage={
-              extraState.hidden
-                ? 'This component is shown only in edit mode'
-                : undefined
-            }
-            isSelected={isSelected}
-          />
-        )}
-        {showComponent && <ErrorBoundary>{children}</ErrorBoundary>}
-        {extraState.infoBulletProps && (
-          <PlayerInfoBullet {...extraState.infoBulletProps} />
-        )}
-        {dragHoverState && editable && dropzones.side && (
-          <ComponentDropZone
-            onDrop={dndComponent =>
-              onDrop(
-                dndComponent,
-                containerPath,
-                itemPath != null ? itemPath + 1 : itemPath,
-              )
-            }
-            show
-            dropPosition="AFTER"
-          />
-        )}
-        <LockedOverlay
-          locked={(extraState.disabled || extraState.locked) === true}
+      {dragHoverState && editable && dropzones.side && (
+        <ComponentDropZone
+          onDrop={dndComponent => onDrop(dndComponent, containerPath, itemPath)}
+          show
+          dropPosition="BEFORE"
         />
-      </Container>
-      {/* {showSplitter && <FonkyFlexSplitter notDraggable={!allowResize} />} */}
-    </>
+      )}
+      {!dragHoverState && editable && (
+        <EditHandle
+          name={name}
+          stackedHandles={stackedHandles}
+          componentType={componentType}
+          path={path}
+          infoMessage={
+            options.hidden
+              ? 'This component is shown only in edit mode'
+              : undefined
+          }
+          isSelected={isSelected}
+        />
+      )}
+      {showComponent && <ErrorBoundary>{children}</ErrorBoundary>}
+      {options.infoBulletProps && (
+        <PlayerInfoBullet {...options.infoBulletProps} />
+      )}
+      {dragHoverState && editable && dropzones.side && (
+        <ComponentDropZone
+          onDrop={dndComponent =>
+            onDrop(
+              dndComponent,
+              containerPath,
+              itemPath != null ? itemPath + 1 : itemPath,
+            )
+          }
+          show
+          dropPosition="AFTER"
+        />
+      )}
+      <LockedOverlay locked={(options.disabled || options.locked) === true} />
+    </Container>
   );
 }
 

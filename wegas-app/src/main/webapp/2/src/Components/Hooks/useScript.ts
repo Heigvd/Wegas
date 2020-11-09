@@ -343,7 +343,7 @@ export function safeClientScriptEval<T extends ReturnType>(
  * @returns Last expression or undefined in case it errors.
  */
 export function useScript<T extends ReturnType>(
-  script?: string | IScript,
+  script?: (string | IScript | undefined) | (string | IScript | undefined)[],
   context?: {
     [name: string]: unknown;
   },
@@ -351,10 +351,16 @@ export function useScript<T extends ReturnType>(
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
   useGlobals();
   // useScriptContext();
-  const fn = React.useCallback(
-    () => safeClientScriptEval<T>(script, context, catchCB),
-    [script, context, catchCB],
-  );
+
+  const fn = React.useCallback(() => {
+    if (Array.isArray(script)) {
+      return script.map(scriptItem =>
+        safeClientScriptEval<T>(scriptItem, context, catchCB),
+      );
+    } else {
+      return safeClientScriptEval<T>(script, context, catchCB);
+    }
+  }, [script, context, catchCB]);
   return useStore(fn, deepDifferent) as any;
 }
 

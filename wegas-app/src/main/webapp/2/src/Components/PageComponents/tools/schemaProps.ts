@@ -548,7 +548,7 @@ const simpleSchemaProps = {
     borderTop,
   }: {
     itemSchema: {};
-    userOnChildAdd?: (value?: {}) => void;
+    userOnChildAdd?: (value?: {}) => {};
     requiredItems?: boolean;
     itemType?: TYPESTRING;
     highlight?: boolean;

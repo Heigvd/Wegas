@@ -7,6 +7,30 @@ import { themeCTX } from '../../Style/Theme';
 import { WegasComponentOptions } from './EditableComponent';
 import { useStore } from '../../../data/store';
 
+interface OptionProps {
+  tooltip: WegasComponentOptions['tooltip'];
+  disableIf: WegasComponentOptions['disableIf'];
+  readOnlyIf: WegasComponentOptions['readOnlyIf'];
+  hideIf: WegasComponentOptions['hideIf'];
+  unreadCount: WegasComponentOptions['unreadCount'];
+  infoBullet: WegasComponentOptions['infoBullet'];
+  themeMode: WegasComponentOptions['themeMode'];
+  lock: WegasComponentOptions['lock'];
+  conditionnalClassNames: WegasComponentOptions['conditionnalClassNames'];
+}
+
+export const defaultOptions: (keyof OptionProps)[] = [
+  'tooltip',
+  'disableIf',
+  'readOnlyIf',
+  'hideIf',
+  'unreadCount',
+  'infoBullet',
+  'themeMode',
+  'lock',
+  'conditionnalClassNames',
+];
+
 export interface OptionsState {
   disabled?: boolean;
   hidden?: boolean;
@@ -15,10 +39,14 @@ export interface OptionsState {
   infoBulletProps?: PlayerInfoBulletProps;
   tooltip?: string;
   themeModeClassName?: string;
+  conditionnalClassName?: string;
 }
 
 interface ComponentOptionsManagerProps {
-  options: WegasComponentOptions;
+  options: OptionProps;
+  context?: {
+    [name: string]: unknown;
+  };
   setUpgradesState: (
     newState: (oldState: OptionsState) => OptionsState,
   ) => void;
@@ -26,6 +54,7 @@ interface ComponentOptionsManagerProps {
 
 export function ComponentOptionsManager({
   options,
+  context,
   setUpgradesState,
 }: ComponentOptionsManagerProps) {
   const {
@@ -37,11 +66,12 @@ export function ComponentOptionsManager({
     infoBullet,
     themeMode,
     lock,
+    conditionnalClassNames = [],
   } = options;
 
-  const disabled = useScript<boolean>(disableIf);
-  const hidden = useScript<boolean>(hideIf);
-  const readOnly = useScript<boolean>(readOnlyIf);
+  const disabled = useScript<boolean>(disableIf, context);
+  const hidden = useScript<boolean>(hideIf, context);
+  const readOnly = useScript<boolean>(readOnlyIf, context);
   const locked = useStore(s => lock != null && s.global.locks[lock] === true);
 
   const infoBulletProps = useComputeUnreadCount(unreadCount) || infoBullet;
@@ -53,6 +83,18 @@ export function ComponentOptionsManager({
       : themesState.themes[themesState.selectedThemes[currentContext]]
           .modeClasses[themeMode];
 
+  const conditionnalClassName = useScript<boolean[]>(
+    conditionnalClassNames.map(item => item.condition),
+    context,
+  )!
+    .map((condition, i) => ({
+      condition,
+      className: conditionnalClassNames[i].className,
+    }))
+    .filter(item => item.condition)
+    .map(item => item.className)
+    .join(' ');
+
   const newUpgrades: OptionsState = {
     disabled,
     hidden,
@@ -61,6 +103,7 @@ export function ComponentOptionsManager({
     infoBulletProps,
     tooltip,
     themeModeClassName,
+    conditionnalClassName,
   };
 
   React.useEffect(() => {
