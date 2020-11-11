@@ -29,7 +29,7 @@ export const prefixes = [
 ] as IconPrefix[];
 
 export const icons = {
-  undefined: undefined,
+  // undefined: undefined,
   ...Object.values(fas).reduce(
     (o: {}, v: IconDefinition) =>
       typeof v === 'object' && 'iconName' in v && v.iconName !== undefined

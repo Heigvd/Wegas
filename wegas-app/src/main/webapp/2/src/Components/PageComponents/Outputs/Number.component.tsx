@@ -8,6 +8,7 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { IScript, INumberDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { classAndStyleShema } from '../tools/options';
 
 export interface PlayerNumberProps extends WegasComponentProps {
   script?: IScript;
@@ -36,7 +37,7 @@ registerComponent(
         required: true,
         returnType: ['SNumberDescriptor'],
       }),
-      className: schemaProps.string({ label: 'ClassName' }),
+      ...classAndStyleShema,
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({

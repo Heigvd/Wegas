@@ -6,12 +6,11 @@ import { omit } from 'lodash';
 import u from 'immer';
 import { ReparentableRoot } from '../Reparentable';
 import { DnDTabLayout, ComponentMap, filterMap } from './DnDTabLayout';
-import { wlog } from '../../../Helper/wegaslog';
+import { wlog, wwarn } from '../../../Helper/wegaslog';
 
 import 'react-reflex/styles.css';
 import { flex, noOverflow, grow, expandHeight } from '../../../css/classes';
 import { themeVar } from '../../../Components/Style/ThemeVars';
-import { AvailableLayoutTab } from '../Layout';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
@@ -41,9 +40,18 @@ export const splitter = css({
   },
 });
 
-export const focusTabContext = React.createContext<
-  (id: AvailableLayoutTab, layoutId: string) => void
->(() => undefined);
+/**
+ * Store all the TabLayouts in there
+ */
+const tabLayouts: { [tabLayoutId: string]: (tabId: string) => void } = {};
+
+export function focusTab(tabLayoutId: string, tabId: string) {
+  if (tabLayouts[tabLayoutId]) {
+    tabLayouts[tabLayoutId](tabId);
+  } else {
+    wwarn(`No tab layout with id ${tabLayoutId} as been found!`);
+  }
+}
 
 type LayoutType = 'ReflexLayoutNode' | 'TabLayoutNode';
 
@@ -745,7 +753,7 @@ const reduceChildren = <T extends ComponentMap>(
   let newLayoutMap: ManagedLayoutMap = layoutMap
     ? layoutMap
     : // Deepcopy
-    JSON.parse(JSON.stringify(defaultLayout));
+      JSON.parse(JSON.stringify(defaultLayout));
   const key = newLayoutMap.lastKey;
   if (children && children.length > 0) {
     if (typeof children[0] === 'string') {
@@ -765,17 +773,17 @@ const reduceChildren = <T extends ComponentMap>(
   return newLayoutMap;
 };
 
-const layoutTabMissing = (layout: LayoutMap | null, tabs: ComponentMap) =>
-  !layout ||
-  Object.values(layout).some(
-    item =>
-      item.type === 'TabLayoutNode' &&
-      item.children.some(c => !Object.keys(tabs).includes(c)),
-  );
+// const layoutTabMissing = (layout: LayoutMap | null, tabs: ComponentMap) =>
+//   !layout ||
+//   Object.values(layout).some(
+//     item =>
+//       item.type === 'TabLayoutNode' &&
+//       item.children.some(c => !Object.keys(tabs).includes(c)),
+//   );
 
 // eslint-disable-next-line
 interface LayoutItem<T extends ComponentMap>
-  extends Array<LayoutItem<T> | keyof T> { }
+  extends Array<LayoutItem<T> | keyof T> {}
 type LayoutItems<T extends ComponentMap> = LayoutItem<T> | LayoutItem<T>[];
 
 interface LinearLayoutProps<T extends ComponentMap> {
@@ -801,9 +809,12 @@ interface LinearLayoutProps<T extends ComponentMap> {
 /**
  * MainLinearLayout is a component that allows to chose the position and size of its children
  */
-export function MainLinearLayout<T extends ComponentMap>(
-  { layoutId, initialLayout, tabs, onFocusTab }: LinearLayoutProps<T>,
-) {
+export function MainLinearLayout<T extends ComponentMap>({
+  layoutId,
+  initialLayout,
+  tabs,
+  onFocusTab,
+}: LinearLayoutProps<T>) {
   // const tabs = React.useRef<ComponentMap>(tabs ? tabs : {});
   const savedLayoutJSON = window.localStorage.getItem(
     `DnDGridLayoutData.${layoutId}`,
@@ -813,7 +824,7 @@ export function MainLinearLayout<T extends ComponentMap>(
     : null;
   const [layout, dispatchLayout] = React.useReducer(
     setLayout(layoutId),
-    savedLayout && !layoutTabMissing(savedLayout.layoutMap, tabs)
+    savedLayout /*&& !layoutTabMissing(savedLayout.layoutMap, tabs)*/
       ? savedLayout
       : reduceChildren(initialLayout),
   );
@@ -859,14 +870,11 @@ export function MainLinearLayout<T extends ComponentMap>(
       tabKey: tabKey,
     });
 
-  const focusTab = React.useCallback(
-    (id: string, layoutId: string) => {
-      if (layoutId === layoutId) {
-        dispatchLayout({ type: 'EXTERNALSELECT', tabKey: id });
-      }
-    },
-    [],
-  );
+  const focusTab = React.useCallback((tabId: string) => {
+    dispatchLayout({ type: 'EXTERNALSELECT', tabKey: tabId });
+  }, []);
+
+  tabLayouts[layoutId] = focusTab;
 
   React.useEffect(() => {
     onFocusTab && onFocusTab(focusTab);
@@ -941,8 +949,8 @@ export function MainLinearLayout<T extends ComponentMap>(
                   <div>Loading...</div>
                 </ReflexElement>
               ) : (
-                  rendered
-                )}
+                rendered
+              )}
             </ReflexContainer>
           );
         }
@@ -958,95 +966,12 @@ export function MainLinearLayout<T extends ComponentMap>(
     }
   };
 
-  // /**
-  //  * renderLayouts is a recursvie function that renders the linearLayout.
-  //  * This function creates a reflexLayout or a tabLayout component depending on the layout type
-  //  * then if the layout is reflex and have children it calls itself to render the children the same way
-  //  *
-  //  * @param layoutKey - the key of the layout to display
-  //  */
-  // const renderLayouts = (layoutKey?: string) => {
-  //   const currentLayoutKey = layoutKey ? layoutKey : layout.rootKey;
-  //   const currentLayout = layout.layoutMap[currentLayoutKey];
-  //   if (currentLayout) {
-  //     switch (currentLayout.type) {
-  //       case 'TabLayoutNode': {
-  //         return (
-  //           <DnDTabLayout
-  //             key={currentLayoutKey}
-  //             components={makeTabMap(currentLayout.children, tabs)}
-  //             selectItems={getUnusedTabs(layout.layoutMap, tabs)}
-  //             vertical={currentLayout.vertical}
-  //             onDrop={onDrop(currentLayoutKey)}
-  //             onDropTab={onDropTab(currentLayoutKey)}
-  //             onDeleteTab={onDeleteTab}
-  //             onNewTab={onNewTab(currentLayoutKey)}
-  //             defaultActiveLabel={currentLayout.defaultActive}
-  //             onSelect={onSelect}
-  //             layoutId={layoutId}
-  //           />
-  //         );
-  //       }
-  //       case 'ReflexLayoutNode': {
-  //         const rendered: JSX.Element[] = [];
-  //         for (let i = 0; i < currentLayout.children.length; i += 1) {
-  //           const childKey = currentLayout.children[i];
-  //           rendered.push(
-  //             <Content
-  //               key={childKey}
-  //               // flex={
-  //               //   layout.layoutMap[childKey].flex
-  //               //     ? layout.layoutMap[childKey].flex
-  //               //     : 1000
-  //               // }
-  //               flexInit={
-  //                 layout.layoutMap[childKey].flexValues
-  //                   ? layout.layoutMap[childKey].flexValues[i]
-  //                   : undefined
-  //               }
-  //               // onStopResize={({ component }) =>
-  //               //   dispatchLayout({
-  //               //     type: 'RESIZE',
-  //               //     layoutKey: childKey,
-  //               //     flex: component.flex,
-  //               //   })
-  //               // }
-  //               // minSize={50}
-  //               className={cx(flex, noOverflow)}
-  //             >
-  //               {renderLayouts(childKey)}
-  //             </Content>,
-  //           );
-  //           if (i < currentLayout.children.length - 1) {
-  //             rendered.push(<Splitter key={childKey + 'SEPARATOR'} />);
-  //           }
-  //         }
-  //         return (
-  //           <Container
-  //             className={splitter}
-  //             vertical={currentLayout.vertical}
-  //             onStopResize={(_splitter, flexValues) =>
-  //               dispatchLayout({
-  //                 type: 'FLEX-RESIZE',
-  //                 layoutKey: currentLayoutKey,
-  //                 flexValues,
-  //               })
-  //             }
-  //           >
-  //             {rendered}
-  //           </Container>
-  //         );
-  //       }
-  //     }
-  //   }
-  // };
-
   return (
-    <focusTabContext.Provider value={focusTab}>
-      <ReparentableRoot>
-        <div className={cx(flex, grow, expandHeight)}>{renderLayouts()}</div>
-      </ReparentableRoot>
-    </focusTabContext.Provider>
+    // <focusTabContext.Provider value={focusTab}>
+    <ReparentableRoot>
+      <div className={cx(flex, grow, expandHeight)}>{renderLayouts()}</div>
+    </ReparentableRoot>
+    // </focusTabContext.Provider>
   );
 }
 

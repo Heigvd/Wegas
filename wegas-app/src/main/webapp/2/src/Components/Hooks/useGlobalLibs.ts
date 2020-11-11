@@ -6,7 +6,9 @@ import { classesCTX } from '../Contexts/ClassesProvider';
 
 // using raw-loader works but you need to put the whole file name and ts doesn't like it
 // @ts-ignore
-import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasScriptableEntities.d.ts.mlib';
+import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasEntities.ts';
+// @ts-ignore
+import scriptableEntitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasScriptableEntities.d.ts.mlib';
 // @ts-ignore
 import editorGlobalSrc from '!!raw-loader!../../../types/scripts/EditorGlobals.d.ts';
 // @ts-ignore
@@ -23,6 +25,10 @@ import wegasEventsGlobalSrc from '!!raw-loader!../../../types/scripts/WegasEvent
 import serverMethodGlobalSrc from '!!raw-loader!../../../types/scripts/ServerMethodsGlobals.d.ts';
 // @ts-ignore
 import i18nGlobalSrc from '!!raw-loader!../../../types/scripts/I18nGlobals.d.ts';
+// @ts-ignore
+import APIMethodsGlobalSrc from '!!raw-loader!../../../types/scripts/APIMethodsGlobals.d.ts';
+// @ts-ignore
+import generalTypes from '!!raw-loader!../../../types/general-types.d.ts';
 
 import { deepDifferent } from './storeHookFactory';
 import { wwarn } from '../../Helper/wegaslog';
@@ -35,6 +41,7 @@ function makeAmbient(source: string) {
 }
 
 const ambientEntitiesSrc = makeAmbient(entitiesSrc);
+const ambientScriptableEntitiesSrc = makeAmbient(scriptableEntitiesSrc);
 
 // We'll keep it for later uses
 // const cleanLib = (libSrc: string) => libSrc.replace(/^(export )/gm, '');
@@ -44,14 +51,14 @@ const ambientEntitiesSrc = makeAmbient(entitiesSrc);
  *  Client : Client script, executed in client only
  *  Server internal : Server script, executed in server only
  *  Server external : Server script, executed in server but triggered by client.
- * 
- * A script in a server external context can execute client script just before beeing 
- * sent to server for execution with the help of runClientScript method. 
- * The argument of this method should be string. The method will be parsed and the return value of the client 
+ *
+ * A script in a server external context can execute client script just before beeing
+ * sent to server for execution with the help of runClientScript method.
+ * The argument of this method should be string. The method will be parsed and the return value of the client
  * script will be injected into the server script.
  * In order for this trick to work, the server script must be passed in parseAndRunClientScript before beeing sent to the server.
  */
-export type ScriptContext = "Client" | "Server internal" | "Server external"
+export type ScriptContext = 'Client' | 'Server internal' | 'Server external';
 
 export function useGlobalLibs(scriptContext: ScriptContext) {
   const { classes } = React.useContext(classesCTX);
@@ -82,8 +89,8 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
 
         interface VariableClasses {
           ${Object.keys(variableClasses)
-          .map(k => `${k}: S${variableClasses[k]};`)
-          .join('\n')}
+            .map(k => `${k}: S${variableClasses[k]};`)
+            .join('\n')}
         }
 
         class Variable {
@@ -91,19 +98,30 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
             gameModel: SGameModel,
             name: T
           ) => VariableClasses[T];
-          ${scriptContext === "Client" ? `static select: <T extends SVariableDescriptor>(
+          ${
+            scriptContext === 'Client'
+              ? `static select: <T extends SVariableDescriptor>(
             _gm: unknown,
             id: number,
           ) => T | undefined;        
           static getItems: <T = SVariableDescriptor<SVariableInstance>>(
             itemsIds: number[],
-          ) => Readonly<T[]>;` : ""}       
+          ) => Readonly<T[]>;`
+              : ''
+          }       
         }
 
-        ${scriptContext === "Server internal" ? `
+        ${
+          scriptContext === 'Server internal'
+            ? `
         declare function runClientScript<T extends any = any>(clientScript:string) : T;`
-          : ""}
-        ${scriptContext === "Client" ? `type CurrentLanguages = ${currentLanguages};
+            : ''
+        }
+        ${
+          scriptContext === 'Client'
+            ? `type CurrentLanguages = ${currentLanguages};
+        type View = 'Editor' | 'Instance' | 'Export' | 'Public';
+        declare const API_VIEW : View;
         interface EditorClass extends GlobalEditorClass {
           setLanguage: (lang: { code: SGameModelLanguage['code'] } | CurrentLanguages) => void;
         }
@@ -116,8 +134,9 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
               const isArray = method.returnStyle === 'array';
               return `'${k}' : (${method.parameters
                 .map(p => `${p[0]} : ${p[1]}`)
-                .join(', ')}) => ${isArray ? '(' : ''
-                } ${method.returnTypes.join(' | ')}
+                .join(', ')}) => ${
+                isArray ? '(' : ''
+              } ${method.returnTypes.join(' | ')}
                ${isArray ? ')[]' : ''};
               `;
             })
@@ -130,9 +149,10 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         declare const ClientMethods : ClientMethodClass;
 
         type GlobalSchemas =
-          ${Object.keys(globalSchemas).length
-            ? Object.keys(globalSchemas).join('\n|')
-            : 'never'
+          ${
+            Object.keys(globalSchemas).length
+              ? Object.keys(globalSchemas).join('\n|')
+              : 'never'
           };
 
         interface SchemaClass extends GlobalSchemaClass {
@@ -157,7 +177,12 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
 
         declare const Context : {
           [id:string]:any;
-        }` : `${buildGlobalServerMethods(globalServerMethods)}`}
+        }
+        
+        declare const APIMethods : APIMethodsClass;
+        `
+            : `${buildGlobalServerMethods(globalServerMethods)}`
+        }
         `;
     } catch (e) {
       wwarn(e);
@@ -170,6 +195,8 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
       {
         content: `
         ${ambientEntitiesSrc}\n
+        ${ambientScriptableEntitiesSrc}\n
+        ${generalTypes}\n
         ${editorGlobalSrc}\n
         ${clientMethodGlobalSrc}\n
         ${serverMethodGlobalSrc}\n
@@ -178,6 +205,7 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         ${popupsGlobalSrc}\n
         ${wegasEventsGlobalSrc}\n
         ${i18nGlobalSrc}\n
+        ${APIMethodsGlobalSrc}\n
         ${libs}\n
       `,
         name: 'VariablesTypes.d.ts',

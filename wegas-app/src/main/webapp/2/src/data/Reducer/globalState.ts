@@ -58,7 +58,8 @@ export function buildGlobalServerMethods(
           '\n\t' +
           `${key}: (${(value.parameters as WegasMethodParameter[])
             .map((p, i) => `arg${i}${p.required ? '' : '?'}: ${p.type}`)
-            .join(', ')}) => ${value.returns ? value.returns : 'void'};${i === objects.length - 1 ? '\n' : ''
+            .join(', ')}) => ${value.returns ? value.returns : 'void'};${
+            i === objects.length - 1 ? '\n' : ''
           }`
         );
       } else {
@@ -135,18 +136,18 @@ export interface GlobalState extends EditingState {
   // pageSrc: Readonly<boolean>;
   pageError?: string;
   search:
-  | {
-    type: 'GLOBAL';
-    value: string;
-    result: number[];
-  }
-  | {
-    type: 'USAGE';
-    value: number;
-    result: number[];
-  }
-  | { type: 'ONGOING' }
-  | { type: 'NONE' };
+    | {
+        type: 'GLOBAL';
+        value: string;
+        result: number[];
+      }
+    | {
+        type: 'USAGE';
+        value: number;
+        result: number[];
+      }
+    | { type: 'ONGOING' }
+    | { type: 'NONE' };
   pusherStatus: {
     status: string;
     socket_id?: string;
@@ -435,29 +436,39 @@ export function editVariable(
       actions != null
         ? actions
         : {
-          more: {
-            delete: {
-              label: 'Delete',
-              action: (entity: IVariableDescriptor, path?: string[]) => {
-                dispatch(
-                  Actions.VariableDescriptorActions.deleteDescriptor(
-                    entity,
-                    path,
-                  ),
-                );
+            more: {
+              duplicate: {
+                label: 'Duplicate',
+                action: (entity: IVariableDescriptor) => {
+                  dispatch(
+                    Actions.VariableDescriptorActions.duplicateDescriptor(
+                      entity,
+                    ),
+                  );
+                },
               },
-              confirm: true,
-            },
-            findUsage: {
-              label: 'Find usage',
-              action: (entity: IVariableDescriptor) => {
-                if (entityIsPersisted(entity)) {
-                  dispatch(Actions.EditorActions.searchUsage(entity));
-                }
+              delete: {
+                label: 'Delete',
+                action: (entity: IVariableDescriptor, path?: string[]) => {
+                  dispatch(
+                    Actions.VariableDescriptorActions.deleteDescriptor(
+                      entity,
+                      path,
+                    ),
+                  );
+                },
+                confirm: true,
+              },
+              findUsage: {
+                label: 'Find usage',
+                action: (entity: IVariableDescriptor) => {
+                  if (entityIsPersisted(entity)) {
+                    dispatch(Actions.EditorActions.searchUsage(entity));
+                  }
+                },
               },
             },
-          },
-        };
+          };
     dispatch(
       ActionCreator.VARIABLE_EDIT({
         entity,
@@ -488,7 +499,7 @@ export function editStateMachine(
         actions: {
           more: {
             delete: {
-              label: 'delete',
+              label: 'Delete',
               action: (entity: IFSMDescriptor, path?: string[]) => {
                 dispatch(
                   Actions.VariableDescriptorActions.deleteDescriptor(
@@ -499,7 +510,7 @@ export function editStateMachine(
               },
             },
             findUsage: {
-              label: 'findUsage',
+              label: 'Find usage',
               action: (entity: IFSMDescriptor) => {
                 if (entityIsPersisted(entity)) {
                   dispatch(Actions.EditorActions.searchUsage(entity));
@@ -582,8 +593,8 @@ export function saveEditor(value: IMergeable): ThunkResult {
           ACTIONS.VariableDescriptorActions.createDescriptor(
             value as IVariableDescriptor,
             VariableDescriptor.select(editMode.parentId) as
-            | IParentDescriptor
-            | undefined,
+              | IParentDescriptor
+              | undefined,
           ),
         );
       case 'File':

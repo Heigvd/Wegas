@@ -22,7 +22,6 @@ import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { AddMenuParent, AddMenuChoice, AddMenuFeedback } from './AddMenu';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { SearchTool } from '../SearchTool';
-import { focusTabContext } from '../LinearTabLayout/LinearLayout';
 import { useAsync } from '../../../Components/Hooks/useAsync';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
@@ -43,6 +42,7 @@ import {
   IVariableDescriptor,
   IEvaluationDescriptorContainer,
 } from 'wegas-ts-api';
+import { focusTab } from '../LinearTabLayout/LinearLayout';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -93,11 +93,10 @@ interface TreeProps {
   localState?: Readonly<Edition> | undefined;
   localDispatch?: StoreDispatch;
 }
-function TreeView({ variables, localState, localDispatch }: TreeProps) {
+export function TreeView({ variables, localState, localDispatch }: TreeProps) {
   const [search, setSearch] = React.useState('');
   const { data } = useAsync(itemsPromise);
   const globalDispatch = store.dispatch;
-  const focusTab = React.useContext(focusTabContext);
 
   return (
     <Toolbar>
@@ -119,7 +118,7 @@ function TreeView({ variables, localState, localDispatch }: TreeProps) {
               localDispatch(Actions.EditorActions.createVariable(i.value));
             } else {
               globalDispatch(Actions.EditorActions.createVariable(i.value));
-              focusTab('Variable Properties', mainLayoutId);
+              focusTab(mainLayoutId, 'Variable Properties');
             }
           }}
         />
@@ -218,14 +217,13 @@ export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_DRAG_ITEM';
 interface CTreeProps {
   variableId: number;
   subPath?: string[];
-  search: string;
+  search?: string;
   nodeProps: () => {};
 }
 
-function CTree(
+export function CTree(
   props: Omit<CTreeProps & TreeProps, 'variables'>,
 ): JSX.Element | null {
-  const focusTab = React.useContext(focusTabContext);
   const { searching, editing, variable, match } = useStore(state => {
     let variable:
       | undefined
@@ -241,7 +239,7 @@ function CTree(
 
     return {
       variable: variable,
-      match: isMatch(props.variableId, props.search),
+      match: isMatch(props.variableId, props.search || ''),
       editing: isEditing(props.variableId, props.subPath, state.global.editing),
       searching:
         (variable &&
@@ -281,9 +279,9 @@ function CTree(
                   entityIs(variable, 'FSMDescriptor') ||
                   entityIs(variable, 'DialogueDescriptor')
                 ) {
-                  focusTab('State Machine', mainLayoutId);
+                  focusTab(mainLayoutId, 'State Machine');
                 }
-                focusTab('Variable Properties', mainLayoutId);
+                focusTab(mainLayoutId, 'Variable Properties');
               }
               getEntityActions(variable!).then(({ edit }) =>
                 dispatch(
@@ -306,19 +304,19 @@ function CTree(
               <AddMenuParent
                 variable={variable}
                 localDispatch={props.localDispatch}
-                focusTab={tabId => focusTab(tabId, mainLayoutId)}
+                focusTab={tabId => focusTab(mainLayoutId, tabId)}
               />
             ) : entityIs(variable, 'ChoiceDescriptor') ? (
               <AddMenuChoice
                 variable={variable}
                 localDispatch={props.localDispatch}
-                focusTab={tabId => focusTab(tabId, mainLayoutId)}
+                focusTab={tabId => focusTab(mainLayoutId, tabId)}
               />
             ) : entityIs(variable, 'EvaluationDescriptorContainer') ? (
               <AddMenuFeedback
                 variable={variable}
                 localDispatch={props.localDispatch}
-                focusTab={tabId => focusTab(tabId, mainLayoutId)}
+                focusTab={tabId => focusTab(mainLayoutId, tabId)}
                 path={props.subPath![0] as 'feedback' | 'fbComments'}
               />
             ) : null}

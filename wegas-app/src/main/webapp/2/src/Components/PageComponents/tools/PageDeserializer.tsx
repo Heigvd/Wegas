@@ -36,7 +36,6 @@ function DefaultChildren(_: ChildrenDeserializerProps) {
   return null;
 }
 
-
 interface PageDeserializerProps {
   pageId?: string;
   path?: number[];
@@ -50,7 +49,7 @@ interface PageDeserializerProps {
     side?: boolean;
     center?: boolean;
     empty?: boolean;
-  }
+  };
 }
 
 export function PageDeserializer({
@@ -60,7 +59,7 @@ export function PageDeserializer({
   context,
   Container,
   containerPropsKeys,
-  dropzones
+  dropzones,
 }: PageDeserializerProps): JSX.Element {
   const realPath = path ? path : [];
 
@@ -84,7 +83,7 @@ export function PageDeserializer({
   const component = usePageComponentStore(
     s => s[(wegasComponent && wegasComponent.type) || ''],
     deepDifferent,
-  ) as PageComponent
+  ) as PageComponent;
 
   const { WegasComponent, container, componentName } = component || {};
 
@@ -95,9 +94,32 @@ export function PageDeserializer({
     return <div>{`Unknown component : ${wegasComponent.type}`}</div>;
   }
 
-  const Children = container ? container.ChildrenDeserializer : DefaultChildren as React.FunctionComponent<ChildrenDeserializerProps>
+  const Children = container
+    ? container.ChildrenDeserializer
+    : (DefaultChildren as React.FunctionComponent<ChildrenDeserializerProps>);
 
-  return (
+  return container?.noContainer &&
+    container?.noContainer(wegasComponent.props as WegasComponentProps) ? (
+    <>
+      {editMode && children.length === 0 ? (
+        <EmptyComponentContainer
+          path={realPath}
+          Container={Container}
+          dropzones={{ ...component.dropzones, ...dropzones }}
+        />
+      ) : (
+        <Children
+          {...wegasComponent?.props}
+          nbChildren={nbChildren}
+          path={path ? path : []}
+          pageId={pageId}
+          uneditable={uneditable}
+          context={context}
+          editMode={editMode}
+        />
+      )}
+    </>
+  ) : (
     <ComponentContainer
       // the key is set in order to force rerendering when page change
       //(if not, if an error occures and the page's strucutre is the same it won't render the new component)
@@ -106,7 +128,9 @@ export function PageDeserializer({
       componentType={componentName}
       containerType={container?.type}
       context={context}
-      vertical={container?.isVertical(wegasComponent.props as WegasComponentProps)}
+      vertical={container?.isVertical(
+        wegasComponent.props as WegasComponentProps,
+      )}
       Container={Container}
       containerPropsKeys={containerPropsKeys}
       {...restProps}
@@ -120,6 +144,7 @@ export function PageDeserializer({
         Container={Container}
         containerPropsKeys={containerPropsKeys}
         {...restProps}
+        style={restProps.style}
         dropzones={{ ...component.dropzones, ...dropzones }}
       >
         {editMode && children.length === 0 ? (
@@ -128,9 +153,17 @@ export function PageDeserializer({
             Container={Container}
             dropzones={{ ...component.dropzones, ...dropzones }}
           />
-        ) :
-          <Children {...wegasComponent?.props} nbChildren={nbChildren} path={(path ? path : [])} pageId={pageId} uneditable={uneditable} context={context} editMode={editMode} />
-        }
+        ) : (
+          <Children
+            {...wegasComponent?.props}
+            nbChildren={nbChildren}
+            path={path ? path : []}
+            pageId={pageId}
+            uneditable={uneditable}
+            context={context}
+            editMode={editMode}
+          />
+        )}
       </WegasComponent>
     </ComponentContainer>
   );

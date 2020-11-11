@@ -42,7 +42,7 @@ export default variableDescriptors;
 //ACTIONS
 
 export function getAll(): ThunkResult {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.getAll(gameModelId).then(res => {
       return store.dispatch(
@@ -55,11 +55,26 @@ export function getAll(): ThunkResult {
 export function updateDescriptor(
   variableDescriptor: IVariableDescriptor,
 ): ThunkResult<Promise<StateActions | void>> {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
-    return VariableDescriptorAPI.update(gameModelId, variableDescriptor).then(
-      res =>
-        store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    return VariableDescriptorAPI.update(
+      gameModelId,
+      variableDescriptor,
+    ).then(res =>
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
+export function duplicateDescriptor(
+  variableDescriptor: IVariableDescriptor,
+): ThunkResult<Promise<StateActions | void>> {
+  return function (dispatch, getState) {
+    const gameModelId = store.getState().global.currentGameModelId;
+    return VariableDescriptorAPI.duplicate(
+      gameModelId,
+      variableDescriptor,
+    ).then(res =>
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
 }
@@ -68,23 +83,25 @@ export function moveDescriptor(
   index: number,
   parent?: IParentDescriptor,
 ): ThunkResult {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.move(
       gameModelId,
       variableDescriptor,
       index,
       parent,
-    ).then(res =>
-      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
-    );
+    ).then(res => {
+      return store.dispatch(
+        manageResponseHandler(res, dispatch, getState().global),
+      );
+    });
   };
 }
 export function createDescriptor(
   variableDescriptor: IVariableDescriptor,
   parent?: IParentDescriptor,
 ): ThunkResult {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.post(
       gameModelId,
@@ -100,6 +117,12 @@ export function createDescriptor(
           undefined,
           {
             more: {
+              duplicate: {
+                label: 'duplicate',
+                action: (entity: IVariableDescriptor) => {
+                  dispatch(duplicateDescriptor(entity));
+                },
+              },
               delete: {
                 label: 'delete',
                 action: (entity: IVariableDescriptor, path?: string[]) => {
@@ -117,21 +140,23 @@ export function deleteDescriptor(
   variableDescriptor: IVariableDescriptor,
   path: string[] = [],
 ): ThunkResult {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     if (path.length > 0) {
       const vs = deepRemove(variableDescriptor, path) as IVariableDescriptor;
       return store.dispatch(updateDescriptor(vs));
     }
     const gameModelId = store.getState().global.currentGameModelId;
-    return VariableDescriptorAPI.delete(gameModelId, variableDescriptor).then(
-      res =>
-        store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    return VariableDescriptorAPI.delete(
+      gameModelId,
+      variableDescriptor,
+    ).then(res =>
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
 }
 
 export function reset(): ThunkResult {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.reset(gameModelId).then(res =>
       store.dispatch(manageResponseHandler(res, dispatch, getState().global)),

@@ -13,6 +13,7 @@ import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { useScript } from '../../Hooks/useScript';
 import { useTranslate } from '../../../Editor/Components/FormView/translatable';
+import { classAndStyleShema } from '../tools/options';
 
 interface PlayerStringInput extends WegasComponentProps {
   /**
@@ -69,6 +70,7 @@ registerComponent(
         returnType: ['SStringDescriptor'],
       }),
       placeholder: schemaProps.scriptString({ label: 'Placeholder' }),
+      ...classAndStyleShema,
     },
     allowedVariables: ['StringDescriptor'],
     getComputedPropsFromVariable: v => ({
