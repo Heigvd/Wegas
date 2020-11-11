@@ -152,12 +152,12 @@
       <network-config>
         <protocols>
           <protocol name="http-listener">
-            <http xpowered-by="false" comet-support-enabled="true" max-connections="250" default-virtual-server="server">
+            <http http2-enabled="false" xpowered-by="false" comet-support-enabled="true" max-connections="250" default-virtual-server="server">
               <file-cache/>
             </http>
           </protocol>
           <protocol name="https-listener" security-enabled="true">
-            <http xpowered-by="false" comet-support-enabled="true" max-connections="250" default-virtual-server="server">
+            <http  http2-enabled="false" xpowered-by="false" comet-support-enabled="true" max-connections="250" default-virtual-server="server">
               <file-cache/>
             </http>
             <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" cert-nickname="s1as"/>
