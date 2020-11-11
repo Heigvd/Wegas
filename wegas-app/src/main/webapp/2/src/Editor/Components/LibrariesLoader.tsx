@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { LibraryAPI, ILibraries } from '../../API/library.api';
+import { LibraryAPI, ILibraries, LibType } from '../../API/library.api';
 import { wlog, wwarn } from '../../Helper/wegaslog';
 import {
   useGlobals,
@@ -10,6 +10,14 @@ import { IGameModelContent } from 'wegas-ts-api';
 
 // @ts-ignore
 import mainStyle from '!!raw-loader!../../css/defaultStyle.less';
+
+interface LibrariesContext {
+  updateCSSLibraries: (name: string) => void;
+}
+
+export const librariesCTX = React.createContext<LibrariesContext>({
+  updateCSSLibraries: () => {},
+});
 
 export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
   const [jsLibs, setJSLibs] = React.useState<ILibraries>({});
@@ -50,7 +58,6 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
       .catch(error => {
         wlog(error);
       });
-
   });
 
   // Effect triggers on first rendering only
@@ -82,7 +89,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
             }
           })
           .then(res => {
-            safeClientScriptEval(res.text,undefined, () =>
+            safeClientScriptEval(res.text, undefined, () =>
               wwarn(`In static client script : ${res.scriptUrl}`),
             );
           })
@@ -122,7 +129,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
 
   React.useEffect(() => {
     Object.entries(jsLibs).forEach(([key, lib]) =>
-      safeClientScriptEval(lib.content, undefined,() =>
+      safeClientScriptEval(lib.content, undefined, () =>
         wwarn(`In client script  : ${key}`),
       ),
     );
@@ -146,7 +153,11 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
           {lib.content}
         </style>
       ))}
-      {props.children}
+      <librariesCTX.Provider
+        value={{ updateCSSLibraries: name => cssEventHandler(name) }}
+      >
+        {props.children}
+      </librariesCTX.Provider>
       {/* <style type="text/css">
         {less
           .render(require('../../css/defaultStyle.less').default, {
