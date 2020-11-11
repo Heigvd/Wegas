@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { LibraryAPI, ILibraries, LibType } from '../../API/library.api';
+import { LibraryAPI, ILibraries } from '../../API/library.api';
 import { wlog, wwarn } from '../../Helper/wegaslog';
 import {
   useGlobals,
