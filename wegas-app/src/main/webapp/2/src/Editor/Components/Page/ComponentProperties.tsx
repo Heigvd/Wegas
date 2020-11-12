@@ -222,7 +222,7 @@ export function wegasComponentSchema(
           [key: string]: SimpleSchemaPropsSchemas;
         },
       }),
-      ...wegasComponentExtraSchema(parentContainer?.type),
+      ...wegasComponentExtraSchema(parentContainer?.childrenSchema),
     },
   };
 }

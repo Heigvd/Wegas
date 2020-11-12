@@ -31,7 +31,7 @@ export type ComponentType = typeof componentTypes[number];
 export interface PageComponent<
   P extends WegasComponentProps = WegasComponentProps,
   T extends IVariableDescriptor['@class'] = IVariableDescriptor['@class']
-  > {
+> {
   WegasComponent: React.FunctionComponent<P>;
   container?: ContainerComponent<P>;
   componentType: ComponentType;
@@ -82,7 +82,7 @@ export const PageComponentActionCreator = {
 
 type PageComponentAction<
   A extends keyof typeof PageComponentActionCreator = keyof typeof PageComponentActionCreator
-  > = ReturnType<typeof PageComponentActionCreator[A]>;
+> = ReturnType<typeof PageComponentActionCreator[A]>;
 
 const pageComponentReducer: Reducer<
   Readonly<PageComponentsState>,
@@ -148,15 +148,15 @@ export function pageComponentFactory<
     allowedVariables?: T[];
   } & (C extends undefined
     ? {
-      getComputedPropsFromVariable?: (
-        variable?: WegasClassNameAndScriptableTypes[T],
-      ) => Omit<P, keyof PageComponentProps>;
-    }
+        getComputedPropsFromVariable?: (
+          variable?: WegasClassNameAndScriptableTypes[T],
+        ) => Omit<P, keyof PageComponentProps>;
+      }
     : {
-      getComputedPropsFromVariable: (
-        variable?: WegasClassNameAndScriptableTypes[T],
-      ) => Omit<P, keyof PageComponentProps>;
-    }),
+        getComputedPropsFromVariable: (
+          variable?: WegasClassNameAndScriptableTypes[T],
+        ) => Omit<P, keyof PageComponentProps>;
+      }),
 ): PageComponent<P> {
   return {
     WegasComponent: param.component,

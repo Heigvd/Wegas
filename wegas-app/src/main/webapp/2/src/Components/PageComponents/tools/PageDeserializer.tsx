@@ -2,7 +2,7 @@ import * as React from 'react';
 import { PageComponent, usePageComponentStore } from './componentFactory';
 import {
   ComponentContainer,
-  EmptyComponentContainer,
+  // EmptyComponentContainer,
   WegasComponentProps,
   ChildrenDeserializerProps,
   ItemContainer,
@@ -119,33 +119,33 @@ export function PageDeserializer({
       )}
       {container?.noContainer &&
       container?.noContainer(wegasComponent.props as WegasComponentProps) ? (
-        <>
-          {editMode && children.length === 0 ? (
-            <EmptyComponentContainer
-              path={realPath}
-              Container={Container}
-              dropzones={{ ...component.dropzones, ...dropzones }}
-            />
-          ) : (
-            <Children
-              {...wegasComponent?.props}
-              nbChildren={nbChildren}
-              path={path ? path : []}
-              pageId={pageId}
-              uneditable={uneditable}
-              context={context}
-              editMode={editMode}
-            />
-          )}
-        </>
+        // <>
+        //   {editMode && children.length === 0 ? (
+        //     <EmptyComponentContainer
+        //       path={realPath}
+        //       Container={Container}
+        //       dropzones={{ ...component.dropzones, ...dropzones }}
+        //     />
+        //   ) : (
+        <Children
+          {...wegasComponent?.props}
+          nbChildren={nbChildren}
+          path={realPath}
+          pageId={pageId}
+          uneditable={uneditable}
+          context={context}
+          editMode={editMode}
+        />
       ) : (
+        //   )}
+        // </>
         <ComponentContainer
           // the key is set in order to force rerendering when page change
           //(if not, if an error occures and the page's strucutre is the same it won't render the new component)
           key={pageId}
           path={realPath}
           componentType={componentName}
-          containerType={container?.type}
+          isContainer={container != null}
           context={context}
           vertical={container?.isVertical(
             wegasComponent.props as WegasComponentProps,
@@ -159,7 +159,7 @@ export function PageDeserializer({
           <WegasComponent
             path={realPath}
             componentType={componentName}
-            containerType={container?.type}
+            // isContainer={container?.type}
             context={context}
             Container={Container}
             containerPropsKeys={containerPropsKeys}
@@ -170,23 +170,23 @@ export function PageDeserializer({
             }
             dropzones={{ ...component.dropzones, ...dropzones }}
           >
-            {editMode && children.length === 0 ? (
+            {/* {editMode && children.length === 0 ? (
               <EmptyComponentContainer
                 path={realPath}
                 Container={Container}
                 dropzones={{ ...component.dropzones, ...dropzones }}
               />
-            ) : (
-              <Children
-                {...wegasComponent?.props}
-                nbChildren={nbChildren}
-                path={path ? path : []}
-                pageId={pageId}
-                uneditable={uneditable}
-                context={context}
-                editMode={editMode}
-              />
-            )}
+            ) : ( */}
+            <Children
+              {...wegasComponent?.props}
+              nbChildren={nbChildren}
+              path={realPath}
+              pageId={pageId}
+              uneditable={uneditable}
+              context={context}
+              editMode={editMode}
+            />
+            {/* )} */}
           </WegasComponent>
         </ComponentContainer>
       )}

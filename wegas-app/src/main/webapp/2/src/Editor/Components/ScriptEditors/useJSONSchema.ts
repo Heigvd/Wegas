@@ -4,7 +4,7 @@ import { SchemaPropsSchemas } from '../../../Components/PageComponents/tools/sch
 import { wegasComponentCommonSchema } from '../Page/ComponentProperties';
 import { hashListChoicesToSchema } from '../FormView/HashList';
 import {
-  layoutChoices,
+  // layoutChoices,
   layoutCommonChoices,
   layoutConditionnalChoices,
   actionsChoices,
@@ -21,6 +21,10 @@ export function useJSONSchema(enabled: boolean = true) {
   if (!enabled) {
     return {};
   }
+
+  const childrenSchemas = Object.values(components)
+    .filter(component => component.container != null)
+    .reduce((o, c) => [...o, ...c.container!.childrenSchema], []);
 
   const componentSchemas = Object.values(components).map(component => {
     const componentSchemaProperties = cloneDeep(
@@ -40,7 +44,8 @@ export function useJSONSchema(enabled: boolean = true) {
       ...wegasComponentCommonSchema,
       ...componentSchemaProperties,
       ...hashListChoicesToSchema([
-        ...Object.values(layoutChoices).reduce((o, c) => [...o, ...c], []),
+        // ...Object.values(layoutChoices).reduce((o, c) => [...o, ...c], []),
+        ...childrenSchemas,
         ...layoutCommonChoices,
       ]),
       ...hashListChoicesToSchema(layoutConditionnalChoices),
@@ -56,7 +61,7 @@ export function useJSONSchema(enabled: boolean = true) {
     return {
       type: 'object',
       required: ['type', 'props'],
-      containerType: component.container ? component.container.type : undefined,
+      isContainer: component.container != null,
       properties: {
         type: {
           type: 'string',
@@ -69,10 +74,11 @@ export function useJSONSchema(enabled: boolean = true) {
             ...wegasComponentCommonSchema,
             ...componentSchemaProperties,
             ...hashListChoicesToSchema([
-              ...Object.values(layoutChoices).reduce(
-                (o, c) => [...o, ...c],
-                [],
-              ),
+              // ...Object.values(layoutChoices).reduce(
+              //   (o, c) => [...o, ...c],
+              //   [],
+              // ),
+              ...childrenSchemas,
               ...layoutCommonChoices,
             ]),
             ...hashListChoicesToSchema(layoutConditionnalChoices),
@@ -85,9 +91,7 @@ export function useJSONSchema(enabled: boolean = true) {
   });
 
   return {
-    oneOf: componentSchemas.filter(
-      component => component.containerType != null,
-    ),
+    oneOf: componentSchemas.filter(component => component.isContainer),
     definitions: {
       ___self: {
         allOf: [

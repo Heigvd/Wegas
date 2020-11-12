@@ -9,13 +9,18 @@ import 'react-reflex/styles.css';
 import {
   defaultFonkyFlexLayoutPropsKeys,
   FonkyFlexContainer,
+  fonkyFlexContainerChoices,
   FonkyFlexContainerProps,
   FonkyFlexContent,
   FonkyFlexSplitter,
 } from '../../Layouts/FonkyFlex';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
-import { ChildrenDeserializerProps, WegasComponentProps } from '../tools/EditableComponent';
+import {
+  ChildrenDeserializerProps,
+  WegasComponentProps,
+} from '../tools/EditableComponent';
 import { PageDeserializer } from '../tools/PageDeserializer';
+import { EmptyComponentContainer } from './FlexList.component';
 
 const CONTENT_TYPE = 'LinearLayout';
 
@@ -26,8 +31,8 @@ export interface PlayerLinearLayoutChildrenProps {
 
 export interface PlayerLinearLayoutProps
   extends WegasComponentProps,
-  FonkyFlexContainerProps,
-  PlayerLinearLayoutChildrenProps {
+    FonkyFlexContainerProps,
+    PlayerLinearLayoutChildrenProps {
   children: React.ReactNode[];
 }
 
@@ -63,15 +68,23 @@ function PlayerLinearLayout({
   );
 }
 
-function isVertical(props?: PlayerLinearLayoutProps) { return props?.vertical === true }
+function isVertical(props?: PlayerLinearLayoutProps) {
+  return props?.vertical === true;
+}
 
-export function ChildrenDeserializer({ nbChildren, path, pageId, uneditable, context, noSplitter, noResize }: ChildrenDeserializerProps<PlayerLinearLayoutProps>) {
-
+export function ChildrenDeserializer({
+  nbChildren,
+  path,
+  pageId,
+  uneditable,
+  context,
+  noSplitter,
+  noResize,
+}: ChildrenDeserializerProps<PlayerLinearLayoutProps>) {
   const { editMode } = React.useContext(pageCTX);
 
-  const showSplitter =
-    (editMode || !noSplitter);
-  const allowResize = (editMode || !noResize);
+  const showSplitter = editMode || !noSplitter;
+  const allowResize = editMode || !noResize;
 
   const newChildren: JSX.Element[] = [];
   for (let i = 0; i < nbChildren; ++i) {
@@ -88,24 +101,30 @@ export function ChildrenDeserializer({ nbChildren, path, pageId, uneditable, con
       />,
     );
     if (showSplitter && i !== nbChildren - 1) {
-      newChildren.push(<FonkyFlexSplitter notDraggable={!allowResize} />)
+      newChildren.push(<FonkyFlexSplitter notDraggable={!allowResize} />);
     }
   }
-  return <>{newChildren}</>;
+  return (
+    <>
+      {editMode && nbChildren === 0 ? (
+        <EmptyComponentContainer Container={FonkyFlexContent} path={path} />
+      ) : (
+        newChildren
+      )}
+    </>
+  );
 }
-
 
 const test = pageComponentFactory({
   component: PlayerLinearLayout,
   componentType: 'Layout',
   container: {
-    type: 'LINEAR',
     isVertical,
-    ChildrenDeserializer
+    ChildrenDeserializer,
+    childrenSchema: fonkyFlexContainerChoices,
   },
   name: CONTENT_TYPE,
   icon: 'columns',
-  dropzones: {},
   schema: {
     vertical: schemaProps.boolean({ label: 'Vertical' }),
     noSplitter: schemaProps.boolean({ label: 'No splitter' }),

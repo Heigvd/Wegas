@@ -8,6 +8,7 @@ import {
   isVertical,
   FlexItem,
   defaultFlexLayoutOptionsKeys,
+  flexlayoutChoices,
 } from '../../Layouts/FlexList';
 import {
   registerComponent,
@@ -72,10 +73,10 @@ registerComponent(
     component: ForEach,
     componentType: 'Programmatic',
     container: {
-      type: 'FOREACH',
       isVertical,
       ChildrenDeserializer,
       noContainer,
+      childrenSchema: flexlayoutChoices,
     },
     name: 'For each',
     icon: 'code',

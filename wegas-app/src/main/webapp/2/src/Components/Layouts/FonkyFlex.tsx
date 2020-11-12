@@ -4,6 +4,8 @@ import { classNameOrEmpty } from '../../Helper/className';
 import { flex, flexColumn, flexRow, layoutStyle } from '../../css/classes';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
 import { themeVar } from '../Style/ThemeVars';
+import { HashListChoices } from '../../Editor/Components/FormView/HashList';
+import { schemaProps } from '../PageComponents/tools/schemaProps';
 
 const SPLITTER_SELECTOR = 'fonkyflex-splitter';
 const CONTENT_SELECTOR = 'fonkyflex-content';
@@ -269,6 +271,16 @@ export function FonkyFlexSplitter({
     />
   );
 }
+
+export const fonkyFlexContainerChoices: HashListChoices = [
+  {
+    label: 'Flex init value',
+    value: {
+      prop: 'flexInit',
+      schema: schemaProps.number({ label: 'Flex init value' }),
+    },
+  },
+];
 
 export const FonkyFlexContent = React.forwardRef<
   HTMLDivElement,

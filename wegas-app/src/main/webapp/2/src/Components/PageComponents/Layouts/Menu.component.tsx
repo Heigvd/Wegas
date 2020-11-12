@@ -10,6 +10,7 @@ import {
   menuSchema,
   MenuItem,
   defaultMenuItemKeys,
+  menuItemSchema,
 } from '../../Layouts/Menu';
 import { childrenDeserializerFactory } from './FlexList.component';
 import { classAndStyleShema } from '../tools/options';
@@ -34,12 +35,12 @@ registerComponent(
     component: PlayerMenu,
     componentType: 'Layout',
     container: {
-      type: 'MENU',
       isVertical,
       ChildrenDeserializer: childrenDeserializerFactory(
         MenuItem,
         defaultMenuItemKeys,
       ),
+      childrenSchema: menuItemSchema,
     },
     dropzones: {},
     name: 'Menu',

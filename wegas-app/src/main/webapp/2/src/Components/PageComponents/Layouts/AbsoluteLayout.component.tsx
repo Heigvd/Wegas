@@ -5,6 +5,7 @@ import {
 import {
   AbsoluteItem,
   AbsoluteLayout,
+  absolutelayoutChoices,
   defaultAbsoluteLayoutPropsKeys,
 } from '../../Layouts/Absolute';
 import { childrenDeserializerFactory } from './FlexList.component';
@@ -19,13 +20,14 @@ registerComponent(
     component: AbsoluteLayout,
     componentType: 'Layout',
     container: {
-      type: 'ABSOLUTE',
       isVertical,
       ChildrenDeserializer: childrenDeserializerFactory(
         AbsoluteItem,
         defaultAbsoluteLayoutPropsKeys,
         {},
+        () => null,
       ),
+      childrenSchema: absolutelayoutChoices,
     },
     name: 'AbsoluteLayout',
     icon: 'images',

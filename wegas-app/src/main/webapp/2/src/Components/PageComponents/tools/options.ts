@@ -10,9 +10,6 @@ import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 import { schemaProps } from './schemaProps';
 import { PlayerInfoBulletProps } from './InfoBullet';
-import { flexlayoutChoices } from '../../Layouts/FlexList';
-import { absolutelayoutChoices } from '../../Layouts/Absolute';
-import { ContainerTypes } from './EditableComponent';
 import { createScript } from '../../../Helper/wegasEntites';
 import { IScript } from 'wegas-ts-api';
 import { instantiate } from '../../../data/scriptable';
@@ -30,7 +27,6 @@ import {
   SSurveyDescriptor,
   SPeerReviewDescriptor,
 } from 'wegas-ts-api';
-import { menuItemSchema } from '../../Layouts/Menu';
 
 export interface WegasComponentOptionsAction {
   priority?: number;
@@ -559,21 +555,20 @@ export type WegasComponentExtra = WegasComponentLayoutCommonOptions &
   WegasComponentLayoutConditionnalOptions &
   WegasComponentDecorations;
 
-export const layoutChoices = {
-  FLEX: flexlayoutChoices,
-  LINEAR: [],
-  ABSOLUTE: absolutelayoutChoices,
-  MENU: menuItemSchema,
-  FOREACH: flexlayoutChoices,
-};
+// export const layoutChoices = {
+//   FLEX: flexlayoutChoices,
+//   LINEAR: [],
+//   ABSOLUTE: absolutelayoutChoices,
+//   MENU: menuItemSchema,
+//   FOREACH: flexlayoutChoices,
+// };
 
-export const wegasComponentExtraSchema = (containerType: ContainerTypes) => ({
+export const wegasComponentExtraSchema = (
+  childrenSchema: HashListChoices = [],
+) => ({
   layoutOptions: schemaProps.hashlist({
     label: 'Layout options',
-    choices: [
-      ...(containerType ? layoutChoices[containerType] : []),
-      ...layoutCommonChoices,
-    ],
+    choices: [...childrenSchema, ...layoutCommonChoices],
     objectViewStyle: true,
   }),
   layoutConditions: schemaProps.hashlist({

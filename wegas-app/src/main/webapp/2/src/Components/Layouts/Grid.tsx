@@ -52,7 +52,7 @@ export const defaultFlexLayoutOptionsKeys = Object.keys(
   defaultFlexLayoutOptions,
 ) as (keyof GridItemLayoutProps)[];
 
-export const flexlayoutChoices: HashListChoices = [
+export const gridItemChoices: HashListChoices = [
   {
     label: 'Column start',
     value: {
@@ -117,7 +117,7 @@ const flexItemDefaultStyle = css({
   padding: '5px',
 });
 
-export interface FlexItemProps
+export interface GridItemProps
   extends WegasComponentItemProps,
     GridItemLayoutProps {
   /**
@@ -130,7 +130,7 @@ export interface FlexItemProps
   onMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
-export const GridItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
+export const GridItem = React.forwardRef<HTMLDivElement, GridItemProps>(
   (
     {
       onClick,

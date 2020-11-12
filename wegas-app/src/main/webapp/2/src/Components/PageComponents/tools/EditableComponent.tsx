@@ -46,6 +46,7 @@ import { defaultMenuItemKeys } from '../../Layouts/Menu';
 import { parseAndRunClientScript } from '../../Hooks/useScript';
 import { IScript } from 'wegas-ts-api';
 import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
+import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {
@@ -142,7 +143,7 @@ const checkIfInsideRectangle = (
  * useDndComponentDrop - it's a hook that normalize the usage of useDrop in the different dropable zone used in this file
  * @param onDrop - the function to trigger when a drop occures
  */
-function useDndComponentDrop(
+export function useDndComponentDrop(
   onDrop?: (
     dndComponnent: PageEditorComponent,
     dndMonitor: DropTargetMonitor,
@@ -265,7 +266,7 @@ interface ComponentDropZoneProps {
   dropPosition: 'BEFORE' | 'AFTER' | 'INTO';
 }
 
-function ComponentDropZone({
+export function ComponentDropZone({
   onDrop,
   show,
   dropPosition,
@@ -284,6 +285,9 @@ function ComponentDropZone({
       style={{
         ...(show ? {} : { display: 'none' }),
         position: 'absolute',
+        ...(dropPosition === 'AFTER'
+          ? { right: 0, bottom: 0 }
+          : { left: 0, top: 0 }),
       }}
     />
   );
@@ -340,21 +344,10 @@ export interface WegasComponentItemProps extends ClassAndStyle {
   tooltip?: string;
 }
 
-/**
- * ContainerTypes - the types of layouts that can be used in a page
- */
-export type ContainerTypes =
-  | 'FLEX'
-  | 'LINEAR'
-  | 'ABSOLUTE'
-  | 'MENU'
-  | 'FOREACH'
-  | undefined;
-
 export type ChildrenDeserializerProps<P = {}> = P & {
   editMode: boolean;
   nbChildren: number;
-  path?: number[];
+  path: number[];
   pageId?: string;
   uneditable?: boolean;
   context?: { [exposeAs: string]: any };
@@ -364,10 +357,10 @@ export type ChildrenDeserializerProps<P = {}> = P & {
  * ContainerComponent - Defines the type and management of a container component
  */
 export interface ContainerComponent<P = {}> {
-  type: ContainerTypes;
   isVertical: (props?: P) => boolean | undefined;
   ChildrenDeserializer: React.FunctionComponent<ChildrenDeserializerProps<P>>;
   noContainer?: (props?: P) => boolean | undefined;
+  childrenSchema: HashListChoices;
 }
 
 /**
@@ -412,7 +405,7 @@ export interface PageComponentProps extends EmptyPageComponentProps {
   /**
    * containerType - the container type of the component
    */
-  containerType: ContainerTypes;
+  isContainer?: boolean;
 }
 
 export type WegasComponentOptions = WegasComponentOptionsActions &
@@ -453,7 +446,7 @@ const pageDispatch = pagesStateStore.dispatch;
 export function ComponentContainer({
   componentType,
   path,
-  containerType,
+  isContainer,
   name,
   layout,
   vertical,
@@ -614,10 +607,10 @@ export function ComponentContainer({
           container.current = ref;
         }
       }}
-      {...pick(options, containerPropsKeys)}
+      {...pick(restProps, containerPropsKeys)}
       className={
         cx(handleControlStyle, flex, options.themeModeClassName, {
-          [showBordersStyle]: showBorders && containerType != null,
+          [showBordersStyle]: showBorders && isContainer,
           [hoverColorInsetShadow]: editMode && isSelected,
           [cx(foregroundContent, thinHoverColorInsetShadow)]: isFocused,
           [childDropzoneHorizontalStyle]: !vertical,
@@ -693,23 +686,12 @@ export function EmptyComponentContainer({
   Container,
   dropzones,
 }: EmptyPageComponentProps) {
-  const container = React.useRef<HTMLDivElement>();
-
   const [{ isOver }, dropZone] = useDndComponentDrop();
 
   const { onDrop, editMode } = React.useContext(pageCTX);
 
   return (
-    <Container
-      ref={ref => {
-        dropZone(ref);
-        if (ref != null) {
-          container.current = ref;
-        }
-      }}
-      className={flex}
-      style={emptyLayoutItemStyle}
-    >
+    <Container ref={dropZone} className={flex} style={emptyLayoutItemStyle}>
       {editMode && !dropzones.center && (
         <ComponentDropZone
           onDrop={dndComponent => {
