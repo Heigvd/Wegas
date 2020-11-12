@@ -15,12 +15,10 @@ import {
   hoverColorInsetShadow,
   thinHoverColorInsetShadow,
 } from '../../../css/classes';
-import { defaultFlexLayoutOptionsKeys } from '../../Layouts/FlexList';
 import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
 import { useDebounce } from '../../Hooks/useDebounce';
 import { pick } from 'lodash-es';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { defaultFonkyFlexLayoutPropsKeys } from '../../Layouts/FonkyFlex';
 import {
   pagesStateStore,
   usePagesStateStore,
@@ -35,18 +33,15 @@ import {
   WegasComponentOptionsAction,
   wegasComponentActions,
 } from './options';
-import { defaultAbsoluteLayoutPropsKeys } from '../../Layouts/Absolute';
 import { PlayerInfoBullet } from './InfoBullet';
 import { EditHandle } from './EditHandle';
 import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayout';
 import { OptionsState } from './OptionsComponent';
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
 import { themeVar } from '../../Style/ThemeVars';
-import { defaultMenuItemKeys } from '../../Layouts/Menu';
 import { parseAndRunClientScript } from '../../Hooks/useScript';
 import { IScript } from 'wegas-ts-api';
 import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
-import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {
@@ -95,17 +90,6 @@ const disabledStyle = css({
   opacity: 0.5,
   backgroundColor: themeVar.Common.colors.DisabledColor,
 });
-
-const emptyLayoutItemStyle: React.CSSProperties = {
-  textAlign: 'center',
-  verticalAlign: 'middle',
-  borderStyle: 'solid',
-  borderWidth: '1px',
-  width: '100px',
-  height: 'fit-content',
-  overflowWrap: 'normal',
-  zIndex: 0,
-};
 
 const showBordersStyle = css({
   borderStyle: 'solid',
@@ -344,25 +328,6 @@ export interface WegasComponentItemProps extends ClassAndStyle {
   tooltip?: string;
 }
 
-export type ChildrenDeserializerProps<P = {}> = P & {
-  editMode: boolean;
-  nbChildren: number;
-  path: number[];
-  pageId?: string;
-  uneditable?: boolean;
-  context?: { [exposeAs: string]: any };
-};
-
-/**
- * ContainerComponent - Defines the type and management of a container component
- */
-export interface ContainerComponent<P = {}> {
-  isVertical: (props?: P) => boolean | undefined;
-  ChildrenDeserializer: React.FunctionComponent<ChildrenDeserializerProps<P>>;
-  noContainer?: (props?: P) => boolean | undefined;
-  childrenSchema: HashListChoices;
-}
-
 /**
  * DropZones - the different zones in which a component can be dropped
  */
@@ -376,10 +341,6 @@ export interface DropZones {
  */
 export interface EmptyPageComponentProps {
   /**
-   * path - the path of the current component
-   */
-  path: number[];
-  /**
    * context - data that can be generated with programmatic components
    */
   context?: {
@@ -389,10 +350,6 @@ export interface EmptyPageComponentProps {
    * Container - the container that is used to wrap the component
    */
   Container: ItemContainer;
-  /**
-   * dropzones - the dropzone to enable when a component is dragged over
-   */
-  dropzones: DropZones;
 }
 /**
  * PageComponentProps - The props that are needed by the ComponentContainer
@@ -406,6 +363,14 @@ export interface PageComponentProps extends EmptyPageComponentProps {
    * containerType - the container type of the component
    */
   isContainer?: boolean;
+  /**
+   * dropzones - the dropzone to enable when a component is dragged over
+   */
+  dropzones: DropZones;
+  /**
+   * path - the path of the current component
+   */
+  path: number[];
 }
 
 export type WegasComponentOptions = WegasComponentOptionsActions &
@@ -429,15 +394,9 @@ export type ItemContainer = React.ForwardRefExoticComponent<
   } & React.RefAttributes<HTMLDivElement>
 >;
 
-export type ItemContainerPropsKeys =
-  | typeof defaultAbsoluteLayoutPropsKeys
-  | typeof defaultFlexLayoutOptionsKeys
-  | typeof defaultMenuItemKeys
-  | typeof defaultFonkyFlexLayoutPropsKeys;
-
 interface ComponentContainerProps extends WegasComponentProps {
   vertical?: boolean;
-  containerPropsKeys?: ItemContainerPropsKeys;
+  containerPropsKeys?: string[];
   options: OptionsState;
 }
 
@@ -677,31 +636,6 @@ export function ComponentContainer({
         />
       )}
       <LockedOverlay locked={(options.disabled || options.locked) === true} />
-    </Container>
-  );
-}
-
-export function EmptyComponentContainer({
-  path,
-  Container,
-  dropzones,
-}: EmptyPageComponentProps) {
-  const [{ isOver }, dropZone] = useDndComponentDrop();
-
-  const { onDrop, editMode } = React.useContext(pageCTX);
-
-  return (
-    <Container ref={dropZone} className={flex} style={emptyLayoutItemStyle}>
-      {editMode && !dropzones.center && (
-        <ComponentDropZone
-          onDrop={dndComponent => {
-            onDrop(dndComponent, path);
-          }}
-          show={isOver}
-          dropPosition="INTO"
-        />
-      )}
-      The layout is empty, drop components in to fill it!
     </Container>
   );
 }

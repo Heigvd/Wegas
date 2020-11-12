@@ -7,7 +7,6 @@ import { useAnyStore } from '../../Hooks/storeHookFactory';
 import {
   WegasComponentProps,
   PageComponentProps,
-  ContainerComponent,
   DropZones,
 } from './EditableComponent';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
@@ -16,6 +15,9 @@ import {
   IVariableDescriptor,
   WegasClassNameAndScriptableTypes,
 } from 'wegas-ts-api';
+import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
+import { ChildrenDeserializerProps } from './PageDeserializer';
+import { classAndStyleShema } from './options';
 
 export const componentTypes = [
   'Other',
@@ -27,6 +29,16 @@ export const componentTypes = [
 ] as const;
 
 export type ComponentType = typeof componentTypes[number];
+
+/**
+ * ContainerComponent - Defines the type and management of a container component
+ */
+export interface ContainerComponent<P = {}> {
+  isVertical: (props?: P) => boolean | undefined;
+  ChildrenDeserializer: React.FunctionComponent<ChildrenDeserializerProps<P>>;
+  noContainer?: (props?: P) => boolean | undefined;
+  childrenSchema: HashListChoices;
+}
 
 export interface PageComponent<
   P extends WegasComponentProps = WegasComponentProps,
@@ -155,7 +167,7 @@ export function pageComponentFactory<
     : {
         getComputedPropsFromVariable: (
           variable?: WegasClassNameAndScriptableTypes[T],
-        ) => Omit<P, keyof PageComponentProps>;
+        ) => Omit<P, keyof PageComponentProps> & { children: WegasComponent[] };
       }),
 ): PageComponent<P> {
   return {
@@ -167,7 +179,7 @@ export function pageComponentFactory<
     componentName: param.name,
     schema: {
       description: param.name,
-      properties: param.schema,
+      properties: { ...classAndStyleShema, ...param.schema },
     },
     allowedVariables: param.allowedVariables,
     getComputedPropsFromVariable: param.getComputedPropsFromVariable,

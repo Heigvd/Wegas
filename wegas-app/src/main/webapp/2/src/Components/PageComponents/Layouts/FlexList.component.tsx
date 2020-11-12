@@ -13,20 +13,22 @@ import {
   flexlayoutChoices,
 } from '../../Layouts/FlexList';
 import {
-  ChildrenDeserializerProps,
   ComponentDropZone,
   DropZones,
   ItemContainer,
-  ItemContainerPropsKeys,
   useDndComponentDrop,
   WegasComponentProps,
 } from '../tools/EditableComponent';
-import { PageDeserializer } from '../tools/PageDeserializer';
+import {
+  ChildrenDeserializerProps,
+  PageDeserializer,
+} from '../tools/PageDeserializer';
 import { classAndStyleShema } from '../tools/options';
-import { flex } from '../../../css/classes';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import { css } from 'emotion';
 
-const emptyLayoutItemStyle: React.CSSProperties = {
+export const emptyLayoutItemStyle = css({
+  display: 'flex',
   textAlign: 'center',
   verticalAlign: 'middle',
   borderStyle: 'solid',
@@ -35,7 +37,7 @@ const emptyLayoutItemStyle: React.CSSProperties = {
   height: 'fit-content',
   overflowWrap: 'normal',
   zIndex: 0,
-};
+});
 
 interface PlayerFlexListProps extends FlexListProps, WegasComponentProps {
   /**
@@ -70,18 +72,24 @@ export interface EmptyPageComponentProps {
    * Container - the container that is used to wrap the component
    */
   Container: ItemContainer;
+  /**
+   * content - the content of the container
+   * default :
+   */
+  content?: React.ReactNode;
 }
 
 export function EmptyComponentContainer({
   path,
   Container,
+  content = 'The layout is empty, drop components in to fill it!',
 }: EmptyPageComponentProps) {
   const [{ isOver }, dropZone] = useDndComponentDrop();
 
   const { onDrop } = React.useContext(pageCTX);
 
   return (
-    <Container ref={dropZone} className={flex} style={emptyLayoutItemStyle}>
+    <Container ref={dropZone} className={emptyLayoutItemStyle}>
       <ComponentDropZone
         onDrop={dndComponent => {
           onDrop(dndComponent, path);
@@ -89,48 +97,46 @@ export function EmptyComponentContainer({
         show={isOver}
         dropPosition="INTO"
       />
-      The layout is empty, drop components in to fill it!
+      {content}
     </Container>
   );
 }
 
 export function childrenDeserializerFactory(
   Container: ItemContainer = FlexItem,
-  containerPropsKeys: ItemContainerPropsKeys = defaultFlexLayoutOptionsKeys,
+  containerPropsKeys: string[] = defaultFlexLayoutOptionsKeys,
   dropzones: DropZones = flexListItemDropZones,
   EmptyContainer: React.FunctionComponent<
     EmptyPageComponentProps
   > = EmptyComponentContainer,
 ) {
   return function ChildrenDeserializer({
-    nbChildren,
+    wegasChildren,
     path,
     pageId,
     uneditable,
     context,
     editMode,
   }: ChildrenDeserializerProps<{}>) {
-    const newChildren: JSX.Element[] = [];
-    for (let i = 0; i < nbChildren; ++i) {
-      newChildren.push(
-        <PageDeserializer
-          key={JSON.stringify([...path, i])}
-          pageId={pageId}
-          path={[...path, i]}
-          uneditable={uneditable}
-          context={context}
-          Container={Container}
-          containerPropsKeys={containerPropsKeys}
-          dropzones={dropzones}
-        />,
-      );
-    }
     return (
       <>
-        {editMode && nbChildren === 0 ? (
+        {editMode && (!wegasChildren || wegasChildren.length === 0) ? (
           <EmptyContainer Container={Container} path={path} />
         ) : (
-          newChildren
+          wegasChildren?.map((_c, i) => {
+            return (
+              <PageDeserializer
+                key={JSON.stringify([...path, i])}
+                pageId={pageId}
+                path={[...path, i]}
+                uneditable={uneditable}
+                context={context}
+                Container={Container}
+                containerPropsKeys={containerPropsKeys}
+                dropzones={dropzones}
+              />
+            );
+          })
         )}
       </>
     );

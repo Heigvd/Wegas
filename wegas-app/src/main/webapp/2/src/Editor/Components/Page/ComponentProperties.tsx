@@ -1,7 +1,10 @@
 import * as React from 'react';
 import { flex, flexColumn, grow } from '../../../css/classes';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
-import { usePageComponentStore } from '../../../Components/PageComponents/tools/componentFactory';
+import {
+  ContainerComponent,
+  usePageComponentStore,
+} from '../../../Components/PageComponents/tools/componentFactory';
 import { cx } from 'emotion';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { BaseView, Schema } from 'jsoninput/typings/types';
@@ -30,7 +33,6 @@ import {
   defaultAbsoluteLayoutPropsKeys,
 } from '../../../Components/Layouts/Absolute';
 import { pick, omit } from 'lodash-es';
-import { ContainerComponent } from '../../../Components/PageComponents/tools/EditableComponent';
 
 /**
  * wegasComponentCommonSchema - defines the minimum schema for every WegasComponent

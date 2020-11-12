@@ -21,6 +21,7 @@ interface PageIndex {
 
 interface WegasComponent {
   type: string;
+  undeletable?: boolean;
   props: {
     children?: WegasComponent[];
     [prop: string]: any;

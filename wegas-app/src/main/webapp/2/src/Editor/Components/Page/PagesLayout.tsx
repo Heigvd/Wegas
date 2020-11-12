@@ -475,17 +475,19 @@ function WegasComponentTitle({
           className={CONTROLS_CLASSNAME}
         />
       )}
-      <ConfirmButton
-        icon="trash"
-        onAction={success => success && onDelete(pageId, page, componentPath)}
-        disabled={componentPath.length === 0}
-        tooltip={
-          componentPath.length === 0
-            ? 'The first component of a page connot be deleted'
-            : 'Delete the component'
-        }
-        className={CONTROLS_CLASSNAME}
-      />
+      {!component.undeletable && (
+        <ConfirmButton
+          icon="trash"
+          onAction={success => success && onDelete(pageId, page, componentPath)}
+          disabled={componentPath.length === 0}
+          tooltip={
+            componentPath.length === 0
+              ? 'The first component of a page connot be deleted'
+              : 'Delete the component'
+          }
+          className={CONTROLS_CLASSNAME}
+        />
+      )}
     </LayoutNodeTitle>
   );
 }
@@ -512,8 +514,18 @@ function WegasComponentNode({
   const page = useStore(s => s.pages[pageId], deepDifferent);
   const id: ComponentNodeId = { pageId, page, componentPath };
   const parentProps = getParentProps();
+  let computedComponent: WegasComponent;
 
-  if (!isWegasComponent(component)) {
+  if (component === undefined) {
+    computedComponent = {
+      type: 'Undefined',
+      props: {},
+    };
+  } else {
+    computedComponent = component;
+  }
+
+  if (!isWegasComponent(computedComponent)) {
     return (
       <LayoutNodeTitle
         icon="exclamation-circle"
@@ -527,7 +539,7 @@ function WegasComponentNode({
       {...parentProps}
       title={
         <WegasComponentTitle
-          component={component}
+          component={computedComponent}
           componentControls={componentControls}
           componentPath={componentPath}
           page={page}
@@ -546,13 +558,14 @@ function WegasComponentNode({
       ]}
       noDrag={componentPath.length === 0}
       noDrop={
-        component.props?.children == null ||
-        (component.props.children.length === 1 && component.type === 'For each')
+        computedComponent.props?.children == null ||
+        (computedComponent.props.children.length === 1 &&
+          computedComponent.type === 'For each')
       }
     >
-      {component.props?.children
+      {computedComponent.props?.children
         ? getParentProps =>
-            component.props?.children?.map((childComponent, i) => (
+            computedComponent.props?.children?.map((childComponent, i) => (
               <WegasComponentNode
                 key={compToKey(childComponent, [...componentPath, i])}
                 getParentProps={getParentProps}

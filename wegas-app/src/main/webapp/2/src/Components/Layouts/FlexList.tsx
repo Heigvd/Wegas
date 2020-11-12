@@ -109,7 +109,7 @@ const flexItemDefaultStyle = css({
 
 export interface FlexItemProps
   extends WegasComponentItemProps,
-    FlexItemLayoutProps {
+    React.PropsWithChildren<FlexItemLayoutProps> {
   /**
    * onMouseOut - triggers when the mouse is not more over the element
    */

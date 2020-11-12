@@ -15,11 +15,11 @@ import {
   FonkyFlexSplitter,
 } from '../../Layouts/FonkyFlex';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import { WegasComponentProps } from '../tools/EditableComponent';
 import {
   ChildrenDeserializerProps,
-  WegasComponentProps,
-} from '../tools/EditableComponent';
-import { PageDeserializer } from '../tools/PageDeserializer';
+  PageDeserializer,
+} from '../tools/PageDeserializer';
 import { EmptyComponentContainer } from './FlexList.component';
 
 const CONTENT_TYPE = 'LinearLayout';
@@ -73,7 +73,7 @@ function isVertical(props?: PlayerLinearLayoutProps) {
 }
 
 export function ChildrenDeserializer({
-  nbChildren,
+  wegasChildren,
   path,
   pageId,
   uneditable,
@@ -86,30 +86,31 @@ export function ChildrenDeserializer({
   const showSplitter = editMode || !noSplitter;
   const allowResize = editMode || !noResize;
 
-  const newChildren: JSX.Element[] = [];
-  for (let i = 0; i < nbChildren; ++i) {
-    newChildren.push(
-      <PageDeserializer
-        key={JSON.stringify([...(path ? path : []), i])}
-        pageId={pageId}
-        path={[...(path ? path : []), i]}
-        uneditable={uneditable}
-        context={context}
-        Container={FonkyFlexContent}
-        containerPropsKeys={defaultFonkyFlexLayoutPropsKeys}
-        dropzones={{ side: true }}
-      />,
-    );
-    if (showSplitter && i !== nbChildren - 1) {
-      newChildren.push(<FonkyFlexSplitter notDraggable={!allowResize} />);
-    }
-  }
   return (
     <>
-      {editMode && nbChildren === 0 ? (
+      {editMode && (!wegasChildren || wegasChildren.length === 0) ? (
         <EmptyComponentContainer Container={FonkyFlexContent} path={path} />
       ) : (
-        newChildren
+        showSplitter &&
+        wegasChildren?.map((_c, i, arr) => {
+          return (
+            <>
+              <PageDeserializer
+                key={JSON.stringify([...(path ? path : []), i])}
+                pageId={pageId}
+                path={[...(path ? path : []), i]}
+                uneditable={uneditable}
+                context={context}
+                Container={FonkyFlexContent}
+                containerPropsKeys={defaultFonkyFlexLayoutPropsKeys}
+                dropzones={{ side: true }}
+              />
+              {showSplitter && i < arr.length - 1 && (
+                <FonkyFlexSplitter notDraggable={!allowResize} />
+              )}
+            </>
+          );
+        })
       )}
     </>
   );
