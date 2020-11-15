@@ -626,7 +626,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                         cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                         on: {
                             click: Y.bind(function() {
-                                var editor = this.get(PARENT), state = this.get(ENTITY).toObject("id",
+                                var editor = this.get(PARENT), state = this.get(ENTITY).toObject("id", "refId",
                                     "transitions"), newNode;
                                 state.x += 10;
                                 state.y += 10;
@@ -887,7 +887,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                         cssClass: Plugin.EditEntityAction.getStackedIconClass(),
                         on: {
                             click: Y.bind(function() {
-                                var entity = this.get(ENTITY).toObject("id"), tr;
+                                var entity = this.get(ENTITY).toObject("id", "refId"), tr;
                                 tr = this.get(PARENT).addTransition(this.getTargetState(),
                                     new Transition({entity: new Wegas.persistence[entity["@class"]](entity)})
                                     );
