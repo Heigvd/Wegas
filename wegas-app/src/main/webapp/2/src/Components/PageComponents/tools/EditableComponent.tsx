@@ -426,7 +426,6 @@ export function ComponentContainer({
   const mouseOver = React.useRef<boolean>(false);
   const [dragHoverState, setDragHoverState] = React.useState<boolean>(false);
   const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
-  // const [options, setoptions] = React.useState<OptionsState>({});
 
   const {
     onDrop,

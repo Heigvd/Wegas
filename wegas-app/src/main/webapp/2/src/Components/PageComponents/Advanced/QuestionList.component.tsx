@@ -28,10 +28,14 @@ interface QuestionListDisplayProps extends WegasComponentProps {
 
 export default function QuestionListDisplay({
   questionList,
+  context,
 }: QuestionListDisplayProps) {
   const entities = useStore(() => {
     // TODO add support for arrays of list/question
-    const descriptor = safeClientScriptEval<SListDescriptor>(questionList);
+    const descriptor = safeClientScriptEval<SListDescriptor>(
+      questionList,
+      context,
+    );
 
     if (descriptor == null || descriptor.getName() == null) {
       return [];

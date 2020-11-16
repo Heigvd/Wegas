@@ -104,6 +104,7 @@ export const flexlayoutChoices: HashListChoices = [
 ];
 
 const flexItemDefaultStyle = css({
+  position: 'relative',
   padding: '5px',
 });
 
@@ -152,7 +153,7 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
         onDragEnd={onDragEnd}
         className={flexItemDefaultStyle + classNameOrEmpty(className)}
         style={{
-          position: 'relative',
+          // position: 'relative',
           ...layout,
           ...style,
         }}

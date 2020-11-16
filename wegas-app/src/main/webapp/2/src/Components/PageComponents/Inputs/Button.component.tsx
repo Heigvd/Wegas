@@ -28,8 +28,9 @@ function PlayerButton({
   className,
   icon,
   prefixedLabel,
+  context,
 }: PlayerButtonProps) {
-  const translation = useScript<string>(label) || '';
+  const translation = useScript<string>(label, context) || '';
   return (
     <Button
       onClick={() =>

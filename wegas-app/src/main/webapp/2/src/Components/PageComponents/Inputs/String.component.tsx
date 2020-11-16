@@ -27,13 +27,13 @@ interface PlayerStringInput extends WegasComponentProps {
 }
 
 function PlayerStringInput(props: PlayerStringInput) {
-  const placeholder = useScript<string>(props.placeholder);
-  const { content, instance, notFound } = useComponentScript<IStringDescriptor>(
-    props.script,
-  );
+  const placeholder = useScript<string>(props.placeholder, props.context);
+  const { descriptor, instance, notFound } = useComponentScript<
+    IStringDescriptor
+  >(props.script);
 
-  const disabled = useScript<boolean>(props.disableIf);
-  const readOnly = useScript<boolean>(props.readOnlyIf);
+  const disabled = useScript<boolean>(props.disableIf, props.context);
+  const readOnly = useScript<boolean>(props.readOnlyIf, props.context);
   const value = useTranslate(instance?.trValue);
 
   return notFound ? (
@@ -42,7 +42,11 @@ function PlayerStringInput(props: PlayerStringInput) {
     <SimpleInput
       value={value}
       onChange={v => {
-        store.dispatch(runScript(`${content}.setValue(self, '${v}');`));
+        store.dispatch(
+          runScript(
+            `Variable.find(gameModel,"${descriptor?.getName()}").setValue(self, '${v}');`,
+          ),
+        );
       }}
       disabled={disabled}
       readOnly={readOnly}

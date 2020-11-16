@@ -28,6 +28,7 @@ const defaultPageAsScript = () =>
 function PlayerPageLoader({
   initialSelectedPageId = defaultPageAsScript(),
   name,
+  context,
 }: PlayerPageLoaderProps) {
   let pageScript = useStore(s => {
     if (name != null) {
@@ -44,7 +45,7 @@ function PlayerPageLoader({
     );
     pageScript = initialSelectedPageId;
   }
-  const pageId = (useScript(pageScript) as string | undefined) || '';
+  const pageId = (useScript(pageScript, context) as string | undefined) || '';
 
   return pageIdPath.includes(pageId) ? (
     <pre>Page {pageId} recursion</pre>

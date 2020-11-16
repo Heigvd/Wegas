@@ -43,13 +43,14 @@ function PlayerBoolean({
   label,
   disabled,
   inactive,
+  context,
 }: PlayerBooleanProps) {
   const {
     content: valueScript,
     instance: valueInstance,
     notFound: valueNotFound,
   } = useComponentScript<IBooleanDescriptor>(value);
-  const strLabel = useScript<string>(label);
+  const strLabel = useScript<string>(label, context);
 
   const BooleanComponent = type === 'toggler' ? Toggler : CheckBox;
 

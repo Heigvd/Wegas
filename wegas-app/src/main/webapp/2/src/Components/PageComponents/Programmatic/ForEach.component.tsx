@@ -43,7 +43,7 @@ function ChildrenDeserializer({
   editMode,
   wegasChildren,
 }: ChildrenDeserializerProps<ForEachProps>) {
-  const items = useScript<object[]>(getItemsFn);
+  const items = useScript<object[]>(getItemsFn, context);
   let children: JSX.Element[] = [];
 
   if (items) {

@@ -44,10 +44,15 @@ export function PageLoader({
             className={cx(flex, { [editStyle]: displayFrame }, expandHeight)}
           >
             {selectedPage ? (
-              <PageDeserializer pageId={selectedPageId} Container={FlexItem} dropzones={{}} />
+              <PageDeserializer
+                pageId={selectedPageId}
+                Container={FlexItem}
+                dropzones={{}}
+                context={{}}
+              />
             ) : (
-                <pre>{`The page is undefined`}</pre>
-              )}
+              <pre>{`The page is undefined`}</pre>
+            )}
           </div>
         </React.Suspense>
       </ThemeProvider>
