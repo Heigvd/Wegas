@@ -23,11 +23,11 @@ registerComponent(
       isVertical,
       ChildrenDeserializer: childrenDeserializerFactory(
         AbsoluteItem,
-        defaultAbsoluteLayoutPropsKeys,
         {},
         () => null,
       ),
       childrenSchema: absolutelayoutChoices,
+      childrenLayoutKeys: defaultAbsoluteLayoutPropsKeys,
     },
     name: 'AbsoluteLayout',
     icon: 'images',

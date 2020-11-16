@@ -123,6 +123,7 @@ const test = pageComponentFactory({
     isVertical,
     ChildrenDeserializer,
     childrenSchema: fonkyFlexContainerChoices,
+    childrenLayoutKeys: defaultFonkyFlexLayoutPropsKeys,
   },
   name: CONTENT_TYPE,
   icon: 'columns',

@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
-import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
+import {
+  createComponent,
+  deleteComponent,
+  pageCTX,
+} from '../../../Editor/Components/Page/PageEditor';
 import { useScript } from '../../Hooks/useScript';
 import { emptyLayoutItemStyle } from '../Layouts/FlexList.component';
 import {
@@ -18,11 +22,16 @@ import {
 } from '../tools/PageDeserializer';
 import { schemaProps } from '../tools/schemaProps';
 import { FlexItem, defaultFlexLayoutOptionsKeys } from '../../Layouts/FlexList';
+import { findComponent } from '../../../Helper/pages';
 
 const IfChildrenType = 'If component';
-const emptyIfChildren = { type: IfChildrenType, props: {}, undeletable: true };
+const emptyIfChildren: WegasComponent = {
+  type: IfChildrenType,
+  props: {},
+  undeletable: true,
+};
 const ElseChildrenType = 'Else component';
-const emptyElseChildren = {
+const emptyElseChildren: WegasComponent = {
   type: ElseChildrenType,
   props: {},
   undeletable: true,
@@ -39,14 +48,19 @@ export function EmptyComponentContainer({
 }: EmptyCompoentContainerProps) {
   const [{ isOver }, dropZone] = useDndComponentDrop();
 
-  const { onDelete, onDrop } = React.useContext(pageCTX);
+  const { onDrop } = React.useContext(pageCTX);
 
   return (
     <FlexItem ref={dropZone} className={emptyLayoutItemStyle}>
       <ComponentDropZone
         onDrop={dndComponent => {
-          onDelete([...path, condition === 'IF' ? 0 : 1]);
-          onDrop(dndComponent, path, condition === 'IF' ? 0 : 1);
+          onDrop(
+            dndComponent,
+            path,
+            condition === 'IF' ? 0 : 1,
+            undefined,
+            true,
+          );
         }}
         show={isOver}
         dropPosition="INTO"
@@ -56,6 +70,26 @@ export function EmptyComponentContainer({
         : 'Drop the component to display when the condition is false'}
     </FlexItem>
   );
+}
+
+function deleteChildren(page: WegasComponent, path: number[]) {
+  const { component } = findComponent(page, path);
+
+  const index = path.slice(-1)[0];
+  const deletedCompPage = deleteComponent(page, path);
+  if (
+    deletedCompPage != null &&
+    component?.type !== IfChildrenType &&
+    component?.type !== ElseChildrenType
+  ) {
+    return createComponent(
+      deletedCompPage,
+      path.slice(0, -1),
+      index === 0 ? IfChildrenType : ElseChildrenType,
+      undefined,
+      index,
+    )?.newPage;
+  }
 }
 
 function ChildrenDeserializer({
@@ -144,11 +178,12 @@ registerComponent(
       ChildrenDeserializer,
       childrenSchema: [],
       noContainer: () => true,
+      deleteChildren,
     },
     name: 'If Else',
     icon: 'code',
     schema: {
-      ifCondition: schemaProps.boolean({ label: 'If condition' }),
+      ifCondition: schemaProps.script({ label: 'If condition', mode: 'GET' }),
     },
     getComputedPropsFromVariable: () => ({
       children: [emptyIfChildren, emptyElseChildren],

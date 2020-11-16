@@ -9,8 +9,8 @@ import {
   flexListSchema,
   isVertical,
   FlexItem,
-  defaultFlexLayoutOptionsKeys,
   flexlayoutChoices,
+  defaultFlexLayoutOptionsKeys,
 } from '../../Layouts/FlexList';
 import {
   ComponentDropZone,
@@ -104,7 +104,6 @@ export function EmptyComponentContainer({
 
 export function childrenDeserializerFactory(
   Container: ItemContainer = FlexItem,
-  containerPropsKeys: string[] = defaultFlexLayoutOptionsKeys,
   dropzones: DropZones = flexListItemDropZones,
   EmptyContainer: React.FunctionComponent<
     EmptyPageComponentProps
@@ -117,6 +116,7 @@ export function childrenDeserializerFactory(
     uneditable,
     context,
     editMode,
+    containerPropsKeys,
   }: ChildrenDeserializerProps<{}>) {
     return (
       <>
@@ -151,6 +151,7 @@ registerComponent(
       isVertical,
       ChildrenDeserializer: childrenDeserializerFactory(),
       childrenSchema: flexlayoutChoices,
+      childrenLayoutKeys: defaultFlexLayoutOptionsKeys,
     },
     name: 'FlexList',
     icon: 'bars',

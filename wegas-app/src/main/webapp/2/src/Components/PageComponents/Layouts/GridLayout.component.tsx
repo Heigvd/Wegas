@@ -5,6 +5,7 @@ import {
 } from '../tools/componentFactory';
 import { classAndStyleShema } from '../tools/options';
 import {
+  defaultGridLayoutOptionsKeys,
   Grid,
   GridItem,
   gridItemChoices,
@@ -33,6 +34,7 @@ registerComponent(
       isVertical: () => false,
       ChildrenDeserializer: childrenDeserializerFactory(GridItem),
       childrenSchema: gridItemChoices,
+      childrenLayoutKeys: defaultGridLayoutOptionsKeys,
     },
     name: 'Grid',
     icon: 'table',

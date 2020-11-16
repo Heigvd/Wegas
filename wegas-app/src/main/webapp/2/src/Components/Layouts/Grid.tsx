@@ -40,7 +40,7 @@ export interface GridItemLayoutProps {
   alignSelf?: JustifySelf;
 }
 
-export const defaultFlexLayoutOptions: GridItemLayoutProps = {
+export const defaultGridLayoutOptions: GridItemLayoutProps = {
   gridAera: undefined,
   gridColumnEnd: undefined,
   gridColumnStart: undefined,
@@ -48,8 +48,8 @@ export const defaultFlexLayoutOptions: GridItemLayoutProps = {
   gridRowStart: undefined,
   justifySelf: undefined,
 };
-export const defaultFlexLayoutOptionsKeys = Object.keys(
-  defaultFlexLayoutOptions,
+export const defaultGridLayoutOptionsKeys = Object.keys(
+  defaultGridLayoutOptions,
 ) as (keyof GridItemLayoutProps)[];
 
 export const gridItemChoices: HashListChoices = [
@@ -113,7 +113,7 @@ export const gridItemChoices: HashListChoices = [
   },
 ];
 
-const flexItemDefaultStyle = css({
+const gridItemDefaultStyle = css({
   padding: '5px',
 });
 
@@ -160,7 +160,7 @@ export const GridItem = React.forwardRef<HTMLDivElement, GridItemProps>(
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
         onDragEnd={onDragEnd}
-        className={flexItemDefaultStyle + classNameOrEmpty(className)}
+        className={gridItemDefaultStyle + classNameOrEmpty(className)}
         style={{
           position: 'relative',
           ...layout,
@@ -183,8 +183,8 @@ export const justifyItemsValues = [
 type JustifyItems = typeof justifyItemsValues[number];
 
 export const justifyContentValues = [
-  'flex-start',
-  'flex-end',
+  'grid-start',
+  'grid-end',
   'center',
   'space-between',
   'space-around',
@@ -202,8 +202,8 @@ type AutoFlow = typeof autoFlowValues[number];
 
 export const alignItemsValues = [
   'stretch',
-  'flex-start',
-  'flex-end',
+  'grid-start',
+  'grid-end',
   'center',
   'baseline',
 ] as const;
@@ -353,7 +353,7 @@ export interface GridProps extends ClassAndStyle {
      */
     justifyContent?: JustifyContent;
     /**
-     * alignItems - justifies the items perpendicularly to the flex direction
+     * alignItems - justifies the items perpendicularly to the grid direction
      */
     alignItems?: AlignItems;
     /**
@@ -375,7 +375,7 @@ export interface GridProps extends ClassAndStyle {
   };
 }
 /**
- * Flex list.
+ * Grid list.
  */
 export function Grid({
   layout,

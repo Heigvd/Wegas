@@ -41,6 +41,7 @@ export type ChildrenDeserializerProps<P = {}> = P & {
   path: number[];
   pageId?: string;
   uneditable?: boolean;
+  containerPropsKeys?: string[];
   // the content of context can be any because it's set at runtime by the user
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context?: { [exposeAs: string]: any };
@@ -134,6 +135,7 @@ export function PageDeserializer({
           uneditable={uneditable}
           context={context}
           editMode={editMode}
+          containerPropsKeys={containerPropsKeys}
         />
       ) : (
         <ComponentContainer
@@ -174,6 +176,7 @@ export function PageDeserializer({
               uneditable={uneditable}
               context={context}
               editMode={editMode}
+              containerPropsKeys={container?.childrenLayoutKeys}
             />
           </WegasComponent>
         </ComponentContainer>

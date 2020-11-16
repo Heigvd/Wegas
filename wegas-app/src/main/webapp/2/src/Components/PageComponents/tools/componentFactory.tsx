@@ -38,6 +38,11 @@ export interface ContainerComponent<P = {}> {
   ChildrenDeserializer: React.FunctionComponent<ChildrenDeserializerProps<P>>;
   noContainer?: (props?: P) => boolean | undefined;
   childrenSchema: HashListChoices;
+  childrenLayoutKeys?: string[];
+  deleteChildren?: (
+    page: WegasComponent,
+    path: number[],
+  ) => WegasComponent | undefined;
 }
 
 export interface PageComponent<

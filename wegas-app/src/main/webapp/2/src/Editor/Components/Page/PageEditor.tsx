@@ -6,6 +6,7 @@ import { ComponentPalette, DnDComponent } from './ComponentPalette';
 import {
   usePageComponentStore,
   PageComponent,
+  componentsStore,
 } from '../../../Components/PageComponents/tools/componentFactory';
 import { MainLinearLayout } from '../LinearTabLayout/LinearLayout';
 import ComponentProperties from './ComponentProperties';
@@ -55,6 +56,7 @@ export interface PageContext {
     path: number[],
     index?: number,
     props?: WegasComponent['props'],
+    replace?: boolean,
   ) => void;
   onDelete: (path: number[]) => void;
   onEdit: (path: number[] | undefined) => void;
@@ -88,13 +90,7 @@ export const pageEditorCTX = React.createContext<PageEditorContext>({
   loading: false,
 });
 
-export const computePageLabel = (id: string, pageName?: string | null) =>
-  pageName ? `${pageName} (${id})` : id;
-
-export const returnPages = (
-  pages: Pages,
-  item?: PageIndexItem,
-): PagesWithName => {
+const returnPages = (pages: Pages, item?: PageIndexItem): PagesWithName => {
   if (item == null) {
     return {};
   }
@@ -109,7 +105,7 @@ export const returnPages = (
 const patchPage = (selectedPageId: string, page: WegasComponent) =>
   store.dispatch(Actions.PageActions.patch(selectedPageId, page));
 
-const createComponent = (
+export const createComponent = (
   page: WegasComponent,
   path: number[],
   componentType: string,
@@ -142,7 +138,7 @@ const createComponent = (
   }
 };
 
-const deleteComponent = (page: WegasComponent, path: number[]) => {
+export const deleteComponent = (page: WegasComponent, path: number[]) => {
   const newPage = deepClone(page) as WegasComponent;
   let parent: WegasComponent = newPage;
   const browsePath = [...path];
@@ -223,7 +219,7 @@ const toolbarStyle = css({
   display: flex,
 });
 
-export function PageEditionToolbar({
+function PageEditionToolbar({
   setShowBorders,
   setEditMode,
   setShowControls,
@@ -464,6 +460,7 @@ export default function PageEditor() {
       path: number[],
       index?: number,
       props?: WegasComponent['props'],
+      replace?: boolean,
     ) => {
       let componentPageId = selectedPageId;
       let componentPage = selectedPage;
@@ -483,43 +480,53 @@ export default function PageEditor() {
       }
 
       if (selectedPageId != null && selectedPage != null) {
-        // Dropping new component
-        if (componentPath == null && componentName != null) {
-          const computedProps = computeProps(
-            components[componentName],
-            props,
-            undefined,
-          );
-          const newComponent = createComponent(
-            selectedPage,
-            path,
-            componentName,
-            computedProps,
-            index,
-          );
-          if (newComponent) {
-            patchPage(selectedPageId, newComponent.newPage);
-            onEdit(selectedPageId, newComponent.newPath);
-          }
-        }
-        // Dropping existing component
-        else {
-          if (
-            componentPageId != null &&
-            componentPage != null &&
-            componentPath != null
-          ) {
-            const newIndex = index ? index : 0;
-            onMoveLayoutComponent(
-              componentPageId,
-              selectedPageId,
-              componentPage,
-              selectedPage,
-              componentPath,
-              path,
-              newIndex,
+        const computedPage = replace
+          ? deleteComponent(selectedPage, [
+              ...path,
+              ...(index == null ? [] : [index]),
+            ])
+          : selectedPage;
+
+        if (computedPage != null) {
+          // Dropping new component
+          if (componentPath == null && componentName != null) {
+            const computedProps = computeProps(
+              components[componentName],
               props,
+              undefined,
             );
+
+            const newComponent = createComponent(
+              computedPage,
+              path,
+              componentName,
+              computedProps,
+              index,
+            );
+            if (newComponent) {
+              patchPage(selectedPageId, newComponent.newPage);
+              onEdit(selectedPageId, newComponent.newPath);
+            }
+          }
+          // Dropping existing component
+          else {
+            if (
+              componentPageId != null &&
+              componentPage != null &&
+              componentPath != null
+            ) {
+              const newIndex = index ? index : 0;
+              onMoveLayoutComponent(
+                componentPageId,
+                selectedPageId,
+                componentPage,
+                computedPage,
+                componentPath,
+                path,
+                newIndex,
+                props,
+              );
+            }
           }
         }
       }
@@ -530,7 +537,15 @@ export default function PageEditor() {
   const onDelete = React.useCallback(
     (path: number[]) => {
       if (selectedPageId && selectedPage) {
-        const newPage = deleteComponent(selectedPage, path);
+        // Checking if parent manages delete by itself
+        const { parent: parentComponent } = findComponent(selectedPage, path);
+        const { container } = componentsStore.getState()[
+          parentComponent?.type || ''
+        ];
+
+        const newPage = container?.deleteChildren
+          ? container?.deleteChildren(selectedPage, path)
+          : deleteComponent(selectedPage, path);
         if (newPage) {
           patchPage(selectedPageId, newPage);
         }
@@ -570,7 +585,15 @@ export default function PageEditor() {
 
   const onDeleteLayoutComponent = React.useCallback(
     (pageId: string, page: WegasComponent, path: number[]) => {
-      const newPage = deleteComponent(page, path);
+      // Checking if parent manages delete by itself
+      const { parent: parentComponent } = findComponent(page, path);
+      const { container } = componentsStore.getState()[
+        parentComponent?.type || ''
+      ];
+
+      const newPage = container?.deleteChildren
+        ? container?.deleteChildren(page, path)
+        : deleteComponent(page, path);
       if (newPage) {
         patchPage(pageId, newPage);
       }
