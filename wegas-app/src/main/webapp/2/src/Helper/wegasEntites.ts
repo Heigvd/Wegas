@@ -23,6 +23,15 @@ export function createScript(
   return { '@class': 'Script', content, language };
 }
 
+export function isScript(tested: any): tested is IScript {
+  return (
+    tested != null &&
+    typeof tested === 'object' &&
+    '@class' in tested &&
+    tested['@class'] === 'Script'
+  );
+}
+
 export function createFindVariableScript<
   T extends Readonly<SVariableDescriptor> | undefined
 >(variable?: T): T extends undefined ? undefined : IScript {

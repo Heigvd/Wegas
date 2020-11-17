@@ -33,6 +33,7 @@ import { wwarn } from '../../Helper/wegaslog';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { replace } from '../../Helper/tools';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
+import { isScript } from '../../Helper/wegasEntites';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -390,7 +391,7 @@ export function parseAndRunClientScript(
     [name: string]: unknown;
   },
 ) {
-  let scriptContent = 'string' === typeof script ? script : script.content;
+  let scriptContent = isScript(script) ? script.content : script;
 
   /*
   const test1 = runClientScript("JKJKJ")
@@ -426,7 +427,7 @@ export function parseAndRunClientScript(
     }
   } while (matched);
 
-  return 'string' === typeof script
-    ? scriptContent
-    : { ...script, content: scriptContent };
+  return isScript(script)
+    ? { ...script, content: scriptContent }
+    : scriptContent;
 }

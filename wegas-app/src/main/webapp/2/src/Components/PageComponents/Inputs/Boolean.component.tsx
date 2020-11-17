@@ -4,21 +4,22 @@ import {
   pageComponentFactory,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { store } from '../../../data/store';
+import { store, useStore } from '../../../data/store';
 import { Actions } from '../../../data';
 import { Toggler } from '../../Inputs/Boolean/Toggler';
-import { useComponentScript } from '../../Hooks/useComponentScript';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { IScript, IBooleanDescriptor } from 'wegas-ts-api';
+import { IScript, SBooleanDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
+import { instantiate } from '../../../data/scriptable';
+import { Player } from '../../../data/selectors';
 
 interface PlayerBooleanProps extends WegasComponentProps {
   /**
    * script - the script that returns the variable to display and modify
    */
-  value?: IScript;
+  script?: IScript;
   /**
    * label - The label to display with the component
    */
@@ -38,34 +39,32 @@ interface PlayerBooleanProps extends WegasComponentProps {
 }
 
 function PlayerBoolean({
-  value,
+  script,
   type,
   label,
   disabled,
   inactive,
   context,
 }: PlayerBooleanProps) {
-  const {
-    content: valueScript,
-    instance: valueInstance,
-    notFound: valueNotFound,
-  } = useComponentScript<IBooleanDescriptor>(value);
+  const bool = useScript<SBooleanDescriptor>(script, context);
+  const player = instantiate(useStore(Player.selectCurrent));
+
   const strLabel = useScript<string>(label, context);
 
   const BooleanComponent = type === 'toggler' ? Toggler : CheckBox;
 
-  return valueNotFound ? (
-    <pre>Not found: {valueScript}</pre>
+  return bool == null ? (
+    <pre>Not found: {script?.content}</pre>
   ) : (
     <BooleanComponent
       label={strLabel}
-      value={valueInstance!.value}
+      value={bool.getValue(player)}
       disabled={disabled}
       readOnly={inactive}
       onChange={v => {
         store.dispatch(
           Actions.VariableInstanceActions.runScript(
-            `${valueScript}.setValue(self, ${v});`,
+            `Variable.find(gameModel,"${bool.getName()}").setValue(self, ${v});`,
           ),
         );
       }}
@@ -80,7 +79,7 @@ registerComponent(
     name: 'Boolean',
     icon: 'check-square',
     schema: {
-      value: schemaProps.scriptVariable({
+      script: schemaProps.scriptVariable({
         label: 'Variable',
         required: true,
         returnType: ['SBooleanDescriptor'],

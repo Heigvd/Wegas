@@ -23,18 +23,19 @@ import {
 import { schemaProps } from '../tools/schemaProps';
 import { FlexItem, defaultFlexLayoutOptionsKeys } from '../../Layouts/FlexList';
 import { findComponent } from '../../../Helper/pages';
+import { wlog } from '../../../Helper/wegaslog';
 
 const IfChildrenType = 'If component';
 const emptyIfChildren: WegasComponent = {
   type: IfChildrenType,
   props: {},
-  undeletable: true,
+  uneditable: true,
 };
 const ElseChildrenType = 'Else component';
 const emptyElseChildren: WegasComponent = {
   type: ElseChildrenType,
   props: {},
-  undeletable: true,
+  uneditable: true,
 };
 
 interface EmptyCompoentContainerProps {
@@ -49,6 +50,8 @@ export function EmptyComponentContainer({
   const [{ isOver }, dropZone] = useDndComponentDrop();
 
   const { onDrop } = React.useContext(pageCTX);
+
+  wlog({ isOver });
 
   return (
     <FlexItem ref={dropZone} className={emptyLayoutItemStyle}>
@@ -82,14 +85,17 @@ function deleteChildren(page: WegasComponent, path: number[]) {
     component?.type !== IfChildrenType &&
     component?.type !== ElseChildrenType
   ) {
-    return createComponent(
-      deletedCompPage,
-      path.slice(0, -1),
-      index === 0 ? IfChildrenType : ElseChildrenType,
-      undefined,
-      index,
-    )?.newPage;
+    if (index < 2) {
+      return createComponent(
+        deletedCompPage,
+        path.slice(0, -1),
+        index === 0 ? IfChildrenType : ElseChildrenType,
+        undefined,
+        index,
+      )?.newPage;
+    }
   }
+  return deletedCompPage;
 }
 
 function ChildrenDeserializer({

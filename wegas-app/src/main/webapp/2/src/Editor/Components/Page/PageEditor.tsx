@@ -300,6 +300,11 @@ interface LayoutProps {
     path: number[],
     type: string,
   ) => void;
+  onDuplicateLayoutComponent: (
+    pageId: string,
+    page: WegasComponent,
+    path: number[],
+  ) => void;
   onDeleteLayoutComponent: (
     pageId: string,
     page: WegasComponent,
@@ -313,6 +318,7 @@ function Layout({
   onEdit,
   onMoveLayoutComponent,
   onNewLayoutComponent,
+  onDuplicateLayoutComponent: onDuplicateComponent,
   setPageEditorState,
 }: LayoutProps) {
   return (
@@ -326,6 +332,7 @@ function Layout({
       }
       componentControls={{
         onNew: onNewLayoutComponent,
+        onDuplicate: onDuplicateComponent,
         onDelete: onDeleteLayoutComponent,
         onEdit: onEdit,
         onMove: onMoveLayoutComponent,
@@ -583,6 +590,25 @@ export default function PageEditor() {
     [components, onEdit],
   );
 
+  const onDuplicateLayoutComponent = React.useCallback(
+    (pageId, page, path) => {
+      const { component } = findComponent(page, path);
+      if (component) {
+        const newComponent = createComponent(
+          page,
+          path,
+          component.type,
+          component.props,
+        );
+        if (newComponent) {
+          patchPage(pageId, newComponent.newPage);
+          onEdit(pageId, newComponent.newPath);
+        }
+      }
+    },
+    [onEdit],
+  );
+
   const onDeleteLayoutComponent = React.useCallback(
     (pageId: string, page: WegasComponent, path: number[]) => {
       // Checking if parent manages delete by itself
@@ -609,6 +635,7 @@ export default function PageEditor() {
           onEdit={onEdit}
           onMoveLayoutComponent={onMoveLayoutComponent}
           onNewLayoutComponent={onNewLayoutComponent}
+          onDuplicateLayoutComponent={onDuplicateLayoutComponent}
           setPageEditorState={setPageEditorState}
         />
       ),
@@ -625,6 +652,7 @@ export default function PageEditor() {
     }),
     [
       onDeleteLayoutComponent,
+      onDuplicateLayoutComponent,
       onEdit,
       onMoveLayoutComponent,
       onNewLayoutComponent,

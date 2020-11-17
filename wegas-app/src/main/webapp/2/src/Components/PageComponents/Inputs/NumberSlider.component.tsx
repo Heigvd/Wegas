@@ -9,13 +9,15 @@ import {
   DisplayMode,
   displayModes,
 } from '../../Inputs/Number/NumberSlider';
-import { store } from '../../../data/store';
+import { store, useStore } from '../../../data/store';
 import { Actions } from '../../../data';
-import { useComponentScript } from '../../Hooks/useComponentScript';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { IScript, INumberDescriptor } from 'wegas-ts-api';
+import { IScript, SNumberDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { classAndStyleShema } from '../tools/options';
+import { instantiate } from '../../../data/scriptable';
+import { Player } from '../../../data/selectors';
+import { useScript } from '../../Hooks/useScript';
 
 interface PlayerNumberSliderProps extends WegasComponentProps {
   /**
@@ -37,27 +39,31 @@ interface PlayerNumberSliderProps extends WegasComponentProps {
   disabled?: boolean;
 }
 
-function PlayerNumberSlider(props: PlayerNumberSliderProps) {
-  const { content, descriptor, instance, notFound } = useComponentScript<
-    INumberDescriptor
-  >(props.script);
-  return notFound ? (
-    <pre>Not found: {content}</pre>
+function PlayerNumberSlider({
+  script,
+  context,
+  ...restProps
+}: PlayerNumberSliderProps) {
+  const number = useScript<SNumberDescriptor>(script, context);
+  const player = instantiate(useStore(Player.selectCurrent));
+
+  return number == null ? (
+    <pre>Not found: {script?.content}</pre>
   ) : (
     <NumberSlider
-      {...props}
-      value={instance!.value}
+      {...restProps}
+      value={number.getValue(player)}
       onChange={(v, i) => {
         if (i === 'DragEnd') {
           store.dispatch(
             Actions.VariableInstanceActions.runScript(
-              `${content}.setValue(self, ${v});`,
+              `Variable.find(gameModel,"${number.getName()}").setValue(self, ${v});`,
             ),
           );
         }
       }}
-      min={descriptor!.getMinValue() || 0}
-      max={descriptor!.getMaxValue() || 1}
+      min={number.getMinValue() || 0}
+      max={number.getMaxValue() || 1}
     />
   );
 }

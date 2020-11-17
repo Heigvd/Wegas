@@ -421,7 +421,7 @@ function WegasComponentTitle({
   const registeredComponent = usePageComponentStore(s => s[component.type]);
   const { editMode } = React.useContext(pageCTX);
 
-  const { onDelete, onEdit, onNew } = componentControls;
+  const { onDelete, onEdit, onNew, onDuplicate } = componentControls;
 
   let icon: Icon;
   if (registeredComponent != null) {
@@ -475,18 +475,33 @@ function WegasComponentTitle({
           className={CONTROLS_CLASSNAME}
         />
       )}
-      {!component.undeletable && (
-        <ConfirmButton
-          icon="trash"
-          onAction={success => success && onDelete(pageId, page, componentPath)}
-          disabled={componentPath.length === 0}
-          tooltip={
-            componentPath.length === 0
-              ? 'The first component of a page connot be deleted'
-              : 'Delete the component'
-          }
-          className={CONTROLS_CLASSNAME}
-        />
+      {!component.uneditable && (
+        <>
+          <ConfirmButton
+            icon="trash"
+            onAction={success =>
+              success && onDelete(pageId, page, componentPath)
+            }
+            disabled={componentPath.length === 0}
+            tooltip={
+              componentPath.length === 0
+                ? 'The first component of a page connot be deleted'
+                : 'Delete the component'
+            }
+            className={CONTROLS_CLASSNAME}
+          />
+          <Button
+            icon="copy"
+            onClick={() => onDuplicate(pageId, page, componentPath)}
+            disabled={componentPath.length === 0}
+            tooltip={
+              componentPath.length === 0
+                ? 'The first component of a page connot be deleted'
+                : 'Delete the component'
+            }
+            className={CONTROLS_CLASSNAME}
+          />
+        </>
       )}
     </LayoutNodeTitle>
   );
@@ -818,6 +833,11 @@ interface ComponentControls {
     page: WegasComponent,
     componentPath: number[],
     componentType: string,
+  ) => void;
+  onDuplicate: (
+    pageId: string,
+    page: WegasComponent,
+    componentPath: number[],
   ) => void;
   onDelete: (
     pageId: string,

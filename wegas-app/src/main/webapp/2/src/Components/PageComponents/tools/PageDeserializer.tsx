@@ -154,6 +154,7 @@ export function PageDeserializer({
           {...restProps}
           dropzones={{ ...component.dropzones, ...dropzones }}
           options={optionsState}
+          editMode={editMode}
         >
           <WegasComponent
             path={realPath}
@@ -167,6 +168,8 @@ export function PageDeserializer({
               classNameOrEmpty(optionsState.conditionnalClassName)
             }
             dropzones={{ ...component.dropzones, ...dropzones }}
+            options={optionsState}
+            editMode={editMode}
           >
             <Children
               {...wegasComponent?.props}

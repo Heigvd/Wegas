@@ -33,7 +33,7 @@ export const emptyLayoutItemStyle = css({
   verticalAlign: 'middle',
   borderStyle: 'solid',
   borderWidth: '1px',
-  width: '100px',
+  width: '120px',
   height: 'fit-content',
   overflowWrap: 'normal',
   zIndex: 0,

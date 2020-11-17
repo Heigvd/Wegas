@@ -40,8 +40,8 @@ import { OptionsState } from './OptionsComponent';
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
 import { themeVar } from '../../Style/ThemeVars';
 import { parseAndRunClientScript } from '../../Hooks/useScript';
-import { IScript } from 'wegas-ts-api';
 import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
+import { IScript } from 'wegas-ts-api';
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {
@@ -272,6 +272,8 @@ export function ComponentDropZone({
         ...(dropPosition === 'AFTER'
           ? { right: 0, bottom: 0 }
           : { left: 0, top: 0 }),
+        width: '100%',
+        height: '100%',
       }}
     />
   );
@@ -371,6 +373,10 @@ export interface PageComponentProps extends EmptyPageComponentProps {
    * path - the path of the current component
    */
   path: number[];
+  /**
+   * options - conditionnal states
+   */
+  options: OptionsState;
 }
 
 export type WegasComponentOptions = WegasComponentOptionsActions &
@@ -397,7 +403,6 @@ export type ItemContainer = React.ForwardRefExoticComponent<
 interface ComponentContainerProps extends WegasComponentProps {
   vertical?: boolean;
   containerPropsKeys?: string[];
-  options: OptionsState;
 }
 
 const pageDispatch = pagesStateStore.dispatch;
