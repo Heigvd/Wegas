@@ -21,6 +21,7 @@ import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import {
   parseAndRunClientScript,
   safeClientScriptEval,
+  useScript,
 } from '../../Hooks/useScript';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
@@ -47,6 +48,10 @@ interface PlayerModalProps extends FlexListProps, WegasComponentProps {
    * children - the array containing the child components
    */
   children: React.ReactNode[];
+  /**
+   * attachedTo - the ID of the element to insert the modal (will cover the whole element). By default, gets the last themeCTX provider
+   */
+  attachedToId?: IScript;
 }
 
 function PlayerModal({
@@ -54,11 +59,14 @@ function PlayerModal({
   children,
   context,
   editMode,
+  attachedToId,
   ...flexProps
 }: PlayerModalProps) {
+  const attachTo = useScript<string>(attachedToId, context);
   const { client, server } = onExitActions || {};
   return (
     <Modal
+      attachedToId={attachTo}
       onExit={() => {
         if (client) {
           safeClientScriptEval(client, context);
@@ -121,6 +129,7 @@ registerComponent(
           },
         ],
       }),
+      attachedToId: schemaProps.scriptString({ label: 'Attach to id' }),
       ...flexListSchema,
       ...classAndStyleShema,
     },

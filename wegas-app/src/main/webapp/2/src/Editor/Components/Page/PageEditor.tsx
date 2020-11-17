@@ -318,7 +318,7 @@ function Layout({
   onEdit,
   onMoveLayoutComponent,
   onNewLayoutComponent,
-  onDuplicateLayoutComponent: onDuplicateComponent,
+  onDuplicateLayoutComponent,
   setPageEditorState,
 }: LayoutProps) {
   return (
@@ -332,7 +332,7 @@ function Layout({
       }
       componentControls={{
         onNew: onNewLayoutComponent,
-        onDuplicate: onDuplicateComponent,
+        onDuplicate: onDuplicateLayoutComponent,
         onDelete: onDeleteLayoutComponent,
         onEdit: onEdit,
         onMove: onMoveLayoutComponent,
@@ -596,9 +596,10 @@ export default function PageEditor() {
       if (component) {
         const newComponent = createComponent(
           page,
-          path,
+          path.slice(0, -1),
           component.type,
           component.props,
+          path.slice(-1)[0] + 1,
         );
         if (newComponent) {
           patchPage(pageId, newComponent.newPage);
