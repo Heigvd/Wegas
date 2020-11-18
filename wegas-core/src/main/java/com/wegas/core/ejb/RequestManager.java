@@ -2044,6 +2044,9 @@ public class RequestManager implements RequestManagerI {
 
         ThreadContext.bind(buildSubject);
 
+        this.currentUser = null;
+        this.currentPrincipal = null;
+
         return this.getCurrentUser();
     }
 
@@ -2064,6 +2067,10 @@ public class RequestManager implements RequestManagerI {
 
             logger.info("Su-Exit -> {}",
                 previous != null ? previous.getPrincipal() : "LOGOUT");
+
+            this.currentUser = null;
+            this.currentPrincipal = null;
+
             this.getCurrentUser();
         } catch (Exception ex) {
             logger.error("EX: ", ex);
