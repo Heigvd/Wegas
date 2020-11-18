@@ -53,6 +53,7 @@ export function CheckBox({
   hint,
   checkBoxClassName,
   className,
+  style,
   id,
 }: CheckBoxProps) {
   const [checked, setChecked] = React.useState(
@@ -76,6 +77,7 @@ export function CheckBox({
         cx(flex, flexColumn, itemCenter, shrinkWidth) +
         classNameOrEmpty(className)
       }
+      style={style}
       title={hint}
     >
       {label && <Value value={label} />}

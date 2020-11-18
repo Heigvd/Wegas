@@ -86,7 +86,7 @@ interface DnDArrayDragMonitor {
   dragStyle: React.CSSProperties;
 }
 
-interface ArrayItemProps extends ClassAndStyle {
+interface ArrayItemProps extends ClassStyleId {
   /**
    * index - The index of the item in the array
    */
@@ -156,7 +156,7 @@ interface DnDArrayDropMonitor {
   canDrop?: boolean;
 }
 
-interface ArrayDropzoneProps extends ClassAndStyle {
+interface ArrayDropzoneProps extends ClassStyleId {
   /**
    * onDrop - the function that is called when an item is dropped
    */

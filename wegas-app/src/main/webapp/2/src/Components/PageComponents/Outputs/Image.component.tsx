@@ -5,7 +5,7 @@ import {
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
-import { classAndStyleShema } from '../tools/options';
+import { classStyleIdShema } from '../tools/options';
 import { IScript } from 'wegas-ts-api';
 import { useScript } from '../../Hooks/useScript';
 import { css } from 'emotion';
@@ -19,12 +19,13 @@ interface SvgLoaderProps extends WegasComponentProps {
   script?: IScript;
 }
 
-function Image({ script, style, className, context }: SvgLoaderProps) {
+function Image({ script, context, style, className, id }: SvgLoaderProps) {
   const path = useScript<string>(script, context);
   return (
     <img
       src={fileURL(path || '')}
       style={style}
+      id={id}
       className={className ? className : initialImageStyle}
     />
   );
@@ -46,7 +47,7 @@ registerComponent(
         },
         scriptable: true,
       }),
-      ...classAndStyleShema,
+      ...classStyleIdShema,
     },
   }),
 );

@@ -21,6 +21,8 @@ import {
   PageDeserializer,
 } from '../tools/PageDeserializer';
 import { EmptyComponentContainer } from './FlexList.component';
+import { classNameOrEmpty } from '../../../Helper/className';
+import { classStyleIdShema } from '../tools/options';
 
 const CONTENT_TYPE = 'LinearLayout';
 
@@ -41,12 +43,17 @@ function PlayerLinearLayout({
   flexValues,
   children,
   path,
+  className,
+  style,
+  id,
 }: PlayerLinearLayoutProps) {
   const { editMode, onUpdate } = React.useContext(pageCTX);
 
   return (
     <FonkyFlexContainer
-      className={splitter}
+      className={splitter + classNameOrEmpty(className)}
+      style={style}
+      id={id}
       vertical={vertical}
       flexValues={flexValues}
       onStopResize={(_splitterId, flexValues) => {
@@ -132,6 +139,7 @@ const test = pageComponentFactory({
     noSplitter: schemaProps.boolean({ label: 'No splitter' }),
     noResize: schemaProps.boolean({ label: 'No resize' }),
     flexValues: schemaProps.hidden({ type: 'array' }),
+    ...classStyleIdShema,
   },
   getComputedPropsFromVariable: () => ({
     children: [],

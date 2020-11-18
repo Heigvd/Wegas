@@ -9,7 +9,7 @@ import {
   defaultAbsoluteLayoutPropsKeys,
 } from '../../Layouts/Absolute';
 import { childrenDeserializerFactory } from './FlexList.component';
-import { classAndStyleShema } from '../tools/options';
+import { classStyleIdShema } from '../tools/options';
 
 function isVertical() {
   return undefined;
@@ -34,7 +34,7 @@ registerComponent(
     dropzones: {
       center: true,
     },
-    schema: classAndStyleShema,
+    schema: classStyleIdShema,
     // {
     // name: schemaProps.string({ label: 'Name' }),
     // children: schemaProps.hidden({}),

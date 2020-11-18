@@ -12,7 +12,7 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript } from 'wegas-ts-api';
 import { icons, Icons } from '../../../Editor/Components/Views/FontAwesome';
 import { useScript } from '../../Hooks/useScript';
-import { classAndStyleShema } from '../tools/options';
+import { classStyleIdShema } from '../tools/options';
 
 export interface PlayerButtonProps extends WegasComponentProps {
   action: IScript;
@@ -26,6 +26,7 @@ function PlayerButton({
   action,
   style,
   className,
+  id,
   icon,
   prefixedLabel,
   context,
@@ -33,6 +34,7 @@ function PlayerButton({
   const translation = useScript<string>(label, context) || '';
   return (
     <Button
+      id={id}
       onClick={() =>
         store.dispatch(Actions.VariableInstanceActions.runScript(action!))
       }
@@ -55,7 +57,7 @@ export const buttonSchema = {
   label: schemaProps.scriptString({ label: 'Label' }),
   icon: schemaProps.select({ label: 'Icon', values: Object.keys(icons) }),
   prefixedLabel: schemaProps.boolean({ label: 'Prefixed label' }),
-  ...classAndStyleShema,
+  ...classStyleIdShema,
 };
 
 const defaultLabel: ITranslatableContent = {

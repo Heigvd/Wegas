@@ -3,7 +3,7 @@ import { titleStyle } from '../../Editor/Components/FormView/labeled';
 import { cx } from 'emotion';
 import { flexRow, flex } from '../../css/classes';
 
-export interface ValueProps extends ClassAndStyle {
+export interface ValueProps extends ClassStyleId {
   value: string | number | object;
   label?: string;
 }

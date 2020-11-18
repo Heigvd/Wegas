@@ -45,6 +45,9 @@ function PlayerBoolean({
   disabled,
   inactive,
   context,
+  className,
+  style,
+  id,
 }: PlayerBooleanProps) {
   const bool = useScript<SBooleanDescriptor>(script, context);
   const player = instantiate(useStore(Player.selectCurrent));
@@ -54,9 +57,14 @@ function PlayerBoolean({
   const BooleanComponent = type === 'toggler' ? Toggler : CheckBox;
 
   return bool == null ? (
-    <pre>Not found: {script?.content}</pre>
+    <pre className={className} style={style} id={id}>
+      Not found: {script?.content}
+    </pre>
   ) : (
     <BooleanComponent
+      className={className}
+      style={style}
+      id={id}
       label={strLabel}
       value={bool.getValue(player)}
       disabled={disabled}

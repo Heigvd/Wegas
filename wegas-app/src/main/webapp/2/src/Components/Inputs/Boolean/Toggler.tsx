@@ -94,6 +94,7 @@ export function Toggler({
   labels,
   hint,
   className,
+  style,
   id,
 }: TogglerProps) {
   const [checked, setChecked] = React.useState(
@@ -117,6 +118,7 @@ export function Toggler({
         cx(flex, flexColumn, itemCenter, shrinkWidth) +
         classNameOrEmpty(className)
       }
+      style={style}
     >
       {label && <Value value={label} />}
       <div

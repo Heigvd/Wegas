@@ -70,7 +70,7 @@ interface ActionButton {
   onAction: (api: TinyMCEButtonAPI, editor: TinyMCEEditor) => void;
 }
 
-interface HTMLEditorProps extends ClassAndStyle {
+interface HTMLEditorProps extends ClassStyleId {
   /**
    * value - content to inject in the editor
    */

@@ -152,17 +152,18 @@ const JS_PLUMB_OPTIONS: Defaults = {
 };
 
 interface StateMachineEditorProps {
-  stateMachine: IFSMDescriptor | IDialogueDescriptor;
-  stateMachineInstance: IFSMInstance;
+  stateMachine: Readonly<IFSMDescriptor | IDialogueDescriptor>;
+  stateMachineInstance: Readonly<IFSMInstance>;
   localDispatch?: StoreDispatch;
-  search: RState['global']['search'];
+  forceLocalDispatch?: boolean;
+  search?: RState['global']['search'];
 }
 interface StateMachineEditorState {
   plumb?: jsPlumbInstance;
   stateMachine: IFSMDescriptor | IDialogueDescriptor;
   oldProps: StateMachineEditorProps;
 }
-class StateMachineEditor extends React.Component<
+export class StateMachineEditor extends React.Component<
   StateMachineEditorProps,
   StateMachineEditorState
 > {
@@ -356,8 +357,10 @@ class StateMachineEditor extends React.Component<
         },
       };
     }
+
+    const localEdit = this.props.forceLocalDispatch || e.ctrlKey;
     const dispatch =
-      e.ctrlKey && this.props.localDispatch
+      localEdit && this.props.localDispatch
         ? this.props.localDispatch
         : store.dispatch;
     dispatch(
@@ -370,7 +373,9 @@ class StateMachineEditor extends React.Component<
         },
       ),
     );
-    focusTab(mainLayoutId, 'Variable Properties');
+    if (!localEdit) {
+      focusTab(mainLayoutId, 'Variable Properties');
+    }
   };
   editStateContent = (key: number, newState: IState | IDialogueState) => {
     const newStateMachine: IFSMDescriptor | IDialogueDescriptor = {
@@ -388,8 +393,9 @@ class StateMachineEditor extends React.Component<
   editTransition = (e: ModifierKeysEvent, path: [number, number]) => {
     const stateId = path[0];
     const transitionIndex = path[1];
+    const localEdit = this.props.forceLocalDispatch || e.ctrlKey;
     const dispatch =
-      e.ctrlKey && this.props.localDispatch
+      localEdit && this.props.localDispatch
         ? this.props.localDispatch
         : store.dispatch;
     dispatch(
@@ -414,6 +420,9 @@ class StateMachineEditor extends React.Component<
         },
       ),
     );
+    if (!localEdit) {
+      focusTab(mainLayoutId, 'Variable Properties');
+    }
   };
   componentDidMount() {
     import('jsplumb').then(({ jsPlumb }) => {
@@ -503,6 +512,7 @@ class StateMachineEditor extends React.Component<
     if (plumb != null) {
       plumb.setSuspendDrawing(true);
     }
+
     return (
       <Toolbar>
         <Toolbar.Header>{editorLabel(stateMachine)}</Toolbar.Header>
@@ -514,21 +524,22 @@ class StateMachineEditor extends React.Component<
             className={cx(editorStyle, expandBoth)}
           >
             {plumb != null &&
-              Object.keys(stateMachine.states).map(k => {
-                const key = Number(k);
+              Object.entries(stateMachine.states).map(([key, state]) => {
+                // const key = Number(k) + stateMachine.states[k].version;
                 return (
                   <State
                     editState={this.editState}
                     editStateContent={this.editStateContent}
-                    state={stateMachine.states[key]}
+                    state={state}
                     currentState={
                       Number(key) === stateMachineInstance.currentStateId
                     }
-                    id={key}
+                    id={Number(key)}
                     initialState={
-                      stateMachine.defaultInstance.currentStateId === key
+                      stateMachine.defaultInstance.currentStateId ===
+                      Number(key)
                     }
-                    key={key}
+                    key={`${key} + ${state.version}`}
                     plumb={plumb}
                     deleteState={this.deleteState}
                     moveState={this.moveState}
@@ -683,7 +694,7 @@ interface StateProps {
     path: [number, number],
     transition: ITransition | IDialogueTransition,
   ) => void;
-  search: RState['global']['search'];
+  search?: RState['global']['search'];
 }
 
 function State({
@@ -702,9 +713,9 @@ function State({
   const [editingText, setEditingText] = React.useState(false);
   const { lang } = React.useContext(languagesCTX);
   const container = React.useRef<HTMLDivElement>(null);
-  const [newValue, setNewValue] = React.useState('');
 
   const textValue = getValue(state, lang);
+  const [newValue, setNewValue] = React.useState(textValue);
 
   useOnClickOutside(container, () => {
     setEditingText(false);
@@ -756,7 +767,7 @@ function State({
     const { onEnterEvent } = state;
     const searched =
       (textValue ? textValue : '') + (onEnterEvent ? onEnterEvent.content : '');
-    return searchWithState(search, searched);
+    return search != null && searchWithState(search, searched);
   }, [textValue, state, search]);
 
   return (
@@ -857,7 +868,7 @@ class Transition extends React.Component<{
     path: [number, number],
     transition: ITransition | IDialogueTransition,
   ) => void;
-  search: RState['global']['search'];
+  search?: RState['global']['search'];
 }> {
   static contextType = languagesCTX;
 
@@ -867,7 +878,9 @@ class Transition extends React.Component<{
     const searched =
       (triggerCondition ? triggerCondition.content : '') +
       (preStateImpact ? preStateImpact.content : '');
-    return searchWithState(this.props.search, searched);
+    return (
+      this.props.search != null && searchWithState(this.props.search, searched)
+    );
   };
   componentDidMount() {
     const src = this.props.parent;

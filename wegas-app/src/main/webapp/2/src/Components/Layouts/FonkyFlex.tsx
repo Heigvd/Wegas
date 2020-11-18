@@ -56,7 +56,7 @@ function getFlexGrowValues(flexItems: HTMLDivElement[]): number[] {
   return flexItems.map(c => Number(c.style.getPropertyValue('flex-grow')));
 }
 
-export interface FonkyFlexContainerProps extends ClassAndStyle {
+export interface FonkyFlexContainerProps extends ClassStyleId {
   vertical?: boolean;
   flexValues?: number[];
   // noCheck?: boolean;
@@ -65,7 +65,7 @@ export interface FonkyFlexContainerProps extends ClassAndStyle {
   onResize?: (splitterNumber: number, flexValues: number[]) => void;
 }
 
-interface FonkyFlexSplitterProps extends ClassAndStyle {
+interface FonkyFlexSplitterProps extends ClassStyleId {
   notDraggable?: boolean;
 }
 
@@ -93,6 +93,7 @@ export function FonkyFlexContainer({
   className,
   style,
   children,
+  id,
 }: React.PropsWithChildren<FonkyFlexContainerProps>) {
   const flexChildren = React.useRef<HTMLDivElement[]>([]);
   const splitterChildren = React.useRef<HTMLDivElement[]>([]);
@@ -207,6 +208,7 @@ export function FonkyFlexContainer({
 
   return (
     <div
+      id={id}
       ref={e => {
         flexChildren.current = [];
         contentChildren.current = [];

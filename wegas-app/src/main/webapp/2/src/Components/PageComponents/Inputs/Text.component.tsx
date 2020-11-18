@@ -9,7 +9,7 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, STextDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
-import { classAndStyleShema } from '../tools/options';
+import { classStyleIdShema } from '../tools/options';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import HTMLEditor from '../../HTMLEditor';
 import { instantiate } from '../../../data/scriptable';
@@ -33,14 +33,18 @@ function PlayerTextInput({
   // options,
   className,
   style,
+  id,
 }: PlayerTextInputProps) {
   const text = useScript<STextDescriptor>(script, context);
   const player = instantiate(useStore(Player.selectCurrent));
 
   return text == null ? (
-    <pre>Not found: {script?.content}</pre>
+    <pre className={className} style={style} id={id}>
+      Not found: {script?.content}
+    </pre>
   ) : (
     <HTMLEditor
+      id={id}
       value={text.getValue(player)}
       onChange={v => {
         store.dispatch(
@@ -68,12 +72,12 @@ registerComponent(
       script: schemaProps.scriptVariable({
         label: 'Variable',
         required: true,
-        returnType: ['SStringDescriptor'],
+        returnType: ['STextDescriptor'],
       }),
       placeholder: schemaProps.scriptString({ label: 'Placeholder' }),
-      ...classAndStyleShema,
+      ...classStyleIdShema,
     },
-    allowedVariables: ['StringDescriptor'],
+    allowedVariables: ['StringDescriptor', 'TextDescriptor'],
     getComputedPropsFromVariable: v => ({
       script: createFindVariableScript(v),
     }),

@@ -10,7 +10,7 @@ import { IScript, SStringDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { useScript } from '../../Hooks/useScript';
-import { classAndStyleShema } from '../tools/options';
+import { classStyleIdShema } from '../tools/options';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
@@ -33,6 +33,7 @@ function PlayerStringInput({
   options,
   className,
   style,
+  id,
 }: PlayerStringInput) {
   const placeholderText = useScript<string>(placeholder, context);
   const text = useScript<SStringDescriptor>(script, context);
@@ -41,7 +42,9 @@ function PlayerStringInput({
   const { disabled, readOnly } = options;
 
   return text == null ? (
-    <pre>Not found: {script?.content}</pre>
+    <pre className={className} style={style} id={id}>
+      Not found: {script?.content}
+    </pre>
   ) : (
     <SimpleInput
       value={text.getValue(player)}
@@ -57,6 +60,7 @@ function PlayerStringInput({
       placeholder={placeholderText}
       className={className}
       style={style}
+      id={id}
     />
   );
 }
@@ -74,7 +78,7 @@ registerComponent(
         returnType: ['SStringDescriptor'],
       }),
       placeholder: schemaProps.scriptString({ label: 'Placeholder' }),
-      ...classAndStyleShema,
+      ...classStyleIdShema,
     },
     allowedVariables: ['StringDescriptor'],
     getComputedPropsFromVariable: v => ({

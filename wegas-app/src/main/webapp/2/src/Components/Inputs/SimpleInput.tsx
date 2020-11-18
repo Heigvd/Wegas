@@ -13,7 +13,7 @@ function undefToEmpty(val?: string | number) {
   return val;
 }
 
-export interface InputProps<T> extends ClassAndStyle {
+export interface InputProps<T> extends ClassStyleId {
   /**
    * value - the value to input
    */

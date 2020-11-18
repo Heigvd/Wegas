@@ -146,7 +146,7 @@ export function isLayoutDndComponent(
   return isItemDescription(item) && isComponentNodeId(item.id);
 }
 
-interface LayoutButtonProps extends ClassAndStyle {
+interface LayoutButtonProps extends ClassStyleId {
   tooltip?: string;
 }
 
@@ -344,7 +344,7 @@ const compToKey = (component: WegasComponent, path?: number[]) =>
     path,
   });
 
-interface LayoutNodeTitleProps extends ClassAndStyle {
+interface LayoutNodeTitleProps extends ClassStyleId {
   icon: Icons;
   title: string;
   advancedTitle?: string;

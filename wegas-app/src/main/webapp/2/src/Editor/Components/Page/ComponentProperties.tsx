@@ -215,7 +215,7 @@ export function wegasComponentSchema(
     description: pageComponentSchema.description,
     properties: {
       commonProperties: schemaProps.object({
-        label: 'Common properties',
+        label: 'Container properties',
         properties: wegasComponentCommonSchema,
       }),
       componentProperties: schemaProps.object({

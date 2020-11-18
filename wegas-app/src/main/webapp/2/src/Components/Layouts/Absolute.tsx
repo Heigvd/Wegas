@@ -12,9 +12,14 @@ export function AbsoluteLayout({
   className,
   style,
   children,
+  id,
 }: WegasComponentProps) {
   return (
-    <div className={layoutStyle + classNameOrEmpty(className)} style={style}>
+    <div
+      id={id}
+      className={layoutStyle + classNameOrEmpty(className)}
+      style={style}
+    >
       {children}
     </div>
   );

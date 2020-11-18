@@ -30,7 +30,7 @@ import {
   FilePickingType,
 } from '../../../Editor/Components/FileBrowser/FileBrowser';
 import { CustomScriptProps } from '../../../Editor/Components/FormView/CustomScript';
-import { IAbstractContentDescriptor } from 'wegas-ts-api';
+import { IAbstractContentDescriptor, IScript } from 'wegas-ts-api';
 import { ScriptContext } from '../../Hooks/useGlobalLibs';
 
 type TypedProps<T extends { view: {} }> = Schema<
@@ -515,14 +515,18 @@ const simpleSchemaProps = {
   scriptString: ({
     label,
     required = false,
+    value = undefined,
     featureLevel = 'DEFAULT',
     index = 0,
     layout,
     borderTop,
-  }: CommonSchemaProps): TypedProps<ScripableVariableSelectProps> => ({
+  }: CommonSchemaProps & ValueSchemaProps<IScript>): TypedProps<
+    ScripableVariableSelectProps
+  > => ({
     required,
     type: 'object',
     index,
+    value,
     view: {
       borderTop,
       index,

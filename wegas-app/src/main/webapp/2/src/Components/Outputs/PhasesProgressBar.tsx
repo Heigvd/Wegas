@@ -84,7 +84,7 @@ function drawBar(
   );
 }
 
-export interface PhasesProgressBarProps extends ClassAndStyle {
+export interface PhasesProgressBarProps extends ClassStyleId {
   /**
    * value - the current value of the progess bar
    */

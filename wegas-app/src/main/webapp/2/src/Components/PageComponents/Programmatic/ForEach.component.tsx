@@ -16,7 +16,7 @@ import {
   pageComponentFactory,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classAndStyleShema } from '../tools/options';
+import { classStyleIdShema } from '../tools/options';
 import {
   ChildrenDeserializerProps,
   PageDeserializer,
@@ -102,7 +102,7 @@ registerComponent(
         value: 'item',
       }),
       itemsOnly: schemaProps.boolean({ label: 'Items only' }),
-      ...classAndStyleShema,
+      ...classStyleIdShema,
     },
     getComputedPropsFromVariable: () => ({ exposeAs: 'item', children: [] }),
   }),

@@ -1200,19 +1200,22 @@ public class SchemaGenerator extends AbstractMojo {
             .append(System.lineSeparator())
             .append(System.lineSeparator());
         
-        //declBuilder.append(EXPORT_TOSTRIP).append("interface WegasEntitiesNamesAndClasses {");
-        //intKeys.forEach(key -> {
-        //    String sKey = "S" + key;
-        //    declBuilder.append(System.lineSeparator())
-        //        .append("  " + sKey + " : " + sKey + ";")
-        //        .append(System.lineSeparator())
-        //        .append("  '" + sKey + "[]' : " + sKey + "[];");
-        //});
+        declBuilder.append(EXPORT_TOSTRIP).append("interface WegasEntitiesNamesAndClasses {");
+        intKeys.forEach(key -> {
+            String sKey = "S" + key;
+            implBuilder.append(System.lineSeparator())
+                .append("  " + sKey + " : " + sKey + ";")
+                .append(System.lineSeparator())
+                .append("  '" + sKey + "[]' : " + sKey + "[];")
+                .append("  'Readonly<" + sKey + ">' : Readonly<" + sKey + ">;")
+                .append(System.lineSeparator())
+                .append("  'Readonly<" + sKey + "[]>' : Readonly<" + sKey + "[]>;");
+        });
 
-        //declBuilder.append(System.lineSeparator())
-        //    .append("}")
-        //    .append(System.lineSeparator())
-        //    .append(System.lineSeparator());
+        declBuilder.append(System.lineSeparator())
+            .append("}")
+            .append(System.lineSeparator())
+            .append(System.lineSeparator());
 
         writeInterfaces(declBuilder, tsScriptableDeclarations, this.otherObjectsScriptableTypeD);
         writeInterfaces(implBuilder, tsScriptableClasses, this.otherObjectsScriptableTypeD);

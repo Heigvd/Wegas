@@ -12,7 +12,10 @@ import {
   defaultFlexLayoutOptionsKeys,
 } from '../../Layouts/FlexList';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classAndStyleShema } from '../tools/options';
+import {
+  classStyleIdShema,
+  clientAndServerScriptChoices,
+} from '../tools/options';
 import { css } from 'emotion';
 import { Modal } from '../../Modal';
 import { childrenDeserializerFactory } from './FlexList.component';
@@ -39,7 +42,10 @@ export const emptyLayoutItemStyle = css({
   zIndex: 0,
 });
 
-interface PlayerModalProps extends FlexListProps, WegasComponentProps {
+interface PlayerModalProps
+  extends FlexListProps,
+    WegasComponentProps,
+    ClassStyleId {
   /**
    * onExitActions - callback when clicking outside the content of the modal
    */
@@ -51,7 +57,7 @@ interface PlayerModalProps extends FlexListProps, WegasComponentProps {
   /**
    * attachedTo - the ID of the element to insert the modal (will cover the whole element). By default, gets the last themeCTX provider
    */
-  attachedToId?: IScript;
+  attachedToId?: string;
 }
 
 function PlayerModal({
@@ -60,13 +66,15 @@ function PlayerModal({
   context,
   editMode,
   attachedToId,
+  className,
+  style,
+  id,
   ...flexProps
 }: PlayerModalProps) {
-  const attachTo = useScript<string>(attachedToId, context);
   const { client, server } = onExitActions || {};
   return (
     <Modal
-      attachedToId={attachTo}
+      attachedToId={attachedToId}
       onExit={() => {
         if (client) {
           safeClientScriptEval(client, context);
@@ -81,6 +89,8 @@ function PlayerModal({
         }
       }}
       style={editMode ? { position: 'relative' } : undefined}
+      className={className}
+      id={id}
     >
       <FlexList {...flexProps}>{children}</FlexList>
     </Modal>
@@ -103,35 +113,11 @@ registerComponent(
       onExitActions: schemaProps.hashlist({
         label: 'On Exit Actions',
         required: true,
-        choices: [
-          {
-            label: 'Client script',
-            value: {
-              prop: 'client',
-              schema: schemaProps.customScript({
-                label: 'Client script',
-                required: true,
-                language: 'TypeScript',
-              }),
-            },
-          },
-          {
-            label: 'Server script',
-            value: {
-              prop: 'server',
-              schema: schemaProps.script({
-                label: 'Server script',
-                required: true,
-                mode: 'SET',
-                language: 'TypeScript',
-              }),
-            },
-          },
-        ],
+        choices: clientAndServerScriptChoices,
       }),
-      attachedToId: schemaProps.scriptString({ label: 'Attach to id' }),
+      attachedToId: schemaProps.string({ label: 'Attach to id' }),
       ...flexListSchema,
-      ...classAndStyleShema,
+      ...classStyleIdShema,
     },
     getComputedPropsFromVariable: () => ({ children: [] }),
   }),

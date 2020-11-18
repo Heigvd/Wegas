@@ -41,7 +41,7 @@ export const FeaturesProvider = React.memo(FeaturesContext);
 /**
  * Features selector allows to select features inside the feature context given by the FeatureProvider
  */
-export function FeatureToggler({ className, style }: ClassAndStyle) {
+export function FeatureToggler({ className, style }: ClassStyleId) {
   const { currentFeatures, setFeature, removeFeature } = React.useContext(
     featuresCTX,
   );

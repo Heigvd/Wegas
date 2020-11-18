@@ -299,7 +299,7 @@ function LockedOverlay({ locked }: LockedOverlayProps) {
 /**
  * WegasComponentItemProps - Required props for a layout item component
  */
-export interface WegasComponentItemProps extends ClassAndStyle {
+export interface WegasComponentItemProps extends ClassStyleId {
   /**
    * onClick - triggered when a click occures on the element
    */
@@ -389,7 +389,7 @@ export type WegasComponentOptions = WegasComponentOptionsActions &
  * WegasComponentProps - Required props for a Wegas component
  */
 export interface WegasComponentProps
-  extends React.PropsWithChildren<ClassAndStyle>,
+  extends React.PropsWithChildren<ClassStyleId>,
     Omit<WegasComponentCommonProperties, 'children'>,
     PageComponentProps,
     WegasComponentOptions {}

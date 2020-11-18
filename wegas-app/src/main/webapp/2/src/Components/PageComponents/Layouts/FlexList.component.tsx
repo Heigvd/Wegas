@@ -23,7 +23,7 @@ import {
   ChildrenDeserializerProps,
   PageDeserializer,
 } from '../tools/PageDeserializer';
-import { classAndStyleShema } from '../tools/options';
+import { classStyleIdShema } from '../tools/options';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { css } from 'emotion';
 
@@ -155,7 +155,7 @@ registerComponent(
     },
     name: 'FlexList',
     icon: 'bars',
-    schema: { ...flexListSchema, ...classAndStyleShema },
+    schema: { ...flexListSchema, ...classStyleIdShema },
     getComputedPropsFromVariable: () => ({ children: [] }),
   }),
 );

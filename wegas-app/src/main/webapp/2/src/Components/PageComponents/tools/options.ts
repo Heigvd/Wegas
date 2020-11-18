@@ -591,7 +591,34 @@ export const wegasComponentExtraSchema = (
 /**
  * classAndStyleShema - defines the schema to be used to edit classes and style of a component
  */
-export const classAndStyleShema = {
+export const classStyleIdShema = {
   className: schemaProps.string({ label: 'Classes' }),
   style: schemaProps.hashlist({ label: 'Style' }),
+  id: schemaProps.string({ label: 'Id' }),
 };
+
+export const clientAndServerScriptChoices: HashListChoices = [
+  {
+    label: 'Client script',
+    value: {
+      prop: 'client',
+      schema: schemaProps.customScript({
+        label: 'Client script',
+        required: true,
+        language: 'TypeScript',
+      }),
+    },
+  },
+  {
+    label: 'Server script',
+    value: {
+      prop: 'server',
+      schema: schemaProps.script({
+        label: 'Server script',
+        required: true,
+        mode: 'SET',
+        language: 'TypeScript',
+      }),
+    },
+  },
+];

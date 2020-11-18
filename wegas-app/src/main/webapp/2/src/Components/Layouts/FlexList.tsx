@@ -246,7 +246,7 @@ export const flexListSchema = {
   children: schemaProps.hidden({}),
 };
 
-export interface FlexListProps extends ClassAndStyle {
+export interface FlexListProps extends ClassStyleId {
   /**
    * layout : the layout CSS properties
    */
@@ -281,11 +281,13 @@ export function FlexList({
   className,
   style,
   children,
+  id,
 }: React.PropsWithChildren<FlexListProps>) {
   const { flexDirection, flexWrap, justifyContent, alignItems, alignContent } =
     layout || {};
   return (
     <div
+      id={id}
       className={cx(flex, grow, layoutStyle) + classNameOrEmpty(className)}
       style={{
         flexDirection,

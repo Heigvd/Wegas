@@ -63,7 +63,7 @@ const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
     }),
 );
 
-interface VariableTreeTitleProps extends ClassAndStyle {
+interface VariableTreeTitleProps extends ClassStyleId {
   variable?: IVariableDescriptor | IEvaluationDescriptorContainer;
   subPath?: (string | number)[];
 }

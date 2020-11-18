@@ -9,6 +9,7 @@ import { css, cx } from 'emotion';
 import { flex, expandHeight } from '../../../css/classes';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { FlexItem } from '../../../Components/Layouts/FlexList';
+import { classNameOrEmpty } from '../../../Helper/className';
 
 const editStyle = css({
   borderStyle: 'solid',
@@ -17,7 +18,7 @@ const editStyle = css({
   overflow: 'auto',
 });
 
-interface PageLoaderProps {
+interface PageLoaderProps extends ClassStyleId {
   selectedPageId?: string;
   displayFrame?: boolean;
   themeMode?: string;
@@ -27,6 +28,9 @@ export function PageLoader({
   selectedPageId,
   displayFrame,
   themeMode,
+  className,
+  style,
+  id,
 }: PageLoaderProps) {
   const selectedPage = useStore(
     s => (selectedPageId ? s.pages[selectedPageId] : undefined),
@@ -41,7 +45,12 @@ export function PageLoader({
       <ThemeProvider contextName={currentContext} modeName={currentMode}>
         <React.Suspense fallback={<TextLoader text="Building World!" />}>
           <div
-            className={cx(flex, { [editStyle]: displayFrame }, expandHeight)}
+            className={
+              cx(flex, { [editStyle]: displayFrame }, expandHeight) +
+              classNameOrEmpty(className)
+            }
+            style={style}
+            id={id}
           >
             {selectedPage ? (
               <PageDeserializer

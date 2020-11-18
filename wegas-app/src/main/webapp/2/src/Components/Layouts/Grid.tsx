@@ -327,7 +327,7 @@ export const gridSchema = {
   children: schemaProps.hidden({}),
 };
 
-export interface GridProps extends ClassAndStyle {
+export interface GridProps extends ClassStyleId {
   /**
    * layout : the layout CSS properties
    */
@@ -382,9 +382,11 @@ export function Grid({
   className,
   style,
   children,
+  id,
 }: React.PropsWithChildren<GridProps>) {
   return (
     <div
+      id={id}
       className={cx(grid, grow, layoutStyle) + classNameOrEmpty(className)}
       style={{
         ...layout,

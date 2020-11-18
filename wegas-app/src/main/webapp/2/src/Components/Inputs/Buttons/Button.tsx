@@ -155,7 +155,7 @@ export function disableBorderToSelector(disableBorders?: DisableBorders) {
     : '';
 }
 
-export interface ButtonProps extends ClassAndStyle {
+export interface ButtonProps extends ClassStyleId {
   label?: React.ReactNode;
   onClick?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   disabled?: boolean;

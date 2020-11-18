@@ -17,7 +17,7 @@ import {
 } from 'wegas-ts-api';
 import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 import { ChildrenDeserializerProps } from './PageDeserializer';
-import { classAndStyleShema } from './options';
+import { classStyleIdShema } from './options';
 
 export const componentTypes = [
   'Other',
@@ -184,7 +184,7 @@ export function pageComponentFactory<
     componentName: param.name,
     schema: {
       description: param.name,
-      properties: { ...classAndStyleShema, ...param.schema },
+      properties: { ...classStyleIdShema, ...param.schema },
     },
     allowedVariables: param.allowedVariables,
     getComputedPropsFromVariable: param.getComputedPropsFromVariable,

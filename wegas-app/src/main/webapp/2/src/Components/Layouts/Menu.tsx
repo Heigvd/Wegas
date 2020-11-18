@@ -50,7 +50,7 @@ export const menuSchema = {
   // alwaysSelected: schemaProps.boolean('Always selected',true,true),
 };
 
-export interface MenuProps extends React.PropsWithChildren<ClassAndStyle> {
+export interface MenuProps extends React.PropsWithChildren<ClassStyleId> {
   selectItem?: number;
   vertical?: boolean;
   // alwaysSelected?: boolean;
@@ -65,6 +65,7 @@ export function Menu({
   className,
   style,
   children,
+  id,
 }: MenuProps) {
   const childrenItems = React.useRef<HTMLElement[]>([]);
   const [selectedItem, setSelectedItem] = React.useState<number | undefined>(
@@ -166,6 +167,7 @@ export function Menu({
         // alignContent,
         ...style,
       }}
+      id={id}
     >
       {children}
     </div>
@@ -185,7 +187,9 @@ export const menuItemSchema: HashListChoices = [
 export const defaultMenuItemProps: MenuItemProps = {
   unselectable: undefined,
 };
-export const defaultMenuItemKeys = Object.keys(defaultMenuItemProps) as (keyof MenuItemProps)[];
+export const defaultMenuItemKeys = Object.keys(
+  defaultMenuItemProps,
+) as (keyof MenuItemProps)[];
 
 interface MenuItemProps
   extends React.PropsWithChildren<WegasComponentItemProps> {

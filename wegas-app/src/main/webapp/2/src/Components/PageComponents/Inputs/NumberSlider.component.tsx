@@ -14,7 +14,7 @@ import { Actions } from '../../../data';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, SNumberDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { classAndStyleShema } from '../tools/options';
+import { classStyleIdShema } from '../tools/options';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
 import { useScript } from '../../Hooks/useScript';
@@ -42,16 +42,24 @@ interface PlayerNumberSliderProps extends WegasComponentProps {
 function PlayerNumberSlider({
   script,
   context,
+  className,
+  style,
+  id,
   ...restProps
 }: PlayerNumberSliderProps) {
   const number = useScript<SNumberDescriptor>(script, context);
   const player = instantiate(useStore(Player.selectCurrent));
 
   return number == null ? (
-    <pre>Not found: {script?.content}</pre>
+    <pre className={className} style={style} id={id}>
+      Not found: {script?.content}
+    </pre>
   ) : (
     <NumberSlider
       {...restProps}
+      className={className}
+      style={style}
+      id={id}
       value={number.getValue(player)}
       onChange={(v, i) => {
         if (i === 'DragEnd') {
@@ -86,7 +94,7 @@ registerComponent(
         values: displayModes,
       }),
       disabled: schemaProps.boolean({ label: 'Disabled' }),
-      ...classAndStyleShema,
+      ...classStyleIdShema,
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({

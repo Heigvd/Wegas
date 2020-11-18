@@ -3,7 +3,7 @@ import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import { classAndStyleShema } from '../tools/options';
+import { classStyleIdShema } from '../tools/options';
 import {
   defaultGridLayoutOptionsKeys,
   Grid,
@@ -38,7 +38,7 @@ registerComponent(
     },
     name: 'Grid',
     icon: 'table',
-    schema: { ...gridSchema, ...classAndStyleShema },
+    schema: { ...gridSchema, ...classStyleIdShema },
     getComputedPropsFromVariable: () => ({ children: [] }),
   }),
 );

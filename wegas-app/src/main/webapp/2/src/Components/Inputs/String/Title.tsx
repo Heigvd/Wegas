@@ -25,7 +25,7 @@ const levelStyle = (level: TitleLevels) =>
       ],
   });
 
-interface TitleProps extends React.PropsWithChildren<ClassAndStyle> {
+interface TitleProps extends React.PropsWithChildren<ClassStyleId> {
   level?: TitleLevels;
 }
 

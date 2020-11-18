@@ -412,9 +412,11 @@ export function parseAndRunClientScript(
     if (matched) {
       index += matched.index == null ? scriptContent.length : matched.index;
       const matchedCode = matched[0].replace(regexStart, '').slice(0, -2);
-      const matchedValue = String(
-        safeClientScriptEval<string>(matchedCode, context),
-      );
+      let matchedValue = safeClientScriptEval<string>(matchedCode, context);
+
+      if (typeof matchedValue === 'string') {
+        matchedValue = `"${matchedValue}"`;
+      }
 
       scriptContent = replace(
         scriptContent,

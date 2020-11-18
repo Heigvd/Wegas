@@ -36,7 +36,7 @@ export type ModalProps = React.PropsWithChildren<
      * attachedTo - the ID of the element to insert the modal (will cover the whole element). By default, gets the last themeCTX provider
      */
     attachedToId?: string;
-  } & ClassAndStyle
+  } & ClassStyleId
 >;
 
 export function Modal({
@@ -45,6 +45,7 @@ export function Modal({
   attachedToId,
   className,
   style,
+  id,
 }: ModalProps) {
   const { themeRoot } = React.useContext(themeCTX);
   const container = React.useRef<HTMLElement | null>(null);
@@ -90,6 +91,7 @@ export function Modal({
       <div
         className={modalStyle + classNameOrEmpty(className)}
         style={style}
+        id={id}
         onClick={bgClick}
       >
         <div ref={modal} aria-modal="true" role="dialog" tabIndex={-1}>

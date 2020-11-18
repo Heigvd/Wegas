@@ -19,6 +19,7 @@ import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { ActionCreator } from '../../../data/actions';
 import { createScript } from '../../../Helper/wegasEntites';
 import { WegasComponentProps } from '../tools/EditableComponent';
+import { classStyleIdShema } from '../tools/options';
 
 type PlayerPageLoaderProps = WegasComponentProps & PageLoaderComponentProps;
 
@@ -29,6 +30,9 @@ function PlayerPageLoader({
   initialSelectedPageId = defaultPageAsScript(),
   name,
   context,
+  className,
+  style,
+  id,
 }: PlayerPageLoaderProps) {
   let pageScript = useStore(s => {
     if (name != null) {
@@ -48,7 +52,9 @@ function PlayerPageLoader({
   const pageId = (useScript(pageScript, context) as string | undefined) || '';
 
   return pageIdPath.includes(pageId) ? (
-    <pre>Page {pageId} recursion</pre>
+    <pre className={className} style={style} id={id}>
+      Page {pageId} recursion
+    </pre>
   ) : (
     <pageCTX.Provider
       value={{
@@ -56,7 +62,12 @@ function PlayerPageLoader({
         pageIdPath: [...pageIdPath, pageId],
       }}
     >
-      <PageLoader selectedPageId={pageId} />
+      <PageLoader
+        className={className}
+        style={style}
+        id={id}
+        selectedPageId={pageId}
+      />
     </pageCTX.Provider>
   );
 }
@@ -69,6 +80,7 @@ registerComponent(
     icon: 'window-maximize',
     schema: {
       initialSelectedPageId: schemaProps.pageSelect({ label: 'Page' }),
+      ...classStyleIdShema,
     },
     getComputedPropsFromVariable: () => ({
       initialSelectedPageId: defaultPageAsScript(),
