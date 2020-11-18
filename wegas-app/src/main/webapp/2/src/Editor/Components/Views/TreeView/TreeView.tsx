@@ -53,7 +53,7 @@ export function isItemDescription<T>(
   );
 }
 
-interface TreeProps<T> extends ClassStyleId {
+interface TreeProps<T> extends Omit<ClassStyleId, 'id'> {
   /**
    * id - the description of the tree - this prop will define the type of the ids used in nodes
    */
@@ -241,7 +241,7 @@ export type GetParentPropsFn<T> = () => {
   parentProps?: ParentPassedProps<T>;
 };
 
-interface TreeNodeProps<T> extends ClassStyleId {
+interface TreeNodeProps<T> extends Omit<ClassStyleId, 'id'> {
   /**
    * id - the description of the node (it's is the information passed on drag/drop event)
    */

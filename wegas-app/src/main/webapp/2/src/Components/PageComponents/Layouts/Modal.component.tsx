@@ -24,7 +24,6 @@ import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import {
   parseAndRunClientScript,
   safeClientScriptEval,
-  useScript,
 } from '../../Hooks/useScript';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
