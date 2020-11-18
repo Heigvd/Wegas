@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -50,6 +51,8 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
 
     @Inject
     private EjbTimerFacade ejbTimerFacade;
+
+    @Inject SecurityTestFacade securityTestFacade;
 
     @Before
     public void setUp() throws Exception {
@@ -280,5 +283,10 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
         dumb.getPassword();
         WegasUser dumber = new WegasUser(dumb.getUser(), "dumb@local", "123abcde");
         this.login(dumber);
+    }
+
+    @Test
+    public void testSu() {
+        securityTestFacade.inFacadeSuTest(admin.getUser(), u.getUser());
     }
 }

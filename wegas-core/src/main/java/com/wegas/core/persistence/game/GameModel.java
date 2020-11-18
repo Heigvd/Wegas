@@ -159,7 +159,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @JsonView(Views.IndexI.class)
+    @JsonView({Views.IndexI.class, Views.LobbyI.class})
     private Long id;
 
     /**
