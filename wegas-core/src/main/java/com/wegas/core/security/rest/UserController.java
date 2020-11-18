@@ -36,6 +36,7 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.core.security.util.AuthenticationMethod;
+import com.wegas.core.security.util.Sudoer;
 import com.wegas.core.security.util.TokenInfo;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -701,15 +702,18 @@ public class UserController {
         User currentUser = userFacade.getCurrentUser();
         final List<Player> players = currentUser.getPlayers();
 
-        List<DatedEntity> queue = populatorFacade.getQueue();
+        try (Sudoer root = requestManager.sudoer()) {
+            List<DatedEntity> queue = populatorFacade.getQueue();
 
-        for (Player p : players) {
-            if (p.getStatus().equals(Populatable.Status.WAITING)
-                || p.getStatus().equals(Populatable.Status.RESCHEDULED)) {
-                p.setQueueSize(queue.indexOf(p) + 1);
+            for (Player p : players) {
+                if (p.getStatus().equals(Populatable.Status.WAITING)
+                    || p.getStatus().equals(Populatable.Status.RESCHEDULED)) {
+                    p.setQueueSize(queue.indexOf(p) + 1);
+                }
+                teamsToReturn.add(p.getTeam());
             }
-            teamsToReturn.add(p.getTeam());
         }
+
         if (!teamsToReturn.isEmpty()) {
             return teamsToReturn;
         } else {
