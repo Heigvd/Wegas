@@ -123,7 +123,8 @@ public class Views {
     /**
      * View relevant to Lobby without Editor nor Extended items
      */
-    public static class Lobby extends Public implements LobbyI {
+    //public static class Lobby extends Public implements LobbyI {
+    public static class Lobby extends Views implements PublicI, LobbyI {
     }
 
     /**
