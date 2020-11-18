@@ -525,7 +525,6 @@ export class StateMachineEditor extends React.Component<
           >
             {plumb != null &&
               Object.entries(stateMachine.states).map(([key, state]) => {
-                // const key = Number(k) + stateMachine.states[k].version;
                 return (
                   <State
                     editState={this.editState}
