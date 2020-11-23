@@ -40,7 +40,8 @@ interface OpenURLAction {
   url: string;
 }
 interface OpenFileAction {
-  filePath: string;
+  filePath: IScript;
+  context?: { [item: string]: any };
 }
 interface ImpactVariableAction {
   impact: IScript;
@@ -113,7 +114,10 @@ export const wegasComponentActions: WegasComponentActions = {
     window.open(props.url);
   },
   openFile: props => {
-    const win = window.open(fileURL(props.filePath), '_blank');
+    const win = window.open(
+      fileURL(clientScriptEval(props.filePath, props.context)),
+      '_blank',
+    );
     win!.focus();
   },
   impactVariable: props => {
@@ -181,7 +185,11 @@ export const actionsChoices: HashListChoices = [
       schema: schemaProps.object({
         label: 'Open File',
         properties: {
-          fileDescriptor: schemaProps.path({ label: 'File', required: true }),
+          filePath: schemaProps.path({
+            label: 'File',
+            required: true,
+            scriptable: true,
+          }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
       }),
