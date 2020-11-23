@@ -52,8 +52,8 @@ import { focusTab } from './LinearTabLayout/LinearLayout';
 import { mainLayoutId } from './Layout';
 import { SimpleInput } from '../../Components/Inputs/SimpleInput';
 import HTMLEditor from '../../Components/HTMLEditor';
-import { useOnClickOutside } from '../../Components/Hooks/useOnClickOutside';
 import { cloneDeep } from 'lodash-es';
+import { Validate } from '../../Components/Inputs/Validate';
 
 const editorStyle = css({
   position: 'relative',
@@ -714,21 +714,21 @@ function State({
   const container = React.useRef<HTMLDivElement>(null);
 
   const textValue = getValue(state, lang);
-  const [newValue, setNewValue] = React.useState(textValue);
+  // const [newValue, setNewValue] = React.useState(textValue);
 
-  useOnClickOutside(container, () => {
-    setEditingText(false);
-    if (entityIs(state, 'State')) {
-      editStateContent(id, {
-        ...state,
-        label: newValue,
-      });
-    } else {
-      const newState = cloneDeep(state);
-      newState.text.translations[lang] = createTranslation(lang, newValue);
-      editStateContent(id, newState);
-    }
-  });
+  // useOnClickOutside(container, () => {
+  //   setEditingText(false);
+  //   if (entityIs(state, 'State')) {
+  //     editStateContent(id, {
+  //       ...state,
+  //       label: newValue,
+  //     });
+  //   } else {
+  //     const newState = cloneDeep(state);
+  //     newState.text.translations[lang] = createTranslation(lang, newValue);
+  //     editStateContent(id, newState);
+  //   }
+  // });
 
   React.useEffect(() => {
     const currentContainer = container.current;
@@ -802,15 +802,36 @@ function State({
           <Toolbar.Content>
             {editingText ? (
               <div onClick={e => e.stopPropagation()}>
-                {entityIs(state, 'State') ? (
-                  <SimpleInput
-                    placeholder="State label"
-                    value={textValue}
-                    onChange={value => setNewValue(String(value))}
-                  />
-                ) : (
-                  <HTMLEditor value={textValue} onChange={setNewValue} />
-                )}
+                <Validate
+                  value={textValue}
+                  onChange={newValue => {
+                    if (entityIs(state, 'State')) {
+                      editStateContent(id, {
+                        ...state,
+                        label: newValue,
+                      });
+                    } else {
+                      const newState = cloneDeep(state);
+                      newState.text.translations[lang] = createTranslation(
+                        lang,
+                        newValue,
+                      );
+                      editStateContent(id, newState);
+                    }
+                  }}
+                >
+                  {(value, onChange) =>
+                    entityIs(state, 'State') ? (
+                      <SimpleInput
+                        placeholder="State label"
+                        value={value}
+                        onChange={value => onChange(String(value))}
+                      />
+                    ) : (
+                      <HTMLEditor value={value} onChange={onChange} />
+                    )
+                  }
+                </Validate>
               </div>
             ) : textValue === '' ? (
               <div onClick={() => setEditingText(true)}>

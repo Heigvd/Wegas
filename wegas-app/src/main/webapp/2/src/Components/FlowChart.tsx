@@ -1,7 +1,5 @@
 import { css } from 'emotion';
 import * as React from 'react';
-import { wlog } from '../Helper/wegaslog';
-import { DefaultDndProvider } from './Contexts/DefaultDndProvider';
 import {
   MouseDnDHandler,
   XYPosition,

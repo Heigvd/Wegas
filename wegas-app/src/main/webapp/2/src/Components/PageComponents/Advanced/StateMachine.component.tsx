@@ -63,7 +63,7 @@ registerComponent(
         returnType: ['SFSMDescriptor', 'SDialogueDescriptor'],
       }),
     },
-    allowedVariables: ['ListDescriptor', 'QuestionDescriptor'],
+    allowedVariables: ['FSMDescriptor', 'DialogueDescriptor'],
     getComputedPropsFromVariable: v => ({
       questionList: createFindVariableScript(v),
       style: {
