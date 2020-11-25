@@ -36,6 +36,14 @@ export type ModalProps = React.PropsWithChildren<
      * attachedTo - the ID of the element to insert the modal (will cover the whole element). By default, gets the last themeCTX provider
      */
     attachedToId?: string;
+    /**
+     * innerClassName - the class to apply on the inner component
+     */
+    innerClassName?: string;
+    /**
+     * innerStyle- the style to apply on the inner component
+     */
+    innerStyle?: React.CSSProperties;
   } & ClassStyleId
 >;
 
@@ -45,6 +53,8 @@ export function Modal({
   attachedToId,
   className,
   style,
+  innerStyle,
+  innerClassName,
   id,
 }: ModalProps) {
   const { themeRoot } = React.useContext(themeCTX);
@@ -94,7 +104,14 @@ export function Modal({
         id={id}
         onClick={bgClick}
       >
-        <div ref={modal} aria-modal="true" role="dialog" tabIndex={-1}>
+        <div
+          ref={modal}
+          aria-modal="true"
+          role="dialog"
+          tabIndex={-1}
+          style={innerStyle}
+          className={innerClassName}
+        >
           {children}
         </div>
       </div>,

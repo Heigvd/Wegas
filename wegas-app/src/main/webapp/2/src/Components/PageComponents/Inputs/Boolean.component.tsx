@@ -92,7 +92,7 @@ registerComponent(
         required: true,
         returnType: ['SBooleanDescriptor'],
       }),
-      label: schemaProps.scriptString({ label: 'Label' }),
+      label: schemaProps.scriptString({ label: 'Label', richText: true }),
       type: schemaProps.select({
         label: 'Type',
         values: ['checkbox', 'toggler'],

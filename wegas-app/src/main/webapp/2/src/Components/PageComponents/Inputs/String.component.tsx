@@ -14,6 +14,11 @@ import { classStyleIdShema } from '../tools/options';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
+import {
+  OnVariableChange,
+  onVariableChangeSchema,
+  useOnVariableChange,
+} from './tools';
 
 interface PlayerStringInput extends WegasComponentProps {
   /**
@@ -24,6 +29,7 @@ interface PlayerStringInput extends WegasComponentProps {
    * placeholder - the grey text inside the box when nothing is written
    */
   placeholder?: IScript;
+  onVariableChange?: OnVariableChange;
 }
 
 function PlayerStringInput({
@@ -34,10 +40,13 @@ function PlayerStringInput({
   className,
   style,
   id,
+  onVariableChange,
 }: PlayerStringInput) {
   const placeholderText = useScript<string>(placeholder, context);
   const text = useScript<SStringDescriptor>(script, context);
   const player = instantiate(useStore(Player.selectCurrent));
+
+  const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
   const { disabled, readOnly } = options;
 
@@ -49,11 +58,15 @@ function PlayerStringInput({
     <SimpleInput
       value={text.getValue(player)}
       onChange={v => {
-        store.dispatch(
-          runScript(
-            `Variable.find(gameModel,"${text.getName()}").setValue(self, '${v}');`,
-          ),
-        );
+        if (handleOnChange) {
+          handleOnChange(v);
+        } else {
+          store.dispatch(
+            runScript(
+              `Variable.find(gameModel,"${text.getName()}").setValue(self, '${v}');`,
+            ),
+          );
+        }
       }}
       disabled={disabled}
       readOnly={readOnly}
@@ -77,7 +90,11 @@ registerComponent(
         required: true,
         returnType: ['SStringDescriptor'],
       }),
-      placeholder: schemaProps.scriptString({ label: 'Placeholder' }),
+      placeholder: schemaProps.scriptString({
+        label: 'Placeholder',
+        richText: true,
+      }),
+      onVariableChange: onVariableChangeSchema('On text change action'),
       ...classStyleIdShema,
     },
     allowedVariables: ['StringDescriptor'],

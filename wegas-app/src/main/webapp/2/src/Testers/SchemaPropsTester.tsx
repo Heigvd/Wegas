@@ -15,7 +15,7 @@ import { IScript, IAbstractContentDescriptor } from 'wegas-ts-api';
 
 const testSchema = {
   variable: schemaProps.scriptVariable({ label: 'Variable' }),
-  translated: schemaProps.scriptString({ label: 'Translated' }),
+  translated: schemaProps.scriptString({ label: 'Translated', richText: true }),
   hidden: schemaProps.hidden({}),
   boolean: schemaProps.boolean({ label: 'Boolean' }),
   number: schemaProps.number({ label: 'Number' }),

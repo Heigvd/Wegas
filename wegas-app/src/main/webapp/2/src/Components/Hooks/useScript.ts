@@ -27,6 +27,7 @@ import { popupDispatch, addPopup, PopupActionCreator } from '../PopupManager';
 import { ActionCreator } from '../../data/actions';
 import {
   createTranslatableContent,
+  createTranslation,
   translate,
 } from '../../Editor/Components/FormView/translatable';
 import { wwarn } from '../../Helper/wegaslog';
@@ -34,6 +35,7 @@ import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { replace } from '../../Helper/tools';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
 import { isScript } from '../../Helper/wegasEntites';
+import { cloneDeep } from 'lodash-es';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -66,6 +68,7 @@ interface GlobalClasses {
     [name: string]: unknown;
   };
   APIMethods: APIMethodsClass;
+  Helpers: GlobalHelpersClass;
 }
 
 const globalDispatch = store.dispatch;
@@ -291,9 +294,17 @@ export function useGlobals() {
     createTranslatableContent: value => {
       return createTranslatableContent(lang, value);
     },
+    createTranslation: value => {
+      return createTranslation(lang, value);
+    },
+    currentLanguageCode: lang,
   };
 
   globals.APIMethods = APIScriptMethods;
+
+  globals.Helpers = {
+    cloneDeep: cloneDeep,
+  };
 }
 
 export type ReturnType = object | number | boolean | string | undefined;

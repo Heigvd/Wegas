@@ -54,7 +54,7 @@ function PlayerButton({
 
 export const buttonSchema = {
   action: schemaProps.script({ label: 'Action', mode: 'SET' }),
-  label: schemaProps.scriptString({ label: 'Label' }),
+  label: schemaProps.scriptString({ label: 'Label', richText: true }),
   icon: schemaProps.select({ label: 'Icon', values: Object.keys(icons) }),
   prefixedLabel: schemaProps.boolean({ label: 'Prefixed label' }),
   ...classStyleIdShema,

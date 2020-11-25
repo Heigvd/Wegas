@@ -65,9 +65,9 @@ function PlayerModal({
   context,
   editMode,
   attachedToId,
-  className,
-  style,
   id,
+  style,
+  className,
   ...flexProps
 }: PlayerModalProps) {
   const { client, server } = onExitActions || {};
@@ -88,10 +88,13 @@ function PlayerModal({
         }
       }}
       style={editMode ? { position: 'relative' } : undefined}
-      className={className}
+      innerStyle={style}
+      innerClassName={className}
       id={id}
     >
-      <FlexList {...flexProps}>{children}</FlexList>
+      <FlexList style={{ width: '100%', height: '100%' }} {...flexProps}>
+        {children}
+      </FlexList>
     </Modal>
   );
 }

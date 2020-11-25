@@ -16,16 +16,19 @@ import { instantiate } from '../../../data/scriptable';
 
 interface PlayerStateMachineProps extends WegasComponentProps {
   stateMachine?: IScript;
+  title?: IScript;
 }
 
 export default function PlayerStateMachine({
   stateMachine,
+  title,
   context,
   className,
   style,
   id,
 }: PlayerStateMachineProps) {
   const player = instantiate(useStore(Player.selectCurrent));
+  const titleText = useScript<string>(title, context);
   const FSM = useScript<SFSMDescriptor>(stateMachine, context);
   const descriptor = FSM?.getEntity();
   const instance = FSM?.getInstance(player).getEntity();
@@ -39,6 +42,7 @@ export default function PlayerStateMachine({
       {({ localDispatch }) => {
         return (
           <StateMachineEditor
+            title={titleText}
             stateMachine={descriptor}
             stateMachineInstance={instance}
             localDispatch={localDispatch}
@@ -62,6 +66,7 @@ registerComponent(
         required: true,
         returnType: ['SFSMDescriptor', 'SDialogueDescriptor'],
       }),
+      title: schemaProps.scriptString({ label: 'Title', richText: true }),
     },
     allowedVariables: ['FSMDescriptor', 'DialogueDescriptor'],
     getComputedPropsFromVariable: v => ({

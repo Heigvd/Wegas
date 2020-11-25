@@ -14,6 +14,11 @@ import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import HTMLEditor from '../../HTMLEditor';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
+import {
+  OnVariableChange,
+  onVariableChangeSchema,
+  useOnVariableChange,
+} from './tools';
 
 interface PlayerTextInputProps extends WegasComponentProps {
   /**
@@ -24,6 +29,7 @@ interface PlayerTextInputProps extends WegasComponentProps {
    * placeholder - the grey text inside the box when nothing is written
    */
   placeholder?: IScript;
+  onVariableChange?: OnVariableChange;
 }
 
 function PlayerTextInput({
@@ -34,9 +40,11 @@ function PlayerTextInput({
   className,
   style,
   id,
+  onVariableChange,
 }: PlayerTextInputProps) {
   const text = useScript<STextDescriptor>(script, context);
   const player = instantiate(useStore(Player.selectCurrent));
+  const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
   return text == null ? (
     <pre className={className} style={style} id={id}>
@@ -47,11 +55,15 @@ function PlayerTextInput({
       id={id}
       value={text.getValue(player)}
       onChange={v => {
-        store.dispatch(
-          runScript(
-            `Variable.find(gameModel,"${text.getName()}").setValue(self, '${v}');`,
-          ),
-        );
+        if (handleOnChange) {
+          handleOnChange(v);
+        } else {
+          store.dispatch(
+            runScript(
+              `Variable.find(gameModel,"${text.getName()}").setValue(self, '${v}');`,
+            ),
+          );
+        }
       }}
       // disabled={disabled}
       // readOnly={readOnly}
@@ -74,7 +86,11 @@ registerComponent(
         required: true,
         returnType: ['STextDescriptor'],
       }),
-      placeholder: schemaProps.scriptString({ label: 'Placeholder' }),
+      placeholder: schemaProps.scriptString({
+        label: 'Placeholder',
+        richText: true,
+      }),
+      onVariableChange: onVariableChangeSchema('On text change action'),
       ...classStyleIdShema,
     },
     allowedVariables: ['StringDescriptor', 'TextDescriptor'],
