@@ -15,7 +15,7 @@ gulp.task('html', ['inject'], function(cb) {
     var jsFilter = $.filter('**/*.js');
     var cssFilter = $.filter('**/*.css');
 
-    var gulped = gulp.src(paths.tmp + '/serve/*.htm')
+    var gulped = gulp.src(paths.tmp + '/serve/*.xhtml')
         .pipe($.useref());
     // .pipe($.rev())
     /* JS COMPRESS */
@@ -60,7 +60,7 @@ gulp.task('debug-build', ['inject'], function(cb) {
         }))).pipe(print());
 
 
-    return gulp.src(paths.tmp + '/serve/*.htm')
+    return gulp.src(paths.tmp + '/serve/*.xhtml')
         .pipe($.useref())
         .pipe(gulp.dest(paths.dist + '/'))
         .pipe($.size({
