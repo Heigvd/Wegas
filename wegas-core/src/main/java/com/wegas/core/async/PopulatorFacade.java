@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -24,15 +25,19 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.security.util.Sudoer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -206,6 +211,26 @@ public class PopulatorFacade extends WegasAbstractFacade {
             p.setStatus(Status.SEC_PROCESSING);
         } else {
             p.setStatus(Status.PROCESSING);
+        }
+    }
+
+    /**
+     * Return the position of the player in the player-to-populate queue
+     *
+     * @param player
+     *
+     * @return the position of the player or -1 if the player is not queued
+     */
+    public int getPositionInQueue(Player player) {
+        try {
+            utx.begin();
+            try (Sudoer root = requestManager.sudoer()) {
+                return this.getQueue().indexOf(player);
+            } finally {
+                utx.rollback();
+            }
+        } catch (NotSupportedException | SystemException ex) {
+            return -1;
         }
     }
 
