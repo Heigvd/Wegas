@@ -187,19 +187,19 @@ YUI.add('wegas-pusher-connector', function(Y) {
          */
         triggerCustomEvent: function(channel, data, event) {
             var id,
-                prefix;
+                eChannel = channel;
             if (channel === "Game") {
                 id = Y.Wegas.Facade.Game.get("currentGameId");
-                prefix = "private-";
+                eChannel = "private-Game" +id;
             } else if (channel === "Team") {
                 id = Y.Wegas.Facade.Game.get("currentTeamId");
-                prefix = "private-";
-            } else {
+                eChannel = "private-Game-" + id;
+            } else if (channel === "Player") {
                 id = Y.Wegas.Facade.Game.get("currentPlayerId");
-                prefix = "";
+                eChannel = "private-Player-" + id;
             }
             this.sendRequest({
-                request: "Send/" + prefix + channel + "/" + id + "/" + event,
+                request: "SendCustomEvent/" + eChannel + "/" + event,
                 cfg: {
                     method: "POST",
                     headers: {

@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -90,22 +91,19 @@ public class WebsocketController {
     }
 
     /**
-     * Retrieve
-     *
-     * @param entityType
-     * @param data
-     * @param eventType
-     * @param entityId
-     *
      * @return result of websocketFacade send
      *
      * @throws java.io.IOException
      */
     @POST
-    @Path("Send/{entityType : .*}/{entityId : .*}/{eventType : .*}")
+    @Path("SendCustomEvent/{channel : .*}/{eventName : .*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response send(@PathParam("entityType") String entityType, @PathParam("entityId") String entityId, @PathParam("eventType") String eventType, Object data) throws IOException {
-        return Response.status(websocketFacade.send(eventType, entityType, entityId, data)).build();
+    public Response send(
+        @PathParam("channel") String channel,
+        @PathParam("eventName") String eventName,
+        Object data
+    ) throws IOException {
+        return Response.status(websocketFacade.send(channel, eventName, data)).build();
     }
 
     /*

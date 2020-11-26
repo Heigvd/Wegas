@@ -1881,19 +1881,19 @@ public class RequestManager implements RequestManagerI {
      */
     public boolean hasChannelPermission(String channel) {
         if (channel != null) {
-            Pattern p = Pattern.compile("^(private-)*([a-zA-Z]*)-([a-zA-Z0-9]*)$");
+            Pattern p = Pattern.compile("^((presence|private)-)([a-zA-Z]*)-([a-zA-Z0-9]*)$");
 
             Matcher m = p.matcher(channel);
             if (m.find()) {
-                if (m.group(2).equals("Role")) {
+                if (m.group(3).equals("Role")) {
                     // e.g. private-Role-Administrator
-                    return this.isMemberOf(new WegasMembership(m.group(3)));
+                    return this.isMemberOf(new WegasMembership(m.group(4)));
                 } else {
                     return this.hasEntityPermission(
                         new WegasEntityPermission(
-                            Long.parseLong(m.group(3)),
+                            Long.parseLong(m.group(4)),
                             WegasEntityPermission.Level.READ,
-                            WegasEntityPermission.EntityType.valueOf(m.group(2).toUpperCase())));
+                            WegasEntityPermission.EntityType.valueOf(m.group(3).toUpperCase())));
                 }
             }
         }
