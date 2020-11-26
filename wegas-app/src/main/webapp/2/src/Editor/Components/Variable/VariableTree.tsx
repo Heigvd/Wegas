@@ -41,6 +41,7 @@ import {
 import {
   IVariableDescriptor,
   IEvaluationDescriptorContainer,
+  IResult,
 } from 'wegas-ts-api';
 import { focusTab } from '../LinearTabLayout/LinearLayout';
 
@@ -64,7 +65,7 @@ const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
 );
 
 interface VariableTreeTitleProps extends ClassAndStyle {
-  variable?: IVariableDescriptor | IEvaluationDescriptorContainer;
+  variable?: IVariableDescriptor | IResult | IEvaluationDescriptorContainer;
   subPath?: (string | number)[];
 }
 
@@ -228,12 +229,14 @@ export function CTree(
     let variable:
       | undefined
       | IVariableDescriptor
+      | IResult
       | IEvaluationDescriptorContainer = VariableDescriptor.select(
       props.variableId,
     );
     if (Array.isArray(props.subPath) && props.subPath.length > 0) {
       variable = get(variable, props.subPath) as
         | IVariableDescriptor
+        | IResult
         | IEvaluationDescriptorContainer;
     }
 
