@@ -359,8 +359,11 @@ export class StateMachineEditor extends React.Component<
         },
       };
     }
+
+    const localDispatch =
+      e.ctrlKey === true || this.props.forceLocalDispatch === true;
     const dispatch =
-      (e.ctrlKey || this.props.forceLocalDispatch) && this.props.localDispatch
+      this.props.localDispatch && localDispatch
         ? this.props.localDispatch
         : store.dispatch;
     dispatch(
@@ -373,7 +376,9 @@ export class StateMachineEditor extends React.Component<
         },
       ),
     );
-    focusTab(mainLayoutId, 'Variable Properties');
+    if (!(this.props.localDispatch && localDispatch)) {
+      focusTab(mainLayoutId, 'Variable Properties');
+    }
   };
   editStateContent = (key: number, newState: IState | IDialogueState) => {
     const newStateMachine: IFSMDescriptor | IDialogueDescriptor = {
@@ -391,8 +396,11 @@ export class StateMachineEditor extends React.Component<
   editTransition = (e: ModifierKeysEvent, path: [number, number]) => {
     const stateId = path[0];
     const transitionIndex = path[1];
+
+    const localDispatch =
+      e.ctrlKey === true || this.props.forceLocalDispatch === true;
     const dispatch =
-      (e.ctrlKey || this.props.forceLocalDispatch) && this.props.localDispatch
+      localDispatch && this.props.localDispatch
         ? this.props.localDispatch
         : store.dispatch;
     dispatch(
@@ -417,6 +425,9 @@ export class StateMachineEditor extends React.Component<
         },
       ),
     );
+    if (!(this.props.localDispatch && localDispatch)) {
+      focusTab(mainLayoutId, 'Variable Properties');
+    }
   };
 
   editTransitionContent = (

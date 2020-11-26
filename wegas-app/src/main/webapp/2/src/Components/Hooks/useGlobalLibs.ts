@@ -83,6 +83,10 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
       .map(l => l.code)
       .join(' | ');
 
+    const allowedPageLoadersType = Object.keys(s.global.pageLoaders)
+      .map(name => `"${name}"`)
+      .join('|');
+
     try {
       return `
         declare const gameModel : SGameModel;
@@ -127,7 +131,9 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         interface EditorClass extends GlobalEditorClass {
           setLanguage: (lang: { code: SGameModelLanguage['code'] } | CurrentLanguages) => void;
         }
-        declare const Editor: EditorClass;
+        declare const Editor: EditorClass & {
+          setPageLoaders: (name: ${allowedPageLoadersType}, pageId: IScript) => void;
+        };
 
         interface ClientMethods {
           ${Object.keys(globalMethods)

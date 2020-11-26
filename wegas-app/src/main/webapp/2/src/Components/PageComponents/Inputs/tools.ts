@@ -41,7 +41,7 @@ export const onVariableChangeSchema = (label: string) =>
           prop: 'exposeVariableAs',
           schema: schemaProps.scriptString({
             label: 'Expose variable as',
-            value: createScript('"file"'),
+            value: createScript('"value"'),
           }),
         },
       },

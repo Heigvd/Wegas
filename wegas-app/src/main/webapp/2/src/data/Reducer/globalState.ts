@@ -367,6 +367,9 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.EDITOR_REGISTER_PAGE_LOADER:
         state.pageLoaders[action.payload.name] = action.payload.pageId;
         return;
+      case ActionType.EDITOR_UNREGISTER_PAGE_LOADER:
+        delete state.pageLoaders[action.payload.name];
+        return;
       case ActionType.LOCK_SET:
         state.locks[action.payload.token] = action.payload.locked;
         return;

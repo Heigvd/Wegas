@@ -1,14 +1,17 @@
 import * as React from 'react';
 import { instantiate } from '../../data/scriptable';
-import { Player, VariableDescriptor as VDSelect } from '../../data/selectors';
+import {
+  GameModel,
+  Player,
+  VariableDescriptor as VDSelect,
+} from '../../data/selectors';
 import { useStore, store } from '../../data/store';
 import { featuresCTX, isFeatureEnabled } from '../Contexts/FeaturesProvider';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
-import { useGameModel } from './useGameModel';
 import { Actions } from '../../data';
 import { transpile } from 'typescript';
 import { classesCTX } from '../Contexts/ClassesProvider';
-import { deepDifferent } from './storeHookFactory';
+import { deepDifferent, shallowDifferent } from './storeHookFactory';
 import {
   IVariableDescriptor,
   WegasClassNames,
@@ -34,7 +37,7 @@ import { wwarn } from '../../Helper/wegaslog';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { replace } from '../../Helper/tools';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
-import { isScript } from '../../Helper/wegasEntites';
+import { createScript, isScript } from '../../Helper/wegasEntites';
 import { cloneDeep } from 'lodash-es';
 
 interface GlobalVariableClass {
@@ -87,9 +90,16 @@ const { sandbox, globals } = createSandbox<GlobalClasses>();
 
 export function useGlobals() {
   // Hooks
-  const player = useStore(Player.selectCurrent);
+  const { player, gameModel, pageLoaders } = useStore(
+    s => ({
+      player: Player.selectCurrent(),
+      gameModel: GameModel.selectCurrent(),
+      pageLoaders: s.global.pageLoaders,
+    }),
+    shallowDifferent,
+  );
   const splayer = instantiate(player);
-  const gameModel = useGameModel();
+  // const gameModel = useGameModel();
   const defaultFeatures: FeaturesSelecta = {
     DEFAULT: true,
     ADVANCED: false,
@@ -142,6 +152,21 @@ export function useGlobals() {
     getLanguage: () => gameModel.languages.find(l => l.code === lang),
     setLanguage: lang =>
       selectLang(typeof lang === 'string' ? lang : lang.code),
+    getPageLoaders: () =>
+      Object.entries(pageLoaders).reduce(
+        (o, [name, script]) => ({
+          ...o,
+          [name]: Number(safeClientScriptEval(script)),
+        }),
+        {},
+      ),
+    setPageLoader: (name, pageId) =>
+      globalDispatch(
+        ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
+          name,
+          pageId: createScript(JSON.stringify(pageId)),
+        }),
+      ),
   };
 
   /**
@@ -436,7 +461,7 @@ export function parseAndRunClientScript(
         matchedValue,
       );
 
-      index += matchedValue.length;
+      index += matchedValue?.length || 0;
     }
   } while (matched);
 

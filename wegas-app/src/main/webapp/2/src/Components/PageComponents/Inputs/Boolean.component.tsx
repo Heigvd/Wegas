@@ -14,6 +14,11 @@ import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
+import {
+  OnVariableChange,
+  onVariableChangeSchema,
+  useOnVariableChange,
+} from './tools';
 
 interface PlayerBooleanProps extends WegasComponentProps {
   /**
@@ -36,6 +41,7 @@ interface PlayerBooleanProps extends WegasComponentProps {
    * disabled - if true, the component will be disabled
    */
   disabled?: boolean;
+  onVariableChange?: OnVariableChange;
 }
 
 function PlayerBoolean({
@@ -48,9 +54,11 @@ function PlayerBoolean({
   className,
   style,
   id,
+  onVariableChange,
 }: PlayerBooleanProps) {
   const bool = useScript<SBooleanDescriptor>(script, context);
   const player = instantiate(useStore(Player.selectCurrent));
+  const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
   const strLabel = useScript<string>(label, context);
 
@@ -70,11 +78,15 @@ function PlayerBoolean({
       disabled={disabled}
       readOnly={inactive}
       onChange={v => {
-        store.dispatch(
-          Actions.VariableInstanceActions.runScript(
-            `Variable.find(gameModel,"${bool.getName()}").setValue(self, ${v});`,
-          ),
-        );
+        if (handleOnChange) {
+          handleOnChange(v);
+        } else {
+          store.dispatch(
+            Actions.VariableInstanceActions.runScript(
+              `Variable.find(gameModel,"${bool.getName()}").setValue(self, ${v});`,
+            ),
+          );
+        }
       }}
     />
   );
@@ -99,6 +111,7 @@ registerComponent(
       }),
       disabled: schemaProps.boolean({ label: 'Disabled' }),
       inactive: schemaProps.boolean({ label: 'Inactive' }),
+      onVariableChange: onVariableChangeSchema('On change action'),
     },
     allowedVariables: ['BooleanDescriptor'],
     getComputedPropsFromVariable: v => ({

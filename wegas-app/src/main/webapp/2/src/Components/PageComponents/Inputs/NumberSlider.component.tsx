@@ -18,6 +18,11 @@ import { classStyleIdShema } from '../tools/options';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
 import { useScript } from '../../Hooks/useScript';
+import {
+  OnVariableChange,
+  onVariableChangeSchema,
+  useOnVariableChange,
+} from './tools';
 
 interface PlayerNumberSliderProps extends WegasComponentProps {
   /**
@@ -37,6 +42,7 @@ interface PlayerNumberSliderProps extends WegasComponentProps {
    * disabled - set the component in disabled mode
    */
   disabled?: boolean;
+  onVariableChange?: OnVariableChange;
 }
 
 function PlayerNumberSlider({
@@ -45,10 +51,12 @@ function PlayerNumberSlider({
   className,
   style,
   id,
+  onVariableChange,
   ...restProps
 }: PlayerNumberSliderProps) {
   const number = useScript<SNumberDescriptor>(script, context);
   const player = instantiate(useStore(Player.selectCurrent));
+  const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
   return number == null ? (
     <pre className={className} style={style} id={id}>
@@ -63,11 +71,15 @@ function PlayerNumberSlider({
       value={number.getValue(player)}
       onChange={(v, i) => {
         if (i === 'DragEnd') {
-          store.dispatch(
-            Actions.VariableInstanceActions.runScript(
-              `Variable.find(gameModel,"${number.getName()}").setValue(self, ${v});`,
-            ),
-          );
+          if (handleOnChange) {
+            handleOnChange(v);
+          } else {
+            store.dispatch(
+              Actions.VariableInstanceActions.runScript(
+                `Variable.find(gameModel,"${number.getName()}").setValue(self, ${v});`,
+              ),
+            );
+          }
         }
       }}
       min={number.getMinValue() || 0}
@@ -94,6 +106,7 @@ registerComponent(
         values: displayModes,
       }),
       disabled: schemaProps.boolean({ label: 'Disabled' }),
+      onVariableChange: onVariableChangeSchema('On number change action'),
       ...classStyleIdShema,
     },
     allowedVariables: ['NumberDescriptor'],

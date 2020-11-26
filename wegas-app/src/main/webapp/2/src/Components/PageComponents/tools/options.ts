@@ -35,6 +35,7 @@ export interface WegasComponentOptionsAction {
 export interface OpenPageAction {
   pageLoaderName: IScript;
   pageId: IScript;
+  context?: { [item: string]: any };
 }
 interface OpenURLAction {
   url: string;
@@ -52,6 +53,7 @@ interface LocalScriptEvalAction {
 }
 interface OpenPopupPageAction {
   pageId: IScript;
+  context?: { [item: string]: any };
 }
 interface PlaySoundAction {
   filePath: string;
@@ -99,8 +101,8 @@ export interface WegasComponentActions {
 }
 
 export const wegasComponentActions: WegasComponentActions = {
-  openPage: ({ pageLoaderName, pageId }) => {
-    const name = clientScriptEval<string>(pageLoaderName.content);
+  openPage: ({ pageLoaderName, pageId, context }) => {
+    const name = clientScriptEval<string>(pageLoaderName.content, context);
     if (name != null) {
       store.dispatch(
         ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
