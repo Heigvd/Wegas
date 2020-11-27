@@ -82,6 +82,14 @@ public class RequestController implements Serializable {
     }
 
     /**
+     * Such a hack to injext %lt;flash:message%gt; tag
+     * @return 
+     */
+    public String getFlashMessageTag(){
+        return "<flash:messages></flash:messages>";
+    }
+
+    /**
      * @return the locale
      */
     public Locale getLocale() {
