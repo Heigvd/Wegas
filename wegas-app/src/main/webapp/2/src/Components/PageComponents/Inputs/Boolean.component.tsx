@@ -60,7 +60,7 @@ function PlayerBoolean({
   const player = instantiate(useStore(Player.selectCurrent));
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
-  const strLabel = useScript<string>(label, context);
+  const textLabel = useScript<string>(label, context);
 
   const BooleanComponent = type === 'toggler' ? Toggler : CheckBox;
 
@@ -73,7 +73,7 @@ function PlayerBoolean({
       className={className}
       style={style}
       id={id}
-      label={strLabel}
+      label={textLabel}
       value={bool.getValue(player)}
       disabled={disabled}
       readOnly={inactive}
@@ -104,7 +104,7 @@ registerComponent(
         required: true,
         returnType: ['SBooleanDescriptor'],
       }),
-      label: schemaProps.scriptString({ label: 'Label', richText: true }),
+      label: schemaProps.scriptString({ label: 'Label' }),
       type: schemaProps.select({
         label: 'Type',
         values: ['checkbox', 'toggler'],

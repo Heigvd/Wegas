@@ -156,7 +156,7 @@ export function NumberSlider({
 
   return (
     <div id={id} className={textCenter + classNameOrEmpty(className)}>
-      {label && <Value value={label} />}
+      {typeof label === 'string' ? <Value value={label} /> : { label }}
       <CheckMinMax min={min} max={max} value={internalValue} />
       <Info />
       <Slider

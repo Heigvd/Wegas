@@ -25,7 +25,7 @@ export interface InputProps<T> extends ClassStyleId {
   /**
    * label - the current label of the input
    */
-  label?: string;
+  label?: React.ReactNode;
   /**
    * disabled - disable the component
    */
