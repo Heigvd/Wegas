@@ -77,6 +77,10 @@ public class RequestController implements Serializable {
         this.lang = lang;
     }
 
+    public String getFavicon(){
+        return Helper.getWegasProperty("favicon", "favicon_red");
+    }
+
     /**
      * @return the locale
      */

@@ -76,11 +76,13 @@ YUI.add('wegas-presence', function(Y) {
                 visible: false
             }).render();
         },
-        _initConnection: function() {
+        getChannelName: function() {
             var gmID = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id");
-
-            pagePresence = Y.Wegas.Facade.Pusher.subscribe("presence-gm" + gmID);
-            pagePresence.bind("client-message", this.onMessage, this);
+            return "presence-GameModel-" + gmID;
+        },
+        _initConnection: function() {
+            pagePresence = Y.Wegas.Facade.Pusher.subscribe(this.getChannelName());
+            pagePresence.bind("CustomEvent", this.onCustomEvent, this);
             pagePresence.bind('pusher:subscription_succeeded', this.onConnected, this);
             pagePresence.bind("pusher:member_removed", this.onRemoved, this);
             pagePresence.bind("pusher:member_added", this.onAdded, this);
@@ -134,14 +136,13 @@ YUI.add('wegas-presence', function(Y) {
         sendInput: function() {
             var val = this.field.get("value");
             if (val && pagePresence.subscribed) {
-                pagePresence.trigger("client-message", {
-                    data: val,
-                    sender: pagePresence.members.me.id
-                });
-                this.onMessage({
-                    sender: pagePresence.members.me.id,
-                    data: val
-                });
+                Y.Wegas.Facade.Pusher.triggerCustomEvent(
+                    this.getChannelName(),
+                    {
+                        data: val,
+                        sender: pagePresence.members.me.id
+                    },
+                    "client-message");
             }
             this.field.set("value", "");
         },
@@ -198,6 +199,11 @@ YUI.add('wegas-presence', function(Y) {
             msgBox.getDOMNode().scrollTop = msgBox.getDOMNode().scrollHeight;
             if (this.closed && !notification) {
                 this.get(CONTENTBOX).addClass("new-message");
+            }
+        },
+        onCustomEvent: function(data) {
+            if (data.type === 'client-message') {
+                this.onMessage(data.payload);
             }
         },
         onMessage: function(data) {

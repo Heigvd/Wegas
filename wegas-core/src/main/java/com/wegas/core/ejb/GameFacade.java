@@ -718,7 +718,7 @@ public class GameFacade extends BaseFacade<Game> {
         teamFacade.detach(team);;
 
         player = playerFacade.find(player.getId());
-        int indexOf = populatorFacade.getQueue().indexOf(player);
+        int indexOf = populatorFacade.getPositionInQueue(player);
         player.setQueueSize(indexOf + 1);
         return player;
     }
