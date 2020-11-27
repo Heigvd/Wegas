@@ -116,6 +116,7 @@ public class WegasRuntime {
         this.baseUrl = baseUrl;
     }
 
+    @Override
     public String toString() {
         return "WegasRuntime UP: " + baseUrl;
     }

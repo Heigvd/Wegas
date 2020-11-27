@@ -9,6 +9,10 @@
         <meta charset="UTF-8"/>
         <meta http-equiv="Content-Type" content="text/html"/>
         <meta http-equiv="Content-Language" content="#{requestController.locale.toLanguageTag()}"/>
+
+        <link rel="icon" href="#{request.contextPath}/${requestController.favicon}.ico" />
+        <link rel="icon" type="image/png" href="#{request.contextPath}/${requestController.favicon}.png" />
+
         <title>Admin</title>
         <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"></link>
         <style type="text/css">
@@ -60,8 +64,8 @@
         </style>
         <script type="application/javascript">
             window.config={
-                debug: #{requestController.debugMode()},
-                contextPath:"#{request.contextPath}"
+            debug: #{requestController.debugMode()},
+            contextPath:"#{request.contextPath}"
             }
         </script>
     </h:head>

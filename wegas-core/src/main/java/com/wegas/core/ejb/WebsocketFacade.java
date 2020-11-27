@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -21,6 +22,7 @@ import com.wegas.core.event.client.DestroyedEntity;
 import com.wegas.core.event.client.EntityDestroyedEvent;
 import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.event.client.OutdatedEntitiesEvent;
+import com.wegas.core.exception.client.WegasAccessDenied;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
@@ -280,20 +282,22 @@ public class WebsocketFacade {
     }
 
     /**
-     * @param filter
-     * @param entityType
-     * @param entityId
      * @param data
      *
      * @return Status
      *
      * @throws IOException
      */
-    public Integer send(String filter, String entityType, String entityId, Object data) throws IOException {
+    public Integer send(String channel, String eventName, Object data) throws IOException {
         if (this.pusher == null) {
             return 400;
+        } else if (requestManager.hasChannelPermission(channel)) {
+            return pusher.trigger(channel, "CustomEvent",
+                parseJSON("{\"@class\": \"CustomEvent\", \"type\": \"" + eventName + "\", \"payload\": " + toJson(data) + "}")
+            ).getHttpStatus();
+        } else {
+            throw new WegasAccessDenied(channel, channel, null, requestManager.getCurrentUser());
         }
-        return pusher.trigger(entityType + "-" + entityId, filter, data).getHttpStatus();
     }
 
     /**

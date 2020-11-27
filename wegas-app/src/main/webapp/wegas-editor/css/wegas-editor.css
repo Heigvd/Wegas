@@ -484,7 +484,7 @@
 .yui3-skin-sam .yui3-button.wegas-logo,
 .yui3-skin-sam .yui3-button.wegas-logo:hover {
     background: url(../../wegas-app/images/wegas-logoicon-35.png) 0 0 no-repeat;
-    filter: brightness(0.3); /* hack to make its color close to #4c4c4c */
+    background-size: contain;
     height: 35px;
     width: 35px;
     margin: 3px 5px;

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
-<html class="no-js" ng-app="Wegas">
+<html xmlns:flash="http://hack.invalid/makexhtmlhappy" class="no-js" ng-app="Wegas">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>Wegas - Web game authoring system</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width">
+        <link rel="icon" href="#{request.contextPath}/${requestController.favicon}.ico" />
+        <link rel="icon" type="image/png" href="#{request.contextPath}/${requestController.favicon}.png" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width" />
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
         <!-- build:css({.tmp/serve,src}) assets/css/app-min.css -->
@@ -16,6 +18,8 @@
         <!-- link rel="stylesheet" href="bower_components/angular-loading-bar/src/loading-bar.css" / -->
         <!-- endbower -->
         <!-- endbuild -->
+        <!-- @hack: injection does not close the link tag but xhtml requires such a closing tag -->
+        </link>
     </head>
     <body>
         <!--[if lt IE 10]>

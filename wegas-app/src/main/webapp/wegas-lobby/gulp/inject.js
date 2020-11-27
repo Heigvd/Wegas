@@ -50,7 +50,7 @@ gulp.task('inject', ['styles', 'partials'], function() {
         exclude: [/bootstrap\.css/, /foundation\.css/]
     };
 
-    return gulp.src(paths.src + '/*.htm')
+    return gulp.src(paths.src + '/*.xhtml')
         .pipe($.inject(injectStyles, injectOptions))
         .pipe($.inject(injectScripts, injectOptions))
         .pipe($.inject(partialsInjectFile, partialsInjectOptions))

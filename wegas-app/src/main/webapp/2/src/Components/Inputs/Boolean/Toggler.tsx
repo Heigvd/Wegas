@@ -71,7 +71,7 @@ export interface TogglerProps extends InputProps<boolean> {
   /**
    * label - the label to display over the toggler
    */
-  label?: string;
+  label?: React.ReactNode | JSX.Element;
   /**
    * labels - the labels to be displayed in the toggle background
    */
@@ -120,7 +120,7 @@ export function Toggler({
       }
       style={style}
     >
-      {label && <Value value={label} />}
+      {typeof label === 'string' ? <Value value={label} /> : { label }}
       <div
         className={
           'wegas wegas-toggler ' +
