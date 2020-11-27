@@ -15,7 +15,15 @@
             <h:body class="yui3-skin-sam wegas-app-default #{cookie['customstyle'].value} wegas-stdmode #{requestController.currentRoles} #{extraBodyClass}">
 
                 <!-- Loading -->
-                <div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>
+                <div class='wegas-loading-app'>
+                    <div class='wegas-loading-app-content'>
+                        <img class='wegas-loading-app-logo' src="#{request.contextPath}/wegas-app/images/wegas-logowhite-80.png" />
+                        <div class='wegas-loading-app-bar'>
+                            <div class='wegas-loading-app-current'>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Rollbar error tracking -->
                 <!--<ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
