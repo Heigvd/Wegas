@@ -1,7 +1,8 @@
 import { cx } from 'emotion';
 import * as React from 'react';
-import { FlowChart, Processes } from '../Components/FlowChart';
 import { flex, flexColumn } from '../css/classes';
+import { FlowChart } from '../Components/FlowChart/FlowChart';
+import { Processes } from '../Components/FlowChart/Process';
 
 const testProcesses: Processes = {
   '1': {
