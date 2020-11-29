@@ -34,6 +34,7 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.core.security.util.AuthenticationMethod;
 import com.wegas.core.security.util.Sudoer;
@@ -736,8 +737,9 @@ public class UserController {
         Player thePlayer = playerFacade.findPlayerInTeam(teamId, currentUser.getId());
 
         if (thePlayer != null) {
-            requestManager.setPlayer(thePlayer);
-            return thePlayer.getTeam();
+            try (ActAsPlayer a = requestManager.actAsPlayer(thePlayer)) {
+                return thePlayer.getTeam();
+            }
         } else {
             return null;
         }

@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -19,6 +20,7 @@ import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
+import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.IOException;
 import javax.naming.NamingException;
@@ -93,7 +95,6 @@ public class StateMachineITest extends AbstractArquillianTest {
         login(user41);
         Player testPlayer41 = gameFacade.joinTeam(team4.getId(), null);
         logger.error("Player 41: {}", testPlayer41);
-
 
         NumberDescriptor number = (NumberDescriptor) variableDescriptorFacade.find(testNumber.getId());
         /* CONTEXT? */
@@ -186,12 +187,15 @@ public class StateMachineITest extends AbstractArquillianTest {
         WegasUser user31 = this.signup("user31@local");
         login(user31);
         Player testPlayer = gameFacade.joinTeam(team.getId(), null);
-        requestManager.setPlayer(testPlayer);
 
-        Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
-        NumberInstance p0Instance = (NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer);
-        p0Instance.setValue(50);
-        requestFacade.setPlayer(null);
+        NumberInstance p0Instance = null;
+        try (ActAsPlayer actAsPlayer = requestManager.actAsPlayer(testPlayer)) {
+            actAsPlayer.setFlushOnExit(false);
+            Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
+            p0Instance = (NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer);
+            p0Instance.setValue(50);
+        }
+
         variableInstanceFacade.update(p0Instance.getId(), p0Instance); // Triggers rf.commit -> StateMachine check
 
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
@@ -221,12 +225,12 @@ public class StateMachineITest extends AbstractArquillianTest {
         gameModelFacade.reset(scenario.getId());
 
         Assert.assertEquals(0, ((NumberInstance) variableInstanceFacade.find(highScore.getId(), player.getId())).getValue(), 0);
-        requestFacade.setPlayer(null);
 
-        scriptFacade.eval(player.getId(), new Script("Variable.find(gameModel, 'personalScore').getInstance(self).value = 10"), null);
-        requestFacade.setPlayer(null);
-        requestFacade.setPlayer(player.getId());
-        requestFacade.commit();
+        try (ActAsPlayer actAsPlayer = requestManager.actAsPlayer(player)) {
+            actAsPlayer.setFlushOnExit(false);
+            scriptFacade.eval(player.getId(), new Script("Variable.find(gameModel, 'personalScore').getInstance(self).value = 10"), null);
+            requestFacade.commit();
+        }
         Assert.assertEquals(10, ((NumberInstance) variableInstanceFacade.find(personalScore.getId(), player.getId())).getValue(), 0);
         Assert.assertEquals(10, ((NumberInstance) variableInstanceFacade.find(highScore.getId(), player.getId())).getValue(), 0);
     }
@@ -248,8 +252,11 @@ public class StateMachineITest extends AbstractArquillianTest {
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, " + ENDVAL + ");"));
         variableDescriptorFacade.create(scenario.getId(), trigger);
 
-        scriptFacade.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){print('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"), null);
-        requestFacade.commit();
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            a.setFlushOnExit(false);
+            scriptFacade.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){print('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"), null);
+            requestFacade.commit();
+        }
         Assert.assertEquals(ENDVAL, ((NumberInstance) variableInstanceFacade.find(number.getId(), player.getId())).getValue(), 0);
     }
 
@@ -285,7 +292,6 @@ public class StateMachineITest extends AbstractArquillianTest {
         Assert.assertEquals(5, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player.getId())).getValue(), 0.001);
 
         //Set again
-        requestFacade.setPlayer(null);
         NumberInstance testInstance = (NumberInstance) variableInstanceFacade.find(testNumber.getId(), player);
         testInstance.setValue(0);
         variableInstanceFacade.update(testInstance.getId(), testInstance);

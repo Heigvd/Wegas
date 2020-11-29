@@ -25,7 +25,9 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.core.security.util.Sudoer;
+import fish.payara.notification.requesttracing.RequestTraceSpanContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -137,24 +139,26 @@ public class PopulatorFacade extends WegasAbstractFacade {
         try {
             utx.begin();
             player = playerFacade.find(playerId);
-            requestManager.setPlayer(player);
+            try (ActAsPlayer acting = requestManager.actAsPlayer(player)) {
+                acting.setFlushOnExit(false); // user managed TX
 
-            // Inform player's user its player is processing
-            websocketFacade.propagateNewPlayer(player);
-            Team team = teamFacade.find(player.getTeamId());
+                // Inform player's user its player is processing
+                websocketFacade.propagateNewPlayer(player);
+                Team team = teamFacade.find(player.getTeamId());
 
-            gameModelFacade.createAndRevivePrivateInstance(team.getGame().getGameModel(), player);
+                gameModelFacade.createAndRevivePrivateInstance(team.getGame().getGameModel(), player);
 
-            player.setStatus(Status.INITIALIZING);
-            this.flush();
+                player.setStatus(Status.INITIALIZING);
+                this.flush();
 
-            stateMachineFacade.runStateMachines(player);
+                stateMachineFacade.runStateMachines(player);
 
-            player.setStatus(Status.LIVE);
-            this.flush();
+                player.setStatus(Status.LIVE);
+                this.flush();
 
-            utx.commit();
-            websocketFacade.propagateNewPlayer(player);
+                utx.commit();
+                websocketFacade.propagateNewPlayer(player);
+            }
 
         } catch (Exception ex) {
             logger.error("Populate Player: Failure", ex);

@@ -212,7 +212,7 @@ public class GameFacade extends BaseFacade<Game> {
         gameModelFacade.propagateAndReviveDefaultInstances(gameModel, game, true); // at this step the game is empty (no teams; no players), hence, only Game[Model]Scoped are propagated
 
         this.addDebugTeam(game);
-        stateMachineFacade.runStateMachines(gameModel);
+        stateMachineFacade.runStateMachines(game);
 
         gameCreatedEvent.fire(new EntityCreated<>(game));
     }

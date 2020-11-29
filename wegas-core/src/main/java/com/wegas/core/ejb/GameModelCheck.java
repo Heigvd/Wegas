@@ -62,7 +62,7 @@ public class GameModelCheck {
                 logger.error("Fail to create a game based on {} ({})", gameModel, ex);
                 return ex;
             } finally {
-                requestManager.setPlayer(null);
+                //requestManager.setPlayer(null);
                 utx.rollback();
                 jpaCacheHelper.requestClearCache();
             }
