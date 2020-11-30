@@ -32,6 +32,7 @@ function PlayerButton({
   context,
 }: PlayerButtonProps) {
   const translation = useScript<string>(label, context) || '';
+
   return (
     <Button
       id={id}
@@ -42,13 +43,16 @@ function PlayerButton({
       style={{ margin: 'auto', ...style }}
       icon={icon}
       prefixedLabel={prefixedLabel}
-    >
-      <div
-        dangerouslySetInnerHTML={{
-          __html: translation,
-        }}
-      ></div>
-    </Button>
+      label={
+        label && translation !== '' ? (
+          <div
+            dangerouslySetInnerHTML={{
+              __html: translation,
+            }}
+          ></div>
+        ) : undefined
+      }
+    />
   );
 }
 
@@ -60,19 +64,6 @@ export const buttonSchema = {
   ...classStyleIdShema,
 };
 
-const defaultLabel: ITranslatableContent = {
-  '@class': 'TranslatableContent',
-  translations: {
-    EN: {
-      '@class': 'Translation',
-      lang: 'EN',
-      status: '',
-      translation: 'Button',
-    },
-  },
-  version: 0,
-};
-
 registerComponent(
   pageComponentFactory({
     component: PlayerButton,
@@ -82,7 +73,6 @@ registerComponent(
     schema: buttonSchema,
     getComputedPropsFromVariable: () => ({
       action: createScript(),
-      label: defaultLabel,
     }),
   }),
 );
