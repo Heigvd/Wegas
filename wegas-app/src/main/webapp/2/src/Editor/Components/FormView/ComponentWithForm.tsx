@@ -22,6 +22,10 @@ const growBig = css({
   flex: '30 1 auto',
 });
 
+const maxSize = css({
+  maxWidth: '20%',
+});
+
 export interface ComponentWithFormChildrenProps {
   localState: Readonly<Edition> | undefined;
   localDispatch: StoreDispatch;
@@ -83,7 +87,7 @@ export function ComponentWithForm({
         })}
       </div>
       {localState.editing && localEntity && (
-        <div className={cx(flex, grow, autoScroll)}>
+        <div className={cx(flex, grow, autoScroll, maxSize)}>
           <AsyncVariableForm
             {...localState.editing}
             getConfig={getConfig(localState.editing)}
@@ -95,7 +99,7 @@ export function ComponentWithForm({
         </div>
       )}
       {instanceView && entityEditor && (
-        <div className={cx(flex, grow, autoScroll)}>
+        <div className={cx(flex, grow, autoScroll, maxSize)}>
           <Toolbar>
             <Toolbar.Header>
               <Button
