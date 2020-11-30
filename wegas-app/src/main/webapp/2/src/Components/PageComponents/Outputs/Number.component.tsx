@@ -8,18 +8,20 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { IScript, INumberDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { classAndStyleShema } from '../tools/options';
+import { classStyleIdShema } from '../tools/options';
 
 export interface PlayerNumberProps extends WegasComponentProps {
   script?: IScript;
 }
 
-function PlayerNumber({ script, className, style }: PlayerNumberProps) {
+function PlayerNumber({ script, className, style, id }: PlayerNumberProps) {
   const { content, instance } = useComponentScript<INumberDescriptor>(script);
   return instance == null || instance.value == null ? (
-    <span>Not found: {content}</span>
+    <span id={id} className={className} style={style}>
+      Not found: {content}
+    </span>
   ) : (
-    <div className={className} style={style}>
+    <div id={id} className={className} style={style}>
       {instance.value}
     </div>
   );
@@ -37,7 +39,7 @@ registerComponent(
         required: true,
         returnType: ['SNumberDescriptor'],
       }),
-      ...classAndStyleShema,
+      ...classStyleIdShema,
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({

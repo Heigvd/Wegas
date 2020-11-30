@@ -38,3 +38,61 @@ const loaderStyle = css({
 export function TextLoader({ text = 'Loading...' }: { text?: string }) {
   return <span className={loaderStyle}>{text}</span>;
 }
+
+const tumbleLoaderAnimation = keyframes({
+  '0% ': {
+    transform: 'rotate(0deg)',
+  },
+  '100%': {
+    transform: 'rotate(360deg)',
+  },
+});
+
+function tumbleLoaderStyle(size: number, color: string = '#fff') {
+  const sideSize = (size * 6) / 8 + 'px';
+  const margin = size / 8 + 'px';
+  const border = (size / 32) * 3 + 'px';
+  return css({
+    display: 'inline-block',
+    width: sideSize,
+    height: sideSize,
+    margin: margin,
+    '&:after': {
+      content: '""',
+      display: 'block',
+      width: sideSize,
+      height: sideSize,
+      // margin: margin,
+      borderRadius: '50%',
+      border: `${border} solid ${color}`,
+      borderColor: `${color} transparent ${color} transparent`,
+      animation: `${tumbleLoaderAnimation} 1.2s linear infinite`,
+    },
+  });
+}
+interface TumblerLoaderProps {
+  color?: string;
+  size?: number;
+}
+
+export function TumbleLoader({
+  color = themeVar.Common.colors.ActiveColor,
+  size,
+}: TumblerLoaderProps) {
+  const container = React.useRef<HTMLDivElement>(null);
+  const [computedSize, setComputedSize] = React.useState(5);
+
+  React.useEffect(() => {
+    const parentBox = container.current?.parentElement?.getBoundingClientRect();
+    if (parentBox) {
+      setComputedSize(Math.min(parentBox.height, parentBox.width));
+    }
+  }, []);
+
+  return (
+    <div
+      ref={container}
+      className={tumbleLoaderStyle(size == null ? computedSize : size, color)}
+    />
+  );
+}

@@ -49,7 +49,7 @@ const numberBoxSquareStyle = css({
   },
 });
 
-interface NumberSquareProps extends ClassAndStyle {
+interface NumberSquareProps extends ClassStyleId {
   value?: number | string;
   onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   active?: boolean;

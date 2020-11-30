@@ -13,7 +13,7 @@ function undefToEmpty(val?: string | number) {
   return val;
 }
 
-export interface InputProps<T> extends ClassAndStyle {
+export interface InputProps<T> extends ClassStyleId {
   /**
    * value - the value to input
    */
@@ -25,7 +25,7 @@ export interface InputProps<T> extends ClassAndStyle {
   /**
    * label - the current label of the input
    */
-  label?: string;
+  label?: React.ReactNode;
   /**
    * disabled - disable the component
    */
@@ -83,7 +83,7 @@ export function SimpleInput({
   const debouncedOnChange = React.useCallback(
     debounce((value: string) => {
       onChange && onChange(value);
-    }, 250),
+    }, 1000),
     [onChange],
   );
 

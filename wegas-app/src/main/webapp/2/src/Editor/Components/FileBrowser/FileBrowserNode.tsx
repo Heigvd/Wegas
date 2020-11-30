@@ -156,7 +156,7 @@ type ModalState =
   | ModalStateDelete
   | ModalStateChangeType;
 
-export interface FileBrowserNodeProps extends ClassAndStyle {
+export interface FileBrowserNodeProps extends ClassStyleId {
   defaultFile: IAbstractContentDescriptor;
   selectedLocalPaths?: string[];
   selectedGlobalPaths?: string[];

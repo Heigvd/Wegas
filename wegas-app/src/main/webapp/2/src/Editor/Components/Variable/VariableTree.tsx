@@ -64,7 +64,7 @@ const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
     }),
 );
 
-interface VariableTreeTitleProps extends ClassAndStyle {
+interface VariableTreeTitleProps extends ClassStyleId {
   variable?: IVariableDescriptor | IResult | IEvaluationDescriptorContainer;
   subPath?: (string | number)[];
 }
@@ -93,8 +93,14 @@ interface TreeProps {
   variables: number[];
   localState?: Readonly<Edition> | undefined;
   localDispatch?: StoreDispatch;
+  forceLocalDispatch?: boolean;
 }
-export function TreeView({ variables, localState, localDispatch }: TreeProps) {
+export function TreeView({
+  variables,
+  localState,
+  localDispatch,
+  forceLocalDispatch,
+}: TreeProps) {
   const [search, setSearch] = React.useState('');
   const { data } = useAsync(itemsPromise);
   const globalDispatch = store.dispatch;
@@ -115,7 +121,7 @@ export function TreeView({ variables, localState, localDispatch }: TreeProps) {
           items={data || []}
           icon="plus"
           onSelect={(i, e) => {
-            if (e.ctrlKey && localDispatch) {
+            if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
               localDispatch(Actions.EditorActions.createVariable(i.value));
             } else {
               globalDispatch(Actions.EditorActions.createVariable(i.value));
@@ -153,6 +159,7 @@ export function TreeView({ variables, localState, localDispatch }: TreeProps) {
                     variableId={v}
                     localState={localState}
                     localDispatch={localDispatch}
+                    forceLocalDispatch={forceLocalDispatch}
                   />
                 ))
               ) : (
@@ -275,7 +282,10 @@ export function CTree(
             })}
             onClick={(e: ModifierKeysEvent) => {
               let dispatch = store.dispatch;
-              if (e.ctrlKey && props.localDispatch) {
+              if (
+                (props.forceLocalDispatch || e.ctrlKey) &&
+                props.localDispatch
+              ) {
                 dispatch = props.localDispatch;
               } else {
                 if (
@@ -308,12 +318,14 @@ export function CTree(
                 variable={variable}
                 localDispatch={props.localDispatch}
                 focusTab={tabId => focusTab(mainLayoutId, tabId)}
+                forceLocalDispatch={props.forceLocalDispatch}
               />
             ) : entityIs(variable, 'ChoiceDescriptor') ? (
               <AddMenuChoice
                 variable={variable}
                 localDispatch={props.localDispatch}
                 focusTab={tabId => focusTab(mainLayoutId, tabId)}
+                forceLocalDispatch={props.forceLocalDispatch}
               />
             ) : entityIs(variable, 'EvaluationDescriptorContainer') ? (
               <AddMenuFeedback
@@ -321,6 +333,7 @@ export function CTree(
                 localDispatch={props.localDispatch}
                 focusTab={tabId => focusTab(mainLayoutId, tabId)}
                 path={props.subPath![0] as 'feedback' | 'fbComments'}
+                forceLocalDispatch={props.forceLocalDispatch}
               />
             ) : null}
           </div>
@@ -337,6 +350,7 @@ export function CTree(
                   search={props.search}
                   localState={props.localState}
                   localDispatch={props.localDispatch}
+                  forceLocalDispatch={props.forceLocalDispatch}
                 />
               ))
             : entityIs(variable, 'ChoiceDescriptor')
@@ -349,6 +363,7 @@ export function CTree(
                   subPath={['results', String(index)]}
                   localState={props.localState}
                   localDispatch={props.localDispatch}
+                  forceLocalDispatch={props.forceLocalDispatch}
                 />
               ))
             : entityIs(variable, 'PeerReviewDescriptor')
@@ -361,6 +376,7 @@ export function CTree(
                   subPath={['feedback']}
                   localState={props.localState}
                   localDispatch={props.localDispatch}
+                  forceLocalDispatch={props.forceLocalDispatch}
                 />,
                 <CTree
                   nodeProps={nodeProps}
@@ -370,6 +386,7 @@ export function CTree(
                   subPath={['fbComments']}
                   localState={props.localState}
                   localDispatch={props.localDispatch}
+                  forceLocalDispatch={props.forceLocalDispatch}
                 />,
               ]
             : entityIs(variable, 'EvaluationDescriptorContainer')
@@ -386,6 +403,7 @@ export function CTree(
                   ]}
                   localState={props.localState}
                   localDispatch={props.localDispatch}
+                  forceLocalDispatch={props.forceLocalDispatch}
                 />
               ))
             : null

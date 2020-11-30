@@ -40,7 +40,7 @@ export interface GridItemLayoutProps {
   alignSelf?: JustifySelf;
 }
 
-export const defaultFlexLayoutOptions: GridItemLayoutProps = {
+export const defaultGridLayoutOptions: GridItemLayoutProps = {
   gridAera: undefined,
   gridColumnEnd: undefined,
   gridColumnStart: undefined,
@@ -48,11 +48,11 @@ export const defaultFlexLayoutOptions: GridItemLayoutProps = {
   gridRowStart: undefined,
   justifySelf: undefined,
 };
-export const defaultFlexLayoutOptionsKeys = Object.keys(
-  defaultFlexLayoutOptions,
+export const defaultGridLayoutOptionsKeys = Object.keys(
+  defaultGridLayoutOptions,
 ) as (keyof GridItemLayoutProps)[];
 
-export const flexlayoutChoices: HashListChoices = [
+export const gridItemChoices: HashListChoices = [
   {
     label: 'Column start',
     value: {
@@ -113,11 +113,11 @@ export const flexlayoutChoices: HashListChoices = [
   },
 ];
 
-const flexItemDefaultStyle = css({
+const gridItemDefaultStyle = css({
   padding: '5px',
 });
 
-export interface FlexItemProps
+export interface GridItemProps
   extends WegasComponentItemProps,
     GridItemLayoutProps {
   /**
@@ -130,7 +130,7 @@ export interface FlexItemProps
   onMouseEnter?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
-export const GridItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
+export const GridItem = React.forwardRef<HTMLDivElement, GridItemProps>(
   (
     {
       onClick,
@@ -160,7 +160,7 @@ export const GridItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
         onDragEnd={onDragEnd}
-        className={flexItemDefaultStyle + classNameOrEmpty(className)}
+        className={gridItemDefaultStyle + classNameOrEmpty(className)}
         style={{
           position: 'relative',
           ...layout,
@@ -183,8 +183,8 @@ export const justifyItemsValues = [
 type JustifyItems = typeof justifyItemsValues[number];
 
 export const justifyContentValues = [
-  'flex-start',
-  'flex-end',
+  'grid-start',
+  'grid-end',
   'center',
   'space-between',
   'space-around',
@@ -202,8 +202,8 @@ type AutoFlow = typeof autoFlowValues[number];
 
 export const alignItemsValues = [
   'stretch',
-  'flex-start',
-  'flex-end',
+  'grid-start',
+  'grid-end',
   'center',
   'baseline',
 ] as const;
@@ -327,7 +327,7 @@ export const gridSchema = {
   children: schemaProps.hidden({}),
 };
 
-export interface GridProps extends ClassAndStyle {
+export interface GridProps extends ClassStyleId {
   /**
    * layout : the layout CSS properties
    */
@@ -353,7 +353,7 @@ export interface GridProps extends ClassAndStyle {
      */
     justifyContent?: JustifyContent;
     /**
-     * alignItems - justifies the items perpendicularly to the flex direction
+     * alignItems - justifies the items perpendicularly to the grid direction
      */
     alignItems?: AlignItems;
     /**
@@ -375,16 +375,18 @@ export interface GridProps extends ClassAndStyle {
   };
 }
 /**
- * Flex list.
+ * Grid list.
  */
 export function Grid({
   layout,
   className,
   style,
   children,
+  id,
 }: React.PropsWithChildren<GridProps>) {
   return (
     <div
+      id={id}
       className={cx(grid, grow, layoutStyle) + classNameOrEmpty(className)}
       style={{
         ...layout,

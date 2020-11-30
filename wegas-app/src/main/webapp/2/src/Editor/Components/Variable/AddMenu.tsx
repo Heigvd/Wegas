@@ -56,6 +56,7 @@ function buildMenuItems(
 
 interface AddMenuProps {
   localDispatch?: StoreDispatch;
+  forceLocalDispatch?: boolean;
   onSelect?: DropMenuProps<string, DropMenuItem<string>>['onSelect'];
   focusTab?: (tab: AvailableLayoutTab) => void;
 }
@@ -67,6 +68,7 @@ export const AddMenuParent = asyncSFC(
   async ({
     variable,
     localDispatch,
+    forceLocalDispatch,
     onSelect,
     focusTab,
   }: {
@@ -80,7 +82,7 @@ export const AddMenuParent = asyncSFC(
         onSelect={(i, e) => {
           onSelect && onSelect(i, e);
           let dispatch = store.dispatch;
-          if (e.ctrlKey && localDispatch) {
+          if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
             dispatch = localDispatch;
           } else {
             focusTab && focusTab('Variable Properties');
@@ -99,6 +101,7 @@ export const AddMenuChoice = asyncSFC(
   async ({
     variable,
     localDispatch,
+    forceLocalDispatch,
     onSelect,
     focusTab,
   }: {
@@ -113,7 +116,7 @@ export const AddMenuChoice = asyncSFC(
           onSelect && onSelect(i, e);
           const globalDispatch = store.dispatch;
           let dispatch = globalDispatch;
-          if (e.ctrlKey && localDispatch) {
+          if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
             dispatch = localDispatch;
           } else {
             focusTab && focusTab('Variable Properties');
@@ -151,6 +154,7 @@ export const AddMenuFeedback = asyncSFC(
   async ({
     variable,
     localDispatch,
+    forceLocalDispatch,
     onSelect,
     focusTab,
     path,
@@ -167,7 +171,7 @@ export const AddMenuFeedback = asyncSFC(
           onSelect && onSelect(i, e);
           const globalDispatch = store.dispatch;
           let dispatch = globalDispatch;
-          if (e.ctrlKey && localDispatch) {
+          if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
             dispatch = localDispatch;
           } else {
             focusTab && focusTab('Variable Properties');

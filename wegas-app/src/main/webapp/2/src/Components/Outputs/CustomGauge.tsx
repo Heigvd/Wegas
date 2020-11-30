@@ -10,6 +10,7 @@ import {
 import { PieChart, PieChartSection, NeedleStyle } from './PieChart';
 import { Value } from './Value';
 import { cx } from 'emotion';
+import { classNameOrEmpty } from '../../Helper/className';
 
 const valueToAngle = (
   value: number,
@@ -31,7 +32,7 @@ export interface GaugeSection
   backgroundColor: React.CSSProperties['backgroundColor'];
 }
 
-export interface CustomGaugeProps {
+export interface CustomGaugeProps extends ClassStyleId {
   /**
    * value - the current value of the slider
    */
@@ -100,6 +101,9 @@ export function CustomGauge({
   holeRatio = 50,
   explodeRatio = 0,
   blur,
+  className,
+  style,
+  id,
 }: CustomGaugeProps) {
   const sortedSections = sections.sort((a, b) => a.stopValue - b.stopValue);
   const maxValue = sortedSections.slice(-1)[0].stopValue;
@@ -111,7 +115,12 @@ export function CustomGauge({
 
   return (
     <div
-      className={cx(flex, textCenter, justifyCenter, flexColumn, expandWidth)}
+      className={
+        cx(flex, textCenter, justifyCenter, flexColumn, expandWidth) +
+        classNameOrEmpty(className)
+      }
+      style={style}
+      id={id}
     >
       {label && <Value className={grow} value={label} />}
       <PieChart

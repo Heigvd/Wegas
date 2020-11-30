@@ -30,8 +30,9 @@ import {
   FilePickingType,
 } from '../../../Editor/Components/FileBrowser/FileBrowser';
 import { CustomScriptProps } from '../../../Editor/Components/FormView/CustomScript';
-import { IAbstractContentDescriptor } from 'wegas-ts-api';
+import { IAbstractContentDescriptor, IScript } from 'wegas-ts-api';
 import { ScriptContext } from '../../Hooks/useGlobalLibs';
+import { ScriptableStringProps } from '../../../Editor/Components/FormView/ScriptableString';
 
 type TypedProps<T extends { view: {} }> = Schema<
   T['view'] & {
@@ -515,22 +516,29 @@ const simpleSchemaProps = {
   scriptString: ({
     label,
     required = false,
+    value = undefined,
     featureLevel = 'DEFAULT',
     index = 0,
     layout,
     borderTop,
-  }: CommonSchemaProps): TypedProps<ScripableVariableSelectProps> => ({
+    richText,
+  }: CommonSchemaProps &
+    ValueSchemaProps<IScript> & {
+      richText?: boolean;
+    }): TypedProps<ScriptableStringProps> => ({
     required,
     type: 'object',
     index,
+    value,
     view: {
       borderTop,
       index,
-      returnType: ['string'],
+      // returnType: ['string'],
       featureLevel,
       label,
       type: 'scriptableString',
       layout,
+      richText,
     },
   }),
   array: ({
@@ -548,7 +556,7 @@ const simpleSchemaProps = {
     borderTop,
   }: {
     itemSchema: {};
-    userOnChildAdd?: (value?: {}) => void;
+    userOnChildAdd?: (value?: {}) => {};
     requiredItems?: boolean;
     itemType?: TYPESTRING;
     highlight?: boolean;

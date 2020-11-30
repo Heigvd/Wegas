@@ -6,6 +6,7 @@ import { ComponentPalette, DnDComponent } from './ComponentPalette';
 import {
   usePageComponentStore,
   PageComponent,
+  componentsStore,
 } from '../../../Components/PageComponents/tools/componentFactory';
 import { MainLinearLayout } from '../LinearTabLayout/LinearLayout';
 import ComponentProperties from './ComponentProperties';
@@ -55,6 +56,7 @@ export interface PageContext {
     path: number[],
     index?: number,
     props?: WegasComponent['props'],
+    replace?: boolean,
   ) => void;
   onDelete: (path: number[]) => void;
   onEdit: (path: number[] | undefined) => void;
@@ -88,13 +90,7 @@ export const pageEditorCTX = React.createContext<PageEditorContext>({
   loading: false,
 });
 
-export const computePageLabel = (id: string, pageName?: string | null) =>
-  pageName ? `${pageName} (${id})` : id;
-
-export const returnPages = (
-  pages: Pages,
-  item?: PageIndexItem,
-): PagesWithName => {
+const returnPages = (pages: Pages, item?: PageIndexItem): PagesWithName => {
   if (item == null) {
     return {};
   }
@@ -109,7 +105,7 @@ export const returnPages = (
 const patchPage = (selectedPageId: string, page: WegasComponent) =>
   store.dispatch(Actions.PageActions.patch(selectedPageId, page));
 
-const createComponent = (
+export const createComponent = (
   page: WegasComponent,
   path: number[],
   componentType: string,
@@ -142,7 +138,7 @@ const createComponent = (
   }
 };
 
-const deleteComponent = (page: WegasComponent, path: number[]) => {
+export const deleteComponent = (page: WegasComponent, path: number[]) => {
   const newPage = deepClone(page) as WegasComponent;
   let parent: WegasComponent = newPage;
   const browsePath = [...path];
@@ -193,21 +189,21 @@ function SourceEditor() {
         loading ? (
           <pre>Loading the pages</pre>
         ) : (
-            <JSONandJSEditor
-              content={JSON.stringify(selectedPage, null, 2)}
-              onSave={content => {
-                try {
-                  if (selectedPageId) {
-                    patchPage(selectedPageId, JSON.parse(content));
-                  } else {
-                    throw Error('No selected page');
-                  }
-                } catch (e) {
-                  return { status: 'error', text: (e as Error).message };
+          <JSONandJSEditor
+            content={JSON.stringify(selectedPage, null, 2)}
+            onSave={content => {
+              try {
+                if (selectedPageId) {
+                  patchPage(selectedPageId, JSON.parse(content));
+                } else {
+                  throw Error('No selected page');
                 }
-              }}
-            />
-          )
+              } catch (e) {
+                return { status: 'error', text: (e as Error).message };
+              }
+            }}
+          />
+        )
       }
     </pageEditorCTX.Consumer>
   );
@@ -223,7 +219,7 @@ const toolbarStyle = css({
   display: flex,
 });
 
-export function PageEditionToolbar({
+function PageEditionToolbar({
   setShowBorders,
   setEditMode,
   setShowControls,
@@ -304,6 +300,11 @@ interface LayoutProps {
     path: number[],
     type: string,
   ) => void;
+  onDuplicateLayoutComponent: (
+    pageId: string,
+    page: WegasComponent,
+    path: number[],
+  ) => void;
   onDeleteLayoutComponent: (
     pageId: string,
     page: WegasComponent,
@@ -317,6 +318,7 @@ function Layout({
   onEdit,
   onMoveLayoutComponent,
   onNewLayoutComponent,
+  onDuplicateLayoutComponent,
   setPageEditorState,
 }: LayoutProps) {
   return (
@@ -330,6 +332,7 @@ function Layout({
       }
       componentControls={{
         onNew: onNewLayoutComponent,
+        onDuplicate: onDuplicateLayoutComponent,
         onDelete: onDeleteLayoutComponent,
         onEdit: onEdit,
         onMove: onMoveLayoutComponent,
@@ -345,7 +348,11 @@ export default function PageEditor() {
   const focusTab = React.useRef<(tabId: string, layoutId: string) => void>();
   const [{ selectedPageId, editedPath }, setPageEditorState] = React.useState<
     PageEditorState
-  >({ selectedPageId: store.getState().pages.index ? store.getState().pages.index.defaultPageId : undefined });
+  >({
+    selectedPageId: store.getState().pages.index
+      ? store.getState().pages.index.defaultPageId
+      : undefined,
+  });
 
   const [editMode, setEditMode] = React.useState(false);
   const [showBorders, setShowBorders] = React.useState(false);
@@ -460,6 +467,7 @@ export default function PageEditor() {
       path: number[],
       index?: number,
       props?: WegasComponent['props'],
+      replace?: boolean,
     ) => {
       let componentPageId = selectedPageId;
       let componentPage = selectedPage;
@@ -479,43 +487,53 @@ export default function PageEditor() {
       }
 
       if (selectedPageId != null && selectedPage != null) {
-        // Dropping new component
-        if (componentPath == null && componentName != null) {
-          const computedProps = computeProps(
-            components[componentName],
-            props,
-            undefined,
-          );
-          const newComponent = createComponent(
-            selectedPage,
-            path,
-            componentName,
-            computedProps,
-            index,
-          );
-          if (newComponent) {
-            patchPage(selectedPageId, newComponent.newPage);
-            onEdit(selectedPageId, newComponent.newPath);
-          }
-        }
-        // Dropping existing component
-        else {
-          if (
-            componentPageId != null &&
-            componentPage != null &&
-            componentPath != null
-          ) {
-            const newIndex = index ? index : 0;
-            onMoveLayoutComponent(
-              componentPageId,
-              selectedPageId,
-              componentPage,
-              selectedPage,
-              componentPath,
-              path,
-              newIndex,
+        const computedPage = replace
+          ? deleteComponent(selectedPage, [
+              ...path,
+              ...(index == null ? [] : [index]),
+            ])
+          : selectedPage;
+
+        if (computedPage != null) {
+          // Dropping new component
+          if (componentPath == null && componentName != null) {
+            const computedProps = computeProps(
+              components[componentName],
               props,
+              undefined,
             );
+
+            const newComponent = createComponent(
+              computedPage,
+              path,
+              componentName,
+              computedProps,
+              index,
+            );
+            if (newComponent) {
+              patchPage(selectedPageId, newComponent.newPage);
+              onEdit(selectedPageId, newComponent.newPath);
+            }
+          }
+          // Dropping existing component
+          else {
+            if (
+              componentPageId != null &&
+              componentPage != null &&
+              componentPath != null
+            ) {
+              const newIndex = index ? index : 0;
+              onMoveLayoutComponent(
+                componentPageId,
+                selectedPageId,
+                componentPage,
+                computedPage,
+                componentPath,
+                path,
+                newIndex,
+                props,
+              );
+            }
           }
         }
       }
@@ -526,7 +544,15 @@ export default function PageEditor() {
   const onDelete = React.useCallback(
     (path: number[]) => {
       if (selectedPageId && selectedPage) {
-        const newPage = deleteComponent(selectedPage, path);
+        // Checking if parent manages delete by itself
+        const { parent: parentComponent } = findComponent(selectedPage, path);
+        const { container } = componentsStore.getState()[
+          parentComponent?.type || ''
+        ];
+
+        const newPage = container?.deleteChildren
+          ? container?.deleteChildren(selectedPage, path)
+          : deleteComponent(selectedPage, path);
         if (newPage) {
           patchPage(selectedPageId, newPage);
         }
@@ -564,9 +590,37 @@ export default function PageEditor() {
     [components, onEdit],
   );
 
+  const onDuplicateLayoutComponent = React.useCallback(
+    (pageId, page, path) => {
+      const { component } = findComponent(page, path);
+      if (component) {
+        const newComponent = createComponent(
+          page,
+          path.slice(0, -1),
+          component.type,
+          component.props,
+          path.slice(-1)[0] + 1,
+        );
+        if (newComponent) {
+          patchPage(pageId, newComponent.newPage);
+          onEdit(pageId, newComponent.newPath);
+        }
+      }
+    },
+    [onEdit],
+  );
+
   const onDeleteLayoutComponent = React.useCallback(
     (pageId: string, page: WegasComponent, path: number[]) => {
-      const newPage = deleteComponent(page, path);
+      // Checking if parent manages delete by itself
+      const { parent: parentComponent } = findComponent(page, path);
+      const { container } = componentsStore.getState()[
+        parentComponent?.type || ''
+      ];
+
+      const newPage = container?.deleteChildren
+        ? container?.deleteChildren(page, path)
+        : deleteComponent(page, path);
       if (newPage) {
         patchPage(pageId, newPage);
       }
@@ -576,78 +630,80 @@ export default function PageEditor() {
 
   const availableLayoutTabs = React.useMemo(
     () => ({
-      'Pages Layout':
+      'Pages Layout': (
         <Layout
           onDeleteLayoutComponent={onDeleteLayoutComponent}
           onEdit={onEdit}
           onMoveLayoutComponent={onMoveLayoutComponent}
           onNewLayoutComponent={onNewLayoutComponent}
+          onDuplicateLayoutComponent={onDuplicateLayoutComponent}
           setPageEditorState={setPageEditorState}
         />
-      ,
+      ),
       'Component Palette': <ComponentPalette setEditMode={setEditMode} />,
-      'Page Display':
+      'Page Display': (
         <PageDisplay
           setEditMode={setEditMode}
           setShowBorders={setShowBorders}
           setShowControls={setShowControls}
         />
-      , 'Source Editor': <SourceEditor />,
+      ),
+      'Source Editor': <SourceEditor />,
       'Component Properties': <ComponentProperties />,
     }),
     [
       onDeleteLayoutComponent,
+      onDuplicateLayoutComponent,
       onEdit,
       onMoveLayoutComponent,
       onNewLayoutComponent,
     ],
   );
 
-
   // useComparator({selectedPageId,editedPath})
 
   return Object.keys(availableLayoutTabs).length === 0 ? (
     <pre>Loading...</pre>
   ) : (
-      <div className={cx(flex, grow) + ' PAGE-EDITOR'}>
-        <pageEditorCTX.Provider
+    <div className={cx(flex, grow) + ' PAGE-EDITOR'}>
+      <pageEditorCTX.Provider
+        value={{
+          selectedPageId,
+          selectedPage,
+          editedPath,
+          loading,
+        }}
+      >
+        <pageCTX.Provider
           value={{
-            selectedPageId,
-            selectedPage,
-            editedPath,
-            loading,
+            editMode,
+            showControls,
+            showBorders: showBorders /*|| (editMode && isAnythingDragged)*/,
+            pageIdPath: selectedPageId
+              ? [selectedPageId]
+              : defaultPageId
+              ? [defaultPageId]
+              : [],
+            handles: handles.current,
+            onDrop,
+            onDelete,
+            onEdit: path => onEdit(selectedPageId, path),
+            onUpdate,
           }}
         >
-          <pageCTX.Provider
-            value={{
-              editMode,
-              showControls,
-              showBorders: showBorders /*|| (editMode && isAnythingDragged)*/,
-              pageIdPath: selectedPageId
-                ? [selectedPageId]
-                : defaultPageId
-                  ? [defaultPageId]
-                  : [],
-              handles: handles.current,
-              onDrop,
-              onDelete,
-              onEdit: path => onEdit(selectedPageId, path),
-              onUpdate,
+          <MainLinearLayout
+            tabs={availableLayoutTabs}
+            initialLayout={[
+              [['Pages Layout'], ['Component Palette']],
+              ['Page Display'],
+            ]}
+            layoutId={PAGE_EDITOR_LAYOUT_ID}
+            onFocusTab={ft => {
+              focusTab.current = ft;
             }}
-          >
-            <MainLinearLayout
-              tabs={availableLayoutTabs}
-              initialLayout={[
-                [['Pages Layout'], ['Component Palette']],
-                ['Page Display'],
-              ]}
-              layoutId={PAGE_EDITOR_LAYOUT_ID}
-              onFocusTab={ft => {
-                focusTab.current = ft;
-              }}
-            />
-          </pageCTX.Provider>
-        </pageEditorCTX.Provider>
-      </div>
-    );
+          />
+        </pageCTX.Provider>
+      </pageEditorCTX.Provider>
+    </div>
+  );
 }

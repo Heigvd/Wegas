@@ -4,6 +4,8 @@ import { classNameOrEmpty } from '../../Helper/className';
 import { flex, flexColumn, flexRow, layoutStyle } from '../../css/classes';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
 import { themeVar } from '../Style/ThemeVars';
+import { HashListChoices } from '../../Editor/Components/FormView/HashList';
+import { schemaProps } from '../PageComponents/tools/schemaProps';
 
 const SPLITTER_SELECTOR = 'fonkyflex-splitter';
 const CONTENT_SELECTOR = 'fonkyflex-content';
@@ -54,7 +56,7 @@ function getFlexGrowValues(flexItems: HTMLDivElement[]): number[] {
   return flexItems.map(c => Number(c.style.getPropertyValue('flex-grow')));
 }
 
-export interface FonkyFlexContainerProps extends ClassAndStyle {
+export interface FonkyFlexContainerProps extends ClassStyleId {
   vertical?: boolean;
   flexValues?: number[];
   // noCheck?: boolean;
@@ -63,7 +65,7 @@ export interface FonkyFlexContainerProps extends ClassAndStyle {
   onResize?: (splitterNumber: number, flexValues: number[]) => void;
 }
 
-interface FonkyFlexSplitterProps extends ClassAndStyle {
+interface FonkyFlexSplitterProps extends ClassStyleId {
   notDraggable?: boolean;
 }
 
@@ -91,6 +93,7 @@ export function FonkyFlexContainer({
   className,
   style,
   children,
+  id,
 }: React.PropsWithChildren<FonkyFlexContainerProps>) {
   const flexChildren = React.useRef<HTMLDivElement[]>([]);
   const splitterChildren = React.useRef<HTMLDivElement[]>([]);
@@ -205,6 +208,7 @@ export function FonkyFlexContainer({
 
   return (
     <div
+      id={id}
       ref={e => {
         flexChildren.current = [];
         contentChildren.current = [];
@@ -269,6 +273,16 @@ export function FonkyFlexSplitter({
     />
   );
 }
+
+export const fonkyFlexContainerChoices: HashListChoices = [
+  {
+    label: 'Flex init value',
+    value: {
+      prop: 'flexInit',
+      schema: schemaProps.number({ label: 'Flex init value' }),
+    },
+  },
+];
 
 export const FonkyFlexContent = React.forwardRef<
   HTMLDivElement,

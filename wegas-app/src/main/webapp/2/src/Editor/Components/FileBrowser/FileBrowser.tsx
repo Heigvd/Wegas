@@ -11,6 +11,7 @@ import { css } from 'emotion';
 import { mainLayoutId } from '../Layout';
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
 import { focusTab } from '../LinearTabLayout/LinearLayout';
+import { classNameOrEmpty } from '../../../Helper/className';
 // import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const fileBrowserStyle = css({
@@ -30,7 +31,7 @@ export interface FileFilter {
   fileType: FileType;
 }
 
-interface FileBrowserProps {
+export interface FileBrowserProps extends ClassStyleId {
   onFileClick?: FileBrowserNodeProps['onFileClick'];
   onDelelteFile?: FileBrowserNodeProps['onDelelteFile'];
   selectedLocalPaths?: string[];
@@ -38,7 +39,6 @@ interface FileBrowserProps {
   localDispatch?: StoreDispatch;
   pick?: FilePickingType;
   filter?: FileFilter;
-  id?: string;
 }
 
 export function FileBrowser({
@@ -49,6 +49,8 @@ export function FileBrowser({
   localDispatch,
   pick,
   filter,
+  className,
+  style,
   id,
 }: FileBrowserProps) {
   const [rootFile, setRootFile] = React.useState<IAbstractContentDescriptor>();
@@ -68,7 +70,12 @@ export function FileBrowser({
 
   return rootFile ? (
     <DefaultDndProvider>
-      <div className={grow} ref={comp.current} id={id}>
+      <div
+        className={grow + classNameOrEmpty(className)}
+        style={style}
+        ref={comp.current}
+        id={id}
+      >
         <MessageString value={error} type={'error'} duration={3000} />
         <FileBrowserNode
           defaultFile={rootFile}

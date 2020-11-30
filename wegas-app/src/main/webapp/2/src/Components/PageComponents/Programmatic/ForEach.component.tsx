@@ -8,17 +8,19 @@ import {
   isVertical,
   FlexItem,
   defaultFlexLayoutOptionsKeys,
+  flexlayoutChoices,
 } from '../../Layouts/FlexList';
+import { EmptyComponentContainer } from '../Layouts/FlexList.component';
 import {
   registerComponent,
   pageComponentFactory,
 } from '../tools/componentFactory';
+import { WegasComponentProps } from '../tools/EditableComponent';
+import { classStyleIdShema } from '../tools/options';
 import {
   ChildrenDeserializerProps,
-  WegasComponentProps,
-} from '../tools/EditableComponent';
-import { classAndStyleShema } from '../tools/options';
-import { PageDeserializer } from '../tools/PageDeserializer';
+  PageDeserializer,
+} from '../tools/PageDeserializer';
 import { schemaProps } from '../tools/schemaProps';
 
 interface ForEachProps extends WegasComponentProps, FlexListProps {
@@ -39,14 +41,23 @@ function ChildrenDeserializer({
   exposeAs,
   getItemsFn,
   editMode,
+  wegasChildren,
 }: ChildrenDeserializerProps<ForEachProps>) {
-  const items = useScript<object[]>(getItemsFn);
+  const items = useScript<object[]>(getItemsFn, context);
   let children: JSX.Element[] = [];
 
   if (items) {
     children = items.map((item, id) => {
       const newContext = { ...context, [exposeAs]: item };
-      return (
+      return editMode && (!wegasChildren || wegasChildren.length === 0) ? (
+        <EmptyComponentContainer
+          Container={FlexItem}
+          path={path}
+          content={
+            'Place a component that you want to duplicate for each item of the Fore Each'
+          }
+        />
+      ) : (
         <PageDeserializer
           key={JSON.stringify([...(path ? path : []), id])}
           pageId={pageId}
@@ -72,10 +83,10 @@ registerComponent(
     component: ForEach,
     componentType: 'Programmatic',
     container: {
-      type: 'FOREACH',
       isVertical,
       ChildrenDeserializer,
       noContainer,
+      childrenSchema: flexlayoutChoices,
     },
     name: 'For each',
     icon: 'code',
@@ -91,9 +102,8 @@ registerComponent(
         value: 'item',
       }),
       itemsOnly: schemaProps.boolean({ label: 'Items only' }),
-      ...classAndStyleShema,
+      ...classStyleIdShema,
     },
-    allowedVariables: ['TextDescriptor'],
-    getComputedPropsFromVariable: () => ({ exposeAs: 'item' }),
+    getComputedPropsFromVariable: () => ({ exposeAs: 'item', children: [] }),
   }),
 );

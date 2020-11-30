@@ -6,9 +6,13 @@ import {
 import { schemaProps } from '../tools/schemaProps';
 import { StandardGauge } from '../../Outputs/StandardGauge';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { useComponentScript } from '../../Hooks/useComponentScript';
-import { IScript, INumberDescriptor } from 'wegas-ts-api';
+import { IScript, SNumberDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { instantiate } from '../../../data/scriptable';
+import { Player } from '../../../data/selectors';
+import { useStore } from '../../../data/store';
+import { useScript } from '../../Hooks/useScript';
+import { classStyleIdShema } from '../tools/options';
 
 interface PlayerGaugeProps extends WegasComponentProps {
   /**
@@ -25,19 +29,32 @@ interface PlayerGaugeProps extends WegasComponentProps {
   followNeedle?: boolean;
 }
 
-function PlayerGauge(props: PlayerGaugeProps) {
-  const { content, descriptor, instance, notFound } = useComponentScript<
-    INumberDescriptor
-  >(props.script);
-  return notFound ? (
-    <pre>Not found: {content}</pre>
+function PlayerGauge({
+  script,
+  label,
+  followNeedle,
+  className,
+  style,
+  id,
+  context,
+}: PlayerGaugeProps) {
+  const number = useScript<SNumberDescriptor>(script, context);
+  const player = instantiate(useStore(Player.selectCurrent));
+
+  return number == null ? (
+    <pre className={className} style={style} id={id}>
+      Not found: {script?.content}
+    </pre>
   ) : (
     <StandardGauge
-      label={props.label}
-      followNeedle={props.followNeedle}
-      min={descriptor!.getMinValue() || 0}
-      max={descriptor!.getMaxValue() || 1}
-      value={instance!.value}
+      className={className}
+      style={style}
+      id={id}
+      label={label}
+      followNeedle={followNeedle}
+      min={number.getMinValue() || 0}
+      max={number.getMaxValue() || 1}
+      value={number.getValue(player)}
     />
   );
 }
@@ -56,6 +73,7 @@ registerComponent(
       }),
       label: schemaProps.string({ label: 'Label' }),
       followNeedle: schemaProps.boolean({ label: 'Follow needle' }),
+      ...classStyleIdShema,
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({

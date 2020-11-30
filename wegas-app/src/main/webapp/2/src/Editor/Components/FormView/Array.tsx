@@ -86,7 +86,7 @@ interface DnDArrayDragMonitor {
   dragStyle: React.CSSProperties;
 }
 
-interface ArrayItemProps extends ClassAndStyle {
+interface ArrayItemProps extends ClassStyleId {
   /**
    * index - The index of the item in the array
    */
@@ -156,7 +156,7 @@ interface DnDArrayDropMonitor {
   canDrop?: boolean;
 }
 
-interface ArrayDropzoneProps extends ClassAndStyle {
+interface ArrayDropzoneProps extends ClassStyleId {
   /**
    * onDrop - the function that is called when an item is dropped
    */
@@ -196,7 +196,7 @@ export interface IArrayProps
       choices?: Item<string>[];
       tooltip?: string;
       disabled?: boolean;
-      userOnChildAdd?: (value?: {}) => void;
+      userOnChildAdd?: (menuValue?: {}) => {};
       // TODO : Use the following view props!
       highlight?: boolean;
       sortable?: boolean;
@@ -296,7 +296,7 @@ function ArrayWidget({
   errorMessage,
   view,
   onChange,
-  onChildAdd,
+  // onChildAdd, //This props is given by WidgetProps.ArrayProps but it makes no sense as there is no way to configure it and it will add a null value in the array no matter the type of the array items
   onChildRemove,
   value,
   children,
@@ -324,12 +324,14 @@ function ArrayWidget({
   }
   const singleItemType: Exclude<typeof itemType, TYPESTRING[]> = itemType;
   const defaultNewChild: (newValue?: {} | undefined) => void = newValue =>
-    onChange([
+    typeCleaner(newValue, singleItemType || 'object', true, defaultItem);
+  const onNewChild: (menuValue?: {} | undefined) => void = menuValue => {
+    const newValue = [
       ...(value || []),
-      typeCleaner(newValue, singleItemType || 'object', true, defaultItem),
-    ]);
-  const onNewChild: (value?: {} | undefined) => void =
-    (userOnChildAdd ? userOnChildAdd : onChildAdd) || defaultNewChild;
+      (userOnChildAdd || defaultNewChild)(menuValue),
+    ];
+    onChange(newValue);
+  };
   return (
     <CommonViewContainer errorMessage={errorMessage} view={view}>
       <Labeled label={label} description={description}>

@@ -10,9 +10,6 @@ import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 import { schemaProps } from './schemaProps';
 import { PlayerInfoBulletProps } from './InfoBullet';
-import { flexlayoutChoices } from '../../Layouts/FlexList';
-import { absolutelayoutChoices } from '../../Layouts/Absolute';
-import { ContainerTypes } from './EditableComponent';
 import { createScript } from '../../../Helper/wegasEntites';
 import { IScript } from 'wegas-ts-api';
 import { instantiate } from '../../../data/scriptable';
@@ -30,7 +27,6 @@ import {
   SSurveyDescriptor,
   SPeerReviewDescriptor,
 } from 'wegas-ts-api';
-import { menuItemSchema } from '../../Layouts/Menu';
 
 export interface WegasComponentOptionsAction {
   priority?: number;
@@ -39,12 +35,14 @@ export interface WegasComponentOptionsAction {
 export interface OpenPageAction {
   pageLoaderName: IScript;
   pageId: IScript;
+  context?: { [item: string]: any };
 }
 interface OpenURLAction {
   url: string;
 }
 interface OpenFileAction {
-  filePath: string;
+  filePath: IScript;
+  context?: { [item: string]: any };
 }
 interface ImpactVariableAction {
   impact: IScript;
@@ -55,6 +53,7 @@ interface LocalScriptEvalAction {
 }
 interface OpenPopupPageAction {
   pageId: IScript;
+  context?: { [item: string]: any };
 }
 interface PlaySoundAction {
   filePath: string;
@@ -102,8 +101,8 @@ export interface WegasComponentActions {
 }
 
 export const wegasComponentActions: WegasComponentActions = {
-  openPage: ({ pageLoaderName, pageId }) => {
-    const name = clientScriptEval<string>(pageLoaderName.content);
+  openPage: ({ pageLoaderName, pageId, context }) => {
+    const name = clientScriptEval<string>(pageLoaderName.content, context);
     if (name != null) {
       store.dispatch(
         ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
@@ -117,7 +116,10 @@ export const wegasComponentActions: WegasComponentActions = {
     window.open(props.url);
   },
   openFile: props => {
-    const win = window.open(fileURL(props.filePath), '_blank');
+    const win = window.open(
+      fileURL(clientScriptEval(props.filePath, props.context)),
+      '_blank',
+    );
     win!.focus();
   },
   impactVariable: props => {
@@ -185,7 +187,11 @@ export const actionsChoices: HashListChoices = [
       schema: schemaProps.object({
         label: 'Open File',
         properties: {
-          fileDescriptor: schemaProps.path({ label: 'File', required: true }),
+          filePath: schemaProps.path({
+            label: 'File',
+            required: true,
+            scriptable: true,
+          }),
           priority: schemaProps.number({ label: 'Priority' }),
         },
       }),
@@ -316,8 +322,14 @@ export const layoutCommonChoices: HashListChoices = [
   },
 ];
 
+export interface WegasConditionnalClassName {
+  className?: string;
+  condition?: IScript;
+}
+
 // OPTIONS -> LAYOUT CONDITIONNAL
 export interface WegasComponentLayoutConditionnalOptions {
+  conditionnalClassNames?: WegasConditionnalClassName[];
   disableIf?: IScript;
   hideIf?: IScript;
   readOnlyIf?: IScript;
@@ -325,6 +337,24 @@ export interface WegasComponentLayoutConditionnalOptions {
 }
 
 export const layoutConditionnalChoices: HashListChoices = [
+  {
+    label: 'Conditionnal classes',
+    value: {
+      prop: 'conditionnalClassNames',
+      schema: schemaProps.array({
+        label: 'Conditionnal classes',
+        itemSchema: {
+          className: schemaProps.string({ label: 'Class' }),
+          condition: schemaProps.script({
+            label: 'Condition',
+            mode: 'GET',
+            language: 'TypeScript',
+            value: 'false',
+          }),
+        },
+      }),
+    },
+  },
   {
     label: 'Disable If',
     value: {
@@ -535,21 +565,20 @@ export type WegasComponentExtra = WegasComponentLayoutCommonOptions &
   WegasComponentLayoutConditionnalOptions &
   WegasComponentDecorations;
 
-export const layoutChoices = {
-  FLEX: flexlayoutChoices,
-  LINEAR: [],
-  ABSOLUTE: absolutelayoutChoices,
-  MENU: menuItemSchema,
-  FOREACH: flexlayoutChoices,
-};
+// export const layoutChoices = {
+//   FLEX: flexlayoutChoices,
+//   LINEAR: [],
+//   ABSOLUTE: absolutelayoutChoices,
+//   MENU: menuItemSchema,
+//   FOREACH: flexlayoutChoices,
+// };
 
-export const wegasComponentExtraSchema = (containerType: ContainerTypes) => ({
+export const wegasComponentExtraSchema = (
+  childrenSchema: HashListChoices = [],
+) => ({
   layoutOptions: schemaProps.hashlist({
     label: 'Layout options',
-    choices: [
-      ...(containerType ? layoutChoices[containerType] : []),
-      ...layoutCommonChoices,
-    ],
+    choices: [...childrenSchema, ...layoutCommonChoices],
     objectViewStyle: true,
   }),
   layoutConditions: schemaProps.hashlist({
@@ -572,7 +601,34 @@ export const wegasComponentExtraSchema = (containerType: ContainerTypes) => ({
 /**
  * classAndStyleShema - defines the schema to be used to edit classes and style of a component
  */
-export const classAndStyleShema = {
+export const classStyleIdShema = {
   className: schemaProps.string({ label: 'Classes' }),
   style: schemaProps.hashlist({ label: 'Style' }),
+  id: schemaProps.string({ label: 'Id' }),
 };
+
+export const clientAndServerScriptChoices: HashListChoices = [
+  {
+    label: 'Client script',
+    value: {
+      prop: 'client',
+      schema: schemaProps.customScript({
+        label: 'Client script',
+        required: true,
+        language: 'TypeScript',
+      }),
+    },
+  },
+  {
+    label: 'Server script',
+    value: {
+      prop: 'server',
+      schema: schemaProps.script({
+        label: 'Server script',
+        required: true,
+        mode: 'SET',
+        language: 'TypeScript',
+      }),
+    },
+  },
+];

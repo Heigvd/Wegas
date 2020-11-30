@@ -26,7 +26,7 @@ import { Button } from '../../Components/Inputs/Buttons/Button';
 
 // May be moved in a proper file to allow wider usage
 // interface NotificationMenuProps {}
-function NotificationMenu({ className, style }: ClassAndStyle) {
+function NotificationMenu({ className, style }: ClassStyleId) {
   const wegasEvents = useStore(s => s.global.events);
   const [recievedEvents, setRecievedEvents] = React.useState<number[]>([]);
 

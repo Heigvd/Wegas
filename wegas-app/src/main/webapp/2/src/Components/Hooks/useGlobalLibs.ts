@@ -28,6 +28,8 @@ import i18nGlobalSrc from '!!raw-loader!../../../types/scripts/I18nGlobals.d.ts'
 // @ts-ignore
 import APIMethodsGlobalSrc from '!!raw-loader!../../../types/scripts/APIMethodsGlobals.d.ts';
 // @ts-ignore
+import HelpersGlobalSrc from '!!raw-loader!../../../types/scripts/HelpersGlobals.d.ts';
+// @ts-ignore
 import generalTypes from '!!raw-loader!../../../types/general-types.d.ts';
 
 import { deepDifferent } from './storeHookFactory';
@@ -81,6 +83,10 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
       .map(l => l.code)
       .join(' | ');
 
+    const allowedPageLoadersType = Object.keys(s.global.pageLoaders)
+      .map(name => `"${name}"`)
+      .join('|');
+
     try {
       return `
         declare const gameModel : SGameModel;
@@ -125,7 +131,9 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         interface EditorClass extends GlobalEditorClass {
           setLanguage: (lang: { code: SGameModelLanguage['code'] } | CurrentLanguages) => void;
         }
-        declare const Editor: EditorClass;
+        declare const Editor: EditorClass & {
+          setPageLoaders: (name: ${allowedPageLoadersType}, pageId: IScript) => void;
+        };
 
         interface ClientMethods {
           ${Object.keys(globalMethods)
@@ -180,6 +188,8 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         }
         
         declare const APIMethods : APIMethodsClass;
+
+        declare const Helpers : GlobalHelpersClass;
         `
             : `${buildGlobalServerMethods(globalServerMethods)}`
         }
@@ -206,6 +216,7 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         ${wegasEventsGlobalSrc}\n
         ${i18nGlobalSrc}\n
         ${APIMethodsGlobalSrc}\n
+        ${HelpersGlobalSrc}\n
         ${libs}\n
       `,
         name: 'VariablesTypes.d.ts',
