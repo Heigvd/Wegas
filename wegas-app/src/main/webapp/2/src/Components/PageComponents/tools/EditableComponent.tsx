@@ -42,6 +42,8 @@ import { themeVar } from '../../Style/ThemeVars';
 import { parseAndRunClientScript } from '../../Hooks/useScript';
 import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
 import { IScript } from 'wegas-ts-api';
+import { TumbleLoader } from '../../Loader';
+// import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {
@@ -97,6 +99,61 @@ const showBordersStyle = css({
 });
 
 // Helper functions
+
+/**
+ * onComponentClick - onClick factory that can be used by components and override classic onClick
+ * @param onClickActions
+ * @param context
+ * @param stopPropagation
+ * @param confirmClick
+ */
+export function onComponentClick(
+  componentProps: { [props: string]: unknown },
+  context?: { [variable: string]: unknown },
+  stopPropagation?: boolean,
+  confirmClick?: string,
+) {
+  const onClickActions = Object.entries(
+    pick(
+      componentProps,
+      Object.keys(defaultWegasComponentOptionsActions),
+    ) as WegasComponentOptionsActions,
+  );
+
+  return function (event: React.MouseEvent<HTMLElement, MouseEvent>) {
+    if (stopPropagation) {
+      event.stopPropagation();
+    }
+    if (
+      !confirmClick ||
+      // TODO : Find a better way to do that than a modal!!!
+      // eslint-disable-next-line no-alert
+      confirm(confirmClick)
+    ) {
+      // if (confirmClick) {
+      //   setWaitConfirmation(true);
+      // } else if (!confirmClick || waitConfirmation) {
+      onClickActions
+        .sort(
+          (
+            [, v1]: [string, WegasComponentOptionsAction],
+            [, v2]: [string, WegasComponentOptionsAction],
+          ) =>
+            (v1.priority ? v1.priority : 0) - (v2.priority ? v2.priority : 0),
+        )
+        .forEach(([k, v]) => {
+          if (k === 'impactVariable') {
+            return wegasComponentActions.impactVariable({
+              impact: parseAndRunClientScript(v.impact, context) as IScript,
+            });
+          }
+          return wegasComponentActions[
+            k as keyof WegasComponentOptionsActions
+          ]({ ...v, context });
+        });
+    }
+  };
+}
 
 /**
  * visitPath - this function will a tree following a path and trigger a callback at each node
@@ -280,20 +337,34 @@ export function ComponentDropZone({
 }
 
 interface LockedOverlayProps {
-  locked: boolean;
+  locked?: boolean;
+  // confirmClick: boolean;
+  // onConfirmClick: (
+  //   confirmed: boolean,
+  //   event: React.MouseEvent<HTMLElement, MouseEvent>,
+  // ) => void;
 }
 
 function LockedOverlay({ locked }: LockedOverlayProps) {
-  return locked ? (
+  return (
     <div
       onClick={e => e.stopPropagation()}
       style={{
         position: 'absolute',
         width: '100%',
         height: '100%',
+        left: 0,
+        top: 0,
+        backgroundColor: 'rgba(100,100,100,.5)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
       }}
-    ></div>
-  ) : null;
+    >
+      {locked && <TumbleLoader />}
+      {/* {confirmClick && <ConfirmButton onAction={onConfirmClick} />} */}
+    </div>
+  );
 }
 
 /**
@@ -403,6 +474,7 @@ export type ItemContainer = React.ForwardRefExoticComponent<
 interface ComponentContainerProps extends WegasComponentProps {
   vertical?: boolean;
   containerPropsKeys?: string[];
+  onClickManaged: boolean;
 }
 
 const pageDispatch = pagesStateStore.dispatch;
@@ -425,12 +497,16 @@ export function ComponentContainer({
   stopPropagation,
   confirmClick,
   actions,
+  onClickManaged,
   ...restProps
 }: ComponentContainerProps) {
   const container = React.useRef<HTMLDivElement>();
   const mouseOver = React.useRef<boolean>(false);
   const [dragHoverState, setDragHoverState] = React.useState<boolean>(false);
   const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
+  // const [waitConfirmation, setWaitConfirmation] = React.useState<boolean>(
+  //   false,
+  // );
 
   const {
     onDrop,
@@ -454,45 +530,11 @@ export function ComponentContainer({
     isComponentFocused(editMode, pageId, path),
   );
 
-  const onClickActions = Object.entries(
-    pick(
-      restProps,
-      Object.keys(defaultWegasComponentOptionsActions),
-    ) as WegasComponentOptionsActions,
-  );
-
   const onClick = React.useCallback(
-    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      if (stopPropagation) {
-        event.stopPropagation();
-      }
-      if (
-        !confirmClick ||
-        // TODO : Find a better way to do that than a modal!!!
-        // eslint-disable-next-line no-alert
-        confirm(confirmClick)
-      ) {
-        onClickActions
-          .sort(
-            (
-              [, v1]: [string, WegasComponentOptionsAction],
-              [, v2]: [string, WegasComponentOptionsAction],
-            ) =>
-              (v1.priority ? v1.priority : 0) - (v2.priority ? v2.priority : 0),
-          )
-          .forEach(([k, v]) => {
-            if (k === 'impactVariable') {
-              return wegasComponentActions.impactVariable({
-                impact: parseAndRunClientScript(v.impact, context) as IScript,
-              });
-            }
-            return wegasComponentActions[
-              k as keyof WegasComponentOptionsActions
-            ]({ ...v, context });
-          });
-      }
-    },
-    [stopPropagation, confirmClick, onClickActions, context],
+    onClickManaged
+      ? () => {}
+      : onComponentClick(restProps, context, stopPropagation, confirmClick),
+    [stopPropagation, confirmClick, restProps, context, onClickManaged],
   );
 
   const onMouseOver = React.useCallback(
@@ -565,7 +607,6 @@ export function ComponentContainer({
   return (
     <Container
       ref={ref => {
-        // dropZone(ref);
         if (ref != null) {
           container.current = ref;
         }
@@ -581,17 +622,8 @@ export function ComponentContainer({
           [disabledStyle]: options.disabled,
         }) + classNameOrEmpty(layoutClassName)
       }
-      style={
-        layoutStyle
-        //   {
-        //   cursor:
-        //     onClickActions.length > 0 && !options.disabled
-        //       ? 'pointer'
-        //       : 'inherit',
-        //   ...layoutStyle,
-        // }
-      }
-      onClick={onClick}
+      style={layoutStyle}
+      onClick={onClickManaged ? undefined : onClick}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
       {...dropFunctions}
@@ -642,7 +674,18 @@ export function ComponentContainer({
           dropPosition="AFTER"
         />
       )}
-      <LockedOverlay locked={(options.disabled || options.locked) === true} />
+      {(options.disabled || options.locked) === true && (
+        <LockedOverlay
+          locked={options.locked}
+          // confirmClick={waitConfirmation}
+          // onConfirmClick={(confirmed, event) => {
+          //   if (confirmed) {
+          //     onClick(event);
+          //   }
+          //   setWaitConfirmation(false);
+          // }}
+        />
+      )}
     </Container>
   );
 }

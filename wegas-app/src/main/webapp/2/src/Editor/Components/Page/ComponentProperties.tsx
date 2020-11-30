@@ -135,6 +135,7 @@ const defaultLayoutConditionsKeys = Object.keys(defaultLayoutConditions);
 const defaultAction: WegasComponentOptionsActions &
   WegasComponentActionsProperties = {
   confirmClick: undefined,
+  stopPropagation: undefined,
   impactVariable: undefined,
   localScriptEval: undefined,
   openFile: undefined,

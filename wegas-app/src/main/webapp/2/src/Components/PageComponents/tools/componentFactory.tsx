@@ -51,6 +51,7 @@ export interface PageComponent<
 > {
   WegasComponent: React.FunctionComponent<P>;
   container?: ContainerComponent<P>;
+  manageOnClick?: boolean;
   componentType: ComponentType;
   componentName: string;
   icon: Icon;
@@ -158,6 +159,7 @@ export function pageComponentFactory<
     component: React.FunctionComponent<P>;
     componentType: ComponentType;
     container?: C;
+    manageOnClick?: boolean;
     name: string;
     icon: Icon;
     dropzones?: DropZones;
@@ -179,6 +181,7 @@ export function pageComponentFactory<
     WegasComponent: param.component,
     componentType: param.componentType,
     container: param.container,
+    manageOnClick: param.manageOnClick,
     icon: param.icon,
     dropzones: param.dropzones,
     componentName: param.name,
