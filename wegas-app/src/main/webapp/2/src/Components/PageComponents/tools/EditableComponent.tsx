@@ -581,13 +581,16 @@ export function ComponentContainer({
           [disabledStyle]: options.disabled,
         }) + classNameOrEmpty(layoutClassName)
       }
-      style={{
-        cursor:
-          onClickActions.length > 0 && !options.disabled
-            ? 'pointer'
-            : 'inherit',
-        ...layoutStyle,
-      }}
+      style={
+        layoutStyle
+        //   {
+        //   cursor:
+        //     onClickActions.length > 0 && !options.disabled
+        //       ? 'pointer'
+        //       : 'inherit',
+        //   ...layoutStyle,
+        // }
+      }
       onClick={onClick}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
