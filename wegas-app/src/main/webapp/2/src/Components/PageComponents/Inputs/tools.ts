@@ -33,7 +33,7 @@ export interface OnVariableChange {
 export const onVariableChangeSchema = (label: string) =>
   schemaProps.hashlist({
     label,
-    required: true,
+    required: false,
     choices: [
       {
         label: 'Expose variable as',
@@ -78,7 +78,7 @@ export function useOnVariableChange(
     }
   }
 
-  if (!onVariableChange) {
+  if (!onVariableChange || Object.keys(onVariableChange).length === 0) {
     return {};
   } else {
     return { client, server, exposeAs, handleOnChange };
