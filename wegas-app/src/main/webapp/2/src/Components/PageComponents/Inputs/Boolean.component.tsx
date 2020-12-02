@@ -63,7 +63,6 @@ function PlayerBoolean({
   const textLabel = useScript<string>(label, context);
 
   const BooleanComponent = type === 'toggler' ? Toggler : CheckBox;
-
   return bool == null ? (
     <pre className={className} style={style} id={id}>
       Not found: {script?.content}

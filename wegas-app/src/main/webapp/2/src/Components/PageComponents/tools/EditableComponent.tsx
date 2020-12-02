@@ -604,7 +604,7 @@ export function ComponentContainer({
     [onDrop, path],
   );
 
-  return (
+  return showComponent ? (
     <Container
       ref={ref => {
         if (ref != null) {
@@ -657,7 +657,7 @@ export function ComponentContainer({
           isSelected={isSelected}
         />
       )}
-      {showComponent && <ErrorBoundary>{children}</ErrorBoundary>}
+      <ErrorBoundary>{children}</ErrorBoundary>
       {options.infoBulletProps && (
         <PlayerInfoBullet {...options.infoBulletProps} />
       )}
@@ -687,5 +687,5 @@ export function ComponentContainer({
         />
       )}
     </Container>
-  );
+  ) : null;
 }

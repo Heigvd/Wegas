@@ -1,13 +1,10 @@
 import * as React from 'react';
-// import { Actions } from '../../../data';
-// import { store } from '../../../data/store';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { Button } from '../../Inputs/Buttons/Button';
-import { createScript } from '../../../Helper/wegasEntites';
 import {
   onComponentClick,
   WegasComponentProps,
@@ -19,7 +16,6 @@ import { classStyleIdShema } from '../tools/options';
 import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 
 export interface PlayerButtonProps extends WegasComponentProps {
-  // action: IScript;
   label?: IScript;
   icon?: Icons;
   prefixedLabel?: boolean;
@@ -101,8 +97,5 @@ registerComponent(
     name: 'Button',
     icon: 'hand-pointer',
     schema: buttonSchema,
-    getComputedPropsFromVariable: () => ({
-      action: createScript(),
-    }),
   }),
 );
