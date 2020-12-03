@@ -104,10 +104,6 @@ export function ComponentOptionsManager({
     .map(item => item.className)
     .join(' ');
 
-  if (conditionnalClassNames.length > 0) {
-    debugger;
-  }
-
   const newUpgrades: OptionsState = {
     disabled,
     hidden,
