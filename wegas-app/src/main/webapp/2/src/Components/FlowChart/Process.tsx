@@ -1,11 +1,11 @@
-import { css } from 'emotion';
 import * as React from 'react';
+import { css } from 'emotion';
+import { themeVar } from '../Style/ThemeVars';
 import {
-  MouseDnDHandler,
   XYPosition,
+  MouseDnDHandler,
   useMouseEventDnd,
 } from '../Hooks/useMouseEventDnd';
-import { themeVar } from '../Style/ThemeVars';
 
 const PROCESS_WIDTH = 100;
 const PROCESS_HEIGHT = 50;
@@ -14,7 +14,8 @@ const processStyle = css({
   position: 'absolute',
   minWidth: `${PROCESS_WIDTH}px`,
   minHeight: `${PROCESS_HEIGHT}px`,
-  backgroundColor: themeVar.Common.colors.ActiveColor,
+  backgroundColor: themeVar.Common.colors.MainColor,
+  color: themeVar.Common.colors.SecondaryTextColor,
   borderRadius: '10px',
   boxShadow: `5px 5px 5px ${themeVar.Common.colors.HeaderColor}`,
   cursor: 'move',
@@ -29,7 +30,7 @@ const flowHandleStyle = css({
   width: `${HANDLE_SIDE}px`,
   height: `${HANDLE_SIDE}px`,
   borderRadius: `${HANDLE_SIDE / 2}px`,
-  backgroundColor: themeVar.Common.colors.WarningColor,
+  backgroundColor: themeVar.Common.colors.HighlightColor,
   opacity: 0.2,
   ':hover': { opacity: 1 },
 });
@@ -66,8 +67,8 @@ function ProcessHandle({ position, handlers }: ProcessHandleProps) {
 
 export interface ProcessProps extends Process {
   id: string;
-  onMoveEnd: (postion: XYPosition) => void;
   onMove: (postion: XYPosition) => void;
+  onMoveEnd: (postion: XYPosition) => void;
   onNew: (position: XYPosition) => void;
   onReady: (element: HTMLElement) => void;
 }
@@ -75,21 +76,12 @@ export interface ProcessProps extends Process {
 export function ProcessComponent({
   id,
   position,
-  onMoveEnd,
   onMove,
+  onMoveEnd,
   onNew,
   onReady,
 }: ProcessProps) {
   const processElement = React.useRef<HTMLDivElement | null>(null);
-  const clickPosition = React.useRef<XYPosition>({ x: 0, y: 0 });
-
-  const onDragStart = React.useCallback((e: MouseEvent) => {
-    const targetBox = (e.target as HTMLDivElement).getBoundingClientRect();
-    clickPosition.current = {
-      x: e.clientX - targetBox.left,
-      y: e.clientY - targetBox.top,
-    };
-  }, []);
 
   const onDrag = React.useCallback(
     (_e: MouseEvent, position: XYPosition) => {
@@ -109,7 +101,6 @@ export function ProcessComponent({
   );
 
   useMouseEventDnd(processElement, {
-    onDragStart,
     onDrag,
     onDragEnd,
   });

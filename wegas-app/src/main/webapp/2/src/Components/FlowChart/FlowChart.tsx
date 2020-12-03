@@ -1,7 +1,7 @@
-import { css } from 'emotion';
 import * as React from 'react';
-import { XYPosition } from '../Hooks/useMouseEventDnd';
+import { css } from 'emotion';
 import { Toolbar } from '../Toolbar';
+import { XYPosition } from '../Hooks/useMouseEventDnd';
 import { Processes, ProcessProps, ProcessComponent } from './Process';
 import { FlowLineProps, FlowLineComponent } from './FlowLine';
 
@@ -67,9 +67,11 @@ export function FlowChart({
     <Toolbar className={flowChartStyle}>
       <Toolbar.Header>{title}</Toolbar.Header>
       <Toolbar.Content style={{ position: 'relative' }}>
-        <svg style={{ position: 'absolute', width: '100%', height: '100%' }}>
-          {flows}
-        </svg>
+        {
+          // FIXME see if OK. Allow access to process if dropped outside the visible flow chart
+        }
+        <svg style={{ position: 'absolute', width: '100%', height: '100%' }} />
+        {flows}
         {Object.entries(processes).map(([key, process]) => (
           <Process
             key={key + JSON.stringify(process.position)}

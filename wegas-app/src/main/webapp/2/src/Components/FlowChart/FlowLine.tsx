@@ -1,6 +1,10 @@
-import { css } from 'emotion';
 import * as React from 'react';
+import { css } from 'emotion';
+import { themeVar } from '../Style/ThemeVars';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
+
+const svgBoxMargin: number = 10;
+
 export interface FlowLine {
   startingStateId: string | number;
   endingStateId: string | number;
@@ -12,7 +16,12 @@ export interface FlowLines {
 
 const flowLineStyle = css({
   position: 'absolute',
-  backgroundColor: 'yellow',
+  backgroundColor: 'rgb(255, 255, 150)',
+});
+
+const arrowStyle = css({
+  stroke: themeVar.Common.colors.TextColor,
+  strokeWidth: 2,
 });
 
 export interface FlowLineProps {
@@ -25,9 +34,9 @@ export interface FlowLineProps {
 interface Values {
   arrowStart: XYPosition;
   arrowEnd: XYPosition;
-  arrowLength: number;
-  arrowLeftCorner: XYPosition;
-  arrowRightCorner: XYPosition;
+  // arrowLength: number;
+  // arrowLeftCorner: XYPosition;
+  // arrowRightCorner: XYPosition;
 }
 
 interface AxeValues {
@@ -113,80 +122,99 @@ export function FlowLineComponent({
     LEFT: {
       arrowStart: startPointLeft,
       arrowEnd: endPointRight,
-      arrowLength: leftArrowLength,
-      arrowLeftCorner: { x: endPointRight.x + 5, y: endPointRight.y - 5 },
-      arrowRightCorner: { x: endPointRight.x + 5, y: endPointRight.y + 5 },
+      //arrowLength: leftArrowLength,
+      //arrowLeftCorner: { x: endPointRight.x + 5, y: endPointRight.y - 5 },
+      //arrowRightCorner: { x: endPointRight.x + 5, y: endPointRight.y + 5 },
     },
     TOP: {
       arrowStart: startPointTop,
       arrowEnd: endPointBottom,
-      arrowLength: topArrowLength,
-      arrowLeftCorner: { x: endPointRight.x + 5, y: endPointRight.y + 5 },
-      arrowRightCorner: { x: endPointRight.x - 5, y: endPointRight.y + 5 },
+      //arrowLength: topArrowLength,
+      //arrowLeftCorner: { x: endPointRight.x + 5, y: endPointRight.y + 5 },
+      //arrowRightCorner: { x: endPointRight.x - 5, y: endPointRight.y + 5 },
     },
     RIGHT: {
       arrowStart: startPointRight,
       arrowEnd: endPointLeft,
-      arrowLength: rightArrowLength,
-      arrowLeftCorner: { x: endPointRight.x - 5, y: endPointRight.y + 5 },
-      arrowRightCorner: { x: endPointRight.x - 5, y: endPointRight.y - 5 },
+      //arrowLength: rightArrowLength,
+      //arrowLeftCorner: { x: endPointRight.x - 5, y: endPointRight.y + 5 },
+      //arrowRightCorner: { x: endPointRight.x - 5, y: endPointRight.y - 5 },
     },
     BOTTOM: {
       arrowStart: startPointBottom,
       arrowEnd: endPointTop,
-      arrowLength: bottomArrowLength,
-      arrowLeftCorner: { x: endPointRight.x + 5, y: endPointRight.y - 5 },
-      arrowRightCorner: { x: endPointRight.x - 5, y: endPointRight.y - 5 },
+      //arrowLength: bottomArrowLength,
+      //arrowLeftCorner: { x: endPointRight.x + 5, y: endPointRight.y - 5 },
+      //arrowRightCorner: { x: endPointRight.x - 5, y: endPointRight.y - 5 },
     },
   };
 
   const shortestArrow = arrowLength.sort((a, b) => a.length - b.length)[0];
   const values = axeValues[shortestArrow.axe];
 
-  const left = Math.min(values.arrowStart.x, values.arrowEnd.x);
-  const top = Math.min(values.arrowStart.y, values.arrowEnd.y);
-  const width = Math.abs(values.arrowStart.x - values.arrowEnd.x);
-  const height = Math.abs(values.arrowStart.y - values.arrowEnd.y);
+  // TODO see if it can be easier to read or compute. for the time being, it is functional
+
+  const isStartMoreLeftThanEnd =
+    Math.sign(values.arrowStart.x - values.arrowEnd.x) < 1;
+  const isStartUpperThanEnd =
+    Math.sign(values.arrowStart.y - values.arrowEnd.y) < 1;
+  const arrowBoxLeft =
+    Math.min(values.arrowStart.x, values.arrowEnd.x) - svgBoxMargin;
+  const arrowBowTop =
+    Math.min(values.arrowStart.y, values.arrowEnd.y) - svgBoxMargin;
+  const arrowBoxWidth =
+    Math.abs(values.arrowStart.x - values.arrowEnd.x) + 2 * svgBoxMargin;
+  const arrowBoxHeight =
+    Math.abs(values.arrowStart.y - values.arrowEnd.y) + 2 * svgBoxMargin;
 
   return (
     <>
-      <defs>
-        <marker
-          id="arrowhead"
-          markerWidth="10"
-          markerHeight="7"
-          refX="10"
-          refY="3.5"
-          orient="auto"
-        >
-          <polygon points="0 0, 10 3.5, 0 7" />
-        </marker>
-      </defs>
-      <line
-        x1={values.arrowStart.x}
-        y1={values.arrowStart.y}
-        x2={values.arrowEnd.x}
-        y2={values.arrowEnd.y}
-        style={{ stroke: 'rgb(255,0,0)', strokeWidth: 2 }}
-        markerEnd="url(#arrowhead)"
-      />
+      <svg
+        className={flowLineStyle}
+        style={{
+          left: arrowBoxLeft,
+          top: arrowBowTop,
+          width: arrowBoxWidth,
+          height: arrowBoxHeight,
+        }}
+      >
+        <defs>
+          <marker
+            id="arrowhead"
+            markerWidth="10"
+            markerHeight="7"
+            refX="10"
+            refY="3.5"
+            orient="auto"
+          >
+            <polygon points="0 0, 10 3.5, 0 7" />
+          </marker>
+        </defs>
+        <line
+          x1={
+            isStartMoreLeftThanEnd ? svgBoxMargin : arrowBoxWidth - svgBoxMargin
+          }
+          y1={
+            isStartUpperThanEnd ? svgBoxMargin : arrowBoxHeight - svgBoxMargin
+          }
+          x2={
+            isStartMoreLeftThanEnd ? arrowBoxWidth - svgBoxMargin : svgBoxMargin
+          }
+          y2={
+            isStartUpperThanEnd ? arrowBoxHeight - svgBoxMargin : svgBoxMargin
+          }
+          className={arrowStyle}
+          markerEnd="url(#arrowhead)"
+        />
+      </svg>
       {/* <path
         d={`M${values.arrowEnd.x} ${values.arrowEnd.y} L${values.arrowLeftCorner.x} ${values.arrowLeftCorner.y} L${values.arrowRightCorner.x} ${values.arrowRightCorner.y} Z`}
       /> */}
       <div
-        className={flowLineStyle}
-        style={{
-          left,
-          top,
-          width,
-          height,
-        }}
-      />
-      <div
         style={{
           position: 'absolute',
-          left: values.arrowStart.x,
-          top: values.arrowStart.y,
+          left: values.arrowStart.x - 5,
+          top: values.arrowStart.y - 5,
           backgroundColor: 'green',
           width: '10px',
           height: '10px',
@@ -195,8 +223,8 @@ export function FlowLineComponent({
       <div
         style={{
           position: 'absolute',
-          left: values.arrowEnd.x,
-          top: values.arrowEnd.y,
+          left: values.arrowEnd.x - 5,
+          top: values.arrowEnd.y - 5,
           backgroundColor: 'red',
           width: '10px',
           height: '10px',
