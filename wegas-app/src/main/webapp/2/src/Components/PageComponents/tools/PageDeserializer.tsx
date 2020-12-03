@@ -155,6 +155,7 @@ export function PageDeserializer({
           dropzones={{ ...component.dropzones, ...dropzones }}
           options={optionsState}
           editMode={editMode}
+          onClickManaged={component.manageOnClick === true}
         >
           <WegasComponent
             path={realPath}

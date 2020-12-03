@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -166,6 +167,10 @@ public class HistoryController {
 
         GameModel original = gameModelFacade.find(gameModelId);
         requestManager.assertUpdateRight(original);
+
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
 
         // Retrieve file from content repository
         InputStream file = jcrFacade.getFile(original, WorkspaceType.HISTORY, path);

@@ -26,6 +26,7 @@ import { schemaProps } from '../tools/schemaProps';
 interface ForEachProps extends WegasComponentProps, FlexListProps {
   getItemsFn?: IScript;
   exposeAs: string;
+  itemKey: string;
   itemsOnly?: boolean;
 }
 
@@ -39,18 +40,28 @@ function ChildrenDeserializer({
   uneditable,
   context,
   exposeAs,
+  itemKey,
   getItemsFn,
   editMode,
   wegasChildren,
 }: ChildrenDeserializerProps<ForEachProps>) {
-  const items = useScript<object[]>(getItemsFn, context);
+  const items = useScript<{ [key: string]: any }[]>(getItemsFn, context);
   let children: JSX.Element[] = [];
 
   if (items) {
-    children = items.map((item, id) => {
+    children = items.map((item, index) => {
       const newContext = { ...context, [exposeAs]: item };
+
+      let key = '';
+      try {
+        key = JSON.stringify(item[itemKey]);
+      } catch (_e) {
+        key = JSON.stringify([...(path ? path : []), index]);
+      }
+
       return editMode && (!wegasChildren || wegasChildren.length === 0) ? (
         <EmptyComponentContainer
+          key={key}
           Container={FlexItem}
           path={path}
           content={
@@ -59,7 +70,7 @@ function ChildrenDeserializer({
         />
       ) : (
         <PageDeserializer
-          key={JSON.stringify([...(path ? path : []), id])}
+          key={key}
           pageId={pageId}
           path={[...(path ? path : []), 0]}
           uneditable={uneditable}
@@ -100,6 +111,11 @@ registerComponent(
         label: 'Expose as',
         required: true,
         value: 'item',
+      }),
+      itemKey: schemaProps.string({
+        label: 'Key',
+        required: true,
+        value: 'id',
       }),
       itemsOnly: schemaProps.boolean({ label: 'Items only' }),
       ...classStyleIdShema,

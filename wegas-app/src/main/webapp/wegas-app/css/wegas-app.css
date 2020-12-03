@@ -134,26 +134,32 @@ font {
 
 .wegas-loading-app {
     position: fixed;
-    top: calc(50% - 40px);
-    left: calc(50% - 184px);
-    width: 372px;
-    height: 80px;
-    margin-top: -50px;
-    margin-left: -40px;
-    background: transparent url(../../wegas-app/images/wegas-logowhite-80.png) no-repeat;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
     z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.wegas-loading-app > div {
-	width: auto;
-	background: #b5b5b5;
-	height: 5px;
-	bottom: -5px;
-	position: absolute;
-	width: 100%;
+.wegas-loading-app-content {
+    display: flex;
+    flex-direction: column;
 }
 
-.wegas-loading-app > div > div {
+.wegas-loading-app .wegas-loading-app-logo {
+    max-width: 90vw;
+}
+
+.wegas-loading-app .wegas-loading-app-bar {
+    background: #b5b5b5;
+    height: 5px;
+    width: 100%;
+}
+
+.wegas-loading-app .wegas-loading-app-current {
     height: 100%;
     width: 0%;
     background-color: black;

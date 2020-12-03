@@ -494,11 +494,7 @@ function WegasComponentTitle({
             icon="copy"
             onClick={() => onDuplicate(pageId, page, componentPath)}
             disabled={componentPath.length === 0}
-            tooltip={
-              componentPath.length === 0
-                ? 'The first component of a page connot be deleted'
-                : 'Delete the component'
-            }
+            tooltip={'Copy the component'}
             className={CONTROLS_CLASSNAME}
           />
         </>

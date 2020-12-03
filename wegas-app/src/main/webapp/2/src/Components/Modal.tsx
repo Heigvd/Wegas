@@ -15,6 +15,7 @@ const modalStyle = css({
   padding: '1em 0',
   backgroundColor: 'rgba(0,0,0,0.8)',
   zIndex: 1000,
+  cursor: 'pointer',
   '&>div': {
     // width: 'fit-content',
     backgroundColor: themeVar.Common.colors.BackgroundColor,

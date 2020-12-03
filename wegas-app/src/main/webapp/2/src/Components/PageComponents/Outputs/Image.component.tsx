@@ -10,6 +10,7 @@ import { IScript } from 'wegas-ts-api';
 import { useScript } from '../../Hooks/useScript';
 import { css } from 'emotion';
 import { fileURL } from '../../../API/files.api';
+import { classNameOrEmpty } from '../../../Helper/className';
 
 const initialImageStyle = css({
   width: '100%',
@@ -26,7 +27,7 @@ function Image({ script, context, style, className, id }: SvgLoaderProps) {
       src={fileURL(path || '')}
       style={style}
       id={id}
-      className={className ? className : initialImageStyle}
+      className={initialImageStyle + classNameOrEmpty(className)}
     />
   );
 }
