@@ -156,6 +156,7 @@ export function PageDeserializer({
           options={optionsState}
           editMode={editMode}
           onClickManaged={component.manageOnClick === true}
+          className={optionsState.outerClassName}
         >
           <WegasComponent
             path={realPath}
@@ -166,7 +167,7 @@ export function PageDeserializer({
             {...restProps}
             className={
               classNameOrEmpty(restProps.className) +
-              classNameOrEmpty(optionsState.conditionnalClassName)
+              classNameOrEmpty(optionsState.innerClassName)
             }
             dropzones={{ ...component.dropzones, ...dropzones }}
             options={optionsState}

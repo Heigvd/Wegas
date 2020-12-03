@@ -2,7 +2,7 @@ import * as React from 'react';
 import { HashListChoices } from '../../Editor/Components/FormView/HashList';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 import { css, cx } from 'emotion';
-import { flex, grow, layoutStyle } from '../../css/classes';
+import { flex, grow } from '../../css/classes';
 import { classNameOrEmpty } from '../../Helper/className';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
 
@@ -288,7 +288,7 @@ export function FlexList({
   return (
     <div
       id={id}
-      className={cx(flex, grow, layoutStyle) + classNameOrEmpty(className)}
+      className={cx(flex, grow) + classNameOrEmpty(className)}
       style={{
         flexDirection,
         flexWrap,

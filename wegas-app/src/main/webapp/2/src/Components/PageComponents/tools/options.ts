@@ -324,6 +324,7 @@ export const layoutCommonChoices: HashListChoices = [
 
 export interface WegasConditionnalClassName {
   className?: string;
+  applyOn?: 'Inside' | 'Outside';
   condition?: IScript;
 }
 
@@ -345,6 +346,11 @@ export const layoutConditionnalChoices: HashListChoices = [
         label: 'Conditionnal classes',
         itemSchema: {
           className: schemaProps.string({ label: 'Class' }),
+          applyOn: schemaProps.select({
+            label: 'Apply on',
+            values: ['Inside', 'Outside'],
+            value: 'Inside',
+          }),
           condition: schemaProps.script({
             label: 'Condition',
             mode: 'GET',

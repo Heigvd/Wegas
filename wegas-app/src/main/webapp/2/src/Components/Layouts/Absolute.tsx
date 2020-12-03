@@ -15,11 +15,7 @@ export function AbsoluteLayout({
   id,
 }: WegasComponentProps) {
   return (
-    <div
-      id={id}
-      className={layoutStyle + classNameOrEmpty(className)}
-      style={style}
-    >
+    <div id={id} className={className} style={style}>
       {children}
     </div>
   );

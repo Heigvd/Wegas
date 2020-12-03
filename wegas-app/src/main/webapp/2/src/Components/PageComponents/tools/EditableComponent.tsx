@@ -620,7 +620,9 @@ export function ComponentContainer({
           [childDropzoneHorizontalStyle]: !vertical,
           [childDropzoneVerticalStyle]: vertical,
           [disabledStyle]: options.disabled,
-        }) + classNameOrEmpty(layoutClassName)
+        }) +
+        classNameOrEmpty(layoutClassName) +
+        classNameOrEmpty(options.outerClassName)
       }
       style={layoutStyle}
       onClick={onClickManaged ? undefined : onClick}

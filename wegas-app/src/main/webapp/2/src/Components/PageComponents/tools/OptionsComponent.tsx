@@ -39,7 +39,8 @@ export interface OptionsState {
   infoBulletProps?: PlayerInfoBulletProps;
   tooltip?: string;
   themeModeClassName?: string;
-  conditionnalClassName?: string;
+  innerClassName?: string;
+  outerClassName?: string;
 }
 
 interface ComponentOptionsManagerProps {
@@ -83,17 +84,29 @@ export function ComponentOptionsManager({
       : themesState.themes[themesState.selectedThemes[currentContext]]
           .modeClasses[themeMode];
 
-  const conditionnalClassName = useScript<boolean[]>(
+  const conditionnalClasses = useScript<boolean[]>(
     conditionnalClassNames.map(item => item.condition),
     context,
   )!
     .map((condition, i) => ({
       condition,
+      applyOn: conditionnalClassNames[i].applyOn,
       className: conditionnalClassNames[i].className,
     }))
-    .filter(item => item.condition)
+    .filter(item => item.condition);
+
+  const innerClassName = conditionnalClasses
+    .filter(item => item.applyOn == null || item.applyOn === 'Inside')
     .map(item => item.className)
     .join(' ');
+  const outerClassName = conditionnalClasses
+    .filter(item => item.applyOn === 'Outside')
+    .map(item => item.className)
+    .join(' ');
+
+  if (conditionnalClassNames.length > 0) {
+    debugger;
+  }
 
   const newUpgrades: OptionsState = {
     disabled,
@@ -103,7 +116,8 @@ export function ComponentOptionsManager({
     infoBulletProps,
     tooltip,
     themeModeClassName,
-    conditionnalClassName,
+    innerClassName,
+    outerClassName,
   };
 
   React.useEffect(() => {
