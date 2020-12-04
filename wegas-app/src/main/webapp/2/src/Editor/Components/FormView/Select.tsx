@@ -48,10 +48,7 @@ const selectStyle = css({
 function genItems(o: string | Choice) {
   if (typeof o !== 'object') {
     return (
-      <option
-        key={`k-${o}`}
-        value={typeof o === 'string' ? o : JSON.stringify(o)}
-      >
+      <option key={`k-${o}`} value={JSON.stringify(o)}>
         {o}
       </option>
     );
@@ -60,7 +57,7 @@ function genItems(o: string | Choice) {
   return (
     <option
       key={`k-${value}`}
-      value={typeof value === 'string' ? value : JSON.stringify(value)}
+      value={JSON.stringify(value)}
       disabled={disabled}
     >
       {label}

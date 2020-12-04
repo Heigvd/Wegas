@@ -53,7 +53,7 @@ function PlayerSelectInput({
   const variable = useScript<
     SStringDescriptor | STextDescriptor | SNumberDescriptor
   >(script, context);
-  const value = String(variable?.getValue(player));
+  const value = JSON.stringify(String(variable?.getValue(player)));
   const { lang } = React.useContext(languagesCTX);
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
