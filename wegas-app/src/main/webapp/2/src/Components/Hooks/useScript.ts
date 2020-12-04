@@ -332,9 +332,9 @@ export function useGlobals() {
   };
 }
 
-export type ReturnType = object | number | boolean | string | undefined;
+export type ScriptReturnType = object | number | boolean | string | undefined;
 
-export function clientScriptEval<T extends ReturnType>(
+export function clientScriptEval<T extends ScriptReturnType>(
   script?: string | IScript,
   context?: {
     [name: string]: unknown;
@@ -351,7 +351,7 @@ export function clientScriptEval<T extends ReturnType>(
     : undefined;
 }
 
-export function safeClientScriptEval<T extends ReturnType>(
+export function safeClientScriptEval<T extends ScriptReturnType>(
   script?: string | IScript,
   context?: {
     [name: string]: unknown;
@@ -379,7 +379,7 @@ export function safeClientScriptEval<T extends ReturnType>(
  * @param script code to execute
  * @returns Last expression or undefined in case it errors.
  */
-export function useScript<T extends ReturnType>(
+export function useScript<T extends ScriptReturnType>(
   script?: (string | IScript | undefined) | (string | IScript | undefined)[],
   context?: {
     [name: string]: unknown;
@@ -406,7 +406,7 @@ export function useScript<T extends ReturnType>(
  * @param script code to execute
  * @returns Last expression or LocalEvalError in case it errors.
  */
-export function useUnsafeScript<T extends ReturnType>(
+export function useUnsafeScript<T extends ScriptReturnType>(
   script?: string | IScript,
   context?: {
     [name: string]: unknown;

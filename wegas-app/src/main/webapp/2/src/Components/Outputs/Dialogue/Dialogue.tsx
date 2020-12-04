@@ -4,66 +4,38 @@ import {
   SDialogueDescriptor,
   SDialogueState,
   SDialogueTransition,
-  STranslatableContent,
 } from 'wegas-ts-api';
 import {
   flex,
   flexColumn,
   flexDistribute,
-  flexRowReverse,
   grow,
-} from '../../css/classes';
-import { applyFSMTransition } from '../../data/Reducer/VariableInstanceReducer';
-import { instantiate } from '../../data/scriptable';
-import { Player } from '../../data/selectors';
-import { store, useStore } from '../../data/store';
-import { useTranslate } from '../../Editor/Components/FormView/translatable';
-import { classOrNothing } from '../../Helper/className';
-import { Button } from '../Inputs/Buttons/Button';
-import { themeVar } from '../Style/ThemeVars';
+  itemCenter,
+} from '../../../css/classes';
+import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReducer';
+import { instantiate } from '../../../data/scriptable';
+import { Player } from '../../../data/selectors';
+import { store, useStore } from '../../../data/store';
+import { themeVar } from '../../Style/ThemeVars';
+import { DialogueChoice } from './DialogueChoice';
+import { DialogueEntry } from './DialogueEntry';
 
 const dialogEntryStyle = css({
+  padding: '5px',
   '&>.player': {
     alignSelf: 'flex-end',
     backgroundColor: themeVar.Common.colors.HeaderColor,
   },
 });
 
-function TranslatedButton({
-  label,
-  onClick,
-}: {
-  label: STranslatableContent;
-  onClick: () => void;
-}) {
-  const translation = useTranslate(label);
-  return (
-    <Button onClick={onClick} className={flexRowReverse}>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: translation,
-        }}
-      ></div>
-    </Button>
-  );
-}
+const choicePannelStyle = css({
+  backgroundColor: themeVar.Common.colors.HeaderColor,
+  padding: '5px',
+});
 
-interface DialogueEntryProps {
-  text: STranslatableContent;
-  player?: boolean;
-}
-
-function DialogueEntry({ text, player }: DialogueEntryProps) {
-  const translation = useTranslate(text);
-  return (
-    <div
-      className={classOrNothing('player', player)}
-      dangerouslySetInnerHTML={{ __html: translation }}
-    />
-  );
-}
-
-const dialogueDisplayStyle = css({});
+const dialogueDisplayStyle = css({
+  border: 'solid',
+});
 
 interface DialogueDisplayProps {
   dialogue: SDialogueDescriptor;
@@ -124,14 +96,22 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
         cx(dialogueDisplayStyle, flex, flexColumn, grow) + ' wegas wegas-dialog'
       }
     >
-      <div className={cx(dialogEntryStyle, flex, flexColumn)}>
+      <div className={cx(dialogEntryStyle, flex, flexColumn, grow)}>
         {renderHistory()}
       </div>
-      <div className={cx(flex, flexColumn, flexDistribute)}>
+      <div
+        className={cx(
+          flex,
+          flexColumn,
+          flexDistribute,
+          itemCenter,
+          choicePannelStyle,
+        )}
+      >
         {dialogueStates[dialogueInstance.getCurrentStateId()]
           .getTransitions()
           .map((transition: SDialogueTransition) => (
-            <TranslatedButton
+            <DialogueChoice
               key={`CHOICE${transition.getId()}`}
               label={transition.getActionText()}
               onClick={() => {

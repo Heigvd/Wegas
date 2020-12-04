@@ -8,7 +8,7 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { IScript, IDialogueDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { DialogueDisplay } from '../../Outputs/Dialogue';
+import { DialogueDisplay } from '../../Outputs/Dialogue/Dialogue';
 
 interface PlayerDialogueProps extends WegasComponentProps {
   dialogue?: IScript;

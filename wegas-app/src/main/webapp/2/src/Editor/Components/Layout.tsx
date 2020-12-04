@@ -66,7 +66,7 @@ export default function Layout() {
   );
 
   return (
-    <div className={layout}>
+    <div className={layout} id="WegasLayout">
       <Header />
       <DndLinearLayout
         tabs={{ ...availableLayoutTabs, ...scenaristPages }}

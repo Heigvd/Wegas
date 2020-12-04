@@ -112,7 +112,6 @@ function ChildrenDeserializer({
     (wegasChildren != null && wegasChildren[0]) || emptyIfChildren;
   const children2: WegasComponent =
     (wegasChildren != null && wegasChildren[1]) || emptyElseChildren;
-
   if (editMode) {
     return (
       <>
@@ -120,7 +119,7 @@ function ChildrenDeserializer({
           <EmptyComponentContainer path={path} condition="IF" />
         ) : (
           <PageDeserializer
-            key={JSON.stringify([...path, 0])}
+            key={JSON.stringify([...path, 0]) + JSON.stringify(context)}
             pageId={pageId}
             path={[...path, 0]}
             uneditable={uneditable}
@@ -134,7 +133,7 @@ function ChildrenDeserializer({
           <EmptyComponentContainer path={path} condition="ELSE" />
         ) : (
           <PageDeserializer
-            key={JSON.stringify([...path, 1])}
+            key={JSON.stringify([...path, 1]) + JSON.stringify(context)}
             pageId={pageId}
             path={[...path, 1]}
             uneditable={uneditable}
@@ -183,7 +182,7 @@ registerComponent(
       isVertical: () => false,
       ChildrenDeserializer,
       childrenSchema: [],
-      noContainer: () => true,
+      // noContainer: () => true,
       deleteChildren,
     },
     name: 'If Else',
