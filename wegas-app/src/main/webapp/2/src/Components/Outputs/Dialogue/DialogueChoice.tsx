@@ -24,6 +24,7 @@ const choiceButtonIcon = css({
   justifyContent: 'center',
   backgroundColor: themeVar.Common.colors.ActiveColor,
   padding: '10px',
+  height: '100%',
 });
 
 export function DialogueChoice({

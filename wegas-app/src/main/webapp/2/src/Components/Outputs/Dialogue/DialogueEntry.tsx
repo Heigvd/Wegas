@@ -6,7 +6,6 @@ import {
   flexRow,
   expandWidth,
   itemCenter,
-  expandBoth,
   expandHeight,
   grow,
 } from '../../../css/classes';

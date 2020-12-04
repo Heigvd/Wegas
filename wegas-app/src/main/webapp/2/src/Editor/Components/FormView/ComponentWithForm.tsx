@@ -17,13 +17,14 @@ import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { Toolbar } from '../../../Components/Toolbar';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
+import {
+  FonkyFlexContainer,
+  FonkyFlexContent,
+  FonkyFlexSplitter,
+} from '../../../Components/Layouts/FonkyFlex';
 
 const growBig = css({
   flex: '30 1 auto',
-});
-
-const maxSize = css({
-  maxWidth: '20%',
 });
 
 export interface ComponentWithFormChildrenProps {
@@ -78,44 +79,91 @@ export function ComponentWithForm({
       action: () => setInstanceView(show => !show),
     });
   }
+
   return (
-    <div className={cx(flex, grow)}>
-      <div className={cx(flex, growBig, autoScroll)}>
+    <FonkyFlexContainer className={cx(flex, grow)}>
+      <FonkyFlexContent className={cx(flex, growBig, autoScroll)}>
         {children({
           localState: localState.editing,
           localDispatch,
         })}
-      </div>
+      </FonkyFlexContent>
       {localState.editing && localEntity && (
-        <div className={cx(flex, grow, autoScroll, maxSize)}>
-          <AsyncVariableForm
-            {...localState.editing}
-            getConfig={getConfig(localState.editing)}
-            update={getUpdate(localState.editing, localDispatch)}
-            actions={actions}
-            entity={localEntity}
-            error={parseEventFromIndex(localState.events, localDispatch)}
-          />
-        </div>
+        <>
+          <FonkyFlexSplitter />
+          <FonkyFlexContent flexInit={200} className={cx(flex)}>
+            <AsyncVariableForm
+              {...localState.editing}
+              getConfig={getConfig(localState.editing)}
+              update={getUpdate(localState.editing, localDispatch)}
+              actions={actions}
+              entity={localEntity}
+              error={parseEventFromIndex(localState.events, localDispatch)}
+            />
+          </FonkyFlexContent>
+        </>
       )}
       {instanceView && entityEditor && (
-        <div className={cx(flex, grow, autoScroll, maxSize)}>
-          <Toolbar>
-            <Toolbar.Header>
-              <Button
-                label="Close instance editor"
-                onClick={() => setInstanceView(false)}
-              />
-            </Toolbar.Header>
-            <Toolbar.Content>
-              <AsyncInstancesEditor
-                state={{ global: localState }}
-                dispatch={localDispatch}
-              />
-            </Toolbar.Content>
-          </Toolbar>
-        </div>
+        <>
+          <FonkyFlexSplitter />
+          <FonkyFlexContent flexInit={200} className={cx(flex)}>
+            <Toolbar>
+              <Toolbar.Header>
+                <Button
+                  label="Close instance editor"
+                  onClick={() => setInstanceView(false)}
+                />
+              </Toolbar.Header>
+              <Toolbar.Content>
+                <AsyncInstancesEditor
+                  state={{ global: localState }}
+                  dispatch={localDispatch}
+                />
+              </Toolbar.Content>
+            </Toolbar>
+          </FonkyFlexContent>
+        </>
       )}
-    </div>
+    </FonkyFlexContainer>
   );
+  // return (
+  //   <div className={cx(flex, grow)}>
+  //     <div className={cx(flex, growBig, autoScroll)}>
+  //       {children({
+  //         localState: localState.editing,
+  //         localDispatch,
+  //       })}
+  //     </div>
+  //     {localState.editing && localEntity && (
+  //       <div className={cx(flex, grow, autoScroll, maxSize)}>
+  //         <AsyncVariableForm
+  //           {...localState.editing}
+  //           getConfig={getConfig(localState.editing)}
+  //           update={getUpdate(localState.editing, localDispatch)}
+  //           actions={actions}
+  //           entity={localEntity}
+  //           error={parseEventFromIndex(localState.events, localDispatch)}
+  //         />
+  //       </div>
+  //     )}
+  //     {instanceView && entityEditor && (
+  //       <div className={cx(flex, grow, autoScroll, maxSize)}>
+  //         <Toolbar>
+  //           <Toolbar.Header>
+  //             <Button
+  //               label="Close instance editor"
+  //               onClick={() => setInstanceView(false)}
+  //             />
+  //           </Toolbar.Header>
+  //           <Toolbar.Content>
+  //             <AsyncInstancesEditor
+  //               state={{ global: localState }}
+  //               dispatch={localDispatch}
+  //             />
+  //           </Toolbar.Content>
+  //         </Toolbar>
+  //       </div>
+  //     )}
+  //   </div>
+  // );
 }

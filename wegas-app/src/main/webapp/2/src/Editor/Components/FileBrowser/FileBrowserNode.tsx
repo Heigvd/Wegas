@@ -27,7 +27,7 @@ import { Button } from '../../../Components/Inputs/Buttons/Button';
 const clickableStyle = css({
   cursor: 'pointer',
   ':hover': {
-    backgroundColor: themeVar.Common.colors.BackgroundColor,
+    backgroundColor: themeVar.Common.colors.HoverColor,
   },
 });
 
@@ -200,9 +200,10 @@ export function FileBrowserNode({
   const [children, setChildren] = React.useState<
     IAbstractContentDescriptor[]
   >();
-  const [currentFile, setCurrentFile] = React.useState<
-    IAbstractContentDescriptor
-  >(defaultFile);
+  const [
+    currentFile,
+    setCurrentFile,
+  ] = React.useState<IAbstractContentDescriptor>(defaultFile);
   const [nbUploadingFiles, dispatchUploadingFiles] = React.useReducer(
     (uploadCount: number, action: { type: 'increment' | 'decrement' }) => {
       switch (action.type) {

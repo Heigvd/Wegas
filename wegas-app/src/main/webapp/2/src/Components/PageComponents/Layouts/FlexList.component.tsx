@@ -105,9 +105,7 @@ export function EmptyComponentContainer({
 export function childrenDeserializerFactory(
   Container: ItemContainer = FlexItem,
   dropzones: DropZones = flexListItemDropZones,
-  EmptyContainer: React.FunctionComponent<
-    EmptyPageComponentProps
-  > = EmptyComponentContainer,
+  EmptyContainer: React.FunctionComponent<EmptyPageComponentProps> = EmptyComponentContainer,
 ) {
   return function ChildrenDeserializer({
     wegasChildren,
