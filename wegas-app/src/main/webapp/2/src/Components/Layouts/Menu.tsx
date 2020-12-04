@@ -5,7 +5,6 @@ import {
   flex,
   flexColumn,
   flexRow,
-  layoutStyle,
   grow,
   contentCenter,
   flexDistribute,
@@ -155,7 +154,6 @@ export function Menu({
           grow,
           vertical ? flexColumn : flexRow,
           flexDistribute,
-          layoutStyle,
           menuItemSelectStyle,
         ) + classNameOrEmpty(className)
       }

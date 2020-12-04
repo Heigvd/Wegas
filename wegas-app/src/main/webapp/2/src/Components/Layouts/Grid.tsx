@@ -2,7 +2,7 @@ import * as React from 'react';
 import { HashListChoices } from '../../Editor/Components/FormView/HashList';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 import { css, cx } from 'emotion';
-import { grid, grow, layoutStyle } from '../../css/classes';
+import { grid, grow } from '../../css/classes';
 import { classNameOrEmpty } from '../../Helper/className';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
 
@@ -387,7 +387,7 @@ export function Grid({
   return (
     <div
       id={id}
-      className={cx(grid, grow, layoutStyle) + classNameOrEmpty(className)}
+      className={cx(grid, grow) + classNameOrEmpty(className)}
       style={{
         ...layout,
         ...style,

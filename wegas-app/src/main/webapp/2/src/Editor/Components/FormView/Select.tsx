@@ -7,6 +7,7 @@ import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { flex, flexColumn } from '../../../css/classes';
 import { ListDescriptorChild } from '../../editionConfig';
 import { inputStyleCSS } from '../../../Components/Inputs/inputStyles';
+import { classNameOrEmpty } from '../../../Helper/className';
 
 export interface Choice {
   value?: {};
@@ -47,7 +48,10 @@ const selectStyle = css({
 function genItems(o: string | Choice) {
   if (typeof o !== 'object') {
     return (
-      <option key={`k-${o}`} value={JSON.stringify(o)}>
+      <option
+        key={`k-${o}`}
+        value={typeof o === 'string' ? o : JSON.stringify(o)}
+      >
         {o}
       </option>
     );
@@ -56,7 +60,7 @@ function genItems(o: string | Choice) {
   return (
     <option
       key={`k-${value}`}
-      value={JSON.stringify(value)}
+      value={typeof value === 'string' ? value : JSON.stringify(value)}
       disabled={disabled}
     >
       {label}
@@ -78,9 +82,8 @@ const undefinedTitle: Choice = {
   disabled: false,
 };
 
-interface SelectorProps {
+interface SelectorProps extends ClassStyleId {
   choices: Choices;
-  id?: string;
   value: string;
   onChange?: (
     event: React.ChangeEvent<{
@@ -93,6 +96,8 @@ interface SelectorProps {
 export function Selector({
   choices,
   id,
+  className,
+  style,
   value,
   onChange,
   readOnly,
@@ -100,18 +105,23 @@ export function Selector({
   return choices.length > 1 ? (
     <select
       id={id}
-      className={selectStyle}
+      className={selectStyle + classNameOrEmpty(className)}
+      style={style}
       value={value}
       onChange={onChange}
       disabled={readOnly}
     >
       {choices.map(genItems)}
     </select>
-  ) : (
-    <span className={selectStyle}>
+  ) : choices.length === 1 ? (
+    <span className={selectStyle + classNameOrEmpty(className)} style={style}>
       {'string' === typeof choices[0]
         ? choices[0]
         : (choices[0] as Choice).label}
+    </span>
+  ) : (
+    <span className={selectStyle + classNameOrEmpty(className)} style={style}>
+      {value}
     </span>
   );
 }

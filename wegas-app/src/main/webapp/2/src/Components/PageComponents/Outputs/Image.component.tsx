@@ -13,7 +13,8 @@ import { fileURL } from '../../../API/files.api';
 import { classNameOrEmpty } from '../../../Helper/className';
 
 const initialImageStyle = css({
-  width: '100%',
+  maxWidth: '100%',
+  maxHeight: '100%',
 });
 
 interface SvgLoaderProps extends WegasComponentProps {

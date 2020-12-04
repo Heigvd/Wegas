@@ -1,4 +1,8 @@
-import { IAbstractEntity, WegasClassNames, WegasClassNamesAndClasses } from 'wegas-ts-api';
+import {
+  IAbstractEntity,
+  WegasClassNames,
+  WegasClassNamesAndClasses,
+} from 'wegas-ts-api';
 
 const InheritanceTable = require('wegas-ts-api/typings/Inheritance.json') as typeof import('wegas-ts-api/typings/Inheritance.json');
 
@@ -68,7 +72,11 @@ export function entityIs<T extends WegasClassNames>(
   inheritance?: boolean,
 ): variable is WegasClassNamesAndClasses[T] {
   if ('object' === typeof variable && variable !== null) {
-    const variableClass = (variable as Record<string, unknown>)[
+    const entity =
+      'getEntity' in variable
+        ? (variable as SVariableDescriptor).getEntity()
+        : variable;
+    const variableClass = (entity as Record<string, unknown>)[
       '@class'
     ] as Mergeable;
     return (
