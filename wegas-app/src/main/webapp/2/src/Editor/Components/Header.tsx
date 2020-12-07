@@ -117,7 +117,10 @@ export default function Header() {
           <Button
             icon="undo"
             tooltip="Restart"
-            onClick={() => dispatch(Actions.VariableDescriptorActions.reset())}
+            onClick={() => {
+              dispatch(Actions.VariableDescriptorActions.reset());
+              dispatch(Actions.EditorActions.resetPageLoader());
+            }}
             className={componentMarginLeft}
           />
           <Button

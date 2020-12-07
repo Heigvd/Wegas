@@ -206,7 +206,7 @@ export async function getVariableMethodConfig<T extends SAbstractEntity>(
 export function getIcon<T extends IMergeable>(entity: T): Icons | undefined {
   switch (entity['@class'] as WegasClassNames) {
     case 'ChoiceDescriptor':
-      return 'check-square';
+      return ['square', { icon: 'check-double', color: 'white', size: 'sm' }];
     case 'FSMDescriptor':
       return 'project-diagram';
     case 'ListDescriptor':
@@ -257,7 +257,7 @@ export function getIcon<T extends IMergeable>(entity: T): Icons | undefined {
 export function getLabel<T extends IMergeable>(entity: T): string | undefined {
   switch (entity['@class'] as WegasClassNames) {
     case 'ChoiceDescriptor':
-      return 'Choice';
+      return 'Conditional';
     case 'FSMDescriptor':
       return 'State Machine';
     case 'ListDescriptor':
@@ -269,7 +269,7 @@ export function getLabel<T extends IMergeable>(entity: T): string | undefined {
     case 'Result':
       return 'Result';
     case 'SingleResultChoiceDescriptor':
-      return 'Single Result Choice';
+      return 'Standard';
     case 'BooleanDescriptor':
       return 'Boolean';
     case 'ObjectDescriptor':

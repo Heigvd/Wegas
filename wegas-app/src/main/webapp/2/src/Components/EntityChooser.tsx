@@ -63,7 +63,8 @@ export class EntityChooser<E extends IAbstractEntity> extends React.Component<
     return { entity: newEntity };
   }
 
-  state: { entity?: E } = { entity: this.props.entities[0] };
+  // state: { entity?: E } = { entity: this.props.entities[0] };
+  state: { entity?: E } = { entity: undefined };
 
   render() {
     const { entity } = this.state;

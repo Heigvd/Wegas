@@ -367,6 +367,9 @@ const global: Reducer<Readonly<GlobalState>> = u(
       case ActionType.EDITOR_REGISTER_PAGE_LOADER:
         state.pageLoaders[action.payload.name] = action.payload.pageId;
         return;
+      case ActionType.EDITOR_RESET_PAGE_LOADER:
+        state.pageLoaders = {};
+        return;
       case ActionType.EDITOR_UNREGISTER_PAGE_LOADER:
         delete state.pageLoaders[action.payload.name];
         return;
@@ -748,6 +751,13 @@ export function setSchema(
  */
 export function registerPageLoader(name: string, pageId: IScript) {
   return ActionCreator.EDITOR_REGISTER_PAGE_LOADER({ name, pageId });
+}
+
+/**
+ * resetPageLoader - resets every pageLoaders
+ */
+export function resetPageLoader() {
+  return ActionCreator.EDITOR_RESET_PAGE_LOADER();
 }
 
 export function setLock(data: LockEventData) {

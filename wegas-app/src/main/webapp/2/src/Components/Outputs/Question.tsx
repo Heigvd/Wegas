@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { TranslatableContent } from '../../data/i18n';
-import { StoreConsumer, StoreDispatch } from '../../data/store';
-import { VariableDescriptor } from '../../data/selectors';
+import {
+  store,
+  StoreConsumer,
+  StoreDispatch,
+  useStore,
+} from '../../data/store';
+import { Player, VariableDescriptor } from '../../data/selectors';
 import { EntityChooser } from '../EntityChooser';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { css, cx } from 'emotion';
@@ -27,6 +32,9 @@ import {
   IQuestionInstance,
   IListDescriptor,
 } from 'wegas-ts-api';
+import { instantiate } from '../../data/scriptable';
+import { flex, itemCenter } from '../../css/classes';
+import { deepDifferent } from '../Hooks/storeHookFactory';
 
 const unreadSignalStyle = css({ margin: '3px' });
 const choiceContainerStyle = css({
@@ -143,18 +151,18 @@ function ChoiceDisplay({
   instance,
   questionDescriptor,
   onValidate,
-  onHover,
+  // onHover,
   replyAllowed,
 }: {
   descriptor: IChoiceDescriptor;
   instance: IChoiceInstance;
   questionDescriptor: IQuestionDescriptor;
   onValidate: (choice: IChoiceDescriptor) => void;
-  onHover?: (choice: IChoiceDescriptor) => void;
+  // onHover?: (choice: IChoiceDescriptor) => void;
   replyAllowed: boolean;
 }) {
   const { maxReplies, description, label } = descriptor;
-  const { active, replies, unread } = instance;
+  const { active, replies /*, unread*/ } = instance;
   if (!active) {
     return null;
   }
@@ -169,10 +177,11 @@ function ChoiceDisplay({
         { [disabledQuestionStyle]: !canReply },
         choiceContainerStyle,
       )}
-      onMouseOver={() => onHover && onHover(descriptor)}
+      // onMouseOver={() => onHover && onHover(descriptor)}
     >
       <div className={choiceTitleStyle}>
-        {unread && <UnreadSignal />}
+        {/* Unread seem to be never used */}
+        {/* {unread && <UnreadSignal />} */}
         {TranslatableContent.toString(label)}
       </div>
       <div
@@ -252,9 +261,9 @@ class QuestionDisplay extends React.Component<{
               descriptor={choice}
               instance={instance}
               replyAllowed={canReply}
-              onHover={() =>
-                instance.unread && this.props.dispatch(readChoice(choice))
-              }
+              // onHover={() =>
+              //   instance.unread && this.props.dispatch(readChoice(choice))
+              // }
             />
           );
         })}
@@ -300,6 +309,45 @@ interface QuestionProps {
   variable: string;
 }
 
+export function QuestionLabel({
+  questionD,
+}: {
+  questionD: IQuestionDescriptor;
+}) {
+  const { isUnread, player } = useStore(() => {
+    return {
+      isUnread:
+        ((VariableDescriptor.select<IChoiceDescriptor>(
+          questionD.itemsIds,
+        ).filter(c => c != null) || []) as Readonly<IChoiceDescriptor>[])
+          .map(cd => getInstance(cd, Player.selectCurrent()))
+          .filter(ci => ci && ci.unread).length > 0,
+      player: Player.selectCurrent(),
+    };
+  }, deepDifferent);
+
+  return (
+    <div
+      className={cx(flex, itemCenter)}
+      onClick={() => {
+        instantiate(questionD)
+          .getItems()
+          .map(choice => {
+            choice.getInstance(instantiate(player)).isUnread() &&
+              store.dispatch(readChoice(choice.getEntity()));
+          });
+      }}
+    >
+      <div className={flex}>
+        {TranslatableContent.toString(questionD.label)}
+      </div>
+      {isUnread && (
+        <FontAwesome className={unreadSignalStyle} icon="exclamation" />
+      )}
+    </div>
+  );
+}
+
 export default function QuestionList(props: QuestionProps) {
   return (
     <StoreConsumer
@@ -308,28 +356,42 @@ export default function QuestionList(props: QuestionProps) {
           'name',
           props.variable,
         );
-        return flatten<IQuestionDescriptor>(list, 'QuestionDescriptor').filter(
-          q => {
+        return {
+          questions: flatten<IQuestionDescriptor>(
+            list,
+            'QuestionDescriptor',
+          ).filter(q => {
             const instance = getInstance(q);
             if (instance != null) {
               return instance.active;
             }
             return false;
-          },
-        );
+          }),
+          player: instantiate(Player.selectCurrent()),
+        };
       }}
     >
-      {({ state }) => {
+      {({ state, dispatch }) => {
         return (
           <EntityChooser
-            entities={state}
+            entities={state.questions}
             entityLabel={e => {
               return (
-                <div className={labelStyle}>
+                <div
+                  className={labelStyle}
+                  onClick={() => {
+                    instantiate(e)
+                      .getItems()
+                      .map(choice => {
+                        choice.getInstance(state.player).isUnread() &&
+                          dispatch(readChoice(choice.getEntity()));
+                      });
+                  }}
+                >
+                  {isUnread(e)() && <UnreadSignal />}
                   <div className={labelTextStyle}>
                     {TranslatableContent.toString(e.label)}
                   </div>
-                  {isUnread(e)() && <UnreadSignal />}
                 </div>
               );
             }}

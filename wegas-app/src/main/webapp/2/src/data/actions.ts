@@ -79,6 +79,8 @@ export const ActionCreator = {
   }) => createAction(ActionType.EDITOR_SET_VARIABLE_SCHEMA, data),
   EDITOR_REGISTER_PAGE_LOADER: (data: { name: string; pageId: IScript }) =>
     createAction(ActionType.EDITOR_REGISTER_PAGE_LOADER, data),
+  EDITOR_RESET_PAGE_LOADER: () =>
+    createAction(ActionType.EDITOR_RESET_PAGE_LOADER, {}),
   EDITOR_UNREGISTER_PAGE_LOADER: (data: { name: string }) =>
     createAction(ActionType.EDITOR_UNREGISTER_PAGE_LOADER, data),
   // EDITOR_SET_VARIABLE_METHOD: (data: ClientMethodPayload) =>
