@@ -58,7 +58,7 @@ interface PageDeserializerProps {
   context?: {
     [name: string]: unknown;
   };
-  Container: ItemContainer;
+  Container?: ItemContainer;
   containerPropsKeys?: string[];
   dropzones: {
     side?: boolean;
@@ -125,8 +125,9 @@ export function PageDeserializer({
           setUpgradesState={setOptionsState}
         />
       )}
-      {container?.noContainer &&
-      container?.noContainer(wegasComponent.props as WegasComponentProps) ? (
+      {Container == null ||
+      (container?.noContainer &&
+        container?.noContainer(wegasComponent.props as WegasComponentProps)) ? (
         <Children
           {...wegasComponent?.props}
           wegasChildren={children}
