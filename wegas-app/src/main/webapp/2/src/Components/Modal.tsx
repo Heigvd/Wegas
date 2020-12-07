@@ -27,6 +27,10 @@ const modalStyle = css({
   },
 });
 
+const modalContentStyle = css({
+  cursor: 'initial',
+});
+
 export type ModalProps = React.PropsWithChildren<
   {
     /**
@@ -111,7 +115,7 @@ export function Modal({
           role="dialog"
           tabIndex={-1}
           style={innerStyle}
-          className={innerClassName}
+          className={modalContentStyle + classNameOrEmpty(innerClassName)}
         >
           {children}
         </div>
