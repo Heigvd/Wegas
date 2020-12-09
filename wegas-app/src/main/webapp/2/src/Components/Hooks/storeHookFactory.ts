@@ -25,7 +25,7 @@ type StoreType<S, A extends AnyAction> = Store<Readonly<S>, AnyAction> & {
 };
 /**
  * Hook, connect to store. Update if the selectors returns something different, as defined by shouldUpdate.
- * @param selector Select a specific part of the store
+ * @param selector Select a specific part of the store. Warning, this must be a static function!
  * @param shouldUpdate Will update the component if this function returns true.
  * Default to ref comparing values returned from selector
  */

@@ -24,6 +24,7 @@ import {
   IReply,
   IDialogueDescriptor,
   IDialogueTransition,
+  IWhQuestionDescriptor,
 } from 'wegas-ts-api';
 import { FSM_API } from '../../API/FSM.api';
 
@@ -105,9 +106,8 @@ export function runScript(
 }
 
 // Question specific actions
-
-export function readChoice(
-  choice: IChoiceDescriptor,
+export function read(
+  choice: IChoiceDescriptor | IQuestionDescriptor | IWhQuestionDescriptor,
   player?: IPlayer,
 ): ThunkResult {
   return function (dispatch, getState) {
@@ -116,11 +116,7 @@ export function readChoice(
     if (p.id == null) {
       throw Error('Missing persisted player');
     }
-    return QuestionDescriptorAPI.readChoice(
-      gameModelId,
-      p.id,
-      choice,
-    ).then(res =>
+    return QuestionDescriptorAPI.read(gameModelId, p.id, choice).then(res =>
       dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };

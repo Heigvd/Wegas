@@ -1,10 +1,21 @@
 import { managedModeRequest } from './rest';
-import { IChoiceDescriptor, IReply, IQuestionInstance } from 'wegas-ts-api';
+import {
+  IChoiceDescriptor,
+  IReply,
+  IQuestionInstance,
+  IWhQuestionDescriptor,
+  IQuestionDescriptor,
+  IWhQuestionInstance,
+} from 'wegas-ts-api';
 
 const QD_BASE = (gameModelId: number) =>
   `/GameModel/${gameModelId}/VariableDescriptor/QuestionDescriptor/`;
 export const QuestionDescriptorAPI = {
-  readChoice(gameModelId: number, playerId: number, choice: IChoiceDescriptor) {
+  read(
+    gameModelId: number,
+    playerId: number,
+    choice: IChoiceDescriptor | IQuestionDescriptor | IWhQuestionDescriptor,
+  ) {
     return managedModeRequest(
       `${QD_BASE(gameModelId)}Read/${playerId}/${choice.id}`,
       {
@@ -51,7 +62,7 @@ export const QuestionDescriptorAPI = {
   validateQuestion(
     gameModelId: number,
     playerId: number,
-    question: IQuestionInstance,
+    question: IQuestionInstance | IWhQuestionInstance,
   ) {
     return managedModeRequest(
       `${QD_BASE(gameModelId)}ValidateQuestion/${

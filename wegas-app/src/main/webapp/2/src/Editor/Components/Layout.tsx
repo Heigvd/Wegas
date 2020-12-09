@@ -7,6 +7,7 @@ import { useStore } from '../../data/store';
 import { visitIndex } from '../../Helper/pages';
 import { PageLoader } from './Page/PageLoader';
 import { ComponentMap } from './LinearTabLayout/DnDTabLayout';
+import { themeVar } from '../../Components/Style/ThemeVars';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageEditor = React.lazy(() => import('./Page/PageEditor'));
@@ -66,7 +67,12 @@ export default function Layout() {
   );
 
   return (
-    <div className={layout} id="WegasLayout">
+    <div
+      className={
+        layout + ' ' + css({ fontFamily: themeVar.Common.others.TextFont2 })
+      }
+      id="WegasLayout"
+    >
       <Header />
       <DndLinearLayout
         tabs={{ ...availableLayoutTabs, ...scenaristPages }}

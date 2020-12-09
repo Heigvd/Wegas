@@ -15,7 +15,14 @@ import {
   ConnectedQuestionDisplay,
   QuestionLabel,
 } from '../../Outputs/Question';
-import { IScript, IQuestionDescriptor, SListDescriptor } from 'wegas-ts-api';
+import {
+  IScript,
+  IQuestionDescriptor,
+  SListDescriptor,
+  IWhQuestionDescriptor,
+  IQuestionInstance,
+  IWhQuestionInstance,
+} from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { Player } from '../../../data/selectors';
 
@@ -40,11 +47,14 @@ export default function QuestionListDisplay({
       return { questions: [], player };
     }
     return {
-      questions: flatten<IQuestionDescriptor>(
+      questions: flatten<IQuestionDescriptor | IWhQuestionDescriptor>(
         descriptor.getEntity(),
         'QuestionDescriptor',
+        'WhQuestionDescriptor',
       ).filter(q => {
-        const instance = getInstance(q);
+        const instance = getInstance<IQuestionInstance | IWhQuestionInstance>(
+          q,
+        );
         if (instance != null) {
           return instance.active;
         }
