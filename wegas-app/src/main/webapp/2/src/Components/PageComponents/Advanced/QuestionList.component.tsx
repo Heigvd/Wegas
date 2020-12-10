@@ -11,10 +11,7 @@ import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import { useStore } from '../../../data/store';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
-import {
-  ConnectedQuestionDisplay,
-  QuestionLabel,
-} from '../../Outputs/Question';
+import { ConnectedQuestionDisplay } from '../../Outputs/Question/Question';
 import {
   IScript,
   IQuestionDescriptor,
@@ -25,6 +22,7 @@ import {
 } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { Player } from '../../../data/selectors';
+import { QuestionLabel } from '../../Outputs/Question/QuestionList';
 
 interface QuestionListDisplayProps extends WegasComponentProps {
   questionList?: IScript;
