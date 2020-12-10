@@ -81,6 +81,9 @@ function ChoiceDisplay({
       (typeof maxReplies !== 'number' || replies.length < maxReplies)) ||
     (questionD.cbx && choiceI.replies.length > 0);
 
+  const questionChoosed =
+    replies.find(r => r.choiceName === choiceD.name) !== undefined;
+
   return (
     <ChoiceContainer active={active} descriptor={choiceD} canReply={canReply}>
       {questionD.cbx ? (
@@ -91,14 +94,14 @@ function ChoiceDisplay({
           }
           onChange={() => onValidate(choiceD)}
         />
-      ) : (
+      ) : canReply || questionChoosed ? (
         <Button
           icon="check"
           onClick={() => onValidate(choiceD)}
           disabled={!canReply}
           label={replies.length ? replies.length : undefined}
         />
-      )}
+      ) : null}
     </ChoiceContainer>
   );
 }
