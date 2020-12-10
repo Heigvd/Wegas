@@ -4,7 +4,7 @@ import {
   pageComponentFactory,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { store, useStore } from '../../../data/store';
+import { store } from '../../../data/store';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, SStringDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
@@ -12,13 +12,12 @@ import { SimpleInput } from '../../Inputs/SimpleInput';
 import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
-import { instantiate } from '../../../data/scriptable';
-import { Player } from '../../../data/selectors';
 import {
   OnVariableChange,
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
+import { useCurrentPlayer } from '../../../data/selectors/Player';
 
 interface PlayerStringInput extends WegasComponentProps {
   /**
@@ -44,7 +43,7 @@ function PlayerStringInput({
 }: PlayerStringInput) {
   const placeholderText = useScript<string>(placeholder, context);
   const text = useScript<SStringDescriptor>(script, context);
-  const player = instantiate(useStore(Player.selectCurrent));
+  const player = useCurrentPlayer();
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 

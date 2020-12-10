@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useTranslate } from '../../Editor/Components/FormView/translatable';
 import { Player } from '../../data/selectors';
 import { useStore, store } from '../../data/store';
-import { deepDifferent } from '../Hooks/storeHookFactory';
 import { EntityChooser } from '../EntityChooser';
 import { cx, css } from 'emotion';
 import { flex, itemCenter } from '../../css/classes';
@@ -54,9 +53,12 @@ interface InboxDisplayProps {
 }
 
 export function InboxDisplay({ inbox }: InboxDisplayProps) {
-  const messages = useStore(() => {
-    return getInstance(inbox, Player.selectCurrent())!.messages;
-  }, deepDifferent);
+  const messagesSelector = React.useCallback(
+    () => getInstance(inbox, Player.selectCurrent())!.messages,
+    [inbox],
+  );
+
+  const messages = useStore(messagesSelector);
 
   return (
     <EntityChooser

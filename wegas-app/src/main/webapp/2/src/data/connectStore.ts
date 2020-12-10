@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Store } from 'redux';
 import {
   useAnyStore,
-  shallowDifferent,
+  refDifferent,
 } from '../Components/Hooks/storeHookFactory';
 
 function id<T>(x: T) {
@@ -43,7 +43,7 @@ export function createStoreConnector<S extends Store>(store: S) {
     const {
       selector = id as (s: State) => State,
       children,
-      shouldUpdate = shallowDifferent,
+      shouldUpdate = refDifferent,
     } = props;
     const state = useStore(selector, shouldUpdate);
     return children({ dispatch: getDispatch(), state });

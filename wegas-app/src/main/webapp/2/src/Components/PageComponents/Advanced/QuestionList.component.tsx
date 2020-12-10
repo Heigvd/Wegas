@@ -10,7 +10,6 @@ import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import { useStore } from '../../../data/store';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { ConnectedQuestionDisplay } from '../../Outputs/Question/Question';
 import {
   IScript,
@@ -32,7 +31,7 @@ export default function QuestionListDisplay({
   questionList,
   context,
 }: QuestionListDisplayProps) {
-  const entities = useStore(() => {
+  const entitiesSelector = React.useCallback(() => {
     // TODO add support for arrays of list/question
     const descriptor = safeClientScriptEval<SListDescriptor>(
       questionList,
@@ -60,7 +59,9 @@ export default function QuestionListDisplay({
       }),
       player,
     };
-  }, deepDifferent);
+  }, [context, questionList]);
+
+  const entities = useStore(entitiesSelector);
 
   if (questionList === undefined) {
     return <pre>No selected list</pre>;

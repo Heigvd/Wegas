@@ -13,9 +13,8 @@ import {
   itemCenter,
 } from '../../../css/classes';
 import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReducer';
-import { instantiate } from '../../../data/scriptable';
-import { Player } from '../../../data/selectors';
-import { store, useStore } from '../../../data/store';
+import { useCurrentPlayer } from '../../../data/selectors/Player';
+import { store } from '../../../data/store';
 import { themeVar } from '../../Style/ThemeVars';
 import { DialogueChoice } from './DialogueChoice';
 import { DialogueEntry } from './DialogueEntry';
@@ -42,7 +41,7 @@ interface DialogueDisplayProps {
 }
 
 export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
-  const player = instantiate(useStore(Player.selectCurrent));
+  const player = useCurrentPlayer();
   const dialogueInstance = dialogue.getInstance(player);
   const history = dialogueInstance.getTransitionHistory();
   const dialogueStates = dialogue.getStates();

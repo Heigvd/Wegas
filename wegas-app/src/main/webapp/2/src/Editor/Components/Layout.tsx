@@ -2,12 +2,12 @@ import * as React from 'react';
 import { css } from 'emotion';
 import Header from './Header';
 import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
-import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { useStore } from '../../data/store';
 import { visitIndex } from '../../Helper/pages';
 import { PageLoader } from './Page/PageLoader';
 import { ComponentMap } from './LinearTabLayout/DnDTabLayout';
 import { themeVar } from '../../Components/Style/ThemeVars';
+import { State } from '../../data/Reducer/reducers';
 
 const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
 const PageEditor = React.lazy(() => import('./Page/PageEditor'));
@@ -54,14 +54,16 @@ export type AvailableLayoutTab = keyof typeof availableLayoutTabs;
 
 export const mainLayoutId = 'MainEditorLayout';
 
+function scenaristPagesSelector(s: State) {
+  return s.pages.index
+    ? visitIndex(s.pages.index.root, item => item).filter(
+        item => item.scenaristPage,
+      )
+    : [];
+}
+
 export default function Layout() {
-  const scenaristPages: ComponentMap = useStore(s => {
-    return s.pages.index
-      ? visitIndex(s.pages.index.root, item => item).filter(
-          item => item.scenaristPage,
-        )
-      : [];
-  }, deepDifferent).reduce(
+  const scenaristPages: ComponentMap = useStore(scenaristPagesSelector).reduce(
     (o, i) => ({ ...o, [i.name]: <PageLoader selectedPageId={i.id} /> }),
     {},
   );

@@ -14,13 +14,13 @@ import { AvailableViews } from '../FormView';
 import { LocalGlobalState } from '../../../data/storeFactory';
 import { updateInstance } from '../../../data/Reducer/VariableInstanceReducer';
 import { flex, flexColumn, grow, localSelection } from '../../../css/classes';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { themeCTX, ThemeComponent } from '../../../Components/Style/Theme';
 import { IVariableInstance } from 'wegas-ts-api';
 import { VariableDescriptor, VariableInstance } from '../../../data/selectors';
 import { Edition, VariableEdition } from '../../../data/Reducer/globalState';
 import { VariableTreeTitle } from './VariableTree';
+import { State } from '../../../data/Reducer/reducers';
 
 const listBox = css({
   width: '100%',
@@ -60,6 +60,13 @@ export interface InstancePropertiesProps extends ThemeComponent {
   actions?: EditorProps<IVariableInstance>['actions'];
 }
 
+function instancesSelector(s: State) {
+  if (isEditingVariable(s.global.editing)) {
+    return VariableInstance.all('parentId', s.global.editing.entity.id);
+  }
+  return [];
+}
+
 export function InstanceProperties({
   state,
   dispatch,
@@ -72,12 +79,7 @@ export function InstanceProperties({
     number | undefined
   >();
 
-  const instances = useStore(() => {
-    if (isEditingVariable(editing)) {
-      return VariableInstance.all('parentId', editing.entity.id);
-    }
-    return [];
-  }, deepDifferent);
+  const instances = useStore(instancesSelector);
 
   const selectedInstance =
     selectedInstanceId != null
@@ -152,21 +154,23 @@ export function InstanceProperties({
   );
 }
 
+function stateSelector(s: State) {
+  const editing = s.global.editing;
+  if (!editing) {
+    return null;
+  } else {
+    return {
+      global: {
+        editing,
+        events: s.global.events,
+        eventsHandlers: s.global.eventsHandlers,
+      },
+    };
+  }
+}
+
 export default function ConnectedInstancesEditor() {
-  const state = useStore(s => {
-    const editing = s.global.editing;
-    if (!editing) {
-      return null;
-    } else {
-      return {
-        global: {
-          editing,
-          events: s.global.events,
-          eventsHandlers: s.global.eventsHandlers,
-        },
-      };
-    }
-  }, deepDifferent);
+  const state = useStore(stateSelector);
 
   const { themesState } = React.useContext(themeCTX);
   const modeName =

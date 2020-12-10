@@ -15,11 +15,11 @@ import {
   defaultPageCTX,
 } from '../../../Editor/Components/Page/PageEditor';
 import { useStore, store } from '../../../data/store';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { ActionCreator } from '../../../data/actions';
 import { createScript } from '../../../Helper/wegasEntites';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { classStyleIdShema } from '../tools/options';
+import { State } from '../../../data/Reducer/reducers';
 
 type PlayerPageLoaderProps = WegasComponentProps & PageLoaderComponentProps;
 
@@ -34,11 +34,16 @@ function PlayerPageLoader({
   style,
   id,
 }: PlayerPageLoaderProps) {
-  let pageScript = useStore(s => {
-    if (name != null) {
-      return s.global.pageLoaders[name];
-    }
-  }, deepDifferent);
+  const pageScriptSelector = React.useCallback(
+    (s: State) => {
+      if (name != null) {
+        return s.global.pageLoaders[name];
+      }
+    },
+    [name],
+  );
+  let pageScript = useStore(pageScriptSelector);
+
   const { pageIdPath } = React.useContext(pageCTX);
   if (name != null && !pageScript) {
     store.dispatch(

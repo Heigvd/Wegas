@@ -32,7 +32,6 @@ import HelpersGlobalSrc from '!!raw-loader!../../../types/scripts/HelpersGlobals
 // @ts-ignore
 import generalTypes from '!!raw-loader!../../../types/general-types.d.ts';
 
-import { deepDifferent } from './storeHookFactory';
 import { wwarn } from '../../Helper/wegaslog';
 import { buildGlobalServerMethods } from '../../data/Reducer/globalState';
 
@@ -65,30 +64,33 @@ export type ScriptContext = 'Client' | 'Server internal' | 'Server external';
 export function useGlobalLibs(scriptContext: ScriptContext) {
   const { classes } = React.useContext(classesCTX);
 
-  const libs = useStore((s: State) => {
-    const variableClasses = Object.values(s.variableDescriptors).reduce<{
-      [variable: string]: string;
-    }>((newObject, variable) => {
-      if (variable !== undefined && variable.name !== undefined) {
-        newObject[variable.name] = variable['@class'];
-      }
-      return newObject;
-    }, {});
+  const libsSelector = React.useCallback(
+    (s: State) => {
+      const variableClasses = Object.values(s.variableDescriptors).reduce<{
+        [variable: string]: string;
+      }>((newObject, variable) => {
+        if (variable !== undefined && variable.name !== undefined) {
+          newObject[variable.name] = variable['@class'];
+        }
+        return newObject;
+      }, {});
 
-    const globalMethods = s.global.clientMethods;
-    const globalSchemas = s.global.schemas.views;
-    const globalServerMethods = s.global.serverMethods;
+      const globalMethods = s.global.clientMethods;
+      const globalSchemas = s.global.schemas.views;
+      const globalServerMethods = s.global.serverMethods;
 
-    const currentLanguages = Object.values(GameModel.selectCurrent().languages)
-      .map(l => l.code)
-      .join(' | ');
+      const currentLanguages = Object.values(
+        GameModel.selectCurrent().languages,
+      )
+        .map(l => l.code)
+        .join(' | ');
 
-    const allowedPageLoadersType = Object.keys(s.global.pageLoaders)
-      .map(name => `"${name}"`)
-      .join('|');
+      const allowedPageLoadersType = Object.keys(s.global.pageLoaders)
+        .map(name => `"${name}"`)
+        .join('|');
 
-    try {
-      return `
+      try {
+        return `
         declare const gameModel : SGameModel;
         declare const self : SPlayer;
         declare const typeFactory: (types: WegasScriptEditorReturnTypeName[]) => GlobalMethodReturnTypesName;
@@ -194,11 +196,15 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
             : `${buildGlobalServerMethods(globalServerMethods)}`
         }
         `;
-    } catch (e) {
-      wwarn(e);
-      return '';
-    }
-  }, deepDifferent);
+      } catch (e) {
+        wwarn(e);
+        return '';
+      }
+    },
+    [classes, scriptContext],
+  );
+
+  const libs = useStore(libsSelector);
 
   const globalLibs = React.useMemo(
     () => [

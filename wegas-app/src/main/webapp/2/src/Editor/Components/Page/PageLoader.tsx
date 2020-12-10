@@ -4,12 +4,12 @@ import { ThemeProvider, themeCTX } from '../../../Components/Style/Theme';
 import { TextLoader } from '../../../Components/Loader';
 import { PageDeserializer } from '../../../Components/PageComponents/tools/PageDeserializer';
 import { useStore } from '../../../data/store';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { css, cx } from 'emotion';
 import { flex, expandHeight } from '../../../css/classes';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { FlexItem } from '../../../Components/Layouts/FlexList';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { State } from '../../../data/Reducer/reducers';
 
 const editStyle = css({
   borderStyle: 'solid',
@@ -32,11 +32,11 @@ export function PageLoader({
   style,
   id,
 }: PageLoaderProps) {
-  const selectedPage = useStore(
-    s => (selectedPageId ? s.pages[selectedPageId] : undefined),
-    deepDifferent,
+  const selectedPageSelector = React.useCallback(
+    (s: State) => (selectedPageId ? s.pages[selectedPageId] : undefined),
+    [selectedPageId],
   );
-  //const { editMode } = React.useContext(pageCTX);
+  const selectedPage = useStore(selectedPageSelector);
   const { currentContext, currentMode = themeMode } = React.useContext(
     themeCTX,
   );

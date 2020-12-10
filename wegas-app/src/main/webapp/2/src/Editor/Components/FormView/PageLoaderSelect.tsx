@@ -16,11 +16,11 @@ import { useScript } from '../../../Components/Hooks/useScript';
 import { DropMenu, DropMenuItem } from '../../../Components/DropMenu';
 import { cx, css } from 'emotion';
 import { flex, flexRow, grow } from '../../../css/classes';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { MessageString } from '../MessageString';
 import { IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { State } from '../../../data/Reducer/reducers';
 
 const updateScript = (scriptContent: string, currentScript?: IScript) =>
   currentScript
@@ -33,30 +33,32 @@ export interface PageSelectProps extends WidgetProps.BaseProps {
   onChange: (code: IScript) => void;
 }
 
+function pageLoadersSelector(s: State) {
+  const loaders: DropMenuItem<
+    { pageId: string } & PageLoaderComponentProps
+  >[] = [];
+  Object.entries(s.pages)
+    .filter(([, v]) => isWegasComponent(v))
+    .map(([k, v]) =>
+      visitComponents(v, c => {
+        if (isPageLoaderComponent(c)) {
+          loaders.push({
+            label: c.props.name,
+            value: {
+              pageId: k,
+              ...c.props,
+            },
+          });
+        }
+      }),
+    );
+  return loaders;
+}
+
 export default function PageLoaderSelect(props: PageSelectProps) {
   const [loaderValue, setPageLoader] = React.useState<string>();
   const [srcMode, setSrcMode] = React.useState(false);
-  const pageLoaders = useStore(s => {
-    const loaders: DropMenuItem<
-      { pageId: string } & PageLoaderComponentProps
-    >[] = [];
-    Object.entries(s.pages)
-      .filter(([, v]) => isWegasComponent(v))
-      .map(([k, v]) =>
-        visitComponents(v, c => {
-          if (isPageLoaderComponent(c)) {
-            loaders.push({
-              label: c.props.name,
-              value: {
-                pageId: k,
-                ...c.props,
-              },
-            });
-          }
-        }),
-      );
-    return loaders;
-  }, deepDifferent);
+  const pageLoaders = useStore(pageLoadersSelector);
   const pageLoaderName = useScript<string>(loaderValue);
 
   React.useEffect(() => {

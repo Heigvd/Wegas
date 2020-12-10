@@ -4,7 +4,7 @@ import {
   pageComponentFactory,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { store, useStore } from '../../../data/store';
+import { store } from '../../../data/store';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import {
   IScript,
@@ -16,8 +16,6 @@ import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
-import { instantiate } from '../../../data/scriptable';
-import { Player } from '../../../data/selectors';
 import {
   OnVariableChange,
   onVariableChangeSchema,
@@ -27,6 +25,7 @@ import { Choice, Selector } from '../../../Editor/Components/FormView/Select';
 import { entityIs } from '../../../data/entities';
 import { translate } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
+import { useCurrentPlayer } from '../../../data/selectors/Player';
 
 interface PlayerSelectInputProps extends WegasComponentProps {
   /**
@@ -49,7 +48,7 @@ function PlayerSelectInput({
   id,
   onVariableChange,
 }: PlayerSelectInputProps) {
-  const player = instantiate(useStore(Player.selectCurrent));
+  const player = useCurrentPlayer();
   const variable = useScript<
     SStringDescriptor | STextDescriptor | SNumberDescriptor
   >(script, context);

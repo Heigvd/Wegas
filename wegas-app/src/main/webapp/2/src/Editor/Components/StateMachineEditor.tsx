@@ -583,49 +583,51 @@ export class StateMachineEditor extends React.Component<
   }
 }
 
+function globalStateSelector(s: RState) {
+  let editedVariable:
+    | IFSMDescriptor
+    | IDialogueDescriptor
+    | undefined = undefined;
+  if (
+    s.global.editing &&
+    (s.global.editing.type === 'VariableFSM' ||
+      // The following condition seems stupid, need to be tested ans documented
+      s.global.editing.type === 'Variable')
+  ) {
+    editedVariable = s.global.editing.entity as
+      | IFSMDescriptor
+      | IDialogueDescriptor;
+    const lastFSM = VariableDescriptor.select(s.global.editing.entity.id) as
+      | IFSMDescriptor
+      | IDialogueDescriptor;
+    if (shallowDifferent(editedVariable, lastFSM)) {
+      editedVariable = lastFSM;
+    }
+  }
+  const instance = editedVariable ? getInstance(editedVariable) : undefined;
+  if (
+    !entityIs(editedVariable, 'TriggerDescriptor', true) &&
+    entityIs(editedVariable, 'AbstractStateMachineDescriptor', true) &&
+    entityIs(instance, 'FSMInstance', true)
+  ) {
+    return {
+      descriptor: editedVariable,
+      instance,
+      search: s.global.search,
+    };
+  } else {
+    return {
+      variable: editedVariable,
+    };
+  }
+}
+
 export function ConnectedStateMachineEditor({
   localDispatch,
 }: {
   localDispatch?: StateMachineEditorProps['localDispatch'];
 }) {
-  const globalState = useStore(s => {
-    let editedVariable:
-      | IFSMDescriptor
-      | IDialogueDescriptor
-      | undefined = undefined;
-    if (
-      s.global.editing &&
-      (s.global.editing.type === 'VariableFSM' ||
-        // The following condition seems stupid, need to be tested ans documented
-        s.global.editing.type === 'Variable')
-    ) {
-      editedVariable = s.global.editing.entity as
-        | IFSMDescriptor
-        | IDialogueDescriptor;
-      const lastFSM = VariableDescriptor.select(s.global.editing.entity.id) as
-        | IFSMDescriptor
-        | IDialogueDescriptor;
-      if (shallowDifferent(editedVariable, lastFSM)) {
-        editedVariable = lastFSM;
-      }
-    }
-    const instance = editedVariable ? getInstance(editedVariable) : undefined;
-    if (
-      !entityIs(editedVariable, 'TriggerDescriptor', true) &&
-      entityIs(editedVariable, 'AbstractStateMachineDescriptor', true) &&
-      entityIs(instance, 'FSMInstance', true)
-    ) {
-      return {
-        descriptor: editedVariable,
-        instance,
-        search: s.global.search,
-      };
-    } else {
-      return {
-        variable: editedVariable,
-      };
-    }
-  }, shallowDifferent);
+  const globalState = useStore(globalStateSelector);
 
   if ('variable' in globalState) {
     if (globalState.variable == null) {
