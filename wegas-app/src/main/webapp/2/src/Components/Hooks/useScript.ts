@@ -11,7 +11,7 @@ import { languagesCTX } from '../Contexts/LanguagesProvider';
 import { Actions } from '../../data';
 import { transpile } from 'typescript';
 import { classesCTX } from '../Contexts/ClassesProvider';
-import { deepDifferent } from './storeHookFactory';
+import { deepDifferent, shallowDifferent } from './storeHookFactory';
 import {
   IVariableDescriptor,
   WegasClassNames,
@@ -39,7 +39,6 @@ import { replace } from '../../Helper/tools';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
 import { createScript, isScript } from '../../Helper/wegasEntites';
 import { cloneDeep } from 'lodash-es';
-import { State } from '../../data/Reducer/reducers';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -89,17 +88,16 @@ export function createSandbox<T = unknown>() {
 
 const { sandbox, globals } = createSandbox<GlobalClasses>();
 
-function globalsSelector(s: State) {
-  return {
-    player: Player.selectCurrent(),
-    gameModel: GameModel.selectCurrent(),
-    pageLoaders: s.global.pageLoaders,
-  };
-}
-
 export function useGlobals() {
   // Hooks
-  const { player, gameModel, pageLoaders } = useStore(globalsSelector);
+  const { player, gameModel, pageLoaders } = useStore(
+    s => ({
+      player: Player.selectCurrent(),
+      gameModel: GameModel.selectCurrent(),
+      pageLoaders: s.global.pageLoaders,
+    }),
+    shallowDifferent,
+  );
   const splayer = instantiate(player);
   // const gameModel = useGameModel();
   const defaultFeatures: FeaturesSelecta = {

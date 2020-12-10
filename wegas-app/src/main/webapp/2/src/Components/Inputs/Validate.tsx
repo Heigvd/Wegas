@@ -1,16 +1,33 @@
-import { cx } from 'emotion';
+import { css, cx } from 'emotion';
 import * as React from 'react';
-import { flex, flexColumn, flexRow, grow } from '../../css/classes';
+import { flex, flexColumn, flexRow, grow, itemCenter } from '../../css/classes';
+import { schemaProps } from '../PageComponents/tools/schemaProps';
+import { themeVar } from '../Style/ThemeVars';
 import { Button } from './Buttons/Button';
+
+const validatorStyle = css({
+  backgroundColor: themeVar.Common.colors.HeaderColor,
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
+  padding: '5px',
+});
+
+const inputStyle = css({
+  padding: '5px',
+});
 
 interface ValidateProps<T> {
   value: T;
-  onChange: (value: T) => void;
+  onValidate: (value: T) => void;
+  onCancel: (value: T) => void;
   children: (value: T, onChange: (value: T) => void) => JSX.Element;
 }
 
-export function Validate<T>({ value, onChange, children }: ValidateProps<T>) {
-  const [childrenFocused, setChildrenFocused] = React.useState<boolean>(false);
+export function Validate<T>({
+  value,
+  onValidate,
+  onCancel,
+  children,
+}: ValidateProps<T>) {
   const [savedValue, setSavedValue] = React.useState<T>(value);
 
   React.useEffect(() => {
@@ -18,22 +35,30 @@ export function Validate<T>({ value, onChange, children }: ValidateProps<T>) {
   }, [value]);
 
   return (
-    <div className={cx(flex, flexRow)}>
-      <div className={grow} onClick={() => setChildrenFocused(true)}>
+    <div className={cx(flex, flexRow, itemCenter, validatorStyle)}>
+      <div className={cx(grow, inputStyle)}>
         {children(savedValue, setSavedValue)}
       </div>
-      {childrenFocused && (
-        <div className={cx(flex, flexColumn)}>
-          <Button icon="times" onClick={() => setChildrenFocused(false)} />
-          <Button
-            icon="check"
-            onClick={() => {
-              setChildrenFocused(false);
-              onChange(savedValue);
-            }}
-          />
-        </div>
-      )}
+      <div className={cx(flex, flexColumn, inputStyle)}>
+        <Button icon="times" onClick={() => onCancel(savedValue)} />
+        <Button icon="check" onClick={() => onValidate(savedValue)} />
+      </div>
     </div>
   );
 }
+
+export interface ValidatorComponentProps {
+  /**
+   * validator - if true, will put a handle that will fire the change event
+   */
+  validator?: boolean;
+  /**
+   * onCancel - will be called if the modiofication is cancelled
+   */
+  onCancel?: IScript;
+}
+
+export const validatorSchema = {
+  validator: schemaProps.boolean({ label: 'Validator' }),
+  onCancel: schemaProps.code({ label: 'On cancel action' }),
+};
