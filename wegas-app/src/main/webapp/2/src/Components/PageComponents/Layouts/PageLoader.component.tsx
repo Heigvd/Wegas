@@ -33,6 +33,7 @@ function PlayerPageLoader({
   className,
   style,
   id,
+  loadTimer,
 }: PlayerPageLoaderProps) {
   const pageScriptSelector = React.useCallback(
     (s: State) => {
@@ -72,6 +73,7 @@ function PlayerPageLoader({
         style={style}
         id={id}
         selectedPageId={pageId}
+        loadTimer={loadTimer}
       />
     </pageCTX.Provider>
   );
@@ -85,6 +87,7 @@ registerComponent(
     icon: 'window-maximize',
     schema: {
       initialSelectedPageId: schemaProps.pageSelect({ label: 'Page' }),
+      loadTimer: schemaProps.number({ label: 'Loading timer (ms)' }),
       ...classStyleIdShema,
     },
     getComputedPropsFromVariable: () => ({
