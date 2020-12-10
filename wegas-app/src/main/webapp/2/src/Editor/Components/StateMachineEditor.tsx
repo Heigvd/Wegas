@@ -1040,11 +1040,13 @@ class Transition extends React.Component<{
       //   ),
       // };
       return label;
-    } else {
+    } else if (condition || impact) {
       return (
         (condition ? 'Condition: ' + condition + ' ' : '') +
         (impact ? 'Impact: ' + impact + ' ' : '')
       );
+    } else {
+      return 'Empty...';
     }
   }
   updateData = () => {
