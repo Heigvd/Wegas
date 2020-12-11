@@ -58,21 +58,23 @@ interface RepliesDisplayProps {
 export function RepliesDisplay({ replies }: RepliesDisplayProps) {
   const [showAll, setShowAll] = React.useState(false);
 
-  if (replies.length === 0) {
+  const nonIgnoredReplies = replies.filter(r => !r.ignored);
+
+  if (nonIgnoredReplies.length === 0) {
     return null;
   }
   return (
     <>
-      {replies.length > 1 && (
+      {nonIgnoredReplies.length > 1 && (
         <Button
           icon={showAll ? 'caret-square-up' : 'caret-square-down'}
           onClick={() => setShowAll(showAll => !showAll)}
         />
       )}
       {showAll ? (
-        replies.map(r => <ReplyDisplay key={r.id} reply={r} />)
+        nonIgnoredReplies.map(r => <ReplyDisplay key={r.id} reply={r} />)
       ) : (
-        <ReplyDisplay reply={replies[replies.length - 1]} />
+        <ReplyDisplay reply={nonIgnoredReplies[nonIgnoredReplies.length - 1]} />
       )}
     </>
   );

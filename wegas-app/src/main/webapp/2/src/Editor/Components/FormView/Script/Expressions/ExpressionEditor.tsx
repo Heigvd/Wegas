@@ -32,7 +32,12 @@ import { CommonView, CommonViewContainer } from '../../commonView';
 import { LabeledView, Labeled } from '../../labeled';
 import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
 import { pick } from 'lodash-es';
-import { CallExpression, StringLiteral, emptyStatement } from '@babel/types';
+import {
+  CallExpression,
+  StringLiteral,
+  emptyStatement,
+  isEmptyStatement,
+} from '@babel/types';
 import { themeVar } from '../../../../../Components/Style/ThemeVars';
 import { Button } from '../../../../../Components/Inputs/Buttons/Button';
 import { EmbeddedSrcEditor } from '../../../ScriptEditors/EmbeddedSrcEditor';
@@ -92,10 +97,12 @@ export function ExpressionEditor({
           statement || emptyStatement(),
           mode,
         );
-        if (
+
+        const isNewOrUnknown =
           !formState.statement ||
-          generate(formState.statement).code !== generate(statement).code
-        ) {
+          isEmptyStatement(formState.statement) ||
+          generate(formState.statement).code !== generate(statement).code;
+        if (isNewOrUnknown) {
           if (error !== undefined) {
             setError(error);
           }

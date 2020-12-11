@@ -214,18 +214,41 @@ export function useGlobals() {
     },
   };
 
-  const registerMethod: ServerMethodRegister = (objects, method, schema) => {
+  const registerGlobalMethod: ServerGlobalMethodRegister = (
+    objects,
+    method,
+    schema,
+  ) => {
     globalDispatch(
       Actions.EditorActions.registerServerMethod(objects, method, {
         ...schema,
-        '@class': 'GlobalServerMethod',
+        '@class': 'ServerGlobalMethod',
       }),
+    );
+  };
+
+  const registerVariableMethod: ServerVariableMethodRegister = (
+    variableClass,
+    label,
+    parameter,
+    returns,
+    serverCode,
+  ) => {
+    globalDispatch(
+      Actions.EditorActions.registerVariableMethod(
+        variableClass,
+        label,
+        parameter,
+        returns,
+        serverCode,
+      ),
     );
   };
 
   // ServerMethods class
   globals.ServerMethods = {
-    registerMethod,
+    registerGlobalMethod,
+    registerVariableMethod,
   };
 
   // Schemas class

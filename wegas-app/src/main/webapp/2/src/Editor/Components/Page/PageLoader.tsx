@@ -10,6 +10,7 @@ import { themeVar } from '../../../Components/Style/ThemeVars';
 import { FlexItem } from '../../../Components/Layouts/FlexList';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { State } from '../../../data/Reducer/reducers';
+import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 
 const modalStyle = css({
   zIndex: 10000,
@@ -22,7 +23,8 @@ const modalStyle = css({
   flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
-  backgroundColor: themeVar.Common.colors.BackgroundColor,
+  backgroundColor: 'rgba(255,255,255,0.9)',
+  transition: '2s background-color',
 });
 
 const loaderStyle = css({
@@ -57,7 +59,7 @@ export function PageLoader({
     (s: State) => (selectedPageId ? s.pages[selectedPageId] : undefined),
     [selectedPageId],
   );
-  const selectedPage = useStore(selectedPageSelector);
+  const selectedPage = useStore(selectedPageSelector, deepDifferent);
   const { currentContext, currentMode = themeMode } = React.useContext(
     themeCTX,
   );

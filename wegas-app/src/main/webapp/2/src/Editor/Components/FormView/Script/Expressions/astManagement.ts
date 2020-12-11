@@ -603,8 +603,8 @@ export const generateStatement = (
             comparatorExpectedType
               ? comparatorExpectedType
               : isWegasMethodReturnType(comparatorCurrentType)
-                ? comparatorCurrentType
-                : 'string',
+              ? comparatorCurrentType
+              : 'string',
             true,
           );
         } else {

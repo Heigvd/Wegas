@@ -230,12 +230,12 @@ export const typeCleaner = (
   }
 };
 
-interface FullNameMethod extends GlobalServerMethod {
+interface FullNameMethod extends ServerGlobalMethod {
   fullName: string;
 }
 
 function getServerMethods(
-  serverObject: GlobalServerObject | GlobalServerMethod | undefined,
+  serverObject: ServerGlobalObject | ServerGlobalMethod | undefined,
   path: string[] = [],
   methods: FullNameMethod[] = [],
 ): FullNameMethod[] {
@@ -451,22 +451,6 @@ export const makeGlobalMethodSchema = (
   properties: {
     ...makeSchemaInitExpression(variableIds, mode, scriptableClassFilter),
     ...(scriptMethod ? makeSchemaParameters(1, scriptMethod.parameters) : {}),
-  },
-});
-
-export const makeVariableMethodSchema = (
-  variableIds: number[],
-  methods?: MethodConfig,
-  scriptMethod?: WegasMethod,
-  mode?: ScriptMode,
-  scriptableClassFilter?: WegasScriptEditorReturnTypeName[],
-): WyiswygExpressionSchema => ({
-  description: 'VariableMethodSchema',
-  properties: {
-    ...makeSchemaInitExpression(variableIds, mode, scriptableClassFilter),
-    ...makeSchemaMethodSelector(methods),
-    ...(scriptMethod ? makeSchemaParameters(2, scriptMethod.parameters) : {}),
-    ...makeSchemaConditionAttributes(2, scriptMethod, mode),
   },
 });
 

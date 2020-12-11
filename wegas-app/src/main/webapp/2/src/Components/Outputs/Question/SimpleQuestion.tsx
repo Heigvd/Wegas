@@ -59,6 +59,7 @@ interface ChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
   choiceI: IChoiceInstance;
   questionD: IQuestionDescriptor;
+  replies: Readonly<IReply[]>;
   onValidate: (choice: IChoiceDescriptor) => void;
   replyAllowed: boolean;
 }
@@ -67,11 +68,12 @@ function ChoiceDisplay({
   choiceD,
   choiceI,
   questionD,
+  replies,
   onValidate,
   replyAllowed,
 }: ChoiceDisplayProps) {
   const { maxReplies } = choiceD;
-  const { active, replies } = choiceI;
+  const { active } = choiceI;
 
   if (!active) {
     return null;
@@ -82,17 +84,17 @@ function ChoiceDisplay({
     (questionD.cbx && choiceI.replies.length > 0);
 
   const questionChoosed =
-    replies.find(r => r.choiceName === choiceD.name) !== undefined;
+    replies.filter(r => !r.ignored).find(r => r.choiceName === choiceD.name) !==
+    undefined;
 
   return (
     <ChoiceContainer active={active} descriptor={choiceD} canReply={canReply}>
       {questionD.cbx ? (
         <input
           type="checkbox"
-          checked={
-            replies.find(r => r.choiceName === choiceD.name) !== undefined
-          }
+          checked={questionChoosed}
           onChange={() => onValidate(choiceD)}
+          disabled={!canReply}
         />
       ) : canReply || questionChoosed ? (
         <Button
@@ -120,6 +122,7 @@ export function QuestionDisplay({
 }: QuestionDisplayProps) {
   const onChoiceValidate = React.useCallback(
     (choice: IChoiceDescriptor) => {
+      debugger;
       if (questionD.cbx) {
         dispatch(toggleReply(choice));
       } else {
@@ -156,6 +159,7 @@ export function QuestionDisplay({
             questionD={questionD}
             choiceD={choiceD}
             choiceI={choiceI}
+            replies={replies}
             replyAllowed={canReply}
           />
         );

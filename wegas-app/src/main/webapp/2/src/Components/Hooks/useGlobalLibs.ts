@@ -34,6 +34,7 @@ import generalTypes from '!!raw-loader!../../../types/general-types.d.ts';
 
 import { wwarn } from '../../Helper/wegaslog';
 import { buildGlobalServerMethods } from '../../data/Reducer/globalState';
+import { deepDifferent } from './storeHookFactory';
 
 const stripRegex = /\/\* STRIP FROM \*\/[\s\S]*?\/\* STRIP TO \*\//gm;
 
@@ -204,7 +205,7 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
     [classes, scriptContext],
   );
 
-  const libs = useStore(libsSelector);
+  const libs = useStore(libsSelector, deepDifferent);
 
   const globalLibs = React.useMemo(
     () => [
