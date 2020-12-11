@@ -191,8 +191,7 @@ export function toggleReply(
   const p = player != null ? player : Player.selectCurrent();
 
   const ci = getInstance<IChoiceInstance>(choice, p);
-  const reply = ci?.replies.find(r => !r.validated);
-
+  const reply = ci?.replies.find(r => r.choiceName === choice.name);
   if (reply && !reply?.ignored) {
     // cancel not yet validated reply
     return cancelReply(reply, p);

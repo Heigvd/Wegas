@@ -114,7 +114,6 @@ export function onComponentClick(
   stopPropagation?: boolean,
   confirmClick?: string,
 ) {
-  wlog('BLIP');
   const onClickActions = Object.entries(
     pick(
       componentProps,
@@ -509,6 +508,15 @@ export function ComponentContainer({
   // const [waitConfirmation, setWaitConfirmation] = React.useState<boolean>(
   //   false,
   // );
+
+  const count = React.useRef(0);
+  React.useEffect(() => {
+    wlog(count.current);
+    count.current += 1;
+    if (count.current > 4) {
+      wlog({ componentType, name, path });
+    }
+  });
 
   const {
     onDrop,

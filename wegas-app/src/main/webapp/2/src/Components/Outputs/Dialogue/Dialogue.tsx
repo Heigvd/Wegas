@@ -15,6 +15,7 @@ import {
 import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReducer';
 import { useCurrentPlayer } from '../../../data/selectors/Player';
 import { store } from '../../../data/store';
+import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { themeVar } from '../../Style/ThemeVars';
 import { DialogueChoice } from './DialogueChoice';
 import { DialogueEntry } from './DialogueEntry';
@@ -48,16 +49,30 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
   const dialogueInstance = dialogue.getInstance(player);
   const history = dialogueInstance.getTransitionHistory();
   const dialogueStates = dialogue.getStates();
+  const oldHistoryState = React.useRef<typeof history>(history);
 
   const wait = React.useCallback(() => {
     setWaiting(true);
     const timer = setTimeout(() => {
       setWaiting(false);
-    }, 1500);
+    }, 3000);
     return () => {
       clearTimeout(timer);
     };
   }, []);
+
+  // React.useEffect(() => {
+  //   wlog('MOUNT');
+  //   wait();
+  //   return () => wlog('UNMOUNT');
+  // }, [wait]);
+
+  React.useEffect(() => {
+    if (deepDifferent(oldHistoryState.current, history)) {
+      oldHistoryState.current = history;
+      wait();
+    }
+  }, [history, wait]);
 
   function renderHistory(): JSX.Element[] {
     let currentState = Object.values(dialogueStates)
@@ -136,13 +151,12 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
                   transition.getEntity(),
                 ),
               );
-              wait();
             }}
           />
         ))}
         {waiting && choices.length > 0 && (
           <WaitingLoader
-            color={themeVar.Common.colors.ActiveColor}
+            color={themeVar.Common.colors.HeaderColor}
             background={themeVar.Common.colors.HeaderColor}
           />
         )}

@@ -31,7 +31,7 @@ type StoreType<S, A extends AnyAction> = Store<Readonly<S>, AnyAction> & {
  */
 export function useAnyStore<R, S, A extends AnyAction>(
   selector: (state: S) => R,
-  shouldUpdate: (oldValue: R, newValue: R) => boolean = refDifferent,
+  shouldUpdate: (oldValue: R, newValue: R) => boolean = shallowDifferent,
   store: StoreType<S, A>,
 ) {
   const [selected, setSelected] = React.useState(() =>

@@ -9,7 +9,7 @@ import {
   WegasComponentProps,
   ItemContainer,
 } from './EditableComponent';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
+import { deepDifferent, shallowDifferent } from '../../Hooks/storeHookFactory';
 import { useStore } from '../../../data/store';
 import { cloneDeep, pick } from 'lodash-es';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
@@ -113,7 +113,10 @@ export function PageDeserializer({
       s[(wegasComponent && wegasComponent.type) || ''],
     [wegasComponent],
   );
-  const component = usePageComponentStore(componentSeletor) as PageComponent;
+  const component = usePageComponentStore(
+    componentSeletor,
+    shallowDifferent,
+  ) as PageComponent;
 
   const options = pick(restProps, defaultOptions);
 
