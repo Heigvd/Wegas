@@ -5,13 +5,13 @@ import { FileBrowserNode, FileBrowserNodeProps } from './FileBrowserNode';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { StoreDispatch, useStore } from '../../../data/store';
 import { grow } from '../../../css/classes';
-import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { MessageString } from '../MessageString';
 import { css } from 'emotion';
 import { mainLayoutId } from '../Layout';
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
 import { focusTab } from '../LinearTabLayout/LinearLayout';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { State } from '../../../data/Reducer/reducers';
 // import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const fileBrowserStyle = css({
@@ -97,14 +97,16 @@ export function FileBrowser({
   );
 }
 
-export default function FileBrowserWithMeta() {
-  const globalFile = useStore(
-    state =>
-      state.global.editing &&
-      state.global.editing.type === 'File' &&
-      state.global.editing.entity,
-    shallowDifferent,
+function globalFileSelector(state: State) {
+  return (
+    state.global.editing &&
+    state.global.editing.type === 'File' &&
+    state.global.editing.entity
   );
+}
+
+export default function FileBrowserWithMeta() {
+  const globalFile = useStore(globalFileSelector);
 
   return (
     <ComponentWithForm>

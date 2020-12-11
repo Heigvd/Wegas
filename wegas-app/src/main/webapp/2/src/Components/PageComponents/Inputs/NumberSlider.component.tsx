@@ -9,20 +9,19 @@ import {
   DisplayMode,
   displayModes,
 } from '../../Inputs/Number/NumberSlider';
-import { store, useStore } from '../../../data/store';
+import { store } from '../../../data/store';
 import { Actions } from '../../../data';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, SNumberDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { classStyleIdShema } from '../tools/options';
-import { instantiate } from '../../../data/scriptable';
-import { Player } from '../../../data/selectors';
 import { useScript } from '../../Hooks/useScript';
 import {
   OnVariableChange,
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
+import { useCurrentPlayer } from '../../../data/selectors/Player';
 
 interface PlayerNumberSliderProps extends WegasComponentProps {
   /**
@@ -55,7 +54,7 @@ function PlayerNumberSlider({
   ...restProps
 }: PlayerNumberSliderProps) {
   const number = useScript<SNumberDescriptor>(script, context);
-  const player = instantiate(useStore(Player.selectCurrent));
+  const player = useCurrentPlayer();
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
   return number == null ? (

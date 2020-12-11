@@ -6,6 +6,7 @@ import { WegasComponentItemProps } from '../PageComponents/tools/EditableCompone
 import { themeVar } from '../Style/ThemeVars';
 import { HashListChoices } from '../../Editor/Components/FormView/HashList';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
+import { wlog } from '../../Helper/wegaslog';
 
 const SPLITTER_SELECTOR = 'fonkyflex-splitter';
 const CONTENT_SELECTOR = 'fonkyflex-content';
@@ -103,7 +104,6 @@ export function FonkyFlexContainer({
   const manageDragStart = React.useCallback(
     (e: DragEvent) => {
       e.stopPropagation();
-
       const { target } = e;
       const divTarget = target as HTMLDivElement;
 
@@ -131,10 +131,12 @@ export function FonkyFlexContainer({
   const manageDrag = React.useCallback(
     (e: DragEvent) => {
       e.stopPropagation();
-
       const { clientX, clientY } = e;
 
-      const target = e.target;
+      const target = e.target as HTMLDivElement;
+
+      wlog(target.getBoundingClientRect());
+
       const splitterIndex = flexChildren.current.findIndex(c => c === target);
 
       const leftContent = flexChildren.current[splitterIndex - 1];

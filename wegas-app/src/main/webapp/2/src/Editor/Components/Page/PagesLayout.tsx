@@ -45,6 +45,7 @@ import { PAGEEDITOR_COMPONENT_TYPE, isDnDComponent } from './ComponentPalette';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { State } from '../../../data/Reducer/reducers';
 
 const bulletCSS = {
   width: '1em',
@@ -522,7 +523,10 @@ function WegasComponentNode({
   selectedComponentPath,
   componentControls,
 }: WegasComponentNodeProps) {
-  const page = useStore(s => s.pages[pageId], deepDifferent);
+  const pageSelector = React.useCallback((s: State) => s.pages[pageId], [
+    pageId,
+  ]);
+  const page = useStore(pageSelector);
   const id: ComponentNodeId = { pageId, page, componentPath };
   const parentProps = getParentProps();
   let computedComponent: WegasComponent;
@@ -747,12 +751,16 @@ function PageIndexItemNode({
   componentControls,
 }: PagesLayoutNodeProps): JSX.Element | null {
   const { selectedPageId, editedPath } = React.useContext(pageEditorCTX);
-  const { page } = useStore(s => {
-    if (isPageItem(indexItem)) {
-      return { page: s.pages[indexItem.id!] };
-    }
-    return {};
-  }, deepDifferent);
+  const pageSelector = React.useCallback(
+    (s: State) => {
+      if (isPageItem(indexItem)) {
+        return s.pages[indexItem.id!];
+      }
+      return undefined;
+    },
+    [indexItem],
+  );
+  const page = useStore(pageSelector);
   const newPath = [
     ...path,
     isPageItem(indexItem) ? indexItem.id! : indexItem.name,

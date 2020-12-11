@@ -13,12 +13,12 @@ import {
   itemCenter,
 } from '../../../css/classes';
 import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReducer';
-import { instantiate } from '../../../data/scriptable';
-import { Player } from '../../../data/selectors';
-import { store, useStore } from '../../../data/store';
+import { useCurrentPlayer } from '../../../data/selectors/Player';
+import { store } from '../../../data/store';
 import { themeVar } from '../../Style/ThemeVars';
 import { DialogueChoice } from './DialogueChoice';
 import { DialogueEntry } from './DialogueEntry';
+import { WaitingLoader } from './WaitingLoader';
 
 const dialogEntryStyle = css({
   padding: '5px',
@@ -29,6 +29,7 @@ const dialogEntryStyle = css({
 });
 
 const choicePannelStyle = css({
+  position: 'relative',
   backgroundColor: themeVar.Common.colors.HeaderColor,
   padding: '5px',
 });
@@ -42,10 +43,21 @@ interface DialogueDisplayProps {
 }
 
 export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
-  const player = instantiate(useStore(Player.selectCurrent));
+  const player = useCurrentPlayer();
+  const [waiting, setWaiting] = React.useState(false);
   const dialogueInstance = dialogue.getInstance(player);
   const history = dialogueInstance.getTransitionHistory();
   const dialogueStates = dialogue.getStates();
+
+  const wait = React.useCallback(() => {
+    setWaiting(true);
+    const timer = setTimeout(() => {
+      setWaiting(false);
+    }, 1500);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
 
   function renderHistory(): JSX.Element[] {
     let currentState = Object.values(dialogueStates)
@@ -61,7 +73,7 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
     const dialogueComponents: JSX.Element[] = [
       <DialogueEntry key="STATE0" text={currentState.getText()} />,
     ];
-    history.map(transitionId => {
+    history.map((transitionId, i, arr) => {
       const transition = currentState
         .getTransitions()
         .find(transition => transition.getId() === transitionId) as
@@ -83,12 +95,17 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
           <DialogueEntry
             key={`STATE${transitionId}`}
             text={currentState.getText()}
+            waiting={i === arr.length - 1 && waiting}
           />,
         );
       }
     });
     return dialogueComponents;
   }
+
+  const choices = dialogueStates[
+    dialogueInstance.getCurrentStateId()
+  ].getTransitions();
 
   return (
     <div
@@ -108,22 +125,27 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
           choicePannelStyle,
         )}
       >
-        {dialogueStates[dialogueInstance.getCurrentStateId()]
-          .getTransitions()
-          .map((transition: SDialogueTransition) => (
-            <DialogueChoice
-              key={`CHOICE${transition.getId()}`}
-              label={transition.getActionText()}
-              onClick={() => {
-                store.dispatch(
-                  applyFSMTransition(
-                    dialogue.getEntity(),
-                    transition.getEntity(),
-                  ),
-                );
-              }}
-            />
-          ))}
+        {choices.map((transition: SDialogueTransition) => (
+          <DialogueChoice
+            key={`CHOICE${transition.getId()}`}
+            label={transition.getActionText()}
+            onClick={() => {
+              store.dispatch(
+                applyFSMTransition(
+                  dialogue.getEntity(),
+                  transition.getEntity(),
+                ),
+              );
+              wait();
+            }}
+          />
+        ))}
+        {waiting && choices.length > 0 && (
+          <WaitingLoader
+            color={themeVar.Common.colors.ActiveColor}
+            background={themeVar.Common.colors.HeaderColor}
+          />
+        )}
       </div>
     </div>
   );

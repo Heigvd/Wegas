@@ -26,7 +26,6 @@ import { useAsync } from '../../../Components/Hooks/useAsync';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { Edition } from '../../../data/Reducer/globalState';
-import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { mainLayoutId } from '../Layout';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import {
@@ -44,6 +43,7 @@ import {
   IResult,
 } from 'wegas-ts-api';
 import { focusTab } from '../LinearTabLayout/LinearLayout';
+import { State } from '../../../data/Reducer/reducers';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -232,33 +232,42 @@ interface CTreeProps {
 export function CTree(
   props: Omit<CTreeProps & TreeProps, 'variables'>,
 ): JSX.Element | null {
-  const { searching, editing, variable, match } = useStore(state => {
-    let variable:
-      | undefined
-      | IVariableDescriptor
-      | IResult
-      | IEvaluationDescriptorContainer = VariableDescriptor.select(
-      props.variableId,
-    );
-    if (Array.isArray(props.subPath) && props.subPath.length > 0) {
-      variable = get(variable, props.subPath) as
+  const infoSelector = React.useCallback(
+    (state: State) => {
+      let variable:
+        | undefined
         | IVariableDescriptor
         | IResult
-        | IEvaluationDescriptorContainer;
-    }
+        | IEvaluationDescriptorContainer = VariableDescriptor.select(
+        props.variableId,
+      );
+      if (Array.isArray(props.subPath) && props.subPath.length > 0) {
+        variable = get(variable, props.subPath) as
+          | IVariableDescriptor
+          | IResult
+          | IEvaluationDescriptorContainer;
+      }
 
-    return {
-      variable: variable,
-      match: isMatch(props.variableId, props.search || ''),
-      editing: isEditing(props.variableId, props.subPath, state.global.editing),
-      searching:
-        (variable &&
-          entityIs(variable, 'VariableDescriptor') &&
-          state.global.search.type === 'GLOBAL' &&
-          state.global.search.value.includes(editorLabel(variable))) ||
-        false,
-    };
-  }, shallowDifferent);
+      return {
+        variable: variable,
+        match: isMatch(props.variableId, props.search || ''),
+        editing: isEditing(
+          props.variableId,
+          props.subPath,
+          state.global.editing,
+        ),
+        searching:
+          (variable &&
+            entityIs(variable, 'VariableDescriptor') &&
+            state.global.search.type === 'GLOBAL' &&
+            state.global.search.value.includes(editorLabel(variable))) ||
+          false,
+      };
+    },
+    [props.search, props.subPath, props.variableId],
+  );
+
+  const { searching, editing, variable, match } = useStore(infoSelector);
 
   const localEditing = isEditing(
     props.variableId,

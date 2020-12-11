@@ -12,6 +12,7 @@ export const inputStyleCSS: ObjectInterpolation<undefined> = {
   borderStyle: 'inset',
   borderColor: themeVar.Common.colors.BorderColor,
   borderRadius: themeVar.Common.dimensions.BorderRadius,
+  backgroundColor: themeVar.Common.colors.BackgroundColor,
   '::placeholder': {
     fontStyle: 'italic',
   },

@@ -20,7 +20,6 @@ import {
 } from './PagesLayout';
 import { store, useStore } from '../../../data/store';
 import { Actions } from '../../../data';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { flex, grow, expandBoth } from '../../../css/classes';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { mergeDeep } from '../../../Helper/tools';
@@ -29,6 +28,7 @@ import {
   WegasClassNameAndScriptableTypes,
   IVariableDescriptor,
 } from 'wegas-ts-api';
+import { State } from '../../../data/Reducer/reducers';
 
 const toggleButtonStyle = css({
   display: 'flex',
@@ -346,9 +346,10 @@ export const PAGE_EDITOR_LAYOUT_ID = 'PageEditorLayout';
 export default function PageEditor() {
   const handles = React.useRef({});
   const focusTab = React.useRef<(tabId: string, layoutId: string) => void>();
-  const [{ selectedPageId, editedPath }, setPageEditorState] = React.useState<
-    PageEditorState
-  >({
+  const [
+    { selectedPageId, editedPath },
+    setPageEditorState,
+  ] = React.useState<PageEditorState>({
     selectedPageId: store.getState().pages.index
       ? store.getState().pages.index.defaultPageId
       : undefined,
@@ -359,14 +360,15 @@ export default function PageEditor() {
   const [showControls, setShowControls] = React.useState(true);
 
   const components = usePageComponentStore(s => s);
-  const { selectedPage, defaultPageId, loading } = useStore(
-    s => ({
+  const pageInfoSelector = React.useCallback(
+    (s: State) => ({
       selectedPage: selectedPageId ? s.pages[selectedPageId] : undefined,
       defaultPageId: s.pages.index ? s.pages.index.defaultPageId : undefined,
       loading: selectedPageId == null || s.pages.index == null,
     }),
-    deepDifferent,
+    [selectedPageId],
   );
+  const { selectedPage, defaultPageId, loading } = useStore(pageInfoSelector);
 
   React.useEffect(() => {
     if (selectedPageId == null && defaultPageId != null) {

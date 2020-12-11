@@ -8,11 +8,9 @@ import { StandardGauge } from '../../Outputs/StandardGauge';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, SNumberDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { instantiate } from '../../../data/scriptable';
-import { Player } from '../../../data/selectors';
-import { useStore } from '../../../data/store';
 import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
+import { useCurrentPlayer } from '../../../data/selectors/Player';
 
 interface PlayerGaugeProps extends WegasComponentProps {
   /**
@@ -39,7 +37,7 @@ function PlayerGauge({
   context,
 }: PlayerGaugeProps) {
   const number = useScript<SNumberDescriptor>(script, context);
-  const player = instantiate(useStore(Player.selectCurrent));
+  const player = useCurrentPlayer();
 
   return number == null ? (
     <pre className={className} style={style} id={id}>

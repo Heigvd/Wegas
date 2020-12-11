@@ -24,6 +24,9 @@ import {
   IReply,
   IDialogueDescriptor,
   IDialogueTransition,
+  IWhQuestionDescriptor,
+  IQuestionInstance,
+  IWhQuestionInstance,
 } from 'wegas-ts-api';
 import { FSM_API } from '../../API/FSM.api';
 
@@ -105,9 +108,8 @@ export function runScript(
 }
 
 // Question specific actions
-
-export function readChoice(
-  choice: IChoiceDescriptor,
+export function read(
+  choice: IChoiceDescriptor | IQuestionDescriptor | IWhQuestionDescriptor,
   player?: IPlayer,
 ): ThunkResult {
   return function (dispatch, getState) {
@@ -116,11 +118,7 @@ export function readChoice(
     if (p.id == null) {
       throw Error('Missing persisted player');
     }
-    return QuestionDescriptorAPI.readChoice(
-      gameModelId,
-      p.id,
-      choice,
-    ).then(res =>
+    return QuestionDescriptorAPI.read(gameModelId, p.id, choice).then(res =>
       dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
@@ -204,13 +202,15 @@ export function toggleReply(
 }
 
 export function validateQuestion(
-  question: IQuestionDescriptor,
+  question: Readonly<IQuestionDescriptor | IWhQuestionDescriptor>,
   player?: IPlayer,
 ): ThunkResult {
   return function (dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
-    const instance = getInstance(question);
+    const instance = getInstance<IQuestionInstance | IWhQuestionInstance>(
+      question,
+    );
     if (p.id == null || instance == null) {
       throw Error('Missing persisted player');
     }

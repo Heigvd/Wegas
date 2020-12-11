@@ -6,13 +6,11 @@ import {
 import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { useScript } from '../../Hooks/useScript';
-import { useStore } from '../../../data/store';
 import { IScript, SFSMDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { StateMachineEditor } from '../../../Editor/Components/StateMachineEditor';
-import { Player } from '../../../data/selectors';
 import { ComponentWithForm } from '../../../Editor/Components/FormView/ComponentWithForm';
-import { instantiate } from '../../../data/scriptable';
+import { useCurrentPlayer } from '../../../data/selectors/Player';
 
 interface PlayerStateMachineProps extends WegasComponentProps {
   stateMachine?: IScript;
@@ -27,7 +25,7 @@ export default function PlayerStateMachine({
   style,
   id,
 }: PlayerStateMachineProps) {
-  const player = instantiate(useStore(Player.selectCurrent));
+  const player = useCurrentPlayer();
   const titleText = useScript<string>(title, context);
   const FSM = useScript<SFSMDescriptor>(stateMachine, context);
   const descriptor = FSM?.getEntity();

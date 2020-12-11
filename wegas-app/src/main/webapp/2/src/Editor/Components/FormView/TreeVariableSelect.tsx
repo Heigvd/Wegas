@@ -252,7 +252,7 @@ export type TreeVariableSelectProps = TreeVSelectProps<string> & {
 export function TreeVariableSelect(
   props: TreeVariableSelectProps,
 ): JSX.Element {
-  const items = useStore(() => GameModel.selectCurrent().itemsIds);
+  const items = useStore(GameModel.selectCurrent).itemsIds;
 
   const varItems = genVarItems(
     items,

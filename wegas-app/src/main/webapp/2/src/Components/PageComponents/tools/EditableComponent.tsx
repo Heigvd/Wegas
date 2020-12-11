@@ -43,6 +43,7 @@ import { parseAndRunClientScript } from '../../Hooks/useScript';
 import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
 import { IScript } from 'wegas-ts-api';
 import { TumbleLoader } from '../../Loader';
+import { wlog } from '../../../Helper/wegaslog';
 // import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 
 const childDropZoneIntoCSS = {
@@ -113,6 +114,7 @@ export function onComponentClick(
   stopPropagation?: boolean,
   confirmClick?: string,
 ) {
+  wlog('BLIP');
   const onClickActions = Object.entries(
     pick(
       componentProps,

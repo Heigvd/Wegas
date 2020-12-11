@@ -4,7 +4,7 @@ import {
   pageComponentFactory,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { store, useStore } from '../../../data/store';
+import { store } from '../../../data/store';
 import { Actions } from '../../../data';
 import { Toggler } from '../../Inputs/Boolean/Toggler';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
@@ -12,13 +12,12 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, SBooleanDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
-import { instantiate } from '../../../data/scriptable';
-import { Player } from '../../../data/selectors';
 import {
   OnVariableChange,
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
+import { useCurrentPlayer } from '../../../data/selectors/Player';
 
 interface PlayerBooleanProps extends WegasComponentProps {
   /**
@@ -57,7 +56,7 @@ function PlayerBoolean({
   onVariableChange,
 }: PlayerBooleanProps) {
   const bool = useScript<SBooleanDescriptor>(script, context);
-  const player = instantiate(useStore(Player.selectCurrent));
+  const player = useCurrentPlayer();
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
   const textLabel = useScript<string>(label, context);

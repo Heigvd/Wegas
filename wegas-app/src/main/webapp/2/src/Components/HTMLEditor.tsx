@@ -47,14 +47,14 @@ const editorStyle = css({
 
 type CallbackFN = (url: string) => void;
 
-interface StyleButton {
-  name: string;
-  block?: 'span' | 'div';
-  className: string;
-  icon?: TinyMCEIcons;
-  text?: string;
-  tooltip?: string;
-}
+// interface StyleButton {
+//   name: string;
+//   block?: 'span' | 'div';
+//   className: string;
+//   icon?: TinyMCEIcons;
+//   text?: string;
+//   tooltip?: string;
+// }
 
 interface ActionButton {
   name: string;
@@ -91,6 +91,15 @@ interface HTMLEditorProps extends ClassStyleId {
    * delay - timeout to avoid frequent onChange updates
    */
   delay?: number;
+  /**
+   * disabled - disables the editor
+   */
+  disabled?: boolean;
+  /**
+   * inline - enables the editor after a click on it
+   * @default true
+   */
+  inline?: boolean;
 }
 
 let HTMLEditorID = 0;
@@ -102,7 +111,9 @@ export default function HTMLEditor({
   className,
   style,
   id,
-  delay = 1000,
+  delay = 100,
+  disabled,
+  inline = true,
 }: HTMLEditorProps) {
   const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>(
     {},
@@ -114,13 +125,13 @@ export default function HTMLEditor({
 
   const config = React.useMemo(
     () => (toolBarContainerId: string) => {
-      const extraStyleButton: StyleButton[] = [
-        {
-          name: 'testbutton',
-          text: 'test',
-          className: 'testclass',
-        },
-      ];
+      // const extraStyleButton: StyleButton[] = [
+      //   {
+      //     name: 'testbutton',
+      //     text: 'test',
+      //     className: 'testclass',
+      //   },
+      // ];
       const extraActionButton: ActionButton[] = [
         {
           name: 'addDivImage',
@@ -139,7 +150,7 @@ export default function HTMLEditor({
 
       return {
         theme: 'silver',
-        inline: true,
+        inline: inline,
         browser_spellcheck: true,
         plugins: [
           `${onSave ? 'save' : ''} autolink link image lists code media table`,
@@ -148,7 +159,7 @@ export default function HTMLEditor({
         toolbar: `${
           onSave ? 'save' : ''
         } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link | ${[
-          ...extraStyleButton,
+          // ...extraStyleButton,
           ...extraActionButton,
         ]
           .map(btn => btn.name)
@@ -188,62 +199,57 @@ export default function HTMLEditor({
           {
             title: 'Wegas styles',
             items: classes.map(c => ({ title: c, block: 'div', classes: c })),
-            // [
-            //   { title: 'primary', block: 'div', classes: primary },
-            //   { title: 'primaryDark', block: 'div', classes: primaryDark },
-            //   { title: 'primaryLight', block: 'div', classes: primaryLight },
-            // ],
           },
-          {
-            title: 'User styles',
-            items: extraStyleButton.map(btn => ({
-              title: btn.name,
-              block: btn.block ? btn.block : 'span',
-              classes: btn.className,
-            })),
-          },
+          // {
+          //   title: 'User styles',
+          //   items: extraStyleButton.map(btn => ({
+          //     title: btn.name,
+          //     block: btn.block ? btn.block : 'span',
+          //     classes: btn.className,
+          //   })),
+          // },
         ],
         // forced_root_block: '',
         setup: function (editor: TinyMCEEditor) {
-          let formatter: EditorFormatter | undefined;
-          editor.on('init', () => {
-            formatter = editor.formatter;
-          });
+          // let formatter: EditorFormatter | undefined;
+          // editor.on('init', () => {
+          //   formatter = editor.formatter;
+          // });
           // editor.on('blur', () => {
           //   // TODO : find a way to close the expended toolbar to avoid bug
           //   // editor.execCommand('commandName');
           //   // wlog(e);
           //   // debugger;
           // });
-          extraStyleButton.forEach(btn => {
-            editor.ui.registry.addToggleButton(btn.name, {
-              text: btn.text,
-              icon: btn.icon,
-              tooltip: btn.tooltip,
-              onAction: () => {
-                formatter && formatter.toggle(`custom-${btn.name}`);
-                editor.fire('change', {
-                  event: {
-                    target: {
-                      getContent: editor.getContent,
-                    },
-                  },
-                });
-              },
-              onSetup: (buttonApi: TinyMCEToggleButtonAPI) => {
-                // Getting the class of the current token to define button state
-                const editorEventCallback = (
-                  eventApi: TinyMCENodeChangeEvent,
-                ) => {
-                  buttonApi.setActive(
-                    eventApi.element.className.includes(btn.className),
-                  );
-                };
-                editor.on('nodechange', editorEventCallback);
-                return () => editor.off('nodechange', editorEventCallback);
-              },
-            });
-          });
+          // extraStyleButton.forEach(btn => {
+          //   editor.ui.registry.addToggleButton(btn.name, {
+          //     text: btn.text,
+          //     icon: btn.icon,
+          //     tooltip: btn.tooltip,
+          //     onAction: () => {
+          //       formatter && formatter.toggle(`custom-${btn.name}`);
+          //       editor.fire('change', {
+          //         event: {
+          //           target: {
+          //             getContent: editor.getContent,
+          //           },
+          //         },
+          //       });
+          //     },
+          //     onSetup: (buttonApi: TinyMCEToggleButtonAPI) => {
+          //       // Getting the class of the current token to define button state
+          //       const editorEventCallback = (
+          //         eventApi: TinyMCENodeChangeEvent,
+          //       ) => {
+          //         buttonApi.setActive(
+          //           eventApi.element.className.includes(btn.className),
+          //         );
+          //       };
+          //       editor.on('nodechange', editorEventCallback);
+          //       return () => editor.off('nodechange', editorEventCallback);
+          //     },
+          //   });
+          // });
 
           extraActionButton.forEach(btn => {
             editor.ui.registry.addButton(btn.name, {
@@ -256,7 +262,7 @@ export default function HTMLEditor({
         },
       };
     },
-    [classes, onSave],
+    [classes, onSave, inline],
   );
 
   React.useEffect(() => {
@@ -286,7 +292,7 @@ export default function HTMLEditor({
     >
       <div style={{ visibility: fileBrowsing.fn ? 'hidden' : 'visible' }}>
         <div id={toolBarId} className={toolbar}>
-          {!editorFocus && (
+          {inline && !editorFocus && (
             <img
               src={
                 require(onSave
@@ -300,10 +306,13 @@ export default function HTMLEditor({
         <TinyEditor
           value={value}
           init={config(toolBarId)}
-          onInit={editor => (HTMLEditor.current = editor.target)}
+          onInit={editor => {
+            HTMLEditor.current = editor.target;
+          }}
           onEditorChange={debouncedOnChange}
           onFocus={() => setEditorFocus(true)}
           onBlur={() => setEditorFocus(false)}
+          disabled={disabled}
           // textareaName={editorStyle}
         />
       </div>

@@ -1,15 +1,26 @@
 import { getInstance, getItems } from '../../methods/VariableDescriptorMethods';
-import { VariableDescriptor, Player } from '../../selectors';
+import { VariableDescriptor } from '../../selectors';
 import {
   IQuestionDescriptor,
-  IPlayer,
   IChoiceDescriptor,
   SChoiceDescriptor,
   IReply,
+  IWhQuestionDescriptor,
+  IBooleanDescriptor,
+  IBooleanInstance,
+  INumberDescriptor,
+  INumberInstance,
+  IStaticTextDescriptor,
+  IStaticTextInstance,
+  IStringDescriptor,
+  IStringInstance,
+  ITextDescriptor,
+  ITextInstance,
 } from 'wegas-ts-api';
 
 import { getScriptableInstance } from '../../methods/VariableDescriptorMethods';
 import { SQuestionDescriptor, SQuestionInstance, SPlayer } from 'wegas-ts-api';
+import { entityIs } from '../../entities';
 
 export class SQuestionDescriptorImpl extends SQuestionDescriptor {
   private getReplies(self: Readonly<SPlayer>, onlyValidated?: boolean) {
@@ -69,19 +80,38 @@ export class SQuestionDescriptorImpl extends SQuestionDescriptor {
 
 // Unmapped methods
 
-export function getChoices(qd: IQuestionDescriptor) {
-  return VariableDescriptor.select<IChoiceDescriptor>(qd.itemsIds).filter(
-    c => c != null,
-  ) as Readonly<IChoiceDescriptor>[];
-}
+export type IWhChoiceDescriptor =
+  | ITextDescriptor
+  | IStringDescriptor
+  | IStaticTextDescriptor
+  | INumberDescriptor
+  | IBooleanDescriptor;
 
-export function isUnread(qd: IQuestionDescriptor) {
-  return (self?: IPlayer) => {
-    const p = self != null ? self : Player.selectCurrent();
-    return (
-      getChoices(qd)
-        .map(cd => getInstance(cd, p))
-        .filter(ci => ci && ci.unread).length > 0
-    );
-  };
+export type IWhChoiceInstance =
+  | ITextInstance
+  | IStringInstance
+  | IStaticTextInstance
+  | INumberInstance
+  | IBooleanInstance;
+
+export function getChoices(
+  qd: IQuestionDescriptor,
+): Readonly<IChoiceDescriptor>[];
+
+export function getChoices(
+  qd: IWhQuestionDescriptor,
+): Readonly<IWhChoiceDescriptor>[];
+
+export function getChoices(
+  qd: IQuestionDescriptor | IWhQuestionDescriptor,
+): Readonly<IChoiceDescriptor>[] | Readonly<IWhChoiceDescriptor>[] {
+  if (entityIs(qd, 'QuestionDescriptor')) {
+    return VariableDescriptor.select<IChoiceDescriptor>(qd.itemsIds).filter(
+      c => c != null,
+    ) as Readonly<IChoiceDescriptor>[];
+  } else {
+    return VariableDescriptor.select<IWhChoiceDescriptor>(qd.itemsIds).filter(
+      c => c != null,
+    ) as Readonly<IWhChoiceDescriptor>[];
+  }
 }

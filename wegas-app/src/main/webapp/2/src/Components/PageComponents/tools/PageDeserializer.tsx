@@ -1,5 +1,9 @@
 import * as React from 'react';
-import { PageComponent, usePageComponentStore } from './componentFactory';
+import {
+  PageComponent,
+  PageComponentsState,
+  usePageComponentStore,
+} from './componentFactory';
 import {
   ComponentContainer,
   WegasComponentProps,
@@ -15,6 +19,7 @@ import {
   OptionsState,
 } from './OptionsComponent';
 import { classNameOrEmpty } from '../../../Helper/className';
+import { State } from '../../../data/Reducer/reducers';
 
 function getComponentFromPath(page: WegasComponent, path: number[]) {
   const newPath = [...path];
@@ -58,7 +63,7 @@ interface PageDeserializerProps {
   context?: {
     [name: string]: unknown;
   };
-  Container: ItemContainer;
+  Container?: ItemContainer;
   containerPropsKeys?: string[];
   dropzones: {
     side?: boolean;
@@ -81,25 +86,34 @@ export function PageDeserializer({
   const realPath = path ? path : [];
 
   const { editMode } = React.useContext(pageCTX);
-  const wegasComponent = useStore(s => {
-    if (!pageId) {
-      return undefined;
-    }
 
-    const page = s.pages[pageId];
-    if (!page) {
-      return undefined;
-    }
+  const wegasComponentSelector = React.useCallback(
+    (s: State) => {
+      if (!pageId) {
+        return undefined;
+      }
 
-    return getComponentFromPath(page, realPath);
-  }, deepDifferent);
+      const page = s.pages[pageId];
+      if (!page) {
+        return undefined;
+      }
+
+      return getComponentFromPath(page, realPath);
+    },
+    [pageId, realPath],
+  );
+
+  const wegasComponent = useStore(wegasComponentSelector, deepDifferent);
 
   const { children, ...restProps } =
     (wegasComponent && wegasComponent.props) || {};
-  const component = usePageComponentStore(
-    s => s[(wegasComponent && wegasComponent.type) || ''],
-    deepDifferent,
-  ) as PageComponent;
+
+  const componentSeletor = React.useCallback(
+    (s: PageComponentsState) =>
+      s[(wegasComponent && wegasComponent.type) || ''],
+    [wegasComponent],
+  );
+  const component = usePageComponentStore(componentSeletor) as PageComponent;
 
   const options = pick(restProps, defaultOptions);
 
@@ -125,8 +139,9 @@ export function PageDeserializer({
           setUpgradesState={setOptionsState}
         />
       )}
-      {container?.noContainer &&
-      container?.noContainer(wegasComponent.props as WegasComponentProps) ? (
+      {Container == null ||
+      (container?.noContainer &&
+        container?.noContainer(wegasComponent.props as WegasComponentProps)) ? (
         <Children
           {...wegasComponent?.props}
           wegasChildren={children}

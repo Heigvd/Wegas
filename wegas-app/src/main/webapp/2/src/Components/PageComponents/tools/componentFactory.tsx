@@ -72,7 +72,7 @@ export interface PageComponent<
   ) => Omit<P, keyof PageComponentProps>;
 }
 
-interface PageComponentsState {
+export interface PageComponentsState {
   [name: string]: PageComponent;
 }
 

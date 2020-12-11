@@ -6,6 +6,7 @@ import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { themeCTX } from '../../Style/Theme';
 import { WegasComponentOptions } from './EditableComponent';
 import { useStore } from '../../../data/store';
+import { State } from '../../../data/Reducer/reducers';
 
 interface OptionProps {
   tooltip: WegasComponentOptions['tooltip'];
@@ -73,7 +74,11 @@ export function ComponentOptionsManager({
   const disabled = useScript<boolean>(disableIf, context);
   const hidden = useScript<boolean>(hideIf, context);
   const readOnly = useScript<boolean>(readOnlyIf, context);
-  const locked = useStore(s => lock != null && s.global.locks[lock] === true);
+  const lockedSelector = React.useCallback(
+    (s: State) => lock != null && s.global.locks[lock] === true,
+    [lock],
+  );
+  const locked = useStore(lockedSelector);
 
   const infoBulletProps = useComputeUnreadCount(unreadCount) || infoBullet;
 

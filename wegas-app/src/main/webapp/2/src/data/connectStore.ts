@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Store } from 'redux';
 import {
   useAnyStore,
-  shallowDifferent,
+  refDifferent,
 } from '../Components/Hooks/storeHookFactory';
 
 function id<T>(x: T) {
@@ -15,7 +15,7 @@ export function createStoreConnector<S extends Store>(store: S) {
 
   /**
    * Hook, connect to store. Update if the selectors returns something different, as defined by shouldUpdate.
-   * @param selector Select a specific part of the store
+   * @param selector Select a specific part of the store. Warning this must be a static function!
    * @param shouldUpdate Will update the component if this function returns true.
    * Default to ref comparing values returned from selector
    */
@@ -43,7 +43,7 @@ export function createStoreConnector<S extends Store>(store: S) {
     const {
       selector = id as (s: State) => State,
       children,
-      shouldUpdate = shallowDifferent,
+      shouldUpdate = refDifferent,
     } = props;
     const state = useStore(selector, shouldUpdate);
     return children({ dispatch: getDispatch(), state });

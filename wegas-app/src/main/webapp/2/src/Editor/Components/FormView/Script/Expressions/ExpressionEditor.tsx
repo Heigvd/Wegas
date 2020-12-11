@@ -36,6 +36,7 @@ import { CallExpression, StringLiteral, emptyStatement } from '@babel/types';
 import { themeVar } from '../../../../../Components/Style/ThemeVars';
 import { Button } from '../../../../../Components/Inputs/Buttons/Button';
 import { EmbeddedSrcEditor } from '../../../ScriptEditors/EmbeddedSrcEditor';
+import { State } from '../../../../../data/Reducer/reducers';
 
 const expressionEditorStyle = css({
   backgroundColor: themeVar.Common.colors.HeaderColor,
@@ -50,6 +51,13 @@ interface ExpressionEditorState {
   attributes?: PartialAttributes;
   schema?: WyiswygExpressionSchema;
   statement?: Statement;
+}
+
+function variableIdsSelector(s: State) {
+  return Object.keys(s.variableDescriptors)
+    .map(Number)
+    .filter(k => !isNaN(k))
+    .filter(k => GameModel.selectCurrent().itemsIds.includes(k));
 }
 
 export interface ExpressionEditorProps extends ScriptView {
@@ -75,14 +83,7 @@ export function ExpressionEditor({
   // Getting variables id
   // First it was done with GameModel.selectCurrent().itemsIds but this array is always full even if the real object are not loaded yet
   // The new way to get itemIds goes directy into the descriptors state and filter to get only the first layer of itemIds
-  const variableIds = useStore(
-    s =>
-      Object.keys(s.variableDescriptors)
-        .map(Number)
-        .filter(k => !isNaN(k))
-        .filter(k => GameModel.selectCurrent().itemsIds.includes(k)),
-    deepDifferent,
-  );
+  const variableIds = useStore(variableIdsSelector);
 
   React.useEffect(
     () => {
