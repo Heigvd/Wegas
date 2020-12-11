@@ -115,7 +115,7 @@ export function NumberSlider({
     [onChange, readOnly],
   );
 
-  const Info = () => {
+  const Info = React.useMemo(() => {
     let display;
     if (displayValues == null) {
       display = null;
@@ -138,8 +138,11 @@ export function NumberSlider({
         case 'NumberInput':
           display = (
             <NumberInput
-              value={value}
-              onChange={v => onSliderChange(v, 'NumberInput')}
+              value={internalValue}
+              onChange={v => {
+                onSliderChange(Math.min(Math.max(v, min), max), 'NumberInput');
+              }}
+              disabled={disabled}
             />
           );
           break;
@@ -152,13 +155,13 @@ export function NumberSlider({
       display = displayValues(internalValue, value);
     }
     return <div className={valueDisplayStyle}>{display}</div>;
-  };
+  }, [disabled, displayValues, internalValue, max, min, onSliderChange, value]);
 
   return (
     <div id={id} className={textCenter + classNameOrEmpty(className)}>
-      {label && <Value value={label} />}
+      {typeof label === 'string' ? <Value value={label} /> : label}
       <CheckMinMax min={min} max={max} value={internalValue} />
-      <Info />
+      {Info}
       <Slider
         styles={{
           track: desinterpolate(rightPartStyle),

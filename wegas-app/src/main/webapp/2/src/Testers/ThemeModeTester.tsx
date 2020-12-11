@@ -33,7 +33,7 @@ function ThemeDiv({
   className,
   style,
 }: React.PropsWithChildren<
-  ThemeComponent & { label?: React.ReactNode } & ClassAndStyle
+  ThemeComponent & { label?: React.ReactNode } & ClassStyleId
 >) {
   const { themesState, currentContext } = React.useContext(themeCTX);
   const currentTheme =
@@ -129,7 +129,7 @@ function ThemeDivHooked({
   className,
   style,
 }: React.PropsWithChildren<
-  ThemeComponent & { label?: React.ReactNode } & ClassAndStyle
+  ThemeComponent & { label?: React.ReactNode } & ClassStyleId
 >) {
   const {
     currentModeClassName,

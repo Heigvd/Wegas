@@ -2,6 +2,7 @@ import { css, cx } from 'emotion';
 import produce from 'immer';
 import { Connection, Defaults, jsPlumbInstance } from 'jsplumb';
 import * as React from 'react';
+// import * as ReactDOMServer from 'react-dom/server';
 import { VariableDescriptor } from '../../data/selectors';
 import { StoreDispatch, useStore } from '../../data/store';
 import { entityIs } from '../../data/entities';
@@ -25,14 +26,12 @@ import {
   expandBoth,
   showOverflow,
   flexDistribute,
+  flexRow,
+  flexColumn,
 } from '../../css/classes';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
-import {
-  createTranslatableContent,
-  createTranslation,
-  translate,
-} from './FormView/translatable';
+import { createTranslatableContent, translate } from './FormView/translatable';
 import { createScript } from '../../Helper/wegasEntites';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import {
@@ -52,7 +51,6 @@ import { focusTab } from './LinearTabLayout/LinearLayout';
 import { mainLayoutId } from './Layout';
 import { SimpleInput } from '../../Components/Inputs/SimpleInput';
 import HTMLEditor from '../../Components/HTMLEditor';
-import { useOnClickOutside } from '../../Components/Hooks/useOnClickOutside';
 import { cloneDeep } from 'lodash-es';
 
 const editorStyle = css({
@@ -101,10 +99,13 @@ const searchHighlighted = css({
 });
 
 export const searchWithState = (
-  search: RState['global']['search'],
-  searched: string,
+  search?: RState['global']['search'],
+  searched?: string,
 ): boolean => {
   let value = '';
+  if (search == null || searched == null) {
+    return false;
+  }
   if (search.type === 'GLOBAL') {
     value = search.value;
   } else if (search.type === 'USAGE') {
@@ -155,14 +156,16 @@ interface StateMachineEditorProps {
   stateMachine: IFSMDescriptor | IDialogueDescriptor;
   stateMachineInstance: IFSMInstance;
   localDispatch?: StoreDispatch;
-  search: RState['global']['search'];
+  forceLocalDispatch?: boolean;
+  search?: RState['global']['search'];
+  title?: string;
 }
 interface StateMachineEditorState {
   plumb?: jsPlumbInstance;
   stateMachine: IFSMDescriptor | IDialogueDescriptor;
   oldProps: StateMachineEditorProps;
 }
-class StateMachineEditor extends React.Component<
+export class StateMachineEditor extends React.Component<
   StateMachineEditorProps,
   StateMachineEditorState
 > {
@@ -356,8 +359,11 @@ class StateMachineEditor extends React.Component<
         },
       };
     }
+
+    const localDispatch =
+      e.ctrlKey === true || this.props.forceLocalDispatch === true;
     const dispatch =
-      e.ctrlKey && this.props.localDispatch
+      this.props.localDispatch && localDispatch
         ? this.props.localDispatch
         : store.dispatch;
     dispatch(
@@ -370,7 +376,9 @@ class StateMachineEditor extends React.Component<
         },
       ),
     );
-    focusTab(mainLayoutId, 'Variable Properties');
+    if (!(this.props.localDispatch && localDispatch)) {
+      focusTab(mainLayoutId, 'Variable Properties');
+    }
   };
   editStateContent = (key: number, newState: IState | IDialogueState) => {
     const newStateMachine: IFSMDescriptor | IDialogueDescriptor = {
@@ -388,8 +396,11 @@ class StateMachineEditor extends React.Component<
   editTransition = (e: ModifierKeysEvent, path: [number, number]) => {
     const stateId = path[0];
     const transitionIndex = path[1];
+
+    const localDispatch =
+      e.ctrlKey === true || this.props.forceLocalDispatch === true;
     const dispatch =
-      e.ctrlKey && this.props.localDispatch
+      localDispatch && this.props.localDispatch
         ? this.props.localDispatch
         : store.dispatch;
     dispatch(
@@ -414,7 +425,28 @@ class StateMachineEditor extends React.Component<
         },
       ),
     );
+    if (!(this.props.localDispatch && localDispatch)) {
+      focusTab(mainLayoutId, 'Variable Properties');
+    }
   };
+
+  editTransitionContent = (
+    stateKey: number,
+    transitionKey: number,
+    newTransition: ITransition | IDialogueTransition,
+  ) => {
+    const newStateMachine = cloneDeep(this.props.stateMachine);
+    newStateMachine.states[stateKey].transitions.splice(
+      transitionKey,
+      1,
+      newTransition as ITransition & IDialogueTransition,
+    );
+
+    store.dispatch(
+      Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
+    );
+  };
+
   componentDidMount() {
     import('jsplumb').then(({ jsPlumb }) => {
       const plumb = jsPlumb.getInstance({
@@ -505,7 +537,13 @@ class StateMachineEditor extends React.Component<
     }
     return (
       <Toolbar>
-        <Toolbar.Header>{editorLabel(stateMachine)}</Toolbar.Header>
+        <Toolbar.Header>
+          {this.props.title ? (
+            <div dangerouslySetInnerHTML={{ __html: this.props.title }} />
+          ) : (
+            editorLabel(stateMachine)
+          )}
+        </Toolbar.Header>
         <Toolbar.Content className={cx(flex, relative, showOverflow)}>
           <div
             ref={n => {
@@ -533,6 +571,7 @@ class StateMachineEditor extends React.Component<
                     deleteState={this.deleteState}
                     moveState={this.moveState}
                     editTransition={this.editTransition}
+                    editTransitionContent={this.editTransitionContent}
                     search={this.props.search}
                   />
                 );
@@ -544,49 +583,51 @@ class StateMachineEditor extends React.Component<
   }
 }
 
+function globalStateSelector(s: RState) {
+  let editedVariable:
+    | IFSMDescriptor
+    | IDialogueDescriptor
+    | undefined = undefined;
+  if (
+    s.global.editing &&
+    (s.global.editing.type === 'VariableFSM' ||
+      // The following condition seems stupid, need to be tested ans documented
+      s.global.editing.type === 'Variable')
+  ) {
+    editedVariable = s.global.editing.entity as
+      | IFSMDescriptor
+      | IDialogueDescriptor;
+    const lastFSM = VariableDescriptor.select(s.global.editing.entity.id) as
+      | IFSMDescriptor
+      | IDialogueDescriptor;
+    if (shallowDifferent(editedVariable, lastFSM)) {
+      editedVariable = lastFSM;
+    }
+  }
+  const instance = editedVariable ? getInstance(editedVariable) : undefined;
+  if (
+    !entityIs(editedVariable, 'TriggerDescriptor', true) &&
+    entityIs(editedVariable, 'AbstractStateMachineDescriptor', true) &&
+    entityIs(instance, 'FSMInstance', true)
+  ) {
+    return {
+      descriptor: editedVariable,
+      instance,
+      search: s.global.search,
+    };
+  } else {
+    return {
+      variable: editedVariable,
+    };
+  }
+}
+
 export function ConnectedStateMachineEditor({
   localDispatch,
 }: {
   localDispatch?: StateMachineEditorProps['localDispatch'];
 }) {
-  const globalState = useStore(s => {
-    let editedVariable:
-      | IFSMDescriptor
-      | IDialogueDescriptor
-      | undefined = undefined;
-    if (
-      s.global.editing &&
-      (s.global.editing.type === 'VariableFSM' ||
-        // The following condition seems stupid, need to be tested ans documented
-        s.global.editing.type === 'Variable')
-    ) {
-      editedVariable = s.global.editing.entity as
-        | IFSMDescriptor
-        | IDialogueDescriptor;
-      const lastFSM = VariableDescriptor.select(s.global.editing.entity.id) as
-        | IFSMDescriptor
-        | IDialogueDescriptor;
-      if (shallowDifferent(editedVariable, lastFSM)) {
-        editedVariable = lastFSM;
-      }
-    }
-    const instance = editedVariable ? getInstance(editedVariable) : undefined;
-    if (
-      !entityIs(editedVariable, 'TriggerDescriptor', true) &&
-      entityIs(editedVariable, 'AbstractStateMachineDescriptor', true) &&
-      entityIs(instance, 'FSMInstance', true)
-    ) {
-      return {
-        descriptor: editedVariable,
-        instance,
-        search: s.global.search,
-      };
-    } else {
-      return {
-        variable: editedVariable,
-      };
-    }
-  }, shallowDifferent);
+  const globalState = useStore(globalStateSelector);
 
   if ('variable' in globalState) {
     if (globalState.variable == null) {
@@ -651,7 +692,7 @@ const sourceStyle = css({
 });
 
 const toolbarStyle = css({
-  cursor: 'initial',
+  cursor: 'pointer',
   userSelect: 'none',
   backgroundColor: 'rgba(255,255,255,0.2)',
 });
@@ -666,6 +707,70 @@ function getValue(state: IState | IDialogueState, lang: string): string {
     : state.text.translations[lang]
     ? state.text.translations[lang].translation
     : '';
+}
+
+interface ModifiableTextProps {
+  mode: 'String' | 'Text';
+  initialValue: string;
+  onValidate: (newValue: string) => void;
+}
+
+// Currently this component is not used but it will be in the future
+// @ts-ignore
+function ModifiableText({
+  mode,
+  initialValue,
+  onValidate,
+}: ModifiableTextProps) {
+  const [editingText, setEditingText] = React.useState(false);
+  const [newTextValue, setNewTextValue] = React.useState(initialValue);
+
+  React.useEffect(() => {
+    setNewTextValue(initialValue);
+  }, [initialValue]);
+
+  return editingText ? (
+    <div className={cx(flex, flexRow)}>
+      <div className={grow}>
+        {mode === 'String' ? (
+          <SimpleInput
+            placeholder="State label"
+            value={newTextValue}
+            onChange={value => setNewTextValue(String(value))}
+          />
+        ) : (
+          <HTMLEditor value={newTextValue} onChange={setNewTextValue} />
+        )}
+      </div>
+      <div className={cx(flex, flexColumn)}>
+        <Button
+          icon="times"
+          onClick={() => {
+            setEditingText(false);
+          }}
+        />
+        <Button
+          icon="check"
+          onClick={() => {
+            setEditingText(false);
+            onValidate(newTextValue);
+          }}
+        />
+      </div>
+    </div>
+  ) : newTextValue === '' ? (
+    <div onClick={() => setEditingText(true)}>
+      {`Click here to edit ${mode === 'String' ? 'label' : 'text'}`}
+    </div>
+  ) : (
+    <div
+      onClick={() => setEditingText(true)}
+      className={stateTextStyle}
+      dangerouslySetInnerHTML={{
+        __html: newTextValue,
+      }}
+    />
+  );
 }
 
 interface StateProps {
@@ -683,7 +788,12 @@ interface StateProps {
     path: [number, number],
     transition: ITransition | IDialogueTransition,
   ) => void;
-  search: RState['global']['search'];
+  editTransitionContent: (
+    stateKey: number,
+    transitionKey: number,
+    newTransition: ITransition | IDialogueTransition,
+  ) => void;
+  search?: RState['global']['search'];
 }
 
 function State({
@@ -695,30 +805,15 @@ function State({
   currentState,
   moveState,
   editState,
-  editStateContent,
-  deleteState,
+  // editStateContent,
+  // deleteState,
   editTransition,
+  editTransitionContent,
 }: StateProps) {
-  const [editingText, setEditingText] = React.useState(false);
   const { lang } = React.useContext(languagesCTX);
   const container = React.useRef<HTMLDivElement>(null);
-  const [newValue, setNewValue] = React.useState('');
 
   const textValue = getValue(state, lang);
-
-  useOnClickOutside(container, () => {
-    setEditingText(false);
-    if (entityIs(state, 'State')) {
-      editStateContent(id, {
-        ...state,
-        label: newValue,
-      });
-    } else {
-      const newState = cloneDeep(state);
-      newState.text.translations[lang] = createTranslation(lang, newValue);
-      editStateContent(id, newState);
-    }
-  });
 
   React.useEffect(() => {
     const currentContainer = container.current;
@@ -788,30 +883,41 @@ function State({
           })
         }
       >
-        <Toolbar vertical className={cx(grow, toolbarStyle)}>
+        <Toolbar
+          vertical
+          className={cx(grow, toolbarStyle)}
+          onClick={onClickEdit}
+        >
           <Toolbar.Content>
-            {editingText ? (
-              <div onClick={e => e.stopPropagation()}>
-                {entityIs(state, 'State') ? (
-                  <SimpleInput
-                    placeholder="State label"
-                    value={textValue}
-                    onChange={value => setNewValue(String(value))}
-                  />
-                ) : (
-                  <HTMLEditor value={textValue} onChange={setNewValue} />
-                )}
-              </div>
-            ) : textValue === '' ? (
-              <div onClick={() => setEditingText(true)}>
+            {/* <ModifiableText
+              initialValue={textValue}
+              mode={entityIs(state, 'State') ? 'String' : 'Text'}
+              onValidate={newValue => {
+                if (entityIs(state, 'State')) {
+                  editStateContent(id, {
+                    ...state,
+                    label: newValue,
+                  });
+                } else {
+                  const newState = cloneDeep(state);
+                  newState.text.translations[lang] = createTranslation(
+                    lang,
+                    newValue,
+                  );
+                  editStateContent(id, newState);
+                }
+              }}
+            /> */}
+
+            {textValue === '' ? (
+              <div>
                 {`Click here to edit ${
-                  entityIs(state, 'State') ? 'State label' : 'Dialog text'
+                  entityIs(state, 'State') ? 'label' : 'text'
                 }`}
               </div>
             ) : (
               <div
-                onClick={() => setEditingText(true)}
-                className={stateTextStyle}
+                // className={stateTextStyle}
                 dangerouslySetInnerHTML={{
                   __html: textValue,
                 }}
@@ -826,9 +932,9 @@ function State({
             <div className={sourceStyle}>
               <FontAwesome icon="project-diagram" />
             </div>
-            {!initialState && (
+            {/* {!initialState && (
               <Button icon="trash" onClick={() => deleteState(id)} />
-            )}
+            )} */}
           </Toolbar.Header>
         </Toolbar>
         {(state.transitions as IAbstractTransition[]).map((t, i) => (
@@ -839,6 +945,9 @@ function State({
             position={i}
             parent={id}
             editTransition={editTransition}
+            editTransitionContent={newTransition =>
+              editTransitionContent(id, i, newTransition)
+            }
             search={search}
           />
         ))}
@@ -857,7 +966,10 @@ class Transition extends React.Component<{
     path: [number, number],
     transition: ITransition | IDialogueTransition,
   ) => void;
-  search: RState['global']['search'];
+  editTransitionContent: (
+    newTransition: ITransition | IDialogueTransition,
+  ) => void;
+  search?: RState['global']['search'];
 }> {
   static contextType = languagesCTX;
 
@@ -896,12 +1008,47 @@ class Transition extends React.Component<{
   }
   buildLabel(label: string, condition: string, impact: string) {
     if (label) {
+      // return {
+      //   label: ReactDOMServer.renderToStaticMarkup(
+      //     <div>
+      //       <ModifiableText
+      //         mode={
+      //           entityIs(this.props.transition, 'Transition')
+      //             ? 'String'
+      //             : 'Text'
+      //         }
+      //         initialValue={label}
+      //         onValidate={newValue => {
+      //           if (entityIs(this.props.transition, 'Transition')) {
+      //             this.props.editTransitionContent({
+      //               ...this.props.transition,
+      //               label: newValue,
+      //             });
+      //           } else {
+      //             const newTranslatable = cloneDeep(
+      //               this.props.transition.actionText,
+      //             );
+      //             newTranslatable.translations[
+      //               this.context.lang
+      //             ].translation = newValue;
+      //             this.props.editTransitionContent({
+      //               ...this.props.transition,
+      //               actionText: newTranslatable,
+      //             });
+      //           }
+      //         }}
+      //       />
+      //     </div>,
+      //   ),
+      // };
       return label;
-    } else {
+    } else if (condition || impact) {
       return (
         (condition ? 'Condition: ' + condition + ' ' : '') +
         (impact ? 'Impact: ' + impact + ' ' : '')
       );
+    } else {
+      return 'Empty...';
     }
   }
   updateData = () => {
@@ -910,13 +1057,14 @@ class Transition extends React.Component<{
     try {
       this.connection!.setParameter('transition', this.props.transition);
       this.connection!.setParameter('transitionIndex', this.props.position);
+      // We are forced to cast setLabel as string here as stupid jsplumb types doesn't take into account that setLabel can take an object
       if (entityIs(this.props.transition, 'Transition')) {
         this.connection!.setLabel(
           this.buildLabel(
             this.props.transition.label,
             triggerCondition ? triggerCondition.content : '',
             preStateImpact ? preStateImpact.content : '',
-          ),
+          ) as string,
         );
       } else if (entityIs(this.props.transition, 'DialogueTransition')) {
         this.connection!.setLabel(
@@ -924,7 +1072,7 @@ class Transition extends React.Component<{
             translate(this.props.transition.actionText, this.context.lang),
             triggerCondition ? triggerCondition.content : '',
             preStateImpact ? preStateImpact.content : '',
-          ),
+          ) as string,
         );
       }
 

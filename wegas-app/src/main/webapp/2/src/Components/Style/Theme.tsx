@@ -18,7 +18,7 @@ import {
   ModeOther,
   ModeComponent,
 } from './ThemeVars';
-import { layoutStyle, expandBoth } from '../../css/classes';
+import { expandBoth } from '../../css/classes';
 
 export type ColorType = Exclude<React.CSSProperties['color'], undefined>;
 
@@ -383,7 +383,7 @@ export function ThemeProvider({
   const className = themeModeClass(themesState, contextName, modeName);
 
   return (
-    <div ref={themeRoot} className={cx(className, layoutStyle, expandBoth)}>
+    <div ref={themeRoot} className={cx(className, expandBoth)}>
       <Provider
         value={{
           themesState: themesState,

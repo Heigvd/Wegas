@@ -17,12 +17,18 @@ import {
 import { SVariableDescriptor, SVariableInstance, SPlayer } from 'wegas-ts-api';
 import { instantiate } from '../scriptable';
 
-export function editorLabel(vd?: {
-  label: ITranslatableContent;
-  editorTag?: string | null;
-  name?: string;
-}) {
+export function editorLabel(
+  vd?: {
+    label: ITranslatableContent;
+    editorTag?: string | null;
+    name?: string;
+  },
+  labelFirst?: boolean,
+) {
   const label = TranslatableContent.toString(vd?.label);
+  if (labelFirst && label) {
+    return label;
+  }
   if (vd && vd.editorTag && label) {
     return `${vd.editorTag} - ${label}`;
   }

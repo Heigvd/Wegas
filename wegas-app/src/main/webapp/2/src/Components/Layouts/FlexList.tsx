@@ -2,7 +2,7 @@ import * as React from 'react';
 import { HashListChoices } from '../../Editor/Components/FormView/HashList';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 import { css, cx } from 'emotion';
-import { flex, grow, layoutStyle } from '../../css/classes';
+import { flex, grow } from '../../css/classes';
 import { classNameOrEmpty } from '../../Helper/className';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
 
@@ -104,12 +104,13 @@ export const flexlayoutChoices: HashListChoices = [
 ];
 
 const flexItemDefaultStyle = css({
+  position: 'relative',
   padding: '5px',
 });
 
 export interface FlexItemProps
   extends WegasComponentItemProps,
-    FlexItemLayoutProps {
+    React.PropsWithChildren<FlexItemLayoutProps> {
   /**
    * onMouseOut - triggers when the mouse is not more over the element
    */
@@ -152,7 +153,7 @@ export const FlexItem = React.forwardRef<HTMLDivElement, FlexItemProps>(
         onDragEnd={onDragEnd}
         className={flexItemDefaultStyle + classNameOrEmpty(className)}
         style={{
-          position: 'relative',
+          // position: 'relative',
           ...layout,
           ...style,
         }}
@@ -245,7 +246,7 @@ export const flexListSchema = {
   children: schemaProps.hidden({}),
 };
 
-export interface FlexListProps extends ClassAndStyle {
+export interface FlexListProps extends ClassStyleId {
   /**
    * layout : the layout CSS properties
    */
@@ -280,12 +281,14 @@ export function FlexList({
   className,
   style,
   children,
+  id,
 }: React.PropsWithChildren<FlexListProps>) {
   const { flexDirection, flexWrap, justifyContent, alignItems, alignContent } =
     layout || {};
   return (
     <div
-      className={cx(flex, grow, layoutStyle) + classNameOrEmpty(className)}
+      id={id}
+      className={cx(flex, grow) + classNameOrEmpty(className)}
       style={{
         flexDirection,
         flexWrap,

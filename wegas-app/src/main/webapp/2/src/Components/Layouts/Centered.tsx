@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export interface CenteredProps<T> extends ClassAndStyle {
+export interface CenteredProps<T> extends ClassStyleId {
   children?: T;
 }
 

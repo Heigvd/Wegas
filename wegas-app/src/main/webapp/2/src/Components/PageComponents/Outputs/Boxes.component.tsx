@@ -9,6 +9,7 @@ import { useComponentScript } from '../../Hooks/useComponentScript';
 import { NumberBox } from '../../Inputs/Number/NumberBox';
 import { IScript, INumberDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { classStyleIdShema } from '../tools/options';
 
 interface PlayerBoxesProps extends WegasComponentProps {
   /**
@@ -34,14 +35,22 @@ function PlayerBoxes({
   label,
   hideBoxValue,
   showLabelValue,
+  className,
+  style,
+  id,
 }: PlayerBoxesProps) {
   const { content, descriptor, instance, notFound } = useComponentScript<
     INumberDescriptor
   >(script);
   return notFound ? (
-    <pre>Not found: {content}</pre>
+    <pre className={className} style={style} id={id}>
+      Not found: {content}
+    </pre>
   ) : (
     <NumberBox
+      className={className}
+      style={style}
+      id={id}
       value={instance?.value}
       minValue={1}
       maxValue={
@@ -71,6 +80,7 @@ registerComponent(
       label: schemaProps.string({ label: 'Label' }),
       hideBoxValue: schemaProps.boolean({ label: 'Hide value in boxes' }),
       showLabelValue: schemaProps.boolean({ label: 'Show value in label' }),
+      ...classStyleIdShema,
     },
     allowedVariables: ['NumberDescriptor', 'TextDescriptor'],
     getComputedPropsFromVariable: v => ({

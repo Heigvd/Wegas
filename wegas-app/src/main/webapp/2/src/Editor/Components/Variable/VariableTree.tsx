@@ -26,7 +26,6 @@ import { useAsync } from '../../../Components/Hooks/useAsync';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { Edition } from '../../../data/Reducer/globalState';
-import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { mainLayoutId } from '../Layout';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import {
@@ -44,6 +43,7 @@ import {
   IResult,
 } from 'wegas-ts-api';
 import { focusTab } from '../LinearTabLayout/LinearLayout';
+import { State } from '../../../data/Reducer/reducers';
 
 const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
   children =>
@@ -64,7 +64,7 @@ const itemsPromise = getChildren({ '@class': 'ListDescriptor' }).then(
     }),
 );
 
-interface VariableTreeTitleProps extends ClassAndStyle {
+interface VariableTreeTitleProps extends ClassStyleId {
   variable?: IVariableDescriptor | IResult | IEvaluationDescriptorContainer;
   subPath?: (string | number)[];
 }
@@ -93,8 +93,14 @@ interface TreeProps {
   variables: number[];
   localState?: Readonly<Edition> | undefined;
   localDispatch?: StoreDispatch;
+  forceLocalDispatch?: boolean;
 }
-export function TreeView({ variables, localState, localDispatch }: TreeProps) {
+export function TreeView({
+  variables,
+  localState,
+  localDispatch,
+  forceLocalDispatch,
+}: TreeProps) {
   const [search, setSearch] = React.useState('');
   const { data } = useAsync(itemsPromise);
   const globalDispatch = store.dispatch;
@@ -115,7 +121,7 @@ export function TreeView({ variables, localState, localDispatch }: TreeProps) {
           items={data || []}
           icon="plus"
           onSelect={(i, e) => {
-            if (e.ctrlKey && localDispatch) {
+            if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
               localDispatch(Actions.EditorActions.createVariable(i.value));
             } else {
               globalDispatch(Actions.EditorActions.createVariable(i.value));
@@ -153,6 +159,7 @@ export function TreeView({ variables, localState, localDispatch }: TreeProps) {
                     variableId={v}
                     localState={localState}
                     localDispatch={localDispatch}
+                    forceLocalDispatch={forceLocalDispatch}
                   />
                 ))
               ) : (
@@ -225,33 +232,42 @@ interface CTreeProps {
 export function CTree(
   props: Omit<CTreeProps & TreeProps, 'variables'>,
 ): JSX.Element | null {
-  const { searching, editing, variable, match } = useStore(state => {
-    let variable:
-      | undefined
-      | IVariableDescriptor
-      | IResult
-      | IEvaluationDescriptorContainer = VariableDescriptor.select(
-      props.variableId,
-    );
-    if (Array.isArray(props.subPath) && props.subPath.length > 0) {
-      variable = get(variable, props.subPath) as
+  const infoSelector = React.useCallback(
+    (state: State) => {
+      let variable:
+        | undefined
         | IVariableDescriptor
         | IResult
-        | IEvaluationDescriptorContainer;
-    }
+        | IEvaluationDescriptorContainer = VariableDescriptor.select(
+        props.variableId,
+      );
+      if (Array.isArray(props.subPath) && props.subPath.length > 0) {
+        variable = get(variable, props.subPath) as
+          | IVariableDescriptor
+          | IResult
+          | IEvaluationDescriptorContainer;
+      }
 
-    return {
-      variable: variable,
-      match: isMatch(props.variableId, props.search || ''),
-      editing: isEditing(props.variableId, props.subPath, state.global.editing),
-      searching:
-        (variable &&
-          entityIs(variable, 'VariableDescriptor') &&
-          state.global.search.type === 'GLOBAL' &&
-          state.global.search.value.includes(editorLabel(variable))) ||
-        false,
-    };
-  }, shallowDifferent);
+      return {
+        variable: variable,
+        match: isMatch(props.variableId, props.search || ''),
+        editing: isEditing(
+          props.variableId,
+          props.subPath,
+          state.global.editing,
+        ),
+        searching:
+          (variable &&
+            entityIs(variable, 'VariableDescriptor') &&
+            state.global.search.type === 'GLOBAL' &&
+            state.global.search.value.includes(editorLabel(variable))) ||
+          false,
+      };
+    },
+    [props.search, props.subPath, props.variableId],
+  );
+
+  const { searching, editing, variable, match } = useStore(infoSelector);
 
   const localEditing = isEditing(
     props.variableId,
@@ -275,7 +291,10 @@ export function CTree(
             })}
             onClick={(e: ModifierKeysEvent) => {
               let dispatch = store.dispatch;
-              if (e.ctrlKey && props.localDispatch) {
+              if (
+                (props.forceLocalDispatch || e.ctrlKey) &&
+                props.localDispatch
+              ) {
                 dispatch = props.localDispatch;
               } else {
                 if (
@@ -308,12 +327,14 @@ export function CTree(
                 variable={variable}
                 localDispatch={props.localDispatch}
                 focusTab={tabId => focusTab(mainLayoutId, tabId)}
+                forceLocalDispatch={props.forceLocalDispatch}
               />
             ) : entityIs(variable, 'ChoiceDescriptor') ? (
               <AddMenuChoice
                 variable={variable}
                 localDispatch={props.localDispatch}
                 focusTab={tabId => focusTab(mainLayoutId, tabId)}
+                forceLocalDispatch={props.forceLocalDispatch}
               />
             ) : entityIs(variable, 'EvaluationDescriptorContainer') ? (
               <AddMenuFeedback
@@ -321,6 +342,7 @@ export function CTree(
                 localDispatch={props.localDispatch}
                 focusTab={tabId => focusTab(mainLayoutId, tabId)}
                 path={props.subPath![0] as 'feedback' | 'fbComments'}
+                forceLocalDispatch={props.forceLocalDispatch}
               />
             ) : null}
           </div>
@@ -337,6 +359,7 @@ export function CTree(
                   search={props.search}
                   localState={props.localState}
                   localDispatch={props.localDispatch}
+                  forceLocalDispatch={props.forceLocalDispatch}
                 />
               ))
             : entityIs(variable, 'ChoiceDescriptor')
@@ -349,6 +372,7 @@ export function CTree(
                   subPath={['results', String(index)]}
                   localState={props.localState}
                   localDispatch={props.localDispatch}
+                  forceLocalDispatch={props.forceLocalDispatch}
                 />
               ))
             : entityIs(variable, 'PeerReviewDescriptor')
@@ -361,6 +385,7 @@ export function CTree(
                   subPath={['feedback']}
                   localState={props.localState}
                   localDispatch={props.localDispatch}
+                  forceLocalDispatch={props.forceLocalDispatch}
                 />,
                 <CTree
                   nodeProps={nodeProps}
@@ -370,6 +395,7 @@ export function CTree(
                   subPath={['fbComments']}
                   localState={props.localState}
                   localDispatch={props.localDispatch}
+                  forceLocalDispatch={props.forceLocalDispatch}
                 />,
               ]
             : entityIs(variable, 'EvaluationDescriptorContainer')
@@ -386,6 +412,7 @@ export function CTree(
                   ]}
                   localState={props.localState}
                   localDispatch={props.localDispatch}
+                  forceLocalDispatch={props.forceLocalDispatch}
                 />
               ))
             : null

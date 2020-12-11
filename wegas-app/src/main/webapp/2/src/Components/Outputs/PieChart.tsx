@@ -792,7 +792,7 @@ const setPieChartState = (
     }
   });
 
-export interface PieChartProps extends ClassAndStyle {
+export interface PieChartProps extends ClassStyleId {
   /**
    * minAngle - the angle of the pie chart (0 is left, 90 is top, 180 is right, 270 is bottom)
    */

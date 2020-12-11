@@ -19,8 +19,15 @@ import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 import { IVariableDescriptor, IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { flexRow, flex, itemCenter, grow } from '../../../css/classes';
+import {
+  flexRow,
+  flex,
+  itemCenter,
+  grow,
+  flexColumn,
+} from '../../../css/classes';
 import { inputStyle } from '../../../Components/Inputs/inputStyles';
+import { VariableScriptPath } from '../Variable/VariableScriptPath';
 
 const treeCss = css({
   padding: '5px 10px',
@@ -211,6 +218,12 @@ export function Searcher<T>({
   );
 }
 
+function isValueScript(value: any): value is { type: string; script: string } {
+  return (
+    typeof value === 'object' && 'type' in value && value.type === 'variable'
+  );
+}
+
 export interface TreeVSelectProps<T> extends LabeledTreeVSelectProps<T> {
   labelNode?: React.ReactNode;
   inputId?: string;
@@ -219,7 +232,14 @@ export interface TreeVSelectProps<T> extends LabeledTreeVSelectProps<T> {
 export function TreeVSelect<T>(
   props: TreeVSelectProps<T> & { items: TreeSelectItem<T>[] },
 ) {
-  return <Searcher {...props} ChildrenComp={TreeSelect} />;
+  return (
+    <div className={cx(flex, flexColumn)}>
+      {isValueScript(props.value) && (
+        <VariableScriptPath script={props.value.script} />
+      )}
+      <Searcher {...props} ChildrenComp={TreeSelect} />
+    </div>
+  );
 }
 
 export class LabeledTreeVSelect<T> extends React.Component<
@@ -252,7 +272,7 @@ export type TreeVariableSelectProps = TreeVSelectProps<string> & {
 export function TreeVariableSelect(
   props: TreeVariableSelectProps,
 ): JSX.Element {
-  const items = useStore(() => GameModel.selectCurrent().itemsIds);
+  const items = useStore(GameModel.selectCurrent).itemsIds;
 
   const varItems = genVarItems(
     items,

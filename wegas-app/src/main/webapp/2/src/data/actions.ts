@@ -1,5 +1,14 @@
 import { Schema } from 'jsoninput';
-import { IAbstractContentDescriptor, IAbstractEntity, IGame, IGameModel, IGameModelLanguage, IScript, ITeam, WegasClassNames } from 'wegas-ts-api';
+import {
+  IAbstractContentDescriptor,
+  IAbstractEntity,
+  IGame,
+  IGameModel,
+  IGameModelLanguage,
+  IScript,
+  ITeam,
+  WegasClassNames,
+} from 'wegas-ts-api';
 import { IManagedResponse } from '../API/rest';
 import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
 import { AvailableViews } from '../Editor/Components/FormView';
@@ -25,8 +34,8 @@ const variableEditAction = <TA extends ActionTypeValues>(type: TA) => <
   entity: TE;
   config?: Schema<AvailableViews>;
   path?: TA extends ValueOf<typeof ActionType.FSM_EDIT>
-  ? string[]
-  : (string | number)[];
+    ? string[]
+    : (string | number)[];
   actions: {
     save?: (entity: TE) => void;
     more?: {
@@ -61,8 +70,10 @@ export const ActionCreator = {
   }) => createAction(ActionType.EDITOR_REMOVE_EVENT_HANDLER, data),
   EDITOR_SET_CLIENT_METHOD: (data: ClientMethodPayload) =>
     createAction(ActionType.EDITOR_SET_CLIENT_METHOD, data),
-  EDITOR_REGISTER_SERVER_METHOD: (data: ServerMethodPayload) =>
-    createAction(ActionType.EDITOR_REGISTER_SERVER_METHOD, data),
+  EDITOR_REGISTER_SERVER_GLOBAL_METHOD: (data: ServerGlobalMethodPayload) =>
+    createAction(ActionType.EDITOR_REGISTER_SERVER_GLOBAL_METHOD, data),
+  EDITOR_REGISTER_SERVER_VARIABLE_METHOD: (data: ServerVariableMethodPayload) =>
+    createAction(ActionType.EDITOR_REGISTER_SERVER_VARIABLE_METHOD, data),
   EDITOR_SET_VARIABLE_SCHEMA: (data: {
     name: string;
     schemaFN?: CustomSchemaFN;
@@ -70,6 +81,10 @@ export const ActionCreator = {
   }) => createAction(ActionType.EDITOR_SET_VARIABLE_SCHEMA, data),
   EDITOR_REGISTER_PAGE_LOADER: (data: { name: string; pageId: IScript }) =>
     createAction(ActionType.EDITOR_REGISTER_PAGE_LOADER, data),
+  EDITOR_RESET_PAGE_LOADER: () =>
+    createAction(ActionType.EDITOR_RESET_PAGE_LOADER, {}),
+  EDITOR_UNREGISTER_PAGE_LOADER: (data: { name: string }) =>
+    createAction(ActionType.EDITOR_UNREGISTER_PAGE_LOADER, data),
   // EDITOR_SET_VARIABLE_METHOD: (data: ClientMethodPayload) =>
   // createAction(ActionType.EDITOR_SET_SERVER_METHOD, data),
   VARIABLE_EDIT: variableEditAction(ActionType.VARIABLE_EDIT),
@@ -133,7 +148,7 @@ export const ActionCreator = {
 
 export type StateActions<
   A extends keyof typeof ActionCreator = keyof typeof ActionCreator
-  > = ReturnType<typeof ActionCreator[A]>;
+> = ReturnType<typeof ActionCreator[A]>;
 
 // TOOLS
 
@@ -181,7 +196,7 @@ export function manageResponseHandler(
     if (currentEditingEntity && currentEditingEntity.id !== undefined) {
       const updatedEntity =
         updatedEntities[
-        discriminant(currentEditingEntity) as keyof NormalizedData
+          discriminant(currentEditingEntity) as keyof NormalizedData
         ][currentEditingEntity.id];
       if (
         updatedEntity &&

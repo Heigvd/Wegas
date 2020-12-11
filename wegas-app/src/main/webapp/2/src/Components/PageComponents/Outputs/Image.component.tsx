@@ -5,26 +5,30 @@ import {
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
-import { classAndStyleShema } from '../tools/options';
+import { classStyleIdShema } from '../tools/options';
 import { IScript } from 'wegas-ts-api';
 import { useScript } from '../../Hooks/useScript';
 import { css } from 'emotion';
+import { fileURL } from '../../../API/files.api';
+import { classNameOrEmpty } from '../../../Helper/className';
 
 const initialImageStyle = css({
-  width: '100%',
+  maxWidth: '100%',
+  maxHeight: '100%',
 });
 
 interface SvgLoaderProps extends WegasComponentProps {
   script?: IScript;
 }
 
-function Image({ script, style, className, context }: SvgLoaderProps) {
+function Image({ script, context, style, className, id }: SvgLoaderProps) {
   const path = useScript<string>(script, context);
   return (
     <img
-      src={path}
+      src={fileURL(path || '')}
       style={style}
-      className={className ? className : initialImageStyle}
+      id={id}
+      className={initialImageStyle + classNameOrEmpty(className)}
     />
   );
 }
@@ -45,7 +49,7 @@ registerComponent(
         },
         scriptable: true,
       }),
-      ...classAndStyleShema,
+      ...classStyleIdShema,
     },
   }),
 );

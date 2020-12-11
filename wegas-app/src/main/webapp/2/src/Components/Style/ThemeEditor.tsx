@@ -30,11 +30,11 @@ import {
   ModeOther,
 } from './ThemeVars';
 import { MainLinearLayout } from '../../Editor/Components/LinearTabLayout/LinearLayout';
-import {
-  FonkyFlexContainer,
-  FonkyFlexContent,
-  FonkyFlexSplitter,
-} from '../Layouts/FonkyFlex';
+// import {
+//   FonkyFlexContainer,
+//   FonkyFlexContent,
+//   FonkyFlexSplitter,
+// } from '../Layouts/FonkyFlex';
 import { SimpleInput } from '../Inputs/SimpleInput';
 // import { PageExamples } from './PageExample';
 import { wlog } from '../../Helper/wegaslog';
@@ -43,6 +43,7 @@ import { Title } from '../Inputs/String/Title';
 import { ConfirmAdder } from '../Inputs/String/ConfirmAdder';
 import { Button } from '../Inputs/Buttons/Button';
 import * as Color from 'color';
+import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
 
@@ -105,8 +106,9 @@ function stringToRGBA(color?: string): RGBColor {
 }
 
 function rgbaToString(color?: RGBColor): string {
-  return `rgba(${color?.r || 0},${color?.g || 0},${color?.b || 0}${color?.a ? `,${color.a}` : ''
-    })`;
+  return `rgba(${color?.r || 0},${color?.g || 0},${color?.b || 0}${
+    color?.a ? `,${color.a}` : ''
+  })`;
 }
 
 interface MyColorPickerProps {
@@ -139,24 +141,24 @@ function MyColorPicker({ initColor = 'black', onChange }: MyColorPickerProps) {
           onClick={() => setDisplayed(old => !old)}
         />
       ) : (
-          <div className={cx(flex, flexColumn, itemCenter)}>
-            <ChromePicker
-              color={color}
-              onChangeComplete={newColor => {
-                setColor(newColor.rgb);
+        <div className={cx(flex, flexColumn, itemCenter)}>
+          <ChromePicker
+            color={color}
+            onChangeComplete={newColor => {
+              setColor(newColor.rgb);
+            }}
+          />
+          <div style={{ margin: themeVar.Common.dimensions.BorderWidth }}>
+            <Button
+              label="Accept"
+              onClick={() => {
+                setDisplayed(false);
+                onChange && onChange(color);
               }}
             />
-            <div style={{ margin: themeVar.Common.dimensions.BorderWidth }}>
-              <Button
-                label="Accept"
-                onClick={() => {
-                  setDisplayed(false);
-                  onChange && onChange(color);
-                }}
-              />
-            </div>
           </div>
-        )}
+        </div>
+      )}
     </div>
   );
 }
@@ -176,16 +178,16 @@ function ThemeValueModifier({
     name?: string;
     value: string;
   }) => string | undefined = value =>
-      value?.name == null || value.name === ''
-        ? 'You have to enter a name'
-        : undefined;
+    value?.name == null || value.name === ''
+      ? 'You have to enter a name'
+      : undefined;
 
   const validator: (
     value?:
       | {
-        name?: string;
-        value: string;
-      }
+          name?: string;
+          value: string;
+        }
       | undefined,
   ) => string | undefined = value => {
     if (Object.keys(theme.values[section]).includes(value?.name || '')) {
@@ -224,14 +226,14 @@ function ThemeValueModifier({
                   }}
                 />
               ) : (
-                  <SimpleInput
-                    placeholder="Theme value"
-                    className={valueStyle}
-                    onChange={v =>
-                      onNewValue(ov => ({ ...ov, value: String(v) }))
-                    }
-                  />
-                )}
+                <SimpleInput
+                  placeholder="Theme value"
+                  className={valueStyle}
+                  onChange={v =>
+                    onNewValue(ov => ({ ...ov, value: String(v) }))
+                  }
+                />
+              )}
             </>
           )}
         </ConfirmAdder>
@@ -259,12 +261,12 @@ function ThemeValueModifier({
                 }}
               />
             ) : (
-                <SimpleInput
-                  className={valueStyle}
-                  value={v}
-                  onChange={v => onChange(k, String(v))}
-                />
-              )}
+              <SimpleInput
+                className={valueStyle}
+                value={v}
+                onChange={v => onChange(k, String(v))}
+              />
+            )}
           </div>
         ))}
       </div>
@@ -358,7 +360,7 @@ function ThemeEdition() {
               ),
             }),
           )}
-          onSelect={() => { }}
+          onSelect={() => {}}
         />
         <DropMenu
           label={'Sections'}
@@ -386,9 +388,9 @@ function ThemeEdition() {
         />
       </Toolbar.Header>
       <Toolbar.Content className={contentStyle}>
-        <FonkyFlexContainer className={expandBoth}>
+        <ReflexContainer className={expandBoth} orientation="vertical">
           {selectedSection.colors && (
-            <FonkyFlexContent>
+            <ReflexElement>
               <ThemeValueModifier
                 theme={themesState.themes[editedThemeName]}
                 section="colors"
@@ -396,14 +398,14 @@ function ThemeEdition() {
                   setThemeValue(editedThemeName, 'colors', k, v)
                 }
               />
-            </FonkyFlexContent>
+            </ReflexElement>
           )}
           {selectedSection.colors &&
             (selectedSection.dimensions || selectedSection.others) && (
-              <FonkyFlexSplitter />
+              <ReflexSplitter />
             )}
           {selectedSection.dimensions && (
-            <FonkyFlexContent>
+            <ReflexElement>
               <ThemeValueModifier
                 theme={themesState.themes[editedThemeName]}
                 section="dimensions"
@@ -411,13 +413,13 @@ function ThemeEdition() {
                   setThemeValue(editedThemeName, 'dimensions', k, v)
                 }
               />
-            </FonkyFlexContent>
+            </ReflexElement>
           )}
           {selectedSection.dimensions && selectedSection.others && (
-            <FonkyFlexSplitter />
+            <ReflexSplitter />
           )}
           {selectedSection.others && (
-            <FonkyFlexContent>
+            <ReflexElement>
               <ThemeValueModifier
                 theme={themesState.themes[editedThemeName]}
                 section="others"
@@ -425,9 +427,9 @@ function ThemeEdition() {
                   setThemeValue(editedThemeName, 'others', k, v)
                 }
               />
-            </FonkyFlexContent>
+            </ReflexElement>
           )}
-        </FonkyFlexContainer>
+        </ReflexContainer>
       </Toolbar.Content>
     </Toolbar>
   );
@@ -493,8 +495,8 @@ function ModeValueModifier({
                   section === 'colors' && v != null ? (
                     <ModeColorValue label={sectionValue} theme={theme} />
                   ) : (
-                      sectionValue
-                    )
+                    sectionValue
+                  )
                 }
                 items={themeValuesWithUndefined.map(k => ({
                   value: k,
@@ -502,8 +504,8 @@ function ModeValueModifier({
                     section === 'colors' && k !== 'undefined' ? (
                       <ModeColorValue label={k} theme={theme} />
                     ) : (
-                        k
-                      ),
+                      k
+                    ),
                 }))}
                 onSelect={({ value: themeValue }) => onChange(k, themeValue)}
               />
@@ -527,9 +529,10 @@ function ModeEdition() {
 
   const [editedMode, setEditedMode] = React.useState<string>('light');
 
-  const [editedComponent, setEditedComponent] = React.useState<
-    ModeComponentNames
-  >('Common');
+  const [
+    editedComponent,
+    setEditedComponent,
+  ] = React.useState<ModeComponentNames>('Common');
   const [selectedSection, setSelectedSection] = React.useState<
     { [key in keyof Theme['values']]?: boolean }
   >({ colors: true, dimensions: true, others: true });
@@ -618,44 +621,46 @@ function ModeEdition() {
         />
       </Toolbar.Header>
       <Toolbar.Content className={contentStyle}>
-        <FonkyFlexContainer className={expandBoth}>
-          <FonkyFlexContent>
-            <FonkyFlexContainer className={expandBoth} vertical>
+        <ReflexContainer className={expandBoth} orientation="vertical">
+          <ReflexElement>
+            <ReflexContainer className={expandBoth} orientation="horizontal">
               {Object.entries(selectedSection)
                 .filter(([v]) => v)
-                .map(([section], i, a) => {
+                .reduce<JSX.Element[]>((old, [section], i, a) => {
                   const component = currentComponents[editedComponent];
                   const entries = Object.keys(
                     component[section as keyof typeof component] || {},
                   );
 
-                  return (
-                    <>
-                      <FonkyFlexContent
-                        key={section}
-                        flexInit={(entries.length + 1) * 1000}
-                      >
-                        <ModeValueModifier
-                          theme={themesState.themes[editedThemeName]}
-                          component={component}
-                          section={section as keyof ThemeValues}
-                          onChange={(k, v) =>
-                            setModeValue(
-                              editedThemeName,
-                              editedMode,
-                              editedComponent,
-                              section as keyof ThemeValues,
-                              k,
-                              v,
-                            )
-                          }
-                        />
-                      </FonkyFlexContent>
-                      {i < a.length - 1 && <FonkyFlexSplitter />}
-                    </>
+                  const content = (
+                    <ReflexElement key={section} flex={entries.length + 1}>
+                      <ModeValueModifier
+                        theme={themesState.themes[editedThemeName]}
+                        component={component}
+                        section={section as keyof ThemeValues}
+                        onChange={(k, v) =>
+                          setModeValue(
+                            editedThemeName,
+                            editedMode,
+                            editedComponent,
+                            section as keyof ThemeValues,
+                            k,
+                            v,
+                          )
+                        }
+                      />
+                    </ReflexElement>
                   );
-                })}
-            </FonkyFlexContainer>
+
+                  const splitter = <ReflexSplitter />;
+
+                  if (i < a.length - 1) {
+                    return [...old, content, splitter];
+                  } else {
+                    return [...old, content];
+                  }
+                }, [])}
+            </ReflexContainer>
             {/* <ModeValueModifier
               theme={themesState.themes[editedThemeName]}
               component={currentComponents[editedComponent]}
@@ -671,12 +676,12 @@ function ModeEdition() {
                 )
               }
             /> */}
-          </FonkyFlexContent>
-          <FonkyFlexSplitter />
-          <FonkyFlexContent>
+          </ReflexElement>
+          <ReflexSplitter />
+          <ReflexElement>
             {/* <PageExamples modeName={editedMode} /> */}
-          </FonkyFlexContent>
-        </FonkyFlexContainer>
+          </ReflexElement>
+        </ReflexContainer>
       </Toolbar.Content>
     </Toolbar>
   );

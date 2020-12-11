@@ -1,7 +1,7 @@
-export const commonServerMethods: GlobalServerObject = {
+export const commonServerMethods: ServerGlobalObject = {
   RequestManager: {
     sendCustomEvent: {
-      '@class': 'GlobalServerMethod',
+      '@class': 'ServerGlobalMethod',
       label: 'Send popup',
       parameters: [
         {
@@ -28,7 +28,7 @@ export const commonServerMethods: GlobalServerObject = {
   },
   Event: {
     fire: {
-      '@class': 'GlobalServerMethod',
+      '@class': 'ServerGlobalMethod',
       label: 'Fire event',
       parameters: [
         {
@@ -38,7 +38,7 @@ export const commonServerMethods: GlobalServerObject = {
       ],
     },
     fired: {
-      '@class': 'GlobalServerMethod',
+      '@class': 'ServerGlobalMethod',
       returns: 'boolean',
       label: 'Event has been fired',
       parameters: [
@@ -51,7 +51,7 @@ export const commonServerMethods: GlobalServerObject = {
   },
   DelayedEvent: {
     delayedFire: {
-      '@class': 'GlobalServerMethod',
+      '@class': 'ServerGlobalMethod',
       label: 'Fire delayed event',
       parameters: [
         {

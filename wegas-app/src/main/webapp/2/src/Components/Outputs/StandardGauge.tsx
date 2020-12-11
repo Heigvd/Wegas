@@ -8,7 +8,7 @@ const sectionsColor = [
   { backgroundColor: 'green', stopValue: 100 },
 ];
 
-export interface StandardGaugeProps {
+export interface StandardGaugeProps extends ClassStyleId {
   /**
    * value - the current value of the slider
    */
@@ -37,6 +37,9 @@ export function StandardGauge({
   max,
   label,
   followNeedle,
+  className,
+  style,
+  id,
 }: StandardGaugeProps) {
   const deltaValue = max - min;
   const sections = sectionsColor.map(s => ({
@@ -45,6 +48,9 @@ export function StandardGauge({
   }));
   return (
     <CustomGauge
+      className={className}
+      style={style}
+      id={id}
       value={value}
       min={min}
       sections={sections}

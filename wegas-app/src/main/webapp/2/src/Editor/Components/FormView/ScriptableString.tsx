@@ -26,6 +26,7 @@ import {
   isStringLiteral,
   isPropertyAccessExpression,
 } from 'typescript';
+import { SimpleInput } from '../../../Components/Inputs/SimpleInput';
 
 const labelStyle = css({
   marginBottom: '5px',
@@ -100,7 +101,9 @@ function parseScript(script: string = ''): InputMode {
 }
 
 export interface ScriptableStringProps
-  extends WidgetProps.BaseProps<CommonView & LabeledView> {
+  extends WidgetProps.BaseProps<
+    CommonView & LabeledView & { richText?: boolean }
+  > {
   value?: IScript;
   onChange: (IScript: IScript) => void;
 }
@@ -176,17 +179,31 @@ export function ScriptableString(props: ScriptableStringProps): JSX.Element {
                 />
               </div>
             ) : inputMode === 'Text' ? (
-              <HTMLEditor
-                value={textValue}
-                onChange={value => {
-                  const stringified = JSON.stringify(value);
-                  props.onChange(
-                    props.value
-                      ? { ...props.value, content: stringified }
-                      : createScript(stringified),
-                  );
-                }}
-              />
+              props.view.richText ? (
+                <HTMLEditor
+                  value={textValue}
+                  onChange={value => {
+                    const stringified = JSON.stringify(value);
+                    props.onChange(
+                      props.value
+                        ? { ...props.value, content: stringified }
+                        : createScript(stringified),
+                    );
+                  }}
+                />
+              ) : (
+                <SimpleInput
+                  value={textValue}
+                  onChange={value => {
+                    const stringified = JSON.stringify(value);
+                    props.onChange(
+                      props.value
+                        ? { ...props.value, content: stringified }
+                        : createScript(stringified),
+                    );
+                  }}
+                />
+              )
             ) : inputMode === 'Variable' ? (
               <TreeVariableSelect
                 {...props}

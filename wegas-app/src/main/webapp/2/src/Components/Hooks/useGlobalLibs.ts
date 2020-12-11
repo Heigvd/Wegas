@@ -28,11 +28,13 @@ import i18nGlobalSrc from '!!raw-loader!../../../types/scripts/I18nGlobals.d.ts'
 // @ts-ignore
 import APIMethodsGlobalSrc from '!!raw-loader!../../../types/scripts/APIMethodsGlobals.d.ts';
 // @ts-ignore
+import HelpersGlobalSrc from '!!raw-loader!../../../types/scripts/HelpersGlobals.d.ts';
+// @ts-ignore
 import generalTypes from '!!raw-loader!../../../types/general-types.d.ts';
 
-import { deepDifferent } from './storeHookFactory';
 import { wwarn } from '../../Helper/wegaslog';
 import { buildGlobalServerMethods } from '../../data/Reducer/globalState';
+import { deepDifferent } from './storeHookFactory';
 
 const stripRegex = /\/\* STRIP FROM \*\/[\s\S]*?\/\* STRIP TO \*\//gm;
 
@@ -63,26 +65,33 @@ export type ScriptContext = 'Client' | 'Server internal' | 'Server external';
 export function useGlobalLibs(scriptContext: ScriptContext) {
   const { classes } = React.useContext(classesCTX);
 
-  const libs = useStore((s: State) => {
-    const variableClasses = Object.values(s.variableDescriptors).reduce<{
-      [variable: string]: string;
-    }>((newObject, variable) => {
-      if (variable !== undefined && variable.name !== undefined) {
-        newObject[variable.name] = variable['@class'];
-      }
-      return newObject;
-    }, {});
+  const libsSelector = React.useCallback(
+    (s: State) => {
+      const variableClasses = Object.values(s.variableDescriptors).reduce<{
+        [variable: string]: string;
+      }>((newObject, variable) => {
+        if (variable !== undefined && variable.name !== undefined) {
+          newObject[variable.name] = variable['@class'];
+        }
+        return newObject;
+      }, {});
 
-    const globalMethods = s.global.clientMethods;
-    const globalSchemas = s.global.schemas.views;
-    const globalServerMethods = s.global.serverMethods;
+      const globalMethods = s.global.clientMethods;
+      const globalSchemas = s.global.schemas.views;
+      const globalServerMethods = s.global.serverMethods;
 
-    const currentLanguages = Object.values(GameModel.selectCurrent().languages)
-      .map(l => l.code)
-      .join(' | ');
+      const currentLanguages = Object.values(
+        GameModel.selectCurrent().languages,
+      )
+        .map(l => l.code)
+        .join(' | ');
 
-    try {
-      return `
+      const allowedPageLoadersType = Object.keys(s.global.pageLoaders)
+        .map(name => `"${name}"`)
+        .join('|');
+
+      try {
+        return `
         declare const gameModel : SGameModel;
         declare const self : SPlayer;
         declare const typeFactory: (types: WegasScriptEditorReturnTypeName[]) => GlobalMethodReturnTypesName;
@@ -125,7 +134,9 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         interface EditorClass extends GlobalEditorClass {
           setLanguage: (lang: { code: SGameModelLanguage['code'] } | CurrentLanguages) => void;
         }
-        declare const Editor: EditorClass;
+        declare const Editor: EditorClass & {
+          setPageLoaders: (name: ${allowedPageLoadersType}, pageId: IScript) => void;
+        };
 
         interface ClientMethods {
           ${Object.keys(globalMethods)
@@ -180,15 +191,21 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         }
         
         declare const APIMethods : APIMethodsClass;
+
+        declare const Helpers : GlobalHelpersClass;
         `
             : `${buildGlobalServerMethods(globalServerMethods)}`
         }
         `;
-    } catch (e) {
-      wwarn(e);
-      return '';
-    }
-  }, deepDifferent);
+      } catch (e) {
+        wwarn(e);
+        return '';
+      }
+    },
+    [classes, scriptContext],
+  );
+
+  const libs = useStore(libsSelector, deepDifferent);
 
   const globalLibs = React.useMemo(
     () => [
@@ -206,6 +223,7 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         ${wegasEventsGlobalSrc}\n
         ${i18nGlobalSrc}\n
         ${APIMethodsGlobalSrc}\n
+        ${HelpersGlobalSrc}\n
         ${libs}\n
       `,
         name: 'VariablesTypes.d.ts',

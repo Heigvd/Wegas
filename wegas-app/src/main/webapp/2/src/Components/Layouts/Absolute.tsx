@@ -5,16 +5,15 @@ import {
 } from '../PageComponents/tools/EditableComponent';
 import { HashListChoices } from '../../Editor/Components/FormView/HashList';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
-import { classNameOrEmpty } from '../../Helper/className';
-import { layoutStyle } from '../../css/classes';
 
 export function AbsoluteLayout({
   className,
   style,
   children,
+  id,
 }: WegasComponentProps) {
   return (
-    <div className={layoutStyle + classNameOrEmpty(className)} style={style}>
+    <div id={id} className={className} style={style}>
       {children}
     </div>
   );

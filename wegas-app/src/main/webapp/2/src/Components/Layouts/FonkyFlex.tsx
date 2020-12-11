@@ -1,9 +1,12 @@
 import * as React from 'react';
 import { cx, css } from 'emotion';
 import { classNameOrEmpty } from '../../Helper/className';
-import { flex, flexColumn, flexRow, layoutStyle } from '../../css/classes';
+import { flex, flexColumn, flexRow } from '../../css/classes';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
 import { themeVar } from '../Style/ThemeVars';
+import { HashListChoices } from '../../Editor/Components/FormView/HashList';
+import { schemaProps } from '../PageComponents/tools/schemaProps';
+import { wlog } from '../../Helper/wegaslog';
 
 const SPLITTER_SELECTOR = 'fonkyflex-splitter';
 const CONTENT_SELECTOR = 'fonkyflex-content';
@@ -54,7 +57,7 @@ function getFlexGrowValues(flexItems: HTMLDivElement[]): number[] {
   return flexItems.map(c => Number(c.style.getPropertyValue('flex-grow')));
 }
 
-export interface FonkyFlexContainerProps extends ClassAndStyle {
+export interface FonkyFlexContainerProps extends ClassStyleId {
   vertical?: boolean;
   flexValues?: number[];
   // noCheck?: boolean;
@@ -63,7 +66,7 @@ export interface FonkyFlexContainerProps extends ClassAndStyle {
   onResize?: (splitterNumber: number, flexValues: number[]) => void;
 }
 
-interface FonkyFlexSplitterProps extends ClassAndStyle {
+interface FonkyFlexSplitterProps extends ClassStyleId {
   notDraggable?: boolean;
 }
 
@@ -91,6 +94,7 @@ export function FonkyFlexContainer({
   className,
   style,
   children,
+  id,
 }: React.PropsWithChildren<FonkyFlexContainerProps>) {
   const flexChildren = React.useRef<HTMLDivElement[]>([]);
   const splitterChildren = React.useRef<HTMLDivElement[]>([]);
@@ -100,7 +104,6 @@ export function FonkyFlexContainer({
   const manageDragStart = React.useCallback(
     (e: DragEvent) => {
       e.stopPropagation();
-
       const { target } = e;
       const divTarget = target as HTMLDivElement;
 
@@ -128,10 +131,12 @@ export function FonkyFlexContainer({
   const manageDrag = React.useCallback(
     (e: DragEvent) => {
       e.stopPropagation();
-
       const { clientX, clientY } = e;
 
-      const target = e.target;
+      const target = e.target as HTMLDivElement;
+
+      wlog(target.getBoundingClientRect());
+
       const splitterIndex = flexChildren.current.findIndex(c => c === target);
 
       const leftContent = flexChildren.current[splitterIndex - 1];
@@ -205,6 +210,7 @@ export function FonkyFlexContainer({
 
   return (
     <div
+      id={id}
       ref={e => {
         flexChildren.current = [];
         contentChildren.current = [];
@@ -239,7 +245,7 @@ export function FonkyFlexContainer({
         container.current = e as HTMLDivElement;
       }}
       className={
-        cx(flex, vertical ? flexColumn : flexRow, containerStyle, layoutStyle) +
+        cx(flex, vertical ? flexColumn : flexRow, containerStyle) +
         classNameOrEmpty(className)
       }
       style={style}
@@ -269,6 +275,16 @@ export function FonkyFlexSplitter({
     />
   );
 }
+
+export const fonkyFlexContainerChoices: HashListChoices = [
+  {
+    label: 'Flex init value',
+    value: {
+      prop: 'flexInit',
+      schema: schemaProps.number({ label: 'Flex init value' }),
+    },
+  },
+];
 
 export const FonkyFlexContent = React.forwardRef<
   HTMLDivElement,

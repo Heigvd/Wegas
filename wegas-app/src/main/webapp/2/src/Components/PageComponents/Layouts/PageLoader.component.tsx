@@ -15,10 +15,11 @@ import {
   defaultPageCTX,
 } from '../../../Editor/Components/Page/PageEditor';
 import { useStore, store } from '../../../data/store';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { ActionCreator } from '../../../data/actions';
 import { createScript } from '../../../Helper/wegasEntites';
 import { WegasComponentProps } from '../tools/EditableComponent';
+import { classStyleIdShema } from '../tools/options';
+import { State } from '../../../data/Reducer/reducers';
 
 type PlayerPageLoaderProps = WegasComponentProps & PageLoaderComponentProps;
 
@@ -28,12 +29,22 @@ const defaultPageAsScript = () =>
 function PlayerPageLoader({
   initialSelectedPageId = defaultPageAsScript(),
   name,
+  context,
+  className,
+  style,
+  id,
+  loadTimer,
 }: PlayerPageLoaderProps) {
-  let pageScript = useStore(s => {
-    if (name != null) {
-      return s.global.pageLoaders[name];
-    }
-  }, deepDifferent);
+  const pageScriptSelector = React.useCallback(
+    (s: State) => {
+      if (name != null) {
+        return s.global.pageLoaders[name];
+      }
+    },
+    [name],
+  );
+  let pageScript = useStore(pageScriptSelector);
+
   const { pageIdPath } = React.useContext(pageCTX);
   if (name != null && !pageScript) {
     store.dispatch(
@@ -44,10 +55,12 @@ function PlayerPageLoader({
     );
     pageScript = initialSelectedPageId;
   }
-  const pageId = (useScript(pageScript) as string | undefined) || '';
+  const pageId = (useScript(pageScript, context) as string | undefined) || '';
 
   return pageIdPath.includes(pageId) ? (
-    <pre>Page {pageId} recursion</pre>
+    <pre className={className} style={style} id={id}>
+      Page {pageId} recursion
+    </pre>
   ) : (
     <pageCTX.Provider
       value={{
@@ -55,7 +68,13 @@ function PlayerPageLoader({
         pageIdPath: [...pageIdPath, pageId],
       }}
     >
-      <PageLoader selectedPageId={pageId} />
+      <PageLoader
+        className={className}
+        style={style}
+        id={id}
+        selectedPageId={pageId}
+        loadTimer={loadTimer}
+      />
     </pageCTX.Provider>
   );
 }
@@ -68,6 +87,8 @@ registerComponent(
     icon: 'window-maximize',
     schema: {
       initialSelectedPageId: schemaProps.pageSelect({ label: 'Page' }),
+      loadTimer: schemaProps.number({ label: 'Loading timer (ms)' }),
+      ...classStyleIdShema,
     },
     getComputedPropsFromVariable: () => ({
       initialSelectedPageId: defaultPageAsScript(),

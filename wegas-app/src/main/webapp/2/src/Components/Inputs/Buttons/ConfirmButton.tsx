@@ -9,7 +9,10 @@ import {
 import { classNameOrEmpty } from '../../../Helper/className';
 
 interface ConfirmButtonProps extends ButtonProps {
-  onAction?: (success: boolean) => void;
+  onAction?: (
+    success: boolean,
+    event: React.MouseEvent<HTMLElement, MouseEvent>,
+  ) => void;
   onBlur?: () => void;
   defaultConfirm?: boolean;
   dontResetOnBlur?: boolean;
@@ -62,7 +65,7 @@ export function ConfirmButton({
     ) => {
       event.stopPropagation();
       onClick && onClick(event);
-      onAction && onAction(accept);
+      onAction && onAction(accept, event);
       setConfirmation(defaultConfirm);
     },
     [defaultConfirm, onAction, onClick],

@@ -2,7 +2,6 @@ import * as React from 'react';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { Player, VariableDescriptor } from '../../data/selectors';
 import { useStore } from '../../data/store';
-import { shallowDifferent, deepDifferent } from './storeHookFactory';
 import { IVariableDescriptor, IPlayer } from 'wegas-ts-api';
 
 type instanceOf<D> = D extends IVariableDescriptor<infer U> ? U : never;
@@ -17,7 +16,7 @@ export function useVariableDescriptor<D extends IVariableDescriptor>(
     () => VariableDescriptor.findByName<D>(name),
     [name],
   );
-  return useStore(getDescriptor, shallowDifferent);
+  return useStore(getDescriptor);
 }
 /**
  * Hook, connect with a VariableInstance
@@ -34,5 +33,5 @@ export function useVariableInstance<D extends IVariableDescriptor>(
     }
     return;
   }, [descriptor, player]);
-  return useStore(getInstanceForDescriptor, deepDifferent);
+  return useStore(getInstanceForDescriptor);
 }

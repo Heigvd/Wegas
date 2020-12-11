@@ -35,17 +35,17 @@ import { cloneDeep } from 'lodash-es';
 import { commonServerMethods } from '../methods/CommonServerMethods';
 
 export function isServerMethod(
-  serverObject: GlobalServerMethod | GlobalServerObject | undefined,
-): serverObject is GlobalServerMethod {
+  serverObject: ServerGlobalMethod | ServerGlobalObject | undefined,
+): serverObject is ServerGlobalMethod {
   return (
     typeof serverObject === 'object' &&
     '@class' in serverObject &&
-    serverObject['@class'] === 'GlobalServerMethod'
+    serverObject['@class'] === 'ServerGlobalMethod'
   );
 }
 
 export function buildGlobalServerMethods(
-  serverObject: GlobalServerObject,
+  serverObject: ServerGlobalObject,
 ): string {
   return Object.entries(serverObject)
     .filter(([, value]) => value != null)
@@ -155,7 +155,8 @@ export interface GlobalState extends EditingState {
   clientMethods: {
     [name: string]: Omit<ClientMethodPayload, 'name'>;
   };
-  serverMethods: GlobalServerObject;
+  serverMethods: ServerGlobalObject;
+  serverVariableMethods: ServerVariableMethods;
   schemas: {
     filtered: {
       [classFilter: string]: keyof GlobalState['schemas']['views'];
@@ -315,7 +316,7 @@ const global: Reducer<Readonly<GlobalState>> = u(
           method: action.payload.method,
         };
         return;
-      case ActionType.EDITOR_REGISTER_SERVER_METHOD: {
+      case ActionType.EDITOR_REGISTER_SERVER_GLOBAL_METHOD: {
         let objectKey = action.payload.objects.splice(0, 1)[0];
         let objects = state.serverMethods;
         while (objectKey != null) {
@@ -325,12 +326,17 @@ const global: Reducer<Readonly<GlobalState>> = u(
           ) {
             objects[objectKey] = {};
           }
-          objects = objects[objectKey] as GlobalServerObject;
+          objects = objects[objectKey] as ServerGlobalObject;
           objectKey = action.payload.objects.splice(0, 1)[0];
           if (objectKey == null) {
             objects[action.payload.method] = action.payload.schema;
           }
         }
+        return;
+      }
+      case ActionType.EDITOR_REGISTER_SERVER_VARIABLE_METHOD: {
+        const { variableClass, label, ...content } = action.payload;
+        state.serverVariableMethods[variableClass][label] = content;
         return;
       }
       case ActionType.EDITOR_SET_VARIABLE_SCHEMA: {
@@ -366,6 +372,12 @@ const global: Reducer<Readonly<GlobalState>> = u(
       }
       case ActionType.EDITOR_REGISTER_PAGE_LOADER:
         state.pageLoaders[action.payload.name] = action.payload.pageId;
+        return;
+      case ActionType.EDITOR_RESET_PAGE_LOADER:
+        state.pageLoaders = {};
+        return;
+      case ActionType.EDITOR_UNREGISTER_PAGE_LOADER:
+        delete state.pageLoaders[action.payload.name];
         return;
       case ActionType.LOCK_SET:
         state.locks[action.payload.token] = action.payload.locked;
@@ -406,6 +418,7 @@ const global: Reducer<Readonly<GlobalState>> = u(
     },
     clientMethods: {},
     serverMethods: { ...commonServerMethods },
+    serverVariableMethods: {},
     schemas: {
       filtered: {},
       unfiltered: [],
@@ -710,14 +723,35 @@ export const setClientMethod = (
  * @param schema - method's schema including : label, return type (optionnal) and the parameter's shemas
  */
 export const registerServerMethod = (
-  objects: ServerMethodPayload['objects'],
-  method: ServerMethodPayload['method'],
-  schema?: ServerMethodPayload['schema'],
+  objects: ServerGlobalMethodPayload['objects'],
+  method: ServerGlobalMethodPayload['method'],
+  schema?: ServerGlobalMethodPayload['schema'],
 ) =>
-  ActionCreator.EDITOR_REGISTER_SERVER_METHOD({
+  ActionCreator.EDITOR_REGISTER_SERVER_GLOBAL_METHOD({
     objects,
     method,
     schema,
+  });
+
+/**
+ * Register a server method that can be used in wysywig
+ * @param objects - the objects containing the method (ex: PMGHelper.MailMethods.<method> => ["PMGHelper","MailMethods"])
+ * @param method - the method to add
+ * @param schema - method's schema including : label, return type (optionnal) and the parameter's shemas
+ */
+export const registerVariableMethod = (
+  variableClass: ServerVariableMethodPayload['variableClass'],
+  label: ServerVariableMethodPayload['label'],
+  parameters: ServerVariableMethodPayload['parameters'],
+  returns: ServerVariableMethodPayload['returns'],
+  serverCode: ServerVariableMethodPayload['serverCode'],
+) =>
+  ActionCreator.EDITOR_REGISTER_SERVER_VARIABLE_METHOD({
+    variableClass,
+    label,
+    parameters,
+    returns,
+    serverCode,
   });
 
 /**
@@ -745,6 +779,13 @@ export function setSchema(
  */
 export function registerPageLoader(name: string, pageId: IScript) {
   return ActionCreator.EDITOR_REGISTER_PAGE_LOADER({ name, pageId });
+}
+
+/**
+ * resetPageLoader - resets every pageLoaders
+ */
+export function resetPageLoader() {
+  return ActionCreator.EDITOR_RESET_PAGE_LOADER();
 }
 
 export function setLock(data: LockEventData) {

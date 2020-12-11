@@ -5,12 +5,13 @@ import { FileBrowserNode, FileBrowserNodeProps } from './FileBrowserNode';
 import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { StoreDispatch, useStore } from '../../../data/store';
 import { grow } from '../../../css/classes';
-import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { MessageString } from '../MessageString';
 import { css } from 'emotion';
 import { mainLayoutId } from '../Layout';
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
 import { focusTab } from '../LinearTabLayout/LinearLayout';
+import { classNameOrEmpty } from '../../../Helper/className';
+import { State } from '../../../data/Reducer/reducers';
 // import { themeVar } from '../../../Components/Style/ThemeVars';
 
 const fileBrowserStyle = css({
@@ -30,7 +31,7 @@ export interface FileFilter {
   fileType: FileType;
 }
 
-interface FileBrowserProps {
+export interface FileBrowserProps extends ClassStyleId {
   onFileClick?: FileBrowserNodeProps['onFileClick'];
   onDelelteFile?: FileBrowserNodeProps['onDelelteFile'];
   selectedLocalPaths?: string[];
@@ -38,7 +39,6 @@ interface FileBrowserProps {
   localDispatch?: StoreDispatch;
   pick?: FilePickingType;
   filter?: FileFilter;
-  id?: string;
 }
 
 export function FileBrowser({
@@ -49,6 +49,8 @@ export function FileBrowser({
   localDispatch,
   pick,
   filter,
+  className,
+  style,
   id,
 }: FileBrowserProps) {
   const [rootFile, setRootFile] = React.useState<IAbstractContentDescriptor>();
@@ -68,7 +70,12 @@ export function FileBrowser({
 
   return rootFile ? (
     <DefaultDndProvider>
-      <div className={grow} ref={comp.current} id={id}>
+      <div
+        className={grow + classNameOrEmpty(className)}
+        style={style}
+        ref={comp.current}
+        id={id}
+      >
         <MessageString value={error} type={'error'} duration={3000} />
         <FileBrowserNode
           defaultFile={rootFile}
@@ -90,14 +97,16 @@ export function FileBrowser({
   );
 }
 
-export default function FileBrowserWithMeta() {
-  const globalFile = useStore(
-    state =>
-      state.global.editing &&
-      state.global.editing.type === 'File' &&
-      state.global.editing.entity,
-    shallowDifferent,
+function globalFileSelector(state: State) {
+  return (
+    state.global.editing &&
+    state.global.editing.type === 'File' &&
+    state.global.editing.entity
   );
+}
+
+export default function FileBrowserWithMeta() {
+  const globalFile = useStore(globalFileSelector);
 
   return (
     <ComponentWithForm>

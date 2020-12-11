@@ -23,11 +23,15 @@ import { parseEvent } from './EntityEditor';
 import { editorEventRemove } from '../../data/Reducer/globalState';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { State } from '../../data/Reducer/reducers';
 
+function wegasEventSelector(s: State) {
+  return s.global.events;
+}
 // May be moved in a proper file to allow wider usage
 // interface NotificationMenuProps {}
-function NotificationMenu({ className, style }: ClassAndStyle) {
-  const wegasEvents = useStore(s => s.global.events);
+function NotificationMenu({ className, style }: ClassStyleId) {
+  const wegasEvents = useStore(wegasEventSelector);
   const [recievedEvents, setRecievedEvents] = React.useState<number[]>([]);
 
   const unreadEvents = wegasEvents.filter(event => event.unread);
@@ -117,7 +121,10 @@ export default function Header() {
           <Button
             icon="undo"
             tooltip="Restart"
-            onClick={() => dispatch(Actions.VariableDescriptorActions.reset())}
+            onClick={() => {
+              dispatch(Actions.VariableDescriptorActions.reset());
+              dispatch(Actions.EditorActions.resetPageLoader());
+            }}
             className={componentMarginLeft}
           />
           <Button

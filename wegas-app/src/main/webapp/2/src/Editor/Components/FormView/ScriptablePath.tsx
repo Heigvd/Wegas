@@ -27,7 +27,6 @@ import {
 } from 'typescript';
 import { CustomFileSelector } from './FileSelector';
 import { FilePickingType, FileFilter } from '../FileBrowser/FileBrowser';
-import { fileURL } from '../../../API/files.api';
 
 const labelStyle = css({
   marginBottom: '5px',
@@ -183,7 +182,7 @@ export function ScriptablePath(props: ScriptablePathProps): JSX.Element {
               <CustomFileSelector
                 value={textValue}
                 onChange={value => {
-                  const stringified = JSON.stringify(fileURL(value));
+                  const stringified = JSON.stringify(value);
                   props.onChange(
                     props.value
                       ? { ...props.value, content: stringified }

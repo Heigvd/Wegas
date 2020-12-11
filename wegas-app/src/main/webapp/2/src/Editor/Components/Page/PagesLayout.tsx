@@ -45,6 +45,7 @@ import { PAGEEDITOR_COMPONENT_TYPE, isDnDComponent } from './ComponentPalette';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { State } from '../../../data/Reducer/reducers';
 
 const bulletCSS = {
   width: '1em',
@@ -146,7 +147,7 @@ export function isLayoutDndComponent(
   return isItemDescription(item) && isComponentNodeId(item.id);
 }
 
-interface LayoutButtonProps extends ClassAndStyle {
+interface LayoutButtonProps extends ClassStyleId {
   tooltip?: string;
 }
 
@@ -344,7 +345,7 @@ const compToKey = (component: WegasComponent, path?: number[]) =>
     path,
   });
 
-interface LayoutNodeTitleProps extends ClassAndStyle {
+interface LayoutNodeTitleProps extends ClassStyleId {
   icon: Icons;
   title: string;
   advancedTitle?: string;
@@ -421,7 +422,7 @@ function WegasComponentTitle({
   const registeredComponent = usePageComponentStore(s => s[component.type]);
   const { editMode } = React.useContext(pageCTX);
 
-  const { onDelete, onEdit, onNew } = componentControls;
+  const { onDelete, onEdit, onNew, onDuplicate } = componentControls;
 
   let icon: Icon;
   if (registeredComponent != null) {
@@ -475,17 +476,30 @@ function WegasComponentTitle({
           className={CONTROLS_CLASSNAME}
         />
       )}
-      <ConfirmButton
-        icon="trash"
-        onAction={success => success && onDelete(pageId, page, componentPath)}
-        disabled={componentPath.length === 0}
-        tooltip={
-          componentPath.length === 0
-            ? 'The first component of a page connot be deleted'
-            : 'Delete the component'
-        }
-        className={CONTROLS_CLASSNAME}
-      />
+      {!component.uneditable && (
+        <>
+          <ConfirmButton
+            icon="trash"
+            onAction={success =>
+              success && onDelete(pageId, page, componentPath)
+            }
+            disabled={componentPath.length === 0}
+            tooltip={
+              componentPath.length === 0
+                ? 'The first component of a page connot be deleted'
+                : 'Delete the component'
+            }
+            className={CONTROLS_CLASSNAME}
+          />
+          <Button
+            icon="copy"
+            onClick={() => onDuplicate(pageId, page, componentPath)}
+            disabled={componentPath.length === 0}
+            tooltip={'Copy the component'}
+            className={CONTROLS_CLASSNAME}
+          />
+        </>
+      )}
     </LayoutNodeTitle>
   );
 }
@@ -509,11 +523,24 @@ function WegasComponentNode({
   selectedComponentPath,
   componentControls,
 }: WegasComponentNodeProps) {
-  const page = useStore(s => s.pages[pageId], deepDifferent);
+  const pageSelector = React.useCallback((s: State) => s.pages[pageId], [
+    pageId,
+  ]);
+  const page = useStore(pageSelector);
   const id: ComponentNodeId = { pageId, page, componentPath };
   const parentProps = getParentProps();
+  let computedComponent: WegasComponent;
 
-  if (!isWegasComponent(component)) {
+  if (component === undefined) {
+    computedComponent = {
+      type: 'Undefined',
+      props: {},
+    };
+  } else {
+    computedComponent = component;
+  }
+
+  if (!isWegasComponent(computedComponent)) {
     return (
       <LayoutNodeTitle
         icon="exclamation-circle"
@@ -527,7 +554,7 @@ function WegasComponentNode({
       {...parentProps}
       title={
         <WegasComponentTitle
-          component={component}
+          component={computedComponent}
           componentControls={componentControls}
           componentPath={componentPath}
           page={page}
@@ -546,13 +573,14 @@ function WegasComponentNode({
       ]}
       noDrag={componentPath.length === 0}
       noDrop={
-        component.props?.children == null ||
-        (component.props.children.length === 1 && component.type === 'For each')
+        computedComponent.props?.children == null ||
+        (computedComponent.props.children.length === 1 &&
+          computedComponent.type === 'For each')
       }
     >
-      {component.props?.children
+      {computedComponent.props?.children
         ? getParentProps =>
-            component.props?.children?.map((childComponent, i) => (
+            computedComponent.props?.children?.map((childComponent, i) => (
               <WegasComponentNode
                 key={compToKey(childComponent, [...componentPath, i])}
                 getParentProps={getParentProps}
@@ -723,12 +751,16 @@ function PageIndexItemNode({
   componentControls,
 }: PagesLayoutNodeProps): JSX.Element | null {
   const { selectedPageId, editedPath } = React.useContext(pageEditorCTX);
-  const { page } = useStore(s => {
-    if (isPageItem(indexItem)) {
-      return { page: s.pages[indexItem.id!] };
-    }
-    return {};
-  }, deepDifferent);
+  const pageSelector = React.useCallback(
+    (s: State) => {
+      if (isPageItem(indexItem)) {
+        return s.pages[indexItem.id!];
+      }
+      return undefined;
+    },
+    [indexItem],
+  );
+  const page = useStore(pageSelector);
   const newPath = [
     ...path,
     isPageItem(indexItem) ? indexItem.id! : indexItem.name,
@@ -805,6 +837,11 @@ interface ComponentControls {
     page: WegasComponent,
     componentPath: number[],
     componentType: string,
+  ) => void;
+  onDuplicate: (
+    pageId: string,
+    page: WegasComponent,
+    componentPath: number[],
   ) => void;
   onDelete: (
     pageId: string,

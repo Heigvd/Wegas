@@ -2,13 +2,14 @@ import * as React from 'react';
 import { useTranslate } from '../../Editor/Components/FormView/translatable';
 import { ITranslatableContent } from 'wegas-ts-api';
 
-interface TextProps extends ClassAndStyle {
+interface TextProps extends ClassStyleId {
   text?: string;
 }
 
-export function Text({ text, style, className }: TextProps) {
+export function Text({ text, style, className, id }: TextProps) {
   return (
     <div
+      id={id}
       className={className}
       style={style}
       dangerouslySetInnerHTML={{
@@ -18,7 +19,7 @@ export function Text({ text, style, className }: TextProps) {
   );
 }
 
-interface TranslatableTextProps extends ClassAndStyle {
+interface TranslatableTextProps extends ClassStyleId {
   htmlTranslatableContent: ITranslatableContent;
 }
 

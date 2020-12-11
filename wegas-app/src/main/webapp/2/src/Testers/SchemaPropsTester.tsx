@@ -15,7 +15,7 @@ import { IScript, IAbstractContentDescriptor } from 'wegas-ts-api';
 
 const testSchema = {
   variable: schemaProps.scriptVariable({ label: 'Variable' }),
-  translated: schemaProps.scriptString({ label: 'Translated' }),
+  translated: schemaProps.scriptString({ label: 'Translated', richText: true }),
   hidden: schemaProps.hidden({}),
   boolean: schemaProps.boolean({ label: 'Boolean' }),
   number: schemaProps.number({ label: 'Number' }),
@@ -73,6 +73,18 @@ const testSchema = {
       fileType: 'audio',
     },
   }),
+  objectArray: schemaProps.array({
+    label: 'Conditionnal classes',
+    itemSchema: {
+      className: schemaProps.string({ label: 'Class' }),
+      condition: schemaProps.script({
+        label: 'Condition',
+        mode: 'GET',
+        language: 'TypeScript',
+        value: 'false',
+      }),
+    },
+  }),
 };
 
 interface SchemaPropsTesterState {
@@ -91,6 +103,7 @@ interface SchemaPropsTesterState {
   customizedMultilevelHashList: {};
   file?: IAbstractContentDescriptor;
   greyFilterfile?: IAbstractContentDescriptor;
+  objectArray?: { className?: string; condition?: IScript }[];
 }
 
 export default function SchemaPropsTester() {
@@ -116,6 +129,7 @@ export default function SchemaPropsTester() {
     // },
     file: undefined,
     greyFilterfile: undefined,
+    objectArray: [],
   });
   const [errors, setErrors] = React.useState<ValidationError[]>([]);
 

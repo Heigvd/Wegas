@@ -34,7 +34,7 @@ const verticalStyle = css({
   // width: '100%',
 });
 
-export interface OrientedLayoutProps<T> extends ClassAndStyle {
+export interface OrientedLayoutProps<T> extends ClassStyleId {
   /**
    * children - the items to display
    */

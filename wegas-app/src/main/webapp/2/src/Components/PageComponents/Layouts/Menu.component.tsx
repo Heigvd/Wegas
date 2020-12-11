@@ -9,10 +9,12 @@ import {
   Menu,
   menuSchema,
   MenuItem,
-  defaultMenuItemKeys,
+  // defaultMenuItemKeys,
+  menuItemSchema,
 } from '../../Layouts/Menu';
 import { childrenDeserializerFactory } from './FlexList.component';
-import { classAndStyleShema } from '../tools/options';
+import { classStyleIdShema } from '../tools/options';
+import { defaultFlexLayoutOptionsKeys } from '../../Layouts/FlexList';
 
 interface PlayerMenuProps extends MenuProps, WegasComponentProps {
   /**
@@ -34,17 +36,18 @@ registerComponent(
     component: PlayerMenu,
     componentType: 'Layout',
     container: {
-      type: 'MENU',
       isVertical,
       ChildrenDeserializer: childrenDeserializerFactory(
         MenuItem,
-        defaultMenuItemKeys,
+        // defaultMenuItemKeys,
       ),
+      childrenSchema: menuItemSchema,
+      childrenLayoutKeys: defaultFlexLayoutOptionsKeys,
     },
     dropzones: {},
     name: 'Menu',
     icon: 'bars',
-    schema: { ...menuSchema, ...classAndStyleShema },
+    schema: { ...menuSchema, ...classStyleIdShema },
     getComputedPropsFromVariable: () => ({ children: [] }),
   }),
 );

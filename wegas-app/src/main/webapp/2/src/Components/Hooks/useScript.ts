@@ -1,14 +1,17 @@
 import * as React from 'react';
 import { instantiate } from '../../data/scriptable';
-import { Player, VariableDescriptor as VDSelect } from '../../data/selectors';
+import {
+  GameModel,
+  Player,
+  VariableDescriptor as VDSelect,
+} from '../../data/selectors';
 import { useStore, store } from '../../data/store';
 import { featuresCTX, isFeatureEnabled } from '../Contexts/FeaturesProvider';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
-import { useGameModel } from './useGameModel';
 import { Actions } from '../../data';
 import { transpile } from 'typescript';
 import { classesCTX } from '../Contexts/ClassesProvider';
-import { deepDifferent } from './storeHookFactory';
+import { deepDifferent, shallowDifferent } from './storeHookFactory';
 import {
   IVariableDescriptor,
   WegasClassNames,
@@ -27,12 +30,15 @@ import { popupDispatch, addPopup, PopupActionCreator } from '../PopupManager';
 import { ActionCreator } from '../../data/actions';
 import {
   createTranslatableContent,
+  createTranslation,
   translate,
 } from '../../Editor/Components/FormView/translatable';
 import { wwarn } from '../../Helper/wegaslog';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { replace } from '../../Helper/tools';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
+import { createScript, isScript } from '../../Helper/wegasEntites';
+import { cloneDeep } from 'lodash-es';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -65,6 +71,7 @@ interface GlobalClasses {
     [name: string]: unknown;
   };
   APIMethods: APIMethodsClass;
+  Helpers: GlobalHelpersClass;
 }
 
 const globalDispatch = store.dispatch;
@@ -83,9 +90,16 @@ const { sandbox, globals } = createSandbox<GlobalClasses>();
 
 export function useGlobals() {
   // Hooks
-  const player = useStore(Player.selectCurrent);
+  const { player, gameModel, pageLoaders } = useStore(
+    s => ({
+      player: Player.selectCurrent(),
+      gameModel: GameModel.selectCurrent(),
+      pageLoaders: s.global.pageLoaders,
+    }),
+    shallowDifferent,
+  );
   const splayer = instantiate(player);
-  const gameModel = useGameModel();
+  // const gameModel = useGameModel();
   const defaultFeatures: FeaturesSelecta = {
     DEFAULT: true,
     ADVANCED: false,
@@ -138,6 +152,21 @@ export function useGlobals() {
     getLanguage: () => gameModel.languages.find(l => l.code === lang),
     setLanguage: lang =>
       selectLang(typeof lang === 'string' ? lang : lang.code),
+    getPageLoaders: () =>
+      Object.entries(pageLoaders).reduce(
+        (o, [name, script]) => ({
+          ...o,
+          [name]: Number(safeClientScriptEval(script)),
+        }),
+        {},
+      ),
+    setPageLoader: (name, pageId) =>
+      globalDispatch(
+        ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
+          name,
+          pageId: createScript(JSON.stringify(pageId)),
+        }),
+      ),
   };
 
   /**
@@ -185,18 +214,41 @@ export function useGlobals() {
     },
   };
 
-  const registerMethod: ServerMethodRegister = (objects, method, schema) => {
+  const registerGlobalMethod: ServerGlobalMethodRegister = (
+    objects,
+    method,
+    schema,
+  ) => {
     globalDispatch(
       Actions.EditorActions.registerServerMethod(objects, method, {
         ...schema,
-        '@class': 'GlobalServerMethod',
+        '@class': 'ServerGlobalMethod',
       }),
+    );
+  };
+
+  const registerVariableMethod: ServerVariableMethodRegister = (
+    variableClass,
+    label,
+    parameter,
+    returns,
+    serverCode,
+  ) => {
+    globalDispatch(
+      Actions.EditorActions.registerVariableMethod(
+        variableClass,
+        label,
+        parameter,
+        returns,
+        serverCode,
+      ),
     );
   };
 
   // ServerMethods class
   globals.ServerMethods = {
-    registerMethod,
+    registerGlobalMethod,
+    registerVariableMethod,
   };
 
   // Schemas class
@@ -290,14 +342,22 @@ export function useGlobals() {
     createTranslatableContent: value => {
       return createTranslatableContent(lang, value);
     },
+    createTranslation: value => {
+      return createTranslation(lang, value);
+    },
+    currentLanguageCode: lang,
   };
 
   globals.APIMethods = APIScriptMethods;
+
+  globals.Helpers = {
+    cloneDeep: cloneDeep,
+  };
 }
 
-export type ReturnType = object | number | boolean | string | undefined;
+export type ScriptReturnType = object | number | boolean | string | undefined;
 
-export function clientScriptEval<T extends ReturnType>(
+export function clientScriptEval<T extends ScriptReturnType>(
   script?: string | IScript,
   context?: {
     [name: string]: unknown;
@@ -314,7 +374,7 @@ export function clientScriptEval<T extends ReturnType>(
     : undefined;
 }
 
-export function safeClientScriptEval<T extends ReturnType>(
+export function safeClientScriptEval<T extends ScriptReturnType>(
   script?: string | IScript,
   context?: {
     [name: string]: unknown;
@@ -342,8 +402,8 @@ export function safeClientScriptEval<T extends ReturnType>(
  * @param script code to execute
  * @returns Last expression or undefined in case it errors.
  */
-export function useScript<T extends ReturnType>(
-  script?: string | IScript,
+export function useScript<T extends ScriptReturnType>(
+  script?: (string | IScript | undefined) | (string | IScript | undefined)[],
   context?: {
     [name: string]: unknown;
   },
@@ -351,10 +411,16 @@ export function useScript<T extends ReturnType>(
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
   useGlobals();
   // useScriptContext();
-  const fn = React.useCallback(
-    () => safeClientScriptEval<T>(script, context, catchCB),
-    [script, context, catchCB],
-  );
+
+  const fn = React.useCallback(() => {
+    if (Array.isArray(script)) {
+      return script.map(scriptItem =>
+        safeClientScriptEval<T>(scriptItem, context, catchCB),
+      );
+    } else {
+      return safeClientScriptEval<T>(script, context, catchCB);
+    }
+  }, [script, context, catchCB]);
   return useStore(fn, deepDifferent) as any;
 }
 
@@ -363,7 +429,7 @@ export function useScript<T extends ReturnType>(
  * @param script code to execute
  * @returns Last expression or LocalEvalError in case it errors.
  */
-export function useUnsafeScript<T extends ReturnType>(
+export function useUnsafeScript<T extends ScriptReturnType>(
   script?: string | IScript,
   context?: {
     [name: string]: unknown;
@@ -384,7 +450,7 @@ export function parseAndRunClientScript(
     [name: string]: unknown;
   },
 ) {
-  let scriptContent = 'string' === typeof script ? script : script.content;
+  let scriptContent = isScript(script) ? script.content : script;
 
   /*
   const test1 = runClientScript("JKJKJ")
@@ -405,9 +471,11 @@ export function parseAndRunClientScript(
     if (matched) {
       index += matched.index == null ? scriptContent.length : matched.index;
       const matchedCode = matched[0].replace(regexStart, '').slice(0, -2);
-      const matchedValue = String(
-        safeClientScriptEval<string>(matchedCode, context),
-      );
+      let matchedValue = safeClientScriptEval<string>(matchedCode, context);
+
+      if (typeof matchedValue === 'string') {
+        matchedValue = `"${matchedValue}"`;
+      }
 
       scriptContent = replace(
         scriptContent,
@@ -416,13 +484,11 @@ export function parseAndRunClientScript(
         matchedValue,
       );
 
-      index += matchedValue.length;
+      index += matchedValue?.length || 0;
     }
   } while (matched);
 
-  return 'string' === typeof script
-    ? scriptContent
-    : { ...script, content: scriptContent };
+  return isScript(script)
+    ? { ...script, content: scriptContent }
+    : scriptContent;
 }
-
-export function serverScriptEval() {}

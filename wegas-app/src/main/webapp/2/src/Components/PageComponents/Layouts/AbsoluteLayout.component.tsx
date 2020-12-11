@@ -5,10 +5,11 @@ import {
 import {
   AbsoluteItem,
   AbsoluteLayout,
+  absolutelayoutChoices,
   defaultAbsoluteLayoutPropsKeys,
 } from '../../Layouts/Absolute';
 import { childrenDeserializerFactory } from './FlexList.component';
-import { classAndStyleShema } from '../tools/options';
+import { classStyleIdShema } from '../tools/options';
 
 function isVertical() {
   return undefined;
@@ -19,20 +20,21 @@ registerComponent(
     component: AbsoluteLayout,
     componentType: 'Layout',
     container: {
-      type: 'ABSOLUTE',
       isVertical,
       ChildrenDeserializer: childrenDeserializerFactory(
         AbsoluteItem,
-        defaultAbsoluteLayoutPropsKeys,
         {},
+        () => null,
       ),
+      childrenSchema: absolutelayoutChoices,
+      childrenLayoutKeys: defaultAbsoluteLayoutPropsKeys,
     },
     name: 'AbsoluteLayout',
     icon: 'images',
     dropzones: {
       center: true,
     },
-    schema: classAndStyleShema,
+    schema: classStyleIdShema,
     // {
     // name: schemaProps.string({ label: 'Name' }),
     // children: schemaProps.hidden({}),

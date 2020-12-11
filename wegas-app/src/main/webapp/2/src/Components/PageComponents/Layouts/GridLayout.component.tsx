@@ -3,8 +3,15 @@ import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import { classAndStyleShema } from '../tools/options';
-import { Grid, GridItem, GridProps, gridSchema } from '../../Layouts/Grid';
+import { classStyleIdShema } from '../tools/options';
+import {
+  defaultGridLayoutOptionsKeys,
+  Grid,
+  GridItem,
+  gridItemChoices,
+  GridProps,
+  gridSchema,
+} from '../../Layouts/Grid';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { childrenDeserializerFactory } from './FlexList.component';
 
@@ -24,13 +31,14 @@ registerComponent(
     component: PlayerGrid,
     componentType: 'Layout',
     container: {
-      type: 'FLEX',
       isVertical: () => false,
       ChildrenDeserializer: childrenDeserializerFactory(GridItem),
+      childrenSchema: gridItemChoices,
+      childrenLayoutKeys: defaultGridLayoutOptionsKeys,
     },
     name: 'Grid',
     icon: 'table',
-    schema: { ...gridSchema, ...classAndStyleShema },
+    schema: { ...gridSchema, ...classStyleIdShema },
     getComputedPropsFromVariable: () => ({ children: [] }),
   }),
 );

@@ -17,6 +17,7 @@ import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { Toolbar } from '../../../Components/Toolbar';
 import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 
 const growBig = css({
   flex: '30 1 auto',
@@ -74,16 +75,18 @@ export function ComponentWithForm({
       action: () => setInstanceView(show => !show),
     });
   }
+
   return (
-    <div className={cx(flex, grow)}>
-      <div className={cx(flex, growBig, autoScroll)}>
+    <ReflexContainer className={cx(flex, grow)} orientation="vertical">
+      <ReflexElement flex={4} className={cx(flex, growBig, autoScroll)}>
         {children({
           localState: localState.editing,
           localDispatch,
         })}
-      </div>
+      </ReflexElement>
+      {localState.editing && localEntity && <ReflexSplitter />}
       {localState.editing && localEntity && (
-        <div className={cx(flex, grow, autoScroll)}>
+        <ReflexElement flex={1} className={cx(flex)}>
           <AsyncVariableForm
             {...localState.editing}
             getConfig={getConfig(localState.editing)}
@@ -92,10 +95,11 @@ export function ComponentWithForm({
             entity={localEntity}
             error={parseEventFromIndex(localState.events, localDispatch)}
           />
-        </div>
+        </ReflexElement>
       )}
+      {instanceView && entityEditor && <ReflexSplitter />}
       {instanceView && entityEditor && (
-        <div className={cx(flex, grow, autoScroll)}>
+        <ReflexElement flex={1} className={cx(flex)}>
           <Toolbar>
             <Toolbar.Header>
               <Button
@@ -110,8 +114,8 @@ export function ComponentWithForm({
               />
             </Toolbar.Content>
           </Toolbar>
-        </div>
+        </ReflexElement>
       )}
-    </div>
+    </ReflexContainer>
   );
 }

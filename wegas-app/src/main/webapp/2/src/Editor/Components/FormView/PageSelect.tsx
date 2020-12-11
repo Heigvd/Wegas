@@ -18,6 +18,7 @@ import { flex, flexRow, grow } from '../../../css/classes';
 import { IScript } from 'wegas-ts-api';
 import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
+import { State } from '../../../data/Reducer/reducers';
 
 const updateScript = (scriptContent: string, currentScript?: IScript) =>
   currentScript
@@ -30,10 +31,14 @@ export interface PageSelectProps extends WidgetProps.BaseProps {
   onChange: (code: IScript) => void;
 }
 
+function pageIndexSelector(s: State) {
+  return s.pages.index;
+}
+
 export default function PageSelect(props: PageSelectProps) {
   const [pageValue, setPageValue] = React.useState<string>();
   const [srcMode, setSrcMode] = React.useState(false);
-  const index = useStore(s => s.pages.index);
+  const index = useStore(pageIndexSelector);
   const pageId = useScript<string>(pageValue);
 
   React.useEffect(() => {

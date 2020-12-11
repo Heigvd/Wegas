@@ -8,22 +8,25 @@ import {
   isVertical,
   FlexItem,
   defaultFlexLayoutOptionsKeys,
+  flexlayoutChoices,
 } from '../../Layouts/FlexList';
+import { EmptyComponentContainer } from '../Layouts/FlexList.component';
 import {
   registerComponent,
   pageComponentFactory,
 } from '../tools/componentFactory';
+import { WegasComponentProps } from '../tools/EditableComponent';
+import { classStyleIdShema } from '../tools/options';
 import {
   ChildrenDeserializerProps,
-  WegasComponentProps,
-} from '../tools/EditableComponent';
-import { classAndStyleShema } from '../tools/options';
-import { PageDeserializer } from '../tools/PageDeserializer';
+  PageDeserializer,
+} from '../tools/PageDeserializer';
 import { schemaProps } from '../tools/schemaProps';
 
 interface ForEachProps extends WegasComponentProps, FlexListProps {
   getItemsFn?: IScript;
   exposeAs: string;
+  itemKey: string;
   itemsOnly?: boolean;
 }
 
@@ -37,18 +40,37 @@ function ChildrenDeserializer({
   uneditable,
   context,
   exposeAs,
+  itemKey,
   getItemsFn,
   editMode,
+  wegasChildren,
 }: ChildrenDeserializerProps<ForEachProps>) {
-  const items = useScript<object[]>(getItemsFn);
+  const items = useScript<{ [key: string]: any }[]>(getItemsFn, context);
   let children: JSX.Element[] = [];
 
   if (items) {
-    children = items.map((item, id) => {
+    children = items.map((item, index) => {
       const newContext = { ...context, [exposeAs]: item };
-      return (
+
+      let key = '';
+      try {
+        key = JSON.stringify(item[itemKey]);
+      } catch (_e) {
+        key = JSON.stringify([...(path ? path : []), index]);
+      }
+
+      return editMode && (!wegasChildren || wegasChildren.length === 0) ? (
+        <EmptyComponentContainer
+          key={key}
+          Container={FlexItem}
+          path={path}
+          content={
+            'Place a component that you want to duplicate for each item of the Fore Each'
+          }
+        />
+      ) : (
         <PageDeserializer
-          key={JSON.stringify([...(path ? path : []), id])}
+          key={key}
           pageId={pageId}
           path={[...(path ? path : []), 0]}
           uneditable={uneditable}
@@ -72,10 +94,10 @@ registerComponent(
     component: ForEach,
     componentType: 'Programmatic',
     container: {
-      type: 'FOREACH',
       isVertical,
       ChildrenDeserializer,
       noContainer,
+      childrenSchema: flexlayoutChoices,
     },
     name: 'For each',
     icon: 'code',
@@ -90,10 +112,14 @@ registerComponent(
         required: true,
         value: 'item',
       }),
+      itemKey: schemaProps.string({
+        label: 'Key',
+        required: true,
+        value: 'id',
+      }),
       itemsOnly: schemaProps.boolean({ label: 'Items only' }),
-      ...classAndStyleShema,
+      ...classStyleIdShema,
     },
-    allowedVariables: ['TextDescriptor'],
-    getComputedPropsFromVariable: () => ({ exposeAs: 'item' }),
+    getComputedPropsFromVariable: () => ({ exposeAs: 'item', children: [] }),
   }),
 );

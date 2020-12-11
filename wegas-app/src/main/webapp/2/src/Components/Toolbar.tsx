@@ -28,7 +28,8 @@ export const Toolbar = Object.assign(
     props: {
       vertical?: boolean;
       children: React.ReactElement<{}>[];
-    } & ClassAndStyle,
+      onClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+    } & ClassStyleId,
   ) {
     return (
       <div
@@ -39,6 +40,7 @@ export const Toolbar = Object.assign(
           }) + classNameOrEmpty(props.className)
         }
         style={props.style}
+        onClick={props.onClick}
       >
         {props.children}
       </div>
@@ -48,7 +50,7 @@ export const Toolbar = Object.assign(
     Header(
       props: {
         children?: React.ReactNode[] | React.ReactNode;
-      } & ClassAndStyle,
+      } & ClassStyleId,
     ) {
       return (
         <div
@@ -59,7 +61,7 @@ export const Toolbar = Object.assign(
         </div>
       );
     },
-    Content(props: { children?: React.ReactNode } & ClassAndStyle) {
+    Content(props: { children?: React.ReactNode } & ClassStyleId) {
       return (
         <div
           className={cx(flex, content) + classNameOrEmpty(props.className)}

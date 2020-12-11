@@ -8,7 +8,7 @@ const buttonZone = css({
   margin: '5px',
 });
 
-interface TextPromptProps extends ClassAndStyle {
+interface TextPromptProps extends ClassStyleId {
   /**
    * label - The label to display net to the input
    */

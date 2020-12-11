@@ -5,17 +5,29 @@ import {
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { store } from '../../../data/store';
-import { Actions } from '../../../data';
-import { useComponentScript } from '../../Hooks/useComponentScript';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { IScript, IStringDescriptor } from 'wegas-ts-api';
+import { IScript, SStringDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { SimpleInput } from '../../Inputs/SimpleInput';
-import { useScript } from '../../Hooks/useScript';
-import { useTranslate } from '../../../Editor/Components/FormView/translatable';
-import { classAndStyleShema } from '../tools/options';
+import { safeClientScriptEval, useScript } from '../../Hooks/useScript';
+import { classStyleIdShema } from '../tools/options';
+import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
+import {
+  OnVariableChange,
+  onVariableChangeSchema,
+  useOnVariableChange,
+} from './tools';
+import { useCurrentPlayer } from '../../../data/selectors/Player';
+import {
+  Validate,
+  ValidatorComponentProps,
+  validatorSchema,
+} from '../../Inputs/Validate';
 
-interface PlayerStringInput extends WegasComponentProps {
+interface PlayerStringInput
+  extends WegasComponentProps,
+    ValidatorComponentProps {
+  onVariableChange?: OnVariableChange;
   /**
    * script - the script that returns the variable to display and modify
    */
@@ -26,33 +38,76 @@ interface PlayerStringInput extends WegasComponentProps {
   placeholder?: IScript;
 }
 
-function PlayerStringInput(props: PlayerStringInput) {
-  const placeholder = useScript<string>(props.placeholder);
-  const { content, instance, notFound } = useComponentScript<IStringDescriptor>(
-    props.script,
-  );
+function PlayerStringInput({
+  placeholder,
+  context,
+  script,
+  options,
+  className,
+  style,
+  id,
+  onVariableChange,
+  validator,
+  onCancel,
+}: PlayerStringInput) {
+  const placeholderText = useScript<string>(placeholder, context);
+  const text = useScript<SStringDescriptor | string>(script, context);
+  const player = useCurrentPlayer();
 
-  const disabled = useScript<boolean>(props.disableIf);
-  const readOnly = useScript<boolean>(props.readOnlyIf);
-  const value = useTranslate(instance?.trValue);
+  const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
-  return notFound ? (
-    <pre>Not found: {content}</pre>
-  ) : (
-    <SimpleInput
-      value={value}
-      onChange={v => {
+  const { disabled, readOnly } = options;
+
+  const onChange = React.useCallback(
+    (v: React.ReactText) => {
+      if (handleOnChange) {
+        handleOnChange(v);
+      } else if (typeof text === 'object') {
         store.dispatch(
-          Actions.VariableInstanceActions.runScript(
-            `${content}.setValue(self, ${v});`,
+          runScript(
+            `Variable.find(gameModel,"${text.getName()}").setValue(self, '${v}');`,
           ),
         );
+      }
+    },
+    [handleOnChange, text],
+  );
+
+  return text == null ? (
+    <pre className={className} style={style} id={id}>
+      Not found: {script?.content}
+    </pre>
+  ) : validator ? (
+    <Validate
+      value={typeof text === 'object' ? text.getValue(player) : text}
+      onValidate={onChange}
+      onCancel={() => safeClientScriptEval(onCancel, context)}
+    >
+      {(value, onChange) => {
+        return (
+          <SimpleInput
+            value={value}
+            onChange={onChange}
+            disabled={disabled}
+            readOnly={readOnly}
+            placeholder={placeholderText}
+            className={className}
+            style={style}
+            id={id}
+          />
+        );
       }}
+    </Validate>
+  ) : (
+    <SimpleInput
+      value={typeof text === 'object' ? text.getValue(player) : text}
+      onChange={onChange}
       disabled={disabled}
       readOnly={readOnly}
-      placeholder={placeholder}
-      className={props.className}
-      style={props.style}
+      placeholder={placeholderText}
+      className={className}
+      style={style}
+      id={id}
     />
   );
 }
@@ -61,16 +116,21 @@ registerComponent(
   pageComponentFactory({
     component: PlayerStringInput,
     componentType: 'Input',
-    name: 'String',
+    name: 'String input',
     icon: 'paragraph',
     schema: {
       script: schemaProps.scriptVariable({
         label: 'Variable',
         required: true,
-        returnType: ['SStringDescriptor'],
+        returnType: ['SStringDescriptor', 'string'],
       }),
-      placeholder: schemaProps.scriptString({ label: 'Placeholder' }),
-      ...classAndStyleShema,
+      placeholder: schemaProps.scriptString({
+        label: 'Placeholder',
+        richText: true,
+      }),
+      onVariableChange: onVariableChangeSchema('On text change action'),
+      ...validatorSchema,
+      ...classStyleIdShema,
     },
     allowedVariables: ['StringDescriptor'],
     getComputedPropsFromVariable: v => ({

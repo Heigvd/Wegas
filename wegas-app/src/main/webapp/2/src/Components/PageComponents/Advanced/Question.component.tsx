@@ -6,7 +6,7 @@ import {
 import { schemaProps } from '../tools/schemaProps';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { ConnectedQuestionDisplay } from '../../Outputs/Question';
+import { ConnectedQuestionDisplay } from '../../Outputs/Question/Question';
 import { IScript, IQuestionDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 
@@ -18,9 +18,11 @@ interface QuestionDisplayProps extends WegasComponentProps {
 }
 
 export default function QuestionDisplay({ question }: QuestionDisplayProps) {
-  const { content, descriptor, notFound } = useComponentScript<
-    IQuestionDescriptor
-  >(question);
+  const {
+    content,
+    descriptor,
+    notFound,
+  } = useComponentScript<IQuestionDescriptor>(question);
 
   return notFound ? (
     <pre>Not found: {content}</pre>

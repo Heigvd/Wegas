@@ -7,7 +7,6 @@ import { useAnyStore } from '../../Hooks/storeHookFactory';
 import {
   WegasComponentProps,
   PageComponentProps,
-  ContainerComponent,
   DropZones,
 } from './EditableComponent';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
@@ -16,6 +15,9 @@ import {
   IVariableDescriptor,
   WegasClassNameAndScriptableTypes,
 } from 'wegas-ts-api';
+import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
+import { ChildrenDeserializerProps } from './PageDeserializer';
+import { classStyleIdShema } from './options';
 
 export const componentTypes = [
   'Other',
@@ -28,12 +30,28 @@ export const componentTypes = [
 
 export type ComponentType = typeof componentTypes[number];
 
+/**
+ * ContainerComponent - Defines the type and management of a container component
+ */
+export interface ContainerComponent<P = {}> {
+  isVertical: (props?: P) => boolean | undefined;
+  ChildrenDeserializer: React.FunctionComponent<ChildrenDeserializerProps<P>>;
+  noContainer?: (props?: P) => boolean | undefined;
+  childrenSchema: HashListChoices;
+  childrenLayoutKeys?: string[];
+  deleteChildren?: (
+    page: WegasComponent,
+    path: number[],
+  ) => WegasComponent | undefined;
+}
+
 export interface PageComponent<
   P extends WegasComponentProps = WegasComponentProps,
   T extends IVariableDescriptor['@class'] = IVariableDescriptor['@class']
-  > {
+> {
   WegasComponent: React.FunctionComponent<P>;
   container?: ContainerComponent<P>;
+  manageOnClick?: boolean;
   componentType: ComponentType;
   componentName: string;
   icon: Icon;
@@ -54,7 +72,7 @@ export interface PageComponent<
   ) => Omit<P, keyof PageComponentProps>;
 }
 
-interface PageComponentsState {
+export interface PageComponentsState {
   [name: string]: PageComponent;
 }
 
@@ -82,7 +100,7 @@ export const PageComponentActionCreator = {
 
 type PageComponentAction<
   A extends keyof typeof PageComponentActionCreator = keyof typeof PageComponentActionCreator
-  > = ReturnType<typeof PageComponentActionCreator[A]>;
+> = ReturnType<typeof PageComponentActionCreator[A]>;
 
 const pageComponentReducer: Reducer<
   Readonly<PageComponentsState>,
@@ -141,6 +159,7 @@ export function pageComponentFactory<
     component: React.FunctionComponent<P>;
     componentType: ComponentType;
     container?: C;
+    manageOnClick?: boolean;
     name: string;
     icon: Icon;
     dropzones?: DropZones;
@@ -148,26 +167,27 @@ export function pageComponentFactory<
     allowedVariables?: T[];
   } & (C extends undefined
     ? {
-      getComputedPropsFromVariable?: (
-        variable?: WegasClassNameAndScriptableTypes[T],
-      ) => Omit<P, keyof PageComponentProps>;
-    }
+        getComputedPropsFromVariable?: (
+          variable?: WegasClassNameAndScriptableTypes[T],
+        ) => Omit<P, keyof PageComponentProps>;
+      }
     : {
-      getComputedPropsFromVariable: (
-        variable?: WegasClassNameAndScriptableTypes[T],
-      ) => Omit<P, keyof PageComponentProps>;
-    }),
+        getComputedPropsFromVariable: (
+          variable?: WegasClassNameAndScriptableTypes[T],
+        ) => Omit<P, keyof PageComponentProps> & { children: WegasComponent[] };
+      }),
 ): PageComponent<P> {
   return {
     WegasComponent: param.component,
     componentType: param.componentType,
     container: param.container,
+    manageOnClick: param.manageOnClick,
     icon: param.icon,
     dropzones: param.dropzones,
     componentName: param.name,
     schema: {
       description: param.name,
-      properties: param.schema,
+      properties: { ...classStyleIdShema, ...param.schema },
     },
     allowedVariables: param.allowedVariables,
     getComputedPropsFromVariable: param.getComputedPropsFromVariable,

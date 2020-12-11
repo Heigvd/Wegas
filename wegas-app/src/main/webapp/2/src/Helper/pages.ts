@@ -128,7 +128,9 @@ export function visitComponents(
   const children = component.props?.children;
   if (children) {
     for (const child of children) {
-      visitComponents(child, callbackFN);
+      if (child) {
+        visitComponents(child, callbackFN);
+      }
     }
   }
 }
@@ -144,7 +146,7 @@ export const findComponent = (
   const browsePath = [...path];
   const newPage = cloneDeep(page);
   let parent: WegasComponent | undefined = undefined;
-  let component: WegasComponent = newPage;
+  let component: WegasComponent | undefined = newPage;
   while (browsePath.length > 0) {
     if (component?.props.children) {
       parent = component;
@@ -162,6 +164,7 @@ export const PAGE_LOADER_COMPONENT_TYPE = 'PageLoader';
 export interface PageLoaderComponentProps {
   name?: string;
   initialSelectedPageId: IScript;
+  loadTimer?: number;
 }
 
 export type PageLoaderComponent = WegasComponent & {
