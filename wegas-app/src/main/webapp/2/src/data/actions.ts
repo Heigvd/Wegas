@@ -70,8 +70,10 @@ export const ActionCreator = {
   }) => createAction(ActionType.EDITOR_REMOVE_EVENT_HANDLER, data),
   EDITOR_SET_CLIENT_METHOD: (data: ClientMethodPayload) =>
     createAction(ActionType.EDITOR_SET_CLIENT_METHOD, data),
-  EDITOR_REGISTER_SERVER_METHOD: (data: ServerMethodPayload) =>
-    createAction(ActionType.EDITOR_REGISTER_SERVER_METHOD, data),
+  EDITOR_REGISTER_SERVER_GLOBAL_METHOD: (data: ServerGlobalMethodPayload) =>
+    createAction(ActionType.EDITOR_REGISTER_SERVER_GLOBAL_METHOD, data),
+  EDITOR_REGISTER_SERVER_VARIABLE_METHOD: (data: ServerVariableMethodPayload) =>
+    createAction(ActionType.EDITOR_REGISTER_SERVER_VARIABLE_METHOD, data),
   EDITOR_SET_VARIABLE_SCHEMA: (data: {
     name: string;
     schemaFN?: CustomSchemaFN;
