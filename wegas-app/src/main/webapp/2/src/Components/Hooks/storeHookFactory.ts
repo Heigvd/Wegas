@@ -3,7 +3,7 @@ import { Store, AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { shallowIs } from '../../Helper/shallowIs';
 
-export function refDifferent(a: unknown, b: unknown) {
+export function refDifferent(a: any, b: any) {
   return a !== b;
 }
 export function shallowDifferent<T>(a: T, b: T) {
