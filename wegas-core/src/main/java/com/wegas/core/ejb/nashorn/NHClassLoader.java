@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -26,7 +27,11 @@ public class NHClassLoader extends ClassLoader {
         "org.apache.shiro",
         "org.postgresql",
         "java.sql",
-        "java.net"
+        "java.util.Timer",
+        "java.net",
+        "java.nio",
+        "java.lang.ProcessBuilder",
+        "org.apache"
     };
 
     private static final Logger logger = LoggerFactory.getLogger(NHClassLoader.class);
@@ -36,9 +41,9 @@ public class NHClassLoader extends ClassLoader {
         logger.trace("Try to load {}", name);
         for (String s : blacklist) {
             if (name.startsWith(s)) {
-                logger.error("{} is blacklisted !", name);
-                return null;
-            }
+            logger.error("{} is blacklisted !", name);
+            return null;
+        }
         }
 
         try {

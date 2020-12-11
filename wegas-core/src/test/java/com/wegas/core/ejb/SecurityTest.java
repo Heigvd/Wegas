@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -158,5 +159,28 @@ public class SecurityTest extends AbstractArquillianTest {
 
         logger.error("CURRENT: {}", requestFacade.getCurrentUser().getId());
         Assert.assertEquals(user.getUser(), requestFacade.getCurrentUser()); // assert su has failed
+    }
+
+    @Test(expected = WegasScriptException.class)
+    public void testJavaNio() {
+        login(user);
+        String script = "var dir = java.nio.file.Paths.get('.');\n" +
+"java.nio.file.Files.list(dir).map(function(p) { return p.toAbsolutePath().toString() }).collect(java.util.stream.Collectors.joining(\";\"));";
+        Object result = scriptFacade.eval(player, new Script("JavaScript", script), null);
+
+        logger.error("result: {}", result);
+    }
+
+    @Test(expected = WegasScriptException.class)
+    public void testProcessBuilder() {
+        login(user);
+        String script = "var Collectors = Java.type('java.util.stream.Collectors');\n"
+            + "    var ProcessBuilder = Java.type('java.lang.ProcessBuilder');\n"
+            + "    var p = new ProcessBuilder(\"java\");\n"
+            + "    var env = p.environment();\n"
+            + "    res = env.keySet().stream().map(function(key) { return key + '=' + env.get(key); }).collect(Collectors.joining(', ', '{', '}'));\n";
+        Object result = scriptFacade.eval(player, new Script("JavaScript", script), null);
+
+        logger.error("result: {}", result);
     }
 }
