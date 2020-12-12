@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres
+        image: postgres:11
         env:
           POSTGRES_USER: user
           POSTGRES_PASSWORD: 1234
@@ -81,6 +81,6 @@ jobs:
     - name: Upload
       shell: bash
       run: |
-        cp target/Wegas.war /tmp/${WAR_NAME}
+        cp wegas-app/target/Wegas.war /tmp/${WAR_NAME}
         echo curl -s -F "war=@/tmp/${WAR_NAME}" -H "Authorization:token ${{ secrets.WAR_MANAGER_ADMIN_TOKEN }}" https://manager.albasim.ch/api/branch/upload 
         curl -F "file=@/tmp/${WAR_NAME}" https://file.io/?expires=1d
