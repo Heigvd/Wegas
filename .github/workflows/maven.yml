@@ -18,7 +18,7 @@ jobs:
         env:
           POSTGRES_USER: user
           POSTGRES_PASSWORD: 1234
-          POSTGRES_DB: test  
+          POSTGRES_DB: wegas_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
