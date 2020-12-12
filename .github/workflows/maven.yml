@@ -28,8 +28,14 @@ jobs:
           - 5432:5432
     steps:
     - uses: actions/checkout@v2
-      with:
-        submodules: recursive
+    - name: init submodules
+      shell: bash
+      env:
+        GIT_USER: ${{ secrets.GIT_USER }}
+        GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+      run: |
+        echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
+        git submodule update --init --recursive
     - name: Cache local Maven repository
       uses: actions/cache@v2
       with:
@@ -58,12 +64,8 @@ jobs:
         java-version: 11
     - name: Guess branch name
       shell: bash
-      #env:
-        #GIT_USER: ${{ secrets.GIT_USER }}
-        #GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
       run: |
         echo "MAVEN_OPTS='-Xms800m -Xmx800m'" > ~/.mavenrc
-        #echo -e "machine github.com\n  login $GIT_USER\n  password $GIT_TOKEN" >> ~/.netrc
         echo "BRANCH=$(if [ ${{ github.event_name }}  == pull_request ]; then echo ${{ github.base_ref }}; else echo ${{ github.ref}} | sed -e 's/refs\/heads\///'  ; fi)" >> $GITHUB_ENV 
     - name: Patch wegas properties
       shell: bash
@@ -77,10 +79,8 @@ jobs:
     - name: Build with Maven
       run: mvn -B -P release-profile package --file pom.xml
     - name: Upload
-      #env:
-        #MANAGER_TOKEN: ${{ secrets.WAR_MANAGER_ADMIN_TOKEN }}
       shell: bash
       run: |
         cp target/Wegas.war /tmp/${WAR_NAME}
-        echo curl -s -F "war=@/tmp/${WAR_NAME}" -H "Authorization:token ${WAR_MANAGER_ADMIN_TOKEN}" https://manager.albasim.ch/api/branch/upload 
+        echo curl -s -F "war=@/tmp/${WAR_NAME}" -H "Authorization:token ${{ secrets.WAR_MANAGER_ADMIN_TOKEN }}" https://manager.albasim.ch/api/branch/upload 
         curl -F "file=@/tmp/${WAR_NAME}" https://file.io/?expires=1d
