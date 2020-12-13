@@ -50,7 +50,8 @@ jobs:
     - name: Get yarn cache directory path
       id: yarn-cache-dir-path
       run: echo "::set-output name=dir::$(yarn cache dir)"
-    - uses: actions/cache@v2
+    - name: Cache local yarn cache
+      uses: actions/cache@v2
       id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
@@ -82,6 +83,9 @@ jobs:
       shell: bash
       run: |
         cp wegas-app/target/Wegas.war /tmp/${WAR_NAME}
-        # echo curl -s -F "war=@/tmp/${WAR_NAME}" -H "Authorization:token ${{ secrets.WAR_MANAGER_ADMIN_TOKEN }}" https://manager.albasim.ch/api/branch/upload 
-        curl -s -F "war=@/tmp/${WAR_NAME}" -H "Authorization:token ${{ secrets.WAR_MANAGER_ADMIN_TOKEN }}" http://opikanoba.mooo.com:9009/api/branch/upload 
+        # echo curl -s -F "war=@/tmp/${WAR_NAME}" -H "Authorization:token ${{ secrets.WAR_MANAGER_ADMIN_TOKEN }}" https://manager.albasim.ch/api/branch/upload  > /dev/null
+        curl -s -F "war=@/tmp/${WAR_NAME}" -H "Authorization:token ${{ secrets.WAR_MANAGER_ADMIN_TOKEN }}" http://opikanoba.mooo.com:9009/api/branch/upload > /dev/null
         # curl -F "file=@/tmp/${WAR_NAME}" https://file.io/?expires=1d
+#   - name: clean maven cache
+#     shell: bash
+#     run: ./clean_repository.sh
