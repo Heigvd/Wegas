@@ -32,6 +32,9 @@ export interface FileFilter {
 }
 
 export interface FileBrowserProps extends ClassStyleId {
+  defaultFilePath?: string;
+  noDelete?: boolean;
+  readOnly?: boolean;
   onFileClick?: FileBrowserNodeProps['onFileClick'];
   onDelelteFile?: FileBrowserNodeProps['onDelelteFile'];
   selectedLocalPaths?: string[];
@@ -42,6 +45,9 @@ export interface FileBrowserProps extends ClassStyleId {
 }
 
 export function FileBrowser({
+  defaultFilePath,
+  noDelete,
+  readOnly,
   onFileClick,
   onDelelteFile,
   selectedLocalPaths,
@@ -58,7 +64,7 @@ export function FileBrowser({
   const comp = React.useRef(); // Safeguard to avoid changing state when unmounted comp
 
   React.useEffect(() => {
-    FileAPI.getFileMeta()
+    FileAPI.getFileMeta(defaultFilePath ? defaultFilePath : undefined)
       .then(file => setRootFile(file))
       .catch(({ statusText }: Response) => {
         if (comp.current) {
@@ -66,7 +72,7 @@ export function FileBrowser({
           setError(statusText);
         }
       });
-  }, []);
+  }, [defaultFilePath]);
 
   return rootFile ? (
     <DefaultDndProvider>
@@ -82,7 +88,8 @@ export function FileBrowser({
           selectedLocalPaths={selectedLocalPaths}
           selectedGlobalPaths={selectedGlobalPaths}
           noBracket
-          noDelete
+          noDelete={noDelete}
+          readOnly={readOnly}
           onFileClick={onFileClick}
           onDelelteFile={onDelelteFile}
           localDispatch={localDispatch}
