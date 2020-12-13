@@ -82,5 +82,6 @@ jobs:
       shell: bash
       run: |
         cp wegas-app/target/Wegas.war /tmp/${WAR_NAME}
-        echo curl -s -F "war=@/tmp/${WAR_NAME}" -H "Authorization:token ${{ secrets.WAR_MANAGER_ADMIN_TOKEN }}" https://manager.albasim.ch/api/branch/upload 
-        curl -F "file=@/tmp/${WAR_NAME}" https://file.io/?expires=1d
+        # echo curl -s -F "war=@/tmp/${WAR_NAME}" -H "Authorization:token ${{ secrets.WAR_MANAGER_ADMIN_TOKEN }}" https://manager.albasim.ch/api/branch/upload 
+        echo curl -s -F "war=@/tmp/${WAR_NAME}" -H "Authorization:token ${{ secrets.WAR_MANAGER_ADMIN_TOKEN }}" http://opikanoba.mooo.com:9009/api/branch/upload 
+        # curl -F "file=@/tmp/${WAR_NAME}" https://file.io/?expires=1d
