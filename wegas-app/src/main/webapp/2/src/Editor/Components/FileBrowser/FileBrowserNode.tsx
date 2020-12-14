@@ -402,7 +402,7 @@ export function FileBrowserNode({
           }
         });
       }
-    }, !readOnly),
+    }, readOnly),
   );
 
   const timeoutBeforeExpend = 1000;
