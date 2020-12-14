@@ -65,7 +65,7 @@ public class Beanjection implements Serializable {
         UserFacade userFacade,
         AccountFacade accountFacade,
         TeamFacade teamFacade,
-        QuestionDescriptorFacade questionDescriptorFacade, 
+        QuestionDescriptorFacade questionDescriptorFacade,
         GameFacade gameFacade) {
         this.variableInstanceFacade = variableInstanceFacade;
         this.variableDescriptorFacade = variableDescriptorFacade;

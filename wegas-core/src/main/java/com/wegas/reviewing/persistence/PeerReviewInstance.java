@@ -10,6 +10,7 @@ package com.wegas.reviewing.persistence;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -148,20 +149,20 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        Collection<WegasPermission> ps = super.getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        Collection<WegasPermission> ps = super.getRequieredReadPermission(context);
 
         // reviewer also have right to read
         for (Review r : getReviewed()) {
             // review may not be fully loaded yet...
             r.setBeanjection(this.beans);
-            ps.addAll(r.getRequieredReadPermission());
+            ps.addAll(r.getRequieredReadPermission(context));
         }
         // so authors have
         for (Review r : getToReview()) {
             // review may not be fully loaded yet...
             r.setBeanjection(this.beans);
-            ps.addAll(r.getRequieredReadPermission());
+            ps.addAll(r.getRequieredReadPermission(context));
         }
         return ps;
     }
@@ -170,23 +171,23 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
      * Skip this {@link #getRequieredUpdatePermission() } implementation.
      * call super one.
      */
-    private Collection<WegasPermission> getSuperRequieredUpdatePermission() {
-        return super.getRequieredUpdatePermission();
+    private Collection<WegasPermission> getSuperRequieredUpdatePermission(RequestContext context) {
+        return super.getRequieredUpdatePermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        Collection<WegasPermission> ps = super.getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        Collection<WegasPermission> ps = super.getRequieredUpdatePermission(context);
         for (Review r : getReviewed()) {
             // when they'er reviewing, reviewers also have right to write (optmisticlock = cascade on variableinstance !)
             if (r.getInitialReviewState().equals(Review.ReviewState.DISPATCHED)) {
-                ps.addAll(r.getReviewer().getSuperRequieredUpdatePermission()); // avoid infinite loop
+                ps.addAll(r.getReviewer().getSuperRequieredUpdatePermission(context)); // avoid infinite loop
             }
         }
         for (Review r : getToReview()) {
             // when they'er commenting the feedback, authors also have right to write (optmisticlock = cascade on variableinstance !)
             if (r.getInitialReviewState().equals(Review.ReviewState.NOTIFIED)) {
-                ps.addAll(r.getAuthor().getSuperRequieredUpdatePermission()); // avoid infinite loop
+                ps.addAll(r.getAuthor().getSuperRequieredUpdatePermission(context)); // avoid infinite loop
             }
         }
         return ps;

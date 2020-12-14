@@ -10,6 +10,7 @@ package com.wegas.survey.persistence.input;
 import ch.albasim.wegas.annotations.CommonView;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.annotations.Errored;
@@ -162,13 +163,13 @@ public class SurveyNumberDescriptor extends SurveyInputDescriptor {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getSection().getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        return this.getSection().getRequieredUpdatePermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getSection().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return this.getSection().getRequieredReadPermission(context);
     }
 
 }

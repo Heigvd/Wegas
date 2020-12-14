@@ -12,6 +12,7 @@ import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.Player;
@@ -330,7 +331,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         Collection<WegasPermission> p = WegasPermission.getAsCollection(
             this.getAssociatedWritePermission()
         );
@@ -339,12 +340,12 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         return null;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
         //Sign-Up
         return null;
     }

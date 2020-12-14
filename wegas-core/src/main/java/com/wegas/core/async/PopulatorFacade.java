@@ -26,12 +26,11 @@ import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.util.ActAsPlayer;
+import com.wegas.core.security.util.ScriptExecutionContext;
 import com.wegas.core.security.util.Sudoer;
-import fish.payara.notification.requesttracing.RequestTraceSpanContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -103,11 +102,13 @@ public class PopulatorFacade extends WegasAbstractFacade {
             utx.begin();
             team = teamFacade.find(teamId);
             requestManager.setCurrentTeam(team);
-            Game game = gameFacade.find(team.getGameId());
-            gameModelFacade.createAndRevivePrivateInstance(game.getGameModel(), team);
+            try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
+                Game game = gameFacade.find(team.getGameId());
+                gameModelFacade.createAndRevivePrivateInstance(game.getGameModel(), team);
 
-            team.setStatus(Status.LIVE);
+                team.setStatus(Status.LIVE);
 
+            }
             utx.commit();
         } catch (Exception ex) {
             logger.error("Populate Team: Failure", ex);
@@ -142,19 +143,20 @@ public class PopulatorFacade extends WegasAbstractFacade {
             try (ActAsPlayer acting = requestManager.actAsPlayer(player)) {
                 acting.setFlushOnExit(false); // user managed TX
 
-                // Inform player's user its player is processing
-                websocketFacade.propagateNewPlayer(player);
-                Team team = teamFacade.find(player.getTeamId());
+                try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
+                    // Inform player's user its player is processing
+                    websocketFacade.propagateNewPlayer(player);
+                    Team team = teamFacade.find(player.getTeamId());
 
-                gameModelFacade.createAndRevivePrivateInstance(team.getGame().getGameModel(), player);
+                    gameModelFacade.createAndRevivePrivateInstance(team.getGame().getGameModel(), player);
 
-                player.setStatus(Status.INITIALIZING);
-                this.flush();
+                    player.setStatus(Status.INITIALIZING);
+                    this.flush();
 
-                stateMachineFacade.runStateMachines(player);
+                    stateMachineFacade.runStateMachines(player);
 
-                player.setStatus(Status.LIVE);
-                this.flush();
+                    player.setStatus(Status.LIVE);
+                }
 
                 utx.commit();
                 websocketFacade.propagateNewPlayer(player);

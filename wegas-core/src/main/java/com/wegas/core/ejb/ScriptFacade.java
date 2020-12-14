@@ -41,6 +41,7 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.statemachine.AbstractTransition;
 import com.wegas.core.security.util.ActAsPlayer;
+import com.wegas.core.security.util.ScriptExecutionContext;
 import com.wegas.log.xapi.Xapi;
 import com.wegas.log.xapi.XapiI;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
@@ -52,6 +53,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -283,29 +285,32 @@ public class ScriptFacade extends WegasAbstractFacade {
             logger.error("noSuchProperty injection", e);
         }
 
-        /**
-         * Inject hard server scripts first
-         */
-        this.injectStaticScript(ctx, player.getGameModel());
+        // Server script are internal
+        try (ScriptExecutionContext context = requestManager.switchToInternalExecContext(true)) {
+            /**
+             * Inject hard server scripts first
+             */
+            this.injectStaticScript(ctx, player.getGameModel());
 
-        /**
-         * Then inject soft ones. It means a soft script may override methods defined in a hard
-         * coded one
-         */
-        for (GameModelContent script : player.getGameModel().getScriptLibraryList()) {
-            ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + script.getContentKey(), ScriptContext.ENGINE_SCOPE);
+            /**
+             * Then inject soft ones. It means a soft script may override methods defined in a hard
+             * coded one
+             */
+            for (GameModelContent script : player.getGameModel().getScriptLibraryList()) {
+                ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + script.getContentKey(), ScriptContext.ENGINE_SCOPE);
 
-            String cacheFileName = "soft:" + player.getGameModel().getId() + ":" + script.getContentKey();
-            String version = script.getVersion().toString();
+                String cacheFileName = "soft:" + player.getGameModel().getId() + ":" + script.getContentKey();
+                String version = script.getVersion().toString();
 
-            CachedScript cached = getCachedScript(cacheFileName, version, script.getContent());
+                CachedScript cached = getCachedScript(cacheFileName, version, script.getContent());
 
-            try {
-                cached.script.eval(ctx);
-            } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
-                throw new WegasScriptException("Server script " + script.getContentKey(), ex.getLineNumber(), ex.getMessage());
-            } catch (Exception ex) { // Java exception (Java -> JS -> Java -> throw)
-                throw new WegasScriptException("Server script " + script.getContentKey(), ex.getMessage());
+                try {
+                    cached.script.eval(ctx);
+                } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
+                    throw new WegasScriptException("Server script " + script.getContentKey(), ex.getLineNumber(), ex.getMessage());
+                } catch (Exception ex) { // Java exception (Java -> JS -> Java -> throw)
+                    throw new WegasScriptException("Server script " + script.getContentKey(), ex.getMessage());
+                }
             }
         }
         return ctx;
@@ -721,7 +726,7 @@ public class ScriptFacade extends WegasAbstractFacade {
      *
      * @throws WegasScriptException
      */
-    public Object eval(Long playerId, Script s, VariableDescriptor context) throws WegasScriptException { // ICI CONTEXT
+    public Object eval(Long playerId, Script s, VariableDescriptor context) throws WegasScriptException {
         Map<String, AbstractEntity> arguments = new HashMap<>();
         arguments.put(ScriptFacade.CONTEXT, context);
         return this.eval(playerFacade.find(playerId), s, arguments);

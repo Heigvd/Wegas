@@ -40,7 +40,8 @@ YUI.add('wegas-pusher-connector', function(Y) {
                 "Player": "private-Player-",
                 "Team": "private-Team-",
                 "Game": "private-Game-",
-                "GameModel": "private-GameModel-"
+                "GameModel": "private-GameModel-",
+                "GameModelEditor": "private-GameModelEditor-"
             };
             this.pusherInstance = null;
             this.pusherInit(cfg);
@@ -81,6 +82,11 @@ YUI.add('wegas-pusher-connector', function(Y) {
                     Y.Wegas.Facade.Game.get("currentTeamId")).bind_global(Y.bind(this.eventReceived, this));
                 this.pusherInstance.subscribe(this.channel_prefix.Player +
                     Y.Wegas.Facade.Game.get("currentPlayerId")).bind_global(Y.bind(this.eventReceived, this));
+            }
+
+            if (this.get("editorChannel")) {
+                this.pusherInstance.subscribe(this.channel_prefix.GameModelEditor +
+                    Y.Wegas.Facade.GameModel.get("currentGameModelId")).bind_global(Y.bind(this.eventReceived, this));
             }
 
             this.pusherInstance.subscribe(this.channel_prefix.Global).bind_global(Y.bind(this.eventReceived, this));
@@ -190,7 +196,7 @@ YUI.add('wegas-pusher-connector', function(Y) {
                 eChannel = channel;
             if (channel === "Game") {
                 id = Y.Wegas.Facade.Game.get("currentGameId");
-                eChannel = "private-Game" +id;
+                eChannel = "private-Game" + id;
             } else if (channel === "Team") {
                 id = Y.Wegas.Facade.Game.get("currentTeamId");
                 eChannel = "private-Game-" + id;
@@ -244,6 +250,9 @@ YUI.add('wegas-pusher-connector', function(Y) {
             },
             mode: {
                 value: "FULL"
+            },
+            editorChannel: {
+                value: false
             }
         }
     });

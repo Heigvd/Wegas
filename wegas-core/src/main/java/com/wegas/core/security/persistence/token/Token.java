@@ -9,7 +9,7 @@
 package com.wegas.core.security.persistence.token;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
@@ -212,9 +212,9 @@ public abstract class Token extends AbstractEntity {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         if (account != null) {
-            return account.getRequieredUpdatePermission();
+            return account.getRequieredUpdatePermission(context);
         } else {
             // admin only
             return WegasMembership.ADMIN;

@@ -10,7 +10,6 @@ package com.wegas.core.persistence.game;
 
 import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.INTERNAL;
 import ch.albasim.wegas.annotations.ProtectionLevel;
-import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
@@ -22,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.jta.JCRClient;
@@ -50,6 +50,7 @@ import com.wegas.editor.view.Hidden;
 import com.wegas.editor.view.NumberView;
 import com.wegas.editor.view.StringView;
 import com.wegas.editor.view.Textarea;
+import java.beans.Beans;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
@@ -1198,13 +1199,17 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
         return Helper.GAMEMODEL_CHANNEL_PREFIX + getId();
     }
 
+    public String getEditorChannel() {
+        return Helper.GAMEMODEL_EDITOR_CHANNEL_PREFIX + getId();
+    }
+
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         return WegasPermission.getAsCollection(this.getAssociatedWritePermission());
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         return WegasPermission.getAsCollection(this.getAssociatedReadPermission());
     }
 
@@ -1270,7 +1275,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
         if (this.isPlay()) {
             return WegasMembership.TRAINER;
         } else {

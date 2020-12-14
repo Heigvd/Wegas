@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -31,6 +32,7 @@ import com.wegas.core.persistence.variable.statemachine.DialogueState;
 import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
+import com.wegas.core.security.util.ScriptExecutionContext;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -59,7 +61,6 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
      * {@value #EVENT_PARAMETER_NAME}
      */
     //static final private String EVENT_PARAMETER_NAME = "param";
-
     @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
     @Inject
@@ -135,16 +136,19 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
     }
 
     private void runForPlayer(Player player) throws WegasScriptException {
-        List<AbstractStateMachineDescriptor> statemachines = this.getAllStateMachines(player.getGameModel());
-        List<AbstractTransition> passed = new ArrayList<>();
-        //stateMachineEventsCounter = new InternalStateMachineEventCounter();
-        Integer steps = this.doSteps(player, passed, statemachines, 0);
-        logger.info("#steps[{}] - Player {} triggered transition(s):{}", steps, player.getName(), passed);
-        //stateMachineEventsCounter = null;
-        /*
+        // State machine only contains internal scripts
+        try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)){
+            List<AbstractStateMachineDescriptor> statemachines = this.getAllStateMachines(player.getGameModel());
+            List<AbstractTransition> passed = new ArrayList<>();
+            //stateMachineEventsCounter = new InternalStateMachineEventCounter();
+            Integer steps = this.doSteps(player, passed, statemachines, 0);
+            logger.info("#steps[{}] - Player {} triggered transition(s):{}", steps, player.getName(), passed);
+            //stateMachineEventsCounter = null;
+            /*
         Force resources release
-         */
-        //getEntityManager().flush();
+             */
+            //getEntityManager().flush();
+        }
     }
 
     private Integer doSteps(Player player, List<AbstractTransition> passedTransitions, List<AbstractStateMachineDescriptor> stateMachineDescriptors, Integer steps) throws WegasScriptException {
@@ -172,8 +176,8 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                         break; // already have a valid transition
                     }
                     if (transition instanceof DialogueTransition
-                            && ((DialogueTransition) transition).getActionText() != null
-                            && !((DialogueTransition) transition).getActionText().translateOrEmpty(player).isEmpty()) {                 // Dialogue, don't eval if not null or empty
+                        && ((DialogueTransition) transition).getActionText() != null
+                        && !((DialogueTransition) transition).getActionText().translateOrEmpty(player).isEmpty()) {                 // Dialogue, don't eval if not null or empty
 
                         logger.trace("Ignore dialogue transition (explicit user action is requiered)");
                         continue;
@@ -201,7 +205,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                     if (validTransition == null) {
                         logger.trace("Condition return null !");
                         throw WegasErrorMessage.error("Please review condition [" + sm.getLabel() + "]:\n"
-                                + transition.getTriggerCondition().getContent());
+                            + transition.getTriggerCondition().getContent());
                     } else if (validTransition) {
                         logger.trace("Valid transition found");
                         if (passedTransitions.contains(transition)) {
@@ -269,7 +273,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
      */
     private Boolean isNotDefined(Script script) {
         return script == null || script.getContent() == null
-                || script.getContent().equals("");
+            || script.getContent().equals("");
     }
 
     public StateMachineInstance doTransition(Long gameModelId, Long playerId, Long stateMachineDescriptorId, Long transitionId) {
@@ -287,7 +291,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
             AbstractTransition aTransition = findTransition(transitionId);
 
             if (aTransition instanceof DialogueTransition
-                    && currentState.equals(aTransition.getState())) {
+                && currentState.equals(aTransition.getState())) {
                 DialogueTransition transition = (DialogueTransition) aTransition;
 
                 if (isTransitionValid(transition, playerId, dd)) {
@@ -330,10 +334,10 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
         final public DialogueState to;
 
         private TransitionTraveled(DialogueDescriptor descriptor,
-                StateMachineInstance instance,
-                DialogueTransition transition,
-                DialogueState from,
-                DialogueState to) {
+            StateMachineInstance instance,
+            DialogueTransition transition,
+            DialogueState from,
+            DialogueState to) {
             this.descriptor = descriptor;
             this.instance = instance;
             this.transition = transition;
@@ -345,10 +349,12 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
     @Override
     public long countValidTransition(DialogueDescriptor dialogueDescriptor, Player currentPlayer) {
         long count = 0;
-        DialogueState currentState = (DialogueState) dialogueDescriptor.getInstance(currentPlayer).getCurrentState();
-        for (DialogueTransition transition : currentState.getTransitions()) {
-            if (isTransitionValid(transition, currentPlayer.getId(), dialogueDescriptor)) {
-                count++;
+        try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
+            DialogueState currentState = (DialogueState) dialogueDescriptor.getInstance(currentPlayer).getCurrentState();
+            for (DialogueTransition transition : currentState.getTransitions()) {
+                if (isTransitionValid(transition, currentPlayer.getId(), dialogueDescriptor)) {
+                    count++;
+                }
             }
         }
         return count;

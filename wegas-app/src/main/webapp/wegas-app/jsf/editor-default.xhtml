@@ -154,6 +154,7 @@
                                 applicationKey: "#{editorGameController.getWegasProperty('pusher.key')}",
                                 cluster: "#{editorGameController.getWegasProperty('pusher.cluster')}",
                                 mode: '<ui:insert name="pusherMode">FULL</ui:insert>',
+                                editorChannel: true,
                                 plugins: [{
                                         fn: "WebSocketListener",
                                         cfg: {

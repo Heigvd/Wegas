@@ -130,7 +130,6 @@ public class RequestFacade {
 
                 if (requestManager.getUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
                     stateMachineFacade.runStateMachines(player);
-                    em.flush();
                 }
             }
         }

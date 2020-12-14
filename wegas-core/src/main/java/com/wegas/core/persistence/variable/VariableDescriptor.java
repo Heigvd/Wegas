@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
@@ -59,10 +61,12 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.EmptyString;
+import com.wegas.editor.ValueGenerators.IsolationVal;
 import com.wegas.editor.ValueGenerators.TeamScopeVal;
 import com.wegas.editor.ValueGenerators.Zero;
 import com.wegas.editor.Visible;
 import com.wegas.editor.view.I18nStringView;
+import com.wegas.editor.view.IsolationSelectView;
 import com.wegas.editor.view.NumberView;
 import com.wegas.editor.view.SelectView;
 import com.wegas.editor.view.Textarea;
@@ -180,6 +184,10 @@ import org.slf4j.LoggerFactory;
     query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id in :gameModelIds AND TYPE(vd) IN :types"
 )
 @NamedQuery(
+    name = "VariableDescriptor.findReadableDescriptors",
+    query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.isolation <> com.wegas.core.persistence.variable.VariableDescriptor.Isolation.HIDDEN"
+)
+@NamedQuery(
     name = "VariableDescriptor.findByGameModelIdAndName",
     query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
     hints = {
@@ -227,10 +235,29 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     protected static final Logger logger = LoggerFactory.getLogger(VariableDescriptor.class);
 
     /**
+     *
+     */
+    public enum Isolation {
+        /**
+         * Indicates the variable is fully accessible to players. It means it can be modified
+         * directly with a script submitted through the REST API
+         */
+        OPEN,
+        /**
+         * Indicates the variable is not directly writeable by players.
+         */
+        SECURED,
+        /**
+         * NOT YET IMPLEMENTED. The variable is not even visible to players.
+         */
+        HIDDEN
+    }
+
+    /**
      * HACK
      * <p>
-     * Injecting VariableDescriptorFacade here don't bring business logic within data because the very only
-     * functionality that is being used here aims to replace some slow JPA mechanisms
+     * Injecting VariableDescriptorFacade here don't bring business logic within data because the
+     * very only functionality that is being used here aims to replace some slow JPA mechanisms
      * <p>
      */
     @JsonIgnore
@@ -260,7 +287,8 @@ public abstract class VariableDescriptor<T extends VariableInstance>
      *
      * The default instance for this variable.
      * <p>
-     * According to WegasPatch spec, OVERRIDE should not be propagated to the instance when the descriptor is protected
+     * According to WegasPatch spec, OVERRIDE should not be propagated to the instance when the
+     * descriptor is protected
      * <p>
      * Here we cannot use type T, otherwise jpa won't handle the db ref correctly
      */
@@ -315,6 +343,18 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         ))
     @Visible(ModelScoped.BelongsToModel.class)
     private Visibility visibility = Visibility.PRIVATE;
+
+    @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
+    @Enumerated(value = EnumType.STRING)
+    @WegasEntityProperty(nullable = false,
+        proposal = IsolationVal.class,
+        view = @View(
+            featureLevel = ADVANCED,
+            label = "Isolation",
+            value = IsolationSelectView.class,
+            index = -299
+        ))
+    private Isolation isolation = Isolation.OPEN;
 
     /**
      * a token to prefix the label with. For editors only
@@ -655,7 +695,8 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     /**
-     * @param defaultInstance indicate whether one wants the default instance r the one belonging to player
+     * @param defaultInstance indicate whether one wants the default instance r the one belonging to
+     *                        player
      * @param player          the player
      *
      * @return either the default instance of the one belonging to player
@@ -825,6 +866,14 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         this.visibility = visibility;
     }
 
+    public Isolation getIsolation() {
+        return isolation;
+    }
+
+    public void setIsolation(Isolation isolation) {
+        this.isolation = isolation;
+    }
+
     /**
      *
      */
@@ -836,8 +885,8 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     /**
-     * @param context allow to circumscribe the propagation within the given context. It may be an instance of
-     *                GameModel, Game, Team, or Player
+     * @param context allow to circumscribe the propagation within the given context. It may be an
+     *                instance of GameModel, Game, Team, or Player
      */
     public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         int sFlag = 0;
@@ -946,13 +995,17 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getGameModel().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        if (context == RequestContext.EXTERNAL && this.getIsolation() == Isolation.HIDDEN) {
+            return this.getGameModel().getRequieredUpdatePermission(context);
+        } else {
+            return this.getGameModel().getRequieredReadPermission(context);
+        }
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getGameModel().getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        return this.getGameModel().getRequieredUpdatePermission(context);
     }
 
     public static class CheckScope extends Or {

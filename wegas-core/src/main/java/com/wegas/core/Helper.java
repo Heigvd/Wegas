@@ -73,6 +73,7 @@ public class Helper {
     public static final String TEAM_CHANNEL_PREFIX = "private-Team-";
     public static final String GAME_CHANNEL_PREFIX = "private-Game-";
     public static final String GAMEMODEL_CHANNEL_PREFIX = "private-GameModel-";
+    public static final String GAMEMODEL_EDITOR_CHANNEL_PREFIX = "private-GameModelEditor-";
 
     private Helper() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");

@@ -8,6 +8,7 @@
 package com.wegas.core.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
 
@@ -28,16 +29,16 @@ public interface WithPermission extends Mergeable {
      * @return
      */
     @JsonIgnore
-    Collection<WegasPermission> getRequieredCreatePermission();
+    Collection<WegasPermission> getRequieredCreatePermission(RequestContext context);
 
     @JsonIgnore
-    Collection<WegasPermission> getRequieredDeletePermission();
+    Collection<WegasPermission> getRequieredDeletePermission(RequestContext context);
 
     @JsonIgnore
-    Collection<WegasPermission> getRequieredReadPermission();
+    Collection<WegasPermission> getRequieredReadPermission(RequestContext context);
 
     @JsonIgnore
-    Collection<WegasPermission> getRequieredUpdatePermission();
+    Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context);
 
 
     @Override

@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -15,6 +16,7 @@ import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
@@ -24,6 +26,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
+import com.wegas.core.persistence.variable.VariableDescriptor.Isolation;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.ObjectInstance;
@@ -83,28 +86,40 @@ import org.eclipse.persistence.config.QueryType;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQuery(name = "VariableInstance.findPlayerInstance",
-        query = "SELECT vi FROM VariableInstance vi WHERE "
-        + "(vi.player.id = :playerId AND vi.playerScope.id = :scopeId)",
-        hints = {
-            @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
-            @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
-        }
+    query = "SELECT vi FROM VariableInstance vi WHERE "
+    + "(vi.player.id = :playerId AND vi.playerScope.id = :scopeId)",
+    hints = {
+        @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+        @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+    }
 )
 @NamedQuery(name = "VariableInstance.findTeamInstance",
-        query = "SELECT vi FROM VariableInstance vi WHERE "
-        + "(vi.team.id = :teamId AND vi.teamScope.id = :scopeId)",
-        hints = {
-            @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
-            @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
-        }
+    query = "SELECT vi FROM VariableInstance vi WHERE "
+    + "(vi.team.id = :teamId AND vi.teamScope.id = :scopeId)",
+    hints = {
+        @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+        @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+    }
 )
 @NamedQuery(name = "VariableInstance.findAllPlayerInstances",
-        query = "SELECT vi FROM VariableInstance vi WHERE "
-        + "(vi.playerScope.id = :scopeId)"
+    query = "SELECT vi FROM VariableInstance vi WHERE "
+    + "(vi.playerScope.id = :scopeId)"
 )
 @NamedQuery(name = "VariableInstance.findAllTeamInstances",
-        query = "SELECT vi FROM VariableInstance vi WHERE "
-        + "(vi.teamScope.id = :scopeId)"
+    query = "SELECT vi FROM VariableInstance vi WHERE "
+    + "(vi.teamScope.id = :scopeId)"
+)
+@NamedQuery(name = "VariableInstance.findReadablePlayerInstances",
+    query = "SELECT vi FROM VariableInstance vi WHERE "
+    + "(vi.player.id = :playerId AND vi.playerScope.variableDescriptor.isolation <> com.wegas.core.persistence.variable.VariableDescriptor.Isolation.HIDDEN)"
+)
+@NamedQuery(name = "VariableInstance.findReadableTeamInstances",
+    query = "SELECT vi FROM VariableInstance vi WHERE"
+    + "(vi.team.id = :teamId AND vi.teamScope.variableDescriptor.isolation <> com.wegas.core.persistence.variable.VariableDescriptor.Isolation.HIDDEN)"
+)
+@NamedQuery(name = "VariableInstance.findReadableGameModelInstances",
+    query = "SELECT vi FROM VariableInstance vi WHERE "
+    + "(vi.gameModel.id = :gameModelId AND vi.gameModelScope.variableDescriptor.isolation <> com.wegas.core.persistence.variable.VariableDescriptor.Isolation.HIDDEN)"
 )
 @CacheIndexes(value = {
     @CacheIndex(columnNames = {"GAMEMODELSCOPE_ID", "GAMEMODEL_ID"}),
@@ -150,13 +165,13 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
-            sameEntityOnly = true, view = @View(
-                    index = -999,
-                    label = "Version",
-                    readOnly = true,
-                    value = NumberView.class,
-                    featureLevel = ADVANCED
-            ))
+        sameEntityOnly = true, view = @View(
+            index = -999,
+            label = "Version",
+            readOnly = true,
+            value = NumberView.class,
+            featureLevel = ADVANCED
+        ))
     @JsonView(Views.IndexI.class)
     private Long version;
 
@@ -274,6 +289,12 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     public String getAudience() {
         InstanceOwner audienceOwner = getBroadcastTarget();
         if (audienceOwner != null) {
+            VariableDescriptor descriptor = this.getDescriptor();
+            if (descriptor != null) {
+                if (descriptor.getIsolation() == Isolation.HIDDEN){
+                    return descriptor.getGameModel().getEditorChannel();
+                }
+            }
             return audienceOwner.getChannel();
         } else {
             return null;
@@ -347,10 +368,10 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     @JsonView(Views.IndexI.class)
     @WegasExtraProperty(view = @View(
-            index = -500,
-            label = "Scope Key",
-            featureLevel = CommonView.FEATURE_LEVEL.INTERNAL,
-            value = NumberView.class
+        index = -500,
+        label = "Scope Key",
+        featureLevel = CommonView.FEATURE_LEVEL.INTERNAL,
+        value = NumberView.class
     ))
     public Long getScopeKey() {
         if (this.getTeamScope() != null) {
@@ -387,7 +408,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * Get instance descriptor through its scope for regular instance or the default descriptor id for default instances
+     * Get instance descriptor through its scope for regular instance or the default descriptor id
+     * for default instances
      *
      * @return descriptor id
      */
@@ -445,7 +467,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return the team or null if this instance doesn't belong to a team (belonging to the game for instance)
+     * @return the team or null if this instance doesn't belong to a team (belonging to the game for
+     *         instance)
      */
     @JsonIgnore
     public TeamScope getTeamScope() {
@@ -562,15 +585,22 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         if (this.getScope() == null) {
             // Default Instance is only editable with edit permission on Descriptor
-            return this.getDefaultDescriptor().getRequieredUpdatePermission();
+            return this.getDefaultDescriptor().getRequieredUpdatePermission(context);
         } else {
-            if (this.getTeamScope() != null || this.getPlayerScope() != null) {
-                return WegasPermission.getAsCollection(this.getEffectiveOwner().getAssociatedWritePermission());
-            } else if (this.getGameModelScope() != null) {
-                return WegasPermission.getAsCollection(this.getEffectiveOwner().getAssociatedReadPermission());
+
+            if (context == RequestContext.EXTERNAL && getDescriptor().getIsolation() != Isolation.OPEN) {
+                // only game superuser can update non-open variable in an external context
+                return this.getDescriptor().getRequieredUpdatePermission(context);
+            } else {
+                if (this.getTeamScope() != null || this.getPlayerScope() != null) {
+                    return WegasPermission.getAsCollection(this.getEffectiveOwner().getAssociatedWritePermission());
+                } else if (this.getGameModelScope() != null) {
+                    // anybody who has access to the game model can write global variables
+                    return WegasPermission.getAsCollection(this.getEffectiveOwner().getAssociatedReadPermission());
+                }
             }
         }
 
@@ -578,26 +608,41 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         WegasPermission perm = null;
-        if (this.getTeam() != null) {
-            if (this.getTeamScope().getBroadcastScope() == ScopeType.GameModelScope) {
-                perm = this.getTeam().getGame().getAssociatedReadPermission();
-            } else {
-                perm = this.getTeam().getAssociatedWritePermission();
-            }
-        } else if (this.getPlayer() != null) {
-            if (this.getPlayerScope().getBroadcastScope() == ScopeType.TeamScope) {
-                perm = this.getPlayer().getTeam().getAssociatedWritePermission();
-            } else if (this.getPlayerScope().getBroadcastScope() == ScopeType.GameModelScope) {
-                perm = this.getPlayer().getGame().getAssociatedReadPermission();
-            } else {
-                perm = this.getPlayer().getAssociatedWritePermission();
-            }
-        } else if (this.gameModelScope != null) {
-            perm = this.getGameModel().getAssociatedReadPermission();
+        if (this.getScope() == null) {
+            // Default instance case
+            return this.getDefaultDescriptor().getGameModel().getRequieredReadPermission(context);
         } else {
-            return this.getDefaultDescriptor().getGameModel().getRequieredReadPermission();
+            // effectives instance cases
+
+            if (context == RequestContext.EXTERNAL) {
+                VariableDescriptor descriptor = this.getDescriptor();
+                if (descriptor.getIsolation() == Isolation.HIDDEN) {
+                    // Variable is hidden to players
+                    perm = this.getTeam().getGame().getAssociatedWritePermission();
+                }
+            }
+
+            if (perm == null) {
+                if (this.getTeam() != null) {
+                    if (this.getTeamScope().getBroadcastScope() == ScopeType.GameModelScope) {
+                        perm = this.getTeam().getGame().getAssociatedReadPermission();
+                    } else {
+                        perm = this.getTeam().getAssociatedWritePermission();
+                    }
+                } else if (this.getPlayer() != null) {
+                    if (this.getPlayerScope().getBroadcastScope() == ScopeType.TeamScope) {
+                        perm = this.getPlayer().getTeam().getAssociatedWritePermission();
+                    } else if (this.getPlayerScope().getBroadcastScope() == ScopeType.GameModelScope) {
+                        perm = this.getPlayer().getGame().getAssociatedReadPermission();
+                    } else {
+                        perm = this.getPlayer().getAssociatedWritePermission();
+                    }
+                } else if (this.gameModelScope != null) {
+                    perm = this.getGameModel().getAssociatedReadPermission();
+                }
+            }
         }
         return WegasPermission.getAsCollection(perm);
     }

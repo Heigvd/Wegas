@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -340,20 +341,20 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
      */
     @JsonIgnore
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
-        return this.getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
+        return this.getRequieredUpdatePermission(context);
     }
 
     @JsonIgnore
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return this.getRequieredUpdatePermission(context);
     }
 
     @JsonIgnore
     @Override
-    public Collection<WegasPermission> getRequieredDeletePermission() {
-        return this.getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredDeletePermission(RequestContext context) {
+        return this.getRequieredUpdatePermission(context);
     }
 
     public boolean isPersisted() {

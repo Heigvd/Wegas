@@ -13,6 +13,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.WithPermission;
@@ -218,13 +219,13 @@ public abstract class SurveyInputDescriptor
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        return this.getMergeableParent().getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        return this.getMergeableParent().getRequieredUpdatePermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return this.getMergeableParent().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return this.getMergeableParent().getRequieredReadPermission(context);
     }
 
     @Override

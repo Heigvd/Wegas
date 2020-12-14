@@ -12,6 +12,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.GameModel;
@@ -227,23 +228,23 @@ public class Translation implements WithPermission {
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
-        return this.getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
+        return this.getRequieredUpdatePermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredDeletePermission() {
-        return getMergeableParent().getRequieredDeletePermission();
+    public Collection<WegasPermission> getRequieredDeletePermission(RequestContext context) {
+        return getMergeableParent().getRequieredDeletePermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
-        return getMergeableParent().getRequieredReadPermission();
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
+        return getMergeableParent().getRequieredReadPermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
-        Collection<WegasPermission> perms = this.getMergeableParent().getRequieredUpdatePermission();
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
+        Collection<WegasPermission> perms = this.getMergeableParent().getRequieredUpdatePermission(context);
 
         GameModel gm = this.getParentGameModel();
 

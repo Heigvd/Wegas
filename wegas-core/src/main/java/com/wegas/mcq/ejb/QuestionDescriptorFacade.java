@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -12,6 +13,7 @@ import com.wegas.core.api.QuestionDescriptorFacadeI;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
+import static com.wegas.core.ejb.RequestManager.RequestContext.INTERNAL_SCRIPT;
 import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -28,6 +30,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.PrimitiveDescriptorI;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
+import com.wegas.core.security.util.ScriptExecutionContext;
 import com.wegas.log.xapi.Xapi;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.ChoiceInstance;
@@ -638,10 +641,13 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             final ChoiceDescriptor choiceDescriptor = reply.getResult().getChoiceDescriptor();
             reply.setResult(choiceDescriptor.getInstance(player).getResult());// Refresh the current result
 
-            if (reply.getIgnored()) {
-                scriptManager.eval(player, reply.getResult().getIgnorationImpact(), choiceDescriptor);
-            } else {
-                scriptManager.eval(player, reply.getResult().getImpact(), choiceDescriptor);
+            // result impacts are intrernal scripts
+            try (ScriptExecutionContext ctx = requestManager.switchToInternalExecContext(true)) {
+                if (reply.getIgnored()) {
+                    scriptManager.eval(player, reply.getResult().getIgnorationImpact(), choiceDescriptor);
+                } else {
+                    scriptManager.eval(player, reply.getResult().getImpact(), choiceDescriptor);
+                }
             }
             ChoiceInstance choiceInstance = reply.getChoiceInstance();
 

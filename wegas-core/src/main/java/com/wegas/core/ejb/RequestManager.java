@@ -40,6 +40,7 @@ import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.ActAsPlayer;
+import com.wegas.core.security.util.ScriptExecutionContext;
 import com.wegas.core.security.util.Sudoer;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasIsTeamMate;
@@ -133,6 +134,14 @@ public class RequestManager implements RequestManagerI {
         INTERNAL
     }
 
+    /**
+     * What kind of script is being executed
+     */
+    public enum RequestContext {
+        EXTERNAL,
+        INTERNAL_SCRIPT
+    }
+
     /*
     @Resource
     private TransactionSynchronizationRegistry txReg;
@@ -200,6 +209,8 @@ public class RequestManager implements RequestManagerI {
      * Default request env is {@link RequestEnvironment#STD}
      */
     private RequestEnvironment env = RequestEnvironment.STD;
+
+    private RequestContext currentContext = RequestContext.EXTERNAL;
 
     /**
      * Default view is {@link Views.Public}
@@ -409,6 +420,32 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
+     * Get the current script context
+     *
+     * @return current script context
+     */
+    public RequestContext getCurrentContext() {
+        return currentContext;
+    }
+
+    /**
+     * Change the script context
+     *
+     * @param currentContext new script context
+     */
+    public void setCurrentContext(RequestContext currentContext) {
+        this.currentContext = currentContext;
+    }
+
+    public ScriptExecutionContext switchToInternalExecContext(boolean doFLush) {
+        return new ScriptExecutionContext(this, RequestManager.RequestContext.INTERNAL_SCRIPT, doFLush);
+    }
+
+    public ScriptExecutionContext switchToExternalExecContext(boolean doFLush) {
+        return new ScriptExecutionContext(this, RequestManager.RequestContext.EXTERNAL, doFLush);
+    }
+
+    /**
      * Register entities as updatedEntities
      *
      * @param entities entities to register
@@ -567,7 +604,7 @@ public class RequestManager implements RequestManagerI {
         return actAsPlayer;
     }
 
-    public void releaseActAsPlayer(){
+    public void releaseActAsPlayer() {
         this.actAsPlayer = null;
     }
 
@@ -1795,7 +1832,7 @@ public class RequestManager implements RequestManagerI {
      * @throws WegasAccessDenied currentUser do NOT have the permission
      */
     public void assertCreateRight(WithPermission entity) {
-        this.assertUserHasPermission(entity.getRequieredCreatePermission(), "Create", entity);
+        this.assertUserHasPermission(entity.getRequieredCreatePermission(this.currentContext), "Create", entity);
     }
 
     /**
@@ -1806,7 +1843,7 @@ public class RequestManager implements RequestManagerI {
      * @throws WegasAccessDenied currentUser do NOT have the permission
      */
     public void assertReadRight(WithPermission entity) {
-        this.assertUserHasPermission(entity.getRequieredReadPermission(), "Read", entity);
+        this.assertUserHasPermission(entity.getRequieredReadPermission(this.currentContext), "Read", entity);
     }
 
     /**
@@ -1817,7 +1854,7 @@ public class RequestManager implements RequestManagerI {
      * @throws WegasAccessDenied currentUser do NOT have the permission
      */
     public void assertUpdateRight(WithPermission entity) {
-        this.assertUserHasPermission(entity.getRequieredUpdatePermission(), "Update", entity);
+        this.assertUserHasPermission(entity.getRequieredUpdatePermission(this.currentContext), "Update", entity);
     }
 
     /**
@@ -1828,7 +1865,7 @@ public class RequestManager implements RequestManagerI {
      * @throws WegasAccessDenied currentUser do NOT have the permission
      */
     public void assertDeleteRight(WithPermission entity) {
-        this.assertUserHasPermission(entity.getRequieredDeletePermission(), "Delete", entity);
+        this.assertUserHasPermission(entity.getRequieredDeletePermission(this.getCurrentContext()), "Delete", entity);
     }
 
     /*
@@ -1992,11 +2029,19 @@ public class RequestManager implements RequestManagerI {
                     // e.g. private-Role-Administrator
                     return this.isMemberOf(new WegasMembership(m.group(4)));
                 } else {
-                    return this.hasEntityPermission(
-                        new WegasEntityPermission(
-                            Long.parseLong(m.group(4)),
-                            WegasEntityPermission.Level.READ,
-                            WegasEntityPermission.EntityType.valueOf(m.group(3).toUpperCase())));
+                    if ("GameModelEditor".equals(m.group(3))) {
+                        return this.hasEntityPermission(
+                            new WegasEntityPermission(
+                                Long.parseLong(m.group(4)),
+                                WegasEntityPermission.Level.WRITE,
+                                WegasEntityPermission.EntityType.GAMEMODEL));
+                    } else {
+                        return this.hasEntityPermission(
+                            new WegasEntityPermission(
+                                Long.parseLong(m.group(4)),
+                                WegasEntityPermission.Level.READ,
+                                WegasEntityPermission.EntityType.valueOf(m.group(3).toUpperCase())));
+                    }
                 }
             }
         }
@@ -2011,7 +2056,7 @@ public class RequestManager implements RequestManagerI {
      */
     public void assertGameTrainer(final Game game) {
         if (!hasGameWriteRight(game)) {
-            throw new WegasAccessDenied(game, "Trainer", game.getRequieredUpdatePermission().toString(), this.getCurrentUser());
+            throw new WegasAccessDenied(game, "Trainer", game.getRequieredUpdatePermission(this.currentContext).toString(), this.getCurrentUser());
         }
     }
 
@@ -2024,7 +2069,7 @@ public class RequestManager implements RequestManagerI {
      */
     public void assertCanReadGameModel(final GameModel gameModel) {
         if (!hasGameModelReadRight(gameModel)) {
-            throw new WegasAccessDenied(gameModel, "Read", gameModel.getRequieredReadPermission().toString(), this.getCurrentUser());
+            throw new WegasAccessDenied(gameModel, "Read", gameModel.getRequieredReadPermission(this.currentContext).toString(), this.getCurrentUser());
         }
     }
 

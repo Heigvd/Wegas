@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.google.common.base.Objects;
 import com.wegas.core.Helper;
+import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
@@ -517,19 +518,19 @@ public class Player extends AbstractEntity implements Broadcastable, InstanceOwn
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredCreatePermission() {
+    public Collection<WegasPermission> getRequieredCreatePermission(RequestContext context) {
         return null;
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredReadPermission() {
+    public Collection<WegasPermission> getRequieredReadPermission(RequestContext context) {
         // ?? strange, should be either this.getChannel() to have a very incognito mode
         // but, with broadcastScope, should be GameModel.Read, nope ? TBT
-        return this.getTeam().getRequieredReadPermission();
+        return this.getTeam().getRequieredReadPermission(context);
     }
 
     @Override
-    public Collection<WegasPermission> getRequieredUpdatePermission() {
+    public Collection<WegasPermission> getRequieredUpdatePermission(RequestContext context) {
         return WegasPermission.getAsCollection(this.getAssociatedWritePermission());
     }
 

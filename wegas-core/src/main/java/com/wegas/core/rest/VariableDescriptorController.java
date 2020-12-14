@@ -8,7 +8,6 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.JCRFacade;
 import com.wegas.core.ejb.ModelFacade;
@@ -24,6 +23,7 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.rest.util.Views;
 import com.wegas.survey.persistence.SurveyDescriptor;
 import com.wegas.survey.persistence.SurveyInstance;
 import java.util.ArrayList;
@@ -43,6 +43,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.commons.math3.geometry.spherical.twod.Edge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,8 +86,13 @@ public class VariableDescriptorController {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
 
-        // Return all variable descriptors
-        return gameModel.getVariableDescriptors();
+        if (Views.EditorI.class.isAssignableFrom(requestManager.getView())) {
+            // Return all variable descriptors for editors
+            return gameModel.getVariableDescriptors();
+        } else {
+            // return not-hidden ones to players
+            return variableDescriptorFacade.getReadableDescriptor(gameModel);
+        }
     }
 
     @POST
@@ -372,7 +378,6 @@ public class VariableDescriptorController {
         return variableDescriptorFacade.cherryPick(gameModelId, vd.getName(),
             source.getId(), vdName, newScopeType, withLang);
     }
-    
 
     /**
      * Class for customizing cherryPicked Surveys.
@@ -400,8 +405,8 @@ public class VariableDescriptorController {
     }
 
     /**
-     * Import a survey variable from the source gameModel into the target gameModel.
-     * Such an import is recursive and all referenced files are
+     * Import a survey variable from the source gameModel into the target gameModel. Such an import
+     * is recursive and all referenced files are
      * {@link JCRFacade#importFile(AbstractContentDescriptor, ContentConnector) imported} too.
      * <p>
      * Such imported files may be renamed to avoid overriding preexisting files.
@@ -442,7 +447,7 @@ public class VariableDescriptorController {
                     // update effective instances status
                     variableDescriptorFacade.getInstances(newDesc).values().forEach(si
                         -> ((SurveyInstance) si).setStatus(config.getDefaultStatus()));
-                    }
+                }
             }
 
             return surveyDesc;
