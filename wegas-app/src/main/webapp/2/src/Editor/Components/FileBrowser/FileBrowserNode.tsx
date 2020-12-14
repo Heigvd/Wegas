@@ -443,6 +443,7 @@ export function FileBrowserNode({
       style={style}
     >
       {!readOnly && (
+        // allow to browse file in the file system
         <input
           ref={uploader}
           type="file"
