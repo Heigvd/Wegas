@@ -24,7 +24,12 @@ angular.module('private.admin', [
         var ctrl = this;
         ctrl.serviceUrl = window.ServiceURL;
         ctrl.loading = true;
-        ctrl.isMaster = false;
+
+        ctrl.branch = false;
+
+        ctrl.prBranch = false;
+        ctrl.branch = false;
+
         ctrl.i18nUsage = false;
         ctrl.uploading = false;
 
@@ -53,8 +58,16 @@ angular.module('private.admin', [
                     workspace: WegasTranslations.workspaces.ADMIN[$translate.use()]
                 };
 
+                $http.get(ctrl.serviceUrl + "rest/Utils/branch").then(function(response) {
+                    ctrl.branch = response.data;
+                });
+
+                $http.get(ctrl.serviceUrl + "rest/Utils/pr_branch").then(function(response) {
+                    ctrl.prBranch = response.data;
+                });
+
                 $http.get(ctrl.serviceUrl + "rest/Utils/pr_number").then(function(response) {
-                    ctrl.isMaster = response.data <= 0;
+                    ctrl.prNumber = parseInt(response.data, 10);
                 });
 
                 $http.get(ctrl.serviceUrl + "rest/GameModel/I18n/Usage").then(function(response) {

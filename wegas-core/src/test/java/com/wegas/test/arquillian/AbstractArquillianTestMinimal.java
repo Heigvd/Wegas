@@ -195,7 +195,6 @@ public abstract class AbstractArquillianTestMinimal {
         SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
         TestHelper.emptyDBTables();
 
-        requestManager.setPlayer(null);
         requestManager.clearEntities();
         this.wipeEmCache();
 
@@ -203,7 +202,6 @@ public abstract class AbstractArquillianTestMinimal {
 
         this.startTime = System.currentTimeMillis();
         this.wipeEmCache();
-        requestFacade.setPlayer(null);
 
         requestFacade.clearEntities();
 
@@ -290,7 +288,6 @@ public abstract class AbstractArquillianTestMinimal {
             this.initTime - this.startTime,
             now - this.initTime);
 
-        requestManager.setPlayer(null);
         requestManager.clearEntities();
 
         this.wipeEmCache();

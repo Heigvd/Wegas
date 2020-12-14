@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -22,6 +23,7 @@ import com.wegas.core.persistence.variable.scope.AbstractScope;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
+import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.resourceManagement.ejb.IterationFacade;
@@ -340,12 +342,17 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
                  * manually selected !
                  */
                 Player p = find.getOwner().getUserLiveOrSurveyOrDebugPlayer(requestManager.getCurrentUser());
-                requestFacade.getRequestManager().setPlayer(p);
-            }
+                try (ActAsPlayer a = requestManager.actAsPlayer(p)) {
+                    VariableInstance ret = super.update(entityId, entity);
+                    requestFacade.commit();
+                    return ret;
+                }
 
-            VariableInstance ret = super.update(entityId, entity);
-            requestFacade.commit();
-            return ret;
+            } else {
+                VariableInstance ret = super.update(entityId, entity);
+                requestFacade.commit();
+                return ret;
+            }
         }
     }
 

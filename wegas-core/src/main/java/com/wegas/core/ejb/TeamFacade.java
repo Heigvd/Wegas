@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -16,6 +17,7 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.util.ActAsPlayer;
 import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -124,10 +126,9 @@ public class TeamFacade extends BaseFacade<Team> {
 
         getEntityManager().persist(entity);
         Player aLivePlayer = entity.getAnyLivePlayer();
-        if (aLivePlayer != null) {
-            requestManager.setPlayer(aLivePlayer);
+        try (ActAsPlayer a = requestManager.actAsPlayer(aLivePlayer)) {
+            gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
         }
-        gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
     }
 
     /**
@@ -144,15 +145,10 @@ public class TeamFacade extends BaseFacade<Team> {
         getEntityManager().persist(entity);
         Player player = entity.getAnySurveyPlayer();
 
-        if (player != null) {
-            requestManager.setPlayer(player);
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
         }
-
-        gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
     }
-
-
-
 
     public List<Team> findTeamsToPopulate() {
         TypedQuery<Team> query = this.getEntityManager().createNamedQuery("Team.findToPopulate", Team.class);

@@ -40,6 +40,7 @@ import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.statemachine.AbstractTransition;
+import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.log.xapi.Xapi;
 import com.wegas.log.xapi.XapiI;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
@@ -619,24 +620,25 @@ public class ScriptFacade extends WegasAbstractFacade {
      */
     public Object timeoutEval(Long playerId, Script script) throws WegasScriptException {
         final Player player = playerFacade.find(playerId);
-        requestManager.setPlayer(player);
 
-        final ScriptContext scriptContext = this.instantiateScriptContext(player, script.getLanguage());
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
 
-        final Script scriptCopy = new Script();
-        scriptCopy.setContent(JSTool.sanitize(script.getContent(), "$$internal$delay.poll();"));
-        scriptCopy.setLanguage(script.getLanguage());
-        scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put(JSTool.JS_TOOL_INSTANCE_NAME,
-            new JSTool.JSToolInstance());
-        try (Delay delay = new Delay(SCRIPT_DELAY, timeoutExecutorService)) {
-            scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put("$$internal$delay", delay);
-            return this.eval(scriptCopy, new HashMap<>());
-        } catch (WegasScriptException e) {
-            // try to restore original code
-            final String replaceCode = e.getMessage().replace(scriptCopy.getContent(), script.getContent());
-            throw new WegasScriptException(script.getContent(), replaceCode);
+            final ScriptContext scriptContext = this.instantiateScriptContext(player, script.getLanguage());
+
+            final Script scriptCopy = new Script();
+            scriptCopy.setContent(JSTool.sanitize(script.getContent(), "$$internal$delay.poll();"));
+            scriptCopy.setLanguage(script.getLanguage());
+            scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put(JSTool.JS_TOOL_INSTANCE_NAME,
+                new JSTool.JSToolInstance());
+            try (Delay delay = new Delay(SCRIPT_DELAY, timeoutExecutorService)) {
+                scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put("$$internal$delay", delay);
+                return this.eval(scriptCopy, new HashMap<>());
+            } catch (WegasScriptException e) {
+                // try to restore original code
+                final String replaceCode = e.getMessage().replace(scriptCopy.getContent(), script.getContent());
+                throw new WegasScriptException(script.getContent(), replaceCode);
+            }
         }
-
     }
     // ~~~ Sugar ~~~
 
@@ -679,8 +681,9 @@ public class ScriptFacade extends WegasAbstractFacade {
     }
 
     private Object eval(Player player, CachedScript s, Map<String, AbstractEntity> arguments) throws WegasScriptException {
-        requestManager.setPlayer(player);
-        return this.eval(s, arguments);
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            return this.eval(s, arguments);
+        }
     }
 
     /**
@@ -704,8 +707,9 @@ public class ScriptFacade extends WegasAbstractFacade {
      * @return eval result
      */
     private Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws WegasScriptException {
-        requestManager.setPlayer(player);
-        return this.eval(s, arguments);
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            return this.eval(s, arguments);
+        }
     }
 
     /**

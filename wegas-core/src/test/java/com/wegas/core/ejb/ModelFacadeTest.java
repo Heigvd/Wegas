@@ -1314,7 +1314,6 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         /**
          * Change Y default value and move to root
-         * <p>
          */
         NumberDescriptor y1 = (NumberDescriptor) getDescriptor(model, "y");
 

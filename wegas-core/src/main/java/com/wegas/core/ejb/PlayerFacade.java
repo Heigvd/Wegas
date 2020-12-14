@@ -29,6 +29,7 @@ import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.ActAsPlayer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -370,16 +371,17 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public List<VariableInstance> getInstances(final Long playerId) {
         Player player = this.find(playerId);
-        requestManager.setPlayer(player);
-        Team team = player.getTeam();
-        Game game = team.getGame();
-        GameModel gameModel = game.getGameModel();
+        try (ActAsPlayer acting = requestManager.actAsPlayer(player)) {
+            Team team = player.getTeam();
+            Game game = team.getGame();
+            GameModel gameModel = game.getGameModel();
 
-        List<VariableInstance> instances = this.getPlayerInstances(player);
-        instances.addAll(this.getTeamInstances(team));
-        instances.addAll(this.getGameModelInstances(gameModel));
+            List<VariableInstance> instances = this.getPlayerInstances(player);
+            instances.addAll(this.getTeamInstances(team));
+            instances.addAll(this.getGameModelInstances(gameModel));
 
-        return instances;
+            return instances;
+        }
     }
 
     /**

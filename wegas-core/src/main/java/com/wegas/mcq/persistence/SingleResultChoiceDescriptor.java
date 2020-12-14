@@ -54,6 +54,7 @@ public class SingleResultChoiceDescriptor extends ChoiceDescriptor {
 
             results.add(result);
             this.setValue(results);
+            this.setIndex(1000);
         }
     }
 

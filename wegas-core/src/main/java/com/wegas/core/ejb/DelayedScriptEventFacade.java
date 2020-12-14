@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -12,6 +13,7 @@ import com.wegas.core.event.internal.DelayedEventPayload;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.security.util.ActAsPlayer;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -63,10 +65,12 @@ public class DelayedScriptEventFacade implements DelayedScriptEventFacadeI {
                 rm.setPath(payload.getEventName());
                 Player p = playerFacade.find(payload.getPlayerId());
 
-                // fire Script (ie base mechanism and static server script eval)
-                scriptEventFacade.fire(p, payload.getEventName());
-                // force FSM evaluation and make sur EntityManager has flush
-                requestFacade.commit(p);
+                try (ActAsPlayer a = rm.actAsPlayer(p)) {
+                    // fire Script (ie base mechanism and static server script eval)
+                    scriptEventFacade.fire(p, payload.getEventName());
+                    // force FSM evaluation and make sur EntityManager has flush
+                    requestFacade.commit(p);
+                }
 
                 rm.markManagermentStartTime();
                 /*
@@ -104,7 +108,7 @@ public class DelayedScriptEventFacade implements DelayedScriptEventFacadeI {
             long duration = (minutes * 60 + seconds) * 1000;
             try {
                 timerService.createTimer(duration, new DelayedEventPayload(requestFacade.getPlayer().getId(),
-                        requestManager.getCurrentUser().getMainAccount().getId(), eventName));
+                    requestManager.getCurrentUser().getMainAccount().getId(), eventName));
             } catch (IllegalArgumentException ex) {
                 throw WegasErrorMessage.error("Timer duration is not valid");
             }
