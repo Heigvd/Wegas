@@ -122,7 +122,6 @@ export function QuestionDisplay({
 }: QuestionDisplayProps) {
   const onChoiceValidate = React.useCallback(
     (choice: IChoiceDescriptor) => {
-      debugger;
       if (questionD.cbx) {
         dispatch(toggleReply(choice));
       } else {

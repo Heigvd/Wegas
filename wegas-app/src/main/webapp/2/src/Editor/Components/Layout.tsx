@@ -78,11 +78,7 @@ export default function Layout() {
       <Header />
       <DndLinearLayout
         tabs={{ ...availableLayoutTabs, ...scenaristPages }}
-        initialLayout={[
-          ['Variables'],
-          [['Play Local'], [['State Machine'], ['Files']]],
-          ['Variable Properties'],
-        ]}
+        initialLayout={[['Variables', 'Files'], ['Page Editor']]}
         layoutId={mainLayoutId}
       />
     </div>
