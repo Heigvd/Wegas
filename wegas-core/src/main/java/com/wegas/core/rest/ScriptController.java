@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -11,6 +12,7 @@ import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.ScriptCheck;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -22,6 +24,7 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.security.util.ActAsPlayer;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
@@ -70,7 +73,10 @@ public class ScriptController {
      *
      */
     @Inject
-    private PlayerFacade playerFacadeFacade;
+    private PlayerFacade playerFacade;
+
+    @Inject
+    private RequestManager requestManager;
     /**
      *
      */
@@ -106,9 +112,12 @@ public class ScriptController {
         }
         logger.info("script for player {} : {}", playerId, script.getContent());
 
-        Object r = scriptFacade.eval(playerId, script, context);
-        requestFacade.commit(playerId);
-        return r;
+        Player player = playerFacade.find(playerId);
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            Object r = scriptFacade.eval(player, script, context);
+            requestFacade.commit(player);
+            return r;
+        }
     }
 
     /**
@@ -141,9 +150,12 @@ public class ScriptController {
         }
 
         for (Integer playerId : playerIdList) {
-            Object r = scriptFacade.eval(playerId.longValue(), script, context);
-            results.add(r);
-            requestFacade.commit(playerFacadeFacade.find(playerId.longValue()));
+            Player player = playerFacade.find(playerId.longValue());
+            try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+                Object r = scriptFacade.eval(player, script, context);
+                results.add(r);
+                requestFacade.commit(player);
+            }
         }
         requestFacade.flushClear();
         return results;
