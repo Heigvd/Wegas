@@ -23,10 +23,10 @@ export function editorLabel(
     editorTag?: string | null;
     name?: string;
   },
-  labelFirst?: boolean,
+  showTag?: boolean,
 ) {
   const label = TranslatableContent.toString(vd?.label);
-  if (labelFirst && label) {
+  if (!showTag && label) {
     return label;
   }
   if (vd && vd.editorTag && label) {
