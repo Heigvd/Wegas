@@ -11,7 +11,7 @@ const modalStyle = css({
   left: 0,
   overflow: 'auto',
   minWidth: '100%',
-  minHeight: '100%',
+  height: '100%',
   padding: '1em 0',
   backgroundColor: 'rgba(0,0,0,0.8)',
   zIndex: 1000,
