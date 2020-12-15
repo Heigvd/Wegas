@@ -151,12 +151,12 @@ export function TreeView({
           {({ nodeProps }) => (
             <div className={cx(flex, grow, flexColumn)}>
               {variables ? (
-                variables.map(v => (
+                variables.map(id => (
                   <CTree
                     nodeProps={nodeProps}
-                    key={v}
+                    key={id}
                     search={search}
-                    variableId={v}
+                    variableId={id}
                     localState={localState}
                     localDispatch={localDispatch}
                     forceLocalDispatch={forceLocalDispatch}
