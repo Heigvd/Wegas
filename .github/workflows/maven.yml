@@ -70,7 +70,7 @@ jobs:
         echo "BRANCH=$(if [ ${{ github.event_name }}  == pull_request ]; then echo ${{ github.base_ref }}; else echo ${{ github.ref}} | sed -e 's/refs\/heads\///'  ; fi)" >> $GITHUB_ENV 
     - name: Set war name
       shell: bash
-      run: echo "WAR_NAME=Wegas_$(if [ ${{ github.event_name }} == pull_request ]; then echo ${PR_NUMBER}_${PR_NAME} ; else echo ${BRANCH}; fi)_${GITHUB_RUN_NUMBER}.war" >> $GITHUB_ENV 
+      run: echo "WAR_NAME=Wegas_$(if [ ${{ github.event_name }} == pull_request ]; then echo ${{ github.event.number }}_${{ github.head_ref }} ; else echo ${BRANCH}; fi)_${GITHUB_RUN_NUMBER}.war" >> $GITHUB_ENV 
     - name: Patch wegas properties
       shell: bash
       env:
