@@ -43,7 +43,6 @@ import { parseAndRunClientScript } from '../../Hooks/useScript';
 import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
 import { IScript } from 'wegas-ts-api';
 import { TumbleLoader } from '../../Loader';
-import { wlog } from '../../../Helper/wegaslog';
 // import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
 
 const childDropZoneIntoCSS = {
@@ -509,14 +508,14 @@ export function ComponentContainer({
   //   false,
   // );
 
-  const count = React.useRef(0);
-  React.useEffect(() => {
-    wlog(count.current);
-    count.current += 1;
-    if (count.current > 4) {
-      wlog({ componentType, name, path });
-    }
-  });
+  // const count = React.useRef(0);
+  // React.useEffect(() => {
+  //   wlog(count.current);
+  //   count.current += 1;
+  //   if (count.current > 4) {
+  //     wlog({ componentType, name, path });
+  //   }
+  // });
 
   const {
     onDrop,
