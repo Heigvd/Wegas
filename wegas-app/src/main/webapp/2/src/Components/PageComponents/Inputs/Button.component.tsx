@@ -34,6 +34,7 @@ function PlayerButton({
   context,
   stopPropagation,
   confirmClick,
+  tooltip,
   ...restProps
 }: PlayerButtonProps) {
   const translation = useScript<string>(label, context) || '';
@@ -52,6 +53,7 @@ function PlayerButton({
           }}
         ></div>
       ) : undefined,
+    tooltip,
   };
 
   const onClick = React.useCallback(

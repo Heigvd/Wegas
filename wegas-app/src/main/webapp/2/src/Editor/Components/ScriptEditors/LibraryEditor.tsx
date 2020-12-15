@@ -24,7 +24,6 @@ import { DropMenu } from '../../../Components/DropMenu';
 import { MessageString } from '../MessageString';
 import { IAbstractContentDescriptor, IGameModelContent } from 'wegas-ts-api';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
-import { wlog } from '../../../Helper/wegaslog';
 import { librariesCTX } from '../LibrariesLoader';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
@@ -558,8 +557,6 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
     }),
     [libEntry, librariesState, onSaveLibrary, scriptType],
   );
-
-  wlog(scriptType);
 
   return (
     <Toolbar>

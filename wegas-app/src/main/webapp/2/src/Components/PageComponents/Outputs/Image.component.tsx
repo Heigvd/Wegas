@@ -13,7 +13,7 @@ import { fileURL } from '../../../API/files.api';
 import { classNameOrEmpty } from '../../../Helper/className';
 
 const initialImageStyle = css({
-  maxWidth: '100%',
+  //maxWidth: '100%',
   maxHeight: '100%',
 });
 

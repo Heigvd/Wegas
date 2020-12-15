@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
@@ -374,6 +375,14 @@ public class Team extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     public Long getGameId() {
         return (getGame() != null ? getGame().getId() : null);
+    }
+    
+    /**
+     * @return the game ui version
+     */
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public Integer getUiVersion() {
+        return getGameModel() != null ? getGameModel().getUIVersion() : null;
     }
 
     /**

@@ -82,6 +82,8 @@ const editorStyle = css({
     overflow: 'auto',
     userSelect: 'none',
     cursor: 'pointer',
+    fontSize: '14px',
+    lineHeight: '105%',
 
     '&.jtk-hover': {
       zIndex: 10,
@@ -662,12 +664,18 @@ export default function StateMachineEditorWithMeta() {
 }
 
 const stateStyle = css({
-  minWidth: '10em',
-  minHeight: '5em',
-  maxWidth: '20em',
-  maxHeight: '10em',
+  width: '200px',
+  height: '90px',
   zIndex: 2,
   opacity: 0.8,
+});
+const textStyle = css({
+  width: '100%',
+  height: '100%',
+  overflow: 'auto',
+  fontSize: '14px',
+  lineHeight: '105%',
+  padding: '5px',
 });
 const contentStyle = css({
   borderStyle: 'solid',
@@ -917,7 +925,7 @@ function State({
               </div>
             ) : (
               <div
-                // className={stateTextStyle}
+                className={textStyle}
                 dangerouslySetInnerHTML={{
                   __html: textValue,
                 }}

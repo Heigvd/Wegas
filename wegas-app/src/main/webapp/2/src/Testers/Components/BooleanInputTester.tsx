@@ -18,7 +18,6 @@ import { Button } from '../../Components/Inputs/Buttons/Button';
 function BoleanPack({
   label,
   value,
-  defaultChecked,
   onChange,
   className,
   disabled,
@@ -29,7 +28,6 @@ function BoleanPack({
       <Toggler
         label={label}
         value={value}
-        defaultChecked={defaultChecked}
         onChange={onChange}
         className={className}
         disabled={disabled}
@@ -38,7 +36,6 @@ function BoleanPack({
       <CheckBox
         label={label}
         value={value}
-        defaultChecked={defaultChecked}
         onChange={onChange}
         className={className}
         disabled={disabled}
@@ -49,7 +46,7 @@ function BoleanPack({
 }
 
 export default function CustomGaugeTester() {
-  const [checked, setChecked] = React.useState();
+  const [checked, setChecked] = React.useState<boolean>();
   const [key, setKey] = React.useState(0);
 
   return (
@@ -63,12 +60,6 @@ export default function CustomGaugeTester() {
       />
       <div key={key} className={cx(grow, autoScroll)}>
         <BoleanPack label="simple" value={checked} onChange={setChecked} />
-        <BoleanPack
-          label="defaultChecked"
-          defaultChecked
-          value={checked}
-          onChange={setChecked}
-        />
         <BoleanPack
           label="funny classname"
           value={checked}

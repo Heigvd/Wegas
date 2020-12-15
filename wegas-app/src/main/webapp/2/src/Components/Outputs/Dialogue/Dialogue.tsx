@@ -50,41 +50,41 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
   const history = dialogueInstance.getTransitionHistory();
   const dialogueStates = dialogue.getStates();
   const oldHistoryState = React.useRef<typeof history>(history);
+  const oldState = React.useRef<SDialogueState>();
 
   const wait = React.useCallback(() => {
     setWaiting(true);
     const timer = setTimeout(() => {
       setWaiting(false);
-    }, 3000);
+    }, 2000);
     return () => {
       clearTimeout(timer);
     };
   }, []);
 
-  // React.useEffect(() => {
-  //   wlog('MOUNT');
-  //   wait();
-  //   return () => wlog('UNMOUNT');
-  // }, [wait]);
+  let currentState = Object.values(dialogueStates)
+    .sort((stateA, stateB) => {
+      const A = stateA.getIndex();
+      const B = stateB.getIndex();
+      return (
+        (B == null ? Number.MAX_SAFE_INTEGER : B) -
+        (A == null ? Number.MAX_SAFE_INTEGER : A)
+      );
+    })
+    .pop() as SDialogueState;
 
   React.useEffect(() => {
-    if (deepDifferent(oldHistoryState.current, history)) {
+    if (
+      deepDifferent(oldHistoryState.current, history) ||
+      deepDifferent(oldState.current, currentState)
+    ) {
+      oldState.current = currentState;
       oldHistoryState.current = history;
       wait();
     }
-  }, [history, wait]);
+  }, [currentState, history, wait]);
 
   function renderHistory(): JSX.Element[] {
-    let currentState = Object.values(dialogueStates)
-      .sort((stateA, stateB) => {
-        const A = stateA.getIndex();
-        const B = stateB.getIndex();
-        return (
-          (B == null ? Number.MAX_SAFE_INTEGER : B) -
-          (A == null ? Number.MAX_SAFE_INTEGER : A)
-        );
-      })
-      .pop() as SDialogueState;
     const dialogueComponents: JSX.Element[] = [
       <DialogueEntry key="STATE0" text={currentState.getText()} />,
     ];

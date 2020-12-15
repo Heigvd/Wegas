@@ -4,7 +4,11 @@ import { css, cx } from 'emotion';
 import { StoreConsumer, useStore, store } from '../../data/store';
 import { Actions } from '../../data';
 import { FontAwesome } from './Views/FontAwesome';
-import { FeatureToggler } from '../../Components/Contexts/FeaturesProvider';
+import {
+  FeatureToggler,
+  featuresCTX,
+  isFeatureEnabled,
+} from '../../Components/Contexts/FeaturesProvider';
 import { LangToggler } from '../../Components/Contexts/LanguagesProvider';
 import {
   flex,
@@ -101,6 +105,8 @@ const headerStyle = css({
 });
 
 export default function Header() {
+  const { currentFeatures } = React.useContext(featuresCTX);
+
   return (
     <StoreConsumer
       selector={() => ({
@@ -112,10 +118,12 @@ export default function Header() {
         <div className={cx(flex, itemCenter, foregroundContent, headerStyle)}>
           <Title className={grow}>{gameModel.name}</Title>
           <LangToggler />
-          <FeatureToggler className={componentMarginLeft} />
-          <NotificationMenu
+          <FeatureToggler
             className={cx(componentMarginLeft, componentMarginRight)}
           />
+          {isFeatureEnabled(currentFeatures, 'ADVANCED') && (
+            <NotificationMenu className={componentMarginRight} />
+          )}
           <FontAwesome icon="user" />
           <span className={componentMarginLeft}>{user.name}</span>
           <Button

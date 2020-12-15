@@ -14,16 +14,16 @@ import {
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
+import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerFileInputProps extends WegasComponentProps, FileBrowserProps {
   onVariableChange?: OnVariableChange;
 }
 
 function PlayerFileInput({
-  // placeholder,
   onVariableChange,
   context,
-  // pick,
+  pick,
   // filter,
   // options,
   className,
@@ -37,8 +37,12 @@ function PlayerFileInput({
       className={className}
       style={style}
       id={id}
+      defaultFilePath="/Patients/"
+      noDelete
+      //readOnly
       onFileClick={file => handleOnChange && handleOnChange(file)}
-      pick={'FILE'}
+      //pick={'FILE'}
+      pick={pick}
       filter={{ fileType: 'image', filterType: 'show' }}
     />
   );
@@ -52,6 +56,11 @@ registerComponent(
     icon: 'image',
     schema: {
       onVariableChange: onVariableChangeSchema('On file click actions'),
+      pick: schemaProps.select({
+        label: 'File picking option',
+        values: ['FILE', 'FOLDER', 'BOTH'], //
+        required: false,
+      }),
       ...classStyleIdShema,
     },
   }),
