@@ -41,6 +41,10 @@ export interface CheckBoxProps extends InputProps<boolean> {
    * hint - the hint that will be displayed when the mouse hover the component
    */
   hint?: string;
+  /**
+   * radio - displays a radio button instead of a check box
+   */
+  radio?: boolean;
 }
 
 export function CheckBox({
@@ -52,6 +56,7 @@ export function CheckBox({
   label,
   hint,
   checkBoxClassName,
+  radio,
   className,
   style,
   id,
@@ -83,7 +88,21 @@ export function CheckBox({
       {label && <Value value={label} />}
       <Button
         icon={
-          checked
+          radio
+            ? checked
+              ? {
+                  icon: {
+                    prefix: 'far',
+                    iconName: 'dot-circle',
+                  },
+                }
+              : {
+                  icon: {
+                    prefix: 'far',
+                    iconName: 'circle',
+                  },
+                }
+            : checked
             ? {
                 icon: {
                   prefix: 'far',
@@ -99,12 +118,12 @@ export function CheckBox({
         }
         onClick={e => {
           e.stopPropagation();
-          !disabled &&
-            !readOnly &&
+          if (!disabled && !readOnly && onChange) {
             setChecked(v => {
-              onChange && onChange(!v);
+              onChange(!v);
               return !v;
             });
+          }
         }}
         className={
           'wegas wegas-cbx' +

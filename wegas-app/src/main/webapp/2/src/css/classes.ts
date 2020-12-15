@@ -136,6 +136,8 @@ export const defaultMargin = cx(
   defaultMarginLeft,
 );
 
+export const autoMargin = css({ margin: 'auto' });
+
 export const defaultPaddingLeft = css({
   paddingLeft: '10px',
 });

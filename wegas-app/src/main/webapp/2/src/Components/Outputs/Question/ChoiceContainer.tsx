@@ -8,7 +8,7 @@ export const choiceContainerStyle = css({
   boxShadow: '0 0 5px grey',
   backgroundColor: themeVar.Common.colors.HeaderColor,
   '&.disabled': {
-    backgroundColor: themeVar.Common.colors.DisabledColor,
+    backgroundColor: 'transparent',
   },
 });
 export const choiceLabelStyle = css({
@@ -21,6 +21,7 @@ export const choiceDescriptionStyle = css({
 });
 export const choiceInputStyle = css({
   display: 'flex',
+  flexDirection: 'column',
   justifyContent: 'center',
   padding: '10px',
 });

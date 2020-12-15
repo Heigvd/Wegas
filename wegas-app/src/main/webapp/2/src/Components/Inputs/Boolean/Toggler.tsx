@@ -133,12 +133,12 @@ export function Toggler({
         }
         onClick={e => {
           e.stopPropagation();
-          !disabled &&
-            !readOnly &&
+          if (!disabled && !readOnly && onChange) {
             setChecked(v => {
-              onChange && onChange(!v);
+              onChange(!v);
               return !v;
             });
+          }
         }}
         title={hint}
       >

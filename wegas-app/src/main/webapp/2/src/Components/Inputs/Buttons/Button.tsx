@@ -55,6 +55,12 @@ export const buttonStyle = css({
         color: themeVar.Common.colors.ActiveColor,
       },
     },
+    ['&:disabled']: {
+      color: themeVar.Common.colors.DisabledColor,
+      [':hover']: {
+        color: themeVar.Common.colors.DisabledColor,
+      },
+    },
   },
   ['&.disabledBorders']: {
     ['&.borderTopLeft']: {

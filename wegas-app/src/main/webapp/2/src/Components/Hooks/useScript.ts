@@ -365,6 +365,7 @@ export function clientScriptEval<T extends ScriptReturnType>(
 ): T extends IMergeable ? unknown : T {
   globals.Context = context || {};
   const scriptContent = typeof script === 'string' ? script : script?.content;
+
   return scriptContent != null
     ? (((sandbox.contentWindow as unknown) as {
         eval: (code: string) => T;
