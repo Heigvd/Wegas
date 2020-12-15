@@ -74,7 +74,7 @@
     <!-- Play button -->
     <a class="button button--small button--round button--default button--label-off button--play action--button" 
        title="{{'PLAYER-CARD-PLAY-BTN'| translate}}" 
-       href="{{ServiceURL}}game-play.html?gameId={{team.gameId}}" 
+       href="{{ServiceURL}}{{team.uiVersion > 1 ? team.uiVersion + '/player': 'game-play'}}.html?gameId={{team.gameId}}" 
        target="_blank">
         <span class="button__label">{{'PLAYER-CARD-PLAY-BTN'| translate}}</span>
     </a>
