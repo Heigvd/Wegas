@@ -52,11 +52,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Resource;
@@ -389,8 +392,8 @@ public class ScriptFacade extends WegasAbstractFacade {
             return;
         }
 
-        String currentPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-        Integer index = currentPath.indexOf("WEB-INF");
+        String currentPath = getClass().getProtectionDomain().getCodeSource().getLocation().toString();
+        Integer index = currentPath.indexOf("/WEB-INF");
         String root;
         if (index < 1) {
             // Seems we're not on a real deployed application
@@ -440,7 +443,7 @@ public class ScriptFacade extends WegasAbstractFacade {
                     throw new WegasScriptException(scriptURI, ex.getMessage());
                 }
             }
-        } catch (IOException ex) {
+        } catch (IOException | URISyntaxException ex) {
             logger.warn("Unable to read hard coded server scripts");
         }
     }
@@ -559,12 +562,12 @@ public class ScriptFacade extends WegasAbstractFacade {
      *
      * @return javascript file collection
      */
-    private Collection<Path> getJavaScriptsRecursively(String root, String[] files) throws IOException {
+    private Collection<Path> getJavaScriptsRecursively(String root, String[] files) throws IOException, URISyntaxException {
         List<Path> queue = new LinkedList<>();
 
         for (String file : files) {
             if (!Helper.isNullOrEmpty(file.trim())) {
-                queue.add(Paths.get(root, file));
+                queue.add(Paths.get(new URI(root + "/" + file)));
             }
         }
 

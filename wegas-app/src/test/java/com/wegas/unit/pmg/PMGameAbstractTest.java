@@ -10,6 +10,7 @@ package com.wegas.unit.pmg;
 import com.wegas.core.Helper;
 import com.wegas.utils.AbstractTest;
 import java.io.IOException;
+import java.nio.file.Paths;
 import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ abstract public class PMGameAbstractTest extends AbstractTest {
     public void setUpGM() throws IOException {
         /* insert script from files*/
         //Helper.setWegasRootDirectory(Paths.get("").toAbsolutePath() + "/src/main/webapp/");
-        Helper.setWegasRootDirectory("./src/main/webapp/");
+        Helper.setWegasRootDirectory(Paths.get("src/main/webapp").toUri().toString());
 
         String[] scripts = {
             //APP_SCRIPTROOT + "/wegas-server-helper.js",
