@@ -14,6 +14,7 @@ import { whQuestionInfo, WhQuestionDisplay } from './WhQuestionDisplay';
 import { getChoices } from '../../../data/scriptable/impl/QuestionDescriptor';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { CbxQuestionDisplay } from './CbxQuestion';
+import { css } from 'emotion';
 
 export interface QuestionInfo {
   questionD: Readonly<IQuestionDescriptor>;
@@ -22,6 +23,10 @@ export interface QuestionInfo {
   choicesI: (Readonly<IChoiceInstance> | undefined)[];
   replies: Readonly<IReply[]>;
 }
+
+export const questionStyle = css({
+  width: 'fit-content',
+});
 
 /**
  * Query subtree / instance about a QuestionDescriptor

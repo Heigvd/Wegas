@@ -5,7 +5,7 @@ import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer
 import { StoreDispatch } from '../../../data/store';
 import { Button } from '../../Inputs/Buttons/Button';
 import { ChoiceContainer } from './ChoiceContainer';
-import { QuestionInfo } from './Question';
+import { QuestionInfo, questionStyle } from './Question';
 import { RepliesDisplay } from './Reply';
 
 interface SimpleChoiceDisplayProps {
@@ -76,7 +76,7 @@ export function SimpleQuestionDisplay({
   }
 
   return (
-    <>
+    <div className={questionStyle}>
       <div
         dangerouslySetInnerHTML={{
           __html: questionD.description
@@ -100,6 +100,6 @@ export function SimpleQuestionDisplay({
         );
       })}
       <RepliesDisplay replies={replies} />
-    </>
+    </div>
   );
 }
