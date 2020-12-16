@@ -18,13 +18,15 @@ import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton'
 import { WegasScriptEditor } from './WegasScriptEditor';
 import {
   clientScriptEval,
-  useGlobals,
+  setGlobals,
+  useGlobalContexts,
 } from '../../../Components/Hooks/useScript';
 import { DropMenu } from '../../../Components/DropMenu';
 import { MessageString } from '../MessageString';
 import { IAbstractContentDescriptor, IGameModelContent } from 'wegas-ts-api';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { librariesCTX } from '../LibrariesLoader';
+import { store } from '../../../data/store';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [
@@ -393,9 +395,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
   const libEntry = librariesState.libraries[librariesState.selected];
 
   const { updateCSSLibraries } = React.useContext(librariesCTX);
-
-  // Allows to load the globals in the script evaluator
-  useGlobals();
+  const globalContexts = useGlobalContexts();
 
   /**
    * A callback for websocket event management
@@ -485,6 +485,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           });
           if (scriptType === 'ClientScript') {
             try {
+              setGlobals(globalContexts, store.getState());
               clientScriptEval(libEntry.library.content);
             } catch (e) {
               setModalState({
@@ -504,7 +505,13 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
           });
         });
     }
-  }, [librariesState, scriptType, libEntry]);
+  }, [
+    librariesState,
+    scriptType,
+    libEntry.library,
+    globalContexts,
+    updateCSSLibraries,
+  ]);
 
   /**
    * onDeleteLibrary deletes the selected library in the database

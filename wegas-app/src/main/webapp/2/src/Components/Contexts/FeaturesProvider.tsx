@@ -2,11 +2,24 @@ import * as React from 'react';
 import { DropMenu } from '../DropMenu';
 
 const availableFeatures: FeatureLevel[] = ['ADVANCED', 'INTERNAL'];
-export const featuresCTX = React.createContext<{
+
+export const defaultFeatures: FeaturesSelecta = {
+  DEFAULT: true,
+  ADVANCED: false,
+  INTERNAL: false,
+};
+
+export interface FeatureContext {
   currentFeatures: FeatureLevel[];
   setFeature: (feature: FeatureLevel) => void;
   removeFeature: (feature: FeatureLevel) => void;
-}>({ currentFeatures: [], setFeature: () => {}, removeFeature: () => {} });
+}
+
+export const featuresCTX = React.createContext<FeatureContext>({
+  currentFeatures: [],
+  setFeature: () => {},
+  removeFeature: () => {},
+});
 
 export function isFeatureEnabled(
   currentFeatures: FeatureLevel[],
