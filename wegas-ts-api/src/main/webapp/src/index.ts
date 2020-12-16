@@ -6,15 +6,21 @@
  * Licensed under the MIT License
  */
 
-import {IMergeable, ITeam, IListDescriptor} from '..';
-import {AtClassToConcrtetableClasses, mapAtClassToConcreteClasses, AtClassToConcreteClasses, WegasClassNameAndScriptableTypes} from './generated/WegasScriptableEntities';
+import { IMergeable, ITeam, IListDescriptor } from "..";
+import {
+  AtClassToConcrtetableClasses,
+  mapAtClassToConcreteClasses,
+  AtClassToConcreteClasses,
+  WegasClassNameAndScriptableTypes,
+} from "./generated/WegasScriptableEntities";
 
-export type ScriptableEntity<T extends IMergeable> = WegasClassNameAndScriptableTypes[T['@class']];
+export type ScriptableEntity<
+  T extends IMergeable
+> = WegasClassNameAndScriptableTypes[T["@class"]];
 
-export type MapOf<T> = {[key: string]: T, [key: number]: T};
+export type MapOf<T> = { [key: string]: T; [key: number]: T };
 
 export class WegasClient {
-
   /**
    * Some classes require user to implement some methods.
    * User has to provide those implementation with this function.
@@ -29,8 +35,10 @@ export class WegasClient {
    *
    * @param entity entity or entites to instantiate
    */
+  // prettier-ignore
   instantiate<T extends IMergeable | IMergeable[] | MapOf<IMergeable> | null | undefined>(entities: T):
-    T extends IMergeable // entity as-is
+    T extends undefined ? undefined : T extends null ? null 
+    : (T extends IMergeable // entity as-is
     ? ScriptableEntity<T>  // -> return a ScriptableEntity
     : (
       T extends (infer U)[] ? // array of some U
@@ -45,9 +53,11 @@ export class WegasClient {
           ? Readonly<MapOf<ScriptableEntity<U>>> // -> Map of Scriptables
           : undefined)
         : undefined
-      )
+      ))
     ) {
-    if ("@class" in entities) {
+    if(entities == null) {
+      return entities as any;
+    } else if ("@class" in entities) {
       const entity = entities as IMergeable;
       if (entity["@class"] in mapAtClassToConcreteClasses) {
         const atClass = entity["@class"] as keyof AtClassToConcreteClasses;
@@ -73,42 +83,40 @@ export class WegasClient {
     return undefined as any;
   }
 
-
   test() {
-
     const listDesc: IListDescriptor = {
       "@class": "ListDescriptor",
       allowedTypes: [],
-      addShortcut: '',
+      addShortcut: "",
       itemsIds: [],
       editorTag: "",
       comments: "",
       defaultInstance: {
         "@class": "ListInstance",
-    version: 1
+        version: 1,
       },
       version: 1,
       label: {
         "@class": "TranslatableContent",
         version: 1,
-        translations: {}
-      }
+        translations: {},
+      },
     };
     console.log(listDesc);
-    const team: ITeam = {"@class": "Team", players: []};
+    const team: ITeam = { "@class": "Team", players: [] };
     const a: ITeam[] = [
-      {"@class": "Team", players: []},
-      {"@class": "Team", players: []},
-      {"@class": "Team", players: []},
-      {"@class": "Team", players: []},
-      {"@class": "Team", players: []}
+      { "@class": "Team", players: [] },
+      { "@class": "Team", players: [] },
+      { "@class": "Team", players: [] },
+      { "@class": "Team", players: [] },
+      { "@class": "Team", players: [] },
     ];
-    const m: {[k: string]: ITeam} = {
-      "a": {"@class": "Team", players: []},
-      "b": {"@class": "Team", players: []},
-      "c": {"@class": "Team", players: []},
-      "d": {"@class": "Team", players: []},
-      "e": {"@class": "Team", players: []}
+    const m: { [k: string]: ITeam } = {
+      a: { "@class": "Team", players: [] },
+      b: { "@class": "Team", players: [] },
+      c: { "@class": "Team", players: [] },
+      d: { "@class": "Team", players: [] },
+      e: { "@class": "Team", players: [] },
     };
 
     const s = this.instantiate(team);
@@ -122,4 +130,4 @@ export class WegasClient {
   }
 }
 
-export * from "./generated/WegasScriptableEntities"
+export * from "./generated/WegasScriptableEntities";

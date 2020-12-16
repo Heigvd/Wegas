@@ -10,7 +10,7 @@ import { IScript, SQuestionDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
 import { TumbleLoader } from '../../Loader';
-import { checkExistsWarnNotFound } from '../tools/methods';
+import { wwarn } from '../../../Helper/wegaslog';
 
 interface QuestionDisplayProps extends WegasComponentProps {
   /**
@@ -25,11 +25,12 @@ export default function QuestionDisplay({
 }: QuestionDisplayProps) {
   const descriptor = useScript<SQuestionDescriptor>(question, context);
 
-  return checkExistsWarnNotFound(descriptor, question?.content) ? (
-    <ConnectedQuestionDisplay entity={descriptor!.getEntity()} />
-  ) : (
-    <TumbleLoader />
-  );
+  if (descriptor == null) {
+    wwarn(`${question?.content} Not found`);
+    return <TumbleLoader />;
+  } else {
+    return <ConnectedQuestionDisplay entity={descriptor!.getEntity()} />;
+  }
 }
 
 registerComponent(

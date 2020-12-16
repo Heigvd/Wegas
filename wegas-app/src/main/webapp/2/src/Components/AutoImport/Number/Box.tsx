@@ -7,6 +7,8 @@ import {
 } from '../../Hooks/useVariable';
 import { themeVar } from '../../Style/ThemeVars';
 import { INumberDescriptor } from 'wegas-ts-api';
+import { wwarn } from '../../../Helper/wegaslog';
+import { TumbleLoader } from '../../Loader';
 
 const boxStyle = css({
   backgroundColor: themeVar.Common.colors.HeaderColor,
@@ -27,13 +29,14 @@ export default function NumberValue(props: { variable: string }) {
   const descriptor = useVariableDescriptor<INumberDescriptor>(props.variable);
   const instance = useVariableInstance(descriptor);
   if (descriptor === undefined || instance === undefined) {
-    return <span>Not found: {props.variable}</span>;
+    wwarn(`Not found: ${props.variable}`);
+    return <TumbleLoader />;
   }
 
   return (
     <div>
       {TranslatableContent.toString(descriptor.label)}
-      <div>{box(instance.value)}</div>
+      <div>{box(instance.getValue())}</div>
     </div>
   );
 }

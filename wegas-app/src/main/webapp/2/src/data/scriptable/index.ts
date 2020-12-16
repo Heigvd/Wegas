@@ -1,4 +1,4 @@
-import { IMergeable, MapOf, SMergeable } from 'wegas-ts-api';
+import { IMergeable, MapOf } from 'wegas-ts-api';
 import * as WegasApiConnector from 'wegas-ts-api';
 
 import { SBooleanDescriptorImpl } from './impl/BooleanDescriptor';
@@ -63,10 +63,4 @@ export function instantiate<
   T extends IMergeable | IMergeable[] | MapOf<IMergeable> | null | undefined
 >(entity: T) {
   return apiConnector.instantiate(entity);
-}
-
-export function isNotScriptable(
-  variable: IMergeable | SMergeable,
-): variable is IMergeable {
-  return '@class' in variable;
 }

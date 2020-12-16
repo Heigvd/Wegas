@@ -504,18 +504,6 @@ export function ComponentContainer({
   const mouseOver = React.useRef<boolean>(false);
   const [dragHoverState, setDragHoverState] = React.useState<boolean>(false);
   const [stackedHandles, setStackedHandles] = React.useState<JSX.Element[]>();
-  // const [waitConfirmation, setWaitConfirmation] = React.useState<boolean>(
-  //   false,
-  // );
-
-  // const count = React.useRef(0);
-  // React.useEffect(() => {
-  //   wlog(count.current);
-  //   count.current += 1;
-  //   if (count.current > 4) {
-  //     wlog({ componentType, name, path });
-  //   }
-  // });
 
   const {
     onDrop,

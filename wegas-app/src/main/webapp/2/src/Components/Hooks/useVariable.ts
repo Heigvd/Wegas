@@ -24,10 +24,9 @@ export function useVariableDescriptor<D extends IVariableDescriptor>(
  * @param descriptor VariableInstance's VariableDescriptor
  * @param player Player owning the instance
  */
-export function useVariableInstance<D extends IVariableDescriptor>(
-  descriptor?: D,
-  player: IPlayer = Player.selectCurrent(),
-) {
+export function useVariableInstance<
+  D extends IVariableDescriptor | SVariableDescriptor
+>(descriptor?: D, player: IPlayer = Player.selectCurrent()) {
   const getInstanceForDescriptor = React.useCallback(() => {
     if (descriptor) {
       return getInstance(descriptor, player) as instanceOf<D>;

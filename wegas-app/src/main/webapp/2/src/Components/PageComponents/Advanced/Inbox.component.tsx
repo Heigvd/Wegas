@@ -9,6 +9,7 @@ import { InboxDisplay } from '../../Outputs/Inbox';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { IScript, IInboxDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { TumbleLoader } from '../../Loader';
 
 interface PlayerInboxProps extends WegasComponentProps {
   inbox?: IScript;
@@ -17,7 +18,7 @@ interface PlayerInboxProps extends WegasComponentProps {
 export default function PlayerInbox({ inbox }: PlayerInboxProps) {
   const { descriptor } = useComponentScript<IInboxDescriptor>(inbox);
   if (descriptor === undefined) {
-    return <pre>No selected list</pre>;
+    return <TumbleLoader />;
   }
 
   return <InboxDisplay inbox={descriptor.getEntity()} />;
