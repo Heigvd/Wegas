@@ -3,6 +3,7 @@ import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { Player, VariableDescriptor } from '../../data/selectors';
 import { useStore } from '../../data/store';
 import { IVariableDescriptor, IPlayer } from 'wegas-ts-api';
+import { instantiate } from '../../data/scriptable';
 
 type instanceOf<D> = D extends IVariableDescriptor<infer U> ? U : never;
 /**
@@ -33,5 +34,7 @@ export function useVariableInstance<D extends IVariableDescriptor>(
     }
     return;
   }, [descriptor, player]);
-  return useStore(getInstanceForDescriptor);
+  const instance = useStore(getInstanceForDescriptor);
+
+  return instantiate(instance);
 }

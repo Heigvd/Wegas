@@ -273,15 +273,18 @@ const getScriptLanguage: (
  *
  * @param libraryEntry - the library to check
  */
-const isLibraryOutdated = (
-  libraryEntry: ILibraryWithStatus,
+function isLibraryOutdated(
+  libraryEntry: ILibraryWithStatus | undefined,
 ): libraryEntry is ILibraryWithStatus & {
   status: {
     latestVersionLibrary: IGameModelContent;
   };
-} => {
-  return libraryEntry.status.latestVersionLibrary !== undefined;
-};
+} {
+  return (
+    libraryEntry != null &&
+    libraryEntry.status.latestVersionLibrary !== undefined
+  );
+}
 
 /**
  * isVisibilityAllowed is a function that tells if a visibility can be sat to the current library
@@ -392,7 +395,9 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
   const [modalState, setModalState] = React.useState<ModalState>({
     type: 'close',
   });
-  const libEntry = librariesState.libraries[librariesState.selected];
+  const libEntry = librariesState.libraries[librariesState.selected] as
+    | ILibraryWithStatus
+    | undefined;
 
   const { updateCSSLibraries } = React.useContext(librariesCTX);
   const globalContexts = useGlobalContexts();
@@ -473,7 +478,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
    * @param content - the content of the library
    */
   const onSaveLibrary = React.useCallback(() => {
-    if (isEditAllowed(librariesState)) {
+    if (isEditAllowed(librariesState) && libEntry != null) {
       LibraryAPI.saveLibrary(
         scriptType,
         librariesState.selected,
@@ -508,7 +513,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
   }, [
     librariesState,
     scriptType,
-    libEntry.library,
+    libEntry,
     globalContexts,
     updateCSSLibraries,
   ]);
@@ -552,7 +557,7 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
 
   const editorProps: SrcEditorProps = React.useMemo(
     () => ({
-      value: librariesState.selected ? libEntry.library.content : '',
+      value: librariesState.selected ? libEntry?.library.content || '' : '',
       onChange: (content: string) =>
         dispatchStateAction({
           type: 'SetLibraryContent',
@@ -652,20 +657,21 @@ function ScriptEditor({ scriptType }: ScriptEditorProps) {
                 )}
               </>
             )}
-            {isLibraryOutdated(libEntry) ? (
-              <MessageString
-                type="error"
-                value="The script is dangeroulsy outdated!"
-              />
-            ) : libEntry.status.isEdited ? (
-              <MessageString type="warning" value="The script is not saved" />
-            ) : (
-              <MessageString
-                type="succes"
-                value="The script is saved"
-                duration={3000}
-              />
-            )}
+            {libEntry &&
+              (isLibraryOutdated(libEntry) ? (
+                <MessageString
+                  type="error"
+                  value="The script is dangeroulsy outdated!"
+                />
+              ) : libEntry.status.isEdited ? (
+                <MessageString type="warning" value="The script is not saved" />
+              ) : (
+                <MessageString
+                  type="succes"
+                  value="The script is saved"
+                  duration={3000}
+                />
+              ))}
             {(modalState.type === 'error' || modalState.type === 'warning') && (
               <MessageString
                 type={modalState.type}

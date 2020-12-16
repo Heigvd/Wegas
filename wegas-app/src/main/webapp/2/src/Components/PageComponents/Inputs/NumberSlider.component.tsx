@@ -22,6 +22,8 @@ import {
   useOnVariableChange,
 } from './tools';
 import { useCurrentPlayer } from '../../../data/selectors/Player';
+import { TumbleLoader } from '../../Loader';
+import { checkExistsWarnNotFound } from '../tools/methods';
 
 interface PlayerNumberSliderProps extends WegasComponentProps {
   /**
@@ -57,11 +59,7 @@ function PlayerNumberSlider({
   const player = useCurrentPlayer();
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
-  return number == null ? (
-    <pre className={className} style={style} id={id}>
-      Not found: {script?.content}
-    </pre>
-  ) : (
+  return checkExistsWarnNotFound(number, script?.content) ? (
     <NumberSlider
       {...restProps}
       className={className}
@@ -84,6 +82,8 @@ function PlayerNumberSlider({
       min={number.getMinValue() || 0}
       max={number.getMaxValue() || 1}
     />
+  ) : (
+    <TumbleLoader />
   );
 }
 
