@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { omit } from 'lodash';
 
-interface ClassesContext extends GlobalClassesClass {
+export interface ClassesContext extends GlobalClassesClass {
   classes: string[];
 }
 export const classesCTX = React.createContext<ClassesContext>({

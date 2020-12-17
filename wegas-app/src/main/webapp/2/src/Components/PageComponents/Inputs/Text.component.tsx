@@ -23,6 +23,7 @@ import {
   ValidatorComponentProps,
   validatorSchema,
 } from '../../Inputs/Validate';
+import { TumbleLoader } from '../../Loader';
 
 interface PlayerTextInputProps
   extends WegasComponentProps,
@@ -70,9 +71,7 @@ function PlayerTextInput({
   );
 
   return text == null ? (
-    <pre className={className} style={style} id={id}>
-      Not found: {script?.content}
-    </pre>
+    <TumbleLoader />
   ) : validator ? (
     <Validate
       value={typeof text === 'object' ? text.getValue(player) : text}

@@ -26,10 +26,6 @@ const cbxStyle = css({
 
 export interface CheckBoxProps extends InputProps<boolean> {
   /**
-   * defaultChecked - the initial state of the toggler (false by default)
-   */
-  defaultChecked?: boolean;
-  /**
    * checkBoxClassName - the className of the checkbox
    */
   checkBoxClassName?: string;
@@ -48,7 +44,6 @@ export interface CheckBoxProps extends InputProps<boolean> {
 }
 
 export function CheckBox({
-  defaultChecked,
   value,
   onChange,
   disabled,
@@ -61,20 +56,6 @@ export function CheckBox({
   style,
   id,
 }: CheckBoxProps) {
-  const [checked, setChecked] = React.useState(
-    defaultChecked !== undefined
-      ? defaultChecked
-      : value !== undefined
-      ? value
-      : false,
-  );
-
-  React.useEffect(() => {
-    if (value !== undefined) {
-      setChecked(value);
-    }
-  }, [value]);
-
   return (
     <div
       id={id}
@@ -89,7 +70,7 @@ export function CheckBox({
       <Button
         icon={
           radio
-            ? checked
+            ? value
               ? {
                   icon: {
                     prefix: 'far',
@@ -102,7 +83,7 @@ export function CheckBox({
                     iconName: 'circle',
                   },
                 }
-            : checked
+            : value
             ? {
                 icon: {
                   prefix: 'far',
@@ -119,10 +100,7 @@ export function CheckBox({
         onClick={e => {
           e.stopPropagation();
           if (!disabled && !readOnly && onChange) {
-            setChecked(v => {
-              onChange(!v);
-              return !v;
-            });
+            onChange(!value);
           }
         }}
         className={

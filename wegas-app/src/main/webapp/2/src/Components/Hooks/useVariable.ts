@@ -3,6 +3,7 @@ import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { Player, VariableDescriptor } from '../../data/selectors';
 import { useStore } from '../../data/store';
 import { IVariableDescriptor, IPlayer } from 'wegas-ts-api';
+import { instantiate } from '../../data/scriptable';
 
 type instanceOf<D> = D extends IVariableDescriptor<infer U> ? U : never;
 /**
@@ -23,15 +24,16 @@ export function useVariableDescriptor<D extends IVariableDescriptor>(
  * @param descriptor VariableInstance's VariableDescriptor
  * @param player Player owning the instance
  */
-export function useVariableInstance<D extends IVariableDescriptor>(
-  descriptor?: D,
-  player: IPlayer = Player.selectCurrent(),
-) {
+export function useVariableInstance<
+  D extends IVariableDescriptor | SVariableDescriptor
+>(descriptor?: D, player: IPlayer = Player.selectCurrent()) {
   const getInstanceForDescriptor = React.useCallback(() => {
     if (descriptor) {
       return getInstance(descriptor, player) as instanceOf<D>;
     }
     return;
   }, [descriptor, player]);
-  return useStore(getInstanceForDescriptor);
+  const instance = useStore(getInstanceForDescriptor);
+
+  return instantiate(instance);
 }

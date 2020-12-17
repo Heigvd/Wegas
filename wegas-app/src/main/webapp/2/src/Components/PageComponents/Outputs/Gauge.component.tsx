@@ -11,6 +11,7 @@ import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
 import { useCurrentPlayer } from '../../../data/selectors/Player';
+import { TumbleLoader } from '../../Loader';
 
 interface PlayerGaugeProps extends WegasComponentProps {
   /**
@@ -40,9 +41,7 @@ function PlayerGauge({
   const player = useCurrentPlayer();
 
   return number == null ? (
-    <pre className={className} style={style} id={id}>
-      Not found: {script?.content}
-    </pre>
+    <TumbleLoader />
   ) : (
     <StandardGauge
       className={className}

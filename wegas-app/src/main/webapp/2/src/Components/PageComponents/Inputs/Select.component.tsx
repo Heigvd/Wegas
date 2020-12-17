@@ -7,13 +7,12 @@ import { schemaProps } from '../tools/schemaProps';
 import { store } from '../../../data/store';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import {
+  INumberDescriptor,
   IScript,
-  SNumberDescriptor,
-  SStringDescriptor,
-  STextDescriptor,
+  IStringDescriptor,
+  ITextDescriptor,
 } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import {
@@ -25,7 +24,8 @@ import { Choice, Selector } from '../../../Editor/Components/FormView/Select';
 import { entityIs } from '../../../data/entities';
 import { translate } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import { useCurrentPlayer } from '../../../data/selectors/Player';
+import { useComponentScript } from '../../Hooks/useComponentScript';
+import { TumbleLoader } from '../../Loader';
 
 interface PlayerSelectInputProps extends WegasComponentProps {
   /**
@@ -48,29 +48,33 @@ function PlayerSelectInput({
   id,
   onVariableChange,
 }: PlayerSelectInputProps) {
-  const player = useCurrentPlayer();
-  const variable = useScript<
-    SStringDescriptor | STextDescriptor | SNumberDescriptor
+  const { descriptor, instance } = useComponentScript<
+    IStringDescriptor | ITextDescriptor | INumberDescriptor
   >(script, context);
-  const value = JSON.stringify(String(variable?.getValue(player)));
   const { lang } = React.useContext(languagesCTX);
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
+  if (instance == null || descriptor == null) {
+    return <TumbleLoader />;
+  }
+
+  const value = JSON.stringify(
+    String(
+      'getValue' in instance ? instance.getValue() : instance.getTrValue(),
+    ),
+  );
+
   const computedChoices: Choice[] =
     choices == null
-      ? entityIs(variable, 'StringDescriptor')
-        ? variable.allowedValues.map(v => {
+      ? entityIs(descriptor, 'StringDescriptor')
+        ? descriptor.allowedValues.map(v => {
             const value = translate(v.label, lang);
             return { value, label: v.name || value };
           })
         : []
       : choices;
 
-  return variable == null ? (
-    <pre className={className} style={style} id={id}>
-      Not found: {script?.content}
-    </pre>
-  ) : (
+  return (
     <Selector
       id={id}
       value={value}
@@ -82,8 +86,8 @@ function PlayerSelectInput({
         } else {
           store.dispatch(
             runScript(
-              `Variable.find(gameModel,"${variable.getName()}").setValue(self, ${
-                entityIs(variable, 'NumberDescriptor')
+              `Variable.find(gameModel,"${descriptor.getName()}").setValue(self, ${
+                entityIs(descriptor, 'NumberDescriptor')
                   ? Number(newValue)
                   : `'${newValue}'`
               });`,

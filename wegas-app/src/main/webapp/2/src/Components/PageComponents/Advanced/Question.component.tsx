@@ -4,11 +4,13 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { useComponentScript } from '../../Hooks/useComponentScript';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { ConnectedQuestionDisplay } from '../../Outputs/Question/Question';
-import { IScript, IQuestionDescriptor } from 'wegas-ts-api';
+import { IScript, SQuestionDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { useScript } from '../../Hooks/useScript';
+import { TumbleLoader } from '../../Loader';
+import { wwarn } from '../../../Helper/wegaslog';
 
 interface QuestionDisplayProps extends WegasComponentProps {
   /**
@@ -17,18 +19,18 @@ interface QuestionDisplayProps extends WegasComponentProps {
   question?: IScript;
 }
 
-export default function QuestionDisplay({ question }: QuestionDisplayProps) {
-  const {
-    content,
-    descriptor,
-    notFound,
-  } = useComponentScript<IQuestionDescriptor>(question);
+export default function QuestionDisplay({
+  question,
+  context,
+}: QuestionDisplayProps) {
+  const descriptor = useScript<SQuestionDescriptor>(question, context);
 
-  return notFound ? (
-    <pre>Not found: {content}</pre>
-  ) : (
-    <ConnectedQuestionDisplay entity={descriptor!.getEntity()} />
-  );
+  if (descriptor == null) {
+    wwarn(`${question?.content} Not found`);
+    return <TumbleLoader />;
+  } else {
+    return <ConnectedQuestionDisplay entity={descriptor!.getEntity()} />;
+  }
 }
 
 registerComponent(

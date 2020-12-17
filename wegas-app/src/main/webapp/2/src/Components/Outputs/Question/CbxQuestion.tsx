@@ -17,7 +17,7 @@ import {
   choiceContainerStyle,
   choiceInputStyle,
 } from './ChoiceContainer';
-import { QuestionInfo } from './Question';
+import { QuestionInfo, questionStyle } from './Question';
 import { RepliesDisplay } from './Reply';
 
 interface CbxChoiceDisplayProps {
@@ -102,7 +102,7 @@ export function CbxQuestionDisplay({
   }
 
   return (
-    <>
+    <div className={questionStyle}>
       <div
         dangerouslySetInnerHTML={{
           __html: questionD.description
@@ -146,6 +146,6 @@ export function CbxQuestionDisplay({
         </div>
       )}
       <RepliesDisplay replies={replies} showAll />
-    </>
+    </div>
   );
 }
