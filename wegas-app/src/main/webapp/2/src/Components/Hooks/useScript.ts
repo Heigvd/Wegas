@@ -319,7 +319,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
       return translate(translatable, lang);
     },
     toString: entity => {
-      let translatableEntity: STranslatableContent | undefined;
+      let translatableEntity: STranslatableContent | undefined | null;
       switch (entity.getEntity()['@class']) {
         case 'StringDescriptor': {
           translatableEntity = (entity as SStringDescriptor)
