@@ -133,11 +133,6 @@
     border-top: 4px solid #6AACF1 !important;
 }
 
-.yui3-skin-sam .wegas-layout-right .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel {
-    /* Because of the handle bar: */
-    padding-left: 4px !important;
-}
-
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel {
     position: relative;
     height: 100%;
