@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -59,7 +58,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Resource;
@@ -141,6 +139,9 @@ public class ScriptFacade extends WegasAbstractFacade {
                 + "  var defaultNoSuchProperty = global.__noSuchProperty__;" // Store nashorn's implementation
                 + "  Object.defineProperty(global, '__noSuchProperty__', {"
                 + "    value: function(prop){"
+                + "      if (prop === 'engine'){"
+                + "        return null;"
+                + "      }"
                 + "      try{"
                 + "        var ret = Variable.find(gameModel, prop).getInstance(self);"
                 + "        print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);" // log usage if var exists
