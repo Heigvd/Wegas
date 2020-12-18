@@ -12,16 +12,16 @@ import {
 import { store } from '../../../data/store';
 import { Actions } from '../../../data';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { IScript, SNumberDescriptor } from 'wegas-ts-api';
+import { INumberDescriptor, IScript } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { classStyleIdShema } from '../tools/options';
-import { useScript } from '../../Hooks/useScript';
 import {
   OnVariableChange,
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
-import { useCurrentPlayer } from '../../../data/selectors/Player';
+import { TumbleLoader } from '../../Loader';
+import { useComponentScript } from '../../Hooks/useComponentScript';
 
 interface PlayerNumberSliderProps extends WegasComponentProps {
   /**
@@ -53,21 +53,26 @@ function PlayerNumberSlider({
   onVariableChange,
   ...restProps
 }: PlayerNumberSliderProps) {
-  const number = useScript<SNumberDescriptor>(script, context);
-  const player = useCurrentPlayer();
+  // const number = useScript<SNumberDescriptor>(script, context);
+  // const player = useCurrentPlayer();
+
+  const {
+    descriptor,
+    instance,
+    notFound,
+  } = useComponentScript<INumberDescriptor>(script, context);
+
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
-  return number == null ? (
-    <pre className={className} style={style} id={id}>
-      Not found: {script?.content}
-    </pre>
+  return notFound ? (
+    <TumbleLoader />
   ) : (
     <NumberSlider
       {...restProps}
       className={className}
       style={style}
       id={id}
-      value={number.getValue(player)}
+      value={instance?.getValue()}
       onChange={(v, i) => {
         if (i === 'DragEnd') {
           if (handleOnChange) {
@@ -75,14 +80,14 @@ function PlayerNumberSlider({
           } else {
             store.dispatch(
               Actions.VariableInstanceActions.runScript(
-                `Variable.find(gameModel,"${number.getName()}").setValue(self, ${v});`,
+                `Variable.find(gameModel,"${descriptor?.getName()}").setValue(self, ${v});`,
               ),
             );
           }
         }
       }}
-      min={number.getMinValue() || 0}
-      max={number.getMaxValue() || 1}
+      min={descriptor?.getMinValue() || 0}
+      max={descriptor?.getMaxValue() || 1}
     />
   );
 }

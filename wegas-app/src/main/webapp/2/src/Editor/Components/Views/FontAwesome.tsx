@@ -47,18 +47,18 @@ export function isIconString(icon: Icons): icon is IconString {
   return !Array.isArray(icon) && typeof icon === 'object' && 'value' in icon;
 }
 
-interface IconDisplayProps {
+interface IconDisplayProps extends Omit<ClassStyleId, 'id'> {
   icon: Icon;
-  style?: React.CSSProperties;
 }
 
-function IconDisplay({ icon, style }: IconDisplayProps) {
+function IconDisplay({ icon, style, className }: IconDisplayProps) {
   return isProps(icon) ? (
-    <FontAwesome fixedWidth {...icon} style={style} />
+    <FontAwesome fixedWidth {...icon} style={style} className={className} />
   ) : isIconString(icon) ? (
     <div
-      className="fa-layers svg-inline--fa fa-w-16 fa-fw"
+      className={className + ' fa-layers svg-inline--fa fa-w-16 fa-fw'}
       style={{
+        ...style,
         display: 'table-cell',
         verticalAlign: 'middle',
       }}
@@ -66,20 +66,21 @@ function IconDisplay({ icon, style }: IconDisplayProps) {
       <div style={{ ...omit(icon, 'value'), ...style }}>{icon.value}</div>
     </div>
   ) : (
-    <FontAwesome fixedWidth icon={icon} style={style} />
+    <FontAwesome fixedWidth icon={icon} style={style} className={className} />
   );
 }
 
-interface IconCompProps {
+interface IconCompProps extends Omit<ClassStyleId, 'id'> {
   icon?: Icons;
-  style?: React.CSSProperties;
 }
 
-export function IconComp({ icon, style }: IconCompProps) {
+export function IconComp({ icon, style, className }: IconCompProps) {
   return icon == null ? (
-    <pre>No icon</pre>
+    <pre style={style} className={className}>
+      No icon
+    </pre>
   ) : Array.isArray(icon) ? (
-    <span className="fa-layers fa-fw">
+    <span style={style} className={className + ' fa-layers fa-fw'}>
       {icon.map((ic: Icon, i) => (
         <IconDisplay
           key={JSON.stringify(ic) + String(i)}
@@ -89,7 +90,7 @@ export function IconComp({ icon, style }: IconCompProps) {
       ))}
     </span>
   ) : (
-    <IconDisplay icon={icon} style={style} />
+    <IconDisplay icon={icon} style={style} className={className} />
   );
 }
 

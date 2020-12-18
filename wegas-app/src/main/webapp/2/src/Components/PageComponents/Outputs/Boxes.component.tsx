@@ -10,6 +10,7 @@ import { NumberBox } from '../../Inputs/Number/NumberBox';
 import { IScript, INumberDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { classStyleIdShema } from '../tools/options';
+import { TumbleLoader } from '../../Loader';
 
 interface PlayerBoxesProps extends WegasComponentProps {
   /**
@@ -39,19 +40,20 @@ function PlayerBoxes({
   style,
   id,
 }: PlayerBoxesProps) {
-  const { content, descriptor, instance, notFound } = useComponentScript<
-    INumberDescriptor
-  >(script);
+  const {
+    descriptor,
+    instance,
+    notFound,
+  } = useComponentScript<INumberDescriptor>(script);
+
   return notFound ? (
-    <pre className={className} style={style} id={id}>
-      Not found: {content}
-    </pre>
+    <TumbleLoader />
   ) : (
     <NumberBox
       className={className}
       style={style}
       id={id}
-      value={instance?.value}
+      value={instance?.getValue()}
       minValue={1}
       maxValue={
         descriptor?.getMaxValue() != null

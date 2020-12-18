@@ -44,6 +44,8 @@ const dropZoneStyle = css({
 const isDirectory = (file: IAbstractContentDescriptor) =>
   file.mimeType === 'application/wfs-directory';
 
+const isFile = (file: IAbstractContentDescriptor) => !isDirectory(file);
+
 const isSelected = (
   file: IAbstractContentDescriptor,
   selectedPaths: string[],
@@ -163,6 +165,7 @@ export interface FileBrowserNodeProps extends ClassStyleId {
   defaultOpen?: boolean;
   noBracket?: boolean;
   noDelete?: boolean;
+  readOnly?: boolean;
   onFileClick?: (
     file: IAbstractContentDescriptor,
     onFileUpdate?: (updatedFile: IAbstractContentDescriptor) => void,
@@ -180,6 +183,7 @@ export function FileBrowserNode({
   defaultOpen = false,
   noBracket = false,
   noDelete = false,
+  readOnly = false,
   onFileClick = () => {},
   onDelelteFile = () => {},
   localDispatch,
@@ -398,7 +402,7 @@ export function FileBrowserNode({
           }
         });
       }
-    }, pick != null),
+    }, readOnly),
   );
 
   const timeoutBeforeExpend = 1000;
@@ -422,11 +426,11 @@ export function FileBrowserNode({
     !pick ||
     pick === 'BOTH' ||
     (pick === 'FOLDER' && isDirectory(currentFile)) ||
-    (pick === 'FILE' && !isDirectory(currentFile));
+    (pick === 'FILE' && isFile(currentFile));
   const typeFilterApproved =
     !filter || currentFile.mimeType.includes(filter.fileType);
   const greyFiltered =
-    !isDirectory(currentFile) &&
+    isFile(currentFile) &&
     filter &&
     !currentFile.mimeType.includes(filter.fileType);
 
@@ -438,7 +442,8 @@ export function FileBrowserNode({
       className={cx(flex, grow) + classNameOrEmpty(className)}
       style={style}
     >
-      {!pick && (
+      {!readOnly && (
+        // allow to browse file in the file system
         <input
           ref={uploader}
           type="file"
@@ -481,7 +486,7 @@ export function FileBrowserNode({
           onClick={(e: ModifierKeysEvent) => {
             if (typeFilterApproved && pickApproved) {
               onFileClick(currentFile, setCurrentFile);
-              if (!pick) {
+              if (!readOnly) {
                 const dispatch =
                   e.ctrlKey && localDispatch ? localDispatch : store.dispatch;
                 dispatch(editFile(currentFile, setCurrentFile));
@@ -532,8 +537,18 @@ export function FileBrowserNode({
                 defaultConfirm
               />
             )}
+            {modalState.type === 'close' && isFile(currentFile) && (
+              <Button
+                icon={'external-link-alt'}
+                tooltip={'Open file'}
+                onClick={event => {
+                  event.stopPropagation();
+                  openFile(currentFile);
+                }}
+              />
+            )}
             {modalState.type === 'close' &&
-              !pick &&
+              !readOnly &&
               (isDirectory(currentFile) ? (
                 <>
                   <Button
@@ -553,24 +568,14 @@ export function FileBrowserNode({
                   />
                 </>
               ) : (
-                <>
-                  <Button
-                    icon={'external-link-alt'}
-                    tooltip={'Open file'}
-                    onClick={event => {
-                      event.stopPropagation();
-                      openFile(currentFile);
-                    }}
-                  />
-                  <Button
-                    icon={'file-import'}
-                    tooltip={'Upload new version'}
-                    disabled={!isUploadAllowed(currentFile)}
-                    onClick={openUploader}
-                  />
-                </>
+                <Button
+                  icon={'file-import'}
+                  tooltip={'Upload new version'}
+                  disabled={!isUploadAllowed(currentFile)}
+                  onClick={openUploader}
+                />
               ))}
-            {modalState.type === 'close' && !noDelete && !pick && (
+            {modalState.type === 'close' && !noDelete && !readOnly && (
               <ConfirmButton
                 icon={'trash'}
                 tooltip={'Delete'}
@@ -674,6 +679,8 @@ export function FileBrowserNode({
                       selectedLocalPaths={selectedLocalPaths}
                       selectedGlobalPaths={selectedGlobalPaths}
                       localDispatch={localDispatch}
+                      noDelete={noDelete}
+                      readOnly={readOnly}
                       filter={filter}
                       pick={pick}
                     />

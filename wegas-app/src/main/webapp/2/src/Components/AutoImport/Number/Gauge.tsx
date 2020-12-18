@@ -8,6 +8,8 @@ import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
 import { css } from 'emotion';
 import { themeVar } from '../../Style/ThemeVars';
 import { INumberDescriptor } from 'wegas-ts-api';
+import { TumbleLoader } from '../../Loader';
+import { wwarn } from '../../../Helper/wegaslog';
 
 const containerStyle = css({
   minWidth: '8em',
@@ -66,7 +68,8 @@ export default function Gauge(props: {
   const descriptor = useVariableDescriptor<INumberDescriptor>(props.variable);
   const instance = useVariableInstance(descriptor);
   if (descriptor === undefined || instance === undefined) {
-    return <span>Not found: {props.variable}</span>;
+    wwarn(`Not found: ${props.variable}`);
+    return <TumbleLoader />;
   }
   const {
     min = descriptor.minValue,
@@ -85,7 +88,7 @@ export default function Gauge(props: {
       </span>
     );
   }
-  const boundedValue = Math.max(min, Math.min(max, instance.value));
+  const boundedValue = Math.max(min, Math.min(max, instance.getValue()));
   const neutral = props.neutralValue === undefined ? min : props.neutralValue;
   const neutralAngle = 180 - ratio(neutral, min, max) * 180;
   const start = polarToCartesian(500, 500, 450, neutralAngle);
@@ -121,7 +124,7 @@ export default function Gauge(props: {
       </svg>
       <div className={textStyle}>
         <div>{TranslatableContent.toString(descriptor.label)}</div>
-        <div>{instance.value}</div>
+        <div>{instance.getValue()}</div>
       </div>
     </div>
   );

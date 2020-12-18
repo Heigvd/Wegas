@@ -23,7 +23,6 @@ import {
 import { schemaProps } from '../tools/schemaProps';
 import { FlexItem, defaultFlexLayoutOptionsKeys } from '../../Layouts/FlexList';
 import { findComponent } from '../../../Helper/pages';
-import { wlog } from '../../../Helper/wegaslog';
 
 const IfChildrenType = 'If component';
 const emptyIfChildren: WegasComponent = {
@@ -50,8 +49,6 @@ export function EmptyComponentContainer({
   const [{ isOver }, dropZone] = useDndComponentDrop();
 
   const { onDrop } = React.useContext(pageCTX);
-
-  wlog({ isOver });
 
   return (
     <FlexItem ref={dropZone} className={emptyLayoutItemStyle}>

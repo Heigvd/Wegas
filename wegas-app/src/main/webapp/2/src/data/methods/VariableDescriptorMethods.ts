@@ -13,6 +13,7 @@ import {
   IPlayer,
   ITeam,
   IGameModel,
+  ScriptableEntity,
 } from 'wegas-ts-api';
 import { SVariableDescriptor, SVariableInstance, SPlayer } from 'wegas-ts-api';
 import { instantiate } from '../scriptable';
@@ -23,10 +24,10 @@ export function editorLabel(
     editorTag?: string | null;
     name?: string;
   },
-  labelFirst?: boolean,
+  showTag?: boolean,
 ) {
   const label = TranslatableContent.toString(vd?.label);
-  if (labelFirst && label) {
+  if (!showTag && label) {
     return label;
   }
   if (vd && vd.editorTag && label) {
@@ -63,13 +64,16 @@ export function getScriptableInstance<T extends SVariableInstance>(
 }
 
 export function getInstance<I extends IVariableInstance>(
-  vd: IVariableDescriptor<I>,
+  vd:
+    | IVariableDescriptor<I>
+    | SVariableDescriptor<ScriptableEntity<IVariableInstance>>,
   self?: IPlayer,
 ): Readonly<I> | undefined {
   type IorUndef = Readonly<I> | undefined;
   const player = self != null ? self : Player.selectCurrent();
-  const scopeType = vd.scopeType;
-  const parentId = vd.id;
+  const variableDescriptor = '@class' in vd ? vd : vd.getEntity();
+  const scopeType = variableDescriptor.scopeType;
+  const parentId = variableDescriptor.id;
   const scopeKey =
     scopeType === 'PlayerScope'
       ? player.id

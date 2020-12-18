@@ -1,14 +1,22 @@
+import { css } from 'emotion';
 import * as React from 'react';
 import { IReply, IChoiceDescriptor } from 'wegas-ts-api';
 import { TranslatableContent } from '../../../data/i18n';
 import { VariableDescriptor } from '../../../data/selectors';
 import { StoreConsumer } from '../../../data/store';
 import { Button } from '../../Inputs/Buttons/Button';
+import { themeVar } from '../../Style/ThemeVars';
 import {
   choiceContainerStyle,
   choiceLabelStyle,
   choiceDescriptionStyle,
 } from './ChoiceContainer';
+
+const repliesContainer = css({
+  margin: '20px',
+  padding: '5px',
+  boxShadow: `0px 0px 5px ${themeVar.Common.colors.HeaderColor}`,
+});
 
 interface ReplyDisplayProps {
   reply: IReply;
@@ -54,28 +62,37 @@ function ReplyDisplay({ reply }: ReplyDisplayProps) {
 
 interface RepliesDisplayProps {
   replies: Readonly<IReply[]>;
+  showAll?: boolean;
 }
-export function RepliesDisplay({ replies }: RepliesDisplayProps) {
-  const [showAll, setShowAll] = React.useState(false);
+export function RepliesDisplay({ replies, showAll }: RepliesDisplayProps) {
+  const [expanded, setExpanded] = React.useState(showAll || false);
 
-  const nonIgnoredReplies = replies.filter(r => !r.ignored);
+  const nonIgnoredValidatedReplies = replies
+    .filter(r => !r.ignored)
+    .filter(r => r.validated);
 
-  if (nonIgnoredReplies.length === 0) {
+  if (nonIgnoredValidatedReplies.length === 0) {
     return null;
   }
   return (
-    <>
-      {nonIgnoredReplies.length > 1 && (
+    <div className={repliesContainer}>
+      {!showAll && nonIgnoredValidatedReplies.length > 1 && (
         <Button
-          icon={showAll ? 'caret-square-up' : 'caret-square-down'}
-          onClick={() => setShowAll(showAll => !showAll)}
+          icon={expanded ? 'caret-square-up' : 'caret-square-down'}
+          onClick={() => setExpanded(expanded => !expanded)}
         />
       )}
-      {showAll ? (
-        nonIgnoredReplies.map(r => <ReplyDisplay key={r.id} reply={r} />)
+      {expanded ? (
+        nonIgnoredValidatedReplies.map(r => (
+          <ReplyDisplay key={r.id} reply={r} />
+        ))
       ) : (
-        <ReplyDisplay reply={nonIgnoredReplies[nonIgnoredReplies.length - 1]} />
+        <ReplyDisplay
+          reply={
+            nonIgnoredValidatedReplies[nonIgnoredValidatedReplies.length - 1]
+          }
+        />
       )}
-    </>
+    </div>
   );
 }

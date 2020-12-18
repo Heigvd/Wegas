@@ -26,10 +26,6 @@ const cbxStyle = css({
 
 export interface CheckBoxProps extends InputProps<boolean> {
   /**
-   * defaultChecked - the initial state of the toggler (false by default)
-   */
-  defaultChecked?: boolean;
-  /**
    * checkBoxClassName - the className of the checkbox
    */
   checkBoxClassName?: string;
@@ -41,10 +37,13 @@ export interface CheckBoxProps extends InputProps<boolean> {
    * hint - the hint that will be displayed when the mouse hover the component
    */
   hint?: string;
+  /**
+   * radio - displays a radio button instead of a check box
+   */
+  radio?: boolean;
 }
 
 export function CheckBox({
-  defaultChecked,
   value,
   onChange,
   disabled,
@@ -52,24 +51,11 @@ export function CheckBox({
   label,
   hint,
   checkBoxClassName,
+  radio,
   className,
   style,
   id,
 }: CheckBoxProps) {
-  const [checked, setChecked] = React.useState(
-    defaultChecked !== undefined
-      ? defaultChecked
-      : value !== undefined
-      ? value
-      : false,
-  );
-
-  React.useEffect(() => {
-    if (value !== undefined) {
-      setChecked(value);
-    }
-  }, [value]);
-
   return (
     <div
       id={id}
@@ -83,7 +69,21 @@ export function CheckBox({
       {label && <Value value={label} />}
       <Button
         icon={
-          checked
+          radio
+            ? value
+              ? {
+                  icon: {
+                    prefix: 'far',
+                    iconName: 'dot-circle',
+                  },
+                }
+              : {
+                  icon: {
+                    prefix: 'far',
+                    iconName: 'circle',
+                  },
+                }
+            : value
             ? {
                 icon: {
                   prefix: 'far',
@@ -99,12 +99,9 @@ export function CheckBox({
         }
         onClick={e => {
           e.stopPropagation();
-          !disabled &&
-            !readOnly &&
-            setChecked(v => {
-              onChange && onChange(!v);
-              return !v;
-            });
+          if (!disabled && !readOnly && onChange) {
+            onChange(!value);
+          }
         }}
         className={
           'wegas wegas-cbx' +

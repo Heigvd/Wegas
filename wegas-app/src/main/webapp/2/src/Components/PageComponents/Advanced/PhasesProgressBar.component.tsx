@@ -9,6 +9,8 @@ import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, INumberDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { wwarn } from '../../../Helper/wegaslog';
+import { TumbleLoader } from '../../Loader';
 
 interface PhasesProgressBarProps extends WegasComponentProps {
   /**
@@ -47,19 +49,24 @@ export default function PlayerPhasesProgressBar({
     notFound: phaseMaxNotFound,
   } = useComponentScript<INumberDescriptor>(phaseMax);
 
-  return phaseNotFound ? (
-    <pre>Current phase not found: {phaseContent}</pre>
-  ) : phaseMinNotFound ? (
-    <pre>Phase min not found: {phaseMinContent}</pre>
-  ) : phaseMaxNotFound ? (
-    <pre>Phase max not found: {phaseMaxContent}</pre>
-  ) : (
-    <PhasesProgressBar
-      value={phaseInstance!.value}
-      phaseMin={phaseMinInstance!.value}
-      phaseMax={phaseMaxInstance!.value}
-    />
-  );
+  if (phaseNotFound) {
+    wwarn(`Current phase not found: ${phaseContent}`);
+    return <TumbleLoader />;
+  } else if (phaseMinNotFound) {
+    wwarn(`Phase min not found: ${phaseMinContent}`);
+    return <TumbleLoader />;
+  } else if (phaseMaxNotFound) {
+    wwarn(`Phase max not found: ${phaseMaxContent}`);
+    return <TumbleLoader />;
+  } else {
+    return (
+      <PhasesProgressBar
+        value={phaseInstance!.getValue()}
+        phaseMin={phaseMinInstance!.getValue()}
+        phaseMax={phaseMaxInstance!.getValue()}
+      />
+    );
+  }
 }
 
 registerComponent(

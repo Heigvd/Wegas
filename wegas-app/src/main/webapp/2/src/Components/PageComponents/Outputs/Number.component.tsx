@@ -9,20 +9,19 @@ import { useComponentScript } from '../../Hooks/useComponentScript';
 import { IScript, INumberDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { classStyleIdShema } from '../tools/options';
+import { TumbleLoader } from '../../Loader';
 
 export interface PlayerNumberProps extends WegasComponentProps {
   script?: IScript;
 }
 
 function PlayerNumber({ script, className, style, id }: PlayerNumberProps) {
-  const { content, instance } = useComponentScript<INumberDescriptor>(script);
-  return instance == null || instance.value == null ? (
-    <span id={id} className={className} style={style}>
-      Not found: {content}
-    </span>
+  const { instance, notFound } = useComponentScript<INumberDescriptor>(script);
+  return notFound ? (
+    <TumbleLoader />
   ) : (
     <div id={id} className={className} style={style}>
-      {instance.value}
+      {instance?.getValue()}
     </div>
   );
 }

@@ -1,17 +1,18 @@
 import * as React from 'react';
 import { instantiate } from '../../data/scriptable';
-import {
-  GameModel,
-  Player,
-  VariableDescriptor as VDSelect,
-} from '../../data/selectors';
+import { VariableDescriptor as VDSelect } from '../../data/selectors';
 import { useStore, store } from '../../data/store';
-import { featuresCTX, isFeatureEnabled } from '../Contexts/FeaturesProvider';
-import { languagesCTX } from '../Contexts/LanguagesProvider';
+import {
+  defaultFeatures,
+  FeatureContext,
+  featuresCTX,
+  isFeatureEnabled,
+} from '../Contexts/FeaturesProvider';
+import { LanguagesContext, languagesCTX } from '../Contexts/LanguagesProvider';
 import { Actions } from '../../data';
 import { transpile } from 'typescript';
-import { classesCTX } from '../Contexts/ClassesProvider';
-import { deepDifferent, shallowDifferent } from './storeHookFactory';
+import { ClassesContext, classesCTX } from '../Contexts/ClassesProvider';
+import { deepDifferent } from './storeHookFactory';
 import {
   IVariableDescriptor,
   WegasClassNames,
@@ -39,6 +40,7 @@ import { replace } from '../../Helper/tools';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
 import { createScript, isScript } from '../../Helper/wegasEntites';
 import { cloneDeep } from 'lodash-es';
+import { State } from '../../data/Reducer/reducers';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -86,29 +88,33 @@ export function createSandbox<T = unknown>() {
   return { sandbox, globals: (sandbox.contentWindow as unknown) as T };
 }
 
-const { sandbox, globals } = createSandbox<GlobalClasses>();
+export const { sandbox, globals } = createSandbox<GlobalClasses>();
 
-export function useGlobals() {
-  // Hooks
-  const { player, gameModel, pageLoaders } = useStore(
-    s => ({
-      player: Player.selectCurrent(),
-      gameModel: GameModel.selectCurrent(),
-      pageLoaders: s.global.pageLoaders,
-    }),
-    shallowDifferent,
-  );
+type GlobalContexts = FeatureContext & LanguagesContext & ClassesContext;
+
+export function useGlobalContexts(): GlobalContexts {
+  const featuresContext = React.useContext(featuresCTX);
+  const languagesContext = React.useContext(languagesCTX);
+  const classesContext = React.useContext(classesCTX);
+  return { ...featuresContext, ...languagesContext, ...classesContext };
+}
+
+export function setGlobals(globalContexts: GlobalContexts, store: State) {
+  const {
+    lang,
+    selectLang,
+    currentFeatures,
+    setFeature,
+    removeFeature,
+    addClass,
+    removeClass,
+  } = globalContexts;
+
+  const player = store.players[store.global.currentPlayerId];
+  const gameModel = store.gameModels[store.global.currentGameModelId];
+  const pageLoaders = store.global.pageLoaders;
+
   const splayer = instantiate(player);
-  // const gameModel = useGameModel();
-  const defaultFeatures: FeaturesSelecta = {
-    DEFAULT: true,
-    ADVANCED: false,
-    INTERNAL: false,
-  };
-  const { currentFeatures, setFeature, removeFeature } = React.useContext(
-    featuresCTX,
-  );
-  const { lang, selectLang } = React.useContext(languagesCTX);
 
   // Global variables
   globals.gameModel = instantiate(gameModel);
@@ -209,7 +215,7 @@ export function useGlobals() {
   globals.ClientMethods = {
     addMethod: addMethod,
     getMethod: (name: string) => {
-      return store.getState().global.clientMethods[name]
+      return store.global.clientMethods[name]
         .method as () => WegasScriptEditorReturnType;
     },
   };
@@ -268,7 +274,6 @@ export function useGlobals() {
   };
 
   // Classes class
-  const { addClass, removeClass } = React.useContext(classesCTX);
   globals.Classes = {
     addClass,
     removeClass,
@@ -286,7 +291,7 @@ export function useGlobals() {
   globals.WegasEvents = {
     addEventHandler: (id, type, cb) => {
       if (id != null && type != null && cb != null) {
-        if (store.getState().global.eventsHandlers[type][id] == null) {
+        if (store.global.eventsHandlers[type][id] == null) {
           globalDispatch(
             ActionCreator.EDITOR_ADD_EVENT_HANDLER({
               id,
@@ -300,7 +305,7 @@ export function useGlobals() {
     removeEventHandler: (id, type) => {
       if (id != null && type != null) {
         7;
-        if (store.getState().global.eventsHandlers[type][id] != null) {
+        if (store.global.eventsHandlers[type][id] != null) {
           globalDispatch(
             ActionCreator.EDITOR_REMOVE_EVENT_HANDLER({ id, type }),
           );
@@ -314,7 +319,7 @@ export function useGlobals() {
       return translate(translatable, lang);
     },
     toString: entity => {
-      let translatableEntity: STranslatableContent | undefined;
+      let translatableEntity: STranslatableContent | undefined | null;
       switch (entity.getEntity()['@class']) {
         case 'StringDescriptor': {
           translatableEntity = (entity as SStringDescriptor)
@@ -365,6 +370,7 @@ export function clientScriptEval<T extends ScriptReturnType>(
 ): T extends IMergeable ? unknown : T {
   globals.Context = context || {};
   const scriptContent = typeof script === 'string' ? script : script?.content;
+
   return scriptContent != null
     ? (((sandbox.contentWindow as unknown) as {
         eval: (code: string) => T;
@@ -409,8 +415,7 @@ export function useScript<T extends ScriptReturnType>(
   },
   catchCB?: (e: Error) => void,
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
-  useGlobals();
-  // useScriptContext();
+  const globalContexts = useGlobalContexts();
 
   const fn = React.useCallback(() => {
     if (Array.isArray(script)) {
@@ -421,7 +426,13 @@ export function useScript<T extends ScriptReturnType>(
       return safeClientScriptEval<T>(script, context, catchCB);
     }
   }, [script, context, catchCB]);
-  return useStore(fn, deepDifferent) as any;
+
+  const returnValue = useStore(s => {
+    setGlobals(globalContexts, s);
+    return fn();
+  }, deepDifferent) as any;
+
+  return returnValue;
 }
 
 /**
@@ -435,13 +446,18 @@ export function useUnsafeScript<T extends ScriptReturnType>(
     [name: string]: unknown;
   },
 ): T extends IMergeable ? unknown : T {
-  useGlobals();
+  const globalContexts = useGlobalContexts();
 
   const fn = React.useCallback(() => clientScriptEval<T>(script, context), [
     script,
     context,
   ]);
-  return useStore(fn, deepDifferent) as any;
+  const returnValue = useStore(s => {
+    setGlobals(globalContexts, s);
+    return fn();
+  }, deepDifferent) as any;
+
+  return returnValue;
 }
 
 export function parseAndRunClientScript(

@@ -8,7 +8,7 @@ interface LanguagesProviderProps {
   children?: React.ReactNode;
   availableLang?: IGameModelLanguage[];
 }
-interface LanguagesContext extends LanguagesProviderProps {
+export interface LanguagesContext extends LanguagesProviderProps {
   lang: string;
   selectLang: (lang: string) => void;
   availableLang: IGameModelLanguage[];

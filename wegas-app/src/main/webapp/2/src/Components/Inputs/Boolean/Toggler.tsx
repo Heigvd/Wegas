@@ -57,10 +57,6 @@ const togglerTextStyle = css({
 
 export interface TogglerProps extends InputProps<boolean> {
   /**
-   * defaultChecked - the initial state of the toggler (false by default)
-   */
-  defaultChecked?: boolean;
-  /**
    * togglerClassName - the className of the component
    */
   togglerClassName?: string;
@@ -83,7 +79,6 @@ export interface TogglerProps extends InputProps<boolean> {
 }
 
 export function Toggler({
-  defaultChecked,
   value,
   onChange,
   togglerClassName,
@@ -97,20 +92,6 @@ export function Toggler({
   style,
   id,
 }: TogglerProps) {
-  const [checked, setChecked] = React.useState(
-    defaultChecked !== undefined
-      ? defaultChecked
-      : value !== undefined
-      ? value
-      : false,
-  );
-
-  React.useEffect(() => {
-    if (value !== undefined) {
-      setChecked(value);
-    }
-  }, [value]);
-
   return (
     <div
       id={id}
@@ -128,28 +109,17 @@ export function Toggler({
           ' ' +
           classOrNothing('disabled', disabled) +
           classOrNothing('readOnly', readOnly) +
-          classOrNothing('checked', checked) +
+          classOrNothing('checked', value) +
           classNameOrEmpty(togglerClassName)
         }
         onClick={e => {
           e.stopPropagation();
-          !disabled &&
-            !readOnly &&
-            setChecked(v => {
-              onChange && onChange(!v);
-              return !v;
-            });
+          if (!disabled && !readOnly && onChange) {
+            onChange(!value);
+          }
         }}
         title={hint}
       >
-        {/* {!checked && (
-          <div
-            className={'wegas-toggler-text ' + cx(grow, togglerTextStyle)}
-            title={hint}
-          >
-            {labels ? labels.off : ''}
-          </div>
-        )} */}
         <div
           className={
             'wegas-toggler-handle ' +
@@ -165,7 +135,7 @@ export function Toggler({
             className={'wegas-toggler-text ' + cx(grow, togglerTextStyle)}
             title={hint}
           >
-            {checked ? labels.on : labels.off}
+            {value ? labels.on : labels.off}
           </div>
         )}
       </div>

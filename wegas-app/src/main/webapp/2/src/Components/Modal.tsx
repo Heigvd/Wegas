@@ -10,9 +10,9 @@ const modalStyle = css({
   top: 0,
   left: 0,
   overflow: 'auto',
-  width: '100%',
+  minWidth: '100%',
   height: '100%',
-  padding: '1em 0',
+  padding: '1.5em 0',
   backgroundColor: 'rgba(0,0,0,0.8)',
   zIndex: 1000,
   cursor: 'pointer',
@@ -23,7 +23,7 @@ const modalStyle = css({
     margin: '0 auto',
     padding: '10px',
     boxShadow: '0 0 1px 1px',
-    maxWidth: '80%',
+    maxWidth: 'calc(100% - 3em)',
   },
 });
 

@@ -9,7 +9,7 @@ import { Actions } from '../../../data';
 import { Toggler } from '../../Inputs/Boolean/Toggler';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { IScript, SBooleanDescriptor } from 'wegas-ts-api';
+import { IBooleanDescriptor, IScript } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
 import {
@@ -17,7 +17,8 @@ import {
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
-import { useCurrentPlayer } from '../../../data/selectors/Player';
+import { TumbleLoader } from '../../Loader';
+import { useComponentScript } from '../../Hooks/useComponentScript';
 
 interface PlayerBooleanProps extends WegasComponentProps {
   /**
@@ -55,24 +56,27 @@ function PlayerBoolean({
   id,
   onVariableChange,
 }: PlayerBooleanProps) {
-  const bool = useScript<SBooleanDescriptor>(script, context);
-  const player = useCurrentPlayer();
+  const {
+    descriptor,
+    instance,
+    notFound,
+  } = useComponentScript<IBooleanDescriptor>(script, context);
+
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
   const textLabel = useScript<string>(label, context);
 
   const BooleanComponent = type === 'toggler' ? Toggler : CheckBox;
-  return bool == null ? (
-    <pre className={className} style={style} id={id}>
-      Not found: {script?.content}
-    </pre>
+
+  return notFound ? (
+    <TumbleLoader />
   ) : (
     <BooleanComponent
       className={className}
       style={style}
       id={id}
       label={textLabel}
-      value={bool.getValue(player)}
+      value={instance?.getValue()}
       disabled={disabled}
       readOnly={inactive}
       onChange={v => {
@@ -81,7 +85,7 @@ function PlayerBoolean({
         } else {
           store.dispatch(
             Actions.VariableInstanceActions.runScript(
-              `Variable.find(gameModel,"${bool.getName()}").setValue(self, ${v});`,
+              `Variable.find(gameModel,"${descriptor?.getName()}").setValue(self, ${v});`,
             ),
           );
         }

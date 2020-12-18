@@ -2,14 +2,16 @@ import * as React from 'react';
 import { LibraryAPI, ILibraries } from '../../API/library.api';
 import { wlog, wwarn } from '../../Helper/wegaslog';
 import {
-  useGlobals,
   safeClientScriptEval,
+  setGlobals,
+  useGlobalContexts,
 } from '../../Components/Hooks/useScript';
 import { useWebsocket } from '../../API/websocket';
 import { IGameModelContent } from 'wegas-ts-api';
 
 // @ts-ignore
 import mainStyle from '!!raw-loader!../../css/defaultStyle.less';
+import { store } from '../../data/store';
 
 interface LibrariesContext {
   updateCSSLibraries: (name: string) => void;
@@ -24,7 +26,7 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
   const [cssLibs, setCSSLibs] = React.useState<ILibraries>({});
   const [lessLibs, setLessLibs] = React.useState<string>();
 
-  useGlobals();
+  const globalContexts = useGlobalContexts();
 
   // It's VERY important to import less library dynamically to avoid breaking the import flow of the components of the layout when less in rendering
   import('less').then(less => {
@@ -77,6 +79,8 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
       .catch(() => {
         wlog('Cannot get the scripts');
       });
+
+    setGlobals(globalContexts, store.getState());
 
     CurrentGM.properties.clientScriptUri?.split(';').map(scriptUrl => {
       if (scriptUrl !== '') {

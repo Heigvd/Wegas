@@ -36,6 +36,7 @@ import {
   choiceContainerStyle,
   choiceInputStyle,
 } from './ChoiceContainer';
+import { questionStyle } from './Question';
 
 interface WhQuestionInfo {
   questionD: Readonly<IWhQuestionDescriptor>;
@@ -157,7 +158,7 @@ export function WhQuestionDisplay({
   }
 
   return (
-    <>
+    <div className={questionStyle}>
       <div
         dangerouslySetInnerHTML={{
           __html: questionD.description
@@ -200,6 +201,6 @@ export function WhQuestionDisplay({
         />
       </div>
       {/* <RepliesDisplay replies={replies} /> */}
-    </>
+    </div>
   );
 }

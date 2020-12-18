@@ -5,18 +5,21 @@ import {
   useVariableInstance,
 } from '../../Hooks/useVariable';
 import { INumberDescriptor } from 'wegas-ts-api';
+import { TumbleLoader } from '../../Loader';
+import { wwarn } from '../../../Helper/wegaslog';
 
 export default function NumberValue(props: { variable: string }) {
   const descriptor = useVariableDescriptor<INumberDescriptor>(props.variable);
   const instance = useVariableInstance(descriptor);
   if (descriptor === undefined || instance === undefined) {
-    return <span>Not found: {props.variable}</span>;
+    wwarn(`Not found: ${props.variable}`);
+    return <TumbleLoader />;
   }
   const label = TranslatableContent.toString(descriptor.label);
   return (
     <div>
       {label && <span>{label}: </span>}
-      {instance.value}
+      {instance.getValue()}
     </div>
   );
 }
