@@ -53,11 +53,26 @@
     /* width: 320px; */
     right: 0;
 }
+
+.yui3-skin-sam .wegas-layout-resizable .wegas-layout-left,
+.yui3-skin-sam .wegas-layout-resizable .wegas-layout-column {
+    display: flex;
+}
+
+.yui3-skin-sam .wegas-layout-resizable .yui3-resize-handles-wrapper {
+    height:100%;
+    width: 4px;
+}
+
 .yui3-skin-sam .wegas-layout-resizable .yui3-resize-handle {
     background: #6AACF1;
-    margin-top: 38px; /* Hide vertical bar in the tab bar */
-    height: calc(100% - 38px);
+    margin-top: 36px; /* Hide vertical bar in the tab bar */
+    height: calc(100% - 36px);
     width: 4px;
+}
+
+.yui3-skin-sam .wegas-layout-resizable .wegas-tabview-fullheight {
+    flex-grow: 1;
 }
 
 .yui3-skin-sam .wegas-layout-left.minimized.hasFocus {

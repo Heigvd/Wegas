@@ -20,7 +20,6 @@ import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.core.security.util.AuthenticationMethod;
-import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.JpaAuthentication;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
