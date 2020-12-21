@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -12,6 +13,7 @@ import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasCallback;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -42,7 +44,7 @@ import javax.persistence.OrderColumn;
  */
 @Entity
 @NamedQuery(name = "ListDescriptor.findDistinctChildrenLabels",
-        query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList.id = :containerId")
+    query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList.id = :containerId")
 @WegasEntity(callback = ListDescriptor.ValidateAllowedItemsCallback.class)
 public class ListDescriptor extends VariableDescriptor<ListInstance> implements DescriptorListI<VariableDescriptor> {
 
@@ -61,16 +63,16 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
      */
     @ElementCollection
     @WegasEntityProperty(view = @View(label = "Allowed types"),
-            schema = JSONArrayOfChildrenType.class,
-            optional = false, nullable = false, proposal = EmptyArray.class)
+        schema = JSONArrayOfChildrenType.class,
+        optional = false, nullable = false, proposal = EmptyArray.class)
     private Set<String> allowedTypes = new HashSet<>();
 
     /**
      * shortcut to show within (+) treeview button, must match allowedTypes
      */
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyString.class,
-            view = @View(label = "Default child type", value=ListChildrenTypeNullView.class))
+        optional = false, nullable = false, proposal = EmptyString.class,
+        view = @View(label = "Default child type", value = ListChildrenTypeNullView.class))
     private String addShortcut = "";
 
     /**
@@ -118,9 +120,19 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
      */
     @Override
     @JsonView(Views.ExportI.class)
-    @Scriptable(label = "getItems",wysiwyg = false)
+    @Scriptable(label = "getItems", wysiwyg = false)
     public List<VariableDescriptor> getItems() {
         return this.items;
+    }
+
+    @Override
+    @JsonIgnore
+    public List<VariableDescriptor> getReadableItems() {
+        if (this.beans.getRequestManager().isEditorView()) {
+            return this.getItems();
+        } else {
+            return this.beans.getVariableDescriptorFacade().getReadableChildren(this);
+        }
     }
 
     @Override
@@ -190,7 +202,7 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
         }
         return acc;
     }
-    
+
     public static class JSONArrayOfChildrenType extends JSONArray {
 
         public JSONArrayOfChildrenType() {

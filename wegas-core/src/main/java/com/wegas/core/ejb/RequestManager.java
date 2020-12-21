@@ -966,6 +966,10 @@ public class RequestManager implements RequestManagerI {
         this.view = view;
     }
 
+    public boolean isEditorView(){
+        return Views.EditorI.class.isAssignableFrom(this.view);
+    }
+
     /**
      * @param bundle
      *

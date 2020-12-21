@@ -29,11 +29,13 @@ import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -142,7 +144,7 @@ import org.slf4j.LoggerFactory;
         @Index(columnList = "basedon_id")
     }
 )
-public class GameModel extends AbstractEntity implements DescriptorListI<VariableDescriptor>, InstanceOwner, Broadcastable, NamedEntity, JCRClient {
+public class GameModel extends AbstractEntity implements DescriptorListI<VariableDescriptor>, AcceptInjection, InstanceOwner, Broadcastable, NamedEntity, JCRClient {
 
     private static final Logger logger = LoggerFactory.getLogger(GameModel.class);
 
@@ -150,6 +152,10 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     @Transient
     private Boolean onGoingPropagation = false;
+
+    @JsonIgnore
+    @Transient
+    protected Beanjection beans;
 
     @Transient
     @JsonIgnore
@@ -383,6 +389,11 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
 
     public void setBasedOnId(Long id) {
         // jsonIgnore
+    }
+
+    @Override
+    public void setBeanjection(Beanjection beanjection) {
+        this.beans = beanjection;
     }
 
     /**
@@ -935,6 +946,16 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @JsonView(Views.ExportI.class)
     public List<VariableDescriptor> getItems() {
         return this.items;
+    }
+
+    @Override
+    @JsonIgnore
+    public List<VariableDescriptor> getReadableItems() {
+        if (this.beans.getRequestManager().isEditorView()) {
+            return this.getItems();
+        } else {
+            return this.beans.getVariableDescriptorFacade().getReadableChildren(this);
+        }
     }
 
     @Override

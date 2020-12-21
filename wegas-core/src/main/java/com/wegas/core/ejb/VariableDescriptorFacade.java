@@ -167,6 +167,23 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         return query.getResultList();
     }
 
+    public List<VariableDescriptor> getReadableChildren(GameModel gameModel) {
+        TypedQuery<VariableDescriptor> query = getEntityManager().createNamedQuery(
+            "VariableDescriptor.findReadableByRootGameModelId", VariableDescriptor.class);
+        query.setParameter("gameModelId", gameModel.getId());
+
+        return query.getResultList();
+    }
+
+
+    public List<VariableDescriptor> getReadableChildren(ListDescriptor list) {
+        TypedQuery<VariableDescriptor> query = getEntityManager().createNamedQuery(
+            "VariableDescriptor.findReadableByParentListId", VariableDescriptor.class);
+        query.setParameter("parentId", list.getId());
+
+        return query.getResultList();
+    }
+
     /**
      * Create a new descriptor in a DescriptorListI
      *

@@ -54,10 +54,15 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
     )
     default List<Long> getItemsIds() {
         List<Long> ids = new LinkedList<>();
-        for (T t : this.getItems()) {
+        for (T t : this.getReadableItems()) {
             ids.add(t.getId());
         }
         return ids;
+    }
+
+    @JsonIgnore
+    default List<T> getReadableItems(){
+        return getItems();
     }
 
     /**

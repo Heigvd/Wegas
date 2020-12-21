@@ -78,8 +78,8 @@ public class EntityListener {
     private GameFacade gameFacade;
 
     private Beanjection getBeansjection() {
-        return new Beanjection(variableInstanceFacade, variableDescriptorFacade, resourceFacade,
-            iterationFacade, reviewingFacade, userFacade, accountFacade,
+        return new Beanjection(requestManager, variableInstanceFacade, variableDescriptorFacade,
+            resourceFacade, iterationFacade, reviewingFacade, userFacade, accountFacade,
             teamFacade, questionDescriptorFacade, gameFacade);
     }
 

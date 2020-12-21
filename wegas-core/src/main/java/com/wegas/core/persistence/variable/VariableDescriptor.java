@@ -176,6 +176,14 @@ import org.slf4j.LoggerFactory;
     query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
 )
 @NamedQuery(
+    name = "VariableDescriptor.findReadableByRootGameModelId",
+    query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId AND vd.isolation <> com.wegas.core.persistence.variable.VariableDescriptor.Isolation.HIDDEN"
+)
+@NamedQuery(
+    name = "VariableDescriptor.findReadableByParentListId",
+    query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.parentList AS parent WHERE parent.id = :parentId AND vd.isolation <> com.wegas.core.persistence.variable.VariableDescriptor.Isolation.HIDDEN"
+)
+@NamedQuery(
     name = "VariableDescriptor.findCherryPickablesIndex",
     query = "SELECT vd.gameModel.id, vd.gameModel.name, vd.id, vd.name, vd.label FROM VariableDescriptor vd where vd.gameModel.id in :gameModelIds AND TYPE(vd) IN :types"
 )
@@ -920,7 +928,11 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         Map<String, List<AbstractEntity>> map = new HashMap<>();
         ArrayList<AbstractEntity> entities = new ArrayList<>();
         entities.add(this);
-        map.put(this.getGameModel().getChannel(), entities);
+        if (this.getIsolation() == Isolation.HIDDEN) {
+            map.put(this.getGameModel().getEditorChannel(), entities);
+        } else {
+            map.put(this.getGameModel().getChannel(), entities);
+        }
         return map;
     }
 

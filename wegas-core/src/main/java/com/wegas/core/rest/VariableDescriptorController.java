@@ -86,7 +86,7 @@ public class VariableDescriptorController {
 
         GameModel gameModel = gameModelFacade.find(gameModelId);
 
-        if (Views.EditorI.class.isAssignableFrom(requestManager.getView())) {
+        if (requestManager.isEditorView()){
             // Return all variable descriptors for editors
             return gameModel.getVariableDescriptors();
         } else {

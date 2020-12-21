@@ -8,7 +8,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
