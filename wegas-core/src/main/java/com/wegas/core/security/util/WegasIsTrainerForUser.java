@@ -23,7 +23,7 @@ public class WegasIsTrainerForUser extends WegasPermission {
 
     @Override
     public String toString() {
-        return "TeamMateOfUser-" + getUserId();
+        return "TrainerForUser-" + getUserId();
     }
 
     public Long getUserId() {
