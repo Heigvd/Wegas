@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -72,6 +71,7 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.script.ScriptContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
@@ -640,10 +640,17 @@ public class RequestManager implements RequestManagerI {
                 //WegasPermission gmWriteRight = currentPlayer.getGameModel().getAssociatedWritePermission();
                 HashSet<String> degradedPerms = new HashSet<>();
                 degradedPerms.add("GameModel:*:gm" + currentPlayer.getGameModelId());
+                degradedPerms.add("Game:*:g" + currentPlayer.getGameId());
+
+                WegasPermission gmPerm = currentPlayer.getGameModel().getAssociatedWritePermission();
+                WegasPermission gPerm = currentPlayer.getGame().getAssociatedWritePermission();
 
                 // set & clear permissions in one shot:
                 this.degradedDBPermissions = degradedPerms;
                 this.grantedPermissions.clear();
+
+                this.grant(gmPerm);
+                this.grant(gPerm);
             } else {
                 // filter effective DBpermissions
 
@@ -1695,6 +1702,24 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
+     * Whether the current user has already been granted a Game Write permission for any game in 
+     * which the given user act as player
+     *
+     * @param userId
+     *
+     * @return
+     */
+    private boolean hasAlreadyGrantedGameWritePermissionForUser(Long userId) {
+        TypedQuery<Long> query = getEntityManager().createNamedQuery("Player.findGameIds", Long.class);
+        query.setParameter("userId", userId);
+
+        return query.getResultList().stream()
+            .map(gameId -> Game.getAssociatedWritePermission(gameId))
+            .filter(p -> grantedPermissions.contains(p))
+            .findFirst().isPresent();
+    }
+
+    /**
      *
      * @param wegasIsTeamMate
      *
@@ -1705,6 +1730,13 @@ public class RequestManager implements RequestManagerI {
 
         Player self = getPlayer();
         if (getPlayer() != null) {
+
+            if (wasAdmin) {
+                // wasAdmin indicates current context is based on degraded permissions
+                // in that case, the default Player.IsUserTeamMateOfPlayer will fail
+                // a custom check must be done
+                return hasAlreadyGrantedGameWritePermissionForUser(wegasIsTeamMate.getUserId());
+            }
 
             Query query = getEntityManager().createNamedQuery("Player.isUserTeamMateOfPlayer");
 
@@ -1720,9 +1752,23 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
+    /**
+     * Is the given user member of a game leads by the currentUser ?
+     *
+     * @param perm permission to check
+     *
+     * @return true is the currentUser has access to the user
+     */
     private boolean isTrainerForUser(WegasIsTrainerForUser perm) {
         User self = this.getCurrentUser();
         if (self != null) {
+            if (wasAdmin) {
+                // wasAdmin indicates current context is based on degraded permissions
+                // in that case, the default Player.IsTrainerForUser will fail
+                // a custom check must be done
+                return hasAlreadyGrantedGameWritePermissionForUser(perm.getUserId());
+            }
+
             Long userId = perm.getUserId();
 
             Query query = getEntityManager().createNamedQuery("Player.IsTrainerForUser");

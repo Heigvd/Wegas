@@ -22,8 +22,6 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
-import org.eclipse.microprofile.metrics.Counter;
-import org.eclipse.microprofile.metrics.annotation.Metric;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.cfg.EndpointConfigBase;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.cfg.ObjectWriterInjector;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.cfg.ObjectWriterModifier;
@@ -51,10 +49,6 @@ public class ViewRequestFilter implements ContainerRequestFilter {
     @Inject
     private RequestFacade requestFacade;
 
-    @Inject
-    @Metric(name = "requests_total", description = "Total requests", absolute = true)
-    private Counter requests;
-
     private final static Logger logger = LoggerFactory.getLogger(ViewRequestFilter.class);
 
     /**
@@ -68,7 +62,6 @@ public class ViewRequestFilter implements ContainerRequestFilter {
 
         requestManager.setSocketId(cr.getHeaderString("socketId"));
 
-        requests.inc();
         requestManager.setRequestId(idGenerator.getUniqueIdentifier());
         requestManager.setMethod(cr.getMethod());
         requestManager.setPath(cr.getUriInfo().getPath());
