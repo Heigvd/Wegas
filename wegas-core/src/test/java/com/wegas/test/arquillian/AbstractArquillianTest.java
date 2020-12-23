@@ -7,16 +7,13 @@
  */
 package com.wegas.test.arquillian;
 
-import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.rest.UserController;
-import java.sql.SQLException;
 import javax.inject.Inject;
-import javax.naming.NamingException;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +62,7 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestMinim
     final static private String GAMENAME = "test-game";
     final static private String GAMETOKEN = "test-game-token";
 
-    @Before
+    @BeforeEach
     public void populate() throws CloneNotSupportedException {
         scenarist = this.signup("scenarist@local");
         trainer = this.signup("trainer@local");
@@ -131,10 +128,5 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestMinim
         player22 = gameFacade.joinTeam(team2.getId(), user22.getId(), null);
 
         login(admin);
-    }
-
-    public void reseAndSetUpDB() throws SQLException, NamingException, WegasNoResultException, CloneNotSupportedException {
-        this.init();
-        this.populate();
     }
 }

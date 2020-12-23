@@ -22,9 +22,9 @@ import java.util.Calendar;
 import java.util.List;
 import javax.ejb.EJBException;
 import javax.inject.Inject;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,9 +52,10 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
     @Inject
     private EjbTimerFacade ejbTimerFacade;
 
-    @Inject SecurityTestFacade securityTestFacade;
+    @Inject
+    SecurityTestFacade securityTestFacade;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         login(admin);
         role1 = new Role(ROLE_1);
@@ -80,14 +81,14 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
 
         // findAll()
         List<User> users = userFacade.findAll();
-        Assert.assertTrue(users.contains(u.getUser()));
-        Assert.assertTrue(users.contains(admin.getUser()));
+        Assertions.assertTrue(users.contains(u.getUser()));
+        Assertions.assertTrue(users.contains(admin.getUser()));
 
-        Assert.assertEquals(2l, users.size()); // admin + u
+        Assertions.assertEquals(2l, users.size()); // admin + u
 
         // find
-        Assert.assertEquals(u.getUser(), userFacade.find(u.getId()));
-        Assert.assertEquals(admin.getUser(), userFacade.find(admin.getId()));
+        Assertions.assertEquals(u.getUser(), userFacade.find(u.getId()));
+        Assertions.assertEquals(admin.getUser(), userFacade.find(admin.getId()));
     }
 
     @Test
@@ -98,18 +99,18 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
         userFacade.addUserPermission(u.getUser(), PERM);
         accountFacade.update(abstractAccount.getId(), abstractAccount);
         AbstractAccount a = accountFacade.find(abstractAccount.getId());
-        Assert.assertEquals(PERM, u.getUser().getPermissions().get(0).getValue());
+        Assertions.assertEquals(PERM, u.getUser().getPermissions().get(0).getValue());
 
         userFacade.addUserPermission(u.getUser(), PERM2);
         accountFacade.update(abstractAccount.getId(), a);
         a = accountFacade.find(abstractAccount.getId());
-        Assert.assertEquals(PERM2, u.getUser().getPermissions().get(1).getValue());
+        Assertions.assertEquals(PERM2, u.getUser().getPermissions().get(1).getValue());
 
         u.getUser().removePermission(PERM);
         u.getUser().removePermission(PERM2);
         accountFacade.update(a.getId(), a);
         a = accountFacade.find(abstractAccount.getId());
-        Assert.assertTrue(a.getPermissions().isEmpty());
+        Assertions.assertTrue(a.getPermissions().isEmpty());
     }
 
     /**
@@ -140,16 +141,18 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
         //String oldToken = acc.getShadow().getToken();
         accountFacade.requestPasswordReset(EMAIL, null);
         acc = accountFacade.findJpaByEmail(EMAIL);
-        //Assert.assertFalse(oldToken.equals(acc.getShadow().getToken()));
+        //Assertions.assertFalse(oldToken.equals(acc.getShadow().getToken()));
     }
 
     /**
      * Test CreateSameUser
      */
-    @Test(expected = EJBException.class)
+    @Test
     public void testCreateSameUser() throws WegasErrorMessage {
-        u.getUser().addAccount(abstractAccount);
-        userFacade.create(u.getUser());
+        Assertions.assertThrows(EJBException.class, () -> {
+            u.getUser().addAccount(abstractAccount);
+            userFacade.create(u.getUser());
+        });
     }
 
     @Test
@@ -158,20 +161,22 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
 
         try {
             this.guestLogin();
-            Assert.fail("Should throw exception !");
+            Assertions.fail("Should throw exception !");
         } catch (Exception ex) {
         }
 
         System.setProperty("guestallowed", "true");
     }
 
-    @Test(expected = WegasConflictException.class)
+    @Test
     public void testDuplicateUsername() {
-        // first sign up is fine
-        this.signup("user_1234@local");
+        Assertions.assertThrows(WegasConflictException.class, () -> {
+            // first sign up is fine
+            this.signup("user_1234@local");
 
-        // second with same address is not
-        this.signup("user_1234@local");
+            // second with same address is not
+            this.signup("user_1234@local");
+        });
     }
 
     @Test
@@ -181,7 +186,7 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
         logout();
 
         userFacade.guestLogin();
-        Assert.assertEquals(nbUser + 1, userFacade.findAll().size());
+        Assertions.assertEquals(nbUser + 1, userFacade.findAll().size());
 
         // Since guests are removed only oif they were create more than three month ago,
         // override this guest createdTime
@@ -195,12 +200,12 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
         login(admin);
         ejbTimerFacade.removeIdleGuests();
 
-        Assert.assertEquals(nbUser, userFacade.findAll().size());
+        Assertions.assertEquals(nbUser, userFacade.findAll().size());
     }
 
     private void assertAuthMethodMatch(JpaAuthentication expected, JpaAuthentication actual) {
-        Assert.assertEquals("Mandatory methods do not match", expected.getMandatoryMethod(), actual.getMandatoryMethod());
-        Assert.assertEquals("Optional methods do not match", expected.getOptionalMethod(), actual.getOptionalMethod());
+        Assertions.assertEquals(expected.getMandatoryMethod(), actual.getMandatoryMethod(), "Mandatory methods do not match");
+        Assertions.assertEquals(expected.getOptionalMethod(), actual.getOptionalMethod(), "Optional methods do not match");
     }
 
     @Test
@@ -232,8 +237,8 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
         String newHash = account.getShadow().getPasswordHex();
         String newSalt = account.getShadow().getSalt();
 
-        Assert.assertNotEquals("Hash has not been updated", previousHash, newHash);
-        Assert.assertNotEquals("Salt has not been updated", previousSalt, newSalt);
+        Assertions.assertNotEquals(previousHash, newHash, "Hash has not been updated");
+        Assertions.assertNotEquals(previousSalt, newSalt, "Salt has not been updated");
 
         logout();
 
@@ -255,8 +260,8 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
         newHash = account.getShadow().getPasswordHex();
         newSalt = account.getShadow().getSalt();
 
-        Assert.assertNotEquals("Hash has not been updated", previousHash, newHash);
-        Assert.assertNotEquals("Salt has not been updated", previousSalt, newSalt);
+        Assertions.assertNotEquals(previousHash, newHash, "Hash has not been updated");
+        Assertions.assertNotEquals(previousSalt, newSalt, "Salt has not been updated");
 
         // well, client to server hash method works fine, let's change internal hash method
         accountFacade.setNextShadowHashMethod(account.getId(),
@@ -270,19 +275,21 @@ public class UserFacadeTest extends AbstractArquillianTestMinimal {
         newHash = account.getShadow().getPasswordHex();
         newSalt = account.getShadow().getSalt();
 
-        Assert.assertNotEquals("Hash has not been updated", previousHash, newHash);
-        Assert.assertNotEquals("Salt has not been updated", previousSalt, newSalt);
+        Assertions.assertNotEquals(previousHash, newHash, "Hash has not been updated");
+        Assertions.assertNotEquals(previousSalt, newSalt, "Salt has not been updated");
 
         login(user);
 
     }
 
-    @Test(expected = WegasErrorMessage.class)
+    @Test
     public void testWrongPassword() {
-        WegasUser dumb = this.signup("dumb@local", "abce123");
-        dumb.getPassword();
-        WegasUser dumber = new WegasUser(dumb.getUser(), "dumb@local", "123abcde");
-        this.login(dumber);
+        Assertions.assertThrows(WegasErrorMessage.class, () -> {
+            WegasUser dumb = this.signup("dumb@local", "abce123");
+            dumb.getPassword();
+            WegasUser dumber = new WegasUser(dumb.getUser(), "dumb@local", "123abcde");
+            this.login(dumber);
+        });
     }
 
     @Test

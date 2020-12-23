@@ -69,10 +69,12 @@ import com.wegas.resourceManagement.persistence.WRequirement;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.After;
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
+import static junit.framework.Assert.assertTrue;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,24 +91,24 @@ public class SerializationTest {
     public SerializationTest() {
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         mapper = JacksonMapperProvider.getMapper();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
     }
 
 
     public void assertPropertyEquals(String json, String property, Number expected) {
         String pattern = "\"" + property + "\":" + expected + "";
-        assertTrue("Expected " + expected + ", found " + json, json.contains(pattern));
+        Assertions.assertTrue(json.contains(pattern), "Expected " + expected + ", found " + json);
     }
 
     public void assertPropertyEquals(String json, String property, String expected) {
         String pattern = "\"" + property + "\":\"" + expected + "\"";
-        assertTrue("Expected " + expected + ", found " + json, json.contains(pattern));
+        Assertions.assertTrue( json.contains(pattern), "Expected " + expected + ", found " + json);
     }
 
     @Test
@@ -348,8 +350,8 @@ public class SerializationTest {
         TaskInstance readTaskI = mapper.readValue(strTaskI, TaskInstance.class);
         TaskDescriptor readTaskD = mapper.readValue(strTaskD, TaskDescriptor.class);
 
-        assertEquals("instance propertes does not match", propertyValue, readTaskI.getProperty("instanceProperty"));
-        assertEquals("desc property does not match", propertyValue, readTaskD.getProperty("descriptorProperty"));
+        Assertions.assertEquals(propertyValue, readTaskI.getProperty("instanceProperty"), "instance propertes does not match");
+        Assertions.assertEquals(propertyValue, readTaskD.getProperty("descriptorProperty"), "desc property does not match");
 
         ResourceDescriptor resourceD = new ResourceDescriptor();
         resourceD.setName("resourceD");

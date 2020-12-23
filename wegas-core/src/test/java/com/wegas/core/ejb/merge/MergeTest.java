@@ -34,8 +34,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,14 +77,14 @@ public class MergeTest extends AbstractArquillianTest {
         TextInstance defaultInstance = textD.getDefaultInstance();
 
         defaultInstance.setValue("newvalue");
-        Assert.assertEquals("initialvalue", ((TextInstance) variableDescriptorFacade.find(textD.getId()).getDefaultInstance()).getTrValue().translateOrEmpty(gameModel));
-        Assert.assertEquals("newvalue", defaultInstance.getTrValue().translateOrEmpty(gameModel));
+        Assertions.assertEquals("initialvalue", ((TextInstance) variableDescriptorFacade.find(textD.getId()).getDefaultInstance()).getTrValue().translateOrEmpty(gameModel));
+        Assertions.assertEquals("newvalue", defaultInstance.getTrValue().translateOrEmpty(gameModel));
 
         variableDescriptorFacade.update(textD.getId(), textD);
         textD = (TextDescriptor) variableDescriptorFacade.find(textD.getId());
         defaultInstance = textD.getDefaultInstance();
 
-        Assert.assertEquals("newvalue", defaultInstance.getTrValue().translateOrEmpty(gameModel));
+        Assertions.assertEquals("newvalue", defaultInstance.getTrValue().translateOrEmpty(gameModel));
     }
 
     @Test
@@ -114,19 +114,19 @@ public class MergeTest extends AbstractArquillianTest {
 
         variableDescriptorFacade.update(listD.getId(), newListD);
         listD = (ListDescriptor) variableDescriptorFacade.find(listD.getId());
-        Assert.assertEquals(3, listD.getAllowedTypes().size());
+        Assertions.assertEquals(3, listD.getAllowedTypes().size());
 
         allowed.remove("StringDescriptor");
         newListD.setVersion(listD.getVersion());
         variableDescriptorFacade.update(listD.getId(), newListD);
         listD = (ListDescriptor) variableDescriptorFacade.find(listD.getId());
-        Assert.assertEquals(2, listD.getAllowedTypes().size());
+        Assertions.assertEquals(2, listD.getAllowedTypes().size());
 
         try {
             allowed.remove("NumberDescriptor");
             newListD.setVersion(listD.getVersion());
             variableDescriptorFacade.update(listD.getId(), newListD);
-            Assert.fail("Shortcut incompatibility should raises error");
+            Assertions.fail("Shortcut incompatibility should raises error");
         } catch (Exception ex) {
             // expected
         }
@@ -135,7 +135,7 @@ public class MergeTest extends AbstractArquillianTest {
             allowed.add("NumberDescriptor");
             newListD.setAddShortcut("BooleanDescriptor");
             variableDescriptorFacade.update(listD.getId(), newListD);
-            Assert.fail("Shortcut incompatibility should raises error");
+            Assertions.fail("Shortcut incompatibility should raises error");
         } catch (Exception ex) {
             // Excpected
         }
@@ -158,8 +158,8 @@ public class MergeTest extends AbstractArquillianTest {
 
         objectD = (ObjectDescriptor) variableDescriptorFacade.find(objectD.getId());
         defaultInstance = objectD.getDefaultInstance();
-        Assert.assertEquals("initialValue", objectD.getProperty("myProperty"));
-        Assert.assertEquals("initialInstanceValue", defaultInstance.getProperty("myInstanceProperty"));
+        Assertions.assertEquals("initialValue", objectD.getProperty("myProperty"));
+        Assertions.assertEquals("initialInstanceValue", defaultInstance.getProperty("myInstanceProperty"));
 
         objectD.setProperty("myProperty", "newValue");
         defaultInstance.setProperty("myInstanceProperty", "newInstanceValue");
@@ -168,8 +168,8 @@ public class MergeTest extends AbstractArquillianTest {
         objectD = (ObjectDescriptor) variableDescriptorFacade.find(objectD.getId());
         defaultInstance = objectD.getDefaultInstance();
 
-        Assert.assertEquals("newValue", objectD.getProperty("myProperty"));
-        Assert.assertEquals("newInstanceValue", defaultInstance.getProperty("myInstanceProperty"));
+        Assertions.assertEquals("newValue", objectD.getProperty("myProperty"));
+        Assertions.assertEquals("newInstanceValue", defaultInstance.getProperty("myInstanceProperty"));
     }
 
     private Set<Field> getFields(Class klass) {
@@ -212,7 +212,7 @@ public class MergeTest extends AbstractArquillianTest {
             logger.error(error);
         }
 
-        Assert.assertEquals(0, errors.size());
+        Assertions.assertEquals(0, errors.size());
     }
 
     //@Test

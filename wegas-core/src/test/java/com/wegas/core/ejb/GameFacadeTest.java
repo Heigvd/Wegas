@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -13,8 +14,8 @@ import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.rest.GameController;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import javax.inject.Inject;
-import static org.junit.Assert.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ public class GameFacadeTest extends AbstractArquillianTest {
                 result = null;
             }
 
-            assertEquals(expected[i], result);
+            Assertions.assertEquals(expected[i], result);
         }
     }
 
@@ -63,7 +64,7 @@ public class GameFacadeTest extends AbstractArquillianTest {
             g.setGameModel(scenario);
             gameFacade.create(g);
 
-            assertTrue("Token " + g.getToken() + " not match " + expected[i], g.getToken().matches(expected[i] + "-.."));
+            Assertions.assertTrue(g.getToken().matches(expected[i] + "-.."), "Token " + g.getToken() + " not match " + expected[i]);
             gameFacade.remove(g.getId());
         }
     }
@@ -86,8 +87,8 @@ public class GameFacadeTest extends AbstractArquillianTest {
 
         newGame = gameFacade.find(newGame.getId());
 
-        assertEquals(1, newGame.getTeams().size()); // Is debug team here ?
-        assertEquals(1, newGame.getTeams().get(0).getPlayers().size()); // Is anybody within debug team ?
+        Assertions.assertEquals(1, newGame.getTeams().size()); // Is debug team here ?
+        Assertions.assertEquals(1, newGame.getTeams().get(0).getPlayers().size()); // Is anybody within debug team ?
     }
 
     @Test
@@ -101,7 +102,7 @@ public class GameFacadeTest extends AbstractArquillianTest {
         gameController.create(gameModel.getId(), newGame);
         newGame = gameFacade.find(newGame.getId());
 
-        assertEquals(1, newGame.getTeams().size()); // Is debug team here ?
-        assertEquals(1, newGame.getTeams().get(0).getPlayers().size()); // Is anybody within debug team ?
+        Assertions.assertEquals(1, newGame.getTeams().size()); // Is debug team here ?
+        Assertions.assertEquals(1, newGame.getTeams().get(0).getPlayers().size()); // Is anybody within debug team ?
     }
 }

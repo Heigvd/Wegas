@@ -27,7 +27,7 @@ YUI.add('wegas-widgetmenu-test', function(Y) {
                     }]
             });
 
-            Y.Assert.isTrue(this.widget.get("boundingBox").hasClass('wegas-widgetmenu-hassubmenu'));
+            Y.Assertions.isTrue(this.widget.get("boundingBox").hasClass('wegas-widgetmenu-hassubmenu'));
 
             this.widget.menu.on("button:click", function(e) {
                 console.log("MENUUUUU", e, arguments, e.target.get("label"));
@@ -38,14 +38,14 @@ YUI.add('wegas-widgetmenu-test', function(Y) {
                     type: Y.Wegas.Button,
                     label: "Second button"
                 }]);
-            Y.Assert.areEqual(1, this.widget.menu.size());
+            Y.Assertions.areEqual(1, this.widget.menu.size());
         },
         "should add a button": function() {
             this.widget.menu.add([{
                     type: Y.Wegas.Button,
                     label: "Third button"
                 }]);
-            Y.Assert.areEqual(2, this.widget.menu.size());
+            Y.Assertions.areEqual(2, this.widget.menu.size());
 
         },
         "should add a nested menu": function() {
@@ -73,7 +73,7 @@ YUI.add('wegas-widgetmenu-test', function(Y) {
         //    this.widget.unplug(Y.Plugin.WidgetMenu);
         //    this.widget.destroy();
         //
-        //    Y.Assert.isTrue(this.widget.get("destroyed"));
+        //    Y.Assertions.isTrue(this.widget.get("destroyed"));
         //}
 
     }));

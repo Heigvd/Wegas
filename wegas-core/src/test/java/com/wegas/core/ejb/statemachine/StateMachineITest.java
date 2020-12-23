@@ -24,8 +24,8 @@ import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.io.IOException;
 import javax.naming.NamingException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,21 +100,21 @@ public class StateMachineITest extends AbstractArquillianTest {
         /* CONTEXT? */
 
         login(trainer);
-        Assert.assertEquals(FINAL_VALUE, number.getValue(testPlayer11), 0.0001);
-        Assert.assertEquals(FINAL_VALUE, number.getValue(testPlayer41), 0.0001);
+        Assertions.assertEquals(FINAL_VALUE, number.getValue(testPlayer11), 0.0001);
+        Assertions.assertEquals(FINAL_VALUE, number.getValue(testPlayer41), 0.0001);
 
         /* REFRESH CONTEXT */
-        Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer11)).getValue(), 0.0);
-        Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer41)).getValue(), 0.0);
+        Assertions.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer11)).getValue(), 0.0);
+        Assertions.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer41)).getValue(), 0.0);
 
         /*
          * Player created before variable -> state machines don't execute
          */
-        Assert.assertEquals(0.0, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player21)).getValue(), 0.0);
+        Assertions.assertEquals(0.0, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player21)).getValue(), 0.0);
         /*
          * Game Scope trigger increase for each player added after trigger creation
          */
-        Assert.assertEquals(2, ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
+        Assertions.assertEquals(2, ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
         /*
          * add a player in not empty team then Reset, trigger will execute
          */
@@ -125,34 +125,34 @@ public class StateMachineITest extends AbstractArquillianTest {
         login(trainer);
         gameModelFacade.reset(scenario.getId());
 
-        Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer11)).getValue(), 0.0);
-        Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer41)).getValue(), 0.0);
-        Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player21)).getValue(), 0.0);
+        Assertions.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer11)).getValue(), 0.0);
+        Assertions.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer41)).getValue(), 0.0);
+        Assertions.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player21)).getValue(), 0.0);
 
         /*
          * trigger2 will execute numberOfPlayers times after a reset -> increment testNumber2 by the same amount.
          * For each player
          */
-        Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
+        Assertions.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
 
         WegasUser user43 = this.signup("user43@local");
         login(user43);
         Player testPlayer43 = gameFacade.joinTeam(team4.getId(), null);
-        Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
+        Assertions.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
 
         login(trainer);
         gameModelFacade.reset(scenario.getId());
-        Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
+        Assertions.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
         /*
          * Player added in empty team.
          */
         login(user31);
         Player testPlayer31 = gameFacade.joinTeam(team3.getId(), null);
-        Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
+        Assertions.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
 
         login(trainer);
         gameModelFacade.reset(scenario.getId());
-        Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
+        Assertions.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
 
         WegasUser user32 = this.signup("user32@local");
         login(user32);
@@ -167,7 +167,7 @@ public class StateMachineITest extends AbstractArquillianTest {
         Player testPlayer34 = gameFacade.joinTeam(team3.getId(), null);
 
         login(trainer);
-        Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
+        Assertions.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
     }
 
     @Test
@@ -191,14 +191,14 @@ public class StateMachineITest extends AbstractArquillianTest {
         NumberInstance p0Instance = null;
         try (ActAsPlayer actAsPlayer = requestManager.actAsPlayer(testPlayer)) {
             actAsPlayer.setFlushOnExit(false);
-            Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
+            Assertions.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
             p0Instance = (NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer);
             p0Instance.setValue(50);
         }
 
         variableInstanceFacade.update(p0Instance.getId(), p0Instance); // Triggers rf.commit -> StateMachine check
 
-        Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
+        Assertions.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
     }
 
     @Test
@@ -224,15 +224,15 @@ public class StateMachineITest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), personalScore);
         gameModelFacade.reset(scenario.getId());
 
-        Assert.assertEquals(0, ((NumberInstance) variableInstanceFacade.find(highScore.getId(), player.getId())).getValue(), 0);
+        Assertions.assertEquals(0, ((NumberInstance) variableInstanceFacade.find(highScore.getId(), player.getId())).getValue(), 0);
 
         try (ActAsPlayer actAsPlayer = requestManager.actAsPlayer(player)) {
             actAsPlayer.setFlushOnExit(false);
             scriptFacade.eval(player.getId(), new Script("Variable.find(gameModel, 'personalScore').getInstance(self).value = 10"), null);
             requestFacade.commit();
         }
-        Assert.assertEquals(10, ((NumberInstance) variableInstanceFacade.find(personalScore.getId(), player.getId())).getValue(), 0);
-        Assert.assertEquals(10, ((NumberInstance) variableInstanceFacade.find(highScore.getId(), player.getId())).getValue(), 0);
+        Assertions.assertEquals(10, ((NumberInstance) variableInstanceFacade.find(personalScore.getId(), player.getId())).getValue(), 0);
+        Assertions.assertEquals(10, ((NumberInstance) variableInstanceFacade.find(highScore.getId(), player.getId())).getValue(), 0);
     }
 
     @Test
@@ -257,7 +257,7 @@ public class StateMachineITest extends AbstractArquillianTest {
             scriptFacade.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){print('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"), null);
             requestFacade.commit();
         }
-        Assert.assertEquals(ENDVAL, ((NumberInstance) variableInstanceFacade.find(number.getId(), player.getId())).getValue(), 0);
+        Assertions.assertEquals(ENDVAL, ((NumberInstance) variableInstanceFacade.find(number.getId(), player.getId())).getValue(), 0);
     }
 
     @Test
@@ -270,7 +270,7 @@ public class StateMachineITest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), trigger);
         GameModel duplicateGm = gameModelFacade.createScenarioWithDebugGame(scenario.getId());
         TriggerDescriptor find = (TriggerDescriptor) variableDescriptorFacade.find(duplicateGm, "trigger");
-        Assert.assertEquals(find.getStates().size(), trigger.getStates().size());
+        Assertions.assertEquals(find.getStates().size(), trigger.getStates().size());
     }
 
     @Test
@@ -289,12 +289,12 @@ public class StateMachineITest extends AbstractArquillianTest {
         trigger.setDisableSelf(Boolean.TRUE);
         variableDescriptorFacade.create(scenario.getId(), trigger);
         gameModelFacade.reset(scenario.getId());
-        Assert.assertEquals(5, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player.getId())).getValue(), 0.001);
+        Assertions.assertEquals(5, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player.getId())).getValue(), 0.001);
 
         //Set again
         NumberInstance testInstance = (NumberInstance) variableInstanceFacade.find(testNumber.getId(), player);
         testInstance.setValue(0);
         variableInstanceFacade.update(testInstance.getId(), testInstance);
-        Assert.assertEquals(0, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player.getId())).getValue(), 0.001);
+        Assertions.assertEquals(0, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player.getId())).getValue(), 0.001);
     }
 }

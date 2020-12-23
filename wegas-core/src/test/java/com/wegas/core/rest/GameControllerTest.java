@@ -14,8 +14,8 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import javax.inject.Inject;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -44,7 +44,7 @@ public class GameControllerTest extends AbstractArquillianTest {
         final Game g = gameFacade.find(game.getId());
         final Player p = g.getTeams().get(g.getTeams().size() - 1).getPlayers().get(0);
         final VariableInstance variableInstance = variableInstanceFacade.find(trigg.getId(), p.getId());
-        Assert.assertTrue(variableInstance instanceof StateMachineInstance);
+        Assertions.assertTrue(variableInstance instanceof StateMachineInstance);
 
         playerController.delete(p.getId());
     }

@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -38,18 +39,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.TargetsContainer;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.importer.ExplodedImporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestName;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,11 +57,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author maxence
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public class WegasTest {
-
-    @Rule
-    public TestName name = new TestName();
 
     private static final String WEGAS_ROOT_DIR = "../wegas-app/";
 
@@ -104,7 +101,7 @@ public class WegasTest {
         return war;
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws IOException {
         client = new WegasRESTClient("http://localhost:28080/Wegas");
         client2 = new WegasRESTClient("http://localhost:28081/Wegas");
@@ -121,16 +118,16 @@ public class WegasTest {
         logger.info("SETUP COMPLETED");
     }
 
-    @Before
-    public void setUp() throws IOException {
-        logger.info("TEST {}", name.getMethodName());
+    @BeforeEach
+    public void setUp(TestInfo testInfo) throws IOException {
+        logger.info("TEST {}", testInfo.getDisplayName());
         logger.info("LOGIN as root");
         client.login(root);
         client.get("/rest/Utils/SetPopulatingSynchronous");
         loadArtos();
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() throws Exception {
     }
 
@@ -169,8 +166,9 @@ public class WegasTest {
         final String USER = "user";
         final String PASSWORD = "1234";
         try (Connection connection = DriverManager.getConnection(DB_CON, USER, PASSWORD); Statement st = connection.createStatement()) {
-            Assert.assertEquals("Some indexes are missing. Please create liquibase changesets. See log for details",
-                0, TestHelper.getMissingIndexesCount(st));
+            Assertions.assertEquals(
+                0, TestHelper.getMissingIndexesCount(st),
+                "Some indexes are missing. Please create liquibase changesets. See log for details");
         } catch (SQLException ex) {
         }
     }
@@ -194,12 +192,14 @@ public class WegasTest {
         Script fetchVar = new Script("JavaScript", "Variable.find(gameModel, 'managementApproval');");
         NumberDescriptor var1 = client.post(runURL, fetchVar, NumberDescriptor.class);
         NumberDescriptor var2 = client2.post(runURL, fetchVar, NumberDescriptor.class);
-        Assert.assertEquals("Min bounds do not match", var1.getMinValue(), var2.getMinValue(), 0.001);
+        Assertions.assertEquals(
+            var1.getMinValue(), var2.getMinValue(), 0.001,
+            "Min bounds do not match");
 
         // update min bound on instance #1
         var1.setMinValue(-100.0);
         var1 = client.put(artosUrl + "/VariableDescriptor/" + var1.getId(), var1, NumberDescriptor.class);
-        Assert.assertEquals("Min bounds do not match", -100, var1.getMinValue(), 0.001);
+        Assertions.assertEquals(-100, var1.getMinValue(), 0.001, "Min bounds do not match");
 
         // update the min bound in database
         // since the cache is active, this value will not be read again, unless the cache is wiped out
@@ -214,8 +214,8 @@ public class WegasTest {
         // assert both instsances do not read the min bounds from database
         var1 = client.get(artosUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
         var2 = client2.get(artosUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
-        Assert.assertEquals("Min bounds do not match", -100, var1.getMinValue(), 0.001);
-        Assert.assertEquals("Min bounds do not match", -100, var2.getMinValue(), 0.001);
+        Assertions.assertEquals(-100, var1.getMinValue(), 0.001, "Min bounds do not match");
+        Assertions.assertEquals(-100, var2.getMinValue(), 0.001, "Min bounds do not match");
 
         // Clear JPA l2 cache
         client.delete("/rest/Utils/LocalEmCache");
@@ -224,8 +224,8 @@ public class WegasTest {
         // assert both instsances DO read the min bounds from database
         var1 = client.get(artosUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
         var2 = client2.get(artosUrl + "/VariableDescriptor/" + var1.getId(), NumberDescriptor.class);
-        Assert.assertEquals("Min bounds do not match", -9999, var1.getMinValue(), 0.001);
-        Assert.assertEquals("Min bounds do not match", -9999, var2.getMinValue(), 0.001);
+        Assertions.assertEquals(-9999, var1.getMinValue(), 0.001, "Min bounds do not match");
+        Assertions.assertEquals(-9999, var2.getMinValue(), 0.001, "Min bounds do not match");
     }
 
     @Test
@@ -257,7 +257,7 @@ public class WegasTest {
         ResourceInstance gaelle_a = client.post(runURL, fetchResource, ResourceInstance.class);
         ResourceInstance gaelle_b = client2.post(runURL, fetchResource, ResourceInstance.class);
 
-        Assert.assertArrayEquals(gaelle_a.getAssignments().toArray(), gaelle_b.getAssignments().toArray());
+        Assertions.assertArrayEquals(gaelle_a.getAssignments().toArray(), gaelle_b.getAssignments().toArray());
 
         // assign gaelle to task3, task2 and task1
         client.post(assignUrl + gaelle_a.getId() + "/" + task1.getId(), null);
@@ -267,7 +267,7 @@ public class WegasTest {
         gaelle_a = client.post(runURL, fetchResource, ResourceInstance.class);
         gaelle_b = client2.post(runURL, fetchResource, ResourceInstance.class);
 
-        Assert.assertArrayEquals(gaelle_a.getAssignments().toArray(), gaelle_b.getAssignments().toArray());
+        Assertions.assertArrayEquals(gaelle_a.getAssignments().toArray(), gaelle_b.getAssignments().toArray());
 
         // move assignment
         Assignment a = gaelle_a.getAssignments().get(1);
@@ -277,7 +277,7 @@ public class WegasTest {
         gaelle_a = client.post(runURL, fetchResource, ResourceInstance.class);
         gaelle_b = client2.post(runURL, fetchResource, ResourceInstance.class);
 
-        Assert.assertArrayEquals(gaelle_a.getAssignments().toArray(), gaelle_b.getAssignments().toArray());
+        Assertions.assertArrayEquals(gaelle_a.getAssignments().toArray(), gaelle_b.getAssignments().toArray());
     }
 
     @Test
@@ -292,7 +292,7 @@ public class WegasTest {
         });
 
         logger.info("# gamemodels scen:" + gameModels.size());
-        Assert.assertEquals(2, gameModels.size()); // Artos  + _empty
+        Assertions.assertEquals(2, gameModels.size()); // Artos  + _empty
         client.post("/rest/User/ShareGameModel/" + artos.getId() + "/Instantiate/" + trainer.getAccountId(), null);
 
         client.login(trainer);
@@ -301,7 +301,7 @@ public class WegasTest {
         });
         logger.info("# gamemodels trainer:" + gameModels.size());
         // Get
-        Assert.assertEquals(2, gameModels.size()); // artos +empty
+        Assertions.assertEquals(2, gameModels.size()); // artos +empty
 
         //create a game
         Game myGame = client.postJSON_asString("/rest/GameModel/" + artos.getId() + "/Game", "{\"@class\":\"Game\",\"gameModelId\":\"" + artos.getId() + "\",\"access\":\"OPEN\",\"name\":\"ArtosGame\"}", Game.class);
@@ -309,7 +309,7 @@ public class WegasTest {
 
         List<Game> games = client.get("/rest/GameModel/Game/status/LIVE", new TypeReference<List<Game>>() {
         });
-        Assert.assertEquals(1, games.size()); // artos +empty
+        Assertions.assertEquals(1, games.size()); // artos +empty
 
         client.login(user);
 
@@ -324,18 +324,18 @@ public class WegasTest {
 
         Team newTeam = client.post("/rest/GameModel/Game/" + gameToJoin.getId() + "/Team", teamToCreate, Team.class);
 
-        Assert.assertEquals(Populatable.Status.LIVE, newTeam.getStatus());
+        Assertions.assertEquals(Populatable.Status.LIVE, newTeam.getStatus());
 
         Team joinedTeam = client.post("/rest/GameModel/Game/Team/" + newTeam.getId() + "/Player", null, Team.class);
-        Assert.assertEquals(1, joinedTeam.getPlayers().size());
-        Assert.assertEquals(Populatable.Status.LIVE, joinedTeam.getPlayers().get(0).getStatus());
+        Assertions.assertEquals(1, joinedTeam.getPlayers().size());
+        Assertions.assertEquals(Populatable.Status.LIVE, joinedTeam.getPlayers().get(0).getStatus());
 
         client.login(user);
 
         List<Team> userTeams = client.get("/rest/User/Current/Team", new TypeReference<List<Team>>() {
         });
 
-        Assert.assertEquals(1, userTeams.size()); // artos +empty
+        Assertions.assertEquals(1, userTeams.size()); // artos +empty
     }
 
     @Test
@@ -369,8 +369,8 @@ public class WegasTest {
 
 
         /* Is the debug team present */
-        Assert.assertEquals(1, myGameFromGet.getTeams().size());
-        Assert.assertEquals(1, myGameFromGet.getTeams().get(0).getPlayers().size());
+        Assertions.assertEquals(1, myGameFromGet.getTeams().size());
+        Assertions.assertEquals(1, myGameFromGet.getTeams().get(0).getPlayers().size());
     }
 
     @Test
@@ -380,7 +380,7 @@ public class WegasTest {
         descs = (List<VariableDescriptor>) (client.get("/rest/GameModel/" + this.artos.getId() + "/VariableDescriptor", new TypeReference<List<VariableDescriptor>>() {
         }));
 
-        Assert.assertTrue("Seems there is not enough descriptor here...", descs.size() > 10);
+        Assertions.assertTrue(descs.size() > 10, "Seems there is not enough descriptor here...");
     }
 
     @Test
@@ -395,9 +395,9 @@ public class WegasTest {
         WebClient webClient = new WebClient();
         final HtmlPage page = webClient.getPage(client.getBaseURL() + "/login.html?debug=true");
 
-        Assert.assertEquals(200, page.getWebResponse().getStatusCode());
+        Assertions.assertEquals(200, page.getWebResponse().getStatusCode());
 
-        Assert.assertEquals("Web Game Authoring System - Wegas", page.getTitleText());
+        Assertions.assertEquals("Web Game Authoring System - Wegas", page.getTitleText());
 
         //tester.setTextField("username", "root@root.com");
         //tester.setTextField("password", "1234");
@@ -414,7 +414,7 @@ public class WegasTest {
         HtmlPage page = webClient.getPage(client.getBaseURL() + "/wegas-app/tests/wegas-alltests.htm");
         //webClient.waitForBackgroundJavaScriptStartingBefore(30000);
 
-        Assert.assertEquals("Wegas Test Suite", page.getTitleText());
+        Assertions.assertEquals("Wegas Test Suite", page.getTitleText());
         DomElement domPassed = page.getElementById("passed");
         DomElement domTotal = page.getElementById("total");
 

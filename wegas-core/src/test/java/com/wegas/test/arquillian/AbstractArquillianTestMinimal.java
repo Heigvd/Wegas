@@ -27,12 +27,10 @@ import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.jparealm.JpaAccount;
-import com.wegas.core.security.persistence.AccountDetails;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.core.security.util.AuthenticationMethod;
-import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.JpaAuthentication;
 import com.wegas.test.TestHelper;
 import com.wegas.test.WegasFactory;
@@ -55,16 +53,15 @@ import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.env.IniWebEnvironment;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit5.ArquillianExtension;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.importer.ExplodedImporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.rules.TestName;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +71,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author maxence
  */
-@RunWith(Arquillian.class)
+@ExtendWith(ArquillianExtension.class)
 public abstract class AbstractArquillianTestMinimal {
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractArquillianTestMinimal.class);
@@ -124,8 +121,7 @@ public abstract class AbstractArquillianTestMinimal {
     @Inject
     protected WegasFactory wegasFactory;
 
-    @Rule
-    public TestName testName = new TestName();
+    public TestInfo testInfo;
 
     protected long initTime;
 
@@ -168,7 +164,7 @@ public abstract class AbstractArquillianTestMinimal {
         populatorScheduler.setAsync(false);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void initJCR() {
         try {
             // init JCR resitory
@@ -180,9 +176,10 @@ public abstract class AbstractArquillianTestMinimal {
     /**
      * Initial db content as defined by Liquibase Changelogs
      */
-    @Before
-    public void init() {
-        logger.info("Start TEST {}", testName.getMethodName());
+    @BeforeEach
+    public void init(TestInfo testInfo) {
+        this.testInfo = testInfo;
+        logger.info("Start TEST {}", testInfo.getDisplayName());
 
         this.startTime = System.currentTimeMillis();
 
@@ -195,7 +192,7 @@ public abstract class AbstractArquillianTestMinimal {
         SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
         TestHelper.emptyDBTables();
 
-        requestManager.clearEntities();
+        requestFacade.clearEntities();
         this.wipeEmCache();
 
         this.setSynchronous();
@@ -279,11 +276,11 @@ public abstract class AbstractArquillianTestMinimal {
         requestManager.clearEntities();
     }
 
-    @After
+    @AfterEach
     public void clean() {
         long now = System.currentTimeMillis();
         logger.info("TEST {} DURATION: total: {} ms; init: {} ms; test: {} ms",
-            testName.getMethodName(),
+            testInfo.getDisplayName(),
             now - this.startTime,
             this.initTime - this.startTime,
             now - this.initTime);

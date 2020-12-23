@@ -18,8 +18,8 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,18 +50,18 @@ public class PlayerFacadeTest extends AbstractArquillianTest {
          * Login as user
          */
         login(user);
-        Assert.assertEquals(1, userFacade.getCurrentUser().getPlayers().size()); // user plays to game as player !
-        Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().size()); // debugTeam 
+        Assertions.assertEquals(1, userFacade.getCurrentUser().getPlayers().size()); // user plays to game as player !
+        Assertions.assertEquals(1, gameFacade.find(g.getId()).getTeams().size()); // debugTeam 
 
         Team t = new Team("team");
         t.setGame(g);
         teamFacade.create(t);
 
-        Assert.assertEquals(2, gameFacade.find(g.getId()).getTeams().size()); // debugTeam and team
+        Assertions.assertEquals(2, gameFacade.find(g.getId()).getTeams().size()); // debugTeam and team
 
         Player p1 = gameFacade.joinTeam(t.getId(), user.getId(), null);
 
-        Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().get(1).getPlayers().size()); // p1
+        Assertions.assertEquals(1, gameFacade.find(g.getId()).getTeams().get(1).getPlayers().size()); // p1
 
         login(user21);
         Player p2 = gameFacade.joinTeam(t.getId(), user21.getId(), null);
@@ -69,7 +69,7 @@ public class PlayerFacadeTest extends AbstractArquillianTest {
         Game ng = gameFacade.find(g.getId());
 
         User currentUser = userFacade.find(user21.getId());
-        Assert.assertEquals(2, ng.getTeams().size());
+        Assertions.assertEquals(2, ng.getTeams().size());
 
         Team theTeam = null;
         for (Team tIt : ng.getTeams()) {
@@ -78,16 +78,16 @@ public class PlayerFacadeTest extends AbstractArquillianTest {
                 break;
             }
         }
-        Assert.assertNotNull(theTeam);
-        Assert.assertEquals(2, theTeam.getPlayers().size());
+        Assertions.assertNotNull(theTeam);
+        Assertions.assertEquals(2, theTeam.getPlayers().size());
 
-        Assert.assertEquals(2, currentUser.getPlayers().size());
+        Assertions.assertEquals(2, currentUser.getPlayers().size());
 
         login(user);
         playerFacade.remove(p1.getId());
 
         ng = gameFacade.find(g.getId());
-        Assert.assertEquals(2, ng.getTeams().size());
+        Assertions.assertEquals(2, ng.getTeams().size());
         theTeam = null;
         for (Team tIt : ng.getTeams()) {
             if (!(tIt instanceof DebugTeam)) {
@@ -95,16 +95,16 @@ public class PlayerFacadeTest extends AbstractArquillianTest {
                 break;
             }
         }
-        Assert.assertNotNull(theTeam);
+        Assertions.assertNotNull(theTeam);
 
-        Assert.assertEquals(1, theTeam.getPlayers().size());
+        Assertions.assertEquals(1, theTeam.getPlayers().size());
 
         login(user21);
         playerFacade.remove(p2.getId()); //removing the last player in team leads to team deletion
 
-        Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().size()); // debugTeam
+        Assertions.assertEquals(1, gameFacade.find(g.getId()).getTeams().size()); // debugTeam
 
-        Assert.assertEquals(1, userFacade.getCurrentUser().getPlayers().size());
+        Assertions.assertEquals(1, userFacade.getCurrentUser().getPlayers().size());
 
         login(admin);
         gameFacade.remove(g.getId());                                           // Clean up
@@ -160,24 +160,24 @@ public class PlayerFacadeTest extends AbstractArquillianTest {
 
         g = gameFacade.find(g.getId());
 
-        Assert.assertEquals(nbTeam + 1, g.getTeams().size()); // + 1 to count debug team
+        Assertions.assertEquals(nbTeam + 1, g.getTeams().size()); // + 1 to count debug team
         for (Team t : g.getTeams()) {
             t = teamFacade.find(t.getId());
             if (t instanceof DebugTeam == false) {
-                Assert.assertEquals(nbPlayer, t.getPlayers().size());
+                Assertions.assertEquals(nbPlayer, t.getPlayers().size());
             }
         }
 
         for (WegasUser wu : users) {
             login(wu);
             Player p = wu.getUser().getPlayers().get(0);
-            Assert.assertTrue(requestManager.hasPlayerRight(p));
-            Assert.assertTrue(requestManager.hasTeamRight(p.getTeam()));
-            Assert.assertTrue(requestManager.hasGameReadRight(p.getGame()));
-            Assert.assertTrue(requestManager.hasGameModelReadRight(p.getGameModel()));
+            Assertions.assertTrue(requestManager.hasPlayerRight(p));
+            Assertions.assertTrue(requestManager.hasTeamRight(p.getTeam()));
+            Assertions.assertTrue(requestManager.hasGameReadRight(p.getGame()));
+            Assertions.assertTrue(requestManager.hasGameModelReadRight(p.getGameModel()));
 
-            Assert.assertFalse(requestManager.hasGameWriteRight(p.getGame()));
-            Assert.assertFalse(requestManager.hasGameModelWriteRight(p.getGameModel()));
+            Assertions.assertFalse(requestManager.hasGameWriteRight(p.getGame()));
+            Assertions.assertFalse(requestManager.hasGameModelWriteRight(p.getGameModel()));
         }
 
     }

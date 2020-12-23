@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -21,10 +22,10 @@ import java.io.InputStream;
 import java.util.Arrays;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FileTest extends AbstractArquillianTest {
 
@@ -34,11 +35,11 @@ public class FileTest extends AbstractArquillianTest {
     @Inject
     private JCRFacade jcrFacade;
 
-    @Before
+    @BeforeEach
     public void before() throws RepositoryException {
     }
 
-    @After
+    @AfterEach
     public void after() throws RepositoryException {
     }
 
@@ -54,7 +55,7 @@ public class FileTest extends AbstractArquillianTest {
         int fileSize = file.read(read);
         byte[] file1ReadContent = Arrays.copyOf(read, fileSize);
 
-        Assert.assertTrue("File 1 content not match", Arrays.equals(initialContent, file1ReadContent));
+        Assertions.assertTrue(Arrays.equals(initialContent, file1ReadContent), "File 1 content not match");
 
         byte[] newContent = {2, 2, 2, 2};
         InputStream newFile = new ByteArrayInputStream(newContent);
@@ -66,7 +67,7 @@ public class FileTest extends AbstractArquillianTest {
         fileSize = newReadfile.read(read);
         byte[] newFileReadContent = Arrays.copyOf(read, fileSize);
 
-        Assert.assertTrue("File content after update not match", Arrays.equals(newContent, newFileReadContent));
+        Assertions.assertTrue(Arrays.equals(newContent, newFileReadContent), "File content after update not match");
 
     }
 
@@ -81,7 +82,7 @@ public class FileTest extends AbstractArquillianTest {
                 "text/plain", "note",
                 "description", initialFile, Boolean.TRUE);
 
-            Assert.fail("Should not be possible to create a file in a non existing folder");
+            Assertions.fail("Should not be possible to create a file in a non existing folder");
         } catch (WegasErrorMessage ex) {
             // this is expected
         }
@@ -104,8 +105,7 @@ public class FileTest extends AbstractArquillianTest {
         int fileSize = file.read(read);
         byte[] file1ReadContent = Arrays.copyOf(read, fileSize);
 
-        Assert.assertTrue("File 1 content not match",
-            Arrays.equals(initialContent, file1ReadContent));
+        Assertions.assertTrue(Arrays.equals(initialContent, file1ReadContent), "File 1 content not match");
     }
 
     @Test
@@ -119,7 +119,7 @@ public class FileTest extends AbstractArquillianTest {
                 "text/plain", "note",
                 "description", initialFile, Boolean.TRUE);
 
-            Assert.fail("Should not be possible to create a file in a non existing folder");
+            Assertions.fail("Should not be possible to create a file in a non existing folder");
         } catch (WegasErrorMessage ex) {
             // this is expected
         }
@@ -141,8 +141,7 @@ public class FileTest extends AbstractArquillianTest {
         int fileSize = file.read(read);
         byte[] file1ReadContent = Arrays.copyOf(read, fileSize);
 
-        Assert.assertTrue("File 1 content not match",
-            Arrays.equals(initialContent, file1ReadContent));
+        Assertions.assertTrue(Arrays.equals(initialContent, file1ReadContent), "File 1 content not match");
     }
 
     @Test
@@ -170,26 +169,26 @@ public class FileTest extends AbstractArquillianTest {
 
         byte[] file1ReadContent = Arrays.copyOf(read, fileSize);
 
-        Assert.assertTrue("File 1 content not match", Arrays.equals(file1Content, file1ReadContent));
+        Assertions.assertTrue(Arrays.equals(file1Content, file1ReadContent), "File 1 content not match");
 
         try {
             byte[] file2Content = {2, 2, 2, 2};
             jcrTestFacade.addFileAndRename(gameModel.getId(), "secondFile", file2Content, "a");
             jcrTestFacade.addPageAndRename(gameModel.getId(), "c name", "3", "a");
-            Assert.fail("Transaction should have been rejeced");
+            Assertions.fail("Transaction should have been rejeced");
         } catch (RuntimeException ex) {
             logger.error("Runtime exception: {}", ex);
         }
 
         // no file2
         file = jcrFacade.getFile(gameModel.getId(), ContentConnector.WorkspaceType.FILES, "/secondFile");
-        Assert.assertNull("File2 should not exist", file);
+        Assertions.assertNull(file, "File2 should not exist");
 
         // no rename
         GameModel gm = gameModelFacade.find(gameModel.getId());
         for (VariableDescriptor vd : gm.getVariableDescriptors()) {
             logger.error("VD: {}", vd);
-            Assert.assertNotEquals("a", vd.getName());
+            Assertions.assertNotEquals("a", vd.getName());
         }
     }
 }

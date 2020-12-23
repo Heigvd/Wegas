@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -26,9 +27,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
-import org.junit.Assert;
-import static org.junit.Assert.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,13 +64,13 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         resourceFacade.assign(res.getInstance(player).getId(), task.getInstance(player).getId());
 
-        assertEquals(
-                ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
-                task.getInstance(player));
+        Assertions.assertEquals(
+            ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
+            task.getInstance(player));
 
-        assertEquals(
-                ((TaskDescriptor) variableDescriptorFacade.find(task.getId())).getInstance(player).getAssignments().get(0).getResourceInstance(),
-                res.getInstance(player));
+        Assertions.assertEquals(
+            ((TaskDescriptor) variableDescriptorFacade.find(task.getId())).getInstance(player).getAssignments().get(0).getResourceInstance(),
+            res.getInstance(player));
 
         variableDescriptorFacade.remove(task.getId());
 
@@ -100,9 +100,9 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         resourceFacade.assign(res.getInstance(player).getId(), task.getInstance(player).getId());
 
-        assertEquals(
-                ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
-                task.getInstance(player));
+        Assertions.assertEquals(
+            ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
+            task.getInstance(player));
 
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -129,9 +129,9 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         // Assign resource to task1
         resourceFacade.assign(res.getInstance(player).getId(), task.getInstance(player).getId());
 
-        assertEquals(
-                ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
-                task.getInstance(player));
+        Assertions.assertEquals(
+            ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
+            task.getInstance(player));
 
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -179,9 +179,9 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         TaskInstance t2 = (TaskInstance) variableInstanceFacade.find(task2.getId(), player);
         TaskInstance t3 = (TaskInstance) variableInstanceFacade.find(task3.getId(), player);
 
-        assertEquals(resI.getAssignments().get(0).getTaskInstance(), t1);
-        assertEquals(resI.getAssignments().get(1).getTaskInstance(), t2);
-        assertEquals(resI.getAssignments().get(2).getTaskInstance(), t3);
+        Assertions.assertEquals(resI.getAssignments().get(0).getTaskInstance(), t1);
+        Assertions.assertEquals(resI.getAssignments().get(1).getTaskInstance(), t2);
+        Assertions.assertEquals(resI.getAssignments().get(2).getTaskInstance(), t3);
 
         res = (ResourceDescriptor) variableDescriptorFacade.find(res.getId());
         // 1 2 3 -> 2 3 1
@@ -191,9 +191,9 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         resI = (ResourceInstance) variableInstanceFacade.find(res.getId(), player);
 
-        assertEquals(resI.getAssignments().get(0).getTaskInstance(), t2);
-        assertEquals(resI.getAssignments().get(1).getTaskInstance(), t3);
-        assertEquals(resI.getAssignments().get(2).getTaskInstance(), t1);
+        Assertions.assertEquals(resI.getAssignments().get(0).getTaskInstance(), t2);
+        Assertions.assertEquals(resI.getAssignments().get(1).getTaskInstance(), t3);
+        Assertions.assertEquals(resI.getAssignments().get(2).getTaskInstance(), t1);
 
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -222,9 +222,9 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         // Assign resource to task1
         resourceFacade.assign(res.getInstance(player).getId(), task.getInstance(player).getId());
 
-        assertEquals(
-                ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
-                task.getInstance(player));
+        Assertions.assertEquals(
+            ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getTaskInstance(),
+            task.getInstance(player));
 
         Assignment assignment = resourceFacade.findAssignment(res.getInstance(player).getId(), task.getInstance(player).getId());
         resourceFacade.removeAssignment(assignment.getId());
@@ -266,16 +266,16 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         task = (TaskDescriptor) variableDescriptorFacade.find(task.getId());
         res = (ResourceDescriptor) variableDescriptorFacade.find(res.getId());
 
-        Assert.assertEquals(1, task.getDefaultInstance().getAssignments().size());
-        Assert.assertEquals(1, res.getDefaultInstance().getAssignments().size());
+        Assertions.assertEquals(1, task.getDefaultInstance().getAssignments().size());
+        Assertions.assertEquals(1, res.getDefaultInstance().getAssignments().size());
 
         /**
          * Reset and propagate to players
          */
         gameModelFacade.reset(scenario.getId());
 
-        Assert.assertEquals(1, task.getInstance(player).getAssignments().size());
-        Assert.assertEquals(1, res.getInstance(player).getAssignments().size());
+        Assertions.assertEquals(1, task.getInstance(player).getAssignments().size());
+        Assertions.assertEquals(1, res.getInstance(player).getAssignments().size());
 
         // Remove assignment
         defaultInstance = res.getDefaultInstance();
@@ -286,16 +286,16 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         task = (TaskDescriptor) variableDescriptorFacade.find(task.getId());
         res = (ResourceDescriptor) variableDescriptorFacade.find(res.getId());
 
-        Assert.assertEquals(0, task.getDefaultInstance().getAssignments().size());
-        Assert.assertEquals(0, res.getDefaultInstance().getAssignments().size());
+        Assertions.assertEquals(0, task.getDefaultInstance().getAssignments().size());
+        Assertions.assertEquals(0, res.getDefaultInstance().getAssignments().size());
 
         /**
          * Reset and propagate to players
          */
         gameModelFacade.reset(scenario.getId());
 
-        Assert.assertEquals(0, task.getInstance(player).getAssignments().size());
-        Assert.assertEquals(0, res.getInstance(player).getAssignments().size());
+        Assertions.assertEquals(0, task.getInstance(player).getAssignments().size());
+        Assertions.assertEquals(0, res.getInstance(player).getAssignments().size());
     }
 
     /**
@@ -375,35 +375,35 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         /**
          * assert initial situation
          */
-        Assert.assertEquals(2, bdi1.getIterations().get(0).getTasks().size());
-        Assert.assertTrue(bdi1.getIterations().get(0).getTasks().contains(task1Ip));
-        Assert.assertTrue(bdi1.getIterations().get(0).getTasks().contains(task2Ip));
+        Assertions.assertEquals(2, bdi1.getIterations().get(0).getTasks().size());
+        Assertions.assertTrue(bdi1.getIterations().get(0).getTasks().contains(task1Ip));
+        Assertions.assertTrue(bdi1.getIterations().get(0).getTasks().contains(task2Ip));
 
-        Assert.assertEquals(2, paulIp.getAssignments().size());
-        Assert.assertEquals(task1Ip, paulIp.getAssignments().get(0).getTaskInstance());
-        Assert.assertEquals(task2Ip, paulIp.getAssignments().get(1).getTaskInstance());
+        Assertions.assertEquals(2, paulIp.getAssignments().size());
+        Assertions.assertEquals(task1Ip, paulIp.getAssignments().get(0).getTaskInstance());
+        Assertions.assertEquals(task2Ip, paulIp.getAssignments().get(1).getTaskInstance());
 
-        Assert.assertEquals(2, rogerIp.getActivities().size());
-        Assert.assertEquals(task1Ip, rogerIp.getActivities().get(0).getTaskInstance());
-        Assert.assertEquals(task2Ip, rogerIp.getActivities().get(1).getTaskInstance());
+        Assertions.assertEquals(2, rogerIp.getActivities().size());
+        Assertions.assertEquals(task1Ip, rogerIp.getActivities().get(0).getTaskInstance());
+        Assertions.assertEquals(task2Ip, rogerIp.getActivities().get(1).getTaskInstance());
 
-        Assert.assertEquals(1, task1Ip.getAssignments().size());
-        Assert.assertEquals(paulIp, task1Ip.getAssignments().get(0).getResourceInstance());
+        Assertions.assertEquals(1, task1Ip.getAssignments().size());
+        Assertions.assertEquals(paulIp, task1Ip.getAssignments().get(0).getResourceInstance());
 
-        Assert.assertEquals(1, task1Ip.getActivities().size());
-        Assert.assertEquals(rogerIp, task1Ip.getActivities().get(0).getResourceInstance());
+        Assertions.assertEquals(1, task1Ip.getActivities().size());
+        Assertions.assertEquals(rogerIp, task1Ip.getActivities().get(0).getResourceInstance());
 
-        Assert.assertEquals(1, task2Ip.getAssignments().size());
-        Assert.assertEquals(paulIp, task2Ip.getAssignments().get(0).getResourceInstance());
+        Assertions.assertEquals(1, task2Ip.getAssignments().size());
+        Assertions.assertEquals(paulIp, task2Ip.getAssignments().get(0).getResourceInstance());
 
-        Assert.assertEquals(1, task2Ip.getActivities().size());
-        Assert.assertEquals(rogerIp, task2Ip.getActivities().get(0).getResourceInstance());
+        Assertions.assertEquals(1, task2Ip.getActivities().size());
+        Assertions.assertEquals(rogerIp, task2Ip.getActivities().get(0).getResourceInstance());
 
-        Assert.assertEquals(1, task1Ip.getIterations().size());
-        Assert.assertEquals(bdi1.getIterations().get(0), task1Ip.getIterations().get(0));
+        Assertions.assertEquals(1, task1Ip.getIterations().size());
+        Assertions.assertEquals(bdi1.getIterations().get(0), task1Ip.getIterations().get(0));
 
-        Assert.assertEquals(1, task2Ip.getIterations().size());
-        Assert.assertEquals(bdi1.getIterations().get(0), task2Ip.getIterations().get(0));
+        Assertions.assertEquals(1, task2Ip.getIterations().size());
+        Assertions.assertEquals(bdi1.getIterations().get(0), task2Ip.getIterations().get(0));
 
         /*
          * Delete task2
@@ -422,23 +422,23 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         /**
          * assert initial situation
          */
-        Assert.assertEquals(1, bdi1.getIterations().get(0).getTasks().size());
-        Assert.assertTrue(bdi1.getIterations().get(0).getTasks().contains(task1Ip));
+        Assertions.assertEquals(1, bdi1.getIterations().get(0).getTasks().size());
+        Assertions.assertTrue(bdi1.getIterations().get(0).getTasks().contains(task1Ip));
 
-        Assert.assertEquals(1, paulIp.getAssignments().size());
-        Assert.assertEquals(task1Ip, paulIp.getAssignments().get(0).getTaskInstance());
+        Assertions.assertEquals(1, paulIp.getAssignments().size());
+        Assertions.assertEquals(task1Ip, paulIp.getAssignments().get(0).getTaskInstance());
 
-        Assert.assertEquals(1, rogerIp.getActivities().size());
-        Assert.assertEquals(task1Ip, rogerIp.getActivities().get(0).getTaskInstance());
+        Assertions.assertEquals(1, rogerIp.getActivities().size());
+        Assertions.assertEquals(task1Ip, rogerIp.getActivities().get(0).getTaskInstance());
 
-        Assert.assertEquals(1, task1Ip.getAssignments().size());
-        Assert.assertEquals(paulIp, task1Ip.getAssignments().get(0).getResourceInstance());
+        Assertions.assertEquals(1, task1Ip.getAssignments().size());
+        Assertions.assertEquals(paulIp, task1Ip.getAssignments().get(0).getResourceInstance());
 
-        Assert.assertEquals(1, task1Ip.getActivities().size());
-        Assert.assertEquals(rogerIp, task1Ip.getActivities().get(0).getResourceInstance());
+        Assertions.assertEquals(1, task1Ip.getActivities().size());
+        Assertions.assertEquals(rogerIp, task1Ip.getActivities().get(0).getResourceInstance());
 
-        Assert.assertEquals(1, task1Ip.getIterations().size());
-        Assert.assertEquals(bdi1.getIterations().get(0), task1Ip.getIterations().get(0));
+        Assertions.assertEquals(1, task1Ip.getIterations().size());
+        Assertions.assertEquals(bdi1.getIterations().get(0), task1Ip.getIterations().get(0));
     }
 
     /**
@@ -473,8 +473,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
         bdi1 = (BurndownInstance) variableInstanceFacade.find(bdi1.getId()); // reload player instance
 
-        Assert.assertEquals(1, bdiDef.getIterations().size());
-        Assert.assertEquals(0, bdi1.getIterations().size());  // not reset yet
+        Assertions.assertEquals(1, bdiDef.getIterations().size());
+        Assertions.assertEquals(0, bdi1.getIterations().size());  // not reset yet
 
         /*
          * propagate to players
@@ -483,10 +483,10 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
         bdi1 = (BurndownInstance) variableInstanceFacade.find(bdi1.getId()); // reload player instance
 
-        Assert.assertEquals(1, bdiDef.getIterations().size());
-        Assert.assertEquals(1, bdi1.getIterations().size());
+        Assertions.assertEquals(1, bdiDef.getIterations().size());
+        Assertions.assertEquals(1, bdi1.getIterations().size());
 
-        Assert.assertFalse(bdiDef.getIterations().get(0).equals(bdi1.getIterations().get(0)));
+        Assertions.assertFalse(bdiDef.getIterations().get(0).equals(bdi1.getIterations().get(0)));
 
         /*
          * add task1 to iteration1
@@ -498,10 +498,10 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         bdi1 = (BurndownInstance) variableInstanceFacade.find(bdi1.getId()); // reload player instance
 
         // assert iteration1 task(s)
-        Assert.assertEquals(1, bdiDef.getIterations().get(0).getTasks().size());
-        Assert.assertEquals(0, bdi1.getIterations().get(0).getTasks().size());
+        Assertions.assertEquals(1, bdiDef.getIterations().get(0).getTasks().size());
+        Assertions.assertEquals(0, bdi1.getIterations().get(0).getTasks().size());
 
-        Assert.assertEquals(task1.getDefaultInstance(), bdiDef.getIterations().get(0).getTasks().get(0));
+        Assertions.assertEquals(task1.getDefaultInstance(), bdiDef.getIterations().get(0).getTasks().get(0));
 
         /*
          * propagation iteration task(s) to player(s)
@@ -513,12 +513,12 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         bdi1 = (BurndownInstance) variableInstanceFacade.find(bdi1.getId()); // reload player instance
 
         // assert iteration1 task(s)
-        Assert.assertEquals(1, bdiDef.getIterations().get(0).getTasks().size());
-        Assert.assertEquals(1, bdi1.getIterations().get(0).getTasks().size());
+        Assertions.assertEquals(1, bdiDef.getIterations().get(0).getTasks().size());
+        Assertions.assertEquals(1, bdi1.getIterations().get(0).getTasks().size());
 
         // Assert taskinstances belong to correct players
-        Assert.assertEquals(task1.getDefaultInstance(), bdiDef.getIterations().get(0).getTasks().get(0));
-        Assert.assertEquals(task1.getInstance(player), bdi1.getIterations().get(0).getTasks().get(0));
+        Assertions.assertEquals(task1.getDefaultInstance(), bdiDef.getIterations().get(0).getTasks().get(0));
+        Assertions.assertEquals(task1.getInstance(player), bdi1.getIterations().get(0).getTasks().get(0));
 
         /*
          * Player update his own iteration
@@ -530,11 +530,11 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         bdi1 = (BurndownInstance) variableInstanceFacade.find(bdi1.getId()); // reload player instance
 
         // assert iteration1 task(s)
-        Assert.assertEquals(1, bdiDef.getIterations().get(0).getTasks().size());
-        Assert.assertEquals(2, bdi1.getIterations().get(0).getTasks().size());
+        Assertions.assertEquals(1, bdiDef.getIterations().get(0).getTasks().size());
+        Assertions.assertEquals(2, bdi1.getIterations().get(0).getTasks().size());
 
-        Assert.assertTrue(bdi1.getIterations().get(0).getTasks().contains(task1.getInstance(player)));
-        Assert.assertTrue(bdi1.getIterations().get(0).getTasks().contains(task2.getInstance(player)));
+        Assertions.assertTrue(bdi1.getIterations().get(0).getTasks().contains(task1.getInstance(player)));
+        Assertions.assertTrue(bdi1.getIterations().get(0).getTasks().contains(task2.getInstance(player)));
 
         /*
          * erase player modification
@@ -546,12 +546,12 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         bdi1 = (BurndownInstance) variableInstanceFacade.find(bdi1.getId()); // reload player instance
 
         // assert iteration1 task(s)
-        Assert.assertEquals(1, bdiDef.getIterations().get(0).getTasks().size());
-        Assert.assertEquals(1, bdi1.getIterations().get(0).getTasks().size());
+        Assertions.assertEquals(1, bdiDef.getIterations().get(0).getTasks().size());
+        Assertions.assertEquals(1, bdi1.getIterations().get(0).getTasks().size());
 
         // Assert taskinstances belong to correct players
-        Assert.assertEquals(task1.getDefaultInstance(), bdiDef.getIterations().get(0).getTasks().get(0));
-        Assert.assertEquals(task1.getInstance(player), bdi1.getIterations().get(0).getTasks().get(0));
+        Assertions.assertEquals(task1.getDefaultInstance(), bdiDef.getIterations().get(0).getTasks().get(0));
+        Assertions.assertEquals(task1.getInstance(player), bdi1.getIterations().get(0).getTasks().get(0));
 
         /**
          * remove all tasks
@@ -563,8 +563,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         bdi1 = (BurndownInstance) variableInstanceFacade.find(bdi1.getId()); // reload player instance
 
         // assert iteration1 task(s)
-        Assert.assertEquals(0, bdiDef.getIterations().get(0).getTasks().size());
-        Assert.assertEquals(1, bdi1.getIterations().get(0).getTasks().size());
+        Assertions.assertEquals(0, bdiDef.getIterations().get(0).getTasks().size());
+        Assertions.assertEquals(1, bdi1.getIterations().get(0).getTasks().size());
 
         /*
          * erase player modification
@@ -576,8 +576,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         bdi1 = (BurndownInstance) variableInstanceFacade.find(bdi1.getId()); // reload player instance
 
         // assert iteration1 task(s)
-        Assert.assertEquals(0, bdiDef.getIterations().get(0).getTasks().size());
-        Assert.assertEquals(0, bdi1.getIterations().get(0).getTasks().size());
+        Assertions.assertEquals(0, bdiDef.getIterations().get(0).getTasks().size());
+        Assertions.assertEquals(0, bdi1.getIterations().get(0).getTasks().size());
 
         /* 
          * remove iteration (player)
@@ -587,8 +587,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
         bdi1 = (BurndownInstance) variableInstanceFacade.find(bdi1.getId()); // reload player instance
 
-        Assert.assertEquals(1, bdiDef.getIterations().size());
-        Assert.assertEquals(0, bdi1.getIterations().size());  // not reset yet
+        Assertions.assertEquals(1, bdiDef.getIterations().size());
+        Assertions.assertEquals(0, bdi1.getIterations().size());  // not reset yet
 
         /*
          * erase player modification
@@ -599,8 +599,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
         bdi1 = (BurndownInstance) variableInstanceFacade.find(bdi1.getId()); // reload player instance
 
-        Assert.assertEquals(1, bdiDef.getIterations().size());
-        Assert.assertEquals(1, bdi1.getIterations().size());
+        Assertions.assertEquals(1, bdiDef.getIterations().size());
+        Assertions.assertEquals(1, bdi1.getIterations().size());
 
         /* 
          * remove iteration (default)
@@ -610,8 +610,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
         bdi1 = (BurndownInstance) variableInstanceFacade.find(bdi1.getId()); // reload player instance
 
-        Assert.assertEquals(0, bdiDef.getIterations().size());
-        Assert.assertEquals(1, bdi1.getIterations().size());  // not reset yet
+        Assertions.assertEquals(0, bdiDef.getIterations().size());
+        Assertions.assertEquals(1, bdi1.getIterations().size());  // not reset yet
 
         /*
          * erase player modification
@@ -622,8 +622,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
         bdi1 = (BurndownInstance) variableInstanceFacade.find(bdi1.getId()); // reload player instance
 
-        Assert.assertEquals(0, bdiDef.getIterations().size());
-        Assert.assertEquals(0, bdi1.getIterations().size());
+        Assertions.assertEquals(0, bdiDef.getIterations().size());
+        Assertions.assertEquals(0, bdi1.getIterations().size());
     }
 
     /**
@@ -645,18 +645,18 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         task.setDefaultInstance(new TaskInstance());
         variableDescriptorFacade.create(scenario.getId(), task);
         String script = "var paul = Variable.find(gameModel, \"paul\");\n"
-                + "var paulI = paul.getInstance(self);\n"
-                + "var task = Variable.find(gameModel, \"task\");\n"
-                + "var taskI = task.getInstance(self);\n"
-                + "ResourceFacade.assign(paulI.getId(), taskI.getId());\n";
+            + "var paulI = paul.getInstance(self);\n"
+            + "var task = Variable.find(gameModel, \"task\");\n"
+            + "var taskI = task.getInstance(self);\n"
+            + "ResourceFacade.assign(paulI.getId(), taskI.getId());\n";
 
         scriptFacade.eval(player, new Script("javascript", script), null); //
 
         String script2 = "var paul = Variable.find(gameModel, \"paul\");\n"
-                + "var paulI = paul.getInstance(self);\n"
-                + "var task = Variable.find(gameModel, \"task\");\n"
-                + "var taskI = task.getInstance(self);\n"
-                + "ResourceFacade.removeAssignment(ResourceFacade.findAssignment(paulI.getId(), taskI.getId()).getId());\n";
+            + "var paulI = paul.getInstance(self);\n"
+            + "var task = Variable.find(gameModel, \"task\");\n"
+            + "var taskI = task.getInstance(self);\n"
+            + "ResourceFacade.removeAssignment(ResourceFacade.findAssignment(paulI.getId(), taskI.getId()).getId());\n";
 
         scriptFacade.eval(player, new Script("javascript", script2), null);
 
@@ -697,10 +697,10 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         resource = (ResourceInstance) variableInstanceFacade.find(resource.getId());
         task = (TaskInstance) variableInstanceFacade.find(task.getId());
 
-        Assert.assertEquals(1, resource.getActivities().size());
-        Assert.assertEquals(1, task.getRequirements().size());
-        Assert.assertEquals(1, task.getActivities().size());
-        Assert.assertEquals(req, task.getActivities().get(0).getRequirement());
+        Assertions.assertEquals(1, resource.getActivities().size());
+        Assertions.assertEquals(1, task.getRequirements().size());
+        Assertions.assertEquals(1, task.getActivities().size());
+        Assertions.assertEquals(req, task.getActivities().get(0).getRequirement());
 
         /**
          * Reset and propagate to players
@@ -710,16 +710,16 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         taskD = (TaskDescriptor) variableDescriptorFacade.find(taskD.getId());
         resD = (ResourceDescriptor) variableDescriptorFacade.find(resD.getId());
 
-        Assert.assertEquals(1, taskD.getInstance(player).getActivities().size());
-        Assert.assertEquals(1, taskD.getInstance(player).getRequirements().size());
-        Assert.assertEquals(1, resD.getInstance(player).getActivities().size());
-        Assert.assertFalse(taskD.getInstance(player).getRequirements().get(0).equals(req));
-        Assert.assertEquals(taskD.getInstance(player).getRequirements().get(0), resD.getInstance(player).getActivities().get(0).getRequirement());
+        Assertions.assertEquals(1, taskD.getInstance(player).getActivities().size());
+        Assertions.assertEquals(1, taskD.getInstance(player).getRequirements().size());
+        Assertions.assertEquals(1, resD.getInstance(player).getActivities().size());
+        Assertions.assertFalse(taskD.getInstance(player).getRequirements().get(0).equals(req));
+        Assertions.assertEquals(taskD.getInstance(player).getRequirements().get(0), resD.getInstance(player).getActivities().get(0).getRequirement());
 
-        Assert.assertEquals(1, taskD.getDefaultInstance().getActivities().size());
-        Assert.assertEquals(1, resD.getDefaultInstance().getActivities().size());
-        Assert.assertEquals(1, taskD.getDefaultInstance().getRequirements().size());
-        Assert.assertEquals(req, taskD.getDefaultInstance().getActivities().get(0).getRequirement());
+        Assertions.assertEquals(1, taskD.getDefaultInstance().getActivities().size());
+        Assertions.assertEquals(1, resD.getDefaultInstance().getActivities().size());
+        Assertions.assertEquals(1, taskD.getDefaultInstance().getRequirements().size());
+        Assertions.assertEquals(req, taskD.getDefaultInstance().getActivities().get(0).getRequirement());
 
         // Remove activity
         resource = resD.getDefaultInstance();
@@ -731,16 +731,16 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         taskD = (TaskDescriptor) variableDescriptorFacade.find(taskD.getId());
         resD = (ResourceDescriptor) variableDescriptorFacade.find(resD.getId());
 
-        Assert.assertEquals(0, taskD.getDefaultInstance().getActivities().size());
-        Assert.assertEquals(0, resD.getDefaultInstance().getActivities().size());
+        Assertions.assertEquals(0, taskD.getDefaultInstance().getActivities().size());
+        Assertions.assertEquals(0, resD.getDefaultInstance().getActivities().size());
 
         /**
          * Reset and propagate to players
          */
         gameModelFacade.reset(scenario.getId());
 
-        Assert.assertEquals(0, taskD.getInstance(player).getActivities().size());
-        Assert.assertEquals(0, resD.getInstance(player).getActivities().size());
+        Assertions.assertEquals(0, taskD.getInstance(player).getActivities().size());
+        Assertions.assertEquals(0, resD.getInstance(player).getActivities().size());
 
         variableDescriptorFacade.remove(resD.getId());
         variableDescriptorFacade.remove(taskD.getId());
@@ -766,9 +766,9 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         // Assign activity between resource to task1
         resourceFacade.createActivity(res.getInstance(player).getId(), task.getInstance(player).getId());
 
-        assertEquals(
-                ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getActivities().get(0).getTaskInstance(),
-                task.getInstance(player));
+        Assertions.assertEquals(
+            ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getActivities().get(0).getTaskInstance(),
+            task.getInstance(player));
 
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -790,9 +790,9 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         // Add occupation to a resource
         resourceFacade.addOccupation(res.getInstance(player).getId(), false, 1);
 
-        assertEquals(
-                ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getOccupations().get(0).getResourceInstance(),
-                res.getInstance(player));
+        Assertions.assertEquals(
+            ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getOccupations().get(0).getResourceInstance(),
+            res.getInstance(player));
 
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -812,9 +812,9 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         // add occupation between to a resource
         resourceFacade.addOccupation(res.getInstance(player).getId(), true, 1);
 
-        assertEquals(
-                ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getOccupations().get(0).getResourceInstance(),
-                res.getInstance(player));
+        Assertions.assertEquals(
+            ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getOccupations().get(0).getResourceInstance(),
+            res.getInstance(player));
 
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -840,13 +840,13 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         Occupation newOccupation = ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getOccupations().get(0);
 
         // Check resource instance has been correctly setted 
-        assertEquals(newOccupation.getResourceInstance(), res.getInstance(player));
+        Assertions.assertEquals(newOccupation.getResourceInstance(), res.getInstance(player));
 
         // Check the editiable occupation mode
-        assertEquals(false, newOccupation.getEditable());
+        Assertions.assertEquals(false, newOccupation.getEditable());
 
         // Check the occupation time
-        assertEquals(1.0, newOccupation.getTime(), 0.00001);
+        Assertions.assertEquals(1.0, newOccupation.getTime(), 0.00001);
 
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -869,9 +869,9 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         Occupation newOccupation = ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getOccupations().get(0);
         // Check resource instance has been correctly setted 
-        assertEquals(newOccupation.getResourceInstance(), res.getInstance(player));
+        Assertions.assertEquals(newOccupation.getResourceInstance(), res.getInstance(player));
         // Check the editiable occupation mode
-        assertEquals(true, newOccupation.getEditable());
+        Assertions.assertEquals(true, newOccupation.getEditable());
 
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -912,9 +912,9 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         //Move last assignement (pos 2) at pos (0)
         resourceFacade.moveAssignment(assignment.getId(), 0);
 
-        assertEquals(
-                ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getId(),
-                assignment.getId());
+        Assertions.assertEquals(
+            ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().get(0).getId(),
+            assignment.getId());
 
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -945,8 +945,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), task);
 
         //test on work variable because if it match, requierements work.
-        assertEquals(((TaskInstance) variableInstanceFacade.find(task.getInstance(player).getId())).getRequirements().get(0).getWork(),
-                requirement.getWork());
+        Assertions.assertEquals(((TaskInstance) variableInstanceFacade.find(task.getInstance(player).getId())).getRequirements().get(0).getWork(),
+            requirement.getWork());
 
         // Clean
         variableDescriptorFacade.remove(task.getId());
@@ -970,12 +970,12 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         task2.setDefaultInstance(taskInstance);
         task2.addPredecessor(task);
         variableDescriptorFacade.create(scenario.getId(), task2);
-        assertEquals("engineer", task2.getDefaultInstance().getRequirements().get(0).getWork());
+        Assertions.assertEquals("engineer", task2.getDefaultInstance().getRequirements().get(0).getWork());
 
         // and duplicate it
         TaskDescriptor duplicate = (TaskDescriptor) variableDescriptorFacade.duplicate(task2.getId());
-        assertEquals("engineer", duplicate.getDefaultInstance().getRequirements().get(0).getWork());
-        assertEquals("My task", duplicate.getPredecessor(0).getLabel().translateOrEmpty(scenario));
+        Assertions.assertEquals("engineer", duplicate.getDefaultInstance().getRequirements().get(0).getWork());
+        Assertions.assertEquals("My task", duplicate.getPredecessor(0).getLabel().translateOrEmpty(scenario));
 
         // Clean
         variableDescriptorFacade.remove(task.getId());
@@ -999,8 +999,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), task2);
 
         TaskDescriptor created = (TaskDescriptor) variableDescriptorFacade.find(task2.getId());
-        assertEquals("My task", created.getPredecessor(0).getLabel().translateOrEmpty(scenario));
-        assertEquals(1, created.getPredecessors().size());
+        Assertions.assertEquals("My task", created.getPredecessor(0).getLabel().translateOrEmpty(scenario));
+        Assertions.assertEquals(1, created.getPredecessors().size());
 
         // Create a task
         TaskDescriptor task3 = new TaskDescriptor();
@@ -1014,8 +1014,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         preds.addAll(Arrays.asList("task3"));
         task2.setPredecessorNames(preds);
         TaskDescriptor updated = (TaskDescriptor) variableDescriptorFacade.update(task2.getId(), task2);
-        assertEquals("task3", updated.getPredecessor(0).getLabel().translateOrEmpty(gameModel));
-        assertEquals(1, updated.getPredecessors().size());
+        Assertions.assertEquals("task3", updated.getPredecessor(0).getLabel().translateOrEmpty(gameModel));
+        Assertions.assertEquals(1, updated.getPredecessors().size());
 
         // Clean
         variableDescriptorFacade.remove(task.getId());
@@ -1040,8 +1040,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), task2);
 
         TaskDescriptor created = (TaskDescriptor) variableDescriptorFacade.find(task2.getId());
-        assertEquals("My task", created.getPredecessor(0).getLabel().translateOrEmpty(scenario));
-        assertEquals(1, created.getPredecessors().size());
+        Assertions.assertEquals("My task", created.getPredecessor(0).getLabel().translateOrEmpty(scenario));
+        Assertions.assertEquals(1, created.getPredecessors().size());
 
         // Create a third task
         TaskDescriptor task3 = new TaskDescriptor();
@@ -1050,8 +1050,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         task3.addPredecessor(task2);
         variableDescriptorFacade.create(scenario.getId(), task3);
 
-        assertEquals("My task2", task3.getPredecessor(0).getLabel().translateOrEmpty(scenario));
-        assertEquals(1, task3.getPredecessors().size());
+        Assertions.assertEquals("My task2", task3.getPredecessor(0).getLabel().translateOrEmpty(scenario));
+        Assertions.assertEquals(1, task3.getPredecessors().size());
 
         variableDescriptorFacade.remove(task2.getId());
         //variableDescriptorFacade.flush();
@@ -1095,15 +1095,15 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         paulI = ((ResourceDescriptor) variableDescriptorFacade.find(paul.getId())).getInstance(player);
         rogerI = ((ResourceDescriptor) variableDescriptorFacade.find(roger.getId())).getInstance(player);
 
-        assertEquals(2, taskI.getAssignments().size());
-        assertNotNull(taskI.getAssignments().get(0));
-        assertNotNull(taskI.getAssignments().get(1));
+        Assertions.assertEquals(2, taskI.getAssignments().size());
+        Assertions.assertNotNull(taskI.getAssignments().get(0));
+        Assertions.assertNotNull(taskI.getAssignments().get(1));
 
-        assertEquals(1, rogerI.getAssignments().size());
-        assertNotNull(rogerI.getAssignments().get(0));
+        Assertions.assertEquals(1, rogerI.getAssignments().size());
+        Assertions.assertNotNull(rogerI.getAssignments().get(0));
 
-        assertEquals(1, paulI.getAssignments().size());
-        assertNotNull(paulI.getAssignments().get(0));
+        Assertions.assertEquals(1, paulI.getAssignments().size());
+        Assertions.assertNotNull(paulI.getAssignments().get(0));
 
         variableDescriptorFacade.remove(paul.getId());
 
@@ -1111,16 +1111,16 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         taskI = task1.getInstance(player);
         rogerI = ((ResourceDescriptor) variableDescriptorFacade.find(roger.getId())).getInstance(player);
 
-        assertEquals(1, taskI.getAssignments().size());
-        assertNotNull(taskI.getAssignments().get(0));
+        Assertions.assertEquals(1, taskI.getAssignments().size());
+        Assertions.assertNotNull(taskI.getAssignments().get(0));
 
-        assertEquals(1, rogerI.getAssignments().size());
-        assertNotNull(rogerI.getAssignments().get(0));
+        Assertions.assertEquals(1, rogerI.getAssignments().size());
+        Assertions.assertNotNull(rogerI.getAssignments().get(0));
 
         variableDescriptorFacade.remove(task1.getId());
 
         rogerI = ((ResourceDescriptor) variableDescriptorFacade.find(roger.getId())).getInstance(player);
 
-        assertEquals(0, rogerI.getAssignments().size());
+        Assertions.assertEquals(0, rogerI.getAssignments().size());
     }
 }

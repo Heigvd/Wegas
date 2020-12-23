@@ -13,9 +13,9 @@ import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import java.util.Objects;
-import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testing Triggers, class StateMachineInstance and class TriggerDescriptor
@@ -28,7 +28,7 @@ public class TriggerTest {
     private TriggerDescriptor triggerDescriptor;
     private Script scriptEntity;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.trigger = new StateMachineInstance();
         // this.trigger.setId(666L);

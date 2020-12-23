@@ -17,8 +17,8 @@ import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.naming.NamingException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -45,7 +45,7 @@ public class ScriptControllerTest extends AbstractArquillianTest {
         number.setDefaultInstance(new NumberInstance(1));
 
         variableDescriptorFacade.create(scenario.getId(), number);
-        Assert.assertEquals(1.0, ((NumberDescriptor) variableDescriptorFacade.find(number.getId())).getInstance(player).getValue(), 0.000001);
+        Assertions.assertEquals(1.0, ((NumberDescriptor) variableDescriptorFacade.find(number.getId())).getInstance(player).getValue(), 0.000001);
 
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new StateMachineInstance());
@@ -65,10 +65,10 @@ public class ScriptControllerTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), trigger3);
 
         Map<Long, WegasScriptException> results = scriptController.testGameModel(scenario.getId());
-        Assert.assertEquals("Errored scripts", EXPECTED_ERRORS, results.size());
-        Assert.assertTrue(results.containsKey(trigger.getId()));
-        Assert.assertFalse(results.containsKey(trigger2.getId()));
-        Assert.assertEquals(1.0, ((NumberDescriptor) variableDescriptorFacade.find(number.getId())).getInstance(player).getValue(), 0.000001);
+        Assertions.assertEquals(EXPECTED_ERRORS, results.size(), "Errored scripts");
+        Assertions.assertTrue(results.containsKey(trigger.getId()));
+        Assertions.assertFalse(results.containsKey(trigger2.getId()));
+        Assertions.assertEquals(1.0, ((NumberDescriptor) variableDescriptorFacade.find(number.getId())).getInstance(player).getValue(), 0.000001);
 
     }
 

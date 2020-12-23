@@ -7,9 +7,8 @@
  */
 package com.wegas.unit.pmg;
 
-import com.wegas.unit.PrivateRelatedTest;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -18,7 +17,7 @@ import org.junit.experimental.categories.Category;
 public class ArtosTest extends PMGameAbstractTest {
 
     @Test
-    @Category(PrivateRelatedTest.class)
+    @Tag("PrivateRelatedTest")
     public void testArtos() {
         //this.evalScript("testArtos()");
         this.evalScript("PMGTest.testAll()");

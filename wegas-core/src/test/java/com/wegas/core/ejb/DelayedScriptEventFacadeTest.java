@@ -16,8 +16,8 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -79,13 +79,13 @@ public class DelayedScriptEventFacadeTest extends AbstractArquillianTest {
         }
 
         // before delay timeout
-        Assert.assertEquals("String 1 value is not the original one", str1OriValue, ((StringDescriptor) variableDescriptorFacade.find(scenario, str1Name)).getValue(player)); // not yet
-        Assert.assertEquals("String 2 value is not the new one", str2NewValue, ((StringDescriptor) variableDescriptorFacade.find(scenario, str2Name)).getValue(player)); // changed by no-delay event
+        Assertions.assertEquals(str1OriValue, ((StringDescriptor) variableDescriptorFacade.find(scenario, str1Name)).getValue(player), "String 1 value is not the original one"); // not yet
+        Assertions.assertEquals(str2NewValue, ((StringDescriptor) variableDescriptorFacade.find(scenario, str2Name)).getValue(player), "String 2 value is not the new one"); // changed by no-delay event
 
         Thread.sleep(4000);
 
         // after delay timeout
-        Assert.assertEquals("String 1 value is not the new one", str1NewValue, ((StringDescriptor) variableDescriptorFacade.find(scenario, str1Name)).getValue(player)); // not yet
-        Assert.assertEquals("String 2 value is not the new one", str2NewValue, ((StringDescriptor) variableDescriptorFacade.find(scenario, str2Name)).getValue(player)); // changed by no-delay event
+        Assertions.assertEquals(str1NewValue, ((StringDescriptor) variableDescriptorFacade.find(scenario, str1Name)).getValue(player), "String 1 value is not the new one"); // not yet
+        Assertions.assertEquals(str2NewValue, ((StringDescriptor) variableDescriptorFacade.find(scenario, str2Name)).getValue(player), "String 2 value is not the new one"); // changed by no-delay event
     }
 }

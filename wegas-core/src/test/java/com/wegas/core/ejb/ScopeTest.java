@@ -21,9 +21,8 @@ import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.List;
 import javax.naming.NamingException;
-import org.junit.Assert;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -41,7 +40,7 @@ public class ScopeTest extends AbstractArquillianTest {
 
         team = teamFacade.find(team.getId());
         team.getPrivateInstances();
-        assertEquals(1, team.getPrivateInstances().size());
+        Assertions.assertEquals(1, team.getPrivateInstances().size());
     }
 
     @Test
@@ -76,40 +75,40 @@ public class ScopeTest extends AbstractArquillianTest {
         gmScoped = (TextDescriptor) variableDescriptorFacade.find(gmScoped.getId());
 
         // Get owner test
-        Assert.assertEquals(player, pScoped.getInstance(player).getOwner());
-        Assert.assertEquals(team, tScoped.getInstance(player).getOwner());
-        Assert.assertEquals(scenario, gmScoped.getInstance(player).getOwner());
+        Assertions.assertEquals(player, pScoped.getInstance(player).getOwner());
+        Assertions.assertEquals(team, tScoped.getInstance(player).getOwner());
+        Assertions.assertEquals(scenario, gmScoped.getInstance(player).getOwner());
 
-        Assert.assertEquals(null, pScoped.getDefaultInstance().getOwner());
+        Assertions.assertEquals(null, pScoped.getDefaultInstance().getOwner());
 
         // default instance has no descriptor through the scope
-        Assert.assertEquals(null, pScoped.getDefaultInstance().getDescriptor());
+        Assertions.assertEquals(null, pScoped.getDefaultInstance().getDescriptor());
         // but findDescriptor retrieve the descriptor
-        Assert.assertEquals(pScoped, pScoped.getDefaultInstance().findDescriptor());
+        Assertions.assertEquals(pScoped, pScoped.getDefaultInstance().findDescriptor());
 
         // test getScopeKey
-        Assert.assertEquals(player.getId(), pScoped.getInstance(player).getScopeKey());
-        Assert.assertEquals(team.getId(), tScoped.getInstance(player).getScopeKey());
-        Assert.assertEquals((Long)0l, gmScoped.getInstance(player).getScopeKey());// hack -> scopeKey for gameModel is always 0 !
+        Assertions.assertEquals(player.getId(), pScoped.getInstance(player).getScopeKey());
+        Assertions.assertEquals(team.getId(), tScoped.getInstance(player).getScopeKey());
+        Assertions.assertEquals((Long)0l, gmScoped.getInstance(player).getScopeKey());// hack -> scopeKey for gameModel is always 0 !
 
-        Assert.assertEquals(null, pScoped.getDefaultInstance().getScopeKey());
+        Assertions.assertEquals(null, pScoped.getDefaultInstance().getScopeKey());
 
         /* One global instance */
-        Assert.assertEquals(1, gameModelFacade.find(scenario.getId()).getPrivateInstances().size());
+        Assertions.assertEquals(1, gameModelFacade.find(scenario.getId()).getPrivateInstances().size());
 
         // no more GameScope !
-        Assert.assertEquals(0, gameFacade.find(game.getId()).getPrivateInstances().size());
+        Assertions.assertEquals(0, gameFacade.find(game.getId()).getPrivateInstances().size());
 
         /* each team own one instance */
-        Assert.assertEquals(1, teamFacade.find(team.getId()).getPrivateInstances().size());
-        Assert.assertEquals(1, teamFacade.find(team2.getId()).getPrivateInstances().size());
+        Assertions.assertEquals(1, teamFacade.find(team.getId()).getPrivateInstances().size());
+        Assertions.assertEquals(1, teamFacade.find(team2.getId()).getPrivateInstances().size());
 
         /* each player owns one instance */
-        Assert.assertEquals(1, playerFacade.find(player.getId()).getPrivateInstances().size());
-        Assert.assertEquals(1, playerFacade.find(player21.getId()).getPrivateInstances().size());
-        Assert.assertEquals(1, playerFacade.find(player22.getId()).getPrivateInstances().size());
+        Assertions.assertEquals(1, playerFacade.find(player.getId()).getPrivateInstances().size());
+        Assertions.assertEquals(1, playerFacade.find(player21.getId()).getPrivateInstances().size());
+        Assertions.assertEquals(1, playerFacade.find(player22.getId()).getPrivateInstances().size());
 
-        Assert.assertEquals(3, instances.size());
+        Assertions.assertEquals(3, instances.size());
     }
 
     @Test
@@ -160,22 +159,22 @@ public class ScopeTest extends AbstractArquillianTest {
         login(user21);
 
         // GameModelScope -> everybody got the same instance
-        Assert.assertEquals(variableDescriptorFacade.find(scenario, "gmScoped").getInstance(player), variableDescriptorFacade.find(scenario, "gmScoped").getInstance(player21));
-        Assert.assertEquals(variableDescriptorFacade.find(scenario, "gmScoped").getInstance(player21), variableDescriptorFacade.find(scenario, "gmScoped").getInstance(player22));
+        Assertions.assertEquals(variableDescriptorFacade.find(scenario, "gmScoped").getInstance(player), variableDescriptorFacade.find(scenario, "gmScoped").getInstance(player21));
+        Assertions.assertEquals(variableDescriptorFacade.find(scenario, "gmScoped").getInstance(player21), variableDescriptorFacade.find(scenario, "gmScoped").getInstance(player22));
 
         // TeamScope
         // player in team2 got the same instance
-        Assert.assertEquals(variableDescriptorFacade.find(scenario, "tScoped").getInstance(player21), variableDescriptorFacade.find(scenario, "tScoped").getInstance(player22));
+        Assertions.assertEquals(variableDescriptorFacade.find(scenario, "tScoped").getInstance(player21), variableDescriptorFacade.find(scenario, "tScoped").getInstance(player22));
         try {
             variableDescriptorFacade.find(scenario, "tScoped").getInstance(player);
-            Assert.fail("Instance from another team should not be readable");
+            Assertions.fail("Instance from another team should not be readable");
         } catch (Exception ex) {
             // expected exeption
         }
 
         // TeamScope broadasted to the whole game
         // player in team2 got the same instance
-        Assert.assertEquals(variableDescriptorFacade.find(scenario, "tScoped_gs").getInstance(player21), variableDescriptorFacade.find(scenario, "tScoped_gs").getInstance(player22));
+        Assertions.assertEquals(variableDescriptorFacade.find(scenario, "tScoped_gs").getInstance(player21), variableDescriptorFacade.find(scenario, "tScoped_gs").getInstance(player22));
         variableDescriptorFacade.find(scenario, "tScoped_gs").getInstance(player);
 
         // PlayerScope
@@ -183,34 +182,34 @@ public class ScopeTest extends AbstractArquillianTest {
         variableDescriptorFacade.find(scenario, "pScoped").getInstance(player21); // self instance, no-problem
         try {
             variableDescriptorFacade.find(scenario, "pScoped").getInstance(player22);
-            Assert.fail("Instances from other players should not be readable");
+            Assertions.fail("Instances from other players should not be readable");
         } catch (Exception ex) {
             // expected exeption
         }
 
         try {
             variableDescriptorFacade.find(scenario, "pScoped").getInstance(player);
-            Assert.fail("Instances from other players should not be readable");
+            Assertions.fail("Instances from other players should not be readable");
         } catch (Exception ex) {
             // expected exeption
         }
 
         // PlayerScope broadcast to team
         // p21 & p12 have distinct instances, but p21 can read the p22 one
-        Assert.assertNotEquals(variableDescriptorFacade.find(scenario, "pScoped_ts").getInstance(player21), variableDescriptorFacade.find(scenario, "pScoped_ts").getInstance(player22));
+        Assertions.assertNotEquals(variableDescriptorFacade.find(scenario, "pScoped_ts").getInstance(player21), variableDescriptorFacade.find(scenario, "pScoped_ts").getInstance(player22));
 
         try {
             variableDescriptorFacade.find(scenario, "pScoped_ts").getInstance(player);
-            Assert.fail("Instances from other teams should not be readable");
+            Assertions.fail("Instances from other teams should not be readable");
         } catch (Exception ex) {
             // expected exeption
         }
 
         // PlayerScope, broadcast to game
         // three distinct instances
-        Assert.assertNotEquals(variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player21), variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player22));
-        Assert.assertNotEquals(variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player21), variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player));
-        Assert.assertNotEquals(variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player22), variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player));
+        Assertions.assertNotEquals(variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player21), variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player22));
+        Assertions.assertNotEquals(variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player21), variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player));
+        Assertions.assertNotEquals(variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player22), variableDescriptorFacade.find(scenario, "pScoped_gs").getInstance(player));
 
         // Assert updates permissions
         updateVariable(player21, "pScoped", "some other value");
@@ -219,37 +218,37 @@ public class ScopeTest extends AbstractArquillianTest {
 
         try {
             updateVariable(player22, "pScoped_ts", "some other value");
-            Assert.fail("playerScoped Instances from other player should not be writable");
+            Assertions.fail("playerScoped Instances from other player should not be writable");
         } catch (Exception ex) {
             // expected exeption
         }
 
         try {
             updateVariable(player, "tScoped_gs", "some other value");
-            Assert.fail("gameScoped instance Instances from other teams should not be writable");
+            Assertions.fail("gameScoped instance Instances from other teams should not be writable");
         } catch (Exception ex) {
             // expected exeption
         }
 
         // find Instances
-        Assert.assertEquals(pScoped.getDefaultInstance(), pScoped.findInstance(tScoped.getDefaultInstance(), null)); // default instances
+        Assertions.assertEquals(pScoped.getDefaultInstance(), pScoped.findInstance(tScoped.getDefaultInstance(), null)); // default instances
 
         login(user);
         TextInstance instance = pScoped.getInstance(player);
 
-        Assert.assertEquals(instance, pScoped.findInstance(pScoped.getInstance(player), user.getUser()));
-        Assert.assertEquals(instance, pScoped.findInstance(tScoped.getInstance(player), user.getUser()));
-        Assert.assertEquals(instance, pScoped.findInstance(gmScoped.getInstance(player), user.getUser()));
+        Assertions.assertEquals(instance, pScoped.findInstance(pScoped.getInstance(player), user.getUser()));
+        Assertions.assertEquals(instance, pScoped.findInstance(tScoped.getInstance(player), user.getUser()));
+        Assertions.assertEquals(instance, pScoped.findInstance(gmScoped.getInstance(player), user.getUser()));
 
         instance = tScoped.getInstance(player);
-        Assert.assertEquals(instance, tScoped.findInstance(pScoped.getInstance(player), user.getUser()));
-        Assert.assertEquals(instance, tScoped.findInstance(tScoped.getInstance(player), user.getUser()));
-        Assert.assertEquals(instance, tScoped.findInstance(gmScoped.getInstance(player), user.getUser()));
+        Assertions.assertEquals(instance, tScoped.findInstance(pScoped.getInstance(player), user.getUser()));
+        Assertions.assertEquals(instance, tScoped.findInstance(tScoped.getInstance(player), user.getUser()));
+        Assertions.assertEquals(instance, tScoped.findInstance(gmScoped.getInstance(player), user.getUser()));
 
         instance = gmScoped.getInstance(player);
-        Assert.assertEquals(instance, gmScoped.findInstance(pScoped.getInstance(player), user.getUser()));
-        Assert.assertEquals(instance, gmScoped.findInstance(tScoped.getInstance(player), user.getUser()));
-        Assert.assertEquals(instance, gmScoped.findInstance(gmScoped.getInstance(player), user.getUser()));
+        Assertions.assertEquals(instance, gmScoped.findInstance(pScoped.getInstance(player), user.getUser()));
+        Assertions.assertEquals(instance, gmScoped.findInstance(tScoped.getInstance(player), user.getUser()));
+        Assertions.assertEquals(instance, gmScoped.findInstance(gmScoped.getInstance(player), user.getUser()));
     }
 
     private void updateVariable(Player player, String vdName, String newValue) throws WegasNoResultException {

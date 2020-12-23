@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -10,8 +11,9 @@ package com.wegas.core.i18n.tools;
 import com.wegas.core.exception.internal.WegasNashornException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import java.util.List;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +56,7 @@ public class I18nHelperTest {
 
         logger.info("New     : {}", newScript);
         logger.info("Expected :{}", expected);
-        assertEquals("Fail to update language code", expected, newScript);
+        assertEquals(expected, newScript, "Fail to update language code");
     }
 
     @Test
@@ -72,10 +74,12 @@ public class I18nHelperTest {
         assertEquals(expected, newScript);
     }
 
-    @Test(expected = WegasNashornException.class)
+    @Test
     public void testSyntaxError() throws WegasNashornException {
-        String script = "sendMessage({\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Boss\",\"status\":\"\"},\"FR\":{\"translation\":\"Grand Chef\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"Welcome\",\"status\":\"\"},\"FR\":{\"translation\":\"Salut !\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":\"<p>Welcome back, old fellow !</p>\",\"FR\":\"<p>Bon retour parmi nous, vieille branche</p>\"}}, [];";
-        I18nHelper.getTranslatableContents(script);
+        Assertions.assertThrows(WegasNashornException.class, () -> {
+            String script = "sendMessage({\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Boss\",\"status\":\"\"},\"FR\":{\"translation\":\"Grand Chef\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"Welcome\",\"status\":\"\"},\"FR\":{\"translation\":\"Salut !\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":\"<p>Welcome back, old fellow !</p>\",\"FR\":\"<p>Bon retour parmi nous, vieille branche</p>\"}}, [];";
+            I18nHelper.getTranslatableContents(script);
+        });
     }
 
     @Test

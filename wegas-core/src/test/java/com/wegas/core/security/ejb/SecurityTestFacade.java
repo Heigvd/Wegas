@@ -13,7 +13,7 @@ import com.wegas.core.security.persistence.User;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,15 +33,15 @@ public class SecurityTestFacade {
     public void inFacadeSuTest(User currentUser, User otherUser) {
         User u = requestManager.getCurrentUser();
         logger.error("CurrentUser: {}", u);
-        Assert.assertEquals("Admin is not the current user", currentUser, u);
+        Assertions.assertEquals(currentUser, u, "Admin is not the current user");
 
         requestManager.su(otherUser.getMainAccount().getId());
 
         u = requestManager.getCurrentUser();
-        Assert.assertEquals("User is not the current user", otherUser, u);
+        Assertions.assertEquals(otherUser, u, "User is not the current user");
 
         requestManager.releaseSu();
         u = requestManager.getCurrentUser();
-        Assert.assertEquals("Admin is not the current user", currentUser, u);
+        Assertions.assertEquals(currentUser, u, "Admin is not the current user");
     }
 }

@@ -7,11 +7,10 @@
  */
 package com.wegas.unit.i18n;
 
-import com.wegas.unit.PrivateRelatedTest;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -20,7 +19,7 @@ import org.junit.experimental.categories.Category;
 public class PmgLanguageTest extends AbstractClientLanguageTest {
 
     @Test
-    @Category(PrivateRelatedTest.class)
+    @Tag("PrivateRelatedTest")
     @Override
     public void testLanguage() {
         // overriden to categorize the test

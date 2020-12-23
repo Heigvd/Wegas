@@ -136,8 +136,8 @@
         <!--<payara.micro.version>5.201.albasim-p1</payara.micro.version>-->
         <payara.micro.version>5.2020.5-albasim-p1</payara.micro.version>
         <payara-api.version>5.2020.5</payara-api.version>
-        <junit.version>4.13.1</junit.version>
-        <arquillian.version>1.6.0.Final</arquillian.version>
+        <junit.version>5.6.0</junit.version>
+        <arquillian.version>1.7.0.Alpha6</arquillian.version>
         <exec.plugin.version>1.2</exec.plugin.version>
 
         <jackson.version>2.10.2</jackson.version>
@@ -504,8 +504,8 @@
             </dependency>
 
             <dependency>
-                <groupId>org.jboss.arquillian.junit</groupId>
-                <artifactId>arquillian-junit-container</artifactId>
+                <groupId>org.jboss.arquillian.junit5</groupId>
+                <artifactId>arquillian-junit5-container</artifactId>
                 <version>${arquillian.version}</version>
                 <scope>test</scope>
             </dependency>
@@ -513,7 +513,8 @@
             <dependency>
                 <groupId>fish.payara.arquillian</groupId>
                 <artifactId>arquillian-payara-server-embedded</artifactId>
-                <version>2.3.1</version>
+                <!--<version>2.3.1</version>-->
+                <version>2.3.1-arq-1.7.0.Alpha5</version>
                 <scope>test</scope>
             </dependency>
 
@@ -542,8 +543,20 @@
             </dependency>
 
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
                 <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
@@ -1129,6 +1142,12 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
+        </repository>
+
+        <!-- Once Arq 1.7.0 or later is released with JUnit 5 support, this can be removed -->
+        <repository>
+            <id>payara</id>
+            <url>https://nexus.payara.fish/repository/payara-artifacts</url>
         </repository>
     </repositories>
 

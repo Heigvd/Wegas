@@ -7,10 +7,9 @@
  */
 package com.wegas.unit.pmg;
 
-import com.wegas.unit.PrivateRelatedTest;
 import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -19,7 +18,7 @@ import org.junit.experimental.categories.Category;
 public class PMGTest extends PMGameAbstractTest {
 
     @Test
-    @Category(PrivateRelatedTest.class)
+    @Tag("PrivateRelatedTest")
     public void testSimplePMG() {
         this.evalScript("PMGTest.testAll()");
     }

@@ -9,7 +9,7 @@ package com.wegas.unit;
 
 import com.wegas.utils.AbstractTest;
 import java.io.IOException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *

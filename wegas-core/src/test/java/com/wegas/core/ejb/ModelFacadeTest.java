@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -54,8 +55,8 @@ import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.naming.NamingException;
 import javax.ws.rs.core.MediaType;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,10 +127,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     }
 
     private void assertListEquals(List<? extends Object> expected, Object... list) {
-        Assert.assertEquals(expected.size(), list.length);
+        Assertions.assertEquals(expected.size(), list.length);
 
         for (int i = 0; i < expected.size(); i++) {
-            Assert.assertEquals(expected.get(i), list[i]);
+            Assertions.assertEquals(expected.get(i), list[i]);
         }
     }
 
@@ -137,7 +138,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Map<String, Translation> aT = a.getTranslations();
         Map<String, Translation> bT = b.getTranslations();
 
-        Assert.assertEquals(aT.keySet().size(), bT.keySet().size());
+        Assertions.assertEquals(aT.keySet().size(), bT.keySet().size());
 
         for (String key : aT.keySet()) {
             Translation at = aT.get(key);
@@ -154,7 +155,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
                 strB = bt.getTranslation();
             }
 
-            Assert.assertEquals(strA, strB);
+            Assertions.assertEquals(strA, strB);
 
         }
     }
@@ -162,9 +163,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     private void assertTranslationEquals(TranslatableContent t, String code, String value) {
         Translation translation = t.getTranslation(code);
         if (translation == null) {
-            Assert.assertNull("Translation for " + code + " should not be null", value);
+            Assertions.assertNull(value, "Translation for " + code + " should not be null");
         } else {
-            Assert.assertEquals("Translation for " + code + " does not match", translation.getTranslation(), value);
+            Assertions.assertEquals(translation.getTranslation(), value, "Translation for " + code + " does not match");
         }
     }
 
@@ -173,29 +174,29 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Translation tb = b.getTranslation(language);
         if (equals) {
             if (ta != null && tb != null) {
-                Assert.assertEquals(a.getTranslation(language).getTranslation(), b.getTranslation(language).getTranslation());
+                Assertions.assertEquals(a.getTranslation(language).getTranslation(), b.getTranslation(language).getTranslation());
             } else {
-                Assert.assertEquals(ta, tb);
+                Assertions.assertEquals(ta, tb);
             }
         } else {
             if (ta != null && tb != null) {
-                Assert.assertNotEquals(a.getTranslation(language).getTranslation(), b.getTranslation(language).getTranslation());
+                Assertions.assertNotEquals(a.getTranslation(language).getTranslation(), b.getTranslation(language).getTranslation());
             } else {
-                Assert.assertNotEquals(ta, tb);
+                Assertions.assertNotEquals(ta, tb);
             }
         }
     }
 
     private void assertEnumItemsListEquals(List<EnumItem> list, String... expected) {
-        Assert.assertEquals(expected.length, list.size());
+        Assertions.assertEquals(expected.length, list.size());
 
         for (int i = 0; i < list.size(); i++) {
             EnumItem get = list.get(i);
-            Assert.assertEquals(expected[i], get.getName());
+            Assertions.assertEquals(expected[i], get.getName());
 
             for (int j = 0; j < list.size(); j++) {
                 for (Translation v : list.get(i).getLabel().getTranslations().values()) {
-                    Assert.assertEquals(v.getTranslation(), expected[i]);
+                    Assertions.assertEquals(v.getTranslation(), expected[i]);
                 }
             }
         }
@@ -229,13 +230,13 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
         modelFacade.propagateModel(model.getId());
 
-        Assert.assertEquals("model", model.getName());
-        Assert.assertEquals("gamemodel #1", gameModel1.getName());
-        Assert.assertEquals("gamemodel #2", gameModel2.getName());
+        Assertions.assertEquals("model", model.getName());
+        Assertions.assertEquals("gamemodel #1", gameModel1.getName());
+        Assertions.assertEquals("gamemodel #2", gameModel2.getName());
 
-        Assert.assertEquals("DefaultLogId1", model.getProperties().getLogID());
-        Assert.assertEquals("DefaultLogId1", gameModel1.getProperties().getLogID());
-        Assert.assertEquals("DefaultLogId2", gameModel2.getProperties().getLogID());
+        Assertions.assertEquals("DefaultLogId1", model.getProperties().getLogID());
+        Assertions.assertEquals("DefaultLogId1", gameModel1.getProperties().getLogID());
+        Assertions.assertEquals("DefaultLogId2", gameModel2.getProperties().getLogID());
 
         model.getProperties().setLogID("NewLogId");
         model.setName("My Model");
@@ -244,9 +245,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel1.setName("My first scenario");
         gameModel1 = gameModelFacade.update(gameModel1.getId(), gameModel1);
 
-        Assert.assertEquals("My Model", model.getName());
-        Assert.assertEquals("My first scenario", gameModel1.getName());
-        Assert.assertEquals("gamemodel #2", gameModel2.getName());
+        Assertions.assertEquals("My Model", model.getName());
+        Assertions.assertEquals("My first scenario", gameModel1.getName());
+        Assertions.assertEquals("gamemodel #2", gameModel2.getName());
 
         /**
          * Update gameModel properties
@@ -256,13 +257,13 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-        Assert.assertEquals("NewLogId", model.getProperties().getLogID());
-        Assert.assertEquals("NewLogId", gameModel1.getProperties().getLogID());
-        Assert.assertEquals("DefaultLogId2", gameModel2.getProperties().getLogID());
+        Assertions.assertEquals("NewLogId", model.getProperties().getLogID());
+        Assertions.assertEquals("NewLogId", gameModel1.getProperties().getLogID());
+        Assertions.assertEquals("DefaultLogId2", gameModel2.getProperties().getLogID());
 
-        Assert.assertEquals("My Model", model.getName());
-        Assert.assertEquals("My first scenario", gameModel1.getName());
-        Assert.assertEquals("gamemodel #2", gameModel2.getName());
+        Assertions.assertEquals("My Model", model.getName());
+        Assertions.assertEquals("My first scenario", gameModel1.getName());
+        Assertions.assertEquals("gamemodel #2", gameModel2.getName());
     }
 
     private void createCss(GameModel theModel, String uniqueToken) {
@@ -378,12 +379,12 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
 
         // by design, pages from the first gameModel are extracted
-        Assert.assertEquals(this.getStringifiedPages(model), this.getStringifiedPages(gameModel1));
-        Assert.assertNotEquals(this.getStringifiedPages(model), this.getStringifiedPages(gameModel2));
+        Assertions.assertEquals(this.getStringifiedPages(model), this.getStringifiedPages(gameModel1));
+        Assertions.assertNotEquals(this.getStringifiedPages(model), this.getStringifiedPages(gameModel2));
 
-        Assert.assertEquals(2,
+        Assertions.assertEquals(2,
             pageFacade.getPageIndex(model).getRoot().getItems().size());
-        Assert.assertEquals(3,
+        Assertions.assertEquals(3,
             pageFacade.getPageIndex(gameModel2).getRoot().getItems().size());
 
         modelFacade.propagateModel(model.getId());
@@ -392,12 +393,12 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-        Assert.assertEquals(this.getStringifiedPages(model),
+        Assertions.assertEquals(this.getStringifiedPages(model),
             this.getStringifiedPages(gameModel1));
-        Assert.assertEquals(this.getStringifiedPages(model),
+        Assertions.assertEquals(this.getStringifiedPages(model),
             this.getStringifiedPages(gameModel2));
 
-        Assert.assertEquals(2,
+        Assertions.assertEquals(2,
             pageFacade.getPageIndex(model).getRoot().getItems().size());
 
         /**
@@ -417,12 +418,12 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-        Assert.assertEquals(this.getStringifiedPages(model),
+        Assertions.assertEquals(this.getStringifiedPages(model),
             this.getStringifiedPages(gameModel1));
-        Assert.assertEquals(this.getStringifiedPages(model),
+        Assertions.assertEquals(this.getStringifiedPages(model),
             this.getStringifiedPages(gameModel2));
 
-        Assert.assertEquals(3, pageFacade.getPageIndex(model).getRoot()
+        Assertions.assertEquals(3, pageFacade.getPageIndex(model).getRoot()
             .getItems().size());
     }
 
@@ -488,23 +489,23 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Map<String, GameModelContent> gameModel2Css = gameModel2.getCssLibrary();
 
         // modelCss and protected always set to model colour
-        Assert.assertTrue(modelCss.get("modelCss").getContent().contains("red"));
-        Assert.assertTrue(gameModel1Css.get("modelCss").getContent().contains("red"));
-        Assert.assertTrue(gameModel2Css.get("modelCss").getContent().contains("red"));
+        Assertions.assertTrue(modelCss.get("modelCss").getContent().contains("red"));
+        Assertions.assertTrue(gameModel1Css.get("modelCss").getContent().contains("red"));
+        Assertions.assertTrue(gameModel2Css.get("modelCss").getContent().contains("red"));
 
-        Assert.assertTrue(modelCss.get("protectedCss").getContent().contains("red"));
-        Assert.assertTrue(gameModel1Css.get("protectedCss").getContent().contains("red"));
-        Assert.assertTrue(gameModel2Css.get("protectedCss").getContent().contains("red"));
+        Assertions.assertTrue(modelCss.get("protectedCss").getContent().contains("red"));
+        Assertions.assertTrue(gameModel1Css.get("protectedCss").getContent().contains("red"));
+        Assertions.assertTrue(gameModel2Css.get("protectedCss").getContent().contains("red"));
 
         // set to model colour, unless user change user change
-        Assert.assertTrue(modelCss.get("inheritedCss").getContent().contains("red"));
-        Assert.assertTrue(gameModel1Css.get("inheritedCss").getContent().contains("red"));
-        Assert.assertTrue(gameModel2Css.get("inheritedCss").getContent().contains("red"));
+        Assertions.assertTrue(modelCss.get("inheritedCss").getContent().contains("red"));
+        Assertions.assertTrue(gameModel1Css.get("inheritedCss").getContent().contains("red"));
+        Assertions.assertTrue(gameModel2Css.get("inheritedCss").getContent().contains("red"));
 
         // private is private
-        Assert.assertTrue(modelCss.get("privateCss").getContent().contains("red"));
-        Assert.assertTrue(gameModel1Css.get("privateCsssheet1").getContent().contains("red"));
-        Assert.assertTrue(gameModel2Css.get("privateCsssheet2").getContent().contains("red"));
+        Assertions.assertTrue(modelCss.get("privateCss").getContent().contains("red"));
+        Assertions.assertTrue(gameModel1Css.get("privateCsssheet1").getContent().contains("red"));
+        Assertions.assertTrue(gameModel2Css.get("privateCsssheet2").getContent().contains("red"));
 
         /**
          * Update CSS sheets
@@ -529,23 +530,23 @@ public class ModelFacadeTest extends AbstractArquillianTest {
          * ASSERTS
          */
         // modelCss and protected always set to model colour
-        Assert.assertTrue(modelCss.get("modelCss").getContent().contains("hotpink"));
-        Assert.assertTrue(gameModel1Css.get("modelCss").getContent().contains("hotpink"));
-        Assert.assertTrue(gameModel2Css.get("modelCss").getContent().contains("hotpink"));
+        Assertions.assertTrue(modelCss.get("modelCss").getContent().contains("hotpink"));
+        Assertions.assertTrue(gameModel1Css.get("modelCss").getContent().contains("hotpink"));
+        Assertions.assertTrue(gameModel2Css.get("modelCss").getContent().contains("hotpink"));
 
-        Assert.assertTrue(modelCss.get("protectedCss").getContent().contains("hotpink"));
-        Assert.assertTrue(gameModel1Css.get("protectedCss").getContent().contains("hotpink"));
-        Assert.assertTrue(gameModel2Css.get("protectedCss").getContent().contains("hotpink"));
+        Assertions.assertTrue(modelCss.get("protectedCss").getContent().contains("hotpink"));
+        Assertions.assertTrue(gameModel1Css.get("protectedCss").getContent().contains("hotpink"));
+        Assertions.assertTrue(gameModel2Css.get("protectedCss").getContent().contains("hotpink"));
 
         // set to model colour, unless user change user change
-        Assert.assertTrue(modelCss.get("inheritedCss").getContent().contains("hotpink"));
-        Assert.assertTrue(gameModel1Css.get("inheritedCss").getContent().contains("palevioletred"));
-        Assert.assertTrue(gameModel2Css.get("inheritedCss").getContent().contains("hotpink"));
+        Assertions.assertTrue(modelCss.get("inheritedCss").getContent().contains("hotpink"));
+        Assertions.assertTrue(gameModel1Css.get("inheritedCss").getContent().contains("palevioletred"));
+        Assertions.assertTrue(gameModel2Css.get("inheritedCss").getContent().contains("hotpink"));
 
         // private is private
-        Assert.assertTrue(modelCss.get("privateCss").getContent().contains("hotpink"));
-        Assert.assertTrue(gameModel1Css.get("privateCsssheet1").getContent().contains("palevioletred"));
-        Assert.assertTrue(gameModel2Css.get("privateCsssheet2").getContent().contains("red"));
+        Assertions.assertTrue(modelCss.get("privateCss").getContent().contains("hotpink"));
+        Assertions.assertTrue(gameModel1Css.get("privateCsssheet1").getContent().contains("palevioletred"));
+        Assertions.assertTrue(gameModel2Css.get("privateCsssheet2").getContent().contains("red"));
     }
 
     private String stringifyLibraries(GameModel gameModel) {
@@ -694,23 +695,23 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         Map<String, String> properties;
         properties = ((ObjectDescriptor) getDescriptor(gameModel1, "aSet")).getProperties();
-        Assert.assertEquals("value0.1", properties.get("prop0"));
-        Assert.assertEquals("value1.1", properties.get("prop1"));
-        Assert.assertEquals("value2.1", properties.get("prop2"));
+        Assertions.assertEquals("value0.1", properties.get("prop0"));
+        Assertions.assertEquals("value1.1", properties.get("prop1"));
+        Assertions.assertEquals("value2.1", properties.get("prop2"));
 
         properties = ((ObjectDescriptor) getDescriptor(gameModel1, "aSet")).getDefaultInstance().getProperties();
 
-        Assert.assertEquals("value0.1", properties.get("prop0"));
-        Assert.assertEquals("value1.1", properties.get("prop1"));
-        Assert.assertEquals("value2.1", properties.get("prop2"));
+        Assertions.assertEquals("value0.1", properties.get("prop0"));
+        Assertions.assertEquals("value1.1", properties.get("prop1"));
+        Assertions.assertEquals("value2.1", properties.get("prop2"));
 
         properties = ((ObjectDescriptor) getDescriptor(gameModel2, "aSet")).getProperties();
-        Assert.assertEquals("value0", properties.get("prop0"));
-        Assert.assertEquals("value1.0", properties.get("prop1"));
+        Assertions.assertEquals("value0", properties.get("prop0"));
+        Assertions.assertEquals("value1.0", properties.get("prop1"));
 
         properties = ((ObjectDescriptor) getDescriptor(gameModel2, "aSet")).getDefaultInstance().getProperties();
-        Assert.assertEquals("value0", properties.get("prop0"));
-        Assert.assertEquals("value1.0", properties.get("prop1"));
+        Assertions.assertEquals("value0", properties.get("prop0"));
+        Assertions.assertEquals("value1.0", properties.get("prop1"));
 
         assertEnumItemsListEquals(((StringDescriptor) getDescriptor(gameModel1, "aString")).getAllowedValues(), "v1", "v11", "v10");
         assertEnumItemsListEquals(((StringDescriptor) getDescriptor(gameModel2, "aString")).getAllowedValues(), "v1", "v10");
@@ -768,14 +769,14 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-        Assert.assertEquals("model #rootdescriptors fails", 1, model.getChildVariableDescriptors().size()); // the list
-        Assert.assertEquals("model #descriptors fails", 2, model.getVariableDescriptors().size()); //the list + x
+        Assertions.assertEquals(1, model.getChildVariableDescriptors().size(), "model #rootdescriptors fails"); // the list
+        Assertions.assertEquals(2, model.getVariableDescriptors().size(), "model #descriptors fails"); //the list + x
 
-        Assert.assertEquals("gameModel1 #rootdescriptors fails", 1, gameModel1.getChildVariableDescriptors().size()); // the list
-        Assert.assertEquals("gameModel1 #descriptors fails", 2, gameModel1.getVariableDescriptors().size()); // the list + x
+        Assertions.assertEquals(1, gameModel1.getChildVariableDescriptors().size(), "gameModel1 #rootdescriptors fails"); // the list
+        Assertions.assertEquals(2, gameModel1.getVariableDescriptors().size(), "gameModel1 #descriptors fails"); // the list + x
 
-        Assert.assertEquals("gameModel2 #rootdescriptors fails", 1, gameModel2.getChildVariableDescriptors().size()); //the list
-        Assert.assertEquals("gameModel2 #descriptors fails", 3, gameModel2.getVariableDescriptors().size()); //the list + x + y
+        Assertions.assertEquals(1, gameModel2.getChildVariableDescriptors().size(), "gameModel2 #rootdescriptors fails"); //the list
+        Assertions.assertEquals(3, gameModel2.getVariableDescriptors().size(), "gameModel2 #descriptors fails"); //the list + x + y
 
         logger.info("MyFirstFolder becomes PRIVATE");
         modelList = getDescriptor(model, "myFirstFolder");
@@ -787,13 +788,13 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-        Assert.assertEquals("model #rootdescriptors fails", 1, model.getChildVariableDescriptors().size()); // the list
-        Assert.assertEquals("model #descriptors fails", 2, model.getVariableDescriptors().size()); //the list + x
+        Assertions.assertEquals(1, model.getChildVariableDescriptors().size(), "model #rootdescriptors fails"); // the list
+        Assertions.assertEquals(2, model.getVariableDescriptors().size(), "model #descriptors fails"); //the list + x
 
-        Assert.assertEquals("gameModel1 #rootdescriptors fails", 0, gameModel1.getChildVariableDescriptors().size()); // none
+        Assertions.assertEquals(0, gameModel1.getChildVariableDescriptors().size(), "gameModel1 #rootdescriptors fails"); // none
 
-        Assert.assertEquals("gameModel2 #rootdescriptors fails", 1, gameModel2.getChildVariableDescriptors().size()); //the substitute list
-        Assert.assertEquals("gameModel2 #descriptors fails", 2, gameModel2.getVariableDescriptors().size()); //the list + y
+        Assertions.assertEquals(1, gameModel2.getChildVariableDescriptors().size(), "gameModel2 #rootdescriptors fails"); //the substitute list
+        Assertions.assertEquals(2, gameModel2.getVariableDescriptors().size(), "gameModel2 #descriptors fails"); //the list + y
 
     }
 
@@ -821,23 +822,23 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         // x in model
         NumberDescriptor xModel = wegasFactory.createNumberDescriptor(model, null, "x", "LABEL X", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
-        Assert.assertEquals("XModel name does not match", "x", xModel.getName());
+        Assertions.assertEquals("x", xModel.getName(), "XModel name does not match");
 
         // x in scenarios -> renamed
         NumberDescriptor x1 = wegasFactory.createNumberDescriptor(gameModel1, null, "x", "X", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
         NumberDescriptor x2 = wegasFactory.createNumberDescriptor(gameModel2, null, "x", "X", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
-        Assert.assertNotEquals("X1 name does not match", "x", x1.getName());
-        Assert.assertNotEquals("X2 name does not match", "x", x2.getName());
+        Assertions.assertNotEquals("x", x1.getName(), "X1 name does not match");
+        Assertions.assertNotEquals("x", x2.getName(), "X2 name does not match");
 
         // y in scenarios
         NumberDescriptor y1 = wegasFactory.createNumberDescriptor(gameModel1, null, "y", "Y", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
         NumberDescriptor y2 = wegasFactory.createNumberDescriptor(gameModel2, null, "y", "Y", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
-        Assert.assertEquals("Y1 name does not match", "y", y1.getName());
-        Assert.assertEquals("Y2 name does not match", "y", y2.getName());
+        Assertions.assertEquals("y", y1.getName(), "Y1 name does not match");
+        Assertions.assertEquals("y", y2.getName(), "Y2 name does not match");
 
         // y in model -> renamed
         NumberDescriptor yModel = wegasFactory.createNumberDescriptor(model, null, "y", "Y", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
-        Assert.assertNotEquals("YModel name does not match", "y", yModel.getName());
+        Assertions.assertNotEquals("y", yModel.getName(), "YModel name does not match");
     }
 
     @Test
@@ -873,42 +874,42 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         VariableDescriptor x2Model = variableDescriptorFacade.duplicate(xModel.getId());
         String x2Name = x2Model.getName();
-        Assert.assertNotEquals("X and X2 have same refid", xModel.getRefId(), x2Model.getRefId());
+        Assertions.assertNotEquals(xModel.getRefId(), x2Model.getRefId(), "X and X2 have same refid");
 
         // propagate x2 to scenarios
         modelFacade.propagateModel(model.getId());
 
-        Assert.assertNotNull("X2 does not exist in the model", getDescriptor(model, x2Name));
-        Assert.assertNotNull("X2 does not exist in scenario1", getDescriptor(gameModel1, x2Name));
-        Assert.assertNotNull("X2 does not exist in scenario2", getDescriptor(gameModel2, x2Name));
+        Assertions.assertNotNull(getDescriptor(model, x2Name), "X2 does not exist in the model");
+        Assertions.assertNotNull(getDescriptor(gameModel1, x2Name), "X2 does not exist in scenario1");
+        Assertions.assertNotNull(getDescriptor(gameModel2, x2Name), "X2 does not exist in scenario2");
 
-        Assert.assertEquals(Visibility.INHERITED, getDescriptor(model, x2Name).getVisibility());
-        Assert.assertEquals(Visibility.INHERITED, getDescriptor(gameModel1, x2Name).getVisibility());
-        Assert.assertEquals(Visibility.INHERITED, getDescriptor(gameModel2, x2Name).getVisibility());
+        Assertions.assertEquals(Visibility.INHERITED, getDescriptor(model, x2Name).getVisibility());
+        Assertions.assertEquals(Visibility.INHERITED, getDescriptor(gameModel1, x2Name).getVisibility());
+        Assertions.assertEquals(Visibility.INHERITED, getDescriptor(gameModel2, x2Name).getVisibility());
 
         // duplcate X in model -> numberDescriptor_??????
         VariableDescriptor x3 = variableDescriptorFacade.duplicate(xModel.getId());
         String x3Name = x3.getName();
 
-        Assert.assertNotNull("X3 does not exist in the model", getDescriptor(model, x3Name));
-        Assert.assertNull("X3 already exists in scenario1", getDescriptor(gameModel1, x3Name));
-        Assert.assertNull("X3 already exists in scenario2", getDescriptor(gameModel2, x3Name));
+        Assertions.assertNotNull(getDescriptor(model, x3Name), "X3 does not exist in the model");
+        Assertions.assertNull(getDescriptor(gameModel1, x3Name), "X3 already exists in scenario1");
+        Assertions.assertNull(getDescriptor(gameModel2, x3Name), "X3 already exists in scenario2");
 
-        Assert.assertEquals(Visibility.INHERITED, getDescriptor(model, x3Name).getVisibility());
+        Assertions.assertEquals(Visibility.INHERITED, getDescriptor(model, x3Name).getVisibility());
 
         // duplcate X in gm1 -> numberDescriptor_??????
         VariableDescriptor x4 = variableDescriptorFacade.duplicate(getDescriptor(gameModel1, "x").getId());
         String x4Name = x4.getName();
-        Assert.assertNotNull("X4 does not exist in scenario1", getDescriptor(gameModel1, x4Name));
-        Assert.assertEquals(Visibility.PRIVATE, getDescriptor(gameModel1, x4Name).getVisibility());
+        Assertions.assertNotNull(getDescriptor(gameModel1, x4Name), "X4 does not exist in scenario1");
+        Assertions.assertEquals(Visibility.PRIVATE, getDescriptor(gameModel1, x4Name).getVisibility());
 
         modelFacade.propagateModel(model.getId());
-        Assert.assertNotNull("X3 does not exist in the model", getDescriptor(model, x3Name));
-        Assert.assertNotNull("X3 does not exist in scenario1", getDescriptor(gameModel1, x3Name));
-        Assert.assertNotNull("X3 does not exist in scenario3", getDescriptor(gameModel2, x3Name));
+        Assertions.assertNotNull(getDescriptor(model, x3Name), "X3 does not exist in the model");
+        Assertions.assertNotNull(getDescriptor(gameModel1, x3Name), "X3 does not exist in scenario1");
+        Assertions.assertNotNull(getDescriptor(gameModel2, x3Name), "X3 does not exist in scenario3");
 
-        Assert.assertEquals(Visibility.INHERITED, getDescriptor(gameModel1, x3Name).getVisibility());
-        Assert.assertEquals(Visibility.INHERITED, getDescriptor(gameModel2, x3Name).getVisibility());
+        Assertions.assertEquals(Visibility.INHERITED, getDescriptor(gameModel1, x3Name).getVisibility());
+        Assertions.assertEquals(Visibility.INHERITED, getDescriptor(gameModel2, x3Name).getVisibility());
     }
 
     @Test
@@ -949,26 +950,26 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         // exact copy, including private content
         GameModel newModel = gameModelFacade.createModel(model.getId());
 
-        Assert.assertNotNull("MyFirstFolder does not exist in the new model", getDescriptor(newModel, "myFirstFolder"));
-        Assert.assertNotNull("x does not exist in the new model", getDescriptor(newModel, "x"));
-        Assert.assertNotNull("yMod does not exist in the new model", getDescriptor(newModel, "yMod"));
+        Assertions.assertNotNull(getDescriptor(newModel, "myFirstFolder"), "MyFirstFolder does not exist in the new model");
+        Assertions.assertNotNull(getDescriptor(newModel, "x"), "x does not exist in the new model");
+        Assertions.assertNotNull(getDescriptor(newModel, "yMod"), "yMod does not exist in the new model");
 
         // new scenario based on the model (do not include nmodel private content)
         GameModel newScenario_model = gameModelFacade.createScenario(model.getId());
 
-        Assert.assertNotNull("MyFirstFolder does not exist in the new model", getDescriptor(newScenario_model, "myFirstFolder"));
-        Assert.assertNotNull("x does not exist in the new model", getDescriptor(newScenario_model, "x"));
-        Assert.assertNull("yMod exist in the new model", getDescriptor(newScenario_model, "yMod"));
+        Assertions.assertNotNull(getDescriptor(newScenario_model, "myFirstFolder"), "MyFirstFolder does not exist in the new model");
+        Assertions.assertNotNull(getDescriptor(newScenario_model, "x"), "x does not exist in the new model");
+        Assertions.assertNull(getDescriptor(newScenario_model, "yMod"), "yMod exist in the new model");
 
         // new scenario based on a scenario (should include src scenario private content)
         ListDescriptor gm1List = (ListDescriptor) getDescriptor(gameModel1, "myFirstFolder");
         wegasFactory.createNumberDescriptor(gameModel1, gm1List, "yGm1", "LABEL Y", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
 
         GameModel newScenario_scen = gameModelFacade.createScenario(gameModel1.getId());
-        Assert.assertNotNull("MyFirstFolder does not exist in the new model", getDescriptor(newScenario_scen, "myFirstFolder"));
-        Assert.assertNotNull("x does not exist in the new model", getDescriptor(newScenario_scen, "x"));
-        Assert.assertNull("yMod exist in the new model", getDescriptor(newScenario_scen, "yMod"));
-        Assert.assertNotNull("yGm1 does not exist in the new model", getDescriptor(newScenario_scen, "yGm1"));
+        Assertions.assertNotNull(getDescriptor(newScenario_scen, "myFirstFolder"), "MyFirstFolder does not exist in the new model");
+        Assertions.assertNotNull(getDescriptor(newScenario_scen, "x"), "x does not exist in the new model");
+        Assertions.assertNull(getDescriptor(newScenario_scen, "yMod"), "yMod exist in the new model");
+        Assertions.assertNotNull(getDescriptor(newScenario_scen, "yGm1"), "yGm1 does not exist in the new model");
     }
 
     @Test
@@ -1019,13 +1020,13 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         logger.info("here we are");
 
-        Assert.assertEquals("model #descriptors fails", 0, model.getChildVariableDescriptors().size());
-        Assert.assertEquals("gameModel1 #descriptors fails", 0, gameModel1.getChildVariableDescriptors().size());
-        Assert.assertEquals("gameModel2 #descriptors fails", 1, gameModel2.getChildVariableDescriptors().size());
+        Assertions.assertEquals(0, model.getChildVariableDescriptors().size(), "model #descriptors fails");
+        Assertions.assertEquals(0, gameModel1.getChildVariableDescriptors().size(), "gameModel1 #descriptors fails");
+        Assertions.assertEquals(1, gameModel2.getChildVariableDescriptors().size(), "gameModel2 #descriptors fails");
 
-        Assert.assertEquals("gameModel2 substitute folder label does not match", "My First Folder", gameModel2.getChildVariableDescriptors().get(0).getLabel().translateOrEmpty(gameModel2));
+        Assertions.assertEquals("My First Folder", gameModel2.getChildVariableDescriptors().get(0).getLabel().translateOrEmpty(gameModel2), "gameModel2 substitute folder label does not match");
 
-        Assert.assertNotNull("Y does not exists any longer in gameModel2", getDescriptor(gameModel2, "y"));
+        Assertions.assertNotNull(getDescriptor(gameModel2, "y"), "Y does not exists any longer in gameModel2");
     }
 
     @Test
@@ -1127,12 +1128,12 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         xi2 = (NumberInstance) getInstance(gameModel2, "x");
         xi3 = (NumberInstance) getInstance(gameModel3, "x");
 
-        Assert.assertEquals("X", xi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
-        Assert.assertEquals("X", xi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
-        Assert.assertEquals("X", xi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
-        Assert.assertEquals(1.0, xi1.getValue(), 0.00001);
-        Assert.assertEquals(1.0, xi2.getValue(), 0.00001);
-        Assert.assertEquals(1.0, xi3.getValue(), 0.00001);
+        Assertions.assertEquals("X", xi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
+        Assertions.assertEquals("X", xi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
+        Assertions.assertEquals("X", xi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
+        Assertions.assertEquals(1.0, xi1.getValue(), 0.00001);
+        Assertions.assertEquals(1.0, xi2.getValue(), 0.00001);
+        Assertions.assertEquals(1.0, xi3.getValue(), 0.00001);
 
 
         /*
@@ -1142,12 +1143,12 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         yi2 = (NumberInstance) getInstance(gameModel2, "y");
         yi3 = (NumberInstance) getInstance(gameModel3, "y");
 
-        Assert.assertEquals("Y", yi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
-        Assert.assertEquals("Y", yi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
-        Assert.assertEquals("Y", yi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
-        Assert.assertEquals(2.0, yi1.getValue(), 0.00001);
-        Assert.assertEquals(2.0, yi2.getValue(), 0.00001);
-        Assert.assertEquals(2.5, yi3.getValue(), 0.00001);
+        Assertions.assertEquals("Y", yi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
+        Assertions.assertEquals("Y", yi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
+        Assertions.assertEquals("Y", yi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
+        Assertions.assertEquals(2.0, yi1.getValue(), 0.00001);
+        Assertions.assertEquals(2.0, yi2.getValue(), 0.00001);
+        Assertions.assertEquals(2.5, yi3.getValue(), 0.00001);
 
 
         /*
@@ -1161,12 +1162,12 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.error("Z {} history {}", zi2, zi2.getHistory());
         logger.error("Z {} history {}", zi3, zi3.getHistory());
 
-        Assert.assertEquals("Z", zi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
-        Assert.assertEquals("LABEL Z", zi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
-        Assert.assertEquals("LBL Z", zi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
-        Assert.assertEquals(3.0, zi1.getValue(), 0.00001);
-        Assert.assertEquals(3.0, zi2.getValue(), 0.00001);
-        Assert.assertEquals(3.5, zi3.getValue(), 0.00001);
+        Assertions.assertEquals("Z", zi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
+        Assertions.assertEquals("LABEL Z", zi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
+        Assertions.assertEquals("LBL Z", zi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
+        Assertions.assertEquals(3.0, zi1.getValue(), 0.00001);
+        Assertions.assertEquals(3.0, zi2.getValue(), 0.00001);
+        Assertions.assertEquals(3.5, zi3.getValue(), 0.00001);
 
         // Update model
         NumberDescriptor xModel = (NumberDescriptor) variableDescriptorFacade.find(model, "x");
@@ -1200,12 +1201,12 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         xi2 = (NumberInstance) getInstance(gameModel2, "x");
         xi3 = (NumberInstance) getInstance(gameModel3, "x");
 
-        Assert.assertEquals("my X", xi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
-        Assert.assertEquals("my X", xi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
-        Assert.assertEquals("my X", xi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
-        Assert.assertEquals(11.0, xi1.getValue(), 0.00001);
-        Assert.assertEquals(11.0, xi2.getValue(), 0.00001);
-        Assert.assertEquals(11.0, xi3.getValue(), 0.00001);
+        Assertions.assertEquals("my X", xi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
+        Assertions.assertEquals("my X", xi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
+        Assertions.assertEquals("my X", xi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
+        Assertions.assertEquals(11.0, xi1.getValue(), 0.00001);
+        Assertions.assertEquals(11.0, xi2.getValue(), 0.00001);
+        Assertions.assertEquals(11.0, xi3.getValue(), 0.00001);
 
 
         /*
@@ -1215,12 +1216,12 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         yi2 = (NumberInstance) getInstance(gameModel2, "y");
         yi3 = (NumberInstance) getInstance(gameModel3, "y");
 
-        Assert.assertEquals("my Y", yi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
-        Assert.assertEquals("my Y", yi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
-        Assert.assertEquals("my Y", yi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
-        Assert.assertEquals(12.0, yi1.getValue(), 0.00001);
-        Assert.assertEquals(12.0, yi2.getValue(), 0.00001);
-        Assert.assertEquals(2.5, yi3.getValue(), 0.00001);
+        Assertions.assertEquals("my Y", yi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
+        Assertions.assertEquals("my Y", yi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
+        Assertions.assertEquals("my Y", yi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
+        Assertions.assertEquals(12.0, yi1.getValue(), 0.00001);
+        Assertions.assertEquals(12.0, yi2.getValue(), 0.00001);
+        Assertions.assertEquals(2.5, yi3.getValue(), 0.00001);
 
 
         /*
@@ -1234,12 +1235,12 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.error("Z {} history {}", zi2, zi2.getHistory());
         logger.error("Z {} history {}", zi3, zi3.getHistory());
 
-        Assert.assertEquals("my Z", zi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
-        Assert.assertEquals("LABEL Z", zi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
-        Assert.assertEquals("LBL Z", zi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
-        Assert.assertEquals(13.0, zi1.getValue(), 0.00001);
-        Assert.assertEquals(13.0, zi2.getValue(), 0.00001);
-        Assert.assertEquals(3.5, zi3.getValue(), 0.00001);
+        Assertions.assertEquals("my Z", zi1.findDescriptor().getLabel().translateOrEmpty(gameModel1));
+        Assertions.assertEquals("LABEL Z", zi2.findDescriptor().getLabel().translateOrEmpty(gameModel2));
+        Assertions.assertEquals("LBL Z", zi3.findDescriptor().getLabel().translateOrEmpty(gameModel3));
+        Assertions.assertEquals(13.0, zi1.getValue(), 0.00001);
+        Assertions.assertEquals(13.0, zi2.getValue(), 0.00001);
+        Assertions.assertEquals(3.5, zi3.getValue(), 0.00001);
 
         /**
          * Create new descriptors in model
@@ -1264,31 +1265,31 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         /**
          * Assert new descriptor stand in the correct folder
          */
-        Assert.assertEquals(getDescriptor(gameModel1, "myFirstFolder"), getDescriptor(gameModel1, "alpha").getParentList());
-        Assert.assertEquals(getDescriptor(gameModel2, "myFirstFolder"), getDescriptor(gameModel2, "alpha").getParentList());
-        Assert.assertEquals(getDescriptor(gameModel3, "myFirstFolder"), getDescriptor(gameModel3, "alpha").getParentList());
+        Assertions.assertEquals(getDescriptor(gameModel1, "myFirstFolder"), getDescriptor(gameModel1, "alpha").getParentList());
+        Assertions.assertEquals(getDescriptor(gameModel2, "myFirstFolder"), getDescriptor(gameModel2, "alpha").getParentList());
+        Assertions.assertEquals(getDescriptor(gameModel3, "myFirstFolder"), getDescriptor(gameModel3, "alpha").getParentList());
 
-        Assert.assertEquals(gameModel1, getDescriptor(gameModel1, "pi").getRoot());
-        Assert.assertEquals(gameModel2, getDescriptor(gameModel2, "pi").getRoot());
-        Assert.assertEquals(gameModel3, getDescriptor(gameModel3, "pi").getRoot());
+        Assertions.assertEquals(gameModel1, getDescriptor(gameModel1, "pi").getRoot());
+        Assertions.assertEquals(gameModel2, getDescriptor(gameModel2, "pi").getRoot());
+        Assertions.assertEquals(gameModel3, getDescriptor(gameModel3, "pi").getRoot());
 
         /**
          * Assert z no longer exists
          */
-        Assert.assertNull(getDescriptor(gameModel1, "z"));
-        Assert.assertNull(getDescriptor(gameModel2, "z"));
-        Assert.assertNull(getDescriptor(gameModel3, "z"));
+        Assertions.assertNull(getDescriptor(gameModel1, "z"));
+        Assertions.assertNull(getDescriptor(gameModel2, "z"));
+        Assertions.assertNull(getDescriptor(gameModel3, "z"));
 
         /**
          * Assert x stands at root level
          */
-        Assert.assertEquals(gameModel1, getDescriptor(gameModel1, "x").getRoot());
-        Assert.assertEquals(gameModel2, getDescriptor(gameModel2, "x").getRoot());
-        Assert.assertEquals(gameModel3, getDescriptor(gameModel3, "x").getRoot());
+        Assertions.assertEquals(gameModel1, getDescriptor(gameModel1, "x").getRoot());
+        Assertions.assertEquals(gameModel2, getDescriptor(gameModel2, "x").getRoot());
+        Assertions.assertEquals(gameModel3, getDescriptor(gameModel3, "x").getRoot());
 
-        Assert.assertNull(getDescriptor(gameModel1, "x").getParentList());
-        Assert.assertNull(getDescriptor(gameModel2, "x").getParentList());
-        Assert.assertNull(getDescriptor(gameModel3, "x").getParentList());
+        Assertions.assertNull(getDescriptor(gameModel1, "x").getParentList());
+        Assertions.assertNull(getDescriptor(gameModel2, "x").getParentList());
+        Assertions.assertNull(getDescriptor(gameModel3, "x").getParentList());
 
         /**
          * remove var from root level
@@ -1304,9 +1305,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         /**
          * Assert x no longer exists
          */
-        Assert.assertNull(getDescriptor(gameModel1, "x"));
-        Assert.assertNull(getDescriptor(gameModel2, "x"));
-        Assert.assertNull(getDescriptor(gameModel3, "x"));
+        Assertions.assertNull(getDescriptor(gameModel1, "x"));
+        Assertions.assertNull(getDescriptor(gameModel2, "x"));
+        Assertions.assertNull(getDescriptor(gameModel3, "x"));
 
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
@@ -1336,20 +1337,20 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         /**
          * Assert y stands at root level
          */
-        Assert.assertEquals(gameModel1, getDescriptor(gameModel1, "y").getRoot());
-        Assert.assertEquals(gameModel2, getDescriptor(gameModel2, "y").getRoot());
-        Assert.assertEquals(gameModel3, getDescriptor(gameModel3, "y").getRoot());
+        Assertions.assertEquals(gameModel1, getDescriptor(gameModel1, "y").getRoot());
+        Assertions.assertEquals(gameModel2, getDescriptor(gameModel2, "y").getRoot());
+        Assertions.assertEquals(gameModel3, getDescriptor(gameModel3, "y").getRoot());
 
-        Assert.assertNull(getDescriptor(gameModel1, "y").getParentList());
-        Assert.assertNull(getDescriptor(gameModel2, "y").getParentList());
-        Assert.assertNull(getDescriptor(gameModel3, "y").getParentList());
+        Assertions.assertNull(getDescriptor(gameModel1, "y").getParentList());
+        Assertions.assertNull(getDescriptor(gameModel2, "y").getParentList());
+        Assertions.assertNull(getDescriptor(gameModel3, "y").getParentList());
 
         /*
          * Y: model override descriptor but update defaultinstance
          */
-        Assert.assertEquals(22.0, ((NumberInstance) getInstance(gameModel1, "y")).getValue(), 0.00001);
-        Assert.assertEquals(22.0, ((NumberInstance) getInstance(gameModel2, "y")).getValue(), 0.00001);
-        Assert.assertEquals(2.5, ((NumberInstance) getInstance(gameModel3, "y")).getValue(), 0.00001);
+        Assertions.assertEquals(22.0, ((NumberInstance) getInstance(gameModel1, "y")).getValue(), 0.00001);
+        Assertions.assertEquals(22.0, ((NumberInstance) getInstance(gameModel2, "y")).getValue(), 0.00001);
+        Assertions.assertEquals(2.5, ((NumberInstance) getInstance(gameModel3, "y")).getValue(), 0.00001);
 
         /* Move alpha to root & delete */
         variableDescriptorFacade.move(getDescriptor(model, "alpha").getId(), 0);
@@ -1362,13 +1363,13 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel3.getId())));
 
-        Assert.assertNull(getDescriptor(gameModel1, "myFirstFolder"));
-        Assert.assertNull(getDescriptor(gameModel2, "myFirstFolder"));
-        Assert.assertNull(getDescriptor(gameModel3, "myFirstFolder"));
+        Assertions.assertNull(getDescriptor(gameModel1, "myFirstFolder"));
+        Assertions.assertNull(getDescriptor(gameModel2, "myFirstFolder"));
+        Assertions.assertNull(getDescriptor(gameModel3, "myFirstFolder"));
 
-        Assert.assertEquals(0.666, ((NumberInstance) getInstance(gameModel1, "alpha")).getValue(), 0.00001);
-        Assert.assertEquals(0.666, ((NumberInstance) getInstance(gameModel2, "alpha")).getValue(), 0.00001);
-        Assert.assertEquals(0.666, ((NumberInstance) getInstance(gameModel3, "alpha")).getValue(), 0.00001);
+        Assertions.assertEquals(0.666, ((NumberInstance) getInstance(gameModel1, "alpha")).getValue(), 0.00001);
+        Assertions.assertEquals(0.666, ((NumberInstance) getInstance(gameModel2, "alpha")).getValue(), 0.00001);
+        Assertions.assertEquals(0.666, ((NumberInstance) getInstance(gameModel3, "alpha")).getValue(), 0.00001);
 
         logger.info("FINI");
     }
@@ -1377,10 +1378,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         NumberDescriptor desc = (NumberDescriptor) variableDescriptorFacade.find(gm, nd.getName());
         NumberInstance instance = desc.getDefaultInstance();
 
-        Assert.assertEquals("Min Value does not match", expectedMin, desc.getMinValue(), 0.01);
-        Assert.assertEquals("Max Value does not match", expectedMax, desc.getMaxValue(), 0.01);
+        Assertions.assertEquals(expectedMin, desc.getMinValue(), 0.01, "Min Value does not match");
+        Assertions.assertEquals(expectedMax, desc.getMaxValue(), 0.01, "Max Value does not match");
 
-        Assert.assertEquals("Default value does not match", expectedValue, instance.getValue(), 0.1);
+        Assertions.assertEquals(expectedValue, instance.getValue(), 0.1, "Default value does not match");
     }
 
     private void updateNumber(GameModel gm, NumberDescriptor desc, Double min, Double max, Double value) throws WegasNoResultException {
@@ -1435,19 +1436,19 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-        Assert.assertEquals("number of descriptor does not match for gm1", 3, gameModel1.getChildVariableDescriptors().size());
-        Assert.assertEquals("number of descriptor does not match for gm2", 3, gameModel2.getChildVariableDescriptors().size());
+        Assertions.assertEquals(3, gameModel1.getChildVariableDescriptors().size(), "number of descriptor does not match for gm1");
+        Assertions.assertEquals(3, gameModel2.getChildVariableDescriptors().size(), "number of descriptor does not match for gm2");
 
         /*
          * verify descriptor order
          */
-        Assert.assertEquals("GM1 1st descriptor does no match", "x", gameModel1.getChildVariableDescriptors().get(0).getName());
-        Assert.assertEquals("GM1 2nd descriptor does no match", "y", gameModel1.getChildVariableDescriptors().get(1).getName());
-        Assert.assertEquals("GM1 3rd descriptor does no match", "z", gameModel1.getChildVariableDescriptors().get(2).getName());
+        Assertions.assertEquals("x", gameModel1.getChildVariableDescriptors().get(0).getName(), "GM1 1st descriptor does no match");
+        Assertions.assertEquals("y", gameModel1.getChildVariableDescriptors().get(1).getName(), "GM1 2nd descriptor does no match");
+        Assertions.assertEquals("z", gameModel1.getChildVariableDescriptors().get(2).getName(), "GM1 3rd descriptor does no match");
 
-        Assert.assertEquals("GM2 1st descriptor does no match", "x", gameModel2.getChildVariableDescriptors().get(0).getName());
-        Assert.assertEquals("GM2 2nd descriptor does no match", "y", gameModel2.getChildVariableDescriptors().get(1).getName());
-        Assert.assertEquals("GM2 3rd descriptor does no match", "z", gameModel2.getChildVariableDescriptors().get(2).getName());
+        Assertions.assertEquals("x", gameModel2.getChildVariableDescriptors().get(0).getName(), "GM2 1st descriptor does no match");
+        Assertions.assertEquals("y", gameModel2.getChildVariableDescriptors().get(1).getName(), "GM2 2nd descriptor does no match");
+        Assertions.assertEquals("z", gameModel2.getChildVariableDescriptors().get(2).getName(), "GM2 3rd descriptor does no match");
 
 
         /* create private t in gameModel2 */
@@ -1568,10 +1569,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         ls.visitGameModelFiles(gameModel1);
         ls.visitGameModelFiles(gameModel2);
 
-        Assert.assertArrayEquals(update,
+        Assertions.assertArrayEquals(update,
             jcrFacade.getFileBytes(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
 
-        Assert.assertArrayEquals(update,
+        Assertions.assertArrayEquals(update,
             jcrFacade.getFileBytes(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
 
         logger.info("update gm1 /dir/1/binFile1 to -1 -2 -3 2 10");
@@ -1588,10 +1589,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         ls.visitGameModelFiles(gameModel1);
         ls.visitGameModelFiles(gameModel2);
 
-        Assert.assertArrayEquals(update1,
+        Assertions.assertArrayEquals(update1,
             jcrFacade.getFileBytes(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
 
-        Assert.assertArrayEquals(update,
+        Assertions.assertArrayEquals(update,
             jcrFacade.getFileBytes(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
 
     }
@@ -1617,77 +1618,81 @@ public class ModelFacadeTest extends AbstractArquillianTest {
             ((StringInstance) getDescriptor(gm2, variable).getDefaultInstance()).getTrValue(), lang, equals);
     }
 
-    @Test(expected = WegasErrorMessage.class)
+    @Test
     public void testModelise_LanguagesNameConflict() throws RepositoryException, IOException, IOException, WegasNoResultException {
-        GameModel gameModel1 = new GameModel();
-        gameModel1.setName("gamemodel #1");
-        i18nFacade.createLanguage(gameModel1, "en", "English");
-        gameModelFacade.createWithDebugGame(gameModel1);
+        Assertions.assertThrows(WegasErrorMessage.class, () -> {
+            GameModel gameModel1 = new GameModel();
+            gameModel1.setName("gamemodel #1");
+            i18nFacade.createLanguage(gameModel1, "en", "English");
+            gameModelFacade.createWithDebugGame(gameModel1);
 
-        GameModel gameModel2 = new GameModel();
-        gameModel2.setName("gamemodel #2");
-        i18nFacade.createLanguage(gameModel2, "en", "English");
-        gameModelFacade.createWithDebugGame(gameModel2);
+            GameModel gameModel2 = new GameModel();
+            gameModel2.setName("gamemodel #2");
+            i18nFacade.createLanguage(gameModel2, "en", "English");
+            gameModelFacade.createWithDebugGame(gameModel2);
 
-        GameModel gameModel3 = new GameModel();
-        gameModel3.setName("gamemodel #3");
-        i18nFacade.createLanguage(gameModel3, "en", "French");
-        gameModelFacade.createWithDebugGame(gameModel3);
+            GameModel gameModel3 = new GameModel();
+            gameModel3.setName("gamemodel #3");
+            i18nFacade.createLanguage(gameModel3, "en", "French");
+            gameModelFacade.createWithDebugGame(gameModel3);
 
-        gameModel1 = gameModelFacade.find(gameModel1.getId());
-        gameModel2 = gameModelFacade.find(gameModel2.getId());
-        gameModel3 = gameModelFacade.find(gameModel3.getId());
+            gameModel1 = gameModelFacade.find(gameModel1.getId());
+            gameModel2 = gameModelFacade.find(gameModel2.getId());
+            gameModel3 = gameModelFacade.find(gameModel3.getId());
 
-        List<GameModel> scenarios = new ArrayList<>();
+            List<GameModel> scenarios = new ArrayList<>();
 
-        scenarios.add(gameModel1);
-        scenarios.add(gameModel2);
-        scenarios.add(gameModel3);
+            scenarios.add(gameModel1);
+            scenarios.add(gameModel2);
+            scenarios.add(gameModel3);
 
-        logger.info("Create Model");
-        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+            logger.info("Create Model");
+            GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+        });
     }
 
-    @Test(expected = WegasErrorMessage.class)
+    @Test
     public void testModelise_LanguagesIntegration() throws RepositoryException, IOException, IOException, WegasNoResultException {
-        GameModel gameModel1 = new GameModel();
-        gameModel1.setName("gamemodel #1");
-        i18nFacade.createLanguage(gameModel1, "en", "English");
-        gameModelFacade.createWithDebugGame(gameModel1);
+        Assertions.assertThrows(WegasErrorMessage.class, () -> {
+            GameModel gameModel1 = new GameModel();
+            gameModel1.setName("gamemodel #1");
+            i18nFacade.createLanguage(gameModel1, "en", "English");
+            gameModelFacade.createWithDebugGame(gameModel1);
 
-        GameModel gameModel2 = new GameModel();
-        gameModel2.setName("gamemodel #2");
-        i18nFacade.createLanguage(gameModel2, "en", "English");
-        gameModelFacade.createWithDebugGame(gameModel2);
+            GameModel gameModel2 = new GameModel();
+            gameModel2.setName("gamemodel #2");
+            i18nFacade.createLanguage(gameModel2, "en", "English");
+            gameModelFacade.createWithDebugGame(gameModel2);
 
-        gameModel1 = gameModelFacade.find(gameModel1.getId());
-        gameModel2 = gameModelFacade.find(gameModel2.getId());
+            gameModel1 = gameModelFacade.find(gameModel1.getId());
+            gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-        wegasFactory.createString(gameModel1, null, "str", "a string", "a value");
-        wegasFactory.createString(gameModel2, null, "str", "a string", "a value");
+            wegasFactory.createString(gameModel1, null, "str", "a string", "a value");
+            wegasFactory.createString(gameModel2, null, "str", "a string", "a value");
 
-        List<GameModel> scenarios = new ArrayList<>();
+            List<GameModel> scenarios = new ArrayList<>();
 
-        scenarios.add(gameModel1);
-        scenarios.add(gameModel2);
+            scenarios.add(gameModel1);
+            scenarios.add(gameModel2);
 
-        logger.info("Create Model");
-        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+            logger.info("Create Model");
+            GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
 
-        modelFacade.propagateModel(model.getId());
+            modelFacade.propagateModel(model.getId());
 
-        GameModel gameModel3 = new GameModel();
-        gameModel3.setName("gamemodel #3");
+            GameModel gameModel3 = new GameModel();
+            gameModel3.setName("gamemodel #3");
 
-        i18nFacade.createLanguage(gameModel3, "def", "English");
-        gameModelFacade.createWithDebugGame(gameModel3);
-        wegasFactory.createString(gameModel3, null, "str", "a string", "a value");
+            i18nFacade.createLanguage(gameModel3, "def", "English");
+            gameModelFacade.createWithDebugGame(gameModel3);
+            wegasFactory.createString(gameModel3, null, "str", "a string", "a value");
 
-        gameModel3 = gameModelFacade.find(gameModel3.getId());
+            gameModel3 = gameModelFacade.find(gameModel3.getId());
 
-        scenarios.clear();
-        scenarios.add(gameModel3);
-        modelFacade.integrateScenario(model, scenarios);
+            scenarios.clear();
+            scenarios.add(gameModel3);
+            modelFacade.integrateScenario(model, scenarios);
+        });
     }
 
     @Test
@@ -1755,8 +1760,8 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.info("Create Model");
         GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
 
-        Assert.assertNotNull("English is missing in model", model.getLanguageByCode("en"));
-        Assert.assertNull("French should not exist in model", model.getLanguageByCode("fr"));
+        Assertions.assertNotNull(model.getLanguageByCode("en"), "English is missing in model");
+        Assertions.assertNull(model.getLanguageByCode("fr"), "French should not exist in model");
 
         setDescriptorVisibility(model, "strModel", Visibility.INTERNAL);
         setDescriptorVisibility(model, "strProtected", Visibility.PROTECTED);
@@ -1776,14 +1781,14 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         //i18nFacade.printTranslations(gameModel1.getId(), "en", "fr");
         //i18nFacade.printTranslations(gameModel2.getId(), "en", "fr");
         //i18nFacade.printTranslations(gameModel3.getId(), "en", "fr");
-        Assert.assertNull("French is missing in gameModel1", gameModel1.getLanguageByCode("fr"));
-        Assert.assertNotNull("English is missing in gameModel1", gameModel1.getLanguageByCode("en"));
+        Assertions.assertNull(gameModel1.getLanguageByCode("fr"), "French is missing in gameModel1");
+        Assertions.assertNotNull(gameModel1.getLanguageByCode("en"), "English is missing in gameModel1");
 
-        Assert.assertNotNull("French is missing in gameModel2", gameModel2.getLanguageByCode("fr"));
-        Assert.assertNotNull("English is missing in gameModel2", gameModel2.getLanguageByCode("en"));
+        Assertions.assertNotNull(gameModel2.getLanguageByCode("fr"), "French is missing in gameModel2");
+        Assertions.assertNotNull(gameModel2.getLanguageByCode("en"), "English is missing in gameModel2");
 
-        Assert.assertNull("French is missing in gameModel3", gameModel3.getLanguageByCode("fr"));
-        Assert.assertNotNull("English is missing in gameModel3", gameModel3.getLanguageByCode("en"));
+        Assertions.assertNull(gameModel3.getLanguageByCode("fr"), "French is missing in gameModel3");
+        Assertions.assertNotNull(gameModel3.getLanguageByCode("en"), "English is missing in gameModel3");
 
         // assert internal translations have been overriden by model ones
         this.assertLabelEquals(model, gameModel1, "strModel"); // all the same
@@ -1835,7 +1840,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         model = gameModelFacade.find(model.getId());
 
-        Assert.assertNotNull("German is missing in model", model.getLanguageByCode("de"));
+        Assertions.assertNotNull(model.getLanguageByCode("de"), "German is missing in model");
 
         /**
          * update some english and german translations
@@ -1881,10 +1886,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         //i18nFacade.printTranslations(gameModel1.getId(), "en", "fr", "de");
         //i18nFacade.printTranslations(gameModel2.getId(), "en", "fr", "de");
         //i18nFacade.printTranslations(gameModel3.getId(), "en", "fr", "de");
-        Assert.assertNotNull("German is missing in model", model.getLanguageByCode("de"));
-        Assert.assertNotNull("German is missing in gameModel1", gameModel1.getLanguageByCode("de"));
-        Assert.assertNotNull("German is missing in gameModel3", gameModel3.getLanguageByCode("de"));
-        Assert.assertNotNull("German is missing in gameModel3", gameModel3.getLanguageByCode("de"));
+        Assertions.assertNotNull(model.getLanguageByCode("de"), "German is missing in model");
+        Assertions.assertNotNull(gameModel1.getLanguageByCode("de"), "German is missing in gameModel1");
+        Assertions.assertNotNull(gameModel3.getLanguageByCode("de"), "German is missing in gameModel3");
+        Assertions.assertNotNull(gameModel3.getLanguageByCode("de"), "German is missing in gameModel3");
 
         // assert INTERNAL German and English translations have been overriden by model ones
         this.testLabel(model, gameModel1, "strModel", "en", true);

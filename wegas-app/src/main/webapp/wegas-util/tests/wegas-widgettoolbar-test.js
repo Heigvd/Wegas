@@ -26,21 +26,21 @@ YUI.add('wegas-widgettoolbar-test', function(Y) {
                     }]
             });
 
-            Y.Assert.isTrue(this.widget.get("boundingBox").hasClass('wegas-hastoolbar'));
+            Y.Assertions.isTrue(this.widget.get("boundingBox").hasClass('wegas-hastoolbar'));
         },
         "should add a button": function() {
             this.widget.toolbar.add({
                 type: Y.Wegas.Button,
                 label: "test"
             });
-            Y.Assert.areEqual(2, this.widget.toolbar.size());
+            Y.Assertions.areEqual(2, this.widget.toolbar.size());
         }
 
         //"shoud destroy": function () {
         //    this.widget.unplug(Y.Plugin.WidgetToolbar);
         //    this.widget.destroy();
         //
-        //    Y.Assert.isTrue(this.widget.get("destroyed"));
+        //    Y.Assertions.isTrue(this.widget.get("destroyed"));
         //}
 
     }));

@@ -10,7 +10,7 @@ package com.wegas.core.security.rest;
 import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
 import java.io.IOException;
 import javax.inject.Inject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *

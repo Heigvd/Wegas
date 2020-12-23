@@ -10,8 +10,8 @@ package com.wegas.unit.i18n;
 import com.wegas.utils.AbstractTest;
 import java.io.IOException;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -23,7 +23,7 @@ public abstract class AbstractClientLanguageTest extends AbstractTest {
 
     protected abstract List<String> getScripts();
 
-    @Before
+    @BeforeEach
     public void setUpGM() throws IOException {
         /* insert script from files*/
         List<String> scripts = this.getScripts();

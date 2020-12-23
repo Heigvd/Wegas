@@ -28,10 +28,10 @@ import com.wegas.mcq.persistence.Result;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import javax.inject.Inject;
 import javax.naming.NamingException;
-import org.junit.Assert;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import org.junit.Test;
+import static junit.framework.Assert.assertFalse;
+import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -108,16 +108,16 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
     private void assertQuestion(Long questionId, Player p, boolean hasBeenReplied) {
         QuestionDescriptor question = (QuestionDescriptor) variableDescriptorFacade.find(questionId);
-        Assert.assertEquals(hasBeenReplied, question.isReplied(p));
-        Assert.assertEquals(!hasBeenReplied, question.isNotReplied(p));
+        Assertions.assertEquals(hasBeenReplied, question.isReplied(p));
+        Assertions.assertEquals(!hasBeenReplied, question.isNotReplied(p));
 
     }
 
     private void assertChoice(Long choiceId, Player p, boolean hasBeenSelected, boolean hasBeenIgnored) {
         ChoiceDescriptor choice = (ChoiceDescriptor) variableDescriptorFacade.find(choiceId);
-        Assert.assertEquals(hasBeenSelected, choice.hasBeenSelected(p));
-        Assert.assertEquals(!hasBeenSelected, choice.hasNotBeenSelected(p));
-        Assert.assertEquals(hasBeenIgnored, choice.hasBeenIgnored(p));
+        Assertions.assertEquals(hasBeenSelected, choice.hasBeenSelected(p));
+        Assertions.assertEquals(!hasBeenSelected, choice.hasNotBeenSelected(p));
+        Assertions.assertEquals(hasBeenIgnored, choice.hasBeenIgnored(p));
 
     }
 
@@ -125,7 +125,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         ChoiceDescriptor choice = (ChoiceDescriptor) variableDescriptorFacade.find(choiceId);
         ChoiceInstance ci = (ChoiceInstance) variableDescriptorFacade.getInstance(choice, p);
 
-        Assert.assertEquals(!preselected, ci.getReplies().isEmpty());
+        Assertions.assertEquals(!preselected, ci.getReplies().isEmpty());
         boolean ok = false;
 
         for (Reply r : ci.getReplies()) {
@@ -134,7 +134,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
                 break;
             }
         }
-        Assert.assertEquals(preselected, ok);
+        Assertions.assertEquals(preselected, ok);
     }
 
     public void testQuestion_choiceMaxLimit() throws Exception {
@@ -179,7 +179,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         // select&validate the first choice
         try {
             questionDescriptorFacade.selectAndValidateChoice(choice1.getId(), player.getId());
-            Assert.fail("Overpassing the limit");
+            Assertions.fail("Overpassing the limit");
         } catch (WegasErrorMessage ex) {
             // expected exception
         }
@@ -187,7 +187,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         // select&validate the second choice
         try {
             questionDescriptorFacade.selectAndValidateChoice(choice2.getId(), player.getId());
-            Assert.fail("Overpassing the limit");
+            Assertions.fail("Overpassing the limit");
         } catch (WegasErrorMessage ex) {
             // expected exception
         }
@@ -235,7 +235,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         // select&validate the first choice
         try {
             questionDescriptorFacade.selectAndValidateChoice(choice1.getId(), player.getId());
-            Assert.fail("Overpassing the limit");
+            Assertions.fail("Overpassing the limit");
         } catch (WegasErrorMessage ex) {
             // expected exception
         }
@@ -243,7 +243,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         // select&validate the second choice
         try {
             questionDescriptorFacade.selectAndValidateChoice(choice2.getId(), player.getId());
-            Assert.fail("Overpassing the limit");
+            Assertions.fail("Overpassing the limit");
         } catch (WegasErrorMessage ex) {
             // expected exception
         }
@@ -311,7 +311,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         try {
             questionDescriptorFacade.validateQuestion(qi.getId(), player.getId());
-            Assert.fail("question validated altough minimum not reached");
+            Assertions.fail("question validated altough minimum not reached");
         } catch (WegasErrorMessage ex) {
             //expecting error
         }
@@ -363,7 +363,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         try {
             questionDescriptorFacade.validateQuestion(qi.getId(), player.getId());
-            Assert.fail("question validated altough minimum not reached");
+            Assertions.fail("question validated altough minimum not reached");
         } catch (WegasErrorMessage ex) {
             //expecting error
         }
@@ -380,7 +380,7 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         try {
             questionDescriptorFacade.selectChoice(choice4.getId(), player.getId());
-            Assert.fail("select choice maximum exedeed but not execption thrown");
+            Assertions.fail("select choice maximum exedeed but not execption thrown");
         } catch (WegasErrorMessage ex) {
             //expecting error
         }
@@ -540,8 +540,8 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         ChoiceInstance instance20 = choice.getInstance(player21);
         ChoiceInstance instance21 = choice.getInstance(player22);
 
-        assertEquals("TeamScoped instance is no the same !", instance20, instance21);
-        assertEquals("Current result does not match", "result_1", instance20.getCurrentResult().getName());
+        assertEquals(instance20, instance21, "TeamScoped instance is no the same !");
+        assertEquals("result_1", instance20.getCurrentResult().getName(), "Current result does not match");
 
         // Set the second result as default
         // Change from teamScope to playerscope
@@ -555,8 +555,8 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
 
         assertFalse("PlayerScoped instances are the same !", instance20.equals(instance21));
 
-        assertEquals("Current result does not match", "result_2", instance20.getCurrentResult().getName());
-        assertEquals("Current result does not match", "result_2", instance21.getCurrentResult().getName());
+        assertEquals("result_2", instance20.getCurrentResult().getName(), "Current result does not match");
+        assertEquals("result_2", instance21.getCurrentResult().getName(), "Current result does not match");
 
         // and remove it
         choice.getResults().remove(1);
@@ -579,30 +579,30 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
                 wegasFactory.createResult("result_1"));
 
         choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
-        Assert.assertEquals(question, (QuestionDescriptor) choice.getParent());
-        Assert.assertEquals("QuestionDescriptor", choice.getParentType());
-        Assert.assertEquals(2, gameModelFacade.find(scenario.getId()).getItems().size());
-        Assert.assertEquals(1, ((DescriptorListI)variableDescriptorFacade.find(question.getId())).getItems().size());
-        Assert.assertEquals(0, ((DescriptorListI)variableDescriptorFacade.find(list.getId())).getItems().size());
+        Assertions.assertEquals(question, (QuestionDescriptor) choice.getParent());
+        Assertions.assertEquals("QuestionDescriptor", choice.getParentType());
+        Assertions.assertEquals(2, gameModelFacade.find(scenario.getId()).getItems().size());
+        Assertions.assertEquals(1, ((DescriptorListI)variableDescriptorFacade.find(question.getId())).getItems().size());
+        Assertions.assertEquals(0, ((DescriptorListI)variableDescriptorFacade.find(list.getId())).getItems().size());
 
         // move choice from question to root
         variableDescriptorFacade.move(choice.getId(), 0);
         choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
-        Assert.assertEquals(scenario, (GameModel) choice.getParent());
-        Assert.assertEquals("GameModel", choice.getParentType());
-        Assert.assertEquals(3, gameModelFacade.find(scenario.getId()).getItems().size());
-        Assert.assertEquals(0, ((DescriptorListI)variableDescriptorFacade.find(question.getId())).getItems().size());
-        Assert.assertEquals(0, ((DescriptorListI)variableDescriptorFacade.find(list.getId())).getItems().size());
+        Assertions.assertEquals(scenario, (GameModel) choice.getParent());
+        Assertions.assertEquals("GameModel", choice.getParentType());
+        Assertions.assertEquals(3, gameModelFacade.find(scenario.getId()).getItems().size());
+        Assertions.assertEquals(0, ((DescriptorListI)variableDescriptorFacade.find(question.getId())).getItems().size());
+        Assertions.assertEquals(0, ((DescriptorListI)variableDescriptorFacade.find(list.getId())).getItems().size());
 
         // move choice from root to list
         variableDescriptorFacade.move(choice.getId(), list.getId(), 0);
 
         choice = (ChoiceDescriptor) variableDescriptorFacade.find(choice.getId());
-        Assert.assertEquals(list, (ListDescriptor) choice.getParent());
-        Assert.assertEquals("ListDescriptor", choice.getParentType());
-        Assert.assertEquals(2, gameModelFacade.find(scenario.getId()).getItems().size());
-        Assert.assertEquals(0, ((DescriptorListI)variableDescriptorFacade.find(question.getId())).getItems().size());
-        Assert.assertEquals(1, ((DescriptorListI)variableDescriptorFacade.find(list.getId())).getItems().size());
+        Assertions.assertEquals(list, (ListDescriptor) choice.getParent());
+        Assertions.assertEquals("ListDescriptor", choice.getParentType());
+        Assertions.assertEquals(2, gameModelFacade.find(scenario.getId()).getItems().size());
+        Assertions.assertEquals(0, ((DescriptorListI)variableDescriptorFacade.find(question.getId())).getItems().size());
+        Assertions.assertEquals(1, ((DescriptorListI)variableDescriptorFacade.find(list.getId())).getItems().size());
 
     }
 }

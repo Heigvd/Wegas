@@ -11,8 +11,8 @@ import com.wegas.core.Helper;
 import com.wegas.utils.AbstractTest;
 import java.io.IOException;
 import java.nio.file.Paths;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ abstract public class PMGameAbstractTest extends AbstractTest {
      */
     protected abstract String getScriptTestPath();
 
-    @Before
+    @BeforeEach
     public void setUpGM() throws IOException {
         /* insert script from files*/
         //Helper.setWegasRootDirectory(Paths.get("").toAbsolutePath() + "/src/main/webapp/");
@@ -64,7 +64,7 @@ abstract public class PMGameAbstractTest extends AbstractTest {
         requestManager.clearEntities();
     }
 
-    @After
+    @AfterEach
     public void cleanGM() {
         //this.getGameModelFacade().remove(getGameModel().getId());
         cleanData();

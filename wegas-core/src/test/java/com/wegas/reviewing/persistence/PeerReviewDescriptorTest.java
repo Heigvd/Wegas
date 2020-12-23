@@ -25,11 +25,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.naming.NamingException;
-import org.junit.After;
-import org.junit.Assert;
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +59,7 @@ public class PeerReviewDescriptorTest extends AbstractArquillianTest {
      *
      * @throws NamingException
      */
-    @Before
+    @BeforeEach
     public void setUpInstances() throws NamingException {
 
         mapper = JacksonMapperProvider.getMapper();
@@ -120,19 +119,19 @@ public class PeerReviewDescriptorTest extends AbstractArquillianTest {
         requestManager.clearEntities();
     }
 
-    @After
+    @AfterEach
     public void tearDownLocal() {
         //logger.warn("Tear Down");
     }
 
     @Test
     public void testSetters() {
-        assertEquals("Number initial value", initial.getMaxNumberOfReview(), MAX_NUM);
-        assertEquals("Var name initial", initial.getToReviewName(), VAR_NAME);
+        Assertions.assertEquals(initial.getMaxNumberOfReview(), MAX_NUM, "Number initial value");
+        Assertions.assertEquals(initial.getToReviewName(), VAR_NAME, "Var name initial");
 
-        assertEquals("Max Number of review error", MAX_NUM, initial.getMaxNumberOfReview());
+        Assertions.assertEquals(MAX_NUM, initial.getMaxNumberOfReview(), "Max Number of review error");
         initial.setMaxNumberOfReview(-1);
-        assertEquals("Max Number of review error", Integer.valueOf(1), initial.getMaxNumberOfReview());
+        Assertions.assertEquals(Integer.valueOf(1), initial.getMaxNumberOfReview(), "Max Number of review error");
     }
 
     /**
@@ -148,13 +147,13 @@ public class PeerReviewDescriptorTest extends AbstractArquillianTest {
 
             PeerReviewDescriptor read = mapper.readValue(json, PeerReviewDescriptor.class);
 
-            assertEquals("Name", initial.getName(), read.getName());
-            assertEquals("Comments", initial.getComments(), read.getComments());
-            assertEquals("NumberOfReview", initial.getMaxNumberOfReview(), read.getMaxNumberOfReview());
-            assertEquals("ImportedName", VAR_NAME, read.getImportedToReviewName());
+            Assertions.assertEquals(initial.getName(), read.getName(), "Name");
+            Assertions.assertEquals(initial.getComments(), read.getComments(), "Comments");
+            Assertions.assertEquals(initial.getMaxNumberOfReview(), read.getMaxNumberOfReview(), "NumberOfReview");
+            Assertions.assertEquals(VAR_NAME, read.getImportedToReviewName(), "ImportedName");
 
-            assertEquals("# Feedback Items", 3, read.getFeedback().getEvaluations().size());
-            assertEquals("# Feedback Eval Items", 1, read.getFbComments().getEvaluations().size());
+            Assertions.assertEquals(3, read.getFeedback().getEvaluations().size(), "# Feedback Items");
+            Assertions.assertEquals(1, read.getFbComments().getEvaluations().size(), "# Feedback Eval Items");
         }
     }
 
@@ -163,9 +162,9 @@ public class PeerReviewDescriptorTest extends AbstractArquillianTest {
         String json = "{ \"@class\": \"PeerReviewDescriptor\", \"id\": \"\", \"label\": \"rr\", \"toReviewName\": \"x\", \"name\": \"\", \"maxNumberOfReview\": 3, \"feedback\": { \"@class\": \"EvaluationDescriptorContainer\" }, \"fbComments\": { \"@class\": \"EvaluationDescriptorContainer\" }, \"defaultInstance\": { \"@class\": \"PeerReviewInstance\", \"id\": \"\" }, \"comments\": \"\", \"scope\": { \"@class\": \"TeamScope\", \"broadcastScope\": \"TeamScope\" } }";
 
         PeerReviewDescriptor read = mapper.readValue(json, PeerReviewDescriptor.class);
-        Assert.assertEquals("Deserialised ReviewName not match", VAR_NAME, read.getToReviewName());// transient field
+        Assertions.assertEquals(VAR_NAME, read.getToReviewName(), "Deserialised ReviewName not match");// transient field
         variableDescriptorFacade.create(scenario.getId(), read);
-        Assert.assertEquals("Deserialised ReviewName not match", VAR_NAME, read.getToReviewName()); // through toReview var
+        Assertions.assertEquals(VAR_NAME, read.getToReviewName(), "Deserialised ReviewName not match"); // through toReview var
 
         String json2 = exportMapper.writeValueAsString(read);
     }
@@ -185,12 +184,12 @@ public class PeerReviewDescriptorTest extends AbstractArquillianTest {
 
         //logger.warn("Initial: " + exportMapper.writeValueAsString(initial));
         //logger.warn("Merged: " + exportMapper.writeValueAsString(merged));
-        assertEquals("Name", initial.getName(), merged.getName());
-        assertEquals("Comments", initial.getComments(), merged.getComments());
-        assertEquals("NumberOfReview", initial.getMaxNumberOfReview(), merged.getMaxNumberOfReview());
-        assertEquals("ImportedName", VAR_NAME, merged.getImportedToReviewName());
+        Assertions.assertEquals(initial.getName(), merged.getName(), "Name");
+        Assertions.assertEquals(initial.getComments(), merged.getComments(), "Comments");
+        Assertions.assertEquals(initial.getMaxNumberOfReview(), merged.getMaxNumberOfReview(), "NumberOfReview");
+        Assertions.assertEquals(VAR_NAME, merged.getImportedToReviewName(), "ImportedName");
 
-        assertEquals("# Feedback Items", 3, merged.getFeedback().getEvaluations().size());
-        assertEquals("# Feedback Eval Items", 1, merged.getFbComments().getEvaluations().size());
+        Assertions.assertEquals(3, merged.getFeedback().getEvaluations().size(), "# Feedback Items");
+        Assertions.assertEquals(1, merged.getFbComments().getEvaluations().size(), "# Feedback Eval Items");
     }
 }

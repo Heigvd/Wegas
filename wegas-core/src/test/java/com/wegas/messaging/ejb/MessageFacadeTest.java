@@ -24,10 +24,8 @@ import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.List;
 import javax.inject.Inject;
 import javax.naming.NamingException;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,12 +74,12 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         InboxInstance gettedInbox = (InboxInstance) vd.getInstance(player);
         List<Message> messages = gettedInbox.getSortedMessages();
 
-        assertEquals("from6", messages.get(0).getFrom().translateOrEmpty(player));
-        assertEquals("from5", messages.get(1).getFrom().translateOrEmpty(player));
-        assertEquals("from4", messages.get(2).getFrom().translateOrEmpty(player));
-        assertEquals("from3", messages.get(3).getFrom().translateOrEmpty(player));
-        assertEquals("from2", messages.get(4).getFrom().translateOrEmpty(player));
-        assertEquals("from1", messages.get(5).getFrom().translateOrEmpty(player));
+        Assertions.assertEquals("from6", messages.get(0).getFrom().translateOrEmpty(player));
+        Assertions.assertEquals("from5", messages.get(1).getFrom().translateOrEmpty(player));
+        Assertions.assertEquals("from4", messages.get(2).getFrom().translateOrEmpty(player));
+        Assertions.assertEquals("from3", messages.get(3).getFrom().translateOrEmpty(player));
+        Assertions.assertEquals("from2", messages.get(4).getFrom().translateOrEmpty(player));
+        Assertions.assertEquals("from1", messages.get(5).getFrom().translateOrEmpty(player));
     }
 
     /**
@@ -113,9 +111,9 @@ public class MessageFacadeTest extends AbstractArquillianTest {
 
         InboxInstance ii = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player));
         // Test
-        assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
-        assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
-        assertTrue("test".equals(ii.getMessages().get(0).getBody().translateOrEmpty(player)));
+        Assertions.assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
+        Assertions.assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
+        Assertions.assertTrue("test".equals(ii.getMessages().get(0).getBody().translateOrEmpty(player)));
 
         // Clean up
         variableDescriptorFacade.remove(inbox.getId());
@@ -145,8 +143,8 @@ public class MessageFacadeTest extends AbstractArquillianTest {
 
         InboxInstance ii = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player));
         // Test
-        assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
-        assertEquals("msg2", ii.getMessages().get(0).getBody().translateOrEmpty(player));
+        Assertions.assertEquals(1, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
+        Assertions.assertEquals("msg2", ii.getMessages().get(0).getBody().translateOrEmpty(player));
         scriptFacade.eval(player, new Script("Variable.find(gameModel, 'inbox').sendMessage(self, \"test\", \"test\", \"msg out\");"), null);
         // Clean up
         variableDescriptorFacade.remove(inbox.getId());
@@ -189,14 +187,14 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         gameModelFacade.reset(scenario.getId());
 
         variableInstanceFacade.find(inbox.getId(), player);
-        assertEquals(0, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
+        Assertions.assertEquals(0, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
         //This MAY Fail
         scriptController.run(scenario.getId(), player.getId(), null, new Script("Variable.find(gameModel,'testnumber').setValue(self,2)"));
         // This NEVER fails
 //        scriptFacade.eval(player.getId(), new Script("Variable.find(scenario,'testnumber').setValue(self,2)"), null);
 //        lookupBy(RequestFacade.class).commit();
-        assertEquals(2, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
-        assertNotSame(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody(), ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1).getBody());
+        Assertions.assertEquals(2, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
+        Assertions.assertNotSame(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody(), ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1).getBody());
     }
 
     @Test
@@ -220,13 +218,13 @@ public class MessageFacadeTest extends AbstractArquillianTest {
 
         variableDescriptorFacade.flush();
         // Test
-        assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
+        Assertions.assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
         //assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
         ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0);
 
-        assertEquals("test", ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().translateOrEmpty(player));
-        assertEquals("test", ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1).getBody().translateOrEmpty(player));
-        assertEquals("test", ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(2).getBody().translateOrEmpty(player));
+        Assertions.assertEquals(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().translateOrEmpty(player), "test");
+        Assertions.assertEquals(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1).getBody().translateOrEmpty(player), "test");
+        Assertions.assertEquals(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(2).getBody().translateOrEmpty(player), "test");
 
         // Clean up
         variableDescriptorFacade.remove(inbox.getId());
@@ -265,14 +263,14 @@ public class MessageFacadeTest extends AbstractArquillianTest {
 
         //InboxInstance ii = ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player));
         // Test
-        assertEquals(3, ii.getMessages().size());
+        Assertions.assertEquals(3, ii.getMessages().size());
         //assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
         ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0);
 
-        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().translateOrEmpty(player).equals("test"));
-        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0) != null);
-        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1) != null);
-        assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(2) != null);
+        Assertions.assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().translateOrEmpty(player).equals("test"));
+        Assertions.assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0) != null);
+        Assertions.assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1) != null);
+        Assertions.assertTrue(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(2) != null);
 
         // Clean up
         variableDescriptorFacade.remove(inbox.getId());
@@ -299,14 +297,14 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         scriptFacade.eval(player, new Script("javascript", script), null);
 
         // Test
-        assertEquals(4, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
+        Assertions.assertEquals(4, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().size());
         //assertEquals(3, ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player21)).getMessages().size());
         ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0);
 
-        assertEquals("test", ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().translateOrEmpty(player));
-        assertEquals("test", ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1).getBody().translateOrEmpty(player));
-        assertEquals("test", ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(2).getBody().translateOrEmpty(player));
-        assertEquals("test", ((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(3).getBody().translateOrEmpty(player));
+        Assertions.assertEquals(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(0).getBody().translateOrEmpty(player), "test");
+        Assertions.assertEquals(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(1).getBody().translateOrEmpty(player), "test");
+        Assertions.assertEquals(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(2).getBody().translateOrEmpty(player), "test");
+        Assertions.assertEquals(((InboxInstance) variableInstanceFacade.find(inbox.getId(), player)).getMessages().get(3).getBody().translateOrEmpty(player), "test");
 
         // Clean up
         variableDescriptorFacade.remove(inbox.getId());

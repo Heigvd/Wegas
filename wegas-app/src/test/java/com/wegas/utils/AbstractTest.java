@@ -20,7 +20,7 @@ import com.wegas.test.TestHelper;
 import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
 import java.io.IOException;
 import javax.inject.Inject;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public abstract class AbstractTest extends AbstractArquillianTestMinimal {
     }
 
     protected final void checkNumber(String name, double expectedValue, String errorMessage) throws WegasNoResultException {
-        Assert.assertEquals(errorMessage, expectedValue, ((NumberDescriptor) variableDescriptorFacade.find(gameModel, name)).getValue(player), 0.0);
+        Assertions.assertEquals(expectedValue, ((NumberDescriptor) variableDescriptorFacade.find(gameModel, name)).getValue(player), 0.0, errorMessage);
     }
 
     protected final void createGameModelFromFile(String gameModelPath) throws IOException {
@@ -64,7 +64,7 @@ public abstract class AbstractTest extends AbstractArquillianTestMinimal {
 
         System.out.println("Create game model : " + gameModel.getName());
         gameModelFacade.createWithDebugGame(gameModel);
-        Assert.assertNotNull(gameModel.getId()); //persisted
+        Assertions.assertNotNull(gameModel.getId()); //persisted
 
         this.gameModel = gameModel;
         player = this.gameModel.getPlayers().get(0);
@@ -89,7 +89,7 @@ public abstract class AbstractTest extends AbstractArquillianTestMinimal {
         logger.info("Create game model : " + gameModel.getName());
 
         gameModelFacade.createWithDebugGame(gameModel);
-        Assert.assertNotNull(gameModel.getId()); //persisted
+        Assertions.assertNotNull(gameModel.getId()); //persisted
 
         this.gameModel = gameModel;
         player = this.gameModel.getPlayers().get(0);

@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -23,8 +24,8 @@ import com.wegas.mcq.persistence.Result;
 import com.wegas.mcq.persistence.Result.IsQuestionCbx;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
 import com.wegas.reviewing.persistence.evaluation.GradeDescriptor;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -63,50 +64,50 @@ public class ErroreAndValidatedTest {
          * Visible
 
          */
-        Assert.assertFalse(isLabelVisible.eval(srResult.getLabel(), srResult));
-        Assert.assertTrue(isLabelVisible.eval(r1.getLabel(), r1));
+        Assertions.assertFalse(isLabelVisible.eval(srResult.getLabel(), srResult));
+        Assertions.assertTrue(isLabelVisible.eval(r1.getLabel(), r1));
 
-        Assert.assertFalse(isCbx.eval(question.getMinReplies(), question));
-        Assert.assertFalse(isCbx.eval(question.getTabular(), question));
-        Assert.assertTrue(notCbx.eval(choice.getMaxReplies(), choice));
-        Assert.assertTrue(notCbx.eval(srChoice.getMaxReplies(), choice));
-        Assert.assertFalse(isQuestionCbx.eval(srResult.getIgnorationAnswer(), srResult));
-        Assert.assertFalse(isQuestionCbx.eval(srResult.getIgnorationImpact(), srResult));
+        Assertions.assertFalse(isCbx.eval(question.getMinReplies(), question));
+        Assertions.assertFalse(isCbx.eval(question.getTabular(), question));
+        Assertions.assertTrue(notCbx.eval(choice.getMaxReplies(), choice));
+        Assertions.assertTrue(notCbx.eval(srChoice.getMaxReplies(), choice));
+        Assertions.assertFalse(isQuestionCbx.eval(srResult.getIgnorationAnswer(), srResult));
+        Assertions.assertFalse(isQuestionCbx.eval(srResult.getIgnorationImpact(), srResult));
 
         question.setMaxReplies(1);
 
-        Assert.assertFalse(isCbx.eval(question.getMinReplies(), question));
-        Assert.assertFalse(isCbx.eval(question.getTabular(), question));
-        Assert.assertFalse(notCbx.eval(choice.getMaxReplies(), choice));
-        Assert.assertFalse(notCbx.eval(srChoice.getMaxReplies(), choice));
-        Assert.assertFalse(isQuestionCbx.eval(srResult.getIgnorationAnswer(), srResult));
-        Assert.assertFalse(isQuestionCbx.eval(srResult.getIgnorationImpact(), srResult));
+        Assertions.assertFalse(isCbx.eval(question.getMinReplies(), question));
+        Assertions.assertFalse(isCbx.eval(question.getTabular(), question));
+        Assertions.assertFalse(notCbx.eval(choice.getMaxReplies(), choice));
+        Assertions.assertFalse(notCbx.eval(srChoice.getMaxReplies(), choice));
+        Assertions.assertFalse(isQuestionCbx.eval(srResult.getIgnorationAnswer(), srResult));
+        Assertions.assertFalse(isQuestionCbx.eval(srResult.getIgnorationImpact(), srResult));
 
         question.setMaxReplies(4);
 
-        Assert.assertFalse(isCbx.eval(question.getMinReplies(), question));
-        Assert.assertFalse(isCbx.eval(question.getTabular(), question));
-        Assert.assertTrue(notCbx.eval(choice.getMaxReplies(), choice));
-        Assert.assertTrue(notCbx.eval(srChoice.getMaxReplies(), choice));
-        Assert.assertFalse(isQuestionCbx.eval(srResult.getIgnorationAnswer(), srResult));
-        Assert.assertFalse(isQuestionCbx.eval(srResult.getIgnorationImpact(), srResult));
+        Assertions.assertFalse(isCbx.eval(question.getMinReplies(), question));
+        Assertions.assertFalse(isCbx.eval(question.getTabular(), question));
+        Assertions.assertTrue(notCbx.eval(choice.getMaxReplies(), choice));
+        Assertions.assertTrue(notCbx.eval(srChoice.getMaxReplies(), choice));
+        Assertions.assertFalse(isQuestionCbx.eval(srResult.getIgnorationAnswer(), srResult));
+        Assertions.assertFalse(isQuestionCbx.eval(srResult.getIgnorationImpact(), srResult));
 
         question.setCbx(Boolean.TRUE);
         question.setMaxReplies(1);
-        Assert.assertTrue(isCbx.eval(question.getMinReplies(), question));
-        Assert.assertTrue(isCbx.eval(question.getTabular(), question));
-        Assert.assertFalse(notCbx.eval(choice.getMaxReplies(), choice));
-        Assert.assertFalse(notCbx.eval(srChoice.getMaxReplies(), choice));
-        Assert.assertTrue(isQuestionCbx.eval(srResult.getIgnorationAnswer(), srResult));
-        Assert.assertTrue(isQuestionCbx.eval(srResult.getIgnorationImpact(), srResult));
+        Assertions.assertTrue(isCbx.eval(question.getMinReplies(), question));
+        Assertions.assertTrue(isCbx.eval(question.getTabular(), question));
+        Assertions.assertFalse(notCbx.eval(choice.getMaxReplies(), choice));
+        Assertions.assertFalse(notCbx.eval(srChoice.getMaxReplies(), choice));
+        Assertions.assertTrue(isQuestionCbx.eval(srResult.getIgnorationAnswer(), srResult));
+        Assertions.assertTrue(isQuestionCbx.eval(srResult.getIgnorationImpact(), srResult));
 
         question.setMaxReplies(null);
-        Assert.assertTrue(isCbx.eval(question.getMinReplies(), question));
-        Assert.assertTrue(isCbx.eval(question.getTabular(), question));
-        Assert.assertFalse(notCbx.eval(choice.getMaxReplies(), choice));
-        Assert.assertFalse(notCbx.eval(srChoice.getMaxReplies(), choice));
-        Assert.assertTrue(isQuestionCbx.eval(srResult.getIgnorationAnswer(), srResult));
-        Assert.assertTrue(isQuestionCbx.eval(srResult.getIgnorationImpact(), srResult));
+        Assertions.assertTrue(isCbx.eval(question.getMinReplies(), question));
+        Assertions.assertTrue(isCbx.eval(question.getTabular(), question));
+        Assertions.assertFalse(notCbx.eval(choice.getMaxReplies(), choice));
+        Assertions.assertFalse(notCbx.eval(srChoice.getMaxReplies(), choice));
+        Assertions.assertTrue(isQuestionCbx.eval(srResult.getIgnorationAnswer(), srResult));
+        Assertions.assertTrue(isQuestionCbx.eval(srResult.getIgnorationImpact(), srResult));
 
 
         /*
@@ -114,105 +115,69 @@ public class ErroreAndValidatedTest {
          */
         question.setMinReplies(null);
         question.setMaxReplies(null);
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(question.getMinReplies(), question));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(question.getMaxReplies(), question));
-        Assert.assertFalse("Min bound is not positive!",
-                checkMinPositiveness.eval(question.getMinReplies(), question));
-        Assert.assertFalse("Max bound is not positive!",
-                checkMinPositiveness.eval(question.getMaxReplies(), question));
+        Assertions.assertFalse(checkMinMaxBounds.eval(question.getMinReplies(), question), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(question.getMaxReplies(), question), "MinMax on max should not fail");
+        Assertions.assertFalse(checkMinPositiveness.eval(question.getMinReplies(), question), "Min bound is not positive!");
+        Assertions.assertFalse(checkMinPositiveness.eval(question.getMaxReplies(), question), "Max bound is not positive!");
 
         // Create default question with a valid minReplies
         question.setMinReplies(1);
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(question.getMinReplies(), question));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(question.getMaxReplies(), question));
-        Assert.assertFalse("Min bound is not positive!",
-                checkMinPositiveness.eval(question.getMinReplies(), question));
-        Assert.assertFalse("Max bound is not positive!",
-                checkMinPositiveness.eval(question.getMaxReplies(), question));
+        Assertions.assertFalse(checkMinMaxBounds.eval(question.getMinReplies(), question), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(question.getMaxReplies(), question), "MinMax on max should not fail");
+        Assertions.assertFalse(checkMinPositiveness.eval(question.getMinReplies(), question), "Min bound is not positive!");
+        Assertions.assertFalse(checkMinPositiveness.eval(question.getMaxReplies(), question), "Max bound is not positive!");
 
         // test with negtive min
         question.setMinReplies(0);
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(question.getMinReplies(), question));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(question.getMaxReplies(), question));
-        Assert.assertTrue("Min bound is not positive!",
-                checkMinPositiveness.eval(question.getMinReplies(), question));
-        Assert.assertFalse("Max bound is not positive!",
-                checkMinPositiveness.eval(question.getMaxReplies(), question));
+        Assertions.assertFalse(checkMinMaxBounds.eval(question.getMinReplies(), question), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(question.getMaxReplies(), question), "MinMax on max should not fail");
+        Assertions.assertTrue(checkMinPositiveness.eval(question.getMinReplies(), question), "Min bound is not positive!");
+        Assertions.assertFalse(checkMinPositiveness.eval(question.getMaxReplies(), question), "Max bound is not positive!");
 
         // test with negtive min
         question.setMinReplies(-10);
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(question.getMinReplies(), question));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(question.getMaxReplies(), question));
-        Assert.assertTrue("Min bound is not positive fail",
-                checkMinPositiveness.eval(question.getMinReplies(), question));
-        Assert.assertFalse("Max bound > 0 fail",
-                checkMinPositiveness.eval(question.getMaxReplies(), question));
+        Assertions.assertFalse(checkMinMaxBounds.eval(question.getMinReplies(), question), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(question.getMaxReplies(), question), "MinMax on max should not fail");
+        Assertions.assertTrue(checkMinPositiveness.eval(question.getMinReplies(), question), "Min bound is not positive fail");
+        Assertions.assertFalse(checkMinPositiveness.eval(question.getMaxReplies(), question), "Max bound > 0 fail");
 
         // test with no min but max = 0
         question.setMinReplies(null);
         question.setMaxReplies(0);
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(question.getMinReplies(), question));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(question.getMaxReplies(), question));
-        Assert.assertFalse("Min bound is not positive fail",
-                checkMinPositiveness.eval(question.getMinReplies(), question));
-        Assert.assertTrue("Max bound > 0 fail",
-                checkMinPositiveness.eval(question.getMaxReplies(), question));
+        Assertions.assertFalse(checkMinMaxBounds.eval(question.getMinReplies(), question), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(question.getMaxReplies(), question), "MinMax on max should not fail");
+        Assertions.assertFalse(checkMinPositiveness.eval(question.getMinReplies(), question), "Min bound is not positive fail");
+        Assertions.assertTrue(checkMinPositiveness.eval(question.getMaxReplies(), question), "Max bound > 0 fail");
 
         // test with no min but max = 1
         question.setMaxReplies(1);
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(question.getMinReplies(), question));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(question.getMaxReplies(), question));
-        Assert.assertFalse("Min bound is not positive fail",
-                checkMinPositiveness.eval(question.getMinReplies(), question));
-        Assert.assertFalse("Max bound > 0 fail",
-                checkMinPositiveness.eval(question.getMaxReplies(), question));
+        Assertions.assertFalse(checkMinMaxBounds.eval(question.getMinReplies(), question), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(question.getMaxReplies(), question), "MinMax on max should not fail");
+        Assertions.assertFalse(checkMinPositiveness.eval(question.getMinReplies(), question), "Min bound is not positive fail");
+        Assertions.assertFalse(checkMinPositiveness.eval(question.getMaxReplies(), question), "Max bound > 0 fail");
 
         // test with no min but max = 10
         question.setMaxReplies(10);
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(question.getMinReplies(), question));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(question.getMaxReplies(), question));
-        Assert.assertFalse("Min bound is not positive fail",
-                checkMinPositiveness.eval(question.getMinReplies(), question));
-        Assert.assertFalse("Max bound > 0 fail",
-                checkMinPositiveness.eval(question.getMaxReplies(), question));
+        Assertions.assertFalse(checkMinMaxBounds.eval(question.getMinReplies(), question), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(question.getMaxReplies(), question), "MinMax on max should not fail");
+        Assertions.assertFalse(checkMinPositiveness.eval(question.getMinReplies(), question), "Min bound is not positive fail");
+        Assertions.assertFalse(checkMinPositiveness.eval(question.getMaxReplies(), question), "Max bound > 0 fail");
 
         // test with min & max
         question.setMinReplies(1);
         question.setMaxReplies(3);
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(question.getMinReplies(), question));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(question.getMaxReplies(), question));
-        Assert.assertFalse("Min bound is not positive fail",
-                checkMinPositiveness.eval(question.getMinReplies(), question));
-        Assert.assertFalse("Max bound > 0 fail",
-                checkMinPositiveness.eval(question.getMaxReplies(), question));
+        Assertions.assertFalse(checkMinMaxBounds.eval(question.getMinReplies(), question), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(question.getMaxReplies(), question), "MinMax on max should not fail");
+        Assertions.assertFalse(checkMinPositiveness.eval(question.getMinReplies(), question), "Min bound is not positive fail");
+        Assertions.assertFalse(checkMinPositiveness.eval(question.getMaxReplies(), question), "Max bound > 0 fail");
 
         // test with erroneous min & max
         question.setMinReplies(10);
         question.setMaxReplies(3);
-        Assert.assertTrue("MinMax on min should not fail",
-                checkMinMaxBounds.eval(question.getMinReplies(), question));
-        Assert.assertTrue("MinMax on max should not fail",
-                checkMinMaxBounds.eval(question.getMaxReplies(), question));
-        Assert.assertFalse("Min bound is not positive fail",
-                checkMinPositiveness.eval(question.getMinReplies(), question));
-        Assert.assertFalse("Max bound > 0 fail",
-                checkMinPositiveness.eval(question.getMaxReplies(), question));
+        Assertions.assertTrue(checkMinMaxBounds.eval(question.getMinReplies(), question), "MinMax on min should not fail");
+        Assertions.assertTrue(checkMinMaxBounds.eval(question.getMaxReplies(), question), "MinMax on max should not fail");
+        Assertions.assertFalse(checkMinPositiveness.eval(question.getMinReplies(), question), "Min bound is not positive fail");
+        Assertions.assertFalse(checkMinPositiveness.eval(question.getMaxReplies(), question), "Max bound > 0 fail");
     }
 
     @Test
@@ -230,124 +195,76 @@ public class ErroreAndValidatedTest {
         NumberInstance instance = new NumberInstance(0.0);
         instance.setTeamScope((TeamScope) number.getScope());
 
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(number.getMinValue(), number));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(number.getMaxValue(), number));
-        Assert.assertFalse("MinMax on default value fail",
-                lessThanMin.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()));
-        Assert.assertFalse("MinMax on default value fail",
-                greaterThanMax.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()));
-        Assert.assertFalse("MinMax on player instance fail",
-                lessThanMin.eval(instance.getValue(), instance));
-        Assert.assertFalse("MinMax on player instance fail",
-                greaterThanMax.eval(instance.getValue(), instance));
+        Assertions.assertFalse(checkMinMaxBounds.eval(number.getMinValue(), number), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(number.getMaxValue(), number), "MinMax on max should not fail");
+        Assertions.assertFalse(lessThanMin.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()), "MinMax on default value fail");
+        Assertions.assertFalse(greaterThanMax.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()), "MinMax on default value fail");
+        Assertions.assertFalse(lessThanMin.eval(instance.getValue(), instance), "MinMax on player instance fail");
+        Assertions.assertFalse(greaterThanMax.eval(instance.getValue(), instance), "MinMax on player instance fail");
 
         number.setMinValue(-10.0);
         number.setMaxValue(10.0);
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(number.getMinValue(), number));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(number.getMaxValue(), number));
-        Assert.assertFalse("MinMax on default value fail",
-                lessThanMin.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()));
-        Assert.assertFalse("MinMax on default value fail",
-                greaterThanMax.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()));
-        Assert.assertFalse("MinMax on player instance fail",
-                lessThanMin.eval(instance.getValue(), instance));
-        Assert.assertFalse("MinMax on player instance fail",
-                greaterThanMax.eval(instance.getValue(), instance));
+        Assertions.assertFalse(checkMinMaxBounds.eval(number.getMinValue(), number), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(number.getMaxValue(), number), "MinMax on max should not fail");
+        Assertions.assertFalse(lessThanMin.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()), "MinMax on default value fail");
+        Assertions.assertFalse(greaterThanMax.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()), "MinMax on default value fail");
+        Assertions.assertFalse(lessThanMin.eval(instance.getValue(), instance), "MinMax on player instance fail");
+        Assertions.assertFalse(greaterThanMax.eval(instance.getValue(), instance), "MinMax on player instance fail");
 
         number.setMinValue(-10.0);
         number.setMaxValue(-20.0);
-        Assert.assertTrue("MinMax on min should not fail",
-                checkMinMaxBounds.eval(number.getMinValue(), number));
-        Assert.assertTrue("MinMax on max should not fail",
-                checkMinMaxBounds.eval(number.getMaxValue(), number));
-        Assert.assertFalse("MinMax on default value fail",
-                lessThanMin.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()));
-        Assert.assertTrue("MinMax on default value fail",
-                greaterThanMax.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()));
-        Assert.assertFalse("MinMax on player instance fail",
-                lessThanMin.eval(instance.getValue(), instance));
-        Assert.assertTrue("MinMax on player instance fail",
-                greaterThanMax.eval(instance.getValue(), instance));
+        Assertions.assertTrue(checkMinMaxBounds.eval(number.getMinValue(), number), "MinMax on min should not fail");
+        Assertions.assertTrue(checkMinMaxBounds.eval(number.getMaxValue(), number), "MinMax on max should not fail");
+        Assertions.assertFalse(lessThanMin.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()), "MinMax on default value fail");
+        Assertions.assertTrue(greaterThanMax.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()), "MinMax on default value fail");
+        Assertions.assertFalse(lessThanMin.eval(instance.getValue(), instance), "MinMax on player instance fail");
+        Assertions.assertTrue(greaterThanMax.eval(instance.getValue(), instance), "MinMax on player instance fail");
 
         number.setMinValue(1.0);
         number.setMaxValue(10.0);
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(number.getMinValue(), number));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(number.getMaxValue(), number));
-        Assert.assertTrue("MinMax on default value fail",
-                lessThanMin.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()));
-        Assert.assertFalse("MinMax on default value fail",
-                greaterThanMax.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()));
-        Assert.assertTrue("MinMax on player instance fail",
-                lessThanMin.eval(instance.getValue(), instance));
-        Assert.assertFalse("MinMax on player instance fail",
-                greaterThanMax.eval(instance.getValue(), instance));
+        Assertions.assertFalse(checkMinMaxBounds.eval(number.getMinValue(), number), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(number.getMaxValue(), number), "MinMax on max should not fail");
+        Assertions.assertTrue(lessThanMin.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()), "MinMax on default value fail");
+        Assertions.assertFalse(greaterThanMax.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()), "MinMax on default value fail");
+        Assertions.assertTrue(lessThanMin.eval(instance.getValue(), instance), "MinMax on player instance fail");
+        Assertions.assertFalse(greaterThanMax.eval(instance.getValue(), instance), "MinMax on player instance fail");
 
         number.setMinValue(-10.0);
         number.setDefaultInstance(new NumberInstance(-20.0));
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(number.getMinValue(), number));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(number.getMaxValue(), number));
-        Assert.assertTrue("MinMax on default value fail",
-                lessThanMin.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()));
-        Assert.assertFalse("MinMax on default value fail",
-                greaterThanMax.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()));
-        Assert.assertFalse("MinMax on player instance fail",
-                lessThanMin.eval(instance.getValue(), instance));
-        Assert.assertFalse("MinMax on player instance fail",
-                greaterThanMax.eval(instance.getValue(), instance));
+        Assertions.assertFalse(checkMinMaxBounds.eval(number.getMinValue(), number), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(number.getMaxValue(), number), "MinMax on max should not fail");
+        Assertions.assertTrue(lessThanMin.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()), "MinMax on default value fail");
+        Assertions.assertFalse(greaterThanMax.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()), "MinMax on default value fail");
+        Assertions.assertFalse(lessThanMin.eval(instance.getValue(), instance), "MinMax on player instance fail");
+        Assertions.assertFalse(greaterThanMax.eval(instance.getValue(), instance), "MinMax on player instance fail");
 
         instance = new NumberInstance(-20.0);
         instance.setTeamScope((TeamScope) number.getScope());
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(number.getMinValue(), number));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(number.getMaxValue(), number));
-        Assert.assertTrue("MinMax on default value fail",
-                lessThanMin.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()));
-        Assert.assertFalse("MinMax on default value fail",
-                greaterThanMax.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()));
-        Assert.assertTrue("MinMax on player instance fail",
-                lessThanMin.eval(instance.getValue(), instance));
-        Assert.assertFalse("MinMax on player instance fail",
-                greaterThanMax.eval(instance.getValue(), instance));
+        Assertions.assertFalse(checkMinMaxBounds.eval(number.getMinValue(), number), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(number.getMaxValue(), number), "MinMax on max should not fail");
+        Assertions.assertTrue(lessThanMin.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()), "MinMax on default value fail");
+        Assertions.assertFalse(greaterThanMax.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()), "MinMax on default value fail");
+        Assertions.assertTrue(lessThanMin.eval(instance.getValue(), instance), "MinMax on player instance fail");
+        Assertions.assertFalse(greaterThanMax.eval(instance.getValue(), instance), "MinMax on player instance fail");
 
         number.setDefaultInstance(new NumberInstance(20.0));
         instance = new NumberInstance(0.0);
         instance.setTeamScope((TeamScope) number.getScope());
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(number.getMinValue(), number));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(number.getMaxValue(), number));
-        Assert.assertFalse("MinMax on default value fail",
-                lessThanMin.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()));
-        Assert.assertTrue("MinMax on default value fail",
-                greaterThanMax.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()));
-        Assert.assertFalse("MinMax on player instance fail",
-                lessThanMin.eval(instance.getValue(), instance));
-        Assert.assertFalse("MinMax on player instance fail",
-                greaterThanMax.eval(instance.getValue(), instance));
+        Assertions.assertFalse(checkMinMaxBounds.eval(number.getMinValue(), number), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(number.getMaxValue(), number), "MinMax on max should not fail");
+        Assertions.assertFalse(lessThanMin.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()), "MinMax on default value fail");
+        Assertions.assertTrue(greaterThanMax.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()), "MinMax on default value fail");
+        Assertions.assertFalse(lessThanMin.eval(instance.getValue(), instance), "MinMax on player instance fail");
+        Assertions.assertFalse(greaterThanMax.eval(instance.getValue(), instance), "MinMax on player instance fail");
 
         instance = new NumberInstance(20.0);
         instance.setTeamScope((TeamScope) number.getScope());
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(number.getMinValue(), number));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(number.getMaxValue(), number));
-        Assert.assertFalse("MinMax on default value fail",
-                lessThanMin.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()));
-        Assert.assertTrue("MinMax on default value fail",
-                greaterThanMax.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()));
-        Assert.assertFalse("MinMax on player instance fail",
-                lessThanMin.eval(instance.getValue(), instance));
-        Assert.assertTrue("MinMax on player instance fail",
-                greaterThanMax.eval(instance.getValue(), instance));
+        Assertions.assertFalse(checkMinMaxBounds.eval(number.getMinValue(), number), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(number.getMaxValue(), number), "MinMax on max should not fail");
+        Assertions.assertFalse(lessThanMin.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()), "MinMax on default value fail");
+        Assertions.assertTrue(greaterThanMax.eval(number.getDefaultInstance().getValue(), number.getDefaultInstance()), "MinMax on default value fail");
+        Assertions.assertFalse(lessThanMin.eval(instance.getValue(), instance), "MinMax on player instance fail");
+        Assertions.assertTrue(greaterThanMax.eval(instance.getValue(), instance), "MinMax on player instance fail");
     }
 
     @Test
@@ -357,36 +274,26 @@ public class ErroreAndValidatedTest {
         // Create default number
         GradeDescriptor grade = new GradeDescriptor();
 
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(grade.getMinValue(), grade));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(grade.getMaxValue(), grade));
+        Assertions.assertFalse(checkMinMaxBounds.eval(grade.getMinValue(), grade), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(grade.getMaxValue(), grade), "MinMax on max should not fail");
 
         grade.setMinValue(-10l);
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(grade.getMinValue(), grade));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(grade.getMaxValue(), grade));
+        Assertions.assertFalse(checkMinMaxBounds.eval(grade.getMinValue(), grade), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(grade.getMaxValue(), grade), "MinMax on max should not fail");
 
         grade.setMinValue(null);
         grade.setMaxValue(10l);
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(grade.getMinValue(), grade));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(grade.getMaxValue(), grade));
+        Assertions.assertFalse(checkMinMaxBounds.eval(grade.getMinValue(), grade), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(grade.getMaxValue(), grade), "MinMax on max should not fail");
 
         grade.setMinValue(-10l);
         grade.setMaxValue(10l);
-        Assert.assertFalse("MinMax on min should not fail",
-                checkMinMaxBounds.eval(grade.getMinValue(), grade));
-        Assert.assertFalse("MinMax on max should not fail",
-                checkMinMaxBounds.eval(grade.getMaxValue(), grade));
+        Assertions.assertFalse(checkMinMaxBounds.eval(grade.getMinValue(), grade), "MinMax on min should not fail");
+        Assertions.assertFalse(checkMinMaxBounds.eval(grade.getMaxValue(), grade), "MinMax on max should not fail");
 
         grade.setMinValue(-10l);
         grade.setMaxValue(-20l);
-        Assert.assertTrue("MinMax on min should not fail",
-                checkMinMaxBounds.eval(grade.getMinValue(), grade));
-        Assert.assertTrue("MinMax on max should not fail",
-                checkMinMaxBounds.eval(grade.getMaxValue(), grade));
+        Assertions.assertTrue(checkMinMaxBounds.eval(grade.getMinValue(), grade), "MinMax on min should not fail");
+        Assertions.assertTrue(checkMinMaxBounds.eval(grade.getMaxValue(), grade), "MinMax on max should not fail");
     }
 }

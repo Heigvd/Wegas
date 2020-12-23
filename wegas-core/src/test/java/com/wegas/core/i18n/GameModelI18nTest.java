@@ -11,8 +11,8 @@ import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import javax.inject.Inject;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -27,12 +27,12 @@ public class GameModelI18nTest extends AbstractArquillianTest {
     public void testI18n() {
         GameModelLanguage defaultLanguage = gameModel.getLanguageByName("english");
 
-        Assert.assertNotNull("No default language", defaultLanguage);
+        Assertions.assertNotNull(defaultLanguage, "No default language");
 
         i18nFacade.createLanguage(gameModel, "fr", "French");
 
         GameModelLanguage fr = gameModel.getLanguageByName("FRENCH");
 
-        Assert.assertNotNull("No French", fr);
+        Assertions.assertNotNull(fr, "No French");
     }
 }

@@ -18,8 +18,8 @@ import com.wegas.test.arquillian.AbstractArquillianTest;
 import com.wegas.test.mcq.Answerer;
 import java.util.function.Function;
 import javax.inject.Inject;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +78,6 @@ public class MultipleResultTest extends AbstractArquillianTest {
         qi = (QuestionInstance) variableInstanceFacade.find(qi.getId());
 
         // Make sure the number of reply is 1
-        Assert.assertEquals(1, qi.getReplies().size());
+        Assertions.assertEquals(1, qi.getReplies().size());
     }
 }

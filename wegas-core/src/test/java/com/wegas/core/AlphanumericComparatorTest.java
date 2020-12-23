@@ -8,8 +8,8 @@
 package com.wegas.core;
 
 import java.util.Arrays;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -30,7 +30,7 @@ public class AlphanumericComparatorTest {
         };
         Arrays.sort(list, new AlphanumericComparator<>());
         for (i = 0; i < list.length; i += 1) {
-            Assert.assertEquals(list[i], expected[i]);
+            Assertions.assertEquals(list[i], expected[i]);
         }
     }
 }

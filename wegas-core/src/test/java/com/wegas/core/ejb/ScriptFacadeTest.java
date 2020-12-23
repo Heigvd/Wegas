@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -18,8 +19,8 @@ import javax.ejb.EJBException;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.script.ScriptException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,13 +59,13 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
 
         // Verify the new value
         final StringInstance instance = (StringInstance) variableInstanceFacade.find(stringDescriptor.getId(), player.getId());
-        Assert.assertEquals(VALUE2, instance.getValue());
+        Assertions.assertEquals(VALUE2, instance.getValue());
 
         //Test with events
         final Script testEvent = new Script("Event.on('testEvent', function(o){Variable.find(gameModel,'" + VARIABLENAME + "').getInstance(self).setValue(o.value);});\nEvent.fire('testEvent', {'value':'" + VALUE + "'});");
         testEvent.setLanguage("JavaScript");
         scriptFacade.eval(player.getId(), testEvent, null);
-        Assert.assertEquals(VALUE, ((StringInstance) variableInstanceFacade.find(stringDescriptor.getId(), player.getId())).getValue());
+        Assertions.assertEquals(VALUE, ((StringInstance) variableInstanceFacade.find(stringDescriptor.getId(), player.getId())).getValue());
     }
 
     @Test
@@ -81,9 +82,9 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
 
         Double rnd2 = (Double) scriptFacade.eval(player, rnd100, null);
 
-        Assert.assertTrue(rnd1 > 0.0);
-        Assert.assertEquals(0.0, rnd_bypassed, 0.001);
-        Assert.assertTrue(rnd2 > 0.0);
+        Assertions.assertTrue(rnd1 > 0.0);
+        Assertions.assertEquals(0.0, rnd_bypassed, 0.001);
+        Assertions.assertTrue(rnd2 > 0.0);
     }
 
     @Test
@@ -110,7 +111,6 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
 
         String script2 = "GameModelFacade.find(1);";
 
-
         int tick = 10_000;
 
         while (true) {
@@ -126,22 +126,26 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
         //logger.error("TOTAL DURATION: {}", System.currentTimeMillis() - start);
     }
 
-    @Test(expected = WegasScriptException.class)
+    @Test
     public void testTimeoutEvalInterrupts() throws Throwable {
-        try {
-            scriptFacade.timeoutEval(player.getId(), new Script("JavaScript", "while(1){}"));
-        } catch (EJBException e) {
-            throw e.getCause();
-        }
+        Assertions.assertThrows(WegasScriptException.class, () -> {
+            try {
+                scriptFacade.timeoutEval(player.getId(), new Script("JavaScript", "while(1){}"));
+            } catch (EJBException e) {
+                throw e.getCause();
+            }
+        });
     }
 
-    @Test(expected = WegasScriptException.class)
+    @Test
     public void testTimeoutEvalInterrupts2() throws Throwable {
-        try {
-            scriptFacade.timeoutEval(player.getId(), new Script("JavaScript", "(function(){for(;;){}})()"));
-        } catch (EJBException e) {
-            throw e.getCause();
-        }
+        Assertions.assertThrows(WegasScriptException.class, () -> {
+            try {
+                scriptFacade.timeoutEval(player.getId(), new Script("JavaScript", "(function(){for(;;){}})()"));
+            } catch (EJBException e) {
+                throw e.getCause();
+            }
+        });
     }
 
     @Test
@@ -152,10 +156,10 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), numberDescriptor);
 
         scriptFacade.timeoutEval(player.getId(),
-                new Script("JavaScript", "Variable.find(gameModel, 'testnum').setValue(self, " + VALUE + ");"));
-        Assert.assertEquals(VALUE,
-                ((NumberInstance) variableInstanceFacade.find(numberDescriptor.getId(), player.getId())).getValue(),
-                0.0001);
+            new Script("JavaScript", "Variable.find(gameModel, 'testnum').setValue(self, " + VALUE + ");"));
+        Assertions.assertEquals(VALUE,
+            ((NumberInstance) variableInstanceFacade.find(numberDescriptor.getId(), player.getId())).getValue(),
+            0.0001);
         // Parser doing hoisting this, test for a correct injection.
         scriptFacade.timeoutEval(player.getId(), new Script("JavaScript", "(function a(c){c(); while(0){}\nfunction b(){c();}})(function(){})"));
     }

@@ -185,15 +185,15 @@ YUI.add('wegas-serialization-test', function(Y) {
                 b = this.escape(widget.toObject());                             // Serialize
 
                 this.logResult(a, b);
-                //Y.Assert.areSame(a, b, "Seralized version does not match original version");
+                //Y.Assertions.areSame(a, b, "Seralized version does not match original version");
 
                 widget.destroy();                                               // Delete
-                Y.Assert.isTrue(widget.get("destroyed"));
+                Y.Assertions.isTrue(widget.get("destroyed"));
 
                 Y.later(1, this, function() {
                     this.resume(function() {                                    // Resume test
                         this.nextPage();
-                        //Y.Assert.areEqual(document.getElementById("testDiv").offsetWidth, 400, "Width of the DIV should be 400.");
+                        //Y.Assertions.areEqual(document.getElementById("testDiv").offsetWidth, 400, "Width of the DIV should be 400.");
                     });
                 });
             }, this, cfg));

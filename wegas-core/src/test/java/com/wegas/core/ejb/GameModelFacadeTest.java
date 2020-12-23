@@ -13,8 +13,8 @@ import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
 import java.util.function.Function;
 import javax.naming.NamingException;
 import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,17 +50,17 @@ public class GameModelFacadeTest extends AbstractArquillianTestMinimal {
 
         final int size = gameModelFacade.findAll().size();
         gameModelFacade.create(myGameModel);
-        Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
+        Assertions.assertEquals(size + 1, gameModelFacade.findAll().size());
 
         myGameModel = gameModelFacade.find(myGameModel.getId());
-        Assert.assertEquals(name, myGameModel.getName());
-        Assert.assertEquals(CLIENT_SCRIPTCONTENT, myGameModel.getClientScript(CLIENT_SCRIPTNAME).getContent());
-        Assert.assertEquals(PAGE_URI, myGameModel.getProperties().getPagesUri());
-        Assert.assertEquals(CSS_CONTENT, myGameModel.getCss(CSS_NAME).getContent());
-        Assert.assertEquals(SERVER_SCRIPTCONTENT, myGameModel.getScript(SERVER_SCRIPTNAME).getContent());
+        Assertions.assertEquals(name, myGameModel.getName());
+        Assertions.assertEquals(CLIENT_SCRIPTCONTENT, myGameModel.getClientScript(CLIENT_SCRIPTNAME).getContent());
+        Assertions.assertEquals(PAGE_URI, myGameModel.getProperties().getPagesUri());
+        Assertions.assertEquals(CSS_CONTENT, myGameModel.getCss(CSS_NAME).getContent());
+        Assertions.assertEquals(SERVER_SCRIPTCONTENT, myGameModel.getScript(SERVER_SCRIPTNAME).getContent());
 
         gameModelFacade.remove(myGameModel.getId());
-        Assert.assertEquals(size, gameModelFacade.findAll().size());
+        Assertions.assertEquals(size, gameModelFacade.findAll().size());
     }
 
     @Test
@@ -75,7 +75,7 @@ public class GameModelFacadeTest extends AbstractArquillianTestMinimal {
         GameModel gm = new GameModel(GAMENAME);
         final int size = gameModelFacade.findAll().size();
         gameModelFacade.create(gm);
-        Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
+        Assertions.assertEquals(size + 1, gameModelFacade.findAll().size());
         gm.setName(GAMENAME2);
 
         // Edit this gam
@@ -83,26 +83,26 @@ public class GameModelFacadeTest extends AbstractArquillianTestMinimal {
         gm.setName(GAMENAME2);
         // Change Name and guestAllowed properties
         GameModel gm2 = gameModelFacade.update(gm.getId(), gm);
-        Assert.assertEquals(GAMENAME2, gm2.getName());
+        Assertions.assertEquals(GAMENAME2, gm2.getName());
 
         // Create a game, a team and a player
         Game g = new Game(NAME, TOKEN);
         gameFacade.create(gm.getId(), g);
 
         Game g2 = gameFacade.findByToken(TOKEN);
-        Assert.assertEquals(NAME, g2.getName());
+        Assertions.assertEquals(NAME, g2.getName());
 
         Team t = new Team();
         t.setName("test-team");
         teamFacade.create(g.getId(), t);
-        Assert.assertNotNull(t.getId());
+        Assertions.assertNotNull(t.getId());
 
         Player p = gameFacade.joinTeam(t.getId(), null);
 
-        Assert.assertNotNull(p.getId());
+        Assertions.assertNotNull(p.getId());
 
         gameModelFacade.remove(gm.getId());
-        Assert.assertEquals(size, gameModelFacade.findAll().size());
+        Assertions.assertEquals(size, gameModelFacade.findAll().size());
     }
 
     @Test
@@ -132,12 +132,12 @@ public class GameModelFacadeTest extends AbstractArquillianTestMinimal {
         final Thread thread2 = TestHelper.start(runCreateTeam.apply(t2), handler);
         thread1.join();
         thread2.join();
-        Assert.assertEquals(1, nbFail);
-        //Assert.assertFalse(t1.getName().equals(t2.getName()));
-        Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
+        Assertions.assertEquals(1, nbFail);
+        //Assertions.assertFalse(t1.getName().equals(t2.getName()));
+        Assertions.assertEquals(size + 1, gameModelFacade.findAll().size());
 
         gameModelFacade.remove(myGameModel.getId());
-        Assert.assertEquals(size, gameModelFacade.findAll().size());
+        Assertions.assertEquals(size, gameModelFacade.findAll().size());
     }
 
     @Test
@@ -162,9 +162,9 @@ public class GameModelFacadeTest extends AbstractArquillianTestMinimal {
             System.out.println("ERROR: " + e);
         }
 
-        Assert.assertEquals(size + 1, gameModelFacade.findAll().size());
+        Assertions.assertEquals(size + 1, gameModelFacade.findAll().size());
 
         gameModelFacade.remove(myGameModel.getId());
-        Assert.assertEquals(size, gameModelFacade.findAll().size());
+        Assertions.assertEquals(size, gameModelFacade.findAll().size());
     }
 }
