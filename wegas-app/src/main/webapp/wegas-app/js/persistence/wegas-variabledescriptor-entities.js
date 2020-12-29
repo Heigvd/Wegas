@@ -245,11 +245,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         {
                             value: 'SECURED',
                             label: 'Secured'
-                        }/*,  // not fully implemented : hide the HIDDEN option
+                        },
                         {
                             value: 'HIDDEN',
                             label: 'Hidden'
-                        }*/
+                        }
                     ],
                     className: 'wegas-advanced-feature',
                     label: 'Variable isolation'

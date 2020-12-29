@@ -14,9 +14,9 @@ public class IsolationSelectView extends SelectView {
 
     public IsolationSelectView() {
         super(
-                new Choice("OPEN", "OPEN"),
-                new Choice("SECURED", "SECURED")//,
-                //new Choice("HIDDEN", "HIDDEN")// not fully implemented hide the hidden option !
+                new Choice("None", "OPEN"),
+                new Choice("Secured", "SECURED"),
+                new Choice("Hidden", "HIDDEN")
         );
         this.setLabel("Isolation");
     }

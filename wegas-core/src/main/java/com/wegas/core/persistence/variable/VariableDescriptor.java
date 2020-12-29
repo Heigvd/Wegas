@@ -256,7 +256,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
          */
         SECURED,
         /**
-         * NOT YET IMPLEMENTED. The variable is not even visible to players.
+         * The variable is not even visible to players.
          */
         HIDDEN
     }
