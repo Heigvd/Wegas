@@ -132,6 +132,11 @@ const toggle = css({
   width: '1em',
   cursor: 'pointer',
 });
+
+const noToggle = css({
+  padding: '0 0.3em',
+  width: '1em',
+});
 const isDraggingStyle = css({
   display: 'none',
 });
@@ -206,7 +211,7 @@ class TreeNode extends React.Component<
     } = this.props;
     const { expanded } = this.state;
     const children = this.props.children({
-      nodeProps: (function () {
+      nodeProps: (function() {
         let index = 0;
         return function nodeProps() {
           return { index: index++, parent: id };
@@ -248,12 +253,14 @@ class TreeNode extends React.Component<
                     )}
                     {separator(
                       <div className={cx(flex, grow, flexRow, itemCenter)}>
-                        {isNode && (
+                        {isNode ? (
                           <div className={toggle} onClick={this.toggleExpand}>
                             <FontAwesome
                               icon={expanded ? 'caret-down' : 'caret-right'}
                             />
                           </div>
+                        ) : (
+                          <div className={noToggle}></div>
                         )}
 
                         {header}
@@ -307,7 +314,7 @@ const DSNodeFactory = (
         }
       },
     },
-    function (connect, monitor) {
+    function(connect, monitor) {
       return {
         connectDragSource: connect.dragSource(),
         isDragging: monitor.isDragging(),

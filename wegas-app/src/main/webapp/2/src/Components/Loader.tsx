@@ -66,7 +66,7 @@ function tumbleLoaderStyle(size: number, color: string = '#fff') {
       borderRadius: '50%',
       border: `${border} solid ${color}`,
       borderColor: `${color} transparent ${color} transparent`,
-      animation: `${tumbleLoaderAnimation} 1.2s linear infinite`,
+      animation: `${tumbleLoaderAnimation} 1.2s steps(16) infinite`,
     },
   });
 }

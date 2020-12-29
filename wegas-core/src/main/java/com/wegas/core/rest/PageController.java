@@ -101,7 +101,7 @@ public class PageController {
         throws RepositoryException {
 
         GameModel gm = gameModelFacade.find(gameModelId);
-        requestManager.assertUpdateRight(gm);
+        requestManager.assertReadRight(gm);
 
         return Response.ok(gm.getPages(), MediaType.APPLICATION_JSON).header("Page", "*").build();
     }
