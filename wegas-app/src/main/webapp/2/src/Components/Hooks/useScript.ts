@@ -36,11 +36,12 @@ import {
 } from '../../Editor/Components/FormView/translatable';
 import { wwarn } from '../../Helper/wegaslog';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
-import { replace } from '../../Helper/tools';
+import { replace, createLRU } from '../../Helper/tools';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
 import { createScript, isScript } from '../../Helper/wegasEntites';
 import { cloneDeep } from 'lodash-es';
 import { State } from '../../data/Reducer/reducers';
+import { formatScriptToFunctionBody } from '../../Editor/Components/ScriptEditors/WegasScriptEditor';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -362,10 +363,96 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
 
 export type ScriptReturnType = object | number | boolean | string | undefined;
 
-/*
- * Quite a ugly solution to cache transpiled scripts...
+/**
+ * Transpile to a new Function()
  */
-const transpiledCache = new Map<IScript, string>();
+function transpileToFunction(script: string) {
+  // script does not containes any return statement (eval-style returns last-evaluated statement)
+  // such a statement must be added
+  // TODO: this function is not that robust... AST based transformation is required (quite a big job)
+  const fnBody = formatScriptToFunctionBody(script);
+  const fnScript = '"use strict"; undefined;' + transpile(fnBody);
+
+  // globals will be injected as arguments as global window will not being accessible by the function body
+  return new Function(
+    'gameModel',
+    'self',
+    'API_VIEW',
+    'Variable',
+    'Editor',
+    'ClientMethods',
+    'ServerMethods',
+    'Schemas',
+    'Classes',
+    'Popups',
+    'WegasEvents',
+    'I18n',
+    'Context',
+    'APIMethods',
+    'Helpers',
+    fnScript,
+  );
+}
+
+const memoClientScriptEval = (() => {
+  const transpiledCache = createLRU<string, Function>(500);
+
+  return <T extends ScriptReturnType>(
+    script?: string | IScript,
+    context?: {
+      [name: string]: unknown;
+    },
+  ): T extends IMergeable ? unknown : T => {
+    globals.Context = context || {};
+    //const scriptContent = typeof script === 'string' ? script : script?.content;
+
+    let scriptAsFunction;
+    if (!script) {
+      return undefined as any;
+    } else if (typeof script === 'string') {
+      // scripts provided as string (eg. big clientscripts), are not cached
+      scriptAsFunction = transpileToFunction(script);
+    } else {
+      if (!script.content) {
+        return undefined as any;
+      }
+
+      if (!transpiledCache.has(script.content)) {
+        // IScript not in cache -> transpile it
+        transpiledCache.set(
+          script.content,
+          transpileToFunction(script.content)!,
+        );
+      }
+      // fetch from cache
+      scriptAsFunction = transpiledCache.get(script.content);
+    }
+
+    if (scriptAsFunction) {
+      // call the function and provide globals
+      return scriptAsFunction.call(
+        undefined, // undef + "use strict" hide global window
+        globals.gameModel,
+        globals.self,
+        globals.API_VIEW,
+        globals.Variable,
+        globals.Editor,
+        globals.ClientMethods,
+        globals.ServerMethods,
+        globals.Schemas,
+        globals.Classes,
+        globals.Popups,
+        globals.WegasEvents,
+        globals.I18n,
+        globals.Context,
+        globals.APIMethods,
+        globals.Helpers,
+      ) as any;
+    } else {
+      return undefined as any;
+    }
+  };
+})();
 
 export function clientScriptEval<T extends ScriptReturnType>(
   script?: string | IScript,
@@ -373,29 +460,7 @@ export function clientScriptEval<T extends ScriptReturnType>(
     [name: string]: unknown;
   },
 ): T extends IMergeable ? unknown : T {
-  globals.Context = context || {};
-  //const scriptContent = typeof script === 'string' ? script : script?.content;
-
-  let scriptContent;
-  if (!script) {
-    return undefined as any;
-  } else if (typeof script === 'string') {
-    scriptContent = transpile(script);
-  } else {
-    if (!transpiledCache.has(script)) {
-      transpiledCache.set(script, transpile(script.content));
-    }
-    scriptContent = transpiledCache.get(script);
-  }
-
-  //scriptContent = typeof script === 'string' ? script : script?.content;
-  return scriptContent != null
-    ? (((sandbox.contentWindow as unknown) as {
-        eval: (code: string) => T;
-      })
-        // 'undefined' so that an empty script don't return '"use strict"'
-        .eval('"use strict";undefined;' + scriptContent) as any)
-    : undefined;
+  return memoClientScriptEval(script, context);
 }
 
 export function safeClientScriptEval<T extends ScriptReturnType>(
@@ -486,11 +551,9 @@ export function parseAndRunClientScript(
 ) {
   let scriptContent = isScript(script) ? script.content : script;
 
-  /*
-    const test1 = runClientScript("JKJKJ")
-    const test2 = runClientScript(const salut = 2;)
-    const test3 = runClientScript(ohmama())
-     */
+  //const test1 = runClientScript("JKJKJ")
+  //const test2 = runClientScript(const salut = 2;)
+  //const test3 = runClientScript(ohmama())
 
   const regexStart = /(runClientScript\(["|'|`])/g;
   const regexEnd = /(["|'|`]\))/g;
