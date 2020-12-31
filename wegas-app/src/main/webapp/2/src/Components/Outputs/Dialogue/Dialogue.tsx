@@ -6,6 +6,7 @@ import {
   SDialogueTransition,
 } from 'wegas-ts-api';
 import {
+  autoScroll,
   flex,
   flexColumn,
   flexDistribute,
@@ -23,6 +24,7 @@ import { WaitingLoader } from './WaitingLoader';
 
 const dialogEntryStyle = css({
   padding: '5px',
+  marginBottom: '3px',
   '&>.player': {
     alignSelf: 'flex-end',
     backgroundColor: themeVar.Common.colors.HeaderColor,
@@ -33,6 +35,8 @@ const choicePannelStyle = css({
   position: 'relative',
   backgroundColor: themeVar.Common.colors.HeaderColor,
   padding: '5px',
+  minHeight: '4em',
+  flexShrink: 0,
 });
 
 const dialogueDisplayStyle = css({
@@ -51,6 +55,7 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
   const dialogueStates = dialogue.getStates();
   const oldHistoryState = React.useRef<typeof history>(history);
   const oldState = React.useRef<SDialogueState>();
+  const historyDiv = React.useRef<HTMLDivElement>(null);
 
   const wait = React.useCallback(() => {
     setWaiting(true);
@@ -78,11 +83,21 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
       deepDifferent(oldHistoryState.current, history) ||
       deepDifferent(oldState.current, currentState)
     ) {
+      // waiting effect only when there is a new entry in the dialogue
+      if (oldState.current != null) {
+        wait();
+      }
       oldState.current = currentState;
       oldHistoryState.current = history;
-      wait();
     }
   }, [currentState, history, wait]);
+
+  React.useEffect(() => {
+    // when a dialogue entry is added, scroll to it at the bottom of the history
+    if (historyDiv != null) {
+      historyDiv.current!.scrollTop = historyDiv.current!.scrollHeight;
+    }
+  }, [currentState]);
 
   function renderHistory(): JSX.Element[] {
     const dialogueComponents: JSX.Element[] = [
@@ -128,7 +143,10 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
         cx(dialogueDisplayStyle, flex, flexColumn, grow) + ' wegas wegas-dialog'
       }
     >
-      <div className={cx(dialogEntryStyle, flex, flexColumn, grow)}>
+      <div
+        ref={historyDiv}
+        className={cx(dialogEntryStyle, flex, flexColumn, autoScroll, grow)}
+      >
         {renderHistory()}
       </div>
       <div
