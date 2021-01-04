@@ -328,7 +328,7 @@ export default function HTMLEditor({
                     fileURL(generateAbsolutePath(file)),
                 );
             }}
-            pick={'FILE'}
+            pickType={'FILE'}
             filter={{ fileType: 'image', filterType: 'show' }}
           />
         </Modal>

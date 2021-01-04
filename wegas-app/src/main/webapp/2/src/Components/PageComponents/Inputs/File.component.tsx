@@ -23,7 +23,7 @@ interface PlayerFileInputProps extends WegasComponentProps, FileBrowserProps {
 function PlayerFileInput({
   onVariableChange,
   context,
-  pick,
+  pickType,
   // filter,
   // options,
   className,
@@ -41,8 +41,8 @@ function PlayerFileInput({
       noDelete
       //readOnly
       onFileClick={file => handleOnChange && handleOnChange(file)}
-      //pick={'FILE'}
-      pick={pick}
+      //pickType={'FILE'}
+      pickType={pickType}
       filter={{ fileType: 'image', filterType: 'show' }}
     />
   );
@@ -56,7 +56,7 @@ registerComponent(
     icon: 'image',
     schema: {
       onVariableChange: onVariableChangeSchema('On file click actions'),
-      pick: schemaProps.select({
+      pickType: schemaProps.select({
         label: 'File picking option',
         values: ['FILE', 'FOLDER', 'BOTH'], //
         required: false,
