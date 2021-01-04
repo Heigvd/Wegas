@@ -530,15 +530,20 @@ export function FileBrowserNode({
     (pickType === 'FOLDER' && isDirectory(currentFile)) ||
     (pickType === 'FILE' && isFile(currentFile));
   const filterApproved =
-    !filter || currentFile.mimeType.includes(filter.fileType);
+    !filter ||
+    !filter.fileType ||
+    currentFile.mimeType.includes(filter.fileType);
   const filterRefused =
     isFile(currentFile) &&
     filter &&
+    filter.fileType &&
     !currentFile.mimeType.includes(filter.fileType);
 
   //TODO : Improve node layout using flex only
 
-  return !filter || filter.filterType !== 'hide' || filterApproved ? (
+  return !filter ||
+    filterApproved ||
+    !(filter.filterType == 'hide' && filterRefused) ? (
     <div
       ref={dropZone}
       className={cx(flex, grow) + classNameOrEmpty(className)}
@@ -582,7 +587,8 @@ export function FileBrowserNode({
         <div
           className={cx(flex, grow, {
             [clickableStyle]: filterApproved && pickTypeApproved && !isRootNode,
-            [disabledColorStyle]: filterRefused,
+            [disabledColorStyle]:
+              filter && filter.filterType == 'grey' && filterRefused,
             [dropZoneStyle]:
               isDirectory(currentFile) && dropZoneProps.isShallowOver,
             [localSelection]: isSelected(currentFile, selectedLocalPaths),
@@ -616,7 +622,9 @@ export function FileBrowserNode({
           {!isRootNode && (
             <>
               <Button
-                disabled={filterRefused}
+                disabled={
+                  filter && filter.filterType == 'grey' && filterRefused
+                }
                 icon={getIconForFile(currentFile, opened)}
               />
               <div className={grow}>{currentFile.name}</div>
