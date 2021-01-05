@@ -149,36 +149,38 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
       >
         {renderHistory()}
       </div>
-      <div
-        className={cx(
-          flex,
-          flexColumn,
-          flexDistribute,
-          itemCenter,
-          choicePannelStyle,
-        )}
-      >
-        {choices.map((transition: SDialogueTransition) => (
-          <DialogueChoice
-            key={`CHOICE${transition.getId()}`}
-            label={transition.getActionText()}
-            onClick={() => {
-              store.dispatch(
-                applyFSMTransition(
-                  dialogue.getEntity(),
-                  transition.getEntity(),
-                ),
-              );
-            }}
-          />
-        ))}
-        {waiting && choices.length > 0 && (
-          <WaitingLoader
-            color={themeVar.Common.colors.HeaderColor}
-            background={themeVar.Common.colors.HeaderColor}
-          />
-        )}
-      </div>
+      {choices.length > 0 && (
+        <div
+          className={cx(
+            flex,
+            flexColumn,
+            flexDistribute,
+            itemCenter,
+            choicePannelStyle,
+          )}
+        >
+          {choices.map((transition: SDialogueTransition) => (
+            <DialogueChoice
+              key={`CHOICE${transition.getId()}`}
+              label={transition.getActionText()}
+              onClick={() => {
+                store.dispatch(
+                  applyFSMTransition(
+                    dialogue.getEntity(),
+                    transition.getEntity(),
+                  ),
+                );
+              }}
+            />
+          ))}
+          {waiting && choices.length > 0 && (
+            <WaitingLoader
+              color={themeVar.Common.colors.HeaderColor}
+              background={themeVar.Common.colors.HeaderColor}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }
