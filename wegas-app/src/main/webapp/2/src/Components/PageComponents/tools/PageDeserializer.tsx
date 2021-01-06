@@ -23,7 +23,7 @@ import { State } from '../../../data/Reducer/reducers';
 
 function getComponentFromPath(page: WegasComponent, path: number[]) {
   const newPath = [...path];
-  let component: WegasComponent = cloneDeep(page);
+  let component = page;
   while (newPath.length > 0) {
     const index = newPath.shift();
     if (
@@ -37,7 +37,7 @@ function getComponentFromPath(page: WegasComponent, path: number[]) {
       component = component.props.children[index];
     }
   }
-  return component;
+  return cloneDeep(component);
 }
 
 export type ChildrenDeserializerProps<P = {}> = P & {

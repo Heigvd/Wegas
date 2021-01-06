@@ -67,6 +67,25 @@ const headerSize = textToArray(header()).length;
 const footer = () => `\n};`;
 const footerSize = textToArray(footer()).length - 1;
 
+export const formatScriptToFunctionBody = (val: string) => {
+  let newValue = val;
+  // Removing first tab if exists
+  if (newValue.length > 0 && newValue[0] === '\t') {
+    newValue = newValue.substring(1);
+  }
+  const lines = textToArray(newValue);
+  const tabber = lines.length > 1 ? '\t' : '';
+  if (lines.length > 0 && !lines[lines.length - 1].includes('return')) {
+    lines[lines.length - 1] = tabber + 'return ' + lines[lines.length - 1];
+  } else {
+    lines[lines.length - 1] = lines[lines.length - 1].replace(
+      /\breturn /,
+      tabber + 'return ',
+    );
+  }
+  return arrayToText(lines);
+};
+
 /**
  * formatScriptToFunction - if the return type is defined, return the script wrapped in a function
  * @param val - The script value
@@ -78,26 +97,11 @@ const formatScriptToFunction = (
   args?: [string, WegasScriptEditorReturnTypeName[]][],
 ) => {
   if (returnType !== undefined && returnType.length > 0) {
-    let newValue = val;
-    // Removing first tab if exists
-    if (newValue.length > 0 && newValue[0] === '\t') {
-      newValue = newValue.substring(1);
-    }
-    const lines = textToArray(newValue);
-    const tabber = lines.length > 1 ? '\t' : '';
-    if (lines.length > 0 && !lines[lines.length - 1].includes('return')) {
-      lines[lines.length - 1] = tabber + 'return ' + lines[lines.length - 1];
-    } else {
-      lines[lines.length - 1] = lines[lines.length - 1].replace(
-        /.*(return).* /,
-        tabber + 'return ',
-      );
-    }
-    newValue = arrayToText(lines);
+    const newValue = formatScriptToFunctionBody(val);
     return `${header(returnType, args)}${newValue}${footer()}`;
   }
   return val;
-};
+}
 
 export function WegasScriptEditor(props: WegasScriptEditorProps) {
   const {
