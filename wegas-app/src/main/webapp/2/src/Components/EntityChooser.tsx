@@ -9,7 +9,7 @@ const entityChooser = css({
 });
 
 const labelList = css({
-  maxWidth: '20%',
+  maxWidth: '40%',
   minWidth: '20%',
   padding: '10px',
 });
@@ -18,14 +18,14 @@ const labelStyle = cx(
   css({
     backgroundColor: themeVar.Common.colors.HeaderColor,
     padding: '10px',
-    boxShadow: `-2px 2px 2px ${themeVar.Common.colors.HeaderColor}`,
+    display: 'flex',
   }),
   grow,
 );
 
 const labelArrow = css({
-  borderTop: '20px solid transparent',
-  borderBottom: '20px solid transparent',
+  borderTop: '40px solid transparent',
+  borderBottom: '40px solid transparent',
   borderLeft: `20px solid ${themeVar.Common.colors.HeaderColor}`,
 });
 
@@ -67,14 +67,29 @@ interface EntityChooserProps<E extends IAbstractEntity> {
   entities: E[];
   children: React.FunctionComponent<{ entity: E }>;
   entityLabel: (entity: E) => React.ReactNode;
+  autoOpenFirst?: boolean;
 }
 
 export function EntityChooser<E extends IAbstractEntity>({
   entities,
   children: Children,
   entityLabel,
+  autoOpenFirst,
 }: EntityChooserProps<E>) {
   const [entity, setEntity] = React.useState<E>();
+
+  React.useEffect(() => {
+    setEntity(oldEntity => {
+      if (
+        autoOpenFirst &&
+        (oldEntity == null || !entities.map(e => e.id).includes(oldEntity.id))
+      ) {
+        return entities[0];
+      } else {
+        return oldEntity;
+      }
+    });
+  }, [autoOpenFirst, entities]);
 
   return (
     <div className={cx(flex, flexRow, entityChooser)}>
@@ -90,7 +105,7 @@ export function EntityChooser<E extends IAbstractEntity>({
                 if (deepDifferent(e, oldEntity)) {
                   return e;
                 } else {
-                  return undefined;
+                  return oldEntity;
                 }
               });
             }}

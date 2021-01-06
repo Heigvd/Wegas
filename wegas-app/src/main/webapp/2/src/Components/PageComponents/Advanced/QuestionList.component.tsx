@@ -25,10 +25,12 @@ import { QuestionLabel } from '../../Outputs/Question/QuestionList';
 
 interface QuestionListDisplayProps extends WegasComponentProps {
   questionList?: IScript;
+  autoOpenFirst: boolean;
 }
 
 export default function QuestionListDisplay({
   questionList,
+  autoOpenFirst,
   context,
 }: QuestionListDisplayProps) {
   const entitiesSelector = React.useCallback(() => {
@@ -71,6 +73,7 @@ export default function QuestionListDisplay({
     <EntityChooser
       entities={entities.questions}
       entityLabel={e => <QuestionLabel questionD={e} />}
+      autoOpenFirst={autoOpenFirst}
     >
       {ConnectedQuestionDisplay}
     </EntityChooser>
@@ -93,6 +96,10 @@ registerComponent(
           'SListDescriptor[]',
           'SQuestionDescriptor[]',
         ],
+      }),
+      autoOpenFirst: schemaProps.boolean({
+        label: 'Automatically open first item',
+        value: true,
       }),
     },
     allowedVariables: ['ListDescriptor', 'QuestionDescriptor'],

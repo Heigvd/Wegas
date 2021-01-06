@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { cx } from 'emotion';
 import * as React from 'react';
 import {
   IQuestionDescriptor,
@@ -7,7 +7,12 @@ import {
   IQuestionInstance,
   IWhQuestionInstance,
 } from 'wegas-ts-api';
-import { flex, itemCenter } from '../../../css/classes';
+import {
+  flex,
+  itemCenter,
+  unreadSignalStyle,
+  unreadSpaceStyle,
+} from '../../../css/classes';
 import { TranslatableContent } from '../../../data/i18n';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { read } from '../../../data/Reducer/VariableInstanceReducer';
@@ -15,11 +20,8 @@ import { instantiate } from '../../../data/scriptable';
 import { Player, VariableDescriptor } from '../../../data/selectors';
 import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
 import { useStore, store, StoreConsumer } from '../../../data/store';
-import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
 import { EntityChooser } from '../../EntityChooser';
 import { ConnectedQuestionDisplay } from './Question';
-
-const unreadSignalStyle = css({ margin: '3px' });
 
 interface QuestionProps {
   variable: string;
@@ -45,16 +47,20 @@ export function QuestionLabel({
         store.dispatch(read(instantiate(questionD).getEntity()));
       }}
     >
+      {isUnread ? (
+        <div className={cx(unreadSpaceStyle, unreadSignalStyle)} />
+      ) : (
+        <div className={cx(unreadSpaceStyle)} />
+      )}
       <div className={flex}>
         {TranslatableContent.toString(questionD.label)}
       </div>
-      {isUnread && (
-        <FontAwesome className={unreadSignalStyle} icon="exclamation" />
-      )}
     </div>
   );
 }
 
+// FIXME Sandra : see how to use it or if it is deprecated
+// I expected it to be used in QuestionList.component, but it uses EntityChooser directly
 export default function QuestionList(props: QuestionProps) {
   return (
     <StoreConsumer

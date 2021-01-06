@@ -243,3 +243,19 @@ export const dropZoneStyle = css({
   borderWidth: '2px',
   borderColor: themeVar.Common.colors.HighlightColor,
 });
+
+export const unreadSignalStyle = css({
+  '::before': {
+    content: '"new"',
+    transform: 'rotate(-45deg)',
+    position: 'absolute',
+    fontSize: '7pt',
+    color: 'green',
+  },
+});
+
+export const unreadSpaceStyle = css({
+  minWidth: '30px',
+  display: 'flex',
+  alignItems: 'center',
+});
