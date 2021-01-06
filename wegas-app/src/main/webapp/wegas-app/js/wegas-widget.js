@@ -588,6 +588,9 @@ YUI.add('wegas-widget', function(Y) {
                                 {
                                     label: 'Other styles',
                                     value: {fn: 'CSSStyles'}
+                                }, {
+                                    label: "Toggle class on script",
+                                    value: {fn: "ToggleOnScript"}
                                 }
                             ]
                         },

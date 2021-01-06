@@ -486,7 +486,7 @@ YUI().use(function(Y) {
             },
             "wegas-toggle-on-click": {
                 path: "js/plugin/wegas-toggle-on-click-min.js",
-                ws_provides: ["ToggleOnClick"]
+                ws_provides: ["ToggleOnClick", "ToggleOnScript"]
             },
             "wegas-chartistcss": {
                 type: CSS
