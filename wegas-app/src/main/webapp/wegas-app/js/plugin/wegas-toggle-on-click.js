@@ -52,7 +52,7 @@ YUI.add('wegas-toggle-on-click', function(Y) {
             var widget = Y.Widget.getByNode(e.target);
 
             var pSelector = this.get("parentSelector");
-            var toggleOn = pSelector ? e.target.ancestor(pSelector) : e.target;
+            var toggleOn = pSelector ? e.target.ancestor(pSelector) : e.currentTarget;
             toggleOn.toggleClass(this.get("className"));
 
             if (widget instanceof Y.DataTable) {
@@ -121,7 +121,12 @@ YUI.add('wegas-toggle-on-click', function(Y) {
             Y.later(0, this, function() {
                 var script = this.get("condition");
                 var toggled = Y.Wegas.Facade.Variable.script.localEval(script);
-                this.get("host").get("contentBox").all(this.get("targetSelector")).toggleClass(this.get("className"), toggled);
+                var tSelector = this.get("targetSelector");
+                if (tSelector) {
+                    this.get("host").get("contentBox").all(this.get("targetSelector")).toggleClass(this.get("className"), toggled);
+                } else {
+                    this.get("host").get("contentBox").toggleClass(this.get("className"), toggled);
+                }
             });
         },
         initializer: function() {
