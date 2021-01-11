@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -31,8 +32,7 @@ public interface VariableDescriptorFacadeI {
     VariableDescriptor find(final Long entityId);
 
     /**
-     * Look for a VariableDescriptor identified by name within the given
-     * gameModel.
+     * Look for a VariableDescriptor identified by name within the given gameModel.
      *
      * @param gameModel gameModel to explore
      * @param name      name of the variableDescriptor to search
@@ -83,8 +83,7 @@ public interface VariableDescriptorFacadeI {
     VariableDescriptor findByLabel(final GameModel gameModel, final String label) throws WegasNoResultException;
 
     /**
-     * For backward compatibility, use find(final GameModel gameModel, final
-     * String name) instead.
+     * For backward compatibility, use find(final GameModel gameModel, final String name) instead.
      *
      * @param gameModel
      * @param name
@@ -161,5 +160,19 @@ public interface VariableDescriptorFacadeI {
      * @return true if gameModel contains a descriptor named name
      */
     boolean hasVariable(final GameModel gameModel, final String name);
+
+    /**
+     * Create a new descriptor in a DescriptorListI
+     *
+     * @param gameModel  the gameModel
+     * @param list       new descriptor parent
+     * @param entity     new descriptor to create
+     * @param resetNames
+     *
+     * @return the new descriptor
+     */
+    VariableDescriptor createChild(final GameModel gameModel,
+        final DescriptorListI<VariableDescriptor> list,
+        final VariableDescriptor entity, boolean resetNames);
 
 }

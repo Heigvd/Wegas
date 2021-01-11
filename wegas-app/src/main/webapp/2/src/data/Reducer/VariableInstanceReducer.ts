@@ -66,7 +66,7 @@ export default variableInstances;
 export function updateInstance(
   variableInstance: IVariableInstance,
 ): ThunkResult<Promise<StateActions | void>> {
-  return function (dispatch, getState) {
+  return function(dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableInstanceAPI.update(variableInstance, gameModelId).then(res =>
       // Dispatching changes to global store and passing local store that manages editor state
@@ -76,31 +76,85 @@ export function updateInstance(
 }
 
 export function getAll(): ThunkResult<Promise<StateActions>> {
-  return function (dispatch, getState) {
+  return function(dispatch, getState) {
     return VariableInstanceAPI.getByPlayer().then(res =>
       dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
 }
 
+export const asyncRunScript = async (
+  gameModelId: number,
+  script: string | IScript,
+  player?: IPlayer,
+  context?: IVariableDescriptor,
+) => {
+  const p = player != null ? player : Player.selectCurrent();
+  if (p.id == null) {
+    throw Error('Missing persisted player');
+  }
+  if (gameModelId == null) {
+    throw Error('Missing persisted gameModel');
+  }
+  const finalScript: IScript =
+    'string' === typeof script ? createScript(script) : script;
+  return VariableDescriptorAPI.runScript(
+    gameModelId,
+    p.id,
+    finalScript,
+    context,
+  );
+};
+
 export function runScript(
   script: string | IScript,
   player?: IPlayer,
   context?: IVariableDescriptor,
 ): ThunkResult {
-  return function (dispatch, getState) {
+  return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
-    const p = player != null ? player : Player.selectCurrent();
-    if (p.id == null) {
-      throw Error('Missing persisted player');
-    }
-    const finalScript: IScript =
-      'string' === typeof script ? createScript(script) : script;
-    return VariableDescriptorAPI.runScript(
+    return asyncRunScript(gameModelId, script, player, context).then(res =>
+      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
+
+export async function asyncRunLoadedScript(
+  gameModelId: number,
+  script: string | IScript,
+  player?: IPlayer,
+  currentDescriptor?: IVariableDescriptor,
+  payload?: { [key: string]: unknown },
+) {
+  const p = player != null ? player : Player.selectCurrent();
+  if (p.id == null) {
+    throw Error('Missing persisted player');
+  }
+  const finalScript: IScript =
+    'string' === typeof script ? createScript(script) : script;
+  return VariableDescriptorAPI.runLoadedScript(
+    gameModelId,
+    p.id,
+    finalScript,
+    currentDescriptor,
+    payload,
+  );
+}
+
+export function runLoadedScript(
+  script: string | IScript,
+  player?: IPlayer,
+  currentDescriptor?: IVariableDescriptor,
+  payload?: { [key: string]: unknown },
+): ThunkResult {
+  return function(dispatch, getState) {
+    const gameModelId = getState().global.currentGameModelId;
+    return asyncRunLoadedScript(
       gameModelId,
-      p.id,
-      finalScript,
-      context,
+      script,
+      player,
+      currentDescriptor,
+      payload,
     ).then(res =>
       dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
@@ -112,7 +166,7 @@ export function read(
   choice: IChoiceDescriptor | IQuestionDescriptor | IWhQuestionDescriptor,
   player?: IPlayer,
 ): ThunkResult {
-  return function (dispatch, getState) {
+  return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
@@ -128,7 +182,7 @@ export function selectAndValidate(
   choice: IChoiceDescriptor,
   player?: IPlayer,
 ): ThunkResult {
-  return function (dispatch, getState) {
+  return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
@@ -148,7 +202,7 @@ export function selectChoice(
   choice: IChoiceDescriptor,
   player?: IPlayer,
 ): ThunkResult {
-  return function (dispatch, getState) {
+  return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
@@ -165,7 +219,7 @@ export function selectChoice(
 }
 
 export function cancelReply(reply: IReply, player?: IPlayer): ThunkResult {
-  return function (dispatch, getState) {
+  return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null || !reply) {
@@ -204,7 +258,7 @@ export function validateQuestion(
   question: Readonly<IQuestionDescriptor | IWhQuestionDescriptor>,
   player?: IPlayer,
 ): ThunkResult {
-  return function (dispatch, getState) {
+  return function(dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     const instance = getInstance<IQuestionInstance | IWhQuestionInstance>(
@@ -226,7 +280,7 @@ export function validateQuestion(
 // Message specific actions
 
 export function readMessage(message: IMessage, player?: IPlayer): ThunkResult {
-  return function (dispatch, getState) {
+  return function(dispatch, getState) {
     const p = player != null ? player : Player.selectCurrent();
     if (message.id == null) {
       throw Error('Missing message id');
@@ -244,7 +298,7 @@ export function readMessages(
   inbox: IInboxDescriptor,
   player?: IPlayer,
 ): ThunkResult {
-  return function (dispatch, getState) {
+  return function(dispatch, getState) {
     const p = player != null ? player : Player.selectCurrent();
     if (inbox.id == null) {
       throw Error('Missing message id');
@@ -262,7 +316,7 @@ export function applyFSMTransition(
   stateMachine: IFSMDescriptor | IDialogueDescriptor,
   transition: ITransition | IDialogueTransition,
 ): ThunkResult {
-  return function (dispatch, getState) {
+  return function(dispatch, getState) {
     if (stateMachine.id == null) {
       throw Error('Missing statemachine id');
     }
