@@ -33,10 +33,12 @@ const labelContainer = css({
   marginBottom: '10px',
   ':hover': {
     [`&>.${labelStyle}`]: {
-      backgroundColor: themeVar.Common.colors.DisabledColor,
+      cursor: 'pointer',
+      backgroundColor: themeVar.Common.colors.HoverColor,
     },
     [`&>.${labelArrow}`]: {
-      borderLeft: `20px solid ${themeVar.Common.colors.DisabledColor}`,
+      cursor: 'pointer',
+      borderLeft: `20px solid ${themeVar.Common.colors.HoverColor}`,
     },
   },
 });
@@ -49,10 +51,13 @@ const activeLabel = css({
     borderLeft: `20px solid ${themeVar.Common.colors.MainColor}`,
   },
   ':hover': {
+    // ideally have an active and hover color
     [`&>.${labelStyle}`]: {
+      cursor: 'pointer',
       backgroundColor: themeVar.Common.colors.ActiveColor,
     },
     [`&>.${labelArrow}`]: {
+      cursor: 'pointer',
       borderLeft: `20px solid ${themeVar.Common.colors.ActiveColor}`,
     },
   },
