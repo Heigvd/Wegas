@@ -88,9 +88,9 @@ export function FlowChart({
     <Toolbar className={flowChartStyle}>
       <Toolbar.Header>{title}</Toolbar.Header>
       <Toolbar.Content style={{ position: 'relative' }}>
-        <svg style={{ position: 'absolute', width: '100%', height: '100%' }}>
+        {/* <svg style={{ position: 'absolute', width: '100%', height: '100%' }}> */}
           {flows}
-        </svg>
+        {/* </svg> */}
         {Object.entries(processes).map(([key, process]) => (
           <Process
             key={key + JSON.stringify(process.position)}
@@ -276,6 +276,10 @@ interface Values {
   arrowLength: number;
   arrowLeftCorner: XYPosition;
   arrowRightCorner: XYPosition;
+  canvasLeft:number;
+  canvasTop: number;
+  canvasWidth: number;
+  canvasHeight: number;
 }
 
 interface AxeValues {
@@ -364,6 +368,10 @@ export function FlowLineComponent({
       arrowLength: leftArrowLength,
       arrowLeftCorner: { x: endPointRight.x + 5, y: endPointRight.y - 5 },
       arrowRightCorner: { x: endPointRight.x + 5, y: endPointRight.y + 5 },
+      canvasLeft:endPointRight.x,
+      canvasTop: Math.min(startPointLeft.y - startHeight / 2, endPointRight.y - endHeight / 2),
+      canvasWidth: startPointLeft.x - endPointRight.x,
+      canvasHeight: Math.abs(startPointLeft.y - endPointRight.y) + Math.max(startHeight,endHeight)
     },
     TOP: {
       arrowStart: startPointTop,
@@ -371,6 +379,10 @@ export function FlowLineComponent({
       arrowLength: topArrowLength,
       arrowLeftCorner: { x: endPointRight.x + 5, y: endPointRight.y + 5 },
       arrowRightCorner: { x: endPointRight.x - 5, y: endPointRight.y + 5 },
+      canvasLeft:Math.min(startPointTop.x - startWidth / 2, endPointBottom.x - endWidth / 2),
+      canvasTop: endPointBottom.y,
+      canvasWidth: Math.abs(startPointTop.x - endPointBottom.x) + Math.max(startWidth,endWidth),
+      canvasHeight: startPointTop.y -endPointBottom.y
     },
     RIGHT: {
       arrowStart: startPointRight,
@@ -378,6 +390,10 @@ export function FlowLineComponent({
       arrowLength: rightArrowLength,
       arrowLeftCorner: { x: endPointRight.x - 5, y: endPointRight.y + 5 },
       arrowRightCorner: { x: endPointRight.x - 5, y: endPointRight.y - 5 },
+      canvasLeft:startPointRight.x,
+      canvasTop: Math.min(startPointRight.y - startHeight / 2, endPointLeft.y - endHeight / 2),
+      canvasWidth: endPointLeft.x - startPointRight.x,
+      canvasHeight: Math.abs(startPointLeft.y - endPointLeft.y) + Math.max(startHeight,endHeight)
     },
     BOTTOM: {
       arrowStart: startPointBottom,
@@ -385,6 +401,10 @@ export function FlowLineComponent({
       arrowLength: bottomArrowLength,
       arrowLeftCorner: { x: endPointRight.x + 5, y: endPointRight.y - 5 },
       arrowRightCorner: { x: endPointRight.x - 5, y: endPointRight.y - 5 },
+      canvasLeft:Math.min(startPointBottom.x - startWidth / 2, endPointTop.x - endWidth / 2),
+      canvasTop: startPointBottom.y,
+      canvasWidth: Math.abs(startPointBottom.x - endPointTop.x) + Math.max(startWidth,endWidth),
+      canvasHeight: endPointTop.y -startPointBottom.y
     },
   };
 
@@ -398,7 +418,7 @@ export function FlowLineComponent({
 
   return (
     <>
-      <defs>
+      {/* <defs>
         <marker
           id="arrowhead"
           markerWidth="10"
@@ -417,19 +437,52 @@ export function FlowLineComponent({
         y2={values.arrowEnd.y}
         style={{ stroke: 'rgb(255,0,0)', strokeWidth: 2 }}
         markerEnd="url(#arrowhead)"
-      />
+      /> */}
       {/* <path
         d={`M${values.arrowEnd.x} ${values.arrowEnd.y} L${values.arrowLeftCorner.x} ${values.arrowLeftCorner.y} L${values.arrowRightCorner.x} ${values.arrowRightCorner.y} Z`}
       /> */}
       <div
         className={flowLineStyle}
         style={{
-          left,
-          top,
-          width,
-          height,
+          left : values.canvasLeft,
+          top : values.canvasTop,
+          width : values.canvasWidth,
+          height : values.canvasHeight,
         }}
       />
+      {/* <canvas
+              style={{
+                left,
+                top,
+                width,
+                height,
+              }}
+      >
+        <defs>
+        <marker
+          id="arrowhead"
+          markerWidth="10"
+          markerHeight="7"
+          refX="10"
+          refY="3.5"
+          orient="auto"
+        >
+          <polygon points="0 0, 10 3.5, 0 7" />
+        </marker>
+      </defs>
+      <line
+        // x1={values.arrowStart.x}
+        // y1={values.arrowStart.y}
+        // x2={values.arrowEnd.x}
+        // y2={values.arrowEnd.y}
+        x1={"0"}
+        y1={"0"}
+        x2={"100"}
+        y2={"100"}
+        style={{ stroke: 'rgb(255,0,0)', strokeWidth: 2 }}
+        markerEnd="url(#arrowhead)"
+      />
+      </canvas> */}
       <div
         style={{
           position: 'absolute',
