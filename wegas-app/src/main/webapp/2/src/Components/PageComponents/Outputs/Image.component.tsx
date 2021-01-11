@@ -42,7 +42,7 @@ registerComponent(
     schema: {
       script: schemaProps.path({
         label: 'Source',
-        pick: 'FILE',
+        pickType: 'FILE',
         filter: {
           fileType: 'image',
           filterType: 'show',

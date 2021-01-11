@@ -642,7 +642,7 @@ const simpleSchemaProps = {
   file: ({
     label,
     required = false,
-    pick = 'FILE',
+    pickType = 'FILE',
     filter,
     value,
     featureLevel = 'DEFAULT',
@@ -650,7 +650,7 @@ const simpleSchemaProps = {
     layout,
     borderTop,
   }: {
-    pick?: FilePickingType;
+    pickType?: FilePickingType;
     filter?: FileFilter;
   } & CommonSchemaProps &
     ValueSchemaProps<IAbstractContentDescriptor>) => ({
@@ -659,7 +659,7 @@ const simpleSchemaProps = {
     value,
     index,
     view: {
-      pick,
+      pickType,
       filter,
       featureLevel,
       index,
@@ -672,7 +672,7 @@ const simpleSchemaProps = {
   path: ({
     label,
     required = false,
-    pick = 'FILE',
+    pickType = 'FILE',
     filter,
     value,
     featureLevel = 'DEFAULT',
@@ -681,7 +681,7 @@ const simpleSchemaProps = {
     borderTop,
     scriptable,
   }: {
-    pick?: FilePickingType;
+    pickType?: FilePickingType;
     filter?: FileFilter;
     scriptable?: boolean;
   } & CommonSchemaProps &
@@ -691,7 +691,7 @@ const simpleSchemaProps = {
     value,
     index,
     view: {
-      pick,
+      pickType,
       filter,
       featureLevel,
       index,

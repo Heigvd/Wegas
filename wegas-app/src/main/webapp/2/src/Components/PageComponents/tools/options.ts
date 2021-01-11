@@ -250,7 +250,7 @@ export const actionsChoices: HashListChoices = [
           fileDescriptor: schemaProps.path({
             label: 'File',
             required: true,
-            pick: 'FILE',
+            pickType: 'FILE',
             filter: {
               filterType: 'grey',
               fileType: 'audio',
