@@ -207,9 +207,9 @@ export interface FileBrowserNodeProps extends ClassStyleId {
    */
   selectedGlobalPaths?: string[];
   /**
-   * forceOpened - with directly opened (expanded) current node
+   * defaultOpened - by default, the current node is opened (expanded)
    */
-  forceOpened?: boolean;
+  defaultOpened?: boolean;
   /**
    * noOpenCloseToggle - without open/close icon for folder
    */
@@ -252,7 +252,7 @@ export function FileBrowserNode({
   isRootNode = false,
   selectedLocalPaths = [],
   selectedGlobalPaths = [],
-  forceOpened = false,
+  defaultOpened = false,
   noToggle = false,
   noDelete = false,
   readOnly = false,
@@ -265,7 +265,7 @@ export function FileBrowserNode({
   style,
 }: FileBrowserNodeProps) {
   const [opened, setOpened] = React.useState(
-    forceOpened ||
+    defaultOpened ||
       isRootNode ||
       noToggle ||
       isChildrenSelected(item, selectedLocalPaths) ||
@@ -824,7 +824,7 @@ export function FileBrowserNode({
                     item={child}
                     selectedLocalPaths={selectedLocalPaths}
                     selectedGlobalPaths={selectedGlobalPaths}
-                    forceOpened={forceOpened}
+                    defaultOpened={defaultOpened}
                     noToggle={noToggle}
                     noDelete={noDelete}
                     readOnly={readOnly}
