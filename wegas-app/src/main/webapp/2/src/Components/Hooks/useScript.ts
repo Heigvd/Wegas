@@ -58,6 +58,7 @@ interface GlobalVariableClass {
 }
 
 interface GlobalClasses {
+    Function: typeof globalThis['Function']
   gameModel?: Readonly<SGameModel>;
   self?: Readonly<SPlayer>;
   API_VIEW: View;
@@ -373,25 +374,7 @@ function transpileToFunction(script: string) {
   const fnBody = formatScriptToFunctionBody(script);
   const fnScript = '"use strict"; undefined;' + transpile(fnBody);
 
-  // globals will be injected as arguments as global window will not being accessible by the function body
-  return new Function(
-    'gameModel',
-    'self',
-    'API_VIEW',
-    'Variable',
-    'Editor',
-    'ClientMethods',
-    'ServerMethods',
-    'Schemas',
-    'Classes',
-    'Popups',
-    'WegasEvents',
-    'I18n',
-    'Context',
-    'APIMethods',
-    'Helpers',
-    fnScript,
-  );
+    return new globals.Function(fnScript);
 }
 
 const memoClientScriptEval = (() => {
@@ -429,25 +412,7 @@ const memoClientScriptEval = (() => {
     }
 
     if (scriptAsFunction) {
-      // call the function and provide globals
-      return scriptAsFunction.call(
-        undefined, // undef + "use strict" hide global window
-        globals.gameModel,
-        globals.self,
-        globals.API_VIEW,
-        globals.Variable,
-        globals.Editor,
-        globals.ClientMethods,
-        globals.ServerMethods,
-        globals.Schemas,
-        globals.Classes,
-        globals.Popups,
-        globals.WegasEvents,
-        globals.I18n,
-        globals.Context,
-        globals.APIMethods,
-        globals.Helpers,
-      ) as any;
+      return scriptAsFunction();
     } else {
       return undefined as any;
     }

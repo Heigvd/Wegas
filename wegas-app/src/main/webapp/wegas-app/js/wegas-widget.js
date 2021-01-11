@@ -548,6 +548,9 @@ YUI.add('wegas-widget', function(Y) {
                                 }, {
                                     label: "Show Inbox Overlay",
                                     value: {fn: "ShowInboxListOnClick"}
+                                }, {
+                                    label: "Toggle class",
+                                    value: {fn: "ToggleOnClick"}
                                 }
                             ]
                         },
@@ -585,6 +588,9 @@ YUI.add('wegas-widget', function(Y) {
                                 {
                                     label: 'Other styles',
                                     value: {fn: 'CSSStyles'}
+                                }, {
+                                    label: "Toggle class on script",
+                                    value: {fn: "ToggleOnScript"}
                                 }
                             ]
                         },
