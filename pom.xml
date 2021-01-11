@@ -257,11 +257,12 @@
                 <version>${shiro.version}</version>
             </dependency>
 
+            <!-- does not work with our beloved RunAs
             <dependency>
                 <groupId>org.apache.shiro</groupId>
                 <artifactId>shiro-hazelcast</artifactId>
                 <version>${shiro.version}</version>
-            </dependency>
+            </dependency>-->
 
 
             <dependency>
