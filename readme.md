@@ -20,5 +20,5 @@ A Web Game Authoring System for rapid development of serious games without progr
 *   Anthony Geiser anthony.geiser@he-arc.ch
 
 ### License
-Copyright (C) 2013-2020 School of Business and Engineering, University of Applied Sciences of Western Switzerland.
+Copyright (C) 2013-2021 School of Management and Engineering Vaud, University of Applied Sciences of Western Switzerland.
 Wegas is released under the [MIT License](http://www.opensource.org/licenses/MIT)
