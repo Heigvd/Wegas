@@ -1,15 +1,15 @@
 import * as React from 'react';
+import { IScript, SListDescriptor } from 'wegas-ts-api';
+import { ComponentWithForm } from '../../../Editor/Components/FormView/ComponentWithForm';
+import { TreeView } from '../../../Editor/Components/Variable/VariableTree';
+import { createFindVariableScript } from '../../../Helper/wegasEntites';
+import { useScript } from '../../Hooks/useScript';
 import {
   pageComponentFactory,
   registerComponent,
 } from '../tools/componentFactory';
-import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { useScript } from '../../Hooks/useScript';
-import { IScript, SListDescriptor } from 'wegas-ts-api';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { ComponentWithForm } from '../../../Editor/Components/FormView/ComponentWithForm';
-import { CTree } from '../../../Editor/Components/Variable/VariableTree';
+import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerFileBrowserProps extends WegasComponentProps {
   list?: IScript;
@@ -33,11 +33,12 @@ export default function PlayerFileBrowser({
     <ComponentWithForm entityEditor>
       {({ localDispatch }) => {
         return (
-          <CTree
-            variableId={rootDirectoryId}
+          <TreeView
+            variables={[rootDirectoryId]}
+            noHeader
+            noVisibleRoot
             localDispatch={localDispatch}
             forceLocalDispatch
-            nodeProps={() => ({})}
           />
         );
       }}
