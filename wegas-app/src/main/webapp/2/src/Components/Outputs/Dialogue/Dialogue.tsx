@@ -16,11 +16,13 @@ import {
 import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReducer';
 import { useCurrentPlayer } from '../../../data/selectors/Player';
 import { store } from '../../../data/store';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { themeVar } from '../../Style/ThemeVars';
 import { DialogueChoice } from './DialogueChoice';
 import { DialogueEntry } from './DialogueEntry';
 import { WaitingLoader } from './WaitingLoader';
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// styles
 
 const dialogEntryStyle = css({
   padding: '5px',
@@ -43,19 +45,26 @@ const dialogueDisplayStyle = css({
   border: 'solid',
 });
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
+// React element
+
 interface DialogueDisplayProps {
   dialogue: SDialogueDescriptor;
 }
 
 export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
-  const player = useCurrentPlayer();
+  const historyDiv = React.useRef<HTMLDivElement>(null);
+
   const [waiting, setWaiting] = React.useState(false);
+
+  const player = useCurrentPlayer();
   const dialogueInstance = dialogue.getInstance(player);
   const history = dialogueInstance.getTransitionHistory();
   const dialogueStates = dialogue.getStates();
-  const oldHistoryState = React.useRef<typeof history>(history);
-  const oldState = React.useRef<SDialogueState>();
-  const historyDiv = React.useRef<HTMLDivElement>(null);
+
+  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // dialogue state
 
   const wait = React.useCallback(() => {
     setWaiting(true);
@@ -78,22 +87,12 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
     })
     .pop() as SDialogueState;
 
-  React.useEffect(() => {
-    if (
-      deepDifferent(oldHistoryState.current, history) ||
-      deepDifferent(oldState.current, currentState)
-    ) {
-      // waiting effect only when there is a new entry in the dialogue
-      if (oldState.current != null) {
-        wait();
-      }
-      oldState.current = currentState;
-      oldHistoryState.current = history;
-    }
-  }, [currentState, history, wait]);
+  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // dialogue history
 
+  // when a dialogue entry is added, scroll to it at the bottom of the history
+  // TODO There is still a problem when the last choice is made
   React.useEffect(() => {
-    // when a dialogue entry is added, scroll to it at the bottom of the history
     if (historyDiv != null) {
       historyDiv.current!.scrollTop = historyDiv.current!.scrollHeight;
     }
@@ -111,6 +110,8 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
         | undefined;
 
       if (transition != null) {
+        // <><><><><><><><><><><><><><><><><>
+        // player input
         dialogueComponents.push(
           <DialogueEntry
             key={`TRANSITION${transitionId}`}
@@ -118,9 +119,15 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
             player
           />,
         );
+
+        // <><><><><><><><><><><><><><><><><>
+        // update current state
         currentState = dialogueStates[
           transition.getNextStateId()
         ] as SDialogueState;
+
+        // <><><><><><><><><><><><><><><><><>
+        // game answer
         dialogueComponents.push(
           <DialogueEntry
             key={`STATE${transitionId}`}
@@ -133,9 +140,15 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
     return dialogueComponents;
   }
 
+  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // next input choices
+
   const choices = dialogueStates[
     dialogueInstance.getCurrentStateId()
   ].getTransitions();
+
+  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // render
 
   return (
     <div
@@ -143,12 +156,15 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
         cx(dialogueDisplayStyle, flex, flexColumn, grow) + ' wegas wegas-dialog'
       }
     >
+      {/* ----- dialogue history  ---------------------------------------------------------- */}
       <div
         ref={historyDiv}
         className={cx(dialogEntryStyle, flex, flexColumn, autoScroll, grow)}
       >
         {renderHistory()}
       </div>
+
+      {/* ----- show next input choices  --------------------------------------------------- */}
       {choices.length > 0 && (
         <div
           className={cx(
@@ -159,11 +175,13 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
             choicePannelStyle,
           )}
         >
+          {/* ---------- each input choice  ------------------------------------------------ */}
           {choices.map((transition: SDialogueTransition) => (
             <DialogueChoice
               key={`CHOICE${transition.getId()}`}
               label={transition.getActionText()}
               onClick={() => {
+                wait();
                 store.dispatch(
                   applyFSMTransition(
                     dialogue.getEntity(),
@@ -173,6 +191,8 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
               }}
             />
           ))}
+
+          {/* ---------- waiting for the next answer to be revealed ------------------------ */}
           {waiting && choices.length > 0 && (
             <WaitingLoader
               color={themeVar.Common.colors.HeaderColor}
