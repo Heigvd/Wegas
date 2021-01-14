@@ -941,8 +941,8 @@
                 <configuration>
                     <header>wegas/licenseheader.template</header>
                     <properties>
-                        <license.owner>School of Business and Engineering Vaud, Comem, MEI</license.owner>
-                        <license.years>2013-2020</license.years>
+                        <license.owner>School of Management and Engineering Vaud, Comem, MEI</license.owner>
+                        <license.years>2013-2021</license.years>
                     </properties>
                     <includes>
                         <include>**/*.java</include>

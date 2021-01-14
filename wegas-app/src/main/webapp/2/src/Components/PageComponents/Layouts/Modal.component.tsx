@@ -21,11 +21,8 @@ import { Modal } from '../../Modal';
 import { childrenDeserializerFactory } from './FlexList.component';
 import { schemaProps } from '../tools/schemaProps';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
-import {
-  parseAndRunClientScript,
-  safeClientScriptEval,
-} from '../../Hooks/useScript';
-import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
+import { safeClientScriptEval } from '../../Hooks/useScript';
+import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
 import { store } from '../../../data/store';
 
@@ -80,10 +77,7 @@ function PlayerModal({
         }
         if (server) {
           store.dispatch(
-            runScript(
-              parseAndRunClientScript(server, context),
-              Player.selectCurrent(),
-            ),
+            runLoadedScript(server, Player.selectCurrent(), undefined, context),
           );
         }
       }}

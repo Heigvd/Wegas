@@ -1,7 +1,7 @@
 // import PusherConstructor, { Pusher } from 'pusher-js';
 // import { inflate } from 'pako';
 import { store } from '../data/store';
-import { updatePusherStatus } from '../data/Reducer/globalState';
+import { editorEvent, updatePusherStatus } from '../data/Reducer/globalState';
 import { manageResponseHandler } from '../data/actions';
 import { Actions } from '../data';
 import * as React from 'react';
@@ -117,11 +117,11 @@ interface EventMap {
   ) => void)[];
 }
 
-interface ICustomEventData {
-  deletedEntities: IAbstractEntity[];
-  updatedEntities: IAbstractEntity[];
-  events: any[];
-}
+// interface ICustomEventData {
+//   deletedEntities: IAbstractEntity[];
+//   updatedEntities: IAbstractEntity[];
+//   events: any[];
+// }
 
 export interface LockEventData {
   '@class': 'LockEvent';
@@ -219,21 +219,41 @@ class WebSocketListener {
     }
 
     // Dispatch inside managed events... (may be simplified)
+    // see : websocketFacade.java , EntityUpdatedEvent.java
     switch (event) {
       case 'EntityUpdatedEvent':
-      case 'EntityDestroyedEvent':
-      case 'CustomEvent':
         return store.dispatch(
           manageResponseHandler(
             {
               '@class': 'ManagedResponse',
-              deletedEntities: (data as ICustomEventData).deletedEntities,
-              updatedEntities: (data as ICustomEventData).updatedEntities,
-              events: (data as ICustomEventData).events,
+              deletedEntities: [],
+              updatedEntities: (data as { updatedEntities: IAbstractEntity[] })
+                .updatedEntities,
+              events: [],
             },
             store.dispatch,
           ),
         );
+      // {updatedEntities:{"@class":IAbstractEntity["@class"];id:number}[]}
+      case 'EntityDestroyedEvent':
+        return store.dispatch(
+          manageResponseHandler(
+            {
+              '@class': 'ManagedResponse',
+              deletedEntities: (data as {
+                deletedEntities: {
+                  '@class': IAbstractEntity['@class'];
+                  id: number;
+                }[];
+              }).deletedEntities,
+              updatedEntities: [],
+              events: [],
+            },
+            store.dispatch,
+          ),
+        );
+      case 'CustomEvent':
+        return store.dispatch(editorEvent(data as CustomEvent));
       case 'PageUpdate':
         store.dispatch(Actions.PageActions.get(data as string));
         return;

@@ -3,7 +3,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -164,9 +164,11 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
      * @param gameModel the gameModel
      * @param list      new descriptor parent
      * @param entity    new descriptor to create
+     * @param resetNames
      *
      * @return the new descriptor
      */
+    @Override
     public VariableDescriptor createChild(final GameModel gameModel,
         final DescriptorListI<VariableDescriptor> list,
         final VariableDescriptor entity, boolean resetNames) {
