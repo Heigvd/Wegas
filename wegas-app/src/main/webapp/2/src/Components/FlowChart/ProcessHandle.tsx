@@ -11,6 +11,7 @@ export const HANDLE_SIDE = 20;
 
 const flowHandleStyle = css({
   position: 'absolute',
+  zIndex: 1,
   width: `${HANDLE_SIDE}px`,
   height: `${HANDLE_SIDE}px`,
   borderRadius: `${HANDLE_SIDE / 2}px`,

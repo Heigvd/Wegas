@@ -35,9 +35,9 @@ function COMMON_CONFIG(
 }
 export interface IManagedResponse {
   '@class': 'ManagedResponse';
-  deletedEntities: IAbstractEntity[];
-  updatedEntities: IAbstractEntity[];
-  events: WegasEvent[];
+  deletedEntities?: IAbstractEntity[];
+  updatedEntities?: IAbstractEntity[];
+  events?: WegasEvent[];
 }
 
 export function rest(

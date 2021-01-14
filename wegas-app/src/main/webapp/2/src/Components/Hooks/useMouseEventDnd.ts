@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { wlog } from '../../Helper/wegaslog';
 
 export interface XYPosition {
   x: number;
@@ -18,7 +19,11 @@ export interface MouseDnDHandler {
    *  onDragEnd - is called at the end of the drag sequence
    * @returns if true, the element will be replaced at its initial position
    */
-  onDragEnd?: (e: MouseEvent, componentPosition: XYPosition) => void | boolean;
+  onDragEnd?: (
+    e: MouseEvent,
+    componentPosition: XYPosition,
+    targetId: string | null,
+  ) => void | boolean;
 }
 
 /**
@@ -32,6 +37,7 @@ export function useMouseEventDnd<T extends HTMLElement>(
   { onDragStart, onDrag, onDragEnd }: MouseDnDHandler,
 ) {
   const draggingTarget = React.useRef<T | null>(null);
+  const draggingStarted = React.useRef(false);
 
   const initialPosition = React.useRef<XYPosition>({ x: 0, y: 0 });
   const clickPosition = React.useRef<XYPosition>({ x: 0, y: 0 });
@@ -60,6 +66,7 @@ export function useMouseEventDnd<T extends HTMLElement>(
     (e: MouseEvent) => {
       e.stopPropagation();
       if (draggingTarget.current != null) {
+        draggingStarted.current = true;
         const target = draggingTarget.current;
         const parentBox = target.parentElement?.getBoundingClientRect();
         const x = e.clientX - (parentBox?.left || 0) - clickPosition.current.x;
@@ -74,8 +81,23 @@ export function useMouseEventDnd<T extends HTMLElement>(
   const onMouseUp = React.useCallback(
     (e: MouseEvent) => {
       e.stopPropagation();
-      if (draggingTarget.current != null) {
-        const reset = onDragEnd && onDragEnd(e, lastPosition.current);
+      if (draggingStarted.current && draggingTarget.current != null) {
+        debugger;
+        draggingStarted.current = false;
+        let targetElement = e.target as HTMLElement;
+        let targetId = null;
+
+        // do{
+        //   targetId = targetElement.getAttribute('data-id');
+        //   targetElement = targetElement.y
+        // }
+        const reset =
+          onDragEnd &&
+          onDragEnd(
+            e,
+            lastPosition.current,
+            (e.target as HTMLElement).getAttribute('data-id'),
+          );
         if (reset) {
           draggingTarget.current.setAttribute(
             'style',

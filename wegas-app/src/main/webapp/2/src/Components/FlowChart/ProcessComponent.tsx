@@ -24,7 +24,7 @@ export interface ProcessProps extends Process {
   id: string;
   onMoveEnd: (postion: XYPosition) => void;
   onMove: (postion: XYPosition) => void;
-  onNew: (position: XYPosition) => void;
+  onNew: (position: XYPosition, targetId: string | null) => void;
   onReady: (element: HTMLElement) => void;
 }
 
@@ -71,10 +71,14 @@ export function ProcessComponent({
   });
 
   const onHandleDragEnd = React.useCallback(
-    (_e: MouseEvent, componentPosition: XYPosition) => {
+    (
+      _e: MouseEvent,
+      componentPosition: XYPosition,
+      targetId: string | null,
+    ) => {
       const x = position.x + componentPosition.x;
       const y = position.y + componentPosition.y;
-      onNew({ x: Math.max(x, 0), y: Math.max(y, 0) });
+      onNew({ x: Math.max(x, 0), y: Math.max(y, 0) }, targetId);
       return true;
     },
     [onNew, position.x, position.y],
@@ -90,6 +94,7 @@ export function ProcessComponent({
       }}
       style={{ left: position.x, top: position.y }}
       className={processStyle}
+      data-id={id}
     >
       {id}
       <ProcessHandle

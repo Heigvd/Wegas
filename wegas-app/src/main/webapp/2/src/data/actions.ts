@@ -216,28 +216,29 @@ export function manageResponseHandler(
     }
   }
 
-  const managetValuesOnly = {
+  const managedValuesOnly = {
     deletedEntities,
     updatedEntities,
     events: [],
   };
 
   const managedValues = {
-    ...managetValuesOnly,
-    events: payload.events.map(event => {
-      const timedEvent: WegasEvent = {
-        ...event,
-        timestamp: new Date().getTime(),
-        unread: true,
-      };
-      triggerEventHandlers(timedEvent);
+    ...managedValuesOnly,
+    events:
+      payload.events?.map(event => {
+        const timedEvent: WegasEvent = {
+          ...event,
+          timestamp: new Date().getTime(),
+          unread: true,
+        };
+        triggerEventHandlers(timedEvent);
 
-      return timedEvent;
-    }),
+        return timedEvent;
+      }) || [],
   };
 
   localDispatch &&
     localDispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
 
-  return ActionCreator.MANAGED_RESPONSE_ACTION(managetValuesOnly);
+  return ActionCreator.MANAGED_RESPONSE_ACTION(managedValuesOnly);
 }

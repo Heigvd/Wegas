@@ -95,10 +95,14 @@ export function FlowChart({
             onMoveEnd={position =>
               onChange({ ...processes, [key]: { ...process, position } })
             }
-            onNew={position => {
-              const newId = String(
-                Number(Object.keys(processes).sort().slice(-1)[0]) + 1,
-              );
+            onNew={(position, targetId) => {
+              debugger;
+              const newId =
+                targetId == null || targetId == ''
+                  ? String(
+                      Number(Object.keys(processes).sort().slice(-1)[0]) + 1,
+                    )
+                  : targetId;
               onChange({
                 ...processes,
                 [key]: {
