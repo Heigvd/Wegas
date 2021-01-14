@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -17,8 +18,10 @@ import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
+import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.PrimitiveDescriptorI;
+import com.wegas.core.persistence.variable.primitive.StaticTextDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.view.Hidden;
@@ -42,14 +45,14 @@ import jdk.nashorn.api.scripting.JSObject;
  */
 @Entity
 @NamedQuery(name = "WhQuestionDescriptor.findDistinctChildrenLabels",
-        query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentWh.id = :containerId")
+    query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentWh.id = :containerId")
 @Table(
-        indexes = {
-            @Index(columnList = "description_id")
-        }
+    indexes = {
+        @Index(columnList = "description_id")
+    }
 )
 public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
-        implements DescriptorListI<VariableDescriptor> {
+    implements DescriptorListI<VariableDescriptor> {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -57,13 +60,13 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            nullable = false, optional = false, proposal = EmptyI18n.class,
-            view = @View(label = "Description", value = I18nHtmlView.class))
+        nullable = false, optional = false, proposal = EmptyI18n.class,
+        view = @View(label = "Description", value = I18nHtmlView.class))
     private TranslatableContent description;
 
     @OneToMany(mappedBy = "parentWh", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @OrderColumn(name = "whd_items_order")
-    
+
     @WegasEntityProperty(includeByDefault = false, view = @View(label = "items", value = Hidden.class), notSerialized = true)
     private List<VariableDescriptor> items = new ArrayList<>();
 
@@ -89,7 +92,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      */
     @Override
     @JsonView(Views.ExportI.class)
-    @Scriptable(label = "getItems",wysiwyg = false)
+    @Scriptable(label = "getItems", wysiwyg = false)
     public List<VariableDescriptor> getItems() {
         return this.items;
     }
@@ -112,7 +115,9 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
     }
 
     private boolean isAuthorized(VariableDescriptor child) {
-        return child instanceof PrimitiveDescriptorI;
+        return child instanceof PrimitiveDescriptorI
+            || child instanceof ListDescriptor
+            || child instanceof StaticTextDescriptor;
     }
 
     @Override
@@ -205,8 +210,8 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
      */
     @Scriptable
     public void setFeedback(
-            Player p,
-            @Param(view = @View(label = "", value = I18nHtmlView.class)) TranslatableContent value) {
+        Player p,
+        @Param(view = @View(label = "", value = I18nHtmlView.class)) TranslatableContent value) {
         this.getInstance(p).setFeedback(value);
     }
 
@@ -225,7 +230,7 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
             if (feedback != null) {
                 feedback.merge(readFromNashorn);
             } else {
-            this.getInstance(p).setFeedback(readFromNashorn);
+                this.getInstance(p).setFeedback(readFromNashorn);
             }
         } else {
             this.getInstance(p).setFeedback(null);
