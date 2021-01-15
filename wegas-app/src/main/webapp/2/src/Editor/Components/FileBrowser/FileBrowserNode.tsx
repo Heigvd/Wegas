@@ -59,6 +59,8 @@ const noToggleStyle = css({
 
 const previewStyle = css(
   {
+    position: 'fixed',
+    backgroundColor: themeVar.Common.colors.BackgroundColor,
     maxWidth: '220px',
     margin: '3px 2em 10px',
     padding: '10px',

@@ -27,52 +27,24 @@ YUI.add('wegas-mcq-view', function(Y) {
             // do not use toObject from Wegas-parent as we do NOT want to serialise children
             return Y.Wegas.Editable.prototype.toObject.apply(this, arguments);
         },
-        renderUI: function() {
-            var whQuestion = this.get("variable.evaluated"),
-                whQuestionInstance = whQuestion.getInstance(),
-                i, child, name, classes,
-                answers,
-                inputWidget, label, title;
-            this.destroyAll();
-            this.readonly = whQuestionInstance.get("validated");
-            this.qList = new Y.Wegas.List({
-                cssClass: "wegas-whview__mainlist"
-            });
-            title = I18n.t(whQuestion.get("label"));
-            this.qTitle = new Y.Wegas.Text({
-                cssClass: "wegas-whview__title",
-                content: title
-            });
-            this.qText = new Y.Wegas.Text({
-                cssClass: "wegas-whview__question wegas-light-picture",
-                content: I18n.t(whQuestion.get("description"), {inlineEditor: 'html'})
-            });
-            this.qList.add(this.qTitle);
-            this.qList.add(this.qText);
-            this.mainList = new Y.Wegas.List({
-                cssClass: "wegas-whview__main-list",
-                direction: "vertical",
-                editable: false,
-                "transient": true
-            });
-            this.hList = new Y.Wegas.List({
-                cssClass: "wegas-whview__main",
-                direction: "vertical"
-            });
-            this.mainList.add(this.qList);
-            this.add(this.mainList);
-            this._locks = {};
-            this._values = {};
-            this.aList = new Y.Wegas.List({
-                cssClass: "wegas-whview__answers"
-            });
-            answers = whQuestion.get("items");
-            for (i in answers) {
+        processItems: function(answers, indent) {
+            var child;
+            var name;
+            var classes;
+            var inputWidget;
+            var label;
+            var indentLevel = indent || 0;
+            for (var i in answers) {
+                inputWidget = undefined;
                 if (answers.hasOwnProperty(i)) {
                     child = answers[i];
                     name = child.get("name");
-                    this._values[name] = child.getValue();
-                    classes = "wegas-whview__answers__input-answer input-" + name;
+                    if (child.getValue) {
+                        this._values[name] = child.getValue();
+                    } else {
+                        //this._values[name] = null;
+                    }
+                    classes = "wegas-whview__answers__input-answer input-" + name + " wegas-whview__answers__ident-" + indentLevel;
                     label = I18n.t(child.get("label"));
                     switch (child.get("@class")) {
                         case "NumberDescriptor":
@@ -149,10 +121,66 @@ YUI.add('wegas-mcq-view', function(Y) {
                                 disablePaste: true
                             });
                             break;
+                        case "StaticTextDescriptor":
+                            inputWidget = new Y.Wegas.Text({
+                                cssClass: classes + " wegas-whview__answers__statictext",
+                                content: I18n.tVar(child)
+                            });
+                            break;
+                        case "ListDescriptor":
+                            this.aList.add(
+                                new Y.Wegas.Text({
+                                    cssClass: classes + " wegas-whview__answers__folder",
+                                    content: I18n.tVar(child)
+                                }));
+                            this.processItems(child.get("items"), indentLevel + 1);
+                            break;
                     }
-                    this.aList.add(inputWidget);
+                    if (inputWidget) {
+                        this.aList.add(inputWidget);
+                    }
                 }
             }
+        },
+        renderUI: function() {
+            var whQuestion = this.get("variable.evaluated"),
+                whQuestionInstance = whQuestion.getInstance(),
+                title;
+            this.destroyAll();
+            this.readonly = whQuestionInstance.get("validated");
+            this.qList = new Y.Wegas.List({
+                cssClass: "wegas-whview__mainlist"
+            });
+            title = I18n.t(whQuestion.get("label"));
+            this.qTitle = new Y.Wegas.Text({
+                cssClass: "wegas-whview__title",
+                content: title
+            });
+            this.qText = new Y.Wegas.Text({
+                cssClass: "wegas-whview__question wegas-light-picture",
+                content: I18n.t(whQuestion.get("description"), {inlineEditor: 'html'})
+            });
+            this.qList.add(this.qTitle);
+            this.qList.add(this.qText);
+            this.mainList = new Y.Wegas.List({
+                cssClass: "wegas-whview__main-list",
+                direction: "vertical",
+                editable: false,
+                "transient": true
+            });
+            this.hList = new Y.Wegas.List({
+                cssClass: "wegas-whview__main",
+                direction: "vertical"
+            });
+            this.mainList.add(this.qList);
+            this.add(this.mainList);
+            this._locks = {};
+            this._values = {};
+            this.aList = new Y.Wegas.List({
+                cssClass: "wegas-whview__answers"
+            });
+
+            this.processItems(whQuestion.get("items"));
 
             this.mainList.add(this.aList);
 
@@ -304,17 +332,21 @@ YUI.add('wegas-mcq-view', function(Y) {
             var i, child, isValid,
                 whQuestion = this.get("variable.evaluated"),
                 value, answers,
+                childVariable,
                 valid = true;
             answers = whQuestion.get("items");
             for (i in answers) {
                 if (answers.hasOwnProperty(i)) {
                     child = answers[i];
-                    value = Y.Wegas.Facade.Variable.cache.find("name", child.get("name")).getValue();
-                    isValid = this.isValid({
-                        descriptor: child,
-                        value: value
-                    });
-                    valid = valid && isValid;
+                    childVariable = Y.Wegas.Facade.Variable.cache.find("name", child.get("name"));
+                    if (childVariable.getValue) {
+                        value = childVariable.getValue();
+                        isValid = this.isValid({
+                            descriptor: child,
+                            value: value
+                        });
+                        valid = valid && isValid;
+                    }
                 }
             }
             return valid;
@@ -322,7 +354,9 @@ YUI.add('wegas-mcq-view', function(Y) {
         getSaveScript: function() {
             var script = "", answerName;
             for (answerName in this._values) {
-                if (this._values.hasOwnProperty(answerName)) {
+                if (this._values.hasOwnProperty(answerName) &&
+                    this._values[answerName] !== null
+                    ) {
                     script += "Variable.find(gameModel, \"" + answerName + "\").setValue(self,  " + JSON.stringify(this._values[answerName]) + ");";
                 }
             }

@@ -36,6 +36,7 @@ export interface DropMenuProps<
   onOpen?: () => void;
   items: readonly MItem[];
   label?: React.ReactNode;
+  prefixedLabel?: boolean;
   path?: number[];
   icon?: IconName;
   direction?: 'left' | 'down' | 'right' | 'top';
@@ -113,6 +114,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
   onSelect,
   direction,
   label,
+  prefixedLabel = true,
   path,
   items,
   icon,
@@ -160,7 +162,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
           <div className={itemStyle} onClick={() => toggleMenu()}>
             <Button
               label={label}
-              prefixedLabel
+              prefixedLabel={prefixedLabel}
               icon={withDefault(
                 icon,
                 !adder && items.length === 0

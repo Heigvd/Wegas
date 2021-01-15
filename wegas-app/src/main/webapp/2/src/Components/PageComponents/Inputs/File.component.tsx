@@ -68,7 +68,7 @@ registerComponent(
       onVariableChange: onVariableChangeSchema('On file click actions'),
       pathScript: schemaProps.path({
         label: 'Root path',
-        pick: 'FOLDER',
+        pickType: 'FOLDER',
         scriptable: true,
       }),
       pickType: schemaProps.select({

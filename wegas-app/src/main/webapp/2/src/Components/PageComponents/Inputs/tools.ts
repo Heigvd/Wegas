@@ -1,13 +1,9 @@
 import { IScript } from 'wegas-ts-api';
-import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
+import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
 import { store } from '../../../data/store';
 import { createScript } from '../../../Helper/wegasEntites';
-import {
-  parseAndRunClientScript,
-  safeClientScriptEval,
-  useScript,
-} from '../../Hooks/useScript';
+import { safeClientScriptEval, useScript } from '../../Hooks/useScript';
 import { clientAndServerScriptChoices } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
@@ -70,10 +66,7 @@ export function useOnVariableChange(
     }
     if (server) {
       store.dispatch(
-        runScript(
-          parseAndRunClientScript(server, newContext),
-          Player.selectCurrent(),
-        ),
+        runLoadedScript(server, Player.selectCurrent(), undefined, newContext),
       );
     }
   }
