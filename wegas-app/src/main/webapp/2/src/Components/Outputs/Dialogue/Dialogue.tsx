@@ -16,6 +16,7 @@ import {
 import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReducer';
 import { useCurrentPlayer } from '../../../data/selectors/Player';
 import { store } from '../../../data/store';
+import { Text } from '../../Outputs/Text';
 import { themeVar } from '../../Style/ThemeVars';
 import { DialogueChoice } from './DialogueChoice';
 import { DialogueEntry } from './DialogueEntry';
@@ -51,9 +52,13 @@ const dialogueDisplayStyle = css({
 
 interface DialogueDisplayProps {
   dialogue: SDialogueDescriptor;
+  endingText?: string;
 }
 
-export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
+export function DialogueDisplay({
+  dialogue,
+  endingText,
+}: DialogueDisplayProps) {
   const historyDiv = React.useRef<HTMLDivElement>(null);
 
   const [waiting, setWaiting] = React.useState(false);
@@ -165,42 +170,47 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
       </div>
 
       {/* ----- show next input choices  --------------------------------------------------- */}
-      {choices.length > 0 && (
-        <div
-          className={cx(
-            flex,
-            flexColumn,
-            flexDistribute,
-            itemCenter,
-            choicePannelStyle,
-          )}
-        >
-          {/* ---------- each input choice  ------------------------------------------------ */}
-          {choices.map((transition: SDialogueTransition) => (
-            <DialogueChoice
-              key={`CHOICE${transition.getId()}`}
-              label={transition.getActionText()}
-              onClick={() => {
-                wait();
-                store.dispatch(
-                  applyFSMTransition(
-                    dialogue.getEntity(),
-                    transition.getEntity(),
-                  ),
-                );
-              }}
-            />
-          ))}
 
-          {/* ---------- waiting for the next answer to be revealed ------------------------ */}
-          {waiting && choices.length > 0 && (
-            <WaitingLoader
-              color={themeVar.Common.colors.HeaderColor}
-              background={themeVar.Common.colors.HeaderColor}
-            />
-          )}
-        </div>
-      )}
+      <div
+        className={cx(
+          flex,
+          flexColumn,
+          flexDistribute,
+          itemCenter,
+          choicePannelStyle,
+        )}
+      >
+        {/* ---------- each input choice  ------------------------------------------------ */}
+        {choices.length > 0 ? (
+          <>
+            {choices.map((transition: SDialogueTransition) => (
+              <DialogueChoice
+                key={`CHOICE${transition.getId()}`}
+                label={transition.getActionText()}
+                onClick={() => {
+                  wait();
+                  store.dispatch(
+                    applyFSMTransition(
+                      dialogue.getEntity(),
+                      transition.getEntity(),
+                    ),
+                  );
+                }}
+              />
+            ))}
+
+            {/* ---------- waiting for the next answer to be revealed ------------------------ */}
+            {waiting && choices.length > 0 && (
+              <WaitingLoader
+                color={themeVar.Common.colors.HeaderColor}
+                background={themeVar.Common.colors.HeaderColor}
+              />
+            )}
+          </>
+        ) : (
+          <Text text={endingText} />
+        )}
+      </div>
     </div>
   );
 }

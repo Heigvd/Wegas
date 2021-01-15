@@ -10,18 +10,25 @@ import { IScript, IDialogueDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { DialogueDisplay } from '../../Outputs/Dialogue/Dialogue';
 import { TumbleLoader } from '../../Loader';
+import { useScript } from '../../Hooks/useScript';
 
 interface PlayerDialogueProps extends WegasComponentProps {
   dialogue?: IScript;
+  endingText?: IScript;
 }
 
-export default function PlayerDialogue({ dialogue }: PlayerDialogueProps) {
+export default function PlayerDialogue({
+  dialogue,
+  endingText,
+  context,
+}: PlayerDialogueProps) {
   const { descriptor } = useComponentScript<IDialogueDescriptor>(dialogue);
+  const finalText = useScript<string>(endingText, context);
   if (descriptor === undefined) {
     return <TumbleLoader />;
   }
 
-  return <DialogueDisplay dialogue={descriptor} />;
+  return <DialogueDisplay dialogue={descriptor} endingText={finalText} />;
 }
 
 registerComponent(
@@ -35,6 +42,10 @@ registerComponent(
         label: 'Dialogue',
         required: true,
         returnType: ['SDialogueDescriptor'],
+      }),
+      endingText: schemaProps.scriptString({
+        label: 'endingText',
+        richText: true,
       }),
     },
     allowedVariables: ['DialogueDescriptor'],
