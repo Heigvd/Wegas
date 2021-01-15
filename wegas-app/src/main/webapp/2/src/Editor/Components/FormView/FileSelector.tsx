@@ -31,7 +31,7 @@ export interface CommonFileSelectProps<
 
 interface CustomFileSelectProps<T extends keyof AllowedTypes>
   extends CommonFileSelectProps<T> {
-  pick?: FilePickingType;
+  pickType?: FilePickingType;
   filter?: FileFilter;
   inputId?: string;
   labelNode?: JSX.Element;
@@ -42,7 +42,7 @@ export function CustomFileSelector<T extends keyof AllowedTypes>({
   onChange,
   valueType,
   filter,
-  pick = 'BOTH',
+  pickType = 'BOTH',
   inputId,
   labelNode,
 }: CustomFileSelectProps<T>) {
@@ -95,7 +95,7 @@ export function CustomFileSelector<T extends keyof AllowedTypes>({
               (onChange as (val: IAbstractContentDescriptor) => void)(file);
             }
           }}
-          pick={pick}
+          pickType={pickType}
         />
       )}
     </>
@@ -105,7 +105,7 @@ export function CustomFileSelector<T extends keyof AllowedTypes>({
 type LabeledCustomFileSelectProps<
   T extends keyof AllowedTypes
 > = WidgetProps.BaseProps<
-  CommonView & LabeledView & { pick?: FilePickingType; filter?: FileFilter }
+  CommonView & LabeledView & { pickType?: FilePickingType; filter?: FileFilter }
 > &
   CommonFileSelectProps<T>;
 
@@ -131,7 +131,7 @@ export function LabeledCustomFileSelector<T extends keyof AllowedTypes>(
 }
 
 type FileSelectProps = WidgetProps.BaseProps<
-  CommonView & LabeledView & { pick: FilePickingType; filter?: FileFilter }
+  CommonView & LabeledView & { pickType: FilePickingType; filter?: FileFilter }
 > &
   CommonFileSelectProps<'IAbstractContentDescriptor'>;
 

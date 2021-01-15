@@ -91,12 +91,16 @@ export function VariableTreeTitle({
 
 interface TreeProps {
   variables: number[];
+  noHeader?: boolean;
+  noVisibleRoot?: boolean;
   localState?: Readonly<Edition> | undefined;
   localDispatch?: StoreDispatch;
   forceLocalDispatch?: boolean;
 }
 export function TreeView({
   variables,
+  noHeader = false,
+  noVisibleRoot = false,
   localState,
   localDispatch,
   forceLocalDispatch,
@@ -108,28 +112,32 @@ export function TreeView({
   return (
     <Toolbar>
       <Toolbar.Header>
-        <input
-          type="string"
-          value={search}
-          placeholder="Filter"
-          aria-label="Filter"
-          onChange={ev => {
-            setSearch(ev.target.value);
-          }}
-        />
-        <DropMenu
-          items={data || []}
-          icon="plus"
-          onSelect={(i, e) => {
-            if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
-              localDispatch(Actions.EditorActions.createVariable(i.value));
-            } else {
-              globalDispatch(Actions.EditorActions.createVariable(i.value));
-              focusTab(mainLayoutId, 'Variable Properties');
-            }
-          }}
-        />
-        <SearchTool />
+        {!noHeader && (
+          <>
+            <input
+              type="string"
+              value={search}
+              placeholder="Filter"
+              aria-label="Filter"
+              onChange={ev => {
+                setSearch(ev.target.value);
+              }}
+            />
+            <DropMenu
+              items={data || []}
+              icon="plus"
+              onSelect={(i, e) => {
+                if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
+                  localDispatch(Actions.EditorActions.createVariable(i.value));
+                } else {
+                  globalDispatch(Actions.EditorActions.createVariable(i.value));
+                  focusTab(mainLayoutId, 'Variable Properties');
+                }
+              }}
+            />
+            <SearchTool />
+          </>
+        )}
       </Toolbar.Header>
       <Toolbar.Content style={{ paddingTop: '1px' }}>
         <Container
@@ -138,7 +146,11 @@ export function TreeView({
               source.parent !== target.parent ||
               source.index !== target.index
             ) {
-              globalDispatch(
+              let dispatch = store.dispatch;
+              if (forceLocalDispatch && localDispatch) {
+                dispatch = localDispatch;
+              }
+              dispatch(
                 moveDescriptor(
                   id as IVariableDescriptor,
                   target.index,
@@ -157,6 +169,7 @@ export function TreeView({
                     key={id}
                     search={search}
                     variableId={id}
+                    noVisibleRoot={noVisibleRoot}
                     localState={localState}
                     localDispatch={localDispatch}
                     forceLocalDispatch={forceLocalDispatch}
@@ -274,12 +287,14 @@ export function CTree(
     props.subPath,
     props.localState,
   );
+
   if (variable) {
     if (!match) {
       return null;
     }
     return (
       <Node
+        noToggle={props.noVisibleRoot}
         dragId={TREEVIEW_ITEM_TYPE}
         {...props.nodeProps()}
         header={
@@ -315,15 +330,19 @@ export function CTree(
               );
             }}
           >
-            <VariableTreeTitle
-              variable={variable}
-              subPath={props.subPath}
-              className={nodeContentStyle}
-            />
+            {!props.noVisibleRoot && (
+              <VariableTreeTitle
+                variable={variable}
+                subPath={props.subPath}
+                className={nodeContentStyle}
+              />
+            )}
             {entityIs(variable, 'ListDescriptor') ||
             entityIs(variable, 'QuestionDescriptor') ||
             entityIs(variable, 'WhQuestionDescriptor') ? (
               <AddMenuParent
+                label={props.noVisibleRoot ? 'Add' : ''}
+                prefixedLabel={!props.noVisibleRoot}
                 variable={variable}
                 localDispatch={props.localDispatch}
                 focusTab={tabId => focusTab(mainLayoutId, tabId)}

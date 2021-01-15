@@ -1,18 +1,23 @@
 import * as React from 'react';
-import { generateAbsolutePath, FileAPI } from '../../../API/files.api';
-import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
-import { FileBrowserNode, FileBrowserNodeProps } from './FileBrowserNode';
-import { ComponentWithForm } from '../FormView/ComponentWithForm';
-import { StoreDispatch, useStore } from '../../../data/store';
-import { grow } from '../../../css/classes';
-import { MessageString } from '../MessageString';
+
 import { css } from 'emotion';
-import { mainLayoutId } from '../Layout';
-import { IAbstractContentDescriptor } from 'wegas-ts-api';
-import { focusTab } from '../LinearTabLayout/LinearLayout';
+import { grow } from '../../../css/classes';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { State } from '../../../data/Reducer/reducers';
 // import { themeVar } from '../../../Components/Style/ThemeVars';
+
+import { IAbstractContentDescriptor } from 'wegas-ts-api';
+
+import { StoreDispatch, useStore } from '../../../data/store';
+import { State } from '../../../data/Reducer/reducers';
+
+import { mainLayoutId } from '../Layout';
+import { focusTab } from '../LinearTabLayout/LinearLayout';
+import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
+import { ComponentWithForm } from '../FormView/ComponentWithForm';
+import { MessageString } from '../MessageString';
+
+import { generateAbsolutePath, FileAPI } from '../../../API/files.api';
+import { FileBrowserNode, FileBrowserNodeProps } from './FileBrowserNode';
 
 const fileBrowserStyle = css({
   // backgroundColor: themeVar.Common.colors.HeaderColor,
@@ -33,28 +38,28 @@ export interface FileFilter {
 
 export interface FileBrowserProps extends ClassStyleId {
   defaultFilePath?: string;
+  selectedLocalPaths?: string[];
+  selectedGlobalPaths?: string[];
   noDelete?: boolean;
   readOnly?: boolean;
   onFileClick?: FileBrowserNodeProps['onFileClick'];
-  onDelelteFile?: FileBrowserNodeProps['onDelelteFile'];
-  selectedLocalPaths?: string[];
-  selectedGlobalPaths?: string[];
-  localDispatch?: StoreDispatch;
-  pick?: FilePickingType;
+  onDeleteFile?: FileBrowserNodeProps['onDeleteFile'];
+  pickType?: FilePickingType;
   filter?: FileFilter;
+  localDispatch?: StoreDispatch;
 }
 
 export function FileBrowser({
   defaultFilePath,
+  selectedLocalPaths,
+  selectedGlobalPaths,
   noDelete,
   readOnly,
   onFileClick,
-  onDelelteFile,
-  selectedLocalPaths,
-  selectedGlobalPaths,
-  localDispatch,
-  pick,
+  onDeleteFile,
+  pickType,
   filter,
+  localDispatch,
   className,
   style,
   id,
@@ -84,23 +89,23 @@ export function FileBrowser({
       >
         <MessageString value={error} type={'error'} duration={3000} />
         <FileBrowserNode
-          defaultFile={rootFile}
+          item={rootFile}
+          isRootNode
           selectedLocalPaths={selectedLocalPaths}
           selectedGlobalPaths={selectedGlobalPaths}
-          noBracket
           noDelete={noDelete}
           readOnly={readOnly}
           onFileClick={onFileClick}
-          onDelelteFile={onDelelteFile}
-          localDispatch={localDispatch}
-          pick={pick}
+          onDeleteFile={onDeleteFile}
+          pickType={pickType}
           filter={filter}
+          localDispatch={localDispatch}
           className={fileBrowserStyle}
         />
       </div>
     </DefaultDndProvider>
   ) : (
-    <div>"Loading files"</div>
+    <div>Loading files</div>
   );
 }
 
