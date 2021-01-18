@@ -3,7 +3,13 @@ import { css } from 'emotion';
 import { XYPosition, useMouseEventDnd } from '../Hooks/useMouseEventDnd';
 import { themeVar } from '../Style/ThemeVars';
 import { Process } from './FlowChart';
-import { HANDLE_SIDE, ProcessHandle } from './ProcessHandle';
+import {
+  DnDFlowchartHandle,
+  HANDLE_SIDE,
+  ProcessHandle,
+  PROCESS_HANDLE_DND_TYPE,
+} from './ProcessHandle';
+import { useDrop } from 'react-dnd';
 
 const PROCESS_WIDTH = 100;
 const PROCESS_HEIGHT = 50;
@@ -20,24 +26,31 @@ const processStyle = css({
   overflow: 'show',
 });
 
-export interface ProcessProps extends Process {
-  id: string;
+export interface ProcessProps {
+  process: Process;
   onMoveEnd: (postion: XYPosition) => void;
   onMove: (postion: XYPosition) => void;
-  onNew: (position: XYPosition, targetId: string | null) => void;
+  onConnect: (sourceProcess: Process, flowId?: string) => void;
   onReady: (element: HTMLElement) => void;
 }
 
 export function ProcessComponent({
-  id,
-  position,
+  process,
   onMoveEnd,
   onMove,
-  onNew,
+  onConnect,
   onReady,
 }: ProcessProps) {
   const processElement = React.useRef<HTMLDivElement | null>(null);
   const clickPosition = React.useRef<XYPosition>({ x: 0, y: 0 });
+
+  const [, drop] = useDrop<DnDFlowchartHandle, unknown, unknown>({
+    accept: PROCESS_HANDLE_DND_TYPE,
+    canDrop: () => true,
+    drop: ({ sourceProcess }) => {
+      onConnect(sourceProcess);
+    },
+  });
 
   const onDragStart = React.useCallback((e: MouseEvent) => {
     const targetBox = (e.target as HTMLDivElement).getBoundingClientRect();
@@ -70,39 +83,26 @@ export function ProcessComponent({
     onDragEnd,
   });
 
-  const onHandleDragEnd = React.useCallback(
-    (
-      _e: MouseEvent,
-      componentPosition: XYPosition,
-      targetId: string | null,
-    ) => {
-      const x = position.x + componentPosition.x;
-      const y = position.y + componentPosition.y;
-      onNew({ x: Math.max(x, 0), y: Math.max(y, 0) }, targetId);
-      return true;
-    },
-    [onNew, position.x, position.y],
-  );
-
   return (
     <div
       ref={ref => {
+        drop(ref);
         if (ref != null) {
           processElement.current = ref;
           onReady(ref);
         }
       }}
-      style={{ left: position.x, top: position.y }}
+      style={{ left: process.position.x, top: process.position.y }}
       className={processStyle}
-      data-id={id}
+      data-id={process.id}
     >
-      {id}
+      {process.id}
       <ProcessHandle
         position={{
           x: PROCESS_WIDTH - HANDLE_SIDE / 2,
           y: (PROCESS_HEIGHT - HANDLE_SIDE) / 2,
         }}
-        handlers={{ onDragEnd: onHandleDragEnd }}
+        sourceProcess={process}
       />
     </div>
   );

@@ -5,6 +5,9 @@ import { Toolbar } from '../Toolbar';
 import { FlowLineComponent, FlowLineProps } from './FlowLineComponent';
 import { ProcessProps, ProcessComponent } from './ProcessComponent';
 import { FlowLineLabelComponent, FlowLineLabelProps } from './FlowLineLabel';
+import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './ProcessHandle';
+import u from 'immer';
+import { useDrop } from 'react-dnd';
 
 const flowChartStyle = css({
   width: '100%',
@@ -13,6 +16,7 @@ const flowChartStyle = css({
 });
 
 export interface Process {
+  id?: string;
   position: XYPosition;
   attachedTo: string[];
 }
@@ -32,11 +36,17 @@ export interface FlowLines {
 
 interface FlowChartProps {
   title: React.ReactNode;
-  processes: Processes;
+  processes: Process[];
   Process?: React.FunctionComponent<ProcessProps>;
   Flowline?: React.FunctionComponent<FlowLineProps>;
   FlowlineLabel?: React.FunctionComponent<FlowLineLabelProps>;
-  onChange: (processes: Processes) => void;
+  onMove: (process: Process, newPosition: XYPosition) => void;
+  onNew: (sourceProcess: Process, newPosition: XYPosition) => void;
+  onConnect: (
+    sourceProcess: Process,
+    targetProcess: Process,
+    flowId?: string | number,
+  ) => void;
 }
 
 export function FlowChart({
@@ -45,77 +55,97 @@ export function FlowChart({
   Process = ProcessComponent,
   Flowline = FlowLineComponent,
   FlowlineLabel = FlowLineLabelComponent,
-  onChange,
+  onMove,
+  onNew,
+  onConnect,
 }: FlowChartProps) {
-  const processesRef = React.useRef<{
-    [key: string]: HTMLElement;
-  }>({});
+  const container = React.useRef<HTMLDivElement>();
+  const processesRef = React.useRef<HTMLElement[]>([]);
 
-  const [processesPosition, setProcessesPosition] = React.useState<{
-    [key: string]: XYPosition;
-  }>({});
+  const [, drop] = useDrop<DnDFlowchartHandle, unknown, unknown>({
+    accept: PROCESS_HANDLE_DND_TYPE,
+    canDrop: (_item, mon) => mon.isOver({ shallow: true }),
+    drop: ({ sourceProcess }, mon) => {
+      const newX = mon.getClientOffset()?.x;
+      const newY = mon.getClientOffset()?.y;
+
+      const containerX = container.current?.getBoundingClientRect().x;
+      const containerY = container.current?.getBoundingClientRect().y;
+
+      onNew(
+        sourceProcess,
+        newX != null && newY != null && containerX != null && containerY != null
+          ? {
+              x: newX - containerX,
+              y: newY - containerY,
+            }
+          : { x: 0, y: 0 },
+      );
+    },
+    // collect: (mon: DropTargetMonitor) => ({
+    //   isOver: mon.isOver(),
+    //   canDrop: mon.canDrop(),
+    // }),
+  });
+
+  const [processesPosition, setProcessesPosition] = React.useState<
+    XYPosition[]
+  >([]);
 
   React.useEffect(() => {
-    setProcessesPosition(
-      Object.entries(processes).reduce(
-        (os, [key, process]) => ({ ...os, [key]: process.position }),
-        {},
-      ),
-    );
+    setProcessesPosition(processes.map(process => process.position));
   }, [processes]);
 
   return (
     <Toolbar className={flowChartStyle}>
       <Toolbar.Header>{title}</Toolbar.Header>
-      <Toolbar.Content style={{ position: 'relative' }}>
-        {Object.entries(processes).map(([key, process]) =>
+      <Toolbar.Content
+        style={{ position: 'relative' }}
+        ref={ref => {
+          drop(ref);
+          if (ref != null) {
+            container.current = ref;
+          }
+        }}
+      >
+        {processes.map((process, index) =>
           process.attachedTo.map(flow => (
             <Flowline
-              key={key + flow}
-              startProcess={processesRef.current[key]}
-              startProcessPosition={processesPosition[key] || process.position}
-              endProcess={processesRef.current[flow]}
+              key={process.id + flow + index}
+              startProcess={processesRef.current[index]}
+              startProcessPosition={
+                processesPosition[index] || process.position
+              }
+              endProcess={
+                processesRef.current[processes.findIndex(p => p.id === flow)]
+              }
               endProcessPosition={
-                processesPosition[flow] || processes[flow].position
+                processesPosition[
+                  processes.findIndex(process => process.id === flow)
+                ] || processes.find(process => process.id === flow)?.position
               }
             >
-              <FlowlineLabel id={key + flow} label={key + flow} />
+              <FlowlineLabel id={process.id + flow} label={process.id + flow} />
             </Flowline>
           )),
         )}
-        {Object.entries(processes).map(([key, process]) => (
+        {processes.map((process, index) => (
           <Process
-            key={key + JSON.stringify(process.position)}
-            id={key}
-            position={process.position}
-            attachedTo={process.attachedTo}
+            key={process.id + JSON.stringify(process.position)}
+            process={process}
             onMove={position =>
-              setProcessesPosition(os => ({ ...os, [key]: position }))
+              setProcessesPosition(os =>
+                u(os, os => {
+                  os[processes.findIndex(p => p.id === process.id)] = position;
+                  return os;
+                }),
+              )
             }
-            onMoveEnd={position =>
-              onChange({ ...processes, [key]: { ...process, position } })
-            }
-            onNew={(position, targetId) => {
-              debugger;
-              const newId =
-                targetId == null || targetId == ''
-                  ? String(
-                      Number(Object.keys(processes).sort().slice(-1)[0]) + 1,
-                    )
-                  : targetId;
-              onChange({
-                ...processes,
-                [key]: {
-                  ...process,
-                  attachedTo: [...process.attachedTo, newId],
-                },
-                [newId]: {
-                  position,
-                  attachedTo: [],
-                },
-              });
+            onMoveEnd={position => onMove(process, position)}
+            onConnect={(sourceProcess, flowId) => {
+              onConnect(sourceProcess, process, flowId);
             }}
-            onReady={ref => (processesRef.current[key] = ref)}
+            onReady={ref => (processesRef.current[index] = ref)}
           />
         ))}
       </Toolbar.Content>

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { wlog } from '../../Helper/wegaslog';
 
 export interface XYPosition {
   x: number;
@@ -47,20 +46,22 @@ export function useMouseEventDnd<T extends HTMLElement>(
     (e: MouseEvent) => {
       e.stopPropagation();
       const target = e.target as T;
-      draggingTarget.current = target;
-      const targetBox = target.getBoundingClientRect();
-      const parentBox = target.parentElement?.getBoundingClientRect();
-      const x = targetBox.left - (parentBox?.left || 0);
-      const y = targetBox.top - (parentBox?.top || 0);
-      initialPosition.current = { x, y };
-      clickPosition.current = {
-        x: e.clientX - targetBox.left,
-        y: e.clientY - targetBox.top,
-      };
+      if (target === ref.current) {
+        draggingTarget.current = target;
+        const targetBox = target.getBoundingClientRect();
+        const parentBox = target.parentElement?.getBoundingClientRect();
+        const x = targetBox.left - (parentBox?.left || 0);
+        const y = targetBox.top - (parentBox?.top || 0);
+        initialPosition.current = { x, y };
+        clickPosition.current = {
+          x: e.clientX - targetBox.left,
+          y: e.clientY - targetBox.top,
+        };
 
-      onDragStart && onDragStart(e, initialPosition.current);
+        onDragStart && onDragStart(e, initialPosition.current);
+      }
     },
-    [onDragStart],
+    [onDragStart, ref],
   );
   const onMouseMove = React.useCallback(
     (e: MouseEvent) => {
@@ -82,10 +83,9 @@ export function useMouseEventDnd<T extends HTMLElement>(
     (e: MouseEvent) => {
       e.stopPropagation();
       if (draggingStarted.current && draggingTarget.current != null) {
-        debugger;
-        draggingStarted.current = false;
-        let targetElement = e.target as HTMLElement;
-        let targetId = null;
+        // debugger;
+        // let targetElement = e.target as HTMLElement;
+        // let targetId = null;
 
         // do{
         //   targetId = targetElement.getAttribute('data-id');
@@ -104,8 +104,9 @@ export function useMouseEventDnd<T extends HTMLElement>(
             `left:${initialPosition.current.x}px ;top:${initialPosition.current.y}px`,
           );
         }
-        draggingTarget.current = null;
       }
+      draggingTarget.current = null;
+      draggingStarted.current = false;
     },
     [onDragEnd],
   );
