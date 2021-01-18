@@ -330,9 +330,9 @@ function ComponentAdder({ className, tooltip, onSelect }: ComponentAdderProps) {
         icon="plus"
         items={Object.values(components).map(v => ({
           label: v.componentName,
-          id: v.componentName,
+          value: v.componentName,
         }))}
-        onSelect={({ id }) => onSelect(id)}
+        onSelect={({ value }) => onSelect(value)}
       />
     </div>
   );
