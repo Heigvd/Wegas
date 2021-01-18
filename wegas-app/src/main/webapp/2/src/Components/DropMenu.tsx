@@ -74,7 +74,7 @@ const subMenuContainer = css({
   zIndex: 10000,
   whiteSpace: 'nowrap',
   margin: '2px',
-  boxShadow: `0px 0px 4px 1px ${themeVar.Common.colors.BorderColor}`,
+  boxShadow: `0px 0px 4px 1px ${themeVar.Common.colors.PrimaryColor}`,
   '>div': {
     padding: '1px',
     borderRadius: '3px',

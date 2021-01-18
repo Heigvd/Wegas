@@ -158,7 +158,7 @@ export default function SchemaPropsTester() {
         style={{
           margin: '20px',
           borderStyle: 'solid',
-          borderColor: themeVar.Common.colors.BorderColor,
+          borderColor: themeVar.Common.colors.PrimaryColor,
         }}
       >
         {Object.entries(values).map(([k, v]) => (

@@ -25,7 +25,7 @@ const dialogEntryStyle = css({
   padding: '5px',
   '&>.player': {
     alignSelf: 'flex-end',
-    backgroundColor: themeVar.Common.colors.HeaderColor,
+    backgroundColor: themeVar.Common.colors.PrimaryColor,
   },
 });
 
@@ -36,7 +36,7 @@ const choicePannelStyle = css({
 });
 
 const dialogueDisplayStyle = css({
-  border: 'solid',
+  border: 'none',
 });
 
 interface DialogueDisplayProps {

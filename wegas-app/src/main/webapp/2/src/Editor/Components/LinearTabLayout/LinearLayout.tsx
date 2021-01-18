@@ -14,11 +14,11 @@ import { themeVar } from '../../../Components/Style/ThemeVars';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
-    backgroundColor: themeVar.Common.colors.MainColor,
+    backgroundColor: themeVar.Common.colors.PrimaryColor,
     zIndex: 0,
   },
   '&.reflex-container > .reflex-splitter:hover': {
-    backgroundColor: themeVar.Common.colors.MainColor,
+    backgroundColor: themeVar.Common.colors.PrimaryColor,
   },
   '&.reflex-container.vertical > .reflex-splitter': {
     width: '5px',

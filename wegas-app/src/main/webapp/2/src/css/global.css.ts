@@ -5,12 +5,13 @@ import { injectGlobal } from 'emotion';
 
 injectGlobal`
   html {
-    font-size: 1.15em;
+    font-size: 1em;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
       Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
       'Segoe UI Symbol';
     line-height: 1.15em;
     box-sizing: border-box;
+    color: #232323;
   }
   *,
   ::after,

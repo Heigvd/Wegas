@@ -144,7 +144,7 @@ const JS_PLUMB_OPTIONS: Defaults = {
   ],
   PaintStyle: {
     strokeWidth: 1,
-    stroke: themeVar.Common.colors.MainColor,
+    stroke: themeVar.Common.colors.PrimaryColor,
     //@ts-ignore
     outlineStroke: 'white',
     outlineWidth: 2,
@@ -687,7 +687,7 @@ const initialStateStyle = css({
   borderStyle: 'double',
 });
 const activeStateStyle = css({
-  borderColor: themeVar.Common.colors.BorderColor,
+  borderColor: themeVar.Common.colors.PrimaryColor,
   backgroundColor: themeVar.Common.colors.WarningColor,
 });
 const sourceStyle = css({

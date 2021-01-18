@@ -8,11 +8,11 @@ import { themeVar } from '../../Style/ThemeVars';
 export const buttonStyle = css({
   display: 'flex',
   alignItems: 'center',
-  backgroundColor: themeVar.Common.colors.MainColor,
+  backgroundColor: themeVar.Common.colors.PrimaryColor,
   color: themeVar.Common.colors.SecondaryTextColor,
   ['&.dark']: {
     backgroundColor: themeVar.Common.colors.SecondaryTextColor,
-    color: themeVar.Common.colors.MainColor,
+    color: themeVar.Common.colors.PrimaryColor,
   },
   borderStyle: 'none',
   paddingLeft: '5px',

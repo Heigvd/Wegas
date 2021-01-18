@@ -1,18 +1,23 @@
 import { ColorType } from './Theme';
 
 export interface DefaultThemeColors {
-  'Main color': ColorType;
+  'Primary color': ColorType;
+  'Primary color shade': ColorType;
+  'Primary color tint': ColorType;
+  'Primary color pastel' : ColorType;
   'Secondary color': ColorType;
+  'Secondary color shade': ColorType;
+  'Secondary color tint': ColorType;
+  'Secondary color pastel': ColorType;
+  'Highlight color': ColorType;
   'Background color': ColorType;
-  'Border color': ColorType;
   'Secondary background color': ColorType;
   'Text color': ColorType;
   'Secondary text color': ColorType;
-  'Warning color': ColorType;
-  'Error color': ColorType;
-  'Success color': ColorType;
   'Disabled color': ColorType;
-  'Highlight color': ColorType;
+  'Error color': ColorType;
+  'Warning color': ColorType;
+  'Success color': ColorType;
   'Hover color': ColorType;
   'Header color': ColorType;
 }
@@ -69,13 +74,12 @@ export interface Mode {
   values: {
     Common: ModeComponent<
       {
-        MainColor: ModeColor;
+        PrimaryColor: ModeColor;
         ActiveColor: ModeColor;
         BackgroundColor: ModeColor;
         TextColor: ModeColor;
         SecondaryTextColor: ModeColor;
         DisabledColor: ModeColor;
-        BorderColor: ModeColor;
         HighlightColor: ModeColor;
         HeaderColor: ModeColor;
         HoverColor: ModeColor;
@@ -128,10 +132,9 @@ export const defaultLightMode: Mode = {
   values: {
     Common: {
       colors: {
-        MainColor: 'Main color',
+        PrimaryColor: 'Primary color',
         ActiveColor: 'Secondary color',
         BackgroundColor: 'Background color',
-        BorderColor: 'Border color',
         DisabledColor: 'Disabled color',
         HeaderColor: 'Secondary background color',
         HighlightColor: 'Highlight color',
@@ -194,10 +197,9 @@ export const defaultDarkMode: Mode = {
   values: {
     Common: {
       colors: {
-        MainColor: 'Background color',
+        PrimaryColor: 'Background color',
         ActiveColor: 'Secondary background color',
         BackgroundColor: 'Text color',
-        BorderColor: 'Secondary color',
         DisabledColor: 'Disabled color',
         HeaderColor: 'Secondary color',
         HighlightColor: 'Highlight color',

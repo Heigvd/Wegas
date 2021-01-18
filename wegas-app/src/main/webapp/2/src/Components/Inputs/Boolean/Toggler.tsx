@@ -21,7 +21,7 @@ const togglerStyle = css({
   borderStyle: 'solid',
   borderWidth: '2px',
   color: themeVar.Common.colors.SecondaryTextColor,
-  borderColor: themeVar.Common.colors.BorderColor,
+  borderColor: themeVar.Common.colors.PrimaryColor,
   backgroundColor: themeVar.Common.colors.ErrorColor,
   cursor: 'pointer',
   margin: 'auto',
@@ -43,7 +43,7 @@ const togglerHandleStyle = css({
   borderRadius: '20px',
   width: '20px',
   height: '20px',
-  backgroundColor: themeVar.Common.colors.MainColor,
+  backgroundColor: themeVar.Common.colors.PrimaryColor,
   ['&.disabled']: {
     backgroundColor: themeVar.Common.colors.DisabledColor,
   },

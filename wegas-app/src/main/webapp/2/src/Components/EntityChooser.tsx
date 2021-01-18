@@ -43,10 +43,10 @@ const labelContainer = css({
 
 const activeLabel = css({
   [`&>.${labelStyle}`]: {
-    backgroundColor: themeVar.Common.colors.MainColor,
+    backgroundColor: themeVar.Common.colors.PrimaryColor,
   },
   [`&>.${labelArrow}`]: {
-    borderLeft: `20px solid ${themeVar.Common.colors.MainColor}`,
+    borderLeft: `20px solid ${themeVar.Common.colors.PrimaryColor}`,
   },
   ':hover': {
     [`&>.${labelStyle}`]: {
