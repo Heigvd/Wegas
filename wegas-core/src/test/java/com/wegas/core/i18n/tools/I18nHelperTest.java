@@ -7,7 +7,7 @@
  */
 package com.wegas.core.i18n.tools;
 
-import com.wegas.core.exception.internal.WegasNashornException;
+import com.wegas.core.exception.internal.WegasGraalException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
@@ -25,7 +25,7 @@ public class I18nHelperTest {
     private static final Logger logger = LoggerFactory.getLogger(I18nHelperTest.class);
 
     @Test
-    public void testI118nGetTranslatableContent() throws WegasNashornException {
+    public void testI118nGetTranslatableContent() throws WegasGraalException {
         String script = "Variable.find(gameModel, \"managementApproval\").add(self, -10);\n"
             + "sendMessage({\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Boss\",\"status\":\"\"},\"FR\":{\"translation\":\"Grand Chef\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"Welcome\",\"status\":\"\"},\"FR\":{\"translation\":\"Salut !\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":\"<p>Welcome back, old fellow !</p>\",\"FR\":\"<p>Bon retour parmi nous, vieille branche</p>\"}}, []);";
 
@@ -34,7 +34,7 @@ public class I18nHelperTest {
     }
 
     @Test
-    public void testI118nGetLocations() throws WegasNashornException {
+    public void testI118nGetLocations() throws WegasGraalException {
         String script = "Variable.find(gameModel, \"managementApproval\").add(self, -10);\n"
             + "sendMessage({\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Boss\",\"status\":\"\"},\"FR\":{\"translation\":\"Grand Chef\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"Welcome\",\"status\":\"\"},\"FR\":{\"translation\":\"Salut !\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":\"<p>Welcome back, old fellow !</p>\",\"FR\":\"<p>Bon retour parmi nous, vieille branche</p>\"}}, []);";
 
@@ -43,7 +43,7 @@ public class I18nHelperTest {
     }
 
     @Test
-    public void testI118nUpdateCode() throws WegasNashornException {
+    public void testI118nUpdateCode() throws WegasGraalException {
         String script = "Variable.find(gameModel, \"managementApproval\").add(self, -10);\n"
             + "sendMessage({\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Boss\",\"status\":\"\"},\"FR\":{\"translation\":\"Grand Chef\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"Welcome\",\"status\":\"\"},\"FR\":{\"translation\":\"Salut !\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":\"<p>Welcome back, old fellow !</p>\",\"FR\":\"<p>Bon retour parmi nous, vieille branche</p>\"}}, []);";
 
@@ -58,7 +58,7 @@ public class I18nHelperTest {
     }
 
     @Test
-    public void testI118nUpdateStatuses() throws WegasNashornException {
+    public void testI118nUpdateStatuses() throws WegasGraalException {
         String script = "Variable.find(gameModel, \"managementApproval\").add(self, -10);\n"
             + "sendMessage({\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Boss\",\"status\":\"\"},\"FR\":{\"translation\":\"Grand Chef\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"Welcome\",\"status\":\"\"},\"FR\":{\"translation\":\"Salut !\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":\"<p>Welcome back, old fellow !</p>\",\"FR\":\"<p>Bon retour parmi nous, vieille branche</p>\"}}, []);";
 
@@ -72,14 +72,14 @@ public class I18nHelperTest {
         assertEquals(expected, newScript);
     }
 
-    @Test(expected = WegasNashornException.class)
-    public void testSyntaxError() throws WegasNashornException {
+    @Test(expected = WegasGraalException.class)
+    public void testSyntaxError() throws WegasGraalException {
         String script = "sendMessage({\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Boss\",\"status\":\"\"},\"FR\":{\"translation\":\"Grand Chef\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"Welcome\",\"status\":\"\"},\"FR\":{\"translation\":\"Salut !\",\"status\":\"\"}}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":\"<p>Welcome back, old fellow !</p>\",\"FR\":\"<p>Bon retour parmi nous, vieille branche</p>\"}}, [];";
         I18nHelper.getTranslatableContents(script);
     }
 
     @Test
-    public void testI118nGetLocation() throws WegasNashornException {
+    public void testI118nGetLocation() throws WegasGraalException {
         String script = "var tr = {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Boss\",\"status\":\"\"},\"FR\":{\"translation\":\"Thierry\",\"status\":\"outdated\"}}};";
 
         FoundTranslation translation = (FoundTranslation) I18nHelper.getTranslationLocation(script, 0, "EN");
@@ -92,7 +92,7 @@ public class I18nHelperTest {
     }
 
     @Test
-    public void testI118nGetNestedTranslatableContent() throws WegasNashornException {
+    public void testI118nGetNestedTranslatableContent() throws WegasGraalException {
         String script = "sendMessage({\"theMessage\": {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Boss\",\"status\":\"\"},\"FR\":{\"translation\":\"Grand Chef\",\"status\":\"\"}}}});";
 
         List<TranslatableContent> translatableContents = I18nHelper.getTranslatableContents(script);
@@ -101,7 +101,7 @@ public class I18nHelperTest {
     }
 
     @Test
-    public void testUpdateTranslations() throws WegasNashornException {
+    public void testUpdateTranslations() throws WegasGraalException {
         String script = "sendMessage({\"theMessage\": {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Boss\",\"status\":\"OUTDATED\"},\"FR\":{\"translation\":\"Grand Chef\",\"status\":\"OUTDATED\"}}}});";
         String expected = "sendMessage({\"theMessage\": {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Big Boss\",\"status\":\"\"},\"FR\":{\"translation\":\"Grand Chef\",\"status\":\"OUTDATED\"}}}});";
         String expected2 = "sendMessage({\"theMessage\": {\"@class\":\"TranslatableContent\",\"translations\":{\"EN\":{\"translation\":\"The Big Boss\",\"status\":\"\"},\"FR\":{\"translation\":\"Le Grand Chef\",\"status\":\"\"}}}});";
@@ -115,7 +115,7 @@ public class I18nHelperTest {
     }
 
     @Test
-    public void testUpdateTranslationsDuplicateCode() throws WegasNashornException {
+    public void testUpdateTranslationsDuplicateCode() throws WegasGraalException {
         String script = "sendMessage({\"theMessage\": {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":{\"translation\":\"lowercase\",\"status\":\"\"},\"EN\":{\"translation\":\"UPPERCASE\",\"status\":\"\"}}}});";
         String expected = "sendMessage({\"theMessage\": {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":{\"translation\":\"lowercase\",\"status\":\"\"},\"EN\":{\"translation\":\"UP\",\"status\":\"\"}}}});";
         String expected2 = "sendMessage({\"theMessage\": {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":{\"translation\":\"low\",\"status\":\"\"},\"EN\":{\"translation\":\"UP\",\"status\":\"\"}}}});";
@@ -128,7 +128,7 @@ public class I18nHelperTest {
     }
 
     @Test
-    public void testUpdateTranslationsAddNewLang() throws WegasNashornException {
+    public void testUpdateTranslationsAddNewLang() throws WegasGraalException {
         String script = "sendMessage({\"theMessage\": {\"@class\":\"TranslatableContent\",\"translations\":{"
             + "\"EN\":{\"translation\":\"in english\",\"status\":\"\"}"
             + "}}});";

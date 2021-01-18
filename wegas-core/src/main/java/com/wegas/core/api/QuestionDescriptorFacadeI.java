@@ -15,7 +15,7 @@ import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
 import com.wegas.mcq.persistence.wh.WhQuestionInstance;
 import com.wegas.messaging.persistence.Message;
-import jdk.nashorn.api.scripting.JSObject;
+import org.graalvm.polyglot.Value;
 
 /**
  *
@@ -198,7 +198,7 @@ public interface QuestionDescriptorFacadeI {
      *
      * @return a message which summarise the answer
      */
-    Message buildWhValidateMessage(Player self, WhValidate whValidate, JSObject i18n);
+    Message buildWhValidateMessage(Player self, WhValidate whValidate, Value i18n);
 
     /**
      * According to ReplyValidate event, create a message to be send to an inbox
@@ -212,6 +212,6 @@ public interface QuestionDescriptorFacadeI {
      *
      * @return a message which summarise the answer
      */
-    Message buildReplyValidateMessage(Player self, ReplyValidate replyValidate, JSObject i18n, JSObject config);
+    Message buildReplyValidateMessage(Player self, ReplyValidate replyValidate, Value i18n, Value config);
 
 }

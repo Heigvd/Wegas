@@ -13,6 +13,7 @@ import com.wegas.core.Helper.EmailAttributes;
 import com.wegas.core.XlsxSpreadsheet;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.async.PopulatorScheduler;
+import com.wegas.core.ejb.js.JSTool;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
@@ -26,7 +27,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
@@ -52,13 +52,13 @@ import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletRequest;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.graalvm.polyglot.Value;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -519,7 +519,6 @@ public class GameFacade extends BaseFacade<Game> {
         player.setStatus(Status.SURVEY);
         player.setUser(currentUser);
 
-
         GameModelLanguage lang = playerFacade.findPreferredLanguages(game.getGameModel(), languages);
 
         player.setLang(lang.getCode());
@@ -580,8 +579,8 @@ public class GameFacade extends BaseFacade<Game> {
      *
      * @param surveys surveys
      * @param request need request to generate the link
-     * @param email structure with attributes recipients (ignored here), sender, subject and body.
-     * 
+     * @param email   structure with attributes recipients (ignored here), sender, subject and body.
+     *
      * @return list of emails to which an invitation has been sent
      *
      * @throws WegasErrorMessage if 1) surveys belong to different GameModels; 2) no game; 3) no
@@ -637,11 +636,11 @@ public class GameFacade extends BaseFacade<Game> {
      * gameModel. must belongs to the same game model.
      *
      * @param surveys surveys
-     * @param email structure with attributes recipients (ignored here), sender, subject and body.
+     * @param email   structure with attributes recipients (ignored here), sender, subject and body.
      * @param request need request to generate the link
      *
      * @return list of emails to which an invitation has been sent
-     * 
+     *
      * @throws WegasErrorMessage if 1) surveys belong to different GameModel; 2) no game; 3) no
      *                           account
      */
@@ -674,14 +673,13 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Send invitation to participate in a survey. 
-     * One invitation will be sent to each recipient address. 
-     * Such survey is made of several SurveyDescriptor. 
-     * Every SurveyDescriptor must belong to the same gameModel.
+     * Send invitation to participate in a survey. One invitation will be sent to each recipient
+     * address. Such survey is made of several SurveyDescriptor. Every SurveyDescriptor must belong
+     * to the same gameModel.
      *
-     * @param surveys   surveys
-     * @param email     structure with attributes recipients, sender, subject and body.
-     * @param request   need request to generate the link
+     * @param surveys surveys
+     * @param email   structure with attributes recipients, sender, subject and body.
+     * @param request need request to generate the link
      *
      * @throws WegasErrorMessage if 1) surveys belong to different GameModel; 2) no game; 3) no
      *                           account
@@ -889,20 +887,16 @@ public class GameFacade extends BaseFacade<Game> {
 
         CellStyle subtitleStyle = xlsx.createSmallerHeaderStyle();
 
-        ScriptObjectMirror overviews = (ScriptObjectMirror) scriptFacade.eval(p, new Script(script), null);
+        Value overviews = (Value) scriptFacade.eval(p, new Script(script), null);
 
-        for (Object oSheet : overviews.values()) {
-            ScriptObjectMirror sheetData = (ScriptObjectMirror) oSheet;
+        for (Value sheetData : JSTool.unwrapList(overviews)) {
 
-            String name = (String) sheetData.get("name"); // aka sheetName
+            String name = sheetData.getMember("name").asString(); // aka sheetName
             Sheet sheet = xlsx.addSheet(name);
 
-            ScriptObjectMirror overview = (ScriptObjectMirror) sheetData.get("overview");
+            Value overview = sheetData.getMember("overview");
 
-            ScriptObjectMirror structure = (ScriptObjectMirror) overview.get("structure");
-
-            Collection<Object> groups = structure.values();
-            // create first row : groups'
+            Value structure = overview.getMember("structure");
 
             Map<String, Integer> index = new HashMap<>(); // item name to col number
             Map<String, String> kinds = new HashMap<>(); // item name to item kind
@@ -916,26 +910,24 @@ public class GameFacade extends BaseFacade<Game> {
 
             int currentCol = 1;
 
-            for (Object oGroup : groups) {
-                ScriptObjectMirror group = (ScriptObjectMirror) oGroup;
-                String title = (String) group.get("title");
+            for (Value group : JSTool.unwrapList(structure)) {
+                String title = group.getMember("title").asString();
 
                 int startGroupCol = currentCol;
 
-                Collection<Object> items = (Collection<Object>) (((ScriptObjectMirror) group.get("items")).values());
-                for (Object oItem : items) {
-                    ScriptObjectMirror item = (ScriptObjectMirror) oItem;
+                Value items = group.getMember("items");
+                for (Value item : JSTool.unwrapList(items)) {
                     if (item.hasMember("kind")) {
                         // skip action/method
-                        String itemLabel = (String) item.get("label");
-                        String itemId = (String) item.get("id");
+                        String itemLabel = item.getMember("label").asString();
+                        String itemId = item.getMember("id").asString();
 
                         Cell itemTitle = secondRow.createCell(currentCol);
                         itemTitle.setCellStyle(subtitleStyle);
                         itemTitle.setCellValue(itemLabel);
 
                         index.put(itemId, currentCol);
-                        kinds.put(itemId, (String) item.get("kind"));
+                        kinds.put(itemId, item.getMember("kind").asString());
 
                         currentCol++;
                     }
@@ -950,28 +942,28 @@ public class GameFacade extends BaseFacade<Game> {
             }
             xlsx.setCurrentRowNumber(1); // focus second row
 
-            ScriptObjectMirror data = (ScriptObjectMirror) overview.get("data");
-            for (String teamId : data.keySet()) {
+            Value data = overview.getMember("data");
+            for (String teamId : data.getMemberKeys()) {
                 Team team = teamFacade.find(Long.parseLong(teamId));
                 if (team instanceof DebugTeam == false || includeTestPlayer) {
                     xlsx.newRow();
                     String tName = team.getName();
                     xlsx.addValue(tName);
 
-                    ScriptObjectMirror teamData = (ScriptObjectMirror) data.get(teamId);
-                    for (String itemId : teamData.keySet()) {
+                    Value teamData = data.getMember(teamId);
+                    for (String itemId : teamData.getMemberKeys()) {
                         Integer itemCol = index.get(itemId);
                         if (itemCol != null) {
                             String kind = kinds.get(itemId);
 
-                            Object value = teamData.get(itemId);
+                            Value value = teamData.getMember(itemId);
 
                             if (kind.equals("inbox") || kind.equals("text")) {
-                                value = ((ScriptObjectMirror) value).getMember("body");
+                                value = value.getMember("body");
                             }
 
                             xlsx.setCurrentColumnNumber(itemCol);
-                            xlsx.addValue(value);
+                            xlsx.addValue(JSTool.unwrap(value));
                         }
                     }
                 }

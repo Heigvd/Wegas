@@ -56,14 +56,14 @@ public class StateMachineITest extends AbstractArquillianTest {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("1===1"));
-        trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, \"number\").getInstance(self).value = " + FINAL_VALUE));
+        trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, \"number\").setValue(self, " + FINAL_VALUE + ");"));
         trigger.setOneShot(Boolean.TRUE);
         trigger.setDisableSelf(Boolean.FALSE);
 
         TriggerDescriptor trigger2 = new TriggerDescriptor();
         trigger2.setDefaultInstance(new StateMachineInstance());
         trigger2.setTriggerEvent(new Script("true"));
-        trigger2.setPostTriggerEvent(new Script("Variable.find(gameModel, \"number2\").getInstance(self).value += 1 "));
+        trigger2.setPostTriggerEvent(new Script("Variable.find(gameModel, \"number2\").add(self,  1);"));
         trigger2.setOneShot(Boolean.FALSE);
         trigger2.setDisableSelf(Boolean.FALSE);
 
@@ -215,8 +215,8 @@ public class StateMachineITest extends AbstractArquillianTest {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setScope(new PlayerScope());
         trigger.setDefaultInstance(new StateMachineInstance());
-        trigger.setTriggerEvent(new Script("Variable.find(gameModel, 'personalScore').getInstance(self).value > Variable.find(gameModel, 'highScore').getInstance(self).value"));
-        trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'highScore').getInstance(self).value = 10"));
+        trigger.setTriggerEvent(new Script("Variable.find(gameModel, 'personalScore').getValue(self) > Variable.find(gameModel, 'highScore').getValue(self)"));
+        trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'highScore').setValue(self, 10)"));
         trigger.setOneShot(Boolean.FALSE);
 
         variableDescriptorFacade.create(scenario.getId(), trigger);
@@ -228,7 +228,7 @@ public class StateMachineITest extends AbstractArquillianTest {
 
         try (ActAsPlayer actAsPlayer = requestManager.actAsPlayer(player)) {
             actAsPlayer.setFlushOnExit(false);
-            scriptFacade.eval(player.getId(), new Script("Variable.find(gameModel, 'personalScore').getInstance(self).value = 10"), null);
+            scriptFacade.eval(player.getId(), new Script("Variable.find(gameModel, 'personalScore').setValue(self, 10)"), null);
             requestFacade.commit();
         }
         Assert.assertEquals(10, ((NumberInstance) variableInstanceFacade.find(personalScore.getId(), player.getId())).getValue(), 0);

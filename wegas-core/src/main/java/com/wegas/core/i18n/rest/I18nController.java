@@ -7,7 +7,7 @@
  */
 package com.wegas.core.i18n.rest;
 
-import com.wegas.core.exception.internal.WegasNashornException;
+import com.wegas.core.exception.internal.WegasGraalException;
 import com.wegas.core.i18n.deepl.Deepl;
 import com.wegas.core.i18n.deepl.DeeplTranslations;
 import com.wegas.core.i18n.deepl.DeeplTranslations.DeeplTranslation;
@@ -106,13 +106,13 @@ public class I18nController {
 
     @PUT
     @Path("Tr/{mode : [A-Z_]+}")
-    public AbstractEntity update(@PathParam("mode") UpdateType mode, I18nUpdate i18nUpdate) throws WegasNashornException {
+    public AbstractEntity update(@PathParam("mode") UpdateType mode, I18nUpdate i18nUpdate) throws WegasGraalException {
         return i18nFacade.update(i18nUpdate, mode);
     }
 
     @PUT
     @Path("BatchUpdate")
-    public List<AbstractEntity> batchUpdate(List<I18nUpdate> i18nUpdates) throws WegasNashornException  {
+    public List<AbstractEntity> batchUpdate(List<I18nUpdate> i18nUpdates) throws WegasGraalException {
         return i18nFacade.batchUpdate(i18nUpdates, UpdateType.MINOR);
     }
 
@@ -177,7 +177,7 @@ public class I18nController {
     @RequiresRoles("Administrator")
     public GameModel initLanguageTranslations(@PathParam("gameModelId") Long gameModelId,
         @PathParam("target") String targetLangCode,
-        @PathParam("source") String sourceLangCode) throws WegasNashornException {
+        @PathParam("source") String sourceLangCode) throws WegasGraalException {
 
         return i18nFacade.initLanguage(gameModelId, sourceLangCode, targetLangCode);
     }
@@ -187,7 +187,7 @@ public class I18nController {
     @RequiresRoles("Administrator")
     public GameModel copyLanguageTranslations(@PathParam("gameModelId") Long gameModelId,
         @PathParam("target") String targetLangCode,
-        @PathParam("source") String sourceLangCode) throws WegasNashornException {
+        @PathParam("source") String sourceLangCode) throws WegasGraalException {
 
         return i18nFacade.copyLanguage(gameModelId, sourceLangCode, targetLangCode);
     }
@@ -197,7 +197,7 @@ public class I18nController {
     @RequiresRoles("Administrator")
     public GameModel clearLanguageTranslations(@PathParam("gameModelId") Long gameModelId,
         @PathParam("lang") String langCode,
-        @PathParam("mode") String mode) throws WegasNashornException {
+        @PathParam("mode") String mode) throws WegasGraalException {
 
         return i18nFacade.clearLanguage(gameModelId, langCode, mode);
     }

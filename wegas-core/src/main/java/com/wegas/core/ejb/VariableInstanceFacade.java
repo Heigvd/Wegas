@@ -147,6 +147,19 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
         return this.mapInstances(this.getAllInstances(vd));
     }
 
+    private Map<String, VariableInstance> mapInstancesString(Map<? extends InstanceOwner, VariableInstance> instances) {
+        Map<String, VariableInstance> mappedInstances = new HashMap<>();
+        for (Entry<? extends InstanceOwner, VariableInstance> entry : instances.entrySet()) {
+            // GameModelScope Hack (null key means id=0...)
+            mappedInstances.put((entry.getKey() != null ? entry.getKey().getId().toString() : "0"), entry.getValue());
+        }
+        return mappedInstances;
+    }
+
+    public Map<String, VariableInstance> getAllInstancesByStringId(VariableDescriptor vd) {
+        return this.mapInstancesString(this.getAllInstances(vd));
+    }
+
     /**
      * get all instances
      *

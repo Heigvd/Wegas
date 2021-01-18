@@ -47,7 +47,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import jdk.nashorn.api.scripting.JSObject;
+import org.graalvm.polyglot.Value;
 
 /**
  *
@@ -231,7 +231,7 @@ public class StringDescriptor extends VariableDescriptor<StringInstance>
      * @param p
      * @param value
      */
-    public void setValue(Player p, JSObject value) {
+    public void setValue(Player p, Value value) {
         this.getInstance(p).setValue(value);
     }
 

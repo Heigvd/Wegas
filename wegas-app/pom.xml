@@ -264,6 +264,12 @@
             <artifactId>jakarta.jakartaee-api</artifactId>
             <version>8.0.0</version>
         </dependency>
+        <!--<dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <scope>test</scope>
+            <type>jar</type>
+        </dependency>-->
     </dependencies>
 
     <build>
@@ -405,7 +411,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
                 <configuration>
                     <skip>${skip.yarn}</skip>
                 </configuration>

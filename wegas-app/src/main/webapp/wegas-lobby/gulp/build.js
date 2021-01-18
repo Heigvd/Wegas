@@ -21,8 +21,8 @@ gulp.task('html', ['inject'], function(cb) {
     /* JS COMPRESS */
     gulped = gulped.pipe(jsFilter)
         .pipe($.ngAnnotate())
-        .pipe($.cache($.uglify({
-            preserveComments: $.uglifySaveLicense
+        .pipe($.cache($.terser({
+            //preserveComments: $.uglifySaveLicense
         }).on('error', function(error) {
             console.log("Error: " + error);
             cb(error);
@@ -55,7 +55,7 @@ gulp.task('html', ['inject'], function(cb) {
 // should also avoid concatenation ...
 gulp.task('debug-build', ['inject'], function(cb) {
     gulp.src('../../../src/main/webapp/wegas-lobby/**/*.js')
-        .pipe($.cache($.uglify().on("error", function(error) {
+        .pipe($.cache($.terser().on("error", function(error) {
             console.log("Error: " + error);
         }))).pipe(print());
 

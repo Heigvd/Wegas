@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -18,6 +19,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
+import org.graalvm.polyglot.Value;
 
 /**
  *
@@ -31,7 +33,6 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
      *
      */
     //ObjectMapper mapper;
-
     /**
      * {@inheritDoc}
      */
@@ -46,17 +47,21 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
      */
     public static ObjectMapper getMapper() {
         ObjectMapper mapper = new ObjectMapper();
-        
+
         /*AnnotationIntrospector primary = new JacksonAnnotationIntrospector();   // Create a new annotation inspector that combines jaxb and jackson
         AnnotationIntrospector secondary = new JaxbAnnotationIntrospector(mapper.getTypeFactory());
         AnnotationIntrospector pair = AnnotationIntrospector.pair(primary, secondary);
 
         mapper.setAnnotationIntrospector(pair);*/
-
-        SimpleModule customSerialisers =new SimpleModule();
+        SimpleModule customSerialisers = new SimpleModule();
         customSerialisers.addDeserializer(TranslatableContent.class, new TranslationContentDeserializer());
 
         mapper.registerModule(customSerialisers);
+
+        SimpleModule polyglotModule = new SimpleModule();
+        polyglotModule.addSerializer(Value.class, new PolyglotValueSerializer());
+
+        mapper.registerModule(polyglotModule);
 
         AnnotationIntrospector jackson = new JacksonAnnotationIntrospector();
         mapper.setAnnotationIntrospector(jackson);

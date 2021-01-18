@@ -59,16 +59,7 @@ public interface ScriptEventFacadeI {
      *
      * @param eventName event name to attache the function to
      * @param func      the function to execute
-     * @param scope     function scope
+     * @param arguments arguments
      */
-    void on(String eventName, Object func, Object scope);
-
-    /**
-     * Register a function to execute on an event
-     *
-     * @param eventName event name to attache the function to
-     * @param func      the function to execute
-     *
-     */
-    void on(String eventName, Object func);
+    void on(String eventName, Object func, Object... arguments);
 }

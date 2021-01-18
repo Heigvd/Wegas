@@ -7,7 +7,7 @@
  */
 package com.wegas.core.i18n.tools;
 
-import jdk.nashorn.api.tree.ObjectLiteralTree;
+import com.oracle.js.parser.ir.ObjectNode;
 
 /**
  * Indicated the requested translatableContent exists but there is no translation for the requested
@@ -31,9 +31,9 @@ public class MissingLangageCode extends FishedTranslation {
      *
      * @param translations
      */
-    public MissingLangageCode(ObjectLiteralTree translations) {
-        this.translationsStartPosition = (int) translations.getStartPosition();
-        this.translationsEndPosition = (int) translations.getEndPosition();
+    public MissingLangageCode(ObjectNode translations) {
+        this.translationsStartPosition = (int) translations.getStart();
+        this.translationsEndPosition = (int) translations.getFinish();
     }
 
     /**

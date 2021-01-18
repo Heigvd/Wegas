@@ -17,7 +17,7 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.view.I18nHtmlView;
 import java.util.Objects;
 import javax.persistence.Entity;
-import jdk.nashorn.api.scripting.JSObject;
+import org.graalvm.polyglot.Value;
 
 /**
  *
@@ -56,7 +56,7 @@ public class TextDescriptor extends VariableDescriptor<TextInstance>
      * @param p
      * @param value
      */
-    public void setValue(Player p, JSObject value) {
+    public void setValue(Player p, Value value) {
         this.getInstance(p).setValue(value);
     }
 
@@ -95,8 +95,8 @@ public class TextDescriptor extends VariableDescriptor<TextInstance>
      * @param p
      * @param value
      */
-    public void setValueIfChanged(Player p, JSObject value) {
-        TranslatableContent newValue = TranslatableContent.readFromNashorn(value);
+    public void setValueIfChanged(Player p, Value value) {
+        TranslatableContent newValue = TranslatableContent.readFromPolyglot(value);
         this.setValueIfChanged(p, newValue);
     }
 

@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -47,8 +48,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Version;
-import jdk.nashorn.api.scripting.JSObject;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.graalvm.polyglot.Value;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
@@ -77,12 +77,12 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
-            sameEntityOnly = true, view = @View(
-                    label = "Version",
-                    readOnly = true,
-                    value = NumberView.class,
-                    featureLevel = ADVANCED
-            )
+        sameEntityOnly = true, view = @View(
+            label = "Version",
+            readOnly = true,
+            value = NumberView.class,
+            featureLevel = ADVANCED
+        )
     )
     @JsonView(Views.IndexI.class)
     private Long version;
@@ -99,8 +99,8 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
      */
     @JsonIgnore
     @WegasEntityProperty(searchable = true, callback = TranslatableCallback.class,
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Translations", value = HashListView.class))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(label = "Translations", value = HashListView.class))
     @OneToMany(mappedBy = "translatableContent", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @PrivateOwned
     private List<Translation> translations = new ArrayList<>();
@@ -400,7 +400,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         TranslatableContent trC = new TranslatableContent();
         for (Translation t : this.getRawTranslations()) {
             trC.getRawTranslations().add(
-                new Translation(t.getLang(), t.getTranslation(), 
+                new Translation(t.getLang(), t.getTranslation(),
                     t.getStatus(), trC));
         }
         return trC;
@@ -456,21 +456,23 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         return target;
     }
 
-    public static TranslatableContent readFromNashorn(JSObject jsTr) {
+    public static TranslatableContent readFromPolyglot(Value jsTr) {
         if (jsTr != null) {
-            Object theClass = jsTr.getMember("@class");
+            Value theClass = jsTr.getMember("@class");
             TranslatableContent trContent = new TranslatableContent();
 
-            if (theClass != null && theClass.equals("TranslatableContent")) {
-                ScriptObjectMirror trs = (ScriptObjectMirror) jsTr.getMember("translations");
-                String[] langs = trs.getOwnKeys(true);
-                for (String code : langs) {
-                    Object member = trs.getMember(code);
-                    if (member instanceof String) {
-                        trContent.updateTranslation(code, (String) member);
-                    } else if (member instanceof ScriptObjectMirror) {
-                        String tr = (String) ((ScriptObjectMirror) member).getMember("translation");
-                        String status = (String) ((ScriptObjectMirror) member).getMember("status");
+            if (theClass != null && "TranslatableContent".equals(theClass.asString())) {
+                Value trs = jsTr.getMember("translations");
+                for (String code : trs.getMemberKeys()) {
+                    Value member = trs.getMember(code);
+                    if (member.isString()) {
+                        trContent.updateTranslation(code, member.asString());
+                    } else if (member.hasMembers()) {
+                        Value vTr = member.getMember("translation");
+                        Value vStatus = member.getMember("status");
+                        String tr = vTr.isString() ? vTr.asString() : "";
+                        String status = vStatus.isString() ? vStatus.asString() : "";
+
                         trContent.updateTranslation(code, tr, status);
                     } else if (member != null) {
                         throw WegasErrorMessage.error("Unhandled Translatable Content Type: " + member);

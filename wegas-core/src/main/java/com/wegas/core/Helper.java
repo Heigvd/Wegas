@@ -31,6 +31,10 @@ import com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescripto
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -180,6 +184,12 @@ public class Helper {
      */
     public static boolean isNullOrEmpty(final String t) {
         return t == null || t.isEmpty();
+    }
+
+    public static String readFile(String path) throws IOException {
+        byte[] buffer;
+        buffer = Files.readAllBytes(Paths.get(path));
+        return Charset.defaultCharset().decode(ByteBuffer.wrap(buffer)).toString();
     }
 
     /**
@@ -976,6 +986,7 @@ public class Helper {
         for (StackTraceElement elem : t.getStackTrace()) {
             if (elem.getClassName().startsWith("com.wegas")
                 || elem.getClassName().startsWith("jdk.nashorn")) {
+
                 sb.append("\n\tat ");
                 sb.append(elem);
             }
@@ -1266,7 +1277,7 @@ public class Helper {
         Pattern p = Pattern.compile("ERROR: duplicate key value violates unique constraint \".*\"\\s+Detail: Key \\((.*)\\)=\\((.*)\\) already exists\\.");
         Matcher m = p.matcher(message);
 
-        if (m !=null && m.matches()){
+        if (m != null && m.matches()) {
             return m.group(1) + " " + m.group(2) + " already exists";
         } else {
             return message;

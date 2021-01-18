@@ -37,8 +37,7 @@ import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import jdk.nashorn.api.scripting.JSObject;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.graalvm.polyglot.Value;
 
 /**
  *
@@ -183,14 +182,14 @@ public class Attachment extends AbstractEntity implements Serializable {
 
     }
 
-    public static Attachment readFromNashorn(JSObject att) {
+    public static Attachment readFromPolyglot(Value att) {
         if (att != null) {
             Object theClass = att.getMember("@class");
             Attachment attachment = new Attachment();
 
             if (theClass != null && theClass.equals("Attachment")) {
-                ScriptObjectMirror trs = (ScriptObjectMirror) att.getMember("file");
-                TranslatableContent file = TranslatableContent.readFromNashorn(trs);
+                Value trs = att.getMember("file");
+                TranslatableContent file = TranslatableContent.readFromPolyglot(trs);
                 attachment.setFile(file);
             }
             return attachment;

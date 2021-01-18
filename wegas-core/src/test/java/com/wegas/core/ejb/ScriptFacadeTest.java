@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -9,6 +10,7 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
@@ -68,6 +70,26 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
+    public void testScriptEventWithParameters() {
+        NumberDescriptor myX = wegasFactory.createNumberDescriptor(scenario, null, "x", "X", ModelScoped.Visibility.PRIVATE, null, null, 0.0);
+        NumberDescriptor myY = wegasFactory.createNumberDescriptor(scenario, null, "y", "Y", ModelScoped.Visibility.PRIVATE, null, null, 0.0);
+        NumberDescriptor myZ = wegasFactory.createNumberDescriptor(scenario, null, "z", "Z", ModelScoped.Visibility.PRIVATE, null, null, 0.0);
+
+        String script = "Event.on('myEvent', function(a, b, payload){ "
+            + "Variable.find(gameModel, 'x').setValue(self, a);"
+            + "Variable.find(gameModel, 'y').setValue(self, b);"
+            + "Variable.find(gameModel, 'z').setValue(self, payload);"
+            + "}, 10, 20); Event.fire('myEvent', 1000);";
+
+        scriptFacade.eval(player.getId(), new Script(script), null);
+
+        Assert.assertEquals(((NumberInstance) variableInstanceFacade.find(myX.getId(), player.getId())).getValue(), 10, 0.0001);
+        Assert.assertEquals(((NumberInstance) variableInstanceFacade.find(myY.getId(), player.getId())).getValue(), 20, 0.0001);
+        Assert.assertEquals(((NumberInstance) variableInstanceFacade.find(myZ.getId(), player.getId())).getValue(), 1000, 0.0001);
+
+    }
+
+    @Test
     public void testBypassRandom() throws NamingException, WegasScriptException, ScriptException {
         Script rnd100 = new Script("JavaScript", "var sum = 0, i; for (i=0;i<100;i++){sum+= Math.random();} sum;");
 
@@ -110,7 +132,6 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
 
         String script2 = "GameModelFacade.find(1);";
 
-
         int tick = 10_000;
 
         while (true) {
@@ -152,10 +173,10 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), numberDescriptor);
 
         scriptFacade.timeoutEval(player.getId(),
-                new Script("JavaScript", "Variable.find(gameModel, 'testnum').setValue(self, " + VALUE + ");"));
+            new Script("JavaScript", "Variable.find(gameModel, 'testnum').setValue(self, " + VALUE + ");"));
         Assert.assertEquals(VALUE,
-                ((NumberInstance) variableInstanceFacade.find(numberDescriptor.getId(), player.getId())).getValue(),
-                0.0001);
+            ((NumberInstance) variableInstanceFacade.find(numberDescriptor.getId(), player.getId())).getValue(),
+            0.0001);
         // Parser doing hoisting this, test for a correct injection.
         scriptFacade.timeoutEval(player.getId(), new Script("JavaScript", "(function a(c){c(); while(0){}\nfunction b(){c();}})(function(){})"));
     }

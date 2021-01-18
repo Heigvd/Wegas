@@ -24,7 +24,7 @@ import static java.lang.Boolean.FALSE;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import jdk.nashorn.api.scripting.JSObject;
+import org.graalvm.polyglot.Value;
 
 /**
  *
@@ -210,8 +210,8 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
         return this.getInstance(p).sendMessage(from, subject, body, date, token, attachments);
     }
 
-    public Message sendMessage(Player p, JSObject from, JSObject date, JSObject subject,
-            JSObject body, String token, List<JSObject> attachments) {
+    public Message sendMessage(Player p, Value from, Value date, Value subject,
+        Value body, String token, List<Value> attachments) {
         return this.getInstance(p).sendMessage(from, subject, body, date, token, attachments);
     }
 

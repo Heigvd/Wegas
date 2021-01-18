@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -16,11 +17,18 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.script.ScriptContext;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.PolyglotException;
+import org.graalvm.polyglot.SourceSection;
+import org.graalvm.polyglot.Value;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -41,7 +49,7 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
     /**
      *
      */
-    private final MultiValueMap registeredEvents;
+    private final Map<String, List<ScriptCallback>> registeredEvents;
     /**
      *
      */
@@ -58,7 +66,7 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
     public ScriptEventFacade() {
         this.eventFired = false;
         this.eventsFired = new MultiValueMap();
-        this.registeredEvents = new MultiValueMap();
+        this.registeredEvents = new HashMap();
     }
 
     /**
@@ -85,7 +93,7 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
      * @throws com.wegas.core.exception.client.WegasRuntimeException
      */
     public void fire(Player player, String eventName, Object param) throws WegasRuntimeException {
-        this.doFire(player, eventName, param);
+        this.doFire(player, eventName, Value.asValue(param));
     }
 
     /**
@@ -130,7 +138,7 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
         this.fire(eventName, null);
     }
 
-    private void doFire(Player player, String eventName, Object params) throws WegasRuntimeException {
+    private void doFire(Player player, String eventName, Value param) throws WegasRuntimeException {
         if (player == null && requestManager.getPlayer() == null) {
             throw WegasErrorMessage.error("An event '" + eventName + "' has been fired without a player defined. A player has to be defined.");
         }
@@ -139,27 +147,44 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
             scriptFacace.eval(player, new Script(""), null);
         }
         /*
-         * Make sure to set eventFired after context initiation because events 
+         * Make sure to set eventFired after context initiation because events
          * are detached by instantiation process
          */
         this.eventFired = true;
-        this.eventsFired.put(eventName, params);
+        this.eventsFired.put(eventName, param);
 
         if (this.registeredEvents.containsKey(eventName)) {
-            Collection callbacks = this.registeredEvents.getCollection(eventName);
-            for (Object cb : callbacks) {
-                ScriptObjectMirror obj = (ScriptObjectMirror) ((Object[]) cb)[0];
-
-                Object scope = (((Object[]) cb).length == 2 ? ((Object[]) cb)[1] : new EmptyObject());
-
+            List<ScriptCallback> callbacks = this.registeredEvents.get(eventName);
+            for (ScriptCallback cb : callbacks) {
                 try {
-                    obj.call(scope, params);
-                } catch (WegasRuntimeException ex) { // throw our exception as-is
-                    logger.error("ScriptException: {}", ex);
-                    throw ex;
-                } catch (RuntimeException ex) { // Java exception (Java -> JS -> Java -> throw)
-                    logger.error("ScriptException: {}", ex);
-                    throw new WegasScriptException(obj.toString(), ex.getMessage(), ex);
+                    List<Value> args = cb.getArugments();
+                    if (param != null) {
+                        args.add(param);
+                    }
+                    Value[] arguments = args.toArray(new Value[0]);
+                    cb.getFunction().executeVoid((Object[]) arguments);
+                } catch (PolyglotException ex) {
+                    if (ex.isHostException()) {
+                        Throwable theEx = ex.asHostException();
+                        if (theEx instanceof WegasRuntimeException) {
+                            // throw our exception as-is
+                            logger.error("ScriptException: {}", ex);
+                            throw (WegasRuntimeException) theEx;
+                        } else if (theEx instanceof RuntimeException) {
+                            logger.error("ScriptException: {}", ex);
+                            throw new WegasScriptException(cb.toString(), ex.getMessage(), ex);
+                        }
+                    } else {
+
+                        SourceSection sourceLocation = ex.getSourceLocation();
+                        int lineStart = -1;
+
+                        if (sourceLocation != null) {
+                            lineStart = sourceLocation.getStartLine();
+                        }
+
+                        throw new WegasScriptException(cb.getFunction().toString(), lineStart, ex.getMessage(), ex);
+                    }
                 }
             }
         }
@@ -169,8 +194,8 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
     /**
      * @param eventName
      *
-     * @return Object[] array of corresponding parameters fired. Length
-     *         correspond to number of times eventName has been fired.
+     * @return Object[] array of corresponding parameters fired. Length correspond to number of
+     *         times eventName has been fired.
      */
     public Object[] getFiredParameters(String eventName) {
         if (this.eventsFired.containsKey(eventName)) {
@@ -190,7 +215,8 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
     }
 
     /**
-     * check if the event has been fired. If it's the case, count this event consumption within eventCounter
+     * check if the event has been fired. If it's the case, count this event consumption within
+     * eventCounter
      *
      * @param eventName
      *
@@ -198,13 +224,17 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
      */
     @Override
     public boolean fired(String eventName) {
-        ScriptContext scriptContext = requestManager.getCurrentScriptContext();
+        Context scriptContext = requestManager.getCurrentScriptContext();
         if (requestManager.isTestEnv()) {
             // mark event as watched !!
             return true;
         } else {
+            Object currentDescriptor = null;
 
-            Object currentDescriptor = scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).get(ScriptFacade.CONTEXT);
+            Value vCurrent = scriptContext.getPolyglotBindings().getMember(ScriptFacade.CONTEXT);
+            if (vCurrent != null) {
+                currentDescriptor = vCurrent.asHostObject();
+            }
 
             if (currentDescriptor instanceof StateMachineDescriptor) {
                 int count;
@@ -231,17 +261,32 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
      * @param scope
      */
     @Override
-    public void on(String eventName, Object func, Object scope) {
-        this.registeredEvents.put(eventName, new Object[]{func, scope});
+    public void on(String eventName, Object func, Object... arguments) {
+        this.registeredEvents.putIfAbsent(eventName, new ArrayList<>());
+        List<ScriptCallback> cbList = this.registeredEvents.get(eventName);
+        cbList.add(new ScriptCallback(Value.asValue(func), Arrays
+            .stream(arguments)
+            .map(Value::asValue)
+            .collect(Collectors.toList())));
     }
 
-    /**
-     * @param eventName
-     * @param func
-     */
-    @Override
-    public void on(String eventName, Object func) {
-        this.registeredEvents.put(eventName, new Object[]{func});
+    public static class ScriptCallback {
+
+        private final Value function;
+        private final List<Value> arugments;
+
+        public ScriptCallback(Value function, List<Value> arugments) {
+            this.function = function;
+            this.arugments = arugments;
+        }
+
+        public Value getFunction() {
+            return function;
+        }
+
+        public List<Value> getArugments() {
+            return arugments;
+        }
     }
 
     /**

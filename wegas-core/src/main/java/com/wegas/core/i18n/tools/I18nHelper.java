@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -7,23 +8,22 @@
  */
 package com.wegas.core.i18n.tools;
 
-import com.wegas.core.ejb.nashorn.JSTool;
-import com.wegas.core.exception.internal.WegasNashornException;
+import com.oracle.js.parser.ir.Block;
+import com.oracle.js.parser.ir.Expression;
+import com.oracle.js.parser.ir.LexicalContext;
+import com.oracle.js.parser.ir.LiteralNode;
+import com.oracle.js.parser.ir.ObjectNode;
+import com.oracle.js.parser.ir.PropertyNode;
+import com.oracle.js.parser.ir.visitor.NodeVisitor;
+import com.wegas.core.ejb.js.JSTool;
+import com.wegas.core.exception.internal.WegasGraalException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.Mergeable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jdk.nashorn.api.scripting.NashornException;
-import jdk.nashorn.api.tree.CompilationUnitTree;
-import jdk.nashorn.api.tree.ExpressionTree;
-import jdk.nashorn.api.tree.LiteralTree;
-import jdk.nashorn.api.tree.ObjectLiteralTree;
-import jdk.nashorn.api.tree.PropertyTree;
-import jdk.nashorn.api.tree.SimpleTreeVisitorES5_1;
 import org.apache.commons.text.StringEscapeUtils;
 
 /**
@@ -33,30 +33,8 @@ import org.apache.commons.text.StringEscapeUtils;
  */
 public class I18nHelper {
 
-    private I18nHelper(){
+    private I18nHelper() {
         // empty private constructor to prevent class initialisation
-    }
-
-    /**
-     * Extract properties from an ObjectLiteratlTree.
-     *
-     * @param node object AST to process
-     *
-     * @return properties mapped with their key
-     */
-    private static Map<String, ExpressionTree> mapProperties(ObjectLiteralTree node) {
-        List<? extends PropertyTree> properties = node.getProperties();
-        Map<String, ExpressionTree> map = new HashMap<>();
-
-        for (PropertyTree property : properties) {
-            ExpressionTree key = property.getKey();
-            String sKey = JSTool.readStringLiteral(key);
-            if (sKey != null) {
-                map.put(sKey, property.getValue());
-            }
-        }
-
-        return map;
     }
 
     /**
@@ -69,7 +47,7 @@ public class I18nHelper {
      *
      * @return true if the object is an instance of the class
      */
-    private static boolean isInstanceOf(Map<String, ExpressionTree> properties, Class<? extends Mergeable> klass) {
+    private static boolean isInstanceOf(Map<String, Expression> properties, Class<? extends Mergeable> klass) {
         String jsonClassName = Mergeable.getJSONClassName(klass);
         String atClass = JSTool.readStringLiteral(properties.get("@class"));
         return jsonClassName.equals(atClass);
@@ -107,22 +85,23 @@ public class I18nHelper {
      *
      * @return true if object match i18v2 tree
      */
-    private static boolean isTranslatableContentV2(Map<String, ExpressionTree> properties) {
-        ExpressionTree get = properties.get("translations");
-        if (get instanceof ObjectLiteralTree) {
-            List<? extends PropertyTree> langs = ((ObjectLiteralTree) get).getProperties();
+    private static boolean isTranslatableContentV2(Map<String, Expression> properties) {
+        Expression get = properties.get("translations");
+        if (get instanceof ObjectNode) {
+            List<PropertyNode> langs = ((ObjectNode) get).getElements();
 
-            return langs.isEmpty() || (langs.get(0).getValue() instanceof ObjectLiteralTree);
+            return langs.isEmpty() || (langs.get(0).getValue() instanceof ObjectNode);
         }
         return false;
     }
 
-    private static boolean isTranslatableContentV2(ObjectLiteralTree node) {
-        PropertyTree get = JSTool.getProperty(node, "translations");
-        if (get != null && get.getValue() instanceof ObjectLiteralTree) {
-            List<? extends PropertyTree> langs = ((ObjectLiteralTree) get.getValue()).getProperties();
-            for (PropertyTree lang : langs) {
-                if (lang.getValue() instanceof ObjectLiteralTree == false) {
+    private static boolean isTranslatableContentV2(ObjectNode node) {
+        PropertyNode get = JSTool.getProperty(node, "translations");
+        if (get != null && get.getValue() instanceof ObjectNode) {
+            List<PropertyNode> langs = ((ObjectNode) get.getValue()).getElements();
+
+            for (PropertyNode lang : langs) {
+                if (lang.getValue() instanceof ObjectNode == false) {
                     // at least one language is still v1
                     return false;
                 }
@@ -139,20 +118,20 @@ public class I18nHelper {
      *
      * @return the object read or null if node is not of correct type
      */
-    private static TranslatableContent readTranslatableContent(ObjectLiteralTree node) {
-        Map<String, ExpressionTree> properties = mapProperties(node);
+    private static TranslatableContent readTranslatableContent(ObjectNode node) {
+        Map<String, Expression> properties = JSTool.mapProperties(node);
         if (isInstanceOf(properties, TranslatableContent.class)) {
             TranslatableContent trc = new TranslatableContent();
 
-            ExpressionTree langs = properties.get("translations");
+            Expression langs = properties.get("translations");
 
-            if (langs instanceof ObjectLiteralTree) {
-                for (PropertyTree lang : ((ObjectLiteralTree) langs).getProperties()) {
+            if (langs instanceof ObjectNode) {
+                for (PropertyNode lang : ((ObjectNode) langs).getElements()) {
                     String code = JSTool.readStringLiteral(lang.getKey());
                     if (code != null) {
-                        ExpressionTree trNode = lang.getValue();
-                        if (trNode instanceof ObjectLiteralTree) {
-                            Map<String, ExpressionTree> trProps = mapProperties(((ObjectLiteralTree) trNode));
+                        Expression trNode = lang.getValue();
+                        if (trNode instanceof ObjectNode) {
+                            Map<String, Expression> trProps = JSTool.mapProperties(((ObjectNode) trNode));
                             String status = JSTool.readStringLiteral(trProps.get("status"));
                             String translation = JSTool.readStringLiteral(trProps.get("translation"));
                             trc.updateTranslation(code, translation, status);
@@ -160,7 +139,6 @@ public class I18nHelper {
                     }
                 }
             }
-
             return trc;
         } else {
             return null;
@@ -178,7 +156,7 @@ public class I18nHelper {
      * @return the fished translation with location information
      */
     public static FishedTranslation getTranslationLocation(String script, Integer index,
-        String code) throws WegasNashornException {
+        String code) throws WegasGraalException {
         List<FishedTranslation> translations = getTranslations(script, code);
         if (translations.size() > index) {
             return translations.get(index);
@@ -196,14 +174,14 @@ public class I18nHelper {
      * @return list of all fetched translation. Size of the list will match the number of
      *         translatableContent in the script.
      */
-    public static List<FishedTranslation> getTranslations(String script, String langCode) throws WegasNashornException {
+    public static List<FishedTranslation> getTranslations(String script, String langCode) throws WegasGraalException {
         List<FishedTranslation> result = new ArrayList<>();
 
-        List<ObjectLiteralTree> trs = getTranslatableContentTrees(script);
-        for (ObjectLiteralTree node : trs) {
+        List<ObjectNode> trs = getTranslatableContentTrees(script);
+        for (ObjectNode node : trs) {
             if (node != null) {
-                ObjectLiteralTree translations = (ObjectLiteralTree) JSTool.getProperty(node, "translations").getValue();
-                PropertyTree translation = JSTool.getProperty(translations, langCode);
+                ObjectNode translations = (ObjectNode) JSTool.getProperty(node, "translations").getValue();
+                PropertyNode translation = JSTool.getProperty(translations, langCode);
                 if (translation != null) {
                     result.add(new FoundTranslation(translation));
                 } else {
@@ -224,8 +202,8 @@ public class I18nHelper {
      * @return AST of the index-th TranslatableContent or null if there is no such
      *         translatableContent
      */
-    private static ObjectLiteralTree getTranslationsByIndex(String script, Integer index) throws WegasNashornException {
-        List<ObjectLiteralTree> trs = getTranslatableContentTrees(script);
+    private static ObjectNode getTranslationsByIndex(String script, Integer index) throws WegasGraalException {
+        List<ObjectNode> trs = getTranslatableContentTrees(script);
         if (trs.size() > index) {
             return trs.get(index);
         } else {
@@ -240,10 +218,10 @@ public class I18nHelper {
      *
      * @return list of all translatable content found in the script
      */
-    public static List<TranslatableContent> getTranslatableContents(String script) throws WegasNashornException {
+    public static List<TranslatableContent> getTranslatableContents(String script) throws WegasGraalException {
         List<TranslatableContent> trs = new ArrayList<>();
 
-        for (ObjectLiteralTree node : getTranslatableContentTrees(script)) {
+        for (ObjectNode node : getTranslatableContentTrees(script)) {
             if (node != null) {
                 trs.add(readTranslatableContent(node));
             } else {
@@ -253,7 +231,7 @@ public class I18nHelper {
         return trs;
     }
 
-    private static String updateScript(List<InScriptChange> changes, String script) throws WegasNashornException {
+    private static String updateScript(List<InScriptChange> changes, String script) throws WegasGraalException {
         if (!changes.isEmpty()) {
             StringBuilder sb = new StringBuilder(script);
 
@@ -282,29 +260,28 @@ public class I18nHelper {
      *
      * @return updated script
      *
-     * @throws WegasNashornException if the given script (or the updated one) is not parseable
+     * @throws WegasGraalException if the given script (or the updated one) is not parseable
      */
-    public static String updateStatusInScript(String impact, int index, String newStatus) throws WegasNashornException {
-        ObjectLiteralTree node = I18nHelper.getTranslationsByIndex(impact, index);
+    public static String updateStatusInScript(String script, int index, String newStatus) throws WegasGraalException {
+        ObjectNode node = I18nHelper.getTranslationsByIndex(script, index);
 
         if (node != null && isTranslatableContentV2(node)) {
 
             List<InScriptChange> changes = new ArrayList<>();
-            ObjectLiteralTree langs = (ObjectLiteralTree) JSTool.getProperty(node, "translations").getValue();
+            ObjectNode langs = (ObjectNode) JSTool.getProperty(node, "translations").getValue();
 
-            for (PropertyTree lang : langs.getProperties()) {
-                ObjectLiteralTree translation = (ObjectLiteralTree) lang.getValue();
+            for (PropertyNode lang : langs.getElements()) {
+                ObjectNode translation = (ObjectNode) lang.getValue();
 
-                Map<String, ExpressionTree> props = I18nHelper.mapProperties(translation);
+                Map<String, Expression> props = JSTool.mapProperties(translation);
                 if (props.containsKey("status")) {
-                    LiteralTree get = (LiteralTree) props.get("status");
-                    changes.add(new InScriptChange((int) get.getStartPosition(), (int) get.getEndPosition(), newStatus));
-
+                    LiteralNode get = (LiteralNode) props.get("status");
+                    changes.add(new InScriptChange(get.getStart(), get.getFinish(), newStatus));
                 }
             }
-            return I18nHelper.updateScript(changes, impact);
+            return I18nHelper.updateScript(changes, script);
         } else {
-            return impact;
+            return script;
         }
     }
 
@@ -317,9 +294,9 @@ public class I18nHelper {
      *
      * @return script with up-to-date language code
      *
-     * @throws WegasNashornException if the given script (or the updated one) is not parseable
+     * @throws WegasGraalException if the given script (or the updated one) is not parseable
      */
-    public static String updateCodeInScript(String script, String oldCode, String newCode) throws WegasNashornException {
+    public static String updateCodeInScript(String script, String oldCode, String newCode) throws WegasGraalException {
         List<FishedTranslation> results = I18nHelper.getTranslations(script, oldCode);
 
         if (!results.isEmpty()) {
@@ -351,9 +328,9 @@ public class I18nHelper {
      *
      * @return updated script
      *
-     * @throws WegasNashornException if the given script (or the updated one) is not parseable
+     * @throws WegasGraalException if the given script (or the updated one) is not parseable
      */
-    public static String updateScriptWithNewTranslation(String script, int index, String code, String newValue, String newTrStatus) throws WegasNashornException {
+    public static String updateScriptWithNewTranslation(String script, int index, String code, String newValue, String newTrStatus) throws WegasGraalException {
 
         FishedTranslation result;
 
@@ -429,14 +406,14 @@ public class I18nHelper {
      *
      * @param script the script to parse
      *
-     * @throws WegasNashornException
+     * @throws WegasGraalException
      */
-    private static String assertScriptIsParsable(String script) throws WegasNashornException {
-        try {
-            JSTool.parse(script);
+    private static String assertScriptIsParsable(String script) throws WegasGraalException {
+        Block parse = JSTool.parse(script);
+        if (parse != null) {
             return script;
-        } catch (NashornException ex) {
-            throw new WegasNashornException(ex);
+        } else {
+            throw new WegasGraalException(null);
         }
     }
 
@@ -447,60 +424,32 @@ public class I18nHelper {
      *
      * @return AST of all TranslatableContent
      */
-    private static List<ObjectLiteralTree> getTranslatableContentTrees(String script) throws WegasNashornException {
+    private static List<ObjectNode> getTranslatableContentTrees(String script) {
+        Block parse = JSTool.parse(script);
+        List<ObjectNode> trs = new ArrayList<>();
 
-        try {
-            CompilationUnitTree parse = JSTool.parse(script);
-            TranslatableContentTreeExtractor visitor = new TranslatableContentTreeExtractor();
-            parse.accept(visitor, null);
+        parse.accept(new NodeVisitor<LexicalContext>(new LexicalContext()) {
+            @Override
+            public boolean enterObjectNode(ObjectNode node) {
+                Map<String, Expression> mapProperties = JSTool.mapProperties(node);
 
-            return visitor.getTranslatableContentTree();
-        } catch (NashornException ex) {
-            throw new WegasNashornException(ex);
-        }
-    }
-
-    /**
-     * AST visitor which extracts all ObjectLiteralTree representing an I18nv2 translatable content.
-     * I18nV1 vill be returned as null item anyway.
-     */
-    private static class TranslatableContentTreeExtractor extends SimpleTreeVisitorES5_1<Void, Void> {
-
-        /**
-         * TranslatableContent accumulated by visitor
-         */
-        private final List<ObjectLiteralTree> trs = new ArrayList<>();
-
-        /**
-         * Only care about ObjectLiteral here.
-         *
-         * @param node the current AST node
-         * @param r    quite nothing here
-         *
-         * @return nothing either
-         */
-        @Override
-        public Void visitObjectLiteral(ObjectLiteralTree node, Void r) {
-            Map<String, ExpressionTree> mapProperties = mapProperties(node);
-
-            if (isInstanceOf(mapProperties, TranslatableContent.class)) {
-                if (isTranslatableContentV2(mapProperties)) {
-                    // accumulate v2 only
-                    trs.add(node);
+                if (isInstanceOf(mapProperties, TranslatableContent.class)) {
+                    if (isTranslatableContentV2(mapProperties)) {
+                        // accumulate v2 only
+                        trs.add(node);
+                    } else {
+                        // but add null to keep track of all translatable content to preserve index-ness
+                        trs.add(null);
+                    }
+                    return false;
                 } else {
-                    // but add null to keep track of all translatable content to preserve index-ness
-                    trs.add(null);
+                    // not a TranslatableContent, call default implematation from super
+                    return super.enterObjectNode(node);
                 }
-                return null;
-            } else {
-                // not a TranslatableContent, call default implematation from super
-                return super.visitObjectLiteral(node, r);
             }
-        }
+        });
 
-        public List<ObjectLiteralTree> getTranslatableContentTree() {
-            return trs;
-        }
+        return trs;
     }
 
     /**
@@ -541,7 +490,7 @@ public class I18nHelper {
          * @param buffer string to update
          */
         public void apply(StringBuilder buffer) {
-            buffer.replace(this.startIndex, this.endIndex, this.newValue);
+            buffer.replace(this.startIndex, this.endIndex, "\"" + this.newValue + "\"");
         }
     }
 

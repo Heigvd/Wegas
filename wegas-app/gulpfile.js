@@ -2,7 +2,7 @@
 
 var gulp = require('gulp'),
     chug = require('gulp-chug'),
-    uglify = require("gulp-uglify"),
+    terser = require("gulp-terser"),
     minifycss = require('gulp-csso'),
     sourcemaps = require("gulp-sourcemaps"),
     rename = require("gulp-rename"),
@@ -89,8 +89,8 @@ gulp.task("compress-js", ["submodule"], function () {
             }
         }))
         .pipe(sourcemaps.init())
-        // .pipe(cache(uglify()))
-        .pipe(uglify().on('error', function (e) {
+        // .pipe(cache(terser()))
+        .pipe(terser().on('error', function (e) {
             console.log(e.message);
             throw e;
         }))

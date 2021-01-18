@@ -161,9 +161,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     /**
      * Create a new descriptor in a DescriptorListI
      *
-     * @param gameModel the gameModel
-     * @param list      new descriptor parent
-     * @param entity    new descriptor to create
+     * @param gameModel  the gameModel
+     * @param list       new descriptor parent
+     * @param entity     new descriptor to create
      * @param resetNames
      *
      * @return the new descriptor
@@ -929,6 +929,14 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     @Override
     public Map<Long, VariableInstance> getInstancesByKeyId(VariableDescriptor vd) {
         return variableInstanceFacade.getAllInstancesById(vd);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, VariableInstance> getInstancesByKeyStringId(VariableDescriptor vd) {
+        return variableInstanceFacade.getAllInstancesByStringId(vd);
     }
 
     /**

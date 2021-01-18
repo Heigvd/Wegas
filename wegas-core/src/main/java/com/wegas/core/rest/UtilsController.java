@@ -18,7 +18,7 @@ import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
 import com.wegas.core.ejb.ConcurrentHelper;
 import com.wegas.core.ejb.JPACacheHelper;
-import com.wegas.core.ejb.nashorn.NasHornMonitor;
+import com.wegas.core.ejb.js.GraalVmMonitor;
 import com.wegas.core.jcr.JackrabbitConnector;
 import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
@@ -92,7 +92,7 @@ public class UtilsController {
     private JackrabbitConnector jcrConnector;
 
     @Inject
-    private NasHornMonitor nhMonitor;
+    private GraalVmMonitor nhMonitor;
 
     private static final String SET_LEVEL_EVENT = "Wegas_setLoggerLevel";
 
@@ -646,19 +646,19 @@ public class UtilsController {
     }
 
     @GET
-    @Path("NashornMonitor")
+    @Path("GraalVmMonitor")
     @RequiresRoles("Administrator")
     @Produces(MediaType.TEXT_HTML)
-    public String getNasHornLoadedClasses() {
+    public String getGraalVMLoadedClasses() {
         Enumeration<String> classes = nhMonitor.getClasses();
-        String result = "<h1>Java classes loaded by nashorn</h1><ul>";
+        String result = "<h1>Java classes loaded by GraalVM</h1><ul>";
 
         while (classes.hasMoreElements()) {
             result += "<li>" + classes.nextElement() + "</li>";
         }
         result += "</ul>";
 
-        result += "<h1>Java classes rejected by nashorn</h1>";
+        result += "<h1>Java classes rejected by GraalVM</h1>";
         result += "<h2>Blacklisted</h2><ul>";
 
         Enumeration<String> blacklistedClasses = nhMonitor.getBlacklistedClasses();

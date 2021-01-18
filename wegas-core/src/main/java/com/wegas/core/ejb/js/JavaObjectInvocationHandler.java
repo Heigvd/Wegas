@@ -5,7 +5,7 @@
  * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-package com.wegas.core.ejb.nashorn;
+package com.wegas.core.ejb.js;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

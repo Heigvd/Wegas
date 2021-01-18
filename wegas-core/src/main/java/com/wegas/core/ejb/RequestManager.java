@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -71,10 +72,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.script.ScriptContext;
+import org.graalvm.polyglot.Context;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
-import jdk.nashorn.api.scripting.ScriptUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -342,9 +342,9 @@ public class RequestManager implements RequestManagerI {
     private Locale locale;
 
     /**
-     * the Nashorn script context to use during the request
+     * the GraalVM script context to use during the request
      */
-    private ScriptContext currentScriptContext = null;
+    private Context currentScriptContext = null;
 
     private boolean clearCacheOnDestroy = false;
 
@@ -567,7 +567,7 @@ public class RequestManager implements RequestManagerI {
         return actAsPlayer;
     }
 
-    public void releaseActAsPlayer(){
+    public void releaseActAsPlayer() {
         this.actAsPlayer = null;
     }
 
@@ -579,6 +579,9 @@ public class RequestManager implements RequestManagerI {
      */
     public void setPlayer(Player currentPlayer) {
         if (this.currentPlayer == null || !this.currentPlayer.equals(currentPlayer)) {
+            if (currentScriptContext != null) {
+                currentScriptContext.close();
+            }
             this.setCurrentScriptContext(null);
         }
         this.currentPlayer = currentPlayer != null ? (currentPlayer.getId() != null ? playerFacade.find(currentPlayer.getId()) : currentPlayer) : null;
@@ -708,14 +711,14 @@ public class RequestManager implements RequestManagerI {
     /**
      * @return the currentScriptContext
      */
-    public ScriptContext getCurrentScriptContext() {
+    public Context getCurrentScriptContext() {
         return currentScriptContext;
     }
 
     /**
      * @param currentScriptContext the currentScriptContext to set
      */
-    public void setCurrentScriptContext(ScriptContext currentScriptContext) {
+    public void setCurrentScriptContext(Context currentScriptContext) {
         this.currentScriptContext = currentScriptContext;
     }
 
@@ -880,11 +883,11 @@ public class RequestManager implements RequestManagerI {
     @Override
     public void sendCustomEvent(String type, Object payload) {
         // @hack check payload type against "jdk.nashorn.internal"
-        if (payload.getClass().getName().startsWith("jdk.nashorn.internal")) {
-            this.addEvent(new CustomEvent(type, ScriptUtils.wrap(payload)));
-        } else {
-            this.addEvent(new CustomEvent(type, payload));
-        }
+        //if (payload.getClass().getName().startsWith("jdk.nashorn.internal")) {
+        //    this.addEvent(new CustomEvent(type, ScriptUtils.wrap(payload)));
+        //} else {
+        this.addEvent(new CustomEvent(type, payload));
+        //}
     }
 
     @Override
@@ -1292,7 +1295,8 @@ public class RequestManager implements RequestManagerI {
         }
 
         if (this.currentScriptContext != null) {
-            this.currentScriptContext.getBindings(ScriptContext.ENGINE_SCOPE).clear();
+            this.currentScriptContext.close();
+            //this.currentScriptContext.getBindings(ScriptContext.ENGINE_SCOPE).clear();
             this.currentScriptContext = null;
         }
 
@@ -1537,7 +1541,7 @@ public class RequestManager implements RequestManagerI {
                 || this.hasDirectGameEditPermission(game) //has edit right on  the game
                 || this.hasDirectGameModelEditPermission(game.getGameModel()) // or edit right on the game model
                 || (!superPermission
-                && ( // OR if no super permission is required. either: 
+                && ( // OR if no super permission is required. either:
                 game.getAccess().equals(Game.GameAccess.OPEN) // the game is open and hence, must be readable to everyone
                 || playerFacade.isInGame(game.getId(), this.getCurrentUser().getId()) // current user owns one player in the game
                 ));
@@ -1665,7 +1669,7 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Whether the current user has already been granted a Game Write permission for any game in 
+     * Whether the current user has already been granted a Game Write permission for any game in
      * which the given user act as player
      *
      * @param userId

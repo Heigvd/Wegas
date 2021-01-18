@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -7,10 +8,11 @@
  */
 package com.wegas.core.i18n.tools;
 
-import com.wegas.core.ejb.nashorn.JSTool;
-import jdk.nashorn.api.tree.ExpressionTree;
-import jdk.nashorn.api.tree.ObjectLiteralTree;
-import jdk.nashorn.api.tree.PropertyTree;
+import com.oracle.js.parser.ir.Expression;
+import com.oracle.js.parser.ir.ObjectNode;
+import com.oracle.js.parser.ir.PropertyNode;
+import com.wegas.core.ejb.js.JSTool;
+import java.util.Map;
 
 /**
  * The location of a translation in a script.
@@ -56,20 +58,26 @@ public class FoundTranslation extends FishedTranslation {
      *
      * @param translation propertyTree which represents the translation (v2)
      */
-    public FoundTranslation(PropertyTree translation) {
-        ExpressionTree key = translation.getKey();
-        ObjectLiteralTree value = (ObjectLiteralTree) translation.getValue();
+    public FoundTranslation(PropertyNode translation) {
+        Expression key = translation.getKey();
+        Expression value = translation.getValue();
 
-        langCodeStartPosition = (int) key.getStartPosition();
-        langCodeEndPosition = (int) key.getEndPosition();
+        langCodeStartPosition = key.getStart();
+        langCodeEndPosition = key.getFinish();
         langCode = JSTool.readStringLiteral(key);
 
-        valueStartPosition = (int) value.getStartPosition();
-        valueEndPosition = (int) value.getEndPosition();
+        valueStartPosition = value.getStart();
+        valueEndPosition = value.getFinish();
 
-        JSTool.getProperty(value, "status");
-        this.status = JSTool.readStringLiteral(JSTool.getProperty(value, "status").getValue());
-        this.translation = JSTool.readStringLiteral(JSTool.getProperty(value, "translation").getValue());
+        if (value instanceof ObjectNode) {
+            Map<String, Expression> props = JSTool.mapProperties((ObjectNode) value);
+
+            this.status = JSTool.readStringLiteral(props.get("status"));
+            this.translation = JSTool.readStringLiteral(props.get("translation"));
+        } else {
+            this.status = "";
+            this.translation = "";
+        }
     }
 
     /**

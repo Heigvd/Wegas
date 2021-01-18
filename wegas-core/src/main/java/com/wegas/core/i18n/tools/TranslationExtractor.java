@@ -10,7 +10,7 @@ package com.wegas.core.i18n.tools;
 import ch.albasim.wegas.annotations.ProtectionLevel;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.exception.internal.WegasNashornException;
+import com.wegas.core.exception.internal.WegasGraalException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.i18n.rest.I18nUpdate;
@@ -126,7 +126,7 @@ public class TranslationExtractor implements MergeHelper.MergeableVisitor {
                                 }
                             }
                         }
-                    } catch (WegasNashornException ex) {
+                    } catch (WegasGraalException ex) {
                         logger.error("Fails to parse script:  {}", ex);
                     }
                 } else {

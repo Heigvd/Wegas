@@ -6,18 +6,18 @@
  * Licensed under the MIT License
  */
 
-package com.wegas.core.ejb.nashorn;
+package com.wegas.core.ejb.js;
 
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.enterprise.context.ApplicationScoped;
 
 /**
- * Used keep track of classes loaded by nashorn, including forbidden attempts
+ * Used keep track of classes loaded by GraalVM, including forbidden attempts
  * @author maxence
  */
 @ApplicationScoped
-public class NasHornMonitor {
+public class GraalVmMonitor {
 
     private static final ConcurrentHashMap<String, Integer> loadedClasses = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, Integer> notWhitelisted = new ConcurrentHashMap<>();

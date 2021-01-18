@@ -6,8 +6,9 @@
  * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-package com.wegas.core.ejb.nashorn;
+package com.wegas.core.ejb.js;
 
+import java.util.function.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,9 +16,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author maxence
  */
-public class NHClassLoader extends ClassLoader {
+public class GraalVmClassFilter implements Predicate<String> {
 
-    private static final Logger logger = LoggerFactory.getLogger(NHClassLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(GraalVmClassFilter.class);
 
     private static final String[] blacklist = {
         "com.wegas.core.Helper", // "javax.naming.InitialContext",
@@ -67,28 +68,22 @@ public class NHClassLoader extends ClassLoader {
     }
 
     @Override
-    public Class<?> loadClass(String name) throws ClassNotFoundException {
+    public boolean test(String name) {
         logger.trace("Try to load {}", name);
         if (containsStartsWith(blacklist, name)) {
             logger.error("{} is blacklisted !", name);
-            NasHornMonitor.registerBlacklistedClass(name);
-            return null;
+            GraalVmMonitor.registerBlacklistedClass(name);
+            return false;
         }
 
-        try {
-            Class<?> loadClass = Thread.currentThread().getContextClassLoader().loadClass(name);
-            if (containsStartsWith(whitelist, name)) {
-                logger.trace("LOAD {}", loadClass);
-                NasHornMonitor.registerClass(name);
-                return loadClass;
-            } else {
-                logger.error("{} is not whitelisted !", name);
-                NasHornMonitor.registerNotWhitelistedClass(name);
-                return null;
-            }
-        } catch (ClassNotFoundException ex) {
-            logger.trace("LOAD ERROR {}", name);
-            throw ex;
+        if (containsStartsWith(whitelist, name)) {
+            logger.trace("LOAD {}", name);
+            GraalVmMonitor.registerClass(name);
+            return true;
+        } else {
+            logger.error("{} is not whitelisted !", name);
+            GraalVmMonitor.registerNotWhitelistedClass(name);
+            return false;
         }
     }
 }

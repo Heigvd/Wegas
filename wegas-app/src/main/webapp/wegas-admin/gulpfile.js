@@ -3,7 +3,7 @@ var gulp = require('gulp'),
     emberTemplates = require('gulp-ember-templates'),
     rename = require("gulp-rename"),
     rjs = require("gulp-requirejs"),
-    uglify = require("gulp-uglify"),
+    terser = require("gulp-terser"),
     sourcemaps = require("gulp-sourcemaps");
 gulp.task("default", ["compile-template"], function() {
     "use strict";
