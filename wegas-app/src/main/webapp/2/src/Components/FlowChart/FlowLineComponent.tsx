@@ -1,6 +1,8 @@
 import { css } from 'emotion';
 import * as React from 'react';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
+import { FlowLine, Process } from './FlowChart';
+import { ProcessHandle } from './ProcessHandle';
 
 const childrenContainerStyle = css({
   position: 'absolute',
@@ -13,6 +15,8 @@ const childrenContainerStyle = css({
 export interface FlowLineProps {
   startProcessElement?: HTMLElement;
   endProcessElement?: HTMLElement;
+  startProcess: Process;
+  flowline: FlowLine;
   positionOffset?: number;
 }
 
@@ -40,6 +44,8 @@ type Axe = keyof AxeValues;
 export function FlowLineComponent({
   startProcessElement,
   endProcessElement,
+  startProcess,
+  flowline,
   children,
   positionOffset = 0.5,
 }: React.PropsWithChildren<FlowLineProps>) {
@@ -265,6 +271,7 @@ export function FlowLineComponent({
         onClick={e => (e.target as HTMLDivElement).focus()}
       >
         {children}
+        <ProcessHandle sourceProcess={startProcess} flow={flowline} />
       </div>
     </>
   );

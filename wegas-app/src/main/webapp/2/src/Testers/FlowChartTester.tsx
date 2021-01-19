@@ -30,8 +30,8 @@ const testProcesses: Process[] = [
   },
 ];
 
-let lastProcessId = 2;
-let lastFlowId = 1;
+let lastProcessId = 3;
+let lastFlowId = 6;
 
 export default function FlowChartTester() {
   const [state, setState] = React.useState(testProcesses);
@@ -53,8 +53,7 @@ export default function FlowChartTester() {
             }),
           );
         }}
-        onNew={(sourceProcess, newPosition) => {
-          wlog('New process');
+        onNew={(sourceProcess, newPosition, flow) => {
           setState(oldState =>
             u(oldState, oldState => {
               const oldProcess = oldState.find(p => p.id === sourceProcess.id);
@@ -64,23 +63,32 @@ export default function FlowChartTester() {
                 connections: [],
               });
               if (oldProcess != null) {
-                oldProcess.connections.push({
-                  id: String(++lastFlowId),
-                  connectedTo: String(lastProcessId),
-                });
+                if (flow == null) {
+                  oldProcess.connections.push({
+                    id: String(++lastFlowId),
+                    connectedTo: String(lastProcessId),
+                  });
+                } else {
+                  const oldConnextionIndex = oldProcess.connections.findIndex(
+                    connection => connection.id === flow.id,
+                  );
+                  oldProcess.connections.splice(oldConnextionIndex, 1, {
+                    ...flow,
+                    connectedTo: String(lastProcessId),
+                  });
+                }
               }
               return oldState;
             }),
           );
         }}
-        onConnect={(sourceProcess, targetProcess, flowId) => {
-          wlog('Connect process');
+        onConnect={(sourceProcess, targetProcess, flow) => {
           setState(oldState =>
             u(oldState, oldState => {
               const oldProcess = oldState.find(p => p.id === sourceProcess.id);
 
               // If new flow
-              if (flowId == null) {
+              if (flow == null) {
                 if (oldProcess != null && targetProcess.id != null) {
                   oldProcess.connections.push({
                     id: String(++lastFlowId),
@@ -90,7 +98,18 @@ export default function FlowChartTester() {
               }
               // If moving flow
               else {
-                //TODO
+                const oldProcess = oldState.find(
+                  process => process.id === sourceProcess.id,
+                );
+                const flowIndex = oldProcess?.connections.findIndex(
+                  connection => connection.id === flow.id,
+                );
+                if (flowIndex != null && flowIndex !== -1) {
+                  oldProcess?.connections.splice(flowIndex, 1, {
+                    ...flow,
+                    connectedTo: targetProcess.id,
+                  });
+                }
               }
               return oldState;
             }),

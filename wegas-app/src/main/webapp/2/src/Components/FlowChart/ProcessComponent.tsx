@@ -2,7 +2,7 @@ import * as React from 'react';
 import { css } from 'emotion';
 import { XYPosition, useMouseEventDnd } from '../Hooks/useMouseEventDnd';
 import { themeVar } from '../Style/ThemeVars';
-import { Process } from './FlowChart';
+import { FlowLine, Process } from './FlowChart';
 import {
   DnDFlowchartHandle,
   ProcessHandle,
@@ -29,7 +29,7 @@ export interface ProcessProps {
   process: Process;
   onMove: (postion: XYPosition) => void;
   onMoveEnd: (postion: XYPosition) => void;
-  onConnect: (sourceProcess: Process, flowId?: string) => void;
+  onConnect: (sourceProcess: Process, flow?: FlowLine) => void;
 }
 
 export const ProcessComponent = React.forwardRef<HTMLElement, ProcessProps>(
@@ -40,8 +40,8 @@ export const ProcessComponent = React.forwardRef<HTMLElement, ProcessProps>(
     const [, drop] = useDrop<DnDFlowchartHandle, unknown, unknown>({
       accept: PROCESS_HANDLE_DND_TYPE,
       canDrop: () => true,
-      drop: ({ sourceProcess }) => {
-        onConnect(sourceProcess);
+      drop: ({ sourceProcess, flow }) => {
+        onConnect(sourceProcess, flow);
       },
     });
 

@@ -48,11 +48,15 @@ interface FlowChartProps {
   Flowline?: React.FunctionComponent<FlowLineProps>;
   FlowlineLabel?: React.FunctionComponent<FlowLineLabelProps>;
   onMove: (process: Process, newPosition: XYPosition) => void;
-  onNew: (sourceProcess: Process, newPosition: XYPosition) => void;
+  onNew: (
+    sourceProcess: Process,
+    newPosition: XYPosition,
+    flow?: FlowLine,
+  ) => void;
   onConnect: (
     sourceProcess: Process,
     targetProcess: Process,
-    flowId?: string | number,
+    flow?: FlowLine,
   ) => void;
 }
 
@@ -72,7 +76,7 @@ export function FlowChart({
   const [, drop] = useDrop<DnDFlowchartHandle, unknown, unknown>({
     accept: PROCESS_HANDLE_DND_TYPE,
     canDrop: (_item, mon) => mon.isOver({ shallow: true }),
-    drop: ({ sourceProcess }, mon) => {
+    drop: ({ sourceProcess, flow }, mon) => {
       const newX = mon.getClientOffset()?.x;
       const newY = mon.getClientOffset()?.y;
 
@@ -87,6 +91,7 @@ export function FlowChart({
               y: newY - containerY,
             }
           : { x: 0, y: 0 },
+        flow,
       );
     },
   });
@@ -139,6 +144,8 @@ export function FlowChart({
             key={c.flow.id}
             startProcessElement={processesRef.current[c.startProcess.id]}
             endProcessElement={processesRef.current[c.endProcess.id]}
+            startProcess={c.startProcess}
+            flowline={c.flow}
             positionOffset={(i + 1) / (g.length + 1)}
           >
             <FlowlineLabel id={c.flow.id} label={c.flow.id} />
@@ -173,8 +180,8 @@ export function FlowChart({
               }))
             }
             onMoveEnd={position => onMove(process, position)}
-            onConnect={(sourceProcess, flowId) => {
-              onConnect(sourceProcess, process, flowId);
+            onConnect={(sourceProcess, flow) => {
+              onConnect(sourceProcess, process, flow);
             }}
             ref={ref => {
               if (ref != null) {
