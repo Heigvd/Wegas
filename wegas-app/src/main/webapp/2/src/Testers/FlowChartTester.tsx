@@ -9,17 +9,29 @@ const testProcesses: Process[] = [
   {
     id: '1',
     position: { x: 50, y: 50 },
-    attachedTo: ['2'],
+    connections: [
+      { id: '1', connectedTo: '2' },
+      { id: '2', connectedTo: '3' },
+      { id: '3', connectedTo: '2' },
+    ],
   },
   {
     id: '2',
-    position: { x: 250, y: 250 },
-    attachedTo: [],
+    position: { x: 400, y: 400 },
+    connections: [
+      { id: '4', connectedTo: '3' },
+      { id: '6', connectedTo: '1' },
+    ],
+  },
+  {
+    id: '3',
+    position: { x: 400, y: 50 },
+    connections: [{ id: '5', connectedTo: '1' }],
   },
 ];
 
 let lastProcessId = 2;
-//let lastFlowId = 1;
+let lastFlowId = 1;
 
 export default function FlowChartTester() {
   const [state, setState] = React.useState(testProcesses);
@@ -49,10 +61,13 @@ export default function FlowChartTester() {
               oldState.push({
                 id: String(++lastProcessId),
                 position: newPosition,
-                attachedTo: [],
+                connections: [],
               });
               if (oldProcess != null) {
-                oldProcess.attachedTo.push(String(lastProcessId));
+                oldProcess.connections.push({
+                  id: String(++lastFlowId),
+                  connectedTo: String(lastProcessId),
+                });
               }
               return oldState;
             }),
@@ -67,7 +82,10 @@ export default function FlowChartTester() {
               // If new flow
               if (flowId == null) {
                 if (oldProcess != null && targetProcess.id != null) {
-                  oldProcess.attachedTo.push(targetProcess.id);
+                  oldProcess.connections.push({
+                    id: String(++lastFlowId),
+                    connectedTo: targetProcess.id,
+                  });
                 }
               }
               // If moving flow

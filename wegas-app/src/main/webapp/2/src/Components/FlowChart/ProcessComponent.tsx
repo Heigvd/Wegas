@@ -5,7 +5,6 @@ import { themeVar } from '../Style/ThemeVars';
 import { Process } from './FlowChart';
 import {
   DnDFlowchartHandle,
-  HANDLE_SIDE,
   ProcessHandle,
   PROCESS_HANDLE_DND_TYPE,
 } from './ProcessHandle';
@@ -28,82 +27,73 @@ const processStyle = css({
 
 export interface ProcessProps {
   process: Process;
-  onMoveEnd: (postion: XYPosition) => void;
   onMove: (postion: XYPosition) => void;
+  onMoveEnd: (postion: XYPosition) => void;
   onConnect: (sourceProcess: Process, flowId?: string) => void;
-  onReady: (element: HTMLElement) => void;
 }
 
-export function ProcessComponent({
-  process,
-  onMoveEnd,
-  onMove,
-  onConnect,
-  onReady,
-}: ProcessProps) {
-  const processElement = React.useRef<HTMLDivElement | null>(null);
-  const clickPosition = React.useRef<XYPosition>({ x: 0, y: 0 });
+export const ProcessComponent = React.forwardRef<HTMLElement, ProcessProps>(
+  ({ process, onMove, onMoveEnd, onConnect }, forwardRef) => {
+    const processElement = React.useRef<HTMLDivElement | null>(null);
+    const clickPosition = React.useRef<XYPosition>({ x: 0, y: 0 });
 
-  const [, drop] = useDrop<DnDFlowchartHandle, unknown, unknown>({
-    accept: PROCESS_HANDLE_DND_TYPE,
-    canDrop: () => true,
-    drop: ({ sourceProcess }) => {
-      onConnect(sourceProcess);
-    },
-  });
+    const [, drop] = useDrop<DnDFlowchartHandle, unknown, unknown>({
+      accept: PROCESS_HANDLE_DND_TYPE,
+      canDrop: () => true,
+      drop: ({ sourceProcess }) => {
+        onConnect(sourceProcess);
+      },
+    });
 
-  const onDragStart = React.useCallback((e: MouseEvent) => {
-    const targetBox = (e.target as HTMLDivElement).getBoundingClientRect();
-    clickPosition.current = {
-      x: e.clientX - targetBox.left,
-      y: e.clientY - targetBox.top,
-    };
-  }, []);
+    const onDragStart = React.useCallback((e: MouseEvent) => {
+      const targetBox = (e.target as HTMLDivElement).getBoundingClientRect();
+      clickPosition.current = {
+        x: e.clientX - targetBox.left,
+        y: e.clientY - targetBox.top,
+      };
+    }, []);
 
-  const onDrag = React.useCallback(
-    (_e: MouseEvent, position: XYPosition) => {
-      onMove(position);
-    },
-    [onMove],
-  );
+    const onDrag = React.useCallback(
+      (_e: MouseEvent, position: XYPosition) => onMove(position),
+      [onMove],
+    );
 
-  const onDragEnd = React.useCallback(
-    (_e: MouseEvent, position: XYPosition) => {
-      onMoveEnd({
-        x: Math.max(position.x, 0),
-        y: Math.max(position.y, 0),
-      });
-    },
-    [onMoveEnd],
-  );
+    const onDragEnd = React.useCallback(
+      (_e: MouseEvent, position: XYPosition) => {
+        onMoveEnd({
+          x: Math.max(position.x, 0),
+          y: Math.max(position.y, 0),
+        });
+      },
+      [onMoveEnd],
+    );
 
-  useMouseEventDnd(processElement, {
-    onDragStart,
-    onDrag,
-    onDragEnd,
-  });
+    useMouseEventDnd(processElement, {
+      onDragStart,
+      onDrag,
+      onDragEnd,
+    });
 
-  return (
-    <div
-      ref={ref => {
-        drop(ref);
-        if (ref != null) {
-          processElement.current = ref;
-          onReady(ref);
-        }
-      }}
-      style={{ left: process.position.x, top: process.position.y }}
-      className={processStyle}
-      data-id={process.id}
-    >
-      {process.id}
-      <ProcessHandle
-        position={{
-          x: PROCESS_WIDTH - HANDLE_SIDE / 2,
-          y: (PROCESS_HEIGHT - HANDLE_SIDE) / 2,
+    return (
+      <div
+        ref={ref => {
+          drop(ref);
+          if (ref != null) {
+            processElement.current = ref;
+            if (forwardRef != null) {
+              if (typeof forwardRef === 'function') {
+                forwardRef(ref);
+              }
+            }
+          }
         }}
-        sourceProcess={process}
-      />
-    </div>
-  );
-}
+        style={{ left: process.position.x, top: process.position.y }}
+        className={processStyle}
+        data-id={process.id}
+      >
+        {process.id}
+        <ProcessHandle sourceProcess={process} />
+      </div>
+    );
+  },
+);

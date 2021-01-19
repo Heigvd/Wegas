@@ -6,7 +6,6 @@ import { FlowLineComponent, FlowLineProps } from './FlowLineComponent';
 import { ProcessProps, ProcessComponent } from './ProcessComponent';
 import { FlowLineLabelComponent, FlowLineLabelProps } from './FlowLineLabel';
 import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './ProcessHandle';
-import u from 'immer';
 import { useDrop } from 'react-dnd';
 
 const flowChartStyle = css({
@@ -15,29 +14,37 @@ const flowChartStyle = css({
   borderStyle: 'solid',
 });
 
-export interface Process {
+export interface FlowLine {
   id?: string;
+  connectedTo: string;
+}
+
+export interface Process {
+  id: string;
   position: XYPosition;
-  attachedTo: string[];
+  connections: FlowLine[];
 }
 
 export interface Processes {
   [id: string]: Process;
 }
 
-export interface FlowLine {
-  startingStateId: string | number;
-  endingStateId: string | number;
-}
-
 export interface FlowLines {
   [id: string]: FlowLine;
+}
+
+interface Connection {
+  startProcess: Process;
+  endProcess: Process;
+  flow: FlowLine;
 }
 
 interface FlowChartProps {
   title: React.ReactNode;
   processes: Process[];
-  Process?: React.FunctionComponent<ProcessProps>;
+  Process?: React.ForwardRefExoticComponent<
+    ProcessProps & React.RefAttributes<HTMLElement>
+  >;
   Flowline?: React.FunctionComponent<FlowLineProps>;
   FlowlineLabel?: React.FunctionComponent<FlowLineLabelProps>;
   onMove: (process: Process, newPosition: XYPosition) => void;
@@ -60,7 +67,7 @@ export function FlowChart({
   onConnect,
 }: FlowChartProps) {
   const container = React.useRef<HTMLDivElement>();
-  const processesRef = React.useRef<HTMLElement[]>([]);
+  const processesRef = React.useRef<{ [pid: string]: HTMLElement }>({});
 
   const [, drop] = useDrop<DnDFlowchartHandle, unknown, unknown>({
     accept: PROCESS_HANDLE_DND_TYPE,
@@ -82,19 +89,65 @@ export function FlowChart({
           : { x: 0, y: 0 },
       );
     },
-    // collect: (mon: DropTargetMonitor) => ({
-    //   isOver: mon.isOver(),
-    //   canDrop: mon.canDrop(),
-    // }),
   });
 
-  const [processesPosition, setProcessesPosition] = React.useState<
-    XYPosition[]
-  >([]);
+  const [internalProcesses, setInternalProcesses] = React.useState<{
+    [pid: string]: Process;
+  }>(processes.reduce((o, p) => ({ ...o, [p.id]: p }), {}));
 
   React.useEffect(() => {
-    setProcessesPosition(processes.map(process => process.position));
+    setInternalProcesses(processes.reduce((o, p) => ({ ...o, [p.id]: p }), {}));
   }, [processes]);
+
+  // Tricking the rendering to build flowline after the first render (onReady like move)
+  const [flows, setFlows] = React.useState<JSX.Element[][]>([]);
+  React.useEffect(() => {
+    const connections = Object.values(internalProcesses).reduce<Connection[]>(
+      (o, process) => {
+        const couples = process.connections.map(flow => ({
+          startProcess: process,
+          endProcess: internalProcesses[flow.connectedTo],
+          flow,
+        }));
+        return [...o, ...couples];
+      },
+      [],
+    );
+
+    // Grouping connections using the same waypoint (back and forth)
+    const groupedConnections = Object.values(
+      connections.reduce<{
+        [coupleId: string]: Connection[];
+      }>((o, c) => {
+        const coupleId1 = c.startProcess.id + c.endProcess.id;
+        const coupleId2 = c.endProcess.id + c.startProcess.id;
+        if (o[coupleId1] != null) {
+          return { ...o, [coupleId1]: [...o[coupleId1], c] };
+        } else if (o[coupleId2] != null) {
+          return { ...o, [coupleId2]: [...o[coupleId2], c] };
+        } else {
+          return { ...o, [coupleId1]: [c] };
+        }
+      }, {}),
+    );
+
+    // Making flowline from groups
+    const flowLines = groupedConnections.map(group =>
+      group.map((c, i, g) => {
+        return (
+          <Flowline
+            key={c.flow.id}
+            startProcessElement={processesRef.current[c.startProcess.id]}
+            endProcessElement={processesRef.current[c.endProcess.id]}
+            positionOffset={(i + 1) / (g.length + 1)}
+          >
+            <FlowlineLabel id={c.flow.id} label={c.flow.id} />
+          </Flowline>
+        );
+      }),
+    );
+    setFlows(flowLines);
+  }, [internalProcesses]);
 
   return (
     <Toolbar className={flowChartStyle}>
@@ -108,44 +161,26 @@ export function FlowChart({
           }
         }}
       >
-        {processes.map((process, index) =>
-          process.attachedTo.map(flow => (
-            <Flowline
-              key={process.id + flow + index}
-              startProcess={processesRef.current[index]}
-              startProcessPosition={
-                processesPosition[index] || process.position
-              }
-              endProcess={
-                processesRef.current[processes.findIndex(p => p.id === flow)]
-              }
-              endProcessPosition={
-                processesPosition[
-                  processes.findIndex(process => process.id === flow)
-                ] || processes.find(process => process.id === flow)?.position
-              }
-            >
-              <FlowlineLabel id={process.id + flow} label={process.id + flow} />
-            </Flowline>
-          )),
-        )}
-        {processes.map((process, index) => (
+        {flows}
+        {processes.map(process => (
           <Process
             key={process.id + JSON.stringify(process.position)}
             process={process}
             onMove={position =>
-              setProcessesPosition(os =>
-                u(os, os => {
-                  os[processes.findIndex(p => p.id === process.id)] = position;
-                  return os;
-                }),
-              )
+              setInternalProcesses(op => ({
+                ...op,
+                [process.id]: { ...op[process.id], position },
+              }))
             }
             onMoveEnd={position => onMove(process, position)}
             onConnect={(sourceProcess, flowId) => {
               onConnect(sourceProcess, process, flowId);
             }}
-            onReady={ref => (processesRef.current[index] = ref)}
+            ref={ref => {
+              if (ref != null) {
+                processesRef.current[process.id] = ref;
+              }
+            }}
           />
         ))}
       </Toolbar.Content>

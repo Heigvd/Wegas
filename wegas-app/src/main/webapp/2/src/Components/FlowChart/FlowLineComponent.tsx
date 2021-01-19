@@ -1,11 +1,19 @@
+import { css } from 'emotion';
 import * as React from 'react';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
 
+const childrenContainerStyle = css({
+  position: 'absolute',
+  zIndex: 1,
+  ':hover': {
+    zIndex: 10,
+  },
+});
+
 export interface FlowLineProps {
-  startProcess?: HTMLElement;
-  startProcessPosition: XYPosition;
-  endProcess?: HTMLElement;
-  endProcessPosition: XYPosition;
+  startProcessElement?: HTMLElement;
+  endProcessElement?: HTMLElement;
+  positionOffset?: number;
 }
 
 interface Values {
@@ -30,20 +38,25 @@ interface AxeValues {
 type Axe = keyof AxeValues;
 
 export function FlowLineComponent({
-  startProcess,
-  startProcessPosition,
-  endProcess,
-  endProcessPosition,
+  startProcessElement,
+  endProcessElement,
   children,
+  positionOffset = 0.5,
 }: React.PropsWithChildren<FlowLineProps>) {
-  if (startProcess == null || endProcess == null) {
+  const parentBox = startProcessElement?.parentElement?.getBoundingClientRect();
+
+  if (
+    startProcessElement == null ||
+    endProcessElement == null ||
+    parentBox == null
+  ) {
     return null;
   }
 
-  const startProcessBox = startProcess.getBoundingClientRect();
+  const startProcessBox = startProcessElement.getBoundingClientRect();
 
-  const startLeft = startProcessPosition.x;
-  const startTop = startProcessPosition.y;
+  const startLeft = startProcessBox.x - parentBox.x;
+  const startTop = startProcessBox.y - parentBox.y;
   const startWidth = startProcessBox.width;
   const startHeight = startProcessBox.height;
 
@@ -64,10 +77,10 @@ export function FlowLineComponent({
     y: startTop + startHeight,
   };
 
-  const endProcessBox = endProcess.getBoundingClientRect();
+  const endProcessBox = endProcessElement.getBoundingClientRect();
 
-  const endLeft = endProcessPosition.x;
-  const endTop = endProcessPosition.y;
+  const endLeft = endProcessBox.x - parentBox.x;
+  const endTop = endProcessBox.y - parentBox.y;
   const endWidth = endProcessBox.width;
   const endHeight = endProcessBox.height;
 
@@ -124,6 +137,11 @@ export function FlowLineComponent({
   const canvasHeightTop = startPointTop.y - endPointBottom.y;
   const canvasHeightBottom = endPointTop.y - startPointBottom.y;
 
+  const canvasVerticalOffset =
+    Math.min(startHeight, endHeight) * (positionOffset - 0.5);
+  const canvasHorizontalOffset =
+    Math.min(startWidth, endWidth) * (positionOffset - 0.5);
+
   const axeValues: AxeValues = {
     LEFT: {
       arrowStart: {
@@ -138,7 +156,7 @@ export function FlowLineComponent({
       arrowLeftCorner: { x: endPointRight.x + 5, y: endPointRight.y - 5 },
       arrowRightCorner: { x: endPointRight.x + 5, y: endPointRight.y + 5 },
       canvasLeft: endPointRight.x,
-      canvasTop: canvasTopHorizontal,
+      canvasTop: canvasTopHorizontal + canvasVerticalOffset,
       canvasWidth: canvasWidthLeft,
       canvasHeight: canvasHeightHorizontal,
     },
@@ -151,7 +169,7 @@ export function FlowLineComponent({
       arrowLength: topArrowLength,
       arrowLeftCorner: { x: endPointRight.x + 5, y: endPointRight.y + 5 },
       arrowRightCorner: { x: endPointRight.x - 5, y: endPointRight.y + 5 },
-      canvasLeft: canvasLeftVertical,
+      canvasLeft: canvasLeftVertical + canvasHorizontalOffset,
       canvasTop: endPointBottom.y,
       canvasWidth: canvasWidthVertical,
       canvasHeight: canvasHeightTop,
@@ -169,7 +187,7 @@ export function FlowLineComponent({
       arrowLeftCorner: { x: endPointRight.x - 5, y: endPointRight.y + 5 },
       arrowRightCorner: { x: endPointRight.x - 5, y: endPointRight.y - 5 },
       canvasLeft: startPointRight.x,
-      canvasTop: canvasTopHorizontal,
+      canvasTop: canvasTopHorizontal + canvasVerticalOffset,
       canvasWidth: canvasWidthRight,
       canvasHeight: canvasHeightHorizontal,
     },
@@ -182,7 +200,7 @@ export function FlowLineComponent({
       arrowLength: bottomArrowLength,
       arrowLeftCorner: { x: endPointRight.x + 5, y: endPointRight.y - 5 },
       arrowRightCorner: { x: endPointRight.x - 5, y: endPointRight.y - 5 },
-      canvasLeft: canvasLeftVertical,
+      canvasLeft: canvasLeftVertical + canvasHorizontalOffset,
       canvasTop: startPointBottom.y,
       canvasWidth: canvasWidthVertical,
       canvasHeight: canvasHeightBottom,
@@ -196,6 +214,7 @@ export function FlowLineComponent({
     <>
       <svg
         style={{
+          zIndex: 0,
           position: 'absolute',
           left: values.canvasLeft,
           top: values.canvasTop,
@@ -220,22 +239,30 @@ export function FlowLineComponent({
           y1={values.arrowStart.y}
           x2={values.arrowEnd.x}
           y2={values.arrowEnd.y}
-          style={{ stroke: 'rgb(255,0,0)', strokeWidth: 2 }}
+          style={{ stroke: 'rgb(0,0,0)', strokeWidth: 2 }}
           markerEnd="url(#arrowhead)"
         />
       </svg>
       <div
-        style={{
-          position: 'absolute',
-          left: values.canvasLeft,
-          top: values.canvasTop,
-          width: values.canvasWidth,
-          height: values.canvasHeight,
-          display: 'flex',
-          overflow: 'visible',
-          justifyContent: 'center',
-          alignItems: 'center',
+        ref={ref => {
+          if (ref != null) {
+            const labelBox = ref.getBoundingClientRect();
+            ref.style.setProperty(
+              'left',
+              values.canvasLeft +
+                (values.canvasWidth - labelBox.width) / 2 +
+                'px',
+            );
+            ref.style.setProperty(
+              'top',
+              values.canvasTop +
+                (values.canvasHeight - labelBox.height) / 2 +
+                'px',
+            );
+          }
         }}
+        className={childrenContainerStyle}
+        onClick={e => (e.target as HTMLDivElement).focus()}
       >
         {children}
       </div>
