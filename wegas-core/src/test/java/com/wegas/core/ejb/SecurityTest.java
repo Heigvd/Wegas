@@ -8,6 +8,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.exception.client.WegasAccessDenied;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
@@ -37,9 +38,29 @@ public class SecurityTest extends AbstractArquillianTest {
     }
 
     @Test(expected = EJBException.class)
-    public void testPrivilegeEscalation_autoGrantTrainer() throws WegasNoResultException, Throwable {
+    public void testPrivilegeEscalation_autoGrantTrainer() throws WegasNoResultException {
         WegasUser guestLogin = guestLogin();
         userFacade.addRole(guestLogin.getId(), roleFacade.findByName("Trainer").getId());
+    }
+
+    /**
+     * A trainer join its own game as player. Then, as admin goin the game as player. Trainer tries
+     * to copy admin membership
+     *
+     * @throws WegasNoResultException
+     */
+    @Test(expected = WegasAccessDenied.class)
+    public void testPrivilegeEscalation_stealTeamMateRoles() throws WegasNoResultException {
+        login(admin);
+        Player adminPlayer = gameFacade.joinTeam(team.getId(), admin.getId(), null);
+
+        login(user);
+
+        String script = "var admin = gameModel.getPlayers().stream().filter(function(p){return p.getUser() && p.getUser().getId() == 1}).findAny().get();\n"
+            + "self.getUser().setRoles(admin.getUser().getRoles());\n";
+
+        Object eval = scriptFacade.eval(player, new Script("JavaScript", script), null);
+        logger.error("Eval: {}", eval);
     }
 
     @Test(expected = WegasScriptException.class)
@@ -91,7 +112,7 @@ public class SecurityTest extends AbstractArquillianTest {
         User currentUser = userFacade.getCurrentUser();
     }
 
-    @Test(expected = EJBException.class)
+    @Test(expected = ArquillianProxyException.class)
     public void grantGameRightToPlayer() {
         login(user);
         userFacade.addTrainerToGame(user.getId(), game.getId());
@@ -164,8 +185,8 @@ public class SecurityTest extends AbstractArquillianTest {
     @Test(expected = WegasScriptException.class)
     public void testJavaNio() {
         login(user);
-        String script = "var dir = java.nio.file.Paths.get('.');\n" +
-"java.nio.file.Files.list(dir).map(function(p) { return p.toAbsolutePath().toString() }).collect(java.util.stream.Collectors.joining(\";\"));";
+        String script = "var dir = java.nio.file.Paths.get('.');\n"
+            + "java.nio.file.Files.list(dir).map(function(p) { return p.toAbsolutePath().toString() }).collect(java.util.stream.Collectors.joining(\";\"));";
         Object result = scriptFacade.eval(player, new Script("JavaScript", script), null);
 
         logger.error("result: {}", result);
