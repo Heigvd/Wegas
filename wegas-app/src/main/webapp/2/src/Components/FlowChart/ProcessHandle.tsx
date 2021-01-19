@@ -6,10 +6,10 @@ import { FlowLine, Process } from './FlowChart';
 
 export const PROCESS_HANDLE_DND_TYPE = 'DND_PROCESS_HANDLE';
 
-export interface DnDFlowchartHandle {
+export interface DnDFlowchartHandle<F extends FlowLine, P extends Process<F>> {
   type: typeof PROCESS_HANDLE_DND_TYPE;
-  sourceProcess: Process;
-  flow?: FlowLine;
+  sourceProcess: P;
+  flowline?: F;
 }
 
 export const HANDLE_SIDE = 20;
@@ -22,20 +22,30 @@ const flowHandleStyle = css({
   borderRadius: `${HANDLE_SIDE / 2}px`,
   backgroundColor: themeVar.Common.colors.WarningColor,
   opacity: 0.4,
+  cursor: 'move',
   ':hover': { opacity: 1 },
 });
 
-interface ProcessHandleProps {
-  sourceProcess: Process;
-  flow?: FlowLine;
+export interface ProcessHandleProps<F extends FlowLine, P extends Process<F>> {
+  /**
+   * the process from which the flowline is comming
+   */
+  sourceProcess: P;
+  /**
+   * the flowline object to drag (if already existing)
+   */
+  flowline?: F;
 }
 
-export function ProcessHandle({ sourceProcess, flow }: ProcessHandleProps) {
-  const [, drag] = useDrag<DnDFlowchartHandle, unknown, unknown>({
+export function DefaultProcessHandle<F extends FlowLine, P extends Process<F>>({
+  sourceProcess,
+  flowline,
+}: ProcessHandleProps<F, P>) {
+  const [, drag] = useDrag<DnDFlowchartHandle<F, P>, unknown, unknown>({
     item: {
       type: PROCESS_HANDLE_DND_TYPE,
       sourceProcess,
-      flow,
+      flowline,
     },
   });
 
@@ -47,6 +57,7 @@ export function ProcessHandle({ sourceProcess, flow }: ProcessHandleProps) {
         top: `calc(50% - ${HANDLE_SIDE / 2}px)`,
       }}
       className={flowHandleStyle}
+      data-nodrag={true}
     />
   );
 }

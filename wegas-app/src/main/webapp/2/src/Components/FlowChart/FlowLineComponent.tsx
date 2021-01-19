@@ -1,8 +1,9 @@
 import { css } from 'emotion';
 import * as React from 'react';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
+import { themeVar } from '../Style/ThemeVars';
 import { FlowLine, Process } from './FlowChart';
-import { ProcessHandle } from './ProcessHandle';
+import { DefaultProcessHandle, ProcessHandleProps } from './ProcessHandle';
 
 const childrenContainerStyle = css({
   position: 'absolute',
@@ -12,12 +13,41 @@ const childrenContainerStyle = css({
   },
 });
 
-export interface FlowLineProps {
+export interface FlowLineProps<F extends FlowLine, P extends Process<F>> {
+  /**
+   * the DOM element from where the flowline starts
+   */
   startProcessElement?: HTMLElement;
+  /**
+   * the DOM element where the flowline ends
+   */
   endProcessElement?: HTMLElement;
-  startProcess: Process;
-  flowline: FlowLine;
+  /**
+   * the process object from where the flowline starts
+   */
+  startProcess: P;
+  /**
+   * the flowline object to display
+   */
+  flowline: F;
+  /**
+   * the offset to apply on the flowline
+   * allows to display multiple parralel flowlines
+   */
   positionOffset?: number;
+  /**
+   * a handle component that can be dragged to connect the flowline to other (existing or new) processes
+   */
+  ProcessHandle?: React.FunctionComponent<ProcessHandleProps<F, P>>;
+}
+
+interface CustomFlowLineProps<F extends FlowLine, P extends Process<F>>
+  extends FlowLineProps<F, P> {
+  /**
+   * the children component that recieve the flowline object
+   * allow to customize easily the flowline label style
+   */
+  children: (flowline: F) => React.ReactNode;
 }
 
 interface Values {
@@ -41,14 +71,18 @@ interface AxeValues {
 
 type Axe = keyof AxeValues;
 
-export function FlowLineComponent({
+export function CustomFlowLineComponent<
+  F extends FlowLine,
+  P extends Process<F>
+>({
   startProcessElement,
   endProcessElement,
   startProcess,
   flowline,
-  children,
   positionOffset = 0.5,
-}: React.PropsWithChildren<FlowLineProps>) {
+  ProcessHandle = DefaultProcessHandle,
+  children,
+}: CustomFlowLineProps<F, P>) {
   const parentBox = startProcessElement?.parentElement?.getBoundingClientRect();
 
   if (
@@ -270,9 +304,33 @@ export function FlowLineComponent({
         className={childrenContainerStyle}
         onClick={e => (e.target as HTMLDivElement).focus()}
       >
-        {children}
-        <ProcessHandle sourceProcess={startProcess} flow={flowline} />
+        {children(flowline)}
+        <ProcessHandle sourceProcess={startProcess} flowline={flowline} />
       </div>
     </>
+  );
+}
+
+const LABEL_WIDTH = 80;
+const LABEL_HEIGHT = 35;
+
+const flowLineLabelStyle = css({
+  minWidth: `${LABEL_WIDTH}px`,
+  minHeight: `${LABEL_HEIGHT}px`,
+  backgroundColor: themeVar.Common.colors.HoverColor,
+  borderRadius: '10px',
+  boxShadow: `5px 5px 5px ${themeVar.Common.colors.HeaderColor}`,
+  userSelect: 'none',
+  overflow: 'show',
+});
+
+export function DefaultFlowLineComponent<
+  F extends FlowLine,
+  P extends Process<F>
+>(props: FlowLineProps<F, P>) {
+  return (
+    <CustomFlowLineComponent {...props}>
+      {flowline => <div className={flowLineLabelStyle}>{flowline.id}</div>}
+    </CustomFlowLineComponent>
   );
 }

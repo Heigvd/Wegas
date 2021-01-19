@@ -1,11 +1,15 @@
 import { cx } from 'emotion';
 import * as React from 'react';
-import { FlowChart, Process } from '../Components/FlowChart/FlowChart';
+import {
+  FlowChart,
+  FlowLine,
+  Process,
+} from '../Components/FlowChart/FlowChart';
 import { flex, flexColumn } from '../css/classes';
 import u from 'immer';
 import { wlog } from '../Helper/wegaslog';
 
-const testProcesses: Process[] = [
+const testProcesses: Process<FlowLine>[] = [
   {
     id: '1',
     position: { x: 50, y: 50 },

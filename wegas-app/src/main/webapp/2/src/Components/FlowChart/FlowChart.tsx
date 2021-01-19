@@ -2,9 +2,8 @@ import * as React from 'react';
 import { css } from 'emotion';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
 import { Toolbar } from '../Toolbar';
-import { FlowLineComponent, FlowLineProps } from './FlowLineComponent';
-import { ProcessProps, ProcessComponent } from './ProcessComponent';
-import { FlowLineLabelComponent, FlowLineLabelProps } from './FlowLineLabel';
+import { DefaultFlowLineComponent, FlowLineProps } from './FlowLineComponent';
+import { ProcessProps, DefaultProcessComponent } from './ProcessComponent';
 import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './ProcessHandle';
 import { useDrop } from 'react-dnd';
 
@@ -15,68 +14,95 @@ const flowChartStyle = css({
 });
 
 export interface FlowLine {
-  id?: string;
+  /**
+   * the id of the flowline
+   */
+  id: string;
+  /**
+   * the id of the target process
+   */
   connectedTo: string;
 }
 
-export interface Process {
+export interface Process<F extends FlowLine> {
+  /**
+   * the id of the process
+   */
   id: string;
+  /**
+   * the position of the process
+   */
   position: XYPosition;
-  connections: FlowLine[];
+  /**
+   * the connections to other processes
+   */
+  connections: F[];
 }
 
-export interface Processes {
-  [id: string]: Process;
+interface Connection<F extends FlowLine, P extends Process<F>> {
+  /**
+   * the source process
+   */
+  startProcess: P;
+  /**
+   * the target process
+   */
+  endProcess: P;
+  /**
+   * the flowline object use for the connection
+   */
+  flowline: F;
 }
 
-export interface FlowLines {
-  [id: string]: FlowLine;
-}
-
-interface Connection {
-  startProcess: Process;
-  endProcess: Process;
-  flow: FlowLine;
-}
-
-interface FlowChartProps {
+interface FlowChartProps<F extends FlowLine, P extends Process<F>> {
+  /**
+   * the title of the chart
+   */
   title: React.ReactNode;
-  processes: Process[];
-  Process?: React.ForwardRefExoticComponent<
-    ProcessProps & React.RefAttributes<HTMLElement>
-  >;
-  Flowline?: React.FunctionComponent<FlowLineProps>;
-  FlowlineLabel?: React.FunctionComponent<FlowLineLabelProps>;
-  onMove: (process: Process, newPosition: XYPosition) => void;
-  onNew: (
-    sourceProcess: Process,
-    newPosition: XYPosition,
-    flow?: FlowLine,
-  ) => void;
-  onConnect: (
-    sourceProcess: Process,
-    targetProcess: Process,
-    flow?: FlowLine,
-  ) => void;
+  /**
+   * the processes in the chart
+   */
+  processes: P[];
+  /**
+   * the component that displays processes
+   */
+  Process?: React.FunctionComponent<ProcessProps<F, P>>;
+  /**
+   * the component that displays flowlines
+   */
+  Flowline?: React.FunctionComponent<FlowLineProps<F, P>>;
+  /**
+   * a callback triggered when a component has been moved
+   */
+  onMove: (process: P, newPosition: XYPosition) => void;
+  /**
+   * a callback triggered when a new process is requested
+   * @example dropping a handle on the main board
+   */
+  onNew: (sourceProcess: P, newPosition: XYPosition, flowline?: F) => void;
+  /**
+   * a callback triggered when a flowline is requested
+   * @example dropping a handle on a process
+   */
+  onConnect: (sourceProcess: P, targetProcess: P, flowline?: F) => void;
 }
 
-export function FlowChart({
+export function FlowChart<F extends FlowLine, P extends Process<F>>({
   title,
   processes,
-  Process = ProcessComponent,
-  Flowline = FlowLineComponent,
-  FlowlineLabel = FlowLineLabelComponent,
+  Process = DefaultProcessComponent,
+  Flowline = DefaultFlowLineComponent,
   onMove,
   onNew,
   onConnect,
-}: FlowChartProps) {
+}: FlowChartProps<F, P>) {
   const container = React.useRef<HTMLDivElement>();
   const processesRef = React.useRef<{ [pid: string]: HTMLElement }>({});
 
-  const [, drop] = useDrop<DnDFlowchartHandle, unknown, unknown>({
+  const [, drop] = useDrop<DnDFlowchartHandle<F, P>, unknown, unknown>({
     accept: PROCESS_HANDLE_DND_TYPE,
     canDrop: (_item, mon) => mon.isOver({ shallow: true }),
-    drop: ({ sourceProcess, flow }, mon) => {
+    drop: ({ sourceProcess, flowline }, mon) => {
       const newX = mon.getClientOffset()?.x;
       const newY = mon.getClientOffset()?.y;
 
@@ -91,13 +117,13 @@ export function FlowChart({
               y: newY - containerY,
             }
           : { x: 0, y: 0 },
-        flow,
+        flowline,
       );
     },
   });
 
   const [internalProcesses, setInternalProcesses] = React.useState<{
-    [pid: string]: Process;
+    [pid: string]: P;
   }>(processes.reduce((o, p) => ({ ...o, [p.id]: p }), {}));
 
   React.useEffect(() => {
@@ -107,22 +133,21 @@ export function FlowChart({
   // Tricking the rendering to build flowline after the first render (onReady like move)
   const [flows, setFlows] = React.useState<JSX.Element[][]>([]);
   React.useEffect(() => {
-    const connections = Object.values(internalProcesses).reduce<Connection[]>(
-      (o, process) => {
-        const couples = process.connections.map(flow => ({
-          startProcess: process,
-          endProcess: internalProcesses[flow.connectedTo],
-          flow,
-        }));
-        return [...o, ...couples];
-      },
-      [],
-    );
+    const connections = Object.values(internalProcesses).reduce<
+      Connection<F, P>[]
+    >((o, process) => {
+      const couples = process.connections.map(flowline => ({
+        startProcess: process,
+        endProcess: internalProcesses[flowline.connectedTo],
+        flowline,
+      }));
+      return [...o, ...couples];
+    }, []);
 
     // Grouping connections using the same waypoint (back and forth)
     const groupedConnections = Object.values(
       connections.reduce<{
-        [coupleId: string]: Connection[];
+        [coupleId: string]: Connection<F, P>[];
       }>((o, c) => {
         const coupleId1 = c.startProcess.id + c.endProcess.id;
         const coupleId2 = c.endProcess.id + c.startProcess.id;
@@ -141,15 +166,13 @@ export function FlowChart({
       group.map((c, i, g) => {
         return (
           <Flowline
-            key={c.flow.id}
+            key={c.flowline.id}
             startProcessElement={processesRef.current[c.startProcess.id]}
             endProcessElement={processesRef.current[c.endProcess.id]}
             startProcess={c.startProcess}
-            flowline={c.flow}
+            flowline={c.flowline}
             positionOffset={(i + 1) / (g.length + 1)}
-          >
-            <FlowlineLabel id={c.flow.id} label={c.flow.id} />
-          </Flowline>
+          />
         );
       }),
     );
@@ -173,6 +196,9 @@ export function FlowChart({
           <Process
             key={process.id + JSON.stringify(process.position)}
             process={process}
+            onReady={ref => {
+              processesRef.current[process.id] = ref;
+            }}
             onMove={position =>
               setInternalProcesses(op => ({
                 ...op,
@@ -180,13 +206,8 @@ export function FlowChart({
               }))
             }
             onMoveEnd={position => onMove(process, position)}
-            onConnect={(sourceProcess, flow) => {
-              onConnect(sourceProcess, process, flow);
-            }}
-            ref={ref => {
-              if (ref != null) {
-                processesRef.current[process.id] = ref;
-              }
+            onConnect={(sourceProcess, flowline) => {
+              onConnect(sourceProcess, process, flowline);
             }}
           />
         ))}
