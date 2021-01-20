@@ -68,7 +68,7 @@ const containerStyle = css({
   position: 'relative',
 });
 const subMenuContainer = css({
-  color: themeVar.Common.colors.TextColor,
+  color: themeVar.Common.colors.DarkTextColor,
   backgroundColor: themeVar.Common.colors.BackgroundColor,
   position: 'absolute',
   zIndex: 10000,

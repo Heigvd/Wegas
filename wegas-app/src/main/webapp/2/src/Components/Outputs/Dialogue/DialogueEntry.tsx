@@ -15,9 +15,9 @@ import { WaitingLoader } from './WaitingLoader';
 
 const dialogueEntryStyle = (player?: boolean) =>
   css({
-    width: '85%',
+    width: '80%',
     margin: '5px',
-    ...(player ? { marginLeft: '20%' } : { marginRight: '20%' }),
+    ...(player ? { marginLeft: '18%' } : { marginRight: '18%' }),
   });
 
 const textContainerStyle = (player?: boolean) =>
@@ -27,8 +27,8 @@ const textContainerStyle = (player?: boolean) =>
       ? themeVar.Common.colors.PrimaryColor
       : themeVar.Common.colors.HeaderColor,
     color: player
-    ? themeVar.Common.colors.SecondaryTextColor
-    : themeVar.Common.colors.TextColor,
+    ? themeVar.Common.colors.LightTextColor
+    : themeVar.Common.colors.DarkTextColor,
     borderRadius: themeVar.Common.dimensions.BorderRadius,
     padding: '5px 10px',
     overflow: 'hidden',

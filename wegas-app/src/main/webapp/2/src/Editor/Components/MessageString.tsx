@@ -54,7 +54,7 @@ function colorByType(type?: MessageStringStyle) {
     }
     case 'normal':
     default: {
-      return themeVar.Common.colors.TextColor;
+      return themeVar.Common.colors.DarkTextColor;
     }
   }
 }

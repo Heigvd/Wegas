@@ -9,52 +9,56 @@ const entityChooser = css({
 });
 
 const labelList = css({
-  maxWidth: '20%',
-  minWidth: '20%',
+  minWidth: '180px',
+  maxWidth: '180px',
   padding: '10px',
 });
 
 const labelStyle = cx(
   css({
-    backgroundColor: themeVar.Common.colors.HeaderColor,
+    backgroundColor: themeVar.Common.colors.PrimaryColor,
     padding: '10px',
-    boxShadow: `-2px 2px 2px ${themeVar.Common.colors.HeaderColor}`,
+    boxShadow: `2px 2px 6px rgba(0, 0, 0, 0.2)`,
+    color: themeVar.Common.colors.LightTextColor,
+    borderRadius: themeVar.Common.dimensions.BorderRadius,
   }),
   grow,
 );
 
-const labelArrow = css({
+/* const labelArrow = css({
   borderTop: '20px solid transparent',
   borderBottom: '20px solid transparent',
   borderLeft: `20px solid ${themeVar.Common.colors.HeaderColor}`,
-});
+}); */
 
 const labelContainer = css({
   marginBottom: '10px',
   ':hover': {
     [`&>.${labelStyle}`]: {
-      backgroundColor: themeVar.Common.colors.DisabledColor,
+      backgroundColor: themeVar.Common.colors.ActiveColor,
+      cursor: 'pointer',
     },
-    [`&>.${labelArrow}`]: {
+    /* [`&>.${labelArrow}`]: {
       borderLeft: `20px solid ${themeVar.Common.colors.DisabledColor}`,
-    },
+    }, */
   },
 });
 
 const activeLabel = css({
   [`&>.${labelStyle}`]: {
-    backgroundColor: themeVar.Common.colors.PrimaryColor,
+    backgroundColor: themeVar.Common.colors.ActiveColor,
+    boxShadow: 'inset 0 0 10px rgba(0, 0, 0, 0.4)'
   },
-  [`&>.${labelArrow}`]: {
+  /* [`&>.${labelArrow}`]: {
     borderLeft: `20px solid ${themeVar.Common.colors.PrimaryColor}`,
-  },
+  }, */
   ':hover': {
     [`&>.${labelStyle}`]: {
-      backgroundColor: themeVar.Common.colors.ActiveColor,
+      backgroundColor: themeVar.Common.colors.PrimaryColor,
     },
-    [`&>.${labelArrow}`]: {
+   /*  [`&>.${labelArrow}`]: {
       borderLeft: `20px solid ${themeVar.Common.colors.ActiveColor}`,
-    },
+    }, */
   },
 });
 
@@ -96,7 +100,7 @@ export function EntityChooser<E extends IAbstractEntity>({
             }}
           >
             <div className={labelStyle}>{entityLabel(e)}</div>
-            <div className={labelArrow} />
+            {/* <div className={labelArrow} /> */}
           </div>
         ))}
       </div>

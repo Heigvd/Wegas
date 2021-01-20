@@ -22,7 +22,7 @@ const numberBoxStyle = css({
 
 const numberBoxSquareStyle = css({
   borderColor: themeVar.Common.colors.PrimaryColor,
-  color: themeVar.Common.colors.TextColor,
+  color: themeVar.Common.colors.DarkTextColor,
   borderStyle: 'solid',
   borderRadius: '2px',
   width: '1.5em',
@@ -34,7 +34,7 @@ const numberBoxSquareStyle = css({
 
   ['&.active']: {
     backgroundColor: themeVar.Common.colors.PrimaryColor,
-    color: themeVar.Common.colors.SecondaryTextColor,
+    color: themeVar.Common.colors.LightTextColor,
   },
 
   ['&.clickable']: {

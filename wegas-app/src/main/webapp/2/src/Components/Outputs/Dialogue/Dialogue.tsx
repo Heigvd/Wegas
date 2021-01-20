@@ -37,6 +37,13 @@ const choicePannelStyle = css({
 
 const dialogueDisplayStyle = css({
   border: 'none',
+  boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.1)',
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
+});
+
+const dialogueHistoryStyle = css({
+  maxHeight: '40vh',
+  overflow: 'auto',
 });
 
 interface DialogueDisplayProps {
@@ -128,7 +135,7 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
         cx(dialogueDisplayStyle, flex, flexColumn, grow) + ' wegas wegas-dialog'
       }
     >
-      <div className={cx(dialogEntryStyle, flex, flexColumn, grow)}>
+      <div className={cx(dialogEntryStyle, dialogueHistoryStyle, flex, flexColumn, grow)}>
         {renderHistory()}
       </div>
       <div

@@ -163,7 +163,7 @@ export const defaultPadding = cx(
 
 // Components
 export const button = css({
-  color: themeVar.Common.colors.TextColor,
+  color: themeVar.Common.colors.DarkTextColor,
   ':hover,:focus': {
     color: themeVar.Common.colors.HoverColor,
     outline: 'none',
@@ -187,7 +187,7 @@ export const searchSelection = css({
 
 // Layout base styles
 export const layoutStyle = css({
-  color: themeVar.Common.colors.TextColor,
+  color: themeVar.Common.colors.DarkTextColor,
   backgroundColor: themeVar.Common.colors.BackgroundColor,
   fontFamily: themeVar.Common.others.TextFont1,
 });

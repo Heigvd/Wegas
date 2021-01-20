@@ -20,7 +20,7 @@ const togglerStyle = css({
   borderRadius: '24px',
   borderStyle: 'solid',
   borderWidth: '2px',
-  color: themeVar.Common.colors.SecondaryTextColor,
+  color: themeVar.Common.colors.LightTextColor,
   borderColor: themeVar.Common.colors.PrimaryColor,
   backgroundColor: themeVar.Common.colors.ErrorColor,
   cursor: 'pointer',
