@@ -594,7 +594,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             } else {
                 perm = this.getPlayer().getAssociatedWritePermission();
             }
-        } else if (this.gameModelScope != null) {
+        } else if (this.getGameModel() != null) {
+            // GameModel is set only for GameModel scoped instances
             perm = this.getGameModel().getAssociatedReadPermission();
         } else {
             return this.getDefaultDescriptor().getGameModel().getRequieredReadPermission();
