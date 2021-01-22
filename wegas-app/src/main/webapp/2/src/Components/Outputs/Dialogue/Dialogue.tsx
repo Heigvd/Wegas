@@ -6,7 +6,6 @@ import {
   SDialogueTransition,
 } from 'wegas-ts-api';
 import {
-  autoScroll,
   flex,
   flexColumn,
   flexDistribute,
