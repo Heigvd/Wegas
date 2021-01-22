@@ -128,15 +128,15 @@ const childrenContainer = css({
     fontStyle: 'italic',
   },
 });
-const toggleStyle = css({
+export const toggleTreeStyle = css({
   padding: '0 0.3em',
   width: '1em',
   cursor: 'pointer',
 });
 
-const noToggleStyle = css({
+export const noToggleTreeStyle = css({
   padding: '0 0.3em',
-  width: '1em',
+  width: '0.875em',
 });
 const isDraggingStyle = css({
   display: 'none',
@@ -258,7 +258,7 @@ class TreeNode extends React.Component<
                         {!noToggle &&
                           (isNode ? (
                             <div
-                              className={toggleStyle}
+                              className={toggleTreeStyle}
                               onClick={this.toggleExpand}
                             >
                               <FontAwesome
@@ -266,7 +266,7 @@ class TreeNode extends React.Component<
                               />
                             </div>
                           ) : (
-                            <div className={noToggleStyle}></div>
+                            <div className={noToggleTreeStyle}></div>
                           ))}
 
                         {header}

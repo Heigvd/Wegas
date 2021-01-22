@@ -19,10 +19,11 @@ import {
 import { classNameOrEmpty } from '../../../../Helper/className';
 import { deepDifferent } from '../../../../Components/Hooks/storeHookFactory';
 import { omit } from 'lodash-es';
+import { noToggleTreeStyle, toggleTreeStyle } from '.';
 import { Button } from '../../../../Components/Inputs/Buttons/Button';
 
 const treeNodeStyle = cx(flex, flexColumn, css({ marginTop: '1px' }));
-const childrenStyle = css({ marginLeft: '2em' });
+const childrenStyle = css({ marginLeft: '1em' });
 
 export interface NodeBasicInfo<T> {
   parent?: T;
@@ -506,13 +507,16 @@ export function TreeNode<T>({
       >
         {!noTitle && (
           <div ref={preview} className={cx(flex, relative, itemCenter)}>
-            {children != null && (
+            {children != null ? (
               <div>
                 <Button
+                  className={toggleTreeStyle}
                   icon={expanded ? 'caret-down' : 'caret-right'}
                   onClick={() => setExpanded(e => !e)}
                 />
               </div>
+            ) : (
+              <div className={noToggleTreeStyle}></div>
             )}
             {title != null && <div>{title}</div>}
           </div>

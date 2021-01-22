@@ -7,6 +7,7 @@ import {
   itemCenter,
   expandBoth,
   globalSelection,
+  componentMarginLeft,
 } from '../../../css/classes';
 import { cx, css } from 'emotion';
 import { FontAwesome, IconComp, Icon, Icons } from '../Views/FontAwesome';
@@ -48,7 +49,8 @@ import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { State } from '../../../data/Reducer/reducers';
 
 const bulletCSS = {
-  width: '1em',
+  width: '1.25em',
+  minWidth: '1.25em',
 };
 
 const CONTROLS_CLASSNAME = 'page-index-item-controls';
@@ -174,7 +176,7 @@ function IndexItemAdder({
           {
             label: (
               <div>
-                <FontAwesome icon="file" style={bulletCSS} />
+                <FontAwesome icon={['far', 'file']} style={bulletCSS} />
                 New page
               </div>
             ),
@@ -392,7 +394,7 @@ function LayoutNodeTitle({
       title={tooltip}
     >
       <IconComp icon={icon} style={bulletCSS} />
-      <div className={grow}>{newTitle}</div>
+      <div className={cx(grow, componentMarginLeft)}>{newTitle}</div>
       {children}
     </div>
   );
@@ -617,7 +619,17 @@ function PageIndexTitle({
 
   return (
     <LayoutNodeTitle
-      icon={isPageItem(indexItem) ? 'file' : 'folder'}
+      icon={
+        isPageItem(indexItem)
+          ? {
+              icon: {
+                prefix: 'far',
+                iconName: 'file',
+              },
+            }
+          : 'folder'
+      }
+      // see if we can set folder-open when expanded
       title={indexItem.name}
       advancedTitle={
         indexItem.name + (isPageItem(indexItem) ? ` ${indexItem.id}` : '')

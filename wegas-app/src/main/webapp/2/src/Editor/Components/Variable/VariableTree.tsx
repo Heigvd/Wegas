@@ -32,7 +32,7 @@ import {
   globalSelection,
   localSelection,
   searchSelection,
-  componentMarginLeft,
+  componentMarginRight,
   flex,
   grow,
   flexColumn,
@@ -225,12 +225,11 @@ const headerStyle = css({
 export const nodeContentStyle = cx(
   css({
     cursor: 'pointer',
-    marginRight: '5px',
     ':hover': {
       backgroundColor: themeVar.Common.colors.HoverColor,
     },
   }),
-  componentMarginLeft,
+  componentMarginRight,
 );
 
 export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_DRAG_ITEM';
