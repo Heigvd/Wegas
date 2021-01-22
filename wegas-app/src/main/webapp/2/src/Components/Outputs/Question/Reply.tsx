@@ -13,9 +13,10 @@ import {
 } from './ChoiceContainer';
 
 const repliesContainer = css({
-  margin: '20px',
-  padding: '5px',
-  boxShadow: `0px 0px 5px ${themeVar.Common.colors.HeaderColor}`,
+  marginTop: '5px',
+  borderTop: '1px solid ' + themeVar.Common.colors.DisabledColor,
+  fontWeight: 'bold',
+  fontSize: themeVar.ComponentTitle.others.FontFamily5,
 });
 
 interface ReplyDisplayProps {

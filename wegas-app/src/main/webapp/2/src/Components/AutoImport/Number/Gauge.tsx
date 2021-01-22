@@ -118,7 +118,7 @@ export default function Gauge(props: {
           cy={end[1]}
           r="37"
           strokeWidth="20"
-          stroke={themeVar.Common.colors.MainColor}
+          stroke={themeVar.Common.colors.PrimaryColor}
           fill={themeVar.Common.colors.HeaderColor}
         />
       </svg>

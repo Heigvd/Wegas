@@ -48,8 +48,8 @@ import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
 
 const borderStyle = {
-  borderStyle: 'inset',
-  borderColor: themeVar.Common.colors.BorderColor,
+  borderStyle: 'solid',
+  borderColor: themeVar.Common.colors.HeaderColor,
   borderWidth: themeVar.Common.dimensions.BorderWidth,
   borderRadius: themeVar.Common.dimensions.BorderRadius,
 };
@@ -62,7 +62,7 @@ const colorButton = css({
 });
 
 const valueEntryStyle = css({
-  marginBottom: '10px',
+  marginBottom: '7px',
 });
 
 const valueStyle = css({

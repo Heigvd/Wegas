@@ -29,7 +29,7 @@ const dialogEntryStyle = css({
   marginBottom: '3px',
   '&>.player': {
     alignSelf: 'flex-end',
-    backgroundColor: themeVar.Common.colors.HeaderColor,
+    backgroundColor: themeVar.Common.colors.PrimaryColor,
   },
 });
 
@@ -42,7 +42,14 @@ const choicePannelStyle = css({
 });
 
 const dialogueDisplayStyle = css({
-  border: 'solid',
+  border: 'none',
+  boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.1)',
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
+});
+
+const dialogueHistoryStyle = css({
+  maxHeight: '40vh',
+  overflow: 'auto',
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,8 +165,13 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
     >
       {/* ----- dialogue history  ---------------------------------------------------------- */}
       <div
-        ref={historyDiv}
-        className={cx(dialogEntryStyle, flex, flexColumn, autoScroll, grow)}
+        className={cx(
+          dialogEntryStyle,
+          dialogueHistoryStyle,
+          flex,
+          flexColumn,
+          grow,
+        )}
       >
         {renderHistory()}
       </div>

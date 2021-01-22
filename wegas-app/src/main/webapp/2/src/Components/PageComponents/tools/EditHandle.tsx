@@ -15,7 +15,7 @@ import { Button } from '../../Inputs/Buttons/Button';
 const handleContentStyle = css({
   borderRadius: themeVar.Common.dimensions.BorderRadius,
   borderStyle: 'solid',
-  borderColor: themeVar.Common.colors.BorderColor,
+  borderColor: themeVar.Common.colors.PrimaryColor,
   backgroundColor: themeVar.Common.colors.BackgroundColor,
 });
 

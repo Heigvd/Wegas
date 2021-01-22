@@ -14,7 +14,7 @@ import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
 import { Button } from '../Buttons/Button';
 
 const newModeStyle = css({
-  borderColor: themeVar.Common.colors.MainColor,
+  borderColor: themeVar.Common.colors.PrimaryColor,
   borderRadius: themeVar.Common.dimensions.BorderRadius,
   borderWidth: themeVar.Common.dimensions.BorderWidth,
   borderStyle: 'solid',

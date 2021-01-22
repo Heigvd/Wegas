@@ -4,26 +4,29 @@ import { TranslatableContent } from '../../../data/i18n';
 import { themeVar } from '../../Style/ThemeVars';
 
 export const choiceContainerStyle = css({
-  margin: '1em 2em',
-  boxShadow: '0 0 5px grey',
+  margin: '1em 0',
+  padding: '15px',
+  boxShadow: '2px 2px 6px rgba(0, 0, 0, 0.2)',
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
   backgroundColor: themeVar.Common.colors.HeaderColor,
   '&.disabled': {
-    backgroundColor: 'transparent',
+    backgroundColor: themeVar.Common.colors.BackgroundColor,
+    opacity: '0.7',
   },
 });
 export const choiceLabelStyle = css({
-  borderBottom: '1px solid',
-  color: themeVar.Common.colors.TextColor,
-  padding: '5px',
+  borderBottom: '1px solid ' + themeVar.Common.colors.HeaderColor,
+  color: themeVar.Common.colors.DarkTextColor,
+  fontWeight: 'bold',
 });
 export const choiceDescriptionStyle = css({
-  padding: '5px',
+  paddingTop: '5px',
 });
 export const choiceInputStyle = css({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
-  padding: '10px',
+  paddingTop: '5px',
 });
 
 export function ChoiceContainer({

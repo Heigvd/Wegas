@@ -17,14 +17,14 @@ import { themeVar } from '../Style/ThemeVars';
 const phasePathStyle = css({
   height: '0.5em',
   width: '100%',
-  backgroundColor: themeVar.Common.colors.BorderColor,
+  backgroundColor: themeVar.Common.colors.PrimaryColor,
 });
 
 const phaseDotStyle = css({
   borderRadius: '50%',
   borderStyle: 'solid',
   borderWidth: '5px',
-  borderColor: themeVar.Common.colors.BorderColor,
+  borderColor: themeVar.Common.colors.PrimaryColor,
 });
 
 interface PhaseComponentProps {
@@ -48,7 +48,7 @@ function SimplePhaseComponent({ value, phase }: PhaseComponentProps) {
           size: 'lg',
           color:
             phase < value
-              ? themeVar.Common.colors.MainColor
+              ? themeVar.Common.colors.PrimaryColor
               : phase > value
               ? 'transparent'
               : themeVar.Common.colors.ActiveColor,

@@ -21,8 +21,8 @@ const numberBoxStyle = css({
 });
 
 const numberBoxSquareStyle = css({
-  borderColor: themeVar.Common.colors.BorderColor,
-  color: themeVar.Common.colors.TextColor,
+  borderColor: themeVar.Common.colors.PrimaryColor,
+  color: themeVar.Common.colors.DarkTextColor,
   borderStyle: 'solid',
   borderRadius: '2px',
   width: '1.5em',
@@ -33,14 +33,14 @@ const numberBoxSquareStyle = css({
   cursor: 'default',
 
   ['&.active']: {
-    backgroundColor: themeVar.Common.colors.MainColor,
-    color: themeVar.Common.colors.SecondaryTextColor,
+    backgroundColor: themeVar.Common.colors.PrimaryColor,
+    color: themeVar.Common.colors.LightTextColor,
   },
 
   ['&.clickable']: {
     cursor: 'pointer',
     ['&:not(.disabled):hover']: {
-      borderColor: themeVar.Common.colors.MainColor,
+      borderColor: themeVar.Common.colors.PrimaryColor,
     },
   },
 

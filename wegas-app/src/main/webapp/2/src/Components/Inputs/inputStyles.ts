@@ -10,7 +10,7 @@ export const inputStyleCSS: ObjectInterpolation<undefined> = {
   ...inputDefaultCSS,
   resize: 'vertical',
   borderStyle: 'inset',
-  borderColor: themeVar.Common.colors.BorderColor,
+  borderColor: themeVar.Common.colors.PrimaryColor,
   borderRadius: themeVar.Common.dimensions.BorderRadius,
   backgroundColor: themeVar.Common.colors.BackgroundColor,
   '::placeholder': {
