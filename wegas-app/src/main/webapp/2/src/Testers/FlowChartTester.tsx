@@ -43,6 +43,7 @@ export default function FlowChartTester() {
   return (
     <div className={cx(flex, flexColumn)}>
       <FlowChart
+        style={{ maxHeight: '500px', maxWidth: '500px' }}
         title="Test flow chart"
         processes={state}
         onMove={(process, newPosition) => {

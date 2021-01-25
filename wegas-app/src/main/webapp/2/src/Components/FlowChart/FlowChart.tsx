@@ -6,6 +6,7 @@ import { DefaultFlowLineComponent, FlowLineProps } from './FlowLineComponent';
 import { ProcessProps, DefaultProcessComponent } from './ProcessComponent';
 import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './ProcessHandle';
 import { useDrop } from 'react-dnd';
+import { classNameOrEmpty } from '../../Helper/className';
 
 const flowChartStyle = css({
   width: '100%',
@@ -54,7 +55,8 @@ interface Connection<F extends FlowLine, P extends Process<F>> {
   flowline: F;
 }
 
-interface FlowChartProps<F extends FlowLine, P extends Process<F>> {
+interface FlowChartProps<F extends FlowLine, P extends Process<F>>
+  extends ClassStyleId {
   /**
    * the title of the chart
    */
@@ -95,6 +97,9 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   onMove,
   onNew,
   onConnect,
+  className,
+  style,
+  id,
 }: FlowChartProps<F, P>) {
   const container = React.useRef<HTMLDivElement>();
   const processesRef = React.useRef<{ [pid: string]: HTMLElement }>({});
@@ -180,7 +185,11 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   }, [internalProcesses]);
 
   return (
-    <Toolbar className={flowChartStyle}>
+    <Toolbar
+      className={flowChartStyle + classNameOrEmpty(className)}
+      style={style}
+      id={id}
+    >
       <Toolbar.Header>{title}</Toolbar.Header>
       <Toolbar.Content
         style={{ position: 'relative' }}

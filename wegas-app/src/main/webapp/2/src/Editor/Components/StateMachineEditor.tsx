@@ -185,6 +185,7 @@ export class StateMachineEditor extends React.Component<
   constructor(props: StateMachineEditorProps) {
     super(props);
     this.state = { oldProps: props, stateMachine: props.stateMachine };
+    wlog(props.stateMachine);
   }
   container: Element | null = null;
   update(stateMachine: IFSMDescriptor) {

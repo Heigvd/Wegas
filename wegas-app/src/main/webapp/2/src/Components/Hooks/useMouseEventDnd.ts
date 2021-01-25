@@ -42,6 +42,8 @@ export function useMouseEventDnd<T extends HTMLElement>(
   const clickPosition = React.useRef<XYPosition>({ x: 0, y: 0 });
   const lastPosition = React.useRef<XYPosition>({ x: 0, y: 0 });
 
+  const ghostElement = React.useRef<T>();
+
   const onMouseDown = React.useCallback(
     (e: MouseEvent) => {
       e.stopPropagation();
@@ -50,6 +52,7 @@ export function useMouseEventDnd<T extends HTMLElement>(
         !(e.target as HTMLElement).getAttribute('data-nodrag')
       ) {
         const target = ref.current as T;
+
         draggingTarget.current = target;
         const targetBox = target.getBoundingClientRect();
         const parentBox = target.parentElement?.getBoundingClientRect();
@@ -60,6 +63,11 @@ export function useMouseEventDnd<T extends HTMLElement>(
           x: e.clientX - targetBox.left,
           y: e.clientY - targetBox.top,
         };
+
+        // Create a ghost of the dragged element to avoid scroll bars to schrink when moving up or left
+        ghostElement.current = target.cloneNode(true) as T;
+        ghostElement.current?.style.setProperty('opacity', '0');
+        target.after(ghostElement.current);
 
         onDragStart && onDragStart(e, initialPosition.current);
       }
@@ -72,12 +80,28 @@ export function useMouseEventDnd<T extends HTMLElement>(
       if (draggingTarget.current != null) {
         draggingStarted.current = true;
         const target = draggingTarget.current;
-        const parentBox = target.parentElement?.getBoundingClientRect();
-        const x = e.clientX - (parentBox?.left || 0) - clickPosition.current.x;
-        const y = e.clientY - (parentBox?.top || 0) - clickPosition.current.y;
-        draggingTarget.current.setAttribute('style', `left:${x}px ;top:${y}px`);
-        lastPosition.current = { x, y };
-        onDrag && onDrag(e, lastPosition.current);
+        const parent = target.parentElement;
+
+        if (parent != null) {
+          const parentBox = parent.getBoundingClientRect();
+          const x =
+            e.clientX +
+            (target.parentElement?.scrollLeft || 0) -
+            (parentBox?.left || 0) -
+            clickPosition.current.x;
+          const y =
+            e.clientY +
+            (target.parentElement?.scrollTop || 0) -
+            (parentBox?.top || 0) -
+            clickPosition.current.y;
+
+          draggingTarget.current.setAttribute(
+            'style',
+            `left:${x}px ;top:${y}px`,
+          );
+          lastPosition.current = { x, y };
+          onDrag && onDrag(e, lastPosition.current);
+        }
       }
     },
     [onDrag],
@@ -85,14 +109,18 @@ export function useMouseEventDnd<T extends HTMLElement>(
   const onMouseUp = React.useCallback(
     (e: MouseEvent) => {
       e.stopPropagation();
+
+      const target = e.target as T;
+
+      // Removing ghost after moving element
+      if (ghostElement.current != null) {
+        ghostElement.current.remove();
+      }
+
       if (draggingStarted.current && draggingTarget.current != null) {
         const reset =
           onDragEnd &&
-          onDragEnd(
-            e,
-            lastPosition.current,
-            (e.target as HTMLElement).getAttribute('data-id'),
-          );
+          onDragEnd(e, lastPosition.current, target.getAttribute('data-id'));
         if (reset) {
           draggingTarget.current.setAttribute(
             'style',
