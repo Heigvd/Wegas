@@ -96,16 +96,15 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     private List<SurveyToken> tokens;
 
     /**
-     * Read-only information about presence of any tokens,
-     * meaning that players have been invited to the survey by email.
-     * Only for use by the trainer dashboard.
+     * Read-only information about presence of any tokens, meaning that players have been invited to
+     * the survey by email. Only for use by the trainer dashboard.
      */
     @JsonView(Views.EditorI.class)
-    @JsonProperty(access = Access.READ_ONLY)    
+    @JsonProperty(access = Access.READ_ONLY)
     public Boolean getHasTokens() {
         return tokens.size() > 0;
     }
-    
+
     /**
      * True unless it should be hidden from trainer/scenarist listings.
      */
@@ -124,7 +123,7 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      */
     @Override
     @JsonView(Views.ExportI.class)
-    @Scriptable(label = "getItems",wysiwyg = false)
+    @Scriptable(label = "getItems", wysiwyg = false)
     public List<SurveySectionDescriptor> getItems() {
         return this.items;
     }

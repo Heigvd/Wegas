@@ -67,7 +67,7 @@ const testSchema = {
   file: schemaProps.file({ label: 'File' }),
   greyFilterfile: schemaProps.file({
     label: 'Filtered audio file',
-    pick: 'FILE',
+    pickType: 'FILE',
     filter: {
       filterType: 'grey',
       fileType: 'audio',

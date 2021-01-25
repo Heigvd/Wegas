@@ -53,6 +53,7 @@ const activeLabel = css({
     borderLeft: `20px solid ${themeVar.Common.colors.PrimaryColor}`,
   }, */
   ':hover': {
+    // ideally have an active and hover color
     [`&>.${labelStyle}`]: {
       backgroundColor: themeVar.Common.colors.PrimaryColor,
     },
@@ -71,14 +72,29 @@ interface EntityChooserProps<E extends IAbstractEntity> {
   entities: E[];
   children: React.FunctionComponent<{ entity: E }>;
   entityLabel: (entity: E) => React.ReactNode;
+  autoOpenFirst?: boolean;
 }
 
 export function EntityChooser<E extends IAbstractEntity>({
   entities,
   children: Children,
   entityLabel,
+  autoOpenFirst,
 }: EntityChooserProps<E>) {
   const [entity, setEntity] = React.useState<E>();
+
+  React.useEffect(() => {
+    setEntity(oldEntity => {
+      if (
+        autoOpenFirst &&
+        (oldEntity == null || !entities.map(e => e.id).includes(oldEntity.id))
+      ) {
+        return entities[0];
+      } else {
+        return oldEntity;
+      }
+    });
+  }, [autoOpenFirst, entities]);
 
   return (
     <div className={cx(flex, flexRow, entityChooser)}>
@@ -94,7 +110,7 @@ export function EntityChooser<E extends IAbstractEntity>({
                 if (deepDifferent(e, oldEntity)) {
                   return e;
                 } else {
-                  return undefined;
+                  return oldEntity;
                 }
               });
             }}

@@ -126,7 +126,7 @@ export const defaultMarginTop = css({
 });
 
 export const defaultMarginBottom = css({
-  marginTop: '10px',
+  marginBottom: '10px',
 });
 
 export const defaultMargin = cx(
@@ -199,6 +199,14 @@ export const contentStyle = css({
   // backgroundColor: themeVar.Common.colors.BackgroundColor,
 });
 
+export const disabledColorStyle = css({
+  color: themeVar.Common.colors.DisabledColor,
+});
+
+export const infoShortTextStyle = css({
+  color: '#AAAAAA', // TODO add in Theme
+});
+
 export const hoverColorInsetShadow = css({
   boxShadow: 'inset 0 0 0 2px var(--common-colors-hovercolor)',
 });
@@ -228,4 +236,26 @@ export const highlightedHatchedBackground = css({
     //`repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, ${Color(themeVar.Common.colors.HoverColor).darken(0.5).toString()} 10px, ${Color(themeVar.Common.colors.HoverColor).darken(0.5).toString()} 20px);`,
     `repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, var(--common-colors-highlightcolor) 10px, var(--common-colors-highlightcolor) 20px);`,
   zIndex: 1000,
+});
+
+export const dropZoneStyle = css({
+  borderStyle: 'solid',
+  borderWidth: '2px',
+  borderColor: themeVar.Common.colors.HighlightColor,
+});
+
+export const unreadSignalStyle = css({
+  '::before': {
+    content: '"new"',
+    transform: 'rotate(-45deg)',
+    position: 'absolute',
+    fontSize: '7pt',
+    color: 'green',
+  },
+});
+
+export const unreadSpaceStyle = css({
+  minWidth: '30px',
+  display: 'flex',
+  alignItems: 'center',
 });
