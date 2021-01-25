@@ -7,6 +7,7 @@ import { Actions } from '../data';
 import * as React from 'react';
 import { wlog } from '../Helper/wegaslog';
 import { IAbstractEntity } from 'wegas-ts-api';
+import { entityIs } from '../data/entities';
 
 const CHANNEL_PREFIX = {
   Admin: 'private-Admin',
@@ -89,18 +90,7 @@ async function processEvent(
   }
   return { event, data };
 }
-
-export type WebSocketEvent =
-  | 'EntityUpdatedEvent'
-  | 'EntityDestroyedEvent'
-  | 'CustomEvent'
-  | 'PageUpdate'
-  | 'LibraryUpdate-CSS'
-  | 'LibraryUpdate-ClientScript'
-  | 'LibraryUpdate-ServerScript'
-  | 'LockEvent';
-
-const webSocketEvents: WebSocketEvent[] = [
+const webSocketEvents = [
   'EntityUpdatedEvent',
   'EntityDestroyedEvent',
   'CustomEvent',
@@ -109,7 +99,15 @@ const webSocketEvents: WebSocketEvent[] = [
   'LibraryUpdate-ClientScript',
   'LibraryUpdate-ServerScript',
   'LockEvent',
-];
+  'OutdatedEntitiesEvent',
+] as const;
+
+export type WebSocketEvent = ValueOf<typeof webSocketEvents>;
+
+interface OutadatedEntitesEvent {
+  '@class': 'OutdatedEntitiesEvent';
+  updatedEntities: { type: WegasClassNames; id: number }[];
+}
 
 interface EventMap {
   [eventId: string]: ((
@@ -252,6 +250,44 @@ class WebSocketListener {
             store.dispatch,
           ),
         );
+      case 'OutdatedEntitiesEvent': {
+        const { updatedEntities } = data as OutadatedEntitesEvent;
+
+        const toUpdate: { instances: number[]; descriptors: number[] } = {
+          instances: [],
+          descriptors: [],
+        };
+
+        for (const updatedEntity of updatedEntities) {
+          if (
+            entityIs({ '@class': updatedEntity.type }, 'VariableInstance', true)
+          ) {
+            toUpdate.instances.push(updatedEntity.id);
+          } else if (
+            entityIs(
+              { '@class': updatedEntity.type },
+              'VariableDescriptor',
+              true,
+            )
+          ) {
+            toUpdate.descriptors.push(updatedEntity.id);
+          }
+        }
+
+        if (toUpdate.instances.length > 0) {
+          store.dispatch(
+            Actions.VariableInstanceActions.getByIds(toUpdate.instances),
+          );
+        }
+
+        if (toUpdate.descriptors.length > 0) {
+          store.dispatch(
+            Actions.VariableDescriptorActions.getByIds(toUpdate.descriptors),
+          );
+        }
+
+        return;
+      }
       case 'CustomEvent':
         return store.dispatch(editorEvent(data as CustomEvent));
       case 'PageUpdate':

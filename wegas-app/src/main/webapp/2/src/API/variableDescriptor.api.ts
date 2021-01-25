@@ -115,4 +115,10 @@ export const VariableDescriptorAPI = {
   reset(gameModelId: number) {
     return managedModeRequest(`${VD_BASE(gameModelId)}Reset`);
   },
+  getByIds(ids: number[], gameModelId: number) {
+    return managedModeRequest(`${VD_BASE(gameModelId)}ByIds`, {
+      method: 'POST',
+      body: JSON.stringify(ids),
+    });
+  },
 };
