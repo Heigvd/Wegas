@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -563,12 +564,14 @@ public class RequestManager implements RequestManagerI {
             }
         } else {
             this.actAsPlayer = new ActAsPlayer(this, player);
-            websocketFacade.touchOnlineUser(currentUser.getId(), player.getId());
+            if (player != null) {
+                websocketFacade.touchOnlineUser(currentUser.getId(), player.getId());
+            }
         }
         return actAsPlayer;
     }
 
-    public void releaseActAsPlayer(){
+    public void releaseActAsPlayer() {
         this.actAsPlayer = null;
     }
 
