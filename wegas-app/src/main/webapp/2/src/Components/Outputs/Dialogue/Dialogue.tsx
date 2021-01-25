@@ -27,6 +27,8 @@ import { WaitingLoader } from './WaitingLoader';
 const dialogEntryStyle = css({
   padding: '5px',
   marginBottom: '3px',
+  maxHeight: '40vh',
+  overflow: 'auto',
   '&>.player': {
     alignSelf: 'flex-end',
     backgroundColor: themeVar.Common.colors.PrimaryColor,
@@ -45,11 +47,6 @@ const dialogueDisplayStyle = css({
   border: 'none',
   boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.1)',
   borderRadius: themeVar.Common.dimensions.BorderRadius,
-});
-
-const dialogueHistoryStyle = css({
-  maxHeight: '40vh',
-  overflow: 'auto',
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
