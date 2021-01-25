@@ -58,4 +58,10 @@ export const VariableInstanceAPI = {
       { method: 'PUT', body: JSON.stringify(variableInstance) },
     );
   },
+  getByIds(ids: number[], gameModelId?: number) {
+    return managedModeRequest(`${VI_BASE({ gameModelId })}ByIds`, {
+      method: 'POST',
+      body: JSON.stringify(ids),
+    });
+  },
 };
