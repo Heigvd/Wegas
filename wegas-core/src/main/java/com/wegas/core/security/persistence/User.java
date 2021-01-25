@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -21,7 +22,6 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasIsTeamMate;
 import com.wegas.core.security.util.WegasIsTrainerForUser;
-import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.view.StringView;
 import java.util.ArrayList;
@@ -271,14 +271,22 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
      * @param roles the roles to set
      */
     public void setRoles(Collection<Role> roles) {
-        this.roles = roles;
+        this.roles = new ArrayList<>();
+        if (roles != null) {
+            for (Role r : roles) {
+                this.addRole(r);
+                r.addUser(this);
+            }
+        }
     }
 
     /**
      * @param role
      */
     public void addRole(Role role) {
-        this.roles.add(role);
+        if (!roles.contains(role)) {
+            this.roles.add(role);
+        }
     }
 
     /**
@@ -287,7 +295,9 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
      * @param role
      */
     public void removeRole(Role role) {
-        this.roles.remove(role);
+        if (this.roles.contains(role)) {
+            this.roles.remove(role);
+        }
     }
 
     @Override
@@ -334,7 +344,6 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         Collection<WegasPermission> p = WegasPermission.getAsCollection(
             this.getAssociatedWritePermission()
         );
-        p.addAll(WegasMembership.TRAINER); // why ? maybe to share game/gameModel (ie add permission)
         return p;
     }
 

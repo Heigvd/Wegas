@@ -11,6 +11,7 @@ package com.wegas.core.security.ejb;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -36,6 +37,7 @@ import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.core.security.util.AuthenticationMethod;
 import com.wegas.core.security.util.HashMethod;
 import com.wegas.core.security.util.JpaAuthentication;
+import com.wegas.core.security.util.Sudoer;
 import com.wegas.core.security.util.TokenInfo;
 import com.wegas.messaging.ejb.EMailFacade;
 import java.util.*;
@@ -89,6 +91,12 @@ public class UserFacade extends BaseFacade<User> {
      */
     @Inject
     private GameFacade gameFacade;
+
+    /**
+     *
+     */
+    @Inject
+    private GameModelFacade gameModelFacade;
 
     /**
      *
@@ -333,7 +341,7 @@ public class UserFacade extends BaseFacade<User> {
     public AbstractAccount getCurrentAccount() {
         final Subject subject = SecurityUtils.getSubject();
 
-        if (Helper.isLoggedIn(subject)){
+        if (Helper.isLoggedIn(subject)) {
             return accountFacade.find((Long) subject.getPrincipal());
         }
         throw new WegasNotFoundException("Unable to find an account");
@@ -736,22 +744,29 @@ public class UserFacade extends BaseFacade<User> {
     public void addTrainerToGame(Long trainerId, Long gameId) {
         // load the game to make sure it exists
         Game game = gameFacade.find(gameId);
-        if (game != null) {
-            User user = this.find(trainerId);
-            this.addUserPermission(user, "Game:View,Edit:g" + gameId);
+        requestManager.assertGameTrainer(game);
+        try (Sudoer su = requestManager.sudoer()) {
+            if (game != null) {
+                User user = this.find(trainerId);
+                this.addUserPermission(user, "Game:View,Edit:g" + gameId);
+            }
         }
     }
 
     public void removeTrainer(Long gameId, User trainer) {
+        // load the game to make sure it exists
+        Game game = gameFacade.find(gameId);
+        requestManager.assertGameTrainer(game);
+        try (Sudoer su = requestManager.sudoer()) {
+            if (this.getCurrentUser().equals(trainer)) {
+                throw WegasErrorMessage.error("Cannot remove yourself");
+            }
 
-        if (this.getCurrentUser().equals(trainer)) {
-            throw WegasErrorMessage.error("Cannot remove yourself");
-        }
-
-        if (this.findEditors("g" + gameId).size() <= 1) {
-            throw WegasErrorMessage.error("Cannot remove last trainer");
-        } else {
-            this.deletePermissions(trainer, "Game:%Edit%:g" + gameId);
+            if (this.findEditors("g" + gameId).size() <= 1) {
+                throw WegasErrorMessage.error("Cannot remove last trainer");
+            } else {
+                this.deletePermissions(trainer, "Game:%Edit%:g" + gameId);
+            }
         }
     }
 
@@ -762,28 +777,37 @@ public class UserFacade extends BaseFacade<User> {
      * @param permissions
      */
     public void grantGameModelPermissionToUser(Long userId, Long gameModelId, String permissions) {
-        User user = this.find(userId);
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
+        try (Sudoer su = requestManager.sudoer()) {
+            User user = this.find(userId);
 
-        /*
+            /*
          * Revoke previous permissions (do not use removeScenarist method since
          * this method prevents to remove one own permissions,
-         */
-        this.deletePermissions(user, "GameModel:%:gm" + gameModelId);
+             */
+            this.deletePermissions(user, "GameModel:%:gm" + gameModelId);
 
-        // Grant new permission
-        this.addUserPermission(user, "GameModel:" + permissions + ":gm" + gameModelId);
+            // Grant new permission
+            this.addUserPermission(user, "GameModel:" + permissions + ":gm" + gameModelId);
+        }
     }
 
     public void removeScenarist(Long gameModelId, User scenarist) {
-        if (this.getCurrentUser().equals(scenarist)) {
-            throw WegasErrorMessage.error("Cannot remove yourself");
-        }
+        GameModel gm = gameModelFacade.find(gameModelId);
+        requestManager.assertUpdateRight(gm);
+        try (Sudoer su = requestManager.sudoer()) {
+            if (this.getCurrentUser().equals(scenarist)) {
+                throw WegasErrorMessage.error("Cannot remove yourself");
+            }
 
-        if (this.findEditors("gm" + gameModelId).size() <= 1) {
-            throw WegasErrorMessage.error("Cannot remove last scenarist");
-        } else {
-            //remove all permission matching  both gameModelId and userId
-            this.deletePermissions(scenarist, "GameModel:%:gm" + gameModelId);
+            List<User> editors = this.findEditors("gm" + gameModelId);
+            if (editors.size() <= 1 && editors.contains(scenarist)) {
+                throw WegasErrorMessage.error("Cannot remove last scenarist");
+            } else {
+                //remove all permission matching  both gameModelId and userId
+                this.deletePermissions(scenarist, "GameModel:%:gm" + gameModelId);
+            }
         }
     }
 
