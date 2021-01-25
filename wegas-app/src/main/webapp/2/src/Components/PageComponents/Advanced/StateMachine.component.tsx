@@ -67,11 +67,5 @@ registerComponent(
       title: schemaProps.scriptString({ label: 'Title', richText: true }),
     },
     allowedVariables: ['FSMDescriptor', 'DialogueDescriptor'],
-    getComputedPropsFromVariable: v => ({
-      questionList: createFindVariableScript(v),
-      style: {
-        overflow: 'auto',
-      },
-    }),
   }),
 );

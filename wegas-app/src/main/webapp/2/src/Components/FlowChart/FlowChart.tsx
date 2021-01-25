@@ -55,16 +55,16 @@ interface Connection<F extends FlowLine, P extends Process<F>> {
   flowline: F;
 }
 
-interface FlowChartProps<F extends FlowLine, P extends Process<F>>
+export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
   extends ClassStyleId {
   /**
    * the title of the chart
    */
-  title: React.ReactNode;
+  title?: React.ReactNode;
   /**
    * the processes in the chart
    */
-  processes: P[];
+  processes?: P[];
   /**
    * the component that displays processes
    */
@@ -89,9 +89,11 @@ interface FlowChartProps<F extends FlowLine, P extends Process<F>>
   onConnect: (sourceProcess: P, targetProcess: P, flowline?: F) => void;
 }
 
+const emptyProcesses: Process<FlowLine>[] = [];
+
 export function FlowChart<F extends FlowLine, P extends Process<F>>({
   title,
-  processes,
+  processes = emptyProcesses as P[],
   Process = DefaultProcessComponent,
   Flowline = DefaultFlowLineComponent,
   onMove,
