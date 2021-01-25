@@ -1,3 +1,4 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -285,11 +286,11 @@ public class ModelFacade {
                  * Filter gameModelContents
                  */
                 logger.info("Filter Libraries");
-                Map<String, Map<String, GameModelContent>> libraries = model.getLibraries();
+                Map<String, Map<String, GameModelContent>> libraries = model.getLibrariesAsMap();
                 List<Map<String, Map<String, GameModelContent>>> otherLibraries = new ArrayList<>();
 
                 for (GameModel other : allScenarios) {
-                    otherLibraries.add(other.getLibraries());
+                    otherLibraries.add(other.getLibrariesAsMap());
                 }
 
                 for (Entry<String, Map<String, GameModelContent>> libEntry : libraries.entrySet()) {
@@ -328,7 +329,7 @@ public class ModelFacade {
                         }
                     }
                 }
-                model.setLibraries(libraries);
+                model.setLibrariesFromMap(libraries);
 
                 List<VariableDescriptor> vdQueue = new ArrayList<>();
                 vdQueue.addAll(model.getChildVariableDescriptors());
@@ -574,11 +575,9 @@ public class ModelFacade {
             vd.setVisibility(ModelScoped.Visibility.PRIVATE);
         }
 
-        Map<String, Map<String, GameModelContent>> libraries = scenario.getLibraries();
-        for (Map<String, GameModelContent> contents : libraries.values()) {
-            for (GameModelContent content : contents.values()) {
-                content.setVisibility(ModelScoped.Visibility.PRIVATE);
-            }
+        List<GameModelContent> library = scenario.getLibraries();
+        for (GameModelContent content : library) {
+            content.setVisibility(ModelScoped.Visibility.PRIVATE);
         }
 
         for (GameModelLanguage lang : scenario.getRawLanguages()) {

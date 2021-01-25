@@ -29,6 +29,7 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
     },
     addLibrary(
       libType: LibType,
+      mimeType: string,
       name: string,
       content: string,
       visibility?: IAbstractContentDescriptor['visibility'],
@@ -36,7 +37,7 @@ export const LibraryAPIFactory = (gameModelId?: number) => {
       const newLib: IGameModelContent = {
         '@class': 'GameModelContent',
         content: content,
-        contentType: libType,
+        contentType: mimeType,
         version: 0,
         visibility: visibility,
       };
