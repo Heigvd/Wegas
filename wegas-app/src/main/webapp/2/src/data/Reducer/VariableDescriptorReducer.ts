@@ -163,3 +163,12 @@ export function reset(): ThunkResult {
     );
   };
 }
+
+export function getByIds(ids: number[]): ThunkResult {
+  return function (dispatch, getState) {
+    const gameModelId = store.getState().global.currentGameModelId;
+    return VariableDescriptorAPI.getByIds(ids, gameModelId).then(res =>
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
