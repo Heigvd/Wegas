@@ -29,7 +29,7 @@ const defaultPageAsScript = () =>
 function PlayerPageLoader({
   initialSelectedPageId = defaultPageAsScript(),
   name,
-  context,
+  context = {},
   className,
   style,
   id,
@@ -74,6 +74,7 @@ function PlayerPageLoader({
         id={id}
         selectedPageId={pageId}
         loadTimer={loadTimer}
+        context={context}
       />
     </pageCTX.Provider>
   );

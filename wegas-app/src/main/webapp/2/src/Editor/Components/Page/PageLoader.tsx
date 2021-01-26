@@ -44,6 +44,9 @@ interface PageLoaderProps extends ClassStyleId {
   displayFrame?: boolean;
   themeMode?: string;
   loadTimer?: number;
+  context?: {
+    [name: string]: unknown;
+  };
 }
 
 export function PageLoader({
@@ -54,6 +57,7 @@ export function PageLoader({
   style,
   id,
   loadTimer = 0,
+  context = {},
 }: PageLoaderProps) {
   const selectedPageSelector = React.useCallback(
     (s: State) => (selectedPageId ? s.pages[selectedPageId] : undefined),
@@ -96,7 +100,7 @@ export function PageLoader({
                 pageId={selectedPageId}
                 Container={FlexItem}
                 dropzones={{}}
-                context={{}}
+                context={context}
               />
             ) : (
               <pre>{`The page is undefined`}</pre>
