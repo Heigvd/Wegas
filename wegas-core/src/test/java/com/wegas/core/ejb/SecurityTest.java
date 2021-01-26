@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -13,8 +12,10 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.test.arquillian.AbstractArquillianTest;
+import java.util.Collection;
 import javax.ejb.EJBException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.jboss.arquillian.test.spi.ArquillianProxyException;
@@ -44,7 +45,7 @@ public class SecurityTest extends AbstractArquillianTest {
     }
 
     /**
-     * A trainer join its own game as player. Then, as admin goin the game as player. Trainer tries
+     * A trainer join its own game as player. Then, as admin join the game as player. Trainer tries
      * to copy admin membership
      *
      * @throws WegasNoResultException
@@ -53,11 +54,64 @@ public class SecurityTest extends AbstractArquillianTest {
     public void testPrivilegeEscalation_stealTeamMateRoles() throws WegasNoResultException {
         login(admin);
         Player adminPlayer = gameFacade.joinTeam(team.getId(), admin.getId(), null);
+        Long rootId = adminPlayer.getUser().getId();
 
         login(user);
 
-        String script = "var admin = gameModel.getPlayers().stream().filter(function(p){return p.getUser() && p.getUser().getId() == 1}).findAny().get();\n"
+        String script = "var admin = gameModel.getPlayers().stream().filter(function(p){return p.getUser() && p.getUser().getId() == " + rootId + "}).findAny().get();\n"
             + "self.getUser().setRoles(admin.getUser().getRoles());\n";
+
+        Object eval = scriptFacade.eval(player, new Script("JavaScript", script), null);
+        logger.error("Eval: {}", eval);
+    }
+
+    /**
+     * A trainer join its own game as player. Then, as admin join the game as player. Trainer tries
+     * to copy admin membership by adding one specific role to its own list
+     *
+     * @throws WegasNoResultException
+     */
+    @Test
+    public void testPrivilegeEscalation_stealTeamMateRoles_v2() throws WegasNoResultException {
+        login(admin);
+        Player adminPlayer = gameFacade.joinTeam(team.getId(), admin.getId(), null);
+        Long rootId = adminPlayer.getUser().getId();
+
+        login(user);
+
+        String script = "var admin = gameModel.getPlayers().stream().filter(function(p){return p.getUser() && p.getUser().getId() == " + rootId + "}).findAny().get();\n"
+            + "var aRole = admin.getUser().getRoles().get(0);\n"
+            + "print('Role: ' +aRole);\n"
+            + "self.getUser().getRoles().add(aRole);\n";
+
+        Collection<Role> rolesBefore = userFacade.find(user.getId()).getRoles();
+
+        Object eval = scriptFacade.eval(player, new Script("JavaScript", script), null);
+        logger.error("Eval: {}", eval);
+
+        Collection<Role> rolesAfter = userFacade.find(user.getId()).getRoles();
+
+        Assert.assertEquals(rolesBefore.size(), rolesAfter.size());
+    }
+
+    /**
+     * A trainer join its own game as player. Then, as admin join the game as player. Trainer tries
+     * to copy admin membership by adding one specific role to its own list
+     *
+     * @throws WegasNoResultException
+     */
+    @Test(expected = WegasAccessDenied.class)
+    public void testPrivilegeEscalation_stealTeamMateRoles_v3() throws WegasNoResultException {
+        login(admin);
+        Player adminPlayer = gameFacade.joinTeam(team.getId(), admin.getId(), null);
+        Long rootId = adminPlayer.getUser().getId();
+
+        login(user);
+
+        String script = "var admin = gameModel.getPlayers().stream().filter(function(p){return p.getUser() && p.getUser().getId() == " + rootId + "}).findAny().get();\n"
+            + "var aRole = admin.getUser().getRoles().get(0);\n"
+            + "print('Role: ' +aRole);\n"
+            + "self.getUser().addRole(aRole);\n";
 
         Object eval = scriptFacade.eval(player, new Script("JavaScript", script), null);
         logger.error("Eval: {}", eval);
