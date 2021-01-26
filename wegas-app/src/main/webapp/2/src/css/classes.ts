@@ -163,7 +163,7 @@ export const defaultPadding = cx(
 
 // Components
 export const button = css({
-  color: themeVar.Common.colors.TextColor,
+  color: themeVar.Common.colors.DarkTextColor,
   ':hover,:focus': {
     color: themeVar.Common.colors.HoverColor,
     outline: 'none',
@@ -179,7 +179,7 @@ export const globalSelection = css({
   //  borderWidth: '2px',
   //  borderColor: themeVar.Common.colors.BorderColor,
   borderRadius: themeVar.Common.dimensions.BorderRadius,
-  boxShadow: `0px 0px 0px 1px ${themeVar.Common.colors.BorderColor}`,
+  boxShadow: `0px 0px 0px 1px ${themeVar.Common.colors.PrimaryColor}`,
 });
 export const searchSelection = css({
   backgroundColor: themeVar.Common.colors.HighlightColor,
@@ -187,7 +187,7 @@ export const searchSelection = css({
 
 // Layout base styles
 export const layoutStyle = css({
-  color: themeVar.Common.colors.TextColor,
+  color: themeVar.Common.colors.DarkTextColor,
   backgroundColor: themeVar.Common.colors.BackgroundColor,
   fontFamily: themeVar.Common.others.TextFont1,
 });

@@ -11,7 +11,7 @@ import { classNameOrEmpty } from '../Helper/className';
 
 const divStyle = css({
   backgroundColor: themeVar.Common.colors.BackgroundColor,
-  color: themeVar.Common.colors.TextColor,
+  color: themeVar.Common.colors.DarkTextColor,
   paddingLeft: '5px',
   paddingRight: '5px',
   paddingTop: '2px',

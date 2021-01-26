@@ -9,7 +9,7 @@ const levelStyle = (level: TitleLevels) =>
   css({
     color:
       themeVar.ComponentTitle.colors[
-        `TextColor${level}` as keyof typeof themeVar.ComponentTitle.colors
+        `DarkTextColor${level}` as keyof typeof themeVar.ComponentTitle.colors
       ],
     background:
       themeVar.ComponentTitle.colors[

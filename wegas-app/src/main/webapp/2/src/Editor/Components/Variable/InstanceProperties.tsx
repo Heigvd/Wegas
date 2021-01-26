@@ -26,7 +26,7 @@ const listBox = css({
   width: '100%',
   maxHeight: '100px',
   overflowY: 'auto',
-  borderColor: themeVar.Common.colors.BorderColor,
+  borderColor: themeVar.Common.colors.PrimaryColor,
   borderWidth: '2px',
   borderStyle: 'solid',
 });
