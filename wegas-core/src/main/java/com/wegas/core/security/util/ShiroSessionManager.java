@@ -9,22 +9,21 @@
 package com.wegas.core.security.util;
 
 import com.wegas.core.Helper;
-import org.apache.shiro.codec.Hex;
-import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.servlet.Cookie;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 
 /**
  *
  * @author maxence
  */
-public final class ShiroRememberManager extends CookieRememberMeManager {
+public final class ShiroSessionManager extends DefaultWebSessionManager {
 
-    public ShiroRememberManager() {
+    public ShiroSessionManager() {
         super();
         boolean secureFlag = "true".equals(Helper.getWegasProperty("shiro.secureFlag", "false"));
-        this.getCookie().setSecure(secureFlag);
-        this.getCookie().setSameSite(Cookie.SameSiteOptions.LAX);
-
-        setCipherKey(Hex.decode(Helper.getWegasProperty("shiro.cipherKey", "09876543212345678965423456787654")));
+        if (secureFlag) {
+            this.getSessionIdCookie().setSameSite(Cookie.SameSiteOptions.LAX);
+            this.getSessionIdCookie().setSecure(true);
+        }
     }
 }
