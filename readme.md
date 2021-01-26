@@ -4,7 +4,7 @@ A Web Game Authoring System for rapid development of serious games without progr
 ### Links
 * [Demonstration](http://wegas.albasim.ch/)
 * [Documentation & Tutorials](https://github.com/Heigvd/Wegas/wiki) 
-* [Continuous integration](https://github.com/Heigvd/Wegas/wiki) [![Build Status](https://travis-ci.org/Heigvd/Wegas.png?branch=master)](https://travis-ci.org/Heigvd/Wegas)
+* [Continuous integration](https://github.com/Heigvd/Wegas/wiki) ![CI](https://github.com/Heigvd/Wegas/workflows/CI/badge.svg)
 * [Build report](http://heigvd.github.com/Wegas/)
 
 ### Authors
