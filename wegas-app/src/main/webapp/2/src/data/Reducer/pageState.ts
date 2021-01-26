@@ -1,7 +1,7 @@
 import u from 'immer';
 import { ActionType, StateActions, ActionCreator } from '../actions';
 import { PageAPI } from '../../API/pages.api';
-import { ThunkResult } from '../store';
+import { ThunkResult } from '../Stores/store';
 import { Reducer } from 'redux';
 import { Page } from '../selectors';
 import { compare } from 'fast-json-patch';

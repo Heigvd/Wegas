@@ -7,7 +7,7 @@ import {
   triggerEventHandlers,
 } from '../actions';
 import { VariableDescriptor } from '../selectors';
-import { ThunkResult, store } from '../store';
+import { ThunkResult, store } from '../Stores/store';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { entityIsPersisted } from '../entities';
 import { Reducer } from 'redux';

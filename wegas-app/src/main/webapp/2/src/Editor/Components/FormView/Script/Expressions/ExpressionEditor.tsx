@@ -22,7 +22,7 @@ import {
   scriptEditStyle,
   returnTypes,
 } from '../Script';
-import { useStore } from '../../../../../data/store';
+import { useStore } from '../../../../../data/Stores/store';
 import { GameModel } from '../../../../../data/selectors';
 import { parseStatement, generateStatement } from './astManagement';
 import { WegasTypeString } from '../../../../editionConfig';

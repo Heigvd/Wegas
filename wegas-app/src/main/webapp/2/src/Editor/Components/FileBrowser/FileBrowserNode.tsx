@@ -22,7 +22,7 @@ import { classNameOrEmpty } from '../../../Helper/className';
 
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
 
-import { store, StoreDispatch } from '../../../data/store';
+import { store, StoreDispatch } from '../../../data/Stores/store';
 import { GameModel } from '../../../data/selectors';
 import { editFile } from '../../../data/Reducer/globalState';
 

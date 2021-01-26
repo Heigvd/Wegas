@@ -1,5 +1,5 @@
 // OPTIONS -> ACTIONS
-import { store } from '../../../data/store';
+import { store } from '../../../data/Stores/store';
 import { ActionCreator } from '../../../data/actions';
 import { clientScriptEval, useScript } from '../../Hooks/useScript';
 import { fileURL } from '../../../API/files.api';

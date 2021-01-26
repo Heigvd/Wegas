@@ -3,7 +3,7 @@ import * as React from 'react';
 import { IReply, IChoiceDescriptor } from 'wegas-ts-api';
 import { TranslatableContent } from '../../../data/i18n';
 import { VariableDescriptor } from '../../../data/selectors';
-import { StoreConsumer } from '../../../data/store';
+import { StoreConsumer } from '../../../data/Stores/store';
 import { Button } from '../../Inputs/Buttons/Button';
 import { themeVar } from '../../Style/ThemeVars';
 import {

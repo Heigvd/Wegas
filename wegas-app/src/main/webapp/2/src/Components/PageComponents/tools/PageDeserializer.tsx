@@ -10,7 +10,7 @@ import {
   ItemContainer,
 } from './EditableComponent';
 import { deepDifferent, shallowDifferent } from '../../Hooks/storeHookFactory';
-import { useStore } from '../../../data/store';
+import { useStore } from '../../../data/Stores/store';
 import { cloneDeep, pick } from 'lodash-es';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import {

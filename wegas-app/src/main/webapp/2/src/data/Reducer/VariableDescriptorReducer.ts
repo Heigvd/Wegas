@@ -4,7 +4,7 @@ import { manageResponseHandler, StateActions, ActionType } from '../actions';
 import { Actions as Act } from '..';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { deepRemove } from '../updateUtils';
-import { ThunkResult, store } from '../store';
+import { ThunkResult, store } from '../Stores/store';
 import { IVariableDescriptor } from 'wegas-ts-api';
 
 export interface VariableDescriptorState {

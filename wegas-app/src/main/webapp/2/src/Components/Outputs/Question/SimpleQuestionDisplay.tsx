@@ -2,7 +2,7 @@ import * as React from 'react';
 import { IChoiceDescriptor, IChoiceInstance } from 'wegas-ts-api';
 import { TranslatableContent } from '../../../data/i18n';
 import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
-import { StoreDispatch } from '../../../data/store';
+import { StoreDispatch } from '../../../data/Stores/store';
 import { Button } from '../../Inputs/Buttons/Button';
 import { ChoiceContainer } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';

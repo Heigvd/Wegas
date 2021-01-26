@@ -6,7 +6,7 @@ import {
 } from '../data/Reducer/VariableDescriptorReducer';
 import { updateInstance } from '../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../data/scriptable';
-import { store } from '../data/store';
+import { store } from '../data/Stores/store';
 import { IManagedResponse } from './rest';
 import { VariableDescriptorAPI } from './variableDescriptor.api';
 

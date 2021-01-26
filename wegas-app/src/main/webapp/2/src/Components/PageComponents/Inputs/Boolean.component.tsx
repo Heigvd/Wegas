@@ -4,7 +4,7 @@ import {
   pageComponentFactory,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { store } from '../../../data/store';
+import { store } from '../../../data/Stores/store';
 import { Actions } from '../../../data';
 import { Toggler } from '../../Inputs/Boolean/Toggler';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';

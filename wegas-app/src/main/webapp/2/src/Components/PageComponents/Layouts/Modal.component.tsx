@@ -24,7 +24,7 @@ import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
-import { store } from '../../../data/store';
+import { store } from '../../../data/Stores/store';
 
 export const emptyLayoutItemStyle = css({
   display: 'flex',

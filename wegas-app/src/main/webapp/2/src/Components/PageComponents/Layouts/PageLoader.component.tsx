@@ -14,7 +14,7 @@ import {
   pageCTX,
   defaultPageCTX,
 } from '../../../Editor/Components/Page/PageEditor';
-import { useStore, store } from '../../../data/store';
+import { useStore, store } from '../../../data/Stores/store';
 import { ActionCreator } from '../../../data/actions';
 import { createScript } from '../../../Helper/wegasEntites';
 import { WegasComponentProps } from '../tools/EditableComponent';

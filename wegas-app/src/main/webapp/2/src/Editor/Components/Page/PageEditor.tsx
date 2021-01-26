@@ -18,7 +18,7 @@ import {
   LayoutDndComponent,
   isLayoutDndComponent,
 } from './PagesLayout';
-import { store, useStore } from '../../../data/store';
+import { store, useStore } from '../../../data/Stores/store';
 import { Actions } from '../../../data';
 import { flex, grow, expandBoth } from '../../../css/classes';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';

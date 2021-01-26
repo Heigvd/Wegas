@@ -5,7 +5,7 @@ import { PlayerInfoBulletProps } from './InfoBullet';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { themeCTX } from '../../Style/Theme';
 import { WegasComponentOptions } from './EditableComponent';
-import { useStore } from '../../../data/store';
+import { useStore } from '../../../data/Stores/store';
 import { State } from '../../../data/Reducer/reducers';
 
 interface OptionProps {

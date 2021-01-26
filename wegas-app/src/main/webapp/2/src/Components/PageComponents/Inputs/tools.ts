@@ -1,7 +1,7 @@
 import { IScript } from 'wegas-ts-api';
 import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
-import { store } from '../../../data/store';
+import { store } from '../../../data/Stores/store';
 import { createScript } from '../../../Helper/wegasEntites';
 import { safeClientScriptEval, useScript } from '../../Hooks/useScript';
 import { clientAndServerScriptChoices } from '../tools/options';

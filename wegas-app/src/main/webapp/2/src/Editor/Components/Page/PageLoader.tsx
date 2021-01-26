@@ -3,7 +3,7 @@ import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvi
 import { ThemeProvider, themeCTX } from '../../../Components/Style/Theme';
 import { TextLoader, TumbleLoader } from '../../../Components/Loader';
 import { PageDeserializer } from '../../../Components/PageComponents/tools/PageDeserializer';
-import { useStore } from '../../../data/store';
+import { useStore } from '../../../data/Stores/store';
 import { css, cx } from 'emotion';
 import { flex, expandHeight } from '../../../css/classes';
 import { themeVar } from '../../../Components/Style/ThemeVars';

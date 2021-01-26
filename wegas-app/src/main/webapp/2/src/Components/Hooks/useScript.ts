@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { instantiate } from '../../data/scriptable';
 import { VariableDescriptor as VDSelect } from '../../data/selectors';
-import { useStore, store } from '../../data/store';
+import { useStore, store } from '../../data/Stores/store';
 import {
   defaultFeatures,
   FeatureContext,
@@ -58,7 +58,7 @@ interface GlobalVariableClass {
 }
 
 interface GlobalClasses {
-    Function: typeof globalThis['Function']
+  Function: typeof globalThis['Function'];
   gameModel?: Readonly<SGameModel>;
   self?: Readonly<SPlayer>;
   API_VIEW: View;
@@ -374,7 +374,7 @@ function transpileToFunction(script: string) {
   const fnBody = formatScriptToFunctionBody(script);
   const fnScript = '"use strict"; undefined;' + transpile(fnBody);
 
-    return new globals.Function(fnScript);
+  return new globals.Function(fnScript);
 }
 
 const memoClientScriptEval = (() => {

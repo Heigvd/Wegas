@@ -9,7 +9,7 @@ import { EntityChooser } from '../../EntityChooser';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
 import { safeClientScriptEval } from '../../Hooks/useScript';
-import { useStore } from '../../../data/store';
+import { useStore } from '../../../data/Stores/store';
 import { ConnectedQuestionDisplay } from '../../Outputs/Question/Question';
 import {
   IScript,

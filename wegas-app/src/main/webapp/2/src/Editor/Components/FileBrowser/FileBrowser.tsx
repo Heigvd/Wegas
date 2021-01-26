@@ -7,7 +7,7 @@ import { classNameOrEmpty } from '../../../Helper/className';
 
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
 
-import { StoreDispatch, useStore } from '../../../data/store';
+import { StoreDispatch, useStore } from '../../../data/Stores/store';
 import { State } from '../../../data/Reducer/reducers';
 
 import { mainLayoutId } from '../Layout';

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { css } from 'emotion';
 import Header from './Header';
 import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
-import { useStore } from '../../data/store';
+import { useStore } from '../../data/Stores/store';
 import { visitIndex } from '../../Helper/pages';
 import { PageLoader } from './Page/PageLoader';
 import { ComponentMap } from './LinearTabLayout/DnDTabLayout';

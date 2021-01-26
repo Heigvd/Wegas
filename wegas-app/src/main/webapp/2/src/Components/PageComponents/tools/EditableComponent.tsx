@@ -24,7 +24,7 @@ import {
   usePagesStateStore,
   isComponentFocused,
   PageStateAction,
-} from '../../../data/pageStore';
+} from '../../../data/Stores/pageStore';
 import {
   WegasComponentOptionsActions,
   WegasComponentActionsProperties,
@@ -41,7 +41,7 @@ import { useDropFunctions } from '../../Hooks/useDropFunctions';
 import { themeVar } from '../../Style/ThemeVars';
 import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
 import { TumbleLoader } from '../../Loader';
-import { ThunkResult, store } from '../../../data/store';
+import { ThunkResult, store } from '../../../data/Stores/store';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { manageResponseHandler } from '../../../data/actions';
 // import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
@@ -105,7 +105,7 @@ function awaitExecute(
   actions: [string, WegasComponentOptionsAction][],
   context?: { [variable: string]: unknown },
 ): ThunkResult {
-  return async function(dispatch, getState) {
+  return async function (dispatch, getState) {
     const sortedActions = actions.sort(
       ([, v1], [, v2]) =>
         (v1.priority ? v1.priority : 0) - (v2.priority ? v2.priority : 0),
@@ -164,7 +164,7 @@ export function onComponentClick(
     ) as WegasComponentOptionsActions,
   );
 
-  return function(event: React.MouseEvent<HTMLElement, MouseEvent>) {
+  return function (event: React.MouseEvent<HTMLElement, MouseEvent>) {
     if (stopPropagation) {
       event.stopPropagation();
     }
