@@ -17,7 +17,7 @@ import { IGameModelLanguage } from 'wegas-ts-api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 
 const edition = { color: themeVar.Common.colors.ActiveColor };
-const simple = { color: themeVar.Common.colors.TextColor };
+const simple = { color: themeVar.Common.colors.DarkTextColor };
 
 const title = 'Translation Manager';
 

@@ -24,7 +24,7 @@ const menuItemStyle = css({
   cursor: 'pointer',
   borderStyle: 'solid',
   borderWidth: themeVar.Common.dimensions.BorderWidth,
-  borderColor: themeVar.Common.colors.BorderColor,
+  borderColor: themeVar.Common.colors.PrimaryColor,
   margin: '2px',
   ':hover': {
     backgroundColor: themeVar.Common.colors.HoverColor,

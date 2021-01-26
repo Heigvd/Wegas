@@ -31,7 +31,7 @@ const popupStyle = css({
   borderRadius: themeVar.Common.dimensions.BorderRadius,
   borderWidth: themeVar.Common.dimensions.BorderWidth,
   borderStyle: 'solid',
-  borderColor: themeVar.Common.colors.MainColor,
+  borderColor: themeVar.Common.colors.PrimaryColor,
 });
 
 interface Popup {

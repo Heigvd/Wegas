@@ -20,6 +20,7 @@ import {
 } from './ThemeVars';
 import { expandBoth } from '../../css/classes';
 
+
 export type ColorType = Exclude<React.CSSProperties['color'], undefined>;
 
 interface ThemeColors extends DefaultThemeColors {
@@ -110,29 +111,34 @@ interface ThemeContextValues {
 
 export const defaultThemeValues: ThemeValues = {
   colors: {
-    'Main color': '#1565C0',
+    'Primary color': '#1565C0',
+    'Primary color shade' : '#0B4F9D',
+    'Primary color tint' : '#4D96EA',
+    'Primary color pastel' : '#CFE5FF',
     'Secondary color': '#00499c',
+    'Secondary color shade': '#03346C',
+    'Secondary color tint': '#1D67BB',
+    'Secondary color pastel': '#ADD3FF',
+    'Accent color': 'hotpink',
     'Background color': 'white',
-    'Border color': 'rgba(96,169,255,1.0)',
-    'Secondary background color': 'rgba(208,224,243,1.0)',
-    'Text color': '#1565C0',
+    'Secondary background color': '#EAEFF5',
+    'Dark background color': '#192F47',
+    'Dark secondary background color': '#07182B',
+    'Text color': '#232323',
     'Secondary text color': 'white',
     'Disabled color': 'lightgrey',
     'Error color': 'red',
-    'Highlight color': 'hotpink',
-    'Hover color': 'rgba(208,224,243,1.0)',
     'Warning color': '#ff9d00',
     'Success color': 'green',
-    'Header color': 'rgba(208,224,243,1.0)',
   },
   dimensions: {
     'Border radius': '5px',
-    'Border width': '5px',
+    'Border width': '2px',
     'Font size 1': '2em',
     'Font size 2': '1.75em',
-    'Font size 3': '1.5em',
-    'Font size 4': '1.25em',
-    'Font size 5': '1.25em',
+    'Font size 3': '1.25em',
+    'Font size 4': '1em',
+    'Font size 5': '0.9em',
   },
   others: {
     'Font family 1': '"Courier New"',

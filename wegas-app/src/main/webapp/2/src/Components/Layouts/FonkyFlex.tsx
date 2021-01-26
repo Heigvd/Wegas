@@ -43,7 +43,7 @@ const containerStyle = css({
 });
 
 const splitterStyle = css({
-  backgroundColor: themeVar.Common.colors.MainColor,
+  backgroundColor: themeVar.Common.colors.PrimaryColor,
 });
 
 export const defaultFlexContainerStyle: React.CSSProperties = {
