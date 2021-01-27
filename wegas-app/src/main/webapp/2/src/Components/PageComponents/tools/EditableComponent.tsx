@@ -32,6 +32,7 @@ import {
   defaultWegasComponentOptionsActions,
   WegasComponentOptionsAction,
   wegasComponentActions,
+  PageComponentContext,
 } from './options';
 import { PlayerInfoBullet } from './InfoBullet';
 import { EditHandle } from './EditHandle';
@@ -44,7 +45,8 @@ import { TumbleLoader } from '../../Loader';
 import { ThunkResult, store } from '../../../data/Stores/store';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { manageResponseHandler } from '../../../data/actions';
-// import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
+import { pagesContextStateStore } from '../../../data/Stores/pageContextStore';
+import { addSetterToState } from '../../Hooks/useScript';
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {
@@ -101,9 +103,21 @@ const showBordersStyle = css({
 
 // Helper functions
 
+export function assembleStateAndContext(
+  context: PageComponentContext = {},
+  state?: PageComponentContext,
+) {
+  return {
+    Context: {
+      ...addSetterToState(state || pagesContextStateStore.getState()),
+      ...context,
+    },
+  };
+}
+
 function awaitExecute(
   actions: [string, WegasComponentOptionsAction][],
-  context?: { [variable: string]: unknown },
+  context?: PageComponentContext,
 ): ThunkResult {
   return async function (dispatch, getState) {
     const sortedActions = actions.sort(
@@ -116,20 +130,13 @@ function awaitExecute(
         const action = v as WegasComponentOptionsActions['impactVariable'];
         if (action) {
           const gameModelId = getState().global.currentGameModelId;
-          //        const result = await asyncRunScript(
-          //        gameModelId,
-          //          parseAndRunClientScript(v.impact, context) as IScript,
-          //          undefined,
-          //        );
 
           const result = await asyncRunLoadedScript(
             gameModelId,
             action.impact,
             undefined,
             undefined,
-            {
-              Context: context,
-            },
+            assembleStateAndContext(context),
           );
 
           dispatch(manageResponseHandler(result, dispatch, getState().global));
@@ -174,10 +181,6 @@ export function onComponentClick(
       // eslint-disable-next-line no-alert
       confirm(confirmClick)
     ) {
-      // if (confirmClick) {
-      //   setWaitConfirmation(true);
-      // } else if (!confirmClick || waitConfirmation) {
-      //execute();
       store.dispatch(awaitExecute(onClickActions, context));
     }
   };

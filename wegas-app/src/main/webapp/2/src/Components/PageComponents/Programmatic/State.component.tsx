@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
+import { setPagesContextState } from '../../../data/Stores/pageContextStore';
 import { createScript } from '../../../Helper/wegasEntites';
+import { wlog } from '../../../Helper/wegaslog';
+import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import {
   FlexListProps,
@@ -65,19 +68,24 @@ function ChildrenDeserializer({
 }
 
 function State({ children, context, exposeAs, initialState }: StateProps) {
+  const initRef = React.useRef<unknown>();
+  const exposeAsRef = React.useRef<string>();
+
   const init = safeClientScriptEval(initialState, context);
-  const [state, setState] = React.useState(init);
 
-  if (context) {
-    context[exposeAs] = {
-      state,
-      setState,
-    };
-  }
+  React.useEffect(() => {
+    if (
+      deepDifferent(initRef.current, init) ||
+      exposeAsRef.current !== exposeAs
+    ) {
+      initRef.current = init;
+      exposeAsRef.current = exposeAs;
+      wlog('setSTATE');
+      setPagesContextState(exposeAs, init);
+    }
+  }, [exposeAs, init]);
 
-  return (
-    <React.Fragment key={JSON.stringify(state)}>{children}</React.Fragment>
-  );
+  return <>{children}</>;
 }
 
 registerComponent(

@@ -28,6 +28,10 @@ import {
   SPeerReviewDescriptor,
 } from 'wegas-ts-api';
 
+export interface PageComponentContext {
+  [item: string]: unknown;
+}
+
 export interface WegasComponentOptionsAction {
   priority?: number;
 }
@@ -35,25 +39,25 @@ export interface WegasComponentOptionsAction {
 export interface OpenPageAction {
   pageLoaderName: IScript;
   pageId: IScript;
-  context?: { [item: string]: any };
+  context?: PageComponentContext;
 }
 interface OpenURLAction {
   url: string;
 }
 interface OpenFileAction {
   filePath: IScript;
-  context?: { [item: string]: any };
+  context?: PageComponentContext;
 }
 interface ImpactVariableAction {
   impact: IScript;
 }
 interface LocalScriptEvalAction {
   script: IScript;
-  context?: { [item: string]: any };
+  context?: PageComponentContext;
 }
 interface OpenPopupPageAction {
   pageId: IScript;
-  context?: { [item: string]: any };
+  context?: PageComponentContext;
 }
 interface PlaySoundAction {
   filePath: string;

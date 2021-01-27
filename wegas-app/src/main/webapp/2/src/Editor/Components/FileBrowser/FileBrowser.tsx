@@ -69,14 +69,19 @@ export function FileBrowser({
   const comp = React.useRef(); // Safeguard to avoid changing state when unmounted comp
 
   React.useEffect(() => {
+    // Allows to cancel the state update in case the component is unmounted before promise finishes
+    let run = true;
     FileAPI.getFileMeta(defaultFilePath ? defaultFilePath : undefined)
       .then(file => setRootFile(file))
       .catch(({ statusText }: Response) => {
-        if (comp.current) {
+        if (run && comp.current) {
           setRootFile(undefined);
           setError(statusText);
         }
       });
+    return () => {
+      run = false;
+    };
   }, [defaultFilePath]);
 
   return rootFile ? (

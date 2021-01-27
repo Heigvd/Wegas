@@ -11,7 +11,10 @@ import {
   flexlayoutChoices,
   defaultFlexLayoutOptionsKeys,
 } from '../../Layouts/FlexList';
-import { WegasComponentProps } from '../tools/EditableComponent';
+import {
+  assembleStateAndContext,
+  WegasComponentProps,
+} from '../tools/EditableComponent';
 import {
   classStyleIdShema,
   clientAndServerScriptChoices,
@@ -77,7 +80,12 @@ function PlayerModal({
         }
         if (server) {
           store.dispatch(
-            runLoadedScript(server, Player.selectCurrent(), undefined, context),
+            runLoadedScript(
+              server,
+              Player.selectCurrent(),
+              undefined,
+              assembleStateAndContext(context),
+            ),
           );
         }
       }}
