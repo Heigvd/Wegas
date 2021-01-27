@@ -2,7 +2,6 @@ import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import { setPagesContextState } from '../../../data/Stores/pageContextStore';
 import { createScript } from '../../../Helper/wegasEntites';
-import { wlog } from '../../../Helper/wegaslog';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import {
