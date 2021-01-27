@@ -9,7 +9,7 @@ import { Actions } from '../../../data';
 import { Toggler } from '../../Inputs/Boolean/Toggler';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { IBooleanDescriptor, IScript } from 'wegas-ts-api';
+import { IScript, SBooleanDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
 import {
@@ -18,7 +18,7 @@ import {
   useOnVariableChange,
 } from './tools';
 import { TumbleLoader } from '../../Loader';
-import { useComponentScript } from '../../Hooks/useComponentScript';
+import { useCurrentPlayer } from '../../../data/selectors/Player';
 
 interface PlayerBooleanProps extends WegasComponentProps {
   /**
@@ -56,11 +56,8 @@ function PlayerBoolean({
   id,
   onVariableChange,
 }: PlayerBooleanProps) {
-  const {
-    descriptor,
-    instance,
-    notFound,
-  } = useComponentScript<IBooleanDescriptor>(script, context);
+  const bool = useScript<SBooleanDescriptor | boolean>(script, context);
+  const player = useCurrentPlayer();
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
@@ -68,7 +65,7 @@ function PlayerBoolean({
 
   const BooleanComponent = type === 'toggler' ? Toggler : CheckBox;
 
-  return notFound ? (
+  return bool == null ? (
     <TumbleLoader />
   ) : (
     <BooleanComponent
@@ -76,16 +73,16 @@ function PlayerBoolean({
       style={style}
       id={id}
       label={textLabel}
-      value={instance?.getValue()}
+      value={typeof bool === 'object' ? bool.getValue(player) : bool}
       disabled={disabled}
       readOnly={inactive}
       onChange={v => {
         if (handleOnChange) {
           handleOnChange(v);
-        } else {
+        } else if (typeof bool === 'object') {
           store.dispatch(
             Actions.VariableInstanceActions.runScript(
-              `Variable.find(gameModel,"${descriptor?.getName()}").setValue(self, ${v});`,
+              `Variable.find(gameModel,"${bool.getName()}").setValue(self, ${v});`,
             ),
           );
         }
@@ -101,10 +98,9 @@ registerComponent(
     name: 'Boolean',
     icon: 'check-square',
     schema: {
-      script: schemaProps.scriptVariable({
+      script: schemaProps.scriptBoolean({
         label: 'Variable',
         required: true,
-        returnType: ['SBooleanDescriptor'],
       }),
       label: schemaProps.scriptString({ label: 'Label' }),
       type: schemaProps.select({

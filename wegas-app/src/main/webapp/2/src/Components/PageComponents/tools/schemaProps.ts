@@ -33,6 +33,7 @@ import { CustomScriptProps } from '../../../Editor/Components/FormView/CustomScr
 import { IAbstractContentDescriptor, IScript } from 'wegas-ts-api';
 import { ScriptContext } from '../../Hooks/useGlobalLibs';
 import { ScriptableStringProps } from '../../../Editor/Components/FormView/ScriptableString';
+import { ScriptableBooleanProps } from '../../../Editor/Components/FormView/ScriptableBoolean';
 
 type TypedProps<T extends { view: {} }> = Schema<
   T['view'] & {
@@ -539,6 +540,29 @@ const simpleSchemaProps = {
       type: 'scriptableString',
       layout,
       richText,
+    },
+  }),
+  scriptBoolean: ({
+    label,
+    required = false,
+    value = undefined,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: CommonSchemaProps &
+    ValueSchemaProps<IScript>): TypedProps<ScriptableBooleanProps> => ({
+    required,
+    type: 'object',
+    index,
+    value,
+    view: {
+      borderTop,
+      index,
+      featureLevel,
+      label,
+      type: 'scriptableBoolean',
+      layout,
     },
   }),
   array: ({

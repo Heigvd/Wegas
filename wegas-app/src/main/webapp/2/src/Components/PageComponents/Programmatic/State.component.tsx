@@ -96,7 +96,6 @@ function State({
     ) {
       initRef.current = init;
       exposeAsRef.current = exposeAs;
-      wlog('setSTATE');
       setPagesContextState(exposeAs, init);
     }
   }, [exposeAs, init, localState]);

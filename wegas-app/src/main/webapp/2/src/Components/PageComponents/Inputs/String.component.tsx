@@ -76,10 +76,7 @@ function PlayerStringInput({
 
   return text == null ? (
     <TumbleLoader />
-  ) : // <pre className={className} style={style} id={id}>
-  //   Not found: {script?.content}
-  // </pre>
-  validator ? (
+  ) : validator ? (
     <Validate
       value={typeof text === 'object' ? text.getValue(player) : text}
       onValidate={onChange}
