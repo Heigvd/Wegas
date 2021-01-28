@@ -20,7 +20,7 @@ import {
   IWhChoiceDescriptor,
   IWhChoiceInstance,
 } from '../../../data/scriptable/impl/QuestionDescriptor';
-import { StoreDispatch } from '../../../data/store';
+import { StoreDispatch } from '../../../data/Stores/store';
 import {
   translate,
   createTranslation,

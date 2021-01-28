@@ -73,11 +73,11 @@ export const tabStyle = css({
   padding: '5px',
 });
 export const inactiveTabStyle = css({
-  color: themeVar.Common.colors.SecondaryTextColor,
-  backgroundColor: themeVar.Common.colors.MainColor,
+  color: themeVar.Common.colors.LightTextColor,
+  backgroundColor: themeVar.Common.colors.PrimaryColor,
 });
 export const activeTabStyle = css({
-  color: themeVar.Common.colors.SecondaryTextColor,
+  color: themeVar.Common.colors.LightTextColor,
   backgroundColor: themeVar.Common.colors.ActiveColor,
 });
 function Tab({

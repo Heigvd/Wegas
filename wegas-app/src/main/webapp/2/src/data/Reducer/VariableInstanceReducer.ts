@@ -2,7 +2,7 @@ import { Reducer } from 'redux';
 import u from 'immer';
 import { ActionType, StateActions, manageResponseHandler } from '../actions';
 import { VariableInstanceAPI } from '../../API/variableInstance.api';
-import { ThunkResult, store } from '../store';
+import { ThunkResult, store } from '../Stores/store';
 import { Player } from '../selectors';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { QuestionDescriptorAPI } from '../../API/questionDescriptor.api';

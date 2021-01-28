@@ -4,7 +4,7 @@ import {
   pageComponentFactory,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { store } from '../../../data/store';
+import { store } from '../../../data/Stores/store';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, SStringDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
@@ -76,10 +76,7 @@ function PlayerStringInput({
 
   return text == null ? (
     <TumbleLoader />
-  ) : // <pre className={className} style={style} id={id}>
-  //   Not found: {script?.content}
-  // </pre>
-  validator ? (
+  ) : validator ? (
     <Validate
       value={typeof text === 'object' ? text.getValue(player) : text}
       onValidate={onChange}

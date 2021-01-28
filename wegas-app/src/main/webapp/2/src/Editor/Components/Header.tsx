@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { GameModel, Global } from '../../data/selectors';
 import { css, cx } from 'emotion';
-import { StoreConsumer, useStore, store } from '../../data/store';
+import { StoreConsumer, useStore, store } from '../../data/Stores/store';
 import { Actions } from '../../data';
 import { FontAwesome } from './Views/FontAwesome';
 import {

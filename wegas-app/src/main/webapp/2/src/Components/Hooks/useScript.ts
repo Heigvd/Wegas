@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { instantiate } from '../../data/scriptable';
 import { VariableDescriptor as VDSelect } from '../../data/selectors';
-import { useStore, store } from '../../data/store';
+import { useStore, store } from '../../data/Stores/store';
 import {
   defaultFeatures,
   FeatureContext,
@@ -42,6 +42,12 @@ import { createScript, isScript } from '../../Helper/wegasEntites';
 import { cloneDeep } from 'lodash-es';
 import { State } from '../../data/Reducer/reducers';
 import { formatScriptToFunctionBody } from '../../Editor/Components/ScriptEditors/WegasScriptEditor';
+import {
+  pagesContextStateStore,
+  setPagesContextState,
+  usePagesContextStateStore,
+} from '../../data/Stores/pageContextStore';
+import { PageComponentContext } from '../PageComponents/tools/options';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -58,7 +64,7 @@ interface GlobalVariableClass {
 }
 
 interface GlobalClasses {
-    Function: typeof globalThis['Function']
+  Function: typeof globalThis['Function'];
   gameModel?: Readonly<SGameModel>;
   self?: Readonly<SPlayer>;
   API_VIEW: View;
@@ -374,7 +380,32 @@ function transpileToFunction(script: string) {
   const fnBody = formatScriptToFunctionBody(script);
   const fnScript = '"use strict"; undefined;' + transpile(fnBody);
 
-    return new globals.Function(fnScript);
+  return new globals.Function(fnScript);
+}
+
+export function addSetterToState(state: PageComponentContext) {
+  return Object.entries(state).reduce((o, [k, s]) => {
+    if (typeof s === 'object' && s !== null && 'state' in s) {
+      return {
+        ...o,
+        [k]: {
+          ...s,
+          setState: (newState: ((oldState: unknown) => unknown) | unknown) => {
+            const newS =
+              typeof newState === 'function'
+                ? newState((s as { state: unknown }).state)
+                : newState;
+            setPagesContextState(k, newS);
+          },
+        },
+      };
+    } else {
+      return {
+        ...o,
+        [k]: s,
+      };
+    }
+  }, {});
 }
 
 const memoClientScriptEval = (() => {
@@ -382,12 +413,13 @@ const memoClientScriptEval = (() => {
 
   return <T extends ScriptReturnType>(
     script?: string | IScript,
-    context?: {
-      [name: string]: unknown;
-    },
+    context: PageComponentContext = {},
+    state?: PageComponentContext,
   ): T extends IMergeable ? unknown : T => {
-    globals.Context = context || {};
-    //const scriptContent = typeof script === 'string' ? script : script?.content;
+    const currentState = addSetterToState(
+      state || pagesContextStateStore.getState(),
+    );
+    globals.Context = { ...currentState, ...context };
 
     let scriptAsFunction;
     if (!script) {
@@ -424,8 +456,11 @@ export function clientScriptEval<T extends ScriptReturnType>(
   context?: {
     [name: string]: unknown;
   },
+  state?: {
+    [name: string]: unknown;
+  },
 ): T extends IMergeable ? unknown : T {
-  return memoClientScriptEval(script, context);
+  return memoClientScriptEval(script, context, state);
 }
 
 export function safeClientScriptEval<T extends ScriptReturnType>(
@@ -434,9 +469,12 @@ export function safeClientScriptEval<T extends ScriptReturnType>(
     [name: string]: unknown;
   },
   catchCB?: (e: Error) => void,
+  state?: {
+    [name: string]: unknown;
+  },
 ): T extends IMergeable ? unknown : T {
   try {
-    return clientScriptEval<T>(script, context);
+    return clientScriptEval<T>(script, context, state);
   } catch (e) {
     const scriptContent = typeof script === 'string' ? script : script?.content;
     wwarn(
@@ -465,22 +503,24 @@ export function useScript<T extends ScriptReturnType>(
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
   const globalContexts = useGlobalContexts();
 
+  const state = usePagesContextStateStore(s => s);
+
   const fn = React.useCallback(() => {
     if (Array.isArray(script)) {
       return script.map(scriptItem =>
-        safeClientScriptEval<T>(scriptItem, context, catchCB),
+        safeClientScriptEval<T>(scriptItem, context, catchCB, state),
       );
     } else {
-      return safeClientScriptEval<T>(script, context, catchCB);
+      return safeClientScriptEval<T>(script, context, catchCB, state);
     }
-  }, [script, context, catchCB]);
+  }, [script, context, state, catchCB]);
 
   const returnValue = useStore(s => {
     setGlobals(globalContexts, s);
     return fn();
-  }, deepDifferent) as any;
+  }, deepDifferent);
 
-  return returnValue;
+  return returnValue as any;
 }
 
 /**
@@ -503,7 +543,7 @@ export function useUnsafeScript<T extends ScriptReturnType>(
   const returnValue = useStore(s => {
     setGlobals(globalContexts, s);
     return fn();
-  }, deepDifferent) as any;
+  }, deepDifferent);
 
   return returnValue;
 }

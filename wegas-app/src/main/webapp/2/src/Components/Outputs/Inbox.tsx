@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useTranslate } from '../../Editor/Components/FormView/translatable';
 import { Player } from '../../data/selectors';
-import { useStore, store } from '../../data/store';
+import { useStore, store } from '../../data/Stores/store';
 import { EntityChooser } from '../EntityChooser';
 import { cx } from 'emotion';
 import {

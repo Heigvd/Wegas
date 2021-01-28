@@ -2,7 +2,7 @@ import * as React from 'react';
 import produce from 'immer';
 import { Actions } from '../../../data';
 import { getIcon, getLabel, getChildren } from '../../editionConfig';
-import { StoreDispatch, store } from '../../../data/store';
+import { StoreDispatch, store } from '../../../data/Stores/store';
 import {
   DropMenu,
   DropMenuProps,
