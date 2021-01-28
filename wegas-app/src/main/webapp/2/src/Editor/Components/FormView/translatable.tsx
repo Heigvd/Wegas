@@ -95,13 +95,18 @@ export default function translatable<P extends EndProps>(
     const { lang, availableLang } = React.useContext(languagesCTX);
     const [currentLanguage, setCurrentLanguage] = React.useState<string>(lang);
 
+    React.useEffect(() => {
+        setCurrentLanguage(lang);
+    }, [lang]);
+
     const view = React.useMemo(
       () => ({
         ...props.view,
         label: <span>{`${props.view.label}`}</span>,
         onLanguage: setCurrentLanguage,
+        currentLanguage,
       }),
-      [props.view],
+      [props.view, currentLanguage],
     );
 
     const pvalue: ITranslatableContent =
@@ -119,7 +124,7 @@ export default function translatable<P extends EndProps>(
 
     if ((view as any).readOnly) {
       // variable is protected by the model
-      const theLanguage = availableLang.find(al => al.code === lang);
+      const theLanguage = availableLang.find(al => al.code === currentLanguage);
       if (theLanguage != null && theLanguage.visibility === 'PRIVATE') {
         // but this language is not defined by the model
         if (
@@ -132,6 +137,7 @@ export default function translatable<P extends EndProps>(
         }
       }
     }
+
 
     return (
       <Comp
