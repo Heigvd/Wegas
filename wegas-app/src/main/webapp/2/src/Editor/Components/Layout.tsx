@@ -2,7 +2,7 @@ import * as React from 'react';
 import { css } from 'emotion';
 import Header from './Header';
 import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
-import { useStore } from '../../data/store';
+import { useStore } from '../../data/Stores/store';
 import { visitIndex } from '../../Helper/pages';
 import { PageLoader } from './Page/PageLoader';
 import { ComponentMap } from './LinearTabLayout/DnDTabLayout';
@@ -18,8 +18,8 @@ const FileBrowserWithMeta = React.lazy(
 );
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
 const LanguageEditor = React.lazy(() => import('./LanguageEditor'));
-const PlayLocal = React.lazy(() => import('./PlayLocal'));
-const PlayServer = React.lazy(() => import('./PlayServer'));
+// const PlayLocal = React.lazy(() => import('./PlayLocal'));
+// const PlayServer = React.lazy(() => import('./PlayServer'));
 const InstancesEditor = React.lazy(
   () => import('./Variable/InstanceProperties'),
 );
@@ -27,7 +27,7 @@ const ThemeEditor = React.lazy(
   () => import('../../Components/Style/ThemeEditor'),
 );
 
-const Tester = React.lazy(() => import('../../Testers/FlowChartTester'));
+// const Tester = React.lazy(() => import('../../Testers/SchemaPropsTester'));
 
 const layout = css({
   display: 'flex',
@@ -42,10 +42,10 @@ export const availableLayoutTabs = {
   Files: <FileBrowserWithMeta />,
   Scripts: <LibraryEditor />,
   'Language Editor': <LanguageEditor />,
-  'Play Local': <PlayLocal />,
-  'Play Server': <PlayServer />,
+  // 'Play Local': <PlayLocal />,
+  // 'Play Server': <PlayServer />,
   'Instances Editor': <InstancesEditor />,
-  Tester: <Tester />,
+  // Tester: <Tester />,
   'Theme Editor': <ThemeEditor />,
   'Page Editor': <PageEditor />,
 } as const;

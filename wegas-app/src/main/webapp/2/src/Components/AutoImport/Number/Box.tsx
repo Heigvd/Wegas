@@ -12,7 +12,7 @@ import { TumbleLoader } from '../../Loader';
 
 const boxStyle = css({
   backgroundColor: themeVar.Common.colors.HeaderColor,
-  color: themeVar.Common.colors.TextColor,
+  color: themeVar.Common.colors.DarkTextColor,
   display: 'inline-block',
   width: '1ex',
   height: '1ex',

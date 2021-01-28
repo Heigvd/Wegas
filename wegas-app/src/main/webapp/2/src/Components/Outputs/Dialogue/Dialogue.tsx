@@ -15,7 +15,7 @@ import {
 } from '../../../css/classes';
 import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReducer';
 import { useCurrentPlayer } from '../../../data/selectors/Player';
-import { store } from '../../../data/store';
+import { store } from '../../../data/Stores/store';
 import { themeVar } from '../../Style/ThemeVars';
 import { DialogueChoice } from './DialogueChoice';
 import { DialogueEntry } from './DialogueEntry';
@@ -27,9 +27,11 @@ import { WaitingLoader } from './WaitingLoader';
 const dialogEntryStyle = css({
   padding: '5px',
   marginBottom: '3px',
+  maxHeight: '40vh',
+  overflow: 'auto',
   '&>.player': {
     alignSelf: 'flex-end',
-    backgroundColor: themeVar.Common.colors.HeaderColor,
+    backgroundColor: themeVar.Common.colors.PrimaryColor,
   },
 });
 
@@ -42,7 +44,9 @@ const choicePannelStyle = css({
 });
 
 const dialogueDisplayStyle = css({
-  border: 'solid',
+  border: 'none',
+  boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.1)',
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
 });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -60,11 +60,11 @@ const componentTypeStyle = (
     width: show ? 'auto' : 0,
     overflow: 'hidden',
     backgroundColor: selected
-      ? themeVar.Common.colors.MainColor
+      ? themeVar.Common.colors.PrimaryColor
       : themeVar.Common.colors.HeaderColor,
     color: selected
       ? themeVar.Common.colors.HeaderColor
-      : themeVar.Common.colors.MainColor,
+      : themeVar.Common.colors.PrimaryColor,
     margin: show ? '5px' : 0,
     cursor: enabled ? 'pointer' : 'initial',
     '&::after': {
@@ -84,11 +84,11 @@ const componentStyle = (show: boolean) =>
     maxWidth: show ? 'fit-content' : 0,
     overflow: 'hidden',
     backgroundColor: themeVar.Common.colors.HeaderColor,
-    color: themeVar.Common.colors.MainColor,
+    color: themeVar.Common.colors.PrimaryColor,
     margin: show ? '5px' : 0,
     cursor: 'pointer',
     ':hover': {
-      backgroundColor: themeVar.Common.colors.MainColor,
+      backgroundColor: themeVar.Common.colors.PrimaryColor,
       color: themeVar.Common.colors.HeaderColor,
     },
   });

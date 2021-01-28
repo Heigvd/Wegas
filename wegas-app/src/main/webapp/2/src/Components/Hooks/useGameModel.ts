@@ -1,5 +1,5 @@
 import { GameModel } from '../../data/selectors';
-import { useStore } from '../../data/store';
+import { useStore } from '../../data/Stores/store';
 import { shallowDifferent } from './storeHookFactory';
 
 /**

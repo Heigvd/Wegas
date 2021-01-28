@@ -26,7 +26,7 @@ import { MessageString } from '../MessageString';
 import { IAbstractContentDescriptor, IGameModelContent } from 'wegas-ts-api';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { librariesCTX } from '../LibrariesLoader';
-import { store } from '../../../data/store';
+import { store } from '../../../data/Stores/store';
 
 type IVisibility = IAbstractContentDescriptor['visibility'];
 const visibilities: IVisibility[] = [

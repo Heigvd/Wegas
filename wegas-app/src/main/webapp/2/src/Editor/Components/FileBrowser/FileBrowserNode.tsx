@@ -22,7 +22,7 @@ import { classNameOrEmpty } from '../../../Helper/className';
 
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
 
-import { store, StoreDispatch } from '../../../data/store';
+import { store, StoreDispatch } from '../../../data/Stores/store';
 import { GameModel } from '../../../data/selectors';
 import { editFile } from '../../../data/Reducer/globalState';
 
@@ -54,7 +54,7 @@ const clickableStyle = css({
 
 const noToggleStyle = css({
   margin: '0 0.8em',
-  color: themeVar.Common.colors.TextColor,
+  color: themeVar.Common.colors.DarkTextColor,
 });
 
 const previewStyle = css(

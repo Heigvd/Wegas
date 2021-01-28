@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useStore } from '../../data/store';
+import { useStore } from '../../data/Stores/store';
 import { State } from '../../data/Reducer/reducers';
 import { GameModel } from '../../data/selectors';
 import { classesCTX } from '../Contexts/ClassesProvider';

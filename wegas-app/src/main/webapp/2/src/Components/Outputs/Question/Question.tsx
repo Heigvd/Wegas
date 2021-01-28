@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { store, useStore } from '../../../data/store';
+import { store, useStore } from '../../../data/Stores/store';
 import {
   IQuestionDescriptor,
   IWhQuestionDescriptor,

@@ -5,8 +5,8 @@ import {
   EditingState,
   eventManagement,
   eventHandlersManagement,
-} from './Reducer/globalState';
-import { StateActions } from './actions';
+} from '../Reducer/globalState';
+import { StateActions } from '../actions';
 import { composeEnhancers } from './store';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 

@@ -14,7 +14,7 @@ import { themeVar } from '../../Style/ThemeVars';
 
 const cbxStyle = css({
   cursor: 'pointer',
-  color: themeVar.Common.colors.TextColor,
+  color: themeVar.Common.colors.DarkTextColor,
   textAlign: 'center',
   ['$:not(.disabled):not(.readonly):hover']: {
     backgroundColor: themeVar.Common.colors.HoverColor,

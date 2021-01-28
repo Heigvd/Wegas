@@ -4,7 +4,7 @@ import { Toolbar } from '../../Components/Toolbar';
 import { LanguagesAPI } from '../../API/languages.api';
 import { useGameModel } from '../../Components/Hooks/useGameModel';
 import { GameModel } from '../../data/selectors';
-import { getDispatch } from '../../data/store';
+import { getDispatch } from '../../data/Stores/store';
 import { Actions } from '../../data';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from './FormView';
@@ -17,7 +17,7 @@ import { IGameModelLanguage } from 'wegas-ts-api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 
 const edition = { color: themeVar.Common.colors.ActiveColor };
-const simple = { color: themeVar.Common.colors.TextColor };
+const simple = { color: themeVar.Common.colors.DarkTextColor };
 
 const title = 'Translation Manager';
 
