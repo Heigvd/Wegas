@@ -89,11 +89,10 @@ export function translate(
 export default function translatable<P extends EndProps>(
   Comp: React.ComponentType<P>,
 ) {
-  const { lang } = React.useContext(languagesCTX);
-
   function Translated(
     props: TranslatableProps & Omit<P, 'value' | 'onChange'>,
   ) {
+    const { lang } = React.useContext(languagesCTX);
     const [currentLanguage, setCurrentLanguage] = React.useState<string>(lang);
 
     const view = React.useMemo(
