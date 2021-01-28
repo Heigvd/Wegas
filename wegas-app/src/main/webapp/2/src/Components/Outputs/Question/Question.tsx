@@ -15,6 +15,7 @@ import { getChoices } from '../../../data/scriptable/impl/QuestionDescriptor';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { CbxQuestionDisplay } from './CbxQuestion';
 import { css } from 'emotion';
+import { select } from '../../../data/selectors/VariableDescriptorSelector';
 
 export interface QuestionInfo {
   questionD: Readonly<IQuestionDescriptor>;
@@ -33,11 +34,12 @@ export const questionStyle = css({
  * @param question QuestionDescriptor to query
  */
 export function questionInfo(question: IQuestionDescriptor): QuestionInfo {
+  const questionD = select<IQuestionDescriptor>(question.id)!;
   const choicesD = getChoices(question);
   const choicesI = choicesD.map(c => getInstance(c));
 
   return {
-    questionD: question,
+    questionD,
     questionI: getInstance(question),
     choicesD,
     choicesI,
@@ -61,6 +63,7 @@ export function ConnectedSimpleQuestionDisplay({
     entity,
   ]);
   const state = useStore(questionInfoSelector);
+
   return state.questionD.cbx ? (
     <CbxQuestionDisplay {...state} dispatch={store.dispatch} />
   ) : (
