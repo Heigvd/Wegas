@@ -857,7 +857,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
                 }
             }
         } else {
-            throw WegasErrorMessage.error("Moving \"" + vd.getLabel().translateOrEmpty(vd.getGameModel()) + "\" is not authorized");
+            throw WegasErrorMessage.error("Moving \"" + vd.getEditorLabel() + "\" is not authorized");
         }
     }
 
@@ -874,9 +874,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
     /**
      * Move given descriptor in targetListDescriptor at specified position.
      *
-     * @param descriptorId           id of the descrptor to move
+     * @param descriptorId           id of the descriptor to move
      * @param targetListDescriptorId id of the new list
-     * @param index                  new position in the targetlist
+     * @param index                  new position in the targetList
      */
     public void move(final Long descriptorId, final Long targetListDescriptorId, final Integer index) {
         this.move(descriptorId, (DescriptorListI) this.find(targetListDescriptorId), index);
