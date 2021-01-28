@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -14,6 +13,7 @@ import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.jcr.jta.JCRClient;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.game.GameModelContent;
@@ -99,7 +99,10 @@ public class EntityListener {
             Mergeable m = (Mergeable) o;
             // new entities in a protected gameModel and an INTERNAL visibility scope is prohibited
             if (m.belongsToProtectedGameModel() && m.getInheritedVisibility() == ModelScoped.Visibility.INTERNAL) {
-                throw WegasErrorMessage.error("Not authorized to create " + o);
+                // but creating translation is allowed
+                if (o instanceof Translation == false) {
+                    throw WegasErrorMessage.error("Not authorized to create " + o);
+                }
             }
         }
 

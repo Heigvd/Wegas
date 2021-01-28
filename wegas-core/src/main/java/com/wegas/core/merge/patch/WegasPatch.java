@@ -251,7 +251,7 @@ public abstract class WegasPatch {
         PatchMode mode;
 
         logger.info("Get MODE: target: {}; from: {}; to: {}; parentMode: {}; iV: {}; v: {}", target, from, to, parentMode, inheritedVisibility, visibility);
-        /* 
+        /*
          * Determine patch mode
          */
         if (PatchMode.DELETE.equals(parentMode)) {
