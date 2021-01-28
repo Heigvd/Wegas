@@ -130,7 +130,7 @@ export function ScriptableBoolean(props: ScriptableBooleanProps): JSX.Element {
               <div className={scriptEditStyle}>
                 <WegasScriptEditor
                   value={script}
-                  returnType={['boolean']}
+                  returnType={['boolean', 'SBooleanDescriptor']}
                   onChange={value =>
                     props.onChange(
                       props.value

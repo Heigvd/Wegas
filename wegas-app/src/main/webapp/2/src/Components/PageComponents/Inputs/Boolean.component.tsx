@@ -4,7 +4,7 @@ import {
   pageComponentFactory,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { store } from '../../../data/Stores/store';
+import { store, useStore } from '../../../data/Stores/store';
 import { Actions } from '../../../data';
 import { Toggler } from '../../Inputs/Boolean/Toggler';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
@@ -65,6 +65,10 @@ function PlayerBoolean({
 
   const BooleanComponent = type === 'toggler' ? Toggler : CheckBox;
 
+  const value = useStore(() =>
+    typeof bool === 'object' ? bool.getValue(player) : bool,
+  );
+
   return bool == null ? (
     <TumbleLoader />
   ) : (
@@ -73,7 +77,7 @@ function PlayerBoolean({
       style={style}
       id={id}
       label={textLabel}
-      value={typeof bool === 'object' ? bool.getValue(player) : bool}
+      value={value}
       disabled={disabled}
       readOnly={inactive}
       onChange={v => {
