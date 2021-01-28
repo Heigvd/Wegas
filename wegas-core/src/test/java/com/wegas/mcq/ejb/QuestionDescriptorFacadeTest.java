@@ -26,6 +26,7 @@ import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.test.arquillian.AbstractArquillianTest;
+import java.util.List;
 import javax.inject.Inject;
 import javax.naming.NamingException;
 import org.junit.Assert;
@@ -492,7 +493,9 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
                 wegasFactory.createResult("result"),
                 wegasFactory.createResult("result_2"));
 
-        choice.getResults().remove(0);
+        List<Result> results = choice.getResults();
+        results.remove(0);
+        choice.setResults(results);
         variableDescriptorFacade.update(choice.getId(), choice);
 
         assertEquals("result_2", ((ChoiceDescriptor) variableDescriptorFacade.find(choice.getId())).getResults().get(0).getName());
