@@ -264,7 +264,8 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
      * @return the roles
      */
     public Collection<Role> getRoles() {
-        return roles;
+        // never return managed list  !
+        return new ArrayList<>(roles);
     }
 
     /**
@@ -275,7 +276,6 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         if (roles != null) {
             for (Role r : roles) {
                 this.addRole(r);
-                r.addUser(this);
             }
         }
     }
@@ -286,6 +286,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     public void addRole(Role role) {
         if (!roles.contains(role)) {
             this.roles.add(role);
+            role.addUser(this);
         }
     }
 
@@ -297,6 +298,7 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
     public void removeRole(Role role) {
         if (this.roles.contains(role)) {
             this.roles.remove(role);
+            role.removeUser(this);
         }
     }
 

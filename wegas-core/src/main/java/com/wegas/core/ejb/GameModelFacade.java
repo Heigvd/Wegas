@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -759,6 +758,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 case MODEL:
                     requestManager.assertCanInstantiateGameModel(srcGameModel);
                     // prefer the reference
+                    GameModel theModel = srcGameModel;
                     GameModel ref = modelFacade.getReference(srcGameModel);
                     if (ref != null) {
                         srcGameModel = ref;
@@ -766,7 +766,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     newGameModel = new GameModel();
                     // merge deep but skip PRIVATE content
                     newGameModel.deepMerge(srcGameModel);
-                    newGameModel.setBasedOn(srcGameModel);
+                    newGameModel.setBasedOn(theModel);
                     break;
 
                 case SCENARIO:

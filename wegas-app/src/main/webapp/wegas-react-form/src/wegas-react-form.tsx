@@ -108,6 +108,7 @@ YUI.add('wegas-react-form', Y => {
                                     return {
                                         code: l.get('code'),
                                         label: l.get('lang'),
+                                        visibility: l.get('visibility'),
                                     };
                                 })}
                         >

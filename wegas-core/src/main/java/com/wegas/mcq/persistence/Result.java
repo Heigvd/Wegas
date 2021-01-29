@@ -17,6 +17,7 @@ import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
+import com.wegas.core.persistence.Orderable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.annotations.WegasConditions.And;
 import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
@@ -76,7 +77,7 @@ import javax.persistence.Version;
     }
 )
 @NamedQuery(name = "Result.findByName", query = "SELECT DISTINCT res FROM Result res WHERE res.choiceDescriptor.id=:choicedescriptorId AND res.name LIKE :name")
-public class Result extends AbstractEntity implements LabelledEntity {
+public class Result extends AbstractEntity implements LabelledEntity, Orderable {
 
     private static final long serialVersionUID = 1L;
 
@@ -148,6 +149,9 @@ public class Result extends AbstractEntity implements LabelledEntity {
     @Visible(IsQuestionCbx.class)
     private TranslatableContent ignorationAnswer;
 
+    @JsonIgnore
+    private Integer index;
+
     /*
      *
      */
@@ -197,6 +201,20 @@ public class Result extends AbstractEntity implements LabelledEntity {
     @Override
     public Long getId() {
         return this.id;
+    }
+
+    @Override
+    @JsonIgnore
+    public Integer getOrder() {
+        return getIndex();
+    }
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
     }
 
     /**

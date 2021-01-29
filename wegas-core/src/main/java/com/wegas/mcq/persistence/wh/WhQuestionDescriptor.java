@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -11,9 +10,12 @@ package com.wegas.mcq.persistence.wh;
 import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.annotations.Param;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -35,7 +37,6 @@ import javax.persistence.Index;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import jdk.nashorn.api.scripting.JSObject;
 
@@ -65,8 +66,6 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
     private TranslatableContent description;
 
     @OneToMany(mappedBy = "parentWh", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-    @OrderColumn(name = "whd_items_order")
-
     @WegasEntityProperty(includeByDefault = false, view = @View(label = "items", value = Hidden.class), notSerialized = true)
     private List<VariableDescriptor> items = new ArrayList<>();
 
@@ -94,6 +93,12 @@ public class WhQuestionDescriptor extends VariableDescriptor<WhQuestionInstance>
     @JsonView(Views.ExportI.class)
     @Scriptable(label = "getItems", wysiwyg = false)
     public List<VariableDescriptor> getItems() {
+        return Helper.copyAndSortModifiable(this.items, new EntityComparators.OrderComparator<>());
+    }
+
+    @JsonIgnore
+    @Override
+    public List<VariableDescriptor> getRawItems() {
         return this.items;
     }
 
