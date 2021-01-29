@@ -9,15 +9,7 @@ import { assembleStateAndContext } from '../tools/EditableComponent';
 import { clientAndServerScriptChoices } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
-/**
- * OnFileClick - the script to execute when a file is clicked.
- * The file is added in the context as an IAbstractContentDescriptor
- */
-export interface OnVariableChange {
-  /**
-   * exposeVariableAs - the id of the stored file in Context
-   */
-  exposeVariableAs?: IScript;
+export interface ClientAndServerAction {
   /**
    * client - the client script
    */
@@ -26,6 +18,17 @@ export interface OnVariableChange {
    * server - the server script
    */
   server?: IScript;
+}
+
+/**
+ * OnFileClick - the script to execute when a file is clicked.
+ * The file is added in the context as an IAbstractContentDescriptor
+ */
+export interface OnVariableChange extends ClientAndServerAction {
+  /**
+   * exposeVariableAs - the id of the stored file in Context
+   */
+  exposeVariableAs?: IScript;
 }
 
 export const onVariableChangeSchema = (label: string) =>

@@ -9,7 +9,7 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, SStringDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { SimpleInput } from '../../Inputs/SimpleInput';
-import { safeClientScriptEval, useScript } from '../../Hooks/useScript';
+import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import {
@@ -19,6 +19,7 @@ import {
 } from './tools';
 import { useCurrentPlayer } from '../../../data/selectors/Player';
 import {
+  useOnCancelAction,
   Validate,
   ValidatorComponentProps,
   validatorSchema,
@@ -56,6 +57,7 @@ function PlayerStringInput({
   const player = useCurrentPlayer();
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
+  const { handleOnCancel } = useOnCancelAction(onCancel, context);
 
   const { disabled, readOnly } = options;
 
@@ -80,7 +82,7 @@ function PlayerStringInput({
     <Validate
       value={typeof text === 'object' ? text.getValue(player) : text}
       onValidate={onChange}
-      onCancel={() => safeClientScriptEval(onCancel, context)}
+      onCancel={handleOnCancel}
     >
       {(value, onChange) => {
         return (
