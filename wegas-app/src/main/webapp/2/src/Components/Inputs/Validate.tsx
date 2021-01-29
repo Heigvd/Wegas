@@ -5,6 +5,7 @@ import { runLoadedScript } from '../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../data/selectors';
 import { usePagesContextStateStore } from '../../data/Stores/pageContextStore';
 import { store } from '../../data/Stores/store';
+import { CleaningHashmapMethods } from '../../Editor/Components/FormView/HashList';
 import { safeClientScriptEval } from '../Hooks/useScript';
 import { ClientAndServerAction } from '../PageComponents/Inputs/tools';
 import { assembleStateAndContext } from '../PageComponents/tools/EditableComponent';
@@ -22,6 +23,17 @@ const validatorStyle = css({
 const inputStyle = css({
   padding: '5px',
 });
+
+export interface ValidatorComponentProps {
+  /**
+   * validator - if true, will put a handle that will fire the change event
+   */
+  validator?: boolean;
+  /**
+   * onCancel - will be called if the modiofication is cancelled
+   */
+  onCancel?: IScript | ClientAndServerAction;
+}
 
 interface ValidateProps<T> {
   value: T;
@@ -55,16 +67,37 @@ export function Validate<T>({
   );
 }
 
-export interface ValidatorComponentProps {
-  /**
-   * validator - if true, will put a handle that will fire the change event
-   */
-  validator?: boolean;
-  /**
-   * onCancel - will be called if the modiofication is cancelled
-   */
-  onCancel?: IScript | ClientAndServerAction;
+/**
+ * Detect an old onCancel value that was a IScript object
+ * @param value
+ */
+
+function errorDetector(value?: object | null | undefined): boolean {
+  return (
+    value != null &&
+    '@class' in value &&
+    (value as IScript)['@class'] === 'Script'
+  );
 }
+
+/**
+ * Transform an IScript object into {client:Iscript} to avoid validatorSchema bad parsing
+ * @param value
+ */
+function cleaningMethod(value?: object | null | undefined): object {
+  if (value == null) {
+    return {};
+  } else {
+    return {
+      client: value,
+    };
+  }
+}
+
+const cleaning: CleaningHashmapMethods = {
+  errorDetector,
+  cleaningMethod,
+};
 
 export const validatorSchema = {
   validator: schemaProps.boolean({ label: 'Validator' }),
@@ -72,6 +105,7 @@ export const validatorSchema = {
     label: 'On cancel action',
     required: false,
     choices: clientAndServerScriptChoices,
+    cleaning,
   }),
 };
 

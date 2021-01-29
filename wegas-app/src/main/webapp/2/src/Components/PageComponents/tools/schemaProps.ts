@@ -24,7 +24,10 @@ import {
 import { IArrayProps } from '../../../Editor/Components/FormView/Array';
 import { StatementViewProps } from '../../../Editor/Components/FormView/Script/Expressions/ExpressionEditor';
 import { createScript } from '../../../Helper/wegasEntites';
-import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
+import {
+  CleaningHashmapMethods,
+  HashListChoices,
+} from '../../../Editor/Components/FormView/HashList';
 import {
   FileFilter,
   FilePickingType,
@@ -643,9 +646,11 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     objectViewStyle,
+    cleaning,
   }: {
     choices?: HashListChoices;
     objectViewStyle?: boolean;
+    cleaning?: CleaningHashmapMethods;
   } & CommonSchemaProps &
     ValueSchemaProps<object>) => ({
     required,
@@ -661,6 +666,7 @@ const simpleSchemaProps = {
       layout,
       borderTop,
       objectViewStyle,
+      cleaning,
     },
   }),
   file: ({
