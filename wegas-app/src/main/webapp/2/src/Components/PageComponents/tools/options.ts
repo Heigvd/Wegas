@@ -5,7 +5,7 @@ import { clientScriptEval, useScript } from '../../Hooks/useScript';
 import { fileURL } from '../../../API/files.api';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
-import { wlog } from '../../../Helper/wegaslog';
+import { wlog, wwarn } from '../../../Helper/wegaslog';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 import { schemaProps } from './schemaProps';
@@ -130,7 +130,7 @@ export const wegasComponentActions: WegasComponentActions = {
     try {
       store.dispatch(runScript(props.impact, Player.selectCurrent()));
     } catch (error) {
-      wlog(error);
+      wwarn(error);
     }
   },
   localScriptEval: props => {
