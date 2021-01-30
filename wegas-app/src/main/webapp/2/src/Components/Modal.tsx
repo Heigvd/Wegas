@@ -3,7 +3,6 @@ import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { IconComp } from '../Editor/Components/Views/FontAwesome';
 import { classNameOrEmpty } from '../Helper/className';
-import { wlog } from '../Helper/wegaslog';
 import { themeCTX } from './Style/Theme';
 import { themeVar } from './Style/ThemeVars';
 
@@ -105,7 +104,6 @@ export function Modal({
 
   const bgClick = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      wlog('clic');
       if (onExit && e.target === e.currentTarget) {
         onExit();
       }
