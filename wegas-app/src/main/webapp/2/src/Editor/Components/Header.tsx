@@ -28,6 +28,7 @@ import { editorEventRemove } from '../../data/Reducer/globalState';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { State } from '../../data/Reducer/reducers';
+import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 
 function wegasEventSelector(s: State) {
   return s.global.events;
@@ -126,12 +127,14 @@ export default function Header() {
           )}
           <FontAwesome icon="user" />
           <span className={componentMarginLeft}>{user.name}</span>
-          <Button
+          <ConfirmButton
             icon="undo"
             tooltip="Restart"
-            onClick={() => {
-              dispatch(Actions.VariableDescriptorActions.reset());
-              dispatch(Actions.EditorActions.resetPageLoader());
+            onAction={success => {
+              if (success) {
+                dispatch(Actions.VariableDescriptorActions.reset());
+                dispatch(Actions.EditorActions.resetPageLoader());
+              }
             }}
             className={componentMarginLeft}
           />

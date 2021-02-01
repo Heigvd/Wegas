@@ -1,9 +1,13 @@
+import { css } from 'emotion';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { css } from 'emotion';
+import { IconComp } from '../Editor/Components/Views/FontAwesome';
+import { classNameOrEmpty } from '../Helper/className';
 import { themeCTX } from './Style/Theme';
 import { themeVar } from './Style/ThemeVars';
-import { classNameOrEmpty } from '../Helper/className';
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// styles
 
 const modalStyle = css({
   position: 'absolute',
@@ -12,24 +16,41 @@ const modalStyle = css({
   overflow: 'auto',
   minWidth: '100%',
   height: '100%',
-  padding: '1.5em 0',
+  padding: '1.5em',
   backgroundColor: 'rgba(0,0,0,0.8)',
   zIndex: 1000,
   cursor: 'pointer',
   '&>div': {
-    // width: 'fit-content',
-    backgroundColor: themeVar.Common.colors.BackgroundColor,
-    borderWidth: themeVar.Common.dimensions.BorderWidth,
     margin: '0 auto',
-    padding: '10px',
-    boxShadow: '0 0 1px 1px',
-    maxWidth: 'calc(100% - 3em)',
+    maxWidth: '100%',
   },
 });
 
 const modalContentStyle = css({
+  backgroundColor: themeVar.Common.colors.BackgroundColor,
+  padding: '10px',
   cursor: 'initial',
+  boxShadow: '0 0 1px 1px',
 });
+
+const modalCloseDivStyle = css({
+  display: 'flex',
+  position: 'absolute',
+  top: 0,
+  left: 'calc(100% - 1.5em)',
+  width: '1.5em',
+  height: '1.5em',
+  cursor: 'pointer',
+  color: 'white',
+});
+
+const modalCloseButtonStyle = css({
+  margin: 'auto',
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
+// React element
 
 export type ModalProps = React.PropsWithChildren<
   {
@@ -117,6 +138,9 @@ export function Modal({
           style={innerStyle}
           className={modalContentStyle + classNameOrEmpty(innerClassName)}
         >
+          <div className={modalCloseDivStyle} onClick={onExit}>
+            <IconComp icon="window-close" className={modalCloseButtonStyle} />
+          </div>
           {children}
         </div>
       </div>,
