@@ -163,7 +163,7 @@ public class VariableDescriptorController {
             VariableDescriptor parent = variableDescriptorFacade.find(gm, entityName);
 
             if (parent instanceof DescriptorListI) {
-                return variableDescriptorFacade.createChild(gm, (DescriptorListI) parent, entity, false);
+                return variableDescriptorFacade.createChild(gm, (DescriptorListI) parent, entity, false, false);
             } else {
                 throw WegasErrorMessage.error("Parent entity does not allow children");
             }
