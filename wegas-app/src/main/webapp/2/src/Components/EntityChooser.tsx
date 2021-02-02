@@ -3,6 +3,7 @@ import { css, cx } from 'emotion';
 import { deepDifferent } from './Hooks/storeHookFactory';
 import { flex, flexColumn, flexRow, grow, justifyCenter } from '../css/classes';
 import { themeVar } from './Style/ThemeVars';
+import { classNameOrEmpty } from '../Helper/className';
 
 const entityChooser = css({
   width: '100%',
@@ -72,6 +73,7 @@ interface EntityChooserProps<E extends IAbstractEntity> {
   entities: E[];
   children: React.FunctionComponent<{ entity: E }>;
   entityLabel: (entity: E) => React.ReactNode;
+  customLabelStyle?: (entity: E) => string | undefined;
   autoOpenFirst?: boolean;
 }
 
@@ -79,6 +81,7 @@ export function EntityChooser<E extends IAbstractEntity>({
   entities,
   children: Children,
   entityLabel,
+  customLabelStyle,
   autoOpenFirst,
 }: EntityChooserProps<E>) {
   const [entity, setEntity] = React.useState<E>();
@@ -115,9 +118,9 @@ export function EntityChooser<E extends IAbstractEntity>({
               });
             }}
           >
-            <div className={labelStyle}>{entityLabel(e)}</div>
+            <div className={labelStyle + classNameOrEmpty(customLabelStyle && customLabelStyle(e))}>{entityLabel(e)}</div>
             {/* <div className={labelArrow} /> */}
-          </div>
+            </div>
         ))}
       </div>
       {entity != null && (

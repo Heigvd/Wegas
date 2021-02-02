@@ -143,7 +143,7 @@ export const defaultThemeValues: ThemeValues = {
   others: {
     'Font family 1': '"Courier New"',
     'Font family 2': '"Montserrat"',
-    'Font family 3': '"Arial"',
+    'Font family 3': '"Lato"',
   },
 };
 
