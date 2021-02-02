@@ -60,11 +60,11 @@ export const VariableDescriptorAPI = {
     gameModelId: number,
     playerId: number,
     script: IScript,
-    context?: IVariableDescriptor,
+    variableContext?: IVariableDescriptor,
   ) {
     return managedModeRequest(
       `${VD_BASE(gameModelId)}Script/Run/${playerId}/${
-        context ? context.id : ''
+        variableContext ? variableContext.id : ''
       }`,
       {
         method: 'POST',

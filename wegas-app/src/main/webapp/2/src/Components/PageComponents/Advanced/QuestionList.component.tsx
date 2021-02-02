@@ -5,7 +5,6 @@ import {
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { useScript } from '../../Hooks/useScript';
 import {
   IScript,
   SListDescriptor,
@@ -13,6 +12,7 @@ import {
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import QuestionList from '../../Outputs/Question/QuestionList';
 import { entityIs } from '../../../data/entities';
+import { useScript } from '../../Hooks/useScript';
 
 interface QuestionListDisplayProps extends WegasComponentProps {
   questionList?: IScript;

@@ -19,7 +19,7 @@ import { read } from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
 import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
-import { useStore, store } from '../../../data/store';
+import { useStore, store } from '../../../data/Stores/store';
 import { EntityChooser } from '../../EntityChooser';
 import { themeVar } from '../../Style/ThemeVars';
 import { ConnectedQuestionDisplay } from './Question';

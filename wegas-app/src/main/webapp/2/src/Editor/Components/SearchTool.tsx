@@ -4,7 +4,7 @@ import { Actions } from '../../data';
 import { editorLabel } from '../../data/methods/VariableDescriptorMethods';
 import { State } from '../../data/Reducer/reducers';
 import { VariableDescriptor } from '../../data/selectors';
-import { StoreConsumer, StoreDispatch } from '../../data/store';
+import { StoreConsumer, StoreDispatch } from '../../data/Stores/store';
 import { getEntityActions, getIcon } from '../editionConfig';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { withDefault, IconComp } from './Views/FontAwesome';

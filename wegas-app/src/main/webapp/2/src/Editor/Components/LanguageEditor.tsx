@@ -4,7 +4,7 @@ import { Toolbar } from '../../Components/Toolbar';
 import { LanguagesAPI } from '../../API/languages.api';
 import { useGameModel } from '../../Components/Hooks/useGameModel';
 import { GameModel } from '../../data/selectors';
-import { getDispatch } from '../../data/store';
+import { getDispatch } from '../../data/Stores/store';
 import { Actions } from '../../data';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from './FormView';

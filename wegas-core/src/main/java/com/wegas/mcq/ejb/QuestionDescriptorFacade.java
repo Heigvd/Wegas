@@ -110,7 +110,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
     public Result findResult(final ChoiceDescriptor choiceDescriptor, final String name) throws WegasNoResultException {
         //if (!Helper.isNullOrEmpty(name)) {
         if (name != null) {
-            for (Result result : choiceDescriptor.getResults()) {
+            for (Result result : choiceDescriptor.getRawResults()) {
                 if (name.equals(result.getName())) {
                     return result;
                 }
@@ -202,7 +202,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
             }
         } else if (choiceInstance.getCurrentResultIndex() != null
             && choiceInstance.getCurrentResultIndex() >= 0
-            && choiceInstance.getCurrentResultIndex() < choice.getResults().size()) {
+            && choiceInstance.getCurrentResultIndex() < choice.getRawResults().size()) {
             // Backward compat
 
             logger.error(" !!!!  REVIVE RESULT BY INDEX !!!! (so 2013...)");
@@ -260,7 +260,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         if (!isCbx
             && questionDescriptor.getMaxReplies() != null
             && questionInstance.getReplies(player).size() >= questionDescriptor.getMaxReplies()) {
-            //if (questionDescriptor.getMaxReplies() == 1) { } else {}; specific message ??? 
+            //if (questionDescriptor.getMaxReplies() == 1) { } else {}; specific message ???
             throw WegasErrorMessage.error("You have already answered this question");
         }
 

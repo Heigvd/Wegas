@@ -20,7 +20,8 @@ import {
   IWhChoiceDescriptor,
   IWhChoiceInstance,
 } from '../../../data/scriptable/impl/QuestionDescriptor';
-import { StoreDispatch } from '../../../data/store';
+import { select } from '../../../data/selectors/VariableDescriptorSelector';
+import { StoreDispatch } from '../../../data/Stores/store';
 import {
   translate,
   createTranslation,
@@ -48,10 +49,11 @@ interface WhQuestionInfo {
 export function whQuestionInfo(
   question: IWhQuestionDescriptor,
 ): WhQuestionInfo {
+  const questionD = select<IWhQuestionDescriptor>(question.id)!;
   const choicesD = getChoices(question);
   const choicesI = choicesD.map(c => getInstance<IWhChoiceInstance>(c));
   return {
-    questionD: question,
+    questionD,
     questionI: getInstance(question),
     choicesD,
     choicesI,

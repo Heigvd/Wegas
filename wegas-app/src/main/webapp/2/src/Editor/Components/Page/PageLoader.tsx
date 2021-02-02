@@ -3,7 +3,7 @@ import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvi
 import { ThemeProvider, themeCTX } from '../../../Components/Style/Theme';
 import { TextLoader, TumbleLoader } from '../../../Components/Loader';
 import { PageDeserializer } from '../../../Components/PageComponents/tools/PageDeserializer';
-import { useStore } from '../../../data/store';
+import { useStore } from '../../../data/Stores/store';
 import { css, cx } from 'emotion';
 import { flex, expandHeight } from '../../../css/classes';
 import { themeVar } from '../../../Components/Style/ThemeVars';
@@ -44,6 +44,9 @@ interface PageLoaderProps extends ClassStyleId {
   displayFrame?: boolean;
   themeMode?: string;
   loadTimer?: number;
+  context?: {
+    [name: string]: unknown;
+  };
 }
 
 export function PageLoader({
@@ -54,6 +57,7 @@ export function PageLoader({
   style,
   id,
   loadTimer = 0,
+  context = {},
 }: PageLoaderProps) {
   const selectedPageSelector = React.useCallback(
     (s: State) => (selectedPageId ? s.pages[selectedPageId] : undefined),
@@ -96,7 +100,7 @@ export function PageLoader({
                 pageId={selectedPageId}
                 Container={FlexItem}
                 dropzones={{}}
-                context={{}}
+                context={context}
               />
             ) : (
               <pre>{`The page is undefined`}</pre>

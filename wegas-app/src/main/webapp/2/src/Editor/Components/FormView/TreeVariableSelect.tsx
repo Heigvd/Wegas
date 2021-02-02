@@ -2,7 +2,7 @@ import * as React from 'react';
 import { SearchableItems } from '../Tree/searchable';
 import { TreeSelect, Item } from '../Tree/TreeSelect';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { useStore } from '../../../data/store';
+import { useStore } from '../../../data/Stores/store';
 import { varIsList } from '../../../data/entities';
 import { VariableDescriptor, GameModel } from '../../../data/selectors';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';

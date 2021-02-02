@@ -3,7 +3,7 @@ import * as React from 'react';
 import { WegasScriptEditor } from './ScriptEditors/WegasScriptEditor';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { Player } from '../../data/selectors';
-import { store } from '../../data/store';
+import { store } from '../../data/Stores/store';
 import { runScript } from '../../data/Reducer/VariableInstanceReducer';
 
 const container = css({ width: '100%' });

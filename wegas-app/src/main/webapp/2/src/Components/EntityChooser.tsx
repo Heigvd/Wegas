@@ -48,7 +48,7 @@ const labelContainer = css({
 const activeLabel = css({
   [`&>.${labelStyle}`]: {
     backgroundColor: themeVar.Common.colors.ActiveColor,
-    boxShadow: 'inset 0 0 10px rgba(0, 0, 0, 0.4)'
+    boxShadow: 'inset 0 0 10px rgba(0, 0, 0, 0.4)',
   },
   /* [`&>.${labelArrow}`]: {
     borderLeft: `20px solid ${themeVar.Common.colors.PrimaryColor}`,
@@ -58,7 +58,7 @@ const activeLabel = css({
     [`&>.${labelStyle}`]: {
       backgroundColor: themeVar.Common.colors.PrimaryColor,
     },
-   /*  [`&>.${labelArrow}`]: {
+    /*  [`&>.${labelArrow}`]: {
       borderLeft: `20px solid ${themeVar.Common.colors.ActiveColor}`,
     }, */
   },

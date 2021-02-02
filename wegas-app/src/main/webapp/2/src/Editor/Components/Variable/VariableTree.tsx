@@ -13,7 +13,7 @@ import {
   getLabel,
   getChildren,
 } from '../../editionConfig';
-import { StoreDispatch, useStore, store } from '../../../data/store';
+import { StoreDispatch, useStore, store } from '../../../data/Stores/store';
 import { css, cx } from 'emotion';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { DropMenu } from '../../../Components/DropMenu';

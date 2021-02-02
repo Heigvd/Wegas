@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { createStore, applyMiddleware, Reducer } from 'redux';
-import { composeEnhancers } from '../data/store';
+import { composeEnhancers } from '../data/Stores/store';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { createStoreConnector } from '../data/connectStore';
 import u from 'immer';

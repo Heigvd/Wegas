@@ -5,7 +5,7 @@ import {
   GameModel,
   Player,
 } from '../selectors';
-import { store } from '../store';
+import { store } from '../Stores/store';
 import {
   ITranslatableContent,
   IVariableDescriptor,

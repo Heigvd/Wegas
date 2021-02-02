@@ -8,7 +8,6 @@
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.JCRFacade;
 import com.wegas.core.ejb.ModelFacade;
@@ -372,7 +371,7 @@ public class VariableDescriptorController {
         return variableDescriptorFacade.cherryPick(gameModelId, vd.getName(),
             source.getId(), vdName, newScopeType, withLang);
     }
-    
+
 
     /**
      * Class for customizing cherryPicked Surveys.

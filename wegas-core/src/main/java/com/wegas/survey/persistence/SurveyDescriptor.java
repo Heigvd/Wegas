@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -16,7 +15,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
@@ -41,9 +42,7 @@ import javax.persistence.Index;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderColumn;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 /**
  * Descriptor of the Survey variable<br>
@@ -80,7 +79,6 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      */
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "survey-sections")
-    @OrderColumn(name = "index")
     //@JsonView(Views.EditorI.class)
     @WegasEntityProperty(includeByDefault = false,
         optional = false, nullable = false, proposal = ValueGenerators.EmptyArray.class,
@@ -125,7 +123,13 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     @JsonView(Views.ExportI.class)
     @Scriptable(label = "getItems", wysiwyg = false)
     public List<SurveySectionDescriptor> getItems() {
-        return this.items;
+        return Helper.copyAndSortModifiable(this.items, new EntityComparators.OrderComparator<>());
+    }
+
+    @JsonIgnore
+    @Override
+    public List<SurveySectionDescriptor> getRawItems() {
+        return items;
     }
 
     /**
@@ -150,21 +154,10 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
         this.tokens.remove(token);
     }
 
-    /**
-     * @param items the items (i.e. sections) to set
-     */
-    @Override
-    public void setItems(List<SurveySectionDescriptor> items) {
-        this.items = items;
-        for (SurveySectionDescriptor ssd : items) {
-            ssd.setSurvey(this);
-        }
-    }
-
     @Override
     public void setGameModel(GameModel gm) {
         super.setGameModel(gm);
-        for (SurveySectionDescriptor ssd : this.getItems()) {
+        for (SurveySectionDescriptor ssd : this.getRawItems()) {
             ssd.setGameModel(gm);
         }
     }
