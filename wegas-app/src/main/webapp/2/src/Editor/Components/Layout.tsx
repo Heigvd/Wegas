@@ -19,7 +19,7 @@ const FileBrowserWithMeta = React.lazy(
 const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
 const LanguageEditor = React.lazy(() => import('./LanguageEditor'));
 // const PlayLocal = React.lazy(() => import('./PlayLocal'));
-// const PlayServer = React.lazy(() => import('./PlayServer'));
+const PlayServer = React.lazy(() => import('./PlayServer'));
 const InstancesEditor = React.lazy(
   () => import('./Variable/InstanceProperties'),
 );
@@ -43,7 +43,7 @@ export const availableLayoutTabs = {
   Scripts: <LibraryEditor />,
   'Language Editor': <LanguageEditor />,
   // 'Play Local': <PlayLocal />,
-  // 'Play Server': <PlayServer />,
+  'Play Server': <PlayServer />,
   'Instances Editor': <InstancesEditor />,
   // Tester: <Tester />,
   'Theme Editor': <ThemeEditor />,
