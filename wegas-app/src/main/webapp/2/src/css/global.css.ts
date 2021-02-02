@@ -2,11 +2,14 @@
 KEEP THIS FILE MINIMAL !!!
 */
 import { injectGlobal } from 'emotion';
+import { wlog } from '../Helper/wegaslog';
+const fontUrl = require("./fonts/Lato-Regular.ttf").default;
+wlog(`TADAAAAAA ${fontUrl}`);
 
 injectGlobal`
   @font-face {
   font-family: "Lato";
-  src: url("./src/css/fonts/Lato-Regular.ttf");
+  src: url("${fontUrl}");
   }
   html {
     font-size: 1em;
