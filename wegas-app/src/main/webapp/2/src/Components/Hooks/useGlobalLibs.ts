@@ -131,6 +131,7 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
             ? `type CurrentLanguages = ${currentLanguages};
         type View = 'Editor' | 'Instance' | 'Export' | 'Public';
         declare const API_VIEW : View;
+        declare const CurrentGame : IGame;
         interface EditorClass extends GlobalEditorClass {
           setLanguage: (lang: { code: SGameModelLanguage['code'] } | CurrentLanguages) => void;
         }

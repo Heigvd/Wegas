@@ -29,7 +29,7 @@ const teams: Reducer<Readonly<TeamState>> = u(
     }
     return state;
   },
-  CurrentGame.teams.reduce((prev, t) => {
+  (CurrentGame.teams || {}).reduce((prev, t) => {
     prev[t.id!] = t;
     return prev;
   }, {} as TeamState),

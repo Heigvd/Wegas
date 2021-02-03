@@ -48,6 +48,7 @@ import {
   usePagesContextStateStore,
 } from '../../data/Stores/pageContextStore';
 import { PageComponentContext } from '../PageComponents/tools/options';
+import { IGame } from 'wegas-ts-api';
 
 interface GlobalVariableClass {
   find: <T extends IVariableDescriptor>(
@@ -67,6 +68,7 @@ interface GlobalClasses {
   Function: typeof globalThis['Function'];
   gameModel?: Readonly<SGameModel>;
   self?: Readonly<SPlayer>;
+  CurrentGame: IGame;
   API_VIEW: View;
   Variable: GlobalVariableClass;
   Editor: GlobalEditorClass;
@@ -128,6 +130,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.gameModel = instantiate(gameModel);
   globals.self = instantiate(player);
   globals.API_VIEW = API_VIEW;
+  globals.CurrentGame = CurrentGame;
   // Variable class
   globals.Variable = {
     find: <T extends IVariableDescriptor>(_gm: unknown, name: string) => {

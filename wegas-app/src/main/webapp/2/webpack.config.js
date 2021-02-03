@@ -44,6 +44,7 @@ const modules = {
   entry: {
     editor: ['./src/Editor/index.tsx'],
     player: ['./src/player.tsx'],
+    trainer: ['./src/trainer.tsx'],
   },
   output: {
     path: path.join(__dirname, 'dist'),
