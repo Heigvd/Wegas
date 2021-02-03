@@ -1393,6 +1393,54 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
+    public void testItemsOrder() throws RepositoryException, WegasNoResultException, CloneNotSupportedException {
+        GameModel model = new GameModel();
+
+        model.setName("The Model");
+        model.setType(GameModel.GmType.MODEL);
+        gameModelFacade.createWithDebugGame(model);
+
+        ListDescriptor folder = wegasFactory.createList(model, model, "aFolder", "");
+        folder.setVisibility(Visibility.INHERITED);
+        variableDescriptorFacade.update(folder.getId(), folder);
+
+        NumberDescriptor third = wegasFactory.createNumberDescriptor(model, folder, "third", "third", Visibility.INHERITED, null, null, 3.0);
+
+        modelFacade.propagateModel(model.getId());
+
+        GameModel scenario = gameModelFacade.createScenarioWithDebugGame(model.getId());
+
+        ListDescriptor folder_gm1 = (ListDescriptor) scenario.getChildVariableDescriptors().get(0);
+        folder_gm1.getItems();
+
+        Assert.assertEquals(1, folder_gm1.getItems().size());
+
+        NumberDescriptor second = wegasFactory.createNumberDescriptor(model, folder, "second", "second", Visibility.INHERITED, null, null, 2.0);
+        NumberDescriptor first = wegasFactory.createNumberDescriptor(model, folder, "first", "first", Visibility.INHERITED, null, null, 1.0);
+
+        variableDescriptorFacade.move(second.getId(), folder.getId(), 0);
+        variableDescriptorFacade.move(first.getId(), folder.getId(), 0);
+
+        modelFacade.propagateModel(model.getId());
+
+        folder_gm1 = (ListDescriptor) variableDescriptorFacade.find(folder_gm1.getId());
+        Assert.assertEquals(3, folder_gm1.getItems().size());
+
+        Assert.assertEquals("first", folder_gm1.getItems().get(0).getName());
+        Assert.assertEquals("second", folder_gm1.getItems().get(1).getName());
+        Assert.assertEquals("third", folder_gm1.getItems().get(2).getName());
+
+        jpaCacheHelper.clearCacheLocal();
+
+        folder_gm1 = (ListDescriptor) variableDescriptorFacade.find(folder_gm1.getId());
+        Assert.assertEquals(3, folder_gm1.getItems().size());
+
+        Assert.assertEquals("first", folder_gm1.getItems().get(0).getName());
+        Assert.assertEquals("second", folder_gm1.getItems().get(1).getName());
+        Assert.assertEquals("third", folder_gm1.getItems().get(2).getName());
+    }
+
+    @Test
     public void testProtectedNumberDescriptorChange() throws RepositoryException, WegasNoResultException {
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");

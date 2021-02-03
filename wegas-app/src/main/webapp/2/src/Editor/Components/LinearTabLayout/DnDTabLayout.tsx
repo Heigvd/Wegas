@@ -23,7 +23,7 @@ import { themeVar } from '../../../Components/Style/ThemeVars';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 const tabButton = css({
-  color: themeVar.Common.colors.SecondaryTextColor,
+  color: themeVar.Common.colors.LightTextColor,
   ':hover': {
     color: themeVar.Common.colors.HoverTextColor,
   },

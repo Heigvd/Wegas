@@ -1,5 +1,8 @@
 import * as React from 'react';
-import { storeFactory, LocalGlobalState } from '../../../data/storeFactory';
+import {
+  storeFactory,
+  LocalGlobalState,
+} from '../../../data/Stores/storeFactory';
 import {
   AsyncVariableForm,
   parseEventFromIndex,
@@ -9,7 +12,7 @@ import {
 } from '../EntityEditor';
 import { css, cx } from 'emotion';
 import { Edition, closeEditor } from '../../../data/Reducer/globalState';
-import { StoreDispatch } from '../../../data/store';
+import { StoreDispatch } from '../../../data/Stores/store';
 import { createStoreConnector } from '../../../data/connectStore';
 import { flex, grow, autoScroll } from '../../../css/classes';
 import { InstancePropertiesProps } from '../Variable/InstanceProperties';

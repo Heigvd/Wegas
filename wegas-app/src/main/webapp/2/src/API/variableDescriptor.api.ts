@@ -60,11 +60,11 @@ export const VariableDescriptorAPI = {
     gameModelId: number,
     playerId: number,
     script: IScript,
-    context?: IVariableDescriptor,
+    variableContext?: IVariableDescriptor,
   ) {
     return managedModeRequest(
       `${VD_BASE(gameModelId)}Script/Run/${playerId}/${
-        context ? context.id : ''
+        variableContext ? variableContext.id : ''
       }`,
       {
         method: 'POST',
@@ -114,5 +114,11 @@ export const VariableDescriptorAPI = {
   },
   reset(gameModelId: number) {
     return managedModeRequest(`${VD_BASE(gameModelId)}Reset`);
+  },
+  getByIds(ids: number[], gameModelId: number) {
+    return managedModeRequest(`${VD_BASE(gameModelId)}ByIds`, {
+      method: 'POST',
+      body: JSON.stringify(ids),
+    });
   },
 };

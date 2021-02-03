@@ -4,7 +4,7 @@ import { Connection, Defaults, jsPlumbInstance } from 'jsplumb';
 import * as React from 'react';
 // import * as ReactDOMServer from 'react-dom/server';
 import { VariableDescriptor } from '../../data/selectors';
-import { StoreDispatch, useStore } from '../../data/store';
+import { StoreDispatch, useStore } from '../../data/Stores/store';
 import { entityIs } from '../../data/entities';
 import { Actions } from '../../data';
 import { Toolbar } from '../../Components/Toolbar';
@@ -17,7 +17,7 @@ import { EditorAction } from '../../data/Reducer/globalState';
 import { State as RState } from '../../data/Reducer/reducers';
 import { wlog } from '../../Helper/wegaslog';
 import { ComponentWithForm } from './FormView/ComponentWithForm';
-import { store } from '../../data/store';
+import { store } from '../../data/Stores/store';
 import {
   forceScroll,
   grow,
@@ -144,7 +144,7 @@ const JS_PLUMB_OPTIONS: Defaults = {
   ],
   PaintStyle: {
     strokeWidth: 1,
-    stroke: themeVar.Common.colors.MainColor,
+    stroke: themeVar.Common.colors.PrimaryColor,
     //@ts-ignore
     outlineStroke: 'white',
     outlineWidth: 2,
@@ -688,7 +688,7 @@ const initialStateStyle = css({
   borderStyle: 'double',
 });
 const activeStateStyle = css({
-  borderColor: themeVar.Common.colors.BorderColor,
+  borderColor: themeVar.Common.colors.PrimaryColor,
   backgroundColor: themeVar.Common.colors.WarningColor,
 });
 const sourceStyle = css({

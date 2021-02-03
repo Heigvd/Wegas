@@ -3,7 +3,7 @@ import * as React from 'react';
 import { IReply, IChoiceDescriptor } from 'wegas-ts-api';
 import { TranslatableContent } from '../../../data/i18n';
 import { VariableDescriptor } from '../../../data/selectors';
-import { StoreConsumer } from '../../../data/store';
+import { StoreConsumer } from '../../../data/Stores/store';
 import { Button } from '../../Inputs/Buttons/Button';
 import { themeVar } from '../../Style/ThemeVars';
 import {
@@ -13,9 +13,10 @@ import {
 } from './ChoiceContainer';
 
 const repliesContainer = css({
-  margin: '20px',
-  padding: '5px',
-  boxShadow: `0px 0px 5px ${themeVar.Common.colors.HeaderColor}`,
+  marginTop: '5px',
+  borderTop: '1px solid ' + themeVar.Common.colors.DisabledColor,
+  fontWeight: 'bold',
+  fontSize: themeVar.ComponentTitle.others.FontFamily5,
 });
 
 interface ReplyDisplayProps {

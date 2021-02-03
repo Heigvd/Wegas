@@ -11,7 +11,7 @@ import { IGameModelContent } from 'wegas-ts-api';
 
 // @ts-ignore
 import mainStyle from '!!raw-loader!../../css/defaultStyle.less';
-import { store } from '../../data/store';
+import { store } from '../../data/Stores/store';
 
 interface LibrariesContext {
   updateCSSLibraries: (name: string) => void;

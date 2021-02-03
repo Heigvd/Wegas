@@ -17,7 +17,7 @@ import * as ActionType from './actionTypes';
 import { discriminant, normalizeDatas, NormalizedData } from './normalize';
 import { closeEditor, EditingState, Edition } from './Reducer/globalState';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
-import { StoreDispatch, store } from './store';
+import { StoreDispatch, store } from './Stores/store';
 
 export { ActionType };
 export type ActionTypeValues = ValueOf<typeof ActionType>;

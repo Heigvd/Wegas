@@ -14,7 +14,7 @@ import {
   pageCTX,
   defaultPageCTX,
 } from '../../../Editor/Components/Page/PageEditor';
-import { useStore, store } from '../../../data/store';
+import { useStore, store } from '../../../data/Stores/store';
 import { ActionCreator } from '../../../data/actions';
 import { createScript } from '../../../Helper/wegasEntites';
 import { WegasComponentProps } from '../tools/EditableComponent';
@@ -29,7 +29,7 @@ const defaultPageAsScript = () =>
 function PlayerPageLoader({
   initialSelectedPageId = defaultPageAsScript(),
   name,
-  context,
+  context = {},
   className,
   style,
   id,
@@ -74,6 +74,7 @@ function PlayerPageLoader({
         id={id}
         selectedPageId={pageId}
         loadTimer={loadTimer}
+        context={context}
       />
     </pageCTX.Provider>
   );

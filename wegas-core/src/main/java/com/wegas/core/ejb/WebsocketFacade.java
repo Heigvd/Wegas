@@ -862,7 +862,7 @@ public class WebsocketFacade {
 
         @Override
         public Object process(MutableEntry<Long, OnlineUser> entry, Object... arguments) throws EntryProcessorException {
-            if (entry != null) {
+            if (entry != null && playerId != null) {
                 OnlineUser value = entry.getValue();
                 if (value != null) {
                     value.touch(playerId);

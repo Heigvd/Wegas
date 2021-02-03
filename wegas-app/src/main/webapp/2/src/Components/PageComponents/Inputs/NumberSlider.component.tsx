@@ -9,7 +9,7 @@ import {
   DisplayMode,
   displayModes,
 } from '../../Inputs/Number/NumberSlider';
-import { store } from '../../../data/store';
+import { store } from '../../../data/Stores/store';
 import { Actions } from '../../../data';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { INumberDescriptor, IScript } from 'wegas-ts-api';

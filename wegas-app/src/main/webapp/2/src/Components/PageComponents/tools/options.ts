@@ -1,11 +1,11 @@
 // OPTIONS -> ACTIONS
-import { store } from '../../../data/store';
+import { store } from '../../../data/Stores/store';
 import { ActionCreator } from '../../../data/actions';
 import { clientScriptEval, useScript } from '../../Hooks/useScript';
 import { fileURL } from '../../../API/files.api';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
-import { wlog } from '../../../Helper/wegaslog';
+import { wlog, wwarn } from '../../../Helper/wegaslog';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 import { schemaProps } from './schemaProps';
@@ -28,6 +28,10 @@ import {
   SPeerReviewDescriptor,
 } from 'wegas-ts-api';
 
+export interface PageComponentContext {
+  [item: string]: unknown;
+}
+
 export interface WegasComponentOptionsAction {
   priority?: number;
 }
@@ -35,25 +39,25 @@ export interface WegasComponentOptionsAction {
 export interface OpenPageAction {
   pageLoaderName: IScript;
   pageId: IScript;
-  context?: { [item: string]: any };
+  context?: PageComponentContext;
 }
 interface OpenURLAction {
   url: string;
 }
 interface OpenFileAction {
   filePath: IScript;
-  context?: { [item: string]: any };
+  context?: PageComponentContext;
 }
 interface ImpactVariableAction {
   impact: IScript;
 }
 interface LocalScriptEvalAction {
   script: IScript;
-  context?: { [item: string]: any };
+  context?: PageComponentContext;
 }
 interface OpenPopupPageAction {
   pageId: IScript;
-  context?: { [item: string]: any };
+  context?: PageComponentContext;
 }
 interface PlaySoundAction {
   filePath: string;
@@ -126,7 +130,7 @@ export const wegasComponentActions: WegasComponentActions = {
     try {
       store.dispatch(runScript(props.impact, Player.selectCurrent()));
     } catch (error) {
-      wlog(error);
+      wwarn(error);
     }
   },
   localScriptEval: props => {

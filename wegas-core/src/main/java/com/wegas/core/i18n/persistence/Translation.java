@@ -159,10 +159,19 @@ public class Translation implements WithPermission {
         return true;
     }
 
+    /**
+     *
+     * @return language code (always uppercase)
+     */
     public String getLang() {
         return lang != null ? lang.toUpperCase() : null;
     }
 
+    /**
+     * Set the language code. Will be uppercased
+     *
+     * @param lang
+     */
     public void setLang(String lang) {
         if (lang != null) {
             this.lang = lang.toUpperCase();

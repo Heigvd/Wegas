@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createStore, Reducer, applyMiddleware } from 'redux';
 import u from 'immer';
-import { composeEnhancers } from '../../../data/store';
+import { composeEnhancers } from '../../../data/Stores/store';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { useAnyStore } from '../../Hooks/storeHookFactory';
 import {

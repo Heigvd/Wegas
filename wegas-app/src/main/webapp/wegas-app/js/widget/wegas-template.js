@@ -276,11 +276,13 @@ YUI.add('wegas-template', function(Y) {
                 "<div class='wegas-template-box'><% if(this.label){ %><label><%= this.label %></label><br/><% } %>"+
                 "<div class='wegas-template-box-units'>" +
                 " <% var i;%>" +
-                "<% for(i=0; i < this.value && i < + this.maxValue - 1; i+=1){ %>" +
-                "  <div class='wegas-template-box-unit <%= 1+i == +this.value ? ' wegas-template-box-selected' : (2+i == +this.value ? ' wegas-template-box-pred' : '') %>' value='<%= 1+i %>'></div>"+
+                "<% var max = (+this.maxValue) || 100;%>" +
+                "<% var value = (+this.value); %>" +
+                "<% for(i=0; i < value && i < max - 1; i+=1){ %>" +
+                "  <div class='wegas-template-box-unit <%= 1+i == value ? ' wegas-template-box-selected' : (2+i == value ? ' wegas-template-box-pred' : '') %>' value='<%= 1+i %>'></div>"+
                 "<% } %></div>" +
                 "  <span class='wegas-template-box-value'>" +
-                "(<%= I18n.formatNumber(this.value || '{value}') %>" +
+                "(<%= I18n.formatNumber(value || '{value}') %>" +
                 ')</span></div>'
                 )
         },
@@ -314,7 +316,7 @@ YUI.add('wegas-template', function(Y) {
                                 label: "max number of boxes displayed",
                                 description: "",
                                 layout: "shortInline",
-                                placeholder: "∞"
+                                placeholder: "100"
                             }
                         }
                     },

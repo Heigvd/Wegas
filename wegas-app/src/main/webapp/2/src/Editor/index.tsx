@@ -8,7 +8,7 @@ import { LibrariesLoader } from './Components/LibrariesLoader';
 import { ClassesProvider } from '../Components/Contexts/ClassesProvider';
 import { FeaturesProvider } from '../Components/Contexts/FeaturesProvider';
 import { ThemeProvider } from '../Components/Style/Theme';
-import '../data/store';
+import '../data/Stores/store';
 import { importPageComponents } from '../Components/PageComponents/tools/componentFactory';
 import { PopupManager } from '../Components/PopupManager';
 // import * as less from 'less';

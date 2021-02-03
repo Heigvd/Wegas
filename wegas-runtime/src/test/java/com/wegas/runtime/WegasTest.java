@@ -143,13 +143,13 @@ public class WegasTest {
         }
 
         User scenUser = client.get("/rest/User/" + scenarist.getUserId(), User.class);
-        scenUser.getRoles().add(roles.get("Scenarist"));
-        scenUser.getRoles().add(roles.get("Trainer"));
+        scenUser.addRole(roles.get("Scenarist"));
+        scenUser.addRole(roles.get("Trainer"));
 
         client.put("/rest/User/Account/" + scenUser.getMainAccount().getId(), scenUser.getMainAccount());
 
         User trainerUser = client.get("/rest/User/" + trainer.getUserId(), User.class);
-        trainerUser.getRoles().add(roles.get("Trainer"));
+        trainerUser.addRole(roles.get("Trainer"));
 
         client.put("/rest/User/Account/" + trainerUser.getMainAccount().getId(), trainerUser.getMainAccount());
     }
@@ -243,7 +243,7 @@ public class WegasTest {
 
         /*
          * DELETE	/Assign/{assignmentId}
-         * POST	/Assign/{resourceId}/{taskInstanceId} 
+         * POST	/Assign/{resourceId}/{taskInstanceId}
          * PUT * /MoveAssignment/{assignmentId}/{index}
          */
         // Load resource and task from botch instance

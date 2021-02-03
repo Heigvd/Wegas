@@ -133,8 +133,8 @@
 
         <shiro.version>1.7.0</shiro.version>
         <payara.version>5.2020.5</payara.version>
-        <!--<payara.micro.version>5.201.albasim-p1</payara.micro.version>-->
-        <payara.micro.version>5.2020.5-albasim-p1</payara.micro.version>
+        <payara.micro.version>5.2020.5</payara.micro.version>
+        <!--<payara.micro.version>5.2020.5-albasim-p1</payara.micro.version>-->
         <payara-api.version>5.2020.5</payara-api.version>
         <junit.version>4.13.1</junit.version>
         <arquillian.version>1.6.0.Final</arquillian.version>

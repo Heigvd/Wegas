@@ -11,7 +11,7 @@ import { arrayToText, textToArray } from './editorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 const diffLabel = css({
-  color: themeVar.Common.colors.TextColor,
+  color: themeVar.Common.colors.DarkTextColor,
   padding: '5px',
 });
 

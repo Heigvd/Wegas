@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { Toolbar } from '../../../Components/Toolbar';
-import { StoreDispatch, useStore, getDispatch } from '../../../data/store';
+import {
+  StoreDispatch,
+  useStore,
+  getDispatch,
+} from '../../../data/Stores/store';
 import { css, cx } from 'emotion';
 import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods';
 import {
@@ -11,7 +15,7 @@ import {
 import getEditionConfig from '../../editionConfig';
 import { Schema } from 'jsoninput';
 import { AvailableViews } from '../FormView';
-import { LocalGlobalState } from '../../../data/storeFactory';
+import { LocalGlobalState } from '../../../data/Stores/storeFactory';
 import { updateInstance } from '../../../data/Reducer/VariableInstanceReducer';
 import { flex, flexColumn, grow, localSelection } from '../../../css/classes';
 import { themeVar } from '../../../Components/Style/ThemeVars';
@@ -26,7 +30,7 @@ const listBox = css({
   width: '100%',
   maxHeight: '100px',
   overflowY: 'auto',
-  borderColor: themeVar.Common.colors.BorderColor,
+  borderColor: themeVar.Common.colors.PrimaryColor,
   borderWidth: '2px',
   borderStyle: 'solid',
 });

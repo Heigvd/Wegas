@@ -11,7 +11,10 @@ import {
   flexlayoutChoices,
   defaultFlexLayoutOptionsKeys,
 } from '../../Layouts/FlexList';
-import { WegasComponentProps } from '../tools/EditableComponent';
+import {
+  assembleStateAndContext,
+  WegasComponentProps,
+} from '../tools/EditableComponent';
 import {
   classStyleIdShema,
   clientAndServerScriptChoices,
@@ -24,7 +27,7 @@ import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
-import { store } from '../../../data/store';
+import { store } from '../../../data/Stores/store';
 
 export const emptyLayoutItemStyle = css({
   display: 'flex',
@@ -77,7 +80,12 @@ function PlayerModal({
         }
         if (server) {
           store.dispatch(
-            runLoadedScript(server, Player.selectCurrent(), undefined, context),
+            runLoadedScript(
+              server,
+              Player.selectCurrent(),
+              undefined,
+              assembleStateAndContext(context),
+            ),
           );
         }
       }}
