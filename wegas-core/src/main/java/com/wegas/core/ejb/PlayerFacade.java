@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -8,7 +7,6 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -30,6 +28,8 @@ import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.ActAsPlayer;
+import com.wegas.core.security.util.Sudoer;
+import com.wegas.core.security.util.WegasPermission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -403,18 +403,31 @@ public class PlayerFacade extends BaseFacade<Player> {
     public void remove(final Player player) {
         //List<VariableInstance> instances = this.getAssociatedInstances(player);
         Team team = teamFacade.find(player.getTeam().getId());
+        User playerUser = player.getUser();
 
-        if (team instanceof DebugTeam == false) {
-            if (team.getPlayers().size() == 1) {
-                // Last player -> remove the whole team
-                teamFacade.remove(team);
-            } else {
-                // Only remove the player
-                team.getPlayers().remove(player);
-                if (player.getUser() != null) {
-                    player.getUser().getPlayers().remove(player);
+        // remove a playes is permitted if either:
+        //   1) the player belongs to the current user (user edit permission)
+        //   2) the current user is an admin (user edit permission)
+        //   3) the current user is the trainer of the player (player.game edit right)
+        //      In this case, the user lacks the user edit right, we have to bypass it
+        //      with a sudo
+        if (team instanceof DebugTeam == false && playerUser != null) {
+            Collection<WegasPermission> perms = playerUser.getRequieredUpdatePermission();
+            perms.addAll(player.getGame().getRequieredUpdatePermission());
+
+            requestManager.assertUserHasPermission(perms, "DELETE", player);
+            try (Sudoer su = requestManager.sudoer()) {
+                if (team.getPlayers().size() == 1) {
+                    // Last player -> remove the whole team
+                    teamFacade.remove(team);
+                } else {
+                    // Only remove the player
+                    team.getPlayers().remove(player);
+                    if (player.getUser() != null) {
+                        player.getUser().getPlayers().remove(player);
+                    }
+                    this.getEntityManager().remove(player);
                 }
-                this.getEntityManager().remove(player);
             }
         }
     }
