@@ -27,8 +27,8 @@ const textContainerStyle = (player?: boolean) =>
       ? themeVar.Common.colors.PrimaryColor
       : themeVar.Common.colors.HeaderColor,
     color: player
-    ? themeVar.Common.colors.LightTextColor
-    : themeVar.Common.colors.DarkTextColor,
+      ? themeVar.Common.colors.LightTextColor
+      : themeVar.Common.colors.DarkTextColor,
     borderRadius: themeVar.Common.dimensions.BorderRadius,
     padding: '5px 10px',
     overflow: 'hidden',
@@ -91,23 +91,30 @@ export function DialogueEntry({ text, player, waiting }: DialogueEntryProps) {
         dialogueEntryStyle(player),
       )}
     >
-      <UserPortrait
-        className={portraitStyle}
-        color={
-          player
-            ? themeVar.Common.colors.ActiveColor
-            : themeVar.Common.colors.HeaderColor
-        }
-      />
-      <div className={cx(expandHeight, grow, textContainerStyle(player))}>
-        <div dangerouslySetInnerHTML={{ __html: translation }} />
-        {waiting && (
-          <WaitingLoader
-            color={themeVar.Common.colors.HeaderColor}
-            background={themeVar.Common.colors.DisabledColor}
-          />
-        )}
-      </div>
+      {
+        /* if there is nothing to say, just skip the entry */
+        translation != null && translation.length > 0 && (
+          <>
+            <UserPortrait
+              className={portraitStyle}
+              color={
+                player
+                  ? themeVar.Common.colors.ActiveColor
+                  : themeVar.Common.colors.HeaderColor
+              }
+            />
+            <div className={cx(expandHeight, grow, textContainerStyle(player))}>
+              <div dangerouslySetInnerHTML={{ __html: translation }} />
+              {waiting && (
+                <WaitingLoader
+                  color={themeVar.Common.colors.HeaderColor}
+                  background={themeVar.Common.colors.DisabledColor}
+                />
+              )}
+            </div>
+          </>
+        )
+      }
     </div>
   );
 }
