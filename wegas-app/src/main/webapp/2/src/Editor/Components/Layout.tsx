@@ -9,7 +9,7 @@ import { ComponentMap } from './LinearTabLayout/DnDTabLayout';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { State } from '../../data/Reducer/reducers';
 
-const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
+const StateMachineEditor = React.lazy(() => import('./StateMachineEditor2'));
 const PageEditor = React.lazy(() => import('./Page/PageEditor'));
 const TreeView = React.lazy(() => import('./Variable/VariableTree'));
 const EntityEditor = React.lazy(() => import('./EntityEditor'));

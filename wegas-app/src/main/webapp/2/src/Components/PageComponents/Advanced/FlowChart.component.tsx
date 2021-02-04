@@ -7,7 +7,6 @@ import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { useScript } from '../../Hooks/useScript';
 import { IScript } from 'wegas-ts-api';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import {
   FlowChart,
   FlowChartProps,
@@ -72,7 +71,7 @@ registerComponent(
       processes: schemaProps.scriptVariable({
         label: 'Processes',
         returnType: [
-          '{id: string;position:{x:number,y:number};connections:{id: string;connectedTo: string}[];}[]',
+          '{id: string;position:{x:number,y:number};connections:{id: string;connectedTo: string}[];}[]' as WegasScriptEditorReturnTypeName,
         ],
       }),
       title: schemaProps.scriptString({ label: 'Title', richText: true }),
