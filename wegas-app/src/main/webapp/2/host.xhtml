@@ -37,13 +37,13 @@
     />
     <title>#{editorGameController.currentGameModel.name}</title>
     <link rel="icon" type="image/ico" href="../favicon.ico" />
-    <link rel="preload" href="dist/trainer.js" as="script" />
+    <link rel="preload" href="dist/host.js" as="script" />
   </h:head>
   <h:body>
     <div id="root" />
     <script type="application/javascript">
       var API_ENDPOINT = "#{request.contextPath}" + "/rest/";
-      var API_VIEW = "Trainer";
+      var API_VIEW = "Editor";
       var CurrentUser = #{requestController.currentUser.toJsonWithView("Index")};
       var CurrentGM = #{editorGameController.currentGameModel.toJsonWithView("Editor")};
       var CurrentGame = #{editorGameController.currentGame.toJsonWithView("Editor")};
@@ -57,6 +57,6 @@
     </script>
     <!-- <script type="application/javascript" src="dist/manifest.js"/> -->
     <!-- <script type="application/javascript" src="dist/vendors.js"/> -->
-    <script type="application/javascript" src="dist/trainer.js" />
+    <script type="application/javascript" src="dist/host.js" />
   </h:body>
 </html>

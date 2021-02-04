@@ -44,7 +44,7 @@ const modules = {
   entry: {
     editor: ['./src/Editor/index.tsx'],
     player: ['./src/player.tsx'],
-    trainer: ['./src/trainer.tsx'],
+    host: ['./src/host.tsx'],
   },
   output: {
     path: path.join(__dirname, 'dist'),
@@ -116,6 +116,19 @@ const modules = {
             options: {
               limit: 8000, // Convert images < 8kb to base64 strings
               name: 'src/pictures/[hash]-[name].[ext]',
+            },
+          },
+        ],
+      },
+
+      {
+        test: /\.(ttf)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8000,
+              name: 'src/fonts/[hash]-[name].[ext]',
             },
           },
         ],
