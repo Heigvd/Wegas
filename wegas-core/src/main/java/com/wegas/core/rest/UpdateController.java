@@ -733,7 +733,7 @@ public class UpdateController {
                 ListDescriptor newChild = new ListDescriptor(childrenPrefix + i);
                 newChild.setDefaultInstance(new ListInstance());
                 newChild.setScope(new GameModelScope());
-                descriptorFacade.createChild(gameModel, parent, newChild, false);
+                descriptorFacade.createChild(gameModel, parent, newChild, false, false);
                 if (i < parent.size()) {
                     // move new folder at the right place
                     descriptorFacade.move(newChild.getId(), parent.getId(), i - 1);

@@ -95,10 +95,9 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
   // dialogue history
 
   // when a dialogue entry is added, scroll to it at the bottom of the history
-  // TODO There is still a problem when the last choice is made
   React.useEffect(() => {
-    if (historyDiv != null) {
-      historyDiv.current!.scrollTop = historyDiv.current!.scrollHeight;
+    if (historyDiv != null && historyDiv.current != null) {
+      historyDiv.current.scrollTop = historyDiv.current.scrollHeight;
     }
   }, [currentState]);
 

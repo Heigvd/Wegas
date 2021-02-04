@@ -129,7 +129,7 @@ export default function Header() {
           <span className={componentMarginLeft}>{user.name}</span>
           <ConfirmButton
             icon="undo"
-            tooltip="Restart"
+            tooltip="Restart the game (applied to every scenarist)"
             onAction={success => {
               if (success) {
                 dispatch(Actions.VariableDescriptorActions.reset());

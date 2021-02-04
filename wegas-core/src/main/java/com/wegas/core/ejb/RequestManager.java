@@ -1825,7 +1825,7 @@ public class RequestManager implements RequestManagerI {
      * @throws WegasAccessDenied permissions is not null and no permission in permissions is
      *                           permitted
      */
-    private void assertUserHasPermission(Collection<WegasPermission> permissions, String type, WithPermission entity) throws WegasAccessDenied {
+    public void assertUserHasPermission(Collection<WegasPermission> permissions, String type, WithPermission entity) throws WegasAccessDenied {
         log("HAS  PERMISSION: {} / {} / {}", type, permissions, entity);
         logIndent++;
         if (!hasAnyPermission(permissions)) {
