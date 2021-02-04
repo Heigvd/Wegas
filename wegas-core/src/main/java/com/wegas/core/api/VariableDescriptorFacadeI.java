@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -164,15 +163,19 @@ public interface VariableDescriptorFacadeI {
     /**
      * Create a new descriptor in a DescriptorListI
      *
-     * @param gameModel  the gameModel
-     * @param list       new descriptor parent
-     * @param entity     new descriptor to create
-     * @param resetNames
+     * @param gameModel   the gameModel
+     * @param list        new descriptor parent
+     * @param entity      new descriptor to create
+     * @param resetNames  should completely reset names or try to keep provideds ?
+     * @param resetRefIds should generate brand new refIds ?
      *
      * @return the new descriptor
      */
     VariableDescriptor createChild(final GameModel gameModel,
         final DescriptorListI<VariableDescriptor> list,
-        final VariableDescriptor entity, boolean resetNames);
+        final VariableDescriptor entity,
+        boolean resetNames,
+        boolean resetRefIds
+    );
 
 }
