@@ -143,11 +143,13 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
     const connections = Object.values(internalProcesses).reduce<
       Connection<F, P>[]
     >((o, process) => {
-      const couples = process.connections.map(flowline => ({
-        startProcess: process,
-        endProcess: internalProcesses[flowline.connectedTo],
-        flowline,
-      }));
+      const couples = process.connections
+        .filter(flowline => internalProcesses[flowline.connectedTo] != null)
+        .map(flowline => ({
+          startProcess: process,
+          endProcess: internalProcesses[flowline.connectedTo],
+          flowline,
+        }));
       return [...o, ...couples];
     }, []);
 
