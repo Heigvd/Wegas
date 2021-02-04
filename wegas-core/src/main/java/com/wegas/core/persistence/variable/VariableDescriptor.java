@@ -139,7 +139,8 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "gamemodel_id"),
     @Index(columnList = "dtype"),
     @Index(columnList = "scope_id"),
-    @Index(columnList = "label_id")
+    @Index(columnList = "label_id"),
+    @Index(columnList = "gamemodel_id, refid", unique = true),
 })
 @NamedQuery(
     name = "VariableDescriptor.findAllNamesInModelAndItsScenarios",
