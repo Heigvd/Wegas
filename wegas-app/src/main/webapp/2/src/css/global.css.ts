@@ -4,7 +4,6 @@ KEEP THIS FILE MINIMAL !!!
 import { injectGlobal } from 'emotion';
 import { wlog } from '../Helper/wegaslog';
 const fontUrl = require("./fonts/Lato-Regular.ttf").default;
-wlog(`TADAAAAAA ${fontUrl}`);
 
 injectGlobal`
   @font-face {
