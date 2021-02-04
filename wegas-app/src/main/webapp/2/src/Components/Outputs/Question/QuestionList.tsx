@@ -27,11 +27,14 @@ import { ConnectedQuestionDisplay } from './Question';
 
 const repliedLabelStyle = css({
   backgroundColor: themeVar.Common.colors.LightTextColor,
-  color: themeVar.Common.colors.DarkTextColor,
-  border: "3px solid " + themeVar.Common.colors.PrimaryColor,
+  color: themeVar.Common.colors.PrimaryColor,
+  border: "2px solid " + themeVar.Common.colors.PrimaryColor,
+  boxShadow: "none",
   "&:hover": {
-
-  }
+    backgroundColor: themeVar.Common.colors.LightTextColor,
+    color: themeVar.Common.colors.ActiveColor,
+    border: "2px solid " + themeVar.Common.colors.ActiveColor,
+  },
 });
 
 /*interface QuestionProps {
