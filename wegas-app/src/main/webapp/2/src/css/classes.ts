@@ -246,11 +246,12 @@ export const dropZoneStyle = css({
 
 export const unreadSignalStyle = css({
   '::before': {
-    content: '"new"',
-    transform: 'rotate(-45deg)',
+    content: '"New"',
+    transform: 'rotate(-90deg)',
     position: 'absolute',
-    fontSize: '7pt',
-    color: 'green',
+    fontSize: '10pt',
+    fontWeight: 'bold',
+    color: 'orange',
   },
 });
 
