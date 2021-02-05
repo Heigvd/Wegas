@@ -513,6 +513,7 @@ export function editStateMachine(
           more: {
             delete: {
               label: 'Delete',
+              confirm: true,
               action: (entity: IFSMDescriptor, path?: string[]) => {
                 dispatch(
                   Actions.VariableDescriptorActions.deleteDescriptor(

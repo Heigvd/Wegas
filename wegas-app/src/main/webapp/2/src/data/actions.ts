@@ -15,7 +15,12 @@ import { AvailableViews } from '../Editor/Components/FormView';
 import { getEntityActions } from '../Editor/editionConfig';
 import * as ActionType from './actionTypes';
 import { discriminant, normalizeDatas, NormalizedData } from './normalize';
-import { closeEditor, EditingState, Edition } from './Reducer/globalState';
+import {
+  closeEditor,
+  EditingState,
+  Edition,
+  EditorAction,
+} from './Reducer/globalState';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
 import { StoreDispatch, store } from './Stores/store';
 
@@ -36,15 +41,16 @@ const variableEditAction = <TA extends ActionTypeValues>(type: TA) => <
   path?: TA extends ValueOf<typeof ActionType.FSM_EDIT>
     ? string[]
     : (string | number)[];
-  actions: {
-    save?: (entity: TE) => void;
-    more?: {
-      [id: string]: {
-        label: React.ReactNode;
-        action: (entity: TE, path: string[]) => void;
-      };
-    };
-  };
+  actions: EditorAction<TE>;
+  // {
+  //   save?: (entity: TE) => void;
+  //   more?: {
+  //     [id: string]: {
+  //       label: React.ReactNode;
+  //       action: (entity: TE, path: string[]) => void;
+  //     };
+  //   };
+  // };
 }) => createAction(type, data);
 
 /**
@@ -175,6 +181,7 @@ export function manageResponseHandler(
   payload: IManagedResponse,
   localDispatch?: StoreDispatch,
   localState?: EditingState,
+  selectUpdatedEntity: boolean = true,
 ) {
   const deletedEntities = normalizeDatas(payload.deletedEntities);
   if (localDispatch && localState) {
@@ -199,6 +206,7 @@ export function manageResponseHandler(
           discriminant(currentEditingEntity) as keyof NormalizedData
         ][currentEditingEntity.id];
       if (
+        selectUpdatedEntity &&
         updatedEntity &&
         shallowDifferent(updatedEntity, currentEditingEntity)
       ) {

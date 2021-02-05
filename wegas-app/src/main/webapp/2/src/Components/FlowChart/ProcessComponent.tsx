@@ -44,6 +44,10 @@ export interface ProcessProps<F extends FlowLine, P extends Process<F>> {
    */
   onConnect: (sourceProcess: P, flowline?: F) => void;
   /**
+   * a callback triggered when a click occures on a process
+   */
+  onClick?: (e: ModifierKeysEvent, process: P) => void;
+  /**
    * a handle component that can be dragged to create new flowlines and processes
    */
   ProcessHandle?: React.FunctionComponent<ProcessHandleProps<F, P>>;
@@ -55,7 +59,10 @@ interface CustomProcessProps<F extends FlowLine, P extends Process<F>>
    * the children component that recieve the process object
    * allow to customize easily the process style
    */
-  children: (process: P) => React.ReactNode;
+  children: (
+    process: P,
+    onClick?: (e: ModifierKeysEvent, process: P) => void,
+  ) => React.ReactNode;
 }
 
 export function CustomProcessComponent<
@@ -67,6 +74,7 @@ export function CustomProcessComponent<
   onMove,
   onMoveEnd,
   onConnect,
+  onClick,
   ProcessHandle = DefaultProcessHandle,
   children,
 }: CustomProcessProps<F, P>) {
@@ -104,11 +112,15 @@ export function CustomProcessComponent<
     [onMoveEnd],
   );
 
-  useMouseEventDnd(processElement, {
-    onDragStart,
-    onDrag,
-    onDragEnd,
-  });
+  useMouseEventDnd(
+    processElement,
+    {
+      onDragStart,
+      onDrag,
+      onDragEnd,
+    },
+    true,
+  );
 
   return (
     <div
@@ -123,7 +135,7 @@ export function CustomProcessComponent<
       className={processStyle}
       data-id={process.id}
     >
-      {children(process)}
+      {children(process, onClick)}
       <ProcessHandle sourceProcess={process} />
     </div>
   );
@@ -143,7 +155,16 @@ export function DefaultProcessComponent<
 >(props: ProcessProps<F, P>) {
   return (
     <CustomProcessComponent {...props}>
-      {process => <div className={defaultProcessStyle}>{process.id}</div>}
+      {(process, onClick) => (
+        <div
+          className={defaultProcessStyle}
+          onClick={e => {
+            onClick && onClick(e, process);
+          }}
+        >
+          {process.id}
+        </div>
+      )}
     </CustomProcessComponent>
   );
 }

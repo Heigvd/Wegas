@@ -87,6 +87,14 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
    * @example dropping a handle on a process
    */
   onConnect: (sourceProcess: P, targetProcess: P, flowline?: F) => void;
+  /**
+   * a callback triggered when a click occures on a process
+   */
+  onProcessClick?: (e: ModifierKeysEvent, process: P) => void;
+  /**
+   * a callback triggered when a click occures on a process
+   */
+  onFlowlineClick?: (e: ModifierKeysEvent, flowline: F) => void;
 }
 
 const emptyProcesses: Process<FlowLine>[] = [];
@@ -99,6 +107,8 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   onMove,
   onNew,
   onConnect,
+  onProcessClick,
+  onFlowlineClick,
   className,
   style,
   id,
@@ -181,12 +191,13 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
             startProcess={c.startProcess}
             flowline={c.flowline}
             positionOffset={(i + 1) / (g.length + 1)}
+            onClick={onFlowlineClick}
           />
         );
       }),
     );
     setFlows(flowLines);
-  }, [internalProcesses]);
+  }, [internalProcesses, onFlowlineClick]);
 
   return (
     <Toolbar
@@ -222,6 +233,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
             onConnect={(sourceProcess, flowline) => {
               onConnect(sourceProcess, process, flowline);
             }}
+            onClick={onProcessClick}
           />
         ))}
       </Toolbar.Content>

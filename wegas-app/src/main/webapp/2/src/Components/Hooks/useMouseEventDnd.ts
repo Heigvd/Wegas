@@ -1,5 +1,9 @@
 import * as React from 'react';
 
+function forbidClick(e: MouseEvent) {
+  e.stopPropagation();
+}
+
 export interface XYPosition {
   x: number;
   y: number;
@@ -34,6 +38,7 @@ export interface MouseDnDHandler {
 export function useMouseEventDnd<T extends HTMLElement>(
   ref: React.MutableRefObject<T | null>,
   { onDragStart, onDrag, onDragEnd }: MouseDnDHandler,
+  prenventClick?: boolean,
 ) {
   const draggingTarget = React.useRef<T | null>(null);
   const draggingStarted = React.useRef(false);
@@ -66,7 +71,8 @@ export function useMouseEventDnd<T extends HTMLElement>(
 
         // Create a ghost of the dragged element to avoid scroll bars to schrink when moving up or left
         ghostElement.current = target.cloneNode(true) as T;
-        ghostElement.current?.style.setProperty('opacity', '0');
+        ghostElement.current.style.setProperty('opacity', '0');
+        ghostElement.current.style.setProperty('z-index', '-10000');
         target.after(ghostElement.current);
 
         onDragStart && onDragStart(e, initialPosition.current);
@@ -78,6 +84,9 @@ export function useMouseEventDnd<T extends HTMLElement>(
     (e: MouseEvent) => {
       e.stopPropagation();
       if (draggingTarget.current != null) {
+        if (prenventClick) {
+          document.body.addEventListener('click', forbidClick);
+        }
         draggingStarted.current = true;
         const target = draggingTarget.current;
         const parent = target.parentElement;
@@ -95,21 +104,18 @@ export function useMouseEventDnd<T extends HTMLElement>(
             (parentBox?.top || 0) -
             clickPosition.current.y;
 
-          draggingTarget.current.setAttribute(
-            'style',
-            `left:${x}px ;top:${y}px`,
-          );
+          draggingTarget.current.style.setProperty('left', `${x}px`);
+          draggingTarget.current.style.setProperty('top', `${y}px`);
           lastPosition.current = { x, y };
           onDrag && onDrag(e, lastPosition.current);
         }
       }
     },
-    [onDrag],
+    [onDrag, prenventClick],
   );
   const onMouseUp = React.useCallback(
     (e: MouseEvent) => {
       e.stopPropagation();
-
       const target = e.target as T;
 
       // Removing ghost after moving element
@@ -122,16 +128,26 @@ export function useMouseEventDnd<T extends HTMLElement>(
           onDragEnd &&
           onDragEnd(e, lastPosition.current, target.getAttribute('data-id'));
         if (reset) {
-          draggingTarget.current.setAttribute(
-            'style',
-            `left:${initialPosition.current.x}px ;top:${initialPosition.current.y}px`,
+          draggingTarget.current.style.setProperty(
+            'left',
+            `${initialPosition.current.x}px`,
+          );
+          draggingTarget.current.style.setProperty(
+            'top',
+            `${initialPosition.current.y}px`,
           );
         }
       }
       draggingTarget.current = null;
       draggingStarted.current = false;
+
+      if (prenventClick) {
+        setTimeout(() => {
+          document.body.removeEventListener('click', forbidClick);
+        }, 50);
+      }
     },
-    [onDragEnd],
+    [onDragEnd, prenventClick],
   );
 
   React.useEffect(() => {

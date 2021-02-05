@@ -27,7 +27,7 @@ const ThemeEditor = React.lazy(
   () => import('../../Components/Style/ThemeEditor'),
 );
 
-// const Tester = React.lazy(() => import('../../Testers/SchemaPropsTester'));
+const Tester = React.lazy(() => import('../../Testers/FlowChartTester'));
 
 const layout = css({
   display: 'flex',
@@ -45,7 +45,7 @@ export const availableLayoutTabs = {
   // 'Play Local': <PlayLocal />,
   'Play Server': <PlayServer />,
   'Instances Editor': <InstancesEditor />,
-  // Tester: <Tester />,
+  Tester: <Tester />,
   'Theme Editor': <ThemeEditor />,
   'Page Editor': <PageEditor />,
 } as const;

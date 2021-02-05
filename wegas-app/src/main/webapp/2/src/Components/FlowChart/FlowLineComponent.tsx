@@ -36,6 +36,10 @@ export interface FlowLineProps<F extends FlowLine, P extends Process<F>> {
    */
   positionOffset?: number;
   /**
+   * a callback triggered when a click occures on a flowline
+   */
+  onClick?: (e: ModifierKeysEvent, flowline: F) => void;
+  /**
    * a handle component that can be dragged to connect the flowline to other (existing or new) processes
    */
   ProcessHandle?: React.FunctionComponent<ProcessHandleProps<F, P>>;
@@ -47,7 +51,10 @@ interface CustomFlowLineProps<F extends FlowLine, P extends Process<F>>
    * the children component that recieve the flowline object
    * allow to customize easily the flowline label style
    */
-  children: (flowline: F) => React.ReactNode;
+  children: (
+    flowline: F,
+    onClick?: (e: ModifierKeysEvent, flowline: F) => void,
+  ) => React.ReactNode;
 }
 
 interface Values {
@@ -80,6 +87,7 @@ export function CustomFlowLineComponent<
   startProcess,
   flowline,
   positionOffset = 0.5,
+  onClick,
   ProcessHandle = DefaultProcessHandle,
   children,
 }: CustomFlowLineProps<F, P>) {
@@ -317,9 +325,11 @@ export function CustomFlowLineComponent<
           }
         }}
         className={childrenContainerStyle}
-        onClick={e => (e.target as HTMLDivElement).focus()}
+        onClick={e => {
+          (e.target as HTMLDivElement).focus();
+        }}
       >
-        {children(flowline)}
+        {children(flowline, onClick)}
         <ProcessHandle sourceProcess={startProcess} flowline={flowline} />
       </div>
     </>
@@ -345,7 +355,14 @@ export function DefaultFlowLineComponent<
 >(props: FlowLineProps<F, P>) {
   return (
     <CustomFlowLineComponent {...props}>
-      {flowline => <div className={flowLineLabelStyle}>{flowline.id}</div>}
+      {(flowline, onClick) => (
+        <div
+          onClickCapture={e => onClick && onClick(e, flowline)}
+          className={flowLineLabelStyle}
+        >
+          {flowline.id}
+        </div>
+      )}
     </CustomFlowLineComponent>
   );
 }
