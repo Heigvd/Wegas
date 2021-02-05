@@ -42,9 +42,8 @@ const modules = {
   // stats: 'verbose',
   devtool: PROD || PREPROD ? 'source-map' : 'inline-source-map',
   entry: {
-    editor: ['./src/Editor/index.tsx'],
+    editor: ['./src/index.tsx'],
     player: ['./src/player.tsx'],
-    host: ['./src/host.tsx'],
   },
   output: {
     path: path.join(__dirname, 'dist'),

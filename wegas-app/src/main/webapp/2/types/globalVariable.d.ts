@@ -1,4 +1,5 @@
-type View = 'Editor' | 'Instance' | 'Export' | 'Public' | 'Trainer';
+type View = 'Editor' | 'Instance' | 'Export' | 'Public';
+type AppContext = 'Editor' | 'Player' | 'Trainer';
 
 // Injected Variables
 declare const CurrentUser: import('wegas-ts-api').IUser;
@@ -8,6 +9,7 @@ declare const CurrentPlayerId: number;
 declare const CurrentTeamId: number;
 declare const API_ENDPOINT: string;
 declare const API_VIEW: View;
+declare const APP_CONTEXT: AppContext;
 declare const PusherApp: {
   authEndpoint: string;
   applicationKey: string;
