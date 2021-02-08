@@ -18,6 +18,8 @@ import {
   IDialogueDescriptor,
   IFSMDescriptor,
   IAbstractTransition,
+  ITransition,
+  IDialogueTransition,
 } from 'wegas-ts-api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { SimpleInput } from '../../Components/Inputs/SimpleInput';
@@ -37,8 +39,9 @@ import { IAbstractState } from 'wegas-ts-api/typings/WegasEntities';
 import { EditorAction } from '../../data/Reducer/globalState';
 import { mainLayoutId } from './Layout';
 import { focusTab } from './LinearTabLayout/LinearLayout';
-import { wlog } from '../../Helper/wegaslog';
 import produce, { Immutable } from 'immer';
+
+const emptyPath: (string | number)[] = [];
 
 export function searchWithState(
   search?: RState['global']['search'],
@@ -80,6 +83,21 @@ function deleteState<T extends IFSMDescriptor | IDialogueDescriptor>(
   );
 }
 
+function deleteTransition<T extends IFSMDescriptor | IDialogueDescriptor>(
+  stateMachine: Immutable<T>,
+  stateId: number,
+  transitionId: number,
+) {
+  const newStateMachine = produce((stateMachine: T) => {
+    const transitions = stateMachine.states[stateId].transitions;
+    transitions.splice(transitionId, 1);
+  })(stateMachine);
+
+  store.dispatch(
+    Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
+  );
+}
+
 interface TransitionFlowLine<T extends IAbstractTransition> extends FlowLine {
   transition: T;
 }
@@ -98,6 +116,7 @@ interface StateMachineEditorProps<
   forceLocalDispatch?: boolean;
   search?: RState['global']['search'];
   title?: string;
+  editPath: (string | number)[] | undefined;
 }
 export function StateMachineEditor<
   IFSM extends IFSMDescriptor | IDialogueDescriptor
@@ -106,6 +125,7 @@ export function StateMachineEditor<
   stateMachine,
   localDispatch,
   forceLocalDispatch,
+  editPath = emptyPath,
 }: //search,
 StateMachineEditorProps<IFSM>) {
   type TState = IFSM['states'][0];
@@ -122,9 +142,9 @@ StateMachineEditorProps<IFSM>) {
         id: key,
         position: { x: state.x, y: state.y },
         connections: (state.transitions as IAbstractTransition[]).map(
-          transition => ({
+          (transition, i) => ({
             transition: transition as TTransition,
-            id: String(transition.id),
+            id: String(i),
             connectedTo: String(transition.nextStateId),
           }),
         ),
@@ -207,9 +227,10 @@ StateMachineEditorProps<IFSM>) {
 
   const createState = React.useCallback(
     (
-      sourceState: TStateProcess,
+      sourceProcess: TStateProcess,
       position: XYPosition,
       transition?: TTransitionFlowLine,
+      backward?: boolean,
     ) => {
       const newState: TState = {
         ...{
@@ -217,7 +238,9 @@ StateMachineEditorProps<IFSM>) {
           onEnterEvent: createScript(),
           x: position.x >= 10 ? position.x : 10,
           y: position.y >= 10 ? position.y : 10,
-          transitions: [],
+          transitions: (backward && transition != null
+            ? [transition.transition]
+            : []) as (ITransition & IDialogueTransition)[],
         },
         ...(entityIs(stateMachine, 'FSMDescriptor')
           ? { '@class': 'State', label: '' }
@@ -234,21 +257,24 @@ StateMachineEditorProps<IFSM>) {
             .pop(),
         ) || 0) + 1;
 
-      const states = stateMachine.states;
-      const currentSource = states[Number(sourceState.id)];
-      const currentTransitions = currentSource.transitions;
-
       const newTransition = transition
         ? { ...transition.transition, nextStateId: newStateId }
-        : createTransition(newStateId, currentTransitions.length);
+        : createTransition(newStateId, sourceProcess.state.transitions.length);
 
       const newStateMachine = produce((stateMachine: IFSM) => {
+        // Adding new state
         stateMachine.states[newStateId] = newState;
-        const currentState = stateMachine.states[Number(sourceState.id)];
+
+        // Removing transition from state
+        const currentState = stateMachine.states[Number(sourceProcess.id)];
         currentState.transitions = (currentState.transitions as TTransition[]).filter(
           t => transition == null || t.id !== transition.transition.id,
         ) as typeof currentState.transitions;
-        (currentState.transitions as TTransition[]).push(newTransition);
+
+        if (!backward) {
+          // Adding new transition
+          (currentState.transitions as TTransition[]).push(newTransition);
+        }
       })(stateMachine);
 
       store.dispatch(
@@ -271,7 +297,9 @@ StateMachineEditorProps<IFSM>) {
             sm: IFSMDescriptor | IDialogueDescriptor,
             path?: (string | number)[],
           ) => {
-            deleteState(sm, Number(path![1]));
+            if (path != null && path.length === 2) {
+              deleteState(sm, Number(path[1]));
+            }
           },
         };
       }
@@ -297,6 +325,61 @@ StateMachineEditorProps<IFSM>) {
     [forceLocalDispatch, localDispatch, stateMachine],
   );
 
+  const onFlowlineClick = React.useCallback(
+    (
+      e: ModifierKeysEvent,
+      startProcess: TStateProcess,
+      flowline: TTransitionFlowLine,
+    ) => {
+      const actions: EditorAction<
+        IFSMDescriptor | IDialogueDescriptor
+      >['more'] = {};
+      actions.delete = {
+        label: 'Delete',
+        confirm: true,
+        action: (
+          sm: IFSMDescriptor | IDialogueDescriptor,
+          path?: (string | number)[],
+        ) => {
+          if (path != null && path?.length === 4) {
+            deleteTransition(sm, Number(path[1]), Number(path[3]));
+          }
+        },
+      };
+
+      const dispatchLocal =
+        (e.ctrlKey === true || forceLocalDispatch === true) &&
+        localDispatch != null;
+      const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
+      dispatch(
+        Actions.EditorActions.editVariable(
+          stateMachine,
+          ['states', startProcess.id, 'transitions', flowline.id],
+          undefined,
+          {
+            more: actions,
+          },
+        ),
+      );
+      if (!dispatchLocal) {
+        focusTab(mainLayoutId, 'Variable Properties');
+      }
+    },
+    [forceLocalDispatch, localDispatch, stateMachine],
+  );
+
+  const isFlowlineSelected = React.useCallback(
+    (sourceProcess: TStateProcess, flowline: TTransitionFlowLine) => {
+      return (
+        editPath[0] === 'states' &&
+        editPath[1] === sourceProcess.id &&
+        editPath[2] === 'transitions' &&
+        editPath[3] === flowline.id
+      );
+    },
+    [editPath],
+  );
+
   return (
     <FlowChart
       title={title}
@@ -304,8 +387,9 @@ StateMachineEditorProps<IFSM>) {
       onConnect={connectState}
       onMove={updateStatePosition}
       onNew={createState}
-      onFlowlineClick={() => wlog('flolineclick')}
+      onFlowlineClick={onFlowlineClick}
       onProcessClick={onStateClick}
+      isFlowlineSelected={isFlowlineSelected}
     />
   );
 }
@@ -315,6 +399,7 @@ function globalStateSelector(s: RState) {
     | IFSMDescriptor
     | IDialogueDescriptor
     | undefined = undefined;
+  let editPath: (string | number)[] | undefined = undefined;
   if (
     s.global.editing &&
     (s.global.editing.type === 'VariableFSM' ||
@@ -330,6 +415,7 @@ function globalStateSelector(s: RState) {
     if (shallowDifferent(editedVariable, lastFSM)) {
       editedVariable = lastFSM;
     }
+    editPath = s.global.editing.path;
   }
   const instance = editedVariable ? getInstance(editedVariable) : undefined;
   if (
@@ -341,6 +427,7 @@ function globalStateSelector(s: RState) {
       descriptor: editedVariable,
       instance,
       search: s.global.search,
+      editPath,
     };
   } else {
     return {
@@ -372,6 +459,7 @@ export function ConnectedStateMachineEditor({
           stateMachineInstance={globalState.instance}
           localDispatch={localDispatch}
           search={globalState.search}
+          editPath={globalState.editPath}
         />
       </div>
     );

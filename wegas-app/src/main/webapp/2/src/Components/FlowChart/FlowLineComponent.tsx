@@ -3,15 +3,20 @@ import * as React from 'react';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
 import { themeVar } from '../Style/ThemeVars';
 import { FlowLine, Process } from './FlowChart';
-import { DefaultProcessHandle, ProcessHandleProps } from './ProcessHandle';
+import { FlowLineHandle } from './Handles';
 
-const childrenContainerStyle = css({
-  position: 'absolute',
-  zIndex: 1,
-  ':hover': {
-    zIndex: 10,
-  },
-});
+const childrenContainerStyle = (selected: boolean) =>
+  css({
+    position: 'absolute',
+    zIndex: selected ? 1000 : 2,
+    ':hover': {
+      zIndex: selected ? 1000 : 10,
+    },
+  });
+
+function defaultSelect() {
+  return false;
+}
 
 export interface FlowLineProps<F extends FlowLine, P extends Process<F>> {
   /**
@@ -27,6 +32,10 @@ export interface FlowLineProps<F extends FlowLine, P extends Process<F>> {
    */
   startProcess: P;
   /**
+   * the process object where the flowline ends
+   */
+  endProcess: P;
+  /**
    * the flowline object to display
    */
   flowline: F;
@@ -38,11 +47,11 @@ export interface FlowLineProps<F extends FlowLine, P extends Process<F>> {
   /**
    * a callback triggered when a click occures on a flowline
    */
-  onClick?: (e: ModifierKeysEvent, flowline: F) => void;
+  onClick?: (e: ModifierKeysEvent, sourceProcess: P, flowline: F) => void;
   /**
-   * a handle component that can be dragged to connect the flowline to other (existing or new) processes
+   * a condition given by the user to see if flowline is selected or not
    */
-  ProcessHandle?: React.FunctionComponent<ProcessHandleProps<F, P>>;
+  isFlowlineSelected?: (sourceProcess: P, flowline: F) => boolean;
 }
 
 interface CustomFlowLineProps<F extends FlowLine, P extends Process<F>>
@@ -51,9 +60,10 @@ interface CustomFlowLineProps<F extends FlowLine, P extends Process<F>>
    * the children component that recieve the flowline object
    * allow to customize easily the flowline label style
    */
-  children: (
+  children?: (
     flowline: F,
-    onClick?: (e: ModifierKeysEvent, flowline: F) => void,
+    sourceProcess: P,
+    onClick?: (e: ModifierKeysEvent, sourceProcess: P, flowline: F) => void,
   ) => React.ReactNode;
 }
 
@@ -85,14 +95,17 @@ export function CustomFlowLineComponent<
   startProcessElement,
   endProcessElement,
   startProcess,
+  endProcess,
   flowline,
   positionOffset = 0.5,
   onClick,
-  ProcessHandle = DefaultProcessHandle,
+  isFlowlineSelected = defaultSelect,
   children,
 }: CustomFlowLineProps<F, P>) {
   const parent = startProcessElement?.parentElement;
   const parentBox = parent?.getBoundingClientRect();
+  const selected = isFlowlineSelected(startProcess, flowline);
+
   const { arrowLength, axeValues } = React.useMemo(() => {
     if (
       startProcessElement == null ||
@@ -277,11 +290,26 @@ export function CustomFlowLineComponent<
   const canvasLeft = values.canvasLeft + (parent?.scrollLeft || 0);
   const canvasTop = values.canvasTop + (parent?.scrollTop || 0);
 
+  const handleRotation = Math.atan2(
+    values.arrowEnd.y - values.arrowStart.y,
+    values.arrowEnd.x - values.arrowStart.x,
+  );
+
+  const startHandlePosition = {
+    x: canvasLeft + values.arrowStart.x,
+    y: canvasTop + values.arrowStart.y,
+  };
+
+  const endHandlePosition = {
+    x: canvasLeft + values.arrowEnd.x,
+    y: canvasTop + values.arrowEnd.y,
+  };
+
   return (
     <>
       <svg
         style={{
-          zIndex: 0,
+          zIndex: selected ? 1 : 0,
           position: 'absolute',
           left: canvasLeft,
           top: canvasTop,
@@ -292,13 +320,46 @@ export function CustomFlowLineComponent<
         <defs>
           <marker
             id="arrowhead"
-            markerWidth="10"
-            markerHeight="7"
-            refX="10"
-            refY="3.5"
+            markerWidth="15"
+            markerHeight="10"
+            refX="15"
+            refY="5"
             orient="auto"
           >
-            <polygon points="0 0, 10 3.5, 0 7" />
+            <polygon points="0 0, 15 5, 0 10" />
+          </marker>
+          <marker
+            id="selectedarrowhead"
+            markerWidth="15"
+            markerHeight="10"
+            refX="15"
+            refY="5"
+            orient="auto"
+            fill={'orange'}
+          >
+            <polygon points="0 0, 15 5, 0 10" />
+          </marker>
+
+          <marker
+            id="arrowtail"
+            markerWidth="15"
+            markerHeight="10"
+            refX="0"
+            refY="5"
+            orient="auto"
+          >
+            <polygon points="0 0, 10 0,15 5, 10 10, 0 10, 5 5" />
+          </marker>
+          <marker
+            id="selectedarrowtail"
+            markerWidth="15"
+            markerHeight="10"
+            refX="0"
+            refY="5"
+            orient="auto"
+            fill={'orange'}
+          >
+            <polygon points="0 0, 10 0,15 5, 10 10, 0 10, 5 5" />
           </marker>
         </defs>
         <line
@@ -306,10 +367,32 @@ export function CustomFlowLineComponent<
           y1={values.arrowStart.y}
           x2={values.arrowEnd.x}
           y2={values.arrowEnd.y}
-          style={{ stroke: 'rgb(0,0,0)', strokeWidth: 2 }}
-          markerEnd="url(#arrowhead)"
+          style={{
+            stroke: 'rgb(0,0,0)',
+            strokeWidth: 2,
+          }}
+          markerStart={`url(#${selected ? 'selectedarrowtail' : 'arrowtail'})`}
+          markerEnd={`url(#${selected ? 'selectedarrowhead' : 'arrowhead'})`}
         />
       </svg>
+      <FlowLineHandle
+        position={startHandlePosition}
+        translation={{ x: 0, y: 0.5 }}
+        rotation={handleRotation}
+        processes={{ sourceProcess: startProcess, targetProcess: endProcess }}
+        selected={selected}
+        flowline={flowline}
+        backward={true}
+      />
+      <FlowLineHandle
+        position={endHandlePosition}
+        translation={{ x: 0, y: 0.5 }}
+        rotation={handleRotation - Math.PI}
+        processes={{ sourceProcess: startProcess }}
+        selected={selected}
+        flowline={flowline}
+        backward={false}
+      />
       <div
         ref={ref => {
           if (ref != null) {
@@ -324,13 +407,12 @@ export function CustomFlowLineComponent<
             );
           }
         }}
-        className={childrenContainerStyle}
+        className={childrenContainerStyle(selected)}
         onClick={e => {
           (e.target as HTMLDivElement).focus();
         }}
       >
-        {children(flowline, onClick)}
-        <ProcessHandle sourceProcess={startProcess} flowline={flowline} />
+        {children && children(flowline, startProcess, onClick)}
       </div>
     </>
   );
@@ -355,14 +437,108 @@ export function DefaultFlowLineComponent<
 >(props: FlowLineProps<F, P>) {
   return (
     <CustomFlowLineComponent {...props}>
-      {(flowline, onClick) => (
+      {(flowline, startProcess, onClick) => (
         <div
-          onClickCapture={e => onClick && onClick(e, flowline)}
+          onClick={e => onClick && onClick(e, startProcess, flowline)}
           className={flowLineLabelStyle}
         >
           {flowline.id}
         </div>
       )}
     </CustomFlowLineComponent>
+  );
+}
+
+interface StartProcessElement {
+  startProcessElement: HTMLElement;
+}
+
+interface EndProcessElement {
+  endProcessElement: HTMLElement;
+}
+
+export function isStartProcessElement(
+  processElements: StartProcessElement | EndProcessElement,
+): processElements is StartProcessElement {
+  return 'startProcessElement' in processElements;
+}
+
+export interface TempFlowLineProps {
+  /**
+   * the DOM element from where the flowline starts
+   */
+  processElements: StartProcessElement | EndProcessElement;
+  /**
+   * the position of the dragged handle
+   */
+  position: XYPosition;
+}
+
+export function TempFlowLine({ processElements, position }: TempFlowLineProps) {
+  const parent = isStartProcessElement(processElements)
+    ? processElements.startProcessElement.parentElement
+    : processElements.endProcessElement.parentElement;
+  const parentBox = parent!.getBoundingClientRect();
+
+  let startX = position.x + parent!.scrollLeft;
+  let startY = position.y + parent!.scrollTop;
+  let endX = position.x + parent!.scrollLeft;
+  let endY = position.y + parent!.scrollTop;
+
+  if (isStartProcessElement(processElements)) {
+    const startProcessBox = processElements.startProcessElement.getBoundingClientRect();
+    startX = startProcessBox.x + startProcessBox.width / 2 - parentBox.x;
+    startY = startProcessBox.y + startProcessBox.height / 2 - parentBox.y;
+  } else {
+    const endProcessBox = processElements.endProcessElement.getBoundingClientRect();
+    endX = endProcessBox.x + endProcessBox.width / 2 - parentBox.x;
+    endY = endProcessBox.y + endProcessBox.height / 2 - parentBox.y;
+  }
+
+  return (
+    <svg
+      style={{
+        zIndex: -1,
+        position: 'absolute',
+        // 100% size here doesn't work as parent doesn't have defined size
+        width: `${parent!.scrollWidth}px`,
+        height: `${parent!.scrollHeight}px`,
+      }}
+    >
+      <defs>
+        <marker
+          id="arrowhead"
+          markerWidth="15"
+          markerHeight="10"
+          refX="15"
+          refY="5"
+          orient="auto"
+        >
+          <polygon points="0 0, 15 5, 0 10" />
+        </marker>
+        <marker
+          id="arrowtail"
+          markerWidth="15"
+          markerHeight="10"
+          refX="0"
+          refY="5"
+          orient="auto"
+        >
+          <polygon points="0 0, 10 0,15 5, 10 10, 0 10, 5 5" />
+        </marker>
+      </defs>
+      <line
+        x1={startX}
+        y1={startY}
+        x2={endX}
+        y2={endY}
+        style={{
+          stroke: 'rgb(0,0,0)',
+          strokeWidth: 2,
+        }}
+        markerStart={`url(#arrowtail)`}
+        markerEnd={`url(#arrowhead)`}
+      />
+    </svg>
   );
 }

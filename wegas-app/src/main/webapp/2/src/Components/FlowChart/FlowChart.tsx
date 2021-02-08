@@ -2,9 +2,14 @@ import * as React from 'react';
 import { css } from 'emotion';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
 import { Toolbar } from '../Toolbar';
-import { DefaultFlowLineComponent, FlowLineProps } from './FlowLineComponent';
+import {
+  DefaultFlowLineComponent,
+  FlowLineProps,
+  TempFlowLine,
+  TempFlowLineProps,
+} from './FlowLineComponent';
 import { ProcessProps, DefaultProcessComponent } from './ProcessComponent';
-import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './ProcessHandle';
+import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './Handles';
 import { useDrop } from 'react-dnd';
 import { classNameOrEmpty } from '../../Helper/className';
 
@@ -13,6 +18,11 @@ const flowChartStyle = css({
   height: '100%',
   borderStyle: 'solid',
 });
+
+export interface Processes<F extends FlowLine, P extends Process<F>> {
+  sourceProcess: P;
+  targetProcess?: P;
+}
 
 export interface FlowLine {
   /**
@@ -81,7 +91,12 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
    * a callback triggered when a new process is requested
    * @example dropping a handle on the main board
    */
-  onNew: (sourceProcess: P, newPosition: XYPosition, flowline?: F) => void;
+  onNew: (
+    sourceProcess: P,
+    newPosition: XYPosition,
+    flowline?: F,
+    backward?: boolean,
+  ) => void;
   /**
    * a callback triggered when a flowline is requested
    * @example dropping a handle on a process
@@ -94,7 +109,15 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
   /**
    * a callback triggered when a click occures on a process
    */
-  onFlowlineClick?: (e: ModifierKeysEvent, flowline: F) => void;
+  onFlowlineClick?: (
+    e: ModifierKeysEvent,
+    sourceProcess: P,
+    flowline: F,
+  ) => void;
+  /**
+   * a condition given by the user to see if flowline is selected or not
+   */
+  isFlowlineSelected?: (sourceProcess: P, flowline: F) => boolean;
 }
 
 const emptyProcesses: Process<FlowLine>[] = [];
@@ -109,6 +132,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   onConnect,
   onProcessClick,
   onFlowlineClick,
+  isFlowlineSelected,
   className,
   style,
   id,
@@ -116,10 +140,53 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   const container = React.useRef<HTMLDivElement>();
   const processesRef = React.useRef<{ [pid: string]: HTMLElement }>({});
 
-  const [, drop] = useDrop<DnDFlowchartHandle<F, P>, unknown, unknown>({
+  const [tempFlow, setTempFlow] = React.useState<TempFlowLineProps>();
+
+  const [, drop] = useDrop<
+    DnDFlowchartHandle<F, P>,
+    unknown,
+    { position?: XYPosition | undefined; sourceProcess?: P }
+  >({
     accept: PROCESS_HANDLE_DND_TYPE,
-    canDrop: (_item, mon) => mon.isOver({ shallow: true }),
-    drop: ({ sourceProcess, flowline }, mon) => {
+    hover: (item, mon) => {
+      const newX = mon.getClientOffset()?.x;
+      const newY = mon.getClientOffset()?.y;
+
+      const containerX = container.current?.getBoundingClientRect().x;
+      const containerY = container.current?.getBoundingClientRect().y;
+
+      let processElements: TempFlowLineProps['processElements'];
+      if ('targetProcess' in item.processes) {
+        processElements = {
+          endProcessElement:
+            processesRef.current[item.processes.targetProcess!.id],
+        };
+      } else {
+        processElements = {
+          startProcessElement:
+            processesRef.current[item.processes.sourceProcess.id],
+        };
+      }
+
+      if (
+        newX != null &&
+        newY != null &&
+        containerX != null &&
+        containerY != null
+      ) {
+        setTempFlow({
+          position: { x: newX - containerX, y: newY - containerY },
+          processElements,
+        });
+      } else {
+        setTempFlow(undefined);
+      }
+    },
+    canDrop: (_item, mon) => {
+      return mon.isOver({ shallow: true });
+    },
+    drop: ({ processes, flowline, backward }, mon) => {
+      setTempFlow(undefined);
       const newX = mon.getClientOffset()?.x;
       const newY = mon.getClientOffset()?.y;
 
@@ -127,7 +194,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
       const containerY = container.current?.getBoundingClientRect().y;
 
       onNew(
-        sourceProcess,
+        processes.sourceProcess,
         newX != null && newY != null && containerX != null && containerY != null
           ? {
               x: newX - containerX,
@@ -135,6 +202,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
             }
           : { x: 0, y: 0 },
         flowline,
+        backward,
       );
     },
   });
@@ -185,19 +253,21 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
       group.map((c, i, g) => {
         return (
           <Flowline
-            key={c.flowline.id}
+            key={c.flowline.id + c.startProcess.id + c.endProcess.id}
             startProcessElement={processesRef.current[c.startProcess.id]}
             endProcessElement={processesRef.current[c.endProcess.id]}
             startProcess={c.startProcess}
+            endProcess={c.endProcess}
             flowline={c.flowline}
             positionOffset={(i + 1) / (g.length + 1)}
             onClick={onFlowlineClick}
+            isFlowlineSelected={isFlowlineSelected}
           />
         );
       }),
     );
     setFlows(flowLines);
-  }, [internalProcesses, onFlowlineClick]);
+  }, [internalProcesses, isFlowlineSelected, onFlowlineClick]);
 
   return (
     <Toolbar
@@ -216,6 +286,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
         }}
       >
         {flows}
+        {tempFlow != null && <TempFlowLine {...tempFlow} />}
         {processes.map(process => (
           <Process
             key={process.id + JSON.stringify(process.position)}
@@ -230,8 +301,14 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
               }))
             }
             onMoveEnd={position => onMove(process, position)}
-            onConnect={(sourceProcess, flowline) => {
-              onConnect(sourceProcess, process, flowline);
+            onConnect={(processes, flowline) => {
+              setTempFlow(undefined);
+
+              if ('targetProcess' in processes) {
+                onConnect(process, processes.targetProcess!, flowline);
+              } else {
+                onConnect(processes.sourceProcess, process, flowline);
+              }
             }}
             onClick={onProcessClick}
           />

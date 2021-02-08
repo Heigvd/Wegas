@@ -2,14 +2,14 @@ import * as React from 'react';
 import { css } from 'emotion';
 import { XYPosition, useMouseEventDnd } from '../Hooks/useMouseEventDnd';
 import { themeVar } from '../Style/ThemeVars';
-import { FlowLine, Process } from './FlowChart';
+import { FlowLine, Process, Processes } from './FlowChart';
+import { useDrop } from 'react-dnd';
 import {
+  ProcessHandleProps,
   DefaultProcessHandle,
   DnDFlowchartHandle,
-  ProcessHandleProps,
   PROCESS_HANDLE_DND_TYPE,
-} from './ProcessHandle';
-import { useDrop } from 'react-dnd';
+} from './Handles';
 
 const PROCESS_WIDTH = 100;
 const PROCESS_HEIGHT = 50;
@@ -42,7 +42,7 @@ export interface ProcessProps<F extends FlowLine, P extends Process<F>> {
   /**
    * a callback triggered when a handle is dropped on the process component
    */
-  onConnect: (sourceProcess: P, flowline?: F) => void;
+  onConnect: (processes: Processes<F, P>, flowline?: F) => void;
   /**
    * a callback triggered when a click occures on a process
    */
@@ -84,8 +84,8 @@ export function CustomProcessComponent<
   const [, drop] = useDrop<DnDFlowchartHandle<F, P>, unknown, unknown>({
     accept: PROCESS_HANDLE_DND_TYPE,
     canDrop: () => true,
-    drop: ({ sourceProcess, flowline }) => {
-      onConnect(sourceProcess, flowline);
+    drop: ({ processes, flowline }) => {
+      onConnect(processes, flowline);
     },
   });
 
