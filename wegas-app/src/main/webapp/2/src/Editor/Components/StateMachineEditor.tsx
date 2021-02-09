@@ -181,22 +181,39 @@ StateMachineEditorProps<IFSM>) {
       sourceState: TStateProcess,
       targetState: TStateProcess,
       transition?: TTransitionFlowLine,
+      backward?: boolean,
     ) => {
       const newTransition: TTransition =
         transition != null
-          ? { ...transition.transition, nextStateId: Number(targetState.id) }
+          ? {
+              ...transition.transition,
+              nextStateId: backward
+                ? transition.transition.nextStateId
+                : Number(targetState.id),
+              index: backward
+                ? sourceState.state.transitions.length
+                : transition.transition.index,
+            }
           : createTransition(
               Number(targetState.id),
               sourceState.state.transitions.length,
             );
 
       const newStateMachine = produce((stateMachine: IFSM) => {
-        const state = stateMachine.states[Number(sourceState.id)];
+        const source = stateMachine.states[Number(sourceState.id)];
+        const target = stateMachine.states[Number(targetState.id)];
 
-        state.transitions = (state.transitions as TTransition[]).filter(
-          t => transition == null || t.id !== transition.transition.id,
-        ) as typeof state.transitions;
-        (state.transitions as IAbstractTransition[]).push(newTransition);
+        if (backward) {
+          target.transitions = (target.transitions as TTransition[]).filter(
+            t => transition == null || t.id !== transition.transition.id,
+          ) as typeof target.transitions;
+          // (source.transitions as IAbstractTransition[]).push(newTransition);
+        } else {
+          source.transitions = (source.transitions as TTransition[]).filter(
+            t => transition == null || t.id !== transition.transition.id,
+          ) as typeof source.transitions;
+        }
+        (source.transitions as IAbstractTransition[]).push(newTransition);
       })(stateMachine);
 
       store.dispatch(

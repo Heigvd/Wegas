@@ -101,7 +101,12 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
    * a callback triggered when a flowline is requested
    * @example dropping a handle on a process
    */
-  onConnect: (sourceProcess: P, targetProcess: P, flowline?: F) => void;
+  onConnect: (
+    sourceProcess: P,
+    targetProcess: P,
+    flowline?: F,
+    backward?: boolean,
+  ) => void;
   /**
    * a callback triggered when a click occures on a process
    */
@@ -313,9 +318,9 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
               setTempFlow(undefined);
 
               if ('targetProcess' in processes) {
-                onConnect(process, processes.targetProcess!, flowline);
+                onConnect(process, processes.sourceProcess, flowline, true);
               } else {
-                onConnect(processes.sourceProcess, process, flowline);
+                onConnect(processes.sourceProcess, process, flowline, false);
               }
             }}
             onClick={onProcessClick}
