@@ -33,21 +33,15 @@ export interface ProcessHandleProps<F extends FlowLine, P extends Process<F>> {
    * the process from which the flowline is comming
    */
   sourceProcess: P;
-  /**
-   * the flowline object to drag (if already existing)
-   */
-  flowline?: F;
 }
 
 export function DefaultProcessHandle<F extends FlowLine, P extends Process<F>>({
   sourceProcess,
-  flowline,
 }: ProcessHandleProps<F, P>) {
   const [, drag] = useDrag<DnDFlowchartHandle<F, P>, unknown, unknown>({
     item: {
       type: PROCESS_HANDLE_DND_TYPE,
       processes: { sourceProcess },
-      flowline,
     },
   });
 

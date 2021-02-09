@@ -40,6 +40,7 @@ import { EditorAction } from '../../data/Reducer/globalState';
 import { mainLayoutId } from './Layout';
 import { focusTab } from './LinearTabLayout/LinearLayout';
 import produce, { Immutable } from 'immer';
+import { StateProcessComponent } from '../../Components/FlowChart/StateProcessComponent';
 
 const emptyPath: (string | number)[] = [];
 
@@ -98,11 +99,11 @@ function deleteTransition<T extends IFSMDescriptor | IDialogueDescriptor>(
   );
 }
 
-interface TransitionFlowLine<T extends IAbstractTransition> extends FlowLine {
+export interface TransitionFlowLine<T extends IAbstractTransition> extends FlowLine {
   transition: T;
 }
 
-interface StateProcess<T extends IAbstractTransition, S extends IAbstractState>
+export interface StateProcess<T extends IAbstractTransition, S extends IAbstractState>
   extends Process<TransitionFlowLine<T>> {
   state: S;
 }
@@ -397,6 +398,16 @@ StateMachineEditorProps<IFSM>) {
     [editPath],
   );
 
+  const isProcessSelected = React.useCallback(
+    (sourceProcess: TStateProcess) => {
+      return (
+        editPath[0] === 'states' &&
+        editPath[1] === sourceProcess.id
+      );
+    },
+    [editPath],
+  );
+
   return (
     <FlowChart
       title={title}
@@ -407,6 +418,8 @@ StateMachineEditorProps<IFSM>) {
       onFlowlineClick={onFlowlineClick}
       onProcessClick={onStateClick}
       isFlowlineSelected={isFlowlineSelected}
+      isProcessSelected = {isProcessSelected}
+      Process= {StateProcessComponent}
     />
   );
 }

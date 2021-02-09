@@ -123,6 +123,7 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
    * a condition given by the user to see if flowline is selected or not
    */
   isFlowlineSelected?: (sourceProcess: P, flowline: F) => boolean;
+  isProcessSelected?: (sourceProcess: P) => boolean;
 }
 
 const emptyProcesses: Process<FlowLine>[] = [];
@@ -138,6 +139,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   onProcessClick,
   onFlowlineClick,
   isFlowlineSelected,
+  isProcessSelected,
   className,
   style,
   id,
@@ -324,6 +326,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
               }
             }}
             onClick={onProcessClick}
+            isProcessSelected = {isProcessSelected}
           />
         ))}
       </Toolbar.Content>

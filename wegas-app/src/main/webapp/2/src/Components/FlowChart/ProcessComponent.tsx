@@ -6,7 +6,6 @@ import { FlowLine, Process, Processes } from './FlowChart';
 import { useDrop } from 'react-dnd';
 import {
   ProcessHandleProps,
-  DefaultProcessHandle,
   DnDFlowchartHandle,
   PROCESS_HANDLE_DND_TYPE,
 } from './Handles';
@@ -51,6 +50,8 @@ export interface ProcessProps<F extends FlowLine, P extends Process<F>> {
    * a handle component that can be dragged to create new flowlines and processes
    */
   ProcessHandle?: React.FunctionComponent<ProcessHandleProps<F, P>>;
+
+  isProcessSelected?: (sourceProcess: P) => boolean;
 }
 
 interface CustomProcessProps<F extends FlowLine, P extends Process<F>>
@@ -62,6 +63,7 @@ interface CustomProcessProps<F extends FlowLine, P extends Process<F>>
   children: (
     process: P,
     onClick?: (e: ModifierKeysEvent, process: P) => void,
+    selected?:boolean,
   ) => React.ReactNode;
 }
 
@@ -75,12 +77,12 @@ export function CustomProcessComponent<
   onMoveEnd,
   onConnect,
   onClick,
-  ProcessHandle = DefaultProcessHandle,
   children,
+  isProcessSelected,
 }: CustomProcessProps<F, P>) {
   const processElement = React.useRef<HTMLDivElement | null>(null);
   const clickPosition = React.useRef<XYPosition>({ x: 0, y: 0 });
-
+  const selected = isProcessSelected && isProcessSelected(process);
   const [, drop] = useDrop<DnDFlowchartHandle<F, P>, unknown, unknown>({
     accept: PROCESS_HANDLE_DND_TYPE,
     canDrop: () => true,
@@ -135,8 +137,7 @@ export function CustomProcessComponent<
       className={processStyle}
       data-id={process.id}
     >
-      {children(process, onClick)}
-      <ProcessHandle sourceProcess={process} />
+      {children(process, onClick, selected)}
     </div>
   );
 }
