@@ -20,6 +20,7 @@ import {
   IAbstractTransition,
   ITransition,
   IDialogueTransition,
+  IState,
 } from 'wegas-ts-api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { SimpleInput } from '../../Components/Inputs/SimpleInput';
@@ -35,7 +36,10 @@ import { createScript } from '../../Helper/wegasEntites';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { createTranslatableContent } from './FormView/translatable';
 import { XYPosition } from '../../Components/Hooks/useMouseEventDnd';
-import { IAbstractState } from 'wegas-ts-api/typings/WegasEntities';
+import {
+  IAbstractState,
+  IDialogueState,
+} from 'wegas-ts-api/typings/WegasEntities';
 import { EditorAction } from '../../data/Reducer/globalState';
 import { mainLayoutId } from './Layout';
 import { focusTab } from './LinearTabLayout/LinearLayout';
@@ -99,13 +103,12 @@ function deleteTransition<T extends IFSMDescriptor | IDialogueDescriptor>(
   );
 }
 
-export interface TransitionFlowLine<T extends IAbstractTransition> extends FlowLine {
-  transition: T;
+export interface TransitionFlowLine extends FlowLine {
+  transition: ITransition | IDialogueTransition;
 }
 
-export interface StateProcess<T extends IAbstractTransition, S extends IAbstractState>
-  extends Process<TransitionFlowLine<T>> {
-  state: S;
+export interface StateProcess extends Process<TransitionFlowLine> {
+  state: IState | IDialogueState;
 }
 
 interface StateMachineEditorProps<
@@ -131,12 +134,10 @@ export function StateMachineEditor<
 StateMachineEditorProps<IFSM>) {
   type TState = IFSM['states'][0];
   type TTransition = TState['transitions'][0];
-  type TTransitionFlowLine = TransitionFlowLine<TTransition>;
-  type TStateProcess = StateProcess<TTransition, TState>;
 
   const { lang } = React.useContext(languagesCTX);
 
-  const processes: TStateProcess[] = React.useMemo(
+  const processes: StateProcess[] = React.useMemo(
     () =>
       Object.entries(stateMachine.states).map(([key, state]) => ({
         state: state as TState,
@@ -179,9 +180,9 @@ StateMachineEditorProps<IFSM>) {
 
   const connectState = React.useCallback(
     (
-      sourceState: TStateProcess,
-      targetState: TStateProcess,
-      transition?: TTransitionFlowLine,
+      sourceState: StateProcess,
+      targetState: StateProcess,
+      transition?: TransitionFlowLine,
       backward?: boolean,
     ) => {
       const newTransition: TTransition =
@@ -225,7 +226,7 @@ StateMachineEditorProps<IFSM>) {
   );
 
   const updateStatePosition = React.useCallback(
-    (sourceState: TStateProcess, position: XYPosition) => {
+    (sourceState: StateProcess, position: XYPosition) => {
       const newStateMachine = produce((stateMachine: IFSM) => {
         stateMachine.states[Number(sourceState.id)].x =
           position.x >= 10 ? position.x : 10;
@@ -245,9 +246,9 @@ StateMachineEditorProps<IFSM>) {
 
   const createState = React.useCallback(
     (
-      sourceProcess: TStateProcess,
+      sourceProcess: StateProcess,
       position: XYPosition,
-      transition?: TTransitionFlowLine,
+      transition?: TransitionFlowLine,
       backward?: boolean,
     ) => {
       const newState: TState = {
@@ -303,7 +304,7 @@ StateMachineEditorProps<IFSM>) {
   );
 
   const onStateClick = React.useCallback(
-    (e: ModifierKeysEvent, state: TStateProcess) => {
+    (e: ModifierKeysEvent, state: StateProcess) => {
       const actions: EditorAction<
         IFSMDescriptor | IDialogueDescriptor
       >['more'] = {};
@@ -346,8 +347,8 @@ StateMachineEditorProps<IFSM>) {
   const onFlowlineClick = React.useCallback(
     (
       e: ModifierKeysEvent,
-      startProcess: TStateProcess,
-      flowline: TTransitionFlowLine,
+      startProcess: StateProcess,
+      flowline: TransitionFlowLine,
     ) => {
       const actions: EditorAction<
         IFSMDescriptor | IDialogueDescriptor
@@ -387,7 +388,7 @@ StateMachineEditorProps<IFSM>) {
   );
 
   const isFlowlineSelected = React.useCallback(
-    (sourceProcess: TStateProcess, flowline: TTransitionFlowLine) => {
+    (sourceProcess: StateProcess, flowline: TransitionFlowLine) => {
       return (
         editPath[0] === 'states' &&
         editPath[1] === sourceProcess.id &&
@@ -399,11 +400,8 @@ StateMachineEditorProps<IFSM>) {
   );
 
   const isProcessSelected = React.useCallback(
-    (sourceProcess: TStateProcess) => {
-      return (
-        editPath[0] === 'states' &&
-        editPath[1] === sourceProcess.id
-      );
+    (sourceProcess: StateProcess) => {
+      return editPath[0] === 'states' && editPath[1] === sourceProcess.id;
     },
     [editPath],
   );
@@ -418,8 +416,8 @@ StateMachineEditorProps<IFSM>) {
       onFlowlineClick={onFlowlineClick}
       onProcessClick={onStateClick}
       isFlowlineSelected={isFlowlineSelected}
-      isProcessSelected = {isProcessSelected}
-      Process= {StateProcessComponent}
+      isProcessSelected={isProcessSelected}
+      Process={StateProcessComponent}
     />
   );
 }

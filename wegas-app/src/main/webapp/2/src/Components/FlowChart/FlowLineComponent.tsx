@@ -501,24 +501,6 @@ export function CircularFlowLineComponent<
   const processBox = processElement?.getBoundingClientRect();
   const selected = isFlowlineSelected(process, flowline);
 
-  // const shortestArrow = arrowLength.sort((a, b) => a.length - b.length)[0];
-  // const values = axeValues[shortestArrow.axe];
-
-  // const handleRotation = Math.atan2(
-  //   values.arrowEnd.y - values.arrowStart.y,
-  //   values.arrowEnd.x - values.arrowStart.x,
-  // );
-
-  // const startHandlePosition = {
-  //   x: canvasLeft + values.arrowStart.x,
-  //   y: canvasTop + values.arrowStart.y,
-  // };
-
-  // const endHandlePosition = {
-  //   x: canvasLeft + values.arrowEnd.x,
-  //   y: canvasTop + values.arrowEnd.y,
-  // };
-
   if (processBox == null || parentBox == null) {
     return null;
   }
