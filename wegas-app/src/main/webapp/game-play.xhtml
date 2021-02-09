@@ -148,14 +148,26 @@
                     });
 
                     app.after("render", function() {
-                        try {
-                #{gameController.clientScripts}                     // Run game model specific js footer
-                        } catch (e) {
-                            Y.log("Error running client scripts.", "error");
-                        }
+                        Y.use("wegas-react-form", function() {
+
+                            Y.log("SoftClientScript");
+                            /* THIS IS NOT A COMMENT
+                             <ui:repeat var="clientscript" value="#{gameController.getEscapedClientScriptsList()}" varStatus="status">
+                             */
+
+                            try {
+                                // Run game model specific js footer
+                                W.Sandbox.eval("#{clientscript}", undefined, true);
+                            } catch (e) {
+                                Y.log("Error running client scripts: " + e.message, "error");
+                            }
+                            /* THIS IS NOT A COMMENT
+                             </ui:repeat>
+                             */
+                        });
                     });
                     try {
-                #{gameController.staticClientScripts}
+                        #{gameController.staticClientScripts}
                     } catch (e) {
                         Y.log("Error running client scripts.", "error");
                     }

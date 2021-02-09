@@ -13,9 +13,10 @@
  */
 YUI.add('wegas-app', function(Y) {
     "use strict";
-
     var Wegas = Y.namespace('Wegas'); // Create namespace
 
+    // detect youtube links
+    var YOUTUBE_PATTERN = /^(?:https?:)?\/\/www\.youtube(?:-nocookie)?.com\/embed\/(.*)$/;
     /**
      * Create a new wegas-app
      *
@@ -40,17 +41,16 @@ YUI.add('wegas-app', function(Y) {
          * @private
          */
         initializer: function() {
+            this.setupSanitizer();
             /**
              * @name render after app rendering
              * @event
              */
             this.publish("render");
-
             /**
              * Fired just before resetting the scenario
              */
             this.publish("beforeReset");
-
             /**
              * @name render after render event
              * @event
@@ -58,11 +58,8 @@ YUI.add('wegas-app', function(Y) {
             this.publish("ready", {
                 fireOnce: true
             });
-
             this.publish("newSearchVal");
-
             this.dataSources = {};
-
             this._pendingRequests = 0;
             window.onbeforeunload = function() {
                 Y.log("PENDINGS: " + Y.Wegas.app._pendingRequests);
@@ -72,9 +69,24 @@ YUI.add('wegas-app', function(Y) {
                     return;
                 }
             };
-
             Wegas.app = this; // Setup global references to the app
             Wegas.Facade = this.dataSources; // and the data sources
+        },
+        setupSanitizer: function() {
+            var YNodeSetContent = Y.Node.prototype.setContent;
+            var YNodeSetHTML = Y.Node.prototype.setHTML;
+            var YNodeCreate = Y.Node.create;
+
+            Y.Node.create = function(content) {
+                var s = Y.Wegas.App.sanitize(content);
+                return YNodeCreate.call(Y.Node, s);
+            };
+            Y.Node.prototype.setContent = function(content) {
+                return YNodeSetContent.call(this, Y.Wegas.App.sanitize(content));
+            };
+            Y.Node.prototype.setHTML = function(html) {
+                return YNodeSetHTML.call(this, Y.Wegas.App.sanitize(html));
+            };
         },
         preSendRequest: function() {
             this._pendingRequests += 1;
@@ -99,21 +111,18 @@ YUI.add('wegas-app', function(Y) {
                     requestCounter -= 1;
                     Y.one(".wegas-loading-app-current")
                         .setAttribute("style", "width:" + ((1 - requestCounter / totalRequests) * 100) + "%");
-
                     if (requestCounter === 0) { // If all initial request are completed,
                         while ((event = events.shift()) !== undefined) {
                             event.detach();
                         }
                         this.plug(Y.Plugin.SurveyListener);
-
                         this.plug(Y.Plugin.LockManager);
                         this.plug(Y.Plugin.IdleMonitor);
                         this.idlemonitor.on("idle", Y.bind(this.goIdle, this));
                         this.idlemonitor.on("resume", Y.bind(this.resume, this));
-
                         // various idle settings
                         //this.idlemonitor.set("timeout", 900000);  // 15 minutes
-                        this.idlemonitor.set("timeout", 1800000);  // 30 minutes
+                        this.idlemonitor.set("timeout", 1800000); // 30 minutes
                         //this.idlemonitor.set("timeout", 2700000);  // 45 minutes
                         //this.idlemonitor.set("timeout", 3600000);  // 1 hour
 
@@ -121,14 +130,11 @@ YUI.add('wegas-app', function(Y) {
                         //this.idlemonitor.set("resolution", 300000); // check each five minutes
 
                         this.idlemonitor.start();
-
                         this.fire("preRender");
-
                         playerCode = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("lang");
                         playerLanguage = I18n.findLanguageByCode(playerCode);
                         if (playerLanguage && playerLanguage.get("active")) {
                             I18n.setCode(playerCode);
-
                             Y.later(10, this, function() { // Let the loading div update
                                 this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
                                     .render(); // and render it
@@ -154,7 +160,6 @@ YUI.add('wegas-app', function(Y) {
 
                     }
                 };
-
             Y.io.header("Accept-Language", Y.config.lang); // Set up the language for all requests
             Y.on("io:failure", this.globalFailureHandler, this); // Set up a default failure handler
 
@@ -172,7 +177,6 @@ YUI.add('wegas-app', function(Y) {
                     }
                     this.dataSources[name] = ds; // Push to data source list
                 }, this);
-
                 this.dataSources.VariableDescriptor = this.dataSources.Variable; // @backward compatibility
 
                 requestCounter += 1;
@@ -182,13 +186,11 @@ YUI.add('wegas-app', function(Y) {
                 }, this);
                 totalRequests = requestCounter;
             }, this));
-
             // Post render events
             this.on("render", function() { // When the first page is rendered,
 
                 var gm = Y.Wegas.Facade.Game.cache.getCurrentGame();
                 var extraTabs;
-
                 Y.Array.find(["#centerTabView", "#rightTabView"], function(item) {
                     var parent = Y.Widget.getByNode(item);
                     if (parent && parent.extratabs) {
@@ -197,15 +199,12 @@ YUI.add('wegas-app', function(Y) {
                     }
                     return false;
                 }, this);
-
                 if (extraTabs) {
 
                     Y.Wegas.Facade.Page.cache.getIndex(function(index) {
                         var items = [index.root];
-
                         while (items.length) {
                             var item = items.shift();
-
                             if (item["@class"] === "Folder") {
                                 items = items.concat(item.items);
                             } else if (item["@class"] === "Page") {
@@ -253,7 +252,6 @@ YUI.add('wegas-app', function(Y) {
                                             }
                                         }]
                                 });
-
                             }, this);
                         // @TODO Until all survey concepts are agreed upon,
                         // restrict the survey tab to admins or games already containing a survey:
@@ -333,7 +331,6 @@ YUI.add('wegas-app', function(Y) {
                             }
                         }
                     };
-
                 if (variableTreeViewNode) {
                     variableTreeView = Y.Widget.getByNode(variableTreeViewNode);
                     variableTreeView.set("bypassSyncEvents", true);
@@ -408,7 +405,6 @@ YUI.add('wegas-app', function(Y) {
             try {
                 response = Y.JSON.parse(req.responseText);
                 msg += "\n Server reply " + Y.JSON.stringify(response, null, "\t");
-
                 if (response.exception === "org.apache.shiro.authz.UnauthenticatedException") { // If the user session has timed out,
                     new Wegas.Panel({//                                         // Show a message that invites to reconnect
                         content: "<div class='icon icon-info'>You have been logged out.</div>",
@@ -432,6 +428,96 @@ YUI.add('wegas-app', function(Y) {
             Y.log(msg, "error", "Y.Wegas.App"); // Log the error
         }
     }, {
+        /**
+         * Destroy all given DOM node
+         * @param {type} list DOM node list
+         */
+        removeTags: function(list) {
+            for (var i = 0; i < list.length; i++) {
+                list[i].remove();
+            }
+        },
+        /**
+         * Clean some html fragment. Remove <script> and <link> tags. Remove all onEvent attributes.
+         * Sandbox all iframe (except those which embed youtube viedeo :-/). Prevent autocompletion
+         * of password input
+         *
+         * @param {string} html html fragment to sanitize
+         * @returns clean html
+         */
+        sanitize: function(html) {
+            if (html) {
+                if (typeof html === 'string') {
+                    var root;
+                    // table element must be set in a parent of the correct type
+                    if (html.startsWith("<tr")) {
+                        root = document.createElement('tbody');
+                    } else if (html.startsWith("<tbody")) {
+                        root = document.createElement('table');
+                    } else if (html.startsWith("<thead")) {
+                        root = document.createElement('table');
+                    } else if (html.startsWith("<th")) {
+                        root = document.createElement('thead');
+                    } else if (html.startsWith("<colgroup")) {
+                        root = document.createElement('table');
+                    } else {
+                        // any other content can be set within a div
+                        root = document.createElement('div');
+                    }
+                    root.innerHTML = html;
+                    var list;
+                    // remove script and link tags
+                    list = root.getElementsByTagName("script");
+                    Y.Wegas.App.removeTags(list);
+                    list = root.getElementsByTagName("link");
+                    Y.Wegas.App.removeTags(list);
+                    // force iframe to be sandboxed
+                    list = root.getElementsByTagName("iframe");
+                    for (var i = 0; i < list.length; i++) {
+                        // One shall not set allow-same-origin EVER
+                        // But embedding youtube videos requires it...
+                        // Youtube sucks
+                        // youtube wants to track you
+
+                        // So if the src match a youtube video,
+                        // the iframe is nto secured
+                        var src = list[i].getAttribute("src");
+                        var match = src.match(YOUTUBE_PATTERN);
+                        if (match) {
+                            // Youtube really sucks
+                            // so we force using RGPD compliant url
+                            list[i].setAttribute("src", "http://www.youtube-nocookie.com/embed/" + match[1]);
+                        } else {
+                            // other cases => sandbox
+                            list[i].setAttribute("sandbox", "");
+                        }
+                    }
+
+                    // prevent password auto fill by browser add-on
+                    list = root.querySelectorAll("input[type='password']");
+                    for (var i = 0; i < list.length; i++) {
+                        list[i].setAttribute("autocomplete", "new-password");
+                    }
+
+                    // remove all onEvent attributes
+                    // (no CSS way to select all node wih on* attributes, let's iterate over and over...)
+                    list = root.querySelectorAll("*");
+                    for (var i = 0; i < list.length; i++) {
+                        var item = list[i];
+                        for (var j = 0; j < item.attributes.length; j++) {
+                            var attr = item.attributes[j];
+                            if (attr.name.startsWith("on")) {
+                                item.setAttribute(attr.name, "");
+                            }
+                        }
+                    }
+                    return root.innerHTML;
+                } else {
+                    console.error("Could not sanitize non-string argument!", html);
+                }
+            }
+            //return html;
+        },
         /** @lends Y.Wegas.App */
         /**
          * @field
