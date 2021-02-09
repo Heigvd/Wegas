@@ -139,10 +139,10 @@ export function FlowLineHandle<F extends FlowLine, P extends Process<F>>({
       style={{
         left: position.x,
         top: position.y,
-        transformOrigin: `${FLOW_HANDLE_SIDE * translation.x} ${
+        transformOrigin: `${FLOW_HANDLE_SIDE * translation.x}px ${
           FLOW_HANDLE_SIDE * translation.y
         }px`,
-        transform: `translate(${FLOW_HANDLE_SIDE * translation.x},-${
+        transform: `translate(${FLOW_HANDLE_SIDE * translation.x}px,-${
           FLOW_HANDLE_SIDE * translation.y
         }px) rotate(${rotation}rad)`,
         ...style,

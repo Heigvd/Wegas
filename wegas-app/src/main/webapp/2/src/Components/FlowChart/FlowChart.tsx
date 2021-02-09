@@ -193,12 +193,20 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
       const containerX = container.current?.getBoundingClientRect().x;
       const containerY = container.current?.getBoundingClientRect().y;
 
+      const scrollX = container.current?.scrollLeft;
+      const scrollY = container.current?.scrollTop;
+
       onNew(
         processes.sourceProcess,
-        newX != null && newY != null && containerX != null && containerY != null
+        newX != null &&
+          newY != null &&
+          containerX != null &&
+          containerY != null &&
+          scrollX != null &&
+          scrollY != null
           ? {
-              x: newX - containerX,
-              y: newY - containerY,
+              x: newX - containerX + scrollX,
+              y: newY - containerY + scrollY,
             }
           : { x: 0, y: 0 },
         flowline,
