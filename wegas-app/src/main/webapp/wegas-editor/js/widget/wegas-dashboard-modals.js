@@ -110,6 +110,8 @@ YUI.add('wegas-dashboard-modals', function(Y) {
         }
     });
 
+    W.Sandbox.exposeInY("Wegas", "ImpactsTeamModal", Y.Wegas.ImpactsTeamModal);
+
     Y.Wegas.EmailTeamModal = Y.Base.create("wegas-email-team-modal", Y.Wegas.Modal, [], {
         initializer: function() {
             var game = Y.Wegas.Facade.Game.cache.getCurrentGame(),
@@ -300,4 +302,6 @@ YUI.add('wegas-dashboard-modals', function(Y) {
             "team": {}
         }
     });
+
+    W.Sandbox.exposeInY("Wegas", "EmailTeamModal", Y.Wegas.EmailTeamModal);
 });

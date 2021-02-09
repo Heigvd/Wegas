@@ -503,34 +503,10 @@ YUI.add('wegas-dashboard', function(Y) {
                 tables = {}, data = {}, i, j, tableDef,
                 teamId, team, teamData, entry,
                 cell, cellDef,
-                tableName, tableColumns, formatter, transformer, sortFn,
-                key1, key2, firstCellFormatter,
+                tableName, tableColumns,
+                firstCellFormatter,
                 firstOfGroup,
                 getPlayerIcon,
-                // Parses the given JSON string and returns the possibly nested object :
-                parseJSON = function(strObj) {
-                    var props,
-                        res = {};
-                    try {
-                        props = JSON.parse(strObj.body);
-                    } catch (e) {
-                        alert("SyncTable: " + e);
-                        return null;
-                    }
-                    // Handle nested objects as well, i.e. when a value is a string representation of a JSON object.
-                    for (var key in props) {
-                        if (typeof props[key] === 'string') {
-                            try {
-                                res[key] = JSON.parse(props[key]);
-                            } catch (e) {
-                                res[key] = props[key];
-                            }
-                        } else {
-                            res[key] = props[key];
-                        }
-                    }
-                    return res;
-                },
                 parseItem = function(id, def, firstOfGroup) {
                     var item = {
                         key: id,
@@ -541,6 +517,8 @@ YUI.add('wegas-dashboard', function(Y) {
                         disabledTooltip: def.disabledTooltip || "This action is not yet active",
                         cssClass: (firstOfGroup ? "first-of-group" : "")
                     };
+                    var formatter;
+                    var sortFn;
 
                     if (def.itemType === "action") {
 
@@ -574,26 +552,28 @@ YUI.add('wegas-dashboard', function(Y) {
                             }
                         };
                         item.icon = def.icon;
-                        item.do = eval("(" + def.do + ")");
+
+                        item.do = W.Sandbox.eval("return (" + def.do+ ")");
+
                         item.sortable = false;
                         item.globalOnly = def.globalOnly;
                     } else {
                         if (def.formatter) {
-                            formatter = eval("(" + def.formatter + ")");
+                            formatter = W.Sandbox.eval("return (" + def.formatter + ")");
                             if (formatter) {
-                                item.valueFormatter = formatter;
-                            }
-                        }
-                        if (def.transformer) {
-                            transformer = eval("(" + def.transformer + ")");
-                            if (transformer) {
-                                item.valueTransformer = transformer;
+                                item.valueFormatter = function(bloc, value) {
+                                    var node = W.Sandbox.proxyNode(bloc);
+                                    formatter(node, value);
+                                };
                             }
                         }
                         if (def.sortFn) {
-                            sortFn = eval("(" + def.sortFn + ")");
+                            sortFn = W.Sandbox.eval("return (" + def.sortFn + ")");
                             if (sortFn) {
-                                item.sortFn = sortFn;
+                                item.sortFn = function(a, b, desc) {
+                                    // intercept sort function and provide data
+                                    return sortFn(a.get(id), b.get(id), desc);
+                                };
                             }
                         }
 
@@ -605,10 +585,6 @@ YUI.add('wegas-dashboard', function(Y) {
                             var fallback = false;
                             if (def.kind) {
                                 if (def.kind === "boolean") {
-                                    if (o.column.valueTransformer) {
-                                        o.value = o.column.valueTransformer.call(this, o.value);
-                                    }
-
                                     if (def.preventClick) {
                                         o.cell.setHTML("<span class=\"bloc__value bloc__boolean\">" + (o.value ? "✔" : "✕") + "</span>");
                                     } else {
@@ -621,18 +597,10 @@ YUI.add('wegas-dashboard', function(Y) {
 
                                 } else if (def.kind === "inbox") {
                                     o.cell.setHTML('<i class="bloc__text clickable ' + (o.value.empty ? 'icon fa fa-comment-o"' : 'icon fa fa-commenting-o"') + ' title="Click to view"></i>');
-                                    if (o.column.valueTransformer) {
-                                        o.value = o.column.valueTransformer.call(this, o.value);
-                                    }
                                 } else if (def.kind === "text") {
                                     o.cell.setHTML('<i class="bloc__text clickable ' + (o.value.empty ? 'icon fa fa-file-o"' : 'icon fa fa-file-text-o"') + ' title="Click to view"></i>');
                                 } else {
                                     fallback = true;
-                                    if (def.kind === "object") {
-                                        o.value.object = parseJSON(o.value);
-                                        // Extra data required by PACT:
-                                        o.value.data = o.data;
-                                    }
                                 }
                             } else {
                                 fallback = true;
@@ -640,9 +608,6 @@ YUI.add('wegas-dashboard', function(Y) {
 
                             if (fallback) {
                                 if (o.value !== undefined && o.value !== null) {
-                                    if (o.column.valueTransformer) {
-                                        o.value = o.column.valueTransformer.call(this, o.value);
-                                    }
                                     o.cell.setHTML("<span class=\"bloc__value\">" + o.value + "</span>");
                                 } else {
                                     o.cell.setHTML("<span class=\"bloc__value no-value\"></span>");

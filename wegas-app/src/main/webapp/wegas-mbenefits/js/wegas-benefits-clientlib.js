@@ -27,6 +27,8 @@ app.once("render",
             return "no";
         };
 
+        W.Sandbox.exposeInY("Wegas", "MBenefitsHelper", Y.Wegas.MBenefitsHelper);
+
         Y.use('wegas-mbenefits-css', function() {});
     }
 );

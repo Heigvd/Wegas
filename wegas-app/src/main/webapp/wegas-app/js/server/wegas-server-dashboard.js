@@ -62,7 +62,6 @@ var WegasDashboard = (function() {
             varName: varName,
             itemType: 'variable',
             formatter: cfg.formatter,
-            transformer: cfg.transformer,
             label: cfg.label,
             index: cfg.index || Object.keys(section).length,
             active: (cfg.active !== undefined) ? cfg.active : true,
@@ -211,7 +210,6 @@ var WegasDashboard = (function() {
                             item.label = itemCfg.label || variables[varName].descriptor.getLabel()
                                 .translateOrEmpty(self);
                             item.formatter = itemCfg.formatter;
-                            item.transformer = itemCfg.transformer;
                             item.active = itemCfg.active;
                             item.preventClick = itemCfg.preventClick;
                             item.sortable = itemCfg.sortable;
@@ -256,6 +254,11 @@ var WegasDashboard = (function() {
                                     }
                                     args.push(variables[extraVarName].instances[teamId]);
                                 }
+                                // last arguments contains some useful data
+                                args.push({
+                                    teamName: teamName,
+                                    label: item.item.label
+                                });
                                 teamData[id] = item.mapFn.apply(this, args);
                             } else {
                                 if (item.item.kind === "inbox") {
@@ -281,9 +284,6 @@ var WegasDashboard = (function() {
                     if (item.formatter) {
                         item.formatter = item.formatter + "";
                     }
-                    if (item.transformer) {
-                        item.transformer = item.transformer + "";
-                    }
                     if (item.sortFn) {
                         item.sortFn = item.sortFn + "";
                     }
@@ -306,7 +306,7 @@ var WegasDashboard = (function() {
         /**
          *
          * @param {type} varName
-         * @param {type} cfg {section = 'monitoring', dashboard = 'overview', label =varLabel, formatter, transformer, index, preventClick, sortable, sortFn, active, mapFn = function(teamId, instance, ...extraInstances), mapFnExtraArgs = [vdNanem, vdName2, ...]}
+         * @param {type} cfg {section = 'monitoring', dashboard = 'overview', label =varLabel, formatter, index, preventClick, sortable, sortFn, active, mapFn = function(teamId, instance, ...extraInstances), mapFnExtraArgs = [vdNanem, vdName2, ...]}
          * @returns {undefined}
          */
         registerVariable: function(varName, cfg) {

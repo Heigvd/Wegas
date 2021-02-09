@@ -234,7 +234,7 @@ YUI.add('wegas-button', function(Y) {
             for (k in this.get('userCounters')) {
                 var theFunction = this.get('userCounters')[k];
                 if (theFunction instanceof Function === false) {
-                    theFunction = eval('(' + theFunction + ')');
+                    theFunction = W.Sandbox.eval('return (' + theFunction + ')');
                 }
                 this._counters[k] = theFunction;
             }

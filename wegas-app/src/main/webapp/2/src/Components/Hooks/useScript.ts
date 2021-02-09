@@ -89,10 +89,28 @@ const globalDispatch = store.dispatch;
 export function createSandbox<T = unknown>() {
   const sandbox = document.createElement('iframe');
   // This is used to prevent unwanted modification from scripts.
-  // One can still access main window from the sandbox (window.top) and modify it from there. (Break it)
+  // One can still access main window from the sandbox
+  // (window.top) and modify it from there.
+  // to prevent such access, window, globalThis and top are hidden
+  // by function parameters (see transpileToFunction function)
   sandbox.setAttribute('sandbox', 'allow-same-origin');
   sandbox.style.display = 'none';
   document.body.appendChild(sandbox);
+
+  if (sandbox.contentWindow != null) {
+    // Prevent http request by hiding fetch and XHR
+    const w = sandbox.contentWindow as any;
+    w.fetch = undefined;
+    w.XMLHttpRequest = undefined;
+    if (w.document != null) {
+      // prevent creating new element
+      // mainly to prenvent creating new iframe
+      // (a way to get a brand new unrestricted window object)
+      const doc = sandbox.contentWindow.document as any;
+      doc.createElement = undefined;
+      doc.createElementNS = undefined;
+    }
+  }
   return { sandbox, globals: (sandbox.contentWindow as unknown) as T };
 }
 
@@ -380,7 +398,9 @@ function transpileToFunction(script: string) {
   const fnBody = formatScriptToFunctionBody(script);
   const fnScript = '"use strict"; undefined;' + transpile(fnBody);
 
-  return new globals.Function(fnScript);
+  // hide forbidden object by overriding them with parameters
+  // on call, provide undefined arguments
+  return new globals.Function('globalThis', 'window', 'top', fnScript);
 }
 
 export function addSetterToState(state: PageComponentContext) {
@@ -444,7 +464,8 @@ const memoClientScriptEval = (() => {
     }
 
     if (scriptAsFunction) {
-      return scriptAsFunction();
+      // do not provide effective arguments ever !
+      return scriptAsFunction(undefined, undefined, undefined);
     } else {
       return undefined as any;
     }
