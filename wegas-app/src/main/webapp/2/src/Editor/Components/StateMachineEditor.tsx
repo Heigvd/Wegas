@@ -21,6 +21,7 @@ import {
   ITransition,
   IDialogueTransition,
   IState,
+  IDialogueState,
 } from 'wegas-ts-api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { SimpleInput } from '../../Components/Inputs/SimpleInput';
@@ -36,11 +37,7 @@ import { createScript } from '../../Helper/wegasEntites';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { createTranslatableContent } from './FormView/translatable';
 import { XYPosition } from '../../Components/Hooks/useMouseEventDnd';
-import {
-  IAbstractState,
-  IDialogueState,
-} from 'wegas-ts-api/typings/WegasEntities';
-import { EditorAction } from '../../data/Reducer/globalState';
+import { deleteState, EditorAction } from '../../data/Reducer/globalState';
 import { mainLayoutId } from './Layout';
 import { focusTab } from './LinearTabLayout/LinearLayout';
 import produce, { Immutable } from 'immer';
@@ -65,27 +62,6 @@ export function searchWithState(
     }
   }
   return value !== '' && searched.indexOf(value) >= 0;
-}
-
-function deleteState<T extends IFSMDescriptor | IDialogueDescriptor>(
-  stateMachine: Immutable<T>,
-  id: number,
-) {
-  const newStateMachine = produce((stateMachine: T) => {
-    const { states } = stateMachine;
-    delete states[id];
-    // delete transitions pointing to deleted state
-    for (const s in states) {
-      (states[s] as IAbstractState).transitions = (states[s]
-        .transitions as IAbstractTransition[]).filter(
-        t => t.nextStateId !== id,
-      );
-    }
-  })(stateMachine);
-
-  store.dispatch(
-    Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
-  );
 }
 
 function deleteTransition<T extends IFSMDescriptor | IDialogueDescriptor>(
@@ -297,6 +273,12 @@ StateMachineEditorProps<IFSM>) {
       })(stateMachine);
 
       store.dispatch(
+        Actions.EditorActions.editStateMachine(stateMachine, [
+          'states',
+          String(newStateId),
+        ]),
+      );
+      store.dispatch(
         Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
       );
     },
@@ -328,14 +310,10 @@ StateMachineEditorProps<IFSM>) {
         localDispatch != null;
       const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
       dispatch(
-        Actions.EditorActions.editVariable(
-          stateMachine,
-          ['states', state.id],
-          undefined,
-          {
-            more: actions,
-          },
-        ),
+        Actions.EditorActions.editStateMachine(stateMachine, [
+          'states',
+          state.id,
+        ]),
       );
       if (!dispatchLocal) {
         focusTab(mainLayoutId, 'Variable Properties');
