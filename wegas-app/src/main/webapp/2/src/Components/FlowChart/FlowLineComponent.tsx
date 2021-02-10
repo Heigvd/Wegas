@@ -64,6 +64,7 @@ interface CustomFlowLineProps<F extends FlowLine, P extends Process<F>>
     flowline: F,
     sourceProcess: P,
     onClick?: (e: ModifierKeysEvent, sourceProcess: P, flowline: F) => void,
+    selected?: boolean,
   ) => React.ReactNode;
 }
 
@@ -342,46 +343,50 @@ export function CustomStraitFlowLineComponent<
         <defs>
           <marker
             id="arrowhead"
-            markerWidth="15"
+            markerWidth="10"
             markerHeight="10"
-            refX="15"
+            refX="6"
             refY="5"
             orient="auto"
+            fill = "transparent"
+            stroke = "rgb(128, 127, 127)"
           >
-            <polygon points="0 0, 15 5, 0 10" />
+            <polyline points="0 0, 6 5, 0 10" />
           </marker>
           <marker
             id="selectedarrowhead"
-            markerWidth="15"
+            markerWidth="10"
             markerHeight="10"
-            refX="15"
+            refX="6"
             refY="5"
             orient="auto"
-            fill={'orange'}
+            fill={'#FFA462'}
+            stroke = "transparent"
           >
-            <polygon points="0 0, 15 5, 0 10" />
+            <polygon points="0 0, 6 5, 0 10" />
           </marker>
 
           <marker
             id="arrowtail"
             markerWidth="15"
-            markerHeight="10"
-            refX="0"
-            refY="5"
+            markerHeight="15"
+            refX="5"
+            refY="10"
             orient="auto"
+            fill= "rgb(128, 127, 127)"
           >
-            <polygon points="0 0, 10 0,15 5, 10 10, 0 10, 5 5" />
+            <circle cx="10" cy="10" r="5" />
           </marker>
           <marker
             id="selectedarrowtail"
             markerWidth="15"
-            markerHeight="10"
-            refX="0"
-            refY="5"
+            markerHeight="15"
+            refX="5"
+            refY="10"
             orient="auto"
-            fill={'orange'}
+            fill={'#FFA462'}
           >
-            <polygon points="0 0, 10 0,15 5, 10 10, 0 10, 5 5" />
+            <circle cx="10" cy="10" r="5" />
           </marker>
         </defs>
         <line
@@ -390,7 +395,7 @@ export function CustomStraitFlowLineComponent<
           x2={values.arrowEnd.x}
           y2={values.arrowEnd.y}
           style={{
-            stroke: 'rgb(0,0,0)',
+            stroke: 'rgb(128,127,127)',
             strokeWidth: 2,
           }}
           markerStart={`url(#${selected ? 'selectedarrowtail' : 'arrowtail'})`}
@@ -571,7 +576,7 @@ export function CircularFlowLineComponent<
             200 * positionOffset
           }, 140 0`}
           style={{
-            stroke: 'rgb(0,0,0)',
+            stroke: 'rgb(128, 127, 127)',
             strokeWidth: 2,
             fill: 'transparent',
           }}

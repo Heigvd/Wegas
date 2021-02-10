@@ -42,6 +42,7 @@ import { mainLayoutId } from './Layout';
 import { focusTab } from './LinearTabLayout/LinearLayout';
 import produce, { Immutable } from 'immer';
 import { StateProcessComponent } from '../../Components/FlowChart/StateProcessComponent';
+import { TransitionFlowLineComponent } from '../../Components/FlowChart/TransitionFlowLineComponent';
 
 const emptyPath: (string | number)[] = [];
 
@@ -396,6 +397,7 @@ StateMachineEditorProps<IFSM>) {
       isFlowlineSelected={isFlowlineSelected}
       isProcessSelected={isProcessSelected}
       Process={StateProcessComponent}
+      Flowline = {TransitionFlowLineComponent}
     />
   );
 }

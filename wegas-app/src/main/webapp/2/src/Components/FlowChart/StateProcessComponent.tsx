@@ -84,14 +84,14 @@ const StateMoreInfosStyle = css({
   wordWrap: 'break-word',
   top: '100%',
   width: '200px',
-  ZIndex: 1000,
+  ZIndex: 9999,
   '&::before': {
     content: "''",
     borderLeft: '15px solid transparent',
     borderRight: '15px solid transparent',
     borderBottom: '15px solid #fff',
     position: 'absolute',
-    top: '-15px',
+    top: '-14px',
     left: 'calc(50% - 15px)',
   },
 });
