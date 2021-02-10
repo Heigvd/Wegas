@@ -74,7 +74,7 @@ interface IconCompProps extends Omit<ClassStyleId, 'id'> {
   icon?: Icons;
 }
 
-export function IconComp({ icon, style, className }: IconCompProps) {
+export function IconComp({ icon, style, className, disabled }: IconCompProps) {
   return icon == null ? (
     <pre style={style} className={className}>
       No icon
@@ -86,11 +86,12 @@ export function IconComp({ icon, style, className }: IconCompProps) {
           key={JSON.stringify(ic) + String(i)}
           icon={ic}
           style={style}
+          disabled = {disabled}
         />
       ))}
     </span>
   ) : (
-    <IconDisplay icon={icon} style={style} className={className} />
+    <IconDisplay icon={icon} style={style} className={className} disabled={disabled} />
   );
 }
 

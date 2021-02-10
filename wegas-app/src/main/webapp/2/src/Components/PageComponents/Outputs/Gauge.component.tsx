@@ -36,6 +36,7 @@ function PlayerGauge({
   style,
   id,
   context,
+  options
 }: PlayerGaugeProps) {
   const number = useScript<SNumberDescriptor>(script, context);
   const player = useCurrentPlayer();
@@ -52,6 +53,7 @@ function PlayerGauge({
       min={number.getMinValue() || 0}
       max={number.getMaxValue() || 1}
       value={number.getValue(player)}
+      disabled = {options.disabled}
     />
   );
 }

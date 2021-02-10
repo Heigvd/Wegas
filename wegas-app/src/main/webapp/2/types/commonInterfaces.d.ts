@@ -11,4 +11,8 @@ interface ClassStyleId {
    * id - a unique identifier to set on a wegas component
    */
   id?: string;
+  /**
+   * disabled - if the weas component is diabled, for styling mainly
+   */
+  disabled?: boolean;
 }

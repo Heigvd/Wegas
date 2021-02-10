@@ -16,19 +16,23 @@ const initialImageStyle = css({
   //maxWidth: '100%',
   maxHeight: '100%',
 });
+const disabledStyle = css({
+  opacity: 0.5,
+  filter: "grayscale(40%)",
+});
 
 interface SvgLoaderProps extends WegasComponentProps {
   script?: IScript;
 }
 
-function Image({ script, context, style, className, id }: SvgLoaderProps) {
+function Image({ script, context, style, className, id, options }: SvgLoaderProps) {
   const path = useScript<string>(script, context);
   return (
     <img
       src={fileURL(path || '')}
       style={style}
       id={id}
-      className={initialImageStyle + classNameOrEmpty(className)}
+      className={initialImageStyle + classNameOrEmpty(className) + (options.disabled && disabledStyle)}
     />
   );
 }

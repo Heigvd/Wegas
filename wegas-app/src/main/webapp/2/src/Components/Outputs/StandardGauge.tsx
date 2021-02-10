@@ -40,6 +40,7 @@ export function StandardGauge({
   className,
   style,
   id,
+  disabled,
 }: StandardGaugeProps) {
   const deltaValue = max - min;
   const sections = sectionsColor.map(s => ({
@@ -59,6 +60,7 @@ export function StandardGauge({
       displayValue
       holeRatio={0.8}
       label={label}
+      disabled={disabled}
       needleStyle={{
         '@class': 'SVGNeedle',
         svg: (cX, cY, angle, radius, holeRadius) => {
