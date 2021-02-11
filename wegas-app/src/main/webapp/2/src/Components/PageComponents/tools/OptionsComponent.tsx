@@ -1,47 +1,61 @@
 import * as React from 'react';
+import { State } from '../../../data/Reducer/reducers';
+import { useStore } from '../../../data/Stores/store';
 import { useScript } from '../../Hooks/useScript';
-import { PageComponentContext, useComputeUnreadCount } from './options';
-import { PlayerInfoBulletProps } from './InfoBullet';
-// import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { themeCTX } from '../../Style/Theme';
 import { WegasComponentOptions } from './EditableComponent';
-import { useStore } from '../../../data/Stores/store';
-import { State } from '../../../data/Reducer/reducers';
+import { PlayerInfoBulletProps } from './InfoBullet';
+import { PageComponentContext, useComputeUnreadCount } from './options';
 
+/**
+ * Standard options of a wegas component and its container.
+ *
+ * They
+ * - are set in the GUI "Component properties" tab
+ * - are read in the PageDeserializer
+ * - are used in the EditableComponent
+ * - may be used specifically in each wegas component
+ * </p>
+ */
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// options in their universal form
 interface OptionProps {
   tooltip: WegasComponentOptions['tooltip'];
-  disableIf: WegasComponentOptions['disableIf'];
-  readOnlyIf: WegasComponentOptions['readOnlyIf'];
-  hideIf: WegasComponentOptions['hideIf'];
-  unreadCount: WegasComponentOptions['unreadCount'];
-  infoBullet: WegasComponentOptions['infoBullet'];
   themeMode: WegasComponentOptions['themeMode'];
-  lock: WegasComponentOptions['lock'];
   conditionnalClassNames: WegasComponentOptions['conditionnalClassNames'];
+  disableIf: WegasComponentOptions['disableIf'];
+  hideIf: WegasComponentOptions['hideIf'];
+  readOnlyIf: WegasComponentOptions['readOnlyIf'];
+  lock: WegasComponentOptions['lock'];
+  infoBullet: WegasComponentOptions['infoBullet'];
+  unreadCount: WegasComponentOptions['unreadCount'];
 }
 
 export const defaultOptions: (keyof OptionProps)[] = [
   'tooltip',
-  'disableIf',
-  'readOnlyIf',
-  'hideIf',
-  'unreadCount',
-  'infoBullet',
   'themeMode',
-  'lock',
   'conditionnalClassNames',
+  'disableIf',
+  'hideIf',
+  'readOnlyIf',
+  'lock',
+  'infoBullet',
+  'unreadCount',
 ];
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// options in their easy-to-use form, computed for a specific context
 export interface OptionsState {
+  tooltip?: string;
+  themeModeClassName?: string;
+  innerClassName?: string;
+  outerClassName?: string;
   disabled?: boolean;
   hidden?: boolean;
   readOnly?: boolean;
   locked?: boolean;
   infoBulletProps?: PlayerInfoBulletProps;
-  tooltip?: string;
-  themeModeClassName?: string;
-  innerClassName?: string;
-  outerClassName?: string;
 }
 
 // interface ComponentOptionsManagerProps {
@@ -52,20 +66,26 @@ export interface OptionsState {
 //   ) => void;
 // }
 
+/**
+ * UseOptions makes an easy-to-use and already computed OptionState specific to the context
+ *
+ * @param options Options in their universal form
+ * @param context Context in which the options are handled
+ */
 export function useOptions(
   options: OptionProps,
   context: PageComponentContext,
 ): OptionsState {
   const {
     tooltip,
-    disableIf,
-    readOnlyIf,
-    hideIf,
-    unreadCount,
-    infoBullet,
     themeMode,
-    lock,
     conditionnalClassNames = [],
+    disableIf,
+    hideIf,
+    readOnlyIf,
+    lock,
+    infoBullet,
+    unreadCount,
   } = options;
 
   const disabled = useScript<boolean>(disableIf, context);
@@ -107,15 +127,15 @@ export function useOptions(
     .join(' ');
 
   return {
+    tooltip,
+    themeModeClassName,
+    innerClassName,
+    outerClassName,
     disabled,
     hidden,
     readOnly,
     locked,
     infoBulletProps,
-    tooltip,
-    themeModeClassName,
-    innerClassName,
-    outerClassName,
   };
 }
 
