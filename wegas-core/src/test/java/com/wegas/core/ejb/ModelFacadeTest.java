@@ -1414,7 +1414,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         ListDescriptor folder_gm1 = (ListDescriptor) scenario.getChildVariableDescriptors().get(0);
         folder_gm1.getItems();
 
-        Assert.assertEquals(1, folder_gm1.getItems().size());
+        Assertions.assertEquals(1, folder_gm1.getItems().size());
 
         NumberDescriptor second = wegasFactory.createNumberDescriptor(model, folder, "second", "second", Visibility.INHERITED, null, null, 2.0);
         NumberDescriptor first = wegasFactory.createNumberDescriptor(model, folder, "first", "first", Visibility.INHERITED, null, null, 1.0);
@@ -1425,20 +1425,20 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         modelFacade.propagateModel(model.getId());
 
         folder_gm1 = (ListDescriptor) variableDescriptorFacade.find(folder_gm1.getId());
-        Assert.assertEquals(3, folder_gm1.getItems().size());
+        Assertions.assertEquals(3, folder_gm1.getItems().size());
 
-        Assert.assertEquals("first", folder_gm1.getItems().get(0).getName());
-        Assert.assertEquals("second", folder_gm1.getItems().get(1).getName());
-        Assert.assertEquals("third", folder_gm1.getItems().get(2).getName());
+        Assertions.assertEquals("first", folder_gm1.getItems().get(0).getName());
+        Assertions.assertEquals("second", folder_gm1.getItems().get(1).getName());
+        Assertions.assertEquals("third", folder_gm1.getItems().get(2).getName());
 
         jpaCacheHelper.clearCacheLocal();
 
         folder_gm1 = (ListDescriptor) variableDescriptorFacade.find(folder_gm1.getId());
-        Assert.assertEquals(3, folder_gm1.getItems().size());
+        Assertions.assertEquals(3, folder_gm1.getItems().size());
 
-        Assert.assertEquals("first", folder_gm1.getItems().get(0).getName());
-        Assert.assertEquals("second", folder_gm1.getItems().get(1).getName());
-        Assert.assertEquals("third", folder_gm1.getItems().get(2).getName());
+        Assertions.assertEquals("first", folder_gm1.getItems().get(0).getName());
+        Assertions.assertEquals("second", folder_gm1.getItems().get(1).getName());
+        Assertions.assertEquals("third", folder_gm1.getItems().get(2).getName());
     }
 
     @Test
