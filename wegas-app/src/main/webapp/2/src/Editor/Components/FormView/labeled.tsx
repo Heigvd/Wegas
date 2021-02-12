@@ -23,6 +23,7 @@ export interface LabeledView {
   description?: string;
   index?: number;
   onLanguage?: (lang: string) => void;
+  currentLanguage?: string;
 }
 
 interface LabeledProps extends LabeledView {
@@ -40,6 +41,7 @@ export const Labeled: React.FunctionComponent<LabeledProps> = ({
   description,
   index,
   onLanguage,
+  currentLanguage,
 }: LabeledProps) => {
   const internalId = React.useRef(`__labelInput__${id++}`);
   const { currentFeatures } = React.useContext(featuresCTX);
@@ -57,12 +59,15 @@ export const Labeled: React.FunctionComponent<LabeledProps> = ({
           {isFeatureEnabled(currentFeatures, 'INTERNAL') && index != null && (
             <span style={{ marginLeft: '1em' }}>{index}</span>
           )}
-          {onLanguage && isFeatureEnabled(currentFeatures, 'ADVANCED') && (
-            <LanguageSelector
-              onSelect={item => onLanguage(item.value.code)}
-              className={componentMarginLeft}
-            />
-          )}
+          {onLanguage &&
+            (isFeatureEnabled(currentFeatures, 'ADVANCED') ? (
+              <LanguageSelector
+                onSelect={item => onLanguage(item.value.code)}
+                className={componentMarginLeft}
+              />
+            ) : (
+              `[${currentLanguage}]`
+            ))}
         </span>
       </label>
     ),

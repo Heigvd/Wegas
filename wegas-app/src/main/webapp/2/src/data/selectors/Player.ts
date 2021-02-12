@@ -1,5 +1,5 @@
 import { instantiate } from '../scriptable';
-import { store, useStore } from '../store';
+import { store, useStore } from '../Stores/store';
 
 /**
  * Get the player with id

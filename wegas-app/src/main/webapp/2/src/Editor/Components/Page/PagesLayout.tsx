@@ -18,7 +18,7 @@ import { omit } from 'lodash-es';
 import { DropMenu } from '../../../Components/DropMenu';
 import { TextPrompt } from '../TextPrompt';
 import { isPageItem, isFolderItem } from '../../../Helper/pages';
-import { useStore, store } from '../../../data/store';
+import { useStore, store } from '../../../data/Stores/store';
 import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { Actions } from '../../../data';
 import { MessageString } from '../MessageString';
@@ -40,7 +40,7 @@ import {
   isComponentFocused,
   pagesStateStore,
   PageStateAction,
-} from '../../../data/pageStore';
+} from '../../../data/Stores/pageStore';
 import { PAGEEDITOR_COMPONENT_TYPE, isDnDComponent } from './ComponentPalette';
 import { themeVar } from '../../../Components/Style/ThemeVars';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';

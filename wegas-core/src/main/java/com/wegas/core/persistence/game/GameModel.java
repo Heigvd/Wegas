@@ -1,16 +1,14 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
 
 import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.INTERNAL;
 import ch.albasim.wegas.annotations.ProtectionLevel;
-import ch.albasim.wegas.annotations.Scriptable;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
@@ -69,7 +67,6 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
 import javax.persistence.PostPersist;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
@@ -254,7 +251,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * VariableDescriptor can be placed inside of a ListDescriptor's items List).
      */
     @OneToMany(mappedBy = "root", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-    @OrderColumn(name = "gm_items_order")
+    //@OrderColumn(name = "gm_items_order")
     //@JsonManagedReference
     @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<VariableDescriptor> items = new ArrayList<>();
@@ -933,7 +930,13 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
     @Override
     @JsonView(Views.ExportI.class)
     public List<VariableDescriptor> getItems() {
-        return this.items;
+        return Helper.copyAndSortModifiable(this.items, new EntityComparators.OrderComparator<>());
+    }
+
+    @JsonIgnore
+    @Override
+    public List<VariableDescriptor> getRawItems() {
+        return items;
     }
 
     @Override

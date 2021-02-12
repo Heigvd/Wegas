@@ -7,7 +7,7 @@ import {
   triggerEventHandlers,
 } from '../actions';
 import { VariableDescriptor } from '../selectors';
-import { ThunkResult, store } from '../store';
+import { ThunkResult, store } from '../Stores/store';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { entityIsPersisted } from '../entities';
 import { Reducer } from 'redux';
@@ -618,7 +618,7 @@ export function saveEditor(value: IMergeable): ThunkResult {
               editMode.cb && editMode.cb(res);
             })
             .catch((res: Error) => {
-              dispatch(ACTIONS.EditorActions.editorEvent(res.message));
+              dispatch(ACTIONS.EditorActions.editorErrorEvent(res.message));
             });
         });
     }
@@ -633,15 +633,18 @@ export function closeEditor() {
   return ActionCreator.CLOSE_EDITOR();
 }
 
-export function editorEvent(error: string) {
+export function editorEvent(anyEvent: WegasEvents[keyof WegasEvents]) {
   const event: WegasEvent = {
-    '@class': 'ClientEvent',
-    error,
+    ...anyEvent,
     timestamp: new Date().getTime(),
     unread: true,
   };
   triggerEventHandlers(event);
   return ActionCreator.EDITOR_EVENT(event);
+}
+
+export function editorErrorEvent(error: string) {
+  return editorEvent({ '@class': 'ClientEvent', error });
 }
 
 export function editorEventRemove(timestamp: number) {
@@ -670,7 +673,7 @@ export function searchGlobal(value: string): ThunkResult {
       .then(result => {
         return dispatch(ActionCreator.SEARCH_GLOBAL({ search: value, result }));
       })
-      .catch((res: Response) => dispatch(editorEvent(res.statusText)));
+      .catch((res: Response) => dispatch(editorErrorEvent(res.statusText)));
   };
 }
 /**
@@ -690,7 +693,7 @@ export function searchUsage(
           ActionCreator.SEARCH_USAGE({ variableId: variable.id, result }),
         );
       })
-      .catch((res: Response) => dispatch(editorEvent(res.statusText)));
+      .catch((res: Response) => dispatch(editorErrorEvent(res.statusText)));
   };
 }
 

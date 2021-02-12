@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -480,16 +480,20 @@ YUI().use(function(Y) {
                 type: CSS
             },
             "wegas-showoverlayonclick": {
-                path: "js/plugin/wegas-showoverlayonclick-min.js",
+            path: "js/plugin/wegas-showoverlayonclick-min.js",
                 requires: ["overlay", "wegas-showoverlayonclickcss"],
                 ws_provides: ["ShowOverlayOnClick", "ShowInboxListOnClick"]
+            },
+            "wegas-toggle-on-click": {
+                path: "js/plugin/wegas-toggle-on-click-min.js",
+                ws_provides: ["ToggleOnClick", "ToggleOnScript"]
             },
             "wegas-chartistcss": {
                 type: CSS
             },
             "wegas-spreadsheet": {
                 path: "js/widget/wegas-spreadsheet-min.js",
-                requires: ["wegas-spreadsheetcss", "wegas-panel", 
+                requires: ["wegas-spreadsheetcss", "wegas-panel",
                     "wegas-i18n-global", "wegas-button"],
                 ws_provides: "Spreadsheet"
             },

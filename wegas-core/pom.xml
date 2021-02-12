@@ -53,10 +53,11 @@
             <artifactId>shiro-web</artifactId>
         </dependency>
 
+        <!-- Does not work with our runAs
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-hazelcast</artifactId>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

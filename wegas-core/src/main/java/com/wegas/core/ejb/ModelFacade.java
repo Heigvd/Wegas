@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -820,7 +820,7 @@ public class ModelFacade {
                                     VariableDescriptor parent = variableDescriptorFacade.find(scenario, parentName);
                                     VariableDescriptor clone;
                                     clone = (VariableDescriptor) vd.shallowClone();
-                                    variableDescriptorFacade.createChild(scenario, (DescriptorListI<VariableDescriptor>) parent, clone, false);
+                                    variableDescriptorFacade.createChild(scenario, (DescriptorListI<VariableDescriptor>) parent, clone, false, false);
 
                                     logger.info(" CREATE AT as {} child", parent);
                                     it.remove();
@@ -831,7 +831,7 @@ public class ModelFacade {
                             } else {
                                 logger.info(" CREATE AT ROOL LEVEL");
                                 VariableDescriptor clone = (VariableDescriptor) vd.shallowClone();
-                                variableDescriptorFacade.createChild(scenario, scenario, clone, false);
+                                variableDescriptorFacade.createChild(scenario, scenario, clone, false, false);
                                 clone.setName(vd.getName()); // force the new variable name
                                 it.remove();
                                 restart = true;

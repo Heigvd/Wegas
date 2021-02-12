@@ -1,19 +1,21 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.exception.client.WegasAccessDenied;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.test.arquillian.AbstractArquillianTest;
+import java.util.Collection;
 import javax.ejb.EJBException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.jboss.arquillian.test.spi.ArquillianProxyException;
@@ -43,6 +45,82 @@ public class SecurityTest extends AbstractArquillianTest {
         Assertions.assertThrows(EJBException.class, () -> {
             WegasUser guestLogin = guestLogin();
             userFacade.addRole(guestLogin.getId(), roleFacade.findByName("Trainer").getId());
+        });
+    }
+
+    /**
+     * A trainer join its own game as player. Then, as admin join the game as player. Trainer tries
+     * to copy admin membership
+     *
+     * @throws WegasNoResultException
+     */
+    @Test
+    public void testPrivilegeEscalation_stealTeamMateRoles() throws WegasNoResultException {
+        Assertions.assertThrows(WegasAccessDenied.class, () -> {
+            login(admin);
+            Player adminPlayer = gameFacade.joinTeam(team.getId(), admin.getId(), null);
+            Long rootId = adminPlayer.getUser().getId();
+
+            login(user);
+
+            String script = "var admin = gameModel.getPlayers().stream().filter(function(p){return p.getUser() && p.getUser().getId() == " + rootId + "}).findAny().get();\n"
+                + "self.getUser().setRoles(admin.getUser().getRoles());\n";
+
+            Object eval = scriptFacade.eval(player, new Script("JavaScript", script), null);
+            logger.error("Eval: {}", eval);
+        });
+    }
+
+    /**
+     * A trainer join its own game as player. Then, as admin join the game as player. Trainer tries
+     * to copy admin membership by adding one specific role to its own list
+     *
+     * @throws WegasNoResultException
+     */
+    @Test
+    public void testPrivilegeEscalation_stealTeamMateRoles_v2() throws WegasNoResultException {
+        login(admin);
+        Player adminPlayer = gameFacade.joinTeam(team.getId(), admin.getId(), null);
+        Long rootId = adminPlayer.getUser().getId();
+
+        login(user);
+
+        String script = "var admin = gameModel.getPlayers().stream().filter(function(p){return p.getUser() && p.getUser().getId() == " + rootId + "}).findAny().get();\n"
+            + "var aRole = admin.getUser().getRoles().get(0);\n"
+            + "print('Role: ' +aRole);\n"
+            + "self.getUser().getRoles().add(aRole);\n";
+
+        Collection<Role> rolesBefore = userFacade.find(user.getId()).getRoles();
+
+        Object eval = scriptFacade.eval(player, new Script("JavaScript", script), null);
+        logger.error("Eval: {}", eval);
+
+        Collection<Role> rolesAfter = userFacade.find(user.getId()).getRoles();
+
+        Assertions.assertEquals(rolesBefore.size(), rolesAfter.size());
+    }
+
+    /**
+     * A trainer join its own game as player. Then, as admin join the game as player. Trainer tries
+     * to copy admin membership by adding one specific role to its own list
+     *
+     */
+    @Test
+    public void testPrivilegeEscalation_stealTeamMateRoles_v3() {
+        Assertions.assertThrows(WegasAccessDenied.class, () -> {
+            login(admin);
+            Player adminPlayer = gameFacade.joinTeam(team.getId(), admin.getId(), null);
+            Long rootId = adminPlayer.getUser().getId();
+
+            login(user);
+
+            String script = "var admin = gameModel.getPlayers().stream().filter(function(p){return p.getUser() && p.getUser().getId() == " + rootId + "}).findAny().get();\n"
+                + "var aRole = admin.getUser().getRoles().get(0);\n"
+                + "print('Role: ' +aRole);\n"
+                + "self.getUser().addRole(aRole);\n";
+
+            Object eval = scriptFacade.eval(player, new Script("JavaScript", script), null);
+            logger.error("Eval: {}", eval);
         });
     }
 
@@ -103,7 +181,7 @@ public class SecurityTest extends AbstractArquillianTest {
 
     @Test
     public void grantGameRightToPlayer() {
-        Assertions.assertThrows(EJBException.class, () -> {
+        Assertions.assertThrows(ArquillianProxyException.class, () -> {
             login(user);
             userFacade.addTrainerToGame(user.getId(), game.getId());
         });

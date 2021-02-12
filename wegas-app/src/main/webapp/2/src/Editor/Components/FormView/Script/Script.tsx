@@ -4,7 +4,7 @@ import { LabeledView, Labeled } from '../labeled';
 import { CommonView, CommonViewContainer } from '../commonView';
 import { WegasScriptEditor } from '../../ScriptEditors/WegasScriptEditor';
 import { css } from 'emotion';
-import { store } from '../../../../data/store';
+import { store } from '../../../../data/Stores/store';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
 import { WyswygScriptEditor } from './WyswygScriptEditor';

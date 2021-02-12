@@ -126,7 +126,7 @@ export const defaultMarginTop = css({
 });
 
 export const defaultMarginBottom = css({
-  marginTop: '10px',
+  marginBottom: '10px',
 });
 
 export const defaultMargin = cx(
@@ -163,7 +163,7 @@ export const defaultPadding = cx(
 
 // Components
 export const button = css({
-  color: themeVar.Common.colors.TextColor,
+  color: themeVar.Common.colors.DarkTextColor,
   ':hover,:focus': {
     color: themeVar.Common.colors.HoverColor,
     outline: 'none',
@@ -179,7 +179,7 @@ export const globalSelection = css({
   //  borderWidth: '2px',
   //  borderColor: themeVar.Common.colors.BorderColor,
   borderRadius: themeVar.Common.dimensions.BorderRadius,
-  boxShadow: `0px 0px 0px 1px ${themeVar.Common.colors.BorderColor}`,
+  boxShadow: `0px 0px 0px 1px ${themeVar.Common.colors.PrimaryColor}`,
 });
 export const searchSelection = css({
   backgroundColor: themeVar.Common.colors.HighlightColor,
@@ -187,7 +187,7 @@ export const searchSelection = css({
 
 // Layout base styles
 export const layoutStyle = css({
-  color: themeVar.Common.colors.TextColor,
+  color: themeVar.Common.colors.DarkTextColor,
   backgroundColor: themeVar.Common.colors.BackgroundColor,
   fontFamily: themeVar.Common.others.TextFont1,
 });
@@ -197,6 +197,14 @@ export const headerStyle = css({
 export const contentStyle = css({
   margin: '5px',
   // backgroundColor: themeVar.Common.colors.BackgroundColor,
+});
+
+export const disabledColorStyle = css({
+  color: themeVar.Common.colors.DisabledColor,
+});
+
+export const infoShortTextStyle = css({
+  color: '#AAAAAA', // TODO add in Theme
 });
 
 export const hoverColorInsetShadow = css({
@@ -228,4 +236,27 @@ export const highlightedHatchedBackground = css({
     //`repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, ${Color(themeVar.Common.colors.HoverColor).darken(0.5).toString()} 10px, ${Color(themeVar.Common.colors.HoverColor).darken(0.5).toString()} 20px);`,
     `repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, var(--common-colors-highlightcolor) 10px, var(--common-colors-highlightcolor) 20px);`,
   zIndex: 1000,
+});
+
+export const dropZoneStyle = css({
+  borderStyle: 'solid',
+  borderWidth: '2px',
+  borderColor: themeVar.Common.colors.HighlightColor,
+});
+
+export const unreadSignalStyle = css({
+  '::before': {
+    content: '"New"',
+    transform: 'rotate(-90deg)',
+    position: 'absolute',
+    fontSize: '10pt',
+    fontWeight: 'bold',
+    color: 'orange',
+  },
+});
+
+export const unreadSpaceStyle = css({
+  minWidth: '30px',
+  display: 'flex',
+  alignItems: 'center',
 });

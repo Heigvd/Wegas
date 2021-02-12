@@ -133,8 +133,8 @@
 
         <shiro.version>1.7.0</shiro.version>
         <payara.version>5.2020.5</payara.version>
-        <!--<payara.micro.version>5.201.albasim-p1</payara.micro.version>-->
-        <payara.micro.version>5.2020.5-albasim-p1</payara.micro.version>
+        <payara.micro.version>5.2020.5</payara.micro.version>
+        <!--<payara.micro.version>5.2020.5-albasim-p1</payara.micro.version>-->
         <payara-api.version>5.2020.5</payara-api.version>
         <junit.version>5.6.0</junit.version>
         <arquillian.version>1.7.0.Alpha6</arquillian.version>
@@ -257,11 +257,12 @@
                 <version>${shiro.version}</version>
             </dependency>
 
+            <!-- does not work with our beloved RunAs
             <dependency>
                 <groupId>org.apache.shiro</groupId>
                 <artifactId>shiro-hazelcast</artifactId>
                 <version>${shiro.version}</version>
-            </dependency>
+            </dependency>-->
 
 
             <dependency>
@@ -953,8 +954,8 @@
                 <configuration>
                     <header>wegas/licenseheader.template</header>
                     <properties>
-                        <license.owner>School of Business and Engineering Vaud, Comem, MEI</license.owner>
-                        <license.years>2013-2020</license.years>
+                        <license.owner>School of Management and Engineering Vaud, Comem, MEI</license.owner>
+                        <license.years>2013-2021</license.years>
                     </properties>
                     <includes>
                         <include>**/*.java</include>

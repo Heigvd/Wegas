@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global I18n */
@@ -187,7 +187,7 @@ YUI.add('wegas-file-uploader', function(Y) {
                     this._updateLink(link);
 
                     // add a delay to let JCR backend sync up
-                    Y.Later(1500, this, function() {
+                    Y.later(1500, this, function() {
                         // do not use YUI sendRequest due to very strage behaviour regarding file upload
                         fetch(url, {
                             credentials: 'same-origin',

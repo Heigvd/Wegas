@@ -8,7 +8,7 @@ import {
 } from 'wegas-ts-api';
 import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/globalState';
-import { ThunkResult } from '../data/store';
+import { ThunkResult } from '../data/Stores/store';
 import { AvailableViews } from './Components/FormView';
 import { Icons } from './Components/Views/FontAwesome';
 import { formValidation } from './formValidation';

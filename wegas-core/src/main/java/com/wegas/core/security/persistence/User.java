@@ -1,8 +1,9 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.persistence;
@@ -21,7 +22,6 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasIsTeamMate;
 import com.wegas.core.security.util.WegasIsTrainerForUser;
-import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.view.StringView;
 import java.util.ArrayList;
@@ -264,21 +264,30 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
      * @return the roles
      */
     public Collection<Role> getRoles() {
-        return roles;
+        // never return managed list  !
+        return new ArrayList<>(roles);
     }
 
     /**
      * @param roles the roles to set
      */
     public void setRoles(Collection<Role> roles) {
-        this.roles = roles;
+        this.roles = new ArrayList<>();
+        if (roles != null) {
+            for (Role r : roles) {
+                this.addRole(r);
+            }
+        }
     }
 
     /**
      * @param role
      */
     public void addRole(Role role) {
-        this.roles.add(role);
+        if (!roles.contains(role)) {
+            this.roles.add(role);
+            role.addUser(this);
+        }
     }
 
     /**
@@ -287,7 +296,10 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
      * @param role
      */
     public void removeRole(Role role) {
-        this.roles.remove(role);
+        if (this.roles.contains(role)) {
+            this.roles.remove(role);
+            role.removeUser(this);
+        }
     }
 
     @Override
@@ -334,7 +346,6 @@ public class User extends AbstractEntity implements Comparable<User>, Permission
         Collection<WegasPermission> p = WegasPermission.getAsCollection(
             this.getAssociatedWritePermission()
         );
-        p.addAll(WegasMembership.TRAINER); // why ? maybe to share game/gameModel (ie add permission)
         return p;
     }
 

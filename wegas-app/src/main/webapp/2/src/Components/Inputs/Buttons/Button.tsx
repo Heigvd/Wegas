@@ -8,17 +8,17 @@ import { themeVar } from '../../Style/ThemeVars';
 export const buttonStyle = css({
   display: 'flex',
   alignItems: 'center',
-  backgroundColor: themeVar.Common.colors.MainColor,
-  color: themeVar.Common.colors.SecondaryTextColor,
+  backgroundColor: themeVar.Common.colors.PrimaryColor,
+  color: themeVar.Common.colors.LightTextColor,
   ['&.dark']: {
-    backgroundColor: themeVar.Common.colors.SecondaryTextColor,
-    color: themeVar.Common.colors.MainColor,
+    backgroundColor: themeVar.Common.colors.LightTextColor,
+    color: themeVar.Common.colors.PrimaryColor,
   },
   borderStyle: 'none',
-  paddingLeft: '5px',
-  paddingRight: '5px',
-  paddingTop: '2px',
-  paddingBottom: '2px',
+  paddingLeft: '10px',
+  paddingRight: '10px',
+  paddingTop: '5px',
+  paddingBottom: '5px',
   cursor: 'pointer',
   fontFamily: themeVar.Common.others.TextFont2,
   borderRadius: themeVar.Common.dimensions.BorderRadius,
@@ -48,7 +48,7 @@ export const buttonStyle = css({
     cursor: 'inherit',
   },
   ['&.iconOnly']: {
-    color: themeVar.Common.colors.TextColor,
+    color: themeVar.Common.colors.DarkTextColor,
     backgroundColor: 'transparent',
     ['&:not(.disabled),&:not(.readOnly)']: {
       [':hover']: {

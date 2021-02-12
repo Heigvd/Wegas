@@ -9,7 +9,7 @@ import {
 } from './FileSelector';
 
 type PathSelectProps = WidgetProps.BaseProps<
-  CommonView & LabeledView & { pick?: FilePickingType; filter?: FileFilter }
+  CommonView & LabeledView & { pickType?: FilePickingType; filter?: FileFilter }
 > &
   Omit<CommonFileSelectProps<'string'>, 'valueType'>;
 

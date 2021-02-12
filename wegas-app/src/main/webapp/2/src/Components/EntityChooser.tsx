@@ -3,60 +3,60 @@ import { css, cx } from 'emotion';
 import { deepDifferent } from './Hooks/storeHookFactory';
 import { flex, flexColumn, flexRow, grow, justifyCenter } from '../css/classes';
 import { themeVar } from './Style/ThemeVars';
+import { classNameOrEmpty } from '../Helper/className';
 
 const entityChooser = css({
   width: '100%',
 });
 
 const labelList = css({
-  maxWidth: '20%',
-  minWidth: '20%',
+  minWidth: '180px',
+  maxWidth: '180px',
   padding: '10px',
 });
 
 const labelStyle = cx(
   css({
-    backgroundColor: themeVar.Common.colors.HeaderColor,
+    backgroundColor: themeVar.Common.colors.PrimaryColor,
     padding: '10px',
-    boxShadow: `-2px 2px 2px ${themeVar.Common.colors.HeaderColor}`,
+    boxShadow: `2px 2px 6px rgba(0, 0, 0, 0.2)`,
+    color: themeVar.Common.colors.LightTextColor,
+    borderRadius: themeVar.Common.dimensions.BorderRadius,
+    border: "2px solid transparent",
+    '&:hover': {
+      backgroundColor: themeVar.Common.colors.ActiveColor,
+      cursor: 'pointer',
+    },
   }),
   grow,
 );
-
-const labelArrow = css({
+/* const labelArrow = css({
   borderTop: '20px solid transparent',
   borderBottom: '20px solid transparent',
   borderLeft: `20px solid ${themeVar.Common.colors.HeaderColor}`,
-});
+}); */
 
 const labelContainer = css({
   marginBottom: '10px',
-  ':hover': {
-    [`&>.${labelStyle}`]: {
-      backgroundColor: themeVar.Common.colors.DisabledColor,
-    },
-    [`&>.${labelArrow}`]: {
+  /* [`&>.${labelArrow}`]: {
       borderLeft: `20px solid ${themeVar.Common.colors.DisabledColor}`,
-    },
-  },
+    }, */
 });
 
-const activeLabel = css({
-  [`&>.${labelStyle}`]: {
-    backgroundColor: themeVar.Common.colors.MainColor,
+const activeLabel = css(
+  {
+    backgroundColor: themeVar.Common.colors.ActiveColor,
+    color: themeVar.Common.colors.LightTextColor,
+    boxShadow: "none",
+    border: "2px solid " + themeVar.Common.colors.ActiveColor,
   },
-  [`&>.${labelArrow}`]: {
-    borderLeft: `20px solid ${themeVar.Common.colors.MainColor}`,
-  },
-  ':hover': {
-    [`&>.${labelStyle}`]: {
-      backgroundColor: themeVar.Common.colors.ActiveColor,
-    },
-    [`&>.${labelArrow}`]: {
+  /*
+    borderLeft: `20px solid ${themeVar.Common.colors.PrimaryColor}`,
+ */
+  /*
       borderLeft: `20px solid ${themeVar.Common.colors.ActiveColor}`,
-    },
-  },
-});
+  */
+);
 
 const entityContainer = css({
   padding: '10px',
@@ -67,14 +67,31 @@ interface EntityChooserProps<E extends IAbstractEntity> {
   entities: E[];
   children: React.FunctionComponent<{ entity: E }>;
   entityLabel: (entity: E) => React.ReactNode;
+  customLabelStyle?: (entity: E) => string | undefined;
+  autoOpenFirst?: boolean;
 }
 
 export function EntityChooser<E extends IAbstractEntity>({
   entities,
   children: Children,
   entityLabel,
+  customLabelStyle,
+  autoOpenFirst,
 }: EntityChooserProps<E>) {
   const [entity, setEntity] = React.useState<E>();
+
+  React.useEffect(() => {
+    setEntity(oldEntity => {
+      if (
+        autoOpenFirst &&
+        (oldEntity == null || !entities.map(e => e.id).includes(oldEntity.id))
+      ) {
+        return entities[0];
+      } else {
+        return oldEntity;
+      }
+    });
+  }, [autoOpenFirst, entities]);
 
   return (
     <div className={cx(flex, flexRow, entityChooser)}>
@@ -82,21 +99,33 @@ export function EntityChooser<E extends IAbstractEntity>({
         {entities.map(e => (
           <div
             key={e.id}
-            className={cx(flex, flexRow, labelContainer, {
-              [activeLabel]: entity?.id === e.id,
-            })}
+            className={cx(
+              flex,
+              flexRow,
+              labelContainer,
+            )}
             onClick={() => {
               setEntity(oldEntity => {
                 if (deepDifferent(e, oldEntity)) {
                   return e;
                 } else {
-                  return undefined;
+                  return oldEntity;
                 }
               });
             }}
           >
-            <div className={labelStyle}>{entityLabel(e)}</div>
-            <div className={labelArrow} />
+            <div
+              className={cx(
+                labelStyle,
+                classNameOrEmpty(customLabelStyle && customLabelStyle(e)),
+                {
+                  [activeLabel]: entity?.id === e.id,
+                },
+              )}
+            >
+              {entityLabel(e)}
+            </div>
+            {/* <div className={labelArrow} /> */}
           </div>
         ))}
       </div>

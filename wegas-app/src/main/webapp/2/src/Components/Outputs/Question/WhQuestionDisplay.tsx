@@ -20,7 +20,8 @@ import {
   IWhChoiceDescriptor,
   IWhChoiceInstance,
 } from '../../../data/scriptable/impl/QuestionDescriptor';
-import { StoreDispatch } from '../../../data/store';
+import { select } from '../../../data/selectors/VariableDescriptorSelector';
+import { StoreDispatch } from '../../../data/Stores/store';
 import {
   translate,
   createTranslation,
@@ -31,9 +32,9 @@ import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';
 import { SimpleInput } from '../../Inputs/SimpleInput';
+import { autoMargin } from '../../../css/classes';
 import {
   ChoiceContainer,
-  choiceContainerStyle,
   choiceInputStyle,
 } from './ChoiceContainer';
 import { questionStyle } from './Question';
@@ -48,10 +49,11 @@ interface WhQuestionInfo {
 export function whQuestionInfo(
   question: IWhQuestionDescriptor,
 ): WhQuestionInfo {
+  const questionD = select<IWhQuestionDescriptor>(question.id)!;
   const choicesD = getChoices(question);
   const choicesI = choicesD.map(c => getInstance<IWhChoiceInstance>(c));
   return {
-    questionD: question,
+    questionD,
     questionI: getInstance(question),
     choicesD,
     choicesI,
@@ -188,8 +190,9 @@ export function WhQuestionDisplay({
           />
         );
       })}
-      <div className={cx(choiceContainerStyle, choiceInputStyle)}>
+      <div className={cx(choiceInputStyle)}>
         <Button
+          className={autoMargin}
           label={questionI.validated ? 'Validated' : 'Validate'}
           onClick={() => {
             dispatch(validateQuestion(questionD));

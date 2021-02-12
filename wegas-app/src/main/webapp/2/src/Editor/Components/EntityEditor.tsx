@@ -7,7 +7,7 @@ import getEditionConfig from '../editionConfig';
 import { Actions } from '../../data';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
-import { StoreConsumer, StoreDispatch, store } from '../../data/store';
+import { StoreConsumer, StoreDispatch, store } from '../../data/Stores/store';
 import { AvailableViews } from './FormView';
 import { cx } from 'emotion';
 import { flex, grow, flexColumn } from '../../css/classes';

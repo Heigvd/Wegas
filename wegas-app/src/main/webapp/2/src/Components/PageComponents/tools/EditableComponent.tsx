@@ -24,7 +24,7 @@ import {
   usePagesStateStore,
   isComponentFocused,
   PageStateAction,
-} from '../../../data/pageStore';
+} from '../../../data/Stores/pageStore';
 import {
   WegasComponentOptionsActions,
   WegasComponentActionsProperties,
@@ -32,6 +32,7 @@ import {
   defaultWegasComponentOptionsActions,
   WegasComponentOptionsAction,
   wegasComponentActions,
+  PageComponentContext,
 } from './options';
 import { PlayerInfoBullet } from './InfoBullet';
 import { EditHandle } from './EditHandle';
@@ -39,11 +40,13 @@ import { PAGE_LAYOUT_COMPONENT } from '../../../Editor/Components/Page/PagesLayo
 import { OptionsState } from './OptionsComponent';
 import { useDropFunctions } from '../../Hooks/useDropFunctions';
 import { themeVar } from '../../Style/ThemeVars';
-import { parseAndRunClientScript } from '../../Hooks/useScript';
 import { WegasComponentCommonProperties } from '../../../Editor/Components/Page/ComponentProperties';
-import { IScript } from 'wegas-ts-api';
 import { TumbleLoader } from '../../Loader';
-// import { ConfirmButton } from '../../Inputs/Buttons/ConfirmButton';
+import { ThunkResult, store } from '../../../data/Stores/store';
+import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
+import { manageResponseHandler } from '../../../data/actions';
+import { pagesContextStateStore } from '../../../data/Stores/pageContextStore';
+import { addSetterToState } from '../../Hooks/useScript';
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {
@@ -100,6 +103,54 @@ const showBordersStyle = css({
 
 // Helper functions
 
+export function assembleStateAndContext(
+  context: PageComponentContext = {},
+  state?: PageComponentContext,
+) {
+  return {
+    Context: {
+      ...addSetterToState(state || pagesContextStateStore.getState()),
+      ...context,
+    },
+  };
+}
+
+function awaitExecute(
+  actions: [string, WegasComponentOptionsAction][],
+  context?: PageComponentContext,
+): ThunkResult {
+  return async function (dispatch, getState) {
+    const sortedActions = actions.sort(
+      ([, v1], [, v2]) =>
+        (v1.priority ? v1.priority : 0) - (v2.priority ? v2.priority : 0),
+    );
+
+    for (const [k, v] of sortedActions) {
+      if (k === 'impactVariable') {
+        const action = v as WegasComponentOptionsActions['impactVariable'];
+        if (action) {
+          const gameModelId = getState().global.currentGameModelId;
+
+          const result = await asyncRunLoadedScript(
+            gameModelId,
+            action.impact,
+            undefined,
+            undefined,
+            assembleStateAndContext(context),
+          );
+
+          dispatch(manageResponseHandler(result, dispatch, getState().global));
+        }
+      } else {
+        wegasComponentActions[k as keyof WegasComponentOptionsActions]({
+          ...(v as any),
+          context,
+        });
+      }
+    }
+  };
+}
+
 /**
  * onComponentClick - onClick factory that can be used by components and override classic onClick
  * @param onClickActions
@@ -130,27 +181,7 @@ export function onComponentClick(
       // eslint-disable-next-line no-alert
       confirm(confirmClick)
     ) {
-      // if (confirmClick) {
-      //   setWaitConfirmation(true);
-      // } else if (!confirmClick || waitConfirmation) {
-      onClickActions
-        .sort(
-          (
-            [, v1]: [string, WegasComponentOptionsAction],
-            [, v2]: [string, WegasComponentOptionsAction],
-          ) =>
-            (v1.priority ? v1.priority : 0) - (v2.priority ? v2.priority : 0),
-        )
-        .forEach(([k, v]) => {
-          if (k === 'impactVariable') {
-            return wegasComponentActions.impactVariable({
-              impact: parseAndRunClientScript(v.impact, context) as IScript,
-            });
-          }
-          return wegasComponentActions[
-            k as keyof WegasComponentOptionsActions
-          ]({ ...v, context });
-        });
+      store.dispatch(awaitExecute(onClickActions, context));
     }
   };
 }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { GameModel, Global } from '../../data/selectors';
 import { css, cx } from 'emotion';
-import { StoreConsumer, useStore, store } from '../../data/store';
+import { StoreConsumer, useStore, store } from '../../data/Stores/store';
 import { Actions } from '../../data';
 import { FontAwesome } from './Views/FontAwesome';
 import {
@@ -28,6 +28,7 @@ import { editorEventRemove } from '../../data/Reducer/globalState';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { State } from '../../data/Reducer/reducers';
+import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 
 function wegasEventSelector(s: State) {
   return s.global.events;
@@ -126,12 +127,14 @@ export default function Header() {
           )}
           <FontAwesome icon="user" />
           <span className={componentMarginLeft}>{user.name}</span>
-          <Button
+          <ConfirmButton
             icon="undo"
-            tooltip="Restart"
-            onClick={() => {
-              dispatch(Actions.VariableDescriptorActions.reset());
-              dispatch(Actions.EditorActions.resetPageLoader());
+            tooltip="Restart the game (applied to every scenarist)"
+            onAction={success => {
+              if (success) {
+                dispatch(Actions.VariableDescriptorActions.reset());
+                dispatch(Actions.EditorActions.resetPageLoader());
+              }
             }}
             className={componentMarginLeft}
           />

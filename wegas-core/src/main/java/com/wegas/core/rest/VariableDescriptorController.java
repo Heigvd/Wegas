@@ -3,12 +3,11 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
 
-import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.JCRFacade;
 import com.wegas.core.ejb.ModelFacade;
@@ -164,7 +163,7 @@ public class VariableDescriptorController {
             VariableDescriptor parent = variableDescriptorFacade.find(gm, entityName);
 
             if (parent instanceof DescriptorListI) {
-                return variableDescriptorFacade.createChild(gm, (DescriptorListI) parent, entity, false);
+                return variableDescriptorFacade.createChild(gm, (DescriptorListI) parent, entity, false, false);
             } else {
                 throw WegasErrorMessage.error("Parent entity does not allow children");
             }
@@ -372,7 +371,7 @@ public class VariableDescriptorController {
         return variableDescriptorFacade.cherryPick(gameModelId, vd.getName(),
             source.getId(), vdName, newScopeType, withLang);
     }
-    
+
 
     /**
      * Class for customizing cherryPicked Surveys.

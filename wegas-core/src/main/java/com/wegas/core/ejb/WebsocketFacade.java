@@ -3,7 +3,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -862,7 +862,7 @@ public class WebsocketFacade {
 
         @Override
         public Object process(MutableEntry<Long, OnlineUser> entry, Object... arguments) throws EntryProcessorException {
-            if (entry != null) {
+            if (entry != null && playerId != null) {
                 OnlineUser value = entry.getValue();
                 if (value != null) {
                     value.touch(playerId);

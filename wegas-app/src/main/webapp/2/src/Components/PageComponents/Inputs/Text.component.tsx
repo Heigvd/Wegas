@@ -4,11 +4,11 @@ import {
   pageComponentFactory,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { store } from '../../../data/store';
+import { store } from '../../../data/Stores/store';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, STextDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
-import { safeClientScriptEval, useScript } from '../../Hooks/useScript';
+import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import HTMLEditor from '../../HTMLEditor';
@@ -19,6 +19,7 @@ import {
 } from './tools';
 import { useCurrentPlayer } from '../../../data/selectors/Player';
 import {
+  useOnCancelAction,
   Validate,
   ValidatorComponentProps,
   validatorSchema,
@@ -53,7 +54,9 @@ function PlayerTextInput({
 }: PlayerTextInputProps) {
   const text = useScript<STextDescriptor | string>(script, context);
   const player = useCurrentPlayer();
+
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
+  const { handleOnCancel } = useOnCancelAction(onCancel, context);
 
   const onChange = React.useCallback(
     (v: React.ReactText) => {
@@ -76,7 +79,7 @@ function PlayerTextInput({
     <Validate
       value={typeof text === 'object' ? text.getValue(player) : text}
       onValidate={onChange}
-      onCancel={() => safeClientScriptEval(onCancel, context)}
+      onCancel={handleOnCancel}
     >
       {(value, onChange) => {
         return (

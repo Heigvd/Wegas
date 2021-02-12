@@ -1,20 +1,25 @@
 import { ColorType } from './Theme';
 
 export interface DefaultThemeColors {
-  'Main color': ColorType;
+  'Primary color': ColorType;
+  'Primary color shade': ColorType;
+  'Primary color tint': ColorType;
+  'Primary color pastel' : ColorType;
   'Secondary color': ColorType;
+  'Secondary color shade': ColorType;
+  'Secondary color tint': ColorType;
+  'Secondary color pastel': ColorType;
+  'Accent color': ColorType;
   'Background color': ColorType;
-  'Border color': ColorType;
   'Secondary background color': ColorType;
+  'Dark background color': ColorType,
+  'Dark secondary background color': ColorType,
   'Text color': ColorType;
   'Secondary text color': ColorType;
-  'Warning color': ColorType;
-  'Error color': ColorType;
-  'Success color': ColorType;
   'Disabled color': ColorType;
-  'Highlight color': ColorType;
-  'Hover color': ColorType;
-  'Header color': ColorType;
+  'Error color': ColorType;
+  'Warning color': ColorType;
+  'Success color': ColorType;
 }
 
 export interface DefaultThemeDimensions {
@@ -69,13 +74,13 @@ export interface Mode {
   values: {
     Common: ModeComponent<
       {
-        MainColor: ModeColor;
+        PrimaryColor: ModeColor;
         ActiveColor: ModeColor;
         BackgroundColor: ModeColor;
-        TextColor: ModeColor;
-        SecondaryTextColor: ModeColor;
+        SecondaryBackgroundColor:ModeColor;
+        DarkTextColor: ModeColor;
+        LightTextColor: ModeColor;
         DisabledColor: ModeColor;
-        BorderColor: ModeColor;
         HighlightColor: ModeColor;
         HeaderColor: ModeColor;
         HoverColor: ModeColor;
@@ -128,17 +133,17 @@ export const defaultLightMode: Mode = {
   values: {
     Common: {
       colors: {
-        MainColor: 'Main color',
-        ActiveColor: 'Secondary color',
+        PrimaryColor: 'Primary color',
+        ActiveColor: 'Secondary color shade',
         BackgroundColor: 'Background color',
-        BorderColor: 'Border color',
+        SecondaryBackgroundColor: 'Secondary background color',
         DisabledColor: 'Disabled color',
-        HeaderColor: 'Secondary background color',
-        HighlightColor: 'Highlight color',
-        HoverColor: 'Hover color',
+        HeaderColor: 'Primary color pastel',
+        HighlightColor: 'Accent color',
+        HoverColor: 'Primary color pastel',
         HoverTextColor: 'Secondary text color',
-        TextColor: 'Text color',
-        SecondaryTextColor: 'Secondary text color',
+        DarkTextColor: 'Text color',
+        LightTextColor: 'Secondary text color',
         WarningColor: 'Warning color',
         SuccessColor: 'Success color',
         ErrorColor: 'Error color',
@@ -166,9 +171,9 @@ export const defaultLightMode: Mode = {
         TextColor3: 'Text color',
         TextBackground3: undefined,
         TextColor4: 'Text color',
-        TextBackground4: 'Header color',
+        TextBackground4: 'Secondary color pastel',
         TextColor5: 'Secondary text color',
-        TextBackground5: 'Header color',
+        TextBackground5: 'Secondary color pastel',
       },
       dimensions: {
         FontSize1: 'Font size 1',
@@ -194,17 +199,17 @@ export const defaultDarkMode: Mode = {
   values: {
     Common: {
       colors: {
-        MainColor: 'Background color',
-        ActiveColor: 'Secondary background color',
-        BackgroundColor: 'Text color',
-        BorderColor: 'Secondary color',
+        PrimaryColor: 'Primary color',
+        ActiveColor: 'Secondary color pastel',
+        BackgroundColor: 'Dark background color',
+        SecondaryBackgroundColor: 'Dark secondary background color',
         DisabledColor: 'Disabled color',
         HeaderColor: 'Secondary color',
-        HighlightColor: 'Highlight color',
+        HighlightColor: 'Accent color',
         HoverColor: 'Secondary color',
         HoverTextColor: 'Secondary text color',
-        TextColor: 'Background color',
-        SecondaryTextColor: 'Text color',
+        DarkTextColor: 'Secondary text color',
+        LightTextColor: 'Text color',
         WarningColor: 'Warning color',
         SuccessColor: 'Success color',
         ErrorColor: 'Error color',
@@ -232,9 +237,9 @@ export const defaultDarkMode: Mode = {
         TextColor3: 'Background color',
         TextBackground3: undefined,
         TextColor4: 'Background color',
-        TextBackground4: 'Header color',
+        TextBackground4: 'Secondary color pastel',
         TextColor5: 'Secondary text color',
-        TextBackground5: 'Header color',
+        TextBackground5: 'Secondary color pastel',
       },
       dimensions: {
         FontSize1: 'Font size 1',

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
@@ -594,7 +594,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             } else {
                 perm = this.getPlayer().getAssociatedWritePermission();
             }
-        } else if (this.gameModelScope != null) {
+        } else if (this.getGameModel() != null) {
+            // GameModel is set only for GameModel scoped instances
             perm = this.getGameModel().getAssociatedReadPermission();
         } else {
             return this.getDefaultDescriptor().getGameModel().getRequieredReadPermission();

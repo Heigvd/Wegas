@@ -1,4 +1,4 @@
-import { store } from '../store';
+import { store } from '../Stores/store';
 
 export function select(pageId?: string): Readonly<WegasComponent> | undefined {
   const state = store.getState();

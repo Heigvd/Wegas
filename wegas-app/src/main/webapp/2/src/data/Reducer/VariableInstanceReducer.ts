@@ -2,7 +2,7 @@ import { Reducer } from 'redux';
 import u from 'immer';
 import { ActionType, StateActions, manageResponseHandler } from '../actions';
 import { VariableInstanceAPI } from '../../API/variableInstance.api';
-import { ThunkResult, store } from '../store';
+import { ThunkResult, store } from '../Stores/store';
 import { Player } from '../selectors';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { QuestionDescriptorAPI } from '../../API/questionDescriptor.api';
@@ -83,6 +83,29 @@ export function getAll(): ThunkResult<Promise<StateActions>> {
   };
 }
 
+export const asyncRunScript = async (
+  gameModelId: number,
+  script: string | IScript,
+  player?: IPlayer,
+  context?: IVariableDescriptor,
+) => {
+  const p = player != null ? player : Player.selectCurrent();
+  if (p.id == null) {
+    throw Error('Missing persisted player');
+  }
+  if (gameModelId == null) {
+    throw Error('Missing persisted gameModel');
+  }
+  const finalScript: IScript =
+    'string' === typeof script ? createScript(script) : script;
+  return VariableDescriptorAPI.runScript(
+    gameModelId,
+    p.id,
+    finalScript,
+    context,
+  );
+};
+
 export function runScript(
   script: string | IScript,
   player?: IPlayer,
@@ -90,17 +113,48 @@ export function runScript(
 ): ThunkResult {
   return function (dispatch, getState) {
     const gameModelId = getState().global.currentGameModelId;
-    const p = player != null ? player : Player.selectCurrent();
-    if (p.id == null) {
-      throw Error('Missing persisted player');
-    }
-    const finalScript: IScript =
-      'string' === typeof script ? createScript(script) : script;
-    return VariableDescriptorAPI.runScript(
+    return asyncRunScript(gameModelId, script, player, context).then(res =>
+      dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
+
+export async function asyncRunLoadedScript(
+  gameModelId: number,
+  script: string | IScript,
+  player?: IPlayer,
+  currentDescriptor?: IVariableDescriptor,
+  payload?: { [key: string]: unknown },
+) {
+  const p = player != null ? player : Player.selectCurrent();
+  if (p.id == null) {
+    throw Error('Missing persisted player');
+  }
+  const finalScript: IScript =
+    'string' === typeof script ? createScript(script) : script;
+  return VariableDescriptorAPI.runLoadedScript(
+    gameModelId,
+    p.id,
+    finalScript,
+    currentDescriptor,
+    payload,
+  );
+}
+
+export function runLoadedScript(
+  script: string | IScript,
+  player?: IPlayer,
+  currentDescriptor?: IVariableDescriptor,
+  payload?: { [key: string]: unknown },
+): ThunkResult {
+  return function (dispatch, getState) {
+    const gameModelId = getState().global.currentGameModelId;
+    return asyncRunLoadedScript(
       gameModelId,
-      p.id,
-      finalScript,
-      context,
+      script,
+      player,
+      currentDescriptor,
+      payload,
     ).then(res =>
       dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
@@ -271,6 +325,14 @@ export function applyFSMTransition(
     }
     return FSM_API.applyTransition(stateMachine.id, transition.id).then(res =>
       dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
+
+export function getByIds(ids: number[]): ThunkResult {
+  return function (dispatch, getState) {
+    return VariableInstanceAPI.getByIds(ids).then(res =>
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };
 }

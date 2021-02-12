@@ -6,6 +6,7 @@ import {
   SDialogueTransition,
 } from 'wegas-ts-api';
 import {
+  autoScroll,
   flex,
   flexColumn,
   flexDistribute,
@@ -14,18 +15,23 @@ import {
 } from '../../../css/classes';
 import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReducer';
 import { useCurrentPlayer } from '../../../data/selectors/Player';
-import { store } from '../../../data/store';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
+import { store } from '../../../data/Stores/store';
 import { themeVar } from '../../Style/ThemeVars';
 import { DialogueChoice } from './DialogueChoice';
 import { DialogueEntry } from './DialogueEntry';
 import { WaitingLoader } from './WaitingLoader';
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// styles
+
 const dialogEntryStyle = css({
   padding: '5px',
+  marginBottom: '3px',
+  maxHeight: '40vh',
+  overflow: 'auto',
   '&>.player': {
     alignSelf: 'flex-end',
-    backgroundColor: themeVar.Common.colors.HeaderColor,
+    backgroundColor: themeVar.Common.colors.PrimaryColor,
   },
 });
 
@@ -33,24 +39,36 @@ const choicePannelStyle = css({
   position: 'relative',
   backgroundColor: themeVar.Common.colors.HeaderColor,
   padding: '5px',
+  minHeight: '4em',
+  flexShrink: 0,
 });
 
 const dialogueDisplayStyle = css({
-  border: 'solid',
+  border: 'none',
+  boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.1)',
+  borderRadius: themeVar.Common.dimensions.BorderRadius,
 });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
+// React element
 
 interface DialogueDisplayProps {
   dialogue: SDialogueDescriptor;
 }
 
 export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
-  const player = useCurrentPlayer();
+  const historyDiv = React.useRef<HTMLDivElement>(null);
+
   const [waiting, setWaiting] = React.useState(false);
+
+  const player = useCurrentPlayer();
   const dialogueInstance = dialogue.getInstance(player);
   const history = dialogueInstance.getTransitionHistory();
   const dialogueStates = dialogue.getStates();
-  const oldHistoryState = React.useRef<typeof history>(history);
-  const oldState = React.useRef<SDialogueState>();
+
+  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // dialogue state
 
   const wait = React.useCallback(() => {
     setWaiting(true);
@@ -73,16 +91,15 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
     })
     .pop() as SDialogueState;
 
+  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // dialogue history
+
+  // when a dialogue entry is added, scroll to it at the bottom of the history
   React.useEffect(() => {
-    if (
-      deepDifferent(oldHistoryState.current, history) ||
-      deepDifferent(oldState.current, currentState)
-    ) {
-      oldState.current = currentState;
-      oldHistoryState.current = history;
-      wait();
+    if (historyDiv != null && historyDiv.current != null) {
+      historyDiv.current.scrollTop = historyDiv.current.scrollHeight;
     }
-  }, [currentState, history, wait]);
+  }, [currentState]);
 
   function renderHistory(): JSX.Element[] {
     const dialogueComponents: JSX.Element[] = [
@@ -96,6 +113,8 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
         | undefined;
 
       if (transition != null) {
+        // <><><><><><><><><><><><><><><><><>
+        // player input
         dialogueComponents.push(
           <DialogueEntry
             key={`TRANSITION${transitionId}`}
@@ -103,9 +122,15 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
             player
           />,
         );
+
+        // <><><><><><><><><><><><><><><><><>
+        // update current state
         currentState = dialogueStates[
           transition.getNextStateId()
         ] as SDialogueState;
+
+        // <><><><><><><><><><><><><><><><><>
+        // game answer
         dialogueComponents.push(
           <DialogueEntry
             key={`STATE${transitionId}`}
@@ -118,9 +143,15 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
     return dialogueComponents;
   }
 
+  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // next input choices
+
   const choices = dialogueStates[
     dialogueInstance.getCurrentStateId()
   ].getTransitions();
+
+  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  // render
 
   return (
     <div
@@ -128,39 +159,51 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
         cx(dialogueDisplayStyle, flex, flexColumn, grow) + ' wegas wegas-dialog'
       }
     >
-      <div className={cx(dialogEntryStyle, flex, flexColumn, grow)}>
+      {/* ----- dialogue history  ---------------------------------------------------------- */}
+      <div
+        ref={historyDiv}
+        className={cx(dialogEntryStyle, flex, flexColumn, autoScroll, grow)}
+      >
         {renderHistory()}
       </div>
-      <div
-        className={cx(
-          flex,
-          flexColumn,
-          flexDistribute,
-          itemCenter,
-          choicePannelStyle,
-        )}
-      >
-        {choices.map((transition: SDialogueTransition) => (
-          <DialogueChoice
-            key={`CHOICE${transition.getId()}`}
-            label={transition.getActionText()}
-            onClick={() => {
-              store.dispatch(
-                applyFSMTransition(
-                  dialogue.getEntity(),
-                  transition.getEntity(),
-                ),
-              );
-            }}
-          />
-        ))}
-        {waiting && choices.length > 0 && (
-          <WaitingLoader
-            color={themeVar.Common.colors.HeaderColor}
-            background={themeVar.Common.colors.HeaderColor}
-          />
-        )}
-      </div>
+
+      {/* ----- show next input choices  --------------------------------------------------- */}
+      {choices.length > 0 && (
+        <div
+          className={cx(
+            flex,
+            flexColumn,
+            flexDistribute,
+            itemCenter,
+            choicePannelStyle,
+          )}
+        >
+          {/* ---------- each input choice  ------------------------------------------------ */}
+          {choices.map((transition: SDialogueTransition) => (
+            <DialogueChoice
+              key={`CHOICE${transition.getId()}`}
+              label={transition.getActionText()}
+              onClick={() => {
+                wait();
+                store.dispatch(
+                  applyFSMTransition(
+                    dialogue.getEntity(),
+                    transition.getEntity(),
+                  ),
+                );
+              }}
+            />
+          ))}
+
+          {/* ---------- waiting for the next answer to be revealed ------------------------ */}
+          {waiting && choices.length > 0 && (
+            <WaitingLoader
+              color={themeVar.Common.colors.HeaderColor}
+              background={themeVar.Common.colors.HeaderColor}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }

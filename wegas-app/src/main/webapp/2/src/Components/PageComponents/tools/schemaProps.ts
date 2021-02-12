@@ -24,7 +24,10 @@ import {
 import { IArrayProps } from '../../../Editor/Components/FormView/Array';
 import { StatementViewProps } from '../../../Editor/Components/FormView/Script/Expressions/ExpressionEditor';
 import { createScript } from '../../../Helper/wegasEntites';
-import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
+import {
+  CleaningHashmapMethods,
+  HashListChoices,
+} from '../../../Editor/Components/FormView/HashList';
 import {
   FileFilter,
   FilePickingType,
@@ -33,6 +36,7 @@ import { CustomScriptProps } from '../../../Editor/Components/FormView/CustomScr
 import { IAbstractContentDescriptor, IScript } from 'wegas-ts-api';
 import { ScriptContext } from '../../Hooks/useGlobalLibs';
 import { ScriptableStringProps } from '../../../Editor/Components/FormView/ScriptableString';
+import { ScriptableBooleanProps } from '../../../Editor/Components/FormView/ScriptableBoolean';
 
 type TypedProps<T extends { view: {} }> = Schema<
   T['view'] & {
@@ -541,6 +545,29 @@ const simpleSchemaProps = {
       richText,
     },
   }),
+  scriptBoolean: ({
+    label,
+    required = false,
+    value = undefined,
+    featureLevel = 'DEFAULT',
+    index = 0,
+    layout,
+    borderTop,
+  }: CommonSchemaProps &
+    ValueSchemaProps<IScript>): TypedProps<ScriptableBooleanProps> => ({
+    required,
+    type: 'object',
+    index,
+    value,
+    view: {
+      borderTop,
+      index,
+      featureLevel,
+      label,
+      type: 'scriptableBoolean',
+      layout,
+    },
+  }),
   array: ({
     label,
     itemSchema = {},
@@ -619,9 +646,11 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     objectViewStyle,
+    cleaning,
   }: {
     choices?: HashListChoices;
     objectViewStyle?: boolean;
+    cleaning?: CleaningHashmapMethods;
   } & CommonSchemaProps &
     ValueSchemaProps<object>) => ({
     required,
@@ -637,12 +666,13 @@ const simpleSchemaProps = {
       layout,
       borderTop,
       objectViewStyle,
+      cleaning,
     },
   }),
   file: ({
     label,
     required = false,
-    pick = 'FILE',
+    pickType = 'FILE',
     filter,
     value,
     featureLevel = 'DEFAULT',
@@ -650,7 +680,7 @@ const simpleSchemaProps = {
     layout,
     borderTop,
   }: {
-    pick?: FilePickingType;
+    pickType?: FilePickingType;
     filter?: FileFilter;
   } & CommonSchemaProps &
     ValueSchemaProps<IAbstractContentDescriptor>) => ({
@@ -659,7 +689,7 @@ const simpleSchemaProps = {
     value,
     index,
     view: {
-      pick,
+      pickType,
       filter,
       featureLevel,
       index,
@@ -672,7 +702,7 @@ const simpleSchemaProps = {
   path: ({
     label,
     required = false,
-    pick = 'FILE',
+    pickType = 'FILE',
     filter,
     value,
     featureLevel = 'DEFAULT',
@@ -681,7 +711,7 @@ const simpleSchemaProps = {
     borderTop,
     scriptable,
   }: {
-    pick?: FilePickingType;
+    pickType?: FilePickingType;
     filter?: FileFilter;
     scriptable?: boolean;
   } & CommonSchemaProps &
@@ -691,7 +721,7 @@ const simpleSchemaProps = {
     value,
     index,
     view: {
-      pick,
+      pickType,
       filter,
       featureLevel,
       index,

@@ -14,11 +14,11 @@ import { themeVar } from '../../../Components/Style/ThemeVars';
 
 export const splitter = css({
   '&.reflex-container > .reflex-splitter': {
-    backgroundColor: themeVar.Common.colors.MainColor,
+    backgroundColor: themeVar.Common.colors.PrimaryColor,
     zIndex: 0,
   },
   '&.reflex-container > .reflex-splitter:hover': {
-    backgroundColor: themeVar.Common.colors.MainColor,
+    backgroundColor: themeVar.Common.colors.PrimaryColor,
   },
   '&.reflex-container.vertical > .reflex-splitter': {
     width: '5px',
@@ -420,12 +420,30 @@ const insertChildren = <T extends LayoutMap>(
   index?: number,
   active?: boolean,
 ) => {
-  const newLayouts = layouts;
-  const newIndex =
-    index !== undefined ? index : newLayouts[destLayoutKey].children.length;
-  newLayouts[destLayoutKey].children.splice(newIndex, 0, key);
-  if (active) {
-    newLayouts[destLayoutKey].defaultActive = key;
+  let newLayouts = layouts;
+  if (Object.keys(newLayouts).length === 0) {
+    newLayouts = ({
+      '0': {
+        type: 'ReflexLayoutNode',
+        children: ['1'],
+        vertical: false,
+        flexValues: [],
+      },
+      '1': {
+        type: 'TabLayoutNode',
+        vertical: false,
+        children: [key],
+        flexValues: [],
+        defaultActive: key,
+      },
+    } as unknown) as T;
+  } else {
+    const newIndex =
+      index !== undefined ? index : newLayouts[destLayoutKey].children.length;
+    newLayouts[destLayoutKey].children.splice(newIndex, 0, key);
+    if (active) {
+      newLayouts[destLayoutKey].defaultActive = key;
+    }
   }
   return newLayouts;
 };
@@ -857,13 +875,13 @@ export function MainLinearLayout<T extends ComponentMap>({
       tabKey: tabkey,
     });
 
-  const onNewTab = (layoutKey: string) => (tabKey: string) =>
+  const onNewTab = (layoutKey: string) => (tabKey: string) => {
     dispatchLayout({
       type: 'NEW',
       tabKey: tabKey,
       destTabLayoutKey: layoutKey,
     });
-
+  };
   const onSelect = (tabKey: string) =>
     dispatchLayout({
       type: 'SELECT',
@@ -917,7 +935,7 @@ export function MainLinearLayout<T extends ComponentMap>({
               <ReflexElement
                 key={childKey}
                 flex={
-                  layout.layoutMap[childKey].flex
+                  layout.layoutMap[childKey]?.flex
                     ? layout.layoutMap[childKey].flex
                     : 1000
                 }
@@ -959,7 +977,17 @@ export function MainLinearLayout<T extends ComponentMap>({
       return (
         <ReflexContainer>
           <ReflexElement>
-            <div>Nothing inside</div>
+            <DnDTabLayout
+              key={currentLayoutKey}
+              components={makeTabMap([], tabs)}
+              selectItems={getUnusedTabs(layout.layoutMap, tabs)}
+              onDrop={onDrop(currentLayoutKey)}
+              onDropTab={onDropTab(currentLayoutKey)}
+              onDeleteTab={onDeleteTab}
+              onNewTab={onNewTab(currentLayoutKey)}
+              onSelect={onSelect}
+              layoutId={layoutId}
+            />
           </ReflexElement>
         </ReflexContainer>
       );
@@ -967,11 +995,9 @@ export function MainLinearLayout<T extends ComponentMap>({
   };
 
   return (
-    // <focusTabContext.Provider value={focusTab}>
     <ReparentableRoot>
       <div className={cx(flex, grow, expandHeight)}>{renderLayouts()}</div>
     </ReparentableRoot>
-    // </focusTabContext.Provider>
   );
 }
 

@@ -1,6 +1,15 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { flex, flexColumn, flexRow, grow, itemCenter } from '../../css/classes';
+import { runLoadedScript } from '../../data/Reducer/VariableInstanceReducer';
+import { Player } from '../../data/selectors';
+import { usePagesContextStateStore } from '../../data/Stores/pageContextStore';
+import { store } from '../../data/Stores/store';
+import { CleaningHashmapMethods } from '../../Editor/Components/FormView/HashList';
+import { safeClientScriptEval } from '../Hooks/useScript';
+import { ClientAndServerAction } from '../PageComponents/Inputs/tools';
+import { assembleStateAndContext } from '../PageComponents/tools/EditableComponent';
+import { clientAndServerScriptChoices } from '../PageComponents/tools/options';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 import { themeVar } from '../Style/ThemeVars';
 import { Button } from './Buttons/Button';
@@ -15,10 +24,21 @@ const inputStyle = css({
   padding: '5px',
 });
 
+export interface ValidatorComponentProps {
+  /**
+   * validator - if true, will put a handle that will fire the change event
+   */
+  validator?: boolean;
+  /**
+   * onCancel - will be called if the modiofication is cancelled
+   */
+  onCancel?: IScript | ClientAndServerAction;
+}
+
 interface ValidateProps<T> {
   value: T;
   onValidate: (value: T) => void;
-  onCancel: (value: T) => void;
+  onCancel: () => void;
   children: (value: T, onChange: (value: T) => void) => JSX.Element;
 }
 
@@ -40,25 +60,95 @@ export function Validate<T>({
         {children(savedValue, setSavedValue)}
       </div>
       <div className={cx(flex, flexColumn, inputStyle)}>
-        <Button icon="times" onClick={() => onCancel(savedValue)} />
+        <Button icon="times" onClick={() => onCancel()} />
         <Button icon="check" onClick={() => onValidate(savedValue)} />
       </div>
     </div>
   );
 }
 
-export interface ValidatorComponentProps {
-  /**
-   * validator - if true, will put a handle that will fire the change event
-   */
-  validator?: boolean;
-  /**
-   * onCancel - will be called if the modiofication is cancelled
-   */
-  onCancel?: IScript;
+/**
+ * Detect an old onCancel value that was a IScript object
+ * @param value
+ */
+
+function errorDetector(value?: object | null | undefined): boolean {
+  return (
+    value != null &&
+    '@class' in value &&
+    (value as IScript)['@class'] === 'Script'
+  );
 }
+
+/**
+ * Transform an IScript object into {client:Iscript} to avoid validatorSchema bad parsing
+ * @param value
+ */
+function cleaningMethod(value?: object | null | undefined): object {
+  if (value == null) {
+    return {};
+  } else {
+    return {
+      client: value,
+    };
+  }
+}
+
+const cleaning: CleaningHashmapMethods = {
+  errorDetector,
+  cleaningMethod,
+};
 
 export const validatorSchema = {
   validator: schemaProps.boolean({ label: 'Validator' }),
-  onCancel: schemaProps.code({ label: 'On cancel action' }),
+  onCancel: schemaProps.hashlist({
+    label: 'On cancel action',
+    required: false,
+    choices: clientAndServerScriptChoices,
+    cleaning,
+  }),
 };
+
+function isOnCancelClientAndServerAction(
+  onCancel?: IScript | ClientAndServerAction,
+): onCancel is ClientAndServerAction {
+  return onCancel != null && ('client' in onCancel || 'server' in onCancel);
+}
+
+export function useOnCancelAction(
+  onCancel?: IScript | ClientAndServerAction,
+  context?: {
+    [name: string]: unknown;
+  },
+) {
+  const client = isOnCancelClientAndServerAction(onCancel)
+    ? onCancel.client
+    : onCancel;
+  const server = isOnCancelClientAndServerAction(onCancel)
+    ? onCancel.server
+    : undefined;
+
+  const state = usePagesContextStateStore(s => s);
+
+  function handleOnCancel() {
+    if (client) {
+      safeClientScriptEval(client, context, undefined, state);
+    }
+    if (server) {
+      store.dispatch(
+        runLoadedScript(
+          server,
+          Player.selectCurrent(),
+          undefined,
+          assembleStateAndContext(context, state),
+        ),
+      );
+    }
+  }
+
+  if (!onCancel || Object.keys(onCancel).length === 0) {
+    return { handleOnCancel: () => {} };
+  } else {
+    return { client, server, handleOnCancel };
+  }
+}

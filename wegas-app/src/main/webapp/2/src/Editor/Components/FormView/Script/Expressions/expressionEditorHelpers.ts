@@ -19,7 +19,7 @@ import {
   TreeSelectItem,
 } from '../../TreeVariableSelect';
 
-import { store } from '../../../../../data/store';
+import { store } from '../../../../../data/Stores/store';
 import { TYPESTRING } from 'jsoninput/typings/types';
 import { safeClientScriptEval } from '../../../../../Components/Hooks/useScript';
 import { isServerMethod } from '../../../../../data/Reducer/globalState';

@@ -102,7 +102,8 @@ function parseScript(script: string = ''): InputMode {
 
 export interface ScriptablePathProps
   extends WidgetProps.BaseProps<
-    CommonView & LabeledView & { pick: FilePickingType; filter?: FileFilter }
+    CommonView &
+      LabeledView & { pickType: FilePickingType; filter?: FileFilter }
   > {
   value?: IScript;
   onChange: (IScript: IScript) => void;
@@ -190,7 +191,7 @@ export function ScriptablePath(props: ScriptablePathProps): JSX.Element {
                   );
                 }}
                 valueType="string"
-                pick={props.view.pick}
+                pickType={props.view.pickType}
                 filter={props.view.filter}
               />
             ) : inputMode === 'Variable' ? (

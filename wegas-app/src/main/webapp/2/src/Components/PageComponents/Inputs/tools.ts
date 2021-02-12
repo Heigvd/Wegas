@@ -1,25 +1,15 @@
 import { IScript } from 'wegas-ts-api';
-import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
+import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
-import { store } from '../../../data/store';
+import { usePagesContextStateStore } from '../../../data/Stores/pageContextStore';
+import { store } from '../../../data/Stores/store';
 import { createScript } from '../../../Helper/wegasEntites';
-import {
-  parseAndRunClientScript,
-  safeClientScriptEval,
-  useScript,
-} from '../../Hooks/useScript';
+import { safeClientScriptEval, useScript } from '../../Hooks/useScript';
+import { assembleStateAndContext } from '../tools/EditableComponent';
 import { clientAndServerScriptChoices } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
-/**
- * OnFileClick - the script to execute when a file is clicked.
- * The file is added in the context as an IAbstractContentDescriptor
- */
-export interface OnVariableChange {
-  /**
-   * exposeVariableAs - the id of the stored file in Context
-   */
-  exposeVariableAs?: IScript;
+export interface ClientAndServerAction {
   /**
    * client - the client script
    */
@@ -28,6 +18,17 @@ export interface OnVariableChange {
    * server - the server script
    */
   server?: IScript;
+}
+
+/**
+ * OnFileClick - the script to execute when a file is clicked.
+ * The file is added in the context as an IAbstractContentDescriptor
+ */
+export interface OnVariableChange extends ClientAndServerAction {
+  /**
+   * exposeVariableAs - the id of the stored file in Context
+   */
+  exposeVariableAs?: IScript;
 }
 
 export const onVariableChangeSchema = (label: string) =>
@@ -63,16 +64,21 @@ export function useOnVariableChange(
 
   const exposeAs = useScript<string>(exposeFileAs, context) || 'file';
 
+  const state = usePagesContextStateStore(s => s);
+
   function handleOnChange(variable: any) {
     const newContext = { ...context, [exposeAs]: variable };
+
     if (client) {
-      safeClientScriptEval(client, newContext);
+      safeClientScriptEval(client, newContext, undefined, state);
     }
     if (server) {
       store.dispatch(
-        runScript(
-          parseAndRunClientScript(server, newContext),
+        runLoadedScript(
+          server,
           Player.selectCurrent(),
+          undefined,
+          assembleStateAndContext(newContext, state),
         ),
       );
     }

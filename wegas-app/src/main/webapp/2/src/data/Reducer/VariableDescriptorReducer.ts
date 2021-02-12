@@ -4,7 +4,7 @@ import { manageResponseHandler, StateActions, ActionType } from '../actions';
 import { Actions as Act } from '..';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { deepRemove } from '../updateUtils';
-import { ThunkResult, store } from '../store';
+import { ThunkResult, store } from '../Stores/store';
 import { IVariableDescriptor } from 'wegas-ts-api';
 
 export interface VariableDescriptorState {
@@ -159,6 +159,15 @@ export function reset(): ThunkResult {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.reset(gameModelId).then(res =>
+      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+    );
+  };
+}
+
+export function getByIds(ids: number[]): ThunkResult {
+  return function (dispatch, getState) {
+    const gameModelId = store.getState().global.currentGameModelId;
+    return VariableDescriptorAPI.getByIds(ids, gameModelId).then(res =>
       store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
     );
   };

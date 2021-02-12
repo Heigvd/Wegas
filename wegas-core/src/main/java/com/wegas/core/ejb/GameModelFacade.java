@@ -1,9 +1,8 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -759,6 +758,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 case MODEL:
                     requestManager.assertCanInstantiateGameModel(srcGameModel);
                     // prefer the reference
+                    GameModel theModel = srcGameModel;
                     GameModel ref = modelFacade.getReference(srcGameModel);
                     if (ref != null) {
                         srcGameModel = ref;
@@ -766,7 +766,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     newGameModel = new GameModel();
                     // merge deep but skip PRIVATE content
                     newGameModel.deepMerge(srcGameModel);
-                    newGameModel.setBasedOn(srcGameModel);
+                    newGameModel.setBasedOn(theModel);
                     break;
 
                 case SCENARIO:

@@ -5,7 +5,7 @@ import { LabeledView, Labeled } from './labeled';
 import { scriptEditStyle } from './Script/Script';
 import { WegasScriptEditor } from '../ScriptEditors/WegasScriptEditor';
 import { createScript } from '../../../Helper/wegasEntites';
-import { useStore } from '../../../data/store';
+import { useStore } from '../../../data/Stores/store';
 import {
   indexToTree,
   isPageItem,

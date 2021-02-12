@@ -10,20 +10,21 @@ import {
   ItemContainer,
 } from './EditableComponent';
 import { deepDifferent, shallowDifferent } from '../../Hooks/storeHookFactory';
-import { useStore } from '../../../data/store';
+import { useStore } from '../../../data/Stores/store';
 import { cloneDeep, pick } from 'lodash-es';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import {
-  ComponentOptionsManager,
+  // ComponentOptionsManager,
   defaultOptions,
-  OptionsState,
+  // OptionsState,
+  useOptions,
 } from './OptionsComponent';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { State } from '../../../data/Reducer/reducers';
 
 function getComponentFromPath(page: WegasComponent, path: number[]) {
   const newPath = [...path];
-  let component: WegasComponent = cloneDeep(page);
+  let component = page;
   while (newPath.length > 0) {
     const index = newPath.shift();
     if (
@@ -37,7 +38,7 @@ function getComponentFromPath(page: WegasComponent, path: number[]) {
       component = component.props.children[index];
     }
   }
-  return component;
+  return cloneDeep(component);
 }
 
 export type ChildrenDeserializerProps<P = {}> = P & {
@@ -81,7 +82,7 @@ export function PageDeserializer({
   containerPropsKeys,
   dropzones,
 }: PageDeserializerProps): JSX.Element {
-  const [optionsState, setOptionsState] = React.useState<OptionsState>({});
+  // const [optionsState, setOptionsState] = React.useState<OptionsState>({});
 
   const realPath = path ? path : [];
 
@@ -118,7 +119,12 @@ export function PageDeserializer({
     shallowDifferent,
   ) as PageComponent;
 
-  const options = pick(restProps, defaultOptions);
+  // const options = pick(restProps, defaultOptions);
+
+  const optionsState = useOptions(
+    pick(restProps, defaultOptions),
+    context || {},
+  );
 
   const { WegasComponent, container, componentName } = component || {};
 
@@ -135,13 +141,13 @@ export function PageDeserializer({
 
   return (
     <>
-      {Object.keys(options).length > 0 && (
+      {/* {Object.keys(options).length > 0 && (
         <ComponentOptionsManager
           options={options}
           context={context}
           setUpgradesState={setOptionsState}
         />
-      )}
+      )} */}
       {Container == null ||
       (container?.noContainer &&
         container?.noContainer(wegasComponent.props as WegasComponentProps)) ? (

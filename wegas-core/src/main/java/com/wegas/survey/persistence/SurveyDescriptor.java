@@ -1,9 +1,8 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.survey.persistence;
@@ -16,7 +15,9 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
@@ -41,9 +42,7 @@ import javax.persistence.Index;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderColumn;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 /**
  * Descriptor of the Survey variable<br>
@@ -80,7 +79,6 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      */
     @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "survey-sections")
-    @OrderColumn(name = "index")
     //@JsonView(Views.EditorI.class)
     @WegasEntityProperty(includeByDefault = false,
         optional = false, nullable = false, proposal = ValueGenerators.EmptyArray.class,
@@ -96,16 +94,15 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
     private List<SurveyToken> tokens;
 
     /**
-     * Read-only information about presence of any tokens,
-     * meaning that players have been invited to the survey by email.
-     * Only for use by the trainer dashboard.
+     * Read-only information about presence of any tokens, meaning that players have been invited to
+     * the survey by email. Only for use by the trainer dashboard.
      */
     @JsonView(Views.EditorI.class)
-    @JsonProperty(access = Access.READ_ONLY)    
+    @JsonProperty(access = Access.READ_ONLY)
     public Boolean getHasTokens() {
         return tokens.size() > 0;
     }
-    
+
     /**
      * True unless it should be hidden from trainer/scenarist listings.
      */
@@ -124,9 +121,15 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
      */
     @Override
     @JsonView(Views.ExportI.class)
-    @Scriptable(label = "getItems",wysiwyg = false)
+    @Scriptable(label = "getItems", wysiwyg = false)
     public List<SurveySectionDescriptor> getItems() {
-        return this.items;
+        return Helper.copyAndSortModifiable(this.items, new EntityComparators.OrderComparator<>());
+    }
+
+    @JsonIgnore
+    @Override
+    public List<SurveySectionDescriptor> getRawItems() {
+        return items;
     }
 
     /**
@@ -151,21 +154,10 @@ public class SurveyDescriptor extends VariableDescriptor<SurveyInstance>
         this.tokens.remove(token);
     }
 
-    /**
-     * @param items the items (i.e. sections) to set
-     */
-    @Override
-    public void setItems(List<SurveySectionDescriptor> items) {
-        this.items = items;
-        for (SurveySectionDescriptor ssd : items) {
-            ssd.setSurvey(this);
-        }
-    }
-
     @Override
     public void setGameModel(GameModel gm) {
         super.setGameModel(gm);
-        for (SurveySectionDescriptor ssd : this.getItems()) {
+        for (SurveySectionDescriptor ssd : this.getRawItems()) {
             ssd.setGameModel(gm);
         }
     }

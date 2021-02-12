@@ -1,4 +1,4 @@
-import { store } from '../data/store';
+import { store } from '../data/Stores/store';
 import { IAbstractEntity } from 'wegas-ts-api';
 
 type ContentType =

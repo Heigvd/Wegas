@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
@@ -28,6 +28,7 @@ import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.LabelledEntity;
+import com.wegas.core.persistence.Orderable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.annotations.WegasConditions.And;
@@ -138,7 +139,8 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "gamemodel_id"),
     @Index(columnList = "dtype"),
     @Index(columnList = "scope_id"),
-    @Index(columnList = "label_id")
+    @Index(columnList = "label_id"),
+    @Index(columnList = "gamemodel_id, refid", unique = true),
 })
 @NamedQuery(
     name = "VariableDescriptor.findAllNamesInModelAndItsScenarios",
@@ -220,7 +222,7 @@ import org.slf4j.LoggerFactory;
 @WegasEntity(callback = VariableDescriptor.VdMergeCallback.class)
 public abstract class VariableDescriptor<T extends VariableInstance>
     extends AbstractEntity
-    implements LabelledEntity, Broadcastable, AcceptInjection, ModelScoped {
+    implements LabelledEntity, Broadcastable, AcceptInjection, ModelScoped, Orderable {
 
     private static final long serialVersionUID = 1L;
 
@@ -229,8 +231,8 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     /**
      * HACK
      * <p>
-     * Injecting VariableDescriptorFacade here don't bring business logic within data because the very only
-     * functionality that is being used here aims to replace some slow JPA mechanisms
+     * Injecting VariableDescriptorFacade here don't bring business logic within data because the
+     * very only functionality that is being used here aims to replace some slow JPA mechanisms
      * <p>
      */
     @JsonIgnore
@@ -260,7 +262,8 @@ public abstract class VariableDescriptor<T extends VariableInstance>
      *
      * The default instance for this variable.
      * <p>
-     * According to WegasPatch spec, OVERRIDE should not be propagated to the instance when the descriptor is protected
+     * According to WegasPatch spec, OVERRIDE should not be propagated to the instance when the
+     * descriptor is protected
      * <p>
      * Here we cannot use type T, otherwise jpa won't handle the db ref correctly
      */
@@ -299,6 +302,9 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     @ManyToOne
     @JsonIgnore
     private WhQuestionDescriptor parentWh;
+
+    @JsonIgnore
+    private Integer indexOrder;
 
     @ManyToOne
     @JsonIgnore
@@ -536,6 +542,20 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         }
     }
 
+    @Override
+    @JsonIgnore
+    public Integer getOrder() {
+        return getIndexOrder();
+    }
+
+    public Integer getIndexOrder() {
+        return indexOrder;
+    }
+
+    public void setIndexOrder(Integer indexOrder) {
+        this.indexOrder = indexOrder;
+    }
+
     public WhQuestionDescriptor getParentWh() {
         return parentWh;
     }
@@ -655,7 +675,8 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     /**
-     * @param defaultInstance indicate whether one wants the default instance r the one belonging to player
+     * @param defaultInstance indicate whether one wants the default instance r the one belonging to
+     *                        player
      * @param player          the player
      *
      * @return either the default instance of the one belonging to player
@@ -836,8 +857,9 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     /**
-     * @param context allow to circumscribe the propagation within the given context. It may be an instance of
-     *                GameModel, Game, Team, or Player
+     * @param context allow to circumscribe the propagation within the given context. It may be an
+     *                instance of GameModel, Game, Team, or Player
+     * @param create
      */
     public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         int sFlag = 0;

@@ -112,6 +112,7 @@ interface DragDropProps {
 interface NodeProps extends DragDropProps {
   id: {};
   expanded?: boolean;
+  noToggle?: boolean;
   /** Autoset when child of Container */
   parent?: {};
   /** Autoset when child of Container */
@@ -127,10 +128,15 @@ const childrenContainer = css({
     fontStyle: 'italic',
   },
 });
-const toggle = css({
+const toggleStyle = css({
   padding: '0 0.3em',
   width: '1em',
   cursor: 'pointer',
+});
+
+const noToggleStyle = css({
+  padding: '0 0.3em',
+  width: '1em',
 });
 const isDraggingStyle = css({
   display: 'none',
@@ -152,7 +158,7 @@ class TreeNode extends React.Component<
   constructor(props: ConnectedNodeProps) {
     super(props);
     this.state = {
-      expanded: Boolean(props.expanded),
+      expanded: Boolean(props.expanded || props.noToggle),
       DropZone: DropZoneFactory(
         props.dropIds ? props.dropIds : props.dragId,
         props.dropDisabled,
@@ -203,6 +209,7 @@ class TreeNode extends React.Component<
       parent,
       index,
       header,
+      noToggle,
     } = this.props;
     const { expanded } = this.state;
     const children = this.props.children({
@@ -218,7 +225,7 @@ class TreeNode extends React.Component<
     const cont = isNode && expanded && (
       <DropZone id={id} where="INSIDE" index={0}>
         {({ isOver, boundingRect }) => (
-          <div className={childrenContainer}>
+          <div className={cx({ [childrenContainer]: !noToggle })}>
             {isOver && <DropPreview boundingRect={boundingRect} />}
             {children}
           </div>
@@ -248,13 +255,19 @@ class TreeNode extends React.Component<
                     )}
                     {separator(
                       <div className={cx(flex, grow, flexRow, itemCenter)}>
-                        {isNode && (
-                          <div className={toggle} onClick={this.toggleExpand}>
-                            <FontAwesome
-                              icon={expanded ? 'caret-down' : 'caret-right'}
-                            />
-                          </div>
-                        )}
+                        {!noToggle &&
+                          (isNode ? (
+                            <div
+                              className={toggleStyle}
+                              onClick={this.toggleExpand}
+                            >
+                              <FontAwesome
+                                icon={expanded ? 'caret-down' : 'caret-right'}
+                              />
+                            </div>
+                          ) : (
+                            <div className={noToggleStyle}></div>
+                          ))}
 
                         {header}
                       </div>,

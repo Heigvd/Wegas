@@ -1,8 +1,9 @@
+
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -563,11 +564,14 @@ public class RequestManager implements RequestManagerI {
             }
         } else {
             this.actAsPlayer = new ActAsPlayer(this, player);
+            if (player != null) {
+                websocketFacade.touchOnlineUser(currentUser.getId(), player.getId());
+            }
         }
         return actAsPlayer;
     }
 
-    public void releaseActAsPlayer(){
+    public void releaseActAsPlayer() {
         this.actAsPlayer = null;
     }
 
@@ -1537,7 +1541,7 @@ public class RequestManager implements RequestManagerI {
                 || this.hasDirectGameEditPermission(game) //has edit right on  the game
                 || this.hasDirectGameModelEditPermission(game.getGameModel()) // or edit right on the game model
                 || (!superPermission
-                && ( // OR if no super permission is required. either: 
+                && ( // OR if no super permission is required. either:
                 game.getAccess().equals(Game.GameAccess.OPEN) // the game is open and hence, must be readable to everyone
                 || playerFacade.isInGame(game.getId(), this.getCurrentUser().getId()) // current user owns one player in the game
                 ));
@@ -1665,7 +1669,7 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Whether the current user has already been granted a Game Write permission for any game in 
+     * Whether the current user has already been granted a Game Write permission for any game in
      * which the given user act as player
      *
      * @param userId
@@ -1821,7 +1825,7 @@ public class RequestManager implements RequestManagerI {
      * @throws WegasAccessDenied permissions is not null and no permission in permissions is
      *                           permitted
      */
-    private void assertUserHasPermission(Collection<WegasPermission> permissions, String type, WithPermission entity) throws WegasAccessDenied {
+    public void assertUserHasPermission(Collection<WegasPermission> permissions, String type, WithPermission entity) throws WegasAccessDenied {
         log("HAS  PERMISSION: {} / {} / {}", type, permissions, entity);
         logIndent++;
         if (!hasAnyPermission(permissions)) {

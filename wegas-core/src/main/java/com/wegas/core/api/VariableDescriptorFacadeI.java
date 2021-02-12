@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2020 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.api;
@@ -31,8 +31,7 @@ public interface VariableDescriptorFacadeI {
     VariableDescriptor find(final Long entityId);
 
     /**
-     * Look for a VariableDescriptor identified by name within the given
-     * gameModel.
+     * Look for a VariableDescriptor identified by name within the given gameModel.
      *
      * @param gameModel gameModel to explore
      * @param name      name of the variableDescriptor to search
@@ -83,8 +82,7 @@ public interface VariableDescriptorFacadeI {
     VariableDescriptor findByLabel(final GameModel gameModel, final String label) throws WegasNoResultException;
 
     /**
-     * For backward compatibility, use find(final GameModel gameModel, final
-     * String name) instead.
+     * For backward compatibility, use find(final GameModel gameModel, final String name) instead.
      *
      * @param gameModel
      * @param name
@@ -161,5 +159,23 @@ public interface VariableDescriptorFacadeI {
      * @return true if gameModel contains a descriptor named name
      */
     boolean hasVariable(final GameModel gameModel, final String name);
+
+    /**
+     * Create a new descriptor in a DescriptorListI
+     *
+     * @param gameModel   the gameModel
+     * @param list        new descriptor parent
+     * @param entity      new descriptor to create
+     * @param resetNames  should completely reset names or try to keep provideds ?
+     * @param resetRefIds should generate brand new refIds ?
+     *
+     * @return the new descriptor
+     */
+    VariableDescriptor createChild(final GameModel gameModel,
+        final DescriptorListI<VariableDescriptor> list,
+        final VariableDescriptor entity,
+        boolean resetNames,
+        boolean resetRefIds
+    );
 
 }

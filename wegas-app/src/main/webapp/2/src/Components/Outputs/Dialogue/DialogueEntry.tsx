@@ -17,23 +17,28 @@ const dialogueEntryStyle = (player?: boolean) =>
   css({
     width: '80%',
     margin: '5px',
-    ...(player ? { marginLeft: '20%' } : { marginRight: '20%' }),
+    ...(player ? { marginLeft: '18%' } : { marginRight: '18%' }),
   });
 
 const textContainerStyle = (player?: boolean) =>
   css({
     position: 'relative',
     backgroundColor: player
-      ? themeVar.Common.colors.HeaderColor
-      : themeVar.Common.colors.DisabledColor,
+      ? themeVar.Common.colors.PrimaryColor
+      : themeVar.Common.colors.HeaderColor,
+    color: player
+      ? themeVar.Common.colors.LightTextColor
+      : themeVar.Common.colors.DarkTextColor,
     borderRadius: themeVar.Common.dimensions.BorderRadius,
-    padding: '5px',
+    padding: '5px 10px',
     overflow: 'hidden',
+    fontSize: 'initial',
+    lineHeight: '1.1em',
   });
 
 const portraitStyle = css({
-  width: '50px',
-  height: '50px',
+  width: '40px',
+  height: '40px',
   margin: '5px',
 });
 
@@ -50,8 +55,8 @@ function UserPortrait({
   return (
     <div className={className} style={style} id={id}>
       <svg
-        width="50"
-        height="50"
+        width="35"
+        height="35"
         viewBox="0 0 50 50"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -86,23 +91,30 @@ export function DialogueEntry({ text, player, waiting }: DialogueEntryProps) {
         dialogueEntryStyle(player),
       )}
     >
-      <UserPortrait
-        className={portraitStyle}
-        color={
-          player
-            ? themeVar.Common.colors.ActiveColor
-            : themeVar.Common.colors.HeaderColor
-        }
-      />
-      <div className={cx(expandHeight, grow, textContainerStyle(player))}>
-        <div dangerouslySetInnerHTML={{ __html: translation }} />
-        {waiting && (
-          <WaitingLoader
-            color={themeVar.Common.colors.HeaderColor}
-            background={themeVar.Common.colors.DisabledColor}
-          />
-        )}
-      </div>
+      {
+        /* if there is nothing to say, just skip the entry */
+        translation != null && translation.length > 0 && (
+          <>
+            <UserPortrait
+              className={portraitStyle}
+              color={
+                player
+                  ? themeVar.Common.colors.ActiveColor
+                  : themeVar.Common.colors.HeaderColor
+              }
+            />
+            <div className={cx(expandHeight, grow, textContainerStyle(player))}>
+              <div dangerouslySetInnerHTML={{ __html: translation }} />
+              {waiting && (
+                <WaitingLoader
+                  color={themeVar.Common.colors.HeaderColor}
+                  background={themeVar.Common.colors.DisabledColor}
+                />
+              )}
+            </div>
+          </>
+        )
+      }
     </div>
   );
 }

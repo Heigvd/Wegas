@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { createStore, applyMiddleware, Reducer } from 'redux';
-import { composeEnhancers } from '../data/store';
+import { composeEnhancers } from '../data/Stores/store';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { createStoreConnector } from '../data/connectStore';
 import u from 'immer';
@@ -31,7 +31,7 @@ const popupStyle = css({
   borderRadius: themeVar.Common.dimensions.BorderRadius,
   borderWidth: themeVar.Common.dimensions.BorderWidth,
   borderStyle: 'solid',
-  borderColor: themeVar.Common.colors.MainColor,
+  borderColor: themeVar.Common.colors.PrimaryColor,
 });
 
 interface Popup {

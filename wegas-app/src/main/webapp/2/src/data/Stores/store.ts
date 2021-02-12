@@ -1,10 +1,10 @@
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import thunk, { ThunkMiddleware, ThunkAction } from 'redux-thunk';
-import reducers, { State } from './Reducer/reducers';
-import { Actions } from '.';
-import { StateActions } from './actions';
-import { createStoreConnector } from './connectStore';
-import '../API/websocket';
+import reducers, { State } from '../Reducer/reducers';
+import { Actions } from '..';
+import { StateActions } from '../actions';
+import { createStoreConnector } from '../connectStore';
+import '../../API/websocket';
 
 // Used by redux dev tool extension
 export const composeEnhancers: typeof compose =

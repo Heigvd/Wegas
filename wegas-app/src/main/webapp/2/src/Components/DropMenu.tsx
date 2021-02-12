@@ -36,6 +36,7 @@ export interface DropMenuProps<
   onOpen?: () => void;
   items: readonly MItem[];
   label?: React.ReactNode;
+  prefixedLabel?: boolean;
   path?: number[];
   icon?: IconName;
   direction?: 'left' | 'down' | 'right' | 'top';
@@ -68,13 +69,13 @@ const containerStyle = css({
   position: 'relative',
 });
 const subMenuContainer = css({
-  color: themeVar.Common.colors.TextColor,
+  color: themeVar.Common.colors.DarkTextColor,
   backgroundColor: themeVar.Common.colors.BackgroundColor,
   position: 'absolute',
   zIndex: 10000,
   whiteSpace: 'nowrap',
   margin: '2px',
-  boxShadow: `0px 0px 4px 1px ${themeVar.Common.colors.BorderColor}`,
+  boxShadow: `0px 0px 4px 1px ${themeVar.Common.colors.PrimaryColor}`,
   '>div': {
     padding: '1px',
     borderRadius: '3px',
@@ -113,6 +114,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
   onSelect,
   direction,
   label,
+  prefixedLabel = true,
   path,
   items,
   icon,
@@ -160,7 +162,7 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
           <div className={itemStyle} onClick={() => toggleMenu()}>
             <Button
               label={label}
-              prefixedLabel
+              prefixedLabel={prefixedLabel}
               icon={withDefault(
                 icon,
                 !adder && items.length === 0

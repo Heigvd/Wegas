@@ -2,7 +2,7 @@ import * as React from 'react';
 import produce from 'immer';
 import { Actions } from '../../../data';
 import { getIcon, getLabel, getChildren } from '../../editionConfig';
-import { StoreDispatch, store } from '../../../data/store';
+import { StoreDispatch, store } from '../../../data/Stores/store';
 import {
   DropMenu,
   DropMenuProps,
@@ -55,6 +55,8 @@ function buildMenuItems(
 }
 
 interface AddMenuProps {
+  label?: React.ReactNode;
+  prefixedLabel?: boolean;
   localDispatch?: StoreDispatch;
   forceLocalDispatch?: boolean;
   onSelect?: DropMenuProps<string, DropMenuItem<string>>['onSelect'];
@@ -67,6 +69,8 @@ interface AddMenuProps {
 export const AddMenuParent = asyncSFC(
   async ({
     variable,
+    label,
+    prefixedLabel,
     localDispatch,
     forceLocalDispatch,
     onSelect,
@@ -77,6 +81,8 @@ export const AddMenuParent = asyncSFC(
     const items = await buildMenuItems(variable);
     return (
       <DropMenu
+        label={label}
+        prefixedLabel={prefixedLabel}
         items={items}
         icon="plus"
         onSelect={(i, e) => {
