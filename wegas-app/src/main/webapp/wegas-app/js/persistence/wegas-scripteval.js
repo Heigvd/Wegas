@@ -503,12 +503,14 @@ YUI.add('wegas-scripteval', function(Y) {
             },
             // resolve sandbox.Y namespace
             namespace: function(ns) {
-                var nss = ns.split(".");
                 var current = sandbox.Y;
-                for (var i in nss) {
-                    var n = nss[i];
-                    current[n] = current[n] || {};
-                    current = current[n];
+                if (ns) {
+                    var nss = ns.split(".");
+                    for (var i in nss) {
+                        var n = nss[i];
+                        current[n] = current[n] || {};
+                        current = current[n];
+                    }
                 }
                 return current;
             }

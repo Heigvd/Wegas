@@ -12,6 +12,10 @@
 YUI.add('wegas-dashboard', function(Y) {
     "use strict";
 
+    W.Sandbox.exposeInY("window", "open", function(url) {
+        window.open(url, "_blank");
+    });
+
     var TITLE_TEMPLATE = "<span class='team-name'></span>",
         LINK_TEMPLATE = "<span class='details__link details__link__closed'>Details</span>",
         BASE_TEMPLATE = "<div><div class='team-details__notes'><textarea class='infos-comments' placeholder='Enter a comment here'></textarea></div>" + "</div>",
@@ -70,7 +74,7 @@ YUI.add('wegas-dashboard', function(Y) {
                             "do": function(team, payload) {
                                 var p = team.getLivePlayer();
                                 if (p) {
-                                    window.open("game-lock.html?id=" + p.get("id"), "_blank");
+                                    Y.window.open("game-lock.html?id=" + p.get("id"));
                                 } else {
                                     Y.Wegas.Alerts.showMessage("error", "No valid player in team");
                                 }
@@ -553,7 +557,7 @@ YUI.add('wegas-dashboard', function(Y) {
                         };
                         item.icon = def.icon;
 
-                        item.do = W.Sandbox.eval("return (" + def.do+ ")");
+                        item.do = W.Sandbox.eval("return (" + def.do + ")");
 
                         item.sortable = false;
                         item.globalOnly = def.globalOnly;
