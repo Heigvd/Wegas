@@ -69,15 +69,16 @@ const TransitionMoreInfosStyle = css({
 interface TransitionBoxProps {
   transition: TransitionFlowLine;
   className?: string;
-  onClick?: (e: ModifierKeysEvent, sourceProcess: StateProcess, flowline: TransitionFlowLine) => void,
+  onClick?: (e: ModifierKeysEvent) => void,
   selected?: boolean;
 }
 
-export function TransitionBox({ transition, className, selected }: TransitionBoxProps) {
+export function TransitionBox({ transition, className, selected, onClick }: TransitionBoxProps) {
   const [isShown, setIsShown] = React.useState(false);
   const { lang } = React.useContext(languagesCTX);
   return (
-    <div className={cx(TransitionContainerStyle, className)}>
+    <div className={cx(TransitionContainerStyle, className)}
+    onClick= {onClick}>
       <div
         className={cx(TransitionBoxStyle, {
           [selectedTransitionBoxStyle]: selected,

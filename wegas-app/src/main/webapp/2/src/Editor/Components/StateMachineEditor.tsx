@@ -369,6 +369,7 @@ StateMachineEditorProps<IFSM>) {
   const isFlowlineSelected = React.useCallback(
     (sourceProcess: StateProcess, flowline: TransitionFlowLine) => {
       return (
+        editPath.length === 4 &&
         editPath[0] === 'states' &&
         editPath[1] === sourceProcess.id &&
         editPath[2] === 'transitions' &&
@@ -380,7 +381,7 @@ StateMachineEditorProps<IFSM>) {
 
   const isProcessSelected = React.useCallback(
     (sourceProcess: StateProcess) => {
-      return editPath[0] === 'states' && editPath[1] === sourceProcess.id;
+      return editPath.length === 2 && editPath[0] === 'states' && editPath[1] === sourceProcess.id;
     },
     [editPath],
   );

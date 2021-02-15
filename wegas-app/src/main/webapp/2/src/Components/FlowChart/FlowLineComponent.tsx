@@ -439,7 +439,7 @@ export function CustomStraitFlowLineComponent<
           (e.target as HTMLDivElement).focus();
         }}
       >
-        {children && children(flowline, startProcess, onClick)}
+        {children && children(flowline, startProcess, onClick, selected)}
       </div>
     </>
   );
@@ -486,6 +486,7 @@ interface CustomCircularFlowLineProps<F extends FlowLine, P extends Process<F>>
     flowline: F,
     sourceProcess: P,
     onClick?: (e: ModifierKeysEvent, sourceProcess: P, flowline: F) => void,
+    selected?: boolean,
   ) => React.ReactNode;
 }
 
@@ -624,7 +625,7 @@ export function CircularFlowLineComponent<
           (e.target as HTMLDivElement).focus();
         }}
       >
-        {children && children(flowline, process, onClick)}
+        {children && children(flowline, process, onClick, selected)}
       </div>
     </>
   );
