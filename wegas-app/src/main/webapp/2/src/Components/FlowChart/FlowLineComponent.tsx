@@ -348,8 +348,8 @@ export function CustomStraitFlowLineComponent<
             refX="6"
             refY="5"
             orient="auto"
-            fill = "transparent"
-            stroke = "rgb(128, 127, 127)"
+            fill="transparent"
+            stroke="rgb(128, 127, 127)"
           >
             <polyline points="0 0, 6 5, 0 10" />
           </marker>
@@ -361,7 +361,7 @@ export function CustomStraitFlowLineComponent<
             refY="5"
             orient="auto"
             fill={'#FFA462'}
-            stroke = "transparent"
+            stroke="transparent"
           >
             <polygon points="0 0, 6 5, 0 10" />
           </marker>
@@ -373,7 +373,7 @@ export function CustomStraitFlowLineComponent<
             refX="5"
             refY="10"
             orient="auto"
-            fill= "rgb(128, 127, 127)"
+            fill="rgb(128, 127, 127)"
           >
             <circle cx="10" cy="10" r="5" />
           </marker>

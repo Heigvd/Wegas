@@ -123,6 +123,9 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
    * a condition given by the user to see if flowline is selected or not
    */
   isFlowlineSelected?: (sourceProcess: P, flowline: F) => boolean;
+  /**
+   * a condition given by the user to see if process is selected or not
+   */
   isProcessSelected?: (sourceProcess: P) => boolean;
 }
 
@@ -149,12 +152,13 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
 
   const [tempFlow, setTempFlow] = React.useState<TempFlowLineProps>();
 
-  const [, drop] = useDrop<
-    DnDFlowchartHandle<F, P>,
-    unknown,
-    { position?: XYPosition | undefined; sourceProcess?: P }
-  >({
+  const [, drop] = useDrop<DnDFlowchartHandle<F, P>, unknown, void>({
     accept: PROCESS_HANDLE_DND_TYPE,
+    collect: monitor => {
+      if (monitor.getItem() == null) {
+        setTempFlow(undefined);
+      }
+    },
     hover: (item, mon) => {
       const newX = mon.getClientOffset()?.x;
       const newY = mon.getClientOffset()?.y;
@@ -326,7 +330,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
               }
             }}
             onClick={onProcessClick}
-            isProcessSelected = {isProcessSelected}
+            isProcessSelected={isProcessSelected}
           />
         ))}
       </Toolbar.Content>
