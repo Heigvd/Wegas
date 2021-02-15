@@ -50,7 +50,9 @@ export interface ProcessProps<F extends FlowLine, P extends Process<F>> {
    * a handle component that can be dragged to create new flowlines and processes
    */
   ProcessHandle?: React.FunctionComponent<ProcessHandleProps<F, P>>;
-
+  /**
+   * a condition given by the user to see if process is selected or not
+   */
   isProcessSelected?: (sourceProcess: P) => boolean;
 }
 
@@ -63,7 +65,7 @@ interface CustomProcessProps<F extends FlowLine, P extends Process<F>>
   children: (
     process: P,
     onClick?: (e: ModifierKeysEvent, process: P) => void,
-    selected?:boolean,
+    selected?: boolean,
   ) => React.ReactNode;
 }
 
