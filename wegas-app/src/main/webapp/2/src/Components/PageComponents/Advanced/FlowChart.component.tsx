@@ -7,20 +7,23 @@ import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { useScript } from '../../Hooks/useScript';
 import { IScript } from 'wegas-ts-api';
-import {
-  FlowChart,
-  FlowChartProps,
-  FlowLine,
-  Process,
-} from '../../FlowChart/FlowChart';
+import { FlowChart, FlowChartProps } from '../../FlowChart/FlowChart';
 import {
   OnVariableChange,
   onVariableChangeSchema,
   useOnVariableChange,
 } from '../Inputs/tools';
+import {
+  LabeledFlowLine,
+  LabeledFlowLineComponent,
+  LabeledProcess,
+  LabeledProcessComponent,
+} from '../../FlowChart/LabeledComponents';
 
-interface PlayerFlowChartProps<F extends FlowLine, P extends Process<F>>
-  extends WegasComponentProps,
+interface PlayerFlowChartProps<
+  F extends LabeledFlowLine,
+  P extends LabeledProcess<F>
+> extends WegasComponentProps,
     Omit<FlowChartProps<F, P>, 'processes' | 'onMove' | 'onNew' | 'onConnect'> {
   title?: IScript;
   processes?: IScript;
@@ -30,8 +33,8 @@ interface PlayerFlowChartProps<F extends FlowLine, P extends Process<F>>
 }
 
 export default function PlayerFlowChart<
-  F extends FlowLine,
-  P extends Process<F>
+  F extends LabeledFlowLine,
+  P extends LabeledProcess<F>
 >({
   title,
   processes,
@@ -44,7 +47,7 @@ export default function PlayerFlowChart<
   id,
 }: PlayerFlowChartProps<F, P>) {
   const titleText = useScript<string>(title, context);
-  const scriptProcesses = useScript<Process<F>[]>(processes);
+  const scriptProcesses = useScript<LabeledProcess<F>[]>(processes);
 
   const { handleOnChange: handleOnMove } = useOnVariableChange(onMove, context);
   const { handleOnChange: handleOnNew } = useOnVariableChange(onNew, context);
@@ -70,9 +73,15 @@ export default function PlayerFlowChart<
       className={className}
       style={style}
       id={id}
+      Flowline={LabeledFlowLineComponent}
+      Process={LabeledProcessComponent}
     />
   );
 }
+
+const returnType = [
+  `{id: string; label:string; position:{x:number,y:number}; connections:{id: string; label:string; connectedTo: string}[];}[]` as WegasScriptEditorReturnTypeName,
+];
 
 registerComponent(
   pageComponentFactory({
@@ -84,9 +93,7 @@ registerComponent(
       title: schemaProps.scriptString({ label: 'Title', richText: true }),
       processes: schemaProps.scriptVariable({
         label: 'Processes',
-        returnType: [
-          '{id: string;position:{x:number,y:number};connections:{id: string;connectedTo: string}[];}[]' as WegasScriptEditorReturnTypeName,
-        ],
+        returnType,
       }),
       onMove: onVariableChangeSchema('On move action'),
       onNew: onVariableChangeSchema('On new action'),
