@@ -139,6 +139,8 @@ export function LibrariesLoader(props: React.PropsWithChildren<{}>) {
     );
   }, [jsLibs]);
 
+  wlog(require('../../css/global.css.ts').default);
+
   return (
     <>
       {/* <link rel="stylesheet/less" href={'../../css/defaultStyle.less'} /> */}
