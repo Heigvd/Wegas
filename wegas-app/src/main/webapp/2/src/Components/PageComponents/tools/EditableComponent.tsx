@@ -91,11 +91,6 @@ const handleControlStyle = css({
   },
 });
 
-const disabledStyle = css({
-  opacity: 0.5,
-  backgroundColor: themeVar.Common.colors.DisabledColor,
-});
-
 const showBordersStyle = css({
   borderStyle: 'solid',
   borderColor: themeVar.Common.colors.HighlightColor,
@@ -380,17 +375,6 @@ function LockedOverlay({ locked }: LockedOverlayProps) {
   return (
     <div
       onClick={e => e.stopPropagation()}
-      style={{
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        left: 0,
-        top: 0,
-        backgroundColor: 'rgba(100,100,100,.5)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
     >
       {locked && <TumbleLoader />}
       {/* {confirmClick && <ConfirmButton onAction={onConfirmClick} />} */}
@@ -647,7 +631,6 @@ export function ComponentContainer({
           [cx(foregroundContent, thinHoverColorInsetShadow)]: isFocused,
           [childDropzoneHorizontalStyle]: !vertical,
           [childDropzoneVerticalStyle]: vertical,
-          [disabledStyle]: options.disabled,
         }) +
         classNameOrEmpty(layoutClassName) +
         classNameOrEmpty(options.outerClassName)

@@ -10,11 +10,9 @@ import { IScript } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
-import { css, cx } from 'emotion';
+import { cx } from 'emotion';
+import { halfOpacity } from '../../../css/classes';
 
-const disabledStyle = css({
-  opacity: 0.5,
-});
 export interface PlayerTextProps extends WegasComponentProps {
   text?: IScript;
 }
@@ -27,7 +25,7 @@ function PlayerText({ text, context, className, style, id, options }: PlayerText
     </span>
   ) : (
     <Text id={id} text={content} className={cx(className, {
-      [disabledStyle]: options.disabled,
+      [halfOpacity]: options.disabled,
     })} style={style} />
   );
 }

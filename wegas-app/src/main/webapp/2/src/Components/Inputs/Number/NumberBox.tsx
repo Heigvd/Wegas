@@ -43,10 +43,6 @@ const numberBoxSquareStyle = css({
       borderColor: themeVar.Common.colors.PrimaryColor,
     },
   },
-
-  ['&.disabled']: {
-    backgroundColor: themeVar.Common.colors.DisabledColor,
-  },
 });
 
 interface NumberSquareProps extends ClassStyleId {

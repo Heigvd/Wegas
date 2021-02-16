@@ -12,6 +12,8 @@ import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
 import { useCurrentPlayer } from '../../../data/selectors/Player';
 import { TumbleLoader } from '../../Loader';
+import { halfOpacity } from '../../../css/classes';
+import { cx } from 'emotion';
 
 interface PlayerGaugeProps extends WegasComponentProps {
   /**
@@ -45,7 +47,9 @@ function PlayerGauge({
     <TumbleLoader />
   ) : (
     <StandardGauge
-      className={className}
+      className={cx(className, {
+        [halfOpacity]: options.disabled
+      })}
       style={style}
       id={id}
       label={label}

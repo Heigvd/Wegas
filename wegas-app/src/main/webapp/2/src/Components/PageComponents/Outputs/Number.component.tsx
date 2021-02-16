@@ -10,11 +10,8 @@ import { IScript, INumberDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { classStyleIdShema } from '../tools/options';
 import { TumbleLoader } from '../../Loader';
-import { css,cx } from 'emotion';
-
-const disabledStyle = css({
-  opacity: 0.5,
-});
+import { cx } from 'emotion';
+import { halfOpacity } from '../../../css/classes';
 
 export interface PlayerNumberProps extends WegasComponentProps {
   script?: IScript;
@@ -26,7 +23,7 @@ function PlayerNumber({ script, className, style, id, options }: PlayerNumberPro
     <TumbleLoader />
   ) : (
     <div id={id} className={cx(className, {
-      [disabledStyle]: options.disabled,
+      [halfOpacity]: options.disabled,
     })} style={style}>
       {instance?.getValue()}
     </div>
