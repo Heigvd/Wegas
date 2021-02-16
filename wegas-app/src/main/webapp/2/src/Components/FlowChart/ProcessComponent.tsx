@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import { XYPosition, useMouseEventDnd } from '../Hooks/useMouseEventDnd';
-import { themeVar } from '../Style/ThemeVars';
 import { FlowLine, Process, Processes } from './FlowChart';
 import { useDrop } from 'react-dnd';
 import {
@@ -9,9 +8,7 @@ import {
   DnDFlowchartHandle,
   PROCESS_HANDLE_DND_TYPE,
 } from './Handles';
-
-const PROCESS_WIDTH = 100;
-const PROCESS_HEIGHT = 50;
+import { stateBoxStyle } from './StateProcessComponent';
 
 const processStyle = css({
   position: 'absolute',
@@ -144,14 +141,6 @@ export function CustomProcessComponent<
   );
 }
 
-const defaultProcessStyle = css({
-  backgroundColor: themeVar.Common.colors.ActiveColor,
-  borderRadius: '10px',
-  boxShadow: `5px 5px 5px ${themeVar.Common.colors.HeaderColor}`,
-  minWidth: `${PROCESS_WIDTH}px`,
-  minHeight: `${PROCESS_HEIGHT}px`,
-});
-
 export function DefaultProcessComponent<
   F extends FlowLine,
   P extends Process<F>
@@ -160,7 +149,7 @@ export function DefaultProcessComponent<
     <CustomProcessComponent {...props}>
       {(process, onClick) => (
         <div
-          className={defaultProcessStyle}
+          className={stateBoxStyle}
           onClick={e => {
             onClick && onClick(e, process);
           }}

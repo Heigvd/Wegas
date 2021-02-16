@@ -9,12 +9,12 @@ import { entityIs } from '../../data/entities';
 import { translate } from '../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
 
-const TransitionContainerStyle = css({
+const transitionContainerStyle = css({
   display: 'inline-flex',
   flexDirection: 'column',
   width: '200px',
 });
-const TransitionBoxStyle = css({
+export const transitionBoxStyle = css({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
@@ -47,7 +47,7 @@ const selectedTransitionBoxStyle = css({
   border: '4px solid #0D71C1',
 });
 
-const TransitionMoreInfosStyle = css({
+const transitionMoreInfosStyle = css({
   position: 'relative',
   backgroundColor: '#fff',
   color: '#807F7F',
@@ -85,9 +85,9 @@ export function TransitionBox({
   const [isShown, setIsShown] = React.useState(false);
   const { lang } = React.useContext(languagesCTX);
   return (
-    <div className={cx(TransitionContainerStyle, className)} onClick={onClick}>
+    <div className={cx(transitionContainerStyle, className)} onClick={onClick}>
       <div
-        className={cx(TransitionBoxStyle, {
+        className={cx(transitionBoxStyle, {
           [selectedTransitionBoxStyle]: selected,
         })}
         onMouseEnter={() => setIsShown(true)}
@@ -110,7 +110,7 @@ export function TransitionBox({
       {isShown &&
         (transition.transition.preStateImpact.content ||
           transition.transition.triggerCondition.content) && (
-          <div className={TransitionMoreInfosStyle}>
+          <div className={transitionMoreInfosStyle}>
             {transition.transition.preStateImpact.content != '' && (
               <div>
                 <strong>Impact</strong>

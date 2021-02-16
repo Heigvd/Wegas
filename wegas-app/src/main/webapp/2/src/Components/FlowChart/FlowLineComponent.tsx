@@ -1,9 +1,9 @@
 import { css } from 'emotion';
 import * as React from 'react';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
-import { themeVar } from '../Style/ThemeVars';
 import { FlowLine, Process } from './FlowChart';
 import { FlowLineHandle } from './Handles';
+import { transitionBoxStyle } from './TransitionFlowLineComponent';
 
 const childrenContainerStyle = (selected: boolean) =>
   css({
@@ -631,37 +631,6 @@ export function CircularFlowLineComponent<
   );
 }
 
-const LABEL_WIDTH = 80;
-const LABEL_HEIGHT = 35;
-
-const flowLineLabelStyle = css({
-  minWidth: `${LABEL_WIDTH}px`,
-  minHeight: `${LABEL_HEIGHT}px`,
-  backgroundColor: themeVar.Common.colors.HoverColor,
-  borderRadius: '10px',
-  boxShadow: `5px 5px 5px ${themeVar.Common.colors.HeaderColor}`,
-  userSelect: 'none',
-  overflow: 'show',
-});
-
-export function DefaultFlowLineComponent<
-  F extends FlowLine,
-  P extends Process<F>
->(props: FlowLineProps<F, P>) {
-  return (
-    <CustomFlowLineComponent {...props}>
-      {(flowline, startProcess, onClick) => (
-        <div
-          onClick={e => onClick && onClick(e, startProcess, flowline)}
-          className={flowLineLabelStyle}
-        >
-          {flowline.id}
-        </div>
-      )}
-    </CustomFlowLineComponent>
-  );
-}
-
 interface StartProcessElement {
   startProcessElement: HTMLElement;
 }
@@ -769,5 +738,23 @@ export function TempFlowLine({ processElements, position }: TempFlowLineProps) {
         markerEnd={`url(#arrowhead)`}
       />
     </svg>
+  );
+}
+
+export function DefaultFlowLineComponent<
+  F extends FlowLine,
+  P extends Process<F>
+>(props: FlowLineProps<F, P>) {
+  return (
+    <CustomFlowLineComponent {...props}>
+      {(flowline, startProcess, onClick) => (
+        <div
+          onClick={e => onClick && onClick(e, startProcess, flowline)}
+          className={transitionBoxStyle}
+        >
+          {flowline.id}
+        </div>
+      )}
+    </CustomFlowLineComponent>
   );
 }

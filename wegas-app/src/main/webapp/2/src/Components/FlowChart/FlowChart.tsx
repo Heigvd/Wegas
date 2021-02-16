@@ -12,6 +12,7 @@ import { ProcessProps, DefaultProcessComponent } from './ProcessComponent';
 import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './Handles';
 import { useDrop } from 'react-dnd';
 import { classNameOrEmpty } from '../../Helper/className';
+import { Text } from '../Outputs/Text';
 
 const flowChartStyle = css({
   width: '100%',
@@ -294,7 +295,9 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
       style={style}
       id={id}
     >
-      <Toolbar.Header>{title}</Toolbar.Header>
+      <Toolbar.Header>
+        {typeof title === 'string' ? <Text text={title} /> : title}
+      </Toolbar.Header>
       <Toolbar.Content
         style={{ position: 'relative' }}
         ref={ref => {

@@ -22,7 +22,7 @@ const stateContainerStyle = css({
   width: '200px',
 });
 
-const stateBoxStyle = css({
+export const stateBoxStyle = css({
   display: 'inline-flex',
   flexDirection: 'row',
   alignItems: 'center',
@@ -72,7 +72,7 @@ const handleForTransition = css({
     right: '-30px',
   },
 });
-const StateMoreInfosStyle = css({
+const stateMoreInfosStyle = css({
   position: 'absolute',
   backgroundColor: '#fff',
   color: '#807F7F',
@@ -163,7 +163,7 @@ export function StateBox({
         <StateProcessHandle sourceProcess={state} />
       </div>
       {isShown && state.state.onEnterEvent.content != '' && (
-        <div className={StateMoreInfosStyle}>
+        <div className={stateMoreInfosStyle}>
           <strong>Impact</strong>
           <p>{state.state.onEnterEvent.content}</p>
         </div>

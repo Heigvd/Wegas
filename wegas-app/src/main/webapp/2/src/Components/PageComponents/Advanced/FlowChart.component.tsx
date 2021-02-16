@@ -13,8 +13,11 @@ import {
   FlowLine,
   Process,
 } from '../../FlowChart/FlowChart';
-import { OnVariableChange, useOnVariableChange } from '../Inputs/tools';
-import { wlog } from '../../../Helper/wegaslog';
+import {
+  OnVariableChange,
+  onVariableChangeSchema,
+  useOnVariableChange,
+} from '../Inputs/tools';
 
 interface PlayerFlowChartProps<F extends FlowLine, P extends Process<F>>
   extends WegasComponentProps,
@@ -33,6 +36,8 @@ export default function PlayerFlowChart<
   title,
   processes,
   onMove,
+  onNew,
+  onConnect,
   context,
   className,
   style,
@@ -42,8 +47,11 @@ export default function PlayerFlowChart<
   const scriptProcesses = useScript<Process<F>[]>(processes);
 
   const { handleOnChange: handleOnMove } = useOnVariableChange(onMove, context);
-
-  wlog(scriptProcesses);
+  const { handleOnChange: handleOnNew } = useOnVariableChange(onNew, context);
+  const { handleOnChange: handleOnConnect } = useOnVariableChange(
+    onConnect,
+    context,
+  );
 
   return (
     <FlowChart
@@ -52,8 +60,13 @@ export default function PlayerFlowChart<
       onMove={(process, newPosition) =>
         handleOnMove && handleOnMove({ process, newPosition })
       }
-      onNew={() => {}}
-      onConnect={() => {}}
+      onNew={(sourceProcess, newPosition, flowLine) =>
+        handleOnNew && handleOnNew({ sourceProcess, newPosition, flowLine })
+      }
+      onConnect={(sourceProcess, targetProcess, flowLine) =>
+        handleOnConnect &&
+        handleOnConnect({ sourceProcess, targetProcess, flowLine })
+      }
       className={className}
       style={style}
       id={id}
@@ -68,13 +81,16 @@ registerComponent(
     name: 'Flow chart',
     icon: 'atom',
     schema: {
+      title: schemaProps.scriptString({ label: 'Title', richText: true }),
       processes: schemaProps.scriptVariable({
         label: 'Processes',
         returnType: [
           '{id: string;position:{x:number,y:number};connections:{id: string;connectedTo: string}[];}[]' as WegasScriptEditorReturnTypeName,
         ],
       }),
-      title: schemaProps.scriptString({ label: 'Title', richText: true }),
+      onMove: onVariableChangeSchema('On move action'),
+      onNew: onVariableChangeSchema('On new action'),
+      onConnect: onVariableChangeSchema('On connect action'),
     },
   }),
 );
