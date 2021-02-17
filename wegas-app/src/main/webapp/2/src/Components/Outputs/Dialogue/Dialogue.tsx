@@ -11,6 +11,7 @@ import {
   flexColumn,
   flexDistribute,
   grow,
+  halfOpacity,
   itemCenter,
 } from '../../../css/classes';
 import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReducer';
@@ -55,9 +56,10 @@ const dialogueDisplayStyle = css({
 
 interface DialogueDisplayProps {
   dialogue: SDialogueDescriptor;
+  disabled?: boolean;
 }
 
-export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
+export function DialogueDisplay({ dialogue, disabled }: DialogueDisplayProps) {
   const historyDiv = React.useRef<HTMLDivElement>(null);
 
   const [waiting, setWaiting] = React.useState(false);
@@ -156,7 +158,7 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
   return (
     <div
       className={
-        cx(dialogueDisplayStyle, flex, flexColumn, grow) + ' wegas wegas-dialog'
+        cx(dialogueDisplayStyle, flex, flexColumn, grow, {[halfOpacity]: disabled}) + ' wegas wegas-dialog'
       }
     >
       {/* ----- dialogue history  ---------------------------------------------------------- */}

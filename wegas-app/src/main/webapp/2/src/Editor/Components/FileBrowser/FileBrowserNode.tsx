@@ -265,7 +265,6 @@ export function FileBrowserNode({
   localDispatch,
   className,
   style,
-  disabled,
 }: FileBrowserNodeProps) {
   const [opened, setOpened] = React.useState(
     defaultOpened ||
@@ -569,7 +568,6 @@ export function FileBrowserNode({
               }
             }
           }}
-          disabled = {disabled}
         />
       )}
       {!isRootNode &&

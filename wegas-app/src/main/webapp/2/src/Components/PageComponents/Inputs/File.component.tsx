@@ -58,7 +58,6 @@ function PlayerFileInput({
       })}
       style={style}
       id={id}
-      disabled = {options.disabled}
     />
   );
 }

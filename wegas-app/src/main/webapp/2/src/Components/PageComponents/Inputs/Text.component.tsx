@@ -46,7 +46,6 @@ function PlayerTextInput({
   // placeholder,
   context,
   script,
-  // options,
   className,
   style,
   id,

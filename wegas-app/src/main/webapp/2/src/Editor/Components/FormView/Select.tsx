@@ -88,6 +88,7 @@ interface SelectorProps extends ClassStyleId {
     }>,
   ) => void;
   readOnly?: boolean;
+  disabled?: boolean;
 }
 
 export function Selector({

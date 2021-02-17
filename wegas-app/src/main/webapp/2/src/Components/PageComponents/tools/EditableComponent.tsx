@@ -362,6 +362,12 @@ export function ComponentDropZone({
   );
 }
 
+const lockedOverlayStyle = css({
+  width: "100%",
+  height: "100%",
+  position: "absolute",
+})
+
 interface LockedOverlayProps {
   locked?: boolean;
   // confirmClick: boolean;
@@ -375,6 +381,7 @@ function LockedOverlay({ locked }: LockedOverlayProps) {
   return (
     <div
       onClick={e => e.stopPropagation()}
+      className = {lockedOverlayStyle}
     >
       {locked && <TumbleLoader />}
       {/* {confirmClick && <ConfirmButton onAction={onConfirmClick} />} */}

@@ -85,6 +85,10 @@ export interface CustomGaugeProps extends ClassStyleId {
    * useGradient - blur the color sections
    */
   blur?: boolean;
+  /**
+   * disable - if true, the element is disabled (nothing implemented at this level)
+   */
+  disabled?: boolean;
 }
 
 export function CustomGauge({
@@ -103,6 +107,7 @@ export function CustomGauge({
   blur,
   className,
   style,
+  //disabled,
   id,
 }: CustomGaugeProps) {
   const sortedSections = sections.sort((a, b) => a.stopValue - b.stopValue);
