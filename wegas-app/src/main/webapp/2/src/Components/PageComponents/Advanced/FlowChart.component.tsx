@@ -17,8 +17,8 @@ import {
   LabeledFlowLine,
   LabeledFlowLineComponent,
   LabeledProcess,
-  LabeledProcessComponent,
-} from '../../FlowChart/LabeledComponents';
+  PlayerFlowChartProcessComponent,
+} from '../../FlowChart/PlayerFlowChartComponents';
 
 interface PlayerFlowChartProps<
   F extends LabeledFlowLine,
@@ -66,15 +66,15 @@ export default function PlayerFlowChart<
       onNew={(sourceProcess, newPosition, flowLine) =>
         handleOnNew && handleOnNew({ sourceProcess, newPosition, flowLine })
       }
-      onConnect={(sourceProcess, targetProcess, flowLine) =>
+      onConnect={(sourceProcess, targetProcess, flowLine, backward) =>
         handleOnConnect &&
-        handleOnConnect({ sourceProcess, targetProcess, flowLine })
+        handleOnConnect({ sourceProcess, targetProcess, flowLine, backward })
       }
       className={className}
       style={style}
       id={id}
       Flowline={LabeledFlowLineComponent}
-      Process={LabeledProcessComponent}
+      Process={PlayerFlowChartProcessComponent}
     />
   );
 }

@@ -1,10 +1,15 @@
+import { cx } from 'emotion';
 import * as React from 'react';
 import { Icon, IconComp } from '../../Editor/Components/Views/FontAwesome';
 import { Text } from '../Outputs/Text';
 import { FlowLine, Process } from './FlowChart';
 import { FlowLineProps, CustomFlowLineComponent } from './FlowLineComponent';
 import { ProcessProps, CustomProcessComponent } from './ProcessComponent';
-import { stateBoxStyle } from './StateProcessComponent';
+import {
+  indexTagStyle,
+  stateBoxStyle,
+  StateProcessHandle,
+} from './StateProcessComponent';
 import { transitionBoxStyle } from './TransitionFlowLineComponent';
 
 export interface LabeledFlowLine extends FlowLine {
@@ -36,23 +41,43 @@ export function LabeledFlowLineComponent<
   );
 }
 
-export function LabeledProcessComponent<
+interface PlayerFlowChartProcessBoxProps<
+  F extends LabeledFlowLine,
+  P extends LabeledProcess<F>
+> extends ClassStyleId {
+  process: P;
+}
+
+function PlayerFlowChartProcessBox<
+  F extends LabeledFlowLine,
+  P extends LabeledProcess<F>
+>({ process, className, style, id }: PlayerFlowChartProcessBoxProps<F, P>) {
+  return (
+    <div className={cx(stateBoxStyle, className)} style={style} id={id}>
+      {process.icon && (
+        <div className={indexTagStyle}>
+          <p>
+            <IconComp icon={process.icon} />
+          </p>
+        </div>
+      )}
+      <div>
+        <p className="StateLabelTextStyle">
+          <Text text={process.label} />
+        </p>
+      </div>
+      <StateProcessHandle sourceProcess={process} />
+    </div>
+  );
+}
+
+export function PlayerFlowChartProcessComponent<
   F extends LabeledFlowLine,
   P extends LabeledProcess<F>
 >(props: ProcessProps<F, P>) {
   return (
     <CustomProcessComponent {...props}>
-      {(process, onClick) => (
-        <div
-          className={stateBoxStyle}
-          onClick={e => {
-            onClick && onClick(e, process);
-          }}
-        >
-          {process.icon && <IconComp icon={process.icon} />}
-          <Text text={process.label} />
-        </div>
-      )}
+      {process => <PlayerFlowChartProcessBox process={process} />}
     </CustomProcessComponent>
   );
 }

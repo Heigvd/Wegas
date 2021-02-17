@@ -325,7 +325,6 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
             onMoveEnd={position => onMove(process, position)}
             onConnect={(processes, flowline) => {
               setTempFlow(undefined);
-
               if ('targetProcess' in processes) {
                 onConnect(process, processes.sourceProcess, flowline, true);
               } else {
