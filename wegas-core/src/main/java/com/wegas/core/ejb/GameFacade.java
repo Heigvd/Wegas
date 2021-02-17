@@ -581,7 +581,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @param surveys surveys
      * @param request need request to generate the link
      * @param email structure with attributes recipients (ignored here), sender, subject and body.
-     * 
+     *
      * @return list of emails to which an invitation has been sent
      *
      * @throws WegasErrorMessage if 1) surveys belong to different GameModels; 2) no game; 3) no
@@ -641,7 +641,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @param request need request to generate the link
      *
      * @return list of emails to which an invitation has been sent
-     * 
+     *
      * @throws WegasErrorMessage if 1) surveys belong to different GameModel; 2) no game; 3) no
      *                           account
      */
@@ -674,9 +674,9 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Send invitation to participate in a survey. 
-     * One invitation will be sent to each recipient address. 
-     * Such survey is made of several SurveyDescriptor. 
+     * Send invitation to participate in a survey.
+     * One invitation will be sent to each recipient address.
+     * Such survey is made of several SurveyDescriptor.
      * Every SurveyDescriptor must belong to the same gameModel.
      *
      * @param surveys   surveys
@@ -916,6 +916,7 @@ public class GameFacade extends BaseFacade<Game> {
 
             int currentCol = 1;
 
+            // write headers
             for (Object oGroup : groups) {
                 ScriptObjectMirror group = (ScriptObjectMirror) oGroup;
                 String title = (String) group.get("title");
@@ -950,6 +951,7 @@ public class GameFacade extends BaseFacade<Game> {
             }
             xlsx.setCurrentRowNumber(1); // focus second row
 
+            // write data
             ScriptObjectMirror data = (ScriptObjectMirror) overview.get("data");
             for (String teamId : data.keySet()) {
                 Team team = teamFacade.find(Long.parseLong(teamId));
