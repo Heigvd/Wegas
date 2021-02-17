@@ -47,7 +47,7 @@ export const stateBoxStyle = css({
   },
 });
 
-const indexTagStyle = css({
+export const indexTagStyle = css({
   display: 'flex',
   borderRadius: '50%',
   border: '1px solid #fff', //LightText theme var?
@@ -184,7 +184,7 @@ export function StateProcessComponent(
   );
 }
 
-function StateProcessHandle<F extends FlowLine, P extends Process<F>>({
+export function StateProcessHandle<F extends FlowLine, P extends Process<F>>({
   sourceProcess,
 }: ProcessHandleProps<F, P>) {
   const [, drag] = useDrag<DnDFlowchartHandle<F, P>, unknown, unknown>({
