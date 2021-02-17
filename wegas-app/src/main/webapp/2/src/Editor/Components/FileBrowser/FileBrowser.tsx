@@ -63,6 +63,7 @@ export function FileBrowser({
   className,
   style,
   id,
+  disabled,
 }: FileBrowserProps) {
   const [rootFile, setRootFile] = React.useState<IAbstractContentDescriptor>();
   const [error, setError] = React.useState<string>('');
@@ -106,6 +107,7 @@ export function FileBrowser({
           filter={filter}
           localDispatch={localDispatch}
           className={fileBrowserStyle}
+          disabled = {disabled}
         />
       </div>
     </DefaultDndProvider>

@@ -37,10 +37,7 @@ interface PlayerBooleanProps extends WegasComponentProps {
    * inactive - if true, the component will only display the boolean but the user won't be abe to change it
    */
   inactive?: boolean;
-  /**
-   * disabled - if true, the component will be disabled
-   */
-  disabled?: boolean;
+
   onVariableChange?: OnVariableChange;
 }
 
@@ -48,7 +45,7 @@ function PlayerBoolean({
   script,
   type,
   label,
-  disabled,
+  options,
   inactive,
   context,
   className,
@@ -78,7 +75,7 @@ function PlayerBoolean({
       id={id}
       label={textLabel}
       value={value}
-      disabled={disabled}
+      disabled={options.disabled}
       readOnly={inactive}
       onChange={v => {
         if (handleOnChange) {

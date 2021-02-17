@@ -98,6 +98,7 @@ export function Selector({
   value,
   onChange,
   readOnly,
+  disabled,
 }: SelectorProps) {
   return choices.length > 1 ? (
     <select
@@ -106,7 +107,7 @@ export function Selector({
       style={style}
       value={value}
       onChange={onChange}
-      disabled={readOnly}
+      disabled={disabled || readOnly}
     >
       {choices.map(genItems)}
     </select>

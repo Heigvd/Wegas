@@ -1,4 +1,6 @@
+import { cx } from 'emotion';
 import * as React from 'react';
+import { halfOpacity } from '../../../css/classes';
 import {
   FileBrowser,
   FileBrowserProps,
@@ -35,10 +37,10 @@ function PlayerFileInput({
   fileType,
   filterType,
   readOnly,
-  // options,
   className,
   style,
   id,
+  options,
 }: PlayerFileInputProps) {
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
   const path = useScript<string>(pathScript, context);
@@ -51,9 +53,12 @@ function PlayerFileInput({
       onFileClick={file => handleOnChange && handleOnChange(file)}
       pickType={pickType}
       filter={{ fileType: fileType, filterType: filterType }}
-      className={className}
+      className={cx(className, {
+        [halfOpacity]: options.disabled
+      })}
       style={style}
       id={id}
+      disabled = {options.disabled}
     />
   );
 }

@@ -37,10 +37,6 @@ interface PlayerNumberSliderProps extends WegasComponentProps {
    * Can be a boolean or a formatting function that takes the value and return a string
    */
   displayValues?: DisplayMode;
-  /**
-   * disabled - set the component in disabled mode
-   */
-  disabled?: boolean;
   onVariableChange?: OnVariableChange;
 }
 
@@ -51,6 +47,7 @@ function PlayerNumberSlider({
   style,
   id,
   onVariableChange,
+  options,
   ...restProps
 }: PlayerNumberSliderProps) {
   // const number = useScript<SNumberDescriptor>(script, context);
@@ -73,6 +70,7 @@ function PlayerNumberSlider({
       style={style}
       id={id}
       value={instance?.getValue()}
+      disabled = {options.disabled}
       onChange={(v, i) => {
         if (i === 'DragEnd') {
           if (handleOnChange) {
