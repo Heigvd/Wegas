@@ -512,6 +512,8 @@ YUI.add('wegas-app', function(Y) {
                         }
                     }
                     return root.innerHTML;
+                } else if (typeof html === 'number') {
+                    return html;
                 } else {
                     console.error("Could not sanitize non-string argument!", html);
                 }
