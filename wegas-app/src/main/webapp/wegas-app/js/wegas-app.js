@@ -11,9 +11,9 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-app', function(Y) {
+YUI.add("wegas-app", function(Y) {
     "use strict";
-    var Wegas = Y.namespace('Wegas'); // Create namespace
+    var Wegas = Y.namespace("Wegas"); // Create namespace
 
     // detect youtube links
     var YOUTUBE_PATTERN = /^(?:https?:)?\/\/www\.youtube(?:-nocookie)?.com\/embed\/(.*)$/;
@@ -102,16 +102,23 @@ YUI.add('wegas-app', function(Y) {
          * @public
          */
         render: function() {
-            var ds, dsClass, widgetCfg, totalRequests,
-                dataSources = this.get('dataSources'), // Data sources cfg objects
-                events = [], event,
-                requestCounter = 0, //                                          // Request counter
-                onRequest = function() { // When a response to initial requests is received
+            var ds,
+                dsClass,
+                widgetCfg,
+                totalRequests,
+                dataSources = this.get("dataSources"), // Data sources cfg objects
+                events = [],
+                event,
+                requestCounter = 0,
+                onRequest = function() {
+                    // When a response to initial requests is received
                     var playerCode, playerLanguage;
                     requestCounter -= 1;
                     Y.one(".wegas-loading-app-current")
-                        .setAttribute("style", "width:" + ((1 - requestCounter / totalRequests) * 100) + "%");
-                    if (requestCounter === 0) { // If all initial request are completed,
+                        .setAttribute("style",
+                            "width:" + (1 - requestCounter / totalRequests) * 100 + "%");
+                    if (requestCounter === 0) {
+                        // If all initial request are completed,
                         while ((event = events.shift()) !== undefined) {
                             event.detach();
                         }
@@ -135,7 +142,8 @@ YUI.add('wegas-app', function(Y) {
                         playerLanguage = I18n.findLanguageByCode(playerCode);
                         if (playerLanguage && playerLanguage.get("active")) {
                             I18n.setCode(playerCode);
-                            Y.later(10, this, function() { // Let the loading div update
+                            Y.later(10, this, function() {
+                                // Let the loading div update
                                 this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
                                     .render(); // and render it
                                 this.fire("render"); // Fire a render event for some post processing
@@ -144,32 +152,35 @@ YUI.add('wegas-app', function(Y) {
                                 Y.one(".wegas-loading-app").remove();
                             });
                         } else {
-                            I18n.resetPlayerCode(Y.bind(function(newCode) {
-                                I18n.setCode(newCode);
-                                Y.later(10, this, function() { // Let the loading div update
-                                    this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
-                                        .render(); // and render it
-                                    this.fire("render"); // Fire a render event for some post processing
-                                    this.fire("ready"); // Fire a ready event for some eventual post processing
-                                    Y.log("Ready");
-                                    Y.one(".wegas-loading-app").remove();
-                                });
-                            }, this));
+                            I18n.resetPlayerCode(
+                                Y.bind(function(newCode) {
+                                    I18n.setCode(newCode);
+                                    Y.later(10, this, function() {
+                                        // Let the loading div update
+                                        this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
+                                            .render(); // and render it
+                                        this.fire("render"); // Fire a render event for some post processing
+                                        this.fire("ready"); // Fire a ready event for some eventual post processing
+                                        Y.log("Ready");
+                                        Y.one(".wegas-loading-app").remove();
+                                    });
+                                }, this));
                         }
-
-
                     }
                 };
             Y.io.header("Accept-Language", Y.config.lang); // Set up the language for all requests
             Y.on("io:failure", this.globalFailureHandler, this); // Set up a default failure handler
 
             // Send data sources initial requests
-            Wegas.use(Y.Object.values(dataSources), Y.bind(function(Y) { // Retrieve data sources dependencies (e.g. Pusher)
-                Y.Object.each(dataSources, function(cfg, name) { // For each data source,
+            Wegas.use(Y.Object.values(dataSources), Y.bind(function(Y) {
+                // Retrieve data sources dependencies (e.g. Pusher)
+                Y.Object.each(dataSources, function(cfg, name) {
+                    // For each data source,
                     cfg.source = this.get("base") + (cfg.source || ""); // Set up datasource path
                     dsClass = Wegas[cfg.type] || Wegas.DataSource; // Determine which class to use (default is Y.Wegas.DataSource)
                     ds = new dsClass(cfg); // Instantiate the datasource
-                    if (ds.hasInitialRequest()) { // If the data source has an initial request,
+                    if (ds.hasInitialRequest()) {
+                        // If the data source has an initial request,
                         Y.log(ds.getInitialRequestsCount());
                         requestCounter += ds.getInitialRequestsCount(); // increment request counter
                         ds.sendInitialRequest(); // send it
@@ -180,14 +191,16 @@ YUI.add('wegas-app', function(Y) {
                 this.dataSources.VariableDescriptor = this.dataSources.Variable; // @backward compatibility
 
                 requestCounter += 1;
-                this.dataSources.Page.once("response", function(e) { // When page data source response arrives,
+                this.dataSources.Page.once("response", function(e) {
+                    // When page data source response arrives,
                     widgetCfg = e.response.results; // store the result for later use
                     Wegas.use(widgetCfg, Y.bind(onRequest, this)); // Optim: Load pages dependencies as soon as the data is received
                 }, this);
                 totalRequests = requestCounter;
             }, this));
             // Post render events
-            this.on("render", function() { // When the first page is rendered,
+            this.on("render", function() {
+                // When the first page is rendered,
 
                 var gm = Y.Wegas.Facade.Game.cache.getCurrentGame();
                 var extraTabs;
@@ -200,7 +213,6 @@ YUI.add('wegas-app', function(Y) {
                     return false;
                 }, this);
                 if (extraTabs) {
-
                     Y.Wegas.Facade.Page.cache.getIndex(function(index) {
                         var items = [index.root];
                         while (items.length) {
@@ -217,7 +229,6 @@ YUI.add('wegas-app', function(Y) {
                                     target.push("edit");
                                 }
                                 if (target.length) {
-
                                     extraTabs._addTab({
                                         label: item.name,
                                         targetMode: target,
@@ -225,7 +236,8 @@ YUI.add('wegas-app', function(Y) {
                                                 type: "PageLoader",
                                                 pageLoaderId: "extraTab_" + item.id,
                                                 defaultPageId: item.id
-                                            }]
+                                            }
+                                        ]
                                     });
                                 }
                             }
@@ -236,44 +248,57 @@ YUI.add('wegas-app', function(Y) {
                                 label: I18n.t("global.statistics"),
                                 children: [{
                                         type: "Statistics"
-                                    }]
+                                    }
+                                ]
                             });
                         }
 
-                        Y.Array.each(Y.Wegas.Facade.Variable.cache.findAll("@class", "PeerReviewDescriptor"),
+                        Y.Array.each(
+                            Y.Wegas.Facade.Variable.cache.findAll("@class", "PeerReviewDescriptor"),
                             function(prd) {
                                 extraTabs._addTab({
                                     label: I18n.t("global.peerReview"),
-                                    children: [{
-                                            "type": "ReviewOrchestrator",
-                                            "variable": {
+                                    children: [
+                                        {
+                                            type: "ReviewOrchestrator",
+                                            variable: {
                                                 "@class": "Script",
-                                                "content": "Variable.find(gameModel, \"" + prd.get("name") + "\");\n"
+                                                content:
+                                                    'Variable.find(gameModel, "' +
+                                                    prd.get("name") +
+                                                    '");\n'
                                             }
-                                        }]
+                                        }
+                                    ]
                                 });
                             }, this);
                         // @TODO Until all survey concepts are agreed upon,
                         // restrict the survey tab to admins or games already containing a survey:
-                        var isCurrentUserAdmin = !!Y.Wegas.Facade.User.cache.get("currentUser").get("roles").find(function(role) {
-                            return role.get("name") === "Administrator";
-                        });
-                        if (isCurrentUserAdmin || Y.Wegas.Facade.Variable.cache.find("@class", "SurveyDescriptor")) {
+                        var isCurrentUserAdmin = !!Y.Wegas.Facade.User.cache
+                            .get("currentUser")
+                            .get("roles")
+                            .find(function(role) {
+                                return role.get("name") === "Administrator";
+                            });
+                        if (isCurrentUserAdmin
+                            || Y.Wegas.Facade.Variable.cache.find("@class", "SurveyDescriptor")
+                            ) {
                             extraTabs._addTab({
                                 label: I18n.t("global.surveys"),
                                 // This widget automatically updates the server script path
                                 targetMode: ["host"],
                                 cssClass: "survey-orchestrator-parent",
                                 children: [{
-                                        "type": "SurveyOrchestrator"
-                                    }]
+                                        type: "SurveyOrchestrator"
+                                    }
+                                ]
                             });
                         }
-
                     });
                 }
 
-                Y.one("body").on("key", function(e) { // detect ctrl+§ key
+                Y.one("body").on("key", function(e) {
+                    // detect ctrl+§ key
                     // top left key only
                     if (e._event.code === "Backquote") {
                         if (e.ctrlKey || e.metaKey) {
@@ -285,7 +310,10 @@ YUI.add('wegas-app', function(Y) {
                                 body.toggleClass("wegas-advancedmode");
                             }
 
-                            if (body.hasClass("wegas-internalmode") || body.hasClass("wegas-advancedmode")) {
+                            if (
+                                body.hasClass("wegas-internalmode") ||
+                                body.hasClass("wegas-advancedmode")
+                                ) {
                                 body.removeClass("wegas-stdmode");
                                 Y.config.win.Y = Y; // Allow access to Y instance
                             } else {
@@ -299,7 +327,8 @@ YUI.add('wegas-app', function(Y) {
         },
         resume: function() {
             if (this.dataSources.Pusher) {
-                var counter = 0, totalRequests = 0,
+                var counter = 0,
+                    totalRequests = 0,
                     showLoader = false,
                     events = [],
                     tIds = {},
@@ -310,8 +339,8 @@ YUI.add('wegas-app', function(Y) {
                             delete tIds[response.tId];
                             counter++;
                             if (showLoader) {
-                                Y.one(".wegas-loading-app-current")
-                                    .setAttribute("style", "width:" + ((counter / totalRequests) * 100) + "%");
+                                Y.one(".wegas-loading-app-current").setAttribute(
+                                    "style", "width:" + (counter / totalRequests) * 100 + "%");
                             }
                             var event;
                             if (Object.keys(tIds).length === 0) {
@@ -341,8 +370,7 @@ YUI.add('wegas-app', function(Y) {
                 Y.one("body").toggleClass("idle", false);
                 if (showLoader) {
                     // but show loader
-                    Y.one("body")
-                        .prepend("<div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>");
+                    Y.one("body").prepend("<div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>");
                 }
                 // listen to pusher
                 this.dataSources.Pusher.resume();
@@ -394,19 +422,22 @@ YUI.add('wegas-app', function(Y) {
          * @param {type} e
          * @returns {undefined}
          */
-        globalFailureHandler: function(tId, req, e) { // Add a global io failure listener
+        globalFailureHandler: function(tId, req, e) {
+            // Add a global io failure listener
             var response, msg;
             try {
-                msg = "Error sending " + e.cfg.method + " request : " + e.target.get("source") + e.request
-                    + ", " + e.cfg.data + ": ";
+                msg = "Error sending " + e.cfg.method + " request : " + e.target.get("source")
+                    + e.request + ", " + e.cfg.data + ": ";
             } catch (e) {
                 msg = "Error sending request: ";
             }
             try {
                 response = Y.JSON.parse(req.responseText);
                 msg += "\n Server reply " + Y.JSON.stringify(response, null, "\t");
-                if (response.exception === "org.apache.shiro.authz.UnauthenticatedException") { // If the user session has timed out,
-                    new Wegas.Panel({//                                         // Show a message that invites to reconnect
+                if (response.exception === "org.apache.shiro.authz.UnauthenticatedException") {
+                    // If the user session has timed out,
+                    // Show a message that invites to reconnect
+                    new Wegas.Panel({
                         content: "<div class='icon icon-info'>You have been logged out.</div>",
                         modal: true,
                         buttons: {
@@ -422,7 +453,8 @@ YUI.add('wegas-app', function(Y) {
                 } //else if (r.exception === "org.apache.shiro.authz.UnauthorizedException") {
                 // @todo Do something?
                 //}
-            } catch (e) { // Error while parsing json
+            } catch (e) {
+                // Error while parsing json
                 msg += "\n Server reply " + (req && req.responseText);
             }
             Y.log(msg, "error", "Y.Wegas.App"); // Log the error
@@ -447,22 +479,22 @@ YUI.add('wegas-app', function(Y) {
          */
         sanitize: function(html) {
             if (html) {
-                if (typeof html === 'string') {
+                if (typeof html === "string") {
                     var root;
                     // table element must be set in a parent of the correct type
                     if (html.startsWith("<tr")) {
-                        root = document.createElement('tbody');
+                        root = document.createElement("tbody");
                     } else if (html.startsWith("<tbody")) {
-                        root = document.createElement('table');
+                        root = document.createElement("table");
                     } else if (html.startsWith("<thead")) {
-                        root = document.createElement('table');
+                        root = document.createElement("table");
                     } else if (html.startsWith("<th")) {
-                        root = document.createElement('thead');
+                        root = document.createElement("thead");
                     } else if (html.startsWith("<colgroup")) {
-                        root = document.createElement('table');
+                        root = document.createElement("table");
                     } else {
                         // any other content can be set within a div
-                        root = document.createElement('div');
+                        root = document.createElement("div");
                     }
                     root.innerHTML = html;
                     var list;
@@ -482,14 +514,24 @@ YUI.add('wegas-app', function(Y) {
                         // So if the src match a youtube video,
                         // the iframe is nto secured
                         var src = list[i].getAttribute("src");
-                        var match = src.match(YOUTUBE_PATTERN);
-                        if (match) {
-                            // Youtube really sucks
-                            // so we force using RGPD compliant url
-                            list[i].setAttribute("src", "http://www.youtube-nocookie.com/embed/" + match[1]);
-                        } else {
+                        var fallback = true;
+
+                        if (src) {
+                            var match = src.match(YOUTUBE_PATTERN);
+                            if (match) {
+                                fallback = false;
+                                // Youtube really sucks
+                                // so we force using RGPD compliant url
+                                list[i].setAttribute("src", "https://www.youtube-nocookie.com/embed/" + match[1]);
+                            } else if (src.startsWith("http://")){
+                                // force https
+                                list[i].setAttribute("src", src.replace("http://", "https://"));
+                            }
+                        }
+
+                        if (fallback) {
                             // other cases => sandbox
-                            list[i].setAttribute("sandbox", "");
+                            list[i].setAttribute("sandbox", "allow-scripts");
                         }
                     }
 
@@ -512,7 +554,7 @@ YUI.add('wegas-app', function(Y) {
                         }
                     }
                     return root.innerHTML;
-                } else if (typeof html === 'number') {
+                } else if (typeof html === "number") {
                     return html;
                 } else {
                     console.error("Could not sanitize non-string argument!", html);
