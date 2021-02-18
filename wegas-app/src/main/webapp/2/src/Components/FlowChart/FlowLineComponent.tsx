@@ -2,7 +2,7 @@ import { css } from 'emotion';
 import * as React from 'react';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
 import { FlowLine, Process } from './FlowChart';
-import { FlowLineHandle } from './Handles';
+import { FlowLineHandle, FLOW_HANDLE_SIDE } from './Handles';
 import { transitionBoxStyle } from './TransitionFlowLineComponent';
 
 const childrenContainerStyle = (selected: boolean) =>
@@ -573,9 +573,11 @@ export function CircularFlowLineComponent<
           </marker>
         </defs>
         <path
-          d={`M60 0 C 60 ${200 * positionOffset}, 140 ${
+          d={`M ${(processBox.width * 2) / 3} 0 C ${processBox.width / 2} ${
             200 * positionOffset
-          }, 140 0`}
+          }, ${(processBox.width * 3) / 2} ${200 * positionOffset}, ${
+            (processBox.width * 4) / 3
+          } 0`}
           style={{
             stroke: 'rgb(128, 127, 127)',
             strokeWidth: 2,
@@ -586,8 +588,11 @@ export function CircularFlowLineComponent<
         />
       </svg>
       <FlowLineHandle
-        position={{ x: canvasLeft, y: canvasTop + processBox.height }}
-        translation={{ x: -0.2, y: 0 }}
+        position={{
+          x: canvasLeft + processBox.width / 7 - FLOW_HANDLE_SIDE / 2,
+          y: canvasTop + processBox.height,
+        }}
+        translation={{ x: 0.0, y: 0 }}
         rotation={0}
         processes={{ sourceProcess: process, targetProcess: process }}
         selected={selected}
@@ -596,10 +601,10 @@ export function CircularFlowLineComponent<
       />
       <FlowLineHandle
         position={{
-          x: canvasLeft + processBox.width,
+          x: canvasLeft + processBox.width * (6 / 7) - FLOW_HANDLE_SIDE / 2,
           y: canvasTop + processBox.height,
         }}
-        translation={{ x: -0.8, y: 0 }}
+        translation={{ x: 0.0, y: 0 }}
         rotation={0}
         processes={{ sourceProcess: process }}
         selected={selected}
@@ -616,7 +621,7 @@ export function CircularFlowLineComponent<
             );
             ref.style.setProperty(
               'top',
-              canvasTop + processBox.height + 200 * positionOffset + 'px',
+              canvasTop + processBox.height + 150 * positionOffset + 'px',
             );
           }
         }}
