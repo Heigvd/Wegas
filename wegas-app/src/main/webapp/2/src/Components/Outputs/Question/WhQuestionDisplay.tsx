@@ -9,7 +9,6 @@ import {
   IStringInstance,
   IWhQuestionDescriptor,
 } from 'wegas-ts-api';
-import { TranslatableContent } from '../../../data/i18n';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import {
   validateQuestion,
@@ -38,6 +37,7 @@ import {
   choiceInputStyle,
 } from './ChoiceContainer';
 import { questionStyle } from './Question';
+import { TranslatableText } from '../Text';
 
 interface WhQuestionInfo {
   questionD: Readonly<IWhQuestionDescriptor>;
@@ -161,12 +161,8 @@ export function WhQuestionDisplay({
 
   return (
     <div className={questionStyle}>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: questionD.description
-            ? TranslatableContent.toString(questionD.description)
-            : '',
-        }}
+      <TranslatableText
+          content={questionD.description}
       />
       {choicesD.map((choiceD, i) => {
         const choiceI = choicesI[i];

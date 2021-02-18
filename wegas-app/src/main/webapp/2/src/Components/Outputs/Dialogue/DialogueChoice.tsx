@@ -1,9 +1,9 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { flexRow } from '../../../css/classes';
-import { useTranslate } from '../../../Editor/Components/FormView/translatable';
 import { Button } from '../../Inputs/Buttons/Button';
 import { themeVar } from '../../Style/ThemeVars';
+import { TranslatableText } from '../Text';
 
 const choiceButtonStyle = css({
   backgroundColor: 'white',
@@ -34,15 +34,9 @@ export function DialogueChoice({
   label: STranslatableContent;
   onClick: () => void;
 }) {
-  const translation = useTranslate(label);
   return (
     <Button onClick={onClick} className={cx(flexRow, choiceButtonStyle)}>
-      <div
-        className={choiceButtonText}
-        dangerouslySetInnerHTML={{
-          __html: translation,
-        }}
-      ></div>
+      <TranslatableText className={choiceButtonText} content={label} />
       <div className={choiceButtonIcon}>
         <img src={require('../../../pictures/chat_button.svg').default} />
       </div>

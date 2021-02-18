@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { IChoiceDescriptor, IChoiceInstance } from 'wegas-ts-api';
-import { TranslatableContent } from '../../../data/i18n';
 import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
 import { StoreDispatch } from '../../../data/Stores/store';
 import { Button } from '../../Inputs/Buttons/Button';
 import { ChoiceContainer } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
 import { RepliesDisplay } from './Reply';
+import { TranslatableText } from '../Text';
 
 interface SimpleChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
@@ -77,12 +77,8 @@ export function SimpleQuestionDisplay({
 
   return (
     <div className={questionStyle}>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: questionD.description
-            ? TranslatableContent.toString(questionD.description)
-            : '',
-        }}
+      <TranslatableText
+        content= {questionD.description}
       />
       {choicesD.map((choiceD, i) => {
         const choiceI = choicesI[i];

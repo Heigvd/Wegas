@@ -2,7 +2,6 @@ import { cx } from 'emotion';
 import * as React from 'react';
 import { IChoiceDescriptor, IChoiceInstance } from 'wegas-ts-api';
 import { autoMargin } from '../../../css/classes';
-import { TranslatableContent } from '../../../data/i18n';
 import {
   selectChoice,
   toggleReply,
@@ -18,6 +17,7 @@ import {
 } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
 import { RepliesDisplay } from './Reply';
+import { TranslatableText } from '../Text';
 
 interface CbxChoiceDisplayProps {
   choiceD: IChoiceDescriptor;
@@ -102,12 +102,8 @@ export function CbxQuestionDisplay({
 
   return (
     <div className={questionStyle}>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: questionD.description
-            ? TranslatableContent.toString(questionD.description)
-            : '',
-        }}
+      <TranslatableText
+        content={ questionD.description}
       />
       {choicesD.map((choiceD, i) => {
         const choiceI = choicesI[i];

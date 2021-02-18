@@ -43,6 +43,7 @@ import { focusTab } from './LinearTabLayout/LinearLayout';
 import produce, { Immutable } from 'immer';
 import { StateProcessComponent } from '../../Components/FlowChart/StateProcessComponent';
 import { TransitionFlowLineComponent } from '../../Components/FlowChart/TransitionFlowLineComponent';
+import { Text } from '../../Components/Outputs/Text';
 
 const emptyPath: (string | number)[] = [];
 
@@ -381,7 +382,11 @@ StateMachineEditorProps<IFSM>) {
 
   const isProcessSelected = React.useCallback(
     (sourceProcess: StateProcess) => {
-      return editPath.length === 2 && editPath[0] === 'states' && editPath[1] === sourceProcess.id;
+      return (
+        editPath.length === 2 &&
+        editPath[0] === 'states' &&
+        editPath[1] === sourceProcess.id
+      );
     },
     [editPath],
   );
@@ -398,7 +403,7 @@ StateMachineEditorProps<IFSM>) {
       isFlowlineSelected={isFlowlineSelected}
       isProcessSelected={isProcessSelected}
       Process={StateProcessComponent}
-      Flowline = {TransitionFlowLineComponent}
+      Flowline={TransitionFlowLineComponent}
     />
   );
 }
@@ -543,12 +548,8 @@ function ModifiableText({
       {`Click here to edit ${mode === 'String' ? 'label' : 'text'}`}
     </div>
   ) : (
-    <div
-      onClick={() => setEditingText(true)}
-      className={stateTextStyle}
-      dangerouslySetInnerHTML={{
-        __html: newTextValue,
-      }}
-    />
+    <div onClick={() => setEditingText(true)} className={stateTextStyle}>
+      <Text text={newTextValue} />
+    </div>
   );
 }

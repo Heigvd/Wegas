@@ -9,6 +9,7 @@ import {
   expandHeight,
   grow,
 } from '../../../css/classes';
+import { Text } from '../Text';
 import { useTranslate } from '../../../Editor/Components/FormView/translatable';
 import { themeVar } from '../../Style/ThemeVars';
 import { WaitingLoader } from './WaitingLoader';
@@ -91,30 +92,28 @@ export function DialogueEntry({ text, player, waiting }: DialogueEntryProps) {
         dialogueEntryStyle(player),
       )}
     >
-      {
-        /* if there is nothing to say, just skip the entry */
-        translation != null && translation.length > 0 && (
-          <>
-            <UserPortrait
-              className={portraitStyle}
-              color={
-                player
-                  ? themeVar.Common.colors.ActiveColor
-                  : themeVar.Common.colors.HeaderColor
-              }
-            />
-            <div className={cx(expandHeight, grow, textContainerStyle(player))}>
-              <div dangerouslySetInnerHTML={{ __html: translation }} />
-              {waiting && (
-                <WaitingLoader
-                  color={themeVar.Common.colors.HeaderColor}
-                  background={themeVar.Common.colors.DisabledColor}
-                />
-              )}
-            </div>
-          </>
-        )
-      }
+      {/* if there is nothing to say, just skip the entry */
+      translation != null && translation.length > 0 && (
+        <>
+          <UserPortrait
+            className={portraitStyle}
+            color={
+              player
+                ? themeVar.Common.colors.ActiveColor
+                : themeVar.Common.colors.HeaderColor
+            }
+          />
+          <div className={cx(expandHeight, grow, textContainerStyle(player))}>
+            <Text text={translation} />
+            {waiting && (
+              <WaitingLoader
+                color={themeVar.Common.colors.HeaderColor}
+                background={themeVar.Common.colors.DisabledColor}
+              />
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
