@@ -97,7 +97,7 @@ interface StateMachineEditorProps<
   forceLocalDispatch?: boolean;
   search?: RState['global']['search'];
   title?: string;
-  editPath: (string | number)[] | undefined;
+  editPath?: (string | number)[] | undefined;
 }
 export function StateMachineEditor<
   IFSM extends IFSMDescriptor | IDialogueDescriptor
@@ -381,7 +381,11 @@ StateMachineEditorProps<IFSM>) {
 
   const isProcessSelected = React.useCallback(
     (sourceProcess: StateProcess) => {
-      return editPath.length === 2 && editPath[0] === 'states' && editPath[1] === sourceProcess.id;
+      return (
+        editPath.length === 2 &&
+        editPath[0] === 'states' &&
+        editPath[1] === sourceProcess.id
+      );
     },
     [editPath],
   );
@@ -398,7 +402,7 @@ StateMachineEditorProps<IFSM>) {
       isFlowlineSelected={isFlowlineSelected}
       isProcessSelected={isProcessSelected}
       Process={StateProcessComponent}
-      Flowline = {TransitionFlowLineComponent}
+      Flowline={TransitionFlowLineComponent}
     />
   );
 }
