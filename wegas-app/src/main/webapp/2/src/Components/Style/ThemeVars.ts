@@ -134,7 +134,7 @@ export const defaultLightMode: Mode = {
     Common: {
       colors: {
         PrimaryColor: 'Primary color',
-        ActiveColor: 'Secondary color',
+        ActiveColor: 'Secondary color shade',
         BackgroundColor: 'Background color',
         SecondaryBackgroundColor: 'Secondary background color',
         DisabledColor: 'Disabled color',

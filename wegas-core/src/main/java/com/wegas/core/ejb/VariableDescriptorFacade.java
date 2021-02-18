@@ -72,6 +72,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -202,9 +203,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> imp
         // some impacts may impact renamed variable. -> update them to impact the new variable name
         for (Entry<String, String> newName : newNames.entrySet()) {
             FindAndReplacePayload payload = new FindAndReplacePayload();
-            payload.setRegex(false);
-            payload.setFind("Variable.find(gameModel, \"" + newName.getKey() + "\")");
-            payload.setReplace("Variable.find(gameModel, \"" + newName.getValue() + "\")");
+            payload.setRegex(true);
+            payload.setFind("Variable.find\\(gameModel, ([\"'])" + Pattern.quote(newName.getKey()) + "([\"'])\\)");
+            payload.setReplace("Variable.find(gameModel, $1" + newName.getValue() + "$2)");
             payload.setPretend(false);
 
             FindAndReplaceVisitor replacer = new FindAndReplaceVisitor(payload);

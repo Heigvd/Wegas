@@ -1,11 +1,11 @@
-import { cx } from 'emotion';
+import { cx, css } from 'emotion';
 import * as React from 'react';
 import {
   IQuestionDescriptor,
   IWhQuestionDescriptor,
-  IListDescriptor,
   IQuestionInstance,
   IWhQuestionInstance,
+  SListDescriptor,
 } from 'wegas-ts-api';
 import {
   flex,
@@ -17,15 +17,29 @@ import { TranslatableContent } from '../../../data/i18n';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { read } from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
-import { Player, VariableDescriptor } from '../../../data/selectors';
+import { Player } from '../../../data/selectors';
 import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
-import { useStore, store, StoreConsumer } from '../../../data/Stores/store';
+import { useStore, store } from '../../../data/Stores/store';
 import { EntityChooser } from '../../EntityChooser';
+import { themeVar } from '../../Style/ThemeVars';
 import { ConnectedQuestionDisplay } from './Question';
 
-interface QuestionProps {
+
+const repliedLabelStyle = css({
+  backgroundColor: themeVar.Common.colors.LightTextColor,
+  color: themeVar.Common.colors.PrimaryColor,
+  border: "2px solid " + themeVar.Common.colors.PrimaryColor,
+  boxShadow: "none",
+  "&:hover": {
+    backgroundColor: themeVar.Common.colors.LightTextColor,
+    color: themeVar.Common.colors.ActiveColor,
+    border: "2px solid " + themeVar.Common.colors.ActiveColor,
+  },
+});
+
+/*interface QuestionProps {
   variable: string;
-}
+}*/
 
 export function QuestionLabel({
   questionD,
@@ -50,7 +64,7 @@ export function QuestionLabel({
       {isUnread ? (
         <div className={cx(unreadSpaceStyle, unreadSignalStyle)} />
       ) : (
-        <div className={cx(unreadSpaceStyle)} />
+        <div />
       )}
       <div className={flex}>
         {TranslatableContent.toString(questionD.label)}
@@ -59,45 +73,51 @@ export function QuestionLabel({
   );
 }
 
-// FIXME Sandra : see how to use it or if it is deprecated
-// I expected it to be used in QuestionList.component, but it uses EntityChooser directly
-export default function QuestionList(props: QuestionProps) {
+function customLabelStyle(e:IWhQuestionDescriptor | IQuestionDescriptor):string | undefined {
+    const isReplied = instantiate(e).isReplied(instantiate(Player.selectCurrent()));
+    return isReplied ? repliedLabelStyle : undefined;
+}
+interface QuestionListProps {
+  questionList:SListDescriptor,
+  autoOpenFirst?: boolean,
+}
+export default function QuestionList({
+  questionList,
+  autoOpenFirst,
+}: QuestionListProps) {
+  const entitiesSelector = React.useCallback(() => {
+       return {
+      questions: flatten<IQuestionDescriptor | IWhQuestionDescriptor>(
+        questionList.getEntity(),
+        'QuestionDescriptor',
+        'WhQuestionDescriptor',
+      ).filter(q => {
+        const instance = getInstance<IQuestionInstance | IWhQuestionInstance>(
+          q,
+        );
+        if (instance != null) {
+          return instance.active;
+        }
+        return false;
+      }),
+      player:Player.selectCurrent()
+    };
+  }, [questionList]);
+
+  const entities = useStore(entitiesSelector);
+
+  if (questionList === undefined) {
+    return <pre>No selected list</pre>;
+  }
+
   return (
-    <StoreConsumer
-      selector={() => {
-        const list = VariableDescriptor.first<IListDescriptor>(
-          'name',
-          props.variable,
-        );
-        return {
-          questions: flatten<IQuestionDescriptor | IWhQuestionDescriptor>(
-            list,
-            'QuestionDescriptor',
-          ).filter(q => {
-            const instance = getInstance<
-              IQuestionInstance | IWhQuestionInstance
-            >(q);
-            if (instance != null) {
-              return instance.active;
-            }
-            return false;
-          }),
-          player: instantiate(Player.selectCurrent()),
-        };
-      }}
+    <EntityChooser
+      entities={entities.questions}
+      entityLabel={e => <QuestionLabel questionD={e} />}
+      autoOpenFirst={autoOpenFirst}
+      customLabelStyle={customLabelStyle}
     >
-      {({ state }) => {
-        return (
-          <EntityChooser
-            entities={state.questions}
-            entityLabel={e => {
-              return <QuestionLabel questionD={e} />;
-            }}
-          >
-            {ConnectedQuestionDisplay}
-          </EntityChooser>
-        );
-      }}
-    </StoreConsumer>
+      {ConnectedQuestionDisplay}
+    </EntityChooser>
   );
 }
