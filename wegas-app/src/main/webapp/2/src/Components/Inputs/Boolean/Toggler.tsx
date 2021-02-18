@@ -101,7 +101,7 @@ export function Toggler({
       }
       style={style}
     >
-      {typeof label === 'string' ? <Value value={label} /> : { label }}
+      {typeof label === 'string' ? <Value value={label} /> : label}
       <div
         className={
           'wegas wegas-toggler ' +
