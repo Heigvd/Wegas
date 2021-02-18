@@ -435,11 +435,19 @@ export function CustomStraitFlowLineComponent<
             const labelBox = ref.getBoundingClientRect();
             ref.style.setProperty(
               'left',
-              canvasLeft + (values.canvasWidth - labelBox.width) / 2 + 'px',
+              Math.min(endHandlePosition.x, startHandlePosition.x) +
+                (Math.abs(endHandlePosition.x - startHandlePosition.x) -
+                  labelBox.width) /
+                  2 +
+                'px',
             );
             ref.style.setProperty(
               'top',
-              canvasTop + (values.canvasHeight - labelBox.height) / 2 + 'px',
+              Math.min(endHandlePosition.y, startHandlePosition.y) +
+                (Math.abs(endHandlePosition.y - startHandlePosition.y) -
+                  labelBox.height) /
+                  2 +
+                'px',
             );
           }
         }}
