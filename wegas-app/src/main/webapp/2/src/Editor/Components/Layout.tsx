@@ -26,6 +26,7 @@ const InstancesEditor = React.lazy(
 const ThemeEditor = React.lazy(
   () => import('../../Components/Style/ThemeEditor'),
 );
+// const Tester = React.lazy(() => import('../../Testers/HTMLEditorTester'));
 
 const layout = css({
   display: 'flex',
@@ -34,6 +35,7 @@ const layout = css({
 });
 
 export const availableLayoutTabs = {
+  // Tester: <Tester />,
   Variables: <TreeView />,
   'State Machine': <StateMachineEditor />,
   'Variable Properties': <EntityEditor />,
