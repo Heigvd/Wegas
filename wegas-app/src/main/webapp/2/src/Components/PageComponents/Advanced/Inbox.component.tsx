@@ -15,13 +15,13 @@ interface PlayerInboxProps extends WegasComponentProps {
   inbox?: IScript;
 }
 
-export default function PlayerInbox({ inbox }: PlayerInboxProps) {
+export default function PlayerInbox({ inbox, options }: PlayerInboxProps) {
   const { descriptor } = useComponentScript<IInboxDescriptor>(inbox);
   if (descriptor === undefined) {
     return <TumbleLoader />;
   }
 
-  return <InboxDisplay inbox={descriptor.getEntity()} />;
+  return <InboxDisplay inbox={descriptor.getEntity()} disabled={options.disabled}/>;
 }
 
 registerComponent(

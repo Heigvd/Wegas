@@ -49,6 +49,9 @@ export function isIconString(icon: Icons): icon is IconString {
 
 interface IconDisplayProps extends Omit<ClassStyleId, 'id'> {
   icon: Icon;
+  /**
+   * disabled - if true, displayed as disabled
+   */
   disabled?: boolean;
 }
 
@@ -73,6 +76,9 @@ function IconDisplay({ icon, style, className }: IconDisplayProps) {
 
 interface IconCompProps extends Omit<ClassStyleId, 'id'> {
   icon?: Icons;
+  /**
+   * disabled - if true, displayed as disabled
+   */
   disabled?: boolean;
 }
 

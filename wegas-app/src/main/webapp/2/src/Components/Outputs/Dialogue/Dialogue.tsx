@@ -56,6 +56,9 @@ const dialogueDisplayStyle = css({
 
 interface DialogueDisplayProps {
   dialogue: SDialogueDescriptor;
+  /**
+   * disabled - if true, displayed as disabled
+   */
   disabled?: boolean;
 }
 

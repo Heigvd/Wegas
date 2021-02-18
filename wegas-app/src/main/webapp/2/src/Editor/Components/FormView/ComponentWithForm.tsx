@@ -36,6 +36,9 @@ interface ComponentWithFormProps {
     props: ComponentWithFormChildrenProps,
   ) => React.ReactElement | null;
   entityEditor?: boolean;
+  /**
+   * disabled - if true, displayed as disabled
+   */
   disabled?: boolean;
 }
 

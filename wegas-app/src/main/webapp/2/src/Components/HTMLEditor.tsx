@@ -92,7 +92,7 @@ interface HTMLEditorProps extends ClassStyleId {
    */
   delay?: number;
   /**
-   * disabled - disables the editor
+   * disabled - if true, displayed as disabled
    */
   disabled?: boolean;
   /**

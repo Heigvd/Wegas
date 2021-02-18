@@ -88,6 +88,9 @@ interface SelectorProps extends ClassStyleId {
     }>,
   ) => void;
   readOnly?: boolean;
+  /**
+   * disabled - if true, displayed as disabled
+   */
   disabled?: boolean;
 }
 

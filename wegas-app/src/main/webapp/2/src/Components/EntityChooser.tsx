@@ -73,6 +73,9 @@ interface EntityChooserProps<E extends IAbstractEntity> {
   children: React.FunctionComponent<{ entity: E }>;
   entityLabel: (entity: E) => React.ReactNode;
   autoOpenFirst?: boolean;
+  /**
+   * disabled - if true, displayed as disabled
+   */
   disabled?: boolean;
 }
 

@@ -54,9 +54,13 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
 
 interface InboxDisplayProps {
   inbox: IInboxDescriptor;
+  /**
+   * disabled - if true, displayed as disabled
+   */
+  disabled?:boolean;
 }
 
-export function InboxDisplay({ inbox }: InboxDisplayProps) {
+export function InboxDisplay({ inbox, disabled }: InboxDisplayProps) {
   const messagesSelector = React.useCallback(
     () => getInstance(inbox, Player.selectCurrent())!.messages,
     [inbox],
@@ -68,6 +72,7 @@ export function InboxDisplay({ inbox }: InboxDisplayProps) {
     <EntityChooser
       entities={messages}
       entityLabel={e => <MessageLabel message={e} />}
+      disabled={disabled}
     >
       {MessageDisplay}
     </EntityChooser>

@@ -107,7 +107,7 @@ export interface PhasesProgressBarProps extends ClassStyleId {
    */
   displayValue?: boolean;
   /**
-   * disabled - if true, display the progressbar faded
+   * disabled - if true, displayed as disabled
    */
   disabled?: boolean;
 }
