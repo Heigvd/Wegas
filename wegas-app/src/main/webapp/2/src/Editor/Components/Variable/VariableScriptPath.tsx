@@ -10,7 +10,7 @@ function getVariablePath(variable: IVariableDescriptor): string {
   if (parentVariable != null) {
     path += getVariablePath(parentVariable);
   }
-  return `${path}\\${editorLabel(variable, true)}`;
+  return `${path}\\${editorLabel(variable)}`;
 }
 
 const variableScriptPathStyle = css({
