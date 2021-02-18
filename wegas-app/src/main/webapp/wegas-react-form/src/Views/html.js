@@ -5,14 +5,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import commonView from '../HOC/commonView';
 import labeled from '../HOC/labeled';
-import './../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar';
-import { getY } from './../index';
+import '../../../wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar';
+import { getY } from '../index';
 import FormStyles from './form-styles';
 
 const { Wegas } = getY();
 const tinymceStyle = css({
     '& .mce-tinymce': {
-    //boxShadow: 'none',
+    // boxShadow: 'none',
         boxSizing: 'border-box',
     },
     '& .mce-content-body': {
@@ -23,8 +23,8 @@ const tinymceStyle = css({
         outline: 'medium auto #6AACF1',
     },
     // Fix horizontal resize...
-    //'& .mce-container > iframe': {width: '100% !important'}
-    //'& > .tinymce-toolbar > div': {display: 'block !important'}
+    // '& .mce-container > iframe': {width: '100% !important'}
+    // '& > .tinymce-toolbar > div': {display: 'block !important'}
 });
 function onFileBrowserClick(fieldName, url, type, win) {
     const filePanel = new Wegas.FileSelect();
@@ -60,7 +60,7 @@ function onFileBrowserClick(fieldName, url, type, win) {
     return false;
 }
 function getTinyConfig(fixedToolbar) {
-    let config = {
+    const config = {
         inline: true,
         browser_spellcheck: true,
         plugins: [
@@ -133,7 +133,7 @@ function getTinyConfig(fixedToolbar) {
     // }
     };
 
-    let extraButtons = Wegas.Config.TinyExtraButtons;
+    const extraButtons = Wegas.Config.TinyExtraButtons;
 
     if (extraButtons) {
     /* config example :
@@ -151,14 +151,14 @@ function getTinyConfig(fixedToolbar) {
          }
          };
          */
-        let toolbar = config.toolbar1.split(' ');
+        const toolbar = config.toolbar1.split(' ');
         toolbar.pop(); // remove addToolbarButton
         toolbar.push('|');
 
-        let initFunctions = [];
+        const initFunctions = [];
 
-        for (let name in extraButtons) {
-            let btnCfg = extraButtons[name];
+        for (const name in Object.keys(extraButtons)) {
+            const btnCfg = extraButtons[name];
             config.formats[name] = {
                 attributes: {
                     class: btnCfg.className,
@@ -180,10 +180,10 @@ function getTinyConfig(fixedToolbar) {
                 config: btnCfg,
                 function: function(editor, name, btnCfg) {
                     editor.addButton(name, {
-                        icon: 'x ' + btnCfg.cssIcon,
-                        stateSelector: '.' + btnCfg.className,
+                        icon: `x ${btnCfg.cssIcon}`,
+                        stateSelector: `.${btnCfg.className}`,
                         tooltip: btnCfg.tooltip,
-                        onclick: function(e) {
+                        onclick: function onClick() {
                             tinymce.activeEditor.formatter.toggle(name);
                             tinymce.activeEditor.fire('change');
                         },
@@ -191,8 +191,8 @@ function getTinyConfig(fixedToolbar) {
                 },
             });
             // on setup, call each initFunction
-            config.setup = function(editor) {
-                for (let i in initFunctions) {
+            config.setup = function setup(editor) {
+                for (const i in Object.keys(initFunctions)) {
                     initFunctions[i].function.call(
                         editor,
                         editor,
@@ -281,6 +281,7 @@ class HTMLView extends React.Component {
         }
         return { oldProps: nextProps };
     }
+
     constructor(props) {
         super(props);
         this.id = toolbarIdGenerator();
@@ -292,9 +293,11 @@ class HTMLView extends React.Component {
         };
         this.onChangeHandler = debounce(this.onChangeHandler.bind(this), 200);
     }
+
     componentWillUnmount() {
         this.onChangeHandler.flush();
     }
+
     onChangeHandler(content) {
         const oldContent = this.state.sent;
         const newContent = toInjectorStyle(content);
@@ -311,7 +314,7 @@ class HTMLView extends React.Component {
                 <div
                     className={FormStyles.disabled.toString()}
                     dangerouslySetInnerHTML={{
-                        __html: this.state.content,
+                        __html: Wegas.App.sanitize(this.state.content),
                     }}
                 />
             );
@@ -320,7 +323,7 @@ class HTMLView extends React.Component {
                 <div {...tinymceStyle}>
                     <div id={this.id} className="tinymce-toolbar" />
                     <Editor
-                        value={this.state.content}
+                        value={Wegas.App.sanitize(this.state.content)}
                         init={getTinyConfig('#' + this.id)}
                         onEditorChange={this.onChangeHandler}
                     />
