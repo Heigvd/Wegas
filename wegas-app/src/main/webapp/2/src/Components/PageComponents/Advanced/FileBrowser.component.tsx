@@ -21,6 +21,7 @@ export default function PlayerFileBrowser({
   className,
   style,
   id,
+  options,
 }: PlayerFileBrowserProps) {
   const rootDirectory = useScript<SListDescriptor>(list, context);
   const rootDirectoryId = rootDirectory?.getId();
@@ -30,7 +31,7 @@ export default function PlayerFileBrowser({
       File not found
     </pre>
   ) : (
-    <ComponentWithForm entityEditor>
+    <ComponentWithForm entityEditor disabled={options.disabled}>
       {({ localDispatch }) => {
         return (
           <TreeView

@@ -1,5 +1,7 @@
+import { cx } from 'emotion';
 import * as React from 'react';
 import { IChoiceDescriptor, IChoiceInstance } from 'wegas-ts-api';
+import { halfOpacity } from '../../../css/classes';
 import { TranslatableContent } from '../../../data/i18n';
 import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
 import { StoreDispatch } from '../../../data/Stores/store';
@@ -48,6 +50,7 @@ function SimpleChoiceDisplay({
 
 interface SimpleQuestionDisplayProps extends QuestionInfo {
   dispatch: StoreDispatch;
+  disabled?:boolean;
 }
 
 export function SimpleQuestionDisplay({
@@ -57,6 +60,7 @@ export function SimpleQuestionDisplay({
   choicesD,
   choicesI,
   replies,
+  disabled,
 }: SimpleQuestionDisplayProps) {
   const validatedReplies = replies.filter(r => r.validated);
 
@@ -76,7 +80,7 @@ export function SimpleQuestionDisplay({
   }
 
   return (
-    <div className={questionStyle}>
+    <div className={cx(questionStyle, {[halfOpacity]:disabled})}>
       <div
         dangerouslySetInnerHTML={{
           __html: questionD.description

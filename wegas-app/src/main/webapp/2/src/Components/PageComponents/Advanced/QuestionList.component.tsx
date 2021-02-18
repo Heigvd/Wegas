@@ -32,6 +32,7 @@ export default function QuestionListDisplay({
   questionList,
   autoOpenFirst,
   context,
+  options,
 }: QuestionListDisplayProps) {
   const entitiesSelector = React.useCallback(() => {
     // TODO add support for arrays of list/question
@@ -74,6 +75,7 @@ export default function QuestionListDisplay({
       entities={entities.questions}
       entityLabel={e => <QuestionLabel questionD={e} />}
       autoOpenFirst={autoOpenFirst}
+      disabled= {options.disabled}
     >
       {ConnectedQuestionDisplay}
     </EntityChooser>

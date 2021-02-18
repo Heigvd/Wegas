@@ -24,6 +24,7 @@ export default function PlayerStateMachine({
   className,
   style,
   id,
+  options,
 }: PlayerStateMachineProps) {
   const player = useCurrentPlayer();
   const titleText = useScript<string>(title, context);
@@ -36,7 +37,7 @@ export default function PlayerStateMachine({
       State machine not found
     </pre>
   ) : (
-    <ComponentWithForm entityEditor>
+    <ComponentWithForm entityEditor disabled={options.disabled}>
       {({ localDispatch }) => {
         return (
           <StateMachineEditor

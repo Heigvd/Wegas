@@ -1,7 +1,7 @@
 import { cx } from 'emotion';
 import * as React from 'react';
 import { IChoiceDescriptor, IChoiceInstance } from 'wegas-ts-api';
-import { autoMargin } from '../../../css/classes';
+import { autoMargin, halfOpacity } from '../../../css/classes';
 import { TranslatableContent } from '../../../data/i18n';
 import {
   selectChoice,
@@ -69,6 +69,7 @@ function CbxChoiceDisplay({
 
 interface CbxQuestionDisplayProps extends QuestionInfo {
   dispatch: StoreDispatch;
+  disabled?: boolean;
 }
 
 export function CbxQuestionDisplay({
@@ -78,6 +79,7 @@ export function CbxQuestionDisplay({
   choicesD,
   choicesI,
   replies,
+  disabled,
 }: CbxQuestionDisplayProps) {
   const { maxReplies, minReplies } = questionD;
 
@@ -102,7 +104,7 @@ export function CbxQuestionDisplay({
   }
 
   return (
-    <div className={questionStyle}>
+    <div className={cx(questionStyle, {[halfOpacity]: disabled})}>
       <div
         dangerouslySetInnerHTML={{
           __html: questionD.description

@@ -7,6 +7,7 @@ import {
   flex,
   flexDistribute,
   itemCenter,
+  halfOpacity,
 } from '../../css/classes';
 import { Value } from './Value';
 import { cx, css } from 'emotion';
@@ -105,6 +106,10 @@ export interface PhasesProgressBarProps extends ClassStyleId {
    * displayValue - should the current value be displayed with the gauge
    */
   displayValue?: boolean;
+  /**
+   * disabled - if true, display the progressbar faded
+   */
+  disabled?: boolean;
 }
 
 interface CustomPhasesProgressBarProps extends PhasesProgressBarProps {
@@ -122,12 +127,13 @@ export function CustomPhasesProgressBar({
   style,
   PhaseComponent,
   InterPhaseComponent,
+  disabled,
 }: CustomPhasesProgressBarProps) {
   return (
     <div
       className={
         'wegas wegas-phaseProgessBar ' +
-        cx(flex, textCenter, justifyCenter, flexColumn, grow) +
+        cx(flex, textCenter, justifyCenter, flexColumn, grow, {[halfOpacity]: disabled}) +
         classNameOrEmpty(className)
       }
       style={style}

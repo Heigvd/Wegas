@@ -31,6 +31,7 @@ export default function PlayerPhasesProgressBar({
   phase,
   phaseMin,
   phaseMax,
+  options,
 }: PhasesProgressBarProps) {
   const {
     content: phaseContent,
@@ -64,6 +65,7 @@ export default function PlayerPhasesProgressBar({
         value={phaseInstance!.getValue()}
         phaseMin={phaseMinInstance!.getValue()}
         phaseMax={phaseMaxInstance!.getValue()}
+        disabled={options.disabled}
       />
     );
   }

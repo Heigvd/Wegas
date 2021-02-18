@@ -14,7 +14,7 @@ import { css, cx } from 'emotion';
 import { Edition, closeEditor } from '../../../data/Reducer/globalState';
 import { StoreDispatch } from '../../../data/Stores/store';
 import { createStoreConnector } from '../../../data/connectStore';
-import { flex, grow, autoScroll } from '../../../css/classes';
+import { flex, grow, autoScroll, halfOpacity } from '../../../css/classes';
 import { InstancePropertiesProps } from '../Variable/InstanceProperties';
 import { asyncSFC } from '../../../Components/HOC/asyncSFC';
 import { Toolbar } from '../../../Components/Toolbar';
@@ -36,6 +36,7 @@ interface ComponentWithFormProps {
     props: ComponentWithFormChildrenProps,
   ) => React.ReactElement | null;
   entityEditor?: boolean;
+  disabled?: boolean;
 }
 
 const AsyncInstancesEditor = asyncSFC<InstancePropertiesProps>(
@@ -50,6 +51,7 @@ const AsyncInstancesEditor = asyncSFC<InstancePropertiesProps>(
 export function ComponentWithForm({
   children,
   entityEditor,
+  disabled,
 }: ComponentWithFormProps) {
   const {
     useStore: useLocalStore,
@@ -80,7 +82,7 @@ export function ComponentWithForm({
   }
 
   return (
-    <ReflexContainer className={cx(flex, grow)} orientation="vertical">
+    <ReflexContainer className={cx(flex, grow, {[halfOpacity]: disabled})} orientation="vertical">
       <ReflexElement flex={4} className={cx(flex, growBig, autoScroll)}>
         {children({
           localState: localState.editing,

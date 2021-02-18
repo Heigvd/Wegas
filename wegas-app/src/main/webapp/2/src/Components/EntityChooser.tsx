@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { deepDifferent } from './Hooks/storeHookFactory';
-import { flex, flexColumn, flexRow, grow, justifyCenter } from '../css/classes';
+import { flex, flexColumn, flexRow, grow, halfOpacity, justifyCenter } from '../css/classes';
 import { themeVar } from './Style/ThemeVars';
 
 const entityChooser = css({
@@ -73,6 +73,7 @@ interface EntityChooserProps<E extends IAbstractEntity> {
   children: React.FunctionComponent<{ entity: E }>;
   entityLabel: (entity: E) => React.ReactNode;
   autoOpenFirst?: boolean;
+  disabled?: boolean;
 }
 
 export function EntityChooser<E extends IAbstractEntity>({
@@ -80,6 +81,7 @@ export function EntityChooser<E extends IAbstractEntity>({
   children: Children,
   entityLabel,
   autoOpenFirst,
+  disabled,
 }: EntityChooserProps<E>) {
   const [entity, setEntity] = React.useState<E>();
 
@@ -97,7 +99,7 @@ export function EntityChooser<E extends IAbstractEntity>({
   }, [autoOpenFirst, entities]);
 
   return (
-    <div className={cx(flex, flexRow, entityChooser)}>
+    <div className={cx(flex, flexRow, entityChooser, {[halfOpacity]: disabled})}>
       <div className={cx(flex, flexColumn, labelList)}>
         {entities.map(e => (
           <div

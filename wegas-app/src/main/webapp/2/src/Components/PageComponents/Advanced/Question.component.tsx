@@ -22,6 +22,7 @@ interface QuestionDisplayProps extends WegasComponentProps {
 export default function QuestionDisplay({
   question,
   context,
+  options,
 }: QuestionDisplayProps) {
   const descriptor = useScript<SQuestionDescriptor>(question, context);
 
@@ -29,7 +30,7 @@ export default function QuestionDisplay({
     wwarn(`${question?.content} Not found`);
     return <TumbleLoader />;
   } else {
-    return <ConnectedQuestionDisplay entity={descriptor!.getEntity()} />;
+    return <ConnectedQuestionDisplay entity={descriptor!.getEntity()} disabled={options.disabled}/>;
   }
 }
 

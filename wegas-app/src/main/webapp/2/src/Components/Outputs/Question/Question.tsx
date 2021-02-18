@@ -56,8 +56,10 @@ export function questionInfo(question: IQuestionDescriptor): QuestionInfo {
 
 export function ConnectedSimpleQuestionDisplay({
   entity,
+  disabled,
 }: {
   entity: Readonly<IQuestionDescriptor>;
+  disabled?: boolean;
 }) {
   const questionInfoSelector = React.useCallback(() => questionInfo(entity), [
     entity,
@@ -65,32 +67,36 @@ export function ConnectedSimpleQuestionDisplay({
   const state = useStore(questionInfoSelector);
 
   return state.questionD.cbx ? (
-    <CbxQuestionDisplay {...state} dispatch={store.dispatch} />
+    <CbxQuestionDisplay {...state} dispatch={store.dispatch} disabled={disabled} />
   ) : (
-    <SimpleQuestionDisplay {...state} dispatch={store.dispatch} />
+    <SimpleQuestionDisplay {...state} dispatch={store.dispatch} disabled= {disabled}/>
   );
 }
 
 export function ConnectedWhQuestionDisplay({
   entity,
+  disabled,
 }: {
   entity: Readonly<IWhQuestionDescriptor>;
+  disabled?: boolean;
 }) {
   const questionInfoSelector = React.useCallback(() => whQuestionInfo(entity), [
     entity,
   ]);
   const state = useStore(questionInfoSelector);
-  return <WhQuestionDisplay {...state} dispatch={store.dispatch} />;
+  return <WhQuestionDisplay {...state} dispatch={store.dispatch} disabled={disabled}/>;
 }
 
 export function ConnectedQuestionDisplay({
   entity,
+  disabled,
 }: {
   entity: Readonly<IQuestionDescriptor | IWhQuestionDescriptor>;
+  disabled?: boolean;
 }) {
   return entityIs(entity, 'QuestionDescriptor') ? (
-    <ConnectedSimpleQuestionDisplay entity={entity} />
+    <ConnectedSimpleQuestionDisplay entity={entity} disabled={disabled}/>
   ) : (
-    <ConnectedWhQuestionDisplay entity={entity} />
+    <ConnectedWhQuestionDisplay entity={entity} disabled={disabled}/>
   );
 }

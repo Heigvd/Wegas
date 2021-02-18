@@ -9,6 +9,7 @@ import {
   IStringInstance,
   IWhQuestionDescriptor,
 } from 'wegas-ts-api';
+import { halfOpacity } from '../../../css/classes';
 import { TranslatableContent } from '../../../data/i18n';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import {
@@ -142,6 +143,7 @@ function WhChoiceDisplay({
 
 interface WhQuestionDisplayProps extends WhQuestionInfo {
   dispatch: StoreDispatch;
+  disabled?: boolean;
 }
 
 export function WhQuestionDisplay({
@@ -150,6 +152,7 @@ export function WhQuestionDisplay({
   questionI,
   choicesD,
   choicesI,
+  disabled,
 }: WhQuestionDisplayProps) {
   const [choicesValues, setChoicesValues] = React.useState<
     (IWhChoiceInstance | undefined)[]
@@ -160,7 +163,7 @@ export function WhQuestionDisplay({
   }
 
   return (
-    <div className={questionStyle}>
+    <div className={cx(questionStyle, {[halfOpacity]: disabled})}>
       <div
         dangerouslySetInnerHTML={{
           __html: questionD.description
