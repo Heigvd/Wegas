@@ -8,6 +8,7 @@ import {
 import { entityIs } from '../../data/entities';
 import { translate } from '../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
+import { Text } from '../Outputs/Text';
 
 const transitionContainerStyle = css({
   display: 'inline-flex',
@@ -100,9 +101,14 @@ export function TransitionBox({
         )} */}
         <div>
           <p className="StateLabelTextStyle">
-            {(entityIs(transition.transition, 'Transition')
-              ? transition.transition.label
-              : translate(transition.transition.actionText, lang)) || 'Empty'}
+            <Text
+              text={
+                (entityIs(transition.transition, 'Transition')
+                  ? transition.transition.label
+                  : translate(transition.transition.actionText, lang)) ||
+                'Empty'
+              }
+            />
           </p>
           <p></p>
         </div>

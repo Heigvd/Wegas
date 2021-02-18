@@ -3,16 +3,13 @@ import * as React from 'react';
 // import * as ReactDOMServer from 'react-dom/server';
 import { VariableDescriptor } from '../../data/selectors';
 import { entityIs } from '../../data/entities';
-import { getInstance } from '../../data/methods/VariableDescriptorMethods';
+import {
+  editorLabel,
+  getInstance,
+} from '../../data/methods/VariableDescriptorMethods';
 import { State as RState } from '../../data/Reducer/reducers';
 import { ComponentWithForm } from './FormView/ComponentWithForm';
-import {
-  forceScroll,
-  grow,
-  flex,
-  flexRow,
-  flexColumn,
-} from '../../css/classes';
+import { grow, flex, flexRow, flexColumn } from '../../css/classes';
 import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import {
   IDialogueDescriptor,
@@ -98,7 +95,7 @@ interface StateMachineEditorProps<
   forceLocalDispatch?: boolean;
   search?: RState['global']['search'];
   title?: string;
-  editPath: (string | number)[] | undefined;
+  editPath?: (string | number)[] | undefined;
 }
 export function StateMachineEditor<
   IFSM extends IFSMDescriptor | IDialogueDescriptor
@@ -393,7 +390,7 @@ StateMachineEditorProps<IFSM>) {
 
   return (
     <FlowChart
-      title={title}
+      title={title || <h3>{editorLabel(stateMachine)}</h3>}
       processes={processes}
       onConnect={connectState}
       onMove={updateStatePosition}
@@ -467,7 +464,7 @@ export function ConnectedStateMachineEditor({
     }
   } else {
     return (
-      <div className={cx(grow, forceScroll)}>
+      <div className={grow}>
         <StateMachineEditor
           stateMachine={globalState.descriptor}
           stateMachineInstance={globalState.instance}

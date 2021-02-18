@@ -15,6 +15,7 @@ import {
   PROCESS_HANDLE_DND_TYPE,
 } from './Handles';
 import { useDrag } from 'react-dnd';
+import { Text } from '../Outputs/Text';
 
 const stateContainerStyle = css({
   display: 'inline-flex',
@@ -155,9 +156,13 @@ export function StateBox({
         )} */}
         <div>
           <p className="StateLabelTextStyle">
-            {(entityIs(state.state, 'State')
-              ? state.state.label
-              : translate(state.state.text, lang)) || 'Empty'}
+            <Text
+              text={
+                (entityIs(state.state, 'State')
+                  ? state.state.label
+                  : translate(state.state.text, lang)) || 'Empty'
+              }
+            />
           </p>
         </div>
         <StateProcessHandle sourceProcess={state} />
