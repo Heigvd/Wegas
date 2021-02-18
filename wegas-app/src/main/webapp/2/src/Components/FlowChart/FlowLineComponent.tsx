@@ -18,6 +18,66 @@ function defaultSelect() {
   return false;
 }
 
+function ArrowDefs() {
+  return (
+    <defs>
+      <marker
+        id="arrowhead"
+        markerWidth="10"
+        markerHeight="10"
+        refX="6"
+        refY="5"
+        orient="auto"
+        fill="transparent"
+        stroke="rgb(128, 127, 127)"
+      >
+        <polyline points="0 0, 6 5, 0 10" />
+      </marker>
+      <marker
+        id="selectedarrowhead"
+        markerWidth="10"
+        markerHeight="10"
+        refX="6"
+        refY="5"
+        orient="auto"
+        fill={'#FFA462'}
+        stroke="transparent"
+      >
+        <polygon points="0 0, 6 5, 0 10" />
+      </marker>
+
+      <marker
+        id="arrowtail"
+        markerWidth="15"
+        markerHeight="15"
+        refX="5"
+        refY="10"
+        orient="auto"
+        fill="rgb(128, 127, 127)"
+      >
+        <circle cx="10" cy="10" r="5" />
+      </marker>
+      <marker
+        id="selectedarrowtail"
+        markerWidth="15"
+        markerHeight="15"
+        refX="5"
+        refY="10"
+        orient="auto"
+        fill={'#FFA462'}
+      >
+        <circle cx="10" cy="10" r="5" />
+      </marker>
+    </defs>
+  );
+}
+
+const arrowCSS = {
+  stroke: 'rgb(128,127,127)',
+  strokeWidth: 2,
+  fill: 'none',
+};
+
 export interface FlowLineProps<F extends FlowLine, P extends Process<F>> {
   /**
    * the DOM element from where the flowline starts
@@ -340,64 +400,13 @@ export function CustomStraitFlowLineComponent<
           height: values.canvasHeight,
         }}
       >
-        <defs>
-          <marker
-            id="arrowhead"
-            markerWidth="10"
-            markerHeight="10"
-            refX="6"
-            refY="5"
-            orient="auto"
-            fill="transparent"
-            stroke="rgb(128, 127, 127)"
-          >
-            <polyline points="0 0, 6 5, 0 10" />
-          </marker>
-          <marker
-            id="selectedarrowhead"
-            markerWidth="10"
-            markerHeight="10"
-            refX="6"
-            refY="5"
-            orient="auto"
-            fill={'#FFA462'}
-            stroke="transparent"
-          >
-            <polygon points="0 0, 6 5, 0 10" />
-          </marker>
-
-          <marker
-            id="arrowtail"
-            markerWidth="15"
-            markerHeight="15"
-            refX="5"
-            refY="10"
-            orient="auto"
-            fill="rgb(128, 127, 127)"
-          >
-            <circle cx="10" cy="10" r="5" />
-          </marker>
-          <marker
-            id="selectedarrowtail"
-            markerWidth="15"
-            markerHeight="15"
-            refX="5"
-            refY="10"
-            orient="auto"
-            fill={'#FFA462'}
-          >
-            <circle cx="10" cy="10" r="5" />
-          </marker>
-        </defs>
+        <ArrowDefs />
         <line
           x1={values.arrowStart.x}
           y1={values.arrowStart.y}
           x2={values.arrowEnd.x}
           y2={values.arrowEnd.y}
-          style={{
-            stroke: 'rgb(128,127,127)',
-            strokeWidth: 2,
-          }}
+          style={arrowCSS}
           markerStart={`url(#${selected ? 'selectedarrowtail' : 'arrowtail'})`}
           markerEnd={`url(#${selected ? 'selectedarrowhead' : 'arrowhead'})`}
         />
@@ -527,62 +536,14 @@ export function CircularFlowLineComponent<
           height: 200 * positionOffset,
         }}
       >
-        <defs>
-          <marker
-            id="arrowhead"
-            markerWidth="15"
-            markerHeight="10"
-            refX="15"
-            refY="5"
-            orient="auto"
-          >
-            <polygon points="0 0, 15 5, 0 10" />
-          </marker>
-          <marker
-            id="selectedarrowhead"
-            markerWidth="15"
-            markerHeight="10"
-            refX="15"
-            refY="5"
-            orient="auto"
-            fill={'orange'}
-          >
-            <polygon points="0 0, 15 5, 0 10" />
-          </marker>
-
-          <marker
-            id="arrowtail"
-            markerWidth="15"
-            markerHeight="10"
-            refX="0"
-            refY="5"
-            orient="auto"
-          >
-            <polygon points="0 0, 10 0,15 5, 10 10, 0 10, 5 5" />
-          </marker>
-          <marker
-            id="selectedarrowtail"
-            markerWidth="15"
-            markerHeight="10"
-            refX="0"
-            refY="5"
-            orient="auto"
-            fill={'orange'}
-          >
-            <polygon points="0 0, 10 0,15 5, 10 10, 0 10, 5 5" />
-          </marker>
-        </defs>
+        <ArrowDefs />
         <path
           d={`M ${(processBox.width * 2) / 3} 0 C ${processBox.width / 2} ${
             200 * positionOffset
           }, ${(processBox.width * 3) / 2} ${200 * positionOffset}, ${
             (processBox.width * 4) / 3
           } 0`}
-          style={{
-            stroke: 'rgb(128, 127, 127)',
-            strokeWidth: 2,
-            fill: 'transparent',
-          }}
+          style={arrowCSS}
           markerStart={`url(#${selected ? 'selectedarrowtail' : 'arrowtail'})`}
           markerEnd={`url(#${selected ? 'selectedarrowhead' : 'arrowhead'})`}
         />
@@ -708,37 +669,13 @@ export function TempFlowLine({ processElements, position }: TempFlowLineProps) {
         height: `${parent!.scrollHeight}px`,
       }}
     >
-      <defs>
-        <marker
-          id="arrowhead"
-          markerWidth="15"
-          markerHeight="10"
-          refX="15"
-          refY="5"
-          orient="auto"
-        >
-          <polygon points="0 0, 15 5, 0 10" />
-        </marker>
-        <marker
-          id="arrowtail"
-          markerWidth="15"
-          markerHeight="10"
-          refX="0"
-          refY="5"
-          orient="auto"
-        >
-          <polygon points="0 0, 10 0,15 5, 10 10, 0 10, 5 5" />
-        </marker>
-      </defs>
+      <ArrowDefs />
       <line
         x1={startX}
         y1={startY}
         x2={endX}
         y2={endY}
-        style={{
-          stroke: 'rgb(0,0,0)',
-          strokeWidth: 2,
-        }}
+        style={arrowCSS}
         markerStart={`url(#arrowtail)`}
         markerEnd={`url(#arrowhead)`}
       />
