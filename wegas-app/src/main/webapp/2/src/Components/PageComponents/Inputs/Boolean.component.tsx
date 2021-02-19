@@ -33,10 +33,6 @@ interface PlayerBooleanProps extends WegasComponentProps {
    * type - the behaviour and style of the component
    */
   type?: 'checkbox' | 'toggler';
-  /**
-   * inactive - if true, the component will only display the boolean but the user won't be abe to change it
-   */
-  inactive?: boolean;
 
   onVariableChange?: OnVariableChange;
 }
@@ -46,7 +42,6 @@ function PlayerBoolean({
   type,
   label,
   options,
-  inactive,
   context,
   className,
   style,
@@ -76,7 +71,7 @@ function PlayerBoolean({
       label={textLabel}
       value={value}
       disabled={options.disabled}
-      readOnly={inactive}
+      readOnly={options.readOnly}
       onChange={v => {
         if (handleOnChange) {
           handleOnChange(v);
@@ -108,8 +103,6 @@ registerComponent(
         label: 'Type',
         values: ['checkbox', 'toggler'],
       }),
-      disabled: schemaProps.boolean({ label: 'Disabled' }),
-      inactive: schemaProps.boolean({ label: 'Inactive' }),
       onVariableChange: onVariableChangeSchema('On change action'),
     },
     allowedVariables: ['BooleanDescriptor'],

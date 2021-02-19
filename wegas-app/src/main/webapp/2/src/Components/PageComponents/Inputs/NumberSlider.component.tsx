@@ -70,7 +70,7 @@ function PlayerNumberSlider({
       style={style}
       id={id}
       value={instance?.getValue()}
-      disabled = {options.disabled}
+      disabled={options.disabled}
       onChange={(v, i) => {
         if (i === 'DragEnd') {
           if (handleOnChange) {
@@ -107,7 +107,6 @@ registerComponent(
         label: 'Display value',
         values: displayModes,
       }),
-      disabled: schemaProps.boolean({ label: 'Disabled' }),
       onVariableChange: onVariableChangeSchema('On number change action'),
       ...classStyleIdShema,
     },
