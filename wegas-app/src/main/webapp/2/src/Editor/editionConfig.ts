@@ -9,6 +9,7 @@ import {
 import { entityIs } from '../data/entities';
 import { editStateMachine, editVariable } from '../data/Reducer/globalState';
 import { ThunkResult } from '../data/Stores/store';
+import { wwarn } from '../Helper/wegaslog';
 import { AvailableViews } from './Components/FormView';
 import { Icons } from './Components/Views/FontAwesome';
 import { formValidation } from './formValidation';
@@ -165,14 +166,19 @@ async function injectRef(schema: { $wref?: string }): Promise<Schema> {
 export default async function getEditionConfig<T extends IMergeable>(
   entity: T,
 ): Promise<Schema> {
-  return fetchConfig(entity['@class'] + '.json').then(res => {
-    return schemaUpdater(
-      res.schema,
-      injectRef,
-      updateVisibility,
-      updatedErrored,
-    );
-  });
+  return fetchConfig(entity['@class'] + '.json')
+    .then(res => {
+      return schemaUpdater(
+        res.schema,
+        injectRef,
+        updateVisibility,
+        updatedErrored,
+      );
+    })
+    .catch(e => {
+      wwarn(e);
+      return {};
+    });
 }
 
 export interface EActions {

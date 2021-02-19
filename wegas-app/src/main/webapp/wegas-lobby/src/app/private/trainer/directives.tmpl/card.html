@@ -87,7 +87,7 @@
   <a
     class="button button--small button--round button--default button--label-off button--trainer action--button"
     title="{{'TRAINER-CARD-MONITORING-BTN' | translate}}"
-    href="{{ServiceURL}}{{session.gameModel.uiversion > 1 ? session.gameModel.uiversion + '/trainer': 'host'}}.html?gameId={{session.id}}"
+    href="{{ServiceURL}}{{session.gameModel.uiversion > 1 ? session.gameModel.uiversion + '/': ''}}host.html?gameId={{session.id}}"
     target="_blank"
   >
     <span class="button__label"

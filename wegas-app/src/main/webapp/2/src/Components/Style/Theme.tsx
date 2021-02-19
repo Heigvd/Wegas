@@ -20,7 +20,6 @@ import {
 } from './ThemeVars';
 import { expandBoth } from '../../css/classes';
 
-
 export type ColorType = Exclude<React.CSSProperties['color'], undefined>;
 
 interface ThemeColors extends DefaultThemeColors {
@@ -69,6 +68,7 @@ interface SelectedThemes {
   editor: string;
   player: string;
   survey: string;
+  trainer: string;
 }
 
 export interface ThemeComponent {
@@ -112,9 +112,9 @@ interface ThemeContextValues {
 export const defaultThemeValues: ThemeValues = {
   colors: {
     'Primary color': '#1565C0',
-    'Primary color shade' : '#0B4F9D',
-    'Primary color tint' : '#4D96EA',
-    'Primary color pastel' : '#CFE5FF',
+    'Primary color shade': '#0B4F9D',
+    'Primary color tint': '#4D96EA',
+    'Primary color pastel': '#CFE5FF',
     'Secondary color': '#00499c',
     'Secondary color shade': '#003A7C',
     'Secondary color tint': '#1D67BB',
@@ -166,6 +166,7 @@ const defaultThemesState: ThemesState = {
     editor: 'default',
     player: 'default',
     survey: 'default',
+    trainer: 'default',
   },
   themes: defaultThemes,
 };

@@ -71,7 +71,7 @@ function mount() {
 mount();
 
 if (module.hot) {
-  module.hot.accept('./Components/Layout', () => {
+  module.hot.accept('./Editor/Components/Layout', () => {
     mount();
   });
 }
