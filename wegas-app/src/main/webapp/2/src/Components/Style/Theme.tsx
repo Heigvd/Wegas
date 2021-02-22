@@ -116,7 +116,7 @@ export const defaultThemeValues: ThemeValues = {
     'Primary color tint' : '#4D96EA',
     'Primary color pastel' : '#CFE5FF',
     'Secondary color': '#00499c',
-    'Secondary color shade': '#03346C',
+    'Secondary color shade': '#003A7C',
     'Secondary color tint': '#1D67BB',
     'Secondary color pastel': '#ADD3FF',
     'Accent color': 'hotpink',
@@ -143,7 +143,7 @@ export const defaultThemeValues: ThemeValues = {
   others: {
     'Font family 1': '"Courier New"',
     'Font family 2': '"Montserrat"',
-    'Font family 3': '"Arial"',
+    'Font family 3': '"Lato"',
   },
 };
 

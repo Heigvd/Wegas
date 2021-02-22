@@ -54,6 +54,7 @@ export function getAll(): ThunkResult {
 
 export function updateDescriptor(
   variableDescriptor: IVariableDescriptor,
+  selectUpdatedEntity: boolean = true,
 ): ThunkResult<Promise<StateActions | void>> {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
@@ -61,7 +62,14 @@ export function updateDescriptor(
       gameModelId,
       variableDescriptor,
     ).then(res =>
-      store.dispatch(manageResponseHandler(res, dispatch, getState().global)),
+      store.dispatch(
+        manageResponseHandler(
+          res,
+          dispatch,
+          getState().global,
+          selectUpdatedEntity,
+        ),
+      ),
     );
   };
 }

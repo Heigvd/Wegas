@@ -7,7 +7,6 @@ import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { useScript } from '../../Hooks/useScript';
 import { IScript, SFSMDescriptor } from 'wegas-ts-api';
-import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { StateMachineEditor } from '../../../Editor/Components/StateMachineEditor';
 import { ComponentWithForm } from '../../../Editor/Components/FormView/ComponentWithForm';
 import { useCurrentPlayer } from '../../../data/selectors/Player';
@@ -67,11 +66,5 @@ registerComponent(
       title: schemaProps.scriptString({ label: 'Title', richText: true }),
     },
     allowedVariables: ['FSMDescriptor', 'DialogueDescriptor'],
-    getComputedPropsFromVariable: v => ({
-      questionList: createFindVariableScript(v),
-      style: {
-        overflow: 'auto',
-      },
-    }),
   }),
 );

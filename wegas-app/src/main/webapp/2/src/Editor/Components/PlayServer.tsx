@@ -10,9 +10,7 @@ const container = css({ width: '100%' });
 const editor = css({ width: '100%', height: '400px' });
 
 export default function PlayServer() {
-  const [script, setScript] = React.useState(
-    'Variable.find(gameModel,"playerNumber").setValue(self,100)',
-  );
+  const [script, setScript] = React.useState('');
   const [error, setError] = React.useState<string | undefined>();
 
   const playScript = React.useCallback(() => {

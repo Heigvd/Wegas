@@ -59,10 +59,10 @@ export function useOnVariableChange(
   const {
     client,
     server,
-    exposeVariableAs: exposeFileAs = createScript('"file"'),
+    exposeVariableAs: exposeFileAs = createScript('"value"'),
   } = onVariableChange || {};
 
-  const exposeAs = useScript<string>(exposeFileAs, context) || 'file';
+  const exposeAs = useScript<string>(exposeFileAs, context) || 'value';
 
   const state = usePagesContextStateStore(s => s);
 

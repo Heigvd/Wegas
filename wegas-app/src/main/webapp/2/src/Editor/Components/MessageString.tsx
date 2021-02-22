@@ -7,8 +7,8 @@ const messageStyle = (color?: string) =>
     color,
     padding: '5px',
     whiteSpace: 'pre-wrap',
-    fontSize: '0.8em',
-    lineHeight: '0.8em',
+    fontSize: '0.9em',
+    lineHeight: '0.9em',
     margin: 'auto',
   });
 

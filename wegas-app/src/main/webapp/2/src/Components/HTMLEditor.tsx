@@ -120,7 +120,7 @@ export default function HTMLEditor({
   );
   const [editorFocus, setEditorFocus] = React.useState<boolean>(false);
   const HTMLContent = React.useRef('');
-  const HTMLEditor = React.useRef<{ focus: () => void }>();
+  const HTMLEditor = React.useRef<{ focus: () => void; destroy: () => void }>();
   const { classes } = React.useContext(classesCTX);
 
   const config = React.useMemo(
@@ -274,6 +274,12 @@ export default function HTMLEditor({
       tinyMCEModal.style.visibility = fileBrowsing.fn ? 'hidden' : 'visible';
     }
   }, [fileBrowsing.fn]);
+
+  React.useEffect(() => {
+    return () => {
+      HTMLEditor.current?.destroy();
+    };
+  }, []);
 
   const debouncedOnChange = React.useCallback(
     debounce((value: string) => {

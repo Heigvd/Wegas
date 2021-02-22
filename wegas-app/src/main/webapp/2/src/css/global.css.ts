@@ -2,8 +2,13 @@
 KEEP THIS FILE MINIMAL !!!
 */
 import { injectGlobal } from 'emotion';
+const fontUrl = require("./fonts/Lato-Regular.ttf").default;
 
 injectGlobal`
+  @font-face {
+  font-family: "Lato";
+  src: url("${fontUrl}");
+  }
   html {
     font-size: 1em;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,

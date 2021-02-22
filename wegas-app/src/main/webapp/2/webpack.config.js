@@ -119,6 +119,19 @@ const modules = {
           },
         ],
       },
+
+      {
+        test: /\.(ttf)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8000,
+              name: 'src/fonts/[hash]-[name].[ext]',
+            },
+          },
+        ],
+      },
       // {
       //   test: /\.less$/,
       //   use: [

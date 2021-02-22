@@ -33,32 +33,33 @@ const Eval = React.memo(function Eval({ script }: { script: string }) {
 Eval.displayName = 'Eval';
 
 // const testScript = 'Variable.find(gameModel,"initGroups");';
-const testScript = `
-Popups.addPopup('testpopup', {
-  '@class': 'TranslatableContent',
-  translations: {
-    FR: {
-      '@class': 'Translation',
-      lang: 'FR',
-      translation: "Ceci est un popup",
-      status: '',
-    },
-  },
-  version: 0,
-});
-Popups.addPopup('testpopup2', {
-  '@class': 'TranslatableContent',
-  translations: {
-    FR: {
-      '@class': 'Translation',
-      lang: 'FR',
-      translation: "Ceci est un popup d'une durée de 10 secondes",
-      status: '',
-    },
-  },
-  version: 0,
-},10000);
-`;
+// const testScript = `
+// Popups.addPopup('testpopup', {
+//   '@class': 'TranslatableContent',
+//   translations: {
+//     FR: {
+//       '@class': 'Translation',
+//       lang: 'FR',
+//       translation: "Ceci est un popup",
+//       status: '',
+//     },
+//   },
+//   version: 0,
+// });
+// Popups.addPopup('testpopup2', {
+//   '@class': 'TranslatableContent',
+//   translations: {
+//     FR: {
+//       '@class': 'Translation',
+//       lang: 'FR',
+//       translation: "Ceci est un popup d'une durée de 10 secondes",
+//       status: '',
+//     },
+//   },
+//   version: 0,
+// },10000);
+// `;
+const testScript = '';
 
 export default function PlayLocal() {
   const [script, setScript] = React.useState(testScript);
@@ -69,7 +70,7 @@ export default function PlayLocal() {
         <WegasScriptEditor
           value={script}
           onChange={e => setScript(e)}
-        // returnType={['number']}
+          // returnType={['number']}
         />
       </div>
       <ErrorBoundary script={debouncedScript}>

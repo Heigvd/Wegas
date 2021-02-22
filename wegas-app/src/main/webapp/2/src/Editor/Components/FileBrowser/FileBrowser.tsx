@@ -72,7 +72,11 @@ export function FileBrowser({
     // Allows to cancel the state update in case the component is unmounted before promise finishes
     let run = true;
     FileAPI.getFileMeta(defaultFilePath ? defaultFilePath : undefined)
-      .then(file => setRootFile(file))
+      .then(file => {
+        if (run) {
+          setRootFile(file);
+        }
+      })
       .catch(({ statusText }: Response) => {
         if (run && comp.current) {
           setRootFile(undefined);
