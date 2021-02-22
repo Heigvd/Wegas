@@ -59,7 +59,7 @@ const noToggleStyle = css({
 
 const previewStyle = css(
   {
-    position: 'fixed',
+    position: 'absolute',
     backgroundColor: themeVar.Common.colors.BackgroundColor,
     maxWidth: '220px',
     margin: '3px 2em 10px',
@@ -67,6 +67,7 @@ const previewStyle = css(
     borderWidth: '1px',
     borderRadius: themeVar.Common.dimensions.BorderRadius,
     fontSize: '75%',
+    zIndex: 10000,
   },
   thinHoverColorInsetShadow,
 );
