@@ -157,7 +157,12 @@ async function injectRef(schema: { $wref?: string }): Promise<Schema> {
   if (typeof $wref === 'string') {
     const refSchema = await import(
       'wegas-ts-api/src/generated/schemas/' + $wref
-    ).then(res => res.schema);
+    )
+      .then(res => res.schema)
+      .catch(e => {
+        wwarn(e);
+        return {};
+      });
     return { ...refSchema, ...restSchema };
   }
   return restSchema;
