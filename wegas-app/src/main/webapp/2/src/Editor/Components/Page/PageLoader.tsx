@@ -101,6 +101,10 @@ export function PageLoader({
                 Container={FlexItem}
                 dropzones={{}}
                 context={context}
+                inheritedOptionsState={{
+                  disabled: undefined,
+                  readOnly: undefined,
+                }}
               />
             ) : (
               <pre>{`The page is undefined`}</pre>

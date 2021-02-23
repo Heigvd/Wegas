@@ -15,7 +15,6 @@ import { PageComponentContext, useComputeUnreadCount } from './options';
  * - are read in the PageDeserializer
  * - are used in the EditableComponent
  * - may be used specifically in each wegas component
- * </p>
  */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +31,7 @@ interface OptionProps {
   unreadCount: WegasComponentOptions['unreadCount'];
 }
 
-export const defaultOptions: (keyof OptionProps)[] = [
+export const defaultOptionsKeys: (keyof OptionProps)[] = [
   'tooltip',
   'themeMode',
   'conditionnalClassNames',
@@ -46,14 +45,24 @@ export const defaultOptions: (keyof OptionProps)[] = [
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // options in their easy-to-use form, computed for a specific context
-export interface OptionsState {
+
+// options that can be passed from a parent to its children
+export interface HeritableOptionsState {
+  disabled: boolean | undefined;
+  readOnly: boolean | undefined;
+}
+
+export const heritableOptionsStateKeys: (keyof HeritableOptionsState)[] = [
+  'disabled',
+  'readOnly',
+];
+
+export interface OptionsState extends HeritableOptionsState {
   tooltip?: string;
   themeModeClassName?: string;
   innerClassName?: string;
   outerClassName?: string;
-  disabled?: boolean;
   hidden?: boolean;
-  readOnly?: boolean;
   locked?: boolean;
   infoBulletProps?: PlayerInfoBulletProps;
 }
@@ -71,10 +80,12 @@ export interface OptionsState {
  *
  * @param options Options in their universal form
  * @param context Context in which the options are handled
+ * @param inheritedOptionsState Options' state inherited from the parent
  */
 export function useOptions(
   options: OptionProps,
   context: PageComponentContext,
+  inheritedOptionsState: HeritableOptionsState,
 ): OptionsState {
   const {
     tooltip,
@@ -131,9 +142,11 @@ export function useOptions(
     themeModeClassName,
     innerClassName,
     outerClassName,
-    disabled,
+    disabled:
+      disabled === undefined ? inheritedOptionsState.disabled : disabled,
     hidden,
-    readOnly,
+    readOnly:
+      readOnly === undefined ? inheritedOptionsState.readOnly : readOnly,
     locked,
     infoBulletProps,
   };

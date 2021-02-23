@@ -14,9 +14,9 @@ import { useStore } from '../../../data/Stores/store';
 import { cloneDeep, pick } from 'lodash-es';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import {
-  // ComponentOptionsManager,
-  defaultOptions,
-  // OptionsState,
+  defaultOptionsKeys,
+  HeritableOptionsState,
+  heritableOptionsStateKeys,
   useOptions,
 } from './OptionsComponent';
 import { classNameOrEmpty } from '../../../Helper/className';
@@ -51,6 +51,8 @@ export type ChildrenDeserializerProps<P = {}> = P & {
   // the content of context can be any because it's set at runtime by the user
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context?: { [exposeAs: string]: any };
+  /**  Options' state inherited from the parent */
+  inheritedOptionsState: HeritableOptionsState;
 };
 
 function DefaultChildren(_: ChildrenDeserializerProps) {
@@ -71,6 +73,8 @@ interface PageDeserializerProps {
     center?: boolean;
     empty?: boolean;
   };
+  /**  Options' state inherited from the parent */
+  inheritedOptionsState: HeritableOptionsState;
 }
 
 export function PageDeserializer({
@@ -81,6 +85,7 @@ export function PageDeserializer({
   Container,
   containerPropsKeys,
   dropzones,
+  inheritedOptionsState,
 }: PageDeserializerProps): JSX.Element {
   // const [optionsState, setOptionsState] = React.useState<OptionsState>({});
 
@@ -122,8 +127,9 @@ export function PageDeserializer({
   // const options = pick(restProps, defaultOptions);
 
   const optionsState = useOptions(
-    pick(restProps, defaultOptions),
+    pick(restProps, defaultOptionsKeys),
     context || {},
+    inheritedOptionsState,
   );
 
   const { WegasComponent, container, componentName } = component || {};
@@ -160,6 +166,7 @@ export function PageDeserializer({
           context={context}
           editMode={editMode}
           containerPropsKeys={containerPropsKeys}
+          inheritedOptionsState={pick(optionsState, heritableOptionsStateKeys)}
         />
       ) : (
         <ComponentContainer
@@ -206,6 +213,10 @@ export function PageDeserializer({
               context={context}
               editMode={editMode}
               containerPropsKeys={container?.childrenLayoutKeys}
+              inheritedOptionsState={pick(
+                optionsState,
+                heritableOptionsStateKeys,
+              )}
             />
           </WegasComponent>
         </ComponentContainer>
