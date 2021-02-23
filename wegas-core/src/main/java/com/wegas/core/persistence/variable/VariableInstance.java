@@ -20,6 +20,9 @@ import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
+import com.wegas.core.persistence.annotations.WegasConditions.Equals;
+import com.wegas.core.persistence.annotations.WegasConditions.Not;
+import com.wegas.core.persistence.annotations.WegasRefs;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -601,5 +604,28 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
             return this.getDefaultDescriptor().getGameModel().getRequieredReadPermission();
         }
         return WegasPermission.getAsCollection(perm);
+    }
+    
+    /**
+     * Will be printed in the schema so the client modify a schema entry depending
+     * on the instance type
+     */
+    public static class IsDefaultInstance extends Equals {
+        public IsDefaultInstance() {
+            super(
+                new WegasRefs.Field(VariableDescriptor.class, "defaultInstance"),
+                new WegasRefs.Field(VariableInstance.class, null)
+            );
+        }
+    }
+    
+    /**
+     * Will be printed in the schema so the client modify a schema entry depending
+     * on the instance type
+     */
+    public static class IsNotDefaultInstance extends Not {
+        public IsNotDefaultInstance() {
+            super(new IsDefaultInstance());
+        }
     }
 }
