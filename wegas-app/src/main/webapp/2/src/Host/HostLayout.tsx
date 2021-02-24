@@ -11,6 +11,7 @@ import { DndLinearLayout } from '../Editor/Components/LinearTabLayout/LinearLayo
 import { PageLoader } from '../Editor/Components/Page/PageLoader';
 import { visitIndex } from '../Helper/pages';
 import HostHeader from './HostHeader';
+import { OverviewTab } from './OverviewTab';
 
 const Overview = React.lazy(() => import('./Overview'));
 const PeerReviewPage = React.lazy(() => import('./PeerReviewPage'));
@@ -72,6 +73,7 @@ export default function HostLayout() {
         tabs={{ ...trainerTabs, ...availableLayoutTabs, ...peerReviewTabs }}
         initialLayout={['Overview']}
         layoutId={trainerLayoutId}
+        CustomTab={OverviewTab}
       />
     </div>
   );
