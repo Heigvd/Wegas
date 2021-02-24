@@ -15,8 +15,6 @@ import HostHeader from './HostHeader';
 const Overview = React.lazy(() => import('./Overview'));
 const PeerReviewPage = React.lazy(() => import('./PeerReviewPage'));
 
-// importPageComponents();
-
 const layout = css({
   display: 'flex',
   flexDirection: 'column',

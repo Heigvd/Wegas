@@ -1,7 +1,5 @@
 import * as React from 'react';
-import { Game, GameModel, Global } from '../data/selectors';
 import { css, cx } from 'emotion';
-import { useStore } from '../data/Stores/store';
 import { FontAwesome } from '../Editor/Components/Views/FontAwesome';
 import { LangToggler } from '../Components/Contexts/LanguagesProvider';
 import {
@@ -20,24 +18,12 @@ const headerStyle = css({
   backgroundColor: themeVar.Common.colors.HeaderColor,
 });
 
-function hostHeaderSelector() {
-  return {
-    game: Game.selectCurrent(),
-    gameModel: GameModel.selectCurrent(),
-    user: Global.selectCurrentUser(),
-  };
-}
-
 export default function HostHeader() {
-  // const { currentFeatures } = React.useContext(featuresCTX);
-
-  const { game, gameModel, user } = useStore(hostHeaderSelector);
-
   return (
     <div className={cx(flex, itemCenter, foregroundContent, headerStyle)}>
       <div className={cx(flex, grow, flexRow, itemCenter)}>
-        <Title>{game.name}</Title>
-        <Title level={'3'}>{gameModel.name}</Title>
+        <Title>{CurrentGame.name}</Title>
+        <Title level={'3'}>{CurrentGM.name}</Title>
       </div>
       <LangToggler />
       {/* <FeatureToggler
@@ -47,12 +33,15 @@ export default function HostHeader() {
             <NotificationMenu className={componentMarginRight} />
           )} */}
       <FontAwesome icon="user" />
-      <span className={componentMarginLeft}>{user.name}</span>
+      <span className={componentMarginLeft}>{CurrentUser.name}</span>
       <Button
         icon={'magic'}
         tooltip="Edit this game"
         onClick={() => {
-          const win = window.open('edit.html?gameId=' + game.id, '_blank');
+          const win = window.open(
+            'edit.html?gameId=' + CurrentGame.id,
+            '_blank',
+          );
           win?.focus();
         }}
       />
