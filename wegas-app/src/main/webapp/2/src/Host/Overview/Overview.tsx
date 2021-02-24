@@ -1,16 +1,16 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
-import { VariableDescriptorAPI } from '../API/variableDescriptor.api';
-import { Button } from '../Components/Inputs/Buttons/Button';
-import { Modal } from '../Components/Modal';
-import { themeVar } from '../Components/Style/ThemeVars';
-import { flex, flexColumn, flexRow, grow, itemCenter } from '../css/classes';
+import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
+import { Button } from '../../Components/Inputs/Buttons/Button';
+import { Modal } from '../../Components/Modal';
+import { themeVar } from '../../Components/Style/ThemeVars';
+import { flex, flexColumn, flexRow, grow, itemCenter } from '../../css/classes';
 // import { runScript } from '../data/Reducer/VariableInstanceReducer';
-import { GameModel, Player } from '../data/selectors';
-import { useStore } from '../data/Stores/store';
-import { createScript } from '../Helper/wegasEntites';
-import { wlog } from '../Helper/wegaslog';
+import { GameModel, Player } from '../../data/selectors';
+import { useStore } from '../../data/Stores/store';
+import { createScript } from '../../Helper/wegasEntites';
+import { wlog } from '../../Helper/wegaslog';
 
 const rowStyle = css({
   backgroundColor: themeVar.Common.colors.SecondaryBackgroundColor,
