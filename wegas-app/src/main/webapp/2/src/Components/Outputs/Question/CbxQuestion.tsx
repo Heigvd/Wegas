@@ -14,7 +14,6 @@ import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
 import {
   ChoiceContainer,
-  choiceContainerStyle,
   choiceInputStyle,
 } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
@@ -130,7 +129,7 @@ export function CbxQuestionDisplay({
         );
       })}
       {!questionI.validated && (
-        <div className={cx(choiceContainerStyle, choiceInputStyle)}>
+        <div className={cx(choiceInputStyle)}>
           {remainingChoices > 0 && (
             <MessageString
               type="warning"

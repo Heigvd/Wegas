@@ -1,4 +1,4 @@
-import u from 'immer';
+import u, { Immutable, produce } from 'immer';
 import { Actions as ACTIONS, Actions } from '..';
 import {
   ActionCreator,
@@ -30,6 +30,10 @@ import {
   IWhQuestionDescriptor,
   IPeerReviewDescriptor,
   WegasClassNames,
+  IAbstractStateMachineDescriptor,
+  IAbstractState,
+  IAbstractTransition,
+  IDialogueDescriptor,
 } from 'wegas-ts-api';
 import { cloneDeep } from 'lodash-es';
 import { commonServerMethods } from '../methods/CommonServerMethods';
@@ -492,6 +496,28 @@ export function editVariable(
     );
   };
 }
+
+export function deleteState<T extends IFSMDescriptor | IDialogueDescriptor>(
+  stateMachine: Immutable<T>,
+  id: number,
+) {
+  const newStateMachine = produce((stateMachine: T) => {
+    const { states } = stateMachine;
+    delete states[id];
+    // delete transitions pointing to deleted state
+    for (const s in states) {
+      (states[s] as IAbstractState).transitions = (states[s]
+        .transitions as IAbstractTransition[]).filter(
+        t => t.nextStateId !== id,
+      );
+    }
+  })(stateMachine);
+
+  store.dispatch(
+    Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
+  );
+}
+
 /**
  * Edit StateMachine
  * @param entity
@@ -499,11 +525,29 @@ export function editVariable(
  * @param config
  */
 export function editStateMachine(
-  entity: IFSMDescriptor,
+  entity: Immutable<IAbstractStateMachineDescriptor>,
   path: string[] = [],
   config?: Schema<AvailableViews>,
 ): ThunkResult {
   return function (dispatch) {
+    const deleteAction = {
+      label: 'Delete',
+      confirm: true,
+      action: (entity: IFSMDescriptor, path?: string[]) => {
+        if (
+          path != null &&
+          Number(path.length) === 2 &&
+          Number(path.length) !== entity.defaultInstance.currentStateId
+        ) {
+          deleteState(entity, Number(path[1]));
+        } else {
+          dispatch(
+            Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
+          );
+        }
+      },
+    };
+
     dispatch(
       ActionCreator.FSM_EDIT({
         entity,
@@ -511,17 +555,19 @@ export function editStateMachine(
         path,
         actions: {
           more: {
-            delete: {
-              label: 'Delete',
-              action: (entity: IFSMDescriptor, path?: string[]) => {
-                dispatch(
-                  Actions.VariableDescriptorActions.deleteDescriptor(
-                    entity,
-                    path,
-                  ),
-                );
-              },
-            },
+            delete: deleteAction,
+            // {
+            //   label: 'Delete',
+            //   confirm: true,
+            //   action: (entity: IFSMDescriptor, path?: string[]) => {
+            //     dispatch(
+            //       Actions.VariableDescriptorActions.deleteDescriptor(
+            //         entity,
+            //         path,
+            //       ),
+            //     );
+            //   },
+            // },
             findUsage: {
               label: 'Find usage',
               action: (entity: IFSMDescriptor) => {

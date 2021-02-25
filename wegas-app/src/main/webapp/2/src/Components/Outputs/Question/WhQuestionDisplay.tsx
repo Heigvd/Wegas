@@ -33,9 +33,9 @@ import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';
 import { SimpleInput } from '../../Inputs/SimpleInput';
+import { autoMargin } from '../../../css/classes';
 import {
   ChoiceContainer,
-  choiceContainerStyle,
   choiceInputStyle,
 } from './ChoiceContainer';
 import { questionStyle } from './Question';
@@ -193,8 +193,9 @@ export function WhQuestionDisplay({
           />
         );
       })}
-      <div className={cx(choiceContainerStyle, choiceInputStyle)}>
+      <div className={cx(choiceInputStyle)}>
         <Button
+          className={autoMargin}
           label={questionI.validated ? 'Validated' : 'Validate'}
           onClick={() => {
             dispatch(validateQuestion(questionD));
