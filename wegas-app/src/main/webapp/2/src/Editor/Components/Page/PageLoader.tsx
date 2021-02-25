@@ -47,6 +47,8 @@ interface PageLoaderProps extends ClassStyleId {
   context?: {
     [name: string]: unknown;
   };
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 
 export function PageLoader({
@@ -58,6 +60,8 @@ export function PageLoader({
   id,
   loadTimer = 0,
   context = {},
+  disabled,
+  readOnly,
 }: PageLoaderProps) {
   const selectedPageSelector = React.useCallback(
     (s: State) => (selectedPageId ? s.pages[selectedPageId] : undefined),
@@ -102,8 +106,8 @@ export function PageLoader({
                 dropzones={{}}
                 context={context}
                 inheritedOptionsState={{
-                  disabled: undefined,
-                  readOnly: undefined,
+                  disabled,
+                  readOnly,
                 }}
               />
             ) : (

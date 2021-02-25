@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { XYPosition, useMouseEventDnd } from '../Hooks/useMouseEventDnd';
 import { FlowLine, Process, Processes } from './FlowChart';
 import { useDrop } from 'react-dnd';
@@ -9,12 +9,18 @@ import {
   PROCESS_HANDLE_DND_TYPE,
 } from './Handles';
 import { stateBoxStyle } from './StateProcessComponent';
+import { themeVar } from '../Style/ThemeVars';
 
 const processStyle = css({
   position: 'absolute',
   overflow: 'show',
   cursor: 'move',
   userSelect: 'none',
+});
+
+export const disabledStyle = css({
+  backgroundColor: themeVar.Common.colors.DisabledColor,
+  cursor: 'initial',
 });
 
 export interface ProcessProps<F extends FlowLine, P extends Process<F>> {
@@ -51,6 +57,14 @@ export interface ProcessProps<F extends FlowLine, P extends Process<F>> {
    * a condition given by the user to see if process is selected or not
    */
   isProcessSelected?: (sourceProcess: P) => boolean;
+  /**
+   * the component is disabled if true
+   */
+  disabled?: boolean;
+  /**
+   * the component is read only if true
+   */
+  readOnly?: boolean;
 }
 
 interface CustomProcessProps<F extends FlowLine, P extends Process<F>>
@@ -78,39 +92,49 @@ export function CustomProcessComponent<
   onClick,
   children,
   isProcessSelected,
+  disabled,
+  readOnly,
 }: CustomProcessProps<F, P>) {
   const processElement = React.useRef<HTMLDivElement | null>(null);
   const clickPosition = React.useRef<XYPosition>({ x: 0, y: 0 });
   const selected = isProcessSelected && isProcessSelected(process);
   const [, drop] = useDrop<DnDFlowchartHandle<F, P>, unknown, unknown>({
     accept: PROCESS_HANDLE_DND_TYPE,
-    canDrop: () => true,
+    canDrop: () => !disabled && !readOnly,
     drop: ({ processes, flowline }) => {
       onConnect(processes, flowline);
     },
   });
 
-  const onDragStart = React.useCallback((e: MouseEvent) => {
-    const targetBox = (e.target as HTMLDivElement).getBoundingClientRect();
-    clickPosition.current = {
-      x: e.clientX - targetBox.left,
-      y: e.clientY - targetBox.top,
-    };
-  }, []);
+  const onDragStart = React.useCallback(
+    (e: MouseEvent) => {
+      if (!disabled && !readOnly) {
+        const targetBox = (e.target as HTMLDivElement).getBoundingClientRect();
+        clickPosition.current = {
+          x: e.clientX - targetBox.left,
+          y: e.clientY - targetBox.top,
+        };
+      }
+    },
+    [disabled, readOnly],
+  );
 
   const onDrag = React.useCallback(
-    (_e: MouseEvent, position: XYPosition) => onMove(position),
-    [onMove],
+    (_e: MouseEvent, position: XYPosition) =>
+      !disabled && !readOnly && onMove(position),
+    [disabled, onMove, readOnly],
   );
 
   const onDragEnd = React.useCallback(
     (_e: MouseEvent, position: XYPosition) => {
-      onMoveEnd({
-        x: Math.max(position.x, 0),
-        y: Math.max(position.y, 0),
-      });
+      if (!disabled && !readOnly) {
+        onMoveEnd({
+          x: Math.max(position.x, 0),
+          y: Math.max(position.y, 0),
+        });
+      }
     },
-    [onMoveEnd],
+    [disabled, onMoveEnd, readOnly],
   );
 
   useMouseEventDnd(
@@ -149,9 +173,11 @@ export function DefaultProcessComponent<
     <CustomProcessComponent {...props}>
       {(process, onClick) => (
         <div
-          className={stateBoxStyle}
+          className={cx(stateBoxStyle, { [disabledStyle]: props.disabled })}
           onClick={e => {
-            onClick && onClick(e, process);
+            if (!props.disabled && !props.readOnly) {
+              onClick && onClick(e, process);
+            }
           }}
         >
           {process.id}

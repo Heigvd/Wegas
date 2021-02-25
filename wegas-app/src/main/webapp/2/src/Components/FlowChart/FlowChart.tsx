@@ -128,6 +128,14 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
    * a condition given by the user to see if process is selected or not
    */
   isProcessSelected?: (sourceProcess: P) => boolean;
+  /**
+   * the component is disabled if true
+   */
+  disabled?: boolean;
+  /**
+   * the component is read only if true
+   */
+  readOnly?: boolean;
 }
 
 const emptyProcesses: Process<FlowLine>[] = [];
@@ -147,6 +155,8 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   className,
   style,
   id,
+  disabled,
+  readOnly,
 }: FlowChartProps<F, P>) {
   const container = React.useRef<HTMLDivElement>();
   const processesRef = React.useRef<{ [pid: string]: HTMLElement }>({});
@@ -282,12 +292,20 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
             positionOffset={(i + 1) / (g.length + 1)}
             onClick={onFlowlineClick}
             isFlowlineSelected={isFlowlineSelected}
+            disabled={disabled}
+            readOnly={readOnly}
           />
         );
       }),
     );
     setFlows(flowLines);
-  }, [internalProcesses, isFlowlineSelected, onFlowlineClick]);
+  }, [
+    disabled,
+    internalProcesses,
+    isFlowlineSelected,
+    onFlowlineClick,
+    readOnly,
+  ]);
 
   return (
     <Toolbar
@@ -333,6 +351,8 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
             }}
             onClick={onProcessClick}
             isProcessSelected={isProcessSelected}
+            disabled={disabled}
+            readOnly={readOnly}
           />
         ))}
       </Toolbar.Content>
