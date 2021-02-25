@@ -165,6 +165,7 @@ class WebSocketListener {
         CHANNEL_PREFIX.Player + CurrentPlayerId,
         CHANNEL_PREFIX.Team + CurrentTeamId,
         CHANNEL_PREFIX.User + CurrentUser.id,
+        'global-channel',
       ];
 
       channels.forEach(chan =>
