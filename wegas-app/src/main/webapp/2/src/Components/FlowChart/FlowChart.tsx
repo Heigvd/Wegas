@@ -67,7 +67,8 @@ interface Connection<F extends FlowLine, P extends Process<F>> {
 }
 
 export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
-  extends ClassStyleId {
+  extends ClassStyleId,
+    DisabledReadonlyLocked {
   /**
    * the title of the chart
    */
@@ -128,14 +129,6 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
    * a condition given by the user to see if process is selected or not
    */
   isProcessSelected?: (sourceProcess: P) => boolean;
-  /**
-   * the component is disabled if true
-   */
-  disabled?: boolean;
-  /**
-   * the component is read only if true
-   */
-  readOnly?: boolean;
 }
 
 const emptyProcesses: Process<FlowLine>[] = [];
@@ -155,8 +148,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   className,
   style,
   id,
-  disabled,
-  readOnly,
+  ...options
 }: FlowChartProps<F, P>) {
   const container = React.useRef<HTMLDivElement>();
   const processesRef = React.useRef<{ [pid: string]: HTMLElement }>({});
@@ -246,8 +238,8 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   }, [processes]);
 
   // Tricking the rendering to build flowline after the first render (onReady like move)
-  const [flows, setFlows] = React.useState<JSX.Element[][]>([]);
-  React.useEffect(() => {
+  // const [flows, setFlows] = React.useState<JSX.Element[][]>([]);
+  const flows = React.useMemo(() => {
     const connections = Object.values(internalProcesses).reduce<
       Connection<F, P>[]
     >((o, process) => {
@@ -279,7 +271,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
     );
 
     // Making flowline from groups
-    const flowLines = groupedConnections.map(group =>
+    return groupedConnections.map(group =>
       group.map((c, i, g) => {
         return (
           <Flowline
@@ -292,20 +284,12 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
             positionOffset={(i + 1) / (g.length + 1)}
             onClick={onFlowlineClick}
             isFlowlineSelected={isFlowlineSelected}
-            disabled={disabled}
-            readOnly={readOnly}
+            {...options}
           />
         );
       }),
     );
-    setFlows(flowLines);
-  }, [
-    disabled,
-    internalProcesses,
-    isFlowlineSelected,
-    onFlowlineClick,
-    readOnly,
-  ]);
+  }, [internalProcesses, isFlowlineSelected, onFlowlineClick, options]);
 
   return (
     <Toolbar
@@ -351,8 +335,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
             }}
             onClick={onProcessClick}
             isProcessSelected={isProcessSelected}
-            disabled={disabled}
-            readOnly={readOnly}
+            {...options}
           />
         ))}
       </Toolbar.Content>

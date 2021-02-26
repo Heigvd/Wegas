@@ -16,7 +16,7 @@ import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { MessageString } from './MessageString';
 import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
 
-export interface EditorProps<T> {
+export interface EditorProps<T> extends DisabledReadonlyLocked {
   entity?: T;
   update?: (variable: T) => void;
   actions?: {
@@ -156,6 +156,7 @@ async function WindowedEditor<T extends IMergeable>({
   getConfig,
   path,
   error,
+  ...options
 }: EditorProps<T>) {
   let pathEntity = entity;
   if (Array.isArray(path) && path.length > 0) {
@@ -223,6 +224,7 @@ async function WindowedEditor<T extends IMergeable>({
           entity,
           customSchema !== undefined ? customSchema : schema,
         )}
+        {...options}
       />
     </div>
   );

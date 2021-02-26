@@ -25,8 +25,6 @@ import {
   validatorSchema,
 } from '../../Inputs/Validate';
 import { TumbleLoader } from '../../Loader';
-import { halfOpacity } from '../../../css/classes';
-import { cx } from 'emotion';
 
 interface PlayerTextInputProps
   extends WegasComponentProps,
@@ -43,7 +41,7 @@ interface PlayerTextInputProps
 }
 
 function PlayerTextInput({
-  // placeholder,
+  placeholder,
   context,
   script,
   className,
@@ -55,6 +53,7 @@ function PlayerTextInput({
   options,
 }: PlayerTextInputProps) {
   const text = useScript<STextDescriptor | string>(script, context);
+  const placeholderText = useScript<string>(placeholder, context);
   const player = useCurrentPlayer();
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
@@ -89,12 +88,10 @@ function PlayerTextInput({
             id={id}
             value={String(value)}
             onChange={onChange}
-            disabled={options.disabled}
-            // readOnly={readOnly}
-            // placeholder={placeholderText}
-            className={cx(className, {
-              [halfOpacity]: options.disabled
-            })}
+            disabled={options.disabled || options.locked}
+            readOnly={options.readOnly}
+            placeholder={placeholderText}
+            className={className}
             style={style}
           />
         );
@@ -105,12 +102,10 @@ function PlayerTextInput({
       id={id}
       value={typeof text === 'object' ? text.getValue(player) : text}
       onChange={onChange}
-      disabled={options.disabled}
-      // readOnly={readOnly}
-      // placeholder={placeholderText}
-      className={cx(className, {
-        [halfOpacity]: options.disabled
-      })}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
+      placeholder={placeholderText}
+      className={className}
       style={style}
     />
   );

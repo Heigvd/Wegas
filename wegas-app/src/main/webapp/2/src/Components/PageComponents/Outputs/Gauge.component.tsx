@@ -12,8 +12,6 @@ import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
 import { useCurrentPlayer } from '../../../data/selectors/Player';
 import { TumbleLoader } from '../../Loader';
-import { halfOpacity } from '../../../css/classes';
-import { cx } from 'emotion';
 
 interface PlayerGaugeProps extends WegasComponentProps {
   /**
@@ -38,7 +36,7 @@ function PlayerGauge({
   style,
   id,
   context,
-  options
+  options,
 }: PlayerGaugeProps) {
   const number = useScript<SNumberDescriptor>(script, context);
   const player = useCurrentPlayer();
@@ -47,9 +45,7 @@ function PlayerGauge({
     <TumbleLoader />
   ) : (
     <StandardGauge
-      className={cx(className, {
-        [halfOpacity]: options.disabled
-      })}
+      className={className}
       style={style}
       id={id}
       label={label}
@@ -57,7 +53,7 @@ function PlayerGauge({
       min={number.getMinValue() || 0}
       max={number.getMaxValue() || 1}
       value={number.getValue(player)}
-      disabled = {options.disabled}
+      disabled={options.disabled || options.locked}
     />
   );
 }

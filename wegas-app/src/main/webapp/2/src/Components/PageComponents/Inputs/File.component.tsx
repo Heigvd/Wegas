@@ -1,6 +1,4 @@
-import { cx } from 'emotion';
 import * as React from 'react';
-import { halfOpacity } from '../../../css/classes';
 import {
   FileBrowser,
   FileBrowserProps,
@@ -33,10 +31,9 @@ function PlayerFileInput({
   context,
   pathScript,
   pickType,
-  // filter,
   fileType,
   filterType,
-  readOnly,
+  pickOnly,
   className,
   style,
   id,
@@ -49,15 +46,14 @@ function PlayerFileInput({
     <FileBrowser
       defaultFilePath={path}
       noDelete
-      readOnly={readOnly}
+      pickOnly={pickOnly}
       onFileClick={file => handleOnChange && handleOnChange(file)}
       pickType={pickType}
       filter={{ fileType: fileType, filterType: filterType }}
-      className={cx(className, {
-        [halfOpacity]: options.disabled
-      })}
+      className={className}
       style={style}
       id={id}
+      {...options}
     />
   );
 }
@@ -89,8 +85,8 @@ registerComponent(
         values: ['show', 'hide', 'grey'], // Must be exactly FileBrowser.FilterType // TODO see how extract it automatically
         value: 'grey',
       }),
-      readOnly: schemaProps.boolean({
-        label: 'Read only',
+      pickOnly: schemaProps.boolean({
+        label: 'Pick only',
         value: true,
       }),
       ...classStyleIdShema,

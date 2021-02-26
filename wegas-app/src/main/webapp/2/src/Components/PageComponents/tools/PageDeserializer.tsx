@@ -22,7 +22,7 @@ import {
 import { classNameOrEmpty } from '../../../Helper/className';
 import { State } from '../../../data/Reducer/reducers';
 
-function getComponentFromPath(page: WegasComponent, path: number[]) {
+export function getComponentFromPath(page: WegasComponent, path: number[]) {
   const newPath = [...path];
   let component = page;
   while (newPath.length > 0) {
@@ -174,6 +174,7 @@ export function PageDeserializer({
           //(if not, if an error occures and the page's strucutre is the same it won't render the new component)
           key={pageId}
           path={realPath}
+          pageId={pageId}
           componentType={componentName}
           isContainer={container != null}
           context={context}
@@ -191,6 +192,7 @@ export function PageDeserializer({
         >
           <WegasComponent
             path={realPath}
+            pageId={pageId}
             context={context}
             componentType={componentName}
             Container={Container}

@@ -30,7 +30,9 @@ export default function QuestionDisplay({
     wwarn(`${question?.content} Not found`);
     return <TumbleLoader />;
   } else {
-    return <ConnectedQuestionDisplay entity={descriptor!.getEntity()} disabled={options.disabled}/>;
+    return (
+      <ConnectedQuestionDisplay entity={descriptor!.getEntity()} {...options} />
+    );
   }
 }
 

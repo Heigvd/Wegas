@@ -36,7 +36,7 @@ export default function PlayerStateMachine({
       State machine not found
     </pre>
   ) : (
-    <ComponentWithForm entityEditor disabled={options.disabled}>
+    <ComponentWithForm entityEditor {...options}>
       {({ localDispatch }) => {
         return (
           <StateMachineEditor

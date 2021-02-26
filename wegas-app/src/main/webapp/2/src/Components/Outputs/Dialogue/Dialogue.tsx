@@ -54,15 +54,14 @@ const dialogueDisplayStyle = css({
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
 // React element
 
-interface DialogueDisplayProps {
+interface DialogueDisplayProps extends DisabledReadonlyLocked {
   dialogue: SDialogueDescriptor;
-  /**
-   * disabled - if true, displayed as disabled
-   */
-  disabled?: boolean;
 }
 
-export function DialogueDisplay({ dialogue, disabled }: DialogueDisplayProps) {
+export function DialogueDisplay({
+  dialogue,
+  ...options
+}: DialogueDisplayProps) {
   const historyDiv = React.useRef<HTMLDivElement>(null);
 
   const [waiting, setWaiting] = React.useState(false);
@@ -161,7 +160,9 @@ export function DialogueDisplay({ dialogue, disabled }: DialogueDisplayProps) {
   return (
     <div
       className={
-        cx(dialogueDisplayStyle, flex, flexColumn, grow, {[halfOpacity]: disabled}) + ' wegas wegas-dialog'
+        cx(dialogueDisplayStyle, flex, flexColumn, grow, {
+          [halfOpacity]: options.disabled,
+        }) + ' wegas wegas-dialog'
       }
     >
       {/* ----- dialogue history  ---------------------------------------------------------- */}
@@ -197,6 +198,7 @@ export function DialogueDisplay({ dialogue, disabled }: DialogueDisplayProps) {
                   ),
                 );
               }}
+              {...options}
             />
           ))}
 

@@ -70,7 +70,7 @@ function PlayerBoolean({
       id={id}
       label={textLabel}
       value={value}
-      disabled={options.disabled}
+      disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
       onChange={v => {
         if (handleOnChange) {

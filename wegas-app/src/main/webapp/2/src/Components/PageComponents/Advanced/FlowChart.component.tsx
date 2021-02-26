@@ -45,6 +45,7 @@ export default function PlayerFlowChart<
   className,
   style,
   id,
+  options,
 }: PlayerFlowChartProps<F, P>) {
   const titleText = useScript<string>(title, context);
   const scriptProcesses = useScript<LabeledProcess<F>[]>(processes);
@@ -75,6 +76,7 @@ export default function PlayerFlowChart<
       id={id}
       Flowline={LabeledFlowLineComponent}
       Process={PlayerFlowChartProcessComponent}
+      {...options}
     />
   );
 }

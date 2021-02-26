@@ -31,9 +31,10 @@ export default function PlayerFileBrowser({
       File not found
     </pre>
   ) : (
-    <ComponentWithForm entityEditor disabled={options.disabled}>
+    <ComponentWithForm entityEditor {...options}>
       {({ localDispatch }) => {
         return (
+          // TODO : Implements a disable/readOnly/lock management on this component
           <TreeView
             variables={[rootDirectoryId]}
             noHeader

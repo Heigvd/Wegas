@@ -4,11 +4,12 @@ import { Toolbar } from '../../Components/Toolbar';
 import { defaultMargin, noOverflow, expandHeight } from '../../css/classes';
 import './FormView';
 import { Button, ButtonProps } from '../../Components/Inputs/Buttons/Button';
-import {  wwarn } from '../../Helper/wegaslog';
+import { wwarn } from '../../Helper/wegaslog';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
+import { isActionAllowed } from '../../Components/PageComponents/tools/options';
 
-interface EditorProps<T> {
+interface EditorProps<T> extends DisabledReadonlyLocked {
   entity?: T;
   update?: (variable: T) => void;
   actions: {
@@ -60,62 +61,73 @@ export class Form<T> extends React.Component<
     return (
       <Toolbar>
         <Toolbar.Header>
-          {this.props.update && (
-            <Button
-              label="Save"
-              disabled={!deepDifferent(this.state.val, this.props.entity)}
-              onClick={() => {
-                if (this.state.val !== this.props.entity && this.form) {
-                  const validation = this.form.validate();
-                  if (validation.length) {
-                    wwarn(this.state.val, JSON.stringify(validation, null, 2));
-                  } else {
-                    this.props.update!(this.state.val);
-                  }
-                }
-              }}
-              className={expandHeight}
-              disableBorders={{ right: true }}
-            />
-          )}
-          <ConfirmButton
-            label="Reset"
-            onAction={accept => {
-              accept && this.setState({ val: this.props.entity });
-            }}
-            disableBorders={{
-              left: this.props.update !== undefined,
-              right: this.props.actions.length > 0,
-            }}
-            buttonClassName={expandHeight}
-          />
-          {this.props.actions.map((a, i) => {
-            const btnProps: ButtonProps = {
-              label: a.label,
-              tabIndex: 1,
-              disableBorders: {
-                left: true,
-                right: i !== this.props.actions.length - 1,
-              },
-            };
-            return a.confirm ? (
+          {isActionAllowed({
+            disabled: this.props.disabled,
+            readOnly: this.props.readOnly,
+            locked: this.props.locked,
+          }) && (
+            <>
+              {this.props.update && (
+                <Button
+                  label="Save"
+                  disabled={!deepDifferent(this.state.val, this.props.entity)}
+                  onClick={() => {
+                    if (this.state.val !== this.props.entity && this.form) {
+                      const validation = this.form.validate();
+                      if (validation.length) {
+                        wwarn(
+                          this.state.val,
+                          JSON.stringify(validation, null, 2),
+                        );
+                      } else {
+                        this.props.update!(this.state.val);
+                      }
+                    }
+                  }}
+                  className={expandHeight}
+                  disableBorders={{ right: true }}
+                />
+              )}
               <ConfirmButton
-                {...btnProps}
-                key={i}
-                onAction={succes =>
-                  succes && a.action(this.state.val, this.props.path)
-                }
+                label="Reset"
+                onAction={accept => {
+                  accept && this.setState({ val: this.props.entity });
+                }}
+                disableBorders={{
+                  left: this.props.update !== undefined,
+                  right: this.props.actions.length > 0,
+                }}
                 buttonClassName={expandHeight}
               />
-            ) : (
-              <Button
-                {...btnProps}
-                key={i}
-                onClick={() => a.action(this.state.val, this.props.path)}
-                className={expandHeight}
-              />
-            );
-          })}
+              {this.props.actions.map((a, i) => {
+                const btnProps: ButtonProps = {
+                  label: a.label,
+                  tabIndex: 1,
+                  disableBorders: {
+                    left: true,
+                    right: i !== this.props.actions.length - 1,
+                  },
+                };
+                return a.confirm ? (
+                  <ConfirmButton
+                    {...btnProps}
+                    key={i}
+                    onAction={succes =>
+                      succes && a.action(this.state.val, this.props.path)
+                    }
+                    buttonClassName={expandHeight}
+                  />
+                ) : (
+                  <Button
+                    {...btnProps}
+                    key={i}
+                    onClick={() => a.action(this.state.val, this.props.path)}
+                    className={expandHeight}
+                  />
+                );
+              })}
+            </>
+          )}
         </Toolbar.Header>
         <Toolbar.Content className={noOverflow}>
           <div className={defaultMargin}>

@@ -59,7 +59,7 @@ function PlayerStringInput({
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
   const { handleOnCancel } = useOnCancelAction(onCancel, context);
 
-  const { disabled, readOnly } = options;
+  const { disabled, readOnly, locked } = options;
 
   const onChange = React.useCallback(
     (v: React.ReactText) => {
@@ -89,7 +89,7 @@ function PlayerStringInput({
           <SimpleInput
             value={value}
             onChange={onChange}
-            disabled={disabled}
+            disabled={disabled || locked}
             readOnly={readOnly}
             placeholder={placeholderText}
             className={className}

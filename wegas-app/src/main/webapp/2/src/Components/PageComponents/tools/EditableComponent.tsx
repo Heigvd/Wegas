@@ -465,6 +465,10 @@ export interface PageComponentProps extends EmptyPageComponentProps {
    */
   dropzones: DropZones;
   /**
+   * pageId - the id of the page
+   */
+  pageId: string | undefined;
+  /**
    * path - the path of the current component
    */
   path: number[];
@@ -645,7 +649,11 @@ export function ComponentContainer({
         classNameOrEmpty(options.outerClassName)
       }
       style={layoutStyle}
-      onClick={onClickManaged ? undefined : onClick}
+      onClick={
+        onClickManaged || options.disabled || options.readOnly || options.locked
+          ? undefined
+          : onClick
+      }
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
       {...dropFunctions}
@@ -696,18 +704,7 @@ export function ComponentContainer({
           dropPosition="AFTER"
         />
       )}
-      {(options.disabled || options.locked) === true && (
-        <LockedOverlay
-          locked={options.locked}
-          // confirmClick={waitConfirmation}
-          // onConfirmClick={(confirmed, event) => {
-          //   if (confirmed) {
-          //     onClick(event);
-          //   }
-          //   setWaitConfirmation(false);
-          // }}
-        />
-      )}
+      {options.locked === true && <LockedOverlay locked={options.locked} />}
     </Container>
   ) : null;
 }

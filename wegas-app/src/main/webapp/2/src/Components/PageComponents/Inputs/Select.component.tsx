@@ -26,8 +26,6 @@ import { translate } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { useComponentScript } from '../../Hooks/useComponentScript';
 import { TumbleLoader } from '../../Loader';
-import { cx } from 'emotion';
-import { halfOpacity } from '../../../css/classes';
 
 interface PlayerSelectInputProps extends WegasComponentProps {
   /**
@@ -98,12 +96,10 @@ function PlayerSelectInput({
           );
         }
       }}
-      className={cx(className, {
-        [halfOpacity]: options.disabled || options.readOnly
-      })}
+      className={className}
       style={style}
-      disabled = {options.disabled}
-      readOnly = {options.readOnly}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
     />
   );
 }

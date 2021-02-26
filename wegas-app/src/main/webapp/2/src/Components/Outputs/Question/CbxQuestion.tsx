@@ -12,10 +12,8 @@ import { StoreDispatch } from '../../../data/Stores/store';
 import { MessageString } from '../../../Editor/Components/MessageString';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
-import {
-  ChoiceContainer,
-  choiceInputStyle,
-} from './ChoiceContainer';
+import { isActionAllowed } from '../../PageComponents/tools/options';
+import { ChoiceContainer, choiceInputStyle } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
 import { RepliesDisplay } from './Reply';
 
@@ -66,9 +64,8 @@ function CbxChoiceDisplay({
   );
 }
 
-interface CbxQuestionDisplayProps extends QuestionInfo {
+interface CbxQuestionDisplayProps extends QuestionInfo, DisabledReadonlyLocked {
   dispatch: StoreDispatch;
-  disabled?: boolean;
 }
 
 export function CbxQuestionDisplay({
@@ -78,11 +75,12 @@ export function CbxQuestionDisplay({
   choicesD,
   choicesI,
   replies,
-  disabled,
+  ...options
 }: CbxQuestionDisplayProps) {
   const { maxReplies, minReplies } = questionD;
 
-  const canReply = questionI != null && !questionI.validated;
+  const canReply =
+    questionI != null && !questionI.validated && isActionAllowed(options);
   const maxReplyReached = maxReplies != null && replies.length >= maxReplies;
   const remainingChoices = minReplies == null ? 0 : minReplies - replies.length;
   const radio = maxReplies === 1 && minReplies === 1;
@@ -103,7 +101,11 @@ export function CbxQuestionDisplay({
   }
 
   return (
-    <div className={cx(questionStyle, {[halfOpacity]: disabled})}>
+    <div
+      className={cx(questionStyle, {
+        [halfOpacity]: options.disabled || options.locked,
+      })}
+    >
       <div
         dangerouslySetInnerHTML={{
           __html: questionD.description
@@ -142,7 +144,10 @@ export function CbxQuestionDisplay({
             className={autoMargin}
             label={'Validate'}
             onClick={() => dispatch(validateQuestion(questionD))}
-            disabled={remainingChoices > 0}
+            disabled={
+              remainingChoices > 0 || options.disabled || options.locked
+            }
+            readOnly={options.readOnly}
           />
         </div>
       )}

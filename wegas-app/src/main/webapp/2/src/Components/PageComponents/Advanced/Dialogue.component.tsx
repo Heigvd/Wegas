@@ -15,13 +15,23 @@ interface PlayerDialogueProps extends WegasComponentProps {
   dialogue?: IScript;
 }
 
-export default function PlayerDialogue({ dialogue, options }: PlayerDialogueProps) {
+export default function PlayerDialogue({
+  dialogue,
+  options,
+}: PlayerDialogueProps) {
   const { descriptor } = useComponentScript<IDialogueDescriptor>(dialogue);
   if (descriptor === undefined) {
     return <TumbleLoader />;
   }
 
-  return <DialogueDisplay dialogue={descriptor} disabled={options.disabled} />;
+  return (
+    <DialogueDisplay
+      dialogue={descriptor}
+      disabled={options.disabled}
+      readOnly={options.readOnly}
+      locked={options.locked}
+    />
+  );
 }
 
 registerComponent(

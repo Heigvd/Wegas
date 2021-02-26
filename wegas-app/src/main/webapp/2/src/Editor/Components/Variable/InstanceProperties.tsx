@@ -58,7 +58,9 @@ function isEditingVariable(editing?: Edition): editing is VariableEdition {
   );
 }
 
-export interface InstancePropertiesProps extends ThemeComponent {
+export interface InstancePropertiesProps
+  extends ThemeComponent,
+    DisabledReadonlyLocked {
   state: LocalGlobalState;
   dispatch: StoreDispatch;
   actions?: EditorProps<IVariableInstance>['actions'];
@@ -75,6 +77,7 @@ export function InstanceProperties({
   state,
   dispatch,
   actions,
+  ...options
 }: InstancePropertiesProps) {
   const editing = state.global.editing;
   const events = state.global.events;
@@ -151,6 +154,7 @@ export function InstanceProperties({
             entity={selectedInstance}
             error={parseEventFromIndex(events)}
             actions={actions}
+            {...options}
           />
         )}
       </Toolbar.Content>

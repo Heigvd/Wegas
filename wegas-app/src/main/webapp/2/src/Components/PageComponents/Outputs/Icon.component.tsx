@@ -12,8 +12,6 @@ import {
   icons,
 } from '../../../Editor/Components/Views/FontAwesome';
 import { omit } from 'lodash-es';
-import { halfOpacity } from '../../../css/classes';
-import { cx } from 'emotion';
 
 interface PlayerIconProps extends WegasComponentProps {
   icon?: Icon;
@@ -21,14 +19,13 @@ interface PlayerIconProps extends WegasComponentProps {
 
 function PlayerIcon({ icon, style, className, options }: PlayerIconProps) {
   return (
-  <IconComp
-    icon={icon}
-    style={style}
-    className={cx(className, {
-      [halfOpacity]: options.disabled
-    })}
-    disabled = {options.disabled}
-  />)
+    <IconComp
+      icon={icon}
+      style={style}
+      className={className}
+      disabled={options.disabled || options.locked}
+    />
+  );
 }
 
 registerComponent(

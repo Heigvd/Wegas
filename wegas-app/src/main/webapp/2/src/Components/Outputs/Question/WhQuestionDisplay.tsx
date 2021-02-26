@@ -34,11 +34,9 @@ import { Button } from '../../Inputs/Buttons/Button';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { autoMargin } from '../../../css/classes';
-import {
-  ChoiceContainer,
-  choiceInputStyle,
-} from './ChoiceContainer';
+import { ChoiceContainer, choiceInputStyle } from './ChoiceContainer';
 import { questionStyle } from './Question';
+import { isActionAllowed } from '../../PageComponents/tools/options';
 
 interface WhQuestionInfo {
   questionD: Readonly<IWhQuestionDescriptor>;
@@ -61,7 +59,7 @@ export function whQuestionInfo(
   };
 }
 
-interface WhChoiceDisplayProps {
+interface WhChoiceDisplayProps extends DisabledReadonlyLocked {
   choiceD: IWhChoiceDescriptor;
   choiceI: IWhChoiceInstance;
   questionI: IWhQuestionInstance;
@@ -72,13 +70,14 @@ function WhChoiceDisplay({
   choiceI,
   questionI,
   onChange,
+  ...options
 }: WhChoiceDisplayProps) {
   const { lang } = React.useContext(languagesCTX);
   return (
     <ChoiceContainer
       active
       descriptor={choiceD}
-      canReply={!questionI.validated}
+      canReply={!questionI.validated && isActionAllowed(options)}
     >
       {choiceD['@class'] === 'BooleanDescriptor' ? (
         <CheckBox
@@ -88,7 +87,8 @@ function WhChoiceDisplay({
             newChoiceI.value = v;
             onChange(newChoiceI);
           }}
-          disabled={questionI.validated}
+          disabled={questionI.validated || options.disabled || options.locked}
+          readOnly={options.readOnly}
         />
       ) : choiceD['@class'] === 'NumberDescriptor' ? (
         <NumberSlider
@@ -106,7 +106,8 @@ function WhChoiceDisplay({
             newChoiceI.value = v;
             onChange(newChoiceI);
           }}
-          disabled={questionI.validated}
+          disabled={questionI.validated || options.disabled || options.locked}
+          readOnly={options.readOnly}
           displayValues="NumberInput"
         />
       ) : choiceD['@class'] === 'StringDescriptor' ? (
@@ -120,7 +121,8 @@ function WhChoiceDisplay({
             );
             onChange(newChoiceI);
           }}
-          disabled={questionI.validated}
+          disabled={questionI.validated || options.disabled || options.locked}
+          readOnly={options.readOnly}
         />
       ) : (
         <HTMLEditor
@@ -133,7 +135,8 @@ function WhChoiceDisplay({
             );
             onChange(newChoiceI);
           }}
-          disabled={questionI.validated}
+          disabled={questionI.validated || options.disabled || options.locked}
+          readOnly={options.readOnly}
           inline={false}
         />
       )}
@@ -141,9 +144,10 @@ function WhChoiceDisplay({
   );
 }
 
-interface WhQuestionDisplayProps extends WhQuestionInfo {
+interface WhQuestionDisplayProps
+  extends WhQuestionInfo,
+    DisabledReadonlyLocked {
   dispatch: StoreDispatch;
-  disabled?: boolean;
 }
 
 export function WhQuestionDisplay({
@@ -152,7 +156,7 @@ export function WhQuestionDisplay({
   questionI,
   choicesD,
   choicesI,
-  disabled,
+  ...options
 }: WhQuestionDisplayProps) {
   const [choicesValues, setChoicesValues] = React.useState<
     (IWhChoiceInstance | undefined)[]
@@ -163,7 +167,11 @@ export function WhQuestionDisplay({
   }
 
   return (
-    <div className={cx(questionStyle, {[halfOpacity]: disabled})}>
+    <div
+      className={cx(questionStyle, {
+        [halfOpacity]: options.disabled || options.locked,
+      })}
+    >
       <div
         dangerouslySetInnerHTML={{
           __html: questionD.description
@@ -190,6 +198,7 @@ export function WhQuestionDisplay({
             questionI={questionI}
             choiceD={choiceD}
             choiceI={choiceI}
+            {...options}
           />
         );
       })}
@@ -203,7 +212,8 @@ export function WhQuestionDisplay({
               choiceI => choiceI != null && dispatch(updateInstance(choiceI)),
             );
           }}
-          disabled={questionI.validated}
+          disabled={questionI.validated || options.disabled || options.locked}
+          readOnly={options.readOnly}
         />
       </div>
       {/* <RepliesDisplay replies={replies} /> */}

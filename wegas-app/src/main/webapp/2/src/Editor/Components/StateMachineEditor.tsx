@@ -87,7 +87,7 @@ export interface StateProcess extends Process<TransitionFlowLine> {
 
 interface StateMachineEditorProps<
   IFSM extends IFSMDescriptor | IDialogueDescriptor
-> {
+> extends DisabledReadonlyLocked {
   stateMachine: Immutable<IFSM>;
   stateMachineInstance: IFSM['defaultInstance'];
   localDispatch?: StoreDispatch;
@@ -104,8 +104,9 @@ export function StateMachineEditor<
   localDispatch,
   forceLocalDispatch,
   editPath = emptyPath,
-}: //search,
-StateMachineEditorProps<IFSM>) {
+  search, // TODO:Implement search in Flowchart
+  ...options
+}: StateMachineEditorProps<IFSM>) {
   type TState = IFSM['states'][0];
   type TTransition = TState['transitions'][0];
 
@@ -400,6 +401,7 @@ StateMachineEditorProps<IFSM>) {
       isProcessSelected={isProcessSelected}
       Process={StateProcessComponent}
       Flowline={TransitionFlowLineComponent}
+      {...options}
     />
   );
 }
@@ -446,11 +448,14 @@ function globalStateSelector(s: RState) {
   }
 }
 
+interface ConnectedStateMachineEditorProps extends DisabledReadonlyLocked {
+  localDispatch?: StoreDispatch;
+}
+
 export function ConnectedStateMachineEditor({
   localDispatch,
-}: {
-  localDispatch?: StoreDispatch;
-}) {
+  ...options
+}: ConnectedStateMachineEditorProps) {
   const globalState = useStore(globalStateSelector);
 
   if ('variable' in globalState) {
@@ -470,17 +475,25 @@ export function ConnectedStateMachineEditor({
           localDispatch={localDispatch}
           search={globalState.search}
           editPath={globalState.editPath}
+          {...options}
         />
       </div>
     );
   }
 }
 
-export default function StateMachineEditorWithMeta() {
+export default function StateMachineEditorWithMeta(
+  options: DisabledReadonlyLocked,
+) {
   return (
-    <ComponentWithForm entityEditor>
+    <ComponentWithForm entityEditor {...options}>
       {({ localDispatch }) => {
-        return <ConnectedStateMachineEditor localDispatch={localDispatch} />;
+        return (
+          <ConnectedStateMachineEditor
+            localDispatch={localDispatch}
+            {...options}
+          />
+        );
       }}
     </ComponentWithForm>
   );
@@ -497,6 +510,7 @@ interface ModifiableTextProps {
 }
 
 // Currently this component is not used but it will be in the future
+// TODO : Integrade this component in DialogueEditor
 // @ts-ignore
 function ModifiableText({
   mode,

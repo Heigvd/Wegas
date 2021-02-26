@@ -52,15 +52,11 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
   );
 }
 
-interface InboxDisplayProps {
+interface InboxDisplayProps extends DisabledReadonlyLocked {
   inbox: IInboxDescriptor;
-  /**
-   * disabled - if true, displayed as disabled
-   */
-  disabled?:boolean;
 }
 
-export function InboxDisplay({ inbox, disabled }: InboxDisplayProps) {
+export function InboxDisplay({ inbox, ...options }: InboxDisplayProps) {
   const messagesSelector = React.useCallback(
     () => getInstance(inbox, Player.selectCurrent())!.messages,
     [inbox],
@@ -72,7 +68,7 @@ export function InboxDisplay({ inbox, disabled }: InboxDisplayProps) {
     <EntityChooser
       entities={messages}
       entityLabel={e => <MessageLabel message={e} />}
-      disabled={disabled}
+      {...options}
     >
       {MessageDisplay}
     </EntityChooser>

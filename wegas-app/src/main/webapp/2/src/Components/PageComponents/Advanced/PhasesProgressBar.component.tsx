@@ -65,7 +65,7 @@ export default function PlayerPhasesProgressBar({
         value={phaseInstance!.getValue()}
         phaseMin={phaseMinInstance!.getValue()}
         phaseMax={phaseMaxInstance!.getValue()}
-        disabled={options.disabled}
+        disabled={options.disabled || options.locked}
       />
     );
   }

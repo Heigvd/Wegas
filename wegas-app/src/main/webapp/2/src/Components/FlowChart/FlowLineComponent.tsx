@@ -1,9 +1,10 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
+import { isActionAllowed } from '../PageComponents/tools/options';
 import { FlowLine, Process } from './FlowChart';
 import { FlowLineHandle, FLOW_HANDLE_SIDE } from './Handles';
-import { disabledStyle } from './ProcessComponent';
+import { disabledStyle, readOnlyStyle } from './ProcessComponent';
 import { transitionBoxStyle } from './TransitionFlowLineComponent';
 
 const childrenContainerStyle = (selected: boolean) =>
@@ -79,7 +80,8 @@ const arrowCSS = {
   fill: 'none',
 };
 
-export interface FlowLineProps<F extends FlowLine, P extends Process<F>> {
+export interface FlowLineProps<F extends FlowLine, P extends Process<F>>
+  extends DisabledReadonlyLocked {
   /**
    * the DOM element from where the flowline starts
    */
@@ -113,14 +115,6 @@ export interface FlowLineProps<F extends FlowLine, P extends Process<F>> {
    * a condition given by the user to see if flowline is selected or not
    */
   isFlowlineSelected?: (sourceProcess: P, flowline: F) => boolean;
-  /**
-   * the component is disabled if true
-   */
-  disabled?: boolean;
-  /**
-   * the component is read only if true
-   */
-  readOnly?: boolean;
 }
 
 interface CustomFlowLineProps<F extends FlowLine, P extends Process<F>>
@@ -165,11 +159,8 @@ export function CustomFlowLineComponent<
   if (props.startProcess === props.endProcess) {
     return (
       <CircularFlowLineComponent
-        flowline={props.flowline}
+        {...props}
         process={props.startProcess}
-        isFlowlineSelected={props.isFlowlineSelected}
-        onClick={props.onClick}
-        positionOffset={props.positionOffset}
         processElement={props.startProcessElement}
       >
         {props.children}
@@ -193,8 +184,7 @@ export function CustomStraitFlowLineComponent<
   onClick,
   isFlowlineSelected = defaultSelect,
   children,
-  disabled,
-  readOnly,
+  ...options
 }: CustomFlowLineProps<F, P>) {
   const parent = startProcessElement?.parentElement;
   const parentBox = parent?.getBoundingClientRect();
@@ -422,7 +412,7 @@ export function CustomStraitFlowLineComponent<
           markerEnd={`url(#${selected ? 'selectedarrowhead' : 'arrowhead'})`}
         />
       </svg>
-      {!disabled && !readOnly && (
+      {isActionAllowed(options) && (
         <>
           <FlowLineHandle
             position={startHandlePosition}
@@ -471,7 +461,7 @@ export function CustomStraitFlowLineComponent<
         }}
         className={childrenContainerStyle(selected)}
         onClick={e => {
-          if (!disabled && !readOnly) {
+          if (isActionAllowed(options)) {
             (e.target as HTMLDivElement).focus();
           }
         }}
@@ -482,10 +472,8 @@ export function CustomStraitFlowLineComponent<
   );
 }
 
-export interface CircularFlowLineProps<
-  F extends FlowLine,
-  P extends Process<F>
-> {
+export interface CircularFlowLineProps<F extends FlowLine, P extends Process<F>>
+  extends DisabledReadonlyLocked {
   /**
    * the DOM element from where the flowline starts
    */
@@ -511,14 +499,6 @@ export interface CircularFlowLineProps<
    * a condition given by the user to see if flowline is selected or not
    */
   isFlowlineSelected?: (sourceProcess: P, flowline: F) => boolean;
-  /**
-   * the component is disabled if true
-   */
-  disabled?: boolean;
-  /**
-   * the component is read only if true
-   */
-  readOnly?: boolean;
 }
 
 interface CustomCircularFlowLineProps<F extends FlowLine, P extends Process<F>>
@@ -546,8 +526,7 @@ export function CircularFlowLineComponent<
   onClick,
   isFlowlineSelected = defaultSelect,
   children,
-  disabled,
-  readOnly,
+  ...options
 }: CustomCircularFlowLineProps<F, P>) {
   const parent = processElement?.parentElement;
   const parentBox = parent?.getBoundingClientRect();
@@ -586,7 +565,7 @@ export function CircularFlowLineComponent<
           markerEnd={`url(#${selected ? 'selectedarrowhead' : 'arrowhead'})`}
         />
       </svg>
-      {!disabled && !readOnly && (
+      {isActionAllowed(options) && (
         <>
           <FlowLineHandle
             position={{
@@ -630,7 +609,7 @@ export function CircularFlowLineComponent<
         }}
         className={childrenContainerStyle(selected)}
         onClick={e => {
-          if (!disabled && !readOnly) {
+          if (isActionAllowed(options)) {
             (e.target as HTMLDivElement).focus();
           }
         }}
@@ -735,9 +714,18 @@ export function DefaultFlowLineComponent<
     <CustomFlowLineComponent {...props}>
       {(flowline, startProcess, onClick) => (
         <div
-          onClick={e => onClick && onClick(e, startProcess, flowline)}
+          onClick={e =>
+            onClick &&
+            isActionAllowed({
+              disabled: props.disabled,
+              readOnly: props.readOnly,
+              locked: props.locked,
+            }) &&
+            onClick(e, startProcess, flowline)
+          }
           className={cx(transitionBoxStyle, {
-            [disabledStyle]: props.disabled,
+            [disabledStyle]: props.disabled || props.locked,
+            [readOnlyStyle]: props.readOnly,
           })}
         >
           {flowline.id}

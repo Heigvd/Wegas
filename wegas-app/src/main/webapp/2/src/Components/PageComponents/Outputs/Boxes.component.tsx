@@ -11,8 +11,6 @@ import { IScript, INumberDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { classStyleIdShema } from '../tools/options';
 import { TumbleLoader } from '../../Loader';
-import { cx } from 'emotion';
-import { halfOpacity } from '../../../css/classes';
 
 interface PlayerBoxesProps extends WegasComponentProps {
   /**
@@ -53,9 +51,7 @@ function PlayerBoxes({
     <TumbleLoader />
   ) : (
     <NumberBox
-      className={cx(className, {
-        [halfOpacity]: options.disabled
-      })}
+      className={className}
       style={style}
       id={id}
       value={instance?.getValue()}
@@ -68,7 +64,8 @@ function PlayerBoxes({
       label={label}
       hideBoxValue={hideBoxValue}
       showLabelValue={showLabelValue}
-      disabled = {options.disabled}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
     />
   );
 }

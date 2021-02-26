@@ -36,6 +36,7 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { classNameOrEmpty } from '../Helper/className';
 import { inputStyleCSS } from './Inputs/inputStyles';
 import { debounce } from 'lodash-es';
+import { isActionAllowed } from './PageComponents/tools/options';
 
 const toolbar = css({
   width: '300px',
@@ -70,7 +71,7 @@ interface ActionButton {
   onAction: (api: TinyMCEButtonAPI, editor: TinyMCEEditor) => void;
 }
 
-interface HTMLEditorProps extends ClassStyleId {
+interface HTMLEditorProps extends ClassStyleId, DisabledReadonlyLocked {
   /**
    * value - content to inject in the editor
    */
@@ -92,14 +93,22 @@ interface HTMLEditorProps extends ClassStyleId {
    */
   delay?: number;
   /**
-   * disabled - if true, displayed as disabled
-   */
-  disabled?: boolean;
-  /**
    * inline - enables the editor after a click on it
    * @default true
    */
   inline?: boolean;
+  /**
+   * When no content, this text is displayed in the editor
+   */
+  placeholder?: string;
+  /**
+   * the editor is disabled
+   */
+  disabled?: boolean;
+  /**
+   * the editor is in read only mode
+   */
+  readOnly?: boolean;
 }
 
 let HTMLEditorID = 0;
@@ -112,8 +121,10 @@ export default function HTMLEditor({
   style,
   id,
   delay = 100,
-  disabled,
   inline = true,
+  placeholder,
+  disabled,
+  readOnly,
 }: HTMLEditorProps) {
   const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>(
     {},
@@ -151,13 +162,15 @@ export default function HTMLEditor({
       return {
         theme: 'silver',
         inline: inline,
+        readonly: readOnly,
+        placeholder,
         browser_spellcheck: true,
         plugins: [
           `${onSave ? 'save' : ''} autolink link image lists code media table`,
           'paste advlist',
         ],
         toolbar: `${
-          onSave ? 'save' : ''
+          onSave && isActionAllowed({ disabled, readOnly }) ? 'save' : ''
         } bold italic underline bullist image | alignleft aligncenter alignright alignjustify link | ${[
           // ...extraStyleButton,
           ...extraActionButton,
@@ -175,7 +188,10 @@ export default function HTMLEditor({
         toolbar_items_size: 'small',
         file_picker_callback: (callback: CallbackFN) =>
           setFileBrowsing({ fn: callback }),
-        save_onsavecallback: () => onSave && onSave(HTMLContent.current),
+        save_onsavecallback: () =>
+          onSave &&
+          isActionAllowed({ disabled, readOnly }) &&
+          onSave(HTMLContent.current),
         fixed_toolbar_container: '#' + toolBarContainerId,
         style_formats: [
           {
@@ -262,7 +278,7 @@ export default function HTMLEditor({
         },
       };
     },
-    [classes, onSave, inline],
+    [inline, readOnly, placeholder, onSave, disabled, classes],
   );
 
   React.useEffect(() => {
@@ -319,7 +335,6 @@ export default function HTMLEditor({
           onFocus={() => setEditorFocus(true)}
           onBlur={() => setEditorFocus(false)}
           disabled={disabled}
-          // textareaName={editorStyle}
         />
       </div>
       {fileBrowsing.fn && (

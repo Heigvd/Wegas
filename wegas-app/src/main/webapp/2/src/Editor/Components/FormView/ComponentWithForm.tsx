@@ -31,15 +31,11 @@ export interface ComponentWithFormChildrenProps {
   localDispatch: StoreDispatch;
 }
 
-interface ComponentWithFormProps {
+interface ComponentWithFormProps extends DisabledReadonlyLocked {
   children: (
     props: ComponentWithFormChildrenProps,
   ) => React.ReactElement | null;
   entityEditor?: boolean;
-  /**
-   * disabled - if true, displayed as disabled
-   */
-  disabled?: boolean;
 }
 
 const AsyncInstancesEditor = asyncSFC<InstancePropertiesProps>(
@@ -54,7 +50,7 @@ const AsyncInstancesEditor = asyncSFC<InstancePropertiesProps>(
 export function ComponentWithForm({
   children,
   entityEditor,
-  disabled,
+  ...options
 }: ComponentWithFormProps) {
   const {
     useStore: useLocalStore,
@@ -85,7 +81,10 @@ export function ComponentWithForm({
   }
 
   return (
-    <ReflexContainer className={cx(flex, grow, {[halfOpacity]: disabled})} orientation="vertical">
+    <ReflexContainer
+      className={cx(flex, grow, { [halfOpacity]: options.disabled })}
+      orientation="vertical"
+    >
       <ReflexElement flex={4} className={cx(flex, growBig, autoScroll)}>
         {children({
           localState: localState.editing,
@@ -102,6 +101,7 @@ export function ComponentWithForm({
             actions={actions}
             entity={localEntity}
             error={parseEventFromIndex(localState.events, localDispatch)}
+            {...options}
           />
         </ReflexElement>
       )}
@@ -119,6 +119,7 @@ export function ComponentWithForm({
               <AsyncInstancesEditor
                 state={{ global: localState }}
                 dispatch={localDispatch}
+                {...options}
               />
             </Toolbar.Content>
           </Toolbar>

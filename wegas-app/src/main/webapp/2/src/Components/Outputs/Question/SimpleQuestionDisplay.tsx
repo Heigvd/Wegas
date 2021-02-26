@@ -6,6 +6,7 @@ import { TranslatableContent } from '../../../data/i18n';
 import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
 import { StoreDispatch } from '../../../data/Stores/store';
 import { Button } from '../../Inputs/Buttons/Button';
+import { isActionAllowed } from '../../PageComponents/tools/options';
 import { ChoiceContainer } from './ChoiceContainer';
 import { QuestionInfo, questionStyle } from './Question';
 import { RepliesDisplay } from './Reply';
@@ -48,9 +49,10 @@ function SimpleChoiceDisplay({
   );
 }
 
-interface SimpleQuestionDisplayProps extends QuestionInfo {
+interface SimpleQuestionDisplayProps
+  extends QuestionInfo,
+    DisabledReadonlyLocked {
   dispatch: StoreDispatch;
-  disabled?:boolean;
 }
 
 export function SimpleQuestionDisplay({
@@ -60,13 +62,14 @@ export function SimpleQuestionDisplay({
   choicesD,
   choicesI,
   replies,
-  disabled,
+  ...options
 }: SimpleQuestionDisplayProps) {
   const validatedReplies = replies.filter(r => r.validated);
 
   const canReply =
-    questionD.maxReplies == null ||
-    validatedReplies.length < questionD.maxReplies;
+    (questionD.maxReplies == null ||
+      validatedReplies.length < questionD.maxReplies) &&
+    isActionAllowed(options);
 
   const onChoiceValidate = React.useCallback(
     (choice: IChoiceDescriptor) => {
@@ -80,7 +83,11 @@ export function SimpleQuestionDisplay({
   }
 
   return (
-    <div className={cx(questionStyle, {[halfOpacity]:disabled})}>
+    <div
+      className={cx(questionStyle, {
+        [halfOpacity]: options.disabled || options.locked,
+      })}
+    >
       <div
         dangerouslySetInnerHTML={{
           __html: questionD.description

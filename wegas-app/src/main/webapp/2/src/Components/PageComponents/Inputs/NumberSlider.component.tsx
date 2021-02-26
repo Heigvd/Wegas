@@ -70,7 +70,6 @@ function PlayerNumberSlider({
       style={style}
       id={id}
       value={instance?.getValue()}
-      disabled={options.disabled}
       onChange={(v, i) => {
         if (i === 'DragEnd') {
           if (handleOnChange) {
@@ -86,6 +85,8 @@ function PlayerNumberSlider({
       }}
       min={descriptor?.getMinValue() || 0}
       max={descriptor?.getMaxValue() || 1}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
     />
   );
 }

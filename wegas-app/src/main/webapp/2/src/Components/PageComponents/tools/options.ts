@@ -410,6 +410,14 @@ export const layoutConditionnalChoices: HashListChoices = [
   },
 ];
 
+export function isActionAllowed({
+  disabled,
+  readOnly,
+  locked,
+}: DisabledReadonlyLocked) {
+  return !disabled && !readOnly && !locked;
+}
+
 // OPTIONS -> DECORATIONS
 export interface WegasComponentDecorations {
   infoBullet?: PlayerInfoBulletProps;

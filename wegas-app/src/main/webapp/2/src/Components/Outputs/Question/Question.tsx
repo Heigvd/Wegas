@@ -54,49 +54,54 @@ export function questionInfo(question: IQuestionDescriptor): QuestionInfo {
   };
 }
 
+interface ConnectedSimpleQuestionDisplayProps extends DisabledReadonlyLocked {
+  entity: Readonly<IQuestionDescriptor>;
+}
+
 export function ConnectedSimpleQuestionDisplay({
   entity,
-  disabled,
-}: {
-  entity: Readonly<IQuestionDescriptor>;
-  disabled?: boolean;
-}) {
+  ...options
+}: ConnectedSimpleQuestionDisplayProps) {
   const questionInfoSelector = React.useCallback(() => questionInfo(entity), [
     entity,
   ]);
   const state = useStore(questionInfoSelector);
 
   return state.questionD.cbx ? (
-    <CbxQuestionDisplay {...state} dispatch={store.dispatch} disabled={disabled} />
+    <CbxQuestionDisplay {...state} dispatch={store.dispatch} {...options} />
   ) : (
-    <SimpleQuestionDisplay {...state} dispatch={store.dispatch} disabled= {disabled}/>
+    <SimpleQuestionDisplay {...state} dispatch={store.dispatch} {...options} />
   );
+}
+
+interface ConnectedWhQuestionDisplay extends DisabledReadonlyLocked {
+  entity: Readonly<IWhQuestionDescriptor>;
 }
 
 export function ConnectedWhQuestionDisplay({
   entity,
-  disabled,
-}: {
-  entity: Readonly<IWhQuestionDescriptor>;
-  disabled?: boolean;
-}) {
+  ...options
+}: ConnectedWhQuestionDisplay) {
   const questionInfoSelector = React.useCallback(() => whQuestionInfo(entity), [
     entity,
   ]);
   const state = useStore(questionInfoSelector);
-  return <WhQuestionDisplay {...state} dispatch={store.dispatch} disabled={disabled}/>;
+  return (
+    <WhQuestionDisplay {...state} dispatch={store.dispatch} {...options} />
+  );
+}
+
+interface ConnectedQuestionDisplayProps extends DisabledReadonlyLocked {
+  entity: Readonly<IQuestionDescriptor | IWhQuestionDescriptor>;
 }
 
 export function ConnectedQuestionDisplay({
   entity,
-  disabled,
-}: {
-  entity: Readonly<IQuestionDescriptor | IWhQuestionDescriptor>;
-  disabled?: boolean;
-}) {
+  ...options
+}: ConnectedQuestionDisplayProps) {
   return entityIs(entity, 'QuestionDescriptor') ? (
-    <ConnectedSimpleQuestionDisplay entity={entity} disabled={disabled}/>
+    <ConnectedSimpleQuestionDisplay entity={entity} {...options} />
   ) : (
-    <ConnectedWhQuestionDisplay entity={entity} disabled={disabled}/>
+    <ConnectedWhQuestionDisplay entity={entity} {...options} />
   );
 }
