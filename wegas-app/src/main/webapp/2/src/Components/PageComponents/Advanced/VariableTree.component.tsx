@@ -15,7 +15,7 @@ interface PlayerFileBrowserProps extends WegasComponentProps {
   list?: IScript;
 }
 
-export default function PlayerFileBrowser({
+export default function PlayerVariableTree({
   list,
   context,
   className,
@@ -50,9 +50,9 @@ export default function PlayerFileBrowser({
 
 registerComponent(
   pageComponentFactory({
-    component: PlayerFileBrowser,
+    component: PlayerVariableTree,
     componentType: 'Advanced',
-    name: 'File browser',
+    name: 'Variable tree',
     icon: 'atom',
     schema: {
       list: schemaProps.scriptVariable({
@@ -68,13 +68,5 @@ registerComponent(
         overflow: 'auto',
       },
     }),
-    obsoleteComponent: {
-      keepDisplayingToPlayer: true,
-      isObsolete: oldComponent => oldComponent.type === 'File browser',
-      sanitizer: (oldComponent: WegasComponent) => {
-        oldComponent.type = 'Variable tree';
-        return oldComponent;
-      },
-    },
   }),
 );

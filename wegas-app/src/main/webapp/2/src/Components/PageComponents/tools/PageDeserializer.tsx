@@ -21,6 +21,10 @@ import {
 } from './OptionsComponent';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { State } from '../../../data/Reducer/reducers';
+import {
+  displayObsoleteComponentManager,
+  ObsoleteComponentManager,
+} from './ObsoleteComponentManager';
 
 export function getComponentFromPath(page: WegasComponent, path: number[]) {
   const newPath = [...path];
@@ -132,7 +136,8 @@ export function PageDeserializer({
     inheritedOptionsState,
   );
 
-  const { WegasComponent, container, componentName } = component || {};
+  const { WegasComponent, container, componentName, obsoleteComponent } =
+    component || {};
 
   if (!wegasComponent) {
     return <pre>JSON error in page</pre>;
@@ -190,37 +195,49 @@ export function PageDeserializer({
           onClickManaged={component.manageOnClick === true}
           className={optionsState.outerClassName}
         >
-          <WegasComponent
-            path={realPath}
-            pageId={pageId}
-            context={context}
-            componentType={componentName}
-            Container={Container}
-            containerPropsKeys={containerPropsKeys}
-            {...restProps}
-            className={
-              classNameOrEmpty(restProps.className) +
-              classNameOrEmpty(optionsState.innerClassName)
-            }
-            dropzones={{ ...component.dropzones, ...dropzones }}
-            options={optionsState}
-            editMode={editMode}
-          >
-            <Children
-              {...wegasComponent?.props}
-              wegasChildren={children}
+          {displayObsoleteComponentManager(
+            obsoleteComponent,
+            wegasComponent,
+          ) ? (
+            <ObsoleteComponentManager
+              componentType={componentName}
+              pageId={pageId}
+              path={realPath}
+              sanitizer={obsoleteComponent.sanitizer}
+            />
+          ) : (
+            <WegasComponent
               path={realPath}
               pageId={pageId}
-              uneditable={uneditable}
               context={context}
+              componentType={componentName}
+              Container={Container}
+              containerPropsKeys={containerPropsKeys}
+              {...restProps}
+              className={
+                classNameOrEmpty(restProps.className) +
+                classNameOrEmpty(optionsState.innerClassName)
+              }
+              dropzones={{ ...component.dropzones, ...dropzones }}
+              options={optionsState}
               editMode={editMode}
-              containerPropsKeys={container?.childrenLayoutKeys}
-              inheritedOptionsState={pick(
-                optionsState,
-                heritableOptionsStateKeys,
-              )}
-            />
-          </WegasComponent>
+            >
+              <Children
+                {...wegasComponent?.props}
+                wegasChildren={children}
+                path={realPath}
+                pageId={pageId}
+                uneditable={uneditable}
+                context={context}
+                editMode={editMode}
+                containerPropsKeys={container?.childrenLayoutKeys}
+                inheritedOptionsState={pick(
+                  optionsState,
+                  heritableOptionsStateKeys,
+                )}
+              />
+            </WegasComponent>
+          )}
         </ComponentContainer>
       )}
     </>

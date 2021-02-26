@@ -70,6 +70,14 @@ export interface PageComponent<
   getComputedPropsFromVariable?: (
     variable?: WegasClassNameAndScriptableTypes[T],
   ) => Omit<P, keyof PageComponentProps>;
+  /**
+   * Allows to modify a component or its props when obsolete
+   */
+  obsoleteComponent?: {
+    keepDisplayingToPlayer: boolean;
+    isObsolete: (oldComponent: WegasComponent) => boolean;
+    sanitizer: (oldComponent: WegasComponent) => WegasComponent;
+  };
 }
 
 export interface PageComponentsState {
@@ -165,6 +173,11 @@ export function pageComponentFactory<
     dropzones?: DropZones;
     schema: { [prop: string]: SchemaPropsSchemas };
     allowedVariables?: T[];
+    obsoleteComponent?: {
+      keepDisplayingToPlayer: boolean;
+      isObsolete: (oldComponent: WegasComponent) => boolean;
+      sanitizer: (oldComponent: WegasComponent) => WegasComponent;
+    };
   } & (C extends undefined
     ? {
         getComputedPropsFromVariable?: (
@@ -191,6 +204,7 @@ export function pageComponentFactory<
     },
     allowedVariables: param.allowedVariables,
     getComputedPropsFromVariable: param.getComputedPropsFromVariable,
+    obsoleteComponent: param.obsoleteComponent,
   };
 }
 
