@@ -66,10 +66,11 @@ export function translate(
   }
 
   // Make sure to have a map of ITranslation
-  const translations = entityIs(translatable, 'TranslatableContent')
-    ? translatable.translations
-    : translatable instanceof STranslatableContent
+  const translations =
+    translatable instanceof STranslatableContent
     ? translatable.getEntity().translations
+    : entityIs(translatable, 'TranslatableContent')
+    ? translatable.translations
     : {};
 
   // List of code, ordered by languages ''importance''
