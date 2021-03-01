@@ -12,7 +12,7 @@ import FormStyles from './form-styles';
 const { Wegas } = getY();
 const tinymceStyle = css({
     '& .mce-tinymce': {
-    // boxShadow: 'none',
+        // boxShadow: 'none',
         boxSizing: 'border-box',
     },
     '& .mce-content-body': {
@@ -121,33 +121,33 @@ function getTinyConfig(fixedToolbar) {
             },
         ],
         formats: {},
-    // setup: function setup(editor) {
-    //     let tbs;
-    //     editor.on('init', () => {
-    //         tbs = editor.contentAreaContainer.parentElement
-    //             .querySelectorAll('div.mce-toolbar-grp');
-    //         tbs.forEach(e => { e.style.maxHeight = 0; e.style.overflow = 'hidden'; });
-    //     });
-    //     editor.on('focus', () => tbs.forEach(e => { e.style.maxHeight = '90px'; }));
-    //     editor.on('blur', () => tbs.forEach(e => { e.style.maxHeight = 0; }));
-    // }
+        // setup: function setup(editor) {
+        //     let tbs;
+        //     editor.on('init', () => {
+        //         tbs = editor.contentAreaContainer.parentElement
+        //             .querySelectorAll('div.mce-toolbar-grp');
+        //         tbs.forEach(e => { e.style.maxHeight = 0; e.style.overflow = 'hidden'; });
+        //     });
+        //     editor.on('focus', () => tbs.forEach(e => { e.style.maxHeight = '90px'; }));
+        //     editor.on('blur', () => tbs.forEach(e => { e.style.maxHeight = 0; }));
+        // }
     };
 
     const extraButtons = Wegas.Config.TinyExtraButtons;
 
     if (extraButtons) {
-    /* config example :
+        /* config example :
          Y.namespace("Wegas.Config").TinyExtraButtons = {
 
-            className : "off-game",
-            cssIcon: "fa fa-asterisk",
-            tooltip : "off-game information style"
+         className : "off-game",
+         cssIcon: "fa fa-asterisk",
+         tooltip : "off-game information style"
          },
          danger: {
-            block: "div",
-            className : "danger-message",
-            cssIcon: "fa fa-warning",
-            tooltip : "danger message style"
+         block: "div",
+         className : "danger-message",
+         cssIcon: "fa fa-warning",
+         tooltip : "danger message style"
          }
          };
          */
@@ -156,8 +156,7 @@ function getTinyConfig(fixedToolbar) {
         toolbar.push('|');
 
         const initFunctions = [];
-
-        for (const name in Object.keys(extraButtons)) {
+        Object.keys(extraButtons).forEach(name => {
             const btnCfg = extraButtons[name];
             config.formats[name] = {
                 attributes: {
@@ -178,13 +177,13 @@ function getTinyConfig(fixedToolbar) {
             initFunctions.push({
                 name: name,
                 config: btnCfg,
-                function: function(editor, name, btnCfg) {
-                    editor.addButton(name, {
-                        icon: `x ${btnCfg.cssIcon}`,
-                        stateSelector: `.${btnCfg.className}`,
-                        tooltip: btnCfg.tooltip,
+                function: function init(editor, btnName, btnTinyCfg) {
+                    editor.addButton(btnName, {
+                        icon: `x ${btnTinyCfg.cssIcon}`,
+                        stateSelector: `.${btnTinyCfg.className}`,
+                        tooltip: btnTinyCfg.tooltip,
                         onclick: function onClick() {
-                            tinymce.activeEditor.formatter.toggle(name);
+                            tinymce.activeEditor.formatter.toggle(btnName);
                             tinymce.activeEditor.fire('change');
                         },
                     });
@@ -192,16 +191,11 @@ function getTinyConfig(fixedToolbar) {
             });
             // on setup, call each initFunction
             config.setup = function setup(editor) {
-                for (const i in Object.keys(initFunctions)) {
-                    initFunctions[i].function.call(
-                        editor,
-                        editor,
-                        initFunctions[i].name,
-                        initFunctions[i].config
-                    );
-                }
+                Object.values(initFunctions).forEach(fn => {
+                    fn.function.call(editor, editor, fn.name, fn.config);
+                });
             };
-        }
+        });
 
         // rebuilf toolbar1
         toolbar.push('|');
@@ -224,10 +218,10 @@ function toTinyMCE(content) {
         updated = updated.replace(
             new RegExp('data-file="([^"]*)"', 'gi'),
             `src="${Wegas.Facade.File.getPath()}$1"
-             href="${Wegas.Facade.File.getPath()}$1"`
+             href="${Wegas.Facade.File.getPath()}$1"`,
         ); // @hack Place both href and src so it
-    // will work for both <a> and <img>
-    // elements
+        // will work for both <a> and <img>
+        // elements
     }
     return updated;
 }
@@ -246,18 +240,12 @@ function toInjectorStyle(content) {
 
     return root.innerHTML
         .replace(
-            new RegExp(
-                '((src|href)="[^"]*/rest/File/GameModelId/[^"]*/read([^"]*)")',
-                'gi'
-            ),
-            'data-file="$3"'
+            new RegExp('((src|href)="[^"]*/rest/File/GameModelId/[^"]*/read([^"]*)")', 'gi'),
+            'data-file="$3"',
         ) // Replace absolute path with injector style path (old version)
         .replace(
-            new RegExp(
-                '((src|href)="[^"]*/rest/GameModel/[^"]*/File/read([^"]*)")',
-                'gi'
-            ),
-            'data-file="$3"'
+            new RegExp('((src|href)="[^"]*/rest/GameModel/[^"]*/File/read([^"]*)")', 'gi'),
+            'data-file="$3"',
         ); // Replace absolute path with injector style path
 }
 
@@ -287,7 +275,7 @@ class HTMLView extends React.Component {
         this.id = toolbarIdGenerator();
         this.state = {
             // eslint-disable-next-line
-      oldProps: props,
+            oldProps: props,
             sent: props.value,
             content: toTinyMCE(props.value) || '',
         };
