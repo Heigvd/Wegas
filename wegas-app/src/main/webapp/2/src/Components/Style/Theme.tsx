@@ -157,7 +157,7 @@ const defaultTheme: Theme = {
   baseMode: 'light',
 };
 
-const defaultThemes = {
+const defaultThemes: Themes = {
   default: defaultTheme,
 };
 

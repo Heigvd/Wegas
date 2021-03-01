@@ -1,20 +1,24 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
-import { TabProps, Tab } from '../Editor/Components/LinearTabLayout/DnDTabs';
+import { TabProps, Tab } from '../../Editor/Components/LinearTabLayout/DnDTabs';
+import { trainerTheme } from './HostTheme';
 
 const tabStyle = css({
   display: 'flex',
   alignItems: 'center',
   cursor: 'pointer',
-  margin: '0 5px',
-  padding: '5px',
+  margin: '0 3px',
+  padding: trainerTheme.spacing.MediumPadding + " " + trainerTheme.spacing.LargePadding,
+  borderRadius: trainerTheme.borders.BorderRadius,
+  fontSize: trainerTheme.text.FontSize3,
 });
 
 const inactiveTabStyle = css({
-  backgroundColor: 'lightgrey',
+  backgroundColor: trainerTheme.colors.InactiveColor,
 });
 const activeTabStyle = css({
-  backgroundColor: 'grey',
+  backgroundColor: trainerTheme.colors.ActiveColor,
+  fontWeight: 700,
 });
 
 export const OverviewTab = React.forwardRef<HTMLDivElement, TabProps>(

@@ -7,19 +7,29 @@ import { entityIs } from '../data/entities';
 import { State } from '../data/Reducer/reducers';
 import { useStore } from '../data/Stores/store';
 import { translate } from '../Editor/Components/FormView/translatable';
-import { DndLinearLayout } from '../Editor/Components/LinearTabLayout/LinearLayout';
+import { TabLayout } from '../Editor/Components/LinearTabLayout/TabLayout';
 import { PageLoader } from '../Editor/Components/Page/PageLoader';
+import { ReparentableRoot } from '../Editor/Components/Reparentable';
 import { visitIndex } from '../Helper/pages';
 import HostHeader from './HostHeader';
-import { OverviewTab } from './OverviewTab';
+import { trainerTheme } from './Overview/HostTheme';
+import { OverviewTab } from './Overview/OverviewTab';
 
 const Overview = React.lazy(() => import('./Overview/Overview'));
 const PeerReviewPage = React.lazy(() => import('./PeerReviewPage'));
 
-const layout = css({
+const layoutStyle = css({
   display: 'flex',
   flexDirection: 'column',
   height: '100vh',
+  padding: '50px 75px',
+  fontFamily: trainerTheme.text.TextFont1,
+  backgroundColor: trainerTheme.colors.BackgroundColor,
+});
+
+const tabsLineStyle = css({
+  borderBottom: '3px solid ' + trainerTheme.colors.PrimaryColor,
+  backgroundColor: trainerTheme.colors.BackgroundColor
 });
 
 export const trainerLayoutId = 'TrainerLayout';
@@ -67,14 +77,27 @@ export default function HostLayout() {
   );
 
   return (
-    <div id="WegasLayout" className={layout}>
+    <div id="WegasLayout" className={layoutStyle}>
       <HostHeader />
-      <DndLinearLayout
+      <ReparentableRoot>
+        <TabLayout
+          components={{ ...trainerTabs, ...availableLayoutTabs, ...peerReviewTabs }}
+          CustomTab={OverviewTab}
+          classNames= {{
+            header: tabsLineStyle
+          }}
+          defaultActiveLabel={'Overview'}
+          />
+      </ReparentableRoot>
+      {/* <DndLinearLayout
         tabs={{ ...trainerTabs, ...availableLayoutTabs, ...peerReviewTabs }}
         initialLayout={['Overview']}
         layoutId={trainerLayoutId}
         CustomTab={OverviewTab}
-      />
+        classNames= {{
+          header: tabsLineStyle
+        }}
+      /> */}
     </div>
   );
 }

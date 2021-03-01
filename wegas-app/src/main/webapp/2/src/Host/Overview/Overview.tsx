@@ -17,19 +17,74 @@ const rowStyle = css({
   marginBottom: '5px',
 });
 
+const tableStyle = css({
+  display: "flex",
+  color: "#828282",
+  table: {
+    borderCollapse: "separate",
+    borderSpacing: "5px",
+    td: {
+      minWidth: "60px",
+      padding: "15px 20px",
+      backgroundColor: "#fff",
+      boxShadow: "1px 2px 6px rgba(0, 0, 0, 0.1)",
+      textAlign: "center"
+    }
+  },
+  ".scroll": {
+    width: "100%",
+    overflowX: "auto",
+    fontSize: "14px",
+    ".scrollable": {
+      "thead tr": {
+        height: "55px",
+        th: {
+          backgroundColor: "transparent",
+          boxShadow: "none",
+          verticalAlign: "bottom",
+          padding: "0 10px"
+        }
+      }
+    }
+  },
+  ".fixed": {
+    color: "#626262",
+    fontWeight: "bold",
+    fontSize: "14px",
+    "thead tr": {
+      height: "55px",
+      th: {
+        backgroundColor: "transparent",
+        boxShadow: "none",
+        verticalAlign: "bottom",
+        padding: "0",
+        textAlign: "left"
+      }
+    },
+    "tbody td": {
+      borderRight: "3px solid #ababab",
+      textAlign: "left",
+      whiteSpace: "nowrap",
+      maxWidth: "150px",
+      overflow: "hidden"
+    }
+  }
+});
+
 type OverviewClickType = 'Impact' | 'Mail' | 'Watch team';
 
-interface OverviewRowProps {
+
+
+interface CollapsibleTdProps {
   team: ITeam;
-  onClick: (type: OverviewClickType) => void;
+  key: number;
 }
 
-function OverviewRow({ team, onClick }: OverviewRowProps) {
+function CollapsibleTd({team, key}: CollapsibleTdProps){
   const [showPlayers, setShowPlayers] = React.useState(false);
   return (
-    <tr className={cx(flex, flexRow, rowStyle)}>
-      <td className={cx(flex, flexColumn)}>
-        <div className={cx(flex, flexRow, itemCenter)}>
+    <td>
+        <div>
           <Button
             icon={showPlayers ? 'caret-down' : 'caret-right'}
             onClick={() => setShowPlayers(sp => !sp)}
@@ -45,7 +100,23 @@ function OverviewRow({ team, onClick }: OverviewRowProps) {
             </ul>
           </div>
         )}
-      </td>
+    </td>
+  );
+}
+interface OverviewRowProps {
+  team: ITeam;
+  onClick: (type: OverviewClickType) => void;
+  key: string;
+  nbColumns: number;
+}
+function OverviewRow({team, onClick, key, nbColumns }: OverviewRowProps) {
+  const renderRegularTd = (arr:any) => {
+    const sliceArr = arr.slice(nbColumns, arr.length);
+    return sliceArr.map((e:any, index:string) => <td>{e}</td>);
+  };
+  return (
+    <tr>
+      {renderRegularTd(team)}
       <td>
         <Button
           icon="pen"
@@ -108,6 +179,33 @@ export default function Overview() {
     }
   }, []);
 
+  const table = Object.values(teams).map(team =>([
+    team.id, team.name, team.players.length, team.players
+  ]));
+  const frozenColumns = 1;
+  const headers = [
+    "id", "name", "nb players", "Impacts", "Actions"
+  ];
+  const fixedHeaders = headers.slice(0, frozenColumns);
+  const regularHeaders = headers.slice(frozenColumns, headers.length);
+
+  const addTh = (arr:any) => {
+    return arr.map((e:any, index:number) => <th key={index}>{e}</th>);
+  };
+  const renderFrozenTd = (arr:any[]) => {
+    const sliceArr = arr.slice(0, fixedHeaders.length);
+    return sliceArr.map((team:ITeam, index:number) => <CollapsibleTd team={team} key={index}/>);
+  };
+  const renderFrozen = (arr:any[]) => {
+    return arr.map((e:any, index: number) => {
+      return <tr key={index}>{renderFrozenTd(e)}</tr>;
+    });
+  };
+  const renderRegular = (arr:any) => {
+    return arr.map((team:ITeam, index:number) => {
+      return <OverviewRow key={index} team={team} onClick={onRowClick} nbColumns={fixedHeaders.length}/>;
+    });
+  };
   return (
     <div className={grow}>
       <Button
@@ -122,12 +220,34 @@ export default function Overview() {
           )?.then(res => wlog(res))
         }
       />
-      <table>
+      <div className={tableStyle}>
+        <table className="fixed">
+          <thead>
+            <tr>{addTh(fixedHeaders)}</tr>
+          </thead>
+          <tbody>{renderFrozen(table)}
+          </tbody>
+        </table>
+        <div className="scroll">
+        <table className="scrollable">
+          <thead>
+            <tr>{addTh(regularHeaders)}</tr>
+          </thead>
+          <tbody>
+            {renderRegular(table)}
+            {Object.entries(table).map(([index, team]) => (
+            <OverviewRow key={index} team={team} onClick={onRowClick} nbColumns={fixedHeaders.length} />
+          ))}
+          </tbody>
+        </table>
+      </div>
+      </div>
+      {/* <table>
         <thead>
           <tr>
-            <td>Team</td>
-            <td>Impact</td>
-            <td>Actions</td>
+            <th>Team</th>
+            <th>Impact</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -135,7 +255,7 @@ export default function Overview() {
             <OverviewRow key={id} team={team} onClick={onRowClick} />
           ))}
         </tbody>
-      </table>
+      </table> */}
       {(layoutState.showImpactModal || layoutState.showMailModal) && (
         <Modal onExit={() => setLayoutState(defaultLayoutState)}>
           {layoutState.showImpactModal ? <div>Impacts</div> : <div>Mail</div>}

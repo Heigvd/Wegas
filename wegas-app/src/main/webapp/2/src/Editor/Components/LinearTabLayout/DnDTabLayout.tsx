@@ -98,6 +98,11 @@ export const dropSpecsFactory = (action: DropAction, layoutAccept: string) => {
     }),
   };
 };
+export interface ClassNames {
+  general?:string,
+  header?: string,
+  content?: string
+}
 
 interface TabLayoutProps {
   /**
@@ -144,6 +149,10 @@ interface TabLayoutProps {
    * The tab component to use in this layout
    */
   CustomTab?: TabComponent;
+  /**
+   * The className for general styling
+   */
+  classNames?: ClassNames
 }
 
 /**
@@ -161,7 +170,9 @@ export function DnDTabLayout({
   onNewTab,
   layoutId,
   CustomTab = Tab,
+  classNames = {},
 }: TabLayoutProps) {
+  const {general, header, content} = classNames;
   React.useEffect(() => {
     if (
       defaultActiveLabel === undefined ||
@@ -257,8 +268,8 @@ export function DnDTabLayout({
   };
 
   return (
-    <Toolbar vertical={vertical} className={relative}>
-      <Toolbar.Header className={headerStyle}>
+    <Toolbar vertical={vertical} className={cx(relative, general)}>
+      <Toolbar.Header className={cx(headerStyle, header)}>
         <div ref={dropTabs} className={cx(flex, grow, autoScroll)}>
           {renderTabs()}
           {selectItems && Object.keys(selectItems).length > 0 && (
@@ -280,7 +291,7 @@ export function DnDTabLayout({
           )}
         </div>
       </Toolbar.Header>
-      <Toolbar.Content className={cx(relative, contentStyle)}>
+      <Toolbar.Content className={cx(relative, contentStyle, content)}>
         <div className={cx(expandBoth, hideOverflow)}>
           <div className={cx(autoScroll, absoute, expandBoth, flex)}>
             {defaultActiveLabel && (

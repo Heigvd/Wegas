@@ -8,24 +8,30 @@ import {
   grow,
   foregroundContent,
   flexRow,
+  itemBottom,
   componentMarginLeft,
+  defaultMarginRight,
 } from '../css/classes';
 import { Title } from '../Components/Inputs/String/Title';
-import { themeVar } from '../Components/Style/ThemeVars';
 import { Button } from '../Components/Inputs/Buttons/Button';
-
+import {trainerTheme } from './Overview/HostTheme';
 const headerStyle = css({
-  backgroundColor: themeVar.Common.colors.HeaderColor,
+  marginBottom: trainerTheme.spacing.LargePadding,
 });
+const TitleStyle = css({
+  fontFamily: trainerTheme.text.TextFont1,
+  marginRight: trainerTheme.spacing.MediumPadding,
+});
+
 
 export default function HostHeader() {
   return (
     <div className={cx(flex, itemCenter, foregroundContent, headerStyle)}>
-      <div className={cx(flex, grow, flexRow, itemCenter)}>
-        <Title>{CurrentGame.name}</Title>
+      <div className={cx(flex, grow, flexRow, itemBottom)}>
+        <Title className={TitleStyle}>{CurrentGame.name}</Title>
         <Title level={'3'}>{CurrentGM.name}</Title>
       </div>
-      <LangToggler />
+      <LangToggler className={defaultMarginRight}/>
       {/* <FeatureToggler
             className={cx(componentMarginLeft, componentMarginRight)}
           />

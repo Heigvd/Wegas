@@ -12,6 +12,9 @@ export const grid = css({
 export const block = css({
   display: 'block',
 });
+export const inlineBlock = css({
+  display: 'inline-block',
+});
 export const hidden = css({
   display: 'none',
 });
@@ -93,6 +96,9 @@ export const textCenter = css({
 });
 export const itemCenter = css({
   alignItems: 'center',
+});
+export const itemBottom = css({
+  alignItems: 'flex-end',
 });
 export const contentCenter = css({
   alignContent: 'center',
