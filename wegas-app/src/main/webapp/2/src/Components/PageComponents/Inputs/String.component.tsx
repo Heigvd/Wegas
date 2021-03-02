@@ -4,7 +4,7 @@ import {
   pageComponentFactory,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { store } from '../../../data/Stores/store';
+import { store, useStore } from '../../../data/Stores/store';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { IScript, SStringDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
@@ -17,7 +17,6 @@ import {
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
-import { useCurrentPlayer } from '../../../data/selectors/Player';
 import {
   useOnCancelAction,
   Validate,
@@ -25,6 +24,7 @@ import {
   validatorSchema,
 } from '../../Inputs/Validate';
 import { TumbleLoader } from '../../Loader';
+import { Player } from '../../../data/selectors';
 
 interface PlayerStringInput
   extends WegasComponentProps,
@@ -54,7 +54,11 @@ function PlayerStringInput({
 }: PlayerStringInput) {
   const placeholderText = useScript<string>(placeholder, context);
   const text = useScript<SStringDescriptor | string>(script, context);
-  const player = useCurrentPlayer();
+
+  const value =
+    useStore(() =>
+      typeof text === 'object' ? text.getValue(Player.self()) : text,
+    ) || '';
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
   const { handleOnCancel } = useOnCancelAction(onCancel, context);
@@ -79,11 +83,7 @@ function PlayerStringInput({
   return text == null ? (
     <TumbleLoader />
   ) : validator ? (
-    <Validate
-      value={typeof text === 'object' ? text.getValue(player) : text}
-      onValidate={onChange}
-      onCancel={handleOnCancel}
-    >
+    <Validate value={value} onValidate={onChange} onCancel={handleOnCancel}>
       {(value, onChange) => {
         return (
           <SimpleInput
@@ -101,7 +101,7 @@ function PlayerStringInput({
     </Validate>
   ) : (
     <SimpleInput
-      value={typeof text === 'object' ? text.getValue(player) : text}
+      value={value}
       onChange={onChange}
       disabled={disabled}
       readOnly={readOnly}

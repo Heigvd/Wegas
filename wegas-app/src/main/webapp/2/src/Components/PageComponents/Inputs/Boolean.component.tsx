@@ -18,7 +18,7 @@ import {
   useOnVariableChange,
 } from './tools';
 import { TumbleLoader } from '../../Loader';
-import { useCurrentPlayer } from '../../../data/selectors/Player';
+import { Player } from '../../../data/selectors';
 
 interface PlayerBooleanProps extends WegasComponentProps {
   /**
@@ -49,7 +49,6 @@ function PlayerBoolean({
   onVariableChange,
 }: PlayerBooleanProps) {
   const bool = useScript<SBooleanDescriptor | boolean>(script, context);
-  const player = useCurrentPlayer();
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
@@ -58,7 +57,7 @@ function PlayerBoolean({
   const BooleanComponent = type === 'toggler' ? Toggler : CheckBox;
 
   const value = useStore(() =>
-    typeof bool === 'object' ? bool.getValue(player) : bool,
+    typeof bool === 'object' ? bool.getValue(Player.self()) : bool,
   );
 
   return bool == null ? (

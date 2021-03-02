@@ -144,9 +144,7 @@ function WhChoiceDisplay({
   );
 }
 
-interface WhQuestionDisplayProps
-  extends WhQuestionInfo,
-    DisabledReadonlyLocked {
+interface WhQuestionDisplayProps extends WhQuestionInfo, DisabledReadonly {
   dispatch: StoreDispatch;
 }
 
@@ -169,7 +167,7 @@ export function WhQuestionDisplay({
   return (
     <div
       className={cx(questionStyle, {
-        [halfOpacity]: options.disabled || options.locked,
+        [halfOpacity]: options.disabled,
       })}
     >
       <div
@@ -212,7 +210,7 @@ export function WhQuestionDisplay({
               choiceI => choiceI != null && dispatch(updateInstance(choiceI)),
             );
           }}
-          disabled={questionI.validated || options.disabled || options.locked}
+          disabled={questionI.validated || options.disabled}
           readOnly={options.readOnly}
         />
       </div>

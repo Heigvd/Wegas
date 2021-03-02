@@ -31,7 +31,7 @@ export interface FileFilter {
   fileType: FileType;
 }
 
-export interface FileBrowserProps extends ClassStyleId, DisabledReadonlyLocked {
+export interface FileBrowserProps extends ClassStyleId, DisabledReadonly {
   defaultFilePath?: string;
   selectedLocalPaths?: string[];
   selectedGlobalPaths?: string[];
@@ -89,7 +89,7 @@ export function FileBrowser({
       <div
         className={
           cx(grow, {
-            [halfOpacity]: options.disabled || options.locked,
+            [halfOpacity]: options.disabled,
           }) + classNameOrEmpty(className)
         }
         style={style}

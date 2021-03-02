@@ -71,7 +71,7 @@ interface ActionButton {
   onAction: (api: TinyMCEButtonAPI, editor: TinyMCEEditor) => void;
 }
 
-interface HTMLEditorProps extends ClassStyleId, DisabledReadonlyLocked {
+interface HTMLEditorProps extends ClassStyleId, DisabledReadonly {
   /**
    * value - content to inject in the editor
    */
@@ -121,7 +121,7 @@ export default function HTMLEditor({
   style,
   id,
   delay = 100,
-  inline = true,
+  inline = false,
   placeholder,
   disabled,
   readOnly,
@@ -181,7 +181,7 @@ export default function HTMLEditor({
           )} | code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
         toolbar_drawer: 'floating',
         menubar: false,
-        resize: 'both',
+        // resize: disabled ? false : 'both',
         statusbar: true,
         branding: false,
         relative_urls: false,
@@ -313,18 +313,20 @@ export default function HTMLEditor({
       id={id}
     >
       <div style={{ visibility: fileBrowsing.fn ? 'hidden' : 'visible' }}>
-        <div id={toolBarId} className={toolbar}>
-          {inline && !editorFocus && (
-            <img
-              src={
-                require(onSave
-                  ? '../pictures/tinymcetoolbar.png'
-                  : '../pictures/tinymcetoolbarnosave.png').default
-              }
-              onClick={() => HTMLEditor.current && HTMLEditor.current.focus()}
-            />
-          )}
-        </div>
+        {inline && (
+          <div id={toolBarId} className={toolbar}>
+            {!editorFocus && (
+              <img
+                src={
+                  require(onSave
+                    ? '../pictures/tinymcetoolbar.png'
+                    : '../pictures/tinymcetoolbarnosave.png').default
+                }
+                onClick={() => HTMLEditor.current && HTMLEditor.current.focus()}
+              />
+            )}
+          </div>
+        )}
         <TinyEditor
           value={value}
           init={config(toolBarId)}
@@ -334,7 +336,7 @@ export default function HTMLEditor({
           onEditorChange={debouncedOnChange}
           onFocus={() => setEditorFocus(true)}
           onBlur={() => setEditorFocus(false)}
-          disabled={disabled}
+          disabled={disabled || readOnly}
         />
       </div>
       {fileBrowsing.fn && (

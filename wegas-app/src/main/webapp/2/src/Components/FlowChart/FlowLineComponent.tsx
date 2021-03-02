@@ -83,7 +83,7 @@ const arrowCSS = {
 };
 
 export interface FlowLineProps<F extends FlowLine, P extends Process<F>>
-  extends DisabledReadonlyLocked {
+  extends DisabledReadonly {
   /**
    * the DOM element from where the flowline starts
    */
@@ -475,7 +475,7 @@ export function CustomStraitFlowLineComponent<
 }
 
 export interface CircularFlowLineProps<F extends FlowLine, P extends Process<F>>
-  extends DisabledReadonlyLocked {
+  extends DisabledReadonly {
   /**
    * the DOM element from where the flowline starts
    */
@@ -721,7 +721,6 @@ export function DefaultFlowLineComponent<
             isActionAllowed({
               disabled: props.disabled,
               readOnly: props.readOnly,
-              locked: props.locked,
             }) &&
             onClick(e, startProcess, flowline)
           }

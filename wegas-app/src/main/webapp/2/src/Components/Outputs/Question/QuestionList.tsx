@@ -42,13 +42,14 @@ const repliedLabelStyle = css({
 
 export function QuestionLabel({
   questionD,
+  disabled,
 }: {
   questionD: IQuestionDescriptor | IWhQuestionDescriptor;
+  disabled?: boolean;
 }) {
   const unreadSelector = React.useCallback(() => {
-    const player = instantiate(Player.selectCurrent());
     return {
-      isUnread: instantiate(questionD).getInstance(player).isUnread(),
+      isUnread: instantiate(questionD).getInstance(Player.self()).isUnread(),
     };
   }, [questionD]);
   const { isUnread } = useStore(unreadSelector);
@@ -57,7 +58,7 @@ export function QuestionLabel({
     <div
       className={cx(flex, itemCenter)}
       onClick={() => {
-        store.dispatch(read(instantiate(questionD).getEntity()));
+        !disabled && store.dispatch(read(instantiate(questionD).getEntity()));
       }}
     >
       {isUnread ? (
@@ -117,10 +118,16 @@ export default function QuestionList({
   return (
     <EntityChooser
       entities={entities.questions}
-      entityLabel={e => <QuestionLabel questionD={e} />}
+      entityLabel={e => (
+        <QuestionLabel
+          questionD={e}
+          disabled={options.disabled || options.locked}
+        />
+      )}
       autoOpenFirst={autoOpenFirst}
       customLabelStyle={customLabelStyle}
-      {...options}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
     >
       {ConnectedQuestionDisplay}
     </EntityChooser>

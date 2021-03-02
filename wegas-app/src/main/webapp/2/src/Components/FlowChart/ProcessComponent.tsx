@@ -33,7 +33,7 @@ export const readOnlyStyle = css({
 });
 
 export interface ProcessProps<F extends FlowLine, P extends Process<F>>
-  extends DisabledReadonlyLocked {
+  extends DisabledReadonly {
   /**
    * the process object to be displayed
    */

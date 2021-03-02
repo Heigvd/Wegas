@@ -17,14 +17,15 @@ import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 
 interface MessageLabelProps {
   message: IMessage;
+  disabled?: boolean;
 }
 
-function MessageLabel({ message }: MessageLabelProps) {
+function MessageLabel({ message, disabled }: MessageLabelProps) {
   const translatedLabel = useTranslate(message.subject);
   return (
     <div
       className={cx(flex, itemCenter)}
-      onClick={() => store.dispatch(readMessage(message))}
+      onClick={() => !disabled && store.dispatch(readMessage(message))}
     >
       {message.unread ? (
         <div className={cx(unreadSpaceStyle, unreadSignalStyle)} />
@@ -68,7 +69,8 @@ export function InboxDisplay({ inbox, ...options }: InboxDisplayProps) {
     <EntityChooser
       entities={messages}
       entityLabel={e => <MessageLabel message={e} />}
-      {...options}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
     >
       {MessageDisplay}
     </EntityChooser>

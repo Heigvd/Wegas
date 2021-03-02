@@ -64,7 +64,7 @@ function CbxChoiceDisplay({
   );
 }
 
-interface CbxQuestionDisplayProps extends QuestionInfo, DisabledReadonlyLocked {
+interface CbxQuestionDisplayProps extends QuestionInfo, DisabledReadonly {
   dispatch: StoreDispatch;
 }
 
@@ -103,7 +103,7 @@ export function CbxQuestionDisplay({
   return (
     <div
       className={cx(questionStyle, {
-        [halfOpacity]: options.disabled || options.locked,
+        [halfOpacity]: options.disabled,
       })}
     >
       <div
@@ -144,9 +144,7 @@ export function CbxQuestionDisplay({
             className={autoMargin}
             label={'Validate'}
             onClick={() => dispatch(validateQuestion(questionD))}
-            disabled={
-              remainingChoices > 0 || options.disabled || options.locked
-            }
+            disabled={remainingChoices > 0 || options.disabled}
             readOnly={options.readOnly}
           />
         </div>
