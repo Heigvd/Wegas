@@ -41,6 +41,7 @@ export default function PlayerFileBrowser({
             noVisibleRoot
             localDispatch={localDispatch}
             forceLocalDispatch
+            {...options}
           />
         );
       }}
