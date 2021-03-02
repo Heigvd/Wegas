@@ -60,7 +60,7 @@ const noToggleStyle = css({
 
 const previewStyle = css(
   {
-    position: 'fixed',
+    position: 'absolute',
     backgroundColor: themeVar.Common.colors.BackgroundColor,
     maxWidth: '220px',
     margin: '3px 2em 10px',
@@ -68,6 +68,7 @@ const previewStyle = css(
     borderWidth: '1px',
     borderRadius: themeVar.Common.dimensions.BorderRadius,
     fontSize: '75%',
+    zIndex: 10000,
   },
   thinHoverColorInsetShadow,
 );
@@ -272,6 +273,8 @@ export function FileBrowserNode({
   ...options
 }: FileBrowserNodeProps) {
   const actionAllowed = isActionAllowed(options);
+
+  const isDisplayPreviewAllowed = !options.disabled && !options.locked;
 
   const [opened, setOpened] = React.useState(
     defaultOpened ||
@@ -494,7 +497,7 @@ export function FileBrowserNode({
           }
         });
       }
-    }, pickOnly),
+    }, !actionAllowed),
   );
 
   const timeoutBeforeExpand = 1000;
@@ -518,7 +521,7 @@ export function FileBrowserNode({
 
   React.useEffect(() => {
     let previewTimeout: number | undefined;
-    if (hoveringImageFile) {
+    if (isDisplayPreviewAllowed && hoveringImageFile) {
       previewTimeout = (setTimeout(
         () => setDisplayPreview(true),
         timeoutBeforePreview,
@@ -531,7 +534,7 @@ export function FileBrowserNode({
       setDisplayPreview(false);
       clearTimeout(previewTimeout);
     }
-  }, [hoveringImageFile, currentFile]);
+  }, [isDisplayPreviewAllowed, hoveringImageFile, currentFile]);
 
   const pickTypeApproved =
     !pickType ||
@@ -686,16 +689,18 @@ export function FileBrowserNode({
                 defaultConfirm
               />
             )}
-            {modalState.type === 'close' && isFile(currentFile) && (
-              <Button
-                icon={'external-link-alt'}
-                tooltip={'Open file'}
-                onClick={event => {
-                  event.stopPropagation();
-                  openFile(currentFile);
-                }}
-              />
-            )}
+            {modalState.type === 'close' &&
+              isDisplayPreviewAllowed &&
+              isFile(currentFile) && (
+                <Button
+                  icon={'external-link-alt'}
+                  tooltip={'Open file'}
+                  onClick={event => {
+                    event.stopPropagation();
+                    openFile(currentFile);
+                  }}
+                />
+              )}
             {modalState.type === 'close' &&
               !pickOnly &&
               actionAllowed &&
@@ -847,7 +852,7 @@ export function FileBrowserNode({
                     defaultOpened={defaultOpened}
                     noToggle={noToggle}
                     noDelete={noDelete}
-                    readOnly={pickOnly}
+                    pickOnly={pickOnly}
                     onFileClick={onFileClick}
                     onDeleteFile={deletedFile => {
                       setChildren(oldChildren => {
