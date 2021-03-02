@@ -80,9 +80,11 @@ function PlayerFlowChartProcessBox<
             disabled: disabled,
             readOnly: readOnly,
           }),
-        }) + classNameOrEmpty(className)
+        }) +
+        classNameOrEmpty(className) +
+        classNameOrEmpty(process.className)
       }
-      style={style}
+      style={{ ...style, ...process.style }}
       id={id}
     >
       {process.icon && (

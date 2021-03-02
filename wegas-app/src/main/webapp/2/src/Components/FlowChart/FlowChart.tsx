@@ -37,7 +37,7 @@ export interface FlowLine {
   connectedTo: string;
 }
 
-export interface Process<F extends FlowLine> {
+export interface Process<F extends FlowLine> extends ClassStyleId {
   /**
    * the id of the process
    */
@@ -50,6 +50,10 @@ export interface Process<F extends FlowLine> {
    * the connections to other processes
    */
   connections: F[];
+  /**
+   * tells whether or not the process can be dragged
+   */
+  undraggable?: boolean;
 }
 
 interface Connection<F extends FlowLine, P extends Process<F>> {

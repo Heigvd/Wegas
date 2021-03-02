@@ -15,6 +15,7 @@ import {
 } from './StateProcessComponent';
 import { themeVar } from '../Style/ThemeVars';
 import { isActionAllowed } from '../PageComponents/tools/options';
+import { classNameOrEmpty } from '../../Helper/className';
 
 const processStyle = css({
   position: 'absolute',
@@ -138,7 +139,7 @@ export function CustomProcessComponent<
       onDragEnd,
     },
     true,
-    !isActionAllowed(options),
+    !isActionAllowed(options) || process.undraggable,
   );
 
   return (
@@ -167,14 +168,17 @@ export function DefaultProcessComponent<
     <CustomProcessComponent {...props}>
       {(process, onClick) => (
         <div
-          className={cx(stateBoxStyle, {
-            [stateBoxActionStyle]: isActionAllowed({
-              disabled: props.disabled,
-              readOnly: props.readOnly,
-            }),
-            [selectedStateBoxStyle]:
-              props.isProcessSelected && props.isProcessSelected(process),
-          })}
+          className={
+            cx(stateBoxStyle, {
+              [stateBoxActionStyle]: isActionAllowed({
+                disabled: props.disabled,
+                readOnly: props.readOnly,
+              }),
+              [selectedStateBoxStyle]:
+                props.isProcessSelected && props.isProcessSelected(process),
+            }) + classNameOrEmpty(process.className)
+          }
+          style={process.style}
           onClick={e => {
             if (!props.disabled && !props.readOnly) {
               onClick && onClick(e, process);

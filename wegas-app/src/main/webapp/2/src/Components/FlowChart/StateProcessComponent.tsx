@@ -17,6 +17,7 @@ import {
 import { useDrag } from 'react-dnd';
 import { Text } from '../Outputs/Text';
 import { isActionAllowed } from '../PageComponents/tools/options';
+import { classNameOrEmpty } from '../../Helper/className';
 
 const stateContainerStyle = css({
   display: 'inline-flex',
@@ -140,7 +141,8 @@ export function StateBox({
   const { lang } = React.useContext(languagesCTX);
   return (
     <div
-      className={stateContainerStyle}
+      className={stateContainerStyle + classNameOrEmpty(state.className)}
+      style={state.style}
       onClick={e =>
         isActionAllowed({ disabled, readOnly }) && onClick && onClick(e, state)
       }
