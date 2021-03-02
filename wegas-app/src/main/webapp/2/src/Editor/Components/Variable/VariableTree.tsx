@@ -306,6 +306,7 @@ export function CTree(
     return (
       <Node
         noToggle={props.noVisibleRoot}
+        disabled={props.disabled}
         dragId={TREEVIEW_ITEM_TYPE}
         dragDisabled={!actionAllowed}
         dropDisabled={!actionAllowed}
