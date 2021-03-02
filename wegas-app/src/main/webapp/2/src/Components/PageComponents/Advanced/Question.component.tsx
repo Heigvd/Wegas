@@ -31,7 +31,11 @@ export default function QuestionDisplay({
     return <TumbleLoader />;
   } else {
     return (
-      <ConnectedQuestionDisplay entity={descriptor!.getEntity()} {...options} />
+      <ConnectedQuestionDisplay
+        entity={descriptor!.getEntity()}
+        disabled={options.disabled || options.locked}
+        readOnly={options.readOnly}
+      />
     );
   }
 }

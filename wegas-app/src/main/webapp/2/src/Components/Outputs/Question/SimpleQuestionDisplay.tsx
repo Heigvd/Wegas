@@ -49,9 +49,7 @@ function SimpleChoiceDisplay({
   );
 }
 
-interface SimpleQuestionDisplayProps
-  extends QuestionInfo,
-    DisabledReadonlyLocked {
+interface SimpleQuestionDisplayProps extends QuestionInfo, DisabledReadonly {
   dispatch: StoreDispatch;
 }
 
@@ -85,7 +83,7 @@ export function SimpleQuestionDisplay({
   return (
     <div
       className={cx(questionStyle, {
-        [halfOpacity]: options.disabled || options.locked,
+        [halfOpacity]: options.disabled,
       })}
     >
       <div

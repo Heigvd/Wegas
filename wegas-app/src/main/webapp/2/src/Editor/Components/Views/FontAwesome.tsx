@@ -9,6 +9,9 @@ import { fas } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon, Props } from '@fortawesome/react-fontawesome';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { omit } from 'lodash-es';
+import { halfOpacity } from '../../../css/classes';
+import { classNameOrEmpty } from '../../../Helper/className';
+import { cx } from 'emotion';
 
 // These icon definitions MUST be added to library in order for React-Fontawsome to work properly
 library.add(fas, far);
@@ -55,12 +58,21 @@ interface IconDisplayProps extends Omit<ClassStyleId, 'id'> {
   disabled?: boolean;
 }
 
-function IconDisplay({ icon, style, className }: IconDisplayProps) {
+function IconDisplay({ icon, style, className, disabled }: IconDisplayProps) {
   return isProps(icon) ? (
-    <FontAwesome fixedWidth {...icon} style={style} className={className} />
+    <FontAwesome
+      fixedWidth
+      {...icon}
+      style={style}
+      className={cx({ [halfOpacity]: disabled }) + classNameOrEmpty(className)}
+    />
   ) : isIconString(icon) ? (
     <div
-      className={className + ' fa-layers svg-inline--fa fa-w-16 fa-fw'}
+      className={
+        cx({ [halfOpacity]: disabled }) +
+        classNameOrEmpty(className) +
+        ' fa-layers svg-inline--fa fa-w-16 fa-fw'
+      }
       style={{
         ...style,
         display: 'table-cell',
@@ -70,7 +82,12 @@ function IconDisplay({ icon, style, className }: IconDisplayProps) {
       <div style={{ ...omit(icon, 'value'), ...style }}>{icon.value}</div>
     </div>
   ) : (
-    <FontAwesome fixedWidth icon={icon} style={style} className={className} />
+    <FontAwesome
+      fixedWidth
+      icon={icon}
+      style={style}
+      className={cx({ [halfOpacity]: disabled }) + classNameOrEmpty(className)}
+    />
   );
 }
 
@@ -94,12 +111,17 @@ export function IconComp({ icon, style, className, disabled }: IconCompProps) {
           key={JSON.stringify(ic) + String(i)}
           icon={ic}
           style={style}
-          disabled = {disabled}
+          disabled={disabled}
         />
       ))}
     </span>
   ) : (
-    <IconDisplay icon={icon} style={style} className={className} disabled={disabled} />
+    <IconDisplay
+      icon={icon}
+      style={style}
+      className={className}
+      disabled={disabled}
+    />
   );
 }
 

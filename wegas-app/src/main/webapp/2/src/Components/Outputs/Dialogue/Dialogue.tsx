@@ -15,8 +15,9 @@ import {
   itemCenter,
 } from '../../../css/classes';
 import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReducer';
-import { useCurrentPlayer } from '../../../data/selectors/Player';
+import { Player } from '../../../data/selectors';
 import { store } from '../../../data/Stores/store';
+import { isActionAllowed } from '../../PageComponents/tools/options';
 import { themeVar } from '../../Style/ThemeVars';
 import { DialogueChoice } from './DialogueChoice';
 import { DialogueEntry } from './DialogueEntry';
@@ -54,7 +55,7 @@ const dialogueDisplayStyle = css({
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
 // React element
 
-interface DialogueDisplayProps extends DisabledReadonlyLocked {
+interface DialogueDisplayProps extends DisabledReadonly {
   dialogue: SDialogueDescriptor;
 }
 
@@ -66,8 +67,7 @@ export function DialogueDisplay({
 
   const [waiting, setWaiting] = React.useState(false);
 
-  const player = useCurrentPlayer();
-  const dialogueInstance = dialogue.getInstance(player);
+  const dialogueInstance = dialogue.getInstance(Player.self());
   const history = dialogueInstance.getTransitionHistory();
   const dialogueStates = dialogue.getStates();
 
@@ -174,7 +174,7 @@ export function DialogueDisplay({
       </div>
 
       {/* ----- show next input choices  --------------------------------------------------- */}
-      {choices.length > 0 && (
+      {isActionAllowed(options) && choices.length > 0 && (
         <div
           className={cx(
             flex,

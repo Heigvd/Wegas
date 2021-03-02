@@ -13,7 +13,7 @@ function undefToEmpty(val?: string | number) {
   return val;
 }
 
-export interface InputProps<T> extends ClassStyleId {
+export interface InputProps<T> extends ClassStyleId, DisabledReadonly {
   /**
    * value - the value to input
    */
@@ -26,14 +26,6 @@ export interface InputProps<T> extends ClassStyleId {
    * label - the current label of the input
    */
   label?: React.ReactNode;
-  /**
-   * disabled - disable the component
-   */
-  disabled?: boolean;
-  /**
-   * readOnly - disable the click on the component
-   */
-  readOnly?: boolean;
   /**
    * id - the id of the input
    */

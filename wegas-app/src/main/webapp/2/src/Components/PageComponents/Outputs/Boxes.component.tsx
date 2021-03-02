@@ -65,7 +65,6 @@ function PlayerBoxes({
       hideBoxValue={hideBoxValue}
       showLabelValue={showLabelValue}
       disabled={options.disabled || options.locked}
-      readOnly={options.readOnly}
     />
   );
 }

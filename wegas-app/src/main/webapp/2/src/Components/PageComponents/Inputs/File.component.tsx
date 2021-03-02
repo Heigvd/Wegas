@@ -53,7 +53,8 @@ function PlayerFileInput({
       className={className}
       style={style}
       id={id}
-      {...options}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
     />
   );
 }

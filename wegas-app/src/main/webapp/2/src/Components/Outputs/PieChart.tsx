@@ -53,8 +53,8 @@ const generateGradient = (
         // Putting key in a linearGradient throws warnings, need to wait for react to be updated
         return (
           <linearGradient
-            key={newPieChartId + i}
             id={newPieChartId + i}
+            key={newPieChartId + i}
             gradientUnits="userSpaceOnUse"
             x1={coord1.x}
             y1={coord1.y}
@@ -67,7 +67,6 @@ const generateGradient = (
             <stop offset="100%" stopColor={stopColor} />
           </linearGradient>
         );
-        // }
       })
       .filter(s => s != null),
     currentId: newPieChartId,

@@ -10,8 +10,8 @@ import { IScript, SNumberDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
 import { classStyleIdShema } from '../tools/options';
-import { useCurrentPlayer } from '../../../data/selectors/Player';
 import { TumbleLoader } from '../../Loader';
+import { Player } from '../../../data/selectors';
 
 interface PlayerGaugeProps extends WegasComponentProps {
   /**
@@ -39,7 +39,6 @@ function PlayerGauge({
   options,
 }: PlayerGaugeProps) {
   const number = useScript<SNumberDescriptor>(script, context);
-  const player = useCurrentPlayer();
 
   return number == null ? (
     <TumbleLoader />
@@ -52,7 +51,7 @@ function PlayerGauge({
       followNeedle={followNeedle}
       min={number.getMinValue() || 0}
       max={number.getMaxValue() || 1}
-      value={number.getValue(player)}
+      value={number.getValue(Player.self())}
       disabled={options.disabled || options.locked}
     />
   );
@@ -77,6 +76,10 @@ registerComponent(
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({
       script: createFindVariableScript(v),
+      // Prevent shrinking in chrome
+      layoutStyle: {
+        width: '100%',
+      },
     }),
   }),
 );
