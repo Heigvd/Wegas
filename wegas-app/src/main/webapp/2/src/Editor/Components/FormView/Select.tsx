@@ -45,26 +45,6 @@ const selectStyle = css({
   alignItems: 'center',
 });
 
-function genItems(o: string | Choice) {
-  if (typeof o !== 'object') {
-    return (
-      <option key={`k-${o}`} value={JSON.stringify(o)}>
-        {o}
-      </option>
-    );
-  }
-  const { label = o.value, value, disabled } = o;
-  return (
-    <option
-      key={`k-${value}`}
-      value={JSON.stringify(value)}
-      disabled={disabled}
-    >
-      {label}
-    </option>
-  );
-}
-
 const defaultTitle: Choice = {
   value: '[[[default]]]',
   label: '- please select -',
@@ -79,7 +59,27 @@ const undefinedTitle: Choice = {
   disabled: false,
 };
 
-interface SelectorProps extends ClassStyleId {
+function genItems(o: string | Choice) {
+  if (typeof o !== 'object') {
+    return (
+      <option key={`k-${o}`} value={o}>
+        {o}
+      </option>
+    );
+  }
+  const { label = o.value, value, disabled: choiceDisabled } = o;
+  return (
+    <option
+      key={`k-${value}`}
+      value={typeof value === 'string' ? value : JSON.stringify(value)}
+      disabled={choiceDisabled}
+    >
+      {label}
+    </option>
+  );
+}
+
+interface SelectorProps extends ClassStyleId, DisabledReadonly {
   choices: Choices;
   value: string;
   onChange?: (
@@ -87,11 +87,6 @@ interface SelectorProps extends ClassStyleId {
       value: string;
     }>,
   ) => void;
-  readOnly?: boolean;
-  /**
-   * disabled - if true, displayed as disabled
-   */
-  disabled?: boolean;
 }
 
 export function Selector({

@@ -54,7 +54,7 @@ export function questionInfo(question: IQuestionDescriptor): QuestionInfo {
   };
 }
 
-interface ConnectedSimpleQuestionDisplayProps extends DisabledReadonlyLocked {
+interface ConnectedSimpleQuestionDisplayProps extends DisabledReadonly {
   entity: Readonly<IQuestionDescriptor>;
 }
 
@@ -74,7 +74,7 @@ export function ConnectedSimpleQuestionDisplay({
   );
 }
 
-interface ConnectedWhQuestionDisplay extends DisabledReadonlyLocked {
+interface ConnectedWhQuestionDisplay extends DisabledReadonly {
   entity: Readonly<IWhQuestionDescriptor>;
 }
 
@@ -91,7 +91,7 @@ export function ConnectedWhQuestionDisplay({
   );
 }
 
-interface ConnectedQuestionDisplayProps extends DisabledReadonlyLocked {
+interface ConnectedQuestionDisplayProps extends DisabledReadonly {
   entity: Readonly<IQuestionDescriptor | IWhQuestionDescriptor>;
 }
 

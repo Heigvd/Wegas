@@ -68,7 +68,7 @@ interface Connection<F extends FlowLine, P extends Process<F>> {
 
 export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
   extends ClassStyleId,
-    DisabledReadonlyLocked {
+    DisabledReadonly {
   /**
    * the title of the chart
    */

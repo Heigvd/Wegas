@@ -27,9 +27,8 @@ export default function PlayerDialogue({
   return (
     <DialogueDisplay
       dialogue={descriptor}
-      disabled={options.disabled}
+      disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
-      locked={options.locked}
     />
   );
 }

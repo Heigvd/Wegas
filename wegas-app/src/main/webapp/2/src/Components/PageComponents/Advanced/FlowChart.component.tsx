@@ -76,7 +76,8 @@ export default function PlayerFlowChart<
       id={id}
       Flowline={LabeledFlowLineComponent}
       Process={PlayerFlowChartProcessComponent}
-      {...options}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
     />
   );
 }

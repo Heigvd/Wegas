@@ -29,7 +29,7 @@ export const readOnlyStyle = css({
 });
 
 export interface ProcessProps<F extends FlowLine, P extends Process<F>>
-  extends DisabledReadonlyLocked {
+  extends DisabledReadonly {
   /**
    * the process object to be displayed
    */
@@ -171,7 +171,7 @@ export function DefaultProcessComponent<
       {(process, onClick) => (
         <div
           className={cx(stateBoxStyle, {
-            [disabledStyle]: props.disabled || props.locked,
+            [disabledStyle]: props.disabled,
             [readOnlyStyle]: props.readOnly,
           })}
           onClick={e => {
