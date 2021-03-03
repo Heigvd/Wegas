@@ -4,8 +4,10 @@ import { XYPosition } from '../Hooks/useMouseEventDnd';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { FlowLine, Process } from './FlowChart';
 import { FlowLineHandle, FLOW_HANDLE_SIDE } from './Handles';
-import { disabledStyle, readOnlyStyle } from './ProcessComponent';
-import { transitionBoxStyle } from './TransitionFlowLineComponent';
+import {
+  transitionBoxActionStyle,
+  transitionBoxStyle,
+} from './TransitionFlowLineComponent';
 
 const childrenContainerStyle = (selected: boolean) =>
   css({
@@ -723,8 +725,10 @@ export function DefaultFlowLineComponent<
             onClick(e, startProcess, flowline)
           }
           className={cx(transitionBoxStyle, {
-            [disabledStyle]: props.disabled,
-            [readOnlyStyle]: props.readOnly,
+            [transitionBoxActionStyle]: isActionAllowed({
+              readOnly: props.readOnly,
+              disabled: props.disabled,
+            }),
           })}
         >
           {flowline.id}

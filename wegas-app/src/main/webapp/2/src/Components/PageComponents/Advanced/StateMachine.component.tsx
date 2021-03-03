@@ -44,6 +44,7 @@ export default function PlayerStateMachine({
             stateMachineInstance={instance}
             localDispatch={localDispatch}
             forceLocalDispatch
+            {...options}
           />
         );
       }}

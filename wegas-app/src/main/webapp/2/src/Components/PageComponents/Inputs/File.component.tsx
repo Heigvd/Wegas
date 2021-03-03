@@ -92,5 +92,15 @@ registerComponent(
       }),
       ...classStyleIdShema,
     },
+    obsoleteComponent: {
+      keepDisplayingToPlayer: true,
+      isObsolete: oldComponent => 'readOnly' in oldComponent.props,
+      sanitizer: oldComponent => {
+        const newComponent = { ...oldComponent };
+        newComponent.props.pickOnly = newComponent.props.readOnly;
+        delete newComponent.props.readOnly;
+        return newComponent;
+      },
+    },
   }),
 );

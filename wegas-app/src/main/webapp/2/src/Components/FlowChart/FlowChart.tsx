@@ -13,6 +13,7 @@ import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './Handles';
 import { useDrop } from 'react-dnd';
 import { classNameOrEmpty } from '../../Helper/className';
 import { Text } from '../Outputs/Text';
+import { isActionAllowed } from '../PageComponents/tools/options';
 
 const flowChartStyle = css({
   width: '100%',
@@ -36,7 +37,7 @@ export interface FlowLine {
   connectedTo: string;
 }
 
-export interface Process<F extends FlowLine> {
+export interface Process<F extends FlowLine> extends ClassStyleId {
   /**
    * the id of the process
    */
@@ -49,6 +50,10 @@ export interface Process<F extends FlowLine> {
    * the connections to other processes
    */
   connections: F[];
+  /**
+   * tells whether or not the process can be dragged
+   */
+  undraggable?: boolean;
 }
 
 interface Connection<F extends FlowLine, P extends Process<F>> {
@@ -201,31 +206,33 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
     },
     drop: ({ processes, flowline, backward }, mon) => {
       setTempFlow(undefined);
-      const newX = mon.getClientOffset()?.x;
-      const newY = mon.getClientOffset()?.y;
+      if (isActionAllowed(options)) {
+        const newX = mon.getClientOffset()?.x;
+        const newY = mon.getClientOffset()?.y;
 
-      const containerX = container.current?.getBoundingClientRect().x;
-      const containerY = container.current?.getBoundingClientRect().y;
+        const containerX = container.current?.getBoundingClientRect().x;
+        const containerY = container.current?.getBoundingClientRect().y;
 
-      const scrollX = container.current?.scrollLeft;
-      const scrollY = container.current?.scrollTop;
+        const scrollX = container.current?.scrollLeft;
+        const scrollY = container.current?.scrollTop;
 
-      onNew(
-        processes.sourceProcess,
-        newX != null &&
-          newY != null &&
-          containerX != null &&
-          containerY != null &&
-          scrollX != null &&
-          scrollY != null
-          ? {
-              x: newX - containerX + scrollX,
-              y: newY - containerY + scrollY,
-            }
-          : { x: 0, y: 0 },
-        flowline,
-        backward,
-      );
+        onNew(
+          processes.sourceProcess,
+          newX != null &&
+            newY != null &&
+            containerX != null &&
+            containerY != null &&
+            scrollX != null &&
+            scrollY != null
+            ? {
+                x: newX - containerX + scrollX,
+                y: newY - containerY + scrollY,
+              }
+            : { x: 0, y: 0 },
+          flowline,
+          backward,
+        );
+      }
     },
   });
 
@@ -282,7 +289,11 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
             endProcess={c.endProcess}
             flowline={c.flowline}
             positionOffset={(i + 1) / (g.length + 1)}
-            onClick={onFlowlineClick}
+            onClick={(e, p, f) =>
+              isActionAllowed(options) &&
+              onFlowlineClick &&
+              onFlowlineClick(e, p, f)
+            }
             isFlowlineSelected={isFlowlineSelected}
             {...options}
           />
@@ -319,21 +330,28 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
               processesRef.current[process.id] = ref;
             }}
             onMove={position =>
+              isActionAllowed(options) &&
               setInternalProcesses(op => ({
                 ...op,
                 [process.id]: { ...op[process.id], position },
               }))
             }
-            onMoveEnd={position => onMove(process, position)}
+            onMoveEnd={position =>
+              isActionAllowed(options) && onMove(process, position)
+            }
             onConnect={(processes, flowline) => {
               setTempFlow(undefined);
-              if ('targetProcess' in processes) {
-                onConnect(process, processes.sourceProcess, flowline, true);
-              } else {
-                onConnect(processes.sourceProcess, process, flowline, false);
+              if (isActionAllowed(options)) {
+                if ('targetProcess' in processes) {
+                  onConnect(process, processes.sourceProcess, flowline, true);
+                } else {
+                  onConnect(processes.sourceProcess, process, flowline, false);
+                }
               }
             }}
-            onClick={onProcessClick}
+            onClick={(e, p) =>
+              isActionAllowed(options) && onProcessClick && onProcessClick(e, p)
+            }
             isProcessSelected={isProcessSelected}
             {...options}
           />

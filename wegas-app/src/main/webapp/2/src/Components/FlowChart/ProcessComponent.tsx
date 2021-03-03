@@ -8,9 +8,14 @@ import {
   DnDFlowchartHandle,
   PROCESS_HANDLE_DND_TYPE,
 } from './Handles';
-import { stateBoxStyle } from './StateProcessComponent';
+import {
+  selectedStateBoxStyle,
+  stateBoxActionStyle,
+  stateBoxStyle,
+} from './StateProcessComponent';
 import { themeVar } from '../Style/ThemeVars';
 import { isActionAllowed } from '../PageComponents/tools/options';
+import { classNameOrEmpty } from '../../Helper/className';
 
 const processStyle = css({
   position: 'absolute',
@@ -103,35 +108,27 @@ export function CustomProcessComponent<
     },
   });
 
-  const onDragStart = React.useCallback(
-    (e: MouseEvent) => {
-      if (isActionAllowed(options)) {
-        const targetBox = (e.target as HTMLDivElement).getBoundingClientRect();
-        clickPosition.current = {
-          x: e.clientX - targetBox.left,
-          y: e.clientY - targetBox.top,
-        };
-      }
-    },
-    [options],
-  );
+  const onDragStart = React.useCallback((e: MouseEvent) => {
+    const targetBox = (e.target as HTMLDivElement).getBoundingClientRect();
+    clickPosition.current = {
+      x: e.clientX - targetBox.left,
+      y: e.clientY - targetBox.top,
+    };
+  }, []);
 
   const onDrag = React.useCallback(
-    (_e: MouseEvent, position: XYPosition) =>
-      isActionAllowed(options) && onMove(position),
-    [onMove, options],
+    (_e: MouseEvent, position: XYPosition) => onMove(position),
+    [onMove],
   );
 
   const onDragEnd = React.useCallback(
     (_e: MouseEvent, position: XYPosition) => {
-      if (isActionAllowed(options)) {
-        onMoveEnd({
-          x: Math.max(position.x, 0),
-          y: Math.max(position.y, 0),
-        });
-      }
+      onMoveEnd({
+        x: Math.max(position.x, 0),
+        y: Math.max(position.y, 0),
+      });
     },
-    [onMoveEnd, options],
+    [onMoveEnd],
   );
 
   useMouseEventDnd(
@@ -142,6 +139,7 @@ export function CustomProcessComponent<
       onDragEnd,
     },
     true,
+    !isActionAllowed(options) || process.undraggable,
   );
 
   return (
@@ -170,10 +168,17 @@ export function DefaultProcessComponent<
     <CustomProcessComponent {...props}>
       {(process, onClick) => (
         <div
-          className={cx(stateBoxStyle, {
-            [disabledStyle]: props.disabled,
-            [readOnlyStyle]: props.readOnly,
-          })}
+          className={
+            cx(stateBoxStyle, {
+              [stateBoxActionStyle]: isActionAllowed({
+                disabled: props.disabled,
+                readOnly: props.readOnly,
+              }),
+              [selectedStateBoxStyle]:
+                props.isProcessSelected && props.isProcessSelected(process),
+            }) + classNameOrEmpty(process.className)
+          }
+          style={process.style}
           onClick={e => {
             if (!props.disabled && !props.readOnly) {
               onClick && onClick(e, process);
