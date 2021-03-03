@@ -229,13 +229,18 @@ const headerStyle = css({
 
 export const nodeContentStyle = cx(
   css({
-    cursor: 'pointer',
     marginRight: '5px',
+  }),
+  componentMarginLeft,
+);
+
+export const actionNodeContentStyle = cx(
+  css({
+    cursor: 'pointer',
     ':hover': {
       backgroundColor: themeVar.Common.colors.HoverColor,
     },
   }),
-  componentMarginLeft,
 );
 
 export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_DRAG_ITEM';
@@ -351,7 +356,7 @@ export function CTree(
                 variable={variable}
                 subPath={props.subPath}
                 className={cx(nodeContentStyle, {
-                  [css({ cursor: 'default' })]: !actionAllowed,
+                  [actionNodeContentStyle]: actionAllowed,
                 })}
               />
             )}
