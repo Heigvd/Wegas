@@ -18,7 +18,7 @@ import {
   useOnVariableChange,
 } from './tools';
 import { TumbleLoader } from '../../Loader';
-import { useCurrentPlayer } from '../../../data/selectors/Player';
+import { Player } from '../../../data/selectors';
 
 interface PlayerBooleanProps extends WegasComponentProps {
   /**
@@ -33,14 +33,7 @@ interface PlayerBooleanProps extends WegasComponentProps {
    * type - the behaviour and style of the component
    */
   type?: 'checkbox' | 'toggler';
-  /**
-   * inactive - if true, the component will only display the boolean but the user won't be abe to change it
-   */
-  inactive?: boolean;
-  /**
-   * disabled - if true, the component will be disabled
-   */
-  disabled?: boolean;
+
   onVariableChange?: OnVariableChange;
 }
 
@@ -48,8 +41,7 @@ function PlayerBoolean({
   script,
   type,
   label,
-  disabled,
-  inactive,
+  options,
   context,
   className,
   style,
@@ -57,7 +49,6 @@ function PlayerBoolean({
   onVariableChange,
 }: PlayerBooleanProps) {
   const bool = useScript<SBooleanDescriptor | boolean>(script, context);
-  const player = useCurrentPlayer();
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
@@ -66,7 +57,7 @@ function PlayerBoolean({
   const BooleanComponent = type === 'toggler' ? Toggler : CheckBox;
 
   const value = useStore(() =>
-    typeof bool === 'object' ? bool.getValue(player) : bool,
+    typeof bool === 'object' ? bool.getValue(Player.self()) : bool,
   );
 
   return bool == null ? (
@@ -78,8 +69,8 @@ function PlayerBoolean({
       id={id}
       label={textLabel}
       value={value}
-      disabled={disabled}
-      readOnly={inactive}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
       onChange={v => {
         if (handleOnChange) {
           handleOnChange(v);
@@ -111,8 +102,6 @@ registerComponent(
         label: 'Type',
         values: ['checkbox', 'toggler'],
       }),
-      disabled: schemaProps.boolean({ label: 'Disabled' }),
-      inactive: schemaProps.boolean({ label: 'Inactive' }),
       onVariableChange: onVariableChangeSchema('On change action'),
     },
     allowedVariables: ['BooleanDescriptor'],

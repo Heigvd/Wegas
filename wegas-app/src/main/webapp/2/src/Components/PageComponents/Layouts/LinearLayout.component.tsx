@@ -83,6 +83,7 @@ export function ChildrenDeserializer({
   pageId,
   uneditable,
   context,
+  inheritedOptionsState,
   noSplitter,
   flexValues,
 }: ChildrenDeserializerProps<PlayerLinearLayoutProps>) {
@@ -105,6 +106,7 @@ export function ChildrenDeserializer({
                 uneditable={uneditable}
                 context={context}
                 dropzones={{ side: true }}
+                inheritedOptionsState={inheritedOptionsState}
               />
             </ReflexElement>
           );

@@ -1,9 +1,13 @@
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import * as React from 'react';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
+import { isActionAllowed } from '../PageComponents/tools/options';
 import { FlowLine, Process } from './FlowChart';
 import { FlowLineHandle, FLOW_HANDLE_SIDE } from './Handles';
-import { transitionBoxStyle } from './TransitionFlowLineComponent';
+import {
+  transitionBoxActionStyle,
+  transitionBoxStyle,
+} from './TransitionFlowLineComponent';
 
 const childrenContainerStyle = (selected: boolean) =>
   css({
@@ -78,7 +82,8 @@ const arrowCSS = {
   fill: 'none',
 };
 
-export interface FlowLineProps<F extends FlowLine, P extends Process<F>> {
+export interface FlowLineProps<F extends FlowLine, P extends Process<F>>
+  extends DisabledReadonly {
   /**
    * the DOM element from where the flowline starts
    */
@@ -156,11 +161,8 @@ export function CustomFlowLineComponent<
   if (props.startProcess === props.endProcess) {
     return (
       <CircularFlowLineComponent
-        flowline={props.flowline}
+        {...props}
         process={props.startProcess}
-        isFlowlineSelected={props.isFlowlineSelected}
-        onClick={props.onClick}
-        positionOffset={props.positionOffset}
         processElement={props.startProcessElement}
       >
         {props.children}
@@ -184,6 +186,7 @@ export function CustomStraitFlowLineComponent<
   onClick,
   isFlowlineSelected = defaultSelect,
   children,
+  ...options
 }: CustomFlowLineProps<F, P>) {
   const parent = startProcessElement?.parentElement;
   const parentBox = parent?.getBoundingClientRect();
@@ -411,24 +414,31 @@ export function CustomStraitFlowLineComponent<
           markerEnd={`url(#${selected ? 'selectedarrowhead' : 'arrowhead'})`}
         />
       </svg>
-      <FlowLineHandle
-        position={startHandlePosition}
-        translation={{ x: 0, y: 0.5 }}
-        rotation={handleRotation}
-        processes={{ sourceProcess: startProcess, targetProcess: endProcess }}
-        selected={selected}
-        flowline={flowline}
-        backward={true}
-      />
-      <FlowLineHandle
-        position={endHandlePosition}
-        translation={{ x: 0, y: 0.5 }}
-        rotation={handleRotation - Math.PI}
-        processes={{ sourceProcess: startProcess }}
-        selected={selected}
-        flowline={flowline}
-        backward={false}
-      />
+      {isActionAllowed(options) && (
+        <>
+          <FlowLineHandle
+            position={startHandlePosition}
+            translation={{ x: 0, y: 0.5 }}
+            rotation={handleRotation}
+            processes={{
+              sourceProcess: startProcess,
+              targetProcess: endProcess,
+            }}
+            selected={selected}
+            flowline={flowline}
+            backward={true}
+          />
+          <FlowLineHandle
+            position={endHandlePosition}
+            translation={{ x: 0, y: 0.5 }}
+            rotation={handleRotation - Math.PI}
+            processes={{ sourceProcess: startProcess }}
+            selected={selected}
+            flowline={flowline}
+            backward={false}
+          />
+        </>
+      )}
       <div
         ref={ref => {
           if (ref != null) {
@@ -453,7 +463,9 @@ export function CustomStraitFlowLineComponent<
         }}
         className={childrenContainerStyle(selected)}
         onClick={e => {
-          (e.target as HTMLDivElement).focus();
+          if (isActionAllowed(options)) {
+            (e.target as HTMLDivElement).focus();
+          }
         }}
       >
         {children && children(flowline, startProcess, onClick, selected)}
@@ -462,10 +474,8 @@ export function CustomStraitFlowLineComponent<
   );
 }
 
-export interface CircularFlowLineProps<
-  F extends FlowLine,
-  P extends Process<F>
-> {
+export interface CircularFlowLineProps<F extends FlowLine, P extends Process<F>>
+  extends DisabledReadonly {
   /**
    * the DOM element from where the flowline starts
    */
@@ -518,6 +528,7 @@ export function CircularFlowLineComponent<
   onClick,
   isFlowlineSelected = defaultSelect,
   children,
+  ...options
 }: CustomCircularFlowLineProps<F, P>) {
   const parent = processElement?.parentElement;
   const parentBox = parent?.getBoundingClientRect();
@@ -556,30 +567,34 @@ export function CircularFlowLineComponent<
           markerEnd={`url(#${selected ? 'selectedarrowhead' : 'arrowhead'})`}
         />
       </svg>
-      <FlowLineHandle
-        position={{
-          x: canvasLeft + processBox.width / 7 - FLOW_HANDLE_SIDE / 2,
-          y: canvasTop + processBox.height,
-        }}
-        translation={{ x: 0.0, y: 0 }}
-        rotation={0}
-        processes={{ sourceProcess: process, targetProcess: process }}
-        selected={selected}
-        flowline={flowline}
-        backward={true}
-      />
-      <FlowLineHandle
-        position={{
-          x: canvasLeft + processBox.width * (6 / 7) - FLOW_HANDLE_SIDE / 2,
-          y: canvasTop + processBox.height,
-        }}
-        translation={{ x: 0.0, y: 0 }}
-        rotation={0}
-        processes={{ sourceProcess: process }}
-        selected={selected}
-        flowline={flowline}
-        backward={false}
-      />
+      {isActionAllowed(options) && (
+        <>
+          <FlowLineHandle
+            position={{
+              x: canvasLeft + processBox.width / 7 - FLOW_HANDLE_SIDE / 2,
+              y: canvasTop + processBox.height,
+            }}
+            translation={{ x: 0.0, y: 0 }}
+            rotation={0}
+            processes={{ sourceProcess: process, targetProcess: process }}
+            selected={selected}
+            flowline={flowline}
+            backward={true}
+          />
+          <FlowLineHandle
+            position={{
+              x: canvasLeft + processBox.width * (6 / 7) - FLOW_HANDLE_SIDE / 2,
+              y: canvasTop + processBox.height,
+            }}
+            translation={{ x: 0.0, y: 0 }}
+            rotation={0}
+            processes={{ sourceProcess: process }}
+            selected={selected}
+            flowline={flowline}
+            backward={false}
+          />
+        </>
+      )}
       <div
         ref={ref => {
           if (ref != null) {
@@ -596,7 +611,9 @@ export function CircularFlowLineComponent<
         }}
         className={childrenContainerStyle(selected)}
         onClick={e => {
-          (e.target as HTMLDivElement).focus();
+          if (isActionAllowed(options)) {
+            (e.target as HTMLDivElement).focus();
+          }
         }}
       >
         {children && children(flowline, process, onClick, selected)}
@@ -699,8 +716,20 @@ export function DefaultFlowLineComponent<
     <CustomFlowLineComponent {...props}>
       {(flowline, startProcess, onClick) => (
         <div
-          onClick={e => onClick && onClick(e, startProcess, flowline)}
-          className={transitionBoxStyle}
+          onClick={e =>
+            onClick &&
+            isActionAllowed({
+              disabled: props.disabled,
+              readOnly: props.readOnly,
+            }) &&
+            onClick(e, startProcess, flowline)
+          }
+          className={cx(transitionBoxStyle, {
+            [transitionBoxActionStyle]: isActionAllowed({
+              readOnly: props.readOnly,
+              disabled: props.disabled,
+            }),
+          })}
         >
           {flowline.id}
         </div>

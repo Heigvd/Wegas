@@ -41,6 +41,7 @@ import {
   getIconForFile,
 } from '../../../Helper/fileTools';
 import { FilePickingType, FileFilter } from './FileBrowser';
+import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // styles
@@ -59,7 +60,7 @@ const noToggleStyle = css({
 
 const previewStyle = css(
   {
-    position: 'fixed',
+    position: 'absolute',
     backgroundColor: themeVar.Common.colors.BackgroundColor,
     maxWidth: '220px',
     margin: '3px 2em 10px',
@@ -67,6 +68,7 @@ const previewStyle = css(
     borderWidth: '1px',
     borderRadius: themeVar.Common.dimensions.BorderRadius,
     fontSize: '75%',
+    zIndex: 10000,
   },
   thinHoverColorInsetShadow,
 );
@@ -191,7 +193,7 @@ type ModalState =
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // React element
 
-export interface FileBrowserNodeProps extends ClassStyleId {
+export interface FileBrowserNodeProps extends ClassStyleId, DisabledReadonly {
   /**
    * item - item to display in a node
    */
@@ -221,9 +223,9 @@ export interface FileBrowserNodeProps extends ClassStyleId {
    */
   noDelete?: boolean;
   /**
-   * readOnly - without option to upload file or create folder
+   * pickOnly - without option to upload file or create folder
    */
-  readOnly?: boolean;
+  pickOnly?: boolean;
   /**
    * onFileClick - action on file click
    */
@@ -250,6 +252,7 @@ export interface FileBrowserNodeProps extends ClassStyleId {
 }
 
 export function FileBrowserNode({
+  id,
   item,
   isRootNode = false,
   selectedLocalPaths = [],
@@ -257,7 +260,7 @@ export function FileBrowserNode({
   defaultOpened = false,
   noToggle = false,
   noDelete = false,
-  readOnly = false,
+  pickOnly = false,
   onFileClick = () => {},
   onDeleteFile = () => {},
   pickType,
@@ -265,7 +268,13 @@ export function FileBrowserNode({
   localDispatch,
   className,
   style,
+  disabled,
+  readOnly,
 }: FileBrowserNodeProps) {
+  const actionAllowed = isActionAllowed({ disabled, readOnly });
+
+  //const isDisplayPreviewAllowed = !disabled;
+
   const [opened, setOpened] = React.useState(
     defaultOpened ||
       isRootNode ||
@@ -487,7 +496,7 @@ export function FileBrowserNode({
           }
         });
       }
-    }, readOnly),
+    }, !actionAllowed),
   );
 
   const timeoutBeforeExpand = 1000;
@@ -511,7 +520,7 @@ export function FileBrowserNode({
 
   React.useEffect(() => {
     let previewTimeout: number | undefined;
-    if (hoveringImageFile) {
+    if (!disabled && hoveringImageFile) {
       previewTimeout = (setTimeout(
         () => setDisplayPreview(true),
         timeoutBeforePreview,
@@ -524,7 +533,7 @@ export function FileBrowserNode({
       setDisplayPreview(false);
       clearTimeout(previewTimeout);
     }
-  }, [hoveringImageFile, currentFile]);
+  }, [hoveringImageFile, currentFile, disabled]);
 
   const pickTypeApproved =
     !pickType ||
@@ -547,11 +556,12 @@ export function FileBrowserNode({
     filterApproved ||
     !(filter.filterType == 'hide' && filterRefused) ? (
     <div
+      id={id}
       ref={dropZone}
       className={cx(flex, grow) + classNameOrEmpty(className)}
       style={style}
     >
-      {!readOnly && (
+      {!pickOnly && actionAllowed && (
         // hidden input required to browse file in the file system
         <input
           ref={uploader}
@@ -588,7 +598,11 @@ export function FileBrowserNode({
       <div className={cx(block, grow)}>
         <div
           className={cx(flex, grow, {
-            [clickableStyle]: filterApproved && pickTypeApproved && !isRootNode,
+            [clickableStyle]:
+              filterApproved &&
+              pickTypeApproved &&
+              !isRootNode &&
+              actionAllowed,
             [disabledColorStyle]:
               filter && filter.filterType == 'grey' && filterRefused,
             [dropZoneStyle]:
@@ -597,9 +611,14 @@ export function FileBrowserNode({
             [globalSelection]: isSelected(currentFile, selectedGlobalPaths),
           })}
           onClick={(e: ModifierKeysEvent) => {
-            if (filterApproved && pickTypeApproved && !isRootNode) {
+            if (
+              filterApproved &&
+              pickTypeApproved &&
+              !isRootNode &&
+              actionAllowed
+            ) {
               onFileClick(currentFile, setCurrentFile);
-              if (!readOnly) {
+              if (!pickOnly) {
                 const dispatch =
                   e.ctrlKey && localDispatch ? localDispatch : store.dispatch;
                 dispatch(editFile(currentFile, setCurrentFile));
@@ -670,7 +689,7 @@ export function FileBrowserNode({
                 defaultConfirm
               />
             )}
-            {modalState.type === 'close' && isFile(currentFile) && (
+            {modalState.type === 'close' && !disabled && isFile(currentFile) && (
               <Button
                 icon={'external-link-alt'}
                 tooltip={'Open file'}
@@ -681,7 +700,8 @@ export function FileBrowserNode({
               />
             )}
             {modalState.type === 'close' &&
-              !readOnly &&
+              !pickOnly &&
+              actionAllowed &&
               (isDirectory(currentFile) ? (
                 <>
                   <Button
@@ -720,7 +740,8 @@ export function FileBrowserNode({
               ))}
             {modalState.type === 'close' &&
               !noDelete &&
-              !readOnly &&
+              !pickOnly &&
+              actionAllowed &&
               !isRootNode && (
                 <ConfirmButton
                   icon={'trash'}
@@ -829,7 +850,7 @@ export function FileBrowserNode({
                     defaultOpened={defaultOpened}
                     noToggle={noToggle}
                     noDelete={noDelete}
-                    readOnly={readOnly}
+                    pickOnly={pickOnly}
                     onFileClick={onFileClick}
                     onDeleteFile={deletedFile => {
                       setChildren(oldChildren => {
@@ -846,6 +867,8 @@ export function FileBrowserNode({
                     pickType={pickType}
                     filter={filter}
                     localDispatch={localDispatch}
+                    disabled={disabled}
+                    readOnly={readOnly}
                   />
                 ))
               ) : (

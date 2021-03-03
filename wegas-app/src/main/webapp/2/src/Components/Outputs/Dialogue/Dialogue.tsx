@@ -11,11 +11,13 @@ import {
   flexColumn,
   flexDistribute,
   grow,
+  halfOpacity,
   itemCenter,
 } from '../../../css/classes';
 import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReducer';
-import { useCurrentPlayer } from '../../../data/selectors/Player';
+import { Player } from '../../../data/selectors';
 import { store } from '../../../data/Stores/store';
+import { isActionAllowed } from '../../PageComponents/tools/options';
 import { themeVar } from '../../Style/ThemeVars';
 import { DialogueChoice } from './DialogueChoice';
 import { DialogueEntry } from './DialogueEntry';
@@ -53,17 +55,20 @@ const dialogueDisplayStyle = css({
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
 // React element
 
-interface DialogueDisplayProps {
+interface DialogueDisplayProps extends DisabledReadonly {
   dialogue: SDialogueDescriptor;
 }
 
-export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
+export function DialogueDisplay({
+  dialogue,
+  disabled,
+  readOnly,
+}: DialogueDisplayProps) {
   const historyDiv = React.useRef<HTMLDivElement>(null);
 
   const [waiting, setWaiting] = React.useState(false);
 
-  const player = useCurrentPlayer();
-  const dialogueInstance = dialogue.getInstance(player);
+  const dialogueInstance = dialogue.getInstance(Player.self());
   const history = dialogueInstance.getTransitionHistory();
   const dialogueStates = dialogue.getStates();
 
@@ -156,7 +161,9 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
   return (
     <div
       className={
-        cx(dialogueDisplayStyle, flex, flexColumn, grow) + ' wegas wegas-dialog'
+        cx(dialogueDisplayStyle, flex, flexColumn, grow, {
+          [halfOpacity]: disabled,
+        }) + ' wegas wegas-dialog'
       }
     >
       {/* ----- dialogue history  ---------------------------------------------------------- */}
@@ -168,7 +175,7 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
       </div>
 
       {/* ----- show next input choices  --------------------------------------------------- */}
-      {choices.length > 0 && (
+      {isActionAllowed({ disabled, readOnly }) && choices.length > 0 && (
         <div
           className={cx(
             flex,
@@ -192,6 +199,8 @@ export function DialogueDisplay({ dialogue }: DialogueDisplayProps) {
                   ),
                 );
               }}
+              disabled={disabled}
+              readOnly={readOnly}
             />
           ))}
 

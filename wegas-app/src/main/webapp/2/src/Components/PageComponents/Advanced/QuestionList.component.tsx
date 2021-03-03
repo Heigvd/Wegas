@@ -5,10 +5,7 @@ import {
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import {
-  IScript,
-  SListDescriptor,
-} from 'wegas-ts-api';
+import { IScript, SListDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import QuestionList from '../../Outputs/Question/QuestionList';
 import { entityIs } from '../../../data/entities';
@@ -23,25 +20,22 @@ export default function QuestionListDisplay({
   questionList,
   autoOpenFirst,
   context,
+  options,
 }: QuestionListDisplayProps) {
-    const descriptor = useScript<SListDescriptor>(
-    questionList,
-    context,
-  );
+  const descriptor = useScript<SListDescriptor>(questionList, context);
 
   if (questionList === undefined) {
     return <pre>No selected list</pre>;
-  }
-
-
-  else if (descriptor == null || !entityIs(descriptor, "ListDescriptor")) {
-    return <pre>Descriptor not returned as SListDescriptor</pre>
+  } else if (descriptor == null || !entityIs(descriptor, 'ListDescriptor')) {
+    return <pre>Descriptor not returned as SListDescriptor</pre>;
   }
 
   return (
     <QuestionList
-    questionList = {descriptor}
-    autoOpenFirst = {autoOpenFirst}
+      questionList={descriptor}
+      autoOpenFirst={autoOpenFirst}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
     />
   );
 }

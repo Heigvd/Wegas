@@ -39,6 +39,7 @@ export function useMouseEventDnd<T extends HTMLElement>(
   ref: React.MutableRefObject<T | null>,
   { onDragStart, onDrag, onDragEnd }: MouseDnDHandler,
   prenventClick?: boolean,
+  disabled?: boolean,
 ) {
   const draggingTarget = React.useRef<T | null>(null);
   const draggingStarted = React.useRef(false);
@@ -53,6 +54,7 @@ export function useMouseEventDnd<T extends HTMLElement>(
     (e: MouseEvent) => {
       e.stopPropagation();
       if (
+        !disabled &&
         ref.current != null &&
         !(e.target as HTMLElement).getAttribute('data-nodrag')
       ) {
@@ -78,12 +80,12 @@ export function useMouseEventDnd<T extends HTMLElement>(
         onDragStart && onDragStart(e, initialPosition.current);
       }
     },
-    [onDragStart, ref],
+    [disabled, onDragStart, ref],
   );
   const onMouseMove = React.useCallback(
     (e: MouseEvent) => {
       e.stopPropagation();
-      if (draggingTarget.current != null) {
+      if (!disabled && draggingTarget.current != null) {
         if (prenventClick) {
           document.body.addEventListener('click', forbidClick);
         }
@@ -111,7 +113,7 @@ export function useMouseEventDnd<T extends HTMLElement>(
         }
       }
     },
-    [onDrag, prenventClick],
+    [disabled, onDrag, prenventClick],
   );
   const onMouseUp = React.useCallback(
     (e: MouseEvent) => {
@@ -123,7 +125,11 @@ export function useMouseEventDnd<T extends HTMLElement>(
         ghostElement.current.remove();
       }
 
-      if (draggingStarted.current && draggingTarget.current != null) {
+      if (
+        !disabled &&
+        draggingStarted.current &&
+        draggingTarget.current != null
+      ) {
         const reset =
           onDragEnd &&
           onDragEnd(e, lastPosition.current, target.getAttribute('data-id'));
@@ -147,7 +153,7 @@ export function useMouseEventDnd<T extends HTMLElement>(
         }, 50);
       }
     },
-    [onDragEnd, prenventClick],
+    [disabled, onDragEnd, prenventClick],
   );
 
   React.useEffect(() => {

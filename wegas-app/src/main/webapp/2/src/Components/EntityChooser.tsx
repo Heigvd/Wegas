@@ -1,7 +1,14 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { deepDifferent } from './Hooks/storeHookFactory';
-import { flex, flexColumn, flexRow, grow, justifyCenter } from '../css/classes';
+import {
+  flex,
+  flexColumn,
+  flexRow,
+  grow,
+  halfOpacity,
+  justifyCenter,
+} from '../css/classes';
 import { themeVar } from './Style/ThemeVars';
 import { classNameOrEmpty } from '../Helper/className';
 
@@ -15,21 +22,26 @@ const labelList = css({
   padding: '10px',
 });
 
-const labelStyle = cx(
-  css({
-    backgroundColor: themeVar.Common.colors.PrimaryColor,
-    padding: '10px',
-    boxShadow: `2px 2px 6px rgba(0, 0, 0, 0.2)`,
-    color: themeVar.Common.colors.LightTextColor,
-    borderRadius: themeVar.Common.dimensions.BorderRadius,
-    border: "2px solid transparent",
-    '&:hover': {
-      backgroundColor: themeVar.Common.colors.ActiveColor,
-      cursor: 'pointer',
-    },
-  }),
-  grow,
-);
+const labelStyle = (disabled?: boolean) =>
+  cx(
+    css({
+      backgroundColor: themeVar.Common.colors.PrimaryColor,
+      padding: '10px',
+      boxShadow: `2px 2px 6px rgba(0, 0, 0, 0.2)`,
+      color: themeVar.Common.colors.LightTextColor,
+      borderRadius: themeVar.Common.dimensions.BorderRadius,
+      border: '2px solid transparent',
+      ...(!disabled
+        ? {
+            '&:hover': {
+              backgroundColor: themeVar.Common.colors.ActiveColor,
+              cursor: 'pointer',
+            },
+          }
+        : {}),
+    }),
+    grow,
+  );
 /* const labelArrow = css({
   borderTop: '20px solid transparent',
   borderBottom: '20px solid transparent',
@@ -47,8 +59,8 @@ const activeLabel = css(
   {
     backgroundColor: themeVar.Common.colors.ActiveColor,
     color: themeVar.Common.colors.LightTextColor,
-    boxShadow: "none",
-    border: "2px solid " + themeVar.Common.colors.ActiveColor,
+    boxShadow: 'none',
+    border: '2px solid ' + themeVar.Common.colors.ActiveColor,
   },
   /*
     borderLeft: `20px solid ${themeVar.Common.colors.PrimaryColor}`,
@@ -63,9 +75,10 @@ const entityContainer = css({
   width: '80%',
 });
 
-interface EntityChooserProps<E extends IAbstractEntity> {
+interface EntityChooserProps<E extends IAbstractEntity>
+  extends DisabledReadonly {
   entities: E[];
-  children: React.FunctionComponent<{ entity: E }>;
+  children: React.FunctionComponent<{ entity: E } & DisabledReadonly>;
   entityLabel: (entity: E) => React.ReactNode;
   customLabelStyle?: (entity: E) => string | undefined;
   autoOpenFirst?: boolean;
@@ -77,6 +90,8 @@ export function EntityChooser<E extends IAbstractEntity>({
   entityLabel,
   customLabelStyle,
   autoOpenFirst,
+  disabled,
+  readOnly,
 }: EntityChooserProps<E>) {
   const [entity, setEntity] = React.useState<E>();
 
@@ -94,29 +109,31 @@ export function EntityChooser<E extends IAbstractEntity>({
   }, [autoOpenFirst, entities]);
 
   return (
-    <div className={cx(flex, flexRow, entityChooser)}>
+    <div
+      className={cx(flex, flexRow, entityChooser, {
+        [halfOpacity]: disabled,
+      })}
+    >
       <div className={cx(flex, flexColumn, labelList)}>
         {entities.map(e => (
           <div
             key={e.id}
-            className={cx(
-              flex,
-              flexRow,
-              labelContainer,
-            )}
+            className={cx(flex, flexRow, labelContainer)}
             onClick={() => {
-              setEntity(oldEntity => {
-                if (deepDifferent(e, oldEntity)) {
-                  return e;
-                } else {
-                  return oldEntity;
-                }
-              });
+              if (!disabled) {
+                setEntity(oldEntity => {
+                  if (deepDifferent(e, oldEntity)) {
+                    return e;
+                  } else {
+                    return oldEntity;
+                  }
+                });
+              }
             }}
           >
             <div
               className={cx(
-                labelStyle,
+                labelStyle(disabled),
                 classNameOrEmpty(customLabelStyle && customLabelStyle(e)),
                 {
                   [activeLabel]: entity?.id === e.id,
@@ -131,7 +148,7 @@ export function EntityChooser<E extends IAbstractEntity>({
       </div>
       {entity != null && (
         <div className={cx(flex, entityContainer, grow, justifyCenter)}>
-          {<Children entity={entity} />}
+          {<Children entity={entity} disabled={disabled} readOnly={readOnly} />}
         </div>
       )}
     </div>

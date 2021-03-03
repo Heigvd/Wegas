@@ -21,8 +21,6 @@ const numberBoxStyle = css({
 });
 
 const numberBoxSquareStyle = css({
-  borderColor: themeVar.Common.colors.PrimaryColor,
-  color: themeVar.Common.colors.DarkTextColor,
   borderStyle: 'solid',
   borderRadius: '2px',
   width: '1.5em',
@@ -31,21 +29,23 @@ const numberBoxSquareStyle = css({
   fontSize: '1em',
   textAlign: 'center',
   cursor: 'default',
-
-  ['&.active']: {
-    backgroundColor: themeVar.Common.colors.PrimaryColor,
-    color: themeVar.Common.colors.LightTextColor,
-  },
-
-  ['&.clickable']: {
-    cursor: 'pointer',
-    ['&:not(.disabled):hover']: {
-      borderColor: themeVar.Common.colors.PrimaryColor,
-    },
-  },
-
   ['&.disabled']: {
-    backgroundColor: themeVar.Common.colors.DisabledColor,
+    opacity: '0.5',
+  },
+  [':not(.disabled)']: {
+    borderColor: themeVar.Common.colors.PrimaryColor,
+    color: themeVar.Common.colors.DarkTextColor,
+    ['&.active']: {
+      backgroundColor: themeVar.Common.colors.PrimaryColor,
+      color: themeVar.Common.colors.LightTextColor,
+    },
+
+    ['&.clickable']: {
+      cursor: 'pointer',
+      ['&:not(.disabled):hover']: {
+        borderColor: themeVar.Common.colors.PrimaryColor,
+      },
+    },
   },
 });
 
@@ -76,8 +76,8 @@ function NumberSquare({
         numberBoxSquareStyle +
         ' ' +
         classOrNothing('active', active) +
-        classOrNothing('disabled', !active && disabled) +
-        classOrNothing('clickable', !disabled && !readOnly) +
+        classOrNothing('disabled', disabled) +
+        classOrNothing('clickable', !disabled && !readOnly && onClick != null) +
         classNameOrEmpty(className)
       }
       style={style}

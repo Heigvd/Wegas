@@ -35,7 +35,7 @@ export interface ValidatorComponentProps {
   onCancel?: IScript | ClientAndServerAction;
 }
 
-interface ValidateProps<T> {
+interface ValidateProps<T> extends DisabledReadonly {
   value: T;
   onValidate: (value: T) => void;
   onCancel: () => void;
@@ -47,6 +47,8 @@ export function Validate<T>({
   onValidate,
   onCancel,
   children,
+  disabled,
+  readOnly,
 }: ValidateProps<T>) {
   const [savedValue, setSavedValue] = React.useState<T>(value);
 
@@ -60,8 +62,18 @@ export function Validate<T>({
         {children(savedValue, setSavedValue)}
       </div>
       <div className={cx(flex, flexColumn, inputStyle)}>
-        <Button icon="times" onClick={() => onCancel()} />
-        <Button icon="check" onClick={() => onValidate(savedValue)} />
+        <Button
+          icon="times"
+          onClick={() => onCancel()}
+          disabled={disabled}
+          readOnly={readOnly}
+        />
+        <Button
+          icon="check"
+          onClick={() => onValidate(savedValue)}
+          disabled={disabled}
+          readOnly={readOnly}
+        />
       </div>
     </div>
   );

@@ -4,7 +4,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { Button } from '../../Inputs/Buttons/Button';
+import { Button, ButtonProps } from '../../Inputs/Buttons/Button';
 import {
   onComponentClick,
   WegasComponentProps,
@@ -35,26 +35,44 @@ function PlayerButton({
   stopPropagation,
   confirmClick,
   tooltip,
+  options,
   ...restProps
 }: PlayerButtonProps) {
   const translation = useScript<string>(label, context) || '';
 
-  const buttonProps = {
-    id: id,
-    className: className,
-    style: { margin: 'auto', ...style },
-    icon: icon,
-    prefixedLabel: prefixedLabel,
-    label:
-      label && translation !== '' ? (
-        <div
-          dangerouslySetInnerHTML={{
-            __html: translation,
-          }}
-        ></div>
-      ) : undefined,
-    tooltip,
-  };
+  const buttonProps: ButtonProps = React.useMemo(
+    () => ({
+      id: id,
+      className: className,
+      style: { margin: 'auto', ...style },
+      icon: icon,
+      prefixedLabel: prefixedLabel,
+      label:
+        label && translation !== '' ? (
+          <div
+            dangerouslySetInnerHTML={{
+              __html: translation,
+            }}
+          ></div>
+        ) : undefined,
+      tooltip,
+      disabled: options.disabled || options.locked,
+      readOnly: options.readOnly,
+    }),
+    [
+      className,
+      icon,
+      id,
+      label,
+      options.disabled,
+      options.locked,
+      options.readOnly,
+      prefixedLabel,
+      style,
+      tooltip,
+      translation,
+    ],
+  );
 
   const onClick = React.useCallback(
     onComponentClick(restProps, context, stopPropagation, confirmClick),
@@ -65,20 +83,13 @@ function PlayerButton({
     <ConfirmButton
       onAction={(success, event) => {
         if (success) {
-          // store.dispatch(Actions.VariableInstanceActions.runScript(action!));
           onClick(event);
         }
       }}
       {...buttonProps}
     />
   ) : (
-    <Button
-      onClick={event =>
-        // store.dispatch(Actions.VariableInstanceActions.runScript(action!))
-        onClick(event)
-      }
-      {...buttonProps}
-    />
+    <Button onClick={event => onClick(event)} {...buttonProps} />
   );
 }
 

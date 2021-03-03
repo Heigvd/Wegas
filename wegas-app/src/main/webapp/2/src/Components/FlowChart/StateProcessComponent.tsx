@@ -16,6 +16,8 @@ import {
 } from './Handles';
 import { useDrag } from 'react-dnd';
 import { Text } from '../Outputs/Text';
+import { isActionAllowed } from '../PageComponents/tools/options';
+import { classNameOrEmpty } from '../../Helper/className';
 
 const stateContainerStyle = css({
   display: 'inline-flex',
@@ -34,17 +36,20 @@ export const stateBoxStyle = css({
   border: '4px solid transparent',
   boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)', //shadow theme var?
   color: '#fff', //LightText theme var?
-  cursor: 'pointer',
   flexGrow: 0,
   '&>*': {
     marginRight: '15px',
   },
-  '&:hover': {
-    background: '#0D71C1', // primaryColor theme var?
-  },
   '.StateLabelTextStyle': {
     fontSize: '16px',
     textAlign: 'left',
+  },
+});
+
+export const stateBoxActionStyle = css({
+  cursor: 'pointer',
+  '&:hover': {
+    background: '#0D71C1', // primaryColor theme var?
   },
 });
 
@@ -97,7 +102,7 @@ const stateMoreInfosStyle = css({
   },
 });
 
-const selectedStateBoxStyle = css({
+export const selectedStateBoxStyle = css({
   background: '#FFFFFF',
   border: '4px solid #0D71C1',
   color: '#0D71C1',
@@ -120,6 +125,8 @@ interface StateBoxProps {
   className?: string;
   onClick?: (e: ModifierKeysEvent, process: StateProcess) => void;
   selected?: boolean;
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 
 export function StateBox({
@@ -127,24 +134,30 @@ export function StateBox({
   className,
   onClick,
   selected,
+  disabled,
+  readOnly,
 }: StateBoxProps) {
   const [isShown, setIsShown] = React.useState(false);
   const { lang } = React.useContext(languagesCTX);
   return (
     <div
-      className={stateContainerStyle}
-      onClick={e => onClick && onClick(e, state)}
+      className={stateContainerStyle + classNameOrEmpty(state.className)}
+      style={state.style}
+      onClick={e =>
+        isActionAllowed({ disabled, readOnly }) && onClick && onClick(e, state)
+      }
     >
       <div
         className={cx(
           stateBoxStyle,
           {
+            [stateBoxActionStyle]: isActionAllowed({ disabled, readOnly }),
             [selectedStateBoxStyle]: selected,
           },
           className,
         )}
-        onMouseEnter={() => setIsShown(true)}
-        onMouseLeave={() => setIsShown(false)}
+        onMouseEnter={() => !disabled && setIsShown(true)}
+        onMouseLeave={() => !disabled && setIsShown(false)}
       >
         <div className={indexTagStyle}>
           <p>{state.id}</p>
@@ -165,7 +178,9 @@ export function StateBox({
             />
           </p>
         </div>
-        <StateProcessHandle sourceProcess={state} />
+        {isActionAllowed({ readOnly, disabled }) && (
+          <StateProcessHandle sourceProcess={state} />
+        )}
       </div>
       {isShown && state.state.onEnterEvent.content != '' && (
         <div className={stateMoreInfosStyle}>
@@ -183,7 +198,13 @@ export function StateProcessComponent(
   return (
     <CustomProcessComponent {...props}>
       {(process, onClick, selected) => (
-        <StateBox state={process} onClick={onClick} selected={selected} />
+        <StateBox
+          state={process}
+          onClick={onClick}
+          selected={selected}
+          disabled={props.disabled}
+          readOnly={props.readOnly}
+        />
       )}
     </CustomProcessComponent>
   );

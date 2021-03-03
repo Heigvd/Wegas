@@ -17,8 +17,15 @@ interface PlayerIconProps extends WegasComponentProps {
   icon?: Icon;
 }
 
-function PlayerIcon({ icon, style, className }: PlayerIconProps) {
-  return <IconComp icon={icon} style={style} className={className} />;
+function PlayerIcon({ icon, style, className, options }: PlayerIconProps) {
+  return (
+    <IconComp
+      icon={icon}
+      style={style}
+      className={className}
+      disabled={options.disabled || options.locked}
+    />
+  );
 }
 
 registerComponent(

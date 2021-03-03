@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { XYPosition, useMouseEventDnd } from '../Hooks/useMouseEventDnd';
 import { FlowLine, Process, Processes } from './FlowChart';
 import { useDrop } from 'react-dnd';
@@ -8,7 +8,14 @@ import {
   DnDFlowchartHandle,
   PROCESS_HANDLE_DND_TYPE,
 } from './Handles';
-import { stateBoxStyle } from './StateProcessComponent';
+import {
+  selectedStateBoxStyle,
+  stateBoxActionStyle,
+  stateBoxStyle,
+} from './StateProcessComponent';
+import { themeVar } from '../Style/ThemeVars';
+import { isActionAllowed } from '../PageComponents/tools/options';
+import { classNameOrEmpty } from '../../Helper/className';
 
 const processStyle = css({
   position: 'absolute',
@@ -17,7 +24,17 @@ const processStyle = css({
   userSelect: 'none',
 });
 
-export interface ProcessProps<F extends FlowLine, P extends Process<F>> {
+export const disabledStyle = css({
+  backgroundColor: themeVar.Common.colors.DisabledColor,
+  cursor: 'initial',
+});
+
+export const readOnlyStyle = css({
+  cursor: 'initial',
+});
+
+export interface ProcessProps<F extends FlowLine, P extends Process<F>>
+  extends DisabledReadonly {
   /**
    * the process object to be displayed
    */
@@ -78,13 +95,14 @@ export function CustomProcessComponent<
   onClick,
   children,
   isProcessSelected,
+  ...options
 }: CustomProcessProps<F, P>) {
   const processElement = React.useRef<HTMLDivElement | null>(null);
   const clickPosition = React.useRef<XYPosition>({ x: 0, y: 0 });
   const selected = isProcessSelected && isProcessSelected(process);
   const [, drop] = useDrop<DnDFlowchartHandle<F, P>, unknown, unknown>({
     accept: PROCESS_HANDLE_DND_TYPE,
-    canDrop: () => true,
+    canDrop: () => isActionAllowed(options),
     drop: ({ processes, flowline }) => {
       onConnect(processes, flowline);
     },
@@ -121,6 +139,7 @@ export function CustomProcessComponent<
       onDragEnd,
     },
     true,
+    !isActionAllowed(options) || process.undraggable,
   );
 
   return (
@@ -149,9 +168,21 @@ export function DefaultProcessComponent<
     <CustomProcessComponent {...props}>
       {(process, onClick) => (
         <div
-          className={stateBoxStyle}
+          className={
+            cx(stateBoxStyle, {
+              [stateBoxActionStyle]: isActionAllowed({
+                disabled: props.disabled,
+                readOnly: props.readOnly,
+              }),
+              [selectedStateBoxStyle]:
+                props.isProcessSelected && props.isProcessSelected(process),
+            }) + classNameOrEmpty(process.className)
+          }
+          style={process.style}
           onClick={e => {
-            onClick && onClick(e, process);
+            if (!props.disabled && !props.readOnly) {
+              onClick && onClick(e, process);
+            }
           }}
         >
           {process.id}
