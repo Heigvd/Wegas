@@ -16,7 +16,7 @@ import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { MessageString } from './MessageString';
 import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
 
-export interface EditorProps<T> extends DisabledReadonlyLocked {
+export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
   update?: (variable: T) => void;
   actions?: {

@@ -40,44 +40,48 @@ export function ObsoleteComponentManager({
 }: ObsoleteComponentManagerProps) {
   return (
     <pre>
-      This component is obsolete. If you're a scenarist please click on the
-      button below to update. If you're a player please contact your trainer.
-      <Button
-        label="Update component"
-        onClick={() => {
-          if (!pageId) {
-            wwarn('Error in ' + componentType);
-            return;
-          }
+      This component is obsolete.{' '}
+      {API_VIEW === 'Editor'
+        ? 'Please click on the button below to update.'
+        : 'Please contact your trainer.'}
+      {API_VIEW === 'Editor' && (
+        <Button
+          label="Update component"
+          onClick={() => {
+            if (!pageId) {
+              wwarn('Error in ' + componentType);
+              return;
+            }
 
-          const page = store.getState().pages[pageId];
-          if (!page) {
-            wwarn('Error in ' + componentType);
-            return;
-          }
+            const page = store.getState().pages[pageId];
+            if (!page) {
+              wwarn('Error in ' + componentType);
+              return;
+            }
 
-          const wegasComponent = getComponentFromPath(page, path);
-          if (
-            pageId == null ||
-            page == null ||
-            path == null ||
-            wegasComponent == null
-          ) {
-            wwarn('Error in ' + componentType);
-            return;
-          }
+            const wegasComponent = getComponentFromPath(page, path);
+            if (
+              pageId == null ||
+              page == null ||
+              path == null ||
+              wegasComponent == null
+            ) {
+              wwarn('Error in ' + componentType);
+              return;
+            }
 
-          const newComponent = sanitizer(wegasComponent);
+            const newComponent = sanitizer(wegasComponent);
 
-          const newPage = updateComponent(page, newComponent, path);
-          if (newPage == null) {
-            wwarn('Error in ' + componentType);
-            return;
-          }
+            const newPage = updateComponent(page, newComponent, path);
+            if (newPage == null) {
+              wwarn('Error in ' + componentType);
+              return;
+            }
 
-          patchPage(pageId, newPage);
-        }}
-      />
+            patchPage(pageId, newPage);
+          }}
+        />
+      )}
     </pre>
   );
 }

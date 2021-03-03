@@ -90,7 +90,7 @@ export function VariableTreeTitle({
   );
 }
 
-interface TreeProps extends DisabledReadonlyLocked {
+interface TreeProps extends DisabledReadonly {
   variables: number[];
   noHeader?: boolean;
   noVisibleRoot?: boolean;
@@ -258,7 +258,6 @@ export function CTree(
   const actionAllowed = isActionAllowed({
     disabled: props.disabled,
     readOnly: props.readOnly,
-    locked: props.locked,
   });
 
   const infoSelector = React.useCallback(
@@ -405,7 +404,6 @@ export function CTree(
                   forceLocalDispatch={props.forceLocalDispatch}
                   disabled={props.disabled}
                   readOnly={props.readOnly}
-                  locked={props.locked}
                 />
               ))
             : entityIs(variable, 'ChoiceDescriptor')
@@ -421,7 +419,6 @@ export function CTree(
                   forceLocalDispatch={props.forceLocalDispatch}
                   disabled={props.disabled}
                   readOnly={props.readOnly}
-                  locked={props.locked}
                 />
               ))
             : entityIs(variable, 'PeerReviewDescriptor')
@@ -437,7 +434,6 @@ export function CTree(
                   forceLocalDispatch={props.forceLocalDispatch}
                   disabled={props.disabled}
                   readOnly={props.readOnly}
-                  locked={props.locked}
                 />,
                 <CTree
                   nodeProps={nodeProps}
@@ -450,7 +446,6 @@ export function CTree(
                   forceLocalDispatch={props.forceLocalDispatch}
                   disabled={props.disabled}
                   readOnly={props.readOnly}
-                  locked={props.locked}
                 />,
               ]
             : entityIs(variable, 'EvaluationDescriptorContainer')
@@ -470,7 +465,6 @@ export function CTree(
                   forceLocalDispatch={props.forceLocalDispatch}
                   disabled={props.disabled}
                   readOnly={props.readOnly}
-                  locked={props.locked}
                 />
               ))
             : null

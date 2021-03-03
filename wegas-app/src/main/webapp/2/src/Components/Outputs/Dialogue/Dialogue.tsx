@@ -61,7 +61,8 @@ interface DialogueDisplayProps extends DisabledReadonly {
 
 export function DialogueDisplay({
   dialogue,
-  ...options
+  disabled,
+  readOnly,
 }: DialogueDisplayProps) {
   const historyDiv = React.useRef<HTMLDivElement>(null);
 
@@ -161,7 +162,7 @@ export function DialogueDisplay({
     <div
       className={
         cx(dialogueDisplayStyle, flex, flexColumn, grow, {
-          [halfOpacity]: options.disabled,
+          [halfOpacity]: disabled,
         }) + ' wegas wegas-dialog'
       }
     >
@@ -174,7 +175,7 @@ export function DialogueDisplay({
       </div>
 
       {/* ----- show next input choices  --------------------------------------------------- */}
-      {isActionAllowed(options) && choices.length > 0 && (
+      {isActionAllowed({ disabled, readOnly }) && choices.length > 0 && (
         <div
           className={cx(
             flex,
@@ -198,7 +199,8 @@ export function DialogueDisplay({
                   ),
                 );
               }}
-              {...options}
+              disabled={disabled}
+              readOnly={readOnly}
             />
           ))}
 

@@ -31,16 +31,21 @@ export default function PlayerVariableTree({
       File not found
     </pre>
   ) : (
-    <ComponentWithForm entityEditor {...options}>
+    <ComponentWithForm
+      entityEditor
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
+    >
       {({ localDispatch }) => {
         return (
-          // TODO : Implements a disable/readOnly/lock management on this component
           <TreeView
             variables={[rootDirectoryId]}
             noHeader
             noVisibleRoot
             localDispatch={localDispatch}
             forceLocalDispatch
+            disabled={options.disabled || options.locked}
+            readOnly={options.readOnly}
           />
         );
       }}

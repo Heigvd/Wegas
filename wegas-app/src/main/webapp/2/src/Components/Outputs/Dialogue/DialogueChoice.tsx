@@ -27,7 +27,7 @@ const choiceButtonIcon = css({
   height: '100%',
 });
 
-interface DialogueChoiceProps extends DisabledReadonlyLocked {
+interface DialogueChoiceProps extends DisabledReadonly {
   label: STranslatableContent;
   onClick: () => void;
 }
@@ -35,15 +35,16 @@ interface DialogueChoiceProps extends DisabledReadonlyLocked {
 export function DialogueChoice({
   label,
   onClick,
-  ...options
+  disabled,
+  readOnly,
 }: DialogueChoiceProps) {
   const translation = useTranslate(label);
   return (
     <Button
       onClick={onClick}
       className={cx(flexRow, choiceButtonStyle)}
-      disabled={options.disabled || options.locked}
-      readOnly={options.readOnly}
+      disabled={disabled}
+      readOnly={readOnly}
     >
       <div
         className={choiceButtonText}

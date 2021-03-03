@@ -9,7 +9,7 @@ import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { isActionAllowed } from '../../Components/PageComponents/tools/options';
 
-interface EditorProps<T> extends DisabledReadonlyLocked {
+interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
   update?: (variable: T) => void;
   actions: {
@@ -64,7 +64,6 @@ export class Form<T> extends React.Component<
           {isActionAllowed({
             disabled: this.props.disabled,
             readOnly: this.props.readOnly,
-            locked: this.props.locked,
           }) && (
             <>
               {this.props.update && (

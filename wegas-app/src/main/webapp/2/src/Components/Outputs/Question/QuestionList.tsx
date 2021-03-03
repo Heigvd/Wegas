@@ -81,14 +81,15 @@ function customLabelStyle(
   );
   return isReplied ? repliedLabelStyle : undefined;
 }
-interface QuestionListProps extends DisabledReadonlyLocked {
+interface QuestionListProps extends DisabledReadonly {
   questionList: SListDescriptor;
   autoOpenFirst?: boolean;
 }
 export default function QuestionList({
   questionList,
   autoOpenFirst,
-  ...options
+  disabled,
+  readOnly,
 }: QuestionListProps) {
   const entitiesSelector = React.useCallback(() => {
     return {
@@ -118,16 +119,11 @@ export default function QuestionList({
   return (
     <EntityChooser
       entities={entities.questions}
-      entityLabel={e => (
-        <QuestionLabel
-          questionD={e}
-          disabled={options.disabled || options.locked}
-        />
-      )}
+      entityLabel={e => <QuestionLabel questionD={e} disabled={disabled} />}
       autoOpenFirst={autoOpenFirst}
       customLabelStyle={customLabelStyle}
-      disabled={options.disabled || options.locked}
-      readOnly={options.readOnly}
+      disabled={disabled}
+      readOnly={readOnly}
     >
       {ConnectedQuestionDisplay}
     </EntityChooser>

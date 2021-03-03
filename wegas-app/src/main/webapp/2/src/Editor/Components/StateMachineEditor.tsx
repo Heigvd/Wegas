@@ -87,7 +87,7 @@ export interface StateProcess extends Process<TransitionFlowLine> {
 
 interface StateMachineEditorProps<
   IFSM extends IFSMDescriptor | IDialogueDescriptor
-> extends DisabledReadonlyLocked {
+> extends DisabledReadonly {
   stateMachine: Immutable<IFSM>;
   stateMachineInstance: IFSM['defaultInstance'];
   localDispatch?: StoreDispatch;
@@ -448,7 +448,7 @@ function globalStateSelector(s: RState) {
   }
 }
 
-interface ConnectedStateMachineEditorProps extends DisabledReadonlyLocked {
+interface ConnectedStateMachineEditorProps extends DisabledReadonly {
   localDispatch?: StoreDispatch;
 }
 
@@ -482,16 +482,18 @@ export function ConnectedStateMachineEditor({
   }
 }
 
-export default function StateMachineEditorWithMeta(
-  options: DisabledReadonlyLocked,
-) {
+export default function StateMachineEditorWithMeta({
+  disabled,
+  readOnly,
+}: DisabledReadonly) {
   return (
-    <ComponentWithForm entityEditor {...options}>
+    <ComponentWithForm entityEditor disabled={disabled} readOnly={readOnly}>
       {({ localDispatch }) => {
         return (
           <ConnectedStateMachineEditor
             localDispatch={localDispatch}
-            {...options}
+            disabled={disabled}
+            readOnly={readOnly}
           />
         );
       }}

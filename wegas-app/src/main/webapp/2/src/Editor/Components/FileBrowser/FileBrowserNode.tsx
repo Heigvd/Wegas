@@ -193,9 +193,7 @@ type ModalState =
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // React element
 
-export interface FileBrowserNodeProps
-  extends ClassStyleId,
-    DisabledReadonlyLocked {
+export interface FileBrowserNodeProps extends ClassStyleId, DisabledReadonly {
   /**
    * item - item to display in a node
    */
@@ -270,11 +268,12 @@ export function FileBrowserNode({
   localDispatch,
   className,
   style,
-  ...options
+  disabled,
+  readOnly,
 }: FileBrowserNodeProps) {
-  const actionAllowed = isActionAllowed(options);
+  const actionAllowed = isActionAllowed({ disabled, readOnly });
 
-  const isDisplayPreviewAllowed = !options.disabled && !options.locked;
+  //const isDisplayPreviewAllowed = !disabled;
 
   const [opened, setOpened] = React.useState(
     defaultOpened ||
@@ -521,7 +520,7 @@ export function FileBrowserNode({
 
   React.useEffect(() => {
     let previewTimeout: number | undefined;
-    if (isDisplayPreviewAllowed && hoveringImageFile) {
+    if (!disabled && hoveringImageFile) {
       previewTimeout = (setTimeout(
         () => setDisplayPreview(true),
         timeoutBeforePreview,
@@ -534,7 +533,7 @@ export function FileBrowserNode({
       setDisplayPreview(false);
       clearTimeout(previewTimeout);
     }
-  }, [isDisplayPreviewAllowed, hoveringImageFile, currentFile]);
+  }, [hoveringImageFile, currentFile, disabled]);
 
   const pickTypeApproved =
     !pickType ||
@@ -557,6 +556,7 @@ export function FileBrowserNode({
     filterApproved ||
     !(filter.filterType == 'hide' && filterRefused) ? (
     <div
+      id={id}
       ref={dropZone}
       className={cx(flex, grow) + classNameOrEmpty(className)}
       style={style}
@@ -689,18 +689,16 @@ export function FileBrowserNode({
                 defaultConfirm
               />
             )}
-            {modalState.type === 'close' &&
-              isDisplayPreviewAllowed &&
-              isFile(currentFile) && (
-                <Button
-                  icon={'external-link-alt'}
-                  tooltip={'Open file'}
-                  onClick={event => {
-                    event.stopPropagation();
-                    openFile(currentFile);
-                  }}
-                />
-              )}
+            {modalState.type === 'close' && !disabled && isFile(currentFile) && (
+              <Button
+                icon={'external-link-alt'}
+                tooltip={'Open file'}
+                onClick={event => {
+                  event.stopPropagation();
+                  openFile(currentFile);
+                }}
+              />
+            )}
             {modalState.type === 'close' &&
               !pickOnly &&
               actionAllowed &&
@@ -869,7 +867,8 @@ export function FileBrowserNode({
                     pickType={pickType}
                     filter={filter}
                     localDispatch={localDispatch}
-                    {...options}
+                    disabled={disabled}
+                    readOnly={readOnly}
                   />
                 ))
               ) : (

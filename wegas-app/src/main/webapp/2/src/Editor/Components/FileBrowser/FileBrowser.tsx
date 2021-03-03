@@ -127,11 +127,14 @@ function globalFileSelector(state: State) {
   );
 }
 
-export default function FileBrowserWithMeta(options: DisabledReadonlyLocked) {
+export default function FileBrowserWithMeta({
+  disabled,
+  readOnly,
+}: DisabledReadonly) {
   const globalFile = useStore(globalFileSelector);
 
   return (
-    <ComponentWithForm {...options}>
+    <ComponentWithForm disabled={disabled} readOnly={readOnly}>
       {({ localState, localDispatch }) => {
         return (
           <FileBrowser
@@ -145,7 +148,8 @@ export default function FileBrowserWithMeta(options: DisabledReadonlyLocked) {
             }
             localDispatch={localDispatch}
             onFileClick={() => focusTab(mainLayoutId, 'Variable Properties')}
-            {...options}
+            disabled={disabled}
+            readOnly={readOnly}
           />
         );
       }}

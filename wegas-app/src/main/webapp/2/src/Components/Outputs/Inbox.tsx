@@ -53,11 +53,11 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
   );
 }
 
-interface InboxDisplayProps extends DisabledReadonlyLocked {
+interface InboxDisplayProps extends DisabledReadonly {
   inbox: IInboxDescriptor;
 }
 
-export function InboxDisplay({ inbox, ...options }: InboxDisplayProps) {
+export function InboxDisplay({ inbox, disabled, readOnly }: InboxDisplayProps) {
   const messagesSelector = React.useCallback(
     () => getInstance(inbox, Player.selectCurrent())!.messages,
     [inbox],
@@ -69,8 +69,8 @@ export function InboxDisplay({ inbox, ...options }: InboxDisplayProps) {
     <EntityChooser
       entities={messages}
       entityLabel={e => <MessageLabel message={e} />}
-      disabled={options.disabled || options.locked}
-      readOnly={options.readOnly}
+      disabled={disabled}
+      readOnly={readOnly}
     >
       {MessageDisplay}
     </EntityChooser>

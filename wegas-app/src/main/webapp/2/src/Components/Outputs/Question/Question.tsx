@@ -80,14 +80,20 @@ interface ConnectedWhQuestionDisplay extends DisabledReadonly {
 
 export function ConnectedWhQuestionDisplay({
   entity,
-  ...options
+  disabled,
+  readOnly,
 }: ConnectedWhQuestionDisplay) {
   const questionInfoSelector = React.useCallback(() => whQuestionInfo(entity), [
     entity,
   ]);
   const state = useStore(questionInfoSelector);
   return (
-    <WhQuestionDisplay {...state} dispatch={store.dispatch} {...options} />
+    <WhQuestionDisplay
+      {...state}
+      dispatch={store.dispatch}
+      disabled={disabled}
+      readOnly={readOnly}
+    />
   );
 }
 
@@ -97,11 +103,20 @@ interface ConnectedQuestionDisplayProps extends DisabledReadonly {
 
 export function ConnectedQuestionDisplay({
   entity,
-  ...options
+  disabled,
+  readOnly,
 }: ConnectedQuestionDisplayProps) {
   return entityIs(entity, 'QuestionDescriptor') ? (
-    <ConnectedSimpleQuestionDisplay entity={entity} {...options} />
+    <ConnectedSimpleQuestionDisplay
+      entity={entity}
+      disabled={disabled}
+      readOnly={readOnly}
+    />
   ) : (
-    <ConnectedWhQuestionDisplay entity={entity} {...options} />
+    <ConnectedWhQuestionDisplay
+      entity={entity}
+      disabled={disabled}
+      readOnly={readOnly}
+    />
   );
 }

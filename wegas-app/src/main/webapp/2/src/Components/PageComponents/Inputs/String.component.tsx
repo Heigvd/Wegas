@@ -103,7 +103,7 @@ function PlayerStringInput({
     <SimpleInput
       value={value}
       onChange={onChange}
-      disabled={disabled}
+      disabled={disabled || locked}
       readOnly={readOnly}
       placeholder={placeholderText}
       className={className}

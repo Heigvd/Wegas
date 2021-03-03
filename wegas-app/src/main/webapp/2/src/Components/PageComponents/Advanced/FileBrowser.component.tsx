@@ -31,7 +31,11 @@ export default function PlayerFileBrowser({
       File not found
     </pre>
   ) : (
-    <ComponentWithForm entityEditor {...options}>
+    <ComponentWithForm
+      entityEditor
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
+    >
       {({ localDispatch }) => {
         return (
           // TODO : Implements a disable/readOnly/lock management on this component
@@ -41,7 +45,8 @@ export default function PlayerFileBrowser({
             noVisibleRoot
             localDispatch={localDispatch}
             forceLocalDispatch
-            {...options}
+            disabled={options.disabled || options.locked}
+            readOnly={options.readOnly}
           />
         );
       }}

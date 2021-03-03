@@ -60,7 +60,7 @@ function isEditingVariable(editing?: Edition): editing is VariableEdition {
 
 export interface InstancePropertiesProps
   extends ThemeComponent,
-    DisabledReadonlyLocked {
+    DisabledReadonly {
   state: LocalGlobalState;
   dispatch: StoreDispatch;
   actions?: EditorProps<IVariableInstance>['actions'];

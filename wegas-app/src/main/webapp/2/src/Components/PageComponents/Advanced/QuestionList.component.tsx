@@ -34,7 +34,8 @@ export default function QuestionListDisplay({
     <QuestionList
       questionList={descriptor}
       autoOpenFirst={autoOpenFirst}
-      {...options}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
     />
   );
 }

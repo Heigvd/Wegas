@@ -27,7 +27,13 @@ export default function PlayerInbox({
     return <TumbleLoader />;
   }
 
-  return <InboxDisplay inbox={descriptor.getEntity()} {...options} />;
+  return (
+    <InboxDisplay
+      inbox={descriptor.getEntity()}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
+    />
+  );
 }
 
 registerComponent(
