@@ -5,7 +5,7 @@ A Web Game Authoring System for rapid development of serious games without progr
 * [Demonstration](http://wegas.albasim.ch/)
 * [Documentation & Tutorials](https://github.com/Heigvd/Wegas/wiki) 
 * [Continuous integration](https://github.com/Heigvd/Wegas/wiki) ![CI](https://github.com/Heigvd/Wegas/workflows/CI/badge.svg)
-* [Build report](http://heigvd.github.com/Wegas/)
+* ~~[Build report](http://heigvd.github.com/Wegas/) (outdated)~~
 
 ### Authors
 *   Dominique Jaccard dominique.jaccard@heig-vd.ch 
