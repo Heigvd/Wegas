@@ -65,10 +65,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * Faces component that print a VariableDescriptor as xHTML.
- * <p>
- * <p>
- * <
- * pre>
+ * <pre>
  * <b>Usage:</b>
  * &lt;<b>VariableDescriptor</b> <b>value</b>="#{the varDesc object}"
  * <b>player</b>="#{the player to print the varDesc for (may be the test player)}"
@@ -473,21 +470,25 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @throws IOException
      */
     public void encode(FacesContext context, ResponseWriter writer, ListDescriptor list) throws IOException {
-        //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
-        encodeBase(context, writer, list, editorMode);
+        if (editorMode || !list.getItems().isEmpty()) {
+            //UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
+            encodeBase(context, writer, list, editorMode);
 
-        if (list.getItems().isEmpty()) {
-            UIHelper.printText(context, writer, "[Empty Folder]", UIHelper.CSS_CLASS_PROPERTY_VALUE_NA);
-        } else {
-            UIHelper.startDiv(writer, UIHelper.CSS_CLASS_FOLDER);
-            for (VariableDescriptor vd : list.getItems()) {
+            if (list.getItems().isEmpty()) {
+                UIHelper.printText(context, writer,
+                    "[Empty Folder]", UIHelper.CSS_CLASS_PROPERTY_VALUE_NA);
+            } else {
+                UIHelper.startDiv(writer, UIHelper.CSS_CLASS_FOLDER);
+                for (VariableDescriptor vd : list.getItems()) {
 
-                UIVariableDescriptor uiVd = new UIVariableDescriptor(vd, player, editorMode, defaultValues, includeInactive);
-                uiVd.encodeAll(context);
+                    UIVariableDescriptor uiVd = new UIVariableDescriptor(vd, player, editorMode,
+                        defaultValues, includeInactive);
+                    uiVd.encodeAll(context);
+                }
+                UIHelper.endDiv(writer);
             }
             UIHelper.endDiv(writer);
         }
-        UIHelper.endDiv(writer);
     }
 
     /**
