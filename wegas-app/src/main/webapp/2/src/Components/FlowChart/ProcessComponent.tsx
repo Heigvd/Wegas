@@ -1,14 +1,17 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { XYPosition, useMouseEventDnd } from '../Hooks/useMouseEventDnd';
 import { FlowLine, Process, Processes } from './FlowChart';
 import { useDrop } from 'react-dnd';
+import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './Handles';
 import {
-  ProcessHandleProps,
-  DnDFlowchartHandle,
-  PROCESS_HANDLE_DND_TYPE,
-} from './Handles';
-import { stateBoxStyle } from './StateProcessComponent';
+  selectedStateBoxStyle,
+  stateBoxActionStyle,
+  stateBoxStyle,
+} from './StateProcessComponent';
+import { themeVar } from '../Style/ThemeVars';
+import { isActionAllowed } from '../PageComponents/tools/options';
+import { classNameOrEmpty } from '../../Helper/className';
 
 const processStyle = css({
   position: 'absolute',
@@ -17,7 +20,17 @@ const processStyle = css({
   userSelect: 'none',
 });
 
-export interface ProcessProps<F extends FlowLine, P extends Process<F>> {
+export const disabledStyle = css({
+  backgroundColor: themeVar.Common.colors.DisabledColor,
+  cursor: 'initial',
+});
+
+export const readOnlyStyle = css({
+  cursor: 'initial',
+});
+
+export interface ProcessProps<F extends FlowLine, P extends Process<F>>
+  extends DisabledReadonly {
   /**
    * the process object to be displayed
    */
@@ -39,31 +52,6 @@ export interface ProcessProps<F extends FlowLine, P extends Process<F>> {
    * a callback triggered when a handle is dropped on the process component
    */
   onConnect: (processes: Processes<F, P>, flowline?: F) => void;
-  /**
-   * a callback triggered when a click occures on a process
-   */
-  onClick?: (e: ModifierKeysEvent, process: P) => void;
-  /**
-   * a handle component that can be dragged to create new flowlines and processes
-   */
-  ProcessHandle?: React.FunctionComponent<ProcessHandleProps<F, P>>;
-  /**
-   * a condition given by the user to see if process is selected or not
-   */
-  isProcessSelected?: (sourceProcess: P) => boolean;
-}
-
-interface CustomProcessProps<F extends FlowLine, P extends Process<F>>
-  extends ProcessProps<F, P> {
-  /**
-   * the children component that recieve the process object
-   * allow to customize easily the process style
-   */
-  children: (
-    process: P,
-    onClick?: (e: ModifierKeysEvent, process: P) => void,
-    selected?: boolean,
-  ) => React.ReactNode;
 }
 
 export function CustomProcessComponent<
@@ -75,16 +63,14 @@ export function CustomProcessComponent<
   onMove,
   onMoveEnd,
   onConnect,
-  onClick,
   children,
-  isProcessSelected,
-}: CustomProcessProps<F, P>) {
+  ...options
+}: React.PropsWithChildren<ProcessProps<F, P>>) {
   const processElement = React.useRef<HTMLDivElement | null>(null);
   const clickPosition = React.useRef<XYPosition>({ x: 0, y: 0 });
-  const selected = isProcessSelected && isProcessSelected(process);
   const [, drop] = useDrop<DnDFlowchartHandle<F, P>, unknown, unknown>({
     accept: PROCESS_HANDLE_DND_TYPE,
-    canDrop: () => true,
+    canDrop: () => isActionAllowed(options),
     drop: ({ processes, flowline }) => {
       onConnect(processes, flowline);
     },
@@ -121,6 +107,7 @@ export function CustomProcessComponent<
       onDragEnd,
     },
     true,
+    !isActionAllowed(options) || process.undraggable,
   );
 
   return (
@@ -136,27 +123,54 @@ export function CustomProcessComponent<
       className={processStyle}
       data-id={process.id}
     >
-      {children(process, onClick, selected)}
+      {children}
     </div>
   );
+}
+
+export interface ProcessComponentProps<F extends FlowLine, P extends Process<F>>
+  extends ProcessProps<F, P> {
+  /**
+   * a condition given by the user to see if process is selected or not
+   */
+  isProcessSelected?: (sourceProcess: P) => boolean;
+  /**
+   * a callback triggered when a click occures on a process
+   */
+  onClick?: (e: ModifierKeysEvent, process: P) => void;
 }
 
 export function DefaultProcessComponent<
   F extends FlowLine,
   P extends Process<F>
->(props: ProcessProps<F, P>) {
+>({
+  isProcessSelected,
+  onClick,
+  ...processProps
+}: ProcessComponentProps<F, P>) {
+  const { disabled, readOnly, process } = processProps;
   return (
-    <CustomProcessComponent {...props}>
-      {(process, onClick) => (
-        <div
-          className={stateBoxStyle}
-          onClick={e => {
+    <CustomProcessComponent {...processProps}>
+      <div
+        className={
+          cx(stateBoxStyle, {
+            [stateBoxActionStyle]: isActionAllowed({
+              disabled: disabled,
+              readOnly: readOnly,
+            }),
+            [selectedStateBoxStyle]:
+              isProcessSelected && isProcessSelected(process),
+          }) + classNameOrEmpty(process.className)
+        }
+        style={process.style}
+        onClick={e => {
+          if (!disabled && !readOnly) {
             onClick && onClick(e, process);
-          }}
-        >
-          {process.id}
-        </div>
-      )}
+          }
+        }}
+      >
+        {process.id}
+      </div>
     </CustomProcessComponent>
   );
 }

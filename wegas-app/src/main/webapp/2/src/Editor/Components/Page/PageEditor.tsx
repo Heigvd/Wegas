@@ -90,28 +90,29 @@ export const pageEditorCTX = React.createContext<PageEditorContext>({
   loading: false,
 });
 
-const returnPages = (pages: Pages, item?: PageIndexItem): PagesWithName => {
-  if (item == null) {
-    return {};
-  }
-  if (item['@class'] === 'Folder') {
-    return {
-      ...item.items.reduce((o, i) => ({ ...o, ...returnPages(pages, i) }), {}),
-    };
-  }
-  return { [item.id!]: { name: item.name, page: pages[item.id!] } };
-};
+// const returnPages = (pages: Pages, item?: PageIndexItem): PagesWithName => {
+//   if (item == null) {
+//     return {};
+//   }
+//   if (item['@class'] === 'Folder') {
+//     return {
+//       ...item.items.reduce((o, i) => ({ ...o, ...returnPages(pages, i) }), {}),
+//     };
+//   }
+//   return { [item.id!]: { name: item.name, page: pages[item.id!] } };
+// }
 
-const patchPage = (selectedPageId: string, page: WegasComponent) =>
+export function patchPage(selectedPageId: string, page: WegasComponent) {
   store.dispatch(Actions.PageActions.patch(selectedPageId, page));
+}
 
-export const createComponent = (
+export function createComponent(
   page: WegasComponent,
   path: number[],
   componentType: string,
   componentProps?: WegasComponent['props'],
   index?: number,
-) => {
+) {
   const newPath = [...path];
   const { newPage, component } = findComponent(page, newPath);
   if (component) {
@@ -136,9 +137,9 @@ export const createComponent = (
     }
     return { newPage, newPath };
   }
-};
+}
 
-export const deleteComponent = (page: WegasComponent, path: number[]) => {
+export function deleteComponent(page: WegasComponent, path: number[]) {
   const newPage = deepClone(page) as WegasComponent;
   let parent: WegasComponent = newPage;
   const browsePath = [...path];
@@ -152,14 +153,14 @@ export const deleteComponent = (page: WegasComponent, path: number[]) => {
     }
     browsePath.splice(0, 1);
   }
-};
+}
 
-const updateComponent = (
+export function updateComponent(
   page: WegasComponent,
   value: WegasComponent,
   path: number[],
   patch?: boolean,
-) => {
+) {
   const { newPage, parent } = findComponent(page, path);
   if (parent) {
     if (parent.props.children && path) {
@@ -168,6 +169,7 @@ const updateComponent = (
         const oldComp = parent.props.children[path[path.length - 1]];
         comp = {
           ...oldComp,
+          ...value,
           props: {
             ...oldComp.props,
             ...value.props,
@@ -180,7 +182,7 @@ const updateComponent = (
   } else {
     return value;
   }
-};
+}
 
 function SourceEditor() {
   return (

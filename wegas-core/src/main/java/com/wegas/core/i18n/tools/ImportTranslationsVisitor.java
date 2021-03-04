@@ -23,6 +23,39 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Visitor to import translation from another gameModel.
+ * <p>
+ * Statuses of new translations is determined by comparing another-language translations.
+ * <p>
+ * given this structure:
+ * <table>
+ * <thead>
+ * <tr>
+ * <th colspan="4">Target GameModel
+ * <th colspan="2">Reference GameModel
+ * <tr>
+ * <th>EN
+ * <th>Before FR
+ * <th>After FR
+ * <th>FR status
+ * <th>EN
+ * <th>FR
+ * <tbody>
+ * <tr>
+ * <td>Hello
+ * <td>
+ * <td>Bonjour
+ * <td>up to date
+ * <td>Hello
+ * <td>Bonjour
+ * <tr>
+ * <td>Hi
+ * <td>
+ * <td>Bonjour
+ * <td>outdated
+ * <td>Hello
+ * <td>Bonjour
+ * </table>
  *
  * @author maxence
  */
@@ -30,7 +63,13 @@ public class ImportTranslationsVisitor implements MergeableVisitor {
 
     private static final Logger logger = LoggerFactory.getLogger(ImportTranslationsVisitor.class);
 
+    /**
+     * reference language code
+     */
     private final String refLanguageCode;
+    /**
+     * code of language to import
+     */
     private final String languageCode;
 
     public ImportTranslationsVisitor(String refLanguageCode, String languageCode) {
@@ -47,12 +86,17 @@ public class ImportTranslationsVisitor implements MergeableVisitor {
      * @param reference    previous version of source
      * @param languageCode language to update
      */
-    private void importTranslationsInScript(Script target, Script source, String refLanguageCode, String languageCode) {
+    private void importTranslationsInScript(Script target,
+        Script source,
+        String refLanguageCode,
+        String languageCode
+    ) {
         try {
             String newScript = target.getContent();
 
             List<TranslatableContent> targetTrs = I18nHelper.getTranslatableContents(newScript);
-            List<TranslatableContent> sourceTrs = I18nHelper.getTranslatableContents(source.getContent());
+            List<TranslatableContent> sourceTrs = I18nHelper.getTranslatableContents(source
+                .getContent());
 
             if (targetTrs.size() == sourceTrs.size()) {
                 for (int i = 0; i < targetTrs.size(); i++) {
@@ -66,9 +110,13 @@ public class ImportTranslationsVisitor implements MergeableVisitor {
                         Translation refSource = sourceTr.getTranslation(refLanguageCode);
 
                         String status = "";
-                        if (refTarget != null && refSource != null && !Objects.equals(refTarget.getTranslation(), refSource.getTranslation())) {
+                        if (refTarget != null
+                            && refSource != null
+                            && !Objects.equals(refTarget.getTranslation(),
+                                refSource.getTranslation())) {
                             status = "outdated";
                         }
+
                         if (Helper.isNullOrEmpty(status)) {
                             status = translation.getStatus();
                         }
@@ -86,6 +134,7 @@ public class ImportTranslationsVisitor implements MergeableVisitor {
 
     /**
      * {@inheritDoc }
+     * import this.languageCode translations from references[0].
      */
     @Override
     public boolean visit(Mergeable target, ProtectionLevel protectionLevel, int level,
@@ -105,7 +154,10 @@ public class ImportTranslationsVisitor implements MergeableVisitor {
                 Translation refTrRef = trContentRef.getTranslation(refLanguageCode);
                 String newStatus = "";
 
-                if (refTargetTr != null && refTrRef != null && !Objects.equals(refTargetTr.getTranslation(), refTrRef.getTranslation())) {
+                if (refTargetTr != null
+                    && refTrRef != null
+                    && !Objects.equals(
+                        refTargetTr.getTranslation(), refTrRef.getTranslation())) {
                     newStatus = "outdated";
                 }
                 if (Helper.isNullOrEmpty(newStatus)) {
@@ -118,7 +170,8 @@ public class ImportTranslationsVisitor implements MergeableVisitor {
         }
 
         if (target instanceof Script && references.length > 0 && references[0] instanceof Script) {
-            this.importTranslationsInScript((Script) target, (Script) references[0], refLanguageCode, languageCode);
+            this.importTranslationsInScript((Script) target, (Script) references[0],
+                refLanguageCode, languageCode);
 
             return false;
         }

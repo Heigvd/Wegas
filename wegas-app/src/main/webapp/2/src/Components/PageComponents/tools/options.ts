@@ -12,7 +12,6 @@ import { schemaProps } from './schemaProps';
 import { PlayerInfoBulletProps } from './InfoBullet';
 import { createScript } from '../../../Helper/wegasEntites';
 import { IScript } from 'wegas-ts-api';
-import { instantiate } from '../../../data/scriptable';
 import {
   SDialogueDescriptor,
   SFSMInstance,
@@ -410,6 +409,14 @@ export const layoutConditionnalChoices: HashListChoices = [
   },
 ];
 
+export function isActionAllowed({
+  disabled,
+  readOnly,
+  locked,
+}: DisabledReadonlyLocked) {
+  return !disabled && !readOnly && !locked;
+}
+
 // OPTIONS -> DECORATIONS
 export interface WegasComponentDecorations {
   infoBullet?: PlayerInfoBulletProps;
@@ -480,8 +487,7 @@ function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
   if (!descriptor) {
     return 0;
   } else {
-    const self = instantiate(Player.selectCurrent());
-    const instance = descriptor?.getInstance(self);
+    const instance = descriptor?.getInstance(Player.self());
 
     if (!instance) {
       return 0;
@@ -513,7 +519,7 @@ function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
             return 1;
           } else {
             // non-cbx must have 0 reply
-            return descriptor.isReplied(self) ? 0 : 1;
+            return descriptor.isReplied(Player.self()) ? 0 : 1;
           }
         }
       } else if (instance instanceof SWhQuestionInstance) {

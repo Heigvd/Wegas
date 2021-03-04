@@ -27,10 +27,12 @@ const togglerStyle = css({
   margin: 'auto',
   flexDirection: 'row',
   ['&.disabled']: {
+    opacity: '50%',
     borderColor: themeVar.Common.colors.DisabledColor,
     cursor: 'default',
   },
   ['&.readOnly']: {
+    borderColor: themeVar.Common.colors.DisabledColor,
     cursor: 'default',
   },
   ['&.checked']: {
@@ -45,6 +47,10 @@ const togglerHandleStyle = css({
   height: '20px',
   backgroundColor: themeVar.Common.colors.PrimaryColor,
   ['&.disabled']: {
+    opacity: '50%',
+    backgroundColor: themeVar.Common.colors.DisabledColor,
+  },
+  ['&.readOnly']: {
     backgroundColor: themeVar.Common.colors.DisabledColor,
   },
 });
@@ -126,6 +132,7 @@ export function Toggler({
             togglerHandleStyle +
             ' ' +
             classOrNothing('disabled', disabled) +
+            classOrNothing('readOnly', readOnly) +
             classNameOrEmpty(handlerClassName)
           }
           title={hint}

@@ -261,8 +261,8 @@
           </protocol>
         </protocols>
         <network-listeners>
-          <network-listener protocol="http-listener-1" port="8080" name="http-listener-1" thread-pool="http-thread-pool" transport="tcp"/>
-          <network-listener protocol="http-listener-2" port="8181" name="http-listener-2" thread-pool="http-thread-pool" transport="tcp"/>
+          <network-listener protocol="http-listener-1" port="28080" name="http-listener-1" thread-pool="http-thread-pool" transport="tcp"/>
+          <network-listener protocol="http-listener-2" port="28181" name="http-listener-2" thread-pool="http-thread-pool" transport="tcp"/>
           <network-listener protocol="admin-listener" port="4848" name="admin-listener" thread-pool="admin-thread-pool" transport="tcp"/>
         </network-listeners>
         <transports>

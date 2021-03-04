@@ -4,14 +4,9 @@ import {
   pageComponentFactory,
 } from '../tools/componentFactory';
 import { schemaProps } from '../tools/schemaProps';
-import { store } from '../../../data/Stores/store';
+import { store, useStore } from '../../../data/Stores/store';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import {
-  INumberDescriptor,
-  IScript,
-  IStringDescriptor,
-  ITextDescriptor,
-} from 'wegas-ts-api';
+import { IScript, SNumberDescriptor, SStringDescriptor } from 'wegas-ts-api';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { classStyleIdShema } from '../tools/options';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
@@ -24,8 +19,10 @@ import { Choice, Selector } from '../../../Editor/Components/FormView/Select';
 import { entityIs } from '../../../data/entities';
 import { translate } from '../../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import { useComponentScript } from '../../Hooks/useComponentScript';
 import { TumbleLoader } from '../../Loader';
+import { useScript } from '../../Hooks/useScript';
+import { wwarn } from '../../../Helper/wegaslog';
+import { Player } from '../../../data/selectors';
 
 interface PlayerSelectInputProps extends WegasComponentProps {
   /**
@@ -46,30 +43,30 @@ function PlayerSelectInput({
   className,
   style,
   id,
+  options,
   onVariableChange,
 }: PlayerSelectInputProps) {
-  const { descriptor, instance } = useComponentScript<
-    IStringDescriptor | ITextDescriptor | INumberDescriptor
-  >(script, context);
+  const descriptor = useScript<SStringDescriptor | SNumberDescriptor>(
+    script,
+    context,
+  );
+
   const { lang } = React.useContext(languagesCTX);
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 
-  if (instance == null || descriptor == null) {
+  const value = useStore(() => String(descriptor?.getValue(Player.self())));
+
+  if (descriptor == null) {
+    wwarn('Varialbe not found');
     return <TumbleLoader />;
   }
 
-  const value = JSON.stringify(
-    String(
-      'getValue' in instance ? instance.getValue() : instance.getTrValue(),
-    ),
-  );
-
   const computedChoices: Choice[] =
-    choices == null
+    choices == null || choices.length === 0
       ? entityIs(descriptor, 'StringDescriptor')
-        ? descriptor.allowedValues.map(v => {
-            const value = translate(v.label, lang);
-            return { value, label: v.name || value };
+        ? (descriptor as SStringDescriptor).getAllowedValues().map(v => {
+            const value = translate(v.getLabel(), lang);
+            return { value, label: v.getName() || value };
           })
         : []
       : choices;
@@ -80,7 +77,7 @@ function PlayerSelectInput({
       value={value}
       choices={computedChoices}
       onChange={v => {
-        const newValue = JSON.parse(v.target.value);
+        const newValue = v.target.value;
         if (handleOnChange) {
           handleOnChange(newValue);
         } else {
@@ -97,6 +94,8 @@ function PlayerSelectInput({
       }}
       className={className}
       style={style}
+      disabled={options.disabled || options.locked}
+      readOnly={options.readOnly}
     />
   );
 }
@@ -111,11 +110,7 @@ registerComponent(
       script: schemaProps.scriptVariable({
         label: 'Variable',
         required: true,
-        returnType: [
-          'SStringDescriptor',
-          'STextDescriptor',
-          'SNumberDescriptor',
-        ],
+        returnType: ['SStringDescriptor', 'SNumberDescriptor'],
       }),
       choices: schemaProps.array({
         label: 'Choices',
@@ -127,7 +122,7 @@ registerComponent(
       onVariableChange: onVariableChangeSchema('On text change action'),
       ...classStyleIdShema,
     },
-    allowedVariables: ['StringDescriptor', 'TextDescriptor'],
+    allowedVariables: ['StringDescriptor', 'NumberDescriptor'],
     getComputedPropsFromVariable: v => ({
       script: createFindVariableScript(v),
     }),

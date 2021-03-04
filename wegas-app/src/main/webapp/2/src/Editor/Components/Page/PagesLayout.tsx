@@ -11,6 +11,7 @@ import {
 import { cx, css } from 'emotion';
 import { FontAwesome, IconComp, Icon, Icons } from '../Views/FontAwesome';
 import {
+  actionNodeContentStyle,
   nodeContentStyle,
   TREEVIEW_ITEM_TYPE as TREEVIEW_INDEX_ITEM_TYPE,
 } from '../Variable/VariableTree';
@@ -380,6 +381,7 @@ function LayoutNodeTitle({
       onMouseUp={onMouseUp}
       className={cx(
         nodeContentStyle,
+        actionNodeContentStyle,
         titleStyle,
         flex,
         grow,
