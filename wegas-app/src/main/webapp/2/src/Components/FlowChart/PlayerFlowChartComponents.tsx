@@ -5,7 +5,10 @@ import { classNameOrEmpty } from '../../Helper/className';
 import { Text } from '../Outputs/Text';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { FlowLine, Process } from './FlowChart';
-import { FlowLineProps, CustomFlowLineComponent } from './FlowLineComponent';
+import {
+  FlowLineLabelProps,
+  CustomFlowLineComponent,
+} from './FlowLineComponent';
 import { ProcessProps, CustomProcessComponent } from './ProcessComponent';
 import {
   indexTagStyle,
@@ -30,7 +33,7 @@ export interface LabeledProcess<F extends LabeledFlowLine> extends Process<F> {
 export function LabeledFlowLineComponent<
   F extends LabeledFlowLine,
   P extends LabeledProcess<F>
->(props: FlowLineProps<F, P>) {
+>(props: FlowLineLabelProps<F, P>) {
   return (
     <CustomFlowLineComponent {...props}>
       {(flowline, startProcess, onClick) =>

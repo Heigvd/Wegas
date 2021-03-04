@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { CustomFlowLineComponent, FlowLineProps } from './FlowLineComponent';
 import { css, cx } from 'emotion';
 import {
   StateProcess,
@@ -10,6 +9,10 @@ import { translate } from '../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
 import { Text } from '../Outputs/Text';
 import { isActionAllowed } from '../PageComponents/tools/options';
+import {
+  FlowLineLabelProps,
+  CustomFlowLineComponent,
+} from './FlowLineComponent';
 
 const transitionContainerStyle = css({
   display: 'inline-flex',
@@ -145,7 +148,7 @@ export function TransitionBox({
 }
 
 export function TransitionFlowLineComponent(
-  props: FlowLineProps<TransitionFlowLine, StateProcess>,
+  props: FlowLineLabelProps<TransitionFlowLine, StateProcess>,
 ) {
   return (
     <CustomFlowLineComponent {...props}>

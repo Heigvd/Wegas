@@ -2,18 +2,26 @@ import * as React from 'react';
 import { css } from 'emotion';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
 import { Toolbar } from '../Toolbar';
-import {
-  DefaultFlowLineComponent,
-  FlowLineProps,
-  TempFlowLine,
-  TempFlowLineProps,
-} from './FlowLineComponent';
+
 import { ProcessProps, DefaultProcessComponent } from './ProcessComponent';
 import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './Handles';
 import { useDrop } from 'react-dnd';
 import { classNameOrEmpty } from '../../Helper/className';
 import { Text } from '../Outputs/Text';
 import { isActionAllowed } from '../PageComponents/tools/options';
+import {
+  computeFlowlineValues,
+  StraitFlowLine,
+  DefaultFlowLineComponent,
+  defaultSelect,
+  FlowLineComputedValues,
+  FlowLineHandles,
+  TempFlowLine,
+  TempFlowLineProps,
+  CircularFlowLine,
+  ArrowDefs,
+  FlowLineLabelProps,
+} from './FlowLineComponent';
 
 const flowChartStyle = css({
   width: '100%',
@@ -89,7 +97,7 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
   /**
    * the component that displays flowlines
    */
-  Flowline?: React.FunctionComponent<FlowLineProps<F, P>>;
+  Flowline?: React.FunctionComponent<FlowLineLabelProps<F, P>>;
   /**
    * a callback triggered when a component has been moved
    */
@@ -148,13 +156,17 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   onConnect,
   onProcessClick,
   onFlowlineClick,
-  isFlowlineSelected,
+  isFlowlineSelected = defaultSelect,
   isProcessSelected,
   className,
   style,
   id,
-  ...options
+
+  readOnly,
+  disabled,
 }: FlowChartProps<F, P>) {
+  const actionsAllowed = isActionAllowed({ disabled, readOnly });
+
   const container = React.useRef<HTMLDivElement>();
   const processesRef = React.useRef<{ [pid: string]: HTMLElement }>({});
 
@@ -206,7 +218,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
     },
     drop: ({ processes, flowline, backward }, mon) => {
       setTempFlow(undefined);
-      if (isActionAllowed(options)) {
+      if (actionsAllowed) {
         const newX = mon.getClientOffset()?.x;
         const newY = mon.getClientOffset()?.y;
 
@@ -277,30 +289,111 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
       }, {}),
     );
 
-    // Making flowline from groups
-    return groupedConnections.map(group =>
-      group.map((c, i, g) => {
-        return (
-          <Flowline
-            key={c.flowline.id + c.startProcess.id + c.endProcess.id}
-            startProcessElement={processesRef.current[c.startProcess.id]}
-            endProcessElement={processesRef.current[c.endProcess.id]}
-            startProcess={c.startProcess}
-            endProcess={c.endProcess}
-            flowline={c.flowline}
-            positionOffset={(i + 1) / (g.length + 1)}
-            onClick={(e, p, f) =>
-              isActionAllowed(options) &&
-              onFlowlineClick &&
-              onFlowlineClick(e, p, f)
-            }
-            isFlowlineSelected={isFlowlineSelected}
-            {...options}
-          />
-        );
-      }),
+    interface FlowLineOptionalGroupedValues {
+      values: FlowLineComputedValues | undefined;
+      selected: boolean;
+      id: string;
+      startProcess: P;
+      endProcess: P;
+      flowline: F;
+      circular: boolean;
+      startProcessElement: HTMLElement | undefined;
+      offset: number;
+    }
+
+    interface FlowLineGroupedValues
+      extends Exclude<FlowLineOptionalGroupedValues, 'values'> {
+      values: FlowLineComputedValues;
+    }
+
+    const flowLineValues = groupedConnections.reduce<FlowLineGroupedValues[]>(
+      (o, group) => [
+        ...o,
+        ...group
+          .map<FlowLineOptionalGroupedValues>((c, i, g) => {
+            const circular = c.startProcess === c.endProcess;
+            const startProcessElement = processesRef.current[c.startProcess.id];
+            const offset = (i + 1) / (g.length + 1);
+            return {
+              values: computeFlowlineValues(
+                startProcessElement,
+                processesRef.current[c.endProcess.id],
+                circular,
+                offset,
+              ),
+              selected: isFlowlineSelected(c.startProcess, c.flowline),
+              id: c.flowline.id + c.startProcess.id + c.endProcess.id,
+              startProcess: c.startProcess,
+              endProcess: c.endProcess,
+              flowline: c.flowline,
+              circular,
+              startProcessElement,
+              offset,
+            };
+          })
+          .filter(function (
+            v: FlowLineOptionalGroupedValues,
+          ): v is FlowLineGroupedValues {
+            return v.values != null;
+          }),
+      ],
+      [],
     );
-  }, [internalProcesses, isFlowlineSelected, onFlowlineClick, options]);
+
+    const flowlines = flowLineValues.map(v =>
+      v.circular ? (
+        <CircularFlowLine
+          key={v.id}
+          processElement={v.startProcessElement}
+          selected={v.selected}
+          positionOffset={v.offset}
+        />
+      ) : (
+        <StraitFlowLine
+          key={v.id}
+          flowlineValues={v.values.flowlineValues}
+          selected={v.selected}
+        />
+      ),
+    );
+
+    const handles = flowLineValues.map(v => (
+      <FlowLineHandles
+        key={'Handle' + v.id}
+        {...v.values.handlesValues}
+        startProcess={v.startProcess}
+        endProcess={v.endProcess}
+        flowline={v.flowline}
+        selected={v.selected}
+      />
+    ));
+
+    const labels = flowLineValues.map(v => (
+      <Flowline
+        key={'Label' + v.id}
+        position={v.values.labelValues.position}
+        startProcess={v.startProcess}
+        flowline={v.flowline}
+        disabled={disabled}
+        readOnly={readOnly}
+        onClick={(e, p, f) =>
+          isActionAllowed({ disabled, readOnly }) &&
+          onFlowlineClick &&
+          onFlowlineClick(e, p, f)
+        }
+        selected={v.selected}
+      />
+    ));
+
+    return { flowlines, handles: actionsAllowed ? handles : null, labels };
+  }, [
+    actionsAllowed,
+    disabled,
+    internalProcesses,
+    isFlowlineSelected,
+    onFlowlineClick,
+    readOnly,
+  ]);
 
   return (
     <Toolbar
@@ -320,8 +413,22 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
           }
         }}
       >
-        {flows}
-        {tempFlow != null && <TempFlowLine {...tempFlow} />}
+        <svg
+          style={{
+            zIndex: 0,
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            width: '100%',
+            height: '100%',
+          }}
+        >
+          <ArrowDefs />
+          {flows.flowlines}
+          {tempFlow != null && <TempFlowLine {...tempFlow} />}
+        </svg>
+        {flows.handles}
+        {flows.labels}
         {processes.map(process => (
           <Process
             key={process.id + JSON.stringify(process.position)}
@@ -330,18 +437,16 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
               processesRef.current[process.id] = ref;
             }}
             onMove={position =>
-              isActionAllowed(options) &&
+              actionsAllowed &&
               setInternalProcesses(op => ({
                 ...op,
                 [process.id]: { ...op[process.id], position },
               }))
             }
-            onMoveEnd={position =>
-              isActionAllowed(options) && onMove(process, position)
-            }
+            onMoveEnd={position => actionsAllowed && onMove(process, position)}
             onConnect={(processes, flowline) => {
               setTempFlow(undefined);
-              if (isActionAllowed(options)) {
+              if (actionsAllowed) {
                 if ('targetProcess' in processes) {
                   onConnect(process, processes.sourceProcess, flowline, true);
                 } else {
@@ -350,10 +455,11 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
               }
             }}
             onClick={(e, p) =>
-              isActionAllowed(options) && onProcessClick && onProcessClick(e, p)
+              actionsAllowed && onProcessClick && onProcessClick(e, p)
             }
             isProcessSelected={isProcessSelected}
-            {...options}
+            disabled={disabled}
+            readOnly={readOnly}
           />
         ))}
       </Toolbar.Content>
