@@ -3,7 +3,10 @@ import { css } from 'emotion';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
 import { Toolbar } from '../Toolbar';
 
-import { ProcessProps, DefaultProcessComponent } from './ProcessComponent';
+import {
+  DefaultProcessComponent,
+  ProcessComponentProps,
+} from './ProcessComponent';
 import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './Handles';
 import { useDrop } from 'react-dnd';
 import { classNameOrEmpty } from '../../Helper/className';
@@ -20,7 +23,7 @@ import {
   TempFlowLineProps,
   CircularFlowLine,
   ArrowDefs,
-  FlowLineLabelProps,
+  FlowLineComponentProps,
 } from './FlowLineComponent';
 
 const flowChartStyle = css({
@@ -93,11 +96,11 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
   /**
    * the component that displays processes
    */
-  Process?: React.FunctionComponent<ProcessProps<F, P>>;
+  Process?: React.FunctionComponent<ProcessComponentProps<F, P>>;
   /**
    * the component that displays flowlines
    */
-  Flowline?: React.FunctionComponent<FlowLineLabelProps<F, P>>;
+  Flowline?: React.FunctionComponent<FlowLineComponentProps<F, P>>;
   /**
    * a callback triggered when a component has been moved
    */
@@ -145,6 +148,7 @@ export interface FlowChartProps<F extends FlowLine, P extends Process<F>>
 }
 
 const emptyProcesses: Process<FlowLine>[] = [];
+const emptyFlows = { flowlines: null, handles: null, labels: null };
 
 export function FlowChart<F extends FlowLine, P extends Process<F>>({
   title,
@@ -257,135 +261,145 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
   }, [processes]);
 
   // Tricking the rendering to build flowline after the first render (onReady like move)
-  // const [flows, setFlows] = React.useState<JSX.Element[][]>([]);
-  const flows = React.useMemo(() => {
-    const connections = Object.values(internalProcesses).reduce<
-      Connection<F, P>[]
-    >((o, process) => {
-      const couples = process.connections
-        .filter(flowline => internalProcesses[flowline.connectedTo] != null)
-        .map(flowline => ({
-          startProcess: process,
-          endProcess: internalProcesses[flowline.connectedTo],
-          flowline,
-        }));
-      return [...o, ...couples];
-    }, []);
+  const [flows, setFlows] = React.useState<{
+    flowlines: React.ReactNode;
+    handles: React.ReactNode;
+    labels: React.ReactNode;
+  }>(emptyFlows);
 
-    // Grouping connections using the same waypoint (back and forth)
-    const groupedConnections = Object.values(
-      connections.reduce<{
-        [coupleId: string]: Connection<F, P>[];
-      }>((o, c) => {
-        const coupleId1 = c.startProcess.id + c.endProcess.id;
-        const coupleId2 = c.endProcess.id + c.startProcess.id;
-        if (o[coupleId1] != null) {
-          return { ...o, [coupleId1]: [...o[coupleId1], c] };
-        } else if (o[coupleId2] != null) {
-          return { ...o, [coupleId2]: [...o[coupleId2], c] };
-        } else {
-          return { ...o, [coupleId1]: [c] };
-        }
-      }, {}),
-    );
+  const drawFlows = React.useCallback(() => {
+    try {
+      const connections = Object.values(internalProcesses).reduce<
+        Connection<F, P>[]
+      >((o, process) => {
+        const couples = process.connections
+          .filter(flowline => internalProcesses[flowline.connectedTo] != null)
+          .map(flowline => ({
+            startProcess: process,
+            endProcess: internalProcesses[flowline.connectedTo],
+            flowline,
+          }));
+        return [...o, ...couples];
+      }, []);
 
-    interface FlowLineOptionalGroupedValues {
-      values: FlowLineComputedValues | undefined;
-      selected: boolean;
-      id: string;
-      startProcess: P;
-      endProcess: P;
-      flowline: F;
-      circular: boolean;
-      startProcessElement: HTMLElement | undefined;
-      offset: number;
-    }
+      // Grouping connections using the same waypoint (back and forth)
+      const groupedConnections = Object.values(
+        connections.reduce<{
+          [coupleId: string]: Connection<F, P>[];
+        }>((o, c) => {
+          const coupleId1 = c.startProcess.id + c.endProcess.id;
+          const coupleId2 = c.endProcess.id + c.startProcess.id;
+          if (o[coupleId1] != null) {
+            return { ...o, [coupleId1]: [...o[coupleId1], c] };
+          } else if (o[coupleId2] != null) {
+            return { ...o, [coupleId2]: [...o[coupleId2], c] };
+          } else {
+            return { ...o, [coupleId1]: [c] };
+          }
+        }, {}),
+      );
 
-    interface FlowLineGroupedValues
-      extends Exclude<FlowLineOptionalGroupedValues, 'values'> {
-      values: FlowLineComputedValues;
-    }
+      interface FlowLineOptionalGroupedValues {
+        values: FlowLineComputedValues | undefined;
+        selected: boolean;
+        id: string;
+        startProcess: P;
+        endProcess: P;
+        flowline: F;
+        circular: boolean;
+        startProcessElement: HTMLElement | undefined;
+        offset: number;
+      }
 
-    const flowLineValues = groupedConnections.reduce<FlowLineGroupedValues[]>(
-      (o, group) => [
-        ...o,
-        ...group
-          .map<FlowLineOptionalGroupedValues>((c, i, g) => {
-            const circular = c.startProcess === c.endProcess;
-            const startProcessElement = processesRef.current[c.startProcess.id];
-            const offset = (i + 1) / (g.length + 1);
-            return {
-              values: computeFlowlineValues(
-                startProcessElement,
-                processesRef.current[c.endProcess.id],
+      interface FlowLineGroupedValues
+        extends Exclude<FlowLineOptionalGroupedValues, 'values'> {
+        values: FlowLineComputedValues;
+      }
+
+      const flowLineValues = groupedConnections.reduce<FlowLineGroupedValues[]>(
+        (o, group) => [
+          ...o,
+          ...group
+            .map<FlowLineOptionalGroupedValues>((c, i, g) => {
+              const circular = c.startProcess === c.endProcess;
+              const startProcessElement =
+                processesRef.current[c.startProcess.id];
+              const offset = (i + 1) / (g.length + 1);
+              return {
+                values: computeFlowlineValues(
+                  startProcessElement,
+                  processesRef.current[c.endProcess.id],
+                  circular,
+                  offset,
+                ),
+                selected: isFlowlineSelected(c.startProcess, c.flowline),
+                id: c.flowline.id + c.startProcess.id + c.endProcess.id,
+                startProcess: c.startProcess,
+                endProcess: c.endProcess,
+                flowline: c.flowline,
                 circular,
+                startProcessElement,
                 offset,
-              ),
-              selected: isFlowlineSelected(c.startProcess, c.flowline),
-              id: c.flowline.id + c.startProcess.id + c.endProcess.id,
-              startProcess: c.startProcess,
-              endProcess: c.endProcess,
-              flowline: c.flowline,
-              circular,
-              startProcessElement,
-              offset,
-            };
-          })
-          .filter(function (
-            v: FlowLineOptionalGroupedValues,
-          ): v is FlowLineGroupedValues {
-            return v.values != null;
-          }),
-      ],
-      [],
-    );
+              };
+            })
+            .filter(function (
+              v: FlowLineOptionalGroupedValues,
+            ): v is FlowLineGroupedValues {
+              return v.values != null;
+            }),
+        ],
+        [],
+      );
 
-    const flowlines = flowLineValues.map(v =>
-      v.circular ? (
-        <CircularFlowLine
-          key={v.id}
-          processElement={v.startProcessElement}
+      const flowlines = flowLineValues.map(v => {
+        return v.circular ? (
+          <CircularFlowLine
+            key={v.id}
+            processElement={v.startProcessElement}
+            selected={v.selected}
+            positionOffset={v.offset}
+          />
+        ) : (
+          <StraitFlowLine
+            key={v.id}
+            flowlineValues={v.values.flowlineValues}
+            selected={v.selected}
+          />
+        );
+      });
+
+      const handles = flowLineValues.map(v => (
+        <FlowLineHandles
+          key={'Handle' + v.id}
+          {...v.values.handlesValues}
+          startProcess={v.startProcess}
+          endProcess={v.endProcess}
+          flowline={v.flowline}
           selected={v.selected}
-          positionOffset={v.offset}
         />
-      ) : (
-        <StraitFlowLine
-          key={v.id}
-          flowlineValues={v.values.flowlineValues}
+      ));
+
+      const labels = flowLineValues.map(v => (
+        <Flowline
+          key={'Label' + v.id}
+          position={v.values.labelValues.position}
+          startProcess={v.startProcess}
+          flowline={v.flowline}
+          disabled={disabled}
+          readOnly={readOnly}
+          onClick={(e, p, f) =>
+            isActionAllowed({ disabled, readOnly }) &&
+            onFlowlineClick &&
+            onFlowlineClick(e, p, f)
+          }
           selected={v.selected}
         />
-      ),
-    );
+      ));
 
-    const handles = flowLineValues.map(v => (
-      <FlowLineHandles
-        key={'Handle' + v.id}
-        {...v.values.handlesValues}
-        startProcess={v.startProcess}
-        endProcess={v.endProcess}
-        flowline={v.flowline}
-        selected={v.selected}
-      />
-    ));
-
-    const labels = flowLineValues.map(v => (
-      <Flowline
-        key={'Label' + v.id}
-        position={v.values.labelValues.position}
-        startProcess={v.startProcess}
-        flowline={v.flowline}
-        disabled={disabled}
-        readOnly={readOnly}
-        onClick={(e, p, f) =>
-          isActionAllowed({ disabled, readOnly }) &&
-          onFlowlineClick &&
-          onFlowlineClick(e, p, f)
-        }
-        selected={v.selected}
-      />
-    ));
-
-    return { flowlines, handles: actionsAllowed ? handles : null, labels };
+      setFlows({ flowlines, handles: actionsAllowed ? handles : null, labels });
+    } catch (e) {
+      setFlows(emptyFlows);
+    }
   }, [
     actionsAllowed,
     disabled,
@@ -394,6 +408,17 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
     onFlowlineClick,
     readOnly,
   ]);
+
+  React.useEffect(() => {
+    drawFlows();
+  }, [drawFlows]);
+
+  // Redraw when processes changes
+  const mo = new IntersectionObserver(() => {
+    if (flows === emptyFlows) {
+      drawFlows();
+    }
+  });
 
   return (
     <Toolbar
@@ -410,6 +435,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
           drop(ref);
           if (ref != null) {
             container.current = ref;
+            mo.observe(ref);
           }
         }}
       >
@@ -419,8 +445,21 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
             position: 'absolute',
             left: 0,
             top: 0,
-            width: '100%',
-            height: '100%',
+          }}
+          ref={ref => {
+            const parent = ref?.parentElement;
+            if (ref != null && parent != null) {
+              const parentBox = parent.getBoundingClientRect();
+              // debugger;
+              ref.style.setProperty(
+                'width',
+                Math.max(parentBox.width, parent.scrollWidth) + 'px',
+              );
+              ref.style.setProperty(
+                'height',
+                Math.max(parentBox.height, parent.scrollHeight) + 'px',
+              );
+            }
           }}
         >
           <ArrowDefs />
@@ -429,12 +468,15 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
         </svg>
         {flows.handles}
         {flows.labels}
-        {processes.map(process => (
+        {processes.map((process, i, a) => (
           <Process
             key={process.id + JSON.stringify(process.position)}
             process={process}
             onReady={ref => {
               processesRef.current[process.id] = ref;
+              if (i === a.length - 1) {
+                mo.observe(ref);
+              }
             }}
             onMove={position =>
               actionsAllowed &&

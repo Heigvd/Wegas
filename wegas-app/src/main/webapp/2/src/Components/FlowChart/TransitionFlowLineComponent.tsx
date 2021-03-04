@@ -10,8 +10,8 @@ import { languagesCTX } from '../Contexts/LanguagesProvider';
 import { Text } from '../Outputs/Text';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import {
-  FlowLineLabelProps,
   CustomFlowLineComponent,
+  FlowLineComponentProps,
 } from './FlowLineComponent';
 
 const transitionContainerStyle = css({
@@ -147,20 +147,24 @@ export function TransitionBox({
   );
 }
 
-export function TransitionFlowLineComponent(
-  props: FlowLineLabelProps<TransitionFlowLine, StateProcess>,
-) {
+export function TransitionFlowLineComponent({
+  onClick,
+  startProcess,
+  flowline,
+  disabled,
+  readOnly,
+  selected,
+  position,
+}: FlowLineComponentProps<TransitionFlowLine, StateProcess>) {
   return (
-    <CustomFlowLineComponent {...props}>
-      {(flowline, sourceProcess, onClick, selected) => (
-        <TransitionBox
-          transition={flowline}
-          onClick={e => onClick && onClick(e, sourceProcess, flowline)}
-          selected={selected}
-          disabled={props.disabled}
-          readOnly={props.readOnly}
-        />
-      )}
+    <CustomFlowLineComponent selected={selected} position={position}>
+      <TransitionBox
+        transition={flowline}
+        onClick={e => onClick && onClick(e, startProcess, flowline)}
+        selected={selected}
+        disabled={disabled}
+        readOnly={readOnly}
+      />
     </CustomFlowLineComponent>
   );
 }

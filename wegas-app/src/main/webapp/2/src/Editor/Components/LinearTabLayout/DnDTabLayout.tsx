@@ -276,7 +276,7 @@ export function DnDTabLayout({
       <Toolbar.Content className={cx(relative, contentStyle)}>
         <div className={cx(expandBoth, hideOverflow)}>
           <div className={cx(autoScroll, absoute, expandBoth, flex)}>
-            {defaultActiveLabel && (
+            {defaultActiveLabel && components[defaultActiveLabel] && (
               <Reparentable
                 id={defaultActiveLabel}
                 innerClassName={cx(flex, expandBoth)}

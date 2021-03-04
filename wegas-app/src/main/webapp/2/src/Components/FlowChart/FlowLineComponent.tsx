@@ -150,12 +150,36 @@ export function computeFlowlineValues(
   if (
     startProcessElement == null ||
     endProcessElement == null ||
+    parent == null ||
     parentBox == null
   ) {
     return undefined;
   }
 
   const startProcessBox = startProcessElement.getBoundingClientRect();
+  const endProcessBox = endProcessElement.getBoundingClientRect();
+
+  debugger;
+  const displayValues =
+    startProcessBox.bottom +
+    startProcessBox.height +
+    startProcessBox.left +
+    startProcessBox.right +
+    startProcessBox.top +
+    startProcessBox.width +
+    startProcessBox.x +
+    startProcessBox.y +
+    endProcessBox.bottom +
+    endProcessBox.height +
+    endProcessBox.left +
+    endProcessBox.right +
+    endProcessBox.top +
+    endProcessBox.width +
+    endProcessBox.x +
+    endProcessBox.y;
+  if (displayValues === 0) {
+    throw Error('fail to display');
+  }
 
   const startLeft = startProcessBox.x - parentBox.x;
   const startTop = startProcessBox.y - parentBox.y;
@@ -178,8 +202,6 @@ export function computeFlowlineValues(
     x: startLeft + startWidth / 2,
     y: startTop + startHeight,
   };
-
-  const endProcessBox = endProcessElement.getBoundingClientRect();
 
   const endLeft = endProcessBox.x - parentBox.x;
   const endTop = endProcessBox.y - parentBox.y;
@@ -572,8 +594,39 @@ export function TempFlowLine({ processElements, position }: TempFlowLineProps) {
   );
 }
 
-export interface FlowLineLabelProps<F extends FlowLine, P extends Process<F>>
-  extends FlowLineLabelValues,
+export interface FlowLineLabelProps extends FlowLineLabelValues {
+  /**
+   * a condition given by the user to see if flowline is selected or not
+   */
+  selected: boolean;
+}
+
+export function CustomFlowLineComponent({
+  position,
+  children,
+  selected,
+}: React.PropsWithChildren<FlowLineLabelProps>) {
+  return (
+    <div
+      ref={ref => {
+        if (ref != null) {
+          const labelBox = ref.getBoundingClientRect();
+          const values = position(labelBox);
+          ref.style.setProperty('left', values.x + 'px');
+          ref.style.setProperty('top', values.y + 'px');
+        }
+      }}
+      className={childrenContainerStyle(selected)}
+    >
+      {children}
+    </div>
+  );
+}
+
+export interface FlowLineComponentProps<
+  F extends FlowLine,
+  P extends Process<F>
+> extends FlowLineLabelProps,
     DisabledReadonly {
   /**
    * the process object from where the flowline starts
@@ -588,87 +641,40 @@ export interface FlowLineLabelProps<F extends FlowLine, P extends Process<F>>
    * allows to display multiple parralel flowlines
    */
   onClick?: (e: ModifierKeysEvent, sourceProcess: P, flowline: F) => void;
-  /**
-   * a condition given by the user to see if flowline is selected or not
-   */
-  selected: boolean;
-  /**
-   * the children component that recieve the flowline object
-   * allow to customize easily the flowline label style
-   */
-}
-
-interface CustomFlowLineLabelProps<F extends FlowLine, P extends Process<F>>
-  extends FlowLineLabelProps<F, P> {
-  children?: (
-    flowline: F,
-    sourceProcess: P,
-    onClick?: (e: ModifierKeysEvent, sourceProcess: P, flowline: F) => void,
-    selected?: boolean,
-  ) => React.ReactNode;
-}
-
-export function CustomFlowLineComponent<
-  F extends FlowLine,
-  P extends Process<F>
->({
-  position,
-  startProcess,
-  flowline,
-  children,
-  onClick,
-  selected,
-  disabled,
-  readOnly,
-}: CustomFlowLineLabelProps<F, P>) {
-  return (
-    <div
-      ref={ref => {
-        if (ref != null) {
-          const labelBox = ref.getBoundingClientRect();
-          const values = position(labelBox);
-          ref.style.setProperty('left', values.x + 'px');
-          ref.style.setProperty('top', values.y + 'px');
-        }
-      }}
-      className={childrenContainerStyle(selected)}
-      onClick={e => {
-        if (isActionAllowed({ disabled, readOnly })) {
-          (e.target as HTMLDivElement).focus();
-        }
-      }}
-    >
-      {children && children(flowline, startProcess, onClick, selected)}
-    </div>
-  );
 }
 
 export function DefaultFlowLineComponent<
   F extends FlowLine,
   P extends Process<F>
->(props: FlowLineLabelProps<F, P>) {
+>({
+  onClick,
+  startProcess,
+  flowline,
+  disabled,
+  readOnly,
+  selected,
+  position,
+}: FlowLineComponentProps<F, P>) {
   return (
-    <CustomFlowLineComponent {...props}>
-      {(flowline, startProcess, onClick) => (
-        <div
-          onClick={e =>
-            onClick &&
-            isActionAllowed({
-              disabled: props.disabled,
-              readOnly: props.readOnly,
-            }) &&
-            onClick(e, startProcess, flowline)
-          }
-          className={cx(transitionBoxStyle, {
-            [transitionBoxActionStyle]: isActionAllowed({
-              readOnly: props.readOnly,
-              disabled: props.disabled,
-            }),
-          })}
-        >
-          {flowline.id}
-        </div>
-      )}
+    <CustomFlowLineComponent selected={selected} position={position}>
+      <div
+        onClick={e =>
+          onClick &&
+          isActionAllowed({
+            disabled: disabled,
+            readOnly: readOnly,
+          }) &&
+          onClick(e, startProcess, flowline)
+        }
+        className={cx(transitionBoxStyle, {
+          [transitionBoxActionStyle]: isActionAllowed({
+            readOnly: readOnly,
+            disabled: disabled,
+          }),
+        })}
+      >
+        {flowline.id}
+      </div>
     </CustomFlowLineComponent>
   );
 }
