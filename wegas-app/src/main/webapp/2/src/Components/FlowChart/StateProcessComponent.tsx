@@ -1,7 +1,10 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { FlowLine, Process } from './FlowChart';
-import { ProcessProps, CustomProcessComponent } from './ProcessComponent';
+import {
+  CustomProcessComponent,
+  ProcessComponentProps,
+} from './ProcessComponent';
 import {
   StateProcess,
   TransitionFlowLine,
@@ -192,20 +195,21 @@ export function StateBox({
   );
 }
 
-export function StateProcessComponent(
-  props: ProcessProps<TransitionFlowLine, StateProcess>,
-) {
+export function StateProcessComponent({
+  isProcessSelected,
+  onClick,
+  ...processProps
+}: ProcessComponentProps<TransitionFlowLine, StateProcess>) {
+  const { disabled, readOnly, process } = processProps;
   return (
-    <CustomProcessComponent {...props}>
-      {(process, onClick, selected) => (
-        <StateBox
-          state={process}
-          onClick={onClick}
-          selected={selected}
-          disabled={props.disabled}
-          readOnly={props.readOnly}
-        />
-      )}
+    <CustomProcessComponent {...processProps}>
+      <StateBox
+        state={process}
+        onClick={onClick}
+        selected={isProcessSelected && isProcessSelected(process)}
+        disabled={disabled}
+        readOnly={readOnly}
+      />
     </CustomProcessComponent>
   );
 }

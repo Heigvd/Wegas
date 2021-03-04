@@ -5,8 +5,14 @@ import { classNameOrEmpty } from '../../Helper/className';
 import { Text } from '../Outputs/Text';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { FlowLine, Process } from './FlowChart';
-import { FlowLineProps, CustomFlowLineComponent } from './FlowLineComponent';
-import { ProcessProps, CustomProcessComponent } from './ProcessComponent';
+import {
+  CustomFlowLineComponent,
+  FlowLineComponentProps,
+} from './FlowLineComponent';
+import {
+  CustomProcessComponent,
+  ProcessComponentProps,
+} from './ProcessComponent';
 import {
   indexTagStyle,
   stateBoxActionStyle,
@@ -30,24 +36,30 @@ export interface LabeledProcess<F extends LabeledFlowLine> extends Process<F> {
 export function LabeledFlowLineComponent<
   F extends LabeledFlowLine,
   P extends LabeledProcess<F>
->(props: FlowLineProps<F, P>) {
+>({
+  onClick,
+  startProcess,
+  flowline,
+  disabled,
+  readOnly,
+  selected,
+  position,
+}: FlowLineComponentProps<F, P>) {
   return (
-    <CustomFlowLineComponent {...props}>
-      {(flowline, startProcess, onClick) =>
-        flowline.label && (
-          <div
-            onClick={e => onClick && onClick(e, startProcess, flowline)}
-            className={cx(transitionBoxStyle, {
-              [transitionBoxActionStyle]: isActionAllowed({
-                readOnly: props.readOnly,
-                disabled: props.disabled,
-              }),
-            })}
-          >
-            <Text text={flowline.label} />
-          </div>
-        )
-      }
+    <CustomFlowLineComponent selected={selected} position={position}>
+      {flowline.label && (
+        <div
+          onClick={e => onClick && onClick(e, startProcess, flowline)}
+          className={cx(transitionBoxStyle, {
+            [transitionBoxActionStyle]: isActionAllowed({
+              readOnly: readOnly,
+              disabled: disabled,
+            }),
+          })}
+        >
+          <Text text={flowline.label} />
+        </div>
+      )}
     </CustomFlowLineComponent>
   );
 }
@@ -107,16 +119,19 @@ function PlayerFlowChartProcessBox<
 export function PlayerFlowChartProcessComponent<
   F extends LabeledFlowLine,
   P extends LabeledProcess<F>
->(props: ProcessProps<F, P>) {
+>({
+  isProcessSelected,
+  onClick,
+  ...processProps
+}: ProcessComponentProps<F, P>) {
+  const { disabled, readOnly, process } = processProps;
   return (
-    <CustomProcessComponent {...props}>
-      {process => (
-        <PlayerFlowChartProcessBox
-          process={process}
-          disabled={props.disabled}
-          readOnly={props.readOnly}
-        />
-      )}
+    <CustomProcessComponent {...processProps}>
+      <PlayerFlowChartProcessBox
+        process={process}
+        disabled={disabled}
+        readOnly={readOnly}
+      />
     </CustomProcessComponent>
   );
 }

@@ -206,7 +206,6 @@ export const halfOpacity = css({
   opacity: 0.5,
 });
 
-
 export const infoShortTextStyle = css({
   color: '#AAAAAA', // TODO add in Theme
 });

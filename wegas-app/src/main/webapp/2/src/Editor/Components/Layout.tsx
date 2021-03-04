@@ -26,7 +26,7 @@ const InstancesEditor = React.lazy(
 const ThemeEditor = React.lazy(
   () => import('../../Components/Style/ThemeEditor'),
 );
-// const Tester = React.lazy(() => import('../../Testers/HTMLEditorTester'));
+// const Tester = React.lazy(() => import('../../Testers/FlowchartTester'));
 
 const layout = css({
   display: 'flex',
