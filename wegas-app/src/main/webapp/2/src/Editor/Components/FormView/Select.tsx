@@ -131,9 +131,16 @@ function SelectView(props: ISelectProps) {
   const onChange = function onChange(
     event: React.ChangeEvent<{ value: string }>,
   ) {
-    let parsedValue = undefined;
+    let parsedValue: string | undefined = event.target.value;
     try {
-      parsedValue = JSON.parse(event.target.value);
+      parsedValue = JSON.parse(parsedValue);
+    } catch (_e) {
+      parsedValue =
+        typeof parsedValue === 'string' ||
+        typeof parsedValue === 'number' ||
+        typeof parsedValue === 'boolean'
+          ? String(parsedValue)
+          : undefined;
     } finally {
       props.onChange(parsedValue);
     }
@@ -160,8 +167,8 @@ function SelectView(props: ISelectProps) {
           ].concat(selectChoices)
       : ([defaultTitle] as (Choice | string)[]).concat(selectChoices || []);
 
-  const value =
-    JSON.stringify(props.value) || JSON.stringify(defaultTitle.value);
+  const value = String(props.value);
+
   return (
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>
