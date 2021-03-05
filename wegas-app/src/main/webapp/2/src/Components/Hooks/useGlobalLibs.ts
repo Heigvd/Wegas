@@ -30,6 +30,8 @@ import APIMethodsGlobalSrc from '!!raw-loader!../../../types/scripts/APIMethodsG
 // @ts-ignore
 import HelpersGlobalSrc from '!!raw-loader!../../../types/scripts/HelpersGlobals.d.ts';
 // @ts-ignore
+import WegasDashboardSrc from '!!raw-loader!../../../types/scripts/WegasDashboard.d.ts';
+// @ts-ignore
 import generalTypes from '!!raw-loader!../../../types/general-types.d.ts';
 
 import { wwarn } from '../../Helper/wegaslog';
@@ -121,12 +123,6 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         }
 
         ${
-          scriptContext === 'Server internal'
-            ? `
-        declare function runClientScript<T extends any = any>(clientScript:string) : T;`
-            : ''
-        }
-        ${
           scriptContext === 'Client'
             ? `type CurrentLanguages = ${currentLanguages};
         type View = 'Editor' | 'Instance' | 'Export' | 'Public';
@@ -195,8 +191,37 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
 
         declare const Helpers : GlobalHelpersClass;
         `
-            : `${buildGlobalServerMethods(globalServerMethods)}`
+            : `${buildGlobalServerMethods(globalServerMethods)}
+        
+        interface DashboardVariableClasses {
+          ${Object.keys(variableClasses)
+            .filter(k => {
+              const variableClass = variableClasses[k];
+              return (
+                variableClass === 'NumberDescriptor' ||
+                variableClass === 'StringDescriptor' ||
+                variableClass === 'TextDescriptor' ||
+                variableClass === 'BooleanDescriptor' ||
+                variableClass === 'ObjectDescriptor' ||
+                variableClass === 'InboxDescriptor'
+              );
+            })
+            .map(k => `${k}: S${variableClasses[k]};`)
+            .join('\n')}
         }
+
+        class WegasDashboard {
+          static registerVariable:
+            <T extends keyof DashboardVariableClasses> (
+              variableName: T,
+              config?: WegasDashboardVariableConfig<DashboardVariableClasses[T]>
+            ) => void;
+          static registerAction: WegasDashboardRegisterAction;
+        }        
+
+        `
+        }
+
         `;
       } catch (e) {
         wwarn(e);
@@ -225,6 +250,7 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         ${i18nGlobalSrc}\n
         ${APIMethodsGlobalSrc}\n
         ${HelpersGlobalSrc}\n
+        ${WegasDashboardSrc}\n
         ${libs}\n
       `,
         name: 'VariablesTypes.d.ts',

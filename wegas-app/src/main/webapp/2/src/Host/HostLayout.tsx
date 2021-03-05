@@ -11,9 +11,9 @@ import { DndLinearLayout } from '../Editor/Components/LinearTabLayout/LinearLayo
 import { PageLoader } from '../Editor/Components/Page/PageLoader';
 import { visitIndex } from '../Helper/pages';
 import HostHeader from './HostHeader';
-import { OverviewTab } from './OverviewTab';
+import { OverviewTab } from './Overview/OverviewTab';
 
-const Overview = React.lazy(() => import('./Overview'));
+const Overview = React.lazy(() => import('./Overview/Overview'));
 const PeerReviewPage = React.lazy(() => import('./PeerReviewPage'));
 
 const layout = css({

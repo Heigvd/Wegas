@@ -1,6 +1,6 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
-import { TabProps, Tab } from '../Editor/Components/LinearTabLayout/DnDTabs';
+import { TabProps, Tab } from '../../Editor/Components/LinearTabLayout/DnDTabs';
 
 const tabStyle = css({
   display: 'flex',
