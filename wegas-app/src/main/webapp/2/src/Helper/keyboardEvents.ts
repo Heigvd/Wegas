@@ -12,8 +12,14 @@ function keyboardEventHandler(e: KeyboardEvent) {
   lastKeyboardEvents.altKey = e.altKey;
 }
 
+function keyboardEventCleanerHandler() {
+  lastKeyboardEvents.keyCode = undefined;
+  lastKeyboardEvents.ctrlKey = undefined;
+  lastKeyboardEvents.altKey = undefined;
+}
+
 if (!initialized) {
   initialized = true;
   window.addEventListener('keydown', keyboardEventHandler);
-  window.addEventListener('keyup', keyboardEventHandler);
+  window.addEventListener('keyup', keyboardEventCleanerHandler);
 }
