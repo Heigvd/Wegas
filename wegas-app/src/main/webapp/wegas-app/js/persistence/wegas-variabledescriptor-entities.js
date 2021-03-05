@@ -389,6 +389,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                         label: "Pdf (Players document)",
                                         outputType: "pdf",
                                         mode: "player"
+                                    },{
+                                        type: "PrintButton",
+                                        label: "Pdf (proofreading document)",
+                                        outputType: "pdf",
+                                        mode: "reader"
                                     }, {
                                         type: "OpenEntityButton",
                                         label: "Json",

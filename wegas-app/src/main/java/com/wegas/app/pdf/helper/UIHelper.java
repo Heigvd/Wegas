@@ -7,6 +7,7 @@
  */
 package com.wegas.app.pdf.helper;
 
+import com.wegas.app.pdf.uicomponent.UIGameModel.Mode;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -265,8 +266,7 @@ public class UIHelper {
     }
 
     /**
-     * print key/value property with value as a text area. the text may include
-     * HTML tags
+     * print key/value property with value as a text area. the text may include HTML tags
      *
      * @param ctx
      * @param writer
@@ -298,7 +298,7 @@ public class UIHelper {
      *
      * @throws IOException
      */
-    public static void printPropertyImpactScript(FacesContext ctx, ResponseWriter writer, String key, Script script) throws IOException {
+    public static void printPropertyImpactScript(FacesContext ctx, ResponseWriter writer, String key, Script script, Player player, Mode mode) throws IOException {
 
         //printText(ctx, writer, "IMPACT", CSS_CLASS_VARIABLE_TITLE);
         try {
@@ -306,7 +306,7 @@ public class UIHelper {
                 printPropertyScript(ctx, writer, key, (String) null);
             } else {
                 UIHelper.startScript(ctx, writer, key);
-                ImpactPrinter ip = new ImpactPrinter(script.getContent());
+                ImpactPrinter ip = new ImpactPrinter(script.getContent(), player, mode);
                 ip.print(ctx, writer);
                 UIHelper.endScript(ctx, writer);
             }
@@ -464,10 +464,9 @@ public class UIHelper {
      * @throws IOException
      */
     public static void startTextArea(ResponseWriter writer) throws IOException {
-        /*if (text == null || text.length() == 0) {
-         text = TEXT_NOT_AVAILABLE;
-         style += " " + CSS_CLASS_PROPERTY_VALUE_NA;
-         }*/
+        /* if (text == null || text.length() == 0) { text = TEXT_NOT_AVAILABLE; style += " " +
+         * CSS_CLASS_PROPERTY_VALUE_NA;
+         } */
         startDiv(writer, CSS_CLASS_TEXT_CONTAINER);
 
         //startDiv(writer, style);
@@ -517,9 +516,9 @@ public class UIHelper {
     /**
      * Print key/value map w/o title
      * <p>
-     * TODO TO avoid printing to much properties in player mode, shall we
-     * introduce something like prefixing propertyName with something special
-     * (e.g '$', '_' or '`') to make that property internal ?
+     * TODO TO avoid printing to much properties in player mode, shall we introduce something like
+     * prefixing propertyName with something special (e.g '$', '_' or '`') to make that property
+     * internal ?
      *
      * @param context
      * @param writer
@@ -554,8 +553,8 @@ public class UIHelper {
      * @throws IOException
      */
     public static void printMessage(FacesContext context, ResponseWriter writer,
-            String destination, String from, String subject, String date, String body, String token,
-            List<Attachment> attachments) throws IOException {
+        String destination, String from, String subject, String date, String body, String token,
+        List<Attachment> attachments) throws IOException {
 
         UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_CONTAINER);
         //printText(context, writer, TEXT_SEND_MESSAGE, CSS_CLASS_MESSAGE_TITLE);
@@ -569,7 +568,8 @@ public class UIHelper {
 
         if (destination != null && destination.length() > 0) {
             UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_TO + CSS_CLASS_INLINE_DIV);
-            UIHelper.printProperty(context, writer, UIHelper.TEXT_DESTINATION, unescapeAndTrimQuotes(destination));
+            UIHelper
+                .printProperty(context, writer, UIHelper.TEXT_DESTINATION, unescapeAndTrimQuotes(destination));
             UIHelper.endDiv(writer);
         }
 
@@ -584,18 +584,21 @@ public class UIHelper {
 
         UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_SUBJECT + CSS_CLASS_INLINE_DIV);
         //printText(context, writer, unescapeAndTrimQuotes(subject), CSS_CLASS_PROPERTY_VALUE);
-        UIHelper.printProperty(context, writer, UIHelper.TEXT_SUBJECT, unescapeAndTrimQuotes(subject));
+        UIHelper
+            .printProperty(context, writer, UIHelper.TEXT_SUBJECT, unescapeAndTrimQuotes(subject));
         UIHelper.endDiv(writer);
 
         UIHelper.endDiv(writer); // </div class="header">
 
         if (attachments != null && attachments.size() > 0) {
             for (Attachment a : attachments) {
-                UIHelper.printProperty(context, writer, UIHelper.TEXT_ATTACHMENTS, a.getFile().translateOrEmpty((Player) null));
+                UIHelper.printProperty(context, writer, UIHelper.TEXT_ATTACHMENTS, a.getFile()
+                    .translateOrEmpty((Player) null));
             }
         }
 
-        UIHelper.printPropertyTextArea(context, writer, " ", unescapeAndTrimQuotes(body), false, true);
+        UIHelper
+            .printPropertyTextArea(context, writer, " ", unescapeAndTrimQuotes(body), false, true);
 
         UIHelper.endDiv(writer); // </div class="container">
     }
