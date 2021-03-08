@@ -16,9 +16,11 @@ export const inputStyleCSS: ObjectInterpolation<undefined> = {
   '::placeholder': {
     fontStyle: 'italic',
   },
+  '&[disabled]': {
+    backgroundColor: themeVar.Common.colors.DisabledColor,
+  },
   '&[readonly]': {
-    color: themeVar.Common.colors.HoverTextColor,
-    backgroundColor: themeVar.Common.colors.HoverColor,
+    color: themeVar.Common.colors.DisabledColor,
   },
 };
 
