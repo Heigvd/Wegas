@@ -17,14 +17,15 @@ import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 
 interface MessageLabelProps {
   message: IMessage;
+  disabled?: boolean;
 }
 
-function MessageLabel({ message }: MessageLabelProps) {
+function MessageLabel({ message, disabled }: MessageLabelProps) {
   const translatedLabel = useTranslate(message.subject);
   return (
     <div
       className={cx(flex, itemCenter)}
-      onClick={() => store.dispatch(readMessage(message))}
+      onClick={() => !disabled && store.dispatch(readMessage(message))}
     >
       {message.unread ? (
         <div className={cx(unreadSpaceStyle, unreadSignalStyle)} />
@@ -52,11 +53,11 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
   );
 }
 
-interface InboxDisplayProps {
+interface InboxDisplayProps extends DisabledReadonly {
   inbox: IInboxDescriptor;
 }
 
-export function InboxDisplay({ inbox }: InboxDisplayProps) {
+export function InboxDisplay({ inbox, disabled, readOnly }: InboxDisplayProps) {
   const messagesSelector = React.useCallback(
     () => getInstance(inbox, Player.selectCurrent())!.messages,
     [inbox],
@@ -68,6 +69,8 @@ export function InboxDisplay({ inbox }: InboxDisplayProps) {
     <EntityChooser
       entities={messages}
       entityLabel={e => <MessageLabel message={e} />}
+      disabled={disabled}
+      readOnly={readOnly}
     >
       {MessageDisplay}
     </EntityChooser>

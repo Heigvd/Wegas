@@ -1,13 +1,19 @@
 import * as React from 'react';
-import { Interpolation, css } from 'emotion';
+import { Interpolation, css, cx } from 'emotion';
 import Slider from 'react-input-slider';
-import { textCenter } from '../../../css/classes';
+import {
+  flex,
+  flexColumn,
+  halfOpacity,
+  textCenter,
+} from '../../../css/classes';
 import { CheckMinMax } from './numberComponentHelper';
 import { Value } from '../../Outputs/Value';
 import { InputProps } from '../SimpleInput';
 import { NumberInput } from './NumberInput';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { themeVar } from '../../Style/ThemeVars';
+import { isActionAllowed } from '../../PageComponents/tools/options';
 
 const valueDisplayStyle = css({
   textAlign: 'center',
@@ -122,17 +128,23 @@ export function NumberSlider({
     } else if (typeof displayValues === 'string') {
       switch (displayValues) {
         case 'External':
-          display = value;
+          display = (
+            <div className={cx({ [halfOpacity]: disabled })}>{value}</div>
+          );
           break;
         case 'Internal':
-          display = internalValue;
+          display = (
+            <div className={cx({ [halfOpacity]: disabled })}>
+              {internalValue}
+            </div>
+          );
           break;
         case 'Both':
           display = (
-            <>
+            <div className={cx(flex, flexColumn, { [halfOpacity]: disabled })}>
               <div>External value : {value}</div>
               <div>Internal value : {internalValue}</div>
-            </>
+            </div>
           );
           break;
         case 'NumberInput':
@@ -143,6 +155,7 @@ export function NumberSlider({
                 onSliderChange(Math.min(Math.max(v, min), max), 'NumberInput');
               }}
               disabled={disabled}
+              readOnly={readOnly}
             />
           );
           break;
@@ -155,7 +168,16 @@ export function NumberSlider({
       display = displayValues(internalValue, value);
     }
     return <div className={valueDisplayStyle}>{display}</div>;
-  }, [disabled, displayValues, internalValue, max, min, onSliderChange, value]);
+  }, [
+    disabled,
+    displayValues,
+    internalValue,
+    max,
+    min,
+    onSliderChange,
+    readOnly,
+    value,
+  ]);
 
   return (
     <div id={id} className={textCenter + classNameOrEmpty(className)}>
@@ -172,14 +194,16 @@ export function NumberSlider({
               }),
           thumb: handleStyle
             ? desinterpolate(handleStyle)
-            : css({ cursor: 'pointer' }),
+            : isActionAllowed({ readOnly, disabled })
+            ? desinterpolate({ cursor: 'pointer' })
+            : {},
         }}
         axis="x"
         xmax={max}
         xmin={min}
         xstep={Math.abs(max - min) / (steps ? steps : 100)}
         x={internalValue}
-        onChange={({ x }) => onSliderChange(x, 'Change')}
+        onChange={({ x }) => !readOnly && onSliderChange(x, 'Change')}
         onDragEnd={() =>
           !readOnly && onChange && onChange(refValue.current, 'DragEnd')
         }

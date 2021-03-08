@@ -27,16 +27,25 @@ const choiceButtonIcon = css({
   height: '100%',
 });
 
+interface DialogueChoiceProps extends DisabledReadonly {
+  label: STranslatableContent;
+  onClick: () => void;
+}
+
 export function DialogueChoice({
   label,
   onClick,
-}: {
-  label: STranslatableContent;
-  onClick: () => void;
-}) {
+  disabled,
+  readOnly,
+}: DialogueChoiceProps) {
   const translation = useTranslate(label);
   return (
-    <Button onClick={onClick} className={cx(flexRow, choiceButtonStyle)}>
+    <Button
+      onClick={onClick}
+      className={cx(flexRow, choiceButtonStyle)}
+      disabled={disabled}
+      readOnly={readOnly}
+    >
       <div
         className={choiceButtonText}
         dangerouslySetInnerHTML={{

@@ -29,6 +29,10 @@ export interface StandardGaugeProps extends ClassStyleId {
    * followNeedle - if true, only the sections behind the needle will be displayed
    */
   followNeedle?: boolean;
+  /**
+   * disabled - if true, the element will be disabled (styling mainly)
+   */
+  disabled?: boolean;
 }
 
 export function StandardGauge({
@@ -40,6 +44,7 @@ export function StandardGauge({
   className,
   style,
   id,
+  disabled,
 }: StandardGaugeProps) {
   const deltaValue = max - min;
   const sections = sectionsColor.map(s => ({
@@ -59,6 +64,7 @@ export function StandardGauge({
       displayValue
       holeRatio={0.8}
       label={label}
+      disabled={disabled}
       needleStyle={{
         '@class': 'SVGNeedle',
         svg: (cX, cY, angle, radius, holeRadius) => {
