@@ -39,6 +39,7 @@ function PlayerBoxes({
   className,
   style,
   id,
+  options,
 }: PlayerBoxesProps) {
   const {
     descriptor,
@@ -63,6 +64,7 @@ function PlayerBoxes({
       label={label}
       hideBoxValue={hideBoxValue}
       showLabelValue={showLabelValue}
+      disabled={options.disabled || options.locked}
     />
   );
 }

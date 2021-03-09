@@ -18,3 +18,7 @@ export function selectCurrent() {
 export function useCurrentPlayer() {
   return instantiate(useStore(selectCurrent));
 }
+
+export function self() {
+  return instantiate(selectCurrent());
+}

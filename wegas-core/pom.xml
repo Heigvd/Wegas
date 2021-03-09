@@ -387,7 +387,7 @@
                 <configuration>
                     <systemProperties>
                         <java.util.logging.config.file>${project.basedir}/src/test/resources/logging.properties</java.util.logging.config.file>
-                        <arquillian.launch>glassfish-embedded</arquillian.launch>
+                        <arquillian.launch>payara-embedded</arquillian.launch>
                     </systemProperties>
                 </configuration>
             </plugin>

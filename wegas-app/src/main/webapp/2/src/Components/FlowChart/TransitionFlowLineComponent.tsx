@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { CustomFlowLineComponent, FlowLineProps } from './FlowLineComponent';
 import { css, cx } from 'emotion';
 import {
   StateProcess,
@@ -9,6 +8,11 @@ import { entityIs } from '../../data/entities';
 import { translate } from '../../Editor/Components/FormView/translatable';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
 import { Text } from '../Outputs/Text';
+import { isActionAllowed } from '../PageComponents/tools/options';
+import {
+  CustomFlowLineComponent,
+  FlowLineComponentProps,
+} from './FlowLineComponent';
 
 const transitionContainerStyle = css({
   display: 'inline-flex',
@@ -27,19 +31,22 @@ export const transitionBoxStyle = css({
   boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
   color: '#2097F7',
   flexGrow: 0,
-  cursor: 'pointer',
   '&>*': {
     margin: '0 7px',
-  },
-  '&:hover': {
-    background: '#FFF',
-    color: '#0D71C1',
-    borderColor: '#0D71C1',
   },
   '.StateLabelTextStyle': {
     fontSize: '16px',
     textAlign: 'left',
     margin: 0,
+  },
+});
+
+export const transitionBoxActionStyle = css({
+  cursor: 'pointer',
+  '&:hover': {
+    background: '#FFF',
+    color: '#0D71C1',
+    borderColor: '#0D71C1',
   },
 });
 
@@ -75,6 +82,8 @@ interface TransitionBoxProps {
   className?: string;
   onClick?: (e: ModifierKeysEvent) => void;
   selected?: boolean;
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 
 export function TransitionBox({
@@ -82,6 +91,8 @@ export function TransitionBox({
   className,
   selected,
   onClick,
+  disabled,
+  readOnly,
 }: TransitionBoxProps) {
   const [isShown, setIsShown] = React.useState(false);
   const { lang } = React.useContext(languagesCTX);
@@ -89,10 +100,11 @@ export function TransitionBox({
     <div className={cx(transitionContainerStyle, className)} onClick={onClick}>
       <div
         className={cx(transitionBoxStyle, {
+          [transitionBoxActionStyle]: isActionAllowed({ disabled, readOnly }),
           [selectedTransitionBoxStyle]: selected,
         })}
-        onMouseEnter={() => setIsShown(true)}
-        onMouseLeave={() => setIsShown(false)}
+        onMouseEnter={() => !disabled && setIsShown(true)}
+        onMouseLeave={() => !disabled && setIsShown(false)}
       >
         {/*  {/* {transition.isDialogBox && (
         <div className="speakerImg">
@@ -135,18 +147,24 @@ export function TransitionBox({
   );
 }
 
-export function TransitionFlowLineComponent(
-  props: FlowLineProps<TransitionFlowLine, StateProcess>,
-) {
+export function TransitionFlowLineComponent({
+  onClick,
+  startProcess,
+  flowline,
+  disabled,
+  readOnly,
+  selected,
+  position,
+}: FlowLineComponentProps<TransitionFlowLine, StateProcess>) {
   return (
-    <CustomFlowLineComponent {...props}>
-      {(flowline, sourceProcess, onClick, selected) => (
-        <TransitionBox
-          transition={flowline}
-          onClick={e => onClick && onClick(e, sourceProcess, flowline)}
-          selected={selected}
-        />
-      )}
+    <CustomFlowLineComponent selected={selected} position={position}>
+      <TransitionBox
+        transition={flowline}
+        onClick={e => onClick && onClick(e, startProcess, flowline)}
+        selected={selected}
+        disabled={disabled}
+        readOnly={readOnly}
+      />
     </CustomFlowLineComponent>
   );
 }

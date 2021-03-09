@@ -6,6 +6,7 @@ import {
   grow,
   expandWidth,
   flex,
+  halfOpacity,
 } from '../../css/classes';
 import { PieChart, PieChartSection, NeedleStyle } from './PieChart';
 import { Value } from './Value';
@@ -85,6 +86,10 @@ export interface CustomGaugeProps extends ClassStyleId {
    * useGradient - blur the color sections
    */
   blur?: boolean;
+  /**
+   * disable - if true, the element is disabled (nothing implemented at this level)
+   */
+  disabled?: boolean;
 }
 
 export function CustomGauge({
@@ -103,6 +108,7 @@ export function CustomGauge({
   blur,
   className,
   style,
+  disabled,
   id,
 }: CustomGaugeProps) {
   const sortedSections = sections.sort((a, b) => a.stopValue - b.stopValue);
@@ -116,8 +122,9 @@ export function CustomGauge({
   return (
     <div
       className={
-        cx(flex, textCenter, justifyCenter, flexColumn, expandWidth) +
-        classNameOrEmpty(className)
+        cx(flex, textCenter, justifyCenter, flexColumn, expandWidth, {
+          [halfOpacity]: disabled,
+        }) + classNameOrEmpty(className)
       }
       style={style}
       id={id}

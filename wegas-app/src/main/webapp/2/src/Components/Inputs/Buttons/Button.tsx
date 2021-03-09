@@ -50,10 +50,8 @@ export const buttonStyle = css({
   ['&.iconOnly']: {
     color: themeVar.Common.colors.DarkTextColor,
     backgroundColor: 'transparent',
-    ['&:not(.disabled),&:not(.readOnly)']: {
-      [':hover']: {
-        color: themeVar.Common.colors.ActiveColor,
-      },
+    ['&:not(.disabled):not(.readOnly):hover']: {
+      color: themeVar.Common.colors.ActiveColor,
     },
     ['&:disabled']: {
       color: themeVar.Common.colors.DisabledColor,
@@ -161,11 +159,9 @@ export function disableBorderToSelector(disableBorders?: DisableBorders) {
     : '';
 }
 
-export interface ButtonProps extends ClassStyleId {
+export interface ButtonProps extends ClassStyleId, DisabledReadonly {
   label?: React.ReactNode;
   onClick?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
-  disabled?: boolean;
-  readOnly?: boolean;
   tabIndex?: number;
   tooltip?: string;
   noHover?: boolean;
@@ -243,7 +239,7 @@ export const Button = React.forwardRef<
           classNameOrEmpty(className)
         }
         style={style}
-        onClick={onClick}
+        onClick={e => !readOnly && onClick && onClick(e)}
         disabled={disabled}
         tabIndex={tabIndex}
         title={tooltip}

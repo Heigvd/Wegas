@@ -45,26 +45,6 @@ const selectStyle = css({
   alignItems: 'center',
 });
 
-function genItems(o: string | Choice) {
-  if (typeof o !== 'object') {
-    return (
-      <option key={`k-${o}`} value={JSON.stringify(o)}>
-        {o}
-      </option>
-    );
-  }
-  const { label = o.value, value, disabled } = o;
-  return (
-    <option
-      key={`k-${value}`}
-      value={JSON.stringify(value)}
-      disabled={disabled}
-    >
-      {label}
-    </option>
-  );
-}
-
 const defaultTitle: Choice = {
   value: '[[[default]]]',
   label: '- please select -',
@@ -79,7 +59,27 @@ const undefinedTitle: Choice = {
   disabled: false,
 };
 
-interface SelectorProps extends ClassStyleId {
+function genItems(o: string | Choice) {
+  if (typeof o !== 'object') {
+    return (
+      <option key={`k-${o}`} value={o}>
+        {o}
+      </option>
+    );
+  }
+  const { label = o.value, value, disabled: choiceDisabled } = o;
+  return (
+    <option
+      key={`k-${value}`}
+      value={typeof value === 'string' ? value : JSON.stringify(value)}
+      disabled={choiceDisabled}
+    >
+      {label}
+    </option>
+  );
+}
+
+interface SelectorProps extends ClassStyleId, DisabledReadonly {
   choices: Choices;
   value: string;
   onChange?: (
@@ -87,7 +87,6 @@ interface SelectorProps extends ClassStyleId {
       value: string;
     }>,
   ) => void;
-  readOnly?: boolean;
 }
 
 export function Selector({
@@ -98,6 +97,7 @@ export function Selector({
   value,
   onChange,
   readOnly,
+  disabled,
 }: SelectorProps) {
   return choices.length > 1 ? (
     <select
@@ -106,7 +106,7 @@ export function Selector({
       style={style}
       value={value}
       onChange={onChange}
-      disabled={readOnly}
+      disabled={disabled || readOnly}
     >
       {choices.map(genItems)}
     </select>
@@ -131,9 +131,16 @@ function SelectView(props: ISelectProps) {
   const onChange = function onChange(
     event: React.ChangeEvent<{ value: string }>,
   ) {
-    let parsedValue = undefined;
+    let parsedValue: string | undefined = event.target.value;
     try {
-      parsedValue = JSON.parse(event.target.value);
+      parsedValue = JSON.parse(parsedValue);
+    } catch (_e) {
+      parsedValue =
+        typeof parsedValue === 'string' ||
+        typeof parsedValue === 'number' ||
+        typeof parsedValue === 'boolean'
+          ? String(parsedValue)
+          : undefined;
     } finally {
       props.onChange(parsedValue);
     }
@@ -160,8 +167,8 @@ function SelectView(props: ISelectProps) {
           ].concat(selectChoices)
       : ([defaultTitle] as (Choice | string)[]).concat(selectChoices || []);
 
-  const value =
-    JSON.stringify(props.value) || JSON.stringify(defaultTitle.value);
+  const value = String(props.value);
+
   return (
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>

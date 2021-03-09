@@ -7,15 +7,11 @@ import { Modal } from '../../Components/Modal';
 import { themeVar } from '../../Components/Style/ThemeVars';
 import { flex, flexColumn, flexRow, grow, itemCenter } from '../../css/classes';
 // import { runScript } from '../data/Reducer/VariableInstanceReducer';
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { GameModel, Player } from '../../data/selectors';
 import { useStore } from '../../data/Stores/store';
 import { createScript } from '../../Helper/wegasEntites';
 import { wlog } from '../../Helper/wegaslog';
-
-const rowStyle = css({
-  backgroundColor: themeVar.Common.colors.SecondaryBackgroundColor,
-  marginBottom: '5px',
-});
 
 const tableStyle = css({
   display: "flex",
@@ -71,9 +67,6 @@ const tableStyle = css({
   }
 });
 
-type OverviewClickType = 'Impact' | 'Mail' | 'Watch team';
-
-
 
 interface CollapsibleTdProps {
   team: ITeam;
@@ -109,13 +102,14 @@ interface OverviewRowProps {
   key: string;
   nbColumns: number;
 }
+
 function OverviewRow({team, onClick, key, nbColumns }: OverviewRowProps) {
   const renderRegularTd = (arr:any) => {
     const sliceArr = arr.slice(nbColumns, arr.length);
-    return sliceArr.map((e:any, index:string) => <td>{e}</td>);
+    return sliceArr.map((e:any, index:number) => <td key={index}>{e}</td>);
   };
   return (
-    <tr>
+    <tr key={key}>
       {renderRegularTd(team)}
       <td>
         <Button
@@ -142,9 +136,53 @@ function OverviewRow({team, onClick, key, nbColumns }: OverviewRowProps) {
   );
 }
 
-// const overviewStyle = css({
-//   width:"100%",
-// })
+const headerStyle = css({
+  verticalAlign: 'middle',
+  textAlign: 'center',
+});
+
+interface OverviewItem {
+  id: string;
+  label: string;
+  order: number;
+}
+
+export interface DataItem extends OverviewItem {
+  active: boolean;
+  kind: string;
+  sortable?: boolean;
+  formatter?: string;
+  transformer?: string;
+  sortFn?: string;
+  preventClick?: boolean;
+}
+
+export interface ActionItem extends OverviewItem {
+  do: string;
+  hasGlobal: boolean;
+  itemType: string;
+  icon: IconProp;
+}
+
+interface OverviewData {
+  data: { [teamId: string]: { [key: string]: unknown } };
+  structure: {
+    title: string;
+    items: DataItem[] | ActionItem[];
+  }[];
+}
+
+export function isDataItem(item: DataItem | ActionItem): item is DataItem {
+  return 'active' in item && 'kind' in item;
+}
+
+interface OverviewState {
+  header: { title: string; span: number }[];
+  row: (DataItem | ActionItem)[];
+  data: OverviewData['data'];
+}
+
+export type OverviewClickType = 'Impact' | 'Mail' | 'Watch team';
 
 const defaultLayoutState = {
   showImpactModal: false,
@@ -155,6 +193,46 @@ export default function Overview() {
   const [layoutState, setLayoutState] = React.useState(defaultLayoutState);
 
   // const overview = runScript('WegasDashboard.getOverview();');
+  const [overviewState, setOverviewState] = React.useState<OverviewState>();
+
+  const mounted = React.useRef(true);
+
+  const refreshOverview = React.useCallback(() => {
+    VariableDescriptorAPI.runScript(
+      GameModel.selectCurrent().id!,
+      Player.selectCurrent().id!,
+      createScript('WegasDashboard.getOverview();'),
+      undefined,
+      true,
+    ).then((res: OverviewData) => {
+      wlog(res);
+      if (mounted.current) {
+        const { data, structure } = res;
+        const header = structure.map(s => ({
+          title: s.title,
+          span: s.items.length,
+        }));
+        const row = structure.reduce(
+          (o, s) => [
+            ...o,
+            ...s.items.sort(
+              (ia: OverviewItem, ib: OverviewItem) => ia.order - ib.order,
+            ),
+          ],
+          [],
+        );
+        setOverviewState({ header, row, data });
+      }
+    });
+  }, []);
+
+  React.useEffect(() => {
+    mounted.current = true;
+    refreshOverview();
+    return () => {
+      mounted.current = false;
+    };
+  }, [refreshOverview]);
 
   const teams = useStore(s => s.teams);
 
@@ -202,8 +280,12 @@ export default function Overview() {
     });
   };
   const renderRegular = (arr:any) => {
-    return arr.map((team:ITeam, index:number) => {
-      return <OverviewRow key={index} team={team} onClick={onRowClick} nbColumns={fixedHeaders.length}/>;
+    return arr.map((team:ITeam, index:string) => {
+      return <OverviewRow
+        key={index}
+        team={team}
+        onClick={onRowClick}
+        nbColumns={fixedHeaders.length}/>;
     });
   };
   return (
@@ -228,7 +310,7 @@ export default function Overview() {
           <tbody>{renderFrozen(table)}
           </tbody>
         </table>
-        <div className="scroll">
+        {/* <div className="scroll">
         <table className="scrollable">
           <thead>
             <tr>{addTh(regularHeaders)}</tr>
@@ -240,7 +322,7 @@ export default function Overview() {
           ))}
           </tbody>
         </table>
-      </div>
+      </div> */}
       </div>
       {/* <table>
         <thead>
@@ -248,6 +330,26 @@ export default function Overview() {
             <th>Team</th>
             <th>Impact</th>
             <th>Actions</th>
+  return (
+    <div className={grow}>
+      <Button icon="undo" onClick={refreshOverview} />
+      <table>
+        <thead className={headerStyle}>
+          <tr>
+            <td rowSpan={2}>Team</td>
+            {!overviewState && <td rowSpan={2}>Impact</td>}
+            {overviewState?.header &&
+              overviewState.header.map((h, i) => (
+                <td key={h.title + i} colSpan={h.span}>
+                  {h.title}
+                </td>
+              ))}
+            <td rowSpan={2}>Actions</td>
+          </tr>
+          <tr>
+            {overviewState?.row.map(r => (
+              <td id={'header' + r.id}>{r.label}</td>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -256,11 +358,21 @@ export default function Overview() {
           ))}
         </tbody>
       </table> */}
+           {/*  <OverviewRow
+              key={id}
+              team={team}
+              structure={overviewState?.row}
+              data={overviewState?.data[id]}
+              onClick={onRowClick}
+            />
+          ))}
+        </tbody>
+      </table>
       {(layoutState.showImpactModal || layoutState.showMailModal) && (
         <Modal onExit={() => setLayoutState(defaultLayoutState)}>
           {layoutState.showImpactModal ? <div>Impacts</div> : <div>Mail</div>}
         </Modal>
-      )}
+      )}*/}
     </div>
   );
 }

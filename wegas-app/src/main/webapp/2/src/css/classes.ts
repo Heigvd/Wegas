@@ -208,6 +208,9 @@ export const contentStyle = css({
 export const disabledColorStyle = css({
   color: themeVar.Common.colors.DisabledColor,
 });
+export const halfOpacity = css({
+  opacity: 0.5,
+});
 
 export const infoShortTextStyle = css({
   color: '#AAAAAA', // TODO add in Theme

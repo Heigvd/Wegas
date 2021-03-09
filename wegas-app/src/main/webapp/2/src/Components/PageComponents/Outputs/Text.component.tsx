@@ -15,14 +15,26 @@ export interface PlayerTextProps extends WegasComponentProps {
   text?: IScript;
 }
 
-function PlayerText({ text, context, className, style, id }: PlayerTextProps) {
+function PlayerText({
+  text,
+  context,
+  className,
+  style,
+  id,
+  options,
+}: PlayerTextProps) {
   const content = useScript<string>(text, context);
   return !text ? (
     <span id={id} className={className} style={style}>
       No text
     </span>
   ) : (
-    <Text id={id} text={content} className={className} style={style} />
+    <Text
+      id={id}
+      text={content}
+      style={style}
+      disabled={options.disabled || options.locked}
+    />
   );
 }
 
