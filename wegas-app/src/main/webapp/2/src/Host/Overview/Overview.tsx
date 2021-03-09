@@ -1,140 +1,14 @@
-import { css, cx } from 'emotion';
 import * as React from 'react';
-import { ITeam } from 'wegas-ts-api';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { Modal } from '../../Components/Modal';
-import { themeVar } from '../../Components/Style/ThemeVars';
-import { flex, flexColumn, flexRow, grow, itemCenter } from '../../css/classes';
-// import { runScript } from '../data/Reducer/VariableInstanceReducer';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { grow } from '../../css/classes';
 import { GameModel, Player } from '../../data/selectors';
 import { useStore } from '../../data/Stores/store';
 import { createScript } from '../../Helper/wegasEntites';
 import { wlog } from '../../Helper/wegaslog';
-
-const tableStyle = css({
-  display: "flex",
-  color: "#828282",
-  table: {
-    borderCollapse: "separate",
-    borderSpacing: "5px",
-    td: {
-      minWidth: "60px",
-      padding: "15px 20px",
-      backgroundColor: "#fff",
-      boxShadow: "1px 2px 6px rgba(0, 0, 0, 0.1)",
-      textAlign: "center"
-    }
-  },
-  ".scroll": {
-    width: "100%",
-    overflowX: "auto",
-    fontSize: "14px",
-    ".scrollable": {
-      "thead tr": {
-        height: "55px",
-        th: {
-          backgroundColor: "transparent",
-          boxShadow: "none",
-          verticalAlign: "bottom",
-          padding: "0 10px"
-        }
-      }
-    }
-  },
-  ".fixed": {
-    color: "#626262",
-    fontWeight: "bold",
-    fontSize: "14px",
-    "thead tr": {
-      height: "55px",
-      th: {
-        backgroundColor: "transparent",
-        boxShadow: "none",
-        verticalAlign: "bottom",
-        padding: "0",
-        textAlign: "left"
-      }
-    },
-    "tbody td": {
-      borderRight: "3px solid #ababab",
-      textAlign: "left",
-      whiteSpace: "nowrap",
-      maxWidth: "150px",
-      overflow: "hidden"
-    }
-  }
-});
-
-
-interface CollapsibleTdProps {
-  team: ITeam;
-  key: number;
-}
-
-function CollapsibleTd({team, key}: CollapsibleTdProps){
-  const [showPlayers, setShowPlayers] = React.useState(false);
-  return (
-    <td>
-        <div>
-          <Button
-            icon={showPlayers ? 'caret-down' : 'caret-right'}
-            onClick={() => setShowPlayers(sp => !sp)}
-          />
-          <div>{team.name}</div>
-        </div>
-        {showPlayers && (
-          <div>
-            <ul>
-              {team.players.map(player => (
-                <li key={player.id}>{player.name}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-    </td>
-  );
-}
-interface OverviewRowProps {
-  team: ITeam;
-  onClick: (type: OverviewClickType) => void;
-  key: string;
-  nbColumns: number;
-}
-
-function OverviewRow({team, onClick, key, nbColumns }: OverviewRowProps) {
-  const renderRegularTd = (arr:any) => {
-    const sliceArr = arr.slice(nbColumns, arr.length);
-    return sliceArr.map((e:any, index:number) => <td key={index}>{e}</td>);
-  };
-  return (
-    <tr key={key}>
-      {renderRegularTd(team)}
-      <td>
-        <Button
-          icon="pen"
-          tooltip="Execute impact"
-          onClick={() => onClick('Impact')}
-        />
-      </td>
-      <td>
-        <div className={cx(flex, flexRow)}>
-          <Button
-            icon="envelope"
-            tooltip="send mail"
-            onClick={() => onClick('Mail')}
-          />
-          <Button
-            icon="eye"
-            tooltip="View playing session"
-            onClick={() => onClick('Watch team')}
-          />
-        </div>
-      </td>
-    </tr>
-  );
-}
+import { OverviewHeader } from './OverviewHeader';
+import { OverviewRow } from './OverviewRow';
 
 interface OverviewItem {
   id: string;
@@ -200,8 +74,6 @@ const defaultLayoutState = {
 
 export default function Overview() {
   const [layoutState, setLayoutState] = React.useState(defaultLayoutState);
-
-  // const overview = runScript('WegasDashboard.getOverview();');
   const [overviewState, setOverviewState] = React.useState<OverviewState>();
 
   const mounted = React.useRef(true);
@@ -266,79 +138,6 @@ export default function Overview() {
     }
   }, []);
 
-  const table = Object.values(teams).map(team =>([
-    team.id, team.name, team.players.length, team.players
-  ]));
-  const frozenColumns = 1;
-  const headers = [
-    "id", "name", "nb players", "Impacts", "Actions"
-  ];
-  const fixedHeaders = headers.slice(0, frozenColumns);
-  const regularHeaders = headers.slice(frozenColumns, headers.length);
-
-  const addTh = (arr:any) => {
-    return arr.map((e:any, index:number) => <th key={index}>{e}</th>);
-  };
-  const renderFrozenTd = (arr:any[]) => {
-    const sliceArr = arr.slice(0, fixedHeaders.length);
-    return sliceArr.map((team:ITeam, index:number) => <CollapsibleTd team={team} key={index}/>);
-  };
-  const renderFrozen = (arr:any[]) => {
-    return arr.map((e:any, index: number) => {
-      return <tr key={index}>{renderFrozenTd(e)}</tr>;
-    });
-  };
-  const renderRegular = (arr:any) => {
-    return arr.map((team:ITeam, index:string) => {
-      return <OverviewRow
-        key={index}
-        team={team}
-        onClick={onRowClick}
-        nbColumns={fixedHeaders.length}/>;
-    });
-  };
-  return (
-    <div className={grow}>
-      <Button
-        icon="undo"
-        onClick={() =>
-          VariableDescriptorAPI.runScript(
-            GameModel.selectCurrent().id!,
-            Player.selectCurrent().id!,
-            createScript('WegasDashboard.getOverview();'),
-            undefined,
-            true,
-          )?.then(res => wlog(res))
-        }
-      />
-      <div className={tableStyle}>
-        <table className="fixed">
-          <thead>
-            <tr>{addTh(fixedHeaders)}</tr>
-          </thead>
-          <tbody>{renderFrozen(table)}
-          </tbody>
-        </table>
-        {/* <div className="scroll">
-        <table className="scrollable">
-          <thead>
-            <tr>{addTh(regularHeaders)}</tr>
-          </thead>
-          <tbody>
-            {renderRegular(table)}
-            {Object.entries(table).map(([index, team]) => (
-            <OverviewRow key={index} team={team} onClick={onRowClick} nbColumns={fixedHeaders.length} />
-          ))}
-          </tbody>
-        </table>
-      </div> */}
-      </div>
-      {/* <table>
-        <thead>
-          <tr>
-            <th>Team</th>
-            <th>Impact</th>
-            <th>Actions</th>
   return (
     <div className={grow}>
       <Button icon="undo" onClick={refreshOverview} />
@@ -346,11 +145,7 @@ export default function Overview() {
         <OverviewHeader overviewState={overviewState} />
         <tbody>
           {Object.entries(teams).map(([id, team]) => (
-            <OverviewRow key={id} team={team} onClick={onRowClick} />
-          ))}
-        </tbody>
-      </table> */}
-           {/*  <OverviewRow
+            <OverviewRow
               key={id}
               team={team}
               structure={overviewState?.row}
@@ -364,7 +159,7 @@ export default function Overview() {
         <Modal onExit={() => setLayoutState(defaultLayoutState)}>
           {layoutState.showImpactModal ? <div>Impacts</div> : <div>Mail</div>}
         </Modal>
-      )}*/}
+      )}
     </div>
   );
 }
