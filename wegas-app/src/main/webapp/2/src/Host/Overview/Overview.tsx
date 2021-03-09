@@ -1,5 +1,3 @@
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { css } from 'emotion';
 import * as React from 'react';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
@@ -9,12 +7,8 @@ import { GameModel, Player } from '../../data/selectors';
 import { useStore } from '../../data/Stores/store';
 import { createScript } from '../../Helper/wegasEntites';
 import { wlog } from '../../Helper/wegaslog';
+import { OverviewHeader } from './OverviewHeader';
 import { OverviewRow } from './OverviewRow';
-
-const headerStyle = css({
-  verticalAlign: 'middle',
-  textAlign: 'center',
-});
 
 interface OverviewItem {
   id: string;
@@ -22,9 +16,23 @@ interface OverviewItem {
   order: number;
 }
 
+export type ValueKind =
+  | 'number'
+  | 'string'
+  | 'text'
+  | 'boolean'
+  | 'object'
+  | 'inbox';
+export interface DataObjectType {
+  body: string;
+  empty: boolean;
+  title: string;
+}
+export type DataType = number | string | boolean | DataObjectType;
+
 export interface DataItem extends OverviewItem {
   active: boolean;
-  kind: string;
+  kind: ValueKind;
   sortable?: boolean;
   formatter?: string;
   transformer?: string;
@@ -36,11 +44,11 @@ export interface ActionItem extends OverviewItem {
   do: string;
   hasGlobal: boolean;
   itemType: string;
-  icon: IconProp;
+  icon: string;
 }
 
 interface OverviewData {
-  data: { [teamId: string]: { [key: string]: unknown } };
+  data: { [teamId: string]: { [key: string]: DataType } };
   structure: {
     title: string;
     items: DataItem[] | ActionItem[];
@@ -51,7 +59,7 @@ export function isDataItem(item: DataItem | ActionItem): item is DataItem {
   return 'active' in item && 'kind' in item;
 }
 
-interface OverviewState {
+export interface OverviewState {
   header: { title: string; span: number }[];
   row: (DataItem | ActionItem)[];
   data: OverviewData['data'];
@@ -134,24 +142,7 @@ export default function Overview() {
     <div className={grow}>
       <Button icon="undo" onClick={refreshOverview} />
       <table>
-        <thead className={headerStyle}>
-          <tr>
-            <td rowSpan={2}>Team</td>
-            {!overviewState && <td rowSpan={2}>Impact</td>}
-            {overviewState?.header &&
-              overviewState.header.map((h, i) => (
-                <td key={h.title + i} colSpan={h.span}>
-                  {h.title}
-                </td>
-              ))}
-            <td rowSpan={2}>Actions</td>
-          </tr>
-          <tr>
-            {overviewState?.row.map(r => (
-              <td id={'header' + r.id}>{r.label}</td>
-            ))}
-          </tr>
-        </thead>
+        <OverviewHeader overviewState={overviewState} />
         <tbody>
           {Object.entries(teams).map(([id, team]) => (
             <OverviewRow

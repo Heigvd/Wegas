@@ -1,72 +1,35 @@
-import { cx } from 'emotion';
 import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
-import { Button } from '../../Components/Inputs/Buttons/Button';
-import { flex, flexRow, itemCenter } from '../../css/classes';
-import { OverviewClickType, ActionItem, DataItem } from './Overview';
+import { ActionItem, DataItem, DataType, isDataItem } from './Overview';
+import { OverviewButton } from './OverviewHeaderButton';
 
-interface OverviewRowProps {
+interface OverviewCellProps {
   team: ITeam;
-  onClick: (type: OverviewClickType) => void;
-  structure: (DataItem | ActionItem)[] | undefined;
-  data: { [id: string]: unknown } | undefined;
+  structure: DataItem | ActionItem;
+  data: DataType;
 }
 
-export function OverviewRow({
-  team,
-  structure,
-  data,
-  onClick,
-}: OverviewRowProps) {
-  const [showPlayers, setShowPlayers] = React.useState(false);
-  return (
-    <tr>
+export function OverviewCell({ structure, data }: OverviewCellProps) {
+  if (isDataItem(structure)) {
+    const { kind } = structure;
+    switch (kind) {
+      case 'boolean':
+      case 'number':
+      case 'string':
+        return <td>{String(data)}</td>;
+      case 'inbox':
+      case 'text':
+      case 'object':
+        return <td>{JSON.stringify(data)}</td>;
+      default:
+        throw Error('Unknown kind of value to display');
+    }
+  } else {
+    const { ['do']: fn, icon = 'pen', label } = structure;
+    return (
       <td>
-        <div className={cx(flex, flexRow, itemCenter)}>
-          <Button
-            icon={showPlayers ? 'caret-down' : 'caret-right'}
-            onClick={() => setShowPlayers(sp => !sp)}
-          />
-          <div>{team.name}</div>
-        </div>
-        {showPlayers && (
-          <div>
-            <ul>
-              {team.players.map(player => (
-                <li key={player.id}>{player.name}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+        <OverviewButton label={label} icon={icon} fn={fn} />
       </td>
-      {!structure && (
-        <td>
-          <Button
-            icon="pen"
-            tooltip="Execute impact"
-            onClick={() => onClick('Impact')}
-          />
-        </td>
-      )}
-      {structure != null &&
-        data != null &&
-        structure.map(si => (
-          <td key={'row' + si.id}>{JSON.stringify(data[si.id])}</td>
-        ))}
-      <td>
-        <div className={cx(flex, flexRow)}>
-          <Button
-            icon="envelope"
-            tooltip="send mail"
-            onClick={() => onClick('Mail')}
-          />
-          <Button
-            icon="eye"
-            tooltip="View playing session"
-            onClick={() => onClick('Watch team')}
-          />
-        </div>
-      </td>
-    </tr>
-  );
+    );
+  }
 }
