@@ -3,13 +3,14 @@ import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { flex, flexRow, itemCenter } from '../../css/classes';
-import { OverviewClickType, ActionItem, DataItem } from './Overview';
+import { OverviewClickType, ActionItem, DataItem, DataType } from './Overview';
+import { OverviewCell } from './OverviewCell';
 
 interface OverviewRowProps {
   team: ITeam;
   onClick: (type: OverviewClickType) => void;
   structure: (DataItem | ActionItem)[] | undefined;
-  data: { [id: string]: unknown } | undefined;
+  data: { [id: string]: DataType } | undefined;
 }
 
 export function OverviewRow({
@@ -50,8 +51,13 @@ export function OverviewRow({
       )}
       {structure != null &&
         data != null &&
-        structure.map(si => (
-          <td key={'row' + si.id}>{JSON.stringify(data[si.id])}</td>
+        structure.map(struct => (
+          <OverviewCell
+            key={struct.id}
+            data={data[struct.id]}
+            structure={struct}
+            team={team}
+          />
         ))}
       <td>
         <div className={cx(flex, flexRow)}>
