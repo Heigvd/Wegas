@@ -103,14 +103,15 @@ public class UIGameModel extends UIComponentBase {
         // editor mode and default values only allowedif current user has edit permission on gamemodel
         defaultValues = "true".equals(defVal) && hasEditRightOnGameModel;
 
-        try {
-
-            this.mode = Mode.valueOf(modeParam.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            this.mode = Mode.PLAYER;
+        if (modeParam != null) {
+            try {
+                this.mode = Mode.valueOf(modeParam.toUpperCase());
+            } catch (IllegalArgumentException ex) {
+                this.mode = Mode.PLAYER;
+            }
         }
 
-        if (!hasEditRightOnGameModel) {
+        if (!hasEditRightOnGameModel || mode == null) {
             this.mode = Mode.PLAYER;
         }
 
