@@ -3,7 +3,8 @@ import * as React from 'react';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { Modal } from '../../Components/Modal';
-import { expandWidth, grow } from '../../css/classes';
+import { Toolbar } from '../../Components/Toolbar';
+import { expandWidth } from '../../css/classes';
 import { GameModel, Player } from '../../data/selectors';
 import { useStore } from '../../data/Stores/store';
 import { createScript } from '../../Helper/wegasEntites';
@@ -22,31 +23,31 @@ const tableStyle = css({
     border: "solid 2px",
   },
   table: {
-    borderCollapse: "collapse",
-    borderSpacing: "5px",
+    borderCollapse: 'collapse',
+    borderSpacing: '5px',
     td: {
-      minWidth: "60px",
-      height: "35px",
-      ".data": {
-        backgroundColor: "#fff",
-        boxShadow: "1px 2px 6px rgba(0, 0, 0, 0.1)",
-        height: "100%",
-        padding: "15px 20px",
-        textAlign: "center",
-      }
-    }
+      minWidth: '60px',
+      height: '35px',
+      '.data': {
+        backgroundColor: '#fff',
+        boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
+        height: '100%',
+        padding: '15px 20px',
+        textAlign: 'center',
+      },
+    },
   },
-  ".scrollable": {
-    "thead tr": {
-      height: "55px",
+  '.scrollable': {
+    'thead tr': {
+      height: '55px',
       th: {
-        backgroundColor: "transparent",
-        boxShadow: "none",
-        verticalAlign: "bottom",
-        padding: "0 10px"
-      }
-    }
-  }
+        backgroundColor: 'transparent',
+        boxShadow: 'none',
+        verticalAlign: 'bottom',
+        padding: '0 10px',
+      },
+    },
+  },
 });
 
 interface OverviewItem {
@@ -178,29 +179,33 @@ export default function Overview() {
   }, []);
 
   return (
-    <div className={expandWidth}>
-      <Button icon="undo" onClick={refreshOverview} />
-      <div className={tableStyle}>
-        <table>
-          <OverviewHeader overviewState={overviewState} />
-          <tbody>
-            {Object.entries(teams).map(([id, team]) => (
-              <OverviewRow
-                key={id}
-                team={team}
-                structure={overviewState?.row}
-                data={overviewState?.data[id]}
-                onClick={onRowClick}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {(layoutState.showImpactModal || layoutState.showMailModal) && (
-        <Modal onExit={() => setLayoutState(defaultLayoutState)}>
-          {layoutState.showImpactModal ? <div>Impacts</div> : <div>Mail</div>}
-        </Modal>
-      )}
-    </div>
+    <Toolbar className={expandWidth}>
+      <Toolbar.Header>
+        <Button icon="undo" onClick={refreshOverview} />
+      </Toolbar.Header>
+      <Toolbar.Content>
+        <div className={tableStyle}>
+          <table>
+            <OverviewHeader overviewState={overviewState} />
+            <tbody>
+              {Object.entries(teams).map(([id, team]) => (
+                <OverviewRow
+                  key={id}
+                  team={team}
+                  structure={overviewState?.row}
+                  data={overviewState?.data[id]}
+                  onClick={onRowClick}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {(layoutState.showImpactModal || layoutState.showMailModal) && (
+          <Modal onExit={() => setLayoutState(defaultLayoutState)}>
+            {layoutState.showImpactModal ? <div>Impacts</div> : <div>Mail</div>}
+          </Modal>
+        )}
+      </Toolbar.Content>
+    </Toolbar>
   );
 }

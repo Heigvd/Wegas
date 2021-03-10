@@ -18,7 +18,7 @@ import {
   PROCESS_HANDLE_DND_TYPE,
 } from './Handles';
 import { useDrag } from 'react-dnd';
-import { Text } from '../Outputs/Text';
+import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import { classNameOrEmpty } from '../../Helper/className';
 
@@ -172,7 +172,7 @@ export function StateBox({
         )} */}
         <div>
           <p className="StateLabelTextStyle">
-            <Text
+            <HTMLText
               text={
                 (entityIs(state.state, 'State')
                   ? state.state.label
