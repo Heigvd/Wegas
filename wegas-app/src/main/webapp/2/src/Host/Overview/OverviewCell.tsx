@@ -13,16 +13,12 @@ import {
 } from './Overview';
 import { OverviewButton } from './OverviewButton';
 
-export const fixedCellWidth = css({
-  width: '180px',
-});
-
-export const fixedCellStyle = cx(
-  css({
+export const fixedCellStyle = css({
     position: 'absolute',
-  }),
-  fixedCellWidth,
-);
+    left: 0,
+    width: '180px',
+    zIndex: 100,
+  });
 
 export const firstScrollCellStyle = css({
   borderLeft: '180px solid transparent',
@@ -47,7 +43,7 @@ export function OverviewCell({
       case 'boolean':
       case 'number':
       case 'string':
-        return <td className={className}>{String(data)}</td>;
+        return <td className={className}><div>{String(data)}</div></td>;
       case 'inbox':
         return (
           <td>
@@ -81,7 +77,9 @@ export function OverviewCell({
     const { ['do']: fn, icon = 'pen', label } = structure;
     return (
       <td className={className}>
+        <div>
         <OverviewButton label={label} icon={icon} fn={fn} />
+        </div>
       </td>
     );
   }
