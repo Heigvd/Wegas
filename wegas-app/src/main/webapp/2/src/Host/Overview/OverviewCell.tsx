@@ -1,17 +1,22 @@
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import { ActionItem, DataItem, DataType, isDataItem } from './Overview';
-import { OverviewButton } from './OverviewHeaderButton';
+import { OverviewButton } from './OverviewButton';
 
-
-export const fixedCellStyle = css({
-  position: "absolute",
-  width: "180px"
+export const fixedCellWidth = css({
+  width: '180px',
 });
 
+export const fixedCellStyle = cx(
+  css({
+    position: 'absolute',
+  }),
+  fixedCellWidth,
+);
+
 export const firstScrollCellStyle = css({
-  borderLeft: "180px solid transparent"
+  borderLeft: '180px solid transparent',
 });
 interface OverviewCellProps {
   team: ITeam;
@@ -20,7 +25,11 @@ interface OverviewCellProps {
   className?: string;
 }
 
-export function OverviewCell({ structure, data, className }: OverviewCellProps) {
+export function OverviewCell({
+  structure,
+  data,
+  className,
+}: OverviewCellProps) {
   if (isDataItem(structure)) {
     const { kind } = structure;
     switch (kind) {
