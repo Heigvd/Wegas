@@ -17,9 +17,9 @@ const tableStyle = css({
   width: "100%",
   overflowX: "auto",
   fontSize: "14px",
-  col: {
+  colgroup: {
     backgroundColor: "#ddd",
-    borderRight: "solid 2px",
+    border: "solid 2px",
   },
   table: {
     borderCollapse: "collapse",

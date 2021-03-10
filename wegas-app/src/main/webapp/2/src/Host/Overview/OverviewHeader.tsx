@@ -19,11 +19,17 @@ export function OverviewHeader({ overviewState }: OverviewHeaderProps) {
     <>
     <colgroup>
         <col/>
-        {!overviewState && <col/>}
-        {overviewState?.header &&
+    </colgroup>
+    <colgroup>
+    {!overviewState && <col/>}
+    </colgroup>
+    <colgroup>
+    {overviewState?.header &&
           overviewState.header.map((h, i) => (
             <col span={h.span}/>
           ))}
+    </colgroup>
+    <colgroup>
         <col span={2}/>
     </colgroup>
     <thead className={headerStyle}>
