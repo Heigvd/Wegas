@@ -1,4 +1,4 @@
-import { cx } from 'emotion';
+import { css, cx } from 'emotion';
 import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import HTMLEditor from '../../Components/HTMLEditor';
@@ -8,10 +8,12 @@ import { OverviewClickType, ActionItem, DataItem, DataType } from './Overview';
 import {
   firstScrollCellStyle,
   fixedCellStyle,
-  fixedCellWidth,
   OverviewCell,
 } from './OverviewCell';
 
+const collapseBlock = css({
+  position: 'absolute',
+});
 interface OverviewRowProps {
   team: ITeam;
   onClick: (type: OverviewClickType) => void;
@@ -30,7 +32,7 @@ export function OverviewRow({
     <>
       <tr>
         <td className={fixedCellStyle}>
-          <div className={cx(flex, flexRow, itemCenter)}>
+          <div className={cx(flex, flexRow, itemCenter, 'data')}>
             <Button
               icon={showPlayers ? 'caret-down' : 'caret-right'}
               onClick={() => setShowPlayers(sp => !sp)}
@@ -74,16 +76,20 @@ export function OverviewRow({
         </td>
       </tr>
       {showPlayers && (
-        <tr>
-          <td className={fixedCellWidth}>
-            <ul>
-              {team.players.map(player => (
-                <li key={player.id}>{player.name}</li>
-              ))}
-            </ul>
-          </td>
-          <td colSpan={2 + (structure?.length || 1)}>
-            <HTMLEditor />
+        <tr className={collapseBlock}>
+          <td colSpan={3 + (structure?.length || 1)}>
+            <div className={cx(flex, flexRow)}>
+              <div className={css({ width: '180px' })}>
+                <ul>
+                  {team.players.map(player => (
+                    <li key={player.id}>{player.name}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <HTMLEditor />
+              </div>
+            </div>
           </td>
         </tr>
       )}

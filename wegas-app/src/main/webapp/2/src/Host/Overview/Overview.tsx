@@ -21,36 +21,36 @@ const tableStyle = css({
   width: '100%',
   overflowX: 'auto',
   fontSize: '14px',
-  col: {
-    backgroundColor: '#ddd',
-    borderRight: 'solid 2px',
+  colgroup: {
+    borderLeft: 'solid 15px transparent',
+    borderRight: 'solid 15px transparent',
+    '.fixedColumn': {
+      backgroundColor: 'red',
+      zIndex: 111,
+    },
   },
   table: {
     borderCollapse: 'collapse',
-    borderSpacing: '5px',
+    //borderSpacing: '5px',
     td: {
       minWidth: '60px',
-      height: '35px',
-      textAlign: 'center',
-      verticalAlign: 'middle',
-      '.data': {
+      backgroundColor: '#f9f9f9',
+      '&> div': {
         backgroundColor: '#fff',
         boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
-        height: '100%',
         padding: '15px 20px',
         textAlign: 'center',
+        margin: '3px',
+        height: '48px',
       },
     },
   },
-  '.scrollable': {
-    'thead tr': {
-      height: '55px',
-      th: {
-        backgroundColor: 'transparent',
-        boxShadow: 'none',
-        verticalAlign: 'bottom',
-        padding: '0 10px',
-      },
+  'thead tr': {
+    height: '25px',
+    th: {
+      boxShadow: 'none',
+      verticalAlign: 'top',
+      padding: '0 10px',
     },
   },
 });

@@ -1,4 +1,4 @@
-import { css, cx } from 'emotion';
+import { css } from 'emotion';
 import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import { globals } from '../../Components/Hooks/useScript';
@@ -8,16 +8,12 @@ import { themeVar } from '../../Components/Style/ThemeVars';
 import { ActionItem, DataItem, DataType, isDataItem } from './Overview';
 import { OverviewButton } from './OverviewButton';
 
-export const fixedCellWidth = css({
+export const fixedCellStyle = css({
+  position: 'absolute',
+  left: 0,
   width: '180px',
+  zIndex: 100,
 });
-
-export const fixedCellStyle = cx(
-  css({
-    position: 'absolute',
-  }),
-  fixedCellWidth,
-);
 
 export const firstScrollCellStyle = css({
   borderLeft: '180px solid transparent',
@@ -58,7 +54,11 @@ export function OverviewCell({
         );
       case 'number':
       case 'string':
-        return <td className={className}>{String(value)}</td>;
+        return (
+          <td className={className}>
+            <div>{String(value)}</div>
+          </td>
+        );
       case 'inbox':
         return (
           <td>
@@ -112,7 +112,9 @@ export function OverviewCell({
 
     return (
       <td className={className}>
-        <OverviewButton label={label} icon={icon} fn={fn} team={team} />
+        <div>
+          <OverviewButton label={label} icon={icon} fn={fn} team={team} />
+        </div>
       </td>
     );
   }
