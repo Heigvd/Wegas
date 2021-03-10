@@ -9,7 +9,7 @@ interface TextProps extends ClassStyleId {
   disabled?: boolean;
 }
 
-export function Text({ text, style, className, id, disabled }: TextProps) {
+export function HTMLText({ text, style, className, id, disabled }: TextProps) {
   return (
     <div
       id={id}
@@ -31,5 +31,5 @@ export function TranslatableText({
   ...props
 }: TranslatableTextProps) {
   const translatedContent = useTranslate(htmlTranslatableContent);
-  return <Text {...props} text={translatedContent} />;
+  return <HTMLText {...props} text={translatedContent} />;
 }

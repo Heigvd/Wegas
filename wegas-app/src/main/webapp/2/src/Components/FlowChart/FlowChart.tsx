@@ -10,7 +10,7 @@ import {
 import { DnDFlowchartHandle, PROCESS_HANDLE_DND_TYPE } from './Handles';
 import { useDrop } from 'react-dnd';
 import { classNameOrEmpty } from '../../Helper/className';
-import { Text } from '../Outputs/Text';
+import { HTMLText } from '../Outputs/HTMLText';
 import { isActionAllowed } from '../PageComponents/tools/options';
 import {
   computeFlowlineValues,
@@ -427,7 +427,7 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
       id={id}
     >
       <Toolbar.Header>
-        {typeof title === 'string' ? <Text text={title} /> : title}
+        {typeof title === 'string' ? <HTMLText text={title} /> : title}
       </Toolbar.Header>
       <Toolbar.Content
         style={{ position: 'relative' }}

@@ -55,7 +55,7 @@ export function OverviewHeader({ overviewState }: OverviewHeaderProps) {
                   id={'header' + id}
                   className={cx({ [firstScrollCellStyle]: i === 0 })}
                 >
-                  {label}
+                  {label || id}
                 </th>
               );
             } else {
