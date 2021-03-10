@@ -29,7 +29,7 @@ const layoutStyle = css({
 
 const tabsLineStyle = css({
   borderBottom: '3px solid ' + trainerTheme.colors.PrimaryColor,
-  backgroundColor: trainerTheme.colors.BackgroundColor
+  backgroundColor: trainerTheme.colors.BackgroundColor,
 });
 
 export const trainerLayoutId = 'TrainerLayout';
@@ -81,41 +81,18 @@ export default function HostLayout() {
       <HostHeader />
       <ReparentableRoot>
         <TabLayout
-          components={{ ...trainerTabs, ...availableLayoutTabs, ...peerReviewTabs }}
+          components={{
+            ...trainerTabs,
+            ...availableLayoutTabs,
+            ...peerReviewTabs,
+          }}
           CustomTab={OverviewTab}
-          classNames= {{
-            header: tabsLineStyle
+          classNames={{
+            header: tabsLineStyle,
           }}
           defaultActiveLabel={'Overview'}
-          />
+        />
       </ReparentableRoot>
-      {/* <DndLinearLayout
-        tabs={{ ...trainerTabs, ...availableLayoutTabs, ...peerReviewTabs }}
-        initialLayout={['Overview']}
-        layoutId={trainerLayoutId}
-        CustomTab={OverviewTab}
-        classNames= {{
-          header: tabsLineStyle
-        }}
-      /> */}
     </div>
   );
 }
-
-// function mount() {
-//   render(
-//     <FeaturesProvider>
-//       <LanguagesProvider>
-//         <ClassesProvider>
-//           <LibrariesLoader>
-//             <ThemeProvider contextName="player">
-//               <HostLayout />
-//             </ThemeProvider>
-//           </LibrariesLoader>
-//         </ClassesProvider>
-//       </LanguagesProvider>
-//     </FeaturesProvider>,
-//     document.getElementById('root'),
-//   );
-// }
-// mount();

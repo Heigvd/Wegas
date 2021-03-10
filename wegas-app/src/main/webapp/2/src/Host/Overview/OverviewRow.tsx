@@ -41,7 +41,7 @@ export function OverviewRow({
         {!structure && (
           <td className={firstScrollCellStyle}>
             <Button
-              icon="pen"
+              src={require('../../pictures/icon_edit.svg').default}
               tooltip="Execute impact"
               onClick={() => onClick('Impact')}
             />
@@ -61,12 +61,12 @@ export function OverviewRow({
         <td>
           <div className={cx(flex, flexRow)}>
             <Button
-              icon="envelope"
+              src={require('../../pictures/icon_mail.svg').default}
               tooltip="send mail"
               onClick={() => onClick('Mail')}
             />
             <Button
-              icon="eye"
+              src={require('../../pictures/icon_eye.svg').default}
               tooltip="View playing session"
               onClick={() => onClick('Watch team')}
             />

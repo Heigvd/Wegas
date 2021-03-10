@@ -3,6 +3,7 @@ import * as React from 'react';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { Modal } from '../../Components/Modal';
+import { schemaProps } from '../../Components/PageComponents/tools/schemaProps';
 import { Toolbar } from '../../Components/Toolbar';
 import { expandWidth } from '../../css/classes';
 import { GameModel, Player } from '../../data/selectors';
@@ -11,6 +12,8 @@ import { createScript } from '../../Helper/wegasEntites';
 import { wlog } from '../../Helper/wegaslog';
 import { OverviewHeader } from './OverviewHeader';
 import { OverviewRow } from './OverviewRow';
+import '../../Editor/Components/FormView';
+import { DashboardForm } from './OverviewForm';
 
 const tableStyle = css({
   display: 'flex',
@@ -28,6 +31,8 @@ const tableStyle = css({
     td: {
       minWidth: '60px',
       height: '35px',
+      textAlign: 'center',
+      verticalAlign: 'middle',
       '.data': {
         backgroundColor: '#fff',
         boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
@@ -199,6 +204,27 @@ export default function Overview() {
               ))}
             </tbody>
           </table>
+          <DashboardForm
+            entity={{ from: 'blabla', to: 'bloblo' }}
+            schema={{
+              description: 'Tadaa',
+              properties: {
+                from: schemaProps.string({
+                  label: 'From',
+                  readOnly: true,
+                }),
+                to: schemaProps.boolean({
+                  label: 'To',
+                  readOnly: true,
+                }),
+                dadw: schemaProps.number({
+                  label: 'To',
+                  readOnly: true,
+                }),
+              },
+            }}
+            update={wlog}
+          />
         </div>
         {(layoutState.showImpactModal || layoutState.showMailModal) && (
           <Modal onExit={() => setLayoutState(defaultLayoutState)}>

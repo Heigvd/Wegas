@@ -26,19 +26,21 @@ export default function StringInput({
   return (
     <CommonViewContainer errorMessage={errorMessage} view={view}>
       <Labeled {...view}>
-        {({ inputId, labelNode }) => (
-          <>
-            {labelNode}
-            <SimpleInput
-              value={value}
-              onChange={onChange}
-              disabled={view.disabled}
-              readOnly={view.readOnly}
-              placeholder={view.placeholder}
-              id={inputId}
-            />
-          </>
-        )}
+        {({ inputId, labelNode }) => {
+          return (
+            <>
+              {labelNode}
+              <SimpleInput
+                value={value}
+                onChange={onChange}
+                disabled={view.disabled}
+                readOnly={view.readOnly}
+                placeholder={view.placeholder}
+                id={inputId}
+              />
+            </>
+          );
+        }}
       </Labeled>
     </CommonViewContainer>
   );
