@@ -4,7 +4,7 @@ import { ITeam } from 'wegas-ts-api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { flex, flexRow, itemCenter } from '../../css/classes';
 import { OverviewClickType, ActionItem, DataItem, DataType } from './Overview';
-import { OverviewCell } from './OverviewCell';
+import { firstScrollCellStyle, fixedCellStyle, OverviewCell } from './OverviewCell';
 
 interface OverviewRowProps {
   team: ITeam;
@@ -22,7 +22,7 @@ export function OverviewRow({
   const [showPlayers, setShowPlayers] = React.useState(false);
   return (
     <tr>
-      <td>
+      <td className= {fixedCellStyle}>
         <div className={cx(flex, flexRow, itemCenter)}>
           <Button
             icon={showPlayers ? 'caret-down' : 'caret-right'}
@@ -41,7 +41,7 @@ export function OverviewRow({
         )}
       </td>
       {!structure && (
-        <td>
+        <td className={firstScrollCellStyle}>
           <Button
             icon="pen"
             tooltip="Execute impact"
@@ -51,12 +51,13 @@ export function OverviewRow({
       )}
       {structure != null &&
         data != null &&
-        structure.map(struct => (
+        structure.map((struct,i) => (
           <OverviewCell
             key={struct.id}
             data={data[struct.id]}
             structure={struct}
             team={team}
+            className={cx({[firstScrollCellStyle]: i===0})}
           />
         ))}
       <td>

@@ -1,33 +1,44 @@
+import { css } from 'emotion';
 import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import { ActionItem, DataItem, DataType, isDataItem } from './Overview';
 import { OverviewButton } from './OverviewHeaderButton';
 
+
+export const fixedCellStyle = css({
+  position: "absolute",
+  width: "180px"
+});
+
+export const firstScrollCellStyle = css({
+  borderLeft: "180px solid transparent"
+});
 interface OverviewCellProps {
   team: ITeam;
   structure: DataItem | ActionItem;
   data: DataType;
+  className?: string;
 }
 
-export function OverviewCell({ structure, data }: OverviewCellProps) {
+export function OverviewCell({ structure, data, className }: OverviewCellProps) {
   if (isDataItem(structure)) {
     const { kind } = structure;
     switch (kind) {
       case 'boolean':
       case 'number':
       case 'string':
-        return <td>{String(data)}</td>;
+        return <td className={className}>{String(data)}</td>;
       case 'inbox':
       case 'text':
       case 'object':
-        return <td>{JSON.stringify(data)}</td>;
+        return <td className={className}>{JSON.stringify(data)}</td>;
       default:
         throw Error('Unknown kind of value to display');
     }
   } else {
     const { ['do']: fn, icon = 'pen', label } = structure;
     return (
-      <td>
+      <td className={className}>
         <OverviewButton label={label} icon={icon} fn={fn} />
       </td>
     );
