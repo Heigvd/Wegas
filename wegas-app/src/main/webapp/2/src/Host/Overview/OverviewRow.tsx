@@ -3,7 +3,13 @@ import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import HTMLEditor from '../../Components/HTMLEditor';
 import { Button } from '../../Components/Inputs/Buttons/Button';
-import { flex, flexRow, hideWithEllipsis, itemCenter } from '../../css/classes';
+import {
+  flex,
+  flexRow,
+  hideWithEllipsis,
+  itemCenter,
+  justifyCenter,
+} from '../../css/classes';
 import { OverviewClickType, ActionItem, DataItem, DataType } from './Overview';
 import {
   firstScrollCellStyle,
@@ -13,7 +19,7 @@ import {
 
 interface OverviewRowProps {
   team: ITeam;
-  onClick: (type: OverviewClickType) => void;
+  onClick: (type: OverviewClickType, item?: ActionItem) => void;
   structure: (DataItem | ActionItem)[] | undefined;
   data: { [id: string]: DataType } | undefined;
 }
@@ -29,7 +35,7 @@ export function OverviewRow({
     <>
       <tr>
         <td className={fixedCellStyle}>
-          <div className={cx(flex, flexRow, itemCenter)}>
+          <div className={cx(flex, flexRow, itemCenter, justifyCenter)}>
             <Button
               icon={showPlayers ? 'caret-down' : 'caret-right'}
               onClick={() => setShowPlayers(sp => !sp)}
@@ -57,15 +63,20 @@ export function OverviewRow({
               structure={struct}
               team={team}
               className={cx({ [firstScrollCellStyle]: i === 0 })}
+              onClick={onClick}
             />
           ))}
         <td>
-          <div className={cx(flex, flexRow)}>
+          <div className={cx(flex, itemCenter, justifyCenter)}>
             <Button
               src={require('../../pictures/icon_mail.svg').default}
-              tooltip="send mail"
+              tooltip="Send mail"
               onClick={() => onClick('Mail')}
             />
+          </div>
+        </td>
+        <td>
+          <div className={cx(flex, itemCenter, justifyCenter)}>
             <Button
               src={require('../../pictures/icon_eye.svg').default}
               tooltip="View playing session"

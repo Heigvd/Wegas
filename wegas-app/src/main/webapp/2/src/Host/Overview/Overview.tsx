@@ -7,7 +7,6 @@ import { expandWidth } from '../../css/classes';
 import { GameModel, Player } from '../../data/selectors';
 import { useStore } from '../../data/Stores/store';
 import { createScript } from '../../Helper/wegasEntites';
-import { wlog } from '../../Helper/wegaslog';
 import { OverviewHeader } from './OverviewHeader';
 import { OverviewRow } from './OverviewRow';
 import '../../Editor/Components/FormView';
@@ -63,6 +62,7 @@ const tableStyle = css({
       boxShadow: 'none',
       verticalAlign: 'top',
       padding: '0 10px',
+      textAlign: 'center',
     },
   },
 });
@@ -128,11 +128,13 @@ export type OverviewClickType = 'Impact' | 'Mail' | 'Watch team';
 interface LayoutState {
   modalState: ModalState;
   team: ITeam | undefined;
+  item: ActionItem | undefined;
 }
 
 const defaultLayoutState: LayoutState = {
   modalState: 'Close',
   team: undefined,
+  item: undefined,
 };
 
 export default function Overview() {
@@ -151,7 +153,6 @@ export default function Overview() {
       undefined,
       true,
     ).then((res: OverviewData) => {
-      wlog(res);
       if (mounted.current) {
         const { data, structure } = res;
         const header = structure.map(s => ({
@@ -183,14 +184,14 @@ export default function Overview() {
   const teams = useStore(s => s.teams);
 
   const onRowClick = React.useCallback(
-    (team: ITeam) => (type: OverviewClickType) => {
+    (team?: ITeam) => (type: OverviewClickType, item?: ActionItem) => {
       switch (type) {
         case 'Impact': {
-          setLayoutState({ modalState: 'Impacts', team });
+          setLayoutState({ modalState: 'Impacts', team, item });
           break;
         }
         case 'Mail': {
-          setLayoutState({ modalState: 'Mail', team });
+          setLayoutState({ modalState: 'Mail', team, item: undefined });
           break;
         }
         case 'Watch team': {
@@ -214,7 +215,10 @@ export default function Overview() {
       <Toolbar.Content>
         <div className={tableStyle}>
           <table>
-            <OverviewHeader overviewState={overviewState} />
+            <OverviewHeader
+              overviewState={overviewState}
+              onClick={onRowClick()}
+            />
             <tbody>
               {Object.entries(teams).map(([id, team]) => (
                 <OverviewRow
@@ -228,11 +232,15 @@ export default function Overview() {
             </tbody>
           </table>
         </div>
-        {layoutState.modalState !== 'Close' && layoutState.team != null && (
+        {layoutState.modalState !== 'Close' && (
           <OverviewModal
             {...layoutState}
             onExit={() =>
-              setLayoutState({ modalState: 'Close', team: undefined })
+              setLayoutState({
+                modalState: 'Close',
+                team: undefined,
+                item: undefined,
+              })
             }
           />
         )}

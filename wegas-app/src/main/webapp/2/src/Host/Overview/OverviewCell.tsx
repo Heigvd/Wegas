@@ -5,7 +5,13 @@ import { globals } from '../../Components/Hooks/useScript';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { HTMLText } from '../../Components/Outputs/HTMLText';
 import { themeVar } from '../../Components/Style/ThemeVars';
-import { ActionItem, DataItem, DataType, isDataItem } from './Overview';
+import {
+  ActionItem,
+  DataItem,
+  DataType,
+  isDataItem,
+  OverviewClickType,
+} from './Overview';
 import { OverviewButton } from './OverviewButton';
 
 export const fixedCellStyle = css({
@@ -26,6 +32,7 @@ interface OverviewCellProps {
   structure: DataItem | ActionItem;
   data: DataType;
   className?: string;
+  onClick: (type: OverviewClickType, item?: ActionItem) => void;
 }
 
 export function OverviewCell({
@@ -33,6 +40,7 @@ export function OverviewCell({
   structure,
   data,
   className,
+  onClick,
 }: OverviewCellProps) {
   const [showPopup, setShowPopup] = React.useState(false);
 
@@ -111,12 +119,10 @@ export function OverviewCell({
         throw Error('Unknown kind of value to display');
     }
   } else {
-    const { ['do']: fn, icon = 'pen', label } = structure;
-
     return (
       <td className={className}>
         <div>
-          <OverviewButton label={label} icon={icon} fn={fn} team={team} />
+          <OverviewButton team={team} item={structure} onClick={onClick} />
         </div>
       </td>
     );

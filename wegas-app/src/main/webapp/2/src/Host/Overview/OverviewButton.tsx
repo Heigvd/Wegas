@@ -2,21 +2,19 @@ import { IconName } from '@fortawesome/fontawesome-svg-core';
 import * as React from 'react';
 import { globals } from '../../Components/Hooks/useScript';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { ActionItem, OverviewClickType } from './Overview';
 
 interface OverviewButtonProps {
   team?: ITeam;
-  label: string;
-  icon: string | undefined;
-  fn: string;
+  onClick?: (type: OverviewClickType, item?: ActionItem) => void;
+  item: ActionItem;
 }
 
-export function OverviewButton({ team, label, icon, fn }: OverviewButtonProps) {
+export function OverviewButton({ team, item, onClick }: OverviewButtonProps) {
+  const { label, icon, ['do']: fn } = item;
+
   const actionFn = `return (${fn})(team,payload)`;
-  const formattedFunction = globals.Function(
-    'team',
-    'payload',
-    actionFn,
-  )(team, undefined);
+  const formattedFunction = globals.Function('team', 'payload', actionFn);
 
   return (
     <Button
@@ -24,7 +22,9 @@ export function OverviewButton({ team, label, icon, fn }: OverviewButtonProps) {
       icon={
         icon == null || icon === 'fa fa-pencil' ? 'pen' : (icon as IconName)
       }
-      onClick={() => formattedFunction(team, undefined)}
+      onClick={() =>
+        onClick ? onClick('Impact', item) : formattedFunction(team, undefined)
+      }
     />
   );
 }

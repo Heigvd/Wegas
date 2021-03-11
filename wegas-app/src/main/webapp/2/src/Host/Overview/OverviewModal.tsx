@@ -10,6 +10,9 @@ import { Game } from '../../data/selectors';
 import '../../Editor/Components/FormView';
 import JSONForm from 'jsoninput';
 import { Button } from '../../Components/Inputs/Buttons/Button';
+import { wlog } from '../../Helper/wegaslog';
+import { ActionItem } from './Overview';
+import { globals } from '../../Components/Hooks/useScript';
 
 const modalStyle = css({
   display: 'flex',
@@ -34,12 +37,14 @@ export type ModalState = 'Close' | 'Mail' | 'Impacts';
 interface OverviewModalProps {
   modalState: ModalState;
   team?: ITeam;
+  item?: ActionItem;
   onExit: () => void;
 }
 
 export function OverviewModal({
   modalState,
   team,
+  item,
   onExit,
 }: OverviewModalProps) {
   return (
@@ -49,7 +54,7 @@ export function OverviewModal({
       innerClassName={modalContentStyle}
     >
       {modalState === 'Impacts' ? (
-        <div>Impacts</div>
+        <ImpactModalContent team={team} onExit={onExit} item={item} />
       ) : (
         <MailModalContent team={team} onExit={onExit} />
       )}
@@ -151,6 +156,46 @@ function MailModalContent({ team, onExit }: MailModalContentProps) {
           }}
         />
         <Button label="Download e-mail addresses" icon="download" />
+      </div>
+    </div>
+  );
+}
+
+interface ImpactModalContentProps {
+  team?: ITeam;
+  item?: ActionItem;
+  onExit: () => void;
+}
+
+function ImpactModalContent({ team, onExit, item }: ImpactModalContentProps) {
+  const [impactValues, setImpactValues] = React.useState({});
+
+  const schemaFn = `return (${item?.schema})()`;
+
+  if (item?.schema == null || item?.schema === 'undefined') {
+    return <pre>Schema needed for impact</pre>;
+  }
+
+  const schema = globals.Function('team', 'payload', schemaFn)(team);
+
+  return (
+    <div className={cx(flex, flexColumn)}>
+      <JSONForm
+        value={impactValues}
+        schema={{
+          description: 'Impact',
+          properties: schema,
+        }}
+        onChange={setImpactValues}
+      />
+      <div className={cx(flex, flexRow, flexDistribute, modalButtonsContainer)}>
+        <Button
+          label="Apply impact"
+          onClick={() => {
+            wlog('Impact!');
+            onExit();
+          }}
+        />
       </div>
     </div>
   );

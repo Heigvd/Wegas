@@ -1,8 +1,15 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
-import { isDataItem, OverviewState } from './Overview';
+import {
+  ActionItem,
+  isDataItem,
+  OverviewClickType,
+  OverviewState,
+} from './Overview';
 import { firstScrollCellStyle, fixedCellStyle } from './OverviewCell';
 import { OverviewButton } from './OverviewButton';
+import { Button } from '../../Components/Inputs/Buttons/Button';
+import { flex, itemCenter, justifyCenter } from '../../css/classes';
 
 const headerStyle = css({
   verticalAlign: 'middle',
@@ -19,9 +26,13 @@ const fixedHeaderCellStyle = cx(
 
 interface OverviewHeaderProps {
   overviewState: OverviewState | undefined;
+  onClick: (type: OverviewClickType, item?: ActionItem) => void;
 }
 
-export function OverviewHeader({ overviewState }: OverviewHeaderProps) {
+export function OverviewHeader({
+  overviewState,
+  onClick,
+}: OverviewHeaderProps) {
   return (
     <>
       <colgroup className="fixedColumn">
@@ -61,7 +72,7 @@ export function OverviewHeader({ overviewState }: OverviewHeaderProps) {
                 {h.title}
               </th>
             ))}
-          <th rowSpan={2}>Actions</th>
+          <th colSpan={2}>Actions</th>
         </tr>
         <tr>
           <th className={fixedHeaderCellStyle}>Team (to hide!!)</th>
@@ -77,15 +88,16 @@ export function OverviewHeader({ overviewState }: OverviewHeaderProps) {
                 </th>
               );
             } else {
-              const { id, label, hasGlobal, icon, ['do']: fn } = r;
-
+              const { id, label, hasGlobal } = r;
               return (
                 <th
                   key={'header' + id}
                   className={cx({ [firstScrollCellStyle]: i === 0 })}
                 >
                   {hasGlobal ? (
-                    <OverviewButton label={label} icon={icon} fn={fn} />
+                    <div className={cx(flex, itemCenter, justifyCenter)}>
+                      <OverviewButton item={r} onClick={onClick} />
+                    </div>
                   ) : (
                     label
                   )}
@@ -93,6 +105,16 @@ export function OverviewHeader({ overviewState }: OverviewHeaderProps) {
               );
             }
           })}
+          <th>
+            <div className={cx(flex, itemCenter, justifyCenter)}>
+              <Button
+                src={require('../../pictures/icon_mail.svg').default}
+                tooltip="send mail"
+                onClick={() => onClick('Mail')}
+              />
+            </div>
+          </th>
+          <th />
         </tr>
       </thead>
     </>
