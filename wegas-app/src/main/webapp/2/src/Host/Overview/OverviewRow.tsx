@@ -3,7 +3,7 @@ import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import HTMLEditor from '../../Components/HTMLEditor';
 import { Button } from '../../Components/Inputs/Buttons/Button';
-import { flex, flexRow, itemCenter } from '../../css/classes';
+import { flex, flexRow, hideWithEllipsis, itemCenter } from '../../css/classes';
 import { OverviewClickType, ActionItem, DataItem, DataType } from './Overview';
 import {
   firstScrollCellStyle,
@@ -11,9 +11,6 @@ import {
   OverviewCell,
 } from './OverviewCell';
 
-const collapseBlock = css({
-  position: 'absolute',
-});
 interface OverviewRowProps {
   team: ITeam;
   onClick: (type: OverviewClickType) => void;
@@ -32,12 +29,14 @@ export function OverviewRow({
     <>
       <tr>
         <td className={fixedCellStyle}>
-          <div className={cx(flex, flexRow, itemCenter, 'data')}>
+          <div className={cx(flex, flexRow, itemCenter)}>
             <Button
               icon={showPlayers ? 'caret-down' : 'caret-right'}
               onClick={() => setShowPlayers(sp => !sp)}
             />
-            <div>{team.name}</div>
+            <div className={hideWithEllipsis}>
+              {team.name}kjkjdksholalala lala
+            </div>
           </div>
         </td>
         {!structure && (
@@ -76,7 +75,7 @@ export function OverviewRow({
         </td>
       </tr>
       {showPlayers && (
-        <tr className={collapseBlock}>
+        <tr className={'collapse'}>
           <td colSpan={3 + (structure?.length || 1)}>
             <div className={cx(flex, flexRow)}>
               <div className={css({ width: '180px' })}>

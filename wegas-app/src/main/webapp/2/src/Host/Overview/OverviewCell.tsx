@@ -13,6 +13,9 @@ export const fixedCellStyle = css({
   left: 0,
   width: '180px',
   zIndex: 100,
+  '&> div': {
+    paddingLeft: '0 !important',
+  },
 });
 
 export const firstScrollCellStyle = css({
