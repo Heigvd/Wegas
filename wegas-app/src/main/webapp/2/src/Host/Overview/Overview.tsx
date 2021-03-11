@@ -41,6 +41,20 @@ const tableStyle = css({
         height: "48px",
       },
     },
+    '.collapse td': {
+      position: "absolute",
+      left: 0,
+      '&> div': {
+        height: "auto",
+        boxShadow: 'none',
+        backgroundColor: 'transparent',
+        padding: 0,
+        textAlign: "left",
+        '&> div': {
+          marginRight: "15px",
+        }
+      }
+    }
   },
     'thead tr': {
       height: '25px',

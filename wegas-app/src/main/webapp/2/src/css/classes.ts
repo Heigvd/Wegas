@@ -47,6 +47,12 @@ export const showOverflow = css({
   overflow: 'visible',
 });
 
+export const hideWithEllipsis = css({
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+});
+
 // Size
 export const expandBoth = css({
   width: '100%',
