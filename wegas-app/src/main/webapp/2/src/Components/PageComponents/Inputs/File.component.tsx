@@ -2,8 +2,6 @@ import * as React from 'react';
 import {
   FileBrowser,
   FileBrowserProps,
-  FileType,
-  FilterType,
 } from '../../../Editor/Components/FileBrowser/FileBrowser';
 import { useScript } from '../../Hooks/useScript';
 import {

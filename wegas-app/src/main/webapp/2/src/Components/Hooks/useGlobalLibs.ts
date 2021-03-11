@@ -32,6 +32,8 @@ import HelpersGlobalSrc from '!!raw-loader!../../../types/scripts/HelpersGlobals
 // @ts-ignore
 import WegasDashboardSrc from '!!raw-loader!../../../types/scripts/WegasDashboard.d.ts';
 // @ts-ignore
+import SchemaHelper from '!!raw-loader!../../../types/scripts/SchemaHelper.d.ts';
+// @ts-ignore
 import generalTypes from '!!raw-loader!../../../types/general-types.d.ts';
 
 import { wwarn } from '../../Helper/wegaslog';
@@ -62,8 +64,6 @@ const ambientScriptableEntitiesSrc = makeAmbient(scriptableEntitiesSrc);
  * script will be injected into the server script.
  * In order for this trick to work, the server script must be passed in parseAndRunClientScript before beeing sent to the server.
  */
-export type ScriptContext = 'Client' | 'Server internal' | 'Server external';
-
 export function useGlobalLibs(scriptContext: ScriptContext) {
   const { classes } = React.useContext(classesCTX);
 
@@ -94,9 +94,10 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
 
       try {
         return `
-        declare const gameModel : SGameModel;
-        declare const self : SPlayer;
+        declare const gameModel: SGameModel;
+        declare const self: SPlayer;
         declare const typeFactory: (types: WegasScriptEditorReturnTypeName[]) => GlobalMethodReturnTypesName;
+        declare const schemaProps: SchemaPropsDefinedType;
 
         interface VariableClasses {
           ${Object.keys(variableClasses)
@@ -250,6 +251,7 @@ export function useGlobalLibs(scriptContext: ScriptContext) {
         ${i18nGlobalSrc}\n
         ${APIMethodsGlobalSrc}\n
         ${HelpersGlobalSrc}\n
+        ${SchemaHelper}\n
         ${WegasDashboardSrc}\n
         ${libs}\n
       `,

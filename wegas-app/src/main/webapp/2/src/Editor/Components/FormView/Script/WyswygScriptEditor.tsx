@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ScriptView, isScriptCondition, ScriptMode } from './Script';
+import { ScriptView, isScriptCondition } from './Script';
 import { Statement, expressionStatement, booleanLiteral } from '@babel/types';
 import { css } from 'emotion';
 import { emptyStatement } from '@babel/types';

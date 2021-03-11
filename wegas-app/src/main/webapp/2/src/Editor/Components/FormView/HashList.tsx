@@ -10,7 +10,6 @@ import {
 } from '../../../Components/PageComponents/tools/schemaProps';
 import { LabeledView, Labeled } from './labeled';
 import { DragDropArray } from './Array';
-import { DropMenuItem } from '../../../Components/DropMenu';
 import { setEntry, getEntry } from '../../../Helper/tools';
 import { legendStyle, reset, borderTopStyle } from './Object';
 import { cx } from 'emotion';
@@ -25,31 +24,9 @@ interface ImprovedObjectValue {
   index: number;
 }
 
-interface HashListProp {
-  prop: string;
-}
-
-// interface HashListValueSchema {
-//   [key: string]: SchemaPropsSchemas;
-// }
-
-interface HashListValue {
-  prop: string;
-  schema: SchemaPropsSchemas;
-}
-
-type HashListItem = HashListValue | HashListProp;
-
 function isHashListValue(item: HashListItem): item is HashListValue {
   return 'schema' in item && item.schema != null;
 }
-
-export type HashListChoice = DropMenuItem<HashListItem> & {
-  value: HashListItem;
-  items?: HashListChoices;
-};
-
-export type HashListChoices = HashListChoice[];
 
 export function hashListChoicesToSchema(
   choices?: HashListChoices,
@@ -78,10 +55,10 @@ function isIntermediateKey(
   return [key != null && choice != null && choice.items != null, choice?.items];
 }
 
-export interface CleaningHashmapMethods {
-  errorDetector: (value?: object | null) => boolean;
-  cleaningMethod: (value?: object | null) => object;
-}
+// export interface CleaningHashmapMethods {
+//   errorDetector: (value?: object | null) => boolean;
+//   cleaningMethod: (value?: object | null) => object;
+// }
 
 type HashListViewBag = CommonView &
   LabeledView & {

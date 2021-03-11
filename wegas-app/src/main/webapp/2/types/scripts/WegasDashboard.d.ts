@@ -23,6 +23,13 @@ interface WegasDashboardActionConfig extends WegasDashboardConfig {
   icon?: string;
   hasGlobal?: boolean;
   order?: number;
+  schema?: (
+    team: ITeam,
+  ) => {
+    [id: string]: ReturnType<
+      SchemaPropsDefinedType[keyof SchemaPropsDefinedType]
+    >;
+  };
 }
 
 type WegasDashboardRegisterAction = (

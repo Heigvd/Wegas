@@ -16,16 +16,10 @@ import {
   generateSchema,
   PartialAttributes,
 } from './expressionEditorHelpers';
-import {
-  ScriptView,
-  ScriptMode,
-  scriptEditStyle,
-  returnTypes,
-} from '../Script';
+import { ScriptView, scriptEditStyle, returnTypes } from '../Script';
 import { useStore } from '../../../../../data/Stores/store';
 import { GameModel } from '../../../../../data/selectors';
 import { parseStatement, generateStatement } from './astManagement';
-import { WegasTypeString } from '../../../../editionConfig';
 import { MessageString } from '../../../MessageString';
 import { WegasScriptEditor } from '../../../ScriptEditors/WegasScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';

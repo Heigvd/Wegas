@@ -1,23 +1,17 @@
 import {
   WegasMethodParameter,
-  WegasTypeString,
   MethodConfig,
   WegasMethod,
   getVariableMethodConfig,
-  WegasMethodReturnType,
 } from '../../../../editionConfig';
 
 import { schemaProps } from '../../../../../Components/PageComponents/tools/schemaProps';
 
 import { pick } from 'lodash-es';
 
-import { ScriptMode, isScriptCondition } from '../Script';
+import { isScriptCondition } from '../Script';
 
-import {
-  StringOrT,
-  genVarItems,
-  TreeSelectItem,
-} from '../../TreeVariableSelect';
+import { StringOrT, genVarItems } from '../../TreeVariableSelect';
 
 import { store } from '../../../../../data/Stores/store';
 import { TYPESTRING } from 'jsoninput/typings/types';

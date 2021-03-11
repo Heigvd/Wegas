@@ -1,17 +1,12 @@
 import * as React from 'react';
 import { css, cx } from 'emotion';
 import { WidgetProps, TYPESTRING } from 'jsoninput/typings/types';
-import {
-  DropMenu,
-  DropMenuItem,
-  SelecteDropdMenuItem,
-} from '../../../Components/DropMenu';
+import { DropMenu, SelecteDropdMenuItem } from '../../../Components/DropMenu';
 import { CommonViewContainer, CommonView } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 import { useDrag, useDrop } from 'react-dnd';
 import { dropZoneFocus } from '../../../Components/Contexts/DefaultDndProvider';
 import { array_move } from '../../../Helper/tools';
-import { Item } from '../Tree/TreeSelect';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { typeCleaner } from './Script/Expressions/expressionEditorHelpers';
 import { Button } from '../../../Components/Inputs/Buttons/Button';

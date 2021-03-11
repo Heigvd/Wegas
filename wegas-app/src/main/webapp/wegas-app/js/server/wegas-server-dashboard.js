@@ -95,7 +95,8 @@ var WegasDashboard = (function() {
             doFn: doFn,
             label: cfg.label,
             icon: cfg.icon || "fa fa-pencil",
-            hasGlobal: cfg.hasGlobal
+            hasGlobal: cfg.hasGlobal,
+            schema:cfg.schema
         };
     }
 
@@ -177,6 +178,7 @@ var WegasDashboard = (function() {
                             item.label = itemCfg.label || id;
                             item.icon = itemCfg.icon;
                             item.do = itemCfg.doFn + "";
+                            item.schema = itemCfg.schema + "";
                             item.hasGlobal = itemCfg.hasGlobal;
 
                             items[id] = {
@@ -289,6 +291,9 @@ var WegasDashboard = (function() {
                     }
                     if (item.do) {
                         item.do = item.do + "";
+                    }
+                    if (item.schema) {
+                        item.schema = item.schema + "";
                     }
                 });
             });

@@ -4,7 +4,6 @@ import { classNameOrEmpty } from '../../Helper/className';
 import { flex, flexColumn, flexRow } from '../../css/classes';
 import { WegasComponentItemProps } from '../PageComponents/tools/EditableComponent';
 import { themeVar } from '../Style/ThemeVars';
-import { HashListChoices } from '../../Editor/Components/FormView/HashList';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 
 const SPLITTER_SELECTOR = 'fonkyflex-splitter';
@@ -14,10 +13,6 @@ const HORIZONTAL_SELECTOR = 'fonkyflex-horizontal';
 const NODRAG_SELECTOR = 'fonkyflex-nodrag';
 
 const DEFAULT_FLEX_WRAP = 1000;
-
-// const SPLITTER_TYPE = 'Splitter';
-// const CONTENT_TYPE = 'Content';
-// type ContainerItemType = typeof SPLITTER_TYPE | typeof CONTENT_TYPE;
 
 const noSelectStyle = css({
   userSelect: 'none',

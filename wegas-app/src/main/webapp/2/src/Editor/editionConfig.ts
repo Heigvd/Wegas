@@ -1,5 +1,5 @@
 import { Schema } from 'jsoninput';
-import { TYPESTRING } from 'jsoninput/typings/types';
+// import { TYPESTRING } from 'jsoninput/typings/types';
 import {
   IAbstractEntity,
   SAbstractEntity,
@@ -14,15 +14,11 @@ import { AvailableViews } from './Components/FormView';
 import { Icons } from './Components/Views/FontAwesome';
 import { formValidation } from './formValidation';
 
-export type WegasTypeString = TYPESTRING | 'identifier';
-
 export type WegasMethodParameter = {
   type: WegasTypeString;
 } & Schema<AvailableViews>;
 
 export const wegasMethodReturnValues = ['number', 'string', 'boolean'] as const;
-
-export type WegasMethodReturnType = ValueOf<typeof wegasMethodReturnValues>;
 
 export interface WegasMethod {
   label: string;

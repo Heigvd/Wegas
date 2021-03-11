@@ -1,5 +1,3 @@
-import { TreeSelectItem } from '../FormView/TreeVariableSelect';
-
 interface SearchableTreeSelectProps<T> {
   items: TreeSelectItem<T>[];
   search: string;
@@ -8,9 +6,7 @@ interface SearchableTreeSelectProps<T> {
 }
 function defaultSearchFn<T>(item: TreeSelectItem<T>, search: string) {
   return (
-    JSON.stringify(item.value)
-      .toLowerCase()
-      .indexOf(search.toLowerCase()) > -1
+    JSON.stringify(item.value).toLowerCase().indexOf(search.toLowerCase()) > -1
   );
 }
 

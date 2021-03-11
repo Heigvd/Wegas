@@ -43,19 +43,19 @@ const tableStyle = css({
       },
     },
     '.collapse td': {
-      position: "absolute",
+      position: 'absolute',
       left: 0,
       '&> div': {
-        height: "auto",
+        height: 'auto',
         boxShadow: 'none',
         backgroundColor: 'transparent',
         padding: 0,
-        textAlign: "left",
+        textAlign: 'left',
         '&> div': {
-          marginRight: "15px",
-        }
-      }
-    }
+          marginRight: '15px',
+        },
+      },
+    },
   },
   'thead tr': {
     height: '25px',
@@ -102,6 +102,7 @@ export interface ActionItem extends OverviewItem {
   hasGlobal: boolean;
   itemType: string;
   icon: string;
+  schema: string;
 }
 
 interface OverviewData {

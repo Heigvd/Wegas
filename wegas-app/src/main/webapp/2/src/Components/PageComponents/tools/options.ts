@@ -7,7 +7,6 @@ import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
-import { HashListChoices } from '../../../Editor/Components/FormView/HashList';
 import { schemaProps } from './schemaProps';
 import { PlayerInfoBulletProps } from './InfoBullet';
 import { createScript } from '../../../Helper/wegasEntites';

@@ -5,7 +5,6 @@ import { runLoadedScript } from '../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../data/selectors';
 import { usePagesContextStateStore } from '../../data/Stores/pageContextStore';
 import { store } from '../../data/Stores/store';
-import { CleaningHashmapMethods } from '../../Editor/Components/FormView/HashList';
 import { safeClientScriptEval } from '../Hooks/useScript';
 import { ClientAndServerAction } from '../PageComponents/Inputs/tools';
 import { assembleStateAndContext } from '../PageComponents/tools/EditableComponent';

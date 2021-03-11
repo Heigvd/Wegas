@@ -3,18 +3,12 @@ import Downshift, { StateChangeOptions } from 'downshift';
 import { css, cx } from 'emotion';
 import { withDefault } from '../Editor/Components/Views/FontAwesome';
 import { IconName } from '@fortawesome/fontawesome-svg-core';
-import { Item } from '../Editor/Components/Tree/TreeSelect';
 import { themeVar } from './Style/ThemeVars';
 import { classNameOrEmpty } from '../Helper/className';
 import { ConfirmButton } from './Inputs/Buttons/ConfirmButton';
 import { flexRow, flex, itemCenter } from '../css/classes';
 import { lastKeyboardEvents } from '../Helper/keyboardEvents';
 import { Button } from './Inputs/Buttons/Button';
-
-export interface DropMenuItem<T> extends Item<T> {
-  disabled?: true;
-  items?: DropMenuItem<T>[];
-}
 
 export type SelecteDropdMenuItem<
   T,

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { SearchableItems } from '../Tree/searchable';
-import { TreeSelect, Item } from '../Tree/TreeSelect';
+import { TreeSelect } from '../Tree/TreeSelect';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { useStore } from '../../../data/Stores/store';
 import { varIsList } from '../../../data/entities';
@@ -46,11 +46,6 @@ const treeCss = css({
     outline: 'none',
   },
 });
-
-export interface TreeSelectItem<T> extends Item<T> {
-  label: string;
-  items?: TreeSelectItem<T>[];
-}
 
 export type StringOrT<FNT, T> = FNT extends undefined ? string : T;
 
