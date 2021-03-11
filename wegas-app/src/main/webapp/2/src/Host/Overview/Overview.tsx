@@ -2,8 +2,6 @@ import { css } from 'emotion';
 import * as React from 'react';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { Button } from '../../Components/Inputs/Buttons/Button';
-import { Modal } from '../../Components/Modal';
-import { schemaProps } from '../../Components/PageComponents/tools/schemaProps';
 import { Toolbar } from '../../Components/Toolbar';
 import { expandWidth } from '../../css/classes';
 import { GameModel, Player } from '../../data/selectors';
@@ -13,7 +11,7 @@ import { wlog } from '../../Helper/wegaslog';
 import { OverviewHeader } from './OverviewHeader';
 import { OverviewRow } from './OverviewRow';
 import '../../Editor/Components/FormView';
-import { DashboardForm } from './OverviewForm';
+import { ModalState, OverviewModal } from './OverviewModal';
 
 const tableStyle = css({
   display: 'flex',
@@ -112,13 +110,20 @@ export interface OverviewState {
 
 export type OverviewClickType = 'Impact' | 'Mail' | 'Watch team';
 
-const defaultLayoutState = {
-  showImpactModal: false,
-  showMailModal: false,
+interface LayoutState {
+  modalState: ModalState;
+  team: ITeam | undefined;
+}
+
+const defaultLayoutState: LayoutState = {
+  modalState: 'Close',
+  team: undefined,
 };
 
 export default function Overview() {
-  const [layoutState, setLayoutState] = React.useState(defaultLayoutState);
+  const [layoutState, setLayoutState] = React.useState<LayoutState>(
+    defaultLayoutState,
+  );
   const [overviewState, setOverviewState] = React.useState<OverviewState>();
 
   const mounted = React.useRef(true);
@@ -162,26 +167,29 @@ export default function Overview() {
 
   const teams = useStore(s => s.teams);
 
-  const onRowClick = React.useCallback((type: OverviewClickType) => {
-    switch (type) {
-      case 'Impact': {
-        setLayoutState(os => ({ ...os, showImpactModal: true }));
-        break;
+  const onRowClick = React.useCallback(
+    (team: ITeam) => (type: OverviewClickType) => {
+      switch (type) {
+        case 'Impact': {
+          setLayoutState({ modalState: 'Impacts', team });
+          break;
+        }
+        case 'Mail': {
+          setLayoutState({ modalState: 'Mail', team });
+          break;
+        }
+        case 'Watch team': {
+          const win = window.open(
+            'player.html?gameId=' + CurrentGame.id,
+            '_blank',
+          );
+          win?.focus();
+          break;
+        }
       }
-      case 'Mail': {
-        setLayoutState(os => ({ ...os, showMailModal: true }));
-        break;
-      }
-      case 'Watch team': {
-        const win = window.open(
-          'player.html?gameId=' + CurrentGame.id,
-          '_blank',
-        );
-        win?.focus();
-        break;
-      }
-    }
-  }, []);
+    },
+    [],
+  );
 
   return (
     <Toolbar className={expandWidth}>
@@ -199,37 +207,19 @@ export default function Overview() {
                   team={team}
                   structure={overviewState?.row}
                   data={overviewState?.data[id]}
-                  onClick={onRowClick}
+                  onClick={onRowClick(team)}
                 />
               ))}
             </tbody>
           </table>
-          <DashboardForm
-            entity={{ from: 'blabla', to: 'bloblo' }}
-            schema={{
-              description: 'Tadaa',
-              properties: {
-                from: schemaProps.string({
-                  label: 'From',
-                  readOnly: true,
-                }),
-                to: schemaProps.boolean({
-                  label: 'To',
-                  readOnly: true,
-                }),
-                dadw: schemaProps.number({
-                  label: 'To',
-                  readOnly: true,
-                }),
-              },
-            }}
-            update={wlog}
-          />
         </div>
-        {(layoutState.showImpactModal || layoutState.showMailModal) && (
-          <Modal onExit={() => setLayoutState(defaultLayoutState)}>
-            {layoutState.showImpactModal ? <div>Impacts</div> : <div>Mail</div>}
-          </Modal>
+        {layoutState.modalState !== 'Close' && layoutState.team != null && (
+          <OverviewModal
+            {...layoutState}
+            onExit={() =>
+              setLayoutState({ modalState: 'Close', team: undefined })
+            }
+          />
         )}
       </Toolbar.Content>
     </Toolbar>

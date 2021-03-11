@@ -11,10 +11,11 @@ const headerStyle = css({
 
 const fixedHeaderCellStyle = cx(
   css({
-    backgroundColor: "#F9f9f9",
-    height: "25px",
+    backgroundColor: '#F9f9f9',
+    height: '25px',
   }),
-  fixedCellStyle);
+  fixedCellStyle,
+);
 
 interface OverviewHeaderProps {
   overviewState: OverviewState | undefined;
@@ -23,27 +24,43 @@ interface OverviewHeaderProps {
 export function OverviewHeader({ overviewState }: OverviewHeaderProps) {
   return (
     <>
-    <colgroup className="fixedColumn">
-        <col/>
-    </colgroup>
-    {!overviewState && <colgroup><col/></colgroup>}
-    {overviewState?.header &&
-          overviewState.header.map((h, i) => (
-            <colgroup><col key={h.title + i + 'col'} span={h.span} /></colgroup>
-          ))}
-    <colgroup>
-        <col span={2}/>
-    </colgroup>
-    <thead className={headerStyle}>
-      <tr>
-        <th className={fixedHeaderCellStyle}><div>Team</div></th>
-        {!overviewState && <th rowSpan={2} className={firstScrollCellStyle}>Impact</th>}
-        {overviewState?.header &&
-          overviewState.header.map((h, i) => (
-            <th key={h.title + i} colSpan={h.span} className={cx({[firstScrollCellStyle]: i===0})}>
-              {h.title}
+      <colgroup className="fixedColumn">
+        <col />
+      </colgroup>
+      {!overviewState && (
+        <colgroup>
+          <col />
+        </colgroup>
+      )}
+      {overviewState?.header &&
+        overviewState.header.map((h, i) => (
+          <colgroup key={h.title + i + 'col'}>
+            <col span={h.span} />
+          </colgroup>
+        ))}
+      <colgroup>
+        <col span={2} />
+      </colgroup>
+      <thead className={headerStyle}>
+        <tr>
+          <th className={fixedHeaderCellStyle}>
+            <div>Team</div>
+          </th>
+          {!overviewState && (
+            <th rowSpan={2} className={firstScrollCellStyle}>
+              Impact
             </th>
-          ))}
+          )}
+          {overviewState?.header &&
+            overviewState.header.map((h, i) => (
+              <th
+                key={h.title + i}
+                colSpan={h.span}
+                className={cx({ [firstScrollCellStyle]: i === 0 })}
+              >
+                {h.title}
+              </th>
+            ))}
           <th rowSpan={2}>Actions</th>
         </tr>
         <tr>

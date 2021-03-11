@@ -20,13 +20,11 @@ const modalStyle = css({
   backgroundColor: 'rgba(0,0,0,0.8)',
   zIndex: 1000,
   cursor: 'pointer',
-  '&>div': {
-    margin: '0 auto',
-    maxWidth: '100%',
-  },
 });
 
 const modalContentStyle = css({
+  margin: '0 auto',
+  maxWidth: '100%',
   backgroundColor: themeVar.Common.colors.BackgroundColor,
   padding: '10px',
   cursor: 'initial',

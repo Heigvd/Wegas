@@ -22,4 +22,17 @@ export const TeamAPI = {
       return res.json();
     });
   },
+  /**
+   * Get all the emails from the players of the team
+   * If no teamId is given then returns all the emails of the players in the game
+   * @param gameId
+   * @param teamId
+   */
+  getEmails(gameId: number, teamId?: number): Promise<string[]> {
+    return rest(
+      `/User/Emails/${gameId}${teamId != null ? '/' + teamId : ''}`,
+    ).then((res: Response) => {
+      return res.json();
+    });
+  },
 };
