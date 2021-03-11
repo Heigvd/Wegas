@@ -70,7 +70,7 @@ export function OverviewHeader({ overviewState }: OverviewHeaderProps) {
               const { id, label } = r;
               return (
                 <th
-                  id={'header' + id}
+                  key={'header' + id}
                   className={cx({ [firstScrollCellStyle]: i === 0 })}
                 >
                   {label || id}
@@ -81,7 +81,7 @@ export function OverviewHeader({ overviewState }: OverviewHeaderProps) {
 
               return (
                 <th
-                  id={'header' + id}
+                  key={'header' + id}
                   className={cx({ [firstScrollCellStyle]: i === 0 })}
                 >
                   {hasGlobal ? (
