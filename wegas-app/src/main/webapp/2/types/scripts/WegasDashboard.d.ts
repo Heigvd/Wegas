@@ -1,4 +1,4 @@
-type ITeam = import('wegas-ts-api').ITeam;
+type STeam = import('wegas-ts-api').STeam;
 
 interface WegasDashboardConfig {
   dashboard?: string;
@@ -24,16 +24,19 @@ interface WegasDashboardActionConfig extends WegasDashboardConfig {
   hasGlobal?: boolean;
   order?: number;
   schema: (
-    team: ITeam,
+    team: STeam,
   ) => {
-    [id: string]: ReturnType<
-      SchemaPropsDefinedType[keyof SchemaPropsDefinedType]
-    >;
+    description: string;
+    properties: {
+      [id: string]: ReturnType<
+        SchemaPropsDefinedType[keyof SchemaPropsDefinedType]
+      >;
+    };
   };
 }
 
 type WegasDashboardRegisterAction = (
   id: string,
-  doFn: (team: ITeam, payload?: unknown) => void,
+  doFn: (team: STeam, payload?: any) => void,
   config?: WegasDashboardActionConfig,
 ) => void;

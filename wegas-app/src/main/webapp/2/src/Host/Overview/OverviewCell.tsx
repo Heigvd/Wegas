@@ -1,6 +1,5 @@
 import { css } from 'emotion';
 import * as React from 'react';
-import { ITeam } from 'wegas-ts-api';
 import { globals } from '../../Components/Hooks/useScript';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { HTMLText } from '../../Components/Outputs/HTMLText';
@@ -28,7 +27,7 @@ export const firstScrollCellStyle = css({
   borderLeft: '180px solid transparent',
 });
 interface OverviewCellProps {
-  team: ITeam;
+  team: STeam;
   structure: DataItem | ActionItem;
   data: DataType;
   className?: string;

@@ -1,6 +1,5 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
-import { ITeam } from 'wegas-ts-api';
 import HTMLEditor from '../../Components/HTMLEditor';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import {
@@ -18,7 +17,7 @@ import {
 } from './OverviewCell';
 
 interface OverviewRowProps {
-  team: ITeam;
+  team: STeam;
   onClick: (type: OverviewClickType, item?: ActionItem) => void;
   structure: (DataItem | ActionItem)[] | undefined;
   data: { [id: string]: DataType } | undefined;
@@ -41,7 +40,7 @@ export function OverviewRow({
               onClick={() => setShowPlayers(sp => !sp)}
             />
             <div className={hideWithEllipsis}>
-              {team.name}kjkjdksholalala lala
+              {team.getName()}kjkjdksholalala lala
             </div>
           </div>
         </td>
@@ -91,8 +90,8 @@ export function OverviewRow({
             <div className={cx(flex, flexRow)}>
               <div className={css({ width: '180px' })}>
                 <ul>
-                  {team.players.map(player => (
-                    <li key={player.id}>{player.name}</li>
+                  {team.getPlayers().map(player => (
+                    <li key={player.getId()}>{player.getName()}</li>
                   ))}
                 </ul>
               </div>

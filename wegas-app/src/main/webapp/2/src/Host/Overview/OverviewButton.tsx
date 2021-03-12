@@ -5,7 +5,7 @@ import { Button } from '../../Components/Inputs/Buttons/Button';
 import { ActionItem, OverviewClickType } from './Overview';
 
 interface OverviewButtonProps {
-  team?: ITeam;
+  team?: STeam;
   onClick?: (type: OverviewClickType, item?: ActionItem) => void;
   item: ActionItem;
 }

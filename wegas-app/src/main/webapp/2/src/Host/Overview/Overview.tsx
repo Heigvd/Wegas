@@ -11,6 +11,7 @@ import { OverviewHeader } from './OverviewHeader';
 import { OverviewRow } from './OverviewRow';
 import '../../Editor/Components/FormView';
 import { ModalState, OverviewModal } from './OverviewModal';
+import { instantiate } from '../../data/scriptable';
 
 const tableStyle = css({
   display: 'flex',
@@ -127,7 +128,7 @@ export type OverviewClickType = 'Impact' | 'Mail' | 'Watch team';
 
 interface LayoutState {
   modalState: ModalState;
-  team: ITeam | undefined;
+  team: STeam | undefined;
   item: ActionItem | undefined;
 }
 
@@ -184,7 +185,7 @@ export default function Overview() {
   const teams = useStore(s => s.teams);
 
   const onRowClick = React.useCallback(
-    (team?: ITeam) => (type: OverviewClickType, item?: ActionItem) => {
+    (team?: STeam) => (type: OverviewClickType, item?: ActionItem) => {
       switch (type) {
         case 'Impact': {
           setLayoutState({ modalState: 'Impacts', team, item });
@@ -220,28 +221,32 @@ export default function Overview() {
               onClick={onRowClick()}
             />
             <tbody>
-              {Object.entries(teams).map(([id, team]) => (
-                <OverviewRow
-                  key={id}
-                  team={team}
-                  structure={overviewState?.row}
-                  data={overviewState?.data[id]}
-                  onClick={onRowClick(team)}
-                />
-              ))}
+              {Object.entries(teams).map(([id, t]) => {
+                const team = instantiate(t);
+                return (
+                  <OverviewRow
+                    key={id}
+                    team={team}
+                    structure={overviewState?.row}
+                    data={overviewState?.data[id]}
+                    onClick={onRowClick(team)}
+                  />
+                );
+              })}
             </tbody>
           </table>
         </div>
         {layoutState.modalState !== 'Close' && (
           <OverviewModal
             {...layoutState}
-            onExit={() =>
+            refreshOverview={refreshOverview}
+            onExit={() => {
               setLayoutState({
                 modalState: 'Close',
                 team: undefined,
                 item: undefined,
-              })
-            }
+              });
+            }}
           />
         )}
       </Toolbar.Content>

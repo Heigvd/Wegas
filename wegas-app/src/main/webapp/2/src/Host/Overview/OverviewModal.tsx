@@ -10,9 +10,10 @@ import { Game } from '../../data/selectors';
 import '../../Editor/Components/FormView';
 import JSONForm from 'jsoninput';
 import { Button } from '../../Components/Inputs/Buttons/Button';
-import { wlog } from '../../Helper/wegaslog';
 import { ActionItem } from './Overview';
 import { globals } from '../../Components/Hooks/useScript';
+import { asyncRunLoadedScript } from '../../data/Reducer/VariableInstanceReducer';
+import { STeam } from 'wegas-ts-api';
 
 const modalStyle = css({
   display: 'flex',
@@ -36,9 +37,10 @@ export type ModalState = 'Close' | 'Mail' | 'Impacts';
 
 interface OverviewModalProps {
   modalState: ModalState;
-  team?: ITeam;
+  team?: STeam;
   item?: ActionItem;
   onExit: () => void;
+  refreshOverview: () => void;
 }
 
 export function OverviewModal({
@@ -46,6 +48,7 @@ export function OverviewModal({
   team,
   item,
   onExit,
+  refreshOverview,
 }: OverviewModalProps) {
   return (
     <Modal
@@ -54,7 +57,12 @@ export function OverviewModal({
       innerClassName={modalContentStyle}
     >
       {modalState === 'Impacts' ? (
-        <ImpactModalContent team={team} onExit={onExit} item={item} />
+        <ImpactModalContent
+          team={team}
+          onExit={onExit}
+          item={item}
+          refreshOverview={refreshOverview}
+        />
       ) : (
         <MailModalContent team={team} onExit={onExit} />
       )}
@@ -90,7 +98,7 @@ interface Email {
 }
 
 interface MailModalContentProps {
-  team?: ITeam;
+  team?: STeam;
   onExit: () => void;
 }
 
@@ -107,7 +115,7 @@ function MailModalContent({ team, onExit }: MailModalContentProps) {
 
     UserAPI.getUserInfo().then(res => {
       const from = res.accounts[0].email;
-      TeamAPI.getEmails(Game.selectCurrent().id!, team?.id).then(res => {
+      TeamAPI.getEmails(Game.selectCurrent().id!, team?.getId()).then(res => {
         if (mounted) {
           setEmails(o => ({ ...o, from, to: res.join(';') }));
         }
@@ -148,7 +156,7 @@ function MailModalContent({ team, onExit }: MailModalContentProps) {
           onClick={() => {
             UserAPI.sendMail(
               emails.from || '',
-              team?.players ||
+              team?.getPlayers().map(p => p.getEntity()) ||
                 CurrentGame.teams.reduce((o, t) => [...o, ...t.players], []),
               emails.subject || '',
               emails.body || '',
@@ -162,38 +170,51 @@ function MailModalContent({ team, onExit }: MailModalContentProps) {
 }
 
 interface ImpactModalContentProps {
-  team?: ITeam;
+  team?: STeam;
   item?: ActionItem;
   onExit: () => void;
+  refreshOverview: () => void;
 }
 
-function ImpactModalContent({ team, onExit, item }: ImpactModalContentProps) {
-  const [impactValues, setImpactValues] = React.useState({});
-
-  const schemaFn = `return (${item?.schema})()`;
+function ImpactModalContent({
+  team,
+  onExit,
+  item,
+  refreshOverview,
+}: ImpactModalContentProps) {
+  const [payload, setImpactValues] = React.useState({});
 
   if (item?.schema == null || item?.schema === 'undefined') {
     return <pre>Schema needed for impact</pre>;
   }
+  const schemaFn = `return (${item?.schema})()`;
+  const schema = globals.Function('team', schemaFn)(team);
 
-  const schema = globals.Function('team', 'payload', schemaFn)(team);
+  const doFn = `(${item?.do})(team,payload)`;
+
+  const player = team?.getPlayers()[0].getEntity();
 
   return (
     <div className={cx(flex, flexColumn)}>
-      <JSONForm
-        value={impactValues}
-        schema={{
-          description: 'Impact',
-          properties: schema,
-        }}
-        onChange={setImpactValues}
-      />
+      <h2>{schema.description}</h2>
+      <JSONForm value={payload} schema={schema} onChange={setImpactValues} />
       <div className={cx(flex, flexRow, flexDistribute, modalButtonsContainer)}>
         <Button
+          disabled={player == null}
+          tooltip={player == null ? 'No player in this team' : 'Apply impact'}
           label="Apply impact"
           onClick={() => {
-            wlog('Impact!');
-            onExit();
+            asyncRunLoadedScript(
+              Game.selectCurrent().id!,
+              doFn,
+              player,
+              undefined,
+              {
+                team: team?.getEntity(),
+                payload,
+              },
+            ).then(refreshOverview),
+              onExit();
           }}
         />
       </div>
