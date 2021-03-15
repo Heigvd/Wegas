@@ -27,7 +27,6 @@ export const firstScrollCellStyle = css({
   borderLeft: '180px solid transparent',
 });
 interface OverviewCellProps {
-  team: STeam;
   structure: DataItem | ActionItem;
   data: DataType;
   className?: string;
@@ -35,7 +34,6 @@ interface OverviewCellProps {
 }
 
 export function OverviewCell({
-  team,
   structure,
   data,
   className,
@@ -121,7 +119,7 @@ export function OverviewCell({
     return (
       <td className={className}>
         <div>
-          <OverviewButton team={team} item={structure} onClick={onClick} />
+          <OverviewButton  item={structure} onClick={onClick} />
         </div>
       </td>
     );

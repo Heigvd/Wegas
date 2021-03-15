@@ -23,20 +23,28 @@ interface WegasDashboardActionConfig extends WegasDashboardConfig {
   icon?: string;
   hasGlobal?: boolean;
   order?: number;
-  schema: (
-    team: STeam,
-  ) => {
-    description: string;
-    properties: {
-      [id: string]: ReturnType<
-        SchemaPropsDefinedType[keyof SchemaPropsDefinedType]
-      >;
-    };
+}
+
+type ActionFunction = (team: STeam, payload?: any) => void;
+type ActionSchema = (
+  team: STeam,
+) => {
+  description: string;
+  properties: {
+    [id: string]: ReturnType<
+      SchemaPropsDefinedType[keyof SchemaPropsDefinedType]
+    >;
   };
+};
+
+interface ModalAction {
+  type: 'ModalAction';
+  actions: { doFn: ActionFunction; schemaFn: ActionSchema }[];
+  showAdvancedImpact?: boolean;
 }
 
 type WegasDashboardRegisterAction = (
   id: string,
-  doFn: (team: STeam, payload?: any) => void,
+  actions: ModalAction,
   config?: WegasDashboardActionConfig,
 ) => void;

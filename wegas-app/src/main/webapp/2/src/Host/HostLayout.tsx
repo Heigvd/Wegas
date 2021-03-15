@@ -27,7 +27,7 @@ const layoutStyle = css({
   backgroundColor: trainerTheme.colors.BackgroundColor,
 });
 
-const tabsLineStyle = css({
+export const tabsLineStyle = css({
   borderBottom: '3px solid ' + trainerTheme.colors.PrimaryColor,
   backgroundColor: trainerTheme.colors.BackgroundColor,
 });

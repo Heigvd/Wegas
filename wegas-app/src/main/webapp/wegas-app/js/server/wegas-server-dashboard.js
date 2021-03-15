@@ -96,7 +96,6 @@ var WegasDashboard = (function() {
             label: cfg.label,
             icon: cfg.icon || "fa fa-pencil",
             hasGlobal: cfg.hasGlobal,
-            schema:cfg.schema
         };
     }
 
@@ -177,8 +176,29 @@ var WegasDashboard = (function() {
                             item.itemType = 'action';
                             item.label = itemCfg.label || id;
                             item.icon = itemCfg.icon;
-                            item.do = itemCfg.doFn + "";
-                            item.schema = itemCfg.schema + "";
+                            if(typeof itemCfg.doFn === "function"){
+                                item.do = itemCfg.doFn + "";
+                            }
+                            else if(typeof itemCfg.doFn === "object"){
+                                if("type" in itemCfg.doFn){
+                                    switch(itemCfg.doFn.type){
+                                        case "ModalAction":{
+                                            var actions = itemCfg.doFn.actions.map(function(f){
+                                                return {
+                                                    doFn:f.doFn + "",
+                                                    schemaFn:f.schemaFn + ""
+                                                }
+                                            })
+                                            item.do = JSON.stringify({
+                                                type:itemCfg.doFn.type,
+                                                actions:actions,
+                                                showAdvancedImpact:itemCfg.doFn.showAdvancedImpact
+                                            })
+                                        }
+                                    }
+    
+                                }
+                            }
                             item.hasGlobal = itemCfg.hasGlobal;
 
                             items[id] = {
@@ -291,9 +311,6 @@ var WegasDashboard = (function() {
                     }
                     if (item.do) {
                         item.do = item.do + "";
-                    }
-                    if (item.schema) {
-                        item.schema = item.schema + "";
                     }
                 });
             });

@@ -10,7 +10,7 @@ import { createScript } from '../../Helper/wegasEntites';
 import { OverviewHeader } from './OverviewHeader';
 import { OverviewRow } from './OverviewRow';
 import '../../Editor/Components/FormView';
-import { ModalState, OverviewModal } from './OverviewModal';
+import { ModalState, OverviewModal } from './OverviewModal/OverviewModal';
 import { instantiate } from '../../data/scriptable';
 
 const tableStyle = css({
@@ -103,7 +103,6 @@ export interface ActionItem extends OverviewItem {
   hasGlobal: boolean;
   itemType: string;
   icon: string;
-  schema: string;
 }
 
 interface OverviewData {

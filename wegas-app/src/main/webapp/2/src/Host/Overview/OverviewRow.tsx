@@ -60,7 +60,6 @@ export function OverviewRow({
               key={struct.id}
               data={data[struct.id]}
               structure={struct}
-              team={team}
               className={cx({ [firstScrollCellStyle]: i === 0 })}
               onClick={onClick}
             />
