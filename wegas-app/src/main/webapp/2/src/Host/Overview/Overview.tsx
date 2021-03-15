@@ -127,7 +127,7 @@ export type OverviewClickType = 'Impact' | 'Mail' | 'Watch team';
 
 interface LayoutState {
   modalState: ModalState;
-  team: STeam | undefined;
+  team: STeam | STeam[] | undefined;
   item: ActionItem | undefined;
 }
 
@@ -184,7 +184,10 @@ export default function Overview() {
   const teams = useStore(s => s.teams);
 
   const onRowClick = React.useCallback(
-    (team?: STeam) => (type: OverviewClickType, item?: ActionItem) => {
+    (team?: STeam | STeam[]) => (
+      type: OverviewClickType,
+      item?: ActionItem,
+    ) => {
       switch (type) {
         case 'Impact': {
           setLayoutState({ modalState: 'Impacts', team, item });
@@ -217,7 +220,9 @@ export default function Overview() {
           <table>
             <OverviewHeader
               overviewState={overviewState}
-              onClick={onRowClick()}
+              onClick={onRowClick(
+                Object.values(teams).map(t => instantiate(t)),
+              )}
             />
             <tbody>
               {Object.entries(teams).map(([id, t]) => {

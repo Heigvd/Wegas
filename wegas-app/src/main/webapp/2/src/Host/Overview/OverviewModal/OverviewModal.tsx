@@ -18,6 +18,7 @@ const modalStyle = css({
 const modalContentStyle = css({
   position: 'relative',
   padding: '22px',
+  width: '700px',
   '&>div': {
     color: themeVar.Common.colors.ActiveColor,
   },
@@ -31,7 +32,7 @@ export type ModalState = 'Close' | 'Mail' | 'Impacts';
 
 interface OverviewModalProps {
   modalState: ModalState;
-  team?: STeam;
+  team: STeam | STeam[] | undefined;
   item?: ActionItem;
   onExit: () => void;
   refreshOverview: () => void;

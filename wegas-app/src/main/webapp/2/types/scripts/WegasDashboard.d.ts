@@ -26,9 +26,7 @@ interface WegasDashboardActionConfig extends WegasDashboardConfig {
 }
 
 type ActionFunction = (team: STeam, payload?: any) => void;
-type ActionSchema = (
-  team: STeam,
-) => {
+type ActionSchema = () => {
   description: string;
   properties: {
     [id: string]: ReturnType<

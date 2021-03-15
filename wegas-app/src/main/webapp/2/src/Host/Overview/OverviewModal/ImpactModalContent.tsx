@@ -1,4 +1,4 @@
-import { cx } from 'emotion';
+import { css, cx } from 'emotion';
 import * as React from 'react';
 import { IPlayer } from 'wegas-ts-api';
 import { globals } from '../../../Components/Hooks/useScript';
@@ -8,6 +8,9 @@ import {
   flexColumn,
   flexRow,
   flexDistribute,
+  grow,
+  expandWidth,
+  autoScroll,
 } from '../../../css/classes';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Game } from '../../../data/selectors';
@@ -19,6 +22,13 @@ import { TabLayout } from '../../../Editor/Components/LinearTabLayout/TabLayout'
 import { ReparentableRoot } from '../../../Editor/Components/Reparentable';
 import { tabsLineStyle } from '../../HostLayout';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
+import { OverviewTab } from '../OverviewTab';
+
+const impactContainerStyle = css({
+  padding: '10px',
+  margin: '10px',
+  boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
+});
 
 function recurscript(
   functions: string[],
@@ -57,7 +67,7 @@ function recurscript(
 }
 
 interface ImpactModalComputedContentProps {
-  team?: STeam;
+  team: STeam | STeam[] | undefined;
   actions: { doFn: string; schemaFn: string }[];
   onExit: () => void;
   refreshOverview: () => void;
@@ -71,23 +81,23 @@ export function ImpactModalComputedContent({
 }: ImpactModalComputedContentProps) {
   const [payloads, setPayloads] = React.useState<{}[]>([]);
 
-  const player = team?.getPlayers()[0].getEntity();
   const functions = actions.map(({ doFn }) => {
     return `(${doFn})(team,payload)`;
   });
 
+  const player = Array.isArray(team)
+    ? team.map(t => t?.getPlayers()[0].getEntity())
+    : team?.getPlayers()[0].getEntity();
+
   return (
-    <div className={cx(flex, flexColumn)}>
-      <div className={cx(flex, flexRow)}>
+    <div className={cx(flex, flexColumn, expandWidth)}>
+      <div className={cx(flex, flexRow, flexDistribute, grow, autoScroll)}>
         {actions.map(({ schemaFn }, index) => {
-          const schema = globals.Function(
-            'team',
-            `return (${schemaFn})()`,
-          )(team);
+          const schema = globals.Function(`return (${schemaFn})()`)();
           return (
             <div
               key={JSON.stringify(schemaFn) + index}
-              className={cx(flex, flexColumn)}
+              className={cx(flex, flexColumn, impactContainerStyle)}
             >
               <h3>{schema.description}</h3>
               <JSONForm
@@ -110,14 +120,27 @@ export function ImpactModalComputedContent({
           tooltip={player == null ? 'No player in this team' : 'Apply impact'}
           label="Apply impact"
           onClick={() => {
-            recurscript(
-              functions,
-              payloads,
-              player,
-              team,
-              onExit,
-              refreshOverview,
-            );
+            if (Array.isArray(team) && Array.isArray(player)) {
+              team.map((t, i) => {
+                recurscript(
+                  functions,
+                  payloads,
+                  player[i],
+                  t,
+                  onExit,
+                  refreshOverview,
+                );
+              });
+            } else if (!Array.isArray(team) && !Array.isArray(player)) {
+              recurscript(
+                functions,
+                payloads,
+                player,
+                team,
+                onExit,
+                refreshOverview,
+              );
+            }
           }}
         />
       </div>
@@ -131,7 +154,7 @@ const advancedImpactSchema = {
 };
 
 interface ImpactModalAdvancedContentProps {
-  team?: STeam;
+  team: STeam | STeam[] | undefined;
   onExit: () => void;
   refreshOverview: () => void;
 }
@@ -143,10 +166,12 @@ export function ImpactModalAdvancedContent({
 }: ImpactModalAdvancedContentProps) {
   const [script, setScript] = React.useState('');
 
-  const player = team?.getPlayers()[0].getEntity();
+  const player = Array.isArray(team)
+    ? team.map(t => t?.getPlayers()[0].getEntity())
+    : team?.getPlayers()[0].getEntity();
 
   return (
-    <div className={cx(flex, flexColumn)}>
+    <div className={cx(flex, flexColumn, grow)}>
       <JSONForm
         value={{ script }}
         schema={advancedImpactSchema}
@@ -161,12 +186,27 @@ export function ImpactModalAdvancedContent({
           tooltip={player == null ? 'No player in this team' : 'Apply impact'}
           label="Apply impact"
           onClick={() => {
-            asyncRunLoadedScript(Game.selectCurrent().id!, script, player)
-              .catch(wwarn)
-              .finally(() => {
-                onExit();
-                refreshOverview();
+            if (Array.isArray(team) && Array.isArray(player)) {
+              team.map((_t, i) => {
+                asyncRunLoadedScript(
+                  Game.selectCurrent().id!,
+                  script,
+                  player[i],
+                )
+                  .catch(wwarn)
+                  .finally(() => {
+                    onExit();
+                    refreshOverview();
+                  });
               });
+            } else if (!Array.isArray(team) && !Array.isArray(player)) {
+              asyncRunLoadedScript(Game.selectCurrent().id!, script, player)
+                .catch(wwarn)
+                .finally(() => {
+                  onExit();
+                  refreshOverview();
+                });
+            }
           }}
         />
       </div>
@@ -175,7 +215,7 @@ export function ImpactModalAdvancedContent({
 }
 
 interface ImpactModalContentProps {
-  team?: STeam;
+  team: STeam | STeam[] | undefined;
   item?: ActionItem;
   onExit: () => void;
   refreshOverview: () => void;
@@ -222,6 +262,7 @@ export function ImpactModalContent({
             header: tabsLineStyle,
           }}
           defaultActiveLabel="Impacts"
+          CustomTab={OverviewTab}
         />
       </ReparentableRoot>
     ) : (
