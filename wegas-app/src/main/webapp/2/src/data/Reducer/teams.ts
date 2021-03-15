@@ -1,6 +1,11 @@
 import { Reducer } from 'redux';
 import u from 'immer';
-import { ActionType, StateActions, ActionCreator } from '../actions';
+import {
+  ActionType,
+  StateActions,
+  ActionCreator,
+  manageResponseHandler,
+} from '../actions';
 import { omit } from 'lodash-es';
 import { ThunkResult, store } from '../Stores/store';
 import { TeamAPI } from '../../API/teams.api';
@@ -38,13 +43,25 @@ export default teams;
 
 /**
  * Get all teams
- * @param gameModel the new version of the game model
  */
 export function getTeams(): ThunkResult {
   return function () {
     const gameId = store.getState().global.currentGameId;
     return TeamAPI.getAll(gameId).then(res => {
       return store.dispatch(ActionCreator.TEAM_FETCH_ALL({ teams: res }));
+    });
+  };
+}
+
+/**
+ * update a team
+ */
+export function updateTeam(team: ITeam): ThunkResult {
+  return function () {
+    const gameModelId = store.getState().global.currentGameModelId;
+    const gameId = store.getState().global.currentGameId;
+    return TeamAPI.update(gameModelId, gameId, team).then(res => {
+      return store.dispatch(manageResponseHandler(res));
     });
   };
 }

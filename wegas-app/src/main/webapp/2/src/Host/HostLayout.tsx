@@ -82,8 +82,8 @@ export default function HostLayout() {
       <ReparentableRoot>
         <TabLayout
           components={{
-            ...trainerTabs,
             ...availableLayoutTabs,
+            ...trainerTabs,
             ...peerReviewTabs,
           }}
           CustomTab={OverviewTab}

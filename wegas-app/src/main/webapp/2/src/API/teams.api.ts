@@ -1,5 +1,6 @@
-import { rest } from './rest';
+import { managedModeRequest, rest } from './rest';
 import { ITeam } from 'wegas-ts-api';
+import { GameModel } from '../data/selectors';
 
 /*
 GET	/Wegas/rest/GameModel/{gameModelId: ([1-9][0-9]*)?}{s: /?}Game/{gameId : ([1-9][0-9]*)?}{s2: /?}Team
@@ -34,5 +35,11 @@ export const TeamAPI = {
     ).then((res: Response) => {
       return res.json();
     });
+  },
+  update(gameModelId: number, gameId: number, team: ITeam) {
+    return managedModeRequest(
+      `/GameModel/${gameModelId}/Game/${gameId}/Team/${team.id!}`,
+      { method: 'PUT', body: JSON.stringify(team) },
+    );
   },
 };

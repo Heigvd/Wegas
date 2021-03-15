@@ -1,5 +1,7 @@
 import { css, cx } from 'emotion';
 import * as React from 'react';
+import { ITeam } from 'wegas-ts-api';
+import { useTimeout } from '../../Components/Hooks/useDebounce';
 import HTMLEditor from '../../Components/HTMLEditor';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import {
@@ -9,6 +11,8 @@ import {
   itemCenter,
   justifyCenter,
 } from '../../css/classes';
+import { Actions } from '../../data';
+import { store } from '../../data/Stores/store';
 import { OverviewClickType, ActionItem, DataItem, DataType } from './Overview';
 import {
   firstScrollCellStyle,
@@ -30,6 +34,20 @@ export function OverviewRow({
   onClick,
 }: OverviewRowProps) {
   const [showPlayers, setShowPlayers] = React.useState(false);
+
+  const editTeam = React.useCallback(
+    (value: string) => {
+      const newTeam: ITeam = {
+        ...team.getEntity(),
+        notes: value,
+      };
+      store.dispatch(Actions.TeamActions.updateTeam(newTeam));
+    },
+    [team],
+  );
+
+  const debouncedEditTeam = useTimeout(editTeam, 1000);
+
   return (
     <>
       <tr>
@@ -95,7 +113,12 @@ export function OverviewRow({
                 </ul>
               </div>
               <div>
-                <HTMLEditor />
+                <HTMLEditor
+                  value={team.getNotes() || ''}
+                  noResize
+                  onChange={debouncedEditTeam}
+                  onSave={editTeam}
+                />
               </div>
             </div>
           </td>

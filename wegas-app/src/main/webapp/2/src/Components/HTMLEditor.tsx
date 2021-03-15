@@ -109,6 +109,10 @@ interface HTMLEditorProps extends ClassStyleId, DisabledReadonly {
    * the editor is in read only mode
    */
   readOnly?: boolean;
+  /**
+   * avoid resizing of the editor
+   */
+  noResize?: boolean;
 }
 
 let HTMLEditorID = 0;
@@ -125,6 +129,7 @@ export default function HTMLEditor({
   placeholder,
   disabled,
   readOnly,
+  noResize,
 }: HTMLEditorProps) {
   const [fileBrowsing, setFileBrowsing] = React.useState<{ fn?: CallbackFN }>(
     {},
@@ -181,7 +186,7 @@ export default function HTMLEditor({
           )} | code media table forecolor backcolor styleselect fontsizeselect clientclassselection`,
         toolbar_drawer: 'floating',
         menubar: false,
-        // resize: disabled ? false : 'both',
+        resize: disabled || noResize ? false : 'both',
         statusbar: true,
         branding: false,
         relative_urls: false,
@@ -278,7 +283,7 @@ export default function HTMLEditor({
         },
       };
     },
-    [inline, readOnly, placeholder, onSave, disabled, classes],
+    [inline, readOnly, placeholder, onSave, disabled, noResize, classes],
   );
 
   React.useEffect(() => {
@@ -366,7 +371,7 @@ const labeledHTMLEditorStyle = css({
 
 interface HtmlProps
   extends WidgetProps.BaseProps<
-    { placeholder?: string } & CommonView & LabeledView
+    { placeholder?: string } & CommonView & LabeledView & { noResize?: boolean }
   > {
   value?: string;
 }
@@ -406,6 +411,7 @@ export class LabeledHTMLEditor extends React.Component<HtmlProps, HtmlState> {
                 onChange={this.props.onChange}
                 className={labeledHTMLEditorStyle}
                 id={inputId}
+                noResize={this.props.view.noResize}
               />
             </div>
           )}

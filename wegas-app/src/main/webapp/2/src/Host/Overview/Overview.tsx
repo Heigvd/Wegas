@@ -217,26 +217,30 @@ export default function Overview() {
       </Toolbar.Header>
       <Toolbar.Content>
         <div className={tableStyle}>
-          <table>
+          <table key={JSON.stringify(Object.keys(teams))}>
             <OverviewHeader
               overviewState={overviewState}
               onClick={onRowClick(
-                Object.values(teams).map(t => instantiate(t)),
+                Object.values(teams)
+                  .filter(t => t['@class'] === 'Team')
+                  .map(t => instantiate(t)),
               )}
             />
             <tbody>
-              {Object.entries(teams).map(([id, t]) => {
-                const team = instantiate(t);
-                return (
-                  <OverviewRow
-                    key={id}
-                    team={team}
-                    structure={overviewState?.row}
-                    data={overviewState?.data[id]}
-                    onClick={onRowClick(team)}
-                  />
-                );
-              })}
+              {Object.entries(teams)
+                .filter(([, t]) => t['@class'] === 'Team')
+                .map(([id, t]) => {
+                  const team = instantiate(t);
+                  return (
+                    <OverviewRow
+                      key={id}
+                      team={team}
+                      structure={overviewState?.row}
+                      data={overviewState?.data[id]}
+                      onClick={onRowClick(team)}
+                    />
+                  );
+                })}
             </tbody>
           </table>
         </div>

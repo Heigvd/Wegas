@@ -111,7 +111,7 @@ type SchemaPropsStringFn = (
 type SchemaPropsHTMLFn = (
   props: CommonSchemaProps &
     ReadOnlySchemaProps &
-    ValueSchemaProps<ITranslatableContent>,
+    ValueSchemaProps<ITranslatableContent> & { noResize?: boolean },
 ) => {};
 
 type SchemaPropsCustomFn = (

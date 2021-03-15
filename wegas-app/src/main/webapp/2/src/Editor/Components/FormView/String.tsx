@@ -10,6 +10,7 @@ export interface StringInputProps
       rows?: number;
       disabled?: boolean;
       placeholder?: string;
+      fullWidth?: boolean;
     } & CommonView &
       LabeledView
   > {
@@ -37,6 +38,7 @@ export default function StringInput({
                 readOnly={view.readOnly}
                 placeholder={view.placeholder}
                 id={inputId}
+                fullWidth={view.fullWidth}
               />
             </>
           );

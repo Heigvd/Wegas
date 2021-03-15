@@ -109,9 +109,12 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     readOnly,
+    fullWidth = false,
   }: CommonSchemaProps &
     ReadOnlySchemaProps &
-    ValueSchemaProps<string>): TypedProps<StringInputProps> => ({
+    ValueSchemaProps<string> & {
+      fullWidth?: boolean;
+    }): TypedProps<StringInputProps> => ({
     required,
     type: 'string',
     value,
@@ -124,6 +127,7 @@ const simpleSchemaProps = {
       label,
       type: 'string',
       readOnly,
+      fullWidth,
     },
   }),
   html: ({
@@ -135,9 +139,10 @@ const simpleSchemaProps = {
     layout,
     borderTop,
     readOnly,
+    noResize = false,
   }: CommonSchemaProps &
     ReadOnlySchemaProps &
-    ValueSchemaProps<ITranslatableContent>) => ({
+    ValueSchemaProps<ITranslatableContent> & { noResize?: boolean }) => ({
     required,
     type: 'object',
     value,
@@ -150,6 +155,7 @@ const simpleSchemaProps = {
       label,
       type: 'i18nhtml',
       readOnly,
+      noResize,
     },
   }),
   custom: <T extends keyof typeof DEFINED_VIEWS>({
