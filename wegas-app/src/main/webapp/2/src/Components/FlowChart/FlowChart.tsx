@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css } from 'emotion';
+import { css, cx } from 'emotion';
 import { XYPosition } from '../Hooks/useMouseEventDnd';
 import { Toolbar } from '../Toolbar';
 
@@ -25,11 +25,17 @@ import {
   ArrowDefs,
   FlowLineComponentProps,
 } from './FlowLineComponent';
+import { themeVar } from '../Style/ThemeVars';
 
 const flowChartStyle = css({
   width: '100%',
   height: '100%',
   borderStyle: 'solid',
+});
+
+const flowChartDisabledStyle = css({
+  opacity: 0.5,
+  backgroundColor: themeVar.Common.colors.DisabledColor,
 });
 
 export interface Processes<F extends FlowLine, P extends Process<F>> {
@@ -422,7 +428,10 @@ export function FlowChart<F extends FlowLine, P extends Process<F>>({
 
   return (
     <Toolbar
-      className={flowChartStyle + classNameOrEmpty(className)}
+      className={
+        cx(flowChartStyle, { [flowChartDisabledStyle]: disabled }) +
+        classNameOrEmpty(className)
+      }
       style={style}
       id={id}
     >
