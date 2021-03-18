@@ -25,7 +25,6 @@ import {
   displayObsoleteComponentManager,
   ObsoleteComponentManager,
 } from './ObsoleteComponentManager';
-import { useComparator } from '../../../Helper/react.debug';
 import { useDeepMemo } from '../../Hooks/useDeepMemo';
 
 const emptyPath: number[] = [];
