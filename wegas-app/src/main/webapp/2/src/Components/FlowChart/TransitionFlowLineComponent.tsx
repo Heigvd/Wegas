@@ -39,6 +39,12 @@ export const transitionBoxStyle = css({
     textAlign: 'left',
     margin: 0,
   },
+  '& *': {
+    whiteSpace: 'nowrap',
+    maxHeight: '30px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 });
 
 export const transitionBoxActionStyle = css({
