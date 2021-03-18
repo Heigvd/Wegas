@@ -11,15 +11,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.WebsocketFacade;
+import com.wegas.core.event.client.ClientEvent;
+import com.wegas.core.event.client.ExceptionEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.persistence.AbstractEntity;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -53,8 +57,8 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
     private RequestFacade requestFacade;
 
     /**
-     * This method encapsulates a Jersey response's entities in a ServerResponse
-     * and add server side events.
+     * This method encapsulates a Jersey response's entities in a ServerResponse and add server side
+     * events.
      *
      * @param request
      * @param response
@@ -70,7 +74,23 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         requestManager.setStatus(response.getStatusInfo());
 
         if (response.getStatusInfo().getStatusCode() >= 400) {
-            logger.warn("Problem : {}", response.getEntity());
+            List<Exception> exceptions = new ArrayList<>();
+            requestManager.getClientEvents().forEach(event -> {
+                if (event instanceof ExceptionEvent) {
+                    exceptions.addAll(((ExceptionEvent) event).getExceptions());
+                }
+            });
+
+            if (response.getEntity() == null && !exceptions.isEmpty()) {
+                response.setEntity(exceptions.remove(0));
+            }
+            if (response.getEntity() != null) {
+                logger.warn("Problem : ", response.getEntity());
+            }
+
+            exceptions.forEach(ex
+                -> logger.warn("Problem :", ex)
+            );
         }
 
         boolean rollbacked = false;
@@ -83,19 +103,19 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         if (isManaged) {
             ManagedResponse serverResponse = new ManagedResponse();
             /*
-             * returnd entities are not to propagate through websockets
-             * unless they're registered within requestManager's updatedEntities
+             * returnd entities are not to propagate through websockets unless they're registered
+             * within requestManager's updatedEntities
              */
             List updatedEntities;
             List deletedEntities = new LinkedList<>();
 
 
             /*
-             * if response entity is kind of exception.
-             * it means something went wrong during the process -> Rollback any db changes
+             * if response entity is kind of exception. it means something went wrong during the
+             * process -> Rollback any db changes
              *
-                 * Behaviour is to return a managed response with an empty entity list
-                 * and to register the exception as a request exception event
+             * Behaviour is to return a managed response with an empty entity list and to register
+             * the exception as a request exception event
              */
             if (response.getEntity() instanceof Exception || requestManager.getExceptionCounter() > 0 || response.getStatusInfo().getStatusCode() >= 400) {
 
@@ -122,8 +142,8 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 rollbacked = true;
             } else {
                 /*
-                 * Request has been processed without throwing a fatal exception
-                 * -> Include all returned entities (modified or not) in the managed response
+                 * Request has been processed without throwing a fatal exception -> Include all
+                 * returned entities (modified or not) in the managed response
                  */
 
                 List entities;
@@ -135,7 +155,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                     }
                     //entities = (List<Object>) response.getEntity();
                 } else if (response.getEntity() instanceof ScriptObjectMirror
-                        && ((ScriptObjectMirror) response.getEntity()).isArray()) {
+                    && ((ScriptObjectMirror) response.getEntity()).isArray()) {
                     entities = new LinkedList(((ScriptObjectMirror) response.getEntity()).values());
                 } else if (response.getEntity() != null) {
                     entities = new LinkedList<>();
@@ -151,8 +171,8 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
             if (!rollbacked && !(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
                 /**
-                 * Include all detected updated entities within updatedEntites
-                 * (the ones which will be returned to the client)
+                 * Include all detected updated entities within updatedEntites (the ones which will
+                 * be returned to the client)
                  */
                 for (Entry<String, List<AbstractEntity>> entry : updatedEntitiesMap.entrySet()) {
                     String audience = entry.getKey();
@@ -175,9 +195,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                                 deletedEntities.add(ae);
                             }
                             /*
-                             * Since each entity which has been returned by the rest method is included
-                             * within updatedEntities list by default, make sure to not include thoses which
-                             * where destroyed
+                             * Since each entity which has been returned by the rest method is
+                             * included within updatedEntities list by default, make sure to not
+                             * include thoses which where destroyed
                              */
                             if (updatedEntities.contains(ae)) {
                                 updatedEntities.remove(ae);
@@ -216,18 +236,18 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         String socketId = requestManager.getSocketId();
 
         String eSocketId = (!isManaged || socketId == null || !socketId.matches("^[\\d\\.]+$"))
-                ? null : socketId;
+            ? null : socketId;
 
         if (!rollbacked) {
             if (!(updatedEntitiesMap.isEmpty() && destroyedEntitiesMap.isEmpty())) {
                 requestManager.markPropagationStartTime();
                 websocketFacade.onRequestCommit(updatedEntitiesMap, destroyedEntitiesMap,
-                        socketId);
+                    socketId);
                 requestManager.markPropagationEndTime();
             }
 
             requestManager.getUpdatedGameModelContent().forEach(gameModelContent
-                    -> websocketFacade.gameModelContentUpdate(gameModelContent, eSocketId)
+                -> websocketFacade.gameModelContentUpdate(gameModelContent, eSocketId)
             );
         }
 
