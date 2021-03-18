@@ -501,6 +501,19 @@ export function useScript<T extends ScriptReturnType>(
   },
   catchCB?: (e: Error) => void,
 ): (T extends WegasScriptEditorReturnType ? T : unknown) | undefined {
+  const oldContext = React.useRef<{
+    [name: string]: unknown;
+  }>();
+
+  const newContext = React.useMemo(() => {
+    if (deepDifferent(context, oldContext.current)) {
+      oldContext.current = context;
+      return context;
+    } else {
+      return oldContext.current;
+    }
+  }, [context]);
+
   const globalContexts = useGlobalContexts();
 
   const state = usePagesContextStateStore(s => s);
@@ -508,12 +521,12 @@ export function useScript<T extends ScriptReturnType>(
   const fn = React.useCallback(() => {
     if (Array.isArray(script)) {
       return script.map(scriptItem =>
-        safeClientScriptEval<T>(scriptItem, context, catchCB, state),
+        safeClientScriptEval<T>(scriptItem, newContext, catchCB, state),
       );
     } else {
-      return safeClientScriptEval<T>(script, context, catchCB, state);
+      return safeClientScriptEval<T>(script, newContext, catchCB, state);
     }
-  }, [script, context, state, catchCB]);
+  }, [script, newContext, state, catchCB]);
 
   const returnValue = useStore(s => {
     setGlobals(globalContexts, s);
