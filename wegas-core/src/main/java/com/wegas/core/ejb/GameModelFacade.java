@@ -241,7 +241,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         modelFacade.processLanguages(newVersion, toPatch);
         // ensure variable tree is up to date with newVersion's
-        modelFacade.fixVariableTree(newVersion, toPatch);
+        modelFacade.fixVariableTree(newVersion, toPatch, false);
         // merge recusrsively and bypass visibility restriction
         gameModel.deepMergeForce(newVersion);
 

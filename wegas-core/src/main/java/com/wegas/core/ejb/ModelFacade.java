@@ -374,10 +374,10 @@ public class ModelFacade {
                 }
 
                 /*
-                 * go through exclusionCanditates to detemintate which of them should be kept
-                 * a candidate is a descriptor which is not shared among all scenarios, but it may contains children which are.
-                 * When it's the case, the descriptor must be kept.
-                 * If the descriptor doesn't contains any children, it can be removed
+                 * go through exclusionCanditates to detemintate which of them should be kept a
+                 * candidate is a descriptor which is not shared among all scenarios, but it may
+                 * contains children which are. When it's the case, the descriptor must be kept. If
+                 * the descriptor doesn't contains any children, it can be removed
                  */
                 boolean restart;
                 do {
@@ -413,9 +413,7 @@ public class ModelFacade {
                 gameModelFacade.createWithDebugGame(model);
 
                 /*
-                 * Selection Process is over.
-                 *  -> reset refId
-                 *  -> import missing translations
+                 * Selection Process is over. -> reset refId -> import missing translations
                  */
                 for (VariableDescriptor vd : model.getVariableDescriptors()) {
                     logger.debug("Descriptor {} exists in all scenarios", vd);
@@ -694,7 +692,7 @@ public class ModelFacade {
     public void fixVariableTree(Long modelId) throws RepositoryException {
         GameModel model = gameModelFacade.find(modelId);
         List<GameModel> implementations = gameModelFacade.getImplementations(model);
-        fixVariableTree(model, implementations);
+        fixVariableTree(model, implementations, true);
     }
 
     public void fixVariableTree(Long modelId, List<Long> scenarios) throws RepositoryException {
@@ -702,7 +700,7 @@ public class ModelFacade {
             scenarios.stream()
                 .map(id -> gameModelFacade.find(id))
                 .collect(Collectors.toList())
-        );
+        , true);
     }
 
     private String buildPath(DescriptorListI list) {
@@ -735,10 +733,11 @@ public class ModelFacade {
      *
      * @param model
      * @param scenarios
+     * @param ignorePrivate
      *
      * @throws RepositoryException
      */
-    public void fixVariableTree(GameModel model, List<GameModel> scenarios) throws RepositoryException {
+    public void fixVariableTree(GameModel model, List<GameModel> scenarios, boolean ignorePrivate) throws RepositoryException {
         if (model != null) {
 //            if (model.isModel()) {
             // force all refIds
@@ -770,25 +769,27 @@ public class ModelFacade {
                 // iterate over all model's descriptors
                 String modelParentRef = this.getParentRef(modelVd);
                 String name = modelVd.getName();
+                if (!ignorePrivate || modelVd.getVisibility() != ModelScoped.Visibility.PRIVATE) {
 
-                for (GameModel scenario : scenarios) {
-                    try {
-                        // get corresponding descriptor in the scenrio
-                        VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
+                    for (GameModel scenario : scenarios) {
+                        try {
+                            // get corresponding descriptor in the scenrio
+                            VariableDescriptor vd = variableDescriptorFacade.find(scenario, name);
 
-                        String parentRef = this.getParentRef(vd);
-                        if (!parentRef.equals(modelParentRef)) {
-                            logger.info("Descriptor {} will be moved from {} to {}", vd, buildPath(vd.getParent()), buildPath(modelVd.getParent()));
-                            // Parents differs
-                            toMove.put(vd, modelVd);  //key : the descriptor to move; value: corresponding descriptor within the model
-                        }
-                    } catch (WegasNoResultException ex) {
-                        // corresponding descriptor not found -> it has to be created
-                        // but, in this step we only care about directories
-                        logger.info("Descriptor {} will be created in {} at {}", modelVd, scenario, buildPath(modelVd.getParent()));
-                        if (modelVd instanceof DescriptorListI) {
-                            toCreate.putIfAbsent(scenario, new ArrayList<>());
-                            toCreate.get(scenario).add(modelVd);
+                            String parentRef = this.getParentRef(vd);
+                            if (!parentRef.equals(modelParentRef)) {
+                                logger.info("Descriptor {} will be moved from {} to {}", vd, buildPath(vd.getParent()), buildPath(modelVd.getParent()));
+                                // Parents differs
+                                toMove.put(vd, modelVd);  //key : the descriptor to move; value: corresponding descriptor within the model
+                            }
+                        } catch (WegasNoResultException ex) {
+                            // corresponding descriptor not found -> it has to be created
+                            // but, in this step we only care about directories
+                            logger.info("Descriptor {} will be created in {} at {}", modelVd, scenario, buildPath(modelVd.getParent()));
+                            if (modelVd instanceof DescriptorListI) {
+                                toCreate.putIfAbsent(scenario, new ArrayList<>());
+                                toCreate.get(scenario).add(modelVd);
+                            }
                         }
                     }
                 }
@@ -957,7 +958,7 @@ public class ModelFacade {
                      * make sure refids match. Create missing descriptors move descriptor to correct
                      * location
                      */
-                    fixVariableTree(model, scenarios);
+                    fixVariableTree(model, scenarios, true);
 
                     /**
                      * Clean sub-levels: make sure to clear statemachine scenarios
@@ -1265,12 +1266,12 @@ public class ModelFacade {
                         //scenario.propagateGameModel();
 
                         /*
-                         * This flush is required by several EntityRevivedEvent listener,
-                         * which opperate some SQL queries (which didn't return anything before
-                         * entites have been flushed to database
+                         * This flush is required by several EntityRevivedEvent listener, which
+                         * opperate some SQL queries (which didn't return anything before entites
+                         * have been flushed to database
                          *
-                         * for instance, reviving a taskDescriptor needs to fetch others tasks by name,
-                         * it will not return any result if this flush not occurs
+                         * for instance, reviving a taskDescriptor needs to fetch others tasks by
+                         * name, it will not return any result if this flush not occurs
                          */
                         variableDescriptorFacade.flush();
 
