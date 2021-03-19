@@ -117,9 +117,9 @@ export function Selector({
         : (choices[0] as Choice).label}
     </span>
   ) : (
-    <span className={selectStyle + classNameOrEmpty(className)} style={style}>
+    <option className={selectStyle + classNameOrEmpty(className)} style={style}>
       {value}
-    </span>
+    </option>
   );
 }
 
@@ -161,7 +161,10 @@ function SelectView(props: ISelectProps) {
       : ([defaultTitle] as (Choice | string)[]).concat(selectChoices || []);
 
   const value =
-    JSON.stringify(props.value) || JSON.stringify(defaultTitle.value);
+    typeof props.value === 'string'
+      ? props.value
+      : JSON.stringify(props.value) || JSON.stringify(defaultTitle.value);
+
   return (
     <CommonViewContainer view={props.view} errorMessage={props.errorMessage}>
       <Labeled {...props.view}>

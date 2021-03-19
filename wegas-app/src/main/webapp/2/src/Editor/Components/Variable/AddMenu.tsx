@@ -61,6 +61,7 @@ interface AddMenuProps {
   forceLocalDispatch?: boolean;
   onSelect?: DropMenuProps<string, DropMenuItem<string>>['onSelect'];
   focusTab?: (tab: AvailableLayoutTab) => void;
+  style?: React.CSSProperties;
 }
 
 /**
@@ -75,12 +76,14 @@ export const AddMenuParent = asyncSFC(
     forceLocalDispatch,
     onSelect,
     focusTab,
+    style,
   }: {
     variable: IListDescriptor | IQuestionDescriptor | IWhQuestionDescriptor;
   } & AddMenuProps) => {
     const items = await buildMenuItems(variable);
     return (
       <DropMenu
+        style={style}
         label={label}
         prefixedLabel={prefixedLabel}
         items={items}

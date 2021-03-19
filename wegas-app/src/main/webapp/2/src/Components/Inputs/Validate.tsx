@@ -142,7 +142,7 @@ export function useOnCancelAction(
 
   const state = usePagesContextStateStore(s => s);
 
-  function handleOnCancel() {
+  const handleOnCancel = React.useCallback(() => {
     if (client) {
       safeClientScriptEval(client, context, undefined, state);
     }
@@ -156,11 +156,13 @@ export function useOnCancelAction(
         ),
       );
     }
-  }
+  }, [client, context, server, state]);
 
-  if (!onCancel || Object.keys(onCancel).length === 0) {
-    return { handleOnCancel: () => {} };
-  } else {
-    return { client, server, handleOnCancel };
-  }
+  return React.useMemo(() => {
+    if (!onCancel || Object.keys(onCancel).length === 0) {
+      return { handleOnCancel: () => {} };
+    } else {
+      return { client, server, handleOnCancel };
+    }
+  }, [client, handleOnCancel, onCancel, server]);
 }

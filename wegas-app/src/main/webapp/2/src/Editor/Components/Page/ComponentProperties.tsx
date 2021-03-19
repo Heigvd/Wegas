@@ -70,7 +70,6 @@ async function WindowedEditor({
   const [Form] = await Promise.all<typeof import('../Form')['Form']>([
     import('../Form').then(m => m.Form),
   ]);
-
   return (
     <div className={cx(flex, grow, flexColumn)}>
       <MessageString
