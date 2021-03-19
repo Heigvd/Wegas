@@ -25,8 +25,6 @@ import {
 } from '../../Inputs/Validate';
 import { TumbleLoader } from '../../Loader';
 import { Player } from '../../../data/selectors';
-import { useTimeout } from '../../Hooks/useDebounce';
-// import { useComparator } from '../../../Helper/react.debug';
 
 interface PlayerStringInput
   extends WegasComponentProps,
@@ -40,10 +38,6 @@ interface PlayerStringInput
    * placeholder - the grey text inside the box when nothing is written
    */
   placeholder?: IScript;
-  /**
-   * debounce - the idle time before sending changes
-   */
-  debounce?: number;
 }
 
 function PlayerStringInput({
@@ -57,7 +51,6 @@ function PlayerStringInput({
   onVariableChange,
   validator,
   onCancel,
-  debounce,
 }: PlayerStringInput) {
   const placeholderText = useScript<string>(placeholder, context);
 
@@ -88,16 +81,10 @@ function PlayerStringInput({
     [handleOnChange, text],
   );
 
-  const debouncedOnChange = useTimeout(onChange, debounce);
-
   return text == null ? (
     <TumbleLoader />
   ) : validator ? (
-    <Validate
-      value={value}
-      onValidate={debouncedOnChange}
-      onCancel={handleOnCancel}
-    >
+    <Validate value={value} onValidate={onChange} onCancel={handleOnCancel}>
       {(value, onChange) => {
         return (
           <SimpleInput
@@ -116,7 +103,7 @@ function PlayerStringInput({
   ) : (
     <SimpleInput
       value={value}
-      onChange={debouncedOnChange}
+      onChange={onChange}
       disabled={disabled || locked}
       readOnly={readOnly}
       placeholder={placeholderText}
@@ -142,10 +129,6 @@ registerComponent(
       placeholder: schemaProps.scriptString({
         label: 'Placeholder',
         richText: true,
-      }),
-      debounce: schemaProps.number({
-        label: 'Debounce',
-        value: 100,
       }),
       onVariableChange: onVariableChangeSchema('On text change action'),
       ...validatorSchema,
