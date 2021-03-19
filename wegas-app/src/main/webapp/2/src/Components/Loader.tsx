@@ -48,7 +48,8 @@ const tumbleLoaderAnimation = keyframes({
   },
 });
 
-function tumbleLoaderStyle(size: number, color: string = '#fff') {
+function tumbleLoaderStyle(containerSize: number, color: string = '#fff') {
+  const size = Math.min(containerSize, 100);
   const sideSize = (size * 6) / 8 + 'px';
   const margin = size / 8 + 'px';
   const border = (size / 32) * 3 + 'px';
@@ -62,7 +63,6 @@ function tumbleLoaderStyle(size: number, color: string = '#fff') {
       display: 'block',
       width: sideSize,
       height: sideSize,
-      // margin: margin,
       borderRadius: '50%',
       border: `${border} solid ${color}`,
       borderColor: `${color} transparent ${color} transparent`,
