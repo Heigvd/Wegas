@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -335,14 +334,12 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
         } else {
             if (requestFacade.getRequestManager().getPlayer() == null) {
                 /*
-                 * When there is no player in the current requestFacade context and
-                 * since requestFacade will blindly selects any player in such a
-                 * case.
-                 * A player who match the given variableInstance scope must be
-                 * manually selected !
+                 * When there is no player in the current requestFacade context and since
+                 * requestFacade will blindly selects any player in such a case. A player who match
+                 * the given variableInstance scope must be manually selected !
                  */
                 Player p = find.getOwner().getUserLiveOrSurveyOrDebugPlayer(requestManager.getCurrentUser());
-                try (ActAsPlayer a = requestManager.actAsPlayer(p)) {
+                try ( ActAsPlayer a = requestManager.actAsPlayer(p)) {
                     VariableInstance ret = super.update(entityId, entity);
                     requestFacade.commit();
                     return ret;
@@ -376,7 +373,9 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> impleme
             p = aThis.getOwner().getUserLivePlayerOrDebugPlayer(requestManager.getCurrentUser());
         }
 
-        scriptEvent.fire(p, "numberUpdate", new NumberUpdate(aThis, previousValue));
+        if (p != null) {
+            scriptEvent.fire(p, "numberUpdate", new NumberUpdate(aThis, previousValue));
+        }
     }
 
     public static class NumberUpdate {
