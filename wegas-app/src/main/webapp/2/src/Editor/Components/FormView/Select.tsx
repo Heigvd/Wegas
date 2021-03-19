@@ -117,9 +117,9 @@ export function Selector({
         : (choices[0] as Choice).label}
     </span>
   ) : (
-    <option className={selectStyle + classNameOrEmpty(className)} style={style}>
+    <span className={selectStyle + classNameOrEmpty(className)} style={style}>
       {value}
-    </option>
+    </span>
   );
 }
 
@@ -131,7 +131,7 @@ function SelectView(props: ISelectProps) {
   const onChange = function onChange(
     event: React.ChangeEvent<{ value: string }>,
   ) {
-    let parsedValue = undefined;
+    let parsedValue = event.target.value;
     try {
       parsedValue = JSON.parse(event.target.value);
     } finally {
