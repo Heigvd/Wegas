@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { IScript, SListDescriptor } from 'wegas-ts-api';
-import { ComponentWithForm } from '../../../Editor/Components/FormView/ComponentWithForm';
+import {
+  ComponentWithForm,
+  ComponentWithFormFlexValues,
+  flexValuesSchema,
+} from '../../../Editor/Components/FormView/ComponentWithForm';
 import { TreeView } from '../../../Editor/Components/Variable/VariableTree';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useScript } from '../../Hooks/useScript';
@@ -13,10 +17,12 @@ import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerFileBrowserProps extends WegasComponentProps {
   list?: IScript;
+  flexValues?: ComponentWithFormFlexValues;
 }
 
 export default function PlayerVariableTree({
   list,
+  flexValues,
   context,
   className,
   style,
@@ -32,6 +38,7 @@ export default function PlayerVariableTree({
     </pre>
   ) : (
     <ComponentWithForm
+      flexValues={flexValues}
       entityEditor
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
@@ -65,6 +72,7 @@ registerComponent(
         required: true,
         returnType: ['SListDescriptor'],
       }),
+      flexValues: flexValuesSchema,
     },
     allowedVariables: ['ListDescriptor'],
     getComputedPropsFromVariable: v => ({

@@ -65,7 +65,6 @@ function PlayerTextInput({
 
   const onChange = React.useCallback(
     (v: React.ReactText) => {
-      debugger;
       if (handleOnChange) {
         handleOnChange(v);
       } else if (typeof text === 'object') {
