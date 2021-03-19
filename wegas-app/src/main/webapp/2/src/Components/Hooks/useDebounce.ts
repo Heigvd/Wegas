@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 /**
  * Hook, debounce a value
@@ -16,22 +16,19 @@ export function useDebounce<T>(value: T, delay: number = 100) {
   return debounced;
 }
 
-export function useTimeout<T extends (...args: any) => any>(
+export function useTimeout<T extends (arg: any) => any>(
   action: T,
   delay: number = 100,
 ) {
   const timer = useRef<NodeJS.Timeout>();
 
-  const delayedAction = useCallback(
-    (args: Parameters<T>) => {
-      if (timer.current != null) {
-        clearTimeout(timer.current);
-      }
-      timer.current = setTimeout(() => {
-        action(args);
-      }, delay);
-    },
-    [action, delay],
-  );
+  function delayedAction(args: any) {
+    if (timer.current != null) {
+      clearTimeout(timer.current);
+    }
+    timer.current = setTimeout(() => {
+      action(args);
+    }, delay);
+  }
   return delayedAction as T;
 }
