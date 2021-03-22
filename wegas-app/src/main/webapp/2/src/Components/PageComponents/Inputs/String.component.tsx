@@ -53,12 +53,13 @@ function PlayerStringInput({
   onCancel,
 }: PlayerStringInput) {
   const placeholderText = useScript<string>(placeholder, context);
+
   const text = useScript<SStringDescriptor | string>(script, context);
 
-  const value =
-    useStore(() =>
-      typeof text === 'object' ? text.getValue(Player.self()) : text,
-    ) || '';
+  const value = useStore(
+    () =>
+      (typeof text === 'object' ? text.getValue(Player.self()) : text) || '',
+  );
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
   const { handleOnCancel } = useOnCancelAction(onCancel, context);

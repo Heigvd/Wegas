@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
 import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
@@ -66,27 +67,32 @@ export function useOnVariableChange(
 
   const state = usePagesContextStateStore(s => s);
 
-  function handleOnChange(variable: any) {
-    const newContext = { ...context, [exposeAs]: variable };
+  const handleOnChange = React.useCallback(
+    (variable: any) => {
+      const newContext = { ...context, [exposeAs]: variable };
 
-    if (client) {
-      safeClientScriptEval(client, newContext, undefined, state);
-    }
-    if (server) {
-      store.dispatch(
-        runLoadedScript(
-          server,
-          Player.selectCurrent(),
-          undefined,
-          assembleStateAndContext(newContext, state),
-        ),
-      );
-    }
-  }
+      if (client) {
+        safeClientScriptEval(client, newContext, undefined, state);
+      }
+      if (server) {
+        store.dispatch(
+          runLoadedScript(
+            server,
+            Player.selectCurrent(),
+            undefined,
+            assembleStateAndContext(newContext, state),
+          ),
+        );
+      }
+    },
+    [client, context, exposeAs, server, state],
+  );
 
-  if (!onVariableChange || Object.keys(onVariableChange).length === 0) {
-    return {};
-  } else {
-    return { client, server, exposeAs, handleOnChange };
-  }
+  return React.useMemo(() => {
+    if (!onVariableChange || Object.keys(onVariableChange).length === 0) {
+      return {};
+    } else {
+      return { client, server, exposeAs, handleOnChange };
+    }
+  }, [client, exposeAs, handleOnChange, onVariableChange, server]);
 }
