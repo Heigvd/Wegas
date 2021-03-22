@@ -45,11 +45,7 @@ import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.reviewing.ejb.ReviewingFacade;
-import javax.annotation.Resource;
-import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.script.*;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -62,10 +58,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.Map.Entry;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.naming.NamingException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -74,7 +66,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.inject.Inject;
-import javax.script.*;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,23 +135,23 @@ public class ScriptFacade extends WegasAbstractFacade {
         CompiledScript compile = null;
         try {
             compile = ((Compilable) engine).compile(
-                    "(function(global){"
-                    + "  var defaultNoSuchProperty = global.__noSuchProperty__;" // Store nashorn's implementation
-                    + "  Object.defineProperty(global, '__noSuchProperty__', {"
-                    + "    value: function(prop){"
+                "(function(global){"
+                + "  var defaultNoSuchProperty = global.__noSuchProperty__;" // Store nashorn's implementation
+                + "  Object.defineProperty(global, '__noSuchProperty__', {"
+                + "    value: function(prop){"
                 + "      if (prop === 'engine'){"
                 + "        return null;"
                 + "      }"
-                    + "      try{"
-                    + "        var ret = Variable.find(gameModel, prop).getInstance(self);"
-                    + "        print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);" // log usage if var exists
-                    + "        return ret;" // Try to find a VariableDescriptor's instance for that given prop
-                    + "      }catch(e){"
-                    + "        return defaultNoSuchProperty.call(global, prop);" // Use default implementation if no VariableDescriptor
-                    + "    }}"
-                    + "  });"
-                    + "  if (!Math._random) { Math._random = Math.random; Math.random = function random(){if (RequestManager.isTestEnv()) {return 0} else {return Math._random()} }}"
-                    + "})(this);"); // Run on Bindings
+                + "      try{"
+                + "        var ret = Variable.find(gameModel, prop).getInstance(self);"
+                + "        print('SCRIPT_ALIAS_CALL: [GM]' + gameModel.getId() + ' [alias]' + prop);" // log usage if var exists
+                + "        return ret;" // Try to find a VariableDescriptor's instance for that given prop
+                + "      }catch(e){"
+                + "        return defaultNoSuchProperty.call(global, prop);" // Use default implementation if no VariableDescriptor
+                + "    }}"
+                + "  });"
+                + "  if (!Math._random) { Math._random = Math.random; Math.random = function random(){if (RequestManager.isTestEnv()) {return 0} else {return Math._random()} }}"
+                + "})(this);"); // Run on Bindings
         } catch (ScriptException e) {
             logger.error("noSuchProperty script compilation failed", e);
         }
@@ -247,17 +238,14 @@ public class ScriptFacade extends WegasAbstractFacade {
                     this.injectPlayer(currentContext, player);
 
                     /*
-                     * To create EngineScope bindings for new user
-                     * /
-                    Bindings newB = engine.createBindings();
-                    newB.put("Variable", eBindings.get("Variable"));
-                    newB.put("gameModel", gameModel);
-
-                    currentContext.setBindings(newB, ScriptContext.ENGINE_SCOPE);
-                    this.injectPlayer(currentContext, player);
-
-                    this.injectNoSuchPropertyResolver(newB);
-                    // */
+                     * To create EngineScope bindings for new user / Bindings newB =
+                     * engine.createBindings(); newB.put("Variable", eBindings.get("Variable"));
+                     * newB.put("gameModel", gameModel);
+                     *
+                     * currentContext.setBindings(newB, ScriptContext.ENGINE_SCOPE);
+                     * this.injectPlayer(currentContext, player);
+                     *
+                     * this.injectNoSuchPropertyResolver(newB); // */
                 }
             } else {
                 //GameModel change, rebuild all
@@ -284,7 +272,7 @@ public class ScriptFacade extends WegasAbstractFacade {
          * Then inject soft ones. It means a soft script may override methods defined in a hard
          * coded one
          */
-        for (GameModelContent script : gameModel.getScriptLibraryList()){
+        for (GameModelContent script : gameModel.getScriptLibraryList()) {
             ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + script.getContentKey(), ScriptContext.ENGINE_SCOPE);
 
             String cacheFileName = "soft:" + gameModel.getId() + ":" + script.getContentKey();
@@ -306,24 +294,24 @@ public class ScriptFacade extends WegasAbstractFacade {
 
         CachedScript cached = staticCache.get(name);
 
-            if (cached == null) {
+        if (cached == null) {
             // since putIfAbsent is synchronised, check existence first to reduce locking
             cached = staticCache.putIfAbsentAndGet(name, new CachedScript(null, name, version, "JavaScript"));
-            }
+        }
 
         if (cached.version == null
             || !cached.version.equals(version)
             || cached.script == null) {
 
-                CompiledScript compile;
-                try {
+            CompiledScript compile;
+            try {
                 compile = ((Compilable) engine).compile(script);
-                } catch (ScriptException ex) {
+            } catch (ScriptException ex) {
                 throw new WegasScriptException(name, ex.getLineNumber(), ex.getMessage());
-                }
-                cached.script = compile;
-                cached.version = version;
             }
+            cached.script = compile;
+            cached.version = version;
+        }
         return cached;
     }
 
@@ -391,24 +379,19 @@ public class ScriptFacade extends WegasAbstractFacade {
         this.injectGameModel(ctx, player.getGameModel());
 
         /*
-         * Switch context to set all "static" bindings global
-         * /
-        ScriptContext effectiveCtx = new SimpleScriptContext();
-        effectiveCtx.setBindings(eBindings, ScriptContext.GLOBAL_SCOPE);
-        Bindings newEBindings = engine.createBindings();
-
-        // NoSuchProperty method needs Variable, self and gameModel to resolve
-        // undefined properties
-        newEBindings.put("self", player);
-        newEBindings.put("Variable", variableDescriptorFacade);
-        newEBindings.put("gameModel", player.getGameModel());
-
-        effectiveCtx.setBindings(newEBindings, ScriptContext.ENGINE_SCOPE);
-
-        this.injectNoSuchPropertyResolver(newEBindings);
-
-        ctx = effectiveCtx;
-         // */
+         * Switch context to set all "static" bindings global / ScriptContext effectiveCtx = new
+         * SimpleScriptContext(); effectiveCtx.setBindings(eBindings, ScriptContext.GLOBAL_SCOPE);
+         * Bindings newEBindings = engine.createBindings();
+         *
+         * // NoSuchProperty method needs Variable, self and gameModel to resolve // undefined
+         * properties newEBindings.put("self", player); newEBindings.put("Variable",
+         * variableDescriptorFacade); newEBindings.put("gameModel", player.getGameModel());
+         *
+         * effectiveCtx.setBindings(newEBindings, ScriptContext.ENGINE_SCOPE);
+         *
+         * this.injectNoSuchPropertyResolver(newEBindings);
+         *
+         * ctx = effectiveCtx; // */
         return ctx;
     }
 
@@ -486,35 +469,35 @@ public class ScriptFacade extends WegasAbstractFacade {
                 cacheFileName = "hard:" + path;
                 version = Long.toString(Files.getLastModifiedTime(path).toMillis());
 
-            CachedScript cached = staticCache.get(cacheFileName);
+                CachedScript cached = staticCache.get(cacheFileName);
 
-            if (cached == null) {
+                if (cached == null) {
                     // since putIfAbsent is synchronised, check existence first to reduce locking
                     cached = staticCache.putIfAbsentAndGet(cacheFileName, new CachedScript(null, cacheFileName, version, "JavaScript"));
-            }
+                }
 
                 if (cached.version == null
                     || !cached.version.equals(version)
                     || cached.script == null) {
 
-                    try (BufferedReader reader = Files.newBufferedReader(path)) {
+                    try ( BufferedReader reader = Files.newBufferedReader(path)) {
                         cached.script = this.compile(reader);
-                    cached.version = version;
-                } catch (ScriptException ex) {
+                        cached.version = version;
+                    } catch (ScriptException ex) {
                         throw new WegasScriptException(path.toString(), ex.getLineNumber(), ex.getMessage());
+                    }
+                }
+
+                try {
+                    ctx.setAttribute(ScriptEngine.FILENAME, "Static Scripts " + path, ScriptContext.ENGINE_SCOPE);
+                    cached.script.eval(ctx);
+                    logger.info("File {} successfully injected", path);
+                } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
+                    throw new WegasScriptException(scriptURI, ex.getLineNumber(), ex.getMessage());
+                } catch (RuntimeException ex) { // Unwrapped Java exception (Java -> JS -> Java -> throw)
+                    throw new WegasScriptException(scriptURI, ex.getMessage());
                 }
             }
-
-            try {
-                    ctx.setAttribute(ScriptEngine.FILENAME, "Static Scripts " + path, ScriptContext.ENGINE_SCOPE);
-                cached.script.eval(ctx);
-                    logger.info("File {} successfully injected", path);
-            } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
-                throw new WegasScriptException(scriptURI, ex.getLineNumber(), ex.getMessage());
-            } catch (RuntimeException ex) { // Unwrapped Java exception (Java -> JS -> Java -> throw)
-                throw new WegasScriptException(scriptURI, ex.getMessage());
-            }
-        }
         } catch (IOException | URISyntaxException ex) {
             logger.warn("Unable to read hard coded server scripts");
         }
@@ -567,8 +550,8 @@ public class ScriptFacade extends WegasAbstractFacade {
                     if (subCause != null) {
                         throw new WegasScriptException(script.getContent(), subCause.getMessage(), ex);
                     } else {
-                    throw new WegasScriptException(script.getContent(), cause.getMessage(), ex);
-                }
+                        throw new WegasScriptException(script.getContent(), cause.getMessage(), ex);
+                    }
                 }
             } else {
                 throw new WegasScriptException(script.getContent(), ex.getMessage(), ex);
@@ -649,7 +632,7 @@ public class ScriptFacade extends WegasAbstractFacade {
             Path current = queue.remove(0);
             if (!Files.isSymbolicLink(current) && Files.isReadable(current)) {
                 if (Files.isDirectory(current)) {
-                    try (Stream<Path> children = Files.list(current)) {
+                    try ( Stream<Path> children = Files.list(current)) {
                         // queue children
                         children.collect(Collectors.toCollection(() -> queue));
                     }
@@ -696,23 +679,23 @@ public class ScriptFacade extends WegasAbstractFacade {
     public Object timeoutEval(Long playerId, Script script) throws WegasScriptException {
         final Player player = playerFacade.find(playerId);
 
-        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+        try ( ActAsPlayer a = requestManager.actAsPlayer(player)) {
 
-        final ScriptContext scriptContext = this.instantiateScriptContext(player, script.getLanguage());
+            final ScriptContext scriptContext = this.instantiateScriptContext(player, script.getLanguage());
 
-        final Script scriptCopy = new Script();
-        scriptCopy.setContent(JSTool.sanitize(script.getContent(), "$$internal$delay.poll();"));
-        scriptCopy.setLanguage(script.getLanguage());
-        scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put(JSTool.JS_TOOL_INSTANCE_NAME,
+            final Script scriptCopy = new Script();
+            scriptCopy.setContent(JSTool.sanitize(script.getContent(), "$$internal$delay.poll();"));
+            scriptCopy.setLanguage(script.getLanguage());
+            scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put(JSTool.JS_TOOL_INSTANCE_NAME,
                 new JSTool.JSToolInstance());
-            try (Delay delay = new Delay(SCRIPT_DELAY, timeoutExecutorService)) {
-            scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put("$$internal$delay", delay);
-            return this.eval(scriptCopy, new HashMap<>());
-        } catch (WegasScriptException e) {
-            // try to restore original code
-            final String replaceCode = e.getMessage().replace(scriptCopy.getContent(), script.getContent());
-            throw new WegasScriptException(script.getContent(), replaceCode);
-        }
+            try ( Delay delay = new Delay(SCRIPT_DELAY, timeoutExecutorService)) {
+                scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put("$$internal$delay", delay);
+                return this.eval(scriptCopy, new HashMap<>());
+            } catch (WegasScriptException e) {
+                // try to restore original code
+                final String replaceCode = e.getMessage().replace(scriptCopy.getContent(), script.getContent());
+                throw new WegasScriptException(script.getContent(), replaceCode);
+            }
         }
     }
     // ~~~ Sugar ~~~
@@ -757,7 +740,7 @@ public class ScriptFacade extends WegasAbstractFacade {
 
     @Deprecated
     private Object eval(Player player, CachedScript s, Map<String, Object> arguments) throws WegasScriptException {
-        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+        try ( ActAsPlayer a = requestManager.actAsPlayer(player)) {
             return this.eval(s, arguments);
         }
     }
@@ -783,9 +766,9 @@ public class ScriptFacade extends WegasAbstractFacade {
      * @return eval result
      */
     private Object eval(Player player, Script s, Map<String, Object> arguments) throws WegasScriptException {
-        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
-        return this.eval(s, arguments);
-    }
+        try ( ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            return this.eval(s, arguments);
+        }
     }
 
     /**
