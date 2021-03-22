@@ -1,19 +1,20 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyMap;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.HashListView;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Access;
@@ -40,7 +41,7 @@ public class ObjectInstance extends VariableInstance implements Propertable {
     @JsonIgnore
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyMap.class,
-            view = @View(label = "Instance properties"))
+            view = @View(label = "Instance properties", value = HashListView.class))
     private List<VariableProperty> properties = new ArrayList<>();
 
     @Override

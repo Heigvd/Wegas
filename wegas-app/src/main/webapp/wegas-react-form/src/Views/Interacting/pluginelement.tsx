@@ -1,8 +1,8 @@
 import React from 'react';
-import Form, { Schema } from 'jsoninput';
-import { getY } from '../../index';
-import { useAsync } from '../../Hooks/async';
-import { SimpleLoader } from '../../Components/Loader';
+import Form, {Schema} from 'jsoninput';
+import {getY} from '../../index';
+import {useAsync} from '../../Hooks/async';
+import {SimpleLoader} from '../../Components/Loader';
 
 // Temporary solution until the friendly name is added as a standard widget attribute?
 function friendlyName(label: string) {
@@ -86,7 +86,7 @@ function updateCfg(cfg: Schema): Schema {
 }
 interface IValue {
     fn: string;
-    cfg: { [key: string]: any };
+    cfg: {[key: string]: any};
 }
 const Y = getY();
 function PluginElement({
@@ -96,17 +96,28 @@ function PluginElement({
 }: {
     value: IValue;
     onChange: (value: object) => void;
-    view: { choices: {}[] };
+    view: {choices: {}[]};
 }) {
     const schema = useAsync(
         new Promise<Schema>((resolve, reject) => {
             if (value && value.fn) {
-                Y.Wegas.use({ type: value.fn }, () => {
+                Y.Wegas.use({type: value.fn}, () => {
                     // load required modules
                     const targetPlg = Y.Plugin[value.fn] as Y.Plugin_Base;
-                    const w: Y.Plugin_Host = new Y.Wegas.Text(); // Use this hack to retrieve a plugin config
-                    w.plug(targetPlg);
-                    const cfg = (w as any)[targetPlg.NS].getFormCfg();
+
+                    if (!(Y.Plugin[value.fn] as any)._ATTR_CFG_HASH) {
+                        // This plugin has never been used yet
+                        // need to plug it once to initilize static fields (sic)
+                        try {
+                            const w: Y.Plugin_Host = new Y.Wegas.Text();
+                            w.plug(targetPlg);
+                            (w as any)[targetPlg.NS].getFormCfg();
+                        } catch (e) {
+                            console.log("Error: " + Y.Plugin[value.fn]);
+                        }
+                    }
+
+                    const cfg = Y.Wegas.Editable.staticGetFormCfg(Y.Plugin[value.fn]);
                     cfg.name = targetPlg.NAME;
                     cfg.view = {
                         label:
@@ -114,6 +125,8 @@ function PluginElement({
                             targetPlg.EDITORNAME ||
                             friendlyName(targetPlg.NAME),
                     };
+
+
                     resolve(updateCfg(cfg));
                 });
             } else {

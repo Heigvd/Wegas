@@ -1,22 +1,27 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.page;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.JsonPatchException;
 import com.wegas.core.Helper;
 import java.io.IOException;
+import java.io.StringReader;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonPatch;
+import javax.json.JsonReader;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -70,6 +75,7 @@ public class Page {
      *
      */
     public Page() {
+        // ensure to have an empty constructor
     }
 
     /**
@@ -93,11 +99,37 @@ public class Page {
         return content;
     }
 
+    @Deprecated
     public JsonNode getContentWithMeta() {
         ObjectNode content = this.content.deepCopy();
         content.put("@name", this.name);
         content.put("@index", this.index);
         return content;
+    }
+
+    @Deprecated
+    public JsonObject getJsonBContentWithMeta() throws JsonProcessingException {
+        String strContent = getMapper().writeValueAsString(this.content);
+        JsonObject jsonbContent;
+
+        try (JsonReader reader = Json.createReader(new StringReader(strContent))) {
+            jsonbContent = reader.readObject();
+        }
+
+        JsonObjectBuilder page = Json.createObjectBuilder(jsonbContent);
+        if (this.name != null) {
+            page.add("@name", this.name);
+        } else {
+            page.addNull("@name");
+        }
+
+        if (this.index != null) {
+            page.add("@index", this.index);
+        } else {
+            page.addNull("@index");
+        }
+
+        return page.build();
     }
 
     /**
@@ -119,7 +151,6 @@ public class Page {
     /**
      * @param content
      *
-     * @throws IOException
      */
     @JsonIgnore
     public final void setContent(String content) {
@@ -127,7 +158,7 @@ public class Page {
             this.content = getMapper().readTree(content);
             this.extractAttrs();
         } catch (IOException e) {
-
+            logger.warn("Fails to set page content {}", e);
         }
     }
 
@@ -149,6 +180,7 @@ public class Page {
      *
      */
     @JsonIgnore
+    @Deprecated
     private void extractAttrs() {
         JsonNode node;
         node = this.content.path("@name");
@@ -165,19 +197,23 @@ public class Page {
 
     /**
      * @param patch RFC6902: patch Array
+     *
+     * @throws com.fasterxml.jackson.core.JsonProcessingException
      */
-    public void patch(JsonNode patch) throws IOException, JsonPatchException {
-        final JsonNode target = JsonPatch.fromJson(patch).apply(this.getContentWithMeta());
-        logger.info("INPUT\n" + this.content.toString() + "\nPATCH\n" + patch + "\nRESULT\n" + target.asText());
-        this.setContent(target);
+    public void patch(JsonPatch patch) throws JsonProcessingException {
+        JsonObject patched = patch.apply(this.getJsonBContentWithMeta());
+
+        logger.info("INPUT\n" + this.content.toString() + "\nPATCH\n" + patch + "\nRESULT\n" + patched);
+        this.setContent(patched.toString());
     }
 
     //@TODO : tokenizer
     /**
      * @param jsonPath
      *
-     * @return  some extracted node as text
+     * @return some extracted node as text
      */
+    @Deprecated
     public String extract(String jsonPath) {
         JsonNode node = this.content;
         final String[] xpaths = jsonPath.trim().split("\\.|\\[|\\]");

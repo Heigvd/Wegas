@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.event.client;
@@ -17,13 +17,17 @@ import java.util.List;
  */
 public class OutdatedEntitiesEvent extends ClientEvent {
 
+    private static final long serialVersionUID = 1L;
+
+    private List<OutdatedEntity> outdated = new ArrayList<>();
+
     public static class OutdatedEntity {
 
         private String type;
         private Long id;
 
         public OutdatedEntity(AbstractEntity entity) {
-            this.type = entity.getClass().getSimpleName();
+            this.type = entity.getJSONClassName();
             this.id = entity.getId();
         }
 
@@ -45,13 +49,11 @@ public class OutdatedEntitiesEvent extends ClientEvent {
 
     }
 
-    private static final long serialVersionUID = 1L;
-    private List<OutdatedEntity> outdated = new ArrayList<>();
-
     /**
      *
      */
     public OutdatedEntitiesEvent() {
+        // ensure to have an empty constructor
     }
 
     public OutdatedEntitiesEvent(List<AbstractEntity> entities) {

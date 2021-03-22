@@ -12,34 +12,26 @@ angular.module('wegas.service.wegasTranslations', [])
             },
             default: function() {
                 $translateProvider.useSanitizeValueStrategy('escape'); // Minimal security required against XSS, but it prevents HTML inside translation strings.
-                if (localStorage.getObject("wegas-config")) {
-                    $translateProvider.preferredLanguage(localStorage.getObject("wegas-config").commons.language);
+                var cfg = localStorage.getObject("wegas-config");
+                if (cfg && cfg.commons && cfg.commons.language) {
+                    $translateProvider.preferredLanguage(cfg.commons.language);
                 } else {
                     var frList = ['fr', 'fr-fr', 'fr-ch', 'fr-mc', 'fr-ca', 'fr-lu'],
                         isFr = false,
                         language = window.navigator.userLanguage || window.navigator.language;
+                    language = language.toLowerCase();
                     frList.forEach(function(frCode) {
-                        if (language.toLowerCase() === frCode) {
+                        if (language === frCode) {
                             isFr = true;
                         }
                     });
-                    if (isFr) {
-                        localStorage.setObject("wegas-config", {
-                            'commons': {
-                                'language': 'fr'
-                            },
-                            'users': {}
-                        });
-                        $translateProvider.preferredLanguage('fr');
-                    } else {
-                        localStorage.setObject("wegas-config", {
-                            'commons': {
-                                'language': 'en'
-                            },
-                            'users': {}
-                        });
-                        $translateProvider.preferredLanguage('en');
-                    }
+                    localStorage.setObject("wegas-config", {
+                        'commons': {
+                            'language': (isFr ? 'fr' : 'en')
+                        },
+                        'users': {}
+                    });
+                    $translateProvider.preferredLanguage(isFr ? 'fr' : 'en');
                 }
             },
             $get: function() {
@@ -180,7 +172,32 @@ angular.module('wegas.service.wegasTranslations', [])
                         }
                     ],
                     'translations': {
+                        //warning
+                        'DEPRECATED-BROWSER': {
+                            'en': 'You are using an outdated and unsupported browser. Please upgrade your browser to log in',
+                            'fr': 'Vous utilisez un navigateur obsolète. Veuillez le mettre à jour pour pouvoir vous connecter',
+                        },
                         // Commons
+                        'WEGAS-KEYWORD-AND': {
+                            'en': 'and',
+                            'fr': "et"
+                        },
+                        'WEGAS-TERMS-OF-USE-TITLE': {
+                            'en': 'the general terms of use',
+                            'fr': "les conditions générales"
+                        },
+                        'WEGAS-DATA-PRIVACY-TITLE': {
+                            'en': 'the data management policy',
+                            'fr': "la politique de gestion des données"
+                        },
+                        'WEGAS-TERMS-OF-USE-URL': {
+                            'en': 'https://www.albasim.ch/en/terms-of-use/',
+                            'fr': 'https://www.albasim.ch/en/terms-of-use/'
+                        },
+                        'WEGAS-DATA-PRIVACY-URL': {
+                            'en': 'https://www.albasim.ch/en/data-policy/',
+                            'fr': 'https://www.albasim.ch/en/data-policy/'
+                        },
                         'LANGUAGE-FRENCH-NAME': {
                             'en': "Français",
                             'fr': "Français"
@@ -231,12 +248,6 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Username and password cannot be empty",
                             'fr': "Veuillez renseigner l'email et le mot de passe"
                         },
-                        /*
-                         'CREATE-ACCOUNT-LABEL': {
-                         'en': "New user?",
-                         'fr': "Nouvel utilisateur ?"
-                         },
-                         */
                         'LOGIN-AAI-ACCOUNT-BTN': {
                             'en': "Recommended to AAI users:",
                             'fr': "Recommandé aux utilisateurs AAI:"
@@ -277,10 +288,6 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': 'I agree with',
                             'fr': "J'accepte"
                         },
-                        'CREATE-ACCOUNT-INPUT-TERMS': {
-                            'en': 'the terms of use',
-                            'fr': "les conditions générales"
-                        },
                         'CREATE-ACCOUNT-SEND-BTN': {
                             'en': "Let's go!",
                             'fr': "C'est parti !"
@@ -305,8 +312,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Veuillez entrer votre adresse e-mail"
                         },
                         'CREATE-ACCOUNT-FLASH-WRONG-EMAIL-IN-USERNAME': {
-                            'en': "All e-mail addresses must be identical",
-                            'fr': "Toutes les adresses e-mail doivent être identiques"
+                            'en': "A username can not contain the '@' character",
+                            'fr': "Le nom d'utilisateur ne peux pas contenir de '@'"
                         },
                         'CREATE-ACCOUNT-FLASH-WRONG-USERNAME': {
                             'en': "A username is required",
@@ -502,8 +509,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Erreur durant la création de l'" + keywords.team.singular.fr
                         },
                         'COMMONS-TEAMS-GUEST-JOINING': {
-                            'en': "Preparation of guest account ...",
-                            'fr': "Préparation du compte invité ..."
+                            'en': "Preparation of anonymous guest account ...",
+                            'fr': "Préparation d'un compte invité anonyme ..."
                         },
 
                         // Commons Sessions Model
@@ -550,8 +557,8 @@ angular.module('wegas.service.wegasTranslations', [])
                         },
                         // Referenced server side:
                         'COMMONS-SESSIONS-TAKEN-TOKEN-ERROR': {
-                            'en': "This access key is already used for another " + keywords.session.singular.en,
-                            'fr': "Cette clé d'accès est déjà utilisée pour une autre " + keywords.session.singular.fr
+                            'en': "Access key already used by another " + keywords.session.singular.en,
+                            'fr': "Clé d'accès déjà utilisée par une autre " + keywords.session.singular.fr
                         },
                         'COMMONS-SESSIONS-UPDATE-NO-SESSION-FLASH-ERROR': {
                             'en': "No " + keywords.session.singular.en + " to update",
@@ -594,6 +601,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Error while editing " + keywords.session.singular.en + " access",
                             'fr': "Une erreur est survenue durant l'édition de l'accès à la " +
                                 keywords.session.singular.fr
+                        },
+                        'COMMONS-SESSIONS-EDIT-TOKEN-SUCCESS': {
+                            'en': "Access key is updated",
+                            'fr': "Clé d'accès mise à jour"
                         },
                         'COMMONS-SESSIONS-CREATE-SUCCESS': {
                             'en': startSentence(keywords.session.singular.en) + " created",
@@ -1073,6 +1084,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Some changes were not saved",
                             'fr': "Des changements n'ont pas été sauvés"
                         },
+                        'PRIVATE-MODALE-SETTINGS-DIFF-BTN': {
+                            'en': "Diff as CSV",
+                            'fr': "Diff en CSV"
+                        },
                         'PRIVATE-MODALE-SETTINGS-CANCEL-BTN': {
                             'en': "Cancel",
                             'fr': "Annuler"
@@ -1094,12 +1109,12 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': startSentence(keywords.token.singular.fr)
                         },
                         'PRIVATE-SESSIONS-ACCESS-KEY-PLACEHOLDER-INPUT': {
-                            'en': startSentence(keywords.token.singular.en) + " is required",
-                            'fr': "La " + keywords.token.singular.fr + " est obligatoire"
+                            'en': "Missing key!",
+                            'fr': "Clé manquante!"
                         },
                         'PRIVATE-SESSIONS-ACCESS-KEY-ERROR-INPUT': {
-                            'en': "Syntax error: please don't use special characters !",
-                            'fr': "Erreur de syntaxe : veuillez éviter les caractères spéciaux !"
+                            'en': "Error: special characters and empty keys are not allowed",
+                            'fr': "Erreur : les caractères spéciaux et les clés vides ne sont pas admis"
                         },
                         'PRIVATE-SCENARIOS-NAME-LABEL-INPUT': {
                             'en': "Name",
@@ -1183,6 +1198,10 @@ angular.module('wegas.service.wegasTranslations', [])
                             'en': "Last name",
                             'fr': "Nom de famille"
                         },
+                        'PRIVATE-PROFILE-INPUT-LABEL-COMMENT': {
+                            'en': "Admin comments",
+                            'fr': "Remarques administrateur"
+                        },
                         'PRIVATE-PROFILE-INPUT-PLACEHOLDER-EMAIL': {
                             'en': "Please enter your email",
                             'fr': "Veuillez entrer votre email"
@@ -1196,8 +1215,8 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Confirmer le mot de passe"
                         },
                         'PRIVATE-PROFILE-INPUT-PLACEHOLDER-USERNAME': {
-                            'en': "Please enter your username",
-                            'fr': "Veuillez entrer votre nom d'utilisateur"
+                            'en': "Please enter a username (optional)",
+                            'fr': "Veuillez entrer un nom d'utilisateur (facultatif)"
                         },
                         'PRIVATE-PROFILE-INPUT-PLACEHOLDER-FIRSTNAME': {
                             'en': "Please enter your first name",
@@ -1413,6 +1432,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'TRAINER-CARD-MONITORING-BTN': {
                             'en': "Facilitate the " + keywords.session.singular.en,
                             'fr': "Animer la " + keywords.session.singular.fr
+                        },
+                        'TRAINER-CARD-VIEW-PLAYING-BTN': {
+                            'en': "View playing " + keywords.session.singular.en,
+                            'fr': "Voir la " + keywords.session.singular.fr
                         },
                         'TRAINER-MODALE-USERS-TAB-PLAYER': {
                             'en': startSentence(keywords.player.plural.en),
@@ -1777,6 +1800,14 @@ angular.module('wegas.service.wegasTranslations', [])
                             'fr': "Cette action génère un nouveau " + keywords.scenario.singular.fr +
                                 " basé sur celui-ci"
                         },
+                        'SCENARIST-MODALE-VERSIONS-DIFF-BTN': {
+                            'en': "Diff",
+                            'fr': "Diff"
+                        },
+                        'SCENARIST-MODALE-VERSIONS-PATCH-BTN': {
+                            'en': "Patch",
+                            'fr': "Patch"
+                        },
                         'SCENARIST-MODALE-VERSIONS-PDF-BTN': {
                             'en': "PDF",
                             'fr': "PDF"
@@ -1916,6 +1947,10 @@ angular.module('wegas.service.wegasTranslations', [])
                         'ADMIN-USERS-VERIFIED-ID': {
                             'en': '✔ verified identity',
                             'fr': '✔ identité vérifiée',
+                        },
+                        'ADMIN-USERS-PROCESSING': {
+                            'en': 'initialisation in progress',
+                            'fr': 'en cours d\'initialisation',
                         },
                         'ADMIN-USERS-CARD-EDIT-BTN': {
                             'en': "Edit user",

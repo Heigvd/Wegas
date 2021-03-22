@@ -3,7 +3,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -20,7 +20,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         Wegas = Y.Wegas, persistence = Wegas.persistence,
         EntityAction, EditFSMAction, EditEntityAction, NewEntityAction,
         EditEntityArrayFieldAction, AddEntityChildAction, DuplicateEntityAction,
-        SortEntityAction, ResetVisibilityAction,
+        SortEntityAction, ResetVisibilityAction, ReleaseVariableAction,
         DeleteEntityAction, SearchEntityAction, ToolbarMenu;
 
     var MESSAGE_DISCARD_EDITS = "Unsaved changes!";
@@ -138,16 +138,26 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             i.tooltip = 'Duplicate';
                             break;
                         case "Export":
-                            i = EditEntityAction.stackedIcon(i, 'fa-download');
+                            i = EditEntityAction.stackedIcon(i, 'fa-file-pdf-o');
                             i.tooltip = 'Export';
+                            i.cssClass += ' wegas-export-entity-icon';
                             break;
                         case "Search for usages":
                             i = EditEntityAction.stackedIcon(i, 'fa-compass');
                             i.tooltip = 'Find usage';
+                            i.cssClass += ' wegas-find-usage-icon';
                             break;
                         case "Reset visibilities":
                             i = EditEntityAction.stackedIcon(i, 'fa-paw');
                             i.tooltip = 'Reset visibilities recursively';
+                            break;
+                        case "Set as default":
+                            i = EditEntityAction.stackedIcon(i, 'fa-star');
+                            i.tooltip = 'Set as default';
+                            break;
+                        case "Find & Replace":
+                            i = EditEntityAction.stackedIcon(i, 'fa-search');
+                            i.tooltip = 'Find & Replace';
                             break;
                     }
                 }
@@ -900,6 +910,20 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     on: {
                         success: Y.bind(function(e) {
                             var entity = e.response.entity;
+
+                            if (entity.getMenuConfigMap) {
+                                var menu = entity.getMenuConfigMap(entity);
+                                if (menu.editBtn) {
+                                    // the brand new entity has a custom editAction: use it
+                                    menu.editBtn.cfg.dataSource = this.get(DATASOURCE);
+                                    var button = Wegas.Widget.create(menu.editBtn.cfg);
+                                    button.fire("click");
+                                    button.destroy();
+                                    this.hideOverlay();
+                                    return;
+                                }
+                            }
+                            // fallback: no custom editAction: open entity as-is
                             EditEntityAction.showUpdateForm(entity, this.get(DATASOURCE));
                             this.hideOverlay();
                         }, this),
@@ -993,11 +1017,34 @@ YUI.add("wegas-editor-entityaction", function(Y) {
     });
     Plugin.ResetVisibilityAction = ResetVisibilityAction;
 
-    var ConvertToListAction = Y.Base.create("ConvertToListAction", EntityAction, [], {
+    ReleaseVariableAction = Y.Base.create("ReleaseVariableAction", EntityAction, [], {
+        execute: function() {
+            if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL") {
+                this.showOverlay();
+                Y.Wegas.Facade.Variable.cache.sendRequest({
+                    request: '/' + this.get(ENTITY).get("id") + "/release",
+                    cfg: {
+                        method: 'PUT'
+                    },
+                    on: {
+                        success: Y.bind(this.hideOverlay, this),
+                        failure: Y.bind(this.hideOverlay, this)
+                    }
+                });
+            }
+        }
+    }, {
+        NS: "ReleaseVariableAction",
+        ATTRS: {
+        }
+    });
+    Plugin.ReleaseVariableAction = ReleaseVariableAction;
+
+    var ConvertToTextAction = Y.Base.create("ConvertToTextAction", EntityAction, [], {
         execute: function() {
             this.showOverlay();
             Y.Wegas.Facade.Variable.cache.sendRequest({
-                request: '/' + this.get(ENTITY).get("id") + "/ConvertToList",
+                request: '/' + this.get(ENTITY).get("id") + "/ConvertToText",
                 cfg: {
                     method: 'PUT'
                 },
@@ -1008,11 +1055,34 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             });
         }
     }, {
-        NS: "ConvertToListAction",
+        NS: "ConvertToTextAction",
         ATTRS: {
         }
     });
-    Plugin.ConvertToListAction = ConvertToListAction;
+    Plugin.ConvertToTextAction = ConvertToTextAction;
+
+
+    var ConvertToStaticTextAction = Y.Base.create("ConvertToStaticTextAction", EntityAction, [], {
+        execute: function() {
+            this.showOverlay();
+            Y.Wegas.Facade.Variable.cache.sendRequest({
+                request: '/' + this.get(ENTITY).get("id") + "/ConvertToStaticText",
+                cfg: {
+                    method: 'PUT'
+                },
+                on: {
+                    success: Y.bind(this.hideOverlay, this),
+                    failure: Y.bind(this.hideOverlay, this)
+                }
+            });
+        }
+    }, {
+        NS: "ConvertToStaticTextAction",
+        ATTRS: {
+        }
+    });
+    Plugin.ConvertToStaticTextAction = ConvertToStaticTextAction;
+
 
     /**
      * @class

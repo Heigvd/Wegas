@@ -158,7 +158,7 @@ angular.module('wegas.models.teams', [])
 
         model.refreshTeam = function(teamToRefresh) {
             var deferred = $q.defer(),
-                url = "rest/Extended/User/Current/Team/" + teamToRefresh.id,
+                url = "rest/Editor/User/Current/Team/" + teamToRefresh.id,
                 teamRefreshed = false;
             $http
                 .get(ServiceURL + url)
@@ -297,7 +297,7 @@ angular.module('wegas.models.teams', [])
                         } else {
                             newTeam.name = teamName;
                             newTeam.declaredSize = +teamSize;
-                            $http.post(ServiceURL + "rest/GameModel/Game/" + session.id + "/Team", newTeam).success(
+                            $http.post(ServiceURL + "rest/Public/GameModel/Game/" + session.id + "/Team", newTeam).success(
                                 function(team) {
                                     $translate('COMMONS-TEAMS-CREATE-FLASH-SUCCESS').then(function(message) {
                                         deferred.resolve(Responses.success(message, team));

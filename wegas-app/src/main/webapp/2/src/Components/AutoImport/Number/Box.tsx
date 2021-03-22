@@ -1,18 +1,23 @@
+import { css } from 'emotion';
 import * as React from 'react';
 import { TranslatableContent } from '../../../data/i18n';
-import { VariableConnect } from '../../VariableConnect';
-import { css } from 'emotion';
-import { primary } from '../../Theme';
+import {
+  useVariableDescriptor,
+  useVariableInstance,
+} from '../../Hooks/useVariable';
+import { themeVar } from '../../Style/ThemeVars';
+import { INumberDescriptor } from 'wegas-ts-api';
+import { wwarn } from '../../../Helper/wegaslog';
+import { TumbleLoader } from '../../Loader';
 
-const boxStyle = css(
-  {
-    display: 'inline-block',
-    width: '1ex',
-    height: '1ex',
-    margin: '0 1px',
-  },
-  primary,
-);
+const boxStyle = css({
+  backgroundColor: themeVar.Common.colors.HeaderColor,
+  color: themeVar.Common.colors.DarkTextColor,
+  display: 'inline-block',
+  width: '1ex',
+  height: '1ex',
+  margin: '0 1px',
+});
 function box(count: number) {
   const ret = [];
   for (let i = 0; i < count; i += 1) {
@@ -21,19 +26,17 @@ function box(count: number) {
   return ret;
 }
 export default function NumberValue(props: { variable: string }) {
+  const descriptor = useVariableDescriptor<INumberDescriptor>(props.variable);
+  const instance = useVariableInstance(descriptor);
+  if (descriptor === undefined || instance === undefined) {
+    wwarn(`Not found: ${props.variable}`);
+    return <TumbleLoader />;
+  }
+
   return (
-    <VariableConnect<INumberDescriptor> name={props.variable}>
-      {({ state }) => {
-        if (state === undefined) {
-          return <span>Not found: {props.variable}</span>;
-        }
-        return (
-          <div>
-            {TranslatableContent.toString(state.descriptor.label)}
-            <div>{box(state.instance.value)}</div>
-          </div>
-        );
-      }}
-    </VariableConnect>
+    <div>
+      {TranslatableContent.toString(descriptor.label)}
+      <div>{box(instance.getValue())}</div>
+    </div>
   );
 }

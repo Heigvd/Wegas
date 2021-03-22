@@ -1,25 +1,27 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.ValueGenerators.False;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.SelectView.FreeForAllSelector;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.SelectView.FreeForAllSelector;
+import com.wegas.editor.view.StringView;
 import java.io.Serializable;
-import javax.persistence.*;
+import javax.persistence.Embeddable;
 
 /**
  *
@@ -29,6 +31,15 @@ import javax.persistence.*;
 @JsonIgnoreProperties(value = {"imageUri"})
 public class GameModelProperties implements Serializable, Mergeable {
 
+    @WegasExtraProperty(
+            nullable = false,
+            view = @View(
+                    label = "RefID",
+                    readOnly = true,
+                    value = StringView.class,
+                    index = -800
+            )
+    )
     @Override
     public String getRefId() {
         return "GameModelProperties";
@@ -36,6 +47,7 @@ public class GameModelProperties implements Serializable, Mergeable {
 
     @Override
     public void setRefId(String refId) {
+        // refid is hadcoded
     }
 
     private static final long serialVersionUID = 1L;
@@ -56,7 +68,7 @@ public class GameModelProperties implements Serializable, Mergeable {
     /**
      *
      */
-    @JsonView({Views.ExtendedI.class})
+    @JsonView({Views.ExtendedI.class, Views.LobbyI.class})
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyString.class,
             view = @View(label = "Pages URI"))
@@ -64,7 +76,7 @@ public class GameModelProperties implements Serializable, Mergeable {
     /**
      *
      */
-    @JsonView({Views.ExtendedI.class})
+    @JsonView({Views.ExtendedI.class, Views.LobbyI.class})
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyString.class,
             view = @View(label = "Stylesheets URI"))
@@ -72,7 +84,7 @@ public class GameModelProperties implements Serializable, Mergeable {
     /**
      *
      */
-    @JsonView({Views.ExtendedI.class})
+    @JsonView({Views.ExtendedI.class, Views.LobbyI.class})
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyString.class,
             view = @View(label = "Websockets", value = Hidden.class))
@@ -81,7 +93,7 @@ public class GameModelProperties implements Serializable, Mergeable {
     /**
      *
      */
-    @JsonView({Views.ExtendedI.class})
+    //@JsonView({Views.ExtendedI.class})
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyString.class,
             view = @View(label = "Log ID"))
@@ -89,7 +101,7 @@ public class GameModelProperties implements Serializable, Mergeable {
     /**
      *
      */
-    @JsonView({Views.ExtendedI.class})
+    @JsonView({Views.ExtendedI.class, Views.LobbyI.class})
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyString.class,
             view = @View(label = "ServerSripts URI"))
@@ -98,7 +110,7 @@ public class GameModelProperties implements Serializable, Mergeable {
     /**
      *
      */
-    @JsonView({Views.ExtendedI.class})
+    @JsonView({Views.ExtendedI.class, Views.LobbyI.class})
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyString.class,
             view = @View(label = "ClientSripts URI"))
@@ -115,6 +127,7 @@ public class GameModelProperties implements Serializable, Mergeable {
      *
      */
     public GameModelProperties() {
+        // ensure there is a default constructor
     }
 
     /**

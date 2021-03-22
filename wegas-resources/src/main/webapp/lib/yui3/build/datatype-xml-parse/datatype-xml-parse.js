@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -30,12 +30,12 @@ Y.mix(Y.namespace("XML"), {
             if (win.ActiveXObject !== undefined) {
                 xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
                 xmlDoc.async = false;
-                xmlDoc.loadXML(data);            
+                xmlDoc.loadXML(data);
             } else if (win.DOMParser !== undefined) {
-                xmlDoc = new DOMParser().parseFromString(data, "text/xml");            
+                xmlDoc = new DOMParser().parseFromString(data, "text/xml");
             } else if (win.Windows !== undefined) {
                 xmlDoc = new Windows.Data.Xml.Dom.XmlDocument();
-                xmlDoc.loadXml(data);            
+                xmlDoc.loadXml(data);
             }
         }
 
@@ -53,4 +53,4 @@ Y.namespace("DataType");
 Y.DataType.XML = Y.XML;
 
 
-}, '3.17.2');
+}, '3.18.1');

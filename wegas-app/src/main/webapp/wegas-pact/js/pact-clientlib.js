@@ -1,12 +1,33 @@
 (function() {
     'use strict';
-    var l = document.createElement('link');
+    var SEQUENCE_OBJECT = 'sequence',
+        l = document.createElement('link');
     l.setAttribute(
         'href',
         'https://fonts.googleapis.com/css?family=Electrolize'
     );
     l.setAttribute('rel', 'stylesheet');
     document.head.append(l);
+    
+    // If navigator is MS-Edge, check that it's Chromium, otherwise a nasty stack overflow will happen in PACT.
+    var browser = (function (agent) {
+        switch (true) {
+            case agent.indexOf("edge") > -1: return "old-edge";
+            case agent.indexOf("edg") > -1: return "edge";
+            case agent.indexOf("opr") > -1 && !!window.opr: return "opera";
+            case agent.indexOf("chrome") > -1 && !!window.chrome: return "chrome";
+            case agent.indexOf("trident") > -1: return "ie";
+            case agent.indexOf("firefox") > -1: return "firefox";
+            case agent.indexOf("safari") > -1: return "safari";
+            default: return "other";
+        }
+    })(window.navigator.userAgent.toLowerCase());
+    Y.log('Navigator: ' + browser);
+    if (browser === "old-edge") {
+        alert("You are using an OLD version of the Edge browser,\nwhich is NOT compatible with this game.\n \nPlease download the latest version of Edge from\nwww.microsoft.com/edge \n \nYou may also switch to Firefox or Chrome.");
+        alert("Vous utilisez une VIEILLE version du navigateur Edge,\nqui n'est PAS compatible avec ce jeu.\n \nVeuillez télécharger la dernière version de Edge sur\nwww.microsoft.com/edge \n \nVous pouvez aussi passer à Firefox ou Chrome.");
+    }
+    
     /**
      * @param {(...args:unknown[])=>void} fn
      * @param {number} wait
@@ -64,6 +85,16 @@
         ];
     };
 
+    Y.namespace("Wegas.Config").ExtraTabs = [
+        {
+            label: "Stats de base",
+            targetMode: "host",
+            children: [{
+                type: "PactStats"
+            }]
+        }
+    ];
+
     app.once('render', function() {
         /* global Y */
         if (Y.config.Wegas.mode === 'EDIT') {
@@ -114,7 +145,8 @@
             });
         }
     });
-    if (Y.config.Wegas.mode === 'PLAY') {
+    // @TODO remove EDIT in production
+    if (Y.config.Wegas.mode === 'PLAY' || Y.config.Wegas.mode === 'EDIT') {
         Y.use('wegas-inbox', function() {
             var OldMessageDisplay = Y.Wegas.MessageDisplay;
             Y.Wegas.MessageDisplay = Y.Base.create(
@@ -123,38 +155,38 @@
                 [],
                 {
                     initializer: function() {
-                        var message = this.getMessage();
-                        if (message.get('token')) {
+                        var message = this.getMessage(),
+                            topic = message.get('token') || I18n.t(message.get("subject")).replace(/\s/g,"") || "TheoryWithoutTitle";
+                        if (topic) {
                             Y.Wegas.Facade.Variable.script.remoteFnEval(
-                                function(unread, token) {
+                                function(unread, topic) {
                                     Log.post(
-                                        Log.statement(
-                                            unread ? 'initialized' : 'resumed',
-                                            'theory',
-                                            token
-                                        )
+                                        Log.statement( unread ? 'initialized' : 'resumed', 'theory', topic)
                                     );
                                 },
                                 message.get('unread'),
-                                message.get('token')
+                                topic
                             );
+                            Y.Wegas.ProgGameLevel.prototype.addToSequence({
+                                type: "THEORY-RESUMED",
+                                topic: topic
+                            });
                         }
                     },
                     destructor: function() {
-                        var message = this.getMessage();
-                        if (message.get('token')) {
+                        var message = this.getMessage(),
+                            topic = message.get('token') || I18n.t(message.get("subject")).replace(/\s/g,"") || "TheoryWithoutTitle";
+                        if (topic) {
                             Y.Wegas.Facade.Variable.script.remoteFnEval(
-                                function(token) {
-                                    Log.post(
-                                        Log.statement(
-                                            'suspended',
-                                            'theory',
-                                            token
-                                        )
-                                    );
+                                function(topic) {
+                                    Log.post( Log.statement( 'suspended', 'theory', topic));
                                 },
-                                message.get('token')
+                                topic
                             );
+                            Y.Wegas.ProgGameLevel.prototype.addToSequence({
+                                type: "THEORY-SUSPENDED",
+                                topic: topic
+                            });
                         }
                     },
                 }

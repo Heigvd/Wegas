@@ -1,32 +1,43 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.persistence.evaluation;
 
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.LabelledEntity;
+import com.wegas.core.persistence.Orderable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
-import com.wegas.editor.ValueGenerators.One;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
-import com.wegas.editor.View.I18nHtmlView;
-import com.wegas.editor.View.I18nStringView;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.I18nHtmlView;
+import com.wegas.editor.view.I18nStringView;
 import java.util.Collection;
 import java.util.List;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 /**
  *
@@ -58,7 +69,7 @@ import javax.persistence.*;
     @JsonSubTypes.Type(value = GradeDescriptor.class)
 })
 public abstract class EvaluationDescriptor<T extends EvaluationInstance>
-        extends AbstractEntity implements LabelledEntity {
+        extends AbstractEntity implements LabelledEntity, Orderable {
 
     @OneToMany(mappedBy = "evaluationDescriptor", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<EvaluationInstance> evaluationInstances;
@@ -75,9 +86,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
     /**
      * to sort evaluation descriptor and instance
      */
-    @WegasEntityProperty(
-            optional = false, nullable = false, proposal = One.class,
-            view = @View(label = "Index"))
+    @JsonIgnore
     private Integer index;
 
     /**
@@ -129,6 +138,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
      * Basic constructor
      */
     public EvaluationDescriptor() {
+        // ensure there is an empty constructor
     }
 
     /**
@@ -138,6 +148,12 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance>
      */
     public EvaluationDescriptor(String name) {
         this.name = name;
+    }
+
+    @Override
+    @JsonIgnore
+    public Integer getOrder() {
+        return this.getIndex();
     }
 
     public int getIndex() {

@@ -3,6 +3,7 @@ import Downshift, { ControllerStateAndHelpers } from 'downshift';
 import { css, cx } from 'emotion';
 import matchSorter, { Options } from 'match-sorter';
 import { FontAwesome } from './FontAwesome';
+import { Button } from '../../../Components/Inputs/Buttons/Button';
 
 interface ComboboxProps<T> {
   label?: string;
@@ -73,9 +74,9 @@ export class Combobox<T> extends React.Component<ComboboxProps<T>> {
                     onFocus: () => this.props.openOnFocus && openMenu(),
                   })}
                 />
-                <button {...getToggleButtonProps()}>
+                <Button {...getToggleButtonProps()}>
                   <SelectIcon isOpen={isOpen} />
-                </button>
+                </Button>
               </span>
               {isOpen ? (
                 <div className={menuStyle}>

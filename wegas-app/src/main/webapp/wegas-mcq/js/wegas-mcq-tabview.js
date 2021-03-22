@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global I18n */
@@ -17,7 +17,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
         Wegas = Y.Wegas,
         MCQTabView;
 
-    MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Wegas.ResponsibeTabView, [], {
+    MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Wegas.ResponsiveTabView, [], {
         /** @lends Y.Wegas.MCQTabView# */
         // *** Lifecycle Methods *** //
         //CONTENT_TEMPLATE: null,
@@ -61,7 +61,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     label = ""; // make sure the label is no null
                     if (question.get("allowMultipleReplies")) {
                         if (cbxType) {
-                            label = Wegas.I18n.t('mcq.answered').capitalize();
+                            label = I18n.tCap('mcq.answered');
                         } else {
                             label = questionInstance.get("replies").length + "x";
                         }
@@ -142,6 +142,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     variable: {
                         "name": entity.get("name")
                     },
+                    selfSaving: true,
                     submitVar: this.get("submitVar")
                 });
             }

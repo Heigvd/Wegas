@@ -1,0 +1,121 @@
+import * as React from 'react';
+import { useOnClickOutside } from '../../Hooks/useOnClickOutside';
+import {
+  Button,
+  ButtonProps,
+  buttonStyle,
+  disableBorderToSelector,
+} from './Button';
+import { classNameOrEmpty } from '../../../Helper/className';
+
+interface ConfirmButtonProps extends ButtonProps {
+  onAction?: (
+    success: boolean,
+    event: React.MouseEvent<HTMLElement, MouseEvent>,
+  ) => void;
+  onBlur?: () => void;
+  defaultConfirm?: boolean;
+  dontResetOnBlur?: boolean;
+  buttonClassName?: string;
+}
+
+export function ConfirmButton({
+  label,
+  icon,
+  prefixedLabel,
+  onClick,
+  onAction,
+  onBlur,
+  defaultConfirm,
+  dontResetOnBlur,
+  readOnly,
+  disabled,
+  noHover,
+  disableBorders,
+  className,
+  buttonClassName,
+  tabIndex,
+  tooltip,
+  type,
+  id,
+}: ConfirmButtonProps) {
+  const [confirmation, setConfirmation] = React.useState(defaultConfirm);
+  const confirmButton = React.useRef(null);
+
+  useOnClickOutside(confirmButton, () => {
+    if (!dontResetOnBlur) {
+      setConfirmation(false);
+    }
+    if (onBlur) {
+      onBlur();
+    }
+  });
+
+  const onClickVerify = React.useCallback(
+    (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      event.stopPropagation();
+      onClick && onClick(event);
+      setConfirmation(true);
+    },
+    [onClick],
+  );
+
+  const onConfirm = React.useCallback(
+    (accept: boolean) => (
+      event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    ) => {
+      event.stopPropagation();
+      onClick && onClick(event);
+      onAction && onAction(accept, event);
+      setConfirmation(defaultConfirm);
+    },
+    [defaultConfirm, onAction, onClick],
+  );
+
+  return !confirmation ? (
+    <div tabIndex={tabIndex} ref={confirmButton} id={id} className={className}>
+      <Button
+        label={label}
+        prefixedLabel={prefixedLabel}
+        icon={icon}
+        onClick={onClickVerify}
+        disableBorders={disableBorders}
+        tooltip={tooltip}
+        disabled={disabled}
+        readOnly={readOnly}
+        noHover={noHover}
+        className={buttonClassName}
+      />
+    </div>
+  ) : (
+    <div
+      ref={confirmButton}
+      tabIndex={tabIndex}
+      id={id}
+      className={
+        `wegas wegas-btn confirmBtn ${buttonStyle} ` +
+        disableBorderToSelector(disableBorders) +
+        classNameOrEmpty(className)
+      }
+    >
+      <Button
+        label="Accept"
+        mode="warning"
+        disableBorders={{ right: true }}
+        onClick={onConfirm(true)}
+        disabled={disabled}
+        readOnly={readOnly}
+        noHover={noHover != null ? noHover : true}
+        type={type}
+      />
+      <Button
+        label="Cancel"
+        disableBorders={{ left: true }}
+        onClick={onConfirm(false)}
+        disabled={disabled}
+        readOnly={readOnly}
+        noHover={noHover != null ? noHover : true}
+      />
+    </div>
+  );
+}

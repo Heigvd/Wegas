@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -14,8 +14,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -28,12 +26,10 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class BaseFacade<T extends AbstractEntity> extends WegasAbstractFacade implements AbstractFacade<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(BaseFacade.class);
-
     /**
      * the Class the facade manage
      */
-    final Class<T> entityClass;
+    /* package */ final Class<T> entityClass;
 
     /**
      *
@@ -205,7 +201,7 @@ public abstract class BaseFacade<T extends AbstractEntity> extends WegasAbstract
      * @return intercepted method returned object
      * @throws Exception
      */
-    /*@AroundInvoke
+ /*@AroundInvoke
     public Object interceptor(final InvocationContext ic) throws Exception {
         Object o = null;
         try {

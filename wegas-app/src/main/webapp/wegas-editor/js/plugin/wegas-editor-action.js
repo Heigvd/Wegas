@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -74,6 +74,62 @@ YUI.add('wegas-editor-action', function(Y) {
         NS: "reset"
     });
     Plugin.ResetAction = ResetAction;
+
+    /**
+     *  @name Y.Plugin.ResetTeamAction
+     *  @extends Y.Plugin.Action
+     *  @class Reset the target game model for the current team
+     *  @constructor
+     */
+    var ResetTeamAction = Y.Base.create("ResetTeamAction", Action, [], {
+        /** @lends Y.Plugin.ResetTeamAction# */
+        /**
+         * @function
+         * @private
+         */
+        execute: function() {
+            var editGame = Y.one("body.wegas-editsurveymode");
+            var btn = this.get("host"),
+                childNodes,
+                icon,
+                hideOverlay = Y.bind(this.hideOverlay, this),
+                cb = function() {
+                    if (icon) {
+                        icon.removeClass('fa-spin');
+                    }
+                    hideOverlay();
+                };
+
+            // Make the button spin around for a while as a visual feedback:
+            if (btn && (childNodes = btn
+                .get('contentBox')
+                .get('childNodes'))) {
+                // The icon is a child element of the button:
+                icon = childNodes.get('items')[0];
+                if (icon) {
+                    icon.addClass('fa-spin');
+                }
+            }
+
+            // Ask for confirmation when editing a game
+            if (!editGame || confirm("This will restart your game session without impacting other players.\nDo you want to continue?")) {
+                this.showOverlay();
+                //Y.Wegas.app.fire("beforeReset");
+                var request = "GameModelFacade.reset(self.getTeam());";
+                Y.Wegas.Facade.Variable.script.remoteEval(
+                    request,
+                    {
+                        on: {
+                            success: cb,
+                            failure: cb
+                    }
+                });
+            }
+        }
+    }, {
+        NS: "reset"
+    });
+    Plugin.ResetTeamAction = ResetTeamAction;
 
     /**
      *  @name Y.Plugin.OpenTabAction

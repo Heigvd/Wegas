@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.jsf.controllers;
@@ -10,9 +11,9 @@ package com.wegas.app.jsf.controllers;
 import com.wegas.core.ejb.RequestFacade;
 import java.io.IOException;
 import java.io.Serializable;
-import javax.faces.bean.ManagedBean;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.inject.Named;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -20,7 +21,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
-@ManagedBean(name = "error")
+@Named("error")
 public class ErrorController implements Serializable {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(RequestFacade.class);
@@ -62,6 +63,10 @@ public class ErrorController implements Serializable {
     }
 
     public void accessDenied() {
+        this.dispatch("Access Denied", "You do not have access to this game");
+    }
+
+    public void accessForSurveyOnly() {
         this.dispatch("Access Denied", "You do not have access to this game");
     }
 

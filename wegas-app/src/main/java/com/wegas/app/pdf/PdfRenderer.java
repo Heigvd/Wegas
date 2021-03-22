@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.pdf;
@@ -11,9 +11,7 @@ import com.lowagie.text.DocumentException;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.User;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,13 +23,11 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Level;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -78,13 +74,10 @@ public class PdfRenderer implements Filter {
     private FilterConfig filterConfig = null;
     private DocumentBuilder documentBuilder;
 
-    @EJB
+    @Inject
     private UserFacade userFacade;
 
-    @EJB
-    private RoleFacade roleFacade;
-
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
 
     @Override
@@ -102,6 +95,7 @@ public class PdfRenderer implements Filter {
     }
 
     // convert InputStream to String
+    @SuppressWarnings("PMD")
     private static String getStringFromInputStream(InputStream is) throws IOException {
 
         StringBuilder sb = new StringBuilder();
@@ -129,8 +123,8 @@ public class PdfRenderer implements Filter {
     @POST
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain)
-            throws IOException, ServletException {
+        FilterChain chain)
+        throws IOException, ServletException {
 
         if (debug) {
             log("PdfRenderer:doFilter()");
@@ -153,7 +147,7 @@ public class PdfRenderer implements Filter {
 
                 if (req.getMethod().equalsIgnoreCase("POST")) {
                     // To prevent abuse, check that the user is logged in
-                    User user = userFacade.getCurrentUser();
+                    userFacade.getCurrentUser();
 
                     // In a POST'ed filter method, all parameters must be in the post data.
                     String body = req.getParameter("body");
@@ -183,7 +177,8 @@ public class PdfRenderer implements Filter {
 
                 if (renderType != null && renderType.equals("pdf")) {
                     /**
-                     * Since injecting correct url within print.xhtml.h:doctype.system leads to nothing good, let's hack
+                     * Since injecting correct url within print.xhtml.h:doctype.system leads to
+                     * nothing good, let's hack
                      */
                     String urlDTD = req.getRequestURL().toString().replace(req.getServletPath(), "/wegas-app/DTD/xhtml1-transitional.dtd");
                     String toString = os.toString().replaceFirst("__DTD_URL__", urlDTD);
@@ -268,15 +263,15 @@ public class PdfRenderer implements Filter {
      */
     private String createHtmlDoc(String title, String body) {
         return "" //"<?xml version=\"1.0\" encoding=\"UTF-8\" ?> "
-                + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"__DTD_URL__\"> "
-                + "<html><head><meta charset=\"UTF-8\" /><meta http-equiv=\"Content-Type\" content=\"text/html\" /><title>"
-                + title
-                + "</title>"
-                + "<link rel=\"stylesheet\" type=\"text/css\" href=\"wegas-app/css/wegas-pdf-print.css\" media=\"all\" />"
-                + "<link rel=\"stylesheet\" type=\"text/css\" href=\"wegas-app/css/wegas-pdf-print-page.css\" media=\"print\" />"
-                + "</head><body class='wegas-pdf-content' style=\"font-family:DejaVu Sans, Helvetica, Arial; font-size:12px\">"
-                + body
-                + "</body></html>";
+            + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"__DTD_URL__\"> "
+            + "<html><head><meta charset=\"UTF-8\" /><meta http-equiv=\"Content-Type\" content=\"text/html\" /><title>"
+            + title
+            + "</title>"
+            + "<link rel=\"stylesheet\" type=\"text/css\" href=\"wegas-app/css/wegas-pdf-print.css\" media=\"all\" />"
+            + "<link rel=\"stylesheet\" type=\"text/css\" href=\"wegas-app/css/wegas-pdf-print-page.css\" media=\"print\" />"
+            + "</head><body class='wegas-pdf-content' style=\"font-family:DejaVu Sans, Helvetica, Arial; font-size:12px\">"
+            + body
+            + "</body></html>";
     }
 
     /**
@@ -285,7 +280,7 @@ public class PdfRenderer implements Filter {
      * @return the filterConfig
      */
     public FilterConfig getFilterConfig() {
-        return (this.filterConfig);
+        return this.filterConfig;
     }
 
     /**
@@ -312,12 +307,12 @@ public class PdfRenderer implements Filter {
     @Override
     public String toString() {
         if (filterConfig == null) {
-            return ("PdfRenderer()");
+            return "PdfRenderer()";
         }
         StringBuilder sb = new StringBuilder("PdfRenderer(");
         sb.append(filterConfig);
         sb.append(")");
-        return (sb.toString());
+        return sb.toString();
     }
 
     private void sendProcessingError(Throwable t, ServletResponse response) {
@@ -336,6 +331,7 @@ public class PdfRenderer implements Filter {
                 }
                 response.getOutputStream().close();
             } catch (IOException ex) {
+                logger.error("Failed to generate error");
             }
         } else {
             try {
@@ -344,6 +340,7 @@ public class PdfRenderer implements Filter {
                 }
                 response.getOutputStream().close();
             } catch (IOException ex) {
+                logger.error("Failed to generate error");
             }
         }
     }
@@ -358,6 +355,7 @@ public class PdfRenderer implements Filter {
             sw.close();
             stackTrace = sw.getBuffer().toString();
         } catch (IOException ex) {
+            logger.error("Failed to generate error");
         }
         return stackTrace;
     }
@@ -388,17 +386,15 @@ public class PdfRenderer implements Filter {
 
         @Override
         protected InputStream resolveAndOpenStream(String uri) {
-            java.io.InputStream is = null;
+            InputStream is = null;
             try {
                 URL url = new URL(uri);
                 URLConnection uc = url.openConnection();
                 uc.setRequestProperty("Cookie", joinCookies(this.cookies));
                 is = uc.getInputStream();
 
-            } catch (MalformedURLException ex) {
-                java.util.logging.Logger.getLogger(PdfRenderer.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(PdfRenderer.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error("Cookie exception", ex);
             }
             return is;
         }
@@ -416,10 +412,10 @@ public class PdfRenderer implements Filter {
                 return "";
             }
             StringBuilder sb = new StringBuilder();
-            sb.append(cookies[0].getName()).append("=").append(cookies[0].getValue());
+            sb.append(cookies[0].getName()).append('=').append(cookies[0].getValue());
             int i;
             for (i = 1; i < cookies.length; i++) {
-                sb.append(token).append(cookies[i].getName()).append("=").append(cookies[i].getValue());
+                sb.append(token).append(cookies[i].getName()).append('=').append(cookies[i].getValue());
             }
             return sb.toString();
         }

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -271,6 +271,11 @@ YUI.add('wegas-console-custom', function(Y) {
                         players = (arg.constructor === Array ? arg : [arg]),
                         len = players.length;
 
+                    if (len === 0) {
+                        alert("No teams or players have joined this game!");
+                        return;
+                    }
+                    
                     running = true;
                     this.get(CONTENTBOX).one(".wegas-status-bar").removeClass("wegas-status-bar-hidden");
                     this.get(CONTENTBOX).one(".status").addClass("status--running");

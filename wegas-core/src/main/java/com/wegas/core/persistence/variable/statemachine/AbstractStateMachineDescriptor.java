@@ -1,29 +1,38 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import ch.albasim.wegas.annotations.ProtectionLevel;
+import ch.albasim.wegas.annotations.Scriptable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.annotations.Scriptable;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyMap;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.Hidden;
 import java.util.*;
 import java.util.Map.Entry;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
+ * @param <T>
+ * @param <U>
  */
 @Entity
 //@Table(name = "FSMDescriptor")
@@ -47,7 +56,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
      */
     @OneToMany(mappedBy = "stateMachine", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @MapKeyColumn(name = "fsm_statekey")
-    @JsonView(Views.ExtendedI.class)
+    @JsonView(Views.EditorI.class)
     @WegasEntityProperty(ignoreNull = true, protectionLevel = ProtectionLevel.INHERITED,
             optional = false, nullable = false, proposal = EmptyMap.class,
             view = @View(label = "", value = Hidden.class))
@@ -57,6 +66,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
      *
      */
     public AbstractStateMachineDescriptor() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -100,6 +110,16 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
         for (Entry<Long, T> entry : states.entrySet()) {
             this.addState(entry.getKey(), entry.getValue());
         }
+    }
+
+    @JsonIgnore
+    public AbstractState getState(Long currentStateId) {
+        for (AbstractState<U> state : this.states) {
+            if (state.getIndex().equals(currentStateId)){
+                return state;
+            }
+        }
+        return null;
     }
 
     @Override

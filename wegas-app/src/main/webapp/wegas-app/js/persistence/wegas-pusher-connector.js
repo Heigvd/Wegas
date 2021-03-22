@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -187,19 +187,19 @@ YUI.add('wegas-pusher-connector', function(Y) {
          */
         triggerCustomEvent: function(channel, data, event) {
             var id,
-                prefix;
+                eChannel = channel;
             if (channel === "Game") {
                 id = Y.Wegas.Facade.Game.get("currentGameId");
-                prefix = "private-";
+                eChannel = "private-Game" +id;
             } else if (channel === "Team") {
                 id = Y.Wegas.Facade.Game.get("currentTeamId");
-                prefix = "private-";
-            } else {
+                eChannel = "private-Game-" + id;
+            } else if (channel === "Player") {
                 id = Y.Wegas.Facade.Game.get("currentPlayerId");
-                prefix = "";
+                eChannel = "private-Player-" + id;
             }
             this.sendRequest({
-                request: "Send/" + prefix + channel + "/" + id + "/" + event,
+                request: "SendCustomEvent/" + eChannel + "/" + event,
                 cfg: {
                     method: "POST",
                     headers: {

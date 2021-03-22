@@ -1,20 +1,20 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.persistence;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
@@ -22,29 +22,36 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.View.I18nHtmlView;
-import com.wegas.editor.View.ReadOnlyNumber;
-import com.wegas.editor.View.ReadOnlyString;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.I18nHtmlView;
+import com.wegas.editor.view.NumberView;
+import com.wegas.editor.view.StringView;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-@JsonTypeName(value = "Reply")
 @Table(name = "MCQReply", indexes = {
     @Index(columnList = "choiceinstance_id"),
     @Index(columnList = "result_id")
 })
-@NamedQueries({
-    @NamedQuery(name = "Reply.findByResultId", query = "SELECT r FROM Reply r WHERE r.result.id = :resultId")
-})
+@NamedQuery(name = "Reply.findByResultId", query = "SELECT r FROM Reply r WHERE r.result.id = :resultId")
 public class Reply extends AbstractEntity implements DatedEntity {
 
     private static final long serialVersionUID = 1L;
@@ -59,14 +66,14 @@ public class Reply extends AbstractEntity implements DatedEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
     @WegasEntityProperty(optional = false, nullable = false,
-            view = @View(label = "Created Time", value = ReadOnlyNumber.class))
+            view = @View(label = "Created Time", readOnly = true, value = NumberView.class))
     private Date createdTime = new Date();
     /**
      * <p>
      */
     @WegasEntityProperty(
             optional = false, nullable = false,
-            view = @View(label = "Start Time", value = ReadOnlyNumber.class))
+            view = @View(label = "Start Time", readOnly = true, value = NumberView.class))
     private Long startTime;
     /**
      *
@@ -102,12 +109,12 @@ public class Reply extends AbstractEntity implements DatedEntity {
     @Transient
     @WegasEntityProperty(
             optional = false, nullable = false,
-            view = @View(label = "Result Name", value = ReadOnlyString.class))
+            view = @View(label = "Result Name", readOnly = true, value = StringView.class))
     private String resultName;
 
     @Transient
     @WegasEntityProperty(optional = false, nullable = false,
-            view = @View(label = "Choice Name", value = ReadOnlyString.class))
+            view = @View(label = "Choice Name", readOnly = true, value = StringView.class))
     private String choiceName;
 
     /**

@@ -1,16 +1,16 @@
 import { managedModeRequest, rest } from './rest';
+import { IVariableDescriptor, IScript } from 'wegas-ts-api';
 
 const VD_BASE = (gameModelId: number) =>
   `/GameModel/${gameModelId}/VariableDescriptor/`;
 export const VariableDescriptorAPI = {
   getAll(gameModelId: number) {
-    return managedModeRequest(VD_BASE(gameModelId), undefined, 'Editor');
+    return managedModeRequest(VD_BASE(gameModelId));
   },
   update(gameModelId: number, variableDescriptor: IVariableDescriptor) {
     return managedModeRequest(
       `${VD_BASE(gameModelId)}${variableDescriptor.id}`,
       { method: 'PUT', body: JSON.stringify(variableDescriptor) },
-      'Editor',
     );
   },
   post(
@@ -24,7 +24,12 @@ export const VariableDescriptorAPI = {
         method: 'POST',
         body: JSON.stringify(variableDescriptor),
       },
-      'Editor',
+    );
+  },
+  duplicate(gameModelId: number, variableDescriptor: IVariableDescriptor) {
+    return managedModeRequest(
+      `${VD_BASE(gameModelId)}${variableDescriptor.id}/Duplicate/`,
+      { method: 'POST' },
     );
   },
   delete(gameModelId: number, variableDescriptor: IVariableDescriptor) {
@@ -33,7 +38,6 @@ export const VariableDescriptorAPI = {
       {
         method: 'DELETE',
       },
-      'Editor',
     );
   },
   move(
@@ -56,11 +60,11 @@ export const VariableDescriptorAPI = {
     gameModelId: number,
     playerId: number,
     script: IScript,
-    context?: IVariableDescriptor,
+    variableContext?: IVariableDescriptor,
   ) {
     return managedModeRequest(
       `${VD_BASE(gameModelId)}Script/Run/${playerId}/${
-        context ? context.id : ''
+        variableContext ? variableContext.id : ''
       }`,
       {
         method: 'POST',
@@ -68,6 +72,28 @@ export const VariableDescriptorAPI = {
       },
     );
   },
+
+  runLoadedScript(
+    gameModelId: number,
+    playerId: number,
+    script: IScript,
+    currentDescriptor?: IVariableDescriptor,
+    payload?: { [key: string]: unknown },
+  ) {
+    return managedModeRequest(
+      `${VD_BASE(gameModelId)}Script/LoadedRun/${playerId}/${
+        currentDescriptor ? currentDescriptor.id : ''
+      }`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          script,
+          payload: payload ? payload : {},
+        }),
+      },
+    );
+  },
+
   contains(gameModelId: number, criteria: string) {
     return rest(`${VD_BASE(gameModelId)}contains`, {
       method: 'POST',
@@ -87,10 +113,12 @@ export const VariableDescriptorAPI = {
     }).then(res => res.json() as Promise<number[]>);
   },
   reset(gameModelId: number) {
-    return managedModeRequest(
-      `${VD_BASE(gameModelId)}Reset`,
-      undefined,
-      'Editor',
-    );
+    return managedModeRequest(`${VD_BASE(gameModelId)}Reset`);
+  },
+  getByIds(ids: number[], gameModelId: number) {
+    return managedModeRequest(`${VD_BASE(gameModelId)}ByIds`, {
+      method: 'POST',
+      body: JSON.stringify(ids),
+    });
   },
 };

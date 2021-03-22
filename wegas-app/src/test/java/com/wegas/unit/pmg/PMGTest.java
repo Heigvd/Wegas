@@ -1,14 +1,16 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.unit.pmg;
 
+import com.wegas.unit.PrivateRelatedTest;
 import org.eu.ingwar.tools.arquillian.extension.suite.annotations.ArquillianSuiteDeployment;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -17,6 +19,7 @@ import org.junit.Test;
 public class PMGTest extends PMGameAbstractTest {
 
     @Test
+    @Category(PrivateRelatedTest.class)
     public void testSimplePMG() {
         this.evalScript("PMGTest.testAll()");
     }

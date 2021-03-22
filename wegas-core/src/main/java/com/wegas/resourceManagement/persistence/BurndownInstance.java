@@ -1,19 +1,18 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -66,10 +65,5 @@ public class BurndownInstance extends VariableInstance {
     public void addIteration(Iteration iteration) {
         this.iterations.add(iteration);
         iteration.setBurndownInstance(this);
-    }
-
-    @Override
-    public void revive(Beanjection beans) {
-        beans.getIterationFacade().reviveBurndownInstance(this);
     }
 }

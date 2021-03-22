@@ -15,7 +15,15 @@
             <h:body class="yui3-skin-sam wegas-app-default #{cookie['customstyle'].value} wegas-stdmode #{requestController.currentRoles} #{extraBodyClass}">
 
                 <!-- Loading -->
-                <div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>
+                <div class='wegas-loading-app'>
+                    <div class='wegas-loading-app-content'>
+                        <img class='wegas-loading-app-logo' src="#{request.contextPath}/wegas-app/images/wegas-logowhite-80.png" />
+                        <div class='wegas-loading-app-bar'>
+                            <div class='wegas-loading-app-current'>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Rollbar error tracking -->
                 <!--<ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
@@ -37,17 +45,17 @@
 
 
                 <!-- YUI3 -->
-                <!-- CDN -->
-                <ui:fragment rendered="#{wegasConfig.useYUICDN}">
+                <ui:fragment rendered="#{requestController.useYUICDN()}">
+                    <!-- CDN -->
                     <ui:fragment rendered="#{request.scheme == 'http'}">
-                        <script type="text/javascript" src="http://yui.yahooapis.com/3.17.2/build/yui/yui-min.js"></script>
+                        <script type="text/javascript" src="http://yui.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
                     </ui:fragment>
                     <ui:fragment rendered="#{request.scheme == 'https'}">
-                        <script type="text/javascript" src="https://yui-s.yahooapis.com/3.17.2/build/yui/yui-min.js"></script>
+                        <script type="text/javascript" src="https://yui-s.yahooapis.com/3.18.1/build/yui/yui-min.js"></script>
                     </ui:fragment>
                 </ui:fragment>
-                <!-- Self hosted -->
-                <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
+                <ui:fragment rendered="#{!requestController.useYUICDN()}">
+                    <!-- Self hosted -->
                     <script type="text/javascript" src="#{request.contextPath}/lib/yui3/build/yui/yui-min.js"></script>
                 </ui:fragment>
 
@@ -84,9 +92,10 @@
                     };
                 </script>
 
-                <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
+                <ui:fragment rendered="#{!requestController.useYUICDN()}">
                     <script type="text/javascript">
                         YUI_config.filter = "min";
+                        YUI_config.filter = "raw";
                         YUI_config.combine = false;
                         YUI_config.root = "/lib/yui3/build/";
                     </script>

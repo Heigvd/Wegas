@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global I18n */
@@ -293,67 +293,72 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                     label: "Configuration",
                     addKeyLabel: "Add configuration"
                 },
-                properties:{
-                    pointer:{
+                properties: {
+                    pointer: {
                         type: "object",
-                        properties:{
-                            pointerlength:{
-                                type:"number",
-                                required:true,
-                                view: {
-                                    label: "Pointer length",
-                                    description:"length 0.5 [0.1 - ...]"
-                                }
-                            },
-                            strokeWidth:{
+                        properties: {
+                            pointerlength: {
                                 type: "number",
                                 required: true,
-                                view:{
-                                    label:"Stroke Width",
-                                    description:"width 0.035 [0.02 - 0.5]"
+                                view: {
+                                    label: "Pointer length",
+                                    description: "length 0.5 [0.1 - ...]"
                                 }
                             },
-                            color:{
+                            strokeWidth: {
+                                type: "number",
+                                required: true,
+                                view: {
+                                    label: "Stroke Width",
+                                    description: "width 0.035 [0.02 - 0.5]"
+                                }
+                            },
+                            color: {
                                 type: "string",
-                                required:true,
-                                view:{
+                                required: true,
+                                view: {
                                     type: "colorpicker",
                                     label: "Color"
                                 }
                             }
                         }
                     },
-                    backgroundPercentColors:{
+                    backgroundPercentColors: {
                         type: "array",
-                        value:[undefined, undefined],
-                        minItems:2,
-                        maxItems:2,
-                        items:[
-                            {
-                                type: "string",
-                                view:{
-                                    label: "Value",
-                                    description: "Percent value [0 - 1]"
+                        value: [["", ""]],
+                        items: {
+                            type: "array",
+                            minItems: 2,
+                            maxItems: 2,
+                            items: [
+                                {
+                                    type: "string",
+                                    view: {
+                                        label: "Value",
+                                        description: "Percent value [0 - 1]",
+                                        layout: "inlineShort"
+                                    }
+                                },
+                                {
+                                    type: "string",
+                                    view: {
+                                        label: "Color",
+                                        type: "colorpicker",
+                                        layout: "inlineShort"
+                                    }
                                 }
-                            },
-                            {
-                                type:"string",
-                                view:{
-                                    label: "Color",
-                                    type: "colorpicker"
-                                }
-                            }
-                        ]
+                            ]
+                        }
                     },
-                    percentColors:{
-                        type:"array",
+                    percentColors: {
+                        type: "array",
                         value: [undefined, undefined],
-                        minItems:2,
-                        maxItems:2,
-                        items:[
+                        minItems: 2,
+                        maxItems: 2,
+                        items: [
                             {
                                 type: "string",
-                                view:{
+                                view: {
                                     label: "Value",
                                     description: "Percent value [0 - 1]"
                                 }
@@ -367,16 +372,16 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                             }
                         ]
                     },
-                    lineWidth:{
-                        type:"number",
-                        view:{
-                            description:"0.44 [0 - 0.7]"
+                    lineWidth: {
+                        type: "number",
+                        view: {
+                            description: "0.44 [0 - 0.7]"
                         }
                     },
-                    angle:{
-                        type:"number",
-                        view:{
-                            description:"126° [0° - 180°]",
+                    angle: {
+                        type: "number",
+                        view: {
+                            description: "126° [0° - 180°]",
                         }
                     }
                 }

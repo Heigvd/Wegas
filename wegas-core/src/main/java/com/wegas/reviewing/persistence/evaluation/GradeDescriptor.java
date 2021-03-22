@@ -1,18 +1,18 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.persistence.evaluation;
 
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
+import ch.albasim.wegas.annotations.CommonView;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.annotations.Errored;
-import com.wegas.editor.View.CommonView;
-import com.wegas.editor.View.NumberView;
-import com.wegas.editor.View.View;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
+import com.wegas.editor.view.NumberView;
 import javax.persistence.Entity;
 
 /**

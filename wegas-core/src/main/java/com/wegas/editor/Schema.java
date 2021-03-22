@@ -1,5 +1,14 @@
+/**
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
 package com.wegas.editor;
 
+import ch.albasim.wegas.annotations.JSONSchema;
+import ch.albasim.wegas.annotations.View;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Repeatable;
@@ -7,14 +16,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.wegas.editor.JSONSchema.JSONSchema;
-import com.wegas.editor.View.View;
-
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 @Inherited
 @Repeatable(Schemas.class)
-public @interface Schema {
+    public @interface Schema {
     Class<? extends JSONSchema> value();
 
     String property();

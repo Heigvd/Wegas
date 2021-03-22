@@ -1,22 +1,16 @@
-/*
- * Wegas
- * http://wegas.albasim.ch
- *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
- * Licensed under the MIT License
- */
-package com.wegas.core.security.aai;
-
-import org.apache.shiro.authc.HostAuthenticationToken;
-import org.apache.shiro.authc.RememberMeAuthenticationToken;
-
 /**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) AlbaSim, School of Business and Engineering of Western Switzerland
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
- * Created by jarle.hulaas@heig-vd.ch on 07.03.2017.
+ */
+package com.wegas.core.security.aai;
+
+import org.apache.shiro.authc.RememberMeAuthenticationToken;
+
+/**
+ * @author jarle.hulaas@heig-vd.ch on 07.03.2017.
  */
 
 public class AaiToken implements RememberMeAuthenticationToken {

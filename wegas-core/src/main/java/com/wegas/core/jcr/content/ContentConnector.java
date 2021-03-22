@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.content;
@@ -18,13 +18,20 @@ import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
-import javax.jcr.*;
+import javax.jcr.ImportUUIDBehavior;
+import javax.jcr.NamespaceException;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +53,7 @@ public class ContentConnector extends JTARepositoryConnector {
     private String workspaceRoot;
     private final WorkspaceType workspaceType;
 
-    public static enum WorkspaceType {
+    public enum WorkspaceType {
         FILES,
         HISTORY
     }
@@ -62,8 +69,8 @@ public class ContentConnector extends JTARepositoryConnector {
             return bytes + "B";
         }
         Integer exponent = (int) (Math.log(bytes) / Math.log(unit));
-        String prefix = ("KMGTPE").charAt(exponent - 1) + "";
-        return String.format("%.1f%sB", bytes / Math.pow(unit, exponent), prefix);
+        char prefix = ("KMGTPE").charAt(exponent - 1);
+        return String.format("%.1f%cB", bytes / Math.pow(unit, exponent), prefix);
     }
 
     /**
@@ -76,14 +83,13 @@ public class ContentConnector extends JTARepositoryConnector {
         this.gameModel = gameModel;
         this.gameModelId = gameModel.getId();
         this.workspaceType = workspaceType;
-        switch (workspaceType) {
-            case FILES:
-                this.workspaceRoot = WFSConfig.WFS_ROOT.apply(gameModelId);
-                break;
-            case HISTORY:
-                this.workspaceRoot = WFSConfig.HISTORY_ROOT.apply(gameModelId);
-                break;
+
+        if (workspaceType == WorkspaceType.FILES) {
+            this.workspaceRoot = WFSConfig.WFS_ROOT.apply(gameModelId);
+        } else if (workspaceType == WorkspaceType.HISTORY) {
+            this.workspaceRoot = WFSConfig.HISTORY_ROOT.apply(gameModelId);
         }
+
         this.session = SessionManager.getSession();
 
         if (!this.session.nodeExists(this.workspaceRoot)) {
@@ -184,10 +190,16 @@ public class ContentConnector extends JTARepositoryConnector {
     protected InputStream getData(String absolutePath, long from, int len) throws RepositoryException, IOException {
         InputStream data = this.getData(absolutePath);
         byte[] bytes = new byte[len];
-        data.skip(from);
-        data.read(bytes, 0, len);
-
-        return new ByteArrayInputStream(bytes);
+        long skip = data.skip(from);
+        if (skip != from) {
+            logger.error("Could not skip as much bytes...");
+        }
+        int read = data.read(bytes, 0, len);
+        if (read < len) {
+            return new ByteArrayInputStream(bytes, 0, read);
+        } else {
+            return new ByteArrayInputStream(bytes);
+        }
     }
 
     /**
@@ -373,8 +385,8 @@ public class ContentConnector extends JTARepositoryConnector {
     }
 
     /**
-     * Compress directory and children to ZipOutputStream. Warning: metadatas
-     * are not included due to zip limitation
+     * Compress directory and children to ZipOutputStream. Warning: metadatas are not included due
+     * to zip limitation
      *
      * @param out  a ZipOutputStream to write files to
      * @param path root path to compress
@@ -422,7 +434,8 @@ public class ContentConnector extends JTARepositoryConnector {
     /**
      *
      */
-    public void _save() {
+    @Deprecated
+    public void internalSave() {
         if (session.isLive()) {
             try {
                 session.save();
@@ -467,11 +480,13 @@ public class ContentConnector extends JTARepositoryConnector {
      * @throws RepositoryException
      */
     private void initializeNamespaces() throws RepositoryException {
-        for (String prefix : WFSConfig.namespaces.keySet()) {
+        for (Map.Entry<String, String> entry : WFSConfig.namespaces.entrySet()) {
+            String prefix = entry.getKey();
+            String ns = entry.getValue();
             try {
                 session.getWorkspace().getNamespaceRegistry().getURI(prefix);
             } catch (NamespaceException e) {
-                session.getWorkspace().getNamespaceRegistry().registerNamespace(prefix, WFSConfig.namespaces.get(prefix));
+                session.getWorkspace().getNamespaceRegistry().registerNamespace(prefix, ns);
             }
         }
     }
@@ -504,7 +519,8 @@ public class ContentConnector extends JTARepositoryConnector {
         try {
             session.save();
         } catch (RepositoryException ex) {
-            throw WegasErrorMessage.error("COMMIT FAILS");
+            //should never happened !!!!!
+            logger.error("Content Commit FAILURE: {}", ex);
         }
         this.runCommitCallbacks();
         SessionManager.closeSession(session);

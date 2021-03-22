@@ -1,0 +1,221 @@
+{
+    "allOf": [
+        {
+            "$ref": "#/definitions/components"
+        },
+        {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "props"
+            ],
+            "properties": {
+                "type": {},
+                "props": {}
+            }
+        }
+    ],
+    "definitions": {
+        "components": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "required": [
+                        "type",
+                        "props"
+                    ],
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "HTML"
+                            ]
+                        },
+                        "props": {
+                            "$ref": "#/definitions/__type21423"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "type",
+                        "props"
+                    ],
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "Layout"
+                            ]
+                        },
+                        "props": {
+                            "$ref": "#/definitions/__type21426"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "type",
+                        "props"
+                    ],
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "Number/Box"
+                            ]
+                        },
+                        "props": {
+                            "$ref": "#/definitions/__type21429"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "type",
+                        "props"
+                    ],
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "Number/Gauge"
+                            ]
+                        },
+                        "props": {
+                            "$ref": "#/definitions/__type21432"
+                        }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "type",
+                        "props"
+                    ],
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "Number/Value"
+                            ]
+                        },
+                        "props": {
+                            "$ref": "#/definitions/__type21435"
+                        }
+                    }
+                }
+            ],
+            "defaultSnippets": [
+                {
+                    "label": "New Component",
+                    "body": {
+                        "type": "$1"
+                    }
+                }
+            ]
+        },
+        "___self": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/components"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {},
+                        "props": {}
+                    },
+                    "additionalProperties": false
+                }
+            ]
+        },
+        "__type21423": {
+            "type": "object",
+            "required": [
+                "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "__type21426": {
+            "type": "object",
+            "required": [
+                "children"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/___self"
+                    }
+                }
+            }
+        },
+        "__type21429": {
+            "type": "object",
+            "required": [
+                "variable"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "variable": {
+                    "type": "string"
+                }
+            }
+        },
+        "__type21432": {
+            "type": "object",
+            "required": [
+                "variable"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "variable": {
+                    "type": "string"
+                },
+                "min": {
+                    "description": "lower bound, defaults to descriptor.minValue",
+                    "type": "number"
+                },
+                "max": {
+                    "description": "upper bound, defaults to descriptor.maxValue",
+                    "type": "number"
+                },
+                "neutralValue": {
+                    "description": "Zero, defaults to min",
+                    "type": "number"
+                },
+                "positiveColor": {
+                    "description": "Color above neutral threshold",
+                    "type": "string"
+                },
+                "negativeColor": {
+                    "description": "Color bellow neutral threshold",
+                    "type": "string"
+                }
+            }
+        },
+        "__type21435": {
+            "type": "object",
+            "required": [
+                "variable"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "variable": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

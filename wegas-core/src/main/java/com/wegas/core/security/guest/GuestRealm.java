@@ -1,14 +1,13 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.guest;
 
 import com.wegas.core.security.ejb.AccountFacade;
-import com.wegas.core.security.jparealm.*;
 import com.wegas.core.security.persistence.AbstractAccount;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -18,15 +17,12 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 public class GuestRealm extends AuthorizingRealm {
-
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(JpaRealm.class);
 
     /**
      *
@@ -45,7 +41,7 @@ public class GuestRealm extends AuthorizingRealm {
         Long accountId = (Long) authcToken.getPrincipal();
             AbstractAccount account = AccountFacade.lookup().find(accountId);
 
-            if (account != null && account instanceof GuestJpaAccount) {
+            if (account instanceof GuestJpaAccount) {
                 return new SimpleAuthenticationInfo(authcToken.getPrincipal(), "", this.getName());
             }
 

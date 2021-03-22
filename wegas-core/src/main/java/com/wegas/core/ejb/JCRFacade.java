@@ -1,23 +1,32 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
 
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.jcr.content.*;
+import com.wegas.core.jcr.content.AbstractContentDescriptor;
+import com.wegas.core.jcr.content.ContentComparator;
+import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnector.WorkspaceType;
+import com.wegas.core.jcr.content.DescriptorFactory;
+import com.wegas.core.jcr.content.DirectoryDescriptor;
+import com.wegas.core.jcr.content.FileDescriptor;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ModelScoped;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,10 +34,10 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.jcr.ItemExistsException;
-import javax.jcr.LoginException;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.ws.rs.core.Response;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -38,36 +47,116 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class JCRFacade {
 
-    @Inject JCRConnectorProvider jCRConnectorProvider;
+    private static final String USERLAND_PATH = ".user-uploads";
+
+    private static final Pattern USERLAND_PATTERN = Pattern.compile("^/" + USERLAND_PATH + "/(Player|Team|GameModel)-([1-9][0-9]*).*");
+
+    @Inject
+    private JCRConnectorProvider jCRConnectorProvider;
 
     @Inject
     private GameModelFacade gameModelFacade;
 
-    /**
-     *
-     */
-    private static final String FILENAME_REGEXP = "^(?:[\\p{L}[0-9]-_ ]|\\.)+$";
+    @Inject
+    private TeamFacade teamFacade;
+
+    @Inject
+    private PlayerFacade playerFacade;
+
+    @Inject
+    private RequestManager requestManager;
 
     /**
      *
      */
-    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(JCRFacade.class);
+    //private static final String FILENAME_REGEXP = "^(?:[\\p{L}[0-9]-_ ]|\\.)+$";
+    private static final String[] FORBIDDEN_CHARS = {"?", "\\", "/", "]", "[", "*", "|", "¦", "#", ";", ":", "\""};
+    /**
+     *
+     */
+    static final private Logger logger = LoggerFactory.getLogger(JCRFacade.class);
+
+    public void assertPathReadRight(GameModel gameModel, String path) {
+        if (gameModel != null) {
+            if (path.startsWith("/" + USERLAND_PATH)) {
+                this.assertPathWriteRight(gameModel, path);
+            } else {
+                requestManager.assertReadRight(gameModel);
+            }
+        } else {
+            throw WegasErrorMessage.error("Invalid gameModel");
+        }
+    }
+
+    public void assertPathWriteRight(GameModel gameModel, String path) {
+        if (gameModel != null) {
+            if (path.startsWith("/" + USERLAND_PATH)) {
+                Matcher matcher = USERLAND_PATTERN.matcher(path);
+                if (matcher.matches()) {
+                    if (matcher.groupCount() >= 2) {
+                        String scope = matcher.group(1);
+                        long id = Long.parseLong(matcher.group(2)); // tested by regex
+                        if ("Player".equals(scope)) {
+                            // Assert player write right
+                            Player player = playerFacade.find(id);
+                            requestManager.assertUpdateRight(player);
+
+                            // and make sure the player plays  in that gameModel
+                            if (!gameModel.equals(player.getGameModel())) {
+                                throw WegasErrorMessage.error("Player not in gameModel");
+                            }
+                        } else if ("Team".equals(scope)) {
+                            // Assert team write right
+                            Team team = teamFacade.find(id);
+                            requestManager.assertUpdateRight(team);
+
+                            // and make sure the team is part of that gameModel
+                            if (!gameModel.equals(team.getGameModel())) {
+                                throw WegasErrorMessage.error("Player not in gameModel");
+                            }
+                        } else {
+                            // Global scope
+                            GameModel find = gameModelFacade.find(id);
+                            requestManager.assertReadRight(gameModel);
+
+                            if (!gameModel.equals(find)) {
+                                throw WegasErrorMessage.error("GameModel mismatch");
+                            }
+                        }
+                    } else {
+                        // Invalid path
+                        throw WegasErrorMessage.error("Invalid path");
+                    }
+                } else {
+                    throw WegasErrorMessage.error("Invalid path");
+                }
+            } else {
+                requestManager.assertUpdateRight(gameModel);
+            }
+        } else {
+            throw WegasErrorMessage.error("Invalid gameModel");
+        }
+    }
+
+    public void deleteUserUploads(GameModel gameModel) {
+        requestManager.assertUpdateRight(gameModel);
+        this.delete(gameModel, WorkspaceType.FILES, USERLAND_PATH, "true");
+    }
 
     /**
-     * @param gameModelId
+     * @param gameModel
      * @param workspaceType
      * @param absolutePath
      * @param force
      *
      * @return the destroyed element or HTTP not modified
      *
-     * @throws WegasErrorMessage when deleting a non empty directory without
-     *                           force=true
+     * @throws WegasErrorMessage when deleting a non empty directory without force=true
      */
     public Object delete(GameModel gameModel,
-            WorkspaceType workspaceType,
-            String absolutePath,
-            String force) {
+        WorkspaceType workspaceType,
+        String absolutePath,
+        String force) {
 
         final Boolean recursive = !force.equals("");
         logger.debug("Asking delete for node ({}), force {}", absolutePath, recursive);
@@ -106,8 +195,8 @@ public class JCRFacade {
      * @return list of directory content
      */
     public List<AbstractContentDescriptor> listDirectory(GameModel gameModel,
-            WorkspaceType workspaceType,
-            String directory) {
+        WorkspaceType workspaceType,
+        String directory) {
         logger.debug("Asking listing for directory (/{})", directory);
 
         try {
@@ -120,24 +209,53 @@ public class JCRFacade {
                 Collections.sort(ret, new ContentComparator());
                 return ret;
             }
-        } catch (LoginException ex) {
-            logger.error(null, ex);
         } catch (RepositoryException ex) {
             logger.error(null, ex);
         }
         return new ArrayList<>();
     }
 
+    /**
+     * @param gameModel
+     * @param workspaceType
+     * @param directory
+     *
+     * @return list of directory content and its subdirectories recursively
+     */
+    public List<AbstractContentDescriptor> recurseListDirectory(GameModel gameModel,
+        WorkspaceType workspaceType,
+        String directory) {
+
+        List<AbstractContentDescriptor> recurseList = new ArrayList<>();
+        List<AbstractContentDescriptor> childrenList = listDirectory(gameModel, workspaceType, directory);
+        if (childrenList != null) {
+            for (AbstractContentDescriptor children : childrenList) {
+                // We assume here that the directories are always listed first
+                recurseList.add(children);
+                if (children.isDirectory()) {
+                    recurseList.addAll(
+                        this.recurseListDirectory(gameModel,
+                            workspaceType,
+                            children.getFullPath()));
+                }
+            }
+
+        }
+
+        return recurseList;
+    }
+
     public FileDescriptor createFile(Long gameModelId, WorkspaceType wType, String name, String path, String mediaType,
-            String note, String description, InputStream file, final Boolean override) throws RepositoryException {
+        String note, String description, InputStream file, final Boolean override) throws RepositoryException {
         return this.createFile(gameModelFacade.find(gameModelId), wType, name, path, mediaType, note, description, file, override);
     }
 
     private boolean isPathAvailable(GameModel gameModel, WorkspaceType wType, String path, String name) throws RepositoryException {
+        String fullPath = path + (path.endsWith("/") ? "" : "/") + name;
         if (gameModel.isModel()) {
             for (GameModel scen : gameModelFacade.getImplementations(gameModel)) {
                 ContentConnector connector = jCRConnectorProvider.getContentConnector(scen, wType);
-                AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path + "/" + name, connector);
+                AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(fullPath, connector);
                 if (descriptor.exist()) {
                     return false;
                 }
@@ -147,11 +265,40 @@ public class JCRFacade {
             // Path should not exists in the model
             GameModel model = gameModel.getBasedOn();
             ContentConnector contentConnector = jCRConnectorProvider.getContentConnector(model, wType);
-            AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(path + "/" + name, contentConnector);
+            AbstractContentDescriptor descriptor = DescriptorFactory.getDescriptor(fullPath, contentConnector);
 
             return !descriptor.exist();
         } else {
             return true;
+        }
+    }
+
+    private void assertFilenameIsValid(String filename) {
+        List<String> errors = new LinkedList<>();
+
+        // rewrite with a powerfil regex
+        for (String c : FORBIDDEN_CHARS) {
+            if (filename.contains(c)) {
+                errors.add(c);
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            StringBuilder sb = new StringBuilder("Filename ").append(filename).append(" is not valid! Character");
+            if (errors.size() > 1) {
+                sb.append('s');
+            }
+            for (int i = errors.size() - 1; i >= 0; i--) {
+                sb.append(' ').append(errors.get(i));
+                if (i > 1) {
+                    sb.append(',');
+                } else if (i == 1) {
+                    sb.append(" and");
+                }
+            }
+            sb.append(errors.size() > 1 ? " are" : " is").append(" forbidden!");
+
+            throw WegasErrorMessage.error(sb.toString());
         }
     }
 
@@ -171,50 +318,50 @@ public class JCRFacade {
      * @throws RepositoryException
      */
     public FileDescriptor createFile(GameModel gameModel, WorkspaceType wType, String name, String path, String mediaType,
-            String note, String description, InputStream file, final Boolean override) throws RepositoryException {
+        String note, String description, InputStream file, final Boolean override) throws RepositoryException {
 
         logger.debug("File name: {}", name);
 
-        Pattern pattern = Pattern.compile(FILENAME_REGEXP);
-        Matcher matcher = pattern.matcher(name);
-        if (name.equals("") || !matcher.matches()) {
-            throw WegasErrorMessage.error(name + " is not a valid filename.  Letters, numbers, whitespace or \".-_\" only.");
-        }
+        assertFilenameIsValid(name);
 
         try {
             ContentConnector connector = jCRConnectorProvider.getContentConnector(gameModel, wType);
 
             AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
+            if (dir.exist()) {
 
-            if (!dir.belongsToProtectedGameModel() || dir.getVisibility() != ModelScoped.Visibility.INTERNAL) {
-                FileDescriptor detachedFile = new FileDescriptor(name, path, connector);
+                if (!dir.belongsToProtectedGameModel() || dir.getVisibility() != ModelScoped.Visibility.INTERNAL) {
+                    FileDescriptor detachedFile = new FileDescriptor(name, path, connector);
 
-                if (!detachedFile.exist()) {
-                    // new file, set visibility to private
-                    detachedFile.setVisibility(gameModel.isModel() ? ModelScoped.Visibility.INHERITED : ModelScoped.Visibility.PRIVATE);
-                    if (!isPathAvailable(gameModel, wType, path, name)) {
-                        throw WegasErrorMessage.error(detachedFile.getPath() + name + " already exists in the model cluster");
+                    if (!detachedFile.exist()) {
+                        // new file, set visibility to private
+                        detachedFile.setVisibility(gameModel.isModel() ? ModelScoped.Visibility.INHERITED : ModelScoped.Visibility.PRIVATE);
+                        if (!isPathAvailable(gameModel, wType, path, name)) {
+                            throw WegasErrorMessage.error(detachedFile.getPath() + name + " already exists in the model cluster");
+                        }
+                        // check name
                     }
-                    // check name
-                }
 
-                if (!detachedFile.exist() || override) { //Node should not exist
-                    detachedFile.setNote(note == null ? "" : note);
-                    detachedFile.setDescription(description);
-                    //TODO : check allowed mime-types
-                    try {
-                        detachedFile.setBase64Data(file, mediaType);
-                        logger.info("{} ({}) uploaded", name, mediaType);
-                        return detachedFile;
-                    } catch (IOException ex) {
-                        logger.error("Error reading uploaded file :", ex);
-                        throw WegasErrorMessage.error("Error reading uploaded file");
+                    if (!detachedFile.exist() || override) { //Node should not exist
+                        detachedFile.setNote(note == null ? "" : note);
+                        detachedFile.setDescription(description);
+                        //TODO : check allowed mime-types
+                        try {
+                            detachedFile.setBase64Data(file, mediaType);
+                            logger.info("{} ({}) uploaded", name, mediaType);
+                            return detachedFile;
+                        } catch (IOException ex) {
+                            logger.error("Error reading uploaded file :", ex);
+                            throw WegasErrorMessage.error("Error reading uploaded file");
+                        }
+                    } else {
+                        throw WegasErrorMessage.error(detachedFile.getPath() + name + " already exists");
                     }
                 } else {
-                    throw WegasErrorMessage.error(detachedFile.getPath() + name + " already exists");
+                    throw WegasErrorMessage.error("Path " + path + "is readonly");
                 }
             } else {
-                throw WegasErrorMessage.error("Path " + path + "is readonly");
+                throw WegasErrorMessage.error("Path " + path + " does not exists");
             }
         } catch (RepositoryException ex) {
             ex.printStackTrace();
@@ -252,13 +399,9 @@ public class JCRFacade {
      * @throws RepositoryException
      */
     public DirectoryDescriptor createDirectory(GameModel gameModel, WorkspaceType wType, String name, String path, String note, String description) throws RepositoryException {
-
         //logger.debug("Directory name: {}", name);
-        Pattern pattern = Pattern.compile(FILENAME_REGEXP);
-        Matcher matcher = pattern.matcher(name);
-        if (name.equals("") || !matcher.matches()) {
-            throw WegasErrorMessage.error(name + " is not a valid filename.");
-        }
+        assertFilenameIsValid(name);
+
         ContentConnector connector = this.getContentConnector(gameModel, wType);
 
         AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
@@ -286,6 +429,44 @@ public class JCRFacade {
         } else {
             throw WegasErrorMessage.error(path + " directory does not exists");
         }
+    }
+
+    /**
+     * Make sure the path exists. If not, create all missing directories. This is quite the
+     * {@code mkdir -p} command.
+     *
+     *
+     * @param gameModel workspace owner
+     * @param wType     workspace type
+     * @param path      path to create
+     *
+     * @return the innermost directory (just created or pre-existing)
+     *
+     * @throws RepositoryException
+     */
+    public DirectoryDescriptor createDirectoryWithParents(GameModel gameModel, WorkspaceType wType, String path) throws RepositoryException {
+
+        ContentConnector connector = this.getContentConnector(gameModel, wType);
+
+        if (path.isEmpty() || path.charAt(0) != '/') {
+            path = "/" + path;
+        }
+        String[] segments = path.split("/");
+
+        DirectoryDescriptor dir = null;
+
+        String p = "/";
+        String name;
+        for (int i = 1; i < segments.length; i++) {
+            name = segments[i];
+
+            dir = (DirectoryDescriptor) DescriptorFactory.getDescriptor(p + name, connector);
+            if (!dir.exist()) {
+                dir = this.createDirectory(gameModel, wType, name, p, "", "");
+            }
+            p += name + "/";
+        }
+        return dir;
     }
 
     /**
@@ -388,6 +569,158 @@ public class JCRFacade {
             logger.error("Need to check those errors", e);
         }
         return new byte[]{};
+    }
+
+    /**
+     * Compare two file content. Do not take into account the filename, nor his children. To have
+     * the same content, both file files must be of the same kind (files or directories).
+     * <p>
+     * By definition, all folders have the same content (as we do not care about children here).
+     * Thus, this method always returns true when both source and target are directories.
+     * <p>
+     * To be equals, files must have the same {@link FileDescriptor#getData() content}
+     * <p>
+     * Any other case return false
+     *
+     * @param source first file or directory
+     * @param target second file or directory
+     *
+     * @return true if both files have same content
+     *
+     * @throws IOException
+     * @throws RepositoryException
+     */
+    private boolean fileContentsEquals(AbstractContentDescriptor source,
+        AbstractContentDescriptor target) throws IOException, RepositoryException {
+        if (source != null && source.exist()) {
+            if (target != null && target.exist()) {
+                if (source instanceof FileDescriptor
+                    && target instanceof FileDescriptor) {
+                    FileDescriptor srcFile = (FileDescriptor) source;
+                    FileDescriptor tFile = (FileDescriptor) target;
+
+                    FileDescriptor.FileContent srcData = srcFile.getData();
+                    FileDescriptor.FileContent targetData = tFile.getData();
+
+                    return srcData.equals(targetData);
+                } else if (source instanceof DirectoryDescriptor
+                    && target instanceof DirectoryDescriptor) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Collision proof file importer. This method will save a copy of the given file within the
+     * target directory.
+     * <p>
+     * Collision-Proof algorithm:
+     * <ol>
+     * <li>In the case the file already exists in the repository:</li>
+     * <ul>
+     * <li>if both files have the same
+     * {@link #fileContentsEquals(com.wegas.core.jcr.content.AbstractContentDescriptor, com.wegas.core.jcr.content.AbstractContentDescriptor) content},
+     * the pre-existing file is kept and is used as the new one.</li>
+     * <li>if both content differs, the file is suffixed with an increment and algorithm restarts at
+     * point 1 </li>
+     * </ul>
+     * <li>If the file does not exists in the repository:</li>
+     * <ul>
+     * <li>create all missing directories in the repository</li>
+     * <li>copy the file in the repository</li>
+     * </ul>
+     * </ol>
+     *
+     * @param file       to file to import
+     * @param targetRepo the repository in which to save the copy
+     *
+     * @return the brand new copied file, maybe renamed, or the preexising file
+     *
+     * @throws RepositoryException if a problem occurred while accessing the repository database
+     * @throws IOException
+     */
+    public AbstractContentDescriptor importFile(AbstractContentDescriptor file,
+        ContentConnector targetRepo) throws RepositoryException, IOException {
+
+        // find free path
+        String path = file.getPath();
+
+        if (!path.endsWith("/")) {
+            path = path + "/";
+        }
+
+        String filename = file.getName(); //eg. "a.txt", "picture.jpg", "myFolder", ".hidden"
+        String basename;
+        String extension;
+
+        int lastIndexOf = filename.lastIndexOf('.');
+        if (lastIndexOf > 0) {
+            basename = filename.substring(0, lastIndexOf); // eg picture, a
+            extension = filename.substring(lastIndexOf); // eg. .jpg, .txt
+        } else {
+            basename = filename; // eg myFolder, .hidden
+            extension = "";
+        }
+
+        AbstractContentDescriptor newItem;
+        String fullPath;
+
+        String suffixedName = basename;
+        int suffix = 1;
+
+        // find new filename
+        do {
+            fullPath = path + suffixedName + extension;
+
+            suffix++;
+            suffixedName = basename + "_" + suffix;
+
+            newItem = DescriptorFactory.getDescriptor(
+                fullPath, targetRepo);
+            // loop as long as the fullPath points to a pre-existing file, unless
+            // both pre-existing and new files have the same content
+        } while (newItem.exist() && !fileContentsEquals(file, newItem));
+
+        if (!newItem.exist()) {
+            // create a copy
+            this.createDirectoryWithParents(targetRepo.getGameModel(),
+                WorkspaceType.FILES, path);
+
+            if (file instanceof DirectoryDescriptor) {
+
+                DirectoryDescriptor newDir = new DirectoryDescriptor(fullPath, targetRepo);
+                newDir.setMimeType(file.getMimeType());
+                newDir.setNote(file.getNote());
+                newDir.setVisibility(file.getVisibility());
+                newDir.setDescription(file.getDescription());
+                newDir.sync();
+                return newDir;
+            } else if (file instanceof FileDescriptor) {
+                FileDescriptor newFile = new FileDescriptor(fullPath, targetRepo);
+                newFile.setMimeType(file.getMimeType());
+                newFile.setNote(file.getNote());
+                newFile.setVisibility(file.getVisibility());
+                newFile.setDescription(file.getDescription());
+
+                newFile.setDataLastModified(((FileDescriptor) file).getDataLastModified());
+                newFile.sync();
+
+                newFile.setData(((FileDescriptor) file).getData());
+                return newFile;
+            } else {
+                throw WegasErrorMessage.error("Unknown file type");
+            }
+        } else {
+            // use the pre-existing item as they have the same content
+            return newItem;
+        }
     }
 
     private ContentConnector getContentConnector(GameModel gameModel, WorkspaceType workspaceType) throws RepositoryException {

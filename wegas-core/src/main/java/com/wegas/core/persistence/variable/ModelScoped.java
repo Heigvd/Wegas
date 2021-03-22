@@ -1,11 +1,18 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
+
+import com.wegas.core.persistence.annotations.WegasConditions;
+import com.wegas.core.persistence.annotations.WegasConditions.And;
+import com.wegas.core.persistence.annotations.WegasConditions.Equals;
+import com.wegas.core.persistence.annotations.WegasConditions.Or;
+import com.wegas.core.persistence.annotations.WegasRefs;
+import com.wegas.core.persistence.game.GameModel;
 
 /**
  *
@@ -14,66 +21,65 @@ package com.wegas.core.persistence.variable;
 public interface ModelScoped {
 
     /**
-     * INTERNAL -> TO BE RENAMED
-     * PROTECTED
-     * INHERITED
-     * PRIVATE
+     * INTERNAL -> TO BE RENAMED PROTECTED INHERITED PRIVATE
      */
-    public static enum Visibility {
+     enum Visibility {
         /**
-         * propagated: true
-         * designer: write
-         * scenarist: read only
+         * <ul>
+         * <li>propagated: true</li>
+         * <li>designer: write</li>
+         * <li>scenarist: read only</li>
+         * </ul>
          */
         INTERNAL,
         /**
-         * propagated: true
-         * designer: write
-         * scenarist: read only, but write for default instance and items
+         * <ul>
+         * <li>propagated: true</li>
+         * <li>designer: write</li>
+         * <li>scenarist: read only, but write for default instance and items</li>
+         * </ul>
          */
         PROTECTED,
         /**
-         * propagated: true
-         * designer: write
-         * scenarist: write
+         * <ul>
+         * <li>propagated: true</li>
+         * <li>designer: write</li>
+         * <li>scenarist: write</li>
+         * </ul>
          */
         INHERITED,
         /**
-         * propagated: false (when updating but true when creating ???)
-         * designer: n/a
-         * scenarist: write
+         * <ul>
+         * <li>propagated: false (when updating but true when creating ???)</li>
+         * <li>designer: n/a</li>
+         * <li>scenarist: write</li>
+         * </ul>
          */
         PRIVATE
-    }
-
-    /**
-     * protection against scenario writes
-     */
-    public static enum ProtectionLevel {
-        /**
-         * Fetch from parent
-         */
-        CASCADED,
-        /**
-         * standard level for everything but default instances
-         * INTERNAL and PROTECTED are readonly for scenarist
-         */
-        PROTECTED,
-        /**
-         * open protected world to scenarist
-         */
-        INTERNAL,
-        /**
-         * Only PRIVATE is writable
-         */
-        INHERITED,
-        /**
-         * Always protected
-         */
-        ALL
     }
 
     Visibility getVisibility();
 
     void setVisibility(Visibility visibility);
+
+    class BelongsToModel extends Or {
+
+        public BelongsToModel() {
+            super(
+                new Equals(
+                    new WegasRefs.Field(GameModel.class, "status"),
+                    new WegasRefs.Const(GameModel.GmType.MODEL)
+                ),
+                new And(
+                    new WegasConditions.IsDefined(
+                        new WegasRefs.Field(GameModel.class, "basedOnId")
+                    ),
+                    new Equals(
+                        new WegasRefs.Field(GameModel.class, "status"),
+                        new WegasRefs.Const(GameModel.GmType.SCENARIO)
+                    )
+                )
+            );
+        }
+    }
 }

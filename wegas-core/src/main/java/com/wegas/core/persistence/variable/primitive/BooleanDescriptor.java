@@ -1,19 +1,17 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import ch.albasim.wegas.annotations.Scriptable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.persistence.annotations.Scriptable;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -23,12 +21,12 @@ import org.slf4j.LoggerFactory;
 public class BooleanDescriptor extends VariableDescriptor<BooleanInstance> implements PrimitiveDescriptorI<Boolean> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(BooleanDescriptor.class);
 
     /**
      *
      */
     public BooleanDescriptor() {
+        // ensure to have an empty constructor
     }
 
     /**

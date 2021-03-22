@@ -1,16 +1,13 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.admin;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
 import com.wegas.admin.persistence.GameAdmin;
-import com.wegas.admin.persistence.GameAdmin.Status;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
@@ -18,10 +15,9 @@ import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
-import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -39,11 +35,8 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
 
     private final Logger logger = LoggerFactory.getLogger(AdminFacade.class);
 
-    @EJB
-    private GameFacade gameFacade;
-
     @Inject
-    private HazelcastInstance hzInstance;
+    private GameFacade gameFacade;
 
     public AdminFacade() {
         super(GameAdmin.class);
@@ -58,6 +51,12 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
                 this.create(new GameAdmin(g));
             }
         }
+    }
+
+    public Collection<GameAdmin> getByIds(List<Long> ids) {
+        final TypedQuery<GameAdmin> findByIds = getEntityManager().createNamedQuery("GameAdmin.findByGameIds", GameAdmin.class);
+        findByIds.setParameter("ids", ids);
+        return findByIds.getResultList();
     }
 
     public List<GameAdmin> findDone() {
@@ -168,37 +167,20 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
     }
 
     /**
-     * CRON to delete games once the bin have been emptied. Note that only games
-     * which are marked as {@link Status#PROCESSED} will be destroyed.
-     * {@link Status#TODO} and {@link Status#CHARGED} ones will not be destroyed
+     * delete games once the bin have been emptied. Note that only games
+     * which are marked as {@link GameAdmin.Status#PROCESSED} will be destroyed.
+     * {@link GameAdmin.Status#TODO} and {@link GameAdmin.Status#CHARGED} ones will not be destroyed
      * <p>
      * This task is scheduled each Sunday at 1:30 am
      */
-    @Schedule(hour = "1", minute = "30", dayOfWeek = "Sun")
     public void deleteGames() {
-        requestManager.su();
-        try {
-            ILock lock = hzInstance.getLock("AdminFacade.Schedule");
-            logger.info("deleteGames(): want to delete processed and deleted games");
-            if (lock.tryLock()) {
-                try {
-                    final List<GameAdmin> toDelete = this.getGameToDelete();
-                    logger.info("deleteGames(): got the lock, {} games to delete", toDelete.size());
-                    for (GameAdmin ga : toDelete) {
-                        this.deleteGame(ga);
-                    }
-                    // Flush to trigger EntityListener events before loosing RequestManager !
-                    getEntityManager().flush();
-                } finally {
-                    lock.unlock();
-                    lock.destroy();
-                }
-            } else {
-                logger.info("Somebody else got the lock");
-            }
-        } finally {
-            requestManager.releaseSu();
+        final List<GameAdmin> toDelete = this.getGameToDelete();
+        logger.info("deleteGames(): {} games to delete", toDelete.size());
+        for (GameAdmin ga : toDelete) {
+            this.deleteGame(ga);
         }
+        // Flush to trigger EntityListener events before loosing RequestManager !
+        getEntityManager().flush();
     }
 
     /**

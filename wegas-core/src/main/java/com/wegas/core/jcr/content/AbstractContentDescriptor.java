@@ -1,27 +1,28 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.content;
 
+import ch.albasim.wegas.annotations.ProtectionLevel;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.Helper;
 import com.wegas.core.jcr.tools.JCRDescriptorCallback;
 import com.wegas.core.jcr.tools.JCRDescriptorFactory;
-import com.wegas.core.persistence.annotations.WegasEntity;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
-import com.wegas.core.persistence.annotations.WegasExtraProperty;
+import com.wegas.core.persistence.annotations.WegasEntity;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.ReadOnlyString;
-import com.wegas.editor.View.View;
-import com.wegas.editor.View.VisibilitySelectView;
+import com.wegas.editor.view.StringView;
+import com.wegas.editor.view.VisibilitySelectView;
 import java.io.Serializable;
 import java.util.zip.ZipEntry;
 import javax.jcr.ItemExistsException;
@@ -50,7 +51,9 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      * @throws RepositoryException
      */
     @JsonCreator
-    public static AbstractContentDescriptor getDescriptor(@JsonProperty("name") String name, @JsonProperty("path") String path, @JsonProperty("mimeType") String mimeType) throws RepositoryException {
+    public static AbstractContentDescriptor getDescriptor(@JsonProperty("name") String name,
+        @JsonProperty("path") String path,
+        @JsonProperty("mimeType") String mimeType) throws RepositoryException {
         if (mimeType.equals(DirectoryDescriptor.MIME_TYPE)) {
             return new DirectoryDescriptor(name, path, null);
         } else {
@@ -63,8 +66,14 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     /**
      * MIME type
      */
-    @WegasEntityProperty(view = @View(label = "MIME type", value = ReadOnlyString.class),
-            optional = false, nullable = false)
+    @WegasEntityProperty(
+        optional = false, nullable = false,
+        view = @View(
+            label = "MIME type",
+            readOnly = true,
+            value = StringView.class
+        )
+    )
     protected String mimeType;
 
     /**
@@ -81,23 +90,23 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      * Some internal comment
      */
     @WegasEntityProperty(view = @View(label = "Note"),
-            optional = false, nullable = false, proposal = EmptyString.class)
+        optional = false, nullable = false, proposal = EmptyString.class)
     private String note = "";
 
     /**
      * Some public comment
      */
     @WegasEntityProperty(view = @View(label = "Description"),
-            optional = false, nullable = false, proposal = EmptyString.class)
+        optional = false, nullable = false, proposal = EmptyString.class)
     private String description = "";
 
     /**
      * The so-called visibility
      */
     @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL,
-            nullable = false,
-            view = @View(label = "", value = VisibilitySelectView.class))
-    private ModelScoped.Visibility visibility = ModelScoped.Visibility.PRIVATE;
+        nullable = false,
+        view = @View(label = "", value = VisibilitySelectView.class))
+    private Visibility visibility = Visibility.PRIVATE;
     /**
      *
      */
@@ -135,7 +144,11 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      * @param contentConnector
      */
     protected AbstractContentDescriptor(String name, String path, ContentConnector contentConnector) {
-        path = path.startsWith("/") ? path : "/" + path;
+        if (Helper.isNullOrEmpty(path)){
+            this.path = "/";
+        } else {
+            this.path = path.charAt(0) == '/' ? path : "/" + path;
+        }
         this.connector = contentConnector;
         this.name = name;
         this.path = path;
@@ -168,6 +181,15 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
         }
     }
 
+    @WegasExtraProperty(
+        nullable = false,
+        view = @View(
+            label = "RefID",
+            readOnly = true,
+            value = StringView.class,
+            index = -800
+        )
+    )
     @Override
     //@JsonIgnore
     public String getRefId() {
@@ -177,11 +199,13 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     @Override
     //@JsonIgnore
     public void setRefId(String refId) {
+        // unmodifiable refId
     }
 
     /**
      * @return true is this is a directory
      */
+    @JsonIgnore
     public Boolean isDirectory() {
         return this.mimeType.equals(DirectoryDescriptor.MIME_TYPE);
     }
@@ -197,7 +221,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      * @return the name
      */
     @WegasExtraProperty(view = @View(label = "Filename"),
-            nullable = false, optional = false)
+        nullable = false, optional = false)
     public String getName() {
         return name;
     }
@@ -210,6 +234,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
         try {
             getConnector().setMimeType(fileSystemAbsolutePath, mimeType);
         } catch (RepositoryException ex) {
+            logger.error("Failed to set MIME-type of {}", fileSystemAbsolutePath);
         }
     }
 
@@ -248,6 +273,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
         try {
             getConnector().setNote(fileSystemAbsolutePath, this.note);
         } catch (RepositoryException ex) {
+            logger.error("Failed to set note of {}", fileSystemAbsolutePath);
         }
     }
 
@@ -266,6 +292,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
         try {
             getConnector().setDescription(fileSystemAbsolutePath, this.description);
         } catch (RepositoryException ex) {
+            logger.error("Failed to set description of {}", fileSystemAbsolutePath);
         }
     }
 
@@ -286,6 +313,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
         try {
             getConnector().setVisibility(fileSystemAbsolutePath, this.visibility.toString());
         } catch (RepositoryException ex) {
+            logger.error("Failed to set visibility of {}", fileSystemAbsolutePath);
         }
     }
 
@@ -327,8 +355,8 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     public void sync() throws RepositoryException {
         if (this.exist()) {                                                     //check existence then load it else create it
             try {
-                this.getContentFromRepository();
-            } catch (NullPointerException e) {
+                this.loadContentFromRepository();
+            } catch (NullPointerException e) { // NOPMD TODO: check NPE before, but we do not know what to check
                 if (!this.fileSystemAbsolutePath.equals("/")) {                 //Not a rootNode
                     throw e;
                 }
@@ -336,7 +364,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
             synched = true;
         } else {
             this.saveToRepository();
-            this.setContentToRepository();
+            this.saveContentToRepository();
             synched = true;
         }
     }
@@ -352,14 +380,14 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     public AbstractContentDescriptor addChild(AbstractContentDescriptor file) throws RepositoryException {
         Node parent = getConnector().getNode(fileSystemAbsolutePath);
         parent.addNode(file.getName());
-        file.setContentToRepository();
+        file.saveContentToRepository();
         return file;
     }
 
     /**
      * @return node size
      */
-    @WegasExtraProperty(view = @View(label = "File size"), optional =false, nullable =false)
+    @WegasExtraProperty(view = @View(label = "File size"), optional = false, nullable = false)
     public Long getBytes() {
         return 0L;
     }
@@ -384,14 +412,14 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      * @throws RepositoryException
      */
     @JsonIgnore
-    public void getContentFromRepository() throws RepositoryException {
+    public void loadContentFromRepository() throws RepositoryException {
         ContentConnector myConnector = getConnector();
         this.mimeType = myConnector.getMimeType(fileSystemAbsolutePath);
         this.note = myConnector.getNote(fileSystemAbsolutePath);
         this.description = myConnector.getDescription(fileSystemAbsolutePath);
         Visibility visib;
         try {
-            visib = ModelScoped.Visibility.valueOf(myConnector.getVisibility(fileSystemAbsolutePath));
+            visib = Visibility.valueOf(myConnector.getVisibility(fileSystemAbsolutePath));
         } catch (IllegalArgumentException ex) {
             visib = Visibility.PRIVATE;
         }
@@ -402,7 +430,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
      * @throws RepositoryException
      */
     @JsonIgnore
-    public void setContentToRepository() throws RepositoryException {
+    public void saveContentToRepository() throws RepositoryException {
         ContentConnector myConnector = getConnector();
 
         myConnector.setMimeType(fileSystemAbsolutePath, mimeType);
@@ -428,7 +456,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     @JsonIgnore
     protected ZipEntry getZipEntry() {
         String fullPath = this.getFullPath();
-        if (fullPath.startsWith("/")) { // ZIP entry shouldn't be absolute.
+        if (!fullPath.isEmpty() && fullPath.charAt(0) == '/') { // ZIP entry shouldn't be absolute.
             fullPath = fullPath.replaceFirst("/", "");
         }
         return new ZipEntry(fullPath);
@@ -442,7 +470,7 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
     @JsonIgnore
     private void parseAbsolutePath(String absolutePath) {
 //        absolutePath = absolutePath.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
-        if (!absolutePath.startsWith("/")) {
+        if (absolutePath.isEmpty() || absolutePath.charAt(0) != '/') {
             absolutePath = "/" + absolutePath;
         }
         if (absolutePath.equals("/")) {
@@ -468,7 +496,9 @@ abstract public class AbstractContentDescriptor implements ModelScoped, Mergeabl
         if (this.path.equals("/")) {
             this.fileSystemAbsolutePath = "/" + this.name;
         } else {
-            this.fileSystemAbsolutePath = this.path + "/" + this.name;
+            this.fileSystemAbsolutePath = this.path
+                + (this.path.endsWith("/") ? "" : "/")
+                + this.name;
         }
     }
 

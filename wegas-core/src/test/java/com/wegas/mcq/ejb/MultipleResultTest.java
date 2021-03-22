@@ -1,23 +1,23 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.ejb;
 
-import com.wegas.mcq.persistence.QuestionInstance;
-import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
-import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.ChoiceInstance;
+import com.wegas.mcq.persistence.QuestionDescriptor;
+import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Result;
+import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
 import com.wegas.test.TestHelper;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import com.wegas.test.mcq.Answerer;
 import java.util.function.Function;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -29,10 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MultipleResultTest extends AbstractArquillianTest {
 
-    @EJB
-    private QuestionDescriptorFacade questionDescriptorFacade;
-
-    @EJB
+    @Inject
     private Answerer answerer;
 
     private static final Logger logger = LoggerFactory.getLogger(MultipleResultTest.class);

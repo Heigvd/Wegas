@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -55,11 +55,11 @@
 }
 
 
-.wegas-whview__mainlist,
+.wegas-whview__main-list,
 .wegas-mcqview .wegas-mcqview-content {
     padding: 0 0 10px 6px;
     position: relative;
-    height: 100%;
+    height: calc(100% - 10px);
     box-sizing : border-box;
 }
 
@@ -115,12 +115,14 @@
 }
 
 
+.wegas-whview .wegas-mcqview-content .mcq-view-result-layout .mcq-view__results,
 .wegas-mcqview .wegas-mcqview-content .mcq-view-result-layout .mcq-view__results {
     flex-shrink: 1;
     flex-grow: 1;
     overflow-y: hidden;
     position:relative;
 }
+.wegas-whview .wegas-mcqview-content .mcq-view-result-layout .mcq-view__results > div,
 .wegas-mcqview .wegas-mcqview-content .mcq-view-result-layout .mcq-view__results > div {
     overflow-y: auto;
     position:absolute;
@@ -657,6 +659,7 @@
 /*
  * Replies
  */
+.wegas-whview .mcq-view__results-title > div:not(:empty),
 .wegas-mcqview .mcq-view__results-title > div:not(:empty){
     font-weight: bold;
     font-size: 13px;
@@ -664,6 +667,12 @@
     border-bottom: 1px solid lightgray;
 }
 
+
+.wegas-whview .mcq-view__results-title > div:not(:empty){
+    margin-top: 10px;
+}
+
+.wegas-whview .mcq-view__results .wegas-mcqview__result,
 .wegas-mcqview-content:not([data-displayResult='dialogue']) .mcq-view__results .wegas-mcqview__result {
     margin: 0 10px 6px 10px;
     border-bottom: 1px solid lightgray;
@@ -677,15 +686,18 @@
     font-style: italic;
 }
 
+.wegas-whview-content .mcq-view__results .wegas-mcqview__result,
 .wegas-mcqview-content:not(.cbx) .mcq-view__results .wegas-mcqview__result:first-child {
     color: black;
     font-style: normal;
 }
 
+.wegas-whview .mcq-view__results .wegas-mcqview__result:last-child,
 .wegas-mcqview .mcq-view__results .wegas-mcqview__result:last-child {
     border-bottom: none;
 }
 
+.wegas-whview .mcq-view__results .mcq-reply-title,
 .wegas-mcqview .mcq-view__results .mcq-reply-title {
     font-weight: bold;
 }
@@ -827,6 +839,24 @@
     display: none;
 }
 
+
+.wegas-whview__answers__ident-0 {
+
+}
+
+.wegas-whview__answers__ident-1 {
+    padding-left: 35px;
+}
+
+.wegas-whview__answers__ident-2 {
+    padding-left: 70px;
+}
+
+
+.wegas-whview__answers__folder {
+
+}
+
 .wegas-whview--button-container{
     width: 100%;
     height: 28px;
@@ -893,11 +923,8 @@
     margin-top: 3px;
 }
 
+.wegas-whview .wegas-boolean-input ul.wegas-boolean-input-checkboxes,
 .wegas-whview .wegas-string-input ul.wegas-string-input-checkboxes {
     padding: 0;
     margin: 0;
-}
-
-.wegas-whview .wegas-string-input ul.wegas-string-input-checkboxes li:first-child {
-    margin-left: 0;
 }

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -12,9 +12,16 @@ import com.wegas.core.ejb.LibraryFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
 import java.util.Map;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ws.rs.*;
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.authz.AuthorizationException;
 
@@ -31,12 +38,12 @@ public class LibraryController {
     /**
      *
      */
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private LibraryFacade libraryFacade;
 
     /**

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.api;
@@ -28,7 +28,8 @@ public interface IterationFacadeI {
     Iteration addIteration(BurndownInstance burndownInstance, Iteration iteration);
 
     /**
-     * same as {@link #addIteration(com.wegas.resourceManagement.persistence.BurndownInstance, com.wegas.resourceManagement.persistence.Iteration) }
+     * same as {@link #addIteration(com.wegas.resourceManagement.persistence.BurndownInstance, com.wegas.resourceManagement.persistence.Iteration)
+     * }
      *
      * @param burndownInstanceId
      * @param iteration
@@ -38,20 +39,28 @@ public interface IterationFacadeI {
     Iteration addIteration(Long burndownInstanceId, Iteration iteration);
 
     /**
-     * {@link #addTaskToIteration(com.wegas.resourceManagement.persistence.TaskInstance, com.wegas.resourceManagement.persistence.Iteration) }
+     * See {@link #addTaskToIteration(com.wegas.resourceManagement.persistence.TaskInstance, com.wegas.resourceManagement.persistence.Iteration, double, long, double, double) }
      *
      * @param taskInstanceId id of the task
      * @param iterationId    id of the iteration
+     * @param workload       remaining workload
+     * @param period         absolute period
+     * @param ac             actual cost change
+     * @param ev             earned value change
      */
-    void addTaskToIteration(Long taskInstanceId, Long iterationId);
+    void addTaskToIteration(Long taskInstanceId, Long iterationId, double workload, long period, double ac, double ev);
 
     /**
      * Add a task instance in an iteration
      *
      * @param task      the task to add
      * @param iteration iteration to add the task in
+     * @param workload  remaining workload
+     * @param period    absolute period
+     * @param ac        actual cost change
+     * @param ev        earned value change
      */
-    void addTaskToIteration(TaskInstance task, Iteration iteration);
+    void addTaskToIteration(TaskInstance task, Iteration iteration, double workload, long period, double ac, double ev);
 
     /**
      * find an iteration by id
@@ -70,12 +79,16 @@ public interface IterationFacadeI {
     void removeIteration(Long iterationId);
 
     /**
-     * same as {@link #removeTaskFromIteration(com.wegas.resourceManagement.persistence.TaskInstance, com.wegas.resourceManagement.persistence.Iteration) }
+     * same as {@link #removeTaskFromIteration(com.wegas.resourceManagement.persistence.TaskInstance, com.wegas.resourceManagement.persistence.Iteration, double, long, double, double) }
      *
      * @param taskInstanceId id of the task to remove
      * @param iterationId    id of the iteration to remove the task from
+     * @param workload       remaining workload
+     * @param period         absolute period
+     * @param ac             actual cost change
+     * @param ev             earned value change
      */
-    void removeTaskFromIteration(Long taskInstanceId, Long iterationId);
+    void removeTaskFromIteration(Long taskInstanceId, Long iterationId, double workload, long period, double ac, double ev);
 
     /**
      *
@@ -83,7 +96,11 @@ public interface IterationFacadeI {
      *
      * @param task      the task to remove
      * @param iteration iteration to remove the task from
+     * @param workload  remaining workload
+     * @param period    absolute period
+     * @param ac        actual cost change
+     * @param ev        earned value change
      */
-    void removeTaskFromIteration(TaskInstance task, Iteration iteration);
+    void removeTaskFromIteration(TaskInstance task, Iteration iteration, double workload, long period, double ac, double ev);
 
 }

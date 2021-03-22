@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /*
@@ -34,41 +34,41 @@
     }
 }
 
-@font-face {  
+@font-face {
     src: url("../fonts/DejaVuSansMono.ttf");
-    -fs-pdf-font-embed: embed;  
+    -fs-pdf-font-embed: embed;
     -fs-pdf-font-encoding: Identity-H;
 }
 
-@font-face {  
+@font-face {
     src: url("../fonts/DejaVuSansMono-Bold.ttf");
-    -fs-pdf-font-embed: embed;  
+    -fs-pdf-font-embed: embed;
     -fs-pdf-font-encoding: Identity-H;
 }
 
-@font-face {  
+@font-face {
     src: url("../fonts/DejaVuSansMono-Oblique.ttf");
-    -fs-pdf-font-embed: embed;  
+    -fs-pdf-font-embed: embed;
     -fs-pdf-font-encoding: Identity-H;
 }
 
-@font-face {  
+@font-face {
     src: url("../fonts/DejaVuSans.ttf");
-    -fs-pdf-font-embed: embed;  
+    -fs-pdf-font-embed: embed;
     -fs-pdf-font-encoding: Identity-H;
-}  
+}
 
-@font-face {  
+@font-face {
     src: url("../fonts/DejaVuSans-Bold.ttf");
-    -fs-pdf-font-embed: embed;  
+    -fs-pdf-font-embed: embed;
     -fs-pdf-font-encoding: Identity-H;
-}  
+}
 
-@font-face {  
+@font-face {
     src: url("../fonts/DejaVuSans-Oblique.ttf");
-    -fs-pdf-font-embed: embed;  
+    -fs-pdf-font-embed: embed;
     -fs-pdf-font-encoding: Identity-H;
-}  
+}
 
 .wegas-pdf-content > div > .wegas-pdf-variable-container  {
     padding-top: 20px;
@@ -125,9 +125,9 @@
 }
 
 div.wegas-pdf-content {
-    margin :auto; 
-    max-width: 800px; 
-    position: relative; 
+    margin :auto;
+    max-width: 800px;
+    position: relative;
 }
 
 .wegas-pdf-content div#floatingMenuContainer {
@@ -164,12 +164,7 @@ div.wegas-pdf-content {
 }
 
 .wegas-pdf-content div.wegas-pdf-columns{
-    float: left;
     width: 100%;
-}
-
-.wegas-pdf-content div.wegas-pdf-column{
-    float: left;
 }
 
 .wegas-pdf-content div.wegas-pdf-pictures-collection {
@@ -177,18 +172,13 @@ div.wegas-pdf-content {
 }
 
 .wegas-pdf-content div.wegas-pdf-picture {
-    display: block;   
+    display: block;
 }
 
 .wegas-pdf-content div.wegas-pdf-picture img{
     margin: 4px;
     max-width: 150px;
     max-height: 200px;
-}
-
-.wegas-pdf-content div.wegas-pdf-message-from{
-    float: inherit;
-    clear: both;
 }
 
 .wegas-pdf-content span.wegas-pdf-title-image {
@@ -230,7 +220,7 @@ div.wegas-pdf-content {
     display : block;
     padding: 0px 10px;
     /* background: #fafafc; */
-    /* border : 1px solid #353B41; */    
+    /* border : 1px solid #353B41; */
 }
 
 .wegas-pdf-content .wegas-pdf-WhQuestionDescriptor  .wegas-pdf-variable-container .wegas-pdf-variable-title,
@@ -341,6 +331,7 @@ div.wegas-pdf-content {
 
 .wegas-pdf-content div.wegas-pdf-message-container {
     padding-top: 5px;
+    width: 500px;
 }
 
 .wegas-pdf-content div.wegas-pdf-message-container > .wegas-pdf-property,
@@ -352,6 +343,12 @@ div.wegas-pdf-content {
 
 .wegas-pdf-content div.wegas-pdf-message-container .wegas-pdf-message-header{
     border-bottom: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.wegas-pdf-content div.wegas-pdf-message-container div.wegas-pdf-message-firstline > * {
+    display: inline-block;
 }
 
 .wegas-pdf-content .wegas-variable-history div.wegas-pdf-message-container > .wegas-pdf-property,
@@ -370,22 +367,12 @@ div.wegas-pdf-content {
     margin: 0px 5px 0px 5px;
 }
 
-.wegas-pdf-content .wegas-pdf-message-container .wegas-pdf-message-from{
-    clear:both;
-    float:left;
-} 
-
-.wegas-pdf-content .wegas-pdf-message-container .wegas-pdf-message-header > div {
-    clear: both;
-}
-
 .wegas-pdf-content span.wegas-pdf-property-value {
     font-size: 1.1em;
     font-style: normal;
 }
 
 .wegas-pdf-content .wegas-variable-history .wegas-pdf-message-container .wegas-pdf-message-header .wegas-pdf-message-firstline .wegas-pdf-message-date {
-    float:left !important;
     font-size: 1.1em;
     font-weight: 700;
 }
@@ -399,14 +386,6 @@ div.wegas-pdf-content {
 
 .wegas-pdf-content .wegas-pdf-message-container .wegas-pdf-message-header .wegas-pdf-message-subject {
     font-weight: bold;
-}
-
-.wegas-pdf-content .wegas-pdf-message-container .wegas-pdf-message-header  .wegas-pdf-message-firstline .wegas-pdf-inline-div {
-    float: left;
-}
-
-.wegas-pdf-content .wegas-pdf-message-container .wegas-pdf-message-date {
-    float: right !important;
 }
 
 .wegas-pdf-content .wegas-pdf-message-container > div {

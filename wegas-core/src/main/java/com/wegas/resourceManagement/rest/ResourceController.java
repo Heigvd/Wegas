@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.rest;
@@ -10,8 +10,8 @@ package com.wegas.resourceManagement.rest;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskInstance;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
@@ -31,7 +31,7 @@ import javax.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 public class ResourceController {
 
-    @EJB
+    @Inject
     private ResourceFacade resourceFacade;
 
     /**
@@ -41,9 +41,9 @@ public class ResourceController {
      * @param taskInstanceId
      */
     @POST
-    @Path("Assign/{resourceId : [1-9][0-9]*}/{taskInstanceId : [1-9][0-9]*}")
+    @Path("Assign/{resourceInstanceId : [1-9][0-9]*}/{taskInstanceId : [1-9][0-9]*}")
     public void addAssignment(
-            @PathParam("resourceId") Long resourceInstanceId,
+            @PathParam("resourceInstanceId") Long resourceInstanceId,
             @PathParam("taskInstanceId") Long taskInstanceId
     ) {
         resourceFacade.assign(resourceInstanceId, taskInstanceId);

@@ -1,23 +1,23 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.merge.patch;
 
+import ch.albasim.wegas.annotations.ProtectionLevel;
+import static ch.albasim.wegas.annotations.ProtectionLevel.CASCADED;
+import ch.albasim.wegas.annotations.WegasCallback;
 import com.wegas.core.IndentLogger;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.merge.utils.LifecycleCollector;
-import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -34,9 +34,9 @@ public abstract class WegasPatch {
     protected final static IndentLogger logger = new IndentLogger(LoggerFactory.getLogger(WegasPatch.class));
 
     /**
-     * Represent the patch mode
+     * Represent the patch mode: CREATE, DELETE, UPDATE, OVERRIDE or SKIP
      */
-    public static enum PatchMode {
+    public enum PatchMode {
         /**
          * object is to be created
          */
@@ -96,11 +96,11 @@ public abstract class WegasPatch {
     protected VariableDescriptorFacade vdf;
 
     protected WegasPatch(Object identifier, Integer order,
-            Method getter, Method setter,
-            WegasCallback fieldCallback,
-            boolean ignoreNull, boolean sameEntityOnly,
-            boolean initOnly, boolean recursive,
-            ProtectionLevel protectionLevel) {
+        Method getter, Method setter,
+        WegasCallback fieldCallback,
+        boolean ignoreNull, boolean sameEntityOnly,
+        boolean initOnly, boolean recursive,
+        ProtectionLevel protectionLevel) {
         this.identifier = identifier;
         this.order = order;
         this.getter = getter;
@@ -114,7 +114,8 @@ public abstract class WegasPatch {
     }
 
     /**
-     * Get all callbacks to take into account for this patch (entity + entity super classed + field + user callbacks)
+     * Get all callbacks to take into account for this patch (entity + entity super classed + field
+     * + user callbacks)
      *
      * @param userCallback callback specific to patch
      *
@@ -188,17 +189,19 @@ public abstract class WegasPatch {
     }
 
     protected abstract LifecycleCollector apply(GameModel targetGameModel, Deque<Mergeable> ancestors,
-            Object targetObject, WegasCallback callback, PatchMode parentMode, Visibility visibility,
-            LifecycleCollector collector, Integer numPass, boolean bypassVisibility);
+        Object targetObject, WegasCallback callback, PatchMode parentMode, Visibility visibility,
+        LifecycleCollector collector, Integer numPass, boolean bypassVisibility);
 
     /**
-     * Guess current mode according to protectionLevel, current visibility, and parent mode and visibility
+     * Guess current mode according to protectionLevel, current visibility, and parent mode and
+     * visibility
      *
      * @param inheritedVisibility visibility of parent
      * @param visibility          optional current visibility
      *
-     * @return current mode OVERRIDE if visibility equals INTERNAL or PROTECTED or if parent mode is OVERRIDE and the parent child link allow to cascade OVERRIDE
-     *         , UPDATE in all other case
+     * @return current mode OVERRIDE if visibility equals INTERNAL or PROTECTED or if parent mode is
+     *         OVERRIDE and the parent child link allow to cascade OVERRIDE , UPDATE in all other
+     *         case
      */
     protected PatchMode updateOrOverride(Visibility inheritedVisibility, Visibility visibility) {
         logger.trace("override ? (inheritedV: {}, ownVisibility: {}; protection: {}", inheritedVisibility, visibility, protectionLevel);
@@ -219,8 +222,8 @@ public abstract class WegasPatch {
                 break;
             case INHERITED:
                 if (eVisibility == Visibility.INTERNAL
-                        || eVisibility == Visibility.PROTECTED
-                        || eVisibility == Visibility.INHERITED) {
+                    || eVisibility == Visibility.PROTECTED
+                    || eVisibility == Visibility.INHERITED) {
                     return PatchMode.OVERRIDE;
                 }
                 break;
@@ -248,7 +251,7 @@ public abstract class WegasPatch {
         PatchMode mode;
 
         logger.info("Get MODE: target: {}; from: {}; to: {}; parentMode: {}; iV: {}; v: {}", target, from, to, parentMode, inheritedVisibility, visibility);
-        /* 
+        /*
          * Determine patch mode
          */
         if (PatchMode.DELETE.equals(parentMode)) {
@@ -262,10 +265,8 @@ public abstract class WegasPatch {
 
                 // but skip PRIVATE visibility
                 // Allow to
-                if (!bypassVisibility && to instanceof ModelScoped) {
-                    if (Visibility.PRIVATE.equals(((ModelScoped) to).getVisibility())) {
-                        mode = PatchMode.SKIP;
-                    }
+                if (!bypassVisibility && to instanceof ModelScoped && Visibility.PRIVATE.equals(((ModelScoped) to).getVisibility())) {
+                    mode = PatchMode.SKIP;
                 }
             } else {
                 // should be DELETE but target does not exists
@@ -325,8 +326,16 @@ public abstract class WegasPatch {
                         mode = PatchMode.OVERRIDE;
                     }
                 } else {
+                    if (this.updateOrOverride(inheritedVisibility, visibility) == PatchMode.OVERRIDE) {
+                        // one is not allow to create child/children here -> delete target
+                        mode = PatchMode.DELETE;
+                    } else {
+                        // one is allowed to create create its own child/children -> keep in place
+                        mode = PatchMode.SKIP;
+                    }
                     // FROM NULL TO NULL !!!
-                    throw new WegasConflictException();
+                    logger.error("Patch Null2Null: Target: {}, From: null; To: null; ParentMode: {}; inheritedVisibility: {}; Visibility: {}; protectionLevel: {}; => mode: {}",
+                        target, parentMode, inheritedVisibility, visibility, protectionLevel, mode);
                 }
             }
         }
@@ -352,10 +361,12 @@ public abstract class WegasPatch {
             effectiveAbstractEntity = (AbstractEntity) toEntity;
         } else {
             Mergeable mergeableParent = toEntity;
+
             do {
                 mergeableParent = mergeableParent.getMergeableParent();
             } while (mergeableParent != null && mergeableParent instanceof AbstractEntity == false);
-            if (mergeableParent instanceof AbstractEntity) {
+
+            if (mergeableParent != null) {
                 effectiveAbstractEntity = (AbstractEntity) mergeableParent;
             } else {
                 effectiveAbstractEntity = null;
@@ -371,16 +382,24 @@ public abstract class WegasPatch {
         }
 
         return !bypassVisibility // target is never protected when bypassing visibilities
-                && effectiveTarget != null && effectiveTarget.belongsToProtectedGameModel() // and target is protected
-                && this.toEntity != null
-                && (effectiveAbstractEntity != null && !effectiveAbstractEntity.isPersisted()
-                || this.toEntity.belongsToProtectedGameModel() // toEntity is also protected (ie allows changes from upstream)
-                );
+            && effectiveTarget != null && effectiveTarget.belongsToProtectedGameModel() // and target is protected
+            && this.toEntity != null
+            && (effectiveAbstractEntity != null && !effectiveAbstractEntity.isPersisted()
+            || this.toEntity.belongsToProtectedGameModel() // toEntity is also protected (ie allows changes from upstream)
+            );
     }
 
     @Override
     public String toString() {
         return this.print(0).toString();
+    }
+
+    public PatchDiff diff() {
+        return this.buildDiff(false);
+    }
+
+    public PatchDiff diffForce() {
+        return this.buildDiff(true);
     }
 
     /**
@@ -393,13 +412,21 @@ public abstract class WegasPatch {
     protected StringBuilder print(int ident) {
         StringBuilder sb = new StringBuilder();
         newLine(sb, ident);
-        sb.append("Patch ").append(this.getClass().getSimpleName()).append(" ").append(identifier);
+        sb.append("Patch ").append(this.getClass().getSimpleName()).append(' ').append(identifier);
         if (fieldCallback != null) {
             newLine(sb, ident + 1);
             sb.append("FieldCallback: ").append(fieldCallback);
         }
 
         return sb;
+    }
+
+    protected String indentString(int ident) {
+        String indent = "";
+        for (int i = 0; i < ident; i++) {
+            indent += "  ";
+        }
+        return indent;
     }
 
     protected void indent(StringBuilder sb, int ident) {
@@ -409,7 +436,7 @@ public abstract class WegasPatch {
     }
 
     protected void newLine(StringBuilder sb, int ident) {
-        sb.append("\n");
+        sb.append(System.lineSeparator());
         this.indent(sb, ident);
     }
 
@@ -419,4 +446,9 @@ public abstract class WegasPatch {
         }
         return this.vdf;
     }
+
+    protected abstract PatchDiff buildDiff(boolean bypassVisibility);
+
+    public static abstract class PatchDiff {
+    };
 }

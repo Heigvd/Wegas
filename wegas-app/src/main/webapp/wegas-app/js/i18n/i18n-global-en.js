@@ -3,7 +3,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -26,20 +26,25 @@ YUI.add("wegas-i18n-global-en", function(Y) {
             details: "details",
             delete: "delete",
             dunno: "I don't know",
-            variableNotFound: "Unable to found \"{{name}}\" variable",
+            variableNotFound: "Unable to find \"{{name}}\" variable",
             logout: "logout",
             statistics: "Statistics",
             peerReview: "Peer Review",
+            surveys: "Surveys",
             backToMenu: "back to menu",
             mcqBackToMenu: "back to question list",
             ok: "OK",
-            cancel: "Cancel"
+            cancel: "Cancel",
+            yes: "yes",
+            no: "no",
+            submit: "submit"
         },
         i18n:{
             manager: {
                 title: "Languages Manager"
             },
-            languages: "Languages"
+            languages: "Languages",
+            availables: "Languages available to players"
         },
         errors: {
             conflict: "Your request could not be completed due to a conflict. This usually means you tried to update an outdated element.",
@@ -55,6 +60,9 @@ YUI.add("wegas-i18n-global-en", function(Y) {
             deleteEmailConfirmation: "The e-mail {{subject}} will be permanently deleted. Continue?",
             noMessages: "You have no messages",
             noMessageSelected: "Select an item on the left"
+        },
+        spreadsheet: {
+            empty: "No spreadsheet available at this time"
         }
     }, {
         base: {

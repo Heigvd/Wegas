@@ -2,23 +2,34 @@ import * as React from 'react';
 import { get, cloneDeep } from 'lodash-es';
 import { Schema } from 'jsoninput';
 import { State } from '../../data/Reducer/reducers';
-import { VariableDescriptor, GameModel, Helper } from '../../data/selectors';
+import { GameModel, Helper } from '../../data/selectors';
 import getEditionConfig from '../editionConfig';
 import { Actions } from '../../data';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
 import { deepUpdate } from '../../data/updateUtils';
-import { StoreConsumer } from '../../data/store';
+import { StoreConsumer, StoreDispatch, store } from '../../data/Stores/store';
 import { AvailableViews } from './FormView';
+import { cx } from 'emotion';
+import { flex, grow, flexColumn } from '../../css/classes';
+import { Edition } from '../../data/Reducer/globalState';
+import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
+import { MessageString } from './MessageString';
+import { IAbstractEntity, IMergeable, IVariableDescriptor } from 'wegas-ts-api';
 
-interface EditorProps<T> {
+export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
   update?: (variable: T) => void;
   actions?: {
     label: React.ReactNode;
     action: (entity: T, path?: (string | number)[]) => void;
+    confirm?: boolean;
   }[];
   path?: (string | number)[];
   getConfig(entity: T): Promise<Schema<AvailableViews>>;
+  error?: {
+    message: string;
+    onRead: () => void;
+  };
 }
 
 type VISIBILITY = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE';
@@ -125,7 +136,7 @@ function _overrideSchema(
   return schema;
 }
 
-function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
+export function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
   const gameModel = GameModel.selectCurrent();
   if (gameModel.type === 'SCENARIO') {
     return _overrideSchema(cloneDeep(schema), entity);
@@ -138,21 +149,29 @@ function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
   return schema;
 }
 
-export async function WindowedEditor<T>({
+async function WindowedEditor<T extends IMergeable>({
   entity,
   update,
   actions = [],
   getConfig,
   path,
+  error,
+  ...options
 }: EditorProps<T>) {
   let pathEntity = entity;
   if (Array.isArray(path) && path.length > 0) {
     pathEntity = get(entity, path);
   }
+
+  // const customSchemas = useStore(s => {
+  //   return s.global.schemas;
+  // }, shallowDifferent);
+
   if (pathEntity === undefined) {
     // return <span>There is nothing to edit</span>;
     return null;
   }
+
   function updatePath(variable: {}) {
     return update != null && update(deepUpdate(entity, path, variable) as T);
   }
@@ -161,28 +180,193 @@ export async function WindowedEditor<T>({
     typeof import('./Form')['Form'],
     Schema<AvailableViews>
   >([import('./Form').then(m => m.Form), getConfig(pathEntity)]);
+
+  // First try to get schema from simple filters
+  const customSchemas = store.getState().global.schemas;
+  let customSchema: SimpleSchema | void;
+  const simpleCustomSchemaName = customSchemas.filtered[pathEntity['@class']];
+  if (simpleCustomSchemaName !== undefined) {
+    const nfSchema = customSchemas.views[simpleCustomSchemaName](
+      pathEntity,
+      schema,
+    );
+    if (nfSchema !== undefined) {
+      customSchema = nfSchema;
+    }
+  }
+  // Then try to get schema from complex filters
+  for (const schemaName of customSchemas.unfiltered) {
+    const nfSchema = customSchemas.views[schemaName](pathEntity, schema);
+    if (nfSchema !== undefined) {
+      customSchema = nfSchema;
+      break;
+    }
+  }
   return (
-    <Form
-      entity={pathEntity}
-      update={update != null ? updatePath : update}
-      actions={actions.map(({ label, action }) => {
-        return {
-          label,
-          action: function(e: T) {
-            action(deepUpdate(entity, path, e) as T, path);
+    <div className={cx(flex, grow, flexColumn)}>
+      <MessageString
+        value={error && error.message}
+        type={'error'}
+        duration={3000}
+        onLabelVanish={error && error.onRead}
+      />
+      <Form
+        entity={pathEntity}
+        update={update != null ? updatePath : update}
+        actions={actions.map(action => ({
+          ...action,
+          action: function (e: T) {
+            action.action(deepUpdate(entity, path, e) as T, path);
           },
-        };
-      })}
-      path={path}
-      schema={overrideSchema(entity, schema)}
-    />
+        }))}
+        path={path}
+        schema={overrideSchema(
+          entity,
+          customSchema !== undefined ? customSchema : schema,
+        )}
+        {...options}
+      />
+    </div>
   );
 }
-const AsyncVariableForm = asyncSFC<EditorProps<{ '@class': string }>>(
+export const AsyncVariableForm = asyncSFC<EditorProps<IMergeable>>(
   WindowedEditor,
   () => <div>load...</div>,
-  ({ err }: { err: Error }) => <span>{err.message}</span>,
+  ({ err }: { err: Error }) => (
+    <span>{err && err.message ? err.message : 'Something went wrong...'}</span>
+  ),
 );
+
+/**
+ * Retrieve message event and make it readable
+ * @param event - the event to parse
+ */
+export function parseEvent(
+  event: WegasEvent,
+  dispatch: StoreDispatch = store.dispatch,
+) {
+  const onRead = () =>
+    dispatch(Actions.EditorActions.editorEventRead(event.timestamp));
+  switch (event['@class']) {
+    case 'ClientEvent':
+      return { message: event.error, onRead };
+    case 'ExceptionEvent': {
+      if (event.exceptions.length > 0) {
+        let message = 'Exceptions :';
+        for (const exception of event.exceptions) {
+          switch (exception['@class']) {
+            case 'WegasConflictException':
+              message += 'Conflict between variables';
+              break;
+            case 'WegasErrorMessage':
+              message += exception.message;
+              break;
+
+            case 'WegasNotFoundException':
+              message += exception.message;
+              break;
+
+            case 'WegasOutOfBoundException': {
+              const min = exception.min ? exception.min : '-∞';
+              const max = exception.max ? exception.max : '∞';
+              const error =
+                '"' +
+                exception.variableName +
+                '" is out of bound. <br>(' +
+                exception.value +
+                ' not in [' +
+                min +
+                ';' +
+                max +
+                '])';
+              message += error;
+              break;
+            }
+            case 'WegasScriptException': {
+              let error = exception.message;
+              if (exception.lineNumber) {
+                error += ' at line ' + exception.lineNumber;
+              }
+              if (exception.script) {
+                error += ' in script ' + exception.script;
+              }
+              message += error;
+              break;
+            }
+            case 'WegasWrappedException':
+              message = 'Unexpected error: ' + exception.message;
+              break;
+            default:
+              message += 'Severe error';
+          }
+        }
+        return { message, onRead };
+      }
+    }
+  }
+  return { message: `Unknown event : ${event['@class']}`, onRead };
+}
+
+/**
+ * Retrieve error message from stored events
+ * @param state the events stored
+ * @param dispatch the dispatcher fn of the
+ * @param index the index of the event
+ */
+export function parseEventFromIndex(
+  state: Readonly<WegasEvent[]>,
+  dispatch: StoreDispatch = store.dispatch,
+  index: number = 0,
+) {
+  if (state.length > index) {
+    const currentEvent = state[index];
+    if (currentEvent) {
+      parseEvent(currentEvent, dispatch);
+    }
+    return undefined;
+  }
+}
+
+export function getStateConfig(
+  state: Readonly<Edition>,
+  entity: IVariableDescriptor,
+) {
+  return 'config' in state && state.config != null
+    ? Promise.resolve(state.config)
+    : (getEditionConfig(entity) as Promise<Schema<AvailableViews>>);
+}
+
+export function getConfig(state: Readonly<Edition>) {
+  return (entity: IVariableDescriptor) => getStateConfig(state, entity);
+}
+
+export function getUpdate(state: Readonly<Edition>, dispatch: StoreDispatch) {
+  return 'actions' in state && state.actions.save
+    ? state.actions.save
+    : (entity: IAbstractEntity) => {
+        dispatch(Actions.EditorActions.saveEditor(entity));
+      };
+}
+
+export function getEntity(state?: Readonly<Edition>) {
+  if (!state) {
+    return undefined;
+  }
+  switch (state.type) {
+    case 'VariableCreate':
+      return {
+        '@class': state['@class'],
+        parentId: state.parentId,
+        parentType: state.parentType,
+      };
+    case 'Variable':
+    case 'VariableFSM':
+    case 'File':
+      return state.entity;
+    default:
+      return undefined;
+  }
+}
 
 export default function VariableForm(props: {
   entity?: Readonly<IVariableDescriptor>;
@@ -193,52 +377,37 @@ export default function VariableForm(props: {
     <StoreConsumer
       selector={(s: State) => {
         const editing = s.global.editing;
-        if (editing == null) {
+        if (!editing) {
           return null;
+        } else {
+          const entity = getEntity(editing);
+          if (entity == null) {
+            return null;
+          } else {
+            return { editing, entity, events: s.global.events };
+          }
         }
-        if (editing.type === 'VariableCreate') {
-          return {
-            ...editing,
-            entity: {
-              '@class': editing['@class'],
-              parentId: editing.parentId,
-              parentType: editing.parentType,
-            },
-          };
-        }
-        if (editing.type === 'Variable') {
-          return {
-            ...editing,
-            entity: VariableDescriptor.select(editing.id),
-          };
-        }
-        return null;
       }}
+      shouldUpdate={deepDifferent}
     >
       {({ state, dispatch }) => {
         if (state == null || state.entity == null) {
           return null;
         }
-        const update =
-          'save' in state.actions
-            ? state.actions.save
-            : (entity: IAbstractEntity) => {
-                dispatch(Actions.EditorActions.saveEditor(entity));
-              };
-        const getConfig = (entity: IVariableDescriptor) => {
-          return state.config != null
-            ? Promise.resolve(state.config)
-            : (getEditionConfig(entity) as Promise<Schema<AvailableViews>>);
-        };
 
         return (
           <AsyncVariableForm
             {...props}
-            {...state}
-            getConfig={getConfig}
-            update={update}
-            actions={Object.values(state.actions.more || {})}
+            {...state.editing}
+            getConfig={getConfig(state.editing)}
+            update={getUpdate(state.editing, dispatch)}
+            actions={Object.values(
+              'actions' in state.editing && state.editing.actions.more
+                ? state.editing.actions.more
+                : {},
+            )}
             entity={state.entity}
+            error={parseEventFromIndex(state.events)}
           />
         );
       }}

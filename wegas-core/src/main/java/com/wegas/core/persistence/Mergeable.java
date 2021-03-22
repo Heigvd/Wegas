@@ -1,34 +1,35 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
 
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.INTERNAL;
+import static ch.albasim.wegas.annotations.CommonView.LAYOUT.shortInline;
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasNotFoundException;
-import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.INTERNAL;
-import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
-import com.wegas.editor.View.ReadOnlyNumber;
-import com.wegas.editor.View.ReadOnlyString;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.NumberView;
+import com.wegas.editor.view.StringView;
 
 /**
  *
  * @author maxence
  */
-public interface Mergeable {
+public interface Mergeable extends IMergeable {
 
     /**
      * Get entity cross-gamemodel identifier
@@ -39,7 +40,7 @@ public interface Mergeable {
 
     void setRefId(String refId);
 
-    public static String getJSONClassName(Class<?> klass) {
+    static String getJSONClassName(Class<?> klass) {
         JsonTypeName annotation = klass.getAnnotation(JsonTypeName.class);
 
         if (annotation != null) {
@@ -50,23 +51,23 @@ public interface Mergeable {
     }
 
     @WegasExtraProperty(name = "@class",
-            optional = false,
-            nullable = false,
-            view = @View(
-                    value = ReadOnlyString.class,
-                    label = "",
-                    featureLevel = INTERNAL,
-                    index = -2000
-            )
+        optional = false,
+        nullable = false,
+        view = @View(
+            value = StringView.class,
+            label = "",
+            featureLevel = INTERNAL,
+            index = -2000
+        )
     )
     @JsonProperty("@class")
     //@JsonProperty(value = "@class", access = JsonProperty.Access.READ_ONLY)
-    default public String getJSONClassName() {
+    default String getJSONClassName() {
         return Mergeable.getJSONClassName(this.getClass());
     }
 
     @JsonProperty("@class")
-    default public void setJSONClassName(String atClass){
+    default void setJSONClassName(String atClass) {
         // no-op
     }
 
@@ -113,6 +114,15 @@ public interface Mergeable {
     }
 
     @JsonIgnore
+    default Visibility getClosestVisibility() {
+        if (this instanceof ModelScoped) {
+            return ((ModelScoped) this).getVisibility();
+        } else {
+            return this.getInheritedVisibility();
+        }
+    }
+
+    @JsonIgnore
     <T extends Mergeable> T getMergeableParent();
 
     @JsonIgnore
@@ -136,14 +146,14 @@ public interface Mergeable {
     @JsonView(Views.IndexI.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @WegasExtraProperty(
-            nullable = false,
-            view = @View(
-                    value = ReadOnlyString.class,
-                    label = "Parent Type",
-                    featureLevel = INTERNAL,
-                    index = -990,
-                    layout = shortInline
-            ))
+        nullable = false,
+        view = @View(
+            value = StringView.class,
+            label = "Parent Type",
+            featureLevel = INTERNAL,
+            index = -990,
+            layout = shortInline
+        ))
     default String getParentType() {
         AbstractEntity parent = this.getParentEntity();
         if (parent != null) {
@@ -155,14 +165,14 @@ public interface Mergeable {
     @JsonView(Views.IndexI.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @WegasExtraProperty(
-            nullable = false,
-            view = @View(
-                    value = ReadOnlyNumber.class,
-                    label = "Parent ID",
-                    featureLevel = INTERNAL,
-                    index = -980,
-                    layout = shortInline
-            ))
+        nullable = false,
+        view = @View(
+            value = NumberView.class,
+            label = "Parent ID",
+            featureLevel = INTERNAL,
+            index = -980,
+            layout = shortInline
+        ))
     default Long getParentId() {
         AbstractEntity parent = this.getParentEntity();
         if (parent != null) {

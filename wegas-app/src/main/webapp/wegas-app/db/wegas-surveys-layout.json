@@ -1,0 +1,11 @@
+{
+    "type": "SurveysWidget",
+    "plugins": [{
+            "fn": "Injector"
+        }, {
+            "fn": "PopupListener",
+            "cfg": { "alignAttr": null }
+        }, {
+            "fn": "ServerPopupListener"
+        }]
+}

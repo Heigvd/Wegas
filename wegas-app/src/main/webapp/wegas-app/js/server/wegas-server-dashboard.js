@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global Variable, self, gameModel, Event, Java, com, QuestionFacade, I18n */
@@ -32,7 +32,7 @@ var WegasDashboard = (function() {
 
     function getOrCreateSection(dashboardName, sectionName) {
         var sName = sectionName || "monitoring";
-        var dashboard = getOrCreateDashboard(dashboardName || "overview")
+        var dashboard = getOrCreateDashboard(dashboardName || "overview");
         var section = (dashboard[sName] = dashboard[sName] || {
             title: sName,
             items: {}
@@ -55,7 +55,10 @@ var WegasDashboard = (function() {
             }
         }
 
+        var order = Object.keys(section.items).length;
+
         section.items[id] = {
+            order: order,
             varName: varName,
             itemType: 'variable',
             formatter: cfg.formatter,
@@ -64,6 +67,7 @@ var WegasDashboard = (function() {
             index: cfg.index || Object.keys(section).length,
             active: (cfg.active !== undefined) ? cfg.active : true,
             sortable: cfg.sortable,
+            preventClick: cfg.preventClick,
             sortFn: cfg.sortFn,
             mapFn: cfg.mapFn,
             mapFnExtraArgs: cfg.mapFnExtraArgs
@@ -83,8 +87,11 @@ var WegasDashboard = (function() {
             }
         }
 
+        var order = cfg.order === "number" ? cfg.order : Object.keys(section.items).length;
+
         section.items[id] = {
             itemType: 'action',
+            order: order,
             doFn: doFn,
             label: cfg.label,
             icon: cfg.icon || "fa fa-pencil",
@@ -92,9 +99,42 @@ var WegasDashboard = (function() {
         };
     }
 
+    function registerStatExporter(id, activityPattern, userConfig) {
+        var fn = function(owner, payload) {
+            var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
+            var path = owner.name === "Game" || owner.name === "DebugGame" ? "Games" : "Teams";
+            window.open("rest/Statistics/ExportXLSX/" + logId
+                + "/" + path + "/" + owner.get("id") + "QUERYSTRING", "_blank");
+        };
+
+        fn = "" + fn;
+
+        fn = fn.replace("QUERYSTRING", activityPattern ? "?activityPattern=" + activityPattern : "");
+
+        var cfg = userConfig || {};
 
 
-    function overview(name) {
+        registerAction(id, fn, {
+            section: cfg.section || 'actions',
+            order: typeof cfg.order === "number" ? cfg.order : -1,
+            icon: cfg.icon || "fa fa-pie-chart",
+            label: cfg.label || "View statistics",
+            hasGlobal: cfg.hasOwnProperty("hasGlobal") ? cfg.hasGlobal : true,
+        });
+    }
+
+    function getAllOverviews() {
+        var overviews = [];
+        for (var name in dashConfigs) {
+            overviews.push({
+                name: name,
+                overview: overview(name, true)
+            });
+        }
+        return overviews;
+    }
+
+    function overview(name, doNotStringify) {
         name = name || "overview";
         overview = {};
 
@@ -127,7 +167,8 @@ var WegasDashboard = (function() {
                 for (var id in sectionCfg.items) {
                     var itemCfg = sectionCfg.items[id];
                     var item = {
-                        id: id
+                        id: id,
+                        order: itemCfg.order
                     };
 
                     switch (itemCfg.itemType) {
@@ -167,13 +208,16 @@ var WegasDashboard = (function() {
                                 item: item
                             };
 
-                            item.label = itemCfg.label || variables[varName].descriptor.getLabel().translateOrEmpty(self);
+                            item.label = itemCfg.label || variables[varName].descriptor.getLabel()
+                                .translateOrEmpty(self);
                             item.formatter = itemCfg.formatter;
                             item.transformer = itemCfg.transformer;
                             item.active = itemCfg.active;
+                            item.preventClick = itemCfg.preventClick;
                             item.sortable = itemCfg.sortable;
                             item.sortFn = itemCfg.sortFn;
-                            item.kind = variables[varName].descriptor.getClass().getSimpleName().replaceAll("Descriptor", "").toLowerCase();
+                            item.kind = variables[varName].descriptor.getJSONClassName()
+                                .replaceAll("Descriptor", "").toLowerCase();
                             break;
                         default:
                     }
@@ -219,7 +263,7 @@ var WegasDashboard = (function() {
                                 } else if (item.item.kind === "text") {
                                     teamData[id] = WegasHelper.getTextInstanceContent(variable.instances[teamId], item.item.label, teamName);
                                 } else if (item.item.kind === "object") {
-                                    teamData[id] = WegasHelper.getObjectInstanceContent(variable.instances[teamId], item.item.label, teamName)
+                                    teamData[id] = WegasHelper.getObjectInstanceContent(variable.instances[teamId], item.item.label, teamName);
                                 } else {
                                     teamData[id] = variable.instances[teamId].getValue();
                                 }
@@ -250,15 +294,19 @@ var WegasDashboard = (function() {
             });
         }
 
-        // Return stringified object
-        return JSON.stringify(overview);
+        if (doNotStringify) {
+            return overview;
+        } else {
+            // Return stringified object
+            return JSON.stringify(overview);
+        }
     }
 
     return {
         /**
          *
          * @param {type} varName
-         * @param {type} cfg {section = 'monitoring', dashboard = 'overview', label =varLabel, formatter, transformer, index, sortable, sortFn, active, mapFn = function(teamId, instance, ...extraInstances), mapFnExtraArgs = [vdNanem, vdName2, ...]}
+         * @param {type} cfg {section = 'monitoring', dashboard = 'overview', label =varLabel, formatter, transformer, index, preventClick, sortable, sortFn, active, mapFn = function(teamId, instance, ...extraInstances), mapFnExtraArgs = [vdNanem, vdName2, ...]}
          * @returns {undefined}
          */
         registerVariable: function(varName, cfg) {
@@ -273,8 +321,14 @@ var WegasDashboard = (function() {
         registerAction: function(id, doFn, cfg) {
             return registerAction(id, doFn, cfg);
         },
+        registerStatExporter: function(id, activityPattern, cfg) {
+            return registerStatExporter(id, activityPattern, cfg);
+        },
         getOverview: function(name) {
             return overview(name);
+        },
+        getAllOverviews: function() {
+            return getAllOverviews();
         },
         setSectionLabel: function(label, sectionName, dashboardName) {
             getOrCreateSection(dashboardName, sectionName).title = label;

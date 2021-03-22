@@ -1,24 +1,23 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.SelectView.ScriptLanguageSelector;
-import com.wegas.editor.View.View;
-
-import javax.persistence.Embeddable;
-import javax.persistence.Lob;
+import com.wegas.editor.view.SelectView.ScriptLanguageSelector;
 import java.io.Serializable;
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Lob;
 import javax.persistence.Transient;
 
 /**
@@ -60,6 +59,7 @@ public class Script implements Serializable, Mergeable {
      *
      */
     public Script() {
+        // ensure to have an empty constructor
     }
 
     /**

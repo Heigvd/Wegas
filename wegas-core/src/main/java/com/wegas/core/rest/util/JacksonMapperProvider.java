@@ -1,26 +1,23 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
 
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.MapperFeature;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Provider;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.TranslationContentDeserializer;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
-
-import org.slf4j.LoggerFactory;
+import javax.ws.rs.ext.Provider;
 
 /**
  *
@@ -30,7 +27,6 @@ import org.slf4j.LoggerFactory;
 @Produces({MediaType.APPLICATION_JSON})
 public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
 
-    private final static org.slf4j.Logger logger = LoggerFactory.getLogger(JacksonMapperProvider.class);
     /**
      *
      */

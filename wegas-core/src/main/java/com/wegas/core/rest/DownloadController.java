@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -39,7 +39,7 @@ public class DownloadController {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Path("{filename}")
-    public static Response forward(@FormDataParam("ctype") String contentType, @PathParam("filename") String filename, @FormDataParam("data") final String data) {
+    public Response forward(@FormDataParam("ctype") String contentType, @PathParam("filename") String filename, @FormDataParam("data") final String data) {
         return Response.ok(new StreamingOutput() {
             @Override
             public void write(OutputStream out) throws IOException, WebApplicationException {

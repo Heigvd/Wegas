@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global I18n */
@@ -273,11 +273,16 @@ YUI.add('wegas-template', function(Y) {
     Wegas.BoxTemplate = Y.Base.create('wegas-template', AbstractTemplate, [],
         {
             TEMPLATE: Micro.compile(
-                "<div class='wegas-template-box'><% if(this.label){ %><label><%= this.label %></label><br/><% } %>" +
-                "<div class='wegas-template-box-units'><% for(var i=0; i < this.value; i+=1){%>" +
-                "<div class='wegas-template-box-unit <%= 1+i == +this.value ? ' wegas-template-box-selected' : (2+i == +this.value ? ' wegas-template-box-pred' : '') %>' value='<%= 1+i %>'></div><% } %></div>" +
-                "<span class='wegas-template-box-value'>" +
-                "(<%= I18n.formatNumber(this.value || '{value}') %>" +
+                "<div class='wegas-template-box'><% if(this.label){ %><label><%= this.label %></label><br/><% } %>"+
+                "<div class='wegas-template-box-units'>" +
+                " <% var i;%>" +
+                "<% var max = (+this.maxValue) || 100;%>" +
+                "<% var value = (+this.value); %>" +
+                "<% for(i=0; i < value && i < max - 1; i+=1){ %>" +
+                "  <div class='wegas-template-box-unit <%= 1+i == value ? ' wegas-template-box-selected' : (2+i == value ? ' wegas-template-box-pred' : '') %>' value='<%= 1+i %>'></div>"+
+                "<% } %></div>" +
+                "  <span class='wegas-template-box-value'>" +
+                "(<%= I18n.formatNumber(value || '{value}') %>" +
                 ')</span></div>'
                 )
         },
@@ -311,7 +316,7 @@ YUI.add('wegas-template', function(Y) {
                                 label: "max number of boxes displayed",
                                 description: "",
                                 layout: "shortInline",
-                                placeholder: "∞"
+                                placeholder: "100"
                             }
                         }
                     },
@@ -408,7 +413,7 @@ YUI.add('wegas-template', function(Y) {
         }
     );
     Wegas.TextTemplate = Y.Base.create('wegas-template', AbstractTemplate, [], {
-        TEMPLATE: Micro.compile('<div><%== (this.variable instanceof Y.Wegas.persistence.ListDescriptor ? this.variable.getLabel() : this.value) %></div>')
+        TEMPLATE: Micro.compile('<div><%== I18n.tVar(this.variable) %></div>')
     }, {
         ATTRS: {
             /**
@@ -421,7 +426,8 @@ YUI.add('wegas-template', function(Y) {
                 view: {
                     type: 'variableselect',
                     label: 'Variable',
-                    classFilter: ['TextDescriptor', 'StringDescriptor', 'ListDescriptor']
+                    classFilter: ['TextDescriptor', 'StringDescriptor',
+                        'ListDescriptor', 'StaticTextDescriptor']
                 }
             },
             data: {

@@ -1,12 +1,15 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,19 +18,15 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.WithPermission;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyScript;
-import com.wegas.editor.ValueGenerators.Origin;
 import com.wegas.editor.ValueGenerators.Zero;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.ReadOnlyNumber;
-import com.wegas.editor.View.ScriptView;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.NumberView;
+import com.wegas.editor.view.ScriptView;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,18 +34,29 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Version;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
 @Table(
-        name = "fsm_state",
-        indexes = {
-            @Index(columnList = "statemachine_id"),
-            @Index(columnList = "text_id") // stands in superclass since index is not generated if defined in DialogueState ...
-        }
+    name = "fsm_state",
+    indexes = {
+        @Index(columnList = "statemachine_id"),
+        @Index(columnList = "text_id") // stands in superclass since index is not generated if defined in DialogueState ...
+    }
 )
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class),
@@ -66,17 +76,33 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
-            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
+        sameEntityOnly = true, view = @View(
+            label = "Version",
+            readOnly = true,
+            value = NumberView.class,
+            featureLevel = ADVANCED
+        ))
     private Long version;
 
     /**
      *
      */
+    @Column(columnDefinition = "SMALLINT")
     @JsonView(value = Views.EditorI.class)
     @WegasEntityProperty(
-            nullable = false, optional = false, proposal = Origin.class,
-            view = @View(label = "Graphical coordinates", featureLevel = ADVANCED))
-    private Coordinate editorPosition;
+        nullable = false, optional = false, proposal = Zero.class,
+        view = @View(label = "Graphical x coordinate", featureLevel = ADVANCED))
+    private Integer x;
+
+    /**
+     *
+     */
+    @Column(columnDefinition = "SMALLINT")
+    @JsonView(value = Views.EditorI.class)
+    @WegasEntityProperty(
+        nullable = false, optional = false, proposal = Zero.class,
+        view = @View(label = "Graphical y coordinate", featureLevel = ADVANCED))
+    private Integer y;
 
     /**
      *
@@ -92,8 +118,8 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
      */
     @Column(name = "fsm_statekey")
     @WegasEntityProperty(
-            nullable = false,
-            view = @View(label = "Index", value = ReadOnlyNumber.class))
+        nullable = false,
+        view = @View(label = "Index", readOnly = true, value = NumberView.class))
     private Long index;
 
     /**
@@ -102,8 +128,8 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
     @Embedded
     @JsonView(Views.EditorI.class)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyScript.class,
-            view = @View(label = "On enter impact", value = ScriptView.Impact.class))
+        optional = false, nullable = false, proposal = EmptyScript.class,
+        view = @View(label = "On enter impact", value = ScriptView.Impact.class))
     private Script onEnterEvent;
 
     /**
@@ -111,8 +137,8 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
      */
     @OneToMany(mappedBy = "state", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Transitions", value = Hidden.class))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(label = "Transitions", value = Hidden.class))
     //private List<T> transitions = new ArrayList<>(); // templated mapping <T> faisl with eclipselink 2.6.4
     private List<AbstractTransition> transitions = new ArrayList<>();
 
@@ -120,6 +146,7 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
      *
      */
     public AbstractState() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -141,18 +168,30 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
         return getStateMachine().getId();
     }
 
-    /**
-     * @return state position in the stateMachine editor extent
-     */
-    public Coordinate getEditorPosition() {
-        return editorPosition;
+    public Integer getX() {
+        return x;
+    }
+
+    public void setX(Integer x) {
+        this.x = x;
+    }
+
+    public Integer getY() {
+        return y;
+    }
+
+    public void setY(Integer y) {
+        this.y = y;
     }
 
     /**
+     * Kept for backward compatibility
+     *
      * @param editorPosition
      */
     public void setEditorPosition(Coordinate editorPosition) {
-        this.editorPosition = editorPosition;
+        this.x = editorPosition.getX();
+        this.y = editorPosition.getY();
     }
 
     @Override
@@ -273,6 +312,7 @@ public abstract class AbstractState<T extends AbstractTransition> extends Abstra
         private static final long serialVersionUID = -6452488638539643500L;
 
         public ComparatorImpl() {
+            // ensure there is a default constructor
         }
 
         @Override

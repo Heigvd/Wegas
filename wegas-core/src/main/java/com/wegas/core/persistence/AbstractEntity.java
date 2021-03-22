@@ -1,18 +1,20 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
 
+import ch.albasim.wegas.annotations.CommonView;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.patch.WegasEntityPatch;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -24,8 +26,8 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.View.ReadOnlyString;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.StringView;
+import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -46,12 +48,13 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "Player", value = Player.class),
     @JsonSubTypes.Type(name = "Team", value = Team.class),
     @JsonSubTypes.Type(name = "VariableDescriptor", value = VariableDescriptor.class),
-    @JsonSubTypes.Type(name = "VariableInstance", value = VariableInstance.class)
+    @JsonSubTypes.Type(name = "VariableInstance", value = VariableInstance.class),
+    @JsonSubTypes.Type(name = "EvaluationInstance", value = EvaluationInstance.class)
 })
-/**
- * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for some object (eg ChoiceDescriptor and result).
- * INVALIDATE_CHANGED_OBJECTS must be set to fix this problem.
- * 2018-04-05: revert to default since it seems the buggy behaviour no longer occurs
+/*
+ * Default EclipseLink coodinationType (SEND_OBJECT_CHANGE) leads to buggy coordination for some
+ * object (eg ChoiceDescriptor and result). INVALIDATE_CHANGED_OBJECTS must be set to fix this
+ * problem. 2018-04-05: revert to default since it seems the buggy behaviour no longer occurs
  * <p>
  * INVALIDATE OBJECT FIX DirectCollectionMapping NPE -> fixed since eclipselink 2.7.1
  */
@@ -64,8 +67,15 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractEntity.class);
 
     @WegasEntityProperty(
-            nullable = false,
-            view = @View(label = "RefID", value = ReadOnlyString.class, index=-800))
+        nullable = false,
+        view = @View(
+            label = "RefID",
+            readOnly = true,
+            value = StringView.class,
+            featureLevel = CommonView.FEATURE_LEVEL.INTERNAL,
+            index = -800
+        )
+    )
     //@JsonView(Views.InternalI.class)
     private String refId;
 
@@ -83,7 +93,7 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
     public void assertRefId() {
         if (Helper.isNullOrEmpty(refId)) {
             if (this.getId() == null) {
-                logger.error("ID SHOULD NOT BE NULL");
+                logger.warn("ID SHOULD NOT BE NULL");
             } else {
                 this.setRefId(this.getClass().getSimpleName() + ":" + this.getId() + ":" + Helper.genToken(6));
             }
@@ -199,8 +209,8 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
     }
 
     /**
-     * Determine if the given entity equals this. To be equal, both objects must
-     * have the id and being instances of the same class
+     * Determine if the given entity equals this. To be equal, both objects must have the id and
+     * being instances of the same class
      *
      * @param object entity to compare to
      *
@@ -310,12 +320,12 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
     /**
      * Default behaviour is to do nothing
      * <p>
-     * Overriding this method may helps to maintain cache integrity after
-     * cascaded entity deletion
+     * Overriding this method may helps to maintain cache integrity after cascaded entity deletion
      *
      * @param beans facade wrapper
      */
     public void updateCacheOnDelete(Beanjection beans) {
+        // default behaviour is noop
     }
 
     /**
@@ -355,7 +365,7 @@ public abstract class AbstractEntity implements Serializable, Mergeable, WithPer
      *
      * @param persisted
      */
-    public void setPersisted(boolean persisted) {
+    /* package */ void setPersisted(boolean persisted) {
         this.persisted = persisted;
     }
 }

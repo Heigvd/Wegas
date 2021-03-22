@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
@@ -19,6 +19,7 @@
     box-sizing: border-box;
 }
 
+.chooser-property,
 .chooser-entity {
     cursor: pointer;
     border-bottom: 1px solid lightgray;
@@ -29,6 +30,7 @@
     font-weight: bolder;
 }
 
+.chooser-property:hover,
 .chooser-entity:hover {
     background: rgba(178, 210, 255, 0.1);
     box-shadow: 0px 0px 1px lightgray inset;
@@ -37,4 +39,44 @@
 .chooser-choosen {
     background: rgba(178, 210, 255, 0.5);
     box-shadow: 0px 0px 1px lightgray inset;
+}
+
+.wegas-objectproperties-editor .header .title {
+    font-size: 2em;
+    font-weight: bolder;
+}
+.wegas-objectproperties-editor .header .buttons {
+}
+
+
+.wegas-objectproperties-editor .editor {
+    display: flex;
+    flex-direction: row;
+}
+
+.wegas-objectproperties-editor .chooser-properties {
+    box-sizing: border-box;
+    border-right: 1px solid lightgray;
+    border-left: 1px solid lightgray;
+    border-top: 1px solid lightgray;
+}
+
+.wegas-objectproperties-editor .errored {
+    color: red;
+}
+
+.wegas-objectproperties-editor .chooser-form {
+    flex-grow: 1;
+}
+
+
+.wegas-objectproperties-editor-content .header .buttons > i {
+    cursor: pointer;
+    color: grey;
+    padding: 0 5px;
+    font-size: 2em;
+}
+
+.wegas-objectproperties-editor-content .header .buttons > i:hover {
+    color: black;
 }

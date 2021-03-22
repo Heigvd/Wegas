@@ -1,13 +1,12 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.jta;
 
-import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.jta.JCRConnectorProvider.RepositoryType;
@@ -24,7 +23,6 @@ import javax.ejb.PrePassivate;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionRequiredLocalException;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jcr.RepositoryException;
 import javax.transaction.TransactionScoped;
@@ -34,7 +32,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * Transaction scoped JCR Connector provider which bounds JCR repositories to the current transaction
+ * Transaction scoped JCR Connector provider which bounds JCR repositories to the current
+ * transaction
  *
  * @author maxence
  */
@@ -50,9 +49,6 @@ public class JCRConnectorProviderTx implements Serializable {
      */
     @Resource
     private transient TransactionSynchronizationRegistry jtaSyncRegistry;
-
-    @Inject
-    private GameModelFacade gameModelFacade;
 
     /**
      * The JCR synchroniser for the current transaction
@@ -84,7 +80,8 @@ public class JCRConnectorProviderTx implements Serializable {
     }
 
     /**
-     * As soon as this bean is construct, make sure there is a JCRSync bound to the current transaction
+     * As soon as this bean is construct, make sure there is a JCRSync bound to the current
+     * transaction
      */
     @PostConstruct
     public void construct() {
@@ -136,20 +133,20 @@ public class JCRConnectorProviderTx implements Serializable {
     }
 
     /**
-     * Get a managed connector. Setting TransactionAttributeType to MANDATORY compels to have an existing transaction to get a connector.
-     * If there is not transaction, an exception is thrown.
+     * Get a managed connector. Setting TransactionAttributeType to MANDATORY compels to have an
+     * existing transaction to get a connector. If there is not transaction, an exception is thrown.
      *
      * @param gameModel the gameModel
      * @param type      repository type
      *
      * @return a managed connector
      *
-     * @throws RepositoryException seems the data store is not available...
+     * @throws RepositoryException               seems the data store is not available...
      * @throws TransactionRequiredLocalException when there is no transaction context
      */
     @TransactionAttribute(TransactionAttributeType.MANDATORY)
     protected JTARepositoryConnector getConnector(GameModel gameModel, RepositoryType type)
-            throws RepositoryException, TransactionRequiredLocalException {
+        throws RepositoryException, TransactionRequiredLocalException {
         String key = type + "::" + gameModel.getId();
 
         if (!this.connectors.containsKey(key)) {
@@ -165,8 +162,10 @@ public class JCRConnectorProviderTx implements Serializable {
 
     /**
      * make sure changes from all opened repositories are "committable" or throw something bad
+     *
+     * @throws RuntimeException if unable to prepare the commit
      */
-    protected void prepare() throws RuntimeException {
+    protected void prepare() {
         boolean rollback = false;
         for (JTARepositoryConnector connector : connectors.values()) {
             logger.debug(" *** {} PREPARE", connector);

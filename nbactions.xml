@@ -74,13 +74,6 @@
         </goals>
     </action>
     <action>
-        <actionName>CUSTOM-Run Cobertura</actionName>
-        <displayName>Run Cobertura</displayName>
-        <goals>
-            <goal>cobertura:cobertura</goal>
-        </goals>
-    </action>
-    <action>
         <actionName>CUSTOM-Install Site</actionName>
         <displayName>Install Site</displayName>
         <recursive>false</recursive>
@@ -88,30 +81,4 @@
             <goal>scm-publish:publish-scm</goal>
         </goals>
     </action>
-    <action>
-        <actionName>CUSTOM-Deploy-prod</actionName>
-        <displayName>Deploy-prod</displayName>
-        <goals>
-            <goal>clean:clean</goal>
-            <goal>install</goal>
-            <goal>wagon:upload-single</goal>
-        </goals>
-        <activatedProfiles>
-            <activatedProfile>release-profile</activatedProfile>
-            <activatedProfile>prod-profile</activatedProfile>
-        </activatedProfiles>
-    </action>
-    <action>
-        <actionName>CUSTOM-Deploy-dev</actionName>
-        <displayName>Deploy-dev</displayName>
-        <goals>
-            <goal>clean:clean</goal>
-            <goal>install</goal>
-            <goal>wagon:upload-single</goal>
-        </goals>
-        <activatedProfiles>
-            <activatedProfile>release-profile</activatedProfile>
-        </activatedProfiles>
-    </action>
-
 </actions>

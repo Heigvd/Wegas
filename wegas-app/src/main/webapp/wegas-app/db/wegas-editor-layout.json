@@ -171,6 +171,7 @@
                                                 },
                                                 {
                                                     "type": "Button",
+                                                    "cssClass": "wegas-internal-feature",
                                                     "label": "Clear EM level2 Cache",
                                                     "plugins": [
                                                         {

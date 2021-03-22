@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global YUI */
@@ -45,7 +45,7 @@ YUI.add("wegas-tutorial", function(Y) {
             skip: "Skip tutorial",
             next: "Next"
         }, config || {}))),
-            validElements = elementList.filter(function(element){
+            validElements = elementList.filter(function(element) {
                 return getNode(element.node);
             }),
             count = validElements.length,
@@ -153,22 +153,27 @@ YUI.add("wegas-tutorial", function(Y) {
             pos = [pos];
         }
         pos = pos || autoPos(panel, node);
+        var margin = 28;
         switch (pos[0]) {
             case POSITION.top:
                 y = region.top - panelRegion.height;
-                x = region.left + (pos[1] === POSITION.left && panelRegion.width > region.width ? region.width - panelRegion.width : 0) - 8;
+                x = region.left + (pos[1] === POSITION.left && panelRegion.width > region.width ?
+                    region.width - panelRegion.width : 0) - margin;
                 break;
             case POSITION.bottom:
-                y = region.bottom + 8;
-                x = region.left + (pos[1] === POSITION.left && panelRegion.width > region.width ? region.width - panelRegion.width : 0);
+                y = region.bottom + margin;
+                x = region.left + (pos[1] === POSITION.left && panelRegion.width > region.width ?
+                    region.width - panelRegion.width : 0);
                 break;
             case POSITION.left:
-                y = region.top + (pos[1] === POSITION.top && panelRegion.height > region.height ? region.height - panelRegion.height : 0);
-                x = region.left - panelRegion.width - 8;
+                y = region.top + (pos[1] === POSITION.top && panelRegion.height > region.height ?
+                    region.height - panelRegion.height : 0);
+                x = region.left - panelRegion.width - margin;
                 break;
             case POSITION.right:
-                y = region.top + (pos[1] === POSITION.top && panelRegion.height > region.height ? region.height - panelRegion.height : 0);
-                x = region.right + 8;
+                y = region.top + (pos[1] === POSITION.top && panelRegion.height > region.height ?
+                    region.height - panelRegion.height : 0);
+                x = region.right + margin;
                 break;
             default:
                 Y.log("Unknown position: " + pos[0]);
@@ -205,24 +210,25 @@ YUI.add("wegas-tutorial", function(Y) {
     }
     function highlight(element, overlay1, overlay2, overlay3, overlay4) {
         var node = getNode(element.node);
+        var margin = 10;
         if (node) {
             var rect = node.get("region"),
                 viewport = node.get("viewportRegion");
             overlay1.setStyles({
-                width: Math.max(rect.left + rect.width, 0),
-                height: Math.max(rect.top, 0)
+                width: Math.max(rect.left + rect.width + margin, 0),
+                height: Math.max(rect.top - margin, 0)
             });
             overlay2.setStyles({
-                width: Math.max(viewport.width - rect.right, 0),
-                height: Math.max(rect.top + rect.height, 0)
+                width: Math.max(viewport.width - rect.right - margin, 0),
+                height: Math.max(rect.top + rect.height + margin, 0)
             });
             overlay3.setStyles({
-                width: Math.max(viewport.width - rect.left, 0),
-                height: Math.max(viewport.height - rect.bottom, 0)
+                width: Math.max(viewport.width - rect.left + margin, 0),
+                height: Math.max(viewport.height - rect.bottom - margin, 0)
             });
             overlay4.setStyles({
-                width: Math.max(rect.left, 0),
-                height: Math.max(viewport.height - rect.top, 0)
+                width: Math.max(rect.left - margin, 0),
+                height: Math.max(viewport.height - rect.top + margin, 0)
             });
         }
     }

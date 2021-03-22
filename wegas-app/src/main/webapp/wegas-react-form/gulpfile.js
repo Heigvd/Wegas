@@ -24,6 +24,6 @@ gulp.task('build', callback => {
                 color: true,
             })
         );
-        callback();
+        return callback();
     });
 });

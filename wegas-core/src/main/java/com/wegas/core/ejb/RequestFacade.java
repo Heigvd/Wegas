@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -12,11 +12,10 @@ import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.persistence.User;
-import java.util.List;
+import com.wegas.core.security.util.ActAsPlayer;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
-import javax.ejb.EJB;
+import java.util.Set;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -47,21 +46,17 @@ public class RequestFacade {
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
     /**
      *
      */
-    @EJB
-    private StateMachineFacade stateMachineFacade;
-
     @Inject
-    private GameModelFacade gameModelFacade;
+    private StateMachineFacade stateMachineFacade;
 
     /**
      *
-     * @Inject
-     * private Event<PlayerAction> playerActionEvent;
+     * @Inject private Event<PlayerAction> playerActionEvent;
      */
     /**
      * @return the variableInstanceManager
@@ -82,7 +77,6 @@ public class RequestFacade {
      *
      * @param view
      *
-     * @deprecated
      */
     public void setView(Class view) {
         this.requestManager.setView(view);
@@ -92,24 +86,9 @@ public class RequestFacade {
      *
      * @return current request view
      *
-     * @deprecated
      */
     public Class getView() {
         return this.requestManager.getView();
-    }
-
-    /**
-     *
-     * @param playerId
-     */
-    public void setPlayer(Long playerId) {
-        if (playerId != null) {
-            Player p = playerFacade.find(playerId);
-            //playerFacade.getEntityManager().detach(p);
-            this.requestManager.setPlayer(p);
-        } else {
-            requestManager.setPlayer(null);
-        }
     }
 
     /**
@@ -143,6 +122,7 @@ public class RequestFacade {
      */
     public void commit(Player player) {
         if (!requestManager.isTestEnv()) {
+            try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             /*
              * Flush is required to triggered EntityListener's lifecycles events which populate
              * requestManager touched (deleted, updated and so on) entities
@@ -156,6 +136,7 @@ public class RequestFacade {
                 em.flush();
             }
         }
+    }
     }
 
     /**
@@ -201,7 +182,7 @@ public class RequestFacade {
      *
      * @return all entities which were updated during the transaction
      */
-    public Map<String, List<AbstractEntity>> getUpdatedEntities() {
+    public Set<AbstractEntity> getUpdatedEntities() {
         return requestManager.getAllUpdatedEntities();
     }
 
@@ -209,10 +190,16 @@ public class RequestFacade {
      *
      * @return all entities which were destroyed during the transaction
      */
-    public Map<String, List<AbstractEntity>> getDestroyedEntities() {
+    public Set<AbstractEntity> getDestroyedEntities() {
         return requestManager.getDestroyedEntities();
     }
 
+    /**
+     * Not sure it's deprecated... should test...
+     *
+     * @deprecated
+     */
+    @Deprecated
     public void flushClear() {
         requestManager.getEntityManager().flush();
         requestManager.clear();

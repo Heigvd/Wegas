@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -93,7 +93,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                             }
                         }, this);
                         if (cb) {
-                            cb.call(this, data.response.entity.get("val.content"));
+                            cb.call(this, data.response.entity.get("content"));
                         }
                     }, this)
                 }
@@ -160,9 +160,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 this._after();
             });
         },
-        onCustomEvent: function(data) {
-            var payload = Y.JSON.parse(data);
-            // BEURK
+        onCustomEvent: function(payload) {
             Y.Wegas.Facade.Variable.fire(payload.type, payload.payload);
         },
         forceEntityUpdate: function(data) {
@@ -176,7 +174,10 @@ YUI.add('wegas-websocketlistener', function(Y) {
                 };
 
                 for (i = 0; i < parsed.updatedEntities.length; i += 1) {
-                    entity = Y.Wegas.Editable.revive(parsed.updatedEntities[i]);
+                    entity = Y.Wegas.Editable.revive({
+                        "@class": parsed.updatedEntities[i].type,
+                        id: parsed.updatedEntities[i].id
+                    });
 
                     ds = this.getDatasourceFromEntity(entity);
                     if (entity instanceof Y.Wegas.persistence.VariableInstance) {
@@ -256,7 +257,9 @@ YUI.add('wegas-websocketlistener', function(Y) {
             } else if (entity instanceof Y.Wegas.persistence.VariableDescriptor ||
                 entity instanceof Y.Wegas.persistence.GameModel) {
                 return Y.Wegas.Facade.Variable;
-            } else if (entity instanceof Y.Wegas.persistence.Game) {
+            } else if (entity instanceof Y.Wegas.persistence.Player ||
+                entity instanceof Y.Wegas.persistence.Team ||
+                entity instanceof Y.Wegas.persistence.Game) {
                 return Y.Wegas.Facade.Game;
             } else {
                 return null;

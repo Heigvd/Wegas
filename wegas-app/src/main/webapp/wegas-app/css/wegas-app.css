@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
@@ -134,29 +134,35 @@ font {
 
 .wegas-loading-app {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    width: 80px;
-    height: 70px;
-    margin-top: -50px;
-    margin-left: -40px;
-    background: transparent url(../../wegas-app/images/wegas-logowhite-80.png) no-repeat;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
     z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.wegas-loading-app > div {
-    width: auto;
-    margin-top:47px;
+.wegas-loading-app-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.wegas-loading-app .wegas-loading-app-logo {
+    max-width: 90vw;
+}
+
+.wegas-loading-app .wegas-loading-app-bar {
     background: #b5b5b5;
-    margin-left: 10px;
-    margin-right: 1px;
-    height: 0.25em;
+    height: 5px;
+    width: 100%;
 }
 
-.wegas-loading-app > div > div {
+.wegas-loading-app .wegas-loading-app-current {
     height: 100%;
     width: 0%;
-    background-color: #5f5f5f;
+    background-color: black;
 }
 
 
@@ -325,9 +331,9 @@ body:not(.wegas-modeler-mode) .wegas-model-feature {
     margin-top: 6px;
     width: 6px;
     height: 18px;
-    -webkit-animation: loadingbar 1.2s linear infinite;
-    -moz-animation: loadingbar 1.2s linear infinite;
-    animation: loadingbar 1.2s linear infinite;
+    -webkit-animation: loadingbar 1.2s steps(8) infinite;
+    -moz-animation: loadingbar 1.2s steps(8) infinite;
+    animation: loadingbar 1.2s steps(8) infinite;
 }
 
 .wegas-loader .bar:nth-child(2) {
@@ -784,7 +790,7 @@ svg #triangleStart{
 }
 
 .loading:after {
-    animation: rotate .7s linear infinite;
+    animation: rotate .7s steps(7) infinite;
     border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent;
 }
 

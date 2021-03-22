@@ -1,14 +1,15 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.persistence;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.DatedEntity;
@@ -16,23 +17,34 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.StringView;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import java.util.*;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 /**
- * A review is linked to two PeerReviewInstnace : the one who reviews and the
- * original reviewed 'author' A review is composed of the feedback (written by
- * reviewers) and the feedback comments (written by author). Both are a list of
- * evaluation instances
+ * A review is linked to two PeerReviewInstnace : the one who reviews and the original reviewed
+ * 'author' A review is composed of the feedback (written by reviewers) and the feedback comments
+ * (written by author). Both are a list of evaluation instances
  * <ol>
  * <li> dispatched: initial state, reviewer can edit feedback
- * <li> reviewed: reviewer can't edit feedback anymore, author can't read
- * feedback yet
- * <li> notified: author has access to the feedback and can edit feedback
- * comments
+ * <li> reviewed: reviewer can't edit feedback anymore, author can't read feedback yet
+ * <li> notified: author has access to the feedback and can edit feedback comments
  * <li> completed: feedback comments turns read-only, not yet visible by peers
  * <li>
  * <li> closed: feedback comments is visible by the reviewer <li>
@@ -45,9 +57,7 @@ import javax.persistence.*;
     @Index(columnList = "author_id"),
     @Index(columnList = "reviewer_id")
 })
-@NamedNativeQueries({
-    @NamedNativeQuery(name = "Review.findOwners", query = "SELECT CASE WHEN player_id is not null THEN 'PLAYER' ELSE 'TEAM' END, COALESCE(player_id, team_id)  from review r join variableinstance vi on  vi.id = r.author_id or vi.id = r.reviewer_id  where r.id = ?1")
-})
+@NamedNativeQuery(name = "Review.findOwners", query = "SELECT CASE WHEN player_id is not null THEN 'PLAYER' ELSE 'TEAM' END, COALESCE(player_id, team_id)  from review r join variableinstance vi on  vi.id = r.author_id or vi.id = r.reviewer_id  where r.id = ?1")
 public class Review extends AbstractEntity implements DatedEntity, AcceptInjection {
 
     private static final long serialVersionUID = 1L;
@@ -100,6 +110,13 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
      * Current review state
      */
     @Enumerated(value = EnumType.STRING)
+    @WegasEntityProperty(
+        optional = false, nullable = false,
+        view = @View(
+            label = "Status",
+            value = StringView.class
+        )
+    )
     private ReviewState reviewState;
 
     @JsonIgnore
@@ -121,23 +138,21 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
     private PeerReviewInstance author;
 
     /**
-     * List of evaluation instances that compose the feedback (writable by
-     * 'reviewer' only)
+     * List of evaluation instances that compose the feedback (writable by 'reviewer' only)
      */
     @OneToMany(mappedBy = "feedbackReview", cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(value = Hidden.class, label ="FeedbacFeedbackk"))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(value = Hidden.class, label = "FeedbacFeedbackk"))
     private List<EvaluationInstance> feedback = new ArrayList<>();
 
     /**
-     * List of evaluation instances that compose the feedback evaluation
-     * (writable by 'author' only)
+     * List of evaluation instances that compose the feedback evaluation (writable by 'author' only)
      */
     @OneToMany(mappedBy = "commentsReview", cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(value = Hidden.class, label ="Comments"))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(value = Hidden.class, label = "Comments"))
     private List<EvaluationInstance> comments = new ArrayList<>();
 
     @Override
@@ -256,8 +271,7 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
     /**
      * set the list of evaluation instance composing the feedback comments
      *
-     * @param comments the list of evaluation instance composing the feedback
-     *                 comments
+     * @param comments the list of evaluation instance composing the feedback comments
      */
     public void setComments(List<EvaluationInstance> comments) {
         this.comments = comments;
@@ -296,7 +310,6 @@ public class Review extends AbstractEntity implements DatedEntity, AcceptInjecti
         return p;
     }
      */
-
     @Override
     public WithPermission getMergeableParent() {
         return this.getAuthor();

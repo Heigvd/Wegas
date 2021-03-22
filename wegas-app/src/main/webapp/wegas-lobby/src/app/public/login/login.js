@@ -9,19 +9,37 @@ angular.module('public.login', [])
                         controller: 'PublicLoginCtrl as publicLoginCtrl',
                         templateUrl: 'app/public/login/login.tmpl.html'
                     }
+                },
+                params: {
+                    forcedUsername: null,
+                    redirectTo: null
                 }
             });
     })
     .controller('PublicLoginCtrl',
-        function PublicLoginCtrl($scope, Flash, Auth, $state, $q, $http, $translate, TeamsModel, SessionsModel, ScenariosModel, $timeout, $rootScope, WegasTranslations) {
+        function PublicLoginCtrl($scope, Flash, Auth, $state, $stateParams, $q, $http, $translate,
+            TeamsModel, SessionsModel, ScenariosModel, $timeout, $rootScope, WegasTranslations) {
             "use strict";
+
+            $scope.deprecatedBrowser = typeof crypto === 'undefined';
             $scope.showAaiLogin = false; // Default value in case of misconfiguration
             $scope.aaiLoginUrl = "";
             var config = localStorage.getObject("wegas-config");
             $scope.currentLanguage = $translate.use();
             $scope.languages = WegasTranslations.languages;
 
+            if ($stateParams.forcedUsername) {
+                $scope.forcedUsername = true;
+                $scope.username = $stateParams.forcedUsername;
+            }
+
             $scope.changeLanguage = function(key) {
+                if (!config) {
+                    config = {};
+                }
+                if (!config.commons) {
+                    config.commons = {};
+                }
                 config.commons.language = key;
                 $scope.currentLanguage = key;
                 $translate.use(key);
@@ -30,47 +48,30 @@ angular.module('public.login', [])
                 $(".action--language .subactions").removeClass("subactions--show");
             };
 
-            // Returns AAI config for the login page.
-            function getAaiConfig() {
-                var deferred = $q.defer();
-                var url = "rest/Extended/User/Account/AaiConfig";
-                $http
-                    .get(ServiceURL + url, null, {
-                        "headers": {
-                            "managed-mode": "true"
-                        }
-                    })
-                    .success(function(data) {
-                        if (data !== undefined) {
-                            return deferred.resolve(data);
-                        } else {
-                            if (data.events !== undefined) {
-                                console.log("WEGAS LOBBY : Could not obtain AAI config data");
-                                console.log(data.events);
-                            }
-                        }
-                        deferred.resolve();
-                        return;
-                    })
-                    .error(function(data) {
-                        if (data.events !== undefined) {
-                            console.log("WEGAS LOBBY : Could not obtain AAI config data");
-                            console.log(data.events);
-                        }
-                        deferred.resolve();
-                        return;
-                    });
-                return deferred.promise;
-            }
-            ;
-
-            getAaiConfig().then(function(config) {
-                $scope.showAaiLogin = config.showButton;
-                $scope.aaiLoginUrl = config.loginUrl;
-            });
 
             $scope.init = function() {
                 this.agreeCbx = false;
+
+                $scope.redirect = null;
+
+                if ($stateParams.redirectTo) {
+                    $scope.redirect = $stateParams.redirectTo;
+                } else {
+                    var qsRedirect = window.WegasHelper.getQueryStringParameter("redirect");
+                    if (qsRedirect) {
+                        $scope.redirect = decodeURIComponent(qsRedirect);
+                    }
+                }
+
+                Auth.getAaiConfig().then(function(config) {
+                    $scope.showAaiLogin = config.showButton;
+                    $scope.aaiLoginUrl = config.loginUrl;
+
+                    if ($scope.redirect) {
+                        $scope.aaiLoginUrl += "&redirect=" + encodeURIComponent($scope.redirect);
+                    }
+                });
+
                 $timeout(function() {
                     // Install click handler on language menu title
                     var actionLanguage = $('.action--language');
@@ -108,7 +109,7 @@ angular.module('public.login', [])
                         this.agreeCbx = false;
                     }
                     Auth.login(this.username, this.password, this.agreeCbx).then(function(response) {
-                        var redirect, custom;
+                        var custom;
 
                         if (response.isErroneous()) {
                             response.flash();
@@ -126,11 +127,13 @@ angular.module('public.login', [])
                             SessionsModel.clearCache();
                             ScenariosModel.clearCache();
 
-
-                            redirect = window.WegasHelper.getQueryStringParameter("redirect");
-
-                            if (redirect) {
-                                window.location.href = window.ServiceURL + decodeURIComponent(redirect);
+                            if ($scope.redirect) {
+                                var host = window.ServiceURL + window.location.pathname;
+                                var path = $scope.redirect;
+                                if (host.endsWith("/") && path.startsWith("/")) {
+                                    path = path.slice(1);
+                                }
+                                window.location.href = host + path;
                             } else {
                                 // Pre-load sessions and scenarios into local cache to speed up display:
                                 Auth.getAuthenticatedUser().then(function(user) {

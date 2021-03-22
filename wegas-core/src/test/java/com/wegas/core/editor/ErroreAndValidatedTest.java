@@ -1,17 +1,17 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.editor;
 
+import com.wegas.core.persistence.annotations.WegasConditions.Condition;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor.NumberDescBoundsConstraint;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.TeamScope;
-import com.wegas.core.persistence.annotations.WegasConditions.Condition;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor.IsNotQuestionCbxOrMaxEqOne;
 import com.wegas.mcq.persistence.QuestionDescriptor;

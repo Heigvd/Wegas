@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.event.client;
@@ -23,6 +23,7 @@ public class ExceptionEvent extends ClientEvent {
      *
      */
     public ExceptionEvent() {
+        // ensure to have an empty constructor
     }
 
     /**

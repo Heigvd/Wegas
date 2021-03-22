@@ -3,7 +3,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -30,16 +30,21 @@ YUI.add("wegas-i18n-global-de", function(Y) {
             logout: "abmelden",
             statistics: "Statistiken",
             peerReview: "Peer-Review",
+            surveys: "Umfragen",
             backToMenu: "zurück zum Menü",
             mcqBackToMenu: "zurück zur Frageliste",
             ok: "OK",
-            cancel: "Abbrechen"
+            cancel: "Abbrechen",
+            yes: "Ja",
+            no: "Nein",
+            submit: "einreichen"
         },
         i18n: {
             manager: {
                 title: "Sprachen-Manager"
             },
-            languages: "Sprachen"
+            languages: "Sprachen",
+            availables: "Sprachen, die den Spielern zur Verfügung stehen"
         },
         errors: {
             conflict: "Ihre Anfrage kann nicht bearbeitet werden, da bei der Ausführung ein Konflikt aufgetreten ist. Dies bedeutet wahrscheinlich, dass Sie versucht haben, ein Element gleichzeitig mit einem anderen Benutzer zu ändern.",
@@ -55,6 +60,9 @@ YUI.add("wegas-i18n-global-de", function(Y) {
             deleteEmailConfirmation: "Sind Sie sicher, dass Sie die E-Mail \"{{subject}}\" dauerhaft löschen wollen?",
             noMessages: "Keine E-Mail",
             noMessageSelected: "Wählen Sie eine E-Mail auf der linken Seite aus."
+        },
+        spreadsheet: {
+            empty: "Derzeit ist keine Tabelle verfügbar"
         }
     }, {
         base: {

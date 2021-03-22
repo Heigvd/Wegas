@@ -1,32 +1,38 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
 
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.AcceptInjection;
-import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.VariableProperty;
-import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyMap;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.HashListView;
+import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -40,7 +46,7 @@ import javax.persistence.*;
  * @Index(columnList = "properties.resourceinstance_id")
  * })
  */
-public class ResourceInstance extends VariableInstance implements Propertable, AcceptInjection {
+public class ResourceInstance extends VariableInstance implements Propertable {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -50,11 +56,10 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
      * , orphanRemoval = true
      */)
     @JsonManagedReference
-    @OrderColumn
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            callback = ResourceInstanceMergeCallback.class,
-            view = @View(label = "", value = Hidden.class))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        callback = ResourceInstanceMergeCallback.class,
+        view = @View(label = "", value = Hidden.class))
     private List<Assignment> assignments = new ArrayList<>();
     /**
      *
@@ -62,11 +67,11 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(
-                    label = "Occupations",
-                    description = "[period]"
-            ))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(
+            label = "Occupations",
+            description = "[period]"
+        ))
     private List<Occupation> occupations = new ArrayList<>();
     /**
      *
@@ -74,16 +79,16 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            callback = ResourceInstanceMergeCallback.class,
-            view = @View(label = "Activities",
-                    value = Hidden.class
-            ))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        callback = ResourceInstanceMergeCallback.class,
+        view = @View(label = "Activities",
+            value = Hidden.class
+        ))
     private List<Activity> activities = new ArrayList<>();
     /**
      *
      */
-    @WegasEntityProperty(view = @View(label = "Active"))
+    @WegasEntityProperty(view = @View(label = "Active"), nullable = false, optional = false)
     private boolean active = true;
     /**
      *
@@ -91,8 +96,8 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
     @ElementCollection
     @JsonIgnore
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyMap.class,
-            view = @View(label = "Instance properties", featureLevel = ADVANCED))
+        optional = false, nullable = false, proposal = EmptyMap.class,
+        view = @View(label = "Instance properties", featureLevel = ADVANCED, value = HashListView.class))
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
@@ -106,14 +111,15 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
         return properties;
     }
 
-    @JsonIgnore
-    @Transient
-    private Beanjection beans;
-
     /**
      * @return the assignments
      */
     public List<Assignment> getAssignments() {
+        return Helper.copyAndSortModifiable(this.assignments, new EntityComparators.OrderComparator<>());
+    }
+
+    @JsonIgnore
+    public List<Assignment> getRawAssignments() {
         return assignments;
     }
 
@@ -121,23 +127,30 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
      * @param assignments
      */
     public void setAssignments(List<Assignment> assignments) {
-        for (Assignment assignment : assignments) {
-            assignment.setResourceInstance(this);
+        if (assignments != null) {
+            int i = 0;
+            for (Assignment assignment : assignments) {
+                assignment.setResourceInstance(this);
+                assignment.setIndex(i++);
+            }
         }
         this.assignments = assignments;
     }
 
     public void moveAssignment(Assignment assignment, final int index) {
-        this.removeAssignment(assignment);
-        this.addAssignment(assignment, index);
+        this.getRawAssignments().remove(assignment);
+        List<Assignment> items = this.getAssignments();
 
-        List<Assignment> newAssignments = new ArrayList<>();
+        items.add(index, assignment);
 
-        for (Assignment a : this.getAssignments()) {
-            newAssignments.add(a);
+        this.getRawAssignments().add(assignment);
+
+        int i =0;
+        for (Assignment a : items) {
+            a.setResourceInstance(this);
+            a.setIndex(i++);
         }
-
-        this.setAssignments(newAssignments);
+        //this.setAssignments(items);
     }
 
     /**
@@ -145,13 +158,21 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
      * @param assignment
      */
     public void addAssignment(Assignment assignment) {
-        assignments.add(assignment);
-        assignment.setResourceInstance(this);
+        // get the sorted copy
+        List<Assignment> items = this.getAssignments();
+        items.add(assignment);
+
+        // set the new list to recompute indexes
+        this.setAssignments(items);
     }
 
     public void addAssignment(Assignment assignment, final int index) {
-        assignments.add(index, assignment);
-        assignment.setResourceInstance(this);
+        List<Assignment> items = this.getAssignments();
+        // add assignment at the correct possition
+        items.add(index, assignment);
+
+        // set the new list to recompute indexes
+        this.setAssignments(items);
     }
 
     public void removeAssignment(Assignment assignment) {
@@ -207,9 +228,8 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
      *
      * @param task
      *
-     * @return the activity public Activity createActivity(TaskDescriptor task)
-     *         { final Activity activity = new Activity(task);
-     *         this.addActivity(activity); return activity; }
+     * @return the activity public Activity createActivity(TaskDescriptor task) { final Activity
+     *         activity = new Activity(task); this.addActivity(activity); return activity; }
      */
     /**
      * @return the activities
@@ -265,9 +285,8 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
 
     /**
      *
-     * @return public Occupation addOccupation() { Occupation occupation = new
-     *         Occupation(); this.addOccupation(occupation); return occupation;
-     *         }
+     * @return public Occupation addOccupation() { Occupation occupation = new Occupation();
+     *         this.addOccupation(occupation); return occupation; }
      */
     /**
      * @return the active
@@ -323,7 +342,7 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
     public static class ResourceInstanceMergeCallback implements WegasCallback {
 
         @Override
-        public Object remove(Object entity, Mergeable container, Object identifier) {
+        public Object remove(Object entity, IMergeable container, Object identifier) {
             if (entity instanceof Assignment) {
                 Assignment assignment = (Assignment) entity;
                 TaskInstance parent = (TaskInstance) VariableInstanceFacade.lookup().find(assignment.getTaskInstance().getId());
@@ -364,13 +383,4 @@ public class ResourceInstance extends VariableInstance implements Propertable, A
      * }
      * }
      */
-    @Override
-    public void setBeanjection(Beanjection beanjection) {
-        this.beans = beanjection;
-    }
-
-    @Override
-    public void revive(Beanjection beans) {
-        beans.getResourceFacade().reviveResourceInstance(this);
-    }
 }

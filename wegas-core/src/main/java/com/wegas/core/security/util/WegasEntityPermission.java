@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.util;
@@ -92,13 +92,13 @@ public class WegasEntityPermission extends WegasPermission {
         return true;
     }
 
-    public static enum Level {
+    public enum Level {
         READ,
         WRITE,
         TRANSLATE
     };
 
-    public static enum EntityType {
+    public enum EntityType {
         GAMEMODEL,
         GAME,
         TEAM,

@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -16,7 +17,12 @@ import com.pusher.rest.Pusher;
 import com.pusher.rest.data.PresenceUser;
 import com.pusher.rest.data.Result;
 import com.wegas.core.Helper;
-import com.wegas.core.event.client.*;
+import com.wegas.core.event.client.ClientEvent;
+import com.wegas.core.event.client.DestroyedEntity;
+import com.wegas.core.event.client.EntityDestroyedEvent;
+import com.wegas.core.event.client.EntityUpdatedEvent;
+import com.wegas.core.event.client.OutdatedEntitiesEvent;
+import com.wegas.core.exception.client.WegasAccessDenied;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
@@ -31,9 +37,6 @@ import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.OnlineUser;
-import fish.payara.micro.cdi.Inbound;
-import fish.payara.micro.cdi.Outbound;
-import io.prometheus.client.Gauge;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -42,7 +45,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPOutputStream;
@@ -55,8 +57,6 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.ejb.Asynchronous;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -69,8 +69,6 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @LocalBean
 public class WebsocketFacade {
-
-    private static final Gauge onlineUsersGauge = Gauge.build().name("online_users").help("Number of onlineusers").register();
 
     private static final Logger logger = LoggerFactory.getLogger(WebsocketFacade.class);
 
@@ -88,13 +86,6 @@ public class WebsocketFacade {
 
     @Inject
     private HazelcastInstance hazelcastInstance;
-
-    private static final String COMMANDS_EVENT = "WF_UPDATE_OU_METRIC";
-    private static final String UPDATE_OU_METRIC_CMD = "WF_UPDATE_OU_METRIC";
-
-    @Inject
-    @Outbound(eventName = COMMANDS_EVENT, loopBack = true)
-    private Event<String> commands;
 
     private static final String UPTODATE_KEY = "onlineUsersUpTpDate";
     private static final String LOCKNAME = "WebsocketFacade.onlineUsersLock";
@@ -115,9 +106,6 @@ public class WebsocketFacade {
      */
     @Inject
     private UserFacade userFacade;
-
-    @Inject
-    private PlayerFacade playerFacade;
 
     @Inject
     private RequestManager requestManager;
@@ -163,7 +151,7 @@ public class WebsocketFacade {
                 }
             } else if (entity instanceof Team) {
                 Team team = (Team) entity;
-                User user = userFacade.getCurrentUser();
+                userFacade.getCurrentUser();
 
                 if (requestManager.hasTeamRight(team)) {
                     channel = ((Team) entity).getChannel();
@@ -182,24 +170,38 @@ public class WebsocketFacade {
         return channels;
     }
 
+    /**
+     * Send lock to other users involved in the locked process
+     *
+     * @param channel the channel involved user listen to
+     * @param token   token to lock
+     */
+    @Asynchronous
     public void sendLock(String channel, String token) {
         if (this.pusher != null) {
             logger.info("send lock  \"{}\" to \"{}\"", token, channel);
             try {
                 pusher.trigger(channel, "LockEvent",
-                        parseJSON("{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"lock\"}"), null);
+                    parseJSON("{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"lock\"}"), null);
             } catch (IOException ex) {
                 logger.error("Fail to send lockEvent");
             }
         }
     }
 
+    /**
+     * Unlock the lock to involved users.
+     *
+     * @param channel the channel involved user listen to
+     * @param token   token to unlock
+     */
+    @Asynchronous
     public void sendUnLock(String channel, String token) {
         if (this.pusher != null) {
             logger.info("send unlock  \"{}\" to \"{}\"", token, channel);
             try {
                 pusher.trigger(channel, "LockEvent",
-                        parseJSON("{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}"), null);
+                    parseJSON("{\"@class\": \"LockEvent\", \"token\": \"" + token + "\", \"status\": \"unlock\"}"), null);
             } catch (IOException ex) {
                 logger.error("Fail to send unlockEvent");
             }
@@ -207,6 +209,7 @@ public class WebsocketFacade {
     }
 
     /**
+     *
      * @param channel
      * @param status
      * @param socketId
@@ -215,7 +218,7 @@ public class WebsocketFacade {
         if (this.pusher != null) {
             try {
                 pusher.trigger(channel, "LifeCycleEvent",
-                        parseJSON("{\"@class\": \"LifeCycleEvent\", \"status\": \"" + status.toString() + "\"}"), socketId);
+                    parseJSON("{\"@class\": \"LifeCycleEvent\", \"status\": \"" + status.toString() + "\"}"), socketId);
             } catch (IOException ex) {
                 logger.error("Fails to parse json");
             }
@@ -241,7 +244,23 @@ public class WebsocketFacade {
         if (this.pusher != null) {
             try {
                 pusher.trigger(channel, "CustomEvent",
-                        parseJSON("{\"@class\": \"CustomEvent\", \"type\": \"popupEvent\", \"payload\": {\"content\": \"<p>" + message + "</p>\"}}"), socketId);
+                    parseJSON("{\"@class\": \"CustomEvent\", \"type\": \"popupEvent\", \"payload\": {\"content\": \"<p>" + message + "</p>\"}}"), socketId);
+            } catch (IOException ex) {
+                logger.error("Fails to send custom event");
+            }
+        }
+    }
+
+    /**
+     * @param channel
+     * @param entity
+     * @param socketId
+     */
+    public void sendLiveUpdate(String channel, String objectId, Object entity, final String socketId) {
+        if (this.pusher != null) {
+            try {
+                pusher.trigger(channel, "CustomEvent",
+                    parseJSON("{\"@class\": \"CustomEvent\", \"type\": \"" + objectId + ":LiveUpdate\", \"payload\": " + toJson(entity) + "}"), socketId);
             } catch (IOException ex) {
                 logger.error("Fails to send custom event");
             }
@@ -263,20 +282,22 @@ public class WebsocketFacade {
     }
 
     /**
-     * @param filter
-     * @param entityType
-     * @param entityId
      * @param data
      *
      * @return Status
      *
      * @throws IOException
      */
-    public Integer send(String filter, String entityType, String entityId, Object data) throws IOException {
+    public Integer send(String channel, String eventName, Object data) throws IOException {
         if (this.pusher == null) {
             return 400;
+        } else if (requestManager.hasChannelPermission(channel)) {
+            return pusher.trigger(channel, "CustomEvent",
+                parseJSON("{\"@class\": \"CustomEvent\", \"type\": \"" + eventName + "\", \"payload\": " + toJson(data) + "}")
+            ).getHttpStatus();
+        } else {
+            throw new WegasAccessDenied(channel, channel, null, requestManager.getCurrentUser());
         }
-        return pusher.trigger(entityType + "-" + entityId, filter, data).getHttpStatus();
     }
 
     /**
@@ -286,7 +307,7 @@ public class WebsocketFacade {
      * @param destroyedEntities
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
-            final Map<String, List<AbstractEntity>> destroyedEntities) {
+        final Map<String, List<AbstractEntity>> destroyedEntities) {
         this.onRequestCommit(dispatchedEntities, destroyedEntities, null);
     }
 
@@ -295,12 +316,12 @@ public class WebsocketFacade {
      *
      * @param dispatchedEntities
      * @param destroyedEntities
-     * @param socketId           Client's socket id. Prevent that specific
-     *                           client to receive this particular message
+     * @param socketId           Client's socket id. Prevent that specific client to receive this
+     *                           particular message
      */
     public void onRequestCommit(final Map<String, List<AbstractEntity>> dispatchedEntities,
-            final Map<String, List<AbstractEntity>> destroyedEntities,
-            final String socketId) {
+        final Map<String, List<AbstractEntity>> destroyedEntities,
+        final String socketId) {
         if (this.pusher == null) {
             return;
         }
@@ -339,8 +360,8 @@ public class WebsocketFacade {
                 propagate(event, audience, socketId);
             }
         } catch (NoSuchMethodException | SecurityException
-                | InstantiationException | IllegalAccessException
-                | IllegalArgumentException | InvocationTargetException ex) {
+            | InstantiationException | IllegalAccessException
+            | IllegalArgumentException | InvocationTargetException ex) {
             logger.error("EVENT INSTANTIATION FAILS");
         }
     }
@@ -419,7 +440,7 @@ public class WebsocketFacade {
         try {
             String eventName = clientEvent.getClass().getSimpleName() + ".gz";
             //if (eventName.matches(".*\\.gz$")) {
-            GzContent gzip = gzip(audience, eventName, clientEvent.toJson(), socketId);
+            GzContent gzip = gzip(audience, eventName, clientEvent.toJson(requestManager.getView()), socketId);
             String content = gzip.getData();
 
             int computedLength = computeLength(gzip);
@@ -434,7 +455,10 @@ public class WebsocketFacade {
                 //} else {
                 Result result = pusher.trigger(audience, eventName, content, socketId);
 
-                if (result.getHttpStatus() == 403) {
+                if (result == null) {
+                    logger.error("Unexpected NULL pusher result");
+                    this.fallback(clientEvent, audience, socketId);
+                } else if (result.getHttpStatus() == 403) {
                     logger.error("403 QUOTA REACHED");
                 } else if (result.getHttpStatus() == 413) {
                     logger.error("413 MESSAGE TOO BIG NOT DETECTED!!!!");
@@ -454,12 +478,15 @@ public class WebsocketFacade {
     public void pageIndexUpdate(Long gameModelId, String socketId) {
         if (pusher != null) {
             GameModel gameModel = gameModelFacade.find(gameModelId);
-            pusher.trigger(gameModel.getChannel(), "PageIndexUpdate", "newIndex", socketId);
+            if (gameModel != null) {
+                // gameModel may be if deleted
+                pusher.trigger(gameModel.getChannel(), "PageIndexUpdate", "newIndex", socketId);
+            }
         }
     }
 
     public void pageUpdate(Long gameModelId, String pageId, String socketId) {
-        if (pusher != null) {
+        if (pusher != null && !pageId.equals("index")) {
             GameModel gameModel = gameModelFacade.find(gameModelId);
             pusher.trigger(gameModel.getChannel(), "PageUpdate", pageId, socketId);
         }
@@ -494,15 +521,15 @@ public class WebsocketFacade {
             User user = newPlayer.getUser();
             if (user != null) {
                 try {
-                    for (Entry<String, List<AbstractEntity>> entry : newPlayer.getGame().getEntities().entrySet()) {
+                    /*for (Entry<String, List<AbstractEntity>> entry : newPlayer.getGame().getEntities().entrySet()) {
                         this.propagate(new EntityUpdatedEvent(entry.getValue()), entry.getKey(), null);
-                    }
+                    }*/
 
                     pusher.trigger(this.getChannelFromUserId(user.getId()), "team-update",
-                            parseJSON(
-                                    // serialise with jackson to exlude unneeded properties
-                                    toJson(newPlayer.getTeam()
-                                    )));
+                        parseJSON(
+                            // serialise with jackson to exlude unneeded properties
+                            toJson(newPlayer.getTeam()
+                            )));
                 } catch (IOException ex) {
                     logger.error("Error while propagating player");
                 }
@@ -513,7 +540,7 @@ public class WebsocketFacade {
     private void fallback(ClientEvent clientEvent, String audience, final String socketId) {
         if (clientEvent instanceof EntityUpdatedEvent) {
             this.propagate(new OutdatedEntitiesEvent(((EntityUpdatedEvent) clientEvent).getUpdatedEntities()),
-                    audience, socketId);
+                audience, socketId);
             //this.outdateEntities(audience, ((EntityUpdatedEvent) clientEvent), socketId);
         } else {
             logger.error("  -> OUTDATE");
@@ -536,10 +563,8 @@ public class WebsocketFacade {
             userInfo.put("name", user.getName());
             return pusher.authenticate(socketId, channel, new PresenceUser(user.getId(), userInfo));
         }
-        if (channel.startsWith("private")) {
-            if (requestManager.hasChannelPermission(channel)) {
-                return pusher.authenticate(socketId, channel);
-            }
+        if (channel.startsWith("private") && requestManager.hasChannelPermission(channel)) {
+            return pusher.authenticate(socketId, channel);
         }
         return null;
     }
@@ -551,10 +576,8 @@ public class WebsocketFacade {
     private Long getUserIdFromChannel(String channelName) {
         Matcher matcher = USER_CHANNEL_PATTERN.matcher(channelName);
 
-        if (matcher.matches()) {
-            if (matcher.groupCount() == 1) {
-                return Long.parseLong(matcher.group(1));
-            }
+        if (matcher.matches() && matcher.groupCount() == 1) {
+            return Long.parseLong(matcher.group(1));
         }
         return null;
     }
@@ -584,12 +607,13 @@ public class WebsocketFacade {
                 User user = this.getUserFromChannel(hook.getChannel());
                 if (user != null) {
                     this.registerUser(user);
+                    userFacade.touchLastSeenAt(user);
                 }
             } else if (hook.getName().equals("channel_vacated")) {
                 Long userId = this.getUserIdFromChannel(hook.getChannel());
                 if (userId != null) {
                     onlineUsers.remove(userId);
-                    updateOnlineUserMetric();
+                    userFacade.touchLastSeenAt(userId);
                 }
             }
 
@@ -600,10 +624,10 @@ public class WebsocketFacade {
     }
 
     @Asynchronous
-    public void touchOnlineUser(Long userId) {
+    public void touchOnlineUser(Long userId, Long playerId) {
         if (userId != null) {
             // do not use lambda since
-            onlineUsers.invoke(userId, new OnlineUserToucher());
+            onlineUsers.invoke(userId, new OnlineUserToucher(playerId));
         }
     }
 
@@ -613,21 +637,30 @@ public class WebsocketFacade {
      * @return list a users who are online
      */
     public Collection<OnlineUser> getOnlineUsers() {
-        if (pusher != null) {
-            ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
-            onlineUsersLock.lock();
-            try {
-                IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
-                if (onlineUsersUpToDate.get() == 0) {
-                    initOnlineUsers();
+        requestManager.su();
+        try {
+            if (pusher != null) {
+                ILock onlineUsersLock = hazelcastInstance.getLock(LOCKNAME);
+                onlineUsersLock.lock();
+                try {
+                    IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
+                    if (onlineUsersUpToDate.get() == 0) {
+                        initOnlineUsers();
+                    }
+                    return this.getLocalOnlineUsers();
+                } finally {
+                    onlineUsersLock.unlock();
                 }
-                return this.getLocalOnlineUsers();
-            } finally {
-                onlineUsersLock.unlock();
+            } else {
+                return new ArrayList<>();
             }
-        } else {
-            return new ArrayList<>();
+        } finally {
+            requestManager.releaseSu();
         }
+    }
+
+    public int getOnlineUserCount() {
+        return this.getLocalOnlineUsers().size();
     }
 
     public Collection<OnlineUser> getLocalOnlineUsers() {
@@ -689,11 +722,6 @@ public class WebsocketFacade {
     private void registerUser(User user) {
         if (user != null && !onlineUsers.containsKey(user.getId())) {
             onlineUsers.put(user.getId(), new OnlineUser(user, getHighestRole(user)));
-
-            IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
-            if (onlineUsersUpToDate.get() == 1) {
-                updateOnlineUserMetric();
-            }
         }
     }
 
@@ -720,8 +748,6 @@ public class WebsocketFacade {
                     IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
                     onlineUsersUpToDate.set(1);
                 }
-
-                updateOnlineUserMetric();
 
             } catch (IOException ex) {
                 logger.error("InitOnlineUser", ex);
@@ -756,14 +782,10 @@ public class WebsocketFacade {
                 Iterator<Cache.Entry<Long, OnlineUser>> it = onlineUsers.iterator();
                 while (it.hasNext()) {
                     Cache.Entry<Long, OnlineUser> next = it.next();
-                    if (next.getKey() != null) {
-                        if (!channels.containsKey(getChannelFromUserId(next.getKey()))) {
-                            it.remove();
-                        }
+                    if (next.getKey() != null && !channels.containsKey(getChannelFromUserId(next.getKey()))) {
+                        it.remove();
                     }
                 }
-
-                updateOnlineUserMetric();
 
                 if (maintainLocalListUpToDate) {
                     IAtomicLong onlineUsersUpToDate = hazelcastInstance.getAtomicLong(UPTODATE_KEY);
@@ -777,11 +799,10 @@ public class WebsocketFacade {
     }
 
     /**
-     * Say to admin's who are currently logged in that some users connect or
-     * disconnect
+     * Say to admin's who are currently logged in that some users connect or disconnect
      */
     private void propagateOnlineUsers() {
-        Result trigger = pusher.trigger(WebsocketFacade.ADMIN_CHANNEL, "online-users", "");
+        pusher.trigger(WebsocketFacade.ADMIN_CHANNEL, "online-users", "");
     }
 
     public void clearOnlineUsers() {
@@ -825,16 +846,6 @@ public class WebsocketFacade {
         }
     }
 
-    public void updateOnlineUserMetric() {
-        commands.fire(UPDATE_OU_METRIC_CMD);
-    }
-
-    public void onOnlineUserMetric(@Inbound(eventName = COMMANDS_EVENT) @Observes String command) {
-        if (UPDATE_OU_METRIC_CMD.equals(command)) {
-            onlineUsersGauge.set(this.getLocalOnlineUsers().size());
-        }
-    }
-
     /**
      * Atomic EntryProcessor to update a OnlineUer lastActivity time.
      * <p>
@@ -843,13 +854,18 @@ public class WebsocketFacade {
     public static class OnlineUserToucher implements EntryProcessor<Long, OnlineUser, Object>, Serializable {
 
         private static final long serialVersionUID = 1L;
+        private final Long playerId;
+
+        public OnlineUserToucher(Long playerId) {
+            this.playerId = playerId;
+        }
 
         @Override
         public Object process(MutableEntry<Long, OnlineUser> entry, Object... arguments) throws EntryProcessorException {
-            if (entry != null) {
+            if (entry != null && playerId != null) {
                 OnlineUser value = entry.getValue();
                 if (value != null) {
-                    value.touch();
+                    value.touch(playerId);
                     entry.setValue(value);
                 }
             }

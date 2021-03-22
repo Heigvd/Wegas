@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.messaging.ejb;
@@ -14,11 +14,14 @@ import java.util.Date;
 import java.util.Properties;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.mail.*;
+import javax.mail.Authenticator;
 import javax.mail.Message.RecipientType;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import org.slf4j.LoggerFactory;
 
 /*
  * @todo @important The mail should be sent in an async queue, so they don't
@@ -32,7 +35,6 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class EMailFacade {
 
-    static final private org.slf4j.Logger logger = LoggerFactory.getLogger(EMailFacade.class);
 
     /**
      *
@@ -44,6 +46,7 @@ public class EMailFacade {
      * @param toType
      * @param mimetype
      * @param replyToOrCC false -> add ReplyTo: replyTo true : acc CC: replyTo
+     *
      * @throws javax.mail.MessagingException when something went wrong
      */
     public void send(String to, String from, String replyTo,
@@ -73,7 +76,7 @@ public class EMailFacade {
             }
         });
 
-        javax.mail.Message msg = new MimeMessage(session);
+        MimeMessage msg = new MimeMessage(session);
 
         msg.setFrom(new InternetAddress(from));
         msg.setRecipients(toType, InternetAddress.parse(to, false));
@@ -83,7 +86,7 @@ public class EMailFacade {
 
         if (replyTo != null) {
             if (replyToOrCC) {
-                msg.setHeader("Reply-To", replyTo);
+                msg.setReplyTo(InternetAddress.parse(replyTo));
             } else {
                 msg.addRecipients(RecipientType.CC, InternetAddress.parse(replyTo, false));
             }

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -14,6 +14,7 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.TextDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
+import com.wegas.core.persistence.variable.scope.AbstractScope.ScopeType;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
@@ -89,7 +90,7 @@ public class ScopeTest extends AbstractArquillianTest {
         // test getScopeKey
         Assert.assertEquals(player.getId(), pScoped.getInstance(player).getScopeKey());
         Assert.assertEquals(team.getId(), tScoped.getInstance(player).getScopeKey());
-        Assert.assertEquals(new Long(0), gmScoped.getInstance(player).getScopeKey());// hack -> scopeKey for gameModel is always 0 !
+        Assert.assertEquals((Long)0l, gmScoped.getInstance(player).getScopeKey());// hack -> scopeKey for gameModel is always 0 !
 
         Assert.assertEquals(null, pScoped.getDefaultInstance().getScopeKey());
 
@@ -129,7 +130,7 @@ public class ScopeTest extends AbstractArquillianTest {
         TextDescriptor tScoped_gs = new TextDescriptor();
         tScoped_gs.setName("tScoped_gs");
         tScoped_gs.setScope(new TeamScope());
-        tScoped_gs.getScope().setBroadcastScope("GameScope");
+        tScoped_gs.getScope().setBroadcastScope(ScopeType.GameModelScope);
         tScoped_gs.setDefaultInstance(new TextInstance());
 
         TextDescriptor pScoped = new TextDescriptor();
@@ -140,13 +141,13 @@ public class ScopeTest extends AbstractArquillianTest {
         TextDescriptor pScoped_ts = new TextDescriptor();
         pScoped_ts.setName("pScoped_ts");
         pScoped_ts.setScope(new PlayerScope());
-        pScoped_ts.getScope().setBroadcastScope("TeamScope");
+        pScoped_ts.getScope().setBroadcastScope(ScopeType.TeamScope);
         pScoped_ts.setDefaultInstance(new TextInstance());
 
         TextDescriptor pScoped_gs = new TextDescriptor();
         pScoped_gs.setName("pScoped_gs");
         pScoped_gs.setScope(new PlayerScope());
-        pScoped_gs.getScope().setBroadcastScope("GameScope");
+        pScoped_gs.getScope().setBroadcastScope(ScopeType.GameModelScope);
         pScoped_gs.setDefaultInstance(new TextInstance());
 
         variableDescriptorFacade.create(scenario.getId(), gmScoped);

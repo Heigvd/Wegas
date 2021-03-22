@@ -1,15 +1,15 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.persistence.evaluation;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.editor.View.View;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -50,8 +50,8 @@ public class GradeInstance extends EvaluationInstance {
     public void setValue(Double value) {
         if (value != null && !Double.isNaN(value) && this.getDescriptor() != null && this.getDescriptor() instanceof GradeDescriptor) {
             GradeDescriptor desc = (GradeDescriptor) this.getDescriptor();
-            if ((desc.getMaxValue() != null && value > desc.getMaxValue())
-                    || (desc.getMinValue() != null && value < desc.getMinValue())) {
+            if (desc.getMaxValue() != null && value > desc.getMaxValue()
+                || (desc.getMinValue() != null && value < desc.getMinValue())) {
                 throw new WegasOutOfBoundException(desc.getMinValue().doubleValue(), desc.getMaxValue().doubleValue(), value, desc.getName(), desc.getName());
             }
         }

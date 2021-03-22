@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -74,6 +74,7 @@ Y.mix(JSONPRequest.prototype, {
                     })
                 .replace(/\[(\d+)\]/g,
                     function (x, $1) {
+                        /*jslint bitwise: true */
                         keys[i] = parseInt($1, 10) | 0;
                         return '.@' + (i++);
                     })
@@ -136,4 +137,4 @@ Y.mix(JSONPRequest.prototype, {
 }, true);
 
 
-}, '3.17.2', {"requires": ["jsonp"]});
+}, '3.18.1', {"requires": ["jsonp"]});

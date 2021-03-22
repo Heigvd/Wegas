@@ -1,19 +1,19 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.View.FlatVariableSelectView.TaskFlatSelector;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.FlatVariableSelectView.TaskFlatSelector;
 import java.util.Collection;
 import javax.persistence.Transient;
 
@@ -28,10 +28,6 @@ import javax.persistence.Transient;
 public abstract class AbstractAssignement extends AbstractEntity {
 
     private static final long serialVersionUID = 324778908917012703L;
-
-    public AbstractAssignement() {
-        super();
-    }
 
     @Transient
     @WegasEntityProperty(

@@ -110,9 +110,9 @@ angular.module('private.modeler.directives', [
         // Updates the listing when the user has clicked on the "My models first" checkbox.
         ctrl.toggleMeFirst = function() {
             ctrl.setMeFirst(!ctrl.mefirst);
-            var config = localStorage.getObject("wegas-config");
-            config.commons.myModelsFirst = ctrl.mefirst;
-            localStorage.setObject("wegas-config", config);
+            var config = localStorage.getObject("wegas-config-nonplayer") || {};
+            config.myModelsFirst = ctrl.mefirst;
+            localStorage.setObject("wegas-config-nonplayer", config);
         };
 
         ctrl.initMeFirst = function() {
@@ -120,8 +120,8 @@ angular.module('private.modeler.directives', [
                 if (ctrl.user.isAdmin) {
                     if (ctrl.username.length > 0) {
                         // Load the "My models first" preference, defaulting to true:
-                        var config = localStorage.getObject("wegas-config"),
-                            mefirst = config.commons && config.commons.myModelsFirst !== false;
+                        var config = localStorage.getObject("wegas-config-nonplayer") || {},
+                            mefirst = config.myModelsFirst !== false;
                         ctrl.setMeFirst(mefirst, true);
                     } // else: ignore as long as required information is missing
                 } else {
@@ -172,36 +172,37 @@ angular.module('private.modeler.directives', [
             ctrl.models = rawModels = [];
             ctrl.loading = true;
 
-            ScenariosModel.getGameModelsByStatusTypeAndPermission("MODEL", "LIVE", ["EDIT", "TRANSLATE"]).then(function(gameModels) {
-                rawModels = gameModels.data;
+            ScenariosModel.getGameModelsByStatusTypeAndPermission("MODEL", "LIVE", ["EDIT", "TRANSLATE"])
+                .then(function(gameModels) {
+                    rawModels = gameModels.data;
 
-                if (ctrl.mefirst && ctrl.username.length > 0) {
-                    // Prepare a list where "my" models appear first (ordered by creation date, like the rest):
-                    var myModels = $filter('filter')(rawModels, {createdByName: ctrl.username}) || [],
-                        otherModels = $filter('filter')(rawModels, {createdByName: '!' + ctrl.username}) || [];
-                    myModels = $filter('orderBy')(myModels, 'createdTime', true) || [];
-                    otherModels = $filter('orderBy')(otherModels, 'createdTime', true) || [];
-                    rawModels = myModels.concat(otherModels);
-                } else {
-                    rawModels = $filter('orderBy')(rawModels, 'createdTime', true) || [];
-                }
-                // At this point, the search variable is not necessarily updated by Angular to reflect the input field:
-                var searchField = document.getElementById('searchField');
-                if (searchField) {
-                    ctrl.search = searchField.getElementsByClassName('tool__input')[0].value;
-                }
-                ctrl.filterModels(ctrl.search);
-                if (updateDisplay) {
-                    extendDisplayedItems();
-                }
-                if (hideScrollbarDuringInitialRender) {
-                    $timeout(function() {
-                        $('#modeler-models-list').css('overflow-y', 'auto');
-                    }, 5000);
-                }
-                // Keep the "loading" indicator on screen as long as possible:
-                ctrl.loading = false;
-            });
+                    if (ctrl.mefirst && ctrl.username.length > 0) {
+                        // Prepare a list where "my" models appear first (ordered by creation date, like the rest):
+                        var myModels = $filter('filter')(rawModels, {createdByName: ctrl.username}) || [],
+                            otherModels = $filter('filter')(rawModels, {createdByName: '!' + ctrl.username}) || [];
+                        myModels = $filter('orderBy')(myModels, 'createdTime', true) || [];
+                        otherModels = $filter('orderBy')(otherModels, 'createdTime', true) || [];
+                        rawModels = myModels.concat(otherModels);
+                    } else {
+                        rawModels = $filter('orderBy')(rawModels, 'createdTime', true) || [];
+                    }
+                    // At this point, the search variable is not necessarily updated by Angular to reflect the input field:
+                    var searchField = document.getElementById('searchField');
+                    if (searchField) {
+                        ctrl.search = searchField.getElementsByClassName('tool__input')[0].value;
+                    }
+                    ctrl.filterModels(ctrl.search);
+                    if (updateDisplay) {
+                        extendDisplayedItems();
+                    }
+                    if (hideScrollbarDuringInitialRender) {
+                        $timeout(function() {
+                            $('#modeler-models-list').css('overflow-y', 'auto');
+                        }, 5000);
+                    }
+                    // Keep the "loading" indicator on screen as long as possible:
+                    ctrl.loading = false;
+                });
         };
 
         ctrl.archiveModel = function(model) {
@@ -228,7 +229,7 @@ angular.module('private.modeler.directives', [
                 return;
             ctrl.duplicating = true;
             $('#dupe-' + model.id).addClass('busy-button');
-            ScenariosModel.copyScenario(model.id).then(function(response) {
+            ScenariosModel.copyScenario(model).then(function(response) {
                 if (response.isErroneous()) {
                     response.flash();
                 } else {
@@ -355,13 +356,14 @@ angular.module('private.modeler.directives', [
                 var loadScenarios = function() {
                     // Reload list from cache each time the window is opened:
                     scope.loadingScenarios = true;
-                    ScenariosModel.getGameModelsByStatusTypeAndPermission("SCENARIO", "LIVE", ["EDIT"]).then(function(response){
-                        if (!response.isErroneous()) {
-                            scope.loadingScenarios = false;
-                            scope.rawscenariomenu = $filter('orderBy')(response.data, 'name');
-                            updateDisplay(scope.rawscenariomenu);
-                        }
-                    });
+                    ScenariosModel.getGameModelsByStatusTypeAndPermission("SCENARIO", "LIVE", ["EDIT"])
+                        .then(function(response) {
+                            if (!response.isErroneous()) {
+                                scope.loadingScenarios = false;
+                                scope.rawscenariomenu = $filter('orderBy')(response.data, 'name');
+                                updateDisplay(scope.rawscenariomenu);
+                            }
+                        });
                 };
 
                 var updateDisplay = function(scenarioList) {
@@ -431,6 +433,23 @@ angular.module('private.modeler.directives', [
                     }
                 };
 
+                scope.diffModel = function() {
+                    var ids = _.transform(scope.selectedIds, function(result, value, key) {
+                        if (value) {
+                            result.push(key);
+                        }
+                        return result;
+                    }, []);
+                    if (ids.length > 0) {
+                        var url = window.ServiceURL + "rest/Export/GameModel/Compare/" + ids.join(",");
+                        window.open(url);
+                    } else {
+                        $translate('COMMONS-SCENARIOS-NO-TEMPLATE-FLASH-ERROR').then(function(message) {
+                            Flash.danger(message);
+                        });
+                    }
+                };
+
                 scope.$on('expand', function() {
                     resetNewModel();
                     loadScenarios();
@@ -452,13 +471,14 @@ angular.module('private.modeler.directives', [
                     // Reload list from cache each time the window is opened:
                     scope.loadingModels = true;
 
-                    ScenariosModel.getGameModelsByStatusTypeAndPermission("MODEL", "LIVE", "DUPLICATE").then(function(response) {
-                        if (!response.isErroneous()) {
-                            scope.loadingModels = false;
-                            scope.rawmodelsmenu = $filter('orderBy')(response.data, 'name');
-                            updateDisplay(scope.rawmodelsmenu);
-                        }
-                    });
+                    ScenariosModel.getGameModelsByStatusTypeAndPermission("MODEL", "LIVE", "DUPLICATE")
+                        .then(function(response) {
+                            if (!response.isErroneous()) {
+                                scope.loadingModels = false;
+                                scope.rawmodelsmenu = $filter('orderBy')(response.data, 'name');
+                                updateDisplay(scope.rawmodelsmenu);
+                            }
+                        });
                 };
 
                 var resetNewModel = function() {
@@ -502,10 +522,11 @@ angular.module('private.modeler.directives', [
                         if (scope.newModel.templateId !== 0) {
                             if (!button.hasClass("button--disable")) {
                                 button.addClass("button--disable button--spinner button--rotate");
-                                scope.modelerIndexCtrl.createModel(scope.newModel.name, scope.newModel.templateId).then(function() {
-                                    button.removeClass("button--disable button--spinner button--rotate");
-                                    resetNewModel();
-                                });
+                                scope.modelerIndexCtrl.createModel(scope.newModel.name, scope.newModel.templateId)
+                                    .then(function() {
+                                        button.removeClass("button--disable button--spinner button--rotate");
+                                        resetNewModel();
+                                    });
                             }
                         } else {
                             $translate('COMMONS-SCENARIOS-NO-TEMPLATE-FLASH-ERROR').then(function(message) {

@@ -1,20 +1,18 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
 
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.False;
-import com.wegas.editor.View.View;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -24,7 +22,6 @@ import org.slf4j.LoggerFactory;
 public class BooleanInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(BooleanInstance.class);
     /**
      *
      */
@@ -37,6 +34,7 @@ public class BooleanInstance extends VariableInstance {
      *
      */
     public BooleanInstance() {
+        // ensure to have an empty constructor
     }
 
     /**

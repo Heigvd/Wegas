@@ -1,26 +1,29 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.security.ejb.UserFacade;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -28,7 +31,6 @@ import javax.ws.rs.core.MediaType;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Stateless
-
 @Path("GameModel/{gameModelId: ([1-9][0-9]*)?}{sep: /?}VariableDescriptor/{variableDescriptorId : ([1-9][0-9]*)?}{sep2: /?}VariableInstance/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -37,27 +39,19 @@ public class VariableInstanceController {
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableInstanceFacade variableInstanceFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
-    /**
-     *
-     */
-    @EJB
-    private UserFacade userFacade;
 
     /**
      *
      */
     @Inject
     private PlayerFacade playerFacade;
-
-    @Inject
-    private RequestManager requestManager;
 
     /**
      *
@@ -160,7 +154,7 @@ public class VariableInstanceController {
      */
     @POST
     @Path("user/{userId : [1-9][0-9]*}")
-    public VariableInstance setVariableInstance(
+    public VariableInstance updateVariableInstance(
             // @fixme Is this method still in use?
             @PathParam("gameModelId") Long gameModelId,
             @PathParam("variableDescriptorId") Long variableDescriptorId,

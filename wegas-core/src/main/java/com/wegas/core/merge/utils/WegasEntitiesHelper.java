@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.merge.utils;
@@ -22,6 +22,10 @@ public class WegasEntitiesHelper {
      * static storage for WegasEntityFields
      */
     private static final Map<Class<? extends Mergeable>, WegasEntityFields> iterators = new HashMap<>();
+
+    private WegasEntitiesHelper() {
+        // empty private constructor to prevent class initialisation
+    }
 
     /**
      * Get WegasEntityProperty fields descriptor for the given class

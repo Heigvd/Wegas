@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
@@ -14,6 +14,10 @@ import java.util.*;
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class ListUtils {
+
+    private ListUtils() {
+        // empty private constructor to prevent class initialisation
+    }
 
     /**
      * Callback to update JPA shared cache
@@ -29,10 +33,12 @@ public class ListUtils {
 
         @Override
         public void addEntity(AbstractEntity entity) {
+            // default behaviour is noop
         }
 
         @Override
         public void removeEntity(AbstractEntity entity) {
+            // default behaviour is noop
         }
 
     }

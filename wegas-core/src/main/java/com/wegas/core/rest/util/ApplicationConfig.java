@@ -1,16 +1,15 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
 
+import javax.ws.rs.ApplicationPath;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
-
-import javax.ws.rs.ApplicationPath;
 
 /**
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -20,7 +19,7 @@ public class ApplicationConfig extends ResourceConfig {
 
     public ApplicationConfig() {
 
-        register(com.wegas.core.rest.util.JacksonFeature.class);
+        register(JacksonFeature.class);
         register(MultiPartFeature.class);
 
         // register REST controllers from those packages :
@@ -33,6 +32,6 @@ public class ApplicationConfig extends ResourceConfig {
             "com.wegas.resourceManagement.rest",
             "com.wegas.reviewing.rest",
             "com.wegas.admin",
-            "com.wegas.log.neo4j");
+            "com.wegas.log.rest");
     }
 }

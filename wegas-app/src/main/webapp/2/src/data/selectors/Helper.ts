@@ -2,14 +2,14 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-201
- * 9 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
 import { get, isMatch } from 'lodash-es';
 import { discriminant } from '../normalize';
 import { Game, GameModel, Player, Team, VariableDescriptor, VariableInstance } from '../selectors';
+import { IAbstractEntity } from 'wegas-ts-api';
 
 function findNearestParentInFormVal<T extends IAbstractEntity = IAbstractEntity>(
   formVal: IAbstractEntity,
@@ -55,19 +55,14 @@ export function getParent<T extends IAbstractEntity = IAbstractEntity>(val: IAbs
     switch (discriminant({ '@class': val.parentType })) {
       case 'variableDescriptors':
         return (VariableDescriptor.select(val.parentId) as unknown) as T;
-        break;
       case 'variableInstances':
         return (VariableInstance.select(val.parentId) as unknown) as T;
-        break;
       case 'gameModels':
         return (GameModel.select(val.parentId!) as unknown) as T;
-        break;
       case 'games':
         return (Game.select(val.parentId!) as unknown) as T;
-        break;
       case 'teams':
         return (Team.select(val.parentId!) as unknown) as T;
-        break;
       case 'players':
         return (Player.select(val.parentId!) as unknown) as T;
     }

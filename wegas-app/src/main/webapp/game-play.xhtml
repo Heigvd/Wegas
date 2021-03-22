@@ -101,8 +101,8 @@
                                     }]
                             },
                             Game: {
-                                /* Use Editor view to load teams: */
-                                source: "rest/Editor/GameModel/#{gameController.currentGameModel.id}/Game",
+                                /* Use Extended view to load teams*/
+                                source: "rest/Extended/GameModel/#{gameController.currentGameModel.id}/Game",
                                 initialRequest: "/#{gameController.currentGame.id}",
                                 plugins: [{
                                         fn: "GameCache",

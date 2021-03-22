@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -38,13 +38,15 @@ YUI.add("wegas-statistics", function(Y) {
                 parent = parent.getParent();
             }
             return title;
-        }, getLogID = function(gm) {
-        if (gm.get("properties.logID")) {
-            return gm.get("properties.logID");
-        } else {
-            throw new Error("No logID defined");
-        }
-    },
+        },
+        getLogID = function(gm) {
+            var logId = gm.get("properties").get("val").logID;
+            if (logId) {
+                return logId;
+            } else {
+                throw new Error("No logID defined");
+            }
+        },
         inlineSvgStyle = function(node) {
             var tw = document.createTreeWalker(node, 1), n, img = new Image();
             while ((n = tw.nextNode())) {
@@ -69,29 +71,56 @@ YUI.add("wegas-statistics", function(Y) {
 
         },
         Stats = Y.Base.create("wegas-statistics", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-            CONTENT_TEMPLATE: "<div><div class='stats-question' style='display: inline-block'>" +
+            CONTENT_TEMPLATE: "<div>"
+                + "<div class='stats-question' style='display: inline-block'>" +
                 "<select><option value='null' disabled>-Question-</option></select><button class='gen-button'>Generate all</button>" +
                 "<i class='loading fa fa-spinner fa-pulse fa-lg' style='display: none'></i>" +
                 "<div>Answer count: <span class='question-answer-count'></span></div>" +
                 "<div class='chart'></div><div class='tmpNode'></div></div>" +
                 "<div class='stats-number' style='display: none;vertical-align: top'>" +
                 "<select><option value='null' disabled>-Number-</option></select>" +
-                "<canvas class='chart' style='width:600px;height:400px'></canvas></div></div>",
+                "<canvas class='chart' style='width:600px;height:400px'></canvas></div>"
+                + "<div class='footer'></div>"
+                + "</div>",
             initializer: function() {
                 this.handlers = [];
                 this._gmPromise = Data.getCurrentGameModel();
                 this._gmPromise.then(Y.bind(function(gm) {
-                    if (!gm.get("properties.logID")) {
+                    if (!gm.get("properties").get("val").logID) {
                         this.get("contentBox").hide();
                         this.get("boundingBox").append("Statistics are not enabled for this game");
                     }
                 }, this));
             },
+            addRawDownloadButton: function() {
+                var game = Y.Wegas.Facade.Game.cache.getCurrentGame();
+                var gameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
+
+                var activityPattern;
+
+                var config = Y.namespace("Wegas.Config").Statistics;
+                var queryString = "";
+
+                if (config) {
+                    activityPattern = config.activityFilter;
+                    queryString = "?activityPattern=" + activityPattern;
+                }
+
+                this._rawButton = new Y.Wegas.Text({
+                    srcNode: this.get("contentBox").one(".footer"),
+                    content: '<a class="wegas-statistics-download-button" title="Download Excel file" href="rest/Statistics/ExportXLSX/'
+                        + getLogID(gameModel) + '/Games/' + +game.get('id') + queryString + '" '
+                        + 'target="_blank"><span class="fa fa-2x fa-file-excel-o icon"></span>Download raw data (Excel)</a>',
+                }).render();
+            },
+            getQuestionList: function() {
+                return Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().flatten("QuestionDescriptor");
+            },
             renderUI: function() {
                 var selectQNode = this.get("contentBox").one(".stats-question select"),
-                    selectNNode = this.get("contentBox").one(".stats-number select"),
-                    questions = Y.Wegas.Facade.Variable.cache.findAll("@class", "QuestionDescriptor"),
-                    numbers = Y.Wegas.Facade.Variable.cache.findAll("@class", "NumberDescriptor");
+                    //selectNNode = this.get("contentBox").one(".stats-number select"),
+                    questions = this.getQuestionList();
+                //numbers = Y.Wegas.Facade.Variable.cache.findAll("@class", "NumberDescriptor");
                 this._questionButton = new Y.Button({
                     srcNode: this.get("contentBox").one(".gen-button"),
                     on: {
@@ -105,29 +134,26 @@ YUI.add("wegas-statistics", function(Y) {
                     },
                     CHART_BAR_OPT);
 
-                // Todo: should use kind of gameModel.flatten(filter: QuestionDescriptor) to keep treeview order
-                questions.sort(function(a, b) {
-                    var aPath = getPath(a),
-                        bPath = getPath(b);
-                    return (aPath < bPath ? -1 : 1);
-                });
                 Y.Array.each(questions, function(i) {
                     selectQNode.appendChild("<option value='" + i.get("name") + "'>" + getPath(i) + "</option>");
                 });
                 //                Y.Array.each(numbers, function(i) {
                 //                    selectNNode.appendChild("<option value='" + i.get("name") + "'>" + i.get("label")
                 // + "</option>"); });
+
+                if (!questions.length) {
+                    this.get("contentBox").addClass("no-questions");
+                }
+                this.addRawDownloadButton();
             },
             bindUI: function() {
-                var chartNNode = this.get("contentBox").one(".stats-number .chart"),
-                    loading = this.get("contentBox").one(".loading");
                 this.handlers.push(this.get("contentBox").one(".stats-question select")
                     .on("valueChange", Y.bind(function(e) {
                         this.drawQuestion(e.newVal);
                     }, this)));
             },
             genAllQuestion: function() {
-                var questions = Y.Wegas.Facade.Variable.cache.findAll("@class", "QuestionDescriptor"),
+                var questions = this.getQuestionList(),
                     promiseChain, i, drawQ = Y.bind(this.drawQuestion, this),
                     wHand = window.open(), wHandInfo, addToWindow, panel, setInitialState, tmpChart;
                 panel = new Y.Wegas.Panel({
@@ -214,6 +240,7 @@ YUI.add("wegas-statistics", function(Y) {
             destructor: function() {
                 this._gmPromise = null;
                 this._questionButton && this._questionButton.destroy();
+                this._rawButton && this._rawButton.destroy();
                 if (this.chart && this.chart.destroy) {
                     this.chart.destroy();
                 }
@@ -275,6 +302,7 @@ YUI.add("wegas-statistics", function(Y) {
 
             });
             Y.Array.each(questionData, function(i) {
+                choices[i.choice][i.result] = choices[i.choice][i.result] || 0;
                 choices[i.choice][i.result] += 1;
                 count += 1;
             });

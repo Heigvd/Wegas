@@ -9,8 +9,14 @@ angular
                 $rootScope.$emit('flash:message', messages);
             };
 
+            function strip(html) {
+                var tmp = document.createElement("div");
+                tmp.innerHTML = html;
+                return tmp.textContent || tmp.innerText;
+            }
+
             var addMessages = function(level, text) {
-                messages = asArrayOfMessages(level, text);
+                messages = asArrayOfMessages(level, strip(text));
                 emit();
                 $timeout(function() {
                     removeMessages();
@@ -42,9 +48,9 @@ angular
                     });
                 }
                 return text ? [{
-                    level: level,
-                    text: text
-                }] : [asMessage(level)];
+                        level: level,
+                        text: text
+                    }] : [asMessage(level)];
             };
 
             var flash = function(level, text) {

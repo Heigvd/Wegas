@@ -345,3 +345,19 @@
 .benefits-actions__thumbnails.wegas-flexlist-hidden {
     display:none;
 }
+
+.wegas-i18n-activator .language-activator-title {
+    font-weight: bold;
+    padding-top: 20px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid black;
+}
+
+.wegas-i18n-activator .wegas-list {
+    padding-top: 10px;
+    padding-left: 20px;
+}
+
+.wegas-i18n-activator .wegas-list > div {
+    flex-wrap: wrap;
+}

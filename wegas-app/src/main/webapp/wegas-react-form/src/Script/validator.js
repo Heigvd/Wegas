@@ -127,7 +127,11 @@ function check(code) {
                         ) == null
                     ) {
                         errors.push(`Variable '${descr.variable}' not found`);
-                    } else {
+                    } else if (descr.method === null) {
+                        errors.push(
+                            'You are allowed to use methods only'
+                        );
+                    } else if (descr.method !== false) {
                         errors.push(
                             `Method '${descr.method}' not found on variable '${
                                 descr.variable
@@ -151,7 +155,7 @@ function check(code) {
                                 }: parameter ${
                                     a.view && a.view.label
                                         ? a.view.label
-                                        : '#' + i
+                                        : `#${i}`
                                 } ${e.message}`
                             );
                         }

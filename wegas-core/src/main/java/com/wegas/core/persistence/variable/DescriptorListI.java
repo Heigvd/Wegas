@@ -1,21 +1,21 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.WithId;
-import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyArray;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,29 +28,38 @@ import java.util.List;
 public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
 
     /**
+     * Sorted shallow copy of items. This list is not managed. Thus
+     * any modification will no be propagated to database
+     *
      * @return the variableDescriptors
      */
     List<T> getItems();
 
     /**
-     * return he gameModel this belongs to
-     * sugar for default methods
+     * unsorted managed list of items.
+     * One shall modify this list to make effective changes
+     *
+     * @return
+     */
+    List<T> getRawItems();
+
+    /**
+     * return he gameModel this belongs to sugar for default methods
      *
      * @return the gameModel owning this descriptor list
      */
     @JsonIgnore
-    public GameModel getGameModel();
+    GameModel getGameModel();
 
     /**
-     * Return children ids
-     * DO NOT OVERRIDE, NEVER!
+     * Return children ids DO NOT OVERRIDE, NEVER!
      *
      * @return list of children's id
      */
     @JsonView(Views.IndexI.class)
     @WegasExtraProperty(view = @View(value = Hidden.class, label = ""),
-            proposal = EmptyArray.class,
-            optional = false, nullable = false
+        proposal = EmptyArray.class,
+        optional = false, nullable = false
     )
     default List<Long> getItemsIds() {
         List<Long> ids = new LinkedList<>();
@@ -61,12 +70,12 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
     }
 
     /**
-     * just do nothing
-     * DO NOT OVERRIDE, NEVER!
+     * just do nothing DO NOT OVERRIDE, NEVER!
      *
      * @param itemsIds
      */
     default void setItemsIds(List<Long> itemsIds) {
+        // just do nothing: DO NOT OVERRIDE, NEVER!
     }
 
     /**
@@ -108,8 +117,8 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
     }
 
     /**
-     * Add a new child. Register the new child within the gameModel (global variable descriptor list)
-     * and within its parent.
+     * Add a new child. Register the new child within the gameModel (global variable descriptor
+     * list) and within its parent.
      *
      * @param index new child position, null means last position
      * @param item  the new child to add
@@ -126,8 +135,17 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
             } else {
                 items.add(item);
             }
+
+            // add the item to the managed list
+            this.getRawItems().add(item);
+
+            // rewrite all items indexes
+            int i = 0;
+            for (T t : items) {
+                t.setIndexOrder(i++);
+            }
+            this.setChildParent(item);
         }
-        this.setChildParent(item);
     }
 
     /**
@@ -135,7 +153,7 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
      * @return number of children
      */
     default int size() {
-        return this.getItems().size();
+        return this.getRawItems().size();
     }
 
     /**
@@ -157,7 +175,7 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
      */
     default boolean remove(T item) {
         this.getGameModel().removeFromVariableDescriptors(item);
-        return this.getItems().remove(item);
+        return this.getRawItems().remove(item);
     }
 
     /**
@@ -168,6 +186,19 @@ public interface DescriptorListI<T extends VariableDescriptor> extends WithId {
      * @return true if item has been removed from its parent
      */
     default boolean localRemove(T item) {
-        return this.getItems().remove(item);
+        return this.getRawItems().remove(item);
     }
+
+    @JsonIgnore
+    default List<VariableDescriptor> getOrderedVariableDesacriptors() {
+        final List<VariableDescriptor> acc = new ArrayList<>();
+        for (VariableDescriptor vd : this.getItems()) {
+            acc.add(vd);
+            if (vd instanceof DescriptorListI) {
+                acc.addAll(((DescriptorListI) vd).getOrderedVariableDesacriptors());
+            }
+        }
+        return acc;
+    }
+
 }

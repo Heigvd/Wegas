@@ -8,6 +8,7 @@
         <ui:define name="title">#{editorGameController.currentGameModel.name}</ui:define>
 
         <ui:define name="head">
+            <!-- Not a comment: hasWriteRight = #{writeRightNotNeeded ne 'true' && editorGameController.assertHasGameWriteRight()} -->
 
             <!-- Page styles -->
             <ui:fragment rendered="#{requestController.debugMode()}">
@@ -42,7 +43,7 @@
                        var="o" value="#{editorGameController.currentGameModel.properties.clientScriptUri.split(';')}" varStatus="status">
                 <script type="text/javascript" src="#{o.trim()}?#{wegasConfig.timestamp}"></script>
             </ui:repeat>-->
-
+            
             <script type="text/javascript">
                 YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function(Y) {
                     Y.namespace("Wegas.Config").ExtraTabs = [/*Tab(s) cfg {label:"label", children:[]}*/];
@@ -72,7 +73,10 @@
                             },
                             Instance: {
                                 source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-                                initialRequest: "/VariableInstance/AllPlayerInstances/#{editorGameController.currentPlayer.id}",
+                                initialRequest: #{writeRightNotNeeded eq 'true' ?
+                                        'undefined' : 
+                                        '"/VariableInstance/AllPlayerInstances/' += editorGameController.currentPlayer.id += '"'
+                                    },
                                 plugins: [{
                                         fn: "VariableInstanceCache",
                                         cfg: {
@@ -128,7 +132,7 @@
                                     }]
                             },
                             User: {
-                                source: "rest/Extended/User",
+                                source: "rest/Editor/User",
                                 initialRequest: "/#{requestController.currentUser.id}",
                                 plugins: [{
                                         fn: "UserCache",

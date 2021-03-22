@@ -1,27 +1,31 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.content;
 
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.Mergeable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class DirectoryDescriptor extends AbstractContentDescriptor {
+
+    private static final Logger logger = LoggerFactory.getLogger(DirectoryDescriptor.class);
 
     /**
      * Directory mime-type
@@ -31,7 +35,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
 
     @JsonIgnore
     @WegasEntityProperty(includeByDefault = false, callback = ChildrenCallback.class, notSerialized = true)
-    private List<AbstractContentDescriptor> children;
+    private List<AbstractContentDescriptor> children; // Hack: to make this property visible to MwegasPatch // NOPMD
 
     /**
      *
@@ -67,13 +71,14 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
      *
      * @return ????? sum of bytes of children ???
      */
-    @JsonProperty("bytes")
+    @JsonProperty(value = "bytes",access = JsonProperty.Access.READ_ONLY)
     @Override
     public Long getBytes() {
         List<AbstractContentDescriptor> nodes = new ArrayList<>();
         try {
             nodes = this.list();
         } catch (RepositoryException ex) {
+            logger.error("Repository error: {}", ex);
         }
         Long sum = 0L;
         for (AbstractContentDescriptor n : nodes) {
@@ -136,7 +141,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
          * @return refId of the removed child
          */
         @Override
-        public Object remove(Object child, Mergeable container, Object identifier) {
+        public Object remove(Object child, IMergeable container, Object identifier) {
             if (child instanceof AbstractContentDescriptor) {
                 try {
                     AbstractContentDescriptor theChild = (AbstractContentDescriptor) child;
@@ -145,6 +150,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
                     theChild.delete(false);
                     return refId;
                 } catch (RepositoryException ex) {
+                    logger.error("Repository error: {}", ex);
                 }
             }
             return null;

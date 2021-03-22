@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
@@ -166,4 +166,37 @@
 }
 .yui3-skin-sam .wegas-icon-leave {
     background-position: 1px -127px;
+}
+
+.wegas-submit-button {
+    display: inline-block;
+    position: relative;
+    background: #69bd7f;
+    text-transform: uppercase;
+    height: 24px;
+    margin: 2px 5px 4px 15px;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 4px 8px 4px 24px;
+    border-radius: 6px;
+    color: white;
+    transition: .3s;
+}
+
+.wegas-submit-button:before {
+    content: "\f00c";
+    font-family: "FontAwesome";
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    line-height: 24px;
+    font-size: 11px;
+    top: 2px;
+    left: 0px;
+}
+
+.wegas-submit-button:hover {
+    background: #4f8c5f;
+    color: rgb(255, 255, 204);
 }

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.ejb;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -41,10 +41,10 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
     static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
 
-    @EJB
+    @Inject
     private ResourceFacade resourceFacade;
 
-    @EJB
+    @Inject
     private IterationFacade iterationFacade;
 
     @Test
@@ -74,7 +74,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         variableDescriptorFacade.remove(task.getId());
 
-        /*assertTrue("Resource assignments not empty", 
+        /*assertTrue("Resource assignments not empty",
             ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getAssignments().isEmpty());*/
         // Clean
         variableDescriptorFacade.remove(res.getId());
@@ -279,7 +279,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         // Remove assignment
         defaultInstance = res.getDefaultInstance();
-        defaultInstance.getAssignments().remove(0);
+        Assignment get = defaultInstance.getAssignments().get(0);
+        defaultInstance.removeAssignment(get);
 
         variableDescriptorFacade.update(res.getId(), res);
 
@@ -348,8 +349,8 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         iterationFacade.addIteration(bdi1.getId(), it1);
         bdi1 = (BurndownInstance) variableInstanceFacade.find(bdi1.getId()); // reload player instance
 
-        iterationFacade.addTaskToIteration(task1Ip.getId(), bdi1.getIterations().get(0).getId());
-        iterationFacade.addTaskToIteration(task2Ip.getId(), bdi1.getIterations().get(0).getId());
+        iterationFacade.addTaskToIteration(task1Ip.getId(), bdi1.getIterations().get(0).getId(), 10, 0, 1000, 1000);
+        iterationFacade.addTaskToIteration(task2Ip.getId(), bdi1.getIterations().get(0).getId(), 10, 0, 1000, 1000);
 
         /*
          * Assign paul to tasks
@@ -491,7 +492,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         /*
          * add task1 to iteration1
          */
-        iterationFacade.addTaskToIteration(task1.getDefaultInstance().getId(), bdiDef.getIterations().get(0).getId());
+        iterationFacade.addTaskToIteration(task1.getDefaultInstance().getId(), bdiDef.getIterations().get(0).getId(), 10, 0, 1000, 1000);
 
         // reload
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
@@ -523,7 +524,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         /*
          * Player update his own iteration
          */
-        iterationFacade.addTaskToIteration(task2.getInstance(player).getId(), bdi1.getIterations().get(0).getId());
+        iterationFacade.addTaskToIteration(task2.getInstance(player).getId(), bdi1.getIterations().get(0).getId(), 10, 0, 1000, 1000);
 
         // reload
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
@@ -556,7 +557,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         /**
          * remove all tasks
          */
-        iterationFacade.removeTaskFromIteration(task1.getDefaultInstance().getId(), bdiDef.getIterations().get(0).getId());
+        iterationFacade.removeTaskFromIteration(task1.getDefaultInstance().getId(), bdiDef.getIterations().get(0).getId(), 10, 0, 1000, 1000);
 
         // reload
         bdiDef = (BurndownInstance) variableInstanceFacade.find(bdiDef.getId()); //reload defaultInstance
@@ -579,7 +580,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         Assert.assertEquals(0, bdiDef.getIterations().get(0).getTasks().size());
         Assert.assertEquals(0, bdi1.getIterations().get(0).getTasks().size());
 
-        /* 
+        /*
          * remove iteration (player)
          */
         iterationFacade.removeIteration(bdi1.getIterations().get(0).getId());
@@ -602,7 +603,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         Assert.assertEquals(1, bdiDef.getIterations().size());
         Assert.assertEquals(1, bdi1.getIterations().size());
 
-        /* 
+        /*
          * remove iteration (default)
          */
         iterationFacade.removeIteration(bdiDef.getIterations().get(0).getId());
@@ -839,7 +840,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
 
         Occupation newOccupation = ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getOccupations().get(0);
 
-        // Check resource instance has been correctly setted 
+        // Check resource instance has been correctly setted
         assertEquals(newOccupation.getResourceInstance(), res.getInstance(player));
 
         // Check the editiable occupation mode
@@ -868,7 +869,7 @@ public class ResourceFacadeTest extends AbstractArquillianTest {
         resourceFacade.addOccupation(res.getInstance(player).getId(), true, 1);
 
         Occupation newOccupation = ((ResourceInstance) variableInstanceFacade.find(res.getId(), player)).getOccupations().get(0);
-        // Check resource instance has been correctly setted 
+        // Check resource instance has been correctly setted
         assertEquals(newOccupation.getResourceInstance(), res.getInstance(player));
         // Check the editiable occupation mode
         assertEquals(true, newOccupation.getEditable());

@@ -1,0 +1,198 @@
+<?xml version="1.0"?>
+<domain application-root="${com.sun.aas.instanceRoot}/applications" version="942" log-root="${com.sun.aas.instanceRoot}/logs">
+  <hazelcast-runtime-configuration generate-names="true" start-port="6900" discovery-mode="multicast" multicast-group="224.2.2.4" multicast-port="2904"/>
+  <security-configurations>
+    <authorization-service default="true" name="authorizationService">
+      <security-provider provider-name="simpleAuthorizationProvider" name="simpleAuthorization" type="Simple">
+        <authorization-provider-config name="simpleAuthorizationProviderConfig" support-policy-deploy="false"/>
+      </security-provider>
+    </authorization-service>
+  </security-configurations>
+  <system-applications/>
+  <applications/>
+  <resources>
+    <jdbc-resource pool-name="H2Pool" object-type="system-all" jndi-name="jdbc/__default"/>
+    <jdbc-connection-pool is-isolation-level-guaranteed="false" datasource-classname="org.h2.jdbcx.JdbcDataSource" name="H2Pool" res-type="javax.sql.DataSource">
+      <property name="URL" value="jdbc:h2:${com.sun.aas.instanceRoot}/lib/databases/embedded_default;AUTO_SERVER=TRUE"/>
+    </jdbc-connection-pool>
+    <!-- Wegas-->
+    <jdbc-connection-pool max-pool-size="300" datasource-classname="org.postgresql.xa.PGXADataSource" name="jdbc/wegas_dev_pool" res-type="javax.sql.XADataSource">
+      <property name="DatabaseName" value="${wegas.db.name}"/>
+      <property name="PortNumber" value="5432"/>
+      <property name="User" value="user"/>
+      <property name="Password" value="1234"/>
+      <property name="ServerName" value="${wegas.db.host}"/>
+    </jdbc-connection-pool>
+    <jdbc-resource pool-name="jdbc/wegas_dev_pool" jndi-name="jdbc/wegas_dev"/>
+    <managed-executor-service core-pool-size="${wegas.http.threads}" maximum-pool-size="${wegas.http.threads}" object-type="system-all" jndi-name="timeoutExecutorService">
+        </managed-executor-service>
+    <!-- /Wegas-->
+    <context-service object-type="system-all" description="context service" jndi-name="concurrent/__defaultContextService"/>
+    <!-- Wegas-->
+    <managed-executor-service keep-alive-seconds="300" object-type="system-all" core-pool-size="${wegas.nb_populators}" task-queue-capacity="20000" maximum-pool-size="200" hung-after-seconds="300" jndi-name="concurrent/__defaultManagedExecutorService" long-running-tasks="true"/>
+    <!-- /Wegas-->
+    <managed-scheduled-executor-service keep-alive-seconds="300" object-type="system-all" hung-after-seconds="300" jndi-name="concurrent/__defaultManagedScheduledExecutorService" long-running-tasks="true"/>
+    <managed-thread-factory object-type="system-all" description="thread factory" jndi-name="concurrent/__defaultManagedThreadFactory"/>
+  </resources>
+  <servers>
+    <server config-ref="server-config" name="server">
+      <resource-ref ref="jdbc/__default"/>
+      <resource-ref ref="concurrent/__defaultContextService"/>
+      <resource-ref ref="concurrent/__defaultManagedExecutorService"/>
+      <resource-ref ref="concurrent/__defaultManagedScheduledExecutorService"/>
+      <resource-ref ref="concurrent/__defaultManagedThreadFactory"/>
+      <!-- Wegas-->
+      <resource-ref ref="jdbc/wegas_dev"/>
+      <resource-ref ref="timeoutExecutorService"/>
+      <!-- /Wegas-->
+    </server>
+  </servers>
+  <configs>
+    <config name="server-config">
+      <payara-executor-service-configuration/>
+      <cdi-service enable-concurrent-deployment="true" pre-loader-thread-pool-size="2"/>
+      <hazelcast-config-specific-configuration/>
+      <health-check-service-configuration>
+        <notifier>log-notifier</notifier>
+        <cpu-usage-checker name="CPU" time="1" enabled="true"/>
+        <machine-memory-usage-checker name="MMEM" time="3" enabled="true"/>
+        <heap-memory-usage-checker time="3" enabled="true"/>
+        <hogging-threads-checker name="HT" enabled="true"/>
+        <garbage-collector-checker name="GC" enabled="true"/>
+      </health-check-service-configuration>
+      <http-service>
+        <access-log rotation-interval-in-minutes="15"/>
+        <virtual-server network-listeners="http-listener, https-listener" access-log="" access-logging-enabled="false" id="server"/>
+      </http-service>
+      <admin-service system-jmx-connector-name="system" type="das-and-server">
+        <jmx-connector address="0.0.0.0" port="8686" name="system" auth-realm-name="admin-realm" enabled="false" security-enabled="false"/>
+        <das-config/>
+      </admin-service>
+      <connector-service class-loading-policy="global"/>
+      <ejb-container>
+        <ejb-timer-service ejb-timer-service="DataGrid"/>
+      </ejb-container>
+      <log-service file="${com.sun.aas.instanceRoot}/logs/server.log" log-rotation-limit-in-bytes="2000000">
+        <module-log-levels/>
+      </log-service>
+      <monitoring-service-configuration log-frequency="30">
+        <notifier>log-notifier</notifier>
+        <notifier>eventbus-notifier</notifier>
+      </monitoring-service-configuration>
+      <microprofile-metrics-configuration/>
+      <security-service jacc="simple">
+        <auth-realm classname="com.sun.enterprise.security.auth.realm.file.FileRealm" name="admin-realm">
+          <property name="file" value="${com.sun.aas.instanceRoot}/config/admin-keyfile"/>
+          <property name="jaas-context" value="fileRealm"/>
+        </auth-realm>
+        <auth-realm classname="com.sun.enterprise.security.auth.realm.file.FileRealm" name="file">
+          <property name="file" value="${com.sun.aas.instanceRoot}/config/keyfile"/>
+          <property name="jaas-context" value="fileRealm"/>
+        </auth-realm>
+        <auth-realm classname="com.sun.enterprise.security.auth.realm.certificate.CertificateRealm" name="certificate"/>
+        <jacc-provider policy-provider="com.sun.enterprise.security.provider.PolicyWrapper" name="default" policy-configuration-factory-provider="com.sun.enterprise.security.provider.PolicyConfigurationFactoryImpl">
+          <property name="repository" value="${com.sun.aas.instanceRoot}/generated/policy"/>
+        </jacc-provider>
+        <jacc-provider policy-provider="com.sun.enterprise.security.jacc.provider.SimplePolicyProvider" name="simple" policy-configuration-factory-provider="com.sun.enterprise.security.jacc.provider.SimplePolicyConfigurationFactory"/>
+        <audit-module classname="com.sun.enterprise.security.ee.Audit" name="default">
+          <property name="auditOn" value="false"/>
+        </audit-module>
+        <message-security-config auth-layer="SOAP">
+          <provider-config provider-type="client" provider-id="XWS_ClientProvider" class-name="com.sun.xml.wss.provider.ClientSecurityAuthModule">
+            <request-policy auth-source="content"/>
+            <response-policy auth-source="content"/>
+            <property name="encryption.key.alias" value="s1as"/>
+            <property name="signature.key.alias" value="s1as"/>
+            <property name="dynamic.username.password" value="false"/>
+            <property name="debug" value="false"/>
+          </provider-config>
+          <provider-config provider-type="client" provider-id="ClientProvider" class-name="com.sun.xml.wss.provider.ClientSecurityAuthModule">
+            <request-policy auth-source="content"/>
+            <response-policy auth-source="content"/>
+            <property name="encryption.key.alias" value="s1as"/>
+            <property name="signature.key.alias" value="s1as"/>
+            <property name="dynamic.username.password" value="false"/>
+            <property name="debug" value="false"/>
+            <property name="security.config" value="${com.sun.aas.instanceRoot}/config/wss-server-config-1.0.xml"/>
+          </provider-config>
+          <provider-config provider-type="server" provider-id="XWS_ServerProvider" class-name="com.sun.xml.wss.provider.ServerSecurityAuthModule">
+            <request-policy auth-source="content"/>
+            <response-policy auth-source="content"/>
+            <property name="encryption.key.alias" value="s1as"/>
+            <property name="signature.key.alias" value="s1as"/>
+            <property name="debug" value="false"/>
+          </provider-config>
+          <provider-config provider-type="server" provider-id="ServerProvider" class-name="com.sun.xml.wss.provider.ServerSecurityAuthModule">
+            <request-policy auth-source="content"/>
+            <response-policy auth-source="content"/>
+            <property name="encryption.key.alias" value="s1as"/>
+            <property name="signature.key.alias" value="s1as"/>
+            <property name="debug" value="false"/>
+            <property name="security.config" value="${com.sun.aas.instanceRoot}/config/wss-server-config-1.0.xml"/>
+          </provider-config>
+        </message-security-config>
+        <property name="default-digest-algorithm" value="SHA-256"/>
+      </security-service>
+      <transaction-service tx-log-dir="${com.sun.aas.instanceRoot}/logs"/>
+      <java-config/>
+      <phone-home-runtime-configuration/>
+      <request-tracing-service-configuration>
+        <notifier>log-notifier</notifier>
+      </request-tracing-service-configuration>
+      <notification-service-configuration>
+        <log-notifier-configuration enabled="true"/>
+        <cdi-eventbus-notifier-configuration/>
+        <eventbus-notifier-configuration/>
+      </notification-service-configuration>
+      <batch-runtime-configuration table-prefix="jbatch" data-source-lookup-name="jdbc/__default"/>
+      <availability-service>
+        <web-container-availability sso-failover-enabled="true" persistence-scope="modified-session"/>
+        <ejb-container-availability sfsb-persistence-type="hazelcast"/>
+      </availability-service>
+      <network-config>
+        <protocols>
+          <protocol name="http-listener">
+            <http http2-enabled="false" xpowered-by="false" comet-support-enabled="true" max-connections="250" default-virtual-server="server">
+              <file-cache/>
+            </http>
+          </protocol>
+          <protocol name="https-listener" security-enabled="true">
+            <http  http2-enabled="false" xpowered-by="false" comet-support-enabled="true" max-connections="250" default-virtual-server="server">
+              <file-cache/>
+            </http>
+            <ssl classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" cert-nickname="s1as"/>
+          </protocol>
+        </protocols>
+        <network-listeners>
+          <network-listener protocol="http-listener" port="8080" name="http-listener" thread-pool="http-thread-pool" transport="tcp"/>
+          <network-listener protocol="https-listener" port="8443" name="https-listener" thread-pool="http-thread-pool" transport="tcp" enabled="false"/>
+        </network-listeners>
+        <transports>
+          <transport name="tcp" byte-buffer-type="HEAP"/>
+        </transports>
+      </network-config>
+      <thread-pools>
+        <!-- Wegas-->
+        <thread-pool name="http-thread-pool" min-thread-pool-size="2" max-thread-pool-size="${wegas.http.threads}"/>
+        <thread-pool name="thread-pool-1" min-thread-pool-size="2" max-thread-pool-size="${wegas.http.threads}"/>
+        <!-- /Wegas-->
+      </thread-pools>
+      <microprofile-config/>
+      <amx-configuration/>
+      <stuck-threads-checker/>
+      <metrics-health-check-configuration/>
+      <iiop-service/>
+      <system-property name="jersey.config.client.readTimeout" value="300000"/>
+      <system-property name="jersey.config.client.connectTimeout" value="300000"/>
+      <group-management-service>
+        <failure-detection/>
+      </group-management-service>
+      <monitoring-service>
+        <module-monitoring-levels/>
+      </monitoring-service>
+    </config>
+  </configs>
+  <property name="administrative.domain.name" value="domain1"/>
+  <deployment-groups/>
+  <clusters/>
+</domain>

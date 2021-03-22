@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.i18n.rest;
@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
+ * Replace the whole script
  *
  * @author maxence
  */
@@ -61,5 +62,7 @@ public class ScriptUpdate extends I18nUpdate {
 
     @Override
     public void setCode(String langCode) {
+        // this class is used to replace the while script, thus, the code is not required
+        // bad design...
     }
 }

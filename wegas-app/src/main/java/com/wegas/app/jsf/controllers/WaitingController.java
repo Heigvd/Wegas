@@ -1,31 +1,31 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.jsf.controllers;
 
+import com.wegas.app.jsf.controllers.utils.HttpParam;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.persistence.game.DebugGame;
-import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Populatable.Status;
-import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.guest.GuestJpaAccount;
+import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  *
@@ -33,34 +33,38 @@ import javax.inject.Inject;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@ManagedBean(name = "waitController")
+@Named("waitController")
 @RequestScoped
 public class WaitingController extends AbstractGameController {
+
+    private static final long serialVersionUID = -2418779606634610894L;
 
     /**
      *
      */
-    @ManagedProperty("#{param.gameId}")
+    @Inject
+    @HttpParam
     private Long gameId;
     /**
      *
      */
-    @ManagedProperty("#{param.gameModelId}")
+    @Inject
+    @HttpParam
     private Long gameModelId;
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
 
     @Inject
@@ -91,7 +95,14 @@ public class WaitingController extends AbstractGameController {
     }
 
     public String getCurrentUserEmail() {
-        return this.getCurrentUser().getMainAccount().getEmail();
+        AbstractAccount account = this.getCurrentUser().getMainAccount();
+        if (account instanceof GuestJpaAccount) {
+            return null;
+        } else if (account != null && account.getDetails() != null) {
+            return account.getDetails().getEmail();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -111,19 +122,14 @@ public class WaitingController extends AbstractGameController {
             if (game != null) {
                 if (game instanceof DebugGame) {
                     // use the debug player
-                    currentPlayer = game.getPlayers().get(0);
+                    currentPlayer = game.getTestPlayer();
                 } else {
                     // use the player owned by the current user
                     currentPlayer = playerFacade.findPlayer(this.gameId, currentUserId);
 
                     if (currentPlayer == null) {
                         // fallback: use the test player
-                        for (Team t : game.getTeams()) {
-                            if (t instanceof DebugTeam) {
-                                currentPlayer = t.getAnyLivePlayer();
-                                break;
-                            }
-                        }
+                        currentPlayer = game.getTestPlayer();
                     }
                 }
             }
@@ -132,22 +138,15 @@ public class WaitingController extends AbstractGameController {
         if (this.gameModelId != null) {
             GameModel gameModel = gameModelFacade.find(this.gameModelId);
             if (gameModel != null) {
-                if (gameModel.isScenario() || gameModel.isModel()){
+                if (gameModel.isScenario() || gameModel.isModel()) {
                     // use the debug player from the debug game
-                    currentPlayer = gameModel.getAnyLivePlayer();
+                    currentPlayer = gameModel.getTestPlayer();
                 } else {
                     currentPlayer = playerFacade.findPlayerInGameModel(this.gameModelId, currentUserId);
 
                     if (currentPlayer == null) {
                         // fallback: use a test player
-                        for (Game g : gameModel.getGames()) {
-                            for (Team t : g.getTeams()) {
-                                if (t instanceof DebugTeam) {
-                                    currentPlayer = t.getAnyLivePlayer();
-                                    break;
-                                }
-                            }
-                        }
+                        currentPlayer = gameModel.getTestPlayer();
                     }
                 }
             }
@@ -159,7 +158,7 @@ public class WaitingController extends AbstractGameController {
         } else if (!currentPlayer.getStatus().equals(Status.LIVE)) {
             currentPlayer.setQueueSize(populatorFacade.getQueue().indexOf(currentPlayer) + 1);
         } else if (!userFacade.matchCurrentUser(currentPlayer.getId())
-                && !requestManager.hasPlayerRight(currentPlayer)) {
+            && !requestManager.hasPlayerRight(currentPlayer)) {
             errorController.accessDenied();
         }
     }

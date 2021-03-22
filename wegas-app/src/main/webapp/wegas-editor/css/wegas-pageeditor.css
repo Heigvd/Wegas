@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
 */
 /* Pageeditor Plugin styles */
@@ -185,6 +185,15 @@ body > .wegas-pageloader {
     height: 24px;
     width: 24px;
 }
+
+.wegas-page-editor .yui3-treeleaf-content-icon.fa,
+.wegas-page-editor .yui3-treenode-content-icon.fa {
+    background: none;
+    color: #4E525E;
+}
+.wegas-page-editor .yui3-treenode:not(.yui3-treenode-collapsed) > .content-header .yui3-treenode-content-icon.fa-folder:before {
+    content: "\f07c";
+}
 .wegas-page-editor .yui3-treenode-content-icon {
     background: url(../../wegas-app/images/wegas-app-sprite.png) 0px -1468px no-repeat;
 }
@@ -237,6 +246,16 @@ body > .wegas-pageloader {
 .wegas-page-editor .current-page > .content-header{
     color: inherit;
     font-weight: bold;
+}
+.wegas-page-editor .default-page > div .yui3-treelead-content-label,
+.wegas-page-editor .default-page > .content-header .yui3-treenode-content-label {
+    text-decoration: underline;
+}
+.wegas-page-editor .default-page > div .yui3-treeleaf-content-label:after,
+.wegas-page-editor .default-page > .content-header .yui3-treenode-content-label:after {
+    content: " \f005";
+    font-family: "FontAwesome";
+    color: #F6AEA7;
 }
 .wegas-page-editor .page-node> ul.yui3-treenode-content>li>div.content-header,
 .wegas-page-editor .page-node> ul.yui3-treeleaf-content>div.content-header{

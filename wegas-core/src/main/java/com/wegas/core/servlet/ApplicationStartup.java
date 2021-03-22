@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.servlet;
@@ -11,9 +11,8 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.Member;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.ApplicationLifecycle;
+import com.wegas.core.ejb.MetricsFacade;
 import com.wegas.core.ejb.WebsocketFacade;
-import io.prometheus.client.hotspot.DefaultExports;
-import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -35,7 +34,7 @@ public class ApplicationStartup extends HttpServlet {
 
     private final Logger logger = LoggerFactory.getLogger(ApplicationStartup.class);
 
-    @EJB
+    @Inject
     private WebsocketFacade websocketFacade;
 
     @Inject
@@ -47,15 +46,21 @@ public class ApplicationStartup extends HttpServlet {
     @Inject
     private HazelcastInstance hzInstance;
 
+    @Inject
+    private MetricsFacade metricsFacade;
+
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         logger.info("Servlet Startup");
 
-        websocketFacade.getOnlineUsers();
-        websocketFacade.updateOnlineUserMetric();
+        // read metrics once to register them
+        metricsFacade.getOnlineUserCounter();
+        metricsFacade.getInternalSize();
+        metricsFacade.getHzSize();
 
-        DefaultExports.initialize();
+        websocketFacade.getOnlineUsers();
 
         /*
          * init member list

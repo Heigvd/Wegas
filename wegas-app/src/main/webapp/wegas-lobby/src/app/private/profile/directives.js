@@ -20,6 +20,7 @@ angular
                                 response.flash();
                             } else {
                                 $scope.user = response.data;
+                                $scope.currentEmail = $scope.user.account.email;
                                 $scope.oldUsername = $scope.user.account.username;
                                 if ($scope.originalUser === false) {
                                     $scope.originalUsername = $scope.user.account.firstname + ' ' + $scope.user.account.lastname;
@@ -27,25 +28,27 @@ angular
                             }
                         });
                     } else {
-                        $translate('COMMONS-USERS-LOAD-FLASH-ERROR').then(function (message) {
+                        $translate('COMMONS-USERS-LOAD-FLASH-ERROR').then(function(message) {
                             Flash.danger(message);
                         });
                     }
                 });
 
                 ctrl.updateInformations = function() {
-                    UsersModel.updateUser($scope.user.account).then(function(response) {
-                        if (response) response.flash();
+                    UsersModel.updateUser($scope.currentEmail, $scope.user.account).then(function(response) {
+                        if (response) {
+                            response.flash();
+                        }
                         $scope.user.password = '';
                         $scope.user.password2 = '';
 
                         if (!response || !response.isErroneous()) {
-                            if ($scope.oldUsername !== $scope.user.account.username){
+                            if ($scope.oldUsername !== $scope.user.account.username) {
                                 // Make sure the username is updated everywhere on the screen:
                                 $scope.close();
                                 $timeout(function() {
                                     location.reload();
-                                },500);
+                                }, 500);
                             } else {
                                 $scope.close();
                             }
@@ -53,6 +56,12 @@ angular
                     });
                 };
                 $scope.updateInformations = ctrl.updateInformations;
+
+                $scope.verifyEmail = function() {
+                    Auth.requestEmailValidation().then(function(response) {
+                        response.flash();
+                    });
+                };
             }
         };
     })

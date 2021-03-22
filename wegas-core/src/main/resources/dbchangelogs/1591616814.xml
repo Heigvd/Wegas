@@ -1,0 +1,13 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="maxence (generated)" id="1591616826219-21">
+        <createTable tableName="surveydescriptor_token">
+            <column name="surveys_id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="surveydescriptor_token_pkey"/>
+            </column>
+            <column name="tokens_id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="surveydescriptor_token_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

@@ -1,27 +1,28 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr;
 
-import com.hazelcast.core.HazelcastInstance;
 import com.wegas.core.Helper;
-import com.wegas.core.ejb.RequestManager;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import javax.inject.Inject;
 import javax.jcr.Repository;
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.plugins.document.DocumentNodeStore;
+import org.apache.jackrabbit.oak.plugins.document.LeaseCheckMode;
+import org.apache.jackrabbit.oak.plugins.document.VersionGarbageCollector;
 import static org.apache.jackrabbit.oak.plugins.document.mongo.MongoDocumentNodeStoreBuilder.newMongoDocumentNodeStoreBuilder;
 import org.apache.jackrabbit.oak.segment.SegmentNodeStore;
 import org.apache.jackrabbit.oak.segment.SegmentNodeStoreBuilders;
@@ -37,13 +38,9 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 @Startup
-public class JackrabbitConnector {
+public class JackrabbitConnector implements Serializable {
 
-    @Inject
-    private HazelcastInstance hzInstance;
-
-    @Inject
-    private RequestManager requestManager;
+    private static final long serialVersionUID = -5038141424303299112L;
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(JackrabbitConnector.class);
     final private static String URI = Helper.getWegasProperty("jcr.repository.URI");
@@ -67,8 +64,9 @@ public class JackrabbitConnector {
                         hostPort += ":" + uri.getPort();
                     }
                     String dbName = uri.getPath().replaceFirst("/", "");
+
                     nodeStore = newMongoDocumentNodeStoreBuilder()
-                            .setLeaseCheck(false)
+                            .setLeaseCheckMode(LeaseCheckMode.DISABLED)
                             .setMongoDB("mongodb://" + hostPort + "/?readConcernLevel=majority", dbName, 0)
                             .build();
                     JackrabbitConnector.repo = new Jcr(new Oak(nodeStore)).createRepository();
@@ -84,7 +82,7 @@ public class JackrabbitConnector {
                     final SegmentNodeStore segmentNodeStore = SegmentNodeStoreBuilders.builder(fileStore).build();
                     JackrabbitConnector.repo = new Jcr(new Oak(segmentNodeStore)).createRepository();
                 }
-            } catch (URISyntaxException | NullPointerException e) {
+            } catch (URISyntaxException | NullPointerException e) { // NOPMD TODO check this NPE before, but, for the time, we do not know what to check...
                 logger.error("Failed to define JCR repository mode", e);
             }
 
@@ -102,6 +100,7 @@ public class JackrabbitConnector {
     }
 
     @PreDestroy
+    @SuppressWarnings("PMD")
     private void preDestroy() {
         if (nodeStore != null) {
             nodeStore.dispose();
@@ -116,90 +115,76 @@ public class JackrabbitConnector {
 
     /**
      * clean old revisions
-     * <p>
-     * OAK 1.8 will schedule this deletion automatically !!!
-    //@Schedule(hour = "*", minute = "0")
+     */
     public void revisionGC() {
-        ILock lock = hzInstance.getLock("JackRabbit.Schedule");
         logger.info("revisionGC(): OAK GarbageCollection");
-        if (lock.tryLock()) {
-            logger.info(" * I got the lock");
-            try {
-                requestManager.su();
-                if (repo == null) {
-                    init();
-}
-                if (nodeStore != null) {
-                    VersionGarbageCollector versionGc = nodeStore.getVersionGarbageCollector();
-                    logger.info("revisionGC(): start VersionGC");
-                    VersionGarbageCollector.VersionGCStats gc = versionGc.gc(1, TimeUnit.DAYS);
-                    logger.info("revisionGC(): versionGC done: {}", gc);
-                } else {
-                    logger.error("nodeStore is null");
-                }
-
-            } catch (IOException ex) {
-                logger.error("Error while revisionGC: {}", ex);
-            } finally {
-                lock.unlock();
-                lock.destroy();
-                requestManager.releaseSu();
+        try {
+            if (repo == null) {
+                init();
             }
-        } else {
-            logger.info("Somebody else got the lock");
+            if (nodeStore != null) {
+                VersionGarbageCollector versionGc = nodeStore.getVersionGarbageCollector();
+                logger.info("revisionGC(): start VersionGC");
+                VersionGarbageCollector.VersionGCStats gc = versionGc.gc(1, TimeUnit.DAYS);
+                logger.info("revisionGC(): versionGC done: {}", gc);
+            } else {
+                logger.error("nodeStore is null");
+            }
+
+        } catch (IOException ex) {
+            logger.error("Error while revisionGC: {}", ex);
         }
     }
-     */
 
     /**
      * HAZARADOUS BEHAVIOUR: do not use unless ykwyd
     public void blobsGC() {
-        ILock lock = hzInstance.getLock("JackRabbit.Schedule");
+        //ILock lock = hzInstance.getLock("JackRabbit.Schedule");
         logger.info("revisionGC(): OAK GarbageCollection");
-        if (lock.tryLock()) {
-            logger.info(" * I got the lock");
-            try {
-                if (repo == null) {
-                    init();
-                }
-                if (nodeStore != null) {
-                    // GC blobs older than 1 day (60*60*24 sec => 86400 sec => 1 day)
-                    MarkSweepGarbageCollector blobGC = nodeStore.createBlobGarbageCollector(60 * 60 * 24, "oak");
+        //if (lock.tryLock()) {
+        logger.info(" * I got the lock");
+        //try {
+        if (repo == null) {
+            init();
+        }
+        if (nodeStore != null) {
+            // GC blobs older than 1 day (60*60*24 sec => 86400 sec => 1 day)
+            MarkSweepGarbageCollector blobGC = nodeStore.createBlobGarbageCollector(60 * 60 * 24, "oak");
 
-                    if (blobGC != null) {
-                        try {
-                            logger.info("check blob consistency");
-                            long nbBlobs = blobGC.checkConsistency();
-                            if (nbBlobs >= 0) {
-                                logger.info("check blob consistency => {}", nbBlobs);
-                            } else {
-                                logger.error("check blob consistency => {}", nbBlobs);
-                            }
-                        } catch (Exception ex) {
-                            logger.error("CheckConsistency failed with {}", ex);
-                        }
-
-                        try {
-                            logger.info("Collect Blobs garbage");
-                            blobGC.collectGarbage(false);
-                            logger.info("Collect Blobs garbage done");
-                        } catch (Exception ex) {
-                            logger.error("collect blobs failed with {}", ex);
-                        }
+            if (blobGC != null) {
+                try {
+                    logger.info("check blob consistency");
+                    long nbBlobs = blobGC.checkConsistency();
+                    if (nbBlobs >= 0) {
+                        logger.info("check blob consistency => {}", nbBlobs);
                     } else {
-                        logger.error("blobGC is null");
+                        logger.error("check blob consistency => {}", nbBlobs);
                     }
-                } else {
-                    logger.error("nodeStore is null");
+                } catch (Exception ex) {
+                    logger.error("CheckConsistency failed with {}", ex);
                 }
 
-            } finally {
-                lock.unlock();
-                lock.destroy();
+                try {
+                    logger.info("Collect Blobs garbage");
+                    blobGC.collectGarbage(false);
+                    logger.info("Collect Blobs garbage done");
+                } catch (Exception ex) {
+                    logger.error("collect blobs failed with {}", ex);
+                }
+            } else {
+                logger.error("blobGC is null");
             }
         } else {
-            logger.info("Somebody else got the lock");
+            logger.error("nodeStore is null");
         }
+
+        //} finally {
+        //lock.unlock();
+        //lock.destroy();
+        //}
+        //} else {
+        //logger.info("Somebody else got the lock");
+        //}
     }
      */
 }

@@ -3,22 +3,51 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
+        <groupId>ch.albasim.wegas</groupId>
         <artifactId>wegas-project</artifactId>
-        <groupId>com.wegas</groupId>
-        <version>3.0-SNAPSHOT</version>
+        <version>4.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.wegas</groupId>
+    <groupId>ch.albasim.wegas</groupId>
     <artifactId>wegas-core</artifactId>
     <packaging>jar</packaging>
     <name>wegas-core</name>
 
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <property>
+                    <name>!reporting</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>de.empulse.eclipselink</groupId>
+                        <artifactId>staticweave-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>reporting</id>
+            <activation>
+                <property>
+                    <name>reporting</name>
+                </property>
+            </activation>
+        </profile>
+    </profiles>
+
+
     <dependencies>
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-            <version>7.0</version>
-            <scope>provided</scope>
+            <groupId>ch.albasim.wegas</groupId>
+            <artifactId>wegas-annotations</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
@@ -33,6 +62,16 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <type>jar</type>
+        </dependency>
         <!-- Apache Shiro Dependencies -->
         <dependency>
             <groupId>org.apache.shiro</groupId>
@@ -43,6 +82,12 @@
             <artifactId>shiro-web</artifactId>
         </dependency>
 
+        <!-- Does not work with our runAs
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-hazelcast</artifactId>
+        </dependency>-->
+
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
@@ -52,32 +97,6 @@
             <groupId>io.github.java-diff-utils</groupId>
             <artifactId>java-diff-utils</artifactId>
         </dependency>
-
-        <!--<dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-json-jackson</artifactId>
-        </dependency>-->
-
-        <!--<dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-            <scope>provided</scope>
-        </dependency>-->
-
-        <!--<dependency>
-        <groupId>org.glassfish.main.extras</groupId>
-        <artifactId>glassfish-embedded-all</artifactId>
-        <scope>provided</scope>-->
-        <!-- Compile scope is usefull to test JPQL queries-->
-        <!--            <scope>compile</scope>-->
-        <!--</dependency>-->
-
-        <!-- Liquibase 
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-        </dependency>
-        -->
 
         <!-- Postgresql Driver -->
         <dependency>
@@ -110,6 +129,12 @@
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>oak-store-document</artifactId>
             <type>jar</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
@@ -125,7 +150,7 @@
             <artifactId>jcr</artifactId>
             <!--            <scope>compile</scope>-->
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.github.fge</groupId>
             <artifactId>json-patch</artifactId>
             <exclusions>
@@ -134,7 +159,7 @@
                     <artifactId>guava</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
 
         <!-- Liquibase -->
         <dependency>
@@ -142,30 +167,8 @@
             <artifactId>liquibase-core</artifactId>
         </dependency>
 
-        <!--<dependency>
-            <groupId>net.sf.ehcache</groupId>
-            <artifactId>ehcache</artifactId>
-        </dependency> -->
-        <!--<dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jackson-core</artifactId>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
-
 
         <!-- Test -->
-        <!--<dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <scope>test</scope>
-        </dependency>-->
-
-
         <dependency>
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-container</artifactId>
@@ -174,7 +177,7 @@
 
         <dependency>
             <groupId>fish.payara.arquillian</groupId>
-            <artifactId>arquillian-payara-server-4-embedded</artifactId>
+            <artifactId>arquillian-payara-server-embedded</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -194,7 +197,18 @@
                     <groupId>javax.enterprise</groupId>
                     <artifactId>cdi-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+
+        <!-- required by arq-suite-ext -->
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -206,6 +220,7 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
+            <type>jar</type>
         </dependency>
 
         <!--<dependency>
@@ -233,45 +248,81 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
-        <!--<dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
+
+        <dependency>
+            <groupId>org.eclipse.microprofile</groupId>
+            <artifactId>microprofile</artifactId>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.microprofile.metrics</groupId>
+            <artifactId>microprofile-metrics-api</artifactId>
             <type>jar</type>
-        </dependency>-->
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>fish.payara.extras</groupId>
             <artifactId>payara-embedded-all</artifactId>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>eclipselink</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.extension</artifactId>
         </dependency>
         <dependency>
             <groupId>fish.payara.api</groupId>
             <artifactId>payara-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.neo4j.driver</groupId>
-            <artifactId>neo4j-java-driver</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient_servlet</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.prometheus</groupId>
-            <artifactId>simpleclient_hotspot</artifactId>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.cache</groupId>
+            <artifactId>cache-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-multipart</artifactId>
+        </dependency>
+        <!--<dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+        </dependency>-->
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.corba</groupId>
+            <artifactId>glassfish-corba-omgapi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <version>8.0.0</version>
         </dependency>
     </dependencies>
     <build>
@@ -308,6 +359,7 @@
                 </executions>
             </plugin>
 
+            <!-- Profile dependent activation -->
             <plugin>
                 <groupId>de.empulse.eclipselink</groupId>
                 <artifactId>staticweave-maven-plugin</artifactId>
@@ -337,6 +389,23 @@
                             </resources>
                         </configuration>
                     </execution>
+
+                    <execution>
+                        <id>copy-annotations-generated</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <overwrite>true</overwrite>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>target/generated-sources/annotations</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -347,20 +416,29 @@
 
                 <configuration>
                     <systemProperties>
-                        <arquillian.launch>glassfish-embedded</arquillian.launch>
+                        <java.util.logging.config.file>${project.basedir}/src/test/resources/logging.properties</java.util.logging.config.file>
+                        <arquillian.launch>payara-embedded</arquillian.launch>
                     </systemProperties>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
                     <!-- Using nashorn internal -->
+                    <parameters>true</parameters>
                     <compilerArgument>-XDignore.symbol.file</compilerArgument>
+                    <annotationProcessors>
+                        <proc>ch.albasim.wegas.annotations.processor.JavaDocExtractor</proc>
+                    </annotationProcessors>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
         </plugins>
         <testResources>

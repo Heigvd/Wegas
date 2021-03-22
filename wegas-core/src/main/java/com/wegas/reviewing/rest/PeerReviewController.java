@@ -1,16 +1,14 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.game.Player;
@@ -21,10 +19,14 @@ import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
 import com.wegas.reviewing.persistence.Review;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -33,7 +35,6 @@ import javax.ws.rs.core.Response;
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
 @Stateless
-
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/PeerReviewController/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -42,29 +43,20 @@ public class PeerReviewController {
     /**
      * Commit request to eval FSM
      */
-    @EJB
+    @Inject
     private RequestFacade requestFacade;
 
     /**
-     * PeerReview EJB facade
+     * PeerReview facade
      */
-    @EJB
+    @Inject
     private ReviewingFacade reviewFacade;
 
     /**
-     * EJB Player Facade
+     * Player Facade
      */
-    @EJB
-    private PlayerFacade playerFacade;
-
     @Inject
-    private VariableDescriptorFacade variableDescriptorFacade;
-
-    /**
-     * EJB Variable Instance Facade
-     */
-    @EJB
-    private VariableInstanceFacade instanceFacade;
+    private PlayerFacade playerFacade;
 
     /**
      * Return the VariableInstance to review, according to given peer review
@@ -86,7 +78,7 @@ public class PeerReviewController {
             @PathParam("reviewId") Long rId,
             @PathParam("playerId") Long selfId) {
 
-        Player self = playerFacade.find(selfId);
+        playerFacade.find(selfId);
         Review review = reviewFacade.findReview(rId);
         PeerReviewInstance authorInstance = review.getAuthor();
 

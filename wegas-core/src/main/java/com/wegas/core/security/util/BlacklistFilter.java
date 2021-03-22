@@ -1,15 +1,17 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.util;
 
+import com.wegas.core.ejb.RequestManager;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -30,9 +32,12 @@ import org.slf4j.LoggerFactory;
 @WebFilter(filterName = "BlacklistFilter", urlPatterns = {"/wegas-private/*"}, dispatcherTypes = {DispatcherType.REQUEST})
 public class BlacklistFilter implements Filter {
 
-    final Logger logger = LoggerFactory.getLogger(BlacklistFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(BlacklistFilter.class);
 
     private static final List<String> blacklist = new ArrayList<>();
+
+    @Inject
+    private RequestManager requestManager;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -82,7 +87,7 @@ public class BlacklistFilter implements Filter {
 
             String url = req.getRequestURI().replaceFirst("^" + req.getContextPath(), "");
 
-            if (isBlacklisted(url)){
+            if (!requestManager.isAdmin() && isBlacklisted(url)){
                 // Blacklist URL -> forbidden
                 logger.error("Trying to access blacklisted content ( {} ) ! ", url);
                 resp.setStatus(403);
@@ -95,6 +100,7 @@ public class BlacklistFilter implements Filter {
 
     @Override
     public void destroy() {
+        // nothing to do
     }
 
     public static boolean isBlacklisted(String url) {

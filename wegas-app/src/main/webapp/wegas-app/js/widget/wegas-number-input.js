@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global I18n, YUI */
@@ -151,10 +151,13 @@ YUI.add("wegas-number-input", function(Y) {
                 if (this.waitForValue === value) {
                     this.waitForValue = null;
                     if (this.queuedValue) {
-                        this.processSave(
-                            this.queuedValue.value,
-                            this.queuedValue.descriptor
-                            );
+                        if (this.queuedValue.value !== value) {
+                            this.processSave(
+                                this.queuedValue.value,
+                                this.queuedValue.descriptor
+                                );
+                        }
+                        this.queuedValue = null;
                     }
                 }
             },
@@ -209,6 +212,14 @@ YUI.add("wegas-number-input", function(Y) {
             /** @lends Y.Wegas.AbstractNumberInput */
             EDITORNAME: "AbstractNumberInput",
             ATTRS: {
+                label: {
+                    type: "string",
+                    optional: true,
+                    index: 0,
+                    view: {
+                        label: "Label"
+                    }
+                },
                 /**
                  * The target variable, returned either based on the name attribute,
                  * and if absent by evaluating the expr attribute.
@@ -216,6 +227,7 @@ YUI.add("wegas-number-input", function(Y) {
                 variable: {
                     type: "object",
                     getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                    index: 1,
                     view: {
                         type: "variableselect",
                         label: "Variable",
@@ -225,7 +237,11 @@ YUI.add("wegas-number-input", function(Y) {
                 readonly: {
                     getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                     type: "object",
-                    value: false,
+                    index: 100,
+                    value: {
+                        "@class": "Script",
+                        "content": "false;"
+                    },
                     optional: true,
                     view: {
                         type: "scriptcondition",
@@ -236,15 +252,9 @@ YUI.add("wegas-number-input", function(Y) {
                     type: "boolean",
                     value: true,
                     optional: true,
+                    index: 109,
                     view: {
                         label: "Self saving"
-                    }
-                },
-                label: {
-                    type: "string",
-                    optional: true,
-                    view: {
-                        label: "Label"
                     }
                 }
             }
@@ -346,9 +356,12 @@ YUI.add("wegas-number-input", function(Y) {
 
                         this._initialValue = value;
 
-                        CB.one(".wegas-input").set("value", fmtValue);
+                        if (desc.get("defaultValue") !== value || !this.get("voidDefaultValue")) {
+                            CB.one(".wegas-input").set("value", fmtValue);
+                        }
                         if (this.xSlider && this.xSlider.get("value") !== inst.get("value")) {
-                            this.xSlider.get("contentBox").one(".yui3-slider-rail").setAttribute("data-value", fmtValue);
+                            this.xSlider.get("contentBox").one(".yui3-slider-rail")
+                                .setAttribute("data-value", fmtValue);
                             this.xSlider.set("value", inst.get("value"));
                         }
                     }
@@ -365,33 +378,13 @@ YUI.add("wegas-number-input", function(Y) {
                     Y.Wegas.Facade.Variable.after("update", this.syncUI, this)
                     );
                 if (this.xSlider) {
-                    this.handlers.push(
-                        this.xSlider.after(
-                            "slideEnd",
-                            this.updateFromSlider,
-                            this
-                            )
-                        );
-                    this.handlers.push(
-                        this.xSlider.after(
-                            "railMouseDown",
-                            this.updateFromSlider,
-                            this
-                            )
-                        );
-                    this.handlers.push(
-                        this.xSlider.after(
-                            "valueChange",
-                            this.updateInput,
-                            this
-                            )
-                        );
+                    this.handlers.push(this.xSlider.after("slideEnd", this.updateFromSlider, this));
+                    this.handlers.push(this.xSlider.after("railMouseDown", this.updateFromSlider, this));
+                    this.handlers.push(this.xSlider.after("valueChange", this.updateInput, this));
                 }
                 if (input) {
                     //this.handlers.push(input.on("blur", this.updateFromInput, this));
-                    this.handlers.push(
-                        input.on("valuechange", this.onValueChange, this)
-                        );
+                    this.handlers.push(input.on("valuechange", this.onValueChange, this));
                 }
             },
             destructor: function() {},
@@ -437,7 +430,18 @@ YUI.add("wegas-number-input", function(Y) {
         },
         {
             /** @lends Y.Wegas.NumberInput */
-            EDITORNAME: "NumberInput"
+            EDITORNAME: "NumberInput",
+            ATTRS: {
+                voidDefaultValue: {
+                    type: "boolean",
+                    value: false,
+                    optional: true,
+                    index: 109,
+                    view: {
+                        label: "Should empty input when value equals default value ?"
+                    }
+                }
+            }
         }
     );
     Wegas.NumberInput = NumberInput;

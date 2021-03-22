@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -10,22 +11,19 @@ package com.wegas.core.ejb;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.AccountFacade;
-import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
-import java.util.ArrayList;
+import com.wegas.core.security.util.ActAsPlayer;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -34,18 +32,16 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class TeamFacade extends BaseFacade<Team> {
 
-    private static final Logger logger = LoggerFactory.getLogger(TeamFacade.class);
-
     @Inject
     private PopulatorScheduler populatorScheduler;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private GameFacade gameFacade;
 
-    @EJB
+    @Inject
     private AccountFacade accountFacade;
 
     /**
@@ -58,24 +54,15 @@ public class TeamFacade extends BaseFacade<Team> {
     private StateMachineFacade stateMachineFacade;
 
     /**
-     * Get all account linked to team's players Account email addresses will be
-     * altered (by hiding some parts) so they can be publicly displayed
+     * Get all account linked to team's players
      *
      * @param teamId
      *
      * @return List of abstractAccount which are players of the team
      */
-    public List<AbstractAccount> getDetachedAccounts(Long teamId) {
+    public List<AbstractAccount> getInTeamAccounts(Long teamId) {
         Team entity = this.find(teamId);
-        ArrayList<AbstractAccount> accounts = accountFacade.findByTeam(entity);
-        for (AbstractAccount account : accounts) {
-            if (account instanceof JpaAccount) {
-                JpaAccount ja = (JpaAccount) account;
-                getEntityManager().detach(ja);
-                ja.setEmail(ja.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
-            }
-        }
-        return accounts;
+        return accountFacade.findByTeam(entity);
     }
 
     public String findUniqueNameForTeam(Game g, String baseName) {
@@ -121,6 +108,7 @@ public class TeamFacade extends BaseFacade<Team> {
         populatorScheduler.scheduleCreation();
         this.detach(t);
         t = this.find(t.getId());
+        requestManager.setCurrentTeam(t);
         return t;
     }
 
@@ -137,7 +125,29 @@ public class TeamFacade extends BaseFacade<Team> {
         entity.setStatus(Status.LIVE);
 
         getEntityManager().persist(entity);
-        gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
+        Player aLivePlayer = entity.getAnyLivePlayer();
+        try (ActAsPlayer a = requestManager.actAsPlayer(aLivePlayer)) {
+            gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
+        }
+    }
+
+    /**
+     * Internal use(eg. to create debug team)
+     *
+     * @param entity
+     */
+    public void createForSurvey(Team entity) {
+        Game game = entity.getGame();
+        game = gameFacade.find(game.getId());
+        game.addTeam(entity);
+        entity.setStatus(Status.SURVEY);
+
+        getEntityManager().persist(entity);
+        Player player = entity.getAnySurveyPlayer();
+
+        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+            gameModelFacade.propagateAndReviveDefaultInstances(game.getGameModel(), entity, true); // One-step team create (internal use)
+        }
     }
 
     public List<Team> findTeamsToPopulate() {
@@ -163,7 +173,7 @@ public class TeamFacade extends BaseFacade<Team> {
     /**
      * @param team
      *
-     * @return all instances which belons to the team
+     * @return all instances which belongs to the team
      *
      * @deprecated use JPA team.privateInstances
      */

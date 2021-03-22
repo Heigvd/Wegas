@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.page;
@@ -11,7 +11,11 @@ import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.SessionManager;
 import com.wegas.core.jcr.content.WFSConfig;
 import com.wegas.core.jcr.jta.JTARepositoryConnector;
-import javax.jcr.*;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import org.slf4j.LoggerFactory;
@@ -36,7 +40,7 @@ public class PageConnector extends JTARepositoryConnector {
      *
      * @throws RepositoryException
      */
-    PageConnector(Long gameModelId) throws RepositoryException {
+    /* package */ PageConnector(Long gameModelId) throws RepositoryException {
         this.session = SessionManager.getSession();
         this.gameModelId = gameModelId;
     }
@@ -170,7 +174,8 @@ public class PageConnector extends JTARepositoryConnector {
         try {
             session.save();
         } catch (RepositoryException ex) {
-            throw WegasErrorMessage.error("COMMIT FAILS");
+            //should never happened !!!!!
+            logger.error("Pages Commit FAILURE: {}", ex);
         }
         this.runCommitCallbacks();
         SessionManager.closeSession(session);

@@ -8,9 +8,9 @@ var wiredep = require('wiredep').stream;
 gulp.task('partials', function() {
     'use strict';
     return gulp.src([
-            paths.src + '/{app,components}/**/*.html',
-            paths.tmp + '/{app,components}/**/*.html'
-        ])
+        paths.src + '/{app,components}/**/*.html',
+        paths.tmp + '/{app,components}/**/*.html'
+    ])
         // .pipe($.minifyHtml({
         //   empty: true,
         //   spare: true,
@@ -50,7 +50,7 @@ gulp.task('inject', ['styles', 'partials'], function() {
         exclude: [/bootstrap\.css/, /foundation\.css/]
     };
 
-    return gulp.src(paths.src + '/*.jsp')
+    return gulp.src(paths.src + '/*.xhtml')
         .pipe($.inject(injectStyles, injectOptions))
         .pipe($.inject(injectScripts, injectOptions))
         .pipe($.inject(partialsInjectFile, partialsInjectOptions))

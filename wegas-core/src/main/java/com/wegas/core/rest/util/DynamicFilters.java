@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
@@ -31,7 +31,7 @@ public class DynamicFilters implements DynamicFeature {
     private static final String private_cache = "private, ";
 
     @Context
-    HttpServletRequest httpRequestProxy;
+    private HttpServletRequest httpRequestProxy;
 
     @Override
     public void configure(ResourceInfo resourceInfo, FeatureContext context) {

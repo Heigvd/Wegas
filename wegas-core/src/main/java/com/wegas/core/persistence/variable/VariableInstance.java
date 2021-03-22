@@ -1,35 +1,45 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
 
+import ch.albasim.wegas.annotations.CommonView;
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
-import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
-import com.wegas.core.persistence.variable.primitive.*;
-import com.wegas.core.persistence.variable.scope.*;
+import com.wegas.core.persistence.variable.primitive.BooleanInstance;
+import com.wegas.core.persistence.variable.primitive.NumberInstance;
+import com.wegas.core.persistence.variable.primitive.ObjectInstance;
+import com.wegas.core.persistence.variable.primitive.StaticTextInstance;
+import com.wegas.core.persistence.variable.primitive.StringInstance;
+import com.wegas.core.persistence.variable.primitive.TextInstance;
+import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.persistence.variable.scope.AbstractScope.ScopeType;
+import com.wegas.core.persistence.variable.scope.GameModelScope;
+import com.wegas.core.persistence.variable.scope.PlayerScope;
+import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.Zero;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
-import com.wegas.editor.View.ReadOnlyNumber;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.NumberView;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.wh.WhQuestionInstance;
@@ -38,52 +48,64 @@ import com.wegas.resourceManagement.persistence.BurndownInstance;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.reviewing.persistence.PeerReviewInstance;
+import com.wegas.survey.persistence.SurveyInstance;
+import com.wegas.survey.persistence.input.SurveyInputInstance;
+import com.wegas.survey.persistence.input.SurveySectionInstance;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.QueryHint;
+import javax.persistence.Table;
+import javax.persistence.Version;
 import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.QueryType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@NamedQueries({
-    @NamedQuery(name = "VariableInstance.findPlayerInstance",
-            query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.player.id = :playerId AND vi.playerScope.id = :scopeId)",
-            hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
-                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
-            }
-    ),
-    @NamedQuery(name = "VariableInstance.findTeamInstance",
-            query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.team.id = :teamId AND vi.teamScope.id = :scopeId)",
-            hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
-                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
-            }
-    ),
-    @NamedQuery(name = "VariableInstance.findAllPlayerInstances",
-            query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.playerScope.id = :scopeId)"
-    ),
-    @NamedQuery(name = "VariableInstance.findAllTeamInstances",
-            query = "SELECT vi FROM VariableInstance vi WHERE "
-            + "(vi.teamScope.id = :scopeId)"
-    )
-})
+@NamedQuery(name = "VariableInstance.findPlayerInstance",
+        query = "SELECT vi FROM VariableInstance vi WHERE "
+        + "(vi.player.id = :playerId AND vi.playerScope.id = :scopeId)",
+        hints = {
+            @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+            @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+        }
+)
+@NamedQuery(name = "VariableInstance.findTeamInstance",
+        query = "SELECT vi FROM VariableInstance vi WHERE "
+        + "(vi.team.id = :teamId AND vi.teamScope.id = :scopeId)",
+        hints = {
+            @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+            @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)
+        }
+)
+@NamedQuery(name = "VariableInstance.findAllPlayerInstances",
+        query = "SELECT vi FROM VariableInstance vi WHERE "
+        + "(vi.playerScope.id = :scopeId)"
+)
+@NamedQuery(name = "VariableInstance.findAllTeamInstances",
+        query = "SELECT vi FROM VariableInstance vi WHERE "
+        + "(vi.teamScope.id = :scopeId)"
+)
 @CacheIndexes(value = {
     @CacheIndex(columnNames = {"GAMEMODELSCOPE_ID", "GAMEMODEL_ID"}),
     @CacheIndex(columnNames = {"TEAMSCOPE_ID", "TEAM_ID"}),
@@ -101,6 +123,7 @@ import org.slf4j.LoggerFactory;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class),
     @JsonSubTypes.Type(name = "TextInstance", value = TextInstance.class),
+    @JsonSubTypes.Type(name = "StaticTextInstance", value = StaticTextInstance.class),
     @JsonSubTypes.Type(name = "BooleanInstance", value = BooleanInstance.class),
     @JsonSubTypes.Type(name = "ListInstance", value = ListInstance.class),
     @JsonSubTypes.Type(name = "NumberInstance", value = NumberInstance.class),
@@ -113,6 +136,9 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class),
     @JsonSubTypes.Type(name = "ObjectInstance", value = ObjectInstance.class),
     @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class),
+    @JsonSubTypes.Type(name = "SurveyInstance", value = SurveyInstance.class),
+    @JsonSubTypes.Type(name = "SurveySectionInstance", value = SurveySectionInstance.class),
+    @JsonSubTypes.Type(name = "SurveyInputInstance", value = SurveyInputInstance.class),
     @JsonSubTypes.Type(name = "BurndownInstance", value = BurndownInstance.class)
 })
 @OptimisticLocking(cascade = true)
@@ -121,15 +147,14 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = LoggerFactory.getLogger(VariableInstance.class);
-
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
             sameEntityOnly = true, view = @View(
                     index = -999,
                     label = "Version",
-                    value = ReadOnlyNumber.class,
+                    readOnly = true,
+                    value = NumberView.class,
                     featureLevel = ADVANCED
             ))
     @JsonView(Views.IndexI.class)
@@ -258,16 +283,15 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @JsonIgnore
     public InstanceOwner getBroadcastTarget() {
         if (this.getTeam() != null) {
-            if (this.getTeamScope().getBroadcastScope().equals("GameScope")) {
+            if (this.getTeamScope().getBroadcastScope() == ScopeType.GameModelScope) {
                 return this.getTeam().getGame();
             } else {
                 return this.getTeam();
             }
         } else if (this.getPlayer() != null) {
-            if (this.getPlayerScope().getBroadcastScope().equals("TeamScope")) {
-
+            if (this.getPlayerScope().getBroadcastScope() == ScopeType.TeamScope) {
                 return this.getPlayer().getTeam();
-            } else if (this.getPlayerScope().getBroadcastScope().equals("GameScope")) {
+            } else if (this.getPlayerScope().getBroadcastScope() == ScopeType.GameModelScope) {
                 return this.getPlayer().getGame();
             } else {
                 return this.getPlayer();
@@ -325,7 +349,8 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     @WegasExtraProperty(view = @View(
             index = -500,
             label = "Scope Key",
-            value = ReadOnlyNumber.class
+            featureLevel = CommonView.FEATURE_LEVEL.INTERNAL,
+            value = NumberView.class
     ))
     public Long getScopeKey() {
         if (this.getTeamScope() != null) {
@@ -362,8 +387,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * Get instance descriptor through its scope for regular instance or
-     * the default descriptor id for default instances
+     * Get instance descriptor through its scope for regular instance or the default descriptor id for default instances
      *
      * @return descriptor id
      */
@@ -421,8 +445,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return the team or null if this instance doesn't belong to a team
-     *         (belonging to the game for instance)
+     * @return the team or null if this instance doesn't belong to a team (belonging to the game for instance)
      */
     @JsonIgnore
     public TeamScope getTeamScope() {
@@ -467,8 +490,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * return instance descriptor equals the instance is a default or effective
-     * one
+     * return instance descriptor equals the instance is a default or effective one
      *
      * @return instance descriptor
      */
@@ -488,8 +510,7 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     }
 
     /**
-     * @return the gameModelScope of instance id gameModel scoped, null
-     *         otherwise
+     * @return the gameModelScope of instance id gameModel scoped, null otherwise
      */
     public GameModelScope getGameModelScope() {
         return gameModelScope;
@@ -525,13 +546,9 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
         }
     }
 
-    public void revive(Beanjection beans) {
-    }
-
     /**
      *
-     * @return string representation of the instance (class name, id, default or
-     *         not, ...)
+     * @return string representation of the instance (class name, id, default or not, ...)
      */
     @Override
     public String toString() {
@@ -564,20 +581,21 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
     public Collection<WegasPermission> getRequieredReadPermission() {
         WegasPermission perm = null;
         if (this.getTeam() != null) {
-            if (this.getTeamScope().getBroadcastScope().equals("GameScope")) {
+            if (this.getTeamScope().getBroadcastScope() == ScopeType.GameModelScope) {
                 perm = this.getTeam().getGame().getAssociatedReadPermission();
             } else {
                 perm = this.getTeam().getAssociatedWritePermission();
             }
         } else if (this.getPlayer() != null) {
-            if (this.getPlayerScope().getBroadcastScope().equals("TeamScope")) {
+            if (this.getPlayerScope().getBroadcastScope() == ScopeType.TeamScope) {
                 perm = this.getPlayer().getTeam().getAssociatedWritePermission();
-            } else if (this.getPlayerScope().getBroadcastScope().equals("GameScope")) {
+            } else if (this.getPlayerScope().getBroadcastScope() == ScopeType.GameModelScope) {
                 perm = this.getPlayer().getGame().getAssociatedReadPermission();
             } else {
                 perm = this.getPlayer().getAssociatedWritePermission();
             }
-        } else if (this.gameModelScope != null) {
+        } else if (this.getGameModel() != null) {
+            // GameModel is set only for GameModel scoped instances
             perm = this.getGameModel().getAssociatedReadPermission();
         } else {
             return this.getDefaultDescriptor().getGameModel().getRequieredReadPermission();

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -34,7 +34,8 @@ YUI.add('wegas-widget', function(Y) {
                 .toggleClass(this.get('cssClass'), this.get('cssClass')); // Add cssClass atrribute if the widget has one
 
             Y.later(0, this, function() {
-                this.get(BOUNDING_BOX)._node && this.get(BOUNDING_BOX).toggleClass('wegas-widget-editable', this.isEditable());
+                this.get(BOUNDING_BOX)._node && this.get(BOUNDING_BOX)
+                    .toggleClass('wegas-widget-editable', this.isEditable());
             });
         });
         this._cssPrefix = this.constructor.CSS_PREFIX =
@@ -107,6 +108,37 @@ YUI.add('wegas-widget', function(Y) {
             }
         },
         /**
+         *
+         * YUI Node's Delegate makes intensive use of the document.querySelectorAll function.
+         * This function is quite slow on Firefox and MS Edge, escpecially when delegating to a very deep deep DOM.
+         *
+         * This wegasDelegate function imitates behaviour of the YUI one, but way faster.
+         *
+         * @param {String} type event to delegate
+         * @param {Function} fn the one callback
+         * @param {String} spec CSS selector to select children
+         * @param {Objject} context thiz is the context
+         * @param {any} extraArgs* extra args to provive to callback
+         * @returns {EventHandle} the detach handle
+         */
+        wegasDelegate: function(type, fn, spec, context) {
+            return Widget.wegasDelegate(this.get("contentBox"), type, fn, spec, context, Array.prototype.slice.call(arguments, 4));
+        },
+        /**
+         * Same as wegasDelegate but with a keyPress parameter
+         *
+         * @param {String} type event to delegate
+         * @param {Function} fn the one callback
+         * @param {String} keyCode key spec
+         * @param {String} spec CSS selector to select children
+         * @param {Objject} context thiz is the context
+         * @param {any} extraArgs* extra args to provive to callback
+         * @returns {EventHandle} the detach handle
+         */
+        wegasDelegateKey: function(type, fn, keyCode, spec, context) {
+            return Widget.wegasDelegateKey(this.get("contentBox"), type, fn, keyCode, spec, context, Array.prototype.slice.call(arguments, 5));
+        },
+        /**
          * Display a closable message with a status-image.
          * Status-image of message depends of level parameters
          * Txt parameters is the displayed text.
@@ -145,7 +177,8 @@ YUI.add('wegas-widget', function(Y) {
         },
         isPageRoot: function() {
             var ancestor;
-            return this.isRoot && this.isRoot() && (ancestor = this.get("boundingBox").ancestor()) && ancestor.hasClass("wegas-pageloader-content");
+            return this.isRoot && this.isRoot() && (ancestor = this.get("boundingBox")
+                .ancestor()) && ancestor.hasClass("wegas-pageloader-content");
         },
         isEditable: function() {
             return (
@@ -515,6 +548,9 @@ YUI.add('wegas-widget', function(Y) {
                                 }, {
                                     label: "Show Inbox Overlay",
                                     value: {fn: "ShowInboxListOnClick"}
+                                }, {
+                                    label: "Toggle class",
+                                    value: {fn: "ToggleOnClick"}
                                 }
                             ]
                         },
@@ -528,6 +564,10 @@ YUI.add('wegas-widget', function(Y) {
                                 {
                                     label: 'Background',
                                     value: {fn: 'CSSBackground'}
+                                },
+                                {
+                                    label: 'Background Image',
+                                    value: {fn: 'CSSBackgroundImage'}
                                 },
                                 {
                                     label: 'Position',
@@ -548,6 +588,9 @@ YUI.add('wegas-widget', function(Y) {
                                 {
                                     label: 'Other styles',
                                     value: {fn: 'CSSStyles'}
+                                }, {
+                                    label: "Toggle class on script",
+                                    value: {fn: "ToggleOnScript"}
                                 }
                             ]
                         },
@@ -610,6 +653,69 @@ YUI.add('wegas-widget', function(Y) {
             }
         },
         /**
+         * The static version of wegasDelegateKey
+         *
+         * @param {Node} node the node which delegate
+         * @param {String} type event to delegate
+         * @param {Function} fn the one callback
+         * @param {String} keyCode key spec
+         * @param {String} spec CSS selector to select children
+         * @param {Objject} context thiz is the context
+         * @param {Array} extraArgs* extra args to provive to callback
+         * @returns {unresolved} {EventHandle} the detach handle
+         */
+        wegasDelegateKey: function(node, type, fn, keyCode, spec, context, extraArgs) {
+            return node.on(type, function(e) {
+                var target = e.target.getDOMNode();
+                var domRoot = node.getDOMNode();
+
+                var id = Y.Selector._escapeId(Y.DOM.getId(domRoot));
+                if (!id) {
+                    id = Y.guid();
+                    Y.DOM.setId(domRoot, id);
+                }
+
+                document.querySelectorAll("#" + id + " " + spec).forEach(function(node) {
+                    if (node.contains(target)) {
+                        e.currentTarget = Y.Node(node);
+                        fn.apply(context, [e].concat(extraArgs));
+                    }
+                });
+            }, keyCode, this);
+        },
+
+        /**
+         * The static version of wegasDelegateKey
+         *
+         * @param {Node} node the node which delegate
+         * @param {String} type event to delegate
+         * @param {Function} fn the one callback
+         * @param {String} spec CSS selector to select children
+         * @param {Object} context thiz is the context
+         * @param {Array} extraArgs extra arge to provive to callback
+         * @returns {unresolved} {EventHandle} the detach handle
+         */
+        wegasDelegate: function(node, type, fn, spec, context, extraArgs) {
+            return node.on(type, function(e) {
+                var target = e.target.getDOMNode();
+                var domRoot = node.getDOMNode();
+
+                var id = Y.Selector._escapeId(Y.DOM.getId(domRoot));
+                if (!id) {
+                    id = Y.guid();
+                    Y.DOM.setId(domRoot, id);
+                }
+
+                document.querySelectorAll("#" + id + " " + spec).forEach(function(node) {
+                    if (node.contains(target)) {
+                        e.currentTarget = Y.Node(node);
+                        fn.apply(context, [e].concat(extraArgs));
+                    }
+                });
+            }, this);
+        },
+
+        /**
          * @function
          * @private
          * @param config
@@ -626,13 +732,8 @@ YUI.add('wegas-widget', function(Y) {
             if (Lang.isFunction(Fn)) {
                 child = new Fn(config);
             } else {
-                Y.log(
-                    'Could not create a child widget because its constructor is either undefined or invalid(' +
-                    type +
-                    ').',
-                    'error',
-                    'Wegas.Widget'
-                    );
+                Y.log('Could not create a child widget because its constructor is either undefined or invalid(' + type + ').',
+                    'error', 'Wegas.Widget');
             }
 
             return child;
@@ -777,14 +878,10 @@ YUI.add('wegas-widget', function(Y) {
             this.get(BOUNDING_BOX).setHTML(
                 "<div class='wegas-widget-errored'><i>Failed to render<br>" +
                 e.message +
-                '</i><span class="wegas-advanced-feature">' + e.stack + '</span></div>'
-                );
+                '</i><span class="wegas-advanced-feature">' + e.stack + '</span></div>');
 
-            Y.log(
-                'error',
-                'Failed to render ' + this.getType() + ': ' + (e.message || ''),
-                this.constructor.NAME
-                );
+            Y.log('Failed to render ' + this.getType() + ': ' + (e.message || ''), "error", this.constructor.NAME);
+            Y.log("Stack:" + e.stack, "error", this.constructor.NAME);
             //Y.error("Failed to render " + this.getType() + ": " + (e.message || ""), e, this.constructor.NAME);//do crash parent widget in debug mode
             //throw e;
         }

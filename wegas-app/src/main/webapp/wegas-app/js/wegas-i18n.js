@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -42,44 +42,22 @@ YUI.add("wegas-i18n", function(Y) {
                 colonize: function() {
                     return this + ":";
                 }
+            },
+            it: {
+                capitalize: function() {
+                    return this.slice(0, 1).toUpperCase() + this.slice(1);
+                },
+                colonize: function() {
+                    return this + ":";
+                }
             }
-        };
-        /**
-         * String extension with additional methods
-         * to transform given string
-         *
-         * @constructor I18nString
-         * @extends String
-         * @param String str the given string
-         */
-        function I18nString(str) {
-            this.value = str;
-        }
-        I18nString.prototype = new String();
-        I18nString.prototype.toString = function() {
-            return "" + this.value;
-        };
-        I18nString.prototype.valueOf = I18nString.prototype.toString;
-        /**
-         * Capitalize sentence's first letter.
-         * Uppercase first letter, language dependant
-         */
-        I18nString.prototype.capitalize = function() {
-            this.value = config[currentLanguage()].capitalize.call(this.value);
-            return this;
-        };
-        /**
-         * Colonize sentence, append ":" to it, language dependant
-         */
-        I18nString.prototype.colonize = function() {
-            this.value = config[currentLanguage()].colonize.call(this.value);
-            return this;
         };
         /*
          * Take the initial string and replace ALL parameters by theirs argument value
          * provided by k/v in args object.
          *
-         * All paramters (i.e. identifier [a-zA-Z0-9_] surrounded by '{{' and '}}') are mandatory
+         * All parameters (i.e. identifier [a-zA-Z0-9_] surrounded by '{{' and '}}') are mandatory.
+         * Escape sequence is allowed for preventing replacement: \\{ and \\}
          *
          */
         function mapArguments(str, args, tName) {
@@ -93,8 +71,7 @@ YUI.add("wegas-i18n", function(Y) {
                     return "[I18N] MISSING MANDATORY ARGUMENT \"" + key + "\" FOR \"" + tName + "\"";
                 }
             }
-            // return new I18nString(str);
-            return str;
+            return str.replace(/\\{/g, '{').replace(/\\}/g, '}');
         }
 
         function interpolateParam(str, param) {
@@ -102,10 +79,11 @@ YUI.add("wegas-i18n", function(Y) {
             if (params && params.length) {
                 var value;
                 var match;
-                if (match = /Variable\((.*)\)/.exec(params[0])) {
+                if ((match = /Variable\((.*)\)/.exec(params[0]))) {
                     value = Y.Wegas.Facade.Variable.cache.find("name", match[1]);
-                } else if (match = /VariableInstance\((.*)\)/.exec(params[0])) {
-                    value = Y.Wegas.Facade.Variable.cache.find("name", match[1]).getInstance();
+                } else if ((match = /VariableInstance\((.*)\)/.exec(params[0]))) {
+                    var variable = Y.Wegas.Facade.Variable.cache.find("name", match[1]);
+                    value = variable ? variable.getInstance() : null;
                 } else if (params[0] === "Player") {
                     value = Y.Wegas.Facade.Game.cache.getCurrentPlayer();
                 } else if (params[0] === "Team") {
@@ -273,7 +251,12 @@ YUI.add("wegas-i18n", function(Y) {
 
                 if (klass === "TranslatableContent" && translations) {
                     if (translations[code]) {
-                        return translations[code].status || "";
+                        var tr = translations[code];
+                        if (tr.get) {
+                            return tr.get("status") || "";
+                        } else {
+                            return tr.status || "";
+                        }
                     }
                 }
             }
@@ -329,7 +312,10 @@ YUI.add("wegas-i18n", function(Y) {
                         if (lang) {
                             langs = [lang];
                         } else {
-                            langs = [];
+                            langs = [{
+                                    code: forcedLang,
+                                    ghost: true
+                                }];
                         }
                     } else {
                         if (lang) {
@@ -337,21 +323,34 @@ YUI.add("wegas-i18n", function(Y) {
                             langs.splice(i, 1);
                             langs.unshift(lang);
                         }
+
+                        for (var trLang in translations) {
+                            // take ghost languages into account
+                            if (!langs.find(function(item) {
+                                return item.code === trLang;
+                            })) {
+                                langs.push({
+                                    code: trLang,
+                                    lang: "Ghost-" + trLang
+                                });
+                            }
+                        }
                     }
                     for (i in langs) {
                         lang = langs[i];
                         tr = translations[lang.code] || (!caseSensitiveCode && translations[lang.code.toLowerCase()]);
 
-                        if (tr !== undefined) {
-
+                        if (tr !== undefined || forcedLang) {
+                            //when languages is forced, process translations anyway
                             if (tr.get) {
                                 tr = tr.toObject();
                             }
 
-                            if (tr.translation) {
+                            if (tr.translation || forcedLang) {
                                 theOne = lang;
+
                                 isOutdated = !!tr.status;
-                                tr = tr.translation;
+                                tr = tr.translation || "";
                                 break;
                             } else if (typeof tr === "string") {
                                 theOne = lang;
@@ -437,15 +436,17 @@ YUI.add("wegas-i18n", function(Y) {
             }
         }
 
-        function parseNumber(value, formatName) {
-            return Y.Number.parse(value, getFormatConfig(formatName));
+        function parseNumber(value, format) {
+            return Y.Number.parse(value, getFormatConfig(format));
         }
 
-        function formatNumber(value, formatName) {
-            return Y.Number.format(+value, getFormatConfig(formatName));
+        function formatNumber(value, format) {
+            return Y.Number.format(+value, getFormatConfig(format));
         }
 
-        function getFormatConfig(formatName) {
+        // Format is either a string (the name of a predefined format) or
+        // an object, which may overwrite any locale-specific setting.
+        function getFormatConfig(format) {
             var locale = currentNumericLocale().split(/[-_]/),
                 lang = locale[0],
                 variant = locale[1],
@@ -455,8 +456,8 @@ YUI.add("wegas-i18n", function(Y) {
             if (Y.Wegas.I18n._tables[lang]) {
                 // main language exists
 
-                if (formatName) {
-                    extra = getMostSpecificValue(lang, variant, "numbers.extra." + formatName, "object");
+                if (format && typeof format === "string") {
+                    extra = getMostSpecificValue(lang, variant, "numbers.extra." + format, "object");
                     if (extra && typeof extra === "object") {
                         Y.mix(formatConfig, extra);
                     }
@@ -465,6 +466,10 @@ YUI.add("wegas-i18n", function(Y) {
                 base = getMostSpecificValue(lang, variant, "numbers.base", "object");
                 if (base && typeof base === "object") {
                     Y.mix(formatConfig, base);
+                }
+                
+                if (format && typeof format === "object") {
+                    formatConfig = Y.mix(Y.mix({}, format), formatConfig);
                 }
 
             }
@@ -574,7 +579,7 @@ YUI.add("wegas-i18n", function(Y) {
 
         function getAvailableLang() {
             return Y.Array.reduce(Y.config.groups.wegas.allModules, [], function(previous, currentValue) {
-                if (currentValue.indexOf("wegas-i18n-global-" === 0)) {
+                if (currentValue.indexOf("wegas-i18n-global-") === 0) {
                     previous.push(currentValue.substring(18));
                 }
                 return previous;
@@ -692,6 +697,27 @@ YUI.add("wegas-i18n", function(Y) {
             t: function(key, args) {
                 return translate(key, args);
             },
+            tVar: function(variable, fallback) {
+                var theVar = variable;
+                if (typeof variable === "string") {
+                    theVar = Y.Wegas.Facade.cahe.find("name", variable);
+                }
+                if (theVar) {
+                    if (theVar instanceof Y.Wegas.persistence.StaticTextDescriptor) {
+                        return I18n.t(theVar.get("text"))
+                    } else if (theVar instanceof Y.Wegas.persistence.TextDescriptor
+                        || theVar instanceof Y.Wegas.persistence.StringDescriptor) {
+                        return I18n.t(theVar.getInstance().get("trValue"));
+                    } else {
+                        return I18n.t(theVar.get("label"));
+                    }
+                }
+
+                if (typeof fallback === "object") {
+                    return I18n.t(fallback);
+                }
+                return Y.Template.Micro.compile(fallback || '')();
+            },
             getTrStatus: function(trc, code) {
                 return getTrStatus(trc, code);
             },
@@ -716,16 +742,28 @@ YUI.add("wegas-i18n", function(Y) {
             getEditorTools: function() {
                 return "<span class='tools'>" +
                     "<span title='Auto translate from...' class='inline-editor-i18n fa fa-download'></span>" +
-                    "<span title='Save and outdate other languages' class='inline-editor-major-validate fa fa-stack fa-1g'>" +
+                    "<span title='Outdate other languages' class='inline-editor-major-validate fa fa-stack fa-1g'>" +
                     "  <i class='fa fa-toggle-on fa-stack-1x'></i>" +
                     "  <i class='fa fa-expand fa-stack-1x'></i>" +
                     "</span>" +
                     "<span class='inline-editor-separator'></span>" +
-                    "<span title='Save and mark as up-to-date' class='inline-editor-catch_up-validate fa fa-toggle-on fa-flip-horizontal'></span>" +
-                    "<span title='Save and mark as outdated' class='inline-editor-outdate-validate fa fa-toggle-on'></span>" +
+                    "<span title='Mark as up-to-date' class='inline-editor-catch_up-validate fa fa-toggle-on fa-flip-horizontal'></span>" +
+                    "<span title='Mark as outdated' class='inline-editor-outdate-validate fa fa-toggle-on'></span>" +
                     "<span title='Undo' class='inline-editor-cancel fa fa-undo'></span>" +
                     "<span title='Save' class='inline-editor-validate fa fa-save'></span>" +
                     "</span>";
+            },
+            capitalize: function(value) {
+                return config[currentLanguage()].capitalize.call(value);
+            },
+            colonize: function(value) {
+                return config[currentLanguage()].colonize.call(value);
+            },
+            tCap: function(key, args) {
+                return config[currentLanguage()].capitalize.call(translate(key, args));
+            },
+            tCol: function(key, args) {
+                return config[currentLanguage()].colonize.call(translate(key, args));
             }
         };
     }());

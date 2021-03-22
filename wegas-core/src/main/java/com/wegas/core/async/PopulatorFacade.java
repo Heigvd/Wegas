@@ -1,15 +1,21 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.async;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
-import com.wegas.core.ejb.*;
+import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.ejb.WebsocketFacade;
+import com.wegas.core.ejb.WegasAbstractFacade;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.EntityComparators;
@@ -19,15 +25,21 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.security.util.ActAsPlayer;
+import com.wegas.core.security.util.Sudoer;
+import fish.payara.notification.requesttracing.RequestTraceSpanContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
+import javax.transaction.NotSupportedException;
+import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +102,7 @@ public class PopulatorFacade extends WegasAbstractFacade {
         try {
             utx.begin();
             team = teamFacade.find(teamId);
+            requestManager.setCurrentTeam(team);
             Game game = gameFacade.find(team.getGameId());
             gameModelFacade.createAndRevivePrivateInstance(game.getGameModel(), team);
 
@@ -126,19 +139,26 @@ public class PopulatorFacade extends WegasAbstractFacade {
         try {
             utx.begin();
             player = playerFacade.find(playerId);
-            // Inform player's user its player is processing
+            try (ActAsPlayer acting = requestManager.actAsPlayer(player)) {
+                acting.setFlushOnExit(false); // user managed TX
 
-            websocketFacade.propagateNewPlayer(player);
-            Team team = teamFacade.find(player.getTeamId());
+                // Inform player's user its player is processing
+                websocketFacade.propagateNewPlayer(player);
+                Team team = teamFacade.find(player.getTeamId());
 
-            gameModelFacade.createAndRevivePrivateInstance(team.getGame().getGameModel(), player);
+                gameModelFacade.createAndRevivePrivateInstance(team.getGame().getGameModel(), player);
 
-            player.setStatus(Status.LIVE);
+                player.setStatus(Status.INITIALIZING);
+                this.flush();
 
-            this.flush();
-            stateMachineFacade.runStateMachines(player);
-            utx.commit();
-            websocketFacade.propagateNewPlayer(player);
+                stateMachineFacade.runStateMachines(player);
+
+                player.setStatus(Status.LIVE);
+                this.flush();
+
+                utx.commit();
+                websocketFacade.propagateNewPlayer(player);
+            }
 
         } catch (Exception ex) {
             logger.error("Populate Player: Failure", ex);
@@ -170,9 +190,9 @@ public class PopulatorFacade extends WegasAbstractFacade {
     }
 
     /**
-     * Something went wring during the populate process
-     * If it was the first attempt, another tentative will be scheduled.
-     * The target will be makes as failed whether it was the second attempt.
+     * Something went wring during the populate process If it was the first attempt, another
+     * tentative will be scheduled. The target will be makes as failed whether it was the second
+     * attempt.
      *
      * @param p
      */
@@ -185,8 +205,8 @@ public class PopulatorFacade extends WegasAbstractFacade {
     }
 
     /**
-     * Set the target status to processing.
-     * For the first shop : processing, for the second tentative sec_processing
+     * Set the target status to processing. For the first shop : processing, for the second
+     * tentative sec_processing
      *
      * @param p
      */
@@ -195,6 +215,26 @@ public class PopulatorFacade extends WegasAbstractFacade {
             p.setStatus(Status.SEC_PROCESSING);
         } else {
             p.setStatus(Status.PROCESSING);
+        }
+    }
+
+    /**
+     * Return the position of the player in the player-to-populate queue
+     *
+     * @param player
+     *
+     * @return the position of the player or -1 if the player is not queued
+     */
+    public int getPositionInQueue(Player player) {
+        try {
+            utx.begin();
+            try (Sudoer root = requestManager.sudoer()) {
+                return this.getQueue().indexOf(player);
+            } finally {
+                utx.rollback();
+            }
+        } catch (NotSupportedException | SystemException ex) {
+            return -1;
         }
     }
 
@@ -244,7 +284,7 @@ public class PopulatorFacade extends WegasAbstractFacade {
                             candidate = new Candidate(t.getCreatedBy().getMainAccount().getId(), t);
                             break;
                         } else if (pop instanceof Player
-                                && teamFacade.find(((Player) pop).getTeam().getId()).getStatus().equals(Status.LIVE)) {
+                            && teamFacade.find(((Player) pop).getTeam().getId()).getStatus().equals(Status.LIVE)) {
                             Player p = (Player) pop;
                             this.markAsProcessing(p);
                             candidate = new Candidate(p.getUser().getMainAccount().getId(), p);

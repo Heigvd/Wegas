@@ -1,13 +1,15 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.util;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
 import com.wegas.core.Helper;
 import java.util.Collection;
 import java.util.Map;
@@ -24,7 +26,8 @@ public class ShiroCacheImplementation implements org.apache.shiro.cache.Cache {
     private static final String MAP_NAME = "hz_shiro_sessions";
 
     /**
-     * Since there is no CDI context here, we cannot @Inject HazelcastInstance or @Inject Cache<?, ?>
+     * Since there is no CDI context here, we cannot @Inject HazelcastInstance or @Inject
+     * Cache<?, ?>
      * This methods stands here to replace this behaviour
      *
      * @return the cache
@@ -32,8 +35,13 @@ public class ShiroCacheImplementation implements org.apache.shiro.cache.Cache {
      * @throws NamingException fails to retrieve the hazelcast cast, major issue
      */
     private Map<Object, Object> getCache() throws NamingException {
+        //long start = System.currentTimeMillis();
         HazelcastInstance hzInstance = Helper.jndiLookup(Helper.getWegasProperty("hazelcast.jndi_name"), HazelcastInstance.class);
-    return hzInstance.getMap(MAP_NAME);
+
+        IMap<Object, Object> map = hzInstance.getMap(MAP_NAME);
+//        long duration = System.currentTimeMillis() - start;
+//        logger.error("Get Shiro Hz Cache in {} ms", duration);
+        return map;
     }
 
     @Override

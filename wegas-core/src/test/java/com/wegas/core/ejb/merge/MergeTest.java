@@ -1,15 +1,15 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb.merge;
 
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.qos.logback.classic.Level;
 import com.wegas.core.ejb.*;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.patch.WegasPatch;
 import com.wegas.core.merge.utils.WegasEntitiesHelper;
 import com.wegas.core.merge.utils.WegasEntityFields;

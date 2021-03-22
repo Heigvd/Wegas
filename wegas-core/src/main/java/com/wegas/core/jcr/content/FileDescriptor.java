@@ -1,16 +1,18 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.content;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import com.wegas.editor.view.TimestampView;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,9 +31,15 @@ import org.slf4j.LoggerFactory;
 public class FileDescriptor extends AbstractContentDescriptor {
 
     static final private Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
+    private static final long serialVersionUID = 5695858459529162019L;
 
-    @JsonIgnore
-    @WegasEntityProperty(includeByDefault = false, notSerialized = true)
+    @WegasEntityProperty(includeByDefault = false,
+        view = @View(
+            readOnly = true,
+            label = "Last Modified",
+            value = TimestampView.class
+        )
+    )
     private Calendar dataLastModified;
 
     /**
@@ -41,11 +49,12 @@ public class FileDescriptor extends AbstractContentDescriptor {
     private Long bytes;
 
     /**
-     * Some ghost field (since not yet possible to define a WegasEntityProperty without a corresponding field)
+     * Some ghost field (since not yet possible to define a WegasEntityProperty without a
+     * corresponding field)
      */
     @JsonIgnore
     @WegasEntityProperty(includeByDefault = false, notSerialized = true)
-    private FileContent data; // TODO -> allow to define such a transient field withen the WegasEntity class anotation extraProperties = {@WegasEntityProperty + name}
+    private FileContent data; // HACK -> allow to define such a transient field withen the WegasEntity class anotation extraProperties = {@WegasEntityProperty + name} // NOPMD
 
     /**
      * @param absolutePath
@@ -123,8 +132,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     * Attach this fileDescriptor to the content repository and writes
-     * parameters to it.
+     * Attach this fileDescriptor to the content repository and writes parameters to it.
      *
      * @param data     The InputStream to store
      * @param mimeType The data type
@@ -158,8 +166,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
     }
 
     /**
-     * Attach this fileDescriptor to the content repository and writes
-     * parameters to it.
+     * Attach this fileDescriptor to the content repository and writes parameters to it.
      *
      * @param data     The String to store as data
      * @param mimeType The data type
@@ -173,24 +180,23 @@ public class FileDescriptor extends AbstractContentDescriptor {
     /**
      * @return last modified date
      */
-    @JsonProperty("dataLastModified")
     public Calendar getDataLastModified() {
         return dataLastModified;
     }
 
-    @JsonProperty("dataLastModified")
     public void setDataLastModified(Calendar date) {
         this.dataLastModified = date;
         try {
             getConnector().setLastModified(fileSystemAbsolutePath, dataLastModified);
         } catch (RepositoryException ex) {
+            logger.error("Repository error: {}", ex);
         }
     }
 
     /**
      * @return file content as bytes
      */
-    @JsonProperty("bytes")
+    @JsonProperty(value = "bytes", access = JsonProperty.Access.READ_ONLY)
     @Override
     public Long getBytes() {
         return bytes;
@@ -200,20 +206,20 @@ public class FileDescriptor extends AbstractContentDescriptor {
      * @throws RepositoryException
      */
     @Override
-    public void getContentFromRepository() throws RepositoryException {
+    public void loadContentFromRepository() throws RepositoryException {
         if (this.getMimeType().equals(DirectoryDescriptor.MIME_TYPE) || this.fileSystemAbsolutePath.equals("/")) {
             //DirectorDescriptor
             throw new ClassCastException("Trying to retrieve a directory as a file");
         }
         this.dataLastModified = getConnector().getLastModified(fileSystemAbsolutePath);
         this.bytes = getConnector().getBytesSize(fileSystemAbsolutePath);
-        super.getContentFromRepository();
+        super.loadContentFromRepository();
     }
 
     @Override
-    public void setContentToRepository() throws RepositoryException {
+    public void saveContentToRepository() throws RepositoryException {
         getConnector().setLastModified(fileSystemAbsolutePath, dataLastModified);
-        super.setContentToRepository();
+        super.saveContentToRepository();
     }
 
     /**

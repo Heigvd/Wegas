@@ -1,14 +1,14 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.tools;
 
-import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.Mergeable;
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.WegasCallback;
 
 /**
  *
@@ -17,7 +17,7 @@ import com.wegas.core.persistence.Mergeable;
 public class JCRDescriptorCallback implements WegasCallback {
 
     @Override
-    public void postUpdate(Mergeable entity, Object ref, Object identifier) {
+    public void postUpdate(IMergeable entity, Object ref, Object identifier) {
         /*
         try {
             AbstractContentDescriptor item = (AbstractContentDescriptor) entity;

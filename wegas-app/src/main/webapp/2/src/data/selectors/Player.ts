@@ -1,4 +1,5 @@
-import { store } from '../store';
+import { instantiate } from '../scriptable';
+import { store, useStore } from '../Stores/store';
 
 /**
  * Get the player with id
@@ -12,4 +13,12 @@ export function select(id: number) {
 export function selectCurrent() {
   const state = store.getState();
   return state.players[state.global.currentPlayerId];
+}
+
+export function useCurrentPlayer() {
+  return instantiate(useStore(selectCurrent));
+}
+
+export function self() {
+  return instantiate(selectCurrent());
 }

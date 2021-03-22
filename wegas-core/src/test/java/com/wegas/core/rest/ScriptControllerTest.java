@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -11,11 +11,11 @@ import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
-import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
+import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.test.arquillian.AbstractArquillianTest;
 import java.util.Map;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.naming.NamingException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,7 +26,7 @@ import org.junit.Test;
  */
 public class ScriptControllerTest extends AbstractArquillianTest {
 
-    @EJB
+    @Inject
     private ScriptController scriptController;
 
     /**

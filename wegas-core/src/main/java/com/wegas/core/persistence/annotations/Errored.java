@@ -1,15 +1,14 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-
 package com.wegas.core.persistence.annotations;
 
-import com.wegas.editor.Erroreds;
 import com.wegas.core.persistence.annotations.WegasConditions.Condition;
+import com.wegas.editor.Erroreds;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Repeatable;

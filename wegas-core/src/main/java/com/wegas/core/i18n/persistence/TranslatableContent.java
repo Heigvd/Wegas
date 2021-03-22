@@ -1,22 +1,24 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.i18n.persistence;
 
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.ListUtils;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -26,22 +28,29 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.Zero;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
-import com.wegas.editor.View.ReadOnlyNumber;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.HashListView;
+import com.wegas.editor.view.NumberView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Version;
 import jdk.nashorn.api.scripting.JSObject;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -57,8 +66,6 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = LoggerFactory.getLogger(TranslatableContent.class);
-
     @ManyToOne
     @JsonIgnore
     private VariableDescriptor parentDescriptor;
@@ -70,7 +77,13 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(nullable = false, optional = false, proposal = Zero.class,
-            sameEntityOnly = true, view = @View(label = "Version", value = ReadOnlyNumber.class, featureLevel = ADVANCED))
+            sameEntityOnly = true, view = @View(
+                    label = "Version",
+                    readOnly = true,
+                    value = NumberView.class,
+                    featureLevel = ADVANCED
+            )
+    )
     @JsonView(Views.IndexI.class)
     private Long version;
 
@@ -85,9 +98,9 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
      *
      */
     @JsonIgnore
-    @WegasEntityProperty(searchable = true, callback = TranslatableCallback.class, 
+    @WegasEntityProperty(searchable = true, callback = TranslatableCallback.class,
             optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Translations"))
+            view = @View(label = "Translations", value = HashListView.class))
     @OneToMany(mappedBy = "translatableContent", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @PrivateOwned
     private List<Translation> translations = new ArrayList<>();
@@ -196,9 +209,9 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
      */
     public Translation getTranslation(String code) {
         if (code != null) {
-            String CODE = code.toUpperCase();
+            String upperCode = code.toUpperCase();
             for (Translation tr : this.translations) {
-                if (CODE.equals(tr.getLang())) {
+                if (upperCode.equals(tr.getLang())) {
                     return tr;
                 }
             }
@@ -304,9 +317,9 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     }
 
     /**
-     * Returns the most preferred translation according to given languages.
-     * returns the first translation which is not empty. If all translation are empty
-     * returns, the first non null, returns null o otherwise
+     * Returns the most preferred translation according to given languages. returns the first
+     * translation which is not empty. If all translation are empty returns, the first non null,
+     * returns null o otherwise
      *
      * @param languages languages codes sorted by preference
      *
@@ -336,7 +349,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
 
     public Translation translate(GameModel gameModel) {
         if (gameModel != null) {
-            Player player = gameModel.findTestPlayer();
+            Player player = gameModel.getTestPlayer();
             return this.translate(gameModel.getPreferredLanguagesCodes(player));
         } else {
             return getAnyTranslation();
@@ -383,6 +396,16 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
         return trC;
     }
 
+    public TranslatableContent createCopy() {
+        TranslatableContent trC = new TranslatableContent();
+        for (Translation t : this.getRawTranslations()) {
+            trC.getRawTranslations().add(
+                new Translation(t.getLang(), t.getTranslation(), 
+                    t.getStatus(), trC));
+        }
+        return trC;
+    }
+
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
         Broadcastable owner = this.getOwner();
@@ -410,9 +433,8 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     }
 
     /**
-     * Convenient method to use within merge implementation.
-     * other may be null, in this case, null is returned.
-     * target may be null, a brand new object will be returned.
+     * Convenient method to use within merge implementation. other may be null, in this case, null
+     * is returned. target may be null, a brand new object will be returned.
      * <p>
      * <p>
      * in merge example: this.setField(TranslatableContent.merger(this.getField(), o.getField()))
@@ -445,7 +467,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
                 for (String code : langs) {
                     Object member = trs.getMember(code);
                     if (member instanceof String) {
-                        trContent.updateTranslation(code, (String) trs.getMember(code));
+                        trContent.updateTranslation(code, (String) member);
                     } else if (member instanceof ScriptObjectMirror) {
                         String tr = (String) ((ScriptObjectMirror) member).getMember("translation");
                         String status = (String) ((ScriptObjectMirror) member).getMember("status");
@@ -469,7 +491,7 @@ public class TranslatableContent extends AbstractEntity implements Broadcastable
     public static class TranslatableCallback implements WegasCallback {
 
         @Override
-        public void add(Object child, Mergeable container, Object identifier) {
+        public void add(Object child, IMergeable container, Object identifier) {
             if (container instanceof TranslatableContent && child instanceof Translation) {
                 ((Translation) child).setTranslatableContent((TranslatableContent) container);
             }

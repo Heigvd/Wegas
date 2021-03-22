@@ -1,12 +1,20 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
 
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import static ch.albasim.wegas.annotations.CommonView.LAYOUT.shortInline;
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.ProtectionLevel;
+import ch.albasim.wegas.annotations.Scriptable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -14,48 +22,52 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasNotFoundException;
-import com.wegas.core.persistence.annotations.WegasEntity;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.LabelledEntity;
-import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.Orderable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.annotations.Errored;
+import com.wegas.core.persistence.annotations.WegasConditions.And;
+import com.wegas.core.persistence.annotations.WegasConditions.Equals;
+import com.wegas.core.persistence.annotations.WegasConditions.Or;
+import com.wegas.core.persistence.annotations.WegasEntity;
+import com.wegas.core.persistence.annotations.WegasRefs.Const;
+import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.variable.primitive.*;
-import com.wegas.core.persistence.variable.scope.*;
+import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
+import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
+import com.wegas.core.persistence.variable.primitive.StaticTextDescriptor;
+import com.wegas.core.persistence.variable.primitive.StringDescriptor;
+import com.wegas.core.persistence.variable.primitive.TextDescriptor;
+import com.wegas.core.persistence.variable.scope.AbstractScope;
+import com.wegas.core.persistence.variable.scope.AbstractScope.ScopeType;
+import com.wegas.core.persistence.variable.scope.GameModelScope;
+import com.wegas.core.persistence.variable.scope.PlayerScope;
+import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.core.persistence.annotations.WegasConditions.And;
-import com.wegas.core.persistence.annotations.WegasConditions.Equals;
-import com.wegas.core.persistence.annotations.WegasConditions.Or;
-import com.wegas.core.persistence.annotations.WegasRefs.Const;
-import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.EmptyString;
 import com.wegas.editor.ValueGenerators.TeamScopeVal;
 import com.wegas.editor.ValueGenerators.Zero;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
-import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
-import com.wegas.editor.View.I18nStringView;
-import com.wegas.editor.View.ReadOnlyNumber;
-import com.wegas.editor.View.SelectView;
-import com.wegas.editor.View.Textarea;
-import com.wegas.editor.View.View;
-import com.wegas.editor.View.VisibilitySelectView;
+import com.wegas.editor.Visible;
+import com.wegas.editor.view.I18nStringView;
+import com.wegas.editor.view.NumberView;
+import com.wegas.editor.view.SelectView;
+import com.wegas.editor.view.Textarea;
+import com.wegas.editor.view.VisibilitySelectView;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
@@ -65,12 +77,38 @@ import com.wegas.resourceManagement.persistence.BurndownDescriptor;
 import com.wegas.resourceManagement.persistence.ResourceDescriptor;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
+import com.wegas.survey.persistence.SurveyDescriptor;
+import com.wegas.survey.persistence.input.SurveyChoicesDescriptor;
+import com.wegas.survey.persistence.input.SurveyInputDescriptor;
+import com.wegas.survey.persistence.input.SurveyNumberDescriptor;
+import com.wegas.survey.persistence.input.SurveySectionDescriptor;
+import com.wegas.survey.persistence.input.SurveyTextDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.QueryHint;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.CacheIndexes;
@@ -101,18 +139,18 @@ import org.slf4j.LoggerFactory;
     @Index(columnList = "gamemodel_id"),
     @Index(columnList = "dtype"),
     @Index(columnList = "scope_id"),
-    @Index(columnList = "label_id")
+    @Index(columnList = "label_id"),
+    @Index(columnList = "gamemodel_id, refid", unique = true),
 })
-@NamedQueries({
-    @NamedQuery(
-            name = "VariableDescriptor.findAllNamesInModelAndItsScenarios",
-            query = "SELECT DISTINCT(vd.name)"
-            + "FROM GameModel model "
-            + "LEFT JOIN GameModel scen ON (model = scen.basedOn AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
-            + "JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
-            + "WHERE model.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
-    ),
-    /*@NamedQuery(
+@NamedQuery(
+    name = "VariableDescriptor.findAllNamesInModelAndItsScenarios",
+    query = "SELECT DISTINCT(vd.name)"
+    + "FROM GameModel model "
+    + "LEFT JOIN GameModel scen ON (model = scen.basedOn AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
+    + "JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
+    + "WHERE model.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
+)
+/*@NamedQuery(
             name = "VariableDescriptor.findAllNamesInScenarioAndItsModelCluster",
             query = "SELECT DISTINCT(vd.name)"
             + " FROM GameModel scen "
@@ -122,28 +160,34 @@ import org.slf4j.LoggerFactory;
             + "                               AND scen.type = com.wegas.core.persistence.game.GameModel.GmType.SCENARIO)"
             + " JOIN VariableDescriptor vd ON (vd.gameModel = other OR vd.gameModel = model)"
             + " WHERE scen.id = :gameModelId"
-    ),*/
-    @NamedQuery(
-            name = "VariableDescriptor.findAllNamesInScenarioAndItsModel",
-            query = "SELECT DISTINCT(vd.name)"
-            + " FROM GameModel scen "
-            + " LEFT JOIN GameModel model ON (model = scen.basedOn AND model.type = com.wegas.core.persistence.game.GameModel.GmType.MODEL)"
-            + " JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
-            + " WHERE scen.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
-    ),
-    @NamedQuery(
-            name = "VariableDescriptor.findByRootGameModelId",
-            query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
-    ),
-    @NamedQuery(
-            name = "VariableDescriptor.findByGameModelIdAndName",
-            query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
-            hints = {
-                @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
-                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
-    )
-
-})
+    )*/
+@NamedQuery(
+    name = "VariableDescriptor.findAllNamesInScenarioAndItsModel",
+    query = "SELECT DISTINCT(vd.name)"
+    + " FROM GameModel scen "
+    + " LEFT JOIN GameModel model ON (model = scen.basedOn AND model.type = com.wegas.core.persistence.game.GameModel.GmType.MODEL)"
+    + " JOIN VariableDescriptor vd ON (vd.gameModel = model OR vd.gameModel = scen)"
+    + " WHERE scen.id = :gameModelId AND (:refId IS NULL OR vd.refId <> :refId)"
+)
+@NamedQuery(
+    name = "VariableDescriptor.findByRootGameModelId",
+    query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId"
+)
+@NamedQuery(
+    name = "VariableDescriptor.findCherryPickablesIndex",
+    query = "SELECT vd.gameModel.id, vd.gameModel.name, vd.id, vd.name, vd.label FROM VariableDescriptor vd where vd.gameModel.id in :gameModelIds AND TYPE(vd) IN :types"
+)
+@NamedQuery(
+    name = "VariableDescriptor.findCherryPickables",
+    query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id in :gameModelIds AND TYPE(vd) IN :types"
+)
+@NamedQuery(
+    name = "VariableDescriptor.findByGameModelIdAndName",
+    query = "SELECT vd FROM VariableDescriptor vd where vd.gameModel.id = :gameModelId AND vd.name LIKE :name",
+    hints = {
+        @QueryHint(name = QueryHints.QUERY_TYPE, value = QueryType.ReadObject),
+        @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.CheckCacheThenDatabase)}
+)
 @CacheIndexes(value = {
     @CacheIndex(columnNames = {"GAMEMODEL_ID", "NAME"}) // bug uppercase: https://bugs.eclipse.org/bugs/show_bug.cgi?id=407834
 })
@@ -151,6 +195,7 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
     @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
     @JsonSubTypes.Type(name = "TextDescriptor", value = TextDescriptor.class),
+    @JsonSubTypes.Type(name = "StaticTextDescriptor", value = StaticTextDescriptor.class),
     @JsonSubTypes.Type(name = "BooleanDescriptor", value = BooleanDescriptor.class),
     @JsonSubTypes.Type(name = "NumberDescriptor", value = NumberDescriptor.class),
     @JsonSubTypes.Type(name = "InboxDescriptor", value = InboxDescriptor.class),
@@ -165,13 +210,19 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
     @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class),
+    @JsonSubTypes.Type(name = "SurveyDescriptor", value = SurveyDescriptor.class),
+    @JsonSubTypes.Type(name = "SurveySectionDescriptor", value = SurveySectionDescriptor.class),
+    @JsonSubTypes.Type(name = "SurveyInputDescriptor", value = SurveyInputDescriptor.class),
+    @JsonSubTypes.Type(name = "SurveyTextDescriptor", value = SurveyTextDescriptor.class),
+    @JsonSubTypes.Type(name = "SurveyNumberDescriptor", value = SurveyNumberDescriptor.class),
+    @JsonSubTypes.Type(name = "SurveyChoicesDescriptor", value = SurveyChoicesDescriptor.class),
     @JsonSubTypes.Type(name = "BurndownDescriptor", value = BurndownDescriptor.class)
 })
 //@MappedSuperclass
 @WegasEntity(callback = VariableDescriptor.VdMergeCallback.class)
 public abstract class VariableDescriptor<T extends VariableInstance>
-        extends AbstractEntity
-        implements LabelledEntity, Broadcastable, AcceptInjection, ModelScoped {
+    extends AbstractEntity
+    implements LabelledEntity, Broadcastable, AcceptInjection, ModelScoped, Orderable {
 
     private static final long serialVersionUID = 1L;
 
@@ -180,9 +231,8 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     /**
      * HACK
      * <p>
-     * Injecting VariableDescriptorFacade here don't bring business logic within
-     * data because the very only functionality that is being used here aims to
-     * replace some slow JPA mechanisms
+     * Injecting VariableDescriptorFacade here don't bring business logic within data because the
+     * very only functionality that is being used here aims to replace some slow JPA mechanisms
      * <p>
      */
     @JsonIgnore
@@ -200,33 +250,33 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     @JsonView(value = Views.EditorI.class)
     @Column(name = "comments")
     @WegasEntityProperty(searchable = true,
-            optional = false, nullable = false, proposal = EmptyString.class,
-            view = @View(
-                    label = "Comments",
-                    borderTop = true,
-                    value = Textarea.class,
-                    index = 9000))
+        optional = false, nullable = false, proposal = EmptyString.class,
+        view = @View(
+            label = "Comments",
+            borderTop = true,
+            value = Textarea.class,
+            index = 9000))
     private String comments;
 
     /**
      *
      * The default instance for this variable.
      * <p>
-     * According to WegasPatch spec, OVERRIDE should not be propagated to the instance when the descriptor is protected
+     * According to WegasPatch spec, OVERRIDE should not be propagated to the instance when the
+     * descriptor is protected
      * <p>
-     * Here we cannot use type T, otherwise jpa won't handle the db ref
-     * correctly
+     * Here we cannot use type T, otherwise jpa won't handle the db ref correctly
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
     @JsonView(value = Views.EditorI.class)
     @WegasEntityProperty(
-            protectionLevel = ProtectionLevel.INTERNAL,
-            nullable = false,
-            optional = false,
-            view = @View(
-                    label = "Default instance",
-                    index = 500
-            ))
+        protectionLevel = ProtectionLevel.INTERNAL,
+        nullable = false,
+        optional = false,
+        view = @View(
+            label = "Default instance",
+            index = 500
+        ))
     private VariableInstance defaultInstance;
 
     /**
@@ -253,6 +303,9 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     @JsonIgnore
     private WhQuestionDescriptor parentWh;
 
+    @JsonIgnore
+    private Integer indexOrder;
+
     @ManyToOne
     @JsonIgnore
     private GameModel root;
@@ -260,9 +313,13 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     @Column(length = 24, columnDefinition = "character varying(24) default 'PRIVATE'::character varying")
     @Enumerated(value = EnumType.STRING)
     @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL,
-            nullable = false,
-            view = @View(label = "Visibility", value = VisibilitySelectView.class,
-                    index = -300))
+        nullable = false,
+        view = @View(
+            label = "Visibility",
+            value = VisibilitySelectView.class,
+            index = -300
+        ))
+    @Visible(ModelScoped.BelongsToModel.class)
     private Visibility visibility = Visibility.PRIVATE;
 
     /**
@@ -270,28 +327,27 @@ public abstract class VariableDescriptor<T extends VariableInstance>
      */
     //@JsonView(Views.EditorI.class)
     @WegasEntityProperty(searchable = true,
-            proposal = EmptyString.class,
-            optional = false, nullable = false,
-            view = @View(
-                    label = "Tag",
-                    description = "Never displayed to players",
-                    index = -480
-            ))
+        proposal = EmptyString.class,
+        optional = false, nullable = false,
+        view = @View(
+            label = "Tag",
+            description = "Never displayed to players",
+            index = -480
+        ))
     private String editorTag = "";
 
     /**
-     * Variable descriptor human readable name
-     * Player visible
+     * Variable descriptor human readable name Player visible
      */
     @OneToOne(cascade = CascadeType.ALL /*, orphanRemoval = true*/)
     @WegasEntityProperty(searchable = true,
-            nullable = false, optional = false, proposal = EmptyI18n.class,
-            view = @View(
-                    label = "Label",
-                    description = "Displayed to players",
-                    value = I18nStringView.class,
-                    index = -470
-            ))
+        nullable = false, optional = false, proposal = EmptyI18n.class,
+        view = @View(
+            label = "Label",
+            description = "Displayed to players",
+            value = I18nStringView.class,
+            index = -470
+        ))
     private TranslatableContent label;
 
     @Transient
@@ -305,13 +361,13 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     @Basic(optional = false)
     //@CacheIndex
     @WegasEntityProperty(protectionLevel = ProtectionLevel.INHERITED, searchable = true,
-            nullable = false,
-            view = @View(
-                    featureLevel = ADVANCED,
-                    label = "Script alias",
-                    description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character.",
-                    index = -460
-            ))
+        nullable = false,
+        view = @View(
+            featureLevel = ADVANCED,
+            label = "Script alias",
+            description = "Changing this may break your scripts! Use alphanumeric characters,'_','$'. No digit as first character.",
+            index = -460
+        ))
     protected String name;
 
     //@BatchFetch(BatchFetchType.JOIN)
@@ -325,42 +381,43 @@ public abstract class VariableDescriptor<T extends VariableInstance>
 
     @Transient
     @WegasEntityProperty(
-            proposal = TeamScopeVal.class,
-            nullable = false,
-            view = @View(
-                    label = "One variable for",
-                    value = SelectView.ScopeSelector.class,
-                    layout = shortInline,
-                    index = -400
-            ))
+        proposal = TeamScopeVal.class,
+        nullable = false,
+        view = @View(
+            label = "One variable for",
+            value = SelectView.ScopeSelector.class,
+            layout = shortInline,
+            index = -400
+        ))
     @Errored(CheckScope.class)
-    private String scopeType;
+    private ScopeType scopeType;
 
     @Transient
     @WegasEntityProperty(
-            proposal = TeamScopeVal.class,
-            nullable = false,
-            view = @View(
-                    label = "Variable is visible by ",
-                    value = SelectView.BScopeSelector.class,
-                    layout = shortInline,
-                    index = -390
-            ))
+        proposal = TeamScopeVal.class,
+        nullable = false,
+        view = @View(
+            label = "Variable is visible by ",
+            value = SelectView.BScopeSelector.class,
+            layout = shortInline,
+            index = -390
+        ))
     @Errored(CheckScope.class)
-    private String broadcastScope;
+    private ScopeType broadcastScope;
 
     @Version
     @Column(columnDefinition = "bigint default '0'::bigint")
     @WegasEntityProperty(sameEntityOnly = true,
-            nullable = false, optional = false,
-            proposal = Zero.class,
-            view = @View(
-                    label = "Version",
-                    value = ReadOnlyNumber.class,
-                    featureLevel = ADVANCED,
-                    index = -490,
-                    layout = shortInline
-            )
+        nullable = false, optional = false,
+        proposal = Zero.class,
+        view = @View(
+            label = "Version",
+            readOnly = true,
+            value = NumberView.class,
+            featureLevel = ADVANCED,
+            index = -490,
+            layout = shortInline
+        )
     )
     private Long version;
 
@@ -449,8 +506,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     /**
-     * Get the gameModel this descriptor stands in.
-     * RootLevel descriptor only.
+     * Get the gameModel this descriptor stands in. RootLevel descriptor only.
      *
      * @return
      */
@@ -484,6 +540,20 @@ public abstract class VariableDescriptor<T extends VariableInstance>
             this.setRoot(null);
             this.setParentWh(null);
         }
+    }
+
+    @Override
+    @JsonIgnore
+    public Integer getOrder() {
+        return getIndexOrder();
+    }
+
+    public Integer getIndexOrder() {
+        return indexOrder;
+    }
+
+    public void setIndexOrder(Integer indexOrder) {
+        this.indexOrder = indexOrder;
     }
 
     public WhQuestionDescriptor getParentWh() {
@@ -589,6 +659,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
      *
      * @return variableInstance belonging to the player
      */
+    @Scriptable(wysiwyg = false)
     public T getInstance(Player player) {
         return (T) this.getScope().getVariableInstance(player);
     }
@@ -604,8 +675,8 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     /**
-     * @param defaultInstance indicate whether one wants the default instance r
-     *                        the one belonging to player
+     * @param defaultInstance indicate whether one wants the default instance r the one belonging to
+     *                        player
      * @param player          the player
      *
      * @return either the default instance of the one belonging to player
@@ -688,6 +759,11 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         this.title = title;
     }
 
+    @JsonIgnore
+    public String getDeprecatedTitle() {
+        return title;
+    }
+
     /**
      * Get the descriptor internal name (aka scriptAlias)
      *
@@ -716,8 +792,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     /**
      * @param scope the scope to set
      *
-     * @fixme here we cannot use managed references since this.class is
-     * abstract.
+     * @fixme here we cannot use managed references since this.class is abstract.
      */
     //@JsonManagedReference
     public void setScope(AbstractScope scope) {
@@ -728,29 +803,28 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     @JsonIgnore
-    public String getDeserialisedScopeType() {
+    public ScopeType getDeserialisedScopeType() {
         return this.scopeType;
     }
 
-    public String getScopeType() {
+    public ScopeType getScopeType() {
         if (this.scope != null) {
-            return this.scope.getJSONClassName();
+            return this.scope.getScopeType();
         } else {
             return scopeType;
         }
     }
 
-    public void setScopeType(String scopeType) {
+    public void setScopeType(ScopeType scopeType) {
         this.scopeType = scopeType;
     }
 
-
     @JsonIgnore
-    public String getDeserialisedBroadcastScopeType() {
+    public ScopeType getDeserialisedBroadcastScopeType() {
         return this.broadcastScope;
     }
 
-    public String getBroadcastScope() {
+    public ScopeType getBroadcastScope() {
         if (this.scope != null) {
             return this.scope.getBroadcastScope();
         } else {
@@ -758,7 +832,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         }
     }
 
-    public void setBroadcastScope(String broadcastScope) {
+    public void setBroadcastScope(ScopeType broadcastScope) {
         this.broadcastScope = broadcastScope;
     }
 
@@ -783,9 +857,9 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     /**
-     * @param context allow to circumscribe the propagation within the given
-     *                context. It may be an instance of GameModel, Game, Team,
-     *                or Player
+     * @param context allow to circumscribe the propagation within the given context. It may be an
+     *                instance of GameModel, Game, Team, or Player
+     * @param create
      */
     public void propagateDefaultInstance(InstanceOwner context, boolean create) {
         int sFlag = 0;
@@ -798,18 +872,18 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         }
 
         if ((context == null) // no-context
-                || (context instanceof GameModel) // gm ctx -> do not skip anything
-                || (context instanceof Game && sFlag < 4) // g ctx -> skip gms
-                || (context instanceof Team && sFlag < 3) // t ctx -> skip gms, gs
-                || (context instanceof Player && sFlag < 2)) { // p ctx -> skip gms, gs, ts
+            || (context instanceof GameModel) // gm ctx -> do not skip anything
+            || (context instanceof Game && sFlag < 4) // g ctx -> skip gms
+            || (context instanceof Team && sFlag < 3) // t ctx -> skip gms, gs
+            || (context instanceof Player && sFlag < 2)) { // p ctx -> skip gms, gs, ts
             scope.propagateDefaultInstance(context, create);
         }
     }
 
     public void createInstances(InstanceOwner instanceOwner) {
         if ((scope instanceof GameModelScope && instanceOwner instanceof GameModel)
-                || (scope instanceof TeamScope && instanceOwner instanceof Team)
-                || (scope instanceof PlayerScope && instanceOwner instanceof Player)) {
+            || (scope instanceof TeamScope && instanceOwner instanceof Team)
+            || (scope instanceof PlayerScope && instanceOwner instanceof Player)) {
             scope.propagateDefaultInstance(instanceOwner, true);
         }
     }
@@ -828,7 +902,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
      */
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getName() + ", #" + Integer.toHexString(this.hashCode()) + " )";
+        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getName() + ", #" + Integer.toHexString(this.hashCode()) + ", ref:" + this.getRefId() + " )";
     }
 
     @Override
@@ -849,8 +923,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     }
 
     /**
-     * WegasCallback for VariableDescriptor merge.
-     * Two purpose:
+     * WegasCallback for VariableDescriptor merge. Two purpose:
      * <ul>
      * <li>create/destroy instances when scope changes</li>
      * <li>assert name is valid within the model cluster</li>
@@ -859,7 +932,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     public static class VdMergeCallback implements WegasCallback {
 
         @Override
-        public void destroy(Mergeable entity, Object identifier) {
+        public void destroy(IMergeable entity, Object identifier) {
             if (entity instanceof VariableDescriptor) {
                 VariableDescriptor vd = (VariableDescriptor) entity;
                 vd.getVariableDescriptorFacade().preDestroy(vd.getGameModel(), vd);
@@ -894,30 +967,6 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         }
     }
 
-    public void revive(GameModel gameModel, Beanjection beans) {
-        if (this.title != null) {
-            if (title.isEmpty()) {
-                // title is defined but empty -> not prefix, don't change label
-                // eg:  label="[r5b] Meet someone'; title=""; prefix = ""; label="[r5b] Meet someone"
-                this.setEditorTag("");
-            } else {
-                String importedLabel = getLabel().translateOrEmpty(this.getGameModel());
-                if (importedLabel == null) {
-                    importedLabel = "";
-                }
-                // eg:  label="[r5b] Meet someone'; title="Meet someone"; prefix = "[r5b]"; label="Meet someone"
-                // eg:  label="Meet someone'; title="Meet someone"; prefix = ""; label="Meet someone"
-                // eg:  label=""; title="Meet someone"; prefix = ""; label="Meet someone"
-                this.setEditorTag(importedLabel.replace(title, "").trim());
-                List<GameModelLanguage> languages = gameModel.getLanguages();
-                if (languages != null && !languages.isEmpty()) {
-                    this.setLabel(TranslatableContent.build(languages.get(0).getCode(), title));
-                }
-            }
-            this.title = null;
-        }
-    }
-
     @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         return this.getGameModel().getRequieredReadPermission();
@@ -938,17 +987,17 @@ public abstract class VariableDescriptor<T extends VariableInstance>
 
         public CheckScope() {
             super(
-                    new And(
-                            new Equals(scope, ts),
-                            new Equals(bScope, ps)
-                    ),
-                    new And(
-                            new Equals(scope, gs),
-                            new Or(
-                                    new Equals(bScope, ps),
-                                    new Equals(bScope, ts)
-                            )
+                new And(
+                    new Equals(scope, ts),
+                    new Equals(bScope, ps)
+                ),
+                new And(
+                    new Equals(scope, gs),
+                    new Or(
+                        new Equals(bScope, ps),
+                        new Equals(bScope, ts)
                     )
+                )
             );
         }
     }

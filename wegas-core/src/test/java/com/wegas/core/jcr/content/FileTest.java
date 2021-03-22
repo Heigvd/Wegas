@@ -1,13 +1,14 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.content;
 
 import com.wegas.core.ejb.JCRFacade;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.jcr.jta.JCRTestFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -67,6 +68,81 @@ public class FileTest extends AbstractArquillianTest {
 
         Assert.assertTrue("File content after update not match", Arrays.equals(newContent, newFileReadContent));
 
+    }
+
+    @Test
+    public void testDirectoryNotExists() throws RepositoryException, IOException {
+        byte[] initialContent = {0, 1, 2, 3};
+        InputStream initialFile = new ByteArrayInputStream(initialContent);
+        try {
+            jcrFacade.createFile(gameModel.getId(),
+                ContentConnector.WorkspaceType.FILES,
+                "firstFile", "/subdir1",
+                "text/plain", "note",
+                "description", initialFile, Boolean.TRUE);
+
+            Assert.fail("Should not be possible to create a file in a non existing folder");
+        } catch (WegasErrorMessage ex) {
+            // this is expected
+        }
+
+        // create the missing directory
+        jcrFacade.createDirectory(gameModel, ContentConnector.WorkspaceType.FILES,
+            "subdir1", "/", "", "");
+
+        // and retry to create the file
+        jcrFacade.createFile(gameModel.getId(),
+            ContentConnector.WorkspaceType.FILES,
+            "firstFile", "/subdir1",
+            "text/plain", "note",
+            "description", initialFile, Boolean.TRUE);
+
+        InputStream file = jcrFacade.getFile(gameModel.getId(),
+            ContentConnector.WorkspaceType.FILES, "/subdir1/firstFile");
+
+        byte[] read = new byte[100];
+        int fileSize = file.read(read);
+        byte[] file1ReadContent = Arrays.copyOf(read, fileSize);
+
+        Assert.assertTrue("File 1 content not match",
+            Arrays.equals(initialContent, file1ReadContent));
+    }
+
+    @Test
+    public void testDirectoriesNotExists() throws RepositoryException, IOException {
+        byte[] initialContent = {0, 1, 2, 3};
+        InputStream initialFile = new ByteArrayInputStream(initialContent);
+        try {
+            jcrFacade.createFile(gameModel.getId(),
+                ContentConnector.WorkspaceType.FILES,
+                "firstFile", "/subdir1/subdir2/subdir3/",
+                "text/plain", "note",
+                "description", initialFile, Boolean.TRUE);
+
+            Assert.fail("Should not be possible to create a file in a non existing folder");
+        } catch (WegasErrorMessage ex) {
+            // this is expected
+        }
+
+        jcrFacade.createDirectoryWithParents(gameModel,
+            ContentConnector.WorkspaceType.FILES,
+            "subdir1/subdir2/subdir3");
+
+        jcrFacade.createFile(gameModel.getId(),
+            ContentConnector.WorkspaceType.FILES,
+            "firstFile", "/subdir1/subdir2/subdir3/",
+            "text/plain", "note",
+            "description", initialFile, Boolean.TRUE);
+
+        InputStream file = jcrFacade.getFile(gameModel.getId(),
+            ContentConnector.WorkspaceType.FILES, "/subdir1/subdir2/subdir3/firstFile");
+
+        byte[] read = new byte[100];
+        int fileSize = file.read(read);
+        byte[] file1ReadContent = Arrays.copyOf(read, fileSize);
+
+        Assert.assertTrue("File 1 content not match",
+            Arrays.equals(initialContent, file1ReadContent));
     }
 
     @Test

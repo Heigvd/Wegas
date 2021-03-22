@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { Toolbar } from './Toolbar';
-import { css } from 'emotion';
-import { primaryLight, primaryDark } from './Theme';
+import { css, cx } from 'emotion';
+import { themeVar } from './Style/ThemeVars';
+import { contentStyle, layoutStyle } from '../css/classes';
+
 interface TabLayoutProps {
   active?: number;
   vertical: boolean;
@@ -9,61 +11,96 @@ interface TabLayoutProps {
 }
 export class TabLayout extends React.Component<
   TabLayoutProps,
-  { active: number }
+  { active: number; renderedFlag: number }
 > {
   static defaultProps = {
     vertical: false,
   };
-  readonly state = { active: this.props.active || 0 };
+  readonly state = {
+    active: this.props.active || 0,
+    renderedFlag: this.props.active || 0,
+  };
+
   render() {
-    const active = React.Children.map(this.props.children, (c, i) => {
-      return i === this.state.active ? c : null;
-    });
     return (
       <Toolbar vertical={this.props.vertical}>
-        <Toolbar.Header>
+        <Toolbar.Header className={layoutStyle}>
           {this.props.tabs.map((t, i) => {
             return (
               <Tab
                 key={i}
                 active={i === this.state.active}
-                onClick={() => this.setState({ active: i })}
+                onClick={() =>
+                  this.setState(oldState => {
+                    return {
+                      active: i,
+                      renderedFlag: oldState.renderedFlag | (i + 1),
+                    };
+                  })
+                }
               >
                 {t}
               </Tab>
             );
           })}
         </Toolbar.Header>
-        <Toolbar.Content>{active}</Toolbar.Content>
+        <Toolbar.Content className={contentStyle}>
+          {React.Children.map(this.props.children, (c, i) => {
+            return (
+              (i === this.state.active ||
+                (this.state.renderedFlag & (i + 1)) > 0) && (
+                <div
+                  style={{
+                    display: i === this.state.active ? 'flex' : 'none',
+                    flex: '1 1 auto',
+                  }}
+                >
+                  {c}
+                </div>
+              )
+            );
+          })}
+        </Toolbar.Content>
       </Toolbar>
     );
   }
 }
-const tabStyle = css(primaryLight, {
-  display: 'inline-block',
+export const tabStyle = css({
+  display: 'flex',
+  alignItems: 'center',
   cursor: 'pointer',
-
-  margin: '0 0.2em',
-  borderStyle: 'solid',
-  borderWidth: '1px 1px 0 1px',
+  margin: '0 5px',
   padding: '5px',
-  // '&:hover': primary,
 });
-const activeTabStyle = css(tabStyle, primaryDark);
-function Tab(props: {
+export const inactiveTabStyle = css({
+  color: themeVar.Common.colors.LightTextColor,
+  backgroundColor: themeVar.Common.colors.PrimaryColor,
+});
+export const activeTabStyle = css({
+  color: themeVar.Common.colors.LightTextColor,
+  backgroundColor: themeVar.Common.colors.ActiveColor,
+});
+function Tab({
+  active,
+  onClick,
+  children,
+}: {
   active: boolean;
   children: React.ReactChild | null;
   onClick: () => void;
 }) {
-  if (props.children === null) {
+  if (children === null) {
     return null;
   }
   return (
     <div
-      className={`${props.active ? activeTabStyle : tabStyle}`}
-      onClick={props.onClick}
+      className={cx(tabStyle, {
+        [activeTabStyle]: active,
+        [inactiveTabStyle]: !active,
+      })}
+      onClick={onClick}
     >
-      {props.children}
+      {children}
     </div>
   );
 }

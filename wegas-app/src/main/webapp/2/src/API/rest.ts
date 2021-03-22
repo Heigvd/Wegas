@@ -1,16 +1,30 @@
-import { store } from '../data/store';
+import { store } from '../data/Stores/store';
+import { IAbstractEntity } from 'wegas-ts-api';
 
-type ContentType = 'application/json' | 'text/plain';
+type ContentType =
+  | 'application/json'
+  | 'text/plain'
+  | 'multipart/form-data'
+  | undefined;
 
 function COMMON_CONFIG(
-  contentType: ContentType = 'application/json',
+  contentType?: ContentType,
   managed: boolean = false,
 ): RequestInit {
   const socket_id = store.getState().global.pusherStatus.socket_id;
-  const HEADERS = new Headers({
-    'Content-Type': contentType,
-    'Managed-Mode': String(managed),
-  });
+
+  let HEADERS;
+  if (contentType) {
+    HEADERS = new Headers({
+      'Content-Type': contentType,
+      'Managed-Mode': String(managed),
+    });
+  } else {
+    HEADERS = new Headers({
+      'Managed-Mode': String(managed),
+    });
+  }
+
   if (socket_id != null) {
     HEADERS.set('SocketId', socket_id);
   }
@@ -19,32 +33,41 @@ function COMMON_CONFIG(
     headers: HEADERS,
   };
 }
-export interface ManagedMode {
+export interface IManagedResponse {
   '@class': 'ManagedResponse';
   deletedEntities: IAbstractEntity[];
-  events: any[];
   updatedEntities: IAbstractEntity[];
+  events: WegasEvent[];
 }
-type View = 'Editor' | 'Instance' | 'Export';
 
 export function rest(
   url: string,
   options: RequestInit = {},
-  view?: View,
+  view: View = API_VIEW,
   contentType: ContentType = 'application/json',
 ) {
+  let type: ContentType = contentType;
+  if (contentType === 'multipart/form-data') {
+    type = undefined;
+    if (!(options.body instanceof FormData)) {
+      throw Error(
+        "options.body must be FormData when contentType is 'multipart/form-data'",
+      );
+    }
+  }
   const v = view ? `${view}/` : '';
   const u = url.startsWith('/') ? url.substr(1) : url;
   return fetch(`${API_ENDPOINT}${v}${u}`, {
-    ...COMMON_CONFIG(contentType),
+    ...COMMON_CONFIG(type),
     ...options,
   }).then(res => {
     if (res.ok) {
       return res;
     }
-    throw Error(res.statusText);
+    throw res;
   });
 }
+
 export function managedModeRequest(
   url: string,
   options: RequestInit = {},
@@ -59,5 +82,7 @@ export function managedModeRequest(
     },
     view,
     contentType,
-  ).then(data => data.json() as Promise<ManagedMode>);
+  )
+    .then(data => data.json() as Promise<IManagedResponse>)
+    .catch(data => data.json() as Promise<IManagedResponse>);
 }

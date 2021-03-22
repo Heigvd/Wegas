@@ -32,21 +32,21 @@ function ObjectView(props) {
         <div>
             <fieldset
                 className={classNames(
-                `${rootStyle}`,
-                { [`${borderTopStyle}`]: props.view.label },
-                props.view.className
+                    `${rootStyle}`,
+                    { [`${borderTopStyle}`]: props.view.label },
+                    props.view.className
                 )}
             >
-            <legend className={legendStyle} align="center">
-                {label}
-            </legend>
-            <div>
-                {props.children}
-            </div>
-            {props.errorMessage.map(message => (
-                <div key={message} className={errorStyle}>
-                    {message}
+                <legend className={legendStyle} align="center">
+                    {label}
+                </legend>
+                <div>
+                    {props.children}
                 </div>
+                {props.errorMessage.map(message => (
+                    <div key={message} className={errorStyle}>
+                        {message}
+                    </div>
                 ))}
             </fieldset>
         </div>

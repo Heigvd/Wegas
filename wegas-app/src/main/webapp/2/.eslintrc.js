@@ -18,20 +18,30 @@ module.exports = {
   },
   settings: {
     react: {
-      version: '16.8',
+      version: '16.12',
     },
   },
   env: { browser: true, es6: true },
   rules: {
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
-    'no-console': 'warn',
+    'react/display-name': 'off',
+    'no-console': 'error',
+    'no-alert': 'error',
     'no-var': 'error',
+    'no-eval': 'error',
+    'no-implied-eval': 'error',
+    'no-param-reassign': 'error',
+    'no-debugger': 'error',
     'prefer-const': 'error',
     'linebreak-style': ['error', 'unix'],
     'react/no-unescaped-entities': 'off',
     'react/prop-types': 'off',
     'react/no-unsafe': ['error', { checkAliases: true }],
+    // eslint@6.8.0
+    '@typescript-eslint/ban-ts-ignore': 'off',
+    '@typescript-eslint/no-inferrable-types': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
   },
   overrides: [
     {
@@ -49,6 +59,7 @@ module.exports = {
         'no-undef': 'off',
         '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/no-non-null-assertion': 'off',
+        '@typescript-eslint/no-unused-vars': 'off',
         '@typescript-eslint/explicit-member-accessibility': 'off',
         '@typescript-eslint/interface-name-prefix': 'off',
         '@typescript-eslint/no-use-before-define': 'off',

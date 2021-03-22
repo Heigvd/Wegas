@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -14,7 +14,6 @@ import com.hazelcast.core.MembershipEvent;
 import com.hazelcast.core.MembershipListener;
 import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
-import io.prometheus.client.Gauge;
 import java.util.HashSet;
 import java.util.Set;
 import javax.ejb.LocalBean;
@@ -34,15 +33,12 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class ApplicationLifecycle implements MembershipListener/*, LifecycleListener*/ {
 
-    private static final Gauge hazelCastSize = Gauge.build().name("cluster_size").help("Number of hazelcast members").register();
-    private static final Gauge internalSize = Gauge.build().name("internalcluster_size").help("Number of hazelcast members in locallist").register();
-
-    public static final String LIFECYCLE_UP = "InstanceUp";
-    public static final String LIFECYCLE_DOWN = "InstanceDown";
-    public static final String REQUEST_ALL = "RequestAnnouncement";
+    private static final String LIFECYCLE_UP = "InstanceUp";
+    private static final String LIFECYCLE_DOWN = "InstanceDown";
+    private static final String REQUEST_ALL = "RequestAnnouncement";
 
     private final Logger logger = LoggerFactory.getLogger(ApplicationLifecycle.class);
-
+//
     /*
      * local member list to make the list available when the local instance has been shutdown
      */
@@ -80,15 +76,16 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
 
     public void addMember(String member) {
         if (!this.clusterMembers.contains(member)) {
-            internalSize.inc();
             this.clusterMembers.add(member);
         }
     }
 
     public void removeMember(String member) {
-        if (this.clusterMembers.remove(member)) {
-            internalSize.dec();
-        }
+        this.clusterMembers.remove(member);
+    }
+
+    public int getHzSize(){
+        return hzInstance.getCluster().getMembers().size();
     }
 
     /**
@@ -164,7 +161,6 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
         logger.info("NEW MEMBER (MembershipEvent) {}", me.getMember().getUuid());
         this.requestClusterMemberNotification();
         logClusterInfo(null);
-        hazelCastSize.set(me.getMembers().size());
     }
 
     @Override
@@ -184,7 +180,6 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
         logger.info("MEMBER {} REMOVED (membership event)", me.getMember().getUuid());
         this.removeMember(me.getMember().getUuid());
         logClusterInfo(null);
-        hazelCastSize.set(me.getMembers().size());
     }
 
     public Set<String> getMembers() {
@@ -235,7 +230,6 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
 
     public void sendWegasReadyEvent() {
         logger.info("WEGAS IS READY TO SERVE");
-        hazelCastSize.set(hzInstance.getCluster().getMembers().size());
         websocketFacade.sendLifeCycleEvent(WebsocketFacade.WegasStatus.READY, null);
         this.logClusterInfo(null);
     }
@@ -255,7 +249,7 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
             sb.append("** Hazelcast **\n");
 
             for (Member m : hzInstance.getCluster().getMembers()) {
-                sb.append(" - ").append(m.toString()).append("\n");
+                sb.append(" - ").append(m.toString()).append(System.lineSeparator());
             }
         } else {
             sb.append("Hazelcast is down\n");
@@ -264,7 +258,7 @@ public class ApplicationLifecycle implements MembershipListener/*, LifecycleList
         sb.append("** LocalList **\n");
 
         for (String m : this.getMembers()) {
-            sb.append(" - ").append(m).append("\n");
+            sb.append(" - ").append(m).append(System.lineSeparator());
         }
 
         logger.info(sb.toString());

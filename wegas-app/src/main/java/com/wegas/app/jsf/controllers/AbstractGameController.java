@@ -1,12 +1,13 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.jsf.controllers;
 
+import com.wegas.app.jsf.controllers.utils.HttpParam;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.LibraryFacade;
 import com.wegas.core.exception.internal.WegasForbiddenException;
@@ -19,10 +20,8 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import javax.ejb.EJB;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -42,13 +41,13 @@ public class AbstractGameController implements Serializable {
     /**
      *
      */
-    @ManagedProperty("#{param.id}")
+    @Inject @HttpParam("id")
     protected Long playerId;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private LibraryFacade libraryFacade;
 
     /**
@@ -112,7 +111,7 @@ public class AbstractGameController implements Serializable {
                             "url(" + context.getContextPath()
                             + dir + "$1)");                                     //Regexp to avoid rewriting protocol guess they contain ':' (http: data:)
                 }
-                acc.append(content).append("\n");
+                acc.append(content).append('\n');
             } catch (NullPointerException e) {
                 logger.error("Resource not found : {}", fileName);
             }

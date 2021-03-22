@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets" 
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:composition template="wegas-app/jsf/editor-default.xhtml">
+        <ui:define name="pageUri">/wegas-app/db/wegas-editsurvey-layout.json</ui:define>
+
+        <ui:define name="app-init">
+            <c:set var="extraBodyClass" value="wegas-editmode wegas-editsurveymode"/>
+            <c:set var="wegasMode" value="EDIT"/>
+        </ui:define>
+
+        <script>//<ui:define name = "editorFooter"><![CDATA[
+            function requestSurvey(surveyDescr, restart) {
+                var panel = Y.Wegas.Panel.alert((restart ? "Restarting" : "Preparing") + " the survey for you.<br>Please wait...");
+                // Wait until any current transaction is over:
+                //Y.later(000, this, function() {
+                    var script = 
+                            (restart ? "GameModelFacade.reset(self.getTeam());" : "") +
+                            "Variable.find(gameModel, \"" + surveyDescr.get("name") + "\").request(self);",
+                        cfg = {
+                            on: {
+                                success: function(e) {
+                                    // Display panel for at least 1 second:
+                                    Y.later(1000, this, function() {
+                                        panel && panel.destroy();
+                                    });
+                                },
+                                failure: function(e) {
+                                    panel && panel.destroy();
+                                    Y.Wegas.Panel.alert("Something went wrong. Could not restart the survey.");
+                                }
+                            }
+                        };
+                    Y.Wegas.Facade.Variable.script.remoteEval(script, cfg);
+                //});
+            }
+
+
+            Y.Wegas.app.once("preRender", function() {
+                var surveyId = +"#{param['surveyId']}";
+                if (surveyId > 0) {
+                    var descr = Y.Wegas.Facade.Variable.cache.findById(surveyId);
+                    if (descr) {
+                        YUI_config.Wegas.dataSelector = {
+                            key: 'id',
+                            val: surveyId
+                        };
+                    }
+                }
+            });
+
+
+            Y.Wegas.app.once("render", function() {
+                // Prepare Preview of the given survey:
+                if (!YUI_config.Wegas.dataSelector) {
+                    return; // i.e. abort
+                }
+                var descr = Y.Wegas.Facade.Variable.cache.findById(YUI_config.Wegas.dataSelector.val),
+                    inst = descr.getInstance(),
+                    container = Y.one(".wegas-playerview .wegas-pageloader-content");
+                if (!inst || !container) {
+                    return; // i.e. abort
+                }
+
+                // In increasing order of progress, status of a given survey:
+                var ORCHESTRATION_PROGRESS = {
+                    NOT_STARTED: "NOT_STARTED",
+                    REQUESTED: "REQUESTED",
+                    ONGOING: "ONGOING",
+                    COMPLETED: "COMPLETED",
+                    CLOSED: "CLOSED"
+                };
+
+                function onUpdatedSurveyInstance(e) {
+                    var entity = e.entity,
+                        newStatus = entity.get("status"),
+                        descr = entity.getDescriptor();
+                    if (newStatus === ORCHESTRATION_PROGRESS.CLOSED) {
+                        requestSurvey(descr, true);
+                    } else if (newStatus === ORCHESTRATION_PROGRESS.NOT_STARTED) {
+                        // May happen after a game reset in the editor.
+                        requestSurvey(descr, false);
+                    }
+                }
+
+                Y.Wegas.Facade.Instance.after(inst.get("id") + ":updatedInstance", onUpdatedSurveyInstance, this);
+
+                Y.use(["wegas-survey-widgets", "wegas-popuplistener"], function(Y) {
+                    
+                    // We are loading the editor, silence all other surveys
+                    // and force request of debug-team's survey to make sure it's displayed
+
+                    var status = inst.get("status"),
+                        restart = (status === ORCHESTRATION_PROGRESS.COMPLETED || status === ORCHESTRATION_PROGRESS.CLOSED);
+                        
+                    requestSurvey(descr, restart);
+                    Y.Wegas.app.hasPlugin("surveylistener").discardOtherSurveys(descr);
+                    
+                });
+            });
+
+            // Update editor title:
+            Y.Wegas.app.after("render", function() {
+                if (!YUI_config.Wegas.dataSelector) {
+                    return; // abort
+                }
+
+                function getFriendlyVarName(v) {
+                    var name = '',
+                        label = I18n.t(v.get("label"));
+                    if (v.get("editorTag")) {
+                        name += v.get("editorTag");
+                    }
+                    if (name && label) {
+                        name += ' - ';
+                    }
+                    if (label) {
+                        name += label;
+                    }
+                    if (!name) {
+                        name = v.get("name");
+                    }
+                    return name;
+                }
+
+                var descr = Y.Wegas.Facade.Variable.cache.findById(YUI_config.Wegas.dataSelector.val),
+                    friendlyName = getFriendlyVarName(descr);
+                Y.all(".wegas-title").setContent('<i>Editing survey \"' + friendlyName + '\"</i>');
+                document.title = friendlyName + ' - Wegas';
+            });
+
+            //]]></ui:define></script>
+
+    </ui:composition>
+</html>

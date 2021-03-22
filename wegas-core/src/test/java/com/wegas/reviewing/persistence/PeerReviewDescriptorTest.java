@@ -1,8 +1,9 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.persistence;
@@ -13,6 +14,7 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.util.ActAsPlayer;
 import com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
@@ -140,19 +142,20 @@ public class PeerReviewDescriptorTest extends AbstractArquillianTest {
      */
     @Test
     public void testSerialise() throws IOException {
-        requestFacade.setPlayer(player.getId());
+        try (ActAsPlayer actAsPlayer = requestManager.actAsPlayer(player)) {
+            actAsPlayer.setFlushOnExit(false);
+            String json = exportMapper.writeValueAsString(initial);
 
-        String json = exportMapper.writeValueAsString(initial);
+            PeerReviewDescriptor read = mapper.readValue(json, PeerReviewDescriptor.class);
 
-        PeerReviewDescriptor read = mapper.readValue(json, PeerReviewDescriptor.class);
+            assertEquals("Name", initial.getName(), read.getName());
+            assertEquals("Comments", initial.getComments(), read.getComments());
+            assertEquals("NumberOfReview", initial.getMaxNumberOfReview(), read.getMaxNumberOfReview());
+            assertEquals("ImportedName", VAR_NAME, read.getImportedToReviewName());
 
-        assertEquals("Name", initial.getName(), read.getName());
-        assertEquals("Comments", initial.getComments(), read.getComments());
-        assertEquals("NumberOfReview", initial.getMaxNumberOfReview(), read.getMaxNumberOfReview());
-        assertEquals("ImportedName", VAR_NAME, read.getImportedToReviewName());
-
-        assertEquals("# Feedback Items", 3, read.getFeedback().getEvaluations().size());
-        assertEquals("# Feedback Eval Items", 1, read.getFbComments().getEvaluations().size());
+            assertEquals("# Feedback Items", 3, read.getFeedback().getEvaluations().size());
+            assertEquals("# Feedback Eval Items", 1, read.getFbComments().getEvaluations().size());
+        }
     }
 
     @Test
@@ -177,7 +180,6 @@ public class PeerReviewDescriptorTest extends AbstractArquillianTest {
         merged.setFbComments(new EvaluationDescriptorContainer());
 
         //variableDescriptorFacade.create(scenario.getId(), merged);
-
         //logger.warn("Initial: " + exportMapper.writeValueAsString(initial));
         merged.merge(initial);
 

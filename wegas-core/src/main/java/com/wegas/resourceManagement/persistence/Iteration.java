@@ -1,40 +1,49 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.DatedEntity;
-import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.JSONSchema.ListOfTasksSchema;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.ValueGenerators.IterationNotStarted;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.View;
+import com.wegas.editor.jsonschema.ListOfTasksSchema;
+import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 /**
  * PMG Related !
@@ -50,21 +59,6 @@ public class Iteration extends AbstractEntity implements DatedEntity {
 
     private static final long serialVersionUID = 1L;
 
-    public static enum IterationStatus {
-        NOT_STARTED,
-        STARTED,
-        COMPLETED
-    };
-
-    //@JsonIgnore
-    @Transient
-    @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Task names", value = Hidden.class),
-            schema = ListOfTasksSchema.class
-    )
-    private Set<String> taskNames;
-
     /**
      *
      */
@@ -73,6 +67,22 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     @JsonView(Views.IndexI.class)
     private Long id;
 
+    //@JsonIgnore
+    @Transient
+    @WegasEntityProperty(
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(label = "Task names", value = Hidden.class),
+        schema = ListOfTasksSchema.class
+    )
+    private Set<String> taskNames;
+
+    /**
+     *
+     */
+    @WegasEntityProperty(
+        optional = false, nullable = false,
+        view = @View(label = "Create Time", value = Hidden.class)
+    )
     @Temporal(TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
     private Date createdTime = new Date();
@@ -81,76 +91,40 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      * Iteration Name
      */
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyString.class,
-            view = @View(label = "Name"))
+        optional = false, nullable = false, proposal = EmptyString.class,
+        view = @View(label = "Name"))
     private String name;
-
-    @Enumerated(value = EnumType.STRING)
-    @WegasEntityProperty(
-            optional = false, nullable = false, proposal = IterationNotStarted.class,
-            view = @View(label = "Status"))
-    private IterationStatus status = IterationStatus.NOT_STARTED;
 
     /**
      * Period number the iteration shall start on
      */
     @WegasEntityProperty(
-            optional = false, nullable = false,
-            view = @View(label = "Begin at"))
+        optional = false, nullable = false,
+        view = @View(label = "Begin at"))
     private Long beginAt;
 
     /**
-     * Total workload as computed at iteration beginning
+     * SPI-like indicator, based on workloads. WSPI
      */
     @WegasEntityProperty(
-            optional = false, nullable = false,
-            view = @View(label = "Total Workload"))
-    private Double totalWorkload;
+        optional = false, nullable = false,
+        view = @View(label = "WSPI"))
+    private Double wspi;
 
     @WegasEntityProperty(
-            optional = false, nullable = false,
-            view = @View(label = "SPI"))
-    private Double spi;
-
-    @WegasEntityProperty(
-            optional = false, nullable = false,
-            view = @View(label = "WPI"))
-    private Double wpi;
-
+        optional = false, nullable = false,
+        view = @View(label = "CPI"))
     private Double cpi;
 
-    private Double wages;
-
     /**
-     * planned workload from beginAt period
-     */
-    @ElementCollection
-    @JsonIgnore
-    @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Planned Workloads"))
-    private List<IterationPlanning> plannedWorkloads = new ArrayList<>();
-
-    /**
-     * maps a period number with workload for current period and future ones:
-     * Indicate the planned workload consumption
-     */
-    @ElementCollection
-    @JsonIgnore
-    @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Replanned Workloads"))
-    private List<IterationPlanning> replannedWorkloads = new ArrayList<>();
-
-    /**
-     * maps a period number with workload for past period and current one:
-     * indicates the total remaining workload for the corresponding period.
+     * maps a period number with workload for past period and current one: indicates the total remaining workload for
+     * the corresponding period.
      */
     @OneToMany(mappedBy = "iteration", cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Workloads"))
-    private List<Workload> workloads = new ArrayList<>();
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(label = "periods"))
+    private List<IterationPeriod> periods = new ArrayList<>();
 
     /**
      * Tasks composing the iteration
@@ -158,12 +132,12 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     @JsonIgnore
     @ManyToMany
     @JoinTable(name = "iteration_taskinstance",
-            joinColumns = {
-                @JoinColumn(name = "iteration_id", referencedColumnName = "id")
-            },
-            inverseJoinColumns = {
-                @JoinColumn(name = "taskinstance_id", referencedColumnName = "id")
-            }
+        joinColumns = {
+            @JoinColumn(name = "iteration_id", referencedColumnName = "id")
+        },
+        inverseJoinColumns = {
+            @JoinColumn(name = "taskinstance_id", referencedColumnName = "id")
+        }
     )
     private List<TaskInstance> tasks = new ArrayList<>();
 
@@ -178,6 +152,7 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      *
      */
     public Iteration() {
+        // useless but ensure there is an empty constructor
     }
 
     @Override
@@ -237,26 +212,6 @@ public class Iteration extends AbstractEntity implements DatedEntity {
         this.beginAt = beginAt;
     }
 
-    public IterationStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = IterationStatus.valueOf(status);
-    }
-
-    public void setStatus(IterationStatus status) {
-        this.status = status;
-    }
-
-    public Double getWages() {
-        return wages;
-    }
-
-    public void setWages(Double wages) {
-        this.wages = wages;
-    }
-
     /**
      * Get the Cost Performance Index
      *
@@ -271,153 +226,182 @@ public class Iteration extends AbstractEntity implements DatedEntity {
     }
 
     /**
-     * Get the Workload Performance Index
+     * Get the schedule Performance Index based on workloads
      *
-     * @return the WPI
+     * @return the WSPI
      */
-    public Double getWpi() {
-        return this.wpi;
-    }
-
-    public void setWpi(Double wpi) {
-        this.wpi = wpi;
-    }
-
-    /**
-     * Get the schedule Performance Index
-     *
-     * @return the SPI
-     */
-    public Double getSpi() {
-        return spi;
+    public Double getWspi() {
+        return wspi;
     }
 
     /**
      * Set the schedule Performance Index
      *
-     * @param spi
+     * @param wspi
      */
-    public void setSpi(Double spi) {
-        this.spi = spi;
-    }
-
-    /**
-     * Get the total iteration workloads as it was on the beginning of the
-     * iteration
-     *
-     * @return iteration total workload
-     */
-    public Double getTotalWorkload() {
-        return totalWorkload;
-    }
-
-    /**
-     * the the initial total workload
-     *
-     * @param totalWorkload initial workload
-     */
-    public void setTotalWorkload(Double totalWorkload) {
-        this.totalWorkload = totalWorkload;
+    public void setWspi(Double wspi) {
+        this.wspi = wspi;
     }
 
     @JsonIgnore
     private Long getLastPlannedPeriod() {
         Long max = 0l;
-        Set<Long> periods = getPlannedWorkloads().keySet();
-        for (Long p : periods) {
-            if (p > max) {
-                max = p;
+        List<IterationPeriod> periods = getPeriods();
+        for (IterationPeriod ip : periods) {
+            if (ip.getPlanned() != null && ip.getPlanned() > 0 && ip.getPeriodNumber() > max) {
+                max = ip.getPeriodNumber();
             }
         }
-        return max + beginAt;
+        return max;
+    }
+
+    /**
+     * very PMG Related
+     *
+     * @return true is any of its task is started or if any periods has EW gt 0
+     */
+    @JsonIgnore
+    public Boolean isStarted() {
+        for (IterationPeriod period : this.getPeriods()) {
+            if (period.getEw() != null && period.getEw() > 0) {
+                return true;
+            }
+        }
+        for (TaskInstance ti : this.getTasks()) {
+            if (ti.getPropertyD("completeness") > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get total workload, based on effective tasks
+     *
+     * @return
+     */
+    @JsonIgnore
+    public Double getTotalWorkload() {
+
+        Double total = 0.0;
+
+        for (TaskInstance taskInstance : getTasks()) {
+            if (taskInstance.getActive()) {
+                Double duration = taskInstance.getPropertyD("duration");
+                Double sumQuantity = 0.0;
+                for (WRequirement req : taskInstance.getRequirements()) {
+                    sumQuantity += req.getQuantity();
+                }
+                total += duration * sumQuantity;
+            }
+        }
+
+        return total;
+    }
+
+    /**
+     * Get current workload, based on effective tasks
+     *
+     * @return
+     */
+    @JsonIgnore
+    public Double getCurrentWorkload() {
+
+        Double total = 0.0;
+
+        for (TaskInstance taskInstance : getTasks()) {
+            if (taskInstance.getActive()) {
+                Double completeness = taskInstance.getPropertyD("completeness");
+                if (completeness != null && completeness > 0.1) {
+                    Double duration = taskInstance.getPropertyD("duration");
+                    Double sumQuantity = 0.0;
+                    for (WRequirement req : taskInstance.getRequirements()) {
+                        sumQuantity += req.getQuantity();
+                    }
+                    total += duration * sumQuantity;
+                }
+            }
+        }
+
+        return total;
+    }
+
+    /**
+     * Get total workload, based periods delta
+     *
+     * @return
+     */
+    @JsonIgnore
+    public Double getTotalDeltas() {
+
+        Double total = 0.0;
+
+        for (IterationPeriod p : getPeriods()) {
+            Double dWl = p.getDeltaAtStart();
+            if (dWl != null) {
+                total += dWl;
+            }
+        }
+
+        return total;
     }
 
     @JsonIgnore
-    public Double getPlannedValue(Double upTo) {
+    public Boolean hasAnyEw() {
+        for (IterationPeriod p : getPeriods()) {
+            Double ew = p.getEw();
+            if (ew != null && ew > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @JsonIgnore
+    public Double getPlannedWorkload(Double upTo) {
         double upToPeriod = Math.floor(upTo);
 
         if (Math.abs(upTo - upToPeriod) > 0.01) {
-            Double prevPv = this.getPlannedValue(upToPeriod);
-            Double nextPv = this.getPlannedValue(Math.ceil(upTo));
+            Double prevPv = this.getPlannedWorkload(upToPeriod);
+            Double nextPv = this.getPlannedWorkload(Math.ceil(upTo));
             Double delta = upTo - upToPeriod;
             return prevPv + delta * (nextPv - prevPv);
         } else {
-            Double pv = 0.0;
-            Map<Long, Double> pwl = getPlannedWorkloads();
-            for (long i = 0; i < upToPeriod - this.beginAt; i++) {
-                Double get = pwl.get(i);
-                if (get != null) {
-                    pv += get;
+            Double total = 0.0;
+
+            for (IterationPeriod p : getPeriods()) {
+                if (p.getPeriodNumber() < upToPeriod) {
+                    Double pw = p.getPlanned();
+                    if (pw != null) {
+                        total += pw;
+                    }
                 }
             }
 
-            if (pv >= this.getTotalWorkload()) {
-                pv = this.getTotalWorkload();
+            double totalWl = this.getTotalWorkload();
+            if (total >= totalWl) {
                 Long lastPlannedPeriod = getLastPlannedPeriod();
-                if (upToPeriod > lastPlannedPeriod + 1) {
-                    pv += (upToPeriod - lastPlannedPeriod - 1) * pv / (lastPlannedPeriod - beginAt + 1);
+                if (upToPeriod > lastPlannedPeriod + 0.1) {
+                    total += (upToPeriod - lastPlannedPeriod - 1) * total / (lastPlannedPeriod + 1);
                 }
             }
-            return pv;
-        }
-    }
-
-    @JsonIgnore
-    public Double getActualWorkload(int upToPeriod) {
-        Double aw = 0.0;
-
-        for (Workload wl : this.workloads) {
-            if (wl.getPeriodNumber() <= upToPeriod) {
-                aw += wl.getSpentWorkload();
-            }
-        }
-        return aw;
-    }
-
-    /**
-     * get the workload for each iteration period period number are relative to
-     * beginAt attribute
-     *
-     * @return planned workload, mapped by relative period number
-     */
-    @JsonIgnore
-    private Map<Long, Double> getModifiablePlannedWorkloads() {
-        return ListUtils.mapEntries(this.plannedWorkloads, new IterationPlanning.Extractor());
-    }
-
-    @JsonProperty
-    public Map<Long, Double> getPlannedWorkloads() {
-        return Collections.unmodifiableMap(this.getModifiablePlannedWorkloads());
-    }
-
-    /**
-     * set the workload planning
-     *
-     * @param plannedWorkloads the planning
-     */
-    @JsonProperty
-    public void setPlannedWorkloads(Map<Long, Double> plannedWorkloads) {
-        this.plannedWorkloads.clear();
-        if (plannedWorkloads != null) {
-            for (Entry<Long, Double> entry : plannedWorkloads.entrySet()) {
-                this.plannedWorkloads.add(new IterationPlanning(entry.getKey(), entry.getValue()));
-            }
+            return total;
         }
     }
 
     /**
-     * get effective workload (for past and current periods)
+     * get iteration periods
      *
-     * @return get effective workloads (ie. work done by resources)
+     * @return get periods
      */
-    public List<Workload> getWorkloads() {
-        return workloads;
+    public List<IterationPeriod> getPeriods() {
+        return periods;
     }
 
-    public Workload getWorkload(Long periodNumber) {
-        for (Workload wl : this.workloads) {
-            if (wl.getPeriodNumber().equals(periodNumber)) {
-                return wl;
+    public IterationPeriod getPeriod(Long periodNumber) {
+        for (IterationPeriod ip : this.periods) {
+            if (ip.getPeriodNumber().equals(periodNumber)) {
+                return ip;
             }
         }
         return null;
@@ -428,64 +412,24 @@ public class Iteration extends AbstractEntity implements DatedEntity {
      *
      * @param workloads
      */
-    public void setWorkloads(List<Workload> workloads) {
-        this.workloads = workloads;
-        if (this.workloads != null) {
-            for (Workload wl : workloads) {
-                wl.setIteration(this);
+    public void setPeriods(List<IterationPeriod> periods) {
+        this.periods = periods;
+        if (this.periods != null) {
+            for (IterationPeriod ip : periods) {
+                ip.setIteration(this);
             }
         }
     }
 
-    public void addWorkload(Long periodNumber, Double workload, Double spent) {
-        this.addWorkload(periodNumber, workload, spent, 9);
-    }
-
-    public void updateWorkload(Long periodNumber, Double spent, Integer lastWorkedStep) {
-        Workload workload = this.getWorkload(periodNumber);
-        if (workload != null) {
-            workload.setSpentWorkload(spent);
-            workload.setLastWorkedStep(lastWorkedStep);
+    public IterationPeriod getOrCreatePeriod(Long periodNumber) {
+        IterationPeriod p = getPeriod(periodNumber);
+        if (p == null) {
+            p = new IterationPeriod();
+            p.setPeriodNumber(periodNumber);
+            p.setIteration(this);
+            this.periods.add(p);
         }
-    }
-
-    public void addWorkload(Long periodNumber, Double workload, Double spent, Integer lastWorkedStep) {
-        Workload newWorkload = new Workload();
-        newWorkload.setPeriodNumber(periodNumber);
-        newWorkload.setWorkload(workload);
-        newWorkload.setSpentWorkload(spent);
-        newWorkload.setLastWorkedStep(lastWorkedStep);
-        newWorkload.setIteration(this);
-        this.workloads.add(newWorkload);
-    }
-
-    /**
-     * get replanned workloads consumption
-     *
-     * @return the planned workloads consumption
-     */
-    @JsonIgnore
-    private Map<Long, Double> getModifiableReplannedWorkloads() {
-        return ListUtils.mapEntries(this.replannedWorkloads, new IterationPlanning.Extractor());
-    }
-
-    @JsonProperty
-    public Map<Long, Double> getReplannedWorkloads() {
-        return Collections.unmodifiableMap(this.getModifiableReplannedWorkloads());
-    }
-
-    /**
-     * set the replanned workloads consumption
-     *
-     * @param replannedWorkloads
-     */
-    public void setReplannedWorkloads(Map<Long, Double> replannedWorkloads) {
-        this.replannedWorkloads.clear();
-        if (replannedWorkloads != null) {
-            for (Entry<Long, Double> entry : replannedWorkloads.entrySet()) {
-                this.replannedWorkloads.add(new IterationPlanning(entry.getKey(), entry.getValue()));
-            }
-        }
+        return p;
     }
 
     /**
@@ -542,24 +486,15 @@ public class Iteration extends AbstractEntity implements DatedEntity {
         this.taskNames = names;
     }
 
-    private void internalPlan(Long periodNumber, Double workload, Map<Long, Double> planning) {
-        if (workload > 0) {
-            planning.put(periodNumber, workload);
-        } else {
-            planning.remove(periodNumber);
-        }
-    }
-
     public void plan(Long periodNumber, Double workload) {
-        Map<Long, Double> planning = this.getModifiablePlannedWorkloads();
-        internalPlan(periodNumber, workload, planning);
-        this.setPlannedWorkloads(planning);
+        IterationPeriod period = getOrCreatePeriod(periodNumber);
+        period.setPlanned(workload);
+        period.setReplanned(workload);
     }
 
     public void replan(Long periodNumber, Double workload) {
-        Map<Long, Double> planning = this.getModifiableReplannedWorkloads();
-        internalPlan(periodNumber, workload, planning);
-        this.setReplannedWorkloads(planning);
+        IterationPeriod period = getOrCreatePeriod(periodNumber);
+        period.setReplanned(workload);
     }
 
     /**
@@ -575,15 +510,15 @@ public class Iteration extends AbstractEntity implements DatedEntity {
         BurndownInstance theBdI = this.getBurndownInstance();
 
         if (theBdI != null) {
-            theBdI = (BurndownInstance) beans.getVariableInstanceFacade().find(theBdI.getId());
-            if (theBdI != null) {
-                theBdI.getIterations().remove(this);
+            VariableInstance instance = beans.getVariableInstanceFacade().find(theBdI.getId());
+            if (instance instanceof BurndownInstance){
+                ((BurndownInstance) instance).getIterations().remove(this);
             }
         }
         for (TaskInstance task : this.getTasks()) {
-            task = (TaskInstance) beans.getVariableInstanceFacade().find(task.getId());
-            if (task != null) {
-                task.getIterations().remove(this);
+            VariableInstance instance = beans.getVariableInstanceFacade().find(task.getId());
+            if (instance instanceof TaskInstance) {
+                ((TaskInstance)instance).getIterations().remove(this);
             }
         }
         this.setTasks(new ArrayList<>());

@@ -1,15 +1,8 @@
-/*
- * Wegas
- * http://wegas.albasim.ch
- *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
- * Licensed under the MIT License
- */
 package com.wegas.app.jsf.controllers;
 
+import com.wegas.app.jsf.controllers.utils.HttpParam;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasNotFoundException;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.Role;
@@ -19,12 +12,11 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Locale;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
@@ -34,28 +26,30 @@ import org.slf4j.LoggerFactory;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@ManagedBean(name = "requestController")
+@Named("requestController")
 @RequestScoped
 public class RequestController implements Serializable {
 
-    Logger logger = LoggerFactory.getLogger(RequestController.class);
+    private static final long serialVersionUID = 3889537926448950055L;
+
+    private static final Logger logger = LoggerFactory.getLogger(RequestController.class);
 
     private static String[] availableLocales = {"en", "fr", "fr-CH"};
 
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
     /**
      *
      */
-    @ManagedProperty("#{param.lang}")
-    private String lang = "en";
+    @Inject @HttpParam
+    private String lang;
     /**
      *
      */
-    @ManagedProperty("#{param.debug}")
+    @Inject @HttpParam
     private String debug;
 
     /**
@@ -81,6 +75,18 @@ public class RequestController implements Serializable {
      */
     public void setLang(String lang) {
         this.lang = lang;
+    }
+
+    public String getFavicon(){
+        return Helper.getWegasProperty("favicon", "favicon_red");
+    }
+
+    /**
+     * Such a hack to injext %lt;flash:message%gt; tag
+     * @return 
+     */
+    public String getFlashMessageTag(){
+        return "<flash:messages></flash:messages>";
     }
 
     /**
@@ -135,6 +141,7 @@ public class RequestController implements Serializable {
                 context.getExternalContext().redirect(((HttpServletRequest) context.getExternalContext().getRequest()).getContextPath()); // redirect to login
             } catch (IOException ex1) {
                 //check if this happens.
+                logger.error("Failed to get current user");
             }
             return null;
         }
@@ -146,7 +153,7 @@ public class RequestController implements Serializable {
      */
     public String getCurrentUserId() {
         try {
-            return "" + this.getCurrentUser().getId();
+            return this.getCurrentUser().getId().toString();
         } catch (WegasNotFoundException e) {
             return "0";
         }
@@ -158,7 +165,7 @@ public class RequestController implements Serializable {
      */
     public String getCurrentUserMail() {
         try {
-            return ((JpaAccount) this.getCurrentUser().getMainAccount()).getEmail();
+            return ((JpaAccount) this.getCurrentUser().getMainAccount()).getDetails().getEmail();
         } catch (ClassCastException | WegasNotFoundException e) {
             return "";
         }

@@ -1,37 +1,64 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.DatedEntity;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
-import com.wegas.core.persistence.annotations.WegasExtraProperty;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.persistence.token.InviteToJoinToken;
 import com.wegas.core.security.util.WegasEntityPermission;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.Open;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.View;
-import java.util.*;
-import javax.persistence.*;
+import com.wegas.editor.view.Hidden;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -41,20 +68,34 @@ import javax.validation.constraints.Pattern;
  */
 @Entity
 @Table(
-        uniqueConstraints = {
-            //    @UniqueConstraint(columnNames = {"name"}),
-            @UniqueConstraint(columnNames = {"token"})},
-        indexes = {
-            @Index(columnList = "gamemodel_id"),
-            @Index(columnList = "createdby_id")
-        }
+    //uniqueConstraints = {
+    //    @UniqueConstraint(columnNames = {"name"}),
+    //    @UniqueConstraint(columnNames = {"token"})}, // partial index : WHERE status = LIVE OR status = BIN
+    indexes = {
+        @Index(columnList = "gamemodel_id"),
+        @Index(columnList = "createdby_id")
+    }
 )
-@NamedQueries({
-    @NamedQuery(name = "Game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
-    @NamedQuery(name = "Game.findIdById", query = "SELECT DISTINCT g.id FROM Game g WHERE g.id = :gameId"),
-    @NamedQuery(name = "Game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"),
-    @NamedQuery(name = "Game.findByNameLike", query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name")
-})
+@NamedQuery(
+    name = "Game.findByStatus",
+    query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"
+)
+@NamedQuery(
+    name = "Game.findByStatuses",
+    query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status IN :statuses ORDER BY g.createdTime ASC"
+)
+@NamedQuery(
+    name = "Game.findIdById",
+    query = "SELECT DISTINCT g.id FROM Game g WHERE g.id = :gameId"
+)
+@NamedQuery(
+    name = "Game.findByToken",
+    query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token"
+)
+@NamedQuery(
+    name = "Game.findByNameLike",
+    query = "SELECT DISTINCT g FROM Game g WHERE  g.name LIKE :name"
+)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Game extends AbstractEntity implements Broadcastable, InstanceOwner, DatedEntity, NamedEntity {
 
@@ -73,8 +114,8 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     @Basic(optional = false)
     @Pattern(regexp = "^.*\\S+.*$", message = "Game name cannot be empty")// must at least contains one non-whitespace character
     @WegasEntityProperty(
-            optional = false, nullable = false,
-            view = @View(label = "Name"))
+        optional = false, nullable = false,
+        view = @View(label = "Name"))
     private String name;
 
     /**
@@ -82,11 +123,10 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @NotNull
     @Basic(optional = false)
-
     @Pattern(regexp = "^([a-zA-Z0-9_-]|\\.(?!\\.))*$", message = "Token shall only contains alphanumeric characters, numbers, dots, underscores or hyphens")
     @WegasEntityProperty(
-            nullable = false, optional = false,
-            view = @View(label = "Token"))
+        nullable = false, optional = false,
+        view = @View(label = "Token"))
     private String token;
 
     /**
@@ -129,8 +169,8 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @Enumerated
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = Open.class,
-            view = @View(label = "Access"))
+        optional = false, nullable = false, proposal = Open.class,
+        view = @View(label = "Access"))
     private GameAccess access = GameAccess.OPEN;
 
     /**
@@ -143,7 +183,22 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     /**
      *
      */
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<InviteToJoinToken> invitations = new ArrayList<>();
+
+    /**
+     *
+     */
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<InviteToJoinToken> surveyInvitation = new ArrayList<>();
+
+    /**
+     *
+     */
     public Game() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -199,7 +254,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      */
     @JsonManagedReference("game-team")
     // Exclude this property from the Lobby view and force a fetch in Editor view:
-    @JsonView(Views.EditorI.class)
+    @JsonView(Views.ExtendedI.class)
     @WegasExtraProperty(optional = false, nullable = false, view = @View(label = "Teams", value = Hidden.class))
     public List<Team> getTeams() {
         return this.getGameTeams().getTeams();
@@ -213,7 +268,8 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
         this.getGameTeams().setTeams(teams);
     }
 
-    @JsonIgnore
+    @WegasExtraProperty(optional = false, nullable = false, view = @View(label = "Status", value = Hidden.class))
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public Status getStatus() {
         return status;
     }
@@ -237,13 +293,82 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     /**
+     * Return all LIVE teams of the game. To be considered LIVE, a team must have a LIVE status and
+     * must contains at least one player with such a LIVE status too
+     *
+     * @return
+     */
+    @JsonIgnore
+    public List<Team> getLiveTeams() {
+        List<Team> lives = new ArrayList<>();
+
+        List<Team> teams = this.getTeams();
+
+        for (Team t : teams) {
+            if (t.getStatus() == Populatable.Status.LIVE && !t.getLivePlayers().isEmpty()) {
+                lives.add(t);
+            }
+        }
+
+        return lives;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @JsonIgnore
+    @Override
+    public Player getUserLivePlayer(User user) {
+        for (Team t : this.getTeams()) {
+            Player theP = t.getUserLivePlayer(user);
+            if (theP != null) {
+                return theP;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @JsonIgnore
+    @Override
+    public Player getUserLiveOrSurveyPlayer(User user) {
+        for (Team t : this.getTeams()) {
+            Player theP = t.getUserLiveOrSurveyPlayer(user);
+            if (theP != null) {
+                return theP;
+            }
+        }
+        return null;
+    }
+
+    /**
      * {@inheritDoc }
      */
     @JsonIgnore
     @Override
     public Player getAnyLivePlayer() {
         for (Team t : this.getTeams()) {
-            return t.getAnyLivePlayer();
+            Player p = t.getAnyLivePlayer();
+            if (p != null) {
+                return t.getAnyLivePlayer();
+            }
+        }
+        return null;
+    }
+
+    @JsonIgnore
+    public Player getTestPlayer() {
+        if (this instanceof DebugGame) {
+            return this.getAnyLivePlayer();
+        } else {
+            for (Team t : this.getTeams()) {
+                Player testPlayer = t.getTestPlayer();
+                if (testPlayer != null) {
+                    return testPlayer;
+                }
+            }
         }
         return null;
     }
@@ -263,6 +388,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
      * @return the gameModel
      */
     @JsonView({Views.LobbyI.class, Views.EditorI.class})
+    @Override
     public GameModel getGameModel() {
         return gameModel;
     }
@@ -362,6 +488,7 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     /**
      * @return game creator name or null if the user doesn't exists anymore
      */
+    @JsonView({Views.EditorI.class, Views.LobbyI.class})
     public String getCreatedByName() {
         if (this.getCreatedBy() != null) {
             return this.getCreatedBy().getName();
@@ -378,8 +505,8 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     }
 
     /**
-     * @param gameModelId the gameModelId to set public void setGameModelId(Long
-     *                    gameModelId) { this.gameModelId = gameModelId; }
+     * @param gameModelId the gameModelId to set public void setGameModelId(Long gameModelId) {
+     *                    this.gameModelId = gameModelId; }
      */
     /**
      * @return the access
@@ -437,6 +564,18 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
         return instances;
     }
 
+    public List<InviteToJoinToken> getInvitations() {
+        return invitations;
+    }
+
+    public void setInvitations(List<InviteToJoinToken> invitations) {
+        this.invitations = invitations;
+    }
+
+    public void removeInvitation(InviteToJoinToken invitation) {
+        this.invitations.remove(invitation);
+    }
+
     /**
      * @return true if such a debugteam exists
      */
@@ -461,11 +600,11 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
     public enum GameAccess {
 
         /**
-         *
+         * Player can join
          */
         OPEN,
         /**
-         *
+         * Player can not join
          */
         CLOSE
     }
@@ -488,8 +627,8 @@ public class Game extends AbstractEntity implements Broadcastable, InstanceOwner
          */
         DELETE,
         /**
-         * Does not exist anymore. Actually, this status should never persist.
-         * Used internally as game's missing.
+         * Does not exist anymore. Actually, this status should never persist. Used internally as
+         * game's missing.
          */
         SUPPRESSED
     }

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core;
@@ -20,8 +20,7 @@ import org.slf4j.LoggerFactory;
  * https://github.com/PE-INTERNATIONAL/org.eclipse.persistence.logging.slf4j/blob/master/README.md
  * <p>
  * <p>
- * This is a wrapper class for SLF4J. It is used when messages need to be logged
- * through SLF4J.
+ * This is a wrapper class for SLF4J. It is used when messages need to be logged through SLF4J.
  * </p>
  * <p>
  * Para usar SLF4j para los logs de EclipseLink configuramos la propiedad
@@ -29,13 +28,13 @@ import org.slf4j.LoggerFactory;
  * <code>org.eclipse.persistence.logging.Slf4jSessionLogger</code>
  * </p>
  * <p>
- * La configuración del nivel de los logs no se realiza en EclipseLink (con la
- * propiedad eclipselink.logging.level), sino en la implementación de SLF4J.
+ * La configuración del nivel de los logs no se realiza en EclipseLink (con la propiedad
+ * eclipselink.logging.level), sino en la implementación de SLF4J.
  * <p>
  * Se puede usar el resto de las propiedades de logging de EclipseLink
- * (eclipselink.logging.timestamp, eclipselink.logging.thread,
- * eclipselink.logging.session, eclipselink.logging.connection y
- * eclipselink.logging.parameters) para configurar el formato de salida.
+ * (eclipselink.logging.timestamp, eclipselink.logging.thread, eclipselink.logging.session,
+ * eclipselink.logging.connection y eclipselink.logging.parameters) para configurar el formato de
+ * salida.
  * <p>
  * Se usan las siguientes categorias de log:
  * <p>
@@ -57,15 +56,14 @@ import org.slf4j.LoggerFactory;
  * </ul>
  * </p>
  * <p>
- * Los niveles de log de EclipseLink y SLF4J son distintos, se realiza la
- * siguiente correspondencia:
+ * Los niveles de log de EclipseLink y SLF4J son distintos, se realiza la siguiente correspondencia:
  * </p>
  * <ul>
- * <li>ALL,FINER,FINEST -> TRACE
- * <li>FINE -> DEBUG
- * <li>CONFIG,INFO -> INFO
- * <li>WARNING -> WARN
- * <li>SEVERE -> ERROR
+ * <li>ALL,FINER,FINEST -&gt; TRACE
+ * <li>FINE -&gt; DEBUG
+ * <li>CONFIG,INFO -&gt; INFO
+ * <li>WARNING -&gt; WARN
+ * <li>SEVERE -&gt; ERROR
  * </ul>
  * </p>
  * <p>
@@ -97,8 +95,8 @@ public class Slf4jSessionLogger extends AbstractSessionLog {
 
         StringBuilder message = new StringBuilder();
 
-        message.append(getSupplementDetailString(entry));
-        message.append(formatMessage(entry));
+        message.append(getSupplementDetailString(entry))
+            .append(formatMessage(entry));
 
         switch (logLevel) {
             case TRACE:
@@ -116,35 +114,31 @@ public class Slf4jSessionLogger extends AbstractSessionLog {
             case ERROR:
                 logger.error(message.toString());
                 break;
+            default:
+                break;
         }
     }
 
     @Override
     public boolean shouldLog(int level, String category) {
         Logger logger = getLogger(category);
-        boolean resp = false;
 
         LogLevel logLevel = getLogLevel(level);
 
         switch (logLevel) {
             case TRACE:
-                resp = logger.isTraceEnabled();
-                break;
+                return logger.isTraceEnabled();
             case DEBUG:
-                resp = logger.isDebugEnabled();
-                break;
+                return logger.isDebugEnabled();
             case INFO:
-                resp = logger.isInfoEnabled();
-                break;
+                return logger.isInfoEnabled();
             case WARN:
-                resp = logger.isWarnEnabled();
-                break;
+                return logger.isWarnEnabled();
             case ERROR:
-                resp = logger.isErrorEnabled();
-                break;
+                return logger.isErrorEnabled();
+            default:
+                return false;
         }
-
-        return resp;
     }
 
     @Override
@@ -153,8 +147,8 @@ public class Slf4jSessionLogger extends AbstractSessionLog {
     }
 
     /**
-     * Return true if SQL logging should log visible bind parameters. If the
-     * shouldDisplayData is not set, return false.
+     * Return true if SQL logging should log visible bind parameters. If the shouldDisplayData is
+     * not set, return false.
      */
     @Override
     public boolean shouldDisplayData() {
@@ -171,12 +165,12 @@ public class Slf4jSessionLogger extends AbstractSessionLog {
     private Logger getLogger(String category) {
         String loggerName;
         if (category != null) {
-            loggerName= ECLIPSELINK_NAMESPACE + "." + category;
+            loggerName = ECLIPSELINK_NAMESPACE + "." + category;
         } else {
             loggerName = ECLIPSELINK_NAMESPACE + ".default";
         }
         Logger logger = LOGGERS.get(loggerName);
-        if (logger == null){
+        if (logger == null) {
             logger = LoggerFactory.getLogger(loggerName);
             LOGGERS.put(loggerName, logger);
         }
@@ -211,7 +205,7 @@ public class Slf4jSessionLogger extends AbstractSessionLog {
      * Relación de los niveles de log de EclipseLink y los de SLF4J
      */
     private void initMapLevels() {
-        mapLevels = new HashMap<Integer, LogLevel>();
+        mapLevels = new HashMap<>();
 
         mapLevels.put(SessionLog.ALL, LogLevel.TRACE);
         mapLevels.put(SessionLog.FINEST, LogLevel.TRACE);

@@ -1,9 +1,15 @@
 import * as React from 'react';
-import { VariableConnect } from '../../VariableConnect';
+import {
+  useVariableDescriptor,
+  useVariableInstance,
+} from '../../Hooks/useVariable';
 import { TranslatableContent } from '../../../data/i18n';
-import { themeVar } from '../../Theme';
 import { FontAwesome } from '../../../Editor/Components/Views/FontAwesome';
 import { css } from 'emotion';
+import { themeVar } from '../../Style/ThemeVars';
+import { INumberDescriptor } from 'wegas-ts-api';
+import { TumbleLoader } from '../../Loader';
+import { wwarn } from '../../../Helper/wegaslog';
 
 const containerStyle = css({
   minWidth: '8em',
@@ -59,71 +65,67 @@ export default function Gauge(props: {
    */
   negativeColor?: string;
 }) {
+  const descriptor = useVariableDescriptor<INumberDescriptor>(props.variable);
+  const instance = useVariableInstance(descriptor);
+  if (descriptor === undefined || instance === undefined) {
+    wwarn(`Not found: ${props.variable}`);
+    return <TumbleLoader />;
+  }
+  const {
+    min = descriptor.minValue,
+    max = descriptor.maxValue,
+    positiveColor = themeVar.Common.colors.SuccessColor,
+    negativeColor = themeVar.Common.colors.ErrorColor,
+  } = props;
+  if (min == undefined || max == undefined) {
+    return (
+      <span>
+        <FontAwesome
+          style={{ color: themeVar.Common.colors.WarningColor }}
+          icon="exclamation-triangle"
+        />
+        Missing min or max value
+      </span>
+    );
+  }
+  const boundedValue = Math.max(min, Math.min(max, instance.getValue()));
+  const neutral = props.neutralValue === undefined ? min : props.neutralValue;
+  const neutralAngle = 180 - ratio(neutral, min, max) * 180;
+  const start = polarToCartesian(500, 500, 450, neutralAngle);
+  const valueAngle = 180 - ratio(boundedValue, min, max) * 180;
+  const end = polarToCartesian(500, 500, 450, valueAngle);
+  const positive = valueAngle < neutralAngle;
+
   return (
-    <VariableConnect<INumberDescriptor> name={props.variable}>
-      {({ state }) => {
-        if (state === undefined) {
-          return <span>Not found: {props.variable}</span>;
-        }
-        const {
-          min = state.descriptor.minValue,
-          max = state.descriptor.maxValue,
-          positiveColor = themeVar.successColor,
-          negativeColor = themeVar.errorColor,
-        } = props;
-        if (min == undefined || max == undefined) {
-          return (
-            <span>
-              <FontAwesome
-                style={{ color: themeVar.warningColor }}
-                icon="exclamation-triangle"
-              />
-              Missing min or max value
-            </span>
-          );
-        }
-        const boundedValue = Math.max(min, Math.min(max, state.instance.value));
-        const neutral =
-          props.neutralValue === undefined ? min : props.neutralValue;
-        const neutralAngle = 180 - ratio(neutral, min, max) * 180;
-        const start = polarToCartesian(500, 500, 450, neutralAngle);
-        const valueAngle = 180 - ratio(boundedValue, min, max) * 180;
-        const end = polarToCartesian(500, 500, 450, valueAngle);
-        const positive = valueAngle < neutralAngle;
-        
-        return (
-          <div className={containerStyle}>
-            <svg viewBox="0 0 1000 500">
-              <path
-                strokeWidth="75"
-                fill="none"
-                stroke={themeVar.disabledColor}
-                d="M 50 500 A 450 450 0 0 1 950 500"
-              />
-              <path
-                strokeWidth="75"
-                fill="none"
-                stroke={positive ? positiveColor : negativeColor}
-                d={`M ${start[0]} ${start[1]} A 450 450 0 0 ${
-                  positive ? 1 : 0
-                } ${end[0]} ${end[1]}`}
-              />
-              <circle
-                cx={end[0]}
-                cy={end[1]}
-                r="37"
-                strokeWidth="20"
-                stroke={themeVar.primaryLighterColor}
-                fill={themeVar.primaryDarkerColor}
-              />
-            </svg>
-            <div className={textStyle}>
-              <div>{TranslatableContent.toString(state.descriptor.label)}</div>
-              <div>{state.instance.value}</div>
-            </div>
-          </div>
-        );
-      }}
-    </VariableConnect>
+    <div className={containerStyle}>
+      <svg viewBox="0 0 1000 500">
+        <path
+          strokeWidth="75"
+          fill="none"
+          stroke={themeVar.Common.colors.DisabledColor}
+          d="M 50 500 A 450 450 0 0 1 950 500"
+        />
+        <path
+          strokeWidth="75"
+          fill="none"
+          stroke={positive ? positiveColor : negativeColor}
+          d={`M ${start[0]} ${start[1]} A 450 450 0 0 ${positive ? 1 : 0} ${
+            end[0]
+          } ${end[1]}`}
+        />
+        <circle
+          cx={end[0]}
+          cy={end[1]}
+          r="37"
+          strokeWidth="20"
+          stroke={themeVar.Common.colors.PrimaryColor}
+          fill={themeVar.Common.colors.HeaderColor}
+        />
+      </svg>
+      <div className={textStyle}>
+        <div>{TranslatableContent.toString(descriptor.label)}</div>
+        <div>{instance.getValue()}</div>
+      </div>
+    </div>
   );
 }

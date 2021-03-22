@@ -1,13 +1,16 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.util;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.wegas.core.Helper;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -16,11 +19,17 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class AuthenticationInformation {
 
     private String login;
-    private String password;
+
+    /**
+     * hashed salted password
+     */
+    private List<String> hashes = new ArrayList<>();
+
     private boolean remember;
     private boolean agreed = false;
 
     public AuthenticationInformation() {
+        // ensure there is a default constructor
     }
 
     public String getLogin() {
@@ -31,12 +40,12 @@ public class AuthenticationInformation {
         this.login = login;
     }
 
-    public String getPassword() {
-        return password;
+    public List<String> getHashes() {
+        return hashes;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setHashes(List<String> hashes) {
+        this.hashes = hashes;
     }
 
     public boolean isRemember() {
@@ -53,5 +62,11 @@ public class AuthenticationInformation {
 
     public void setAgreed(Boolean agreed) {
         this.agreed = agreed;
+    }
+
+    public void addHash(HashMethod method, String password, String salt){
+        if (method != null){
+            this.getHashes().add(method.hash(password, Helper.coalesce(salt)));
+        }
     }
 }

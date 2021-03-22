@@ -1,15 +1,15 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.annotations;
 
+import ch.albasim.wegas.annotations.EmptyCallback;
+import ch.albasim.wegas.annotations.WegasCallback;
 import com.wegas.core.merge.utils.DefaultWegasFactory;
-import com.wegas.core.merge.utils.EmptyCallback;
-import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.merge.utils.WegasFactory;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

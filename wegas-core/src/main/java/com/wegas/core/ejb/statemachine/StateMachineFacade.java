@@ -1,14 +1,23 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.api.StateMachineFacadeI;
-import com.wegas.core.ejb.*;
+import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.GameFacade;
+import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.ejb.ScriptCheck;
+import com.wegas.core.ejb.ScriptEventFacade;
+import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.ejb.WegasAbstractFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
@@ -29,12 +38,10 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -57,31 +64,30 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
      * Event parameter will be passed in a function with named parameter
      * {@value #EVENT_PARAMETER_NAME}
      */
-    static final private String EVENT_PARAMETER_NAME = "param";
-
-    @EJB
+    //static final private String EVENT_PARAMETER_NAME = "param";
+    @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
 
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
 
-    @EJB
+    @Inject
     private GameFacade gameFacade;
 
-    @EJB
+    @Inject
     private TeamFacade teamFacade;
 
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
 
-    @EJB
+    @Inject
     private ScriptFacade scriptManager;
 
     @Inject
     private RequestManager requestManager;
 
     @Inject
-    ScriptCheck scriptCheck;
+    private ScriptCheck scriptCheck;
 
     @Inject
     ScriptFacade scriptFacade;
@@ -104,17 +110,15 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
         if (context == null || context.getPlayers() == null) {
             logger.error("No Player Provided...");
             Player player = null;
-            for (Entry<String, List<AbstractEntity>> entry : requestManager.getUpdatedEntities().entrySet()) {
-                for (AbstractEntity entity : entry.getValue()) {
+            for (AbstractEntity entity : requestManager.getUpdatedEntities()) {
                     if (entity instanceof VariableInstance) {
                         VariableInstance vi = (VariableInstance) entity;
                         InstanceOwner owner = vi.getOwner();
                         if (owner != null) {
-                            player = owner.getAnyLivePlayer();
+                        player = owner.getUserLivePlayerOrDebugPlayer(requestManager.getCurrentUser());
                         }
                         break;
                     }
-                }
                 if (player != null) {
                     break;
                 }
@@ -190,7 +194,8 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
     private List<String> getAudiences() {
         List<String> audiences = new ArrayList<>();
 
-        for (Entry<String, List<AbstractEntity>> entry : requestManager.getJustUpdatedEntities().entrySet()) {
+        requestManager.getJustUpdatedEntities();
+        for (Entry<String, List<AbstractEntity>> entry : requestManager.getMappedJustUpdatedEntities().entrySet()) {
             for (AbstractEntity ae : entry.getValue()) {
                 if (ae instanceof VariableInstance) {
                     audiences.add(entry.getKey());
@@ -269,6 +274,19 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
         }
     }
 
+//    private void runForPlayer(Player player) throws WegasScriptException {
+//        List<AbstractStateMachineDescriptor> statemachines = this.getAllStateMachines(player.getGameModel());
+//        List<AbstractTransition> passed = new ArrayList<>();
+//        //stateMachineEventsCounter = new InternalStateMachineEventCounter();
+//        Integer steps = this.doSteps(player, passed, statemachines, 0);
+//        logger.info("#steps[{}] - Player {} triggered transition(s):{}", steps, player.getName(), passed);
+//        //stateMachineEventsCounter = null;
+//        /*
+//         * Force resources release
+//         */
+//        //getEntityManager().flush();
+//    }
+
     private static final class SelectedTransition {
 
         Player player;
@@ -310,6 +328,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
             AbstractState currentState = smi.getCurrentState();
             for (AbstractTransition transition : (List<AbstractTransition>)currentState.getSortedTransitions()) {
                 String transitionUID = smi.getId() + "-" + transition.getId();
+                logger.trace("Process FSM Transition {}", transition);
 
                 if (stateMachineCounter.hasAlreadyBeenWalked(transitionUID)) {
                     logger.debug("Loop detected, {} already walked", transition);
@@ -323,25 +342,40 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                          * a DialogueTransition with a text means that
                          * transition can only be triggered by hand by a player
                          */
+                        logger.trace("Ignore dialogue transition (explicit user action is requiered)");
                         continue;
                     } else if (this.isNotDefined(transition.getTriggerCondition())) {
+                        logger.trace("Select This transition (no condition defined)");
                         // Empty condition is always valid :no need to eval
                         validTransition = true;
                     } else {
                         Object result = null;
                         try {
+                            logger.trace("Eval the condition \"{}\"", transition.getTriggerCondition().getContent());
                             result = scriptManager.eval(player, transition.getTriggerCondition(), sm);
+                            logger.trace("Eval result: {}", validTransition);
 
                         } catch (EJBException ex) {
-                            logger.error("Transition eval exception: FSM " + sm.getName() + ":" + sm.getId() + ":" + transition.getTriggerCondition().getContent());
+                            logger.error("Transition eval exception: FSM {}:{}:{}",
+                                sm.getName(),
+                                sm.getId(),
+                                transition.getTriggerCondition().getContent());
                             throw ex;
                         } catch (WegasScriptException ex) {
-                            ex.setScript("Variable " + sm.getLabel());
+                            logger.trace("WegasScriptException: {}", ex);
+                            Long stateId = transition.getState().getIndex();
+                            Long nextStateId = transition.getNextStateId();
+                            sm.getEditorLabel();
+                            ex.setScript("Transition from state #"
+                                + stateId + " to state #" + nextStateId
+                                + " of StateMachine name=" + sm.getName() + " \""
+                                + sm.getEditorLabel()
+                                + "\": " + ex.getScript());
                             requestManager.addException(ex);
                         }
-
                         if (result instanceof Boolean) {
                             validTransition = (Boolean) result;
+                            //logger.debug("Loop detected, already marked {} IN {}", transition, passedTransitions);
                         } else {
                             throw WegasErrorMessage.error("Please review condition "
                                     + "from a transition to state #" + transition.getNextStateId()
@@ -349,7 +383,13 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                     }
                     }
 
+                    if (validTransition == null) {
+                        logger.trace("Condition return null !");
+                        throw WegasErrorMessage.error("Please review condition [" + sm.getLabel() + "]:\n"
+                            + transition.getTriggerCondition().getContent());
+                    } else
                     if (validTransition) {
+                        logger.trace("Valid transition found");
                         stateMachineCounter.walk(smi, transitionUID);
 
                             smi.setCurrentStateId(transition.getNextStateId());
@@ -375,6 +415,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
  /* Fixed by lib, currently commenting it  @removeme */
 //            this.getAllStateMachines(player.getGameModel());
         for (SelectedTransition selectedTransition : selectedTransitions) {
+            logger.trace("Walk Selected Transitions");
             //for (Map.Entry<StateMachineInstance, Transition> entry : selectedTransitions.entrySet()) {
 
             StateMachineInstance fsmi = selectedTransition.stateMachineInstance;
@@ -434,7 +475,7 @@ public class StateMachineFacade extends WegasAbstractFacade implements StateMach
                     fsmI.transitionHistoryAdd(transitionId);
                     DialogueState nextState = (DialogueState) fsmI.getCurrentState();
 
-                    requestManager.addEntity(fsmI.getAudience(), fsmI, requestManager.getUpdatedEntities());
+                    requestManager.addUpdatedEntity(fsmI);
                     /* Force in case next state == current state */
 
                     if (fsmI.getCurrentState().getOnEnterEvent() != null) {

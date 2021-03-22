@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core;
@@ -12,6 +12,7 @@ import java.util.Comparator;
 
 /**
  * @param <T> the type of objects that may be compared by this comparator
+ *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 public class AlphanumericComparator<T extends CharSequence> implements Comparator<T>, Serializable {
@@ -19,11 +20,11 @@ public class AlphanumericComparator<T extends CharSequence> implements Comparato
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param left the first object to be compared.
+     * @param left  the first object to be compared.
      * @param right the second object to be compared.
-     * @return a negative integer, zero, or a positive integer as the
-     * first argument is less than, equal to, or greater than the
-     * second.
+     *
+     * @return a negative integer, zero, or a positive integer as the first argument is less than,
+     *         equal to, or greater than the second.
      */
     @Override
     public int compare(T left, T right) {
@@ -35,7 +36,7 @@ public class AlphanumericComparator<T extends CharSequence> implements Comparato
         while (leftPos < lengthLeft && rightPos < lengthRight) {
             leftChar = left.charAt(leftPos);
             rightChar = right.charAt(rightPos);
-            diff= Character.valueOf(leftChar).compareTo(rightChar);
+            diff = Character.compare(leftChar, rightChar);
             if (diff == 0) {
                 leftPos += 1;
                 rightPos += 1;

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global I18n */
@@ -23,12 +23,129 @@ YUI.add('wegas-mcq-view', function(Y) {
         initializer: function() {
             this.handlers = {};
         },
+        toObject: function() {
+            // do not use toObject from Wegas-parent as we do NOT want to serialise children
+            return Y.Wegas.Editable.prototype.toObject.apply(this, arguments);
+        },
+        processItems: function(answers, indent) {
+            var child;
+            var name;
+            var classes;
+            var inputWidget;
+            var label;
+            var indentLevel = indent || 0;
+            for (var i in answers) {
+                inputWidget = undefined;
+                if (answers.hasOwnProperty(i)) {
+                    child = answers[i];
+                    name = child.get("name");
+                    if (child.getValue) {
+                        this._values[name] = child.getValue();
+                    } else {
+                        //this._values[name] = null;
+                    }
+                    classes = "wegas-whview__answers__input-answer input-" + name + " wegas-whview__answers__ident-" + indentLevel;
+                    label = I18n.t(child.get("label"));
+                    switch (child.get("@class")) {
+                        case "NumberDescriptor":
+                            if (Y.Lang.isNumber(child.get("minValue")) && Y.Lang.isNumber(child.get("maxValue"))
+                                && (child.get("maxValue") - child.get("minValue") < 15)) {
+
+                                inputWidget = new Y.Wegas.BoxesNumberInput({
+                                    label: label,
+                                    cssClass: classes,
+                                    variable: {name: name},
+                                    selfSaving: this.get("selfSaving"),
+                                    readonly: {
+                                        "content": "return " + this.readonly + ";"
+                                    }
+                                });
+                            } else {
+                                inputWidget = new Y.Wegas.NumberInput({
+                                    label: label,
+                                    cssClass: classes,
+                                    variable: {name: name},
+                                    selfSaving: this.get("selfSaving"),
+                                    readonly: {
+                                        "content": "return " + this.readonly + ";"
+                                    }});
+                            }
+                            break;
+                        case "StringDescriptor":
+                            inputWidget = new Y.Wegas.StringInput({
+                                label: label,
+                                cssClass: classes,
+                                variable: {name: name},
+                                displayChoicesWhenReadonly: {
+                                    "content": "false"
+                                },
+                                clickSelect: true,
+                                readonly: {
+                                    "content": "return " + this.readonly + ";"
+                                },
+                                allowNull: false,
+                                selfSaving: this.get("selfSaving")
+                            });
+                            break;
+                        case "BooleanDescriptor":
+                            inputWidget = new Y.Wegas.BooleanInput({
+                                label: label,
+                                cssClass: classes,
+                                variable: {name: name},
+                                readonly: {
+                                    "content": "return " + this.readonly + ";"
+                                },
+                                selfSaving: this.get("selfSaving")
+                            });
+                            break;
+                        case "TextDescriptor":
+                            // maxChars = undefined;
+                            // maxWords = undefined;
+                            // countBlank = false;
+                            inputWidget = new Y.Wegas.TextInput({
+                                label: label,
+                                cssClass: classes,
+                                variable: {name: name},
+                                showSaveButton: false,
+                                maxNumberOfCharacters: undefined,
+                                maxNumberOfWords: undefined,
+                                countBlank: true,
+                                readonly: {
+                                    "content": "return " + this.readonly + ";"
+                                },
+                                selfSaving: this.get("selfSaving"),
+                                toolbar1: "bold italic underline bullist",
+                                toolbar2: "",
+                                toolbar3: "",
+                                contextmenu: "bold italic underline bullist",
+                                disablePaste: true
+                            });
+                            break;
+                        case "StaticTextDescriptor":
+                            inputWidget = new Y.Wegas.Text({
+                                cssClass: classes + " wegas-whview__answers__statictext",
+                                content: I18n.tVar(child)
+                            });
+                            break;
+                        case "ListDescriptor":
+                            this.aList.add(
+                                new Y.Wegas.Text({
+                                    cssClass: classes + " wegas-whview__answers__folder",
+                                    content: I18n.tVar(child)
+                                }));
+                            this.processItems(child.get("items"), indentLevel + 1);
+                            break;
+                    }
+                    if (inputWidget) {
+                        this.aList.add(inputWidget);
+                    }
+                }
+            }
+        },
         renderUI: function() {
             var whQuestion = this.get("variable.evaluated"),
                 whQuestionInstance = whQuestion.getInstance(),
-                i, j, child, name, classes,
-                answers,
-                inputWidget, label, title;
+                title;
             this.destroyAll();
             this.readonly = whQuestionInstance.get("validated");
             this.qList = new Y.Wegas.List({
@@ -62,83 +179,8 @@ YUI.add('wegas-mcq-view', function(Y) {
             this.aList = new Y.Wegas.List({
                 cssClass: "wegas-whview__answers"
             });
-            answers = whQuestion.get("items");
-            for (i in answers) {
-                if (answers.hasOwnProperty(i)) {
-                    child = answers[i];
-                    name = child.get("name");
-                    this._values[name] = child.getValue();
-                    classes = "wegas-whview__answers__input-answer input-" + name;
-                    label = I18n.t(child.get("label"));
-                    switch (child.get("@class")) {
-                        case "NumberDescriptor":
-                            if (Y.Lang.isNumber(child.get("minValue")) && Y.Lang.isNumber(child.get("maxValue"))
-                                && (child.get("maxValue") - child.get("minValue") < 15)) {
 
-                                inputWidget = new Y.Wegas.BoxesNumberInput({
-                                    label: label,
-                                    cssClass: classes,
-                                    variable: {name: name},
-                                    selfSaving: false,
-                                    readonly: {
-                                        "content": "return " + this.readonly + ";"
-                                    }
-                                });
-                            } else {
-                                inputWidget = new Y.Wegas.NumberInput({
-                                    label: label,
-                                    cssClass: classes,
-                                    variable: {name: name},
-                                    selfSaving: false,
-                                    readonly: {
-                                        "content": "return " + this.readonly + ";"
-                                    }});
-                            }
-                            break;
-                        case "StringDescriptor":
-                            inputWidget = new Y.Wegas.StringInput({
-                                label: label,
-                                cssClass: classes,
-                                variable: {name: name},
-                                displayChoicesWhenReadonly: {
-                                    "content": "false"
-                                },
-                                clickSelect: true,
-                                numSelectable: 1,
-                                readonly: {
-                                    "content": "return " + this.readonly + ";"
-                                },
-                                allowNull: false,
-                                selfSaving: false
-                            });
-                            break;
-                        case "TextDescriptor":
-                            // maxChars = undefined;
-                            // maxWords = undefined;
-                            // countBlank = false;
-                            inputWidget = new Y.Wegas.TextInput({
-                                label: label,
-                                cssClass: classes,
-                                variable: {name: name},
-                                showSaveButton: false,
-                                maxNumberOfCharacters: undefined,
-                                maxNumberOfWords: undefined,
-                                countBlank: true,
-                                readonly: {
-                                    "content": "return " + this.readonly + ";"
-                                },
-                                selfSaving: false,
-                                toolbar1: "bold italic underline bullist",
-                                toolbar2: "",
-                                toolbar3: "",
-                                contextmenu: "bold italic underline bullist",
-                                disablePaste: true
-                            });
-                            break;
-                    }
-                    this.aList.add(inputWidget);
-                }
-            }
+            this.processItems(whQuestion.get("items"));
 
             this.mainList.add(this.aList);
 
@@ -155,18 +197,45 @@ YUI.add('wegas-mcq-view', function(Y) {
                 this._submitButton.on("click", this.submit, this);
                 this._buttonContainer.add(this._submitButton);
                 this.mainList.add(this._buttonContainer);
+            } else {
+                var feedback = I18n.t(whQuestionInstance.get("feedback"));
+                if (feedback) {
+                    // validated -> show feedback if any
+                    this.resultTitle = new Y.Wegas.Text({
+                        cssClass: "mcq-view__results-title",
+                        content: I18n.tCap('mcq.result')
+                    });
+
+                    this.resultList = new Y.Wegas.FlexList({
+                        cssClass: "mcq-view__results"
+                    });
+
+                    this.feedback = new Y.Wegas.Text({
+                        cssClass: "wegas-mcqview__result",
+                        content: '<div class="mcq-reply-content">' + feedback + '</div>'
+                    });
+
+                    this.resultList.add(this.feedback);
+
+                    this.mainList.add(this.resultTitle);
+                    this.mainList.add(this.resultList);
+                }
             }
 
 
-            if (whQuestionInstance.get("unread")) {
-                whQuestionInstance.set("unread", false); // avoid sync hell
-                Y.Wegas.Facade.Variable.sendRequest({
-                    request: "/QuestionDescriptor/Read/" +
-                        Wegas.Facade.Game.get('currentPlayerId') + "/" + whQuestion.get("id"),
-                    cfg: {
-                        method: "PUT"
-                    }
-                });
+
+            if (Y.fire("playerAction", {})) {
+                if (whQuestionInstance.get("unread")) {
+                    whQuestionInstance.set("unread", false); // avoid sync hell
+                    Y.Wegas.Facade.Variable.sendRequest({
+                        request: "/QuestionDescriptor/Read/" +
+                            Wegas.Facade.Game.get('currentPlayerId') + "/" + whQuestion.get("id"),
+                        cfg: {
+                            method: "PUT",
+                            responseEvent: false
+                        }
+                    });
+                }
             }
         },
         getAttrValueOrDefault: function(attrName, defaultValue) {
@@ -186,7 +255,8 @@ YUI.add('wegas-mcq-view', function(Y) {
             }
             var question = this.get('variable.evaluated');
             if (question) {
-                this.handlers.onInstanceUpdate = Y.Wegas.Facade.Instance.after(question.getInstance().get("id") + ':updatedInstance', this.renderUI, this);
+                this.handlers.onInstanceUpdate = Y.Wegas.Facade.Instance.after(question.getInstance()
+                    .get("id") + ':updatedInstance', this.renderUI, this);
             }
         },
         afterChange: function(e) {
@@ -262,17 +332,21 @@ YUI.add('wegas-mcq-view', function(Y) {
             var i, child, isValid,
                 whQuestion = this.get("variable.evaluated"),
                 value, answers,
+                childVariable,
                 valid = true;
             answers = whQuestion.get("items");
             for (i in answers) {
                 if (answers.hasOwnProperty(i)) {
                     child = answers[i];
-                    value = Y.Wegas.Facade.Variable.cache.find("name", child.get("name")).getValue();
-                    isValid = this.isValid({
-                        descriptor: child,
-                        value: value
-                    });
-                    valid = valid && isValid;
+                    childVariable = Y.Wegas.Facade.Variable.cache.find("name", child.get("name"));
+                    if (childVariable.getValue) {
+                        value = childVariable.getValue();
+                        isValid = this.isValid({
+                            descriptor: child,
+                            value: value
+                        });
+                        valid = valid && isValid;
+                    }
                 }
             }
             return valid;
@@ -280,7 +354,9 @@ YUI.add('wegas-mcq-view', function(Y) {
         getSaveScript: function() {
             var script = "", answerName;
             for (answerName in this._values) {
-                if (this._values.hasOwnProperty(answerName)) {
+                if (this._values.hasOwnProperty(answerName) &&
+                    this._values[answerName] !== null
+                    ) {
                     script += "Variable.find(gameModel, \"" + answerName + "\").setValue(self,  " + JSON.stringify(this._values[answerName]) + ");";
                 }
             }
@@ -305,29 +381,31 @@ YUI.add('wegas-mcq-view', function(Y) {
         _submit: function() {
             if (this.isAllValid()) {
                 //this.showOverlay();
-                var iId = this.get("variable.evaluated").getInstance().get("id");
-                Y.Wegas.Facade.Variable.sendRequest({
-                    request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
-                    cfg: {
-                        method: "POST",
-                        data: {
-                            "@class": "Script",
-                            content: this.getSaveScript() + "QuestionFacade.validateQuestion(" + iId + ", self);"
+                Y.Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                    var iId = this.get("variable.evaluated").getInstance().get("id");
+                    Y.Wegas.Facade.Variable.sendRequest({
+                        request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
+                        cfg: {
+                            method: "POST",
+                            data: {
+                                "@class": "Script",
+                                content: this.getSaveScript() + "QuestionFacade.validateQuestion(" + iId + ", self);"
+                            }
+                        },
+                        on: {
+                            success: Y.bind(function() {
+                                //this.hideOverlay();
+                                /*if (this.__hackParent) {
+                                 Y.later(500, this.__hackParent, this.__hackParent.selectNextUnread);
+                                 }*/
+                            }, this),
+                            failure: Y.bind(function() {
+                                //this.hideOverlay();
+                                this.showMessage("error", "Something went wrong");
+                            }, this)
                         }
-                    },
-                    on: {
-                        success: Y.bind(function() {
-                            //this.hideOverlay();
-                            /*if (this.__hackParent) {
-                             Y.later(500, this.__hackParent, this.__hackParent.selectNextUnread);
-                             }*/
-                        }, this),
-                        failure: Y.bind(function() {
-                            //this.hideOverlay();
-                            this.showMessage("error", "Something went wrong");
-                        }, this)
-                    }
-                });
+                    });
+                }, this));
             }
         },
         /**
@@ -381,6 +459,11 @@ YUI.add('wegas-mcq-view', function(Y) {
                         "ListDescriptor" // use the label
                     ]
                 }
+            },
+            selfSaving: {
+                type: 'boolean',
+                value: false,
+                view: {label: 'Auto save'}
             }
         }
     });
@@ -455,7 +538,8 @@ YUI.add('wegas-mcq-view', function(Y) {
             }
             var desc = this.get('choice.evaluated');
             if (desc) {
-                this.handlers.onInstanceUpdate = Y.Wegas.Facade.Instance.after(desc.getInstance().get("id") + ':updatedInstance', this.syncUI, this);
+                this.handlers.onInstanceUpdate = Y.Wegas.Facade.Instance.after(desc.getInstance()
+                    .get("id") + ':updatedInstance', this.syncUI, this);
             }
         },
         bindUI: function() {
@@ -519,7 +603,7 @@ YUI.add('wegas-mcq-view', function(Y) {
             if (repliesToDisplay.length &&
                 (!cbx || question.getInstance().get("validated"))
                 && !(cbx && question.get("tabular")) && this.get("displayResult") === "inline") {
-                this.resultTitle.set("content", repliesToDisplay.length > 1 ? Y.Wegas.I18n.t('mcq.results').capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
+                this.resultTitle.set("content", repliesToDisplay.length > 1 ? I18n.tCap('mcq.results') : I18n.tCap('mcq.result'));
                 this.resultTitle.syncUI();
                 var repliesIds = {};
                 for (var i in repliesToDisplay) {
@@ -565,15 +649,19 @@ YUI.add('wegas-mcq-view', function(Y) {
             }
 
 
-            if (choiceInstance.get("unread")) {
-                choiceInstance.set("unread", false); // avoid sync hell
-                Y.Wegas.Facade.Variable.sendRequest({
-                    request: "/QuestionDescriptor/Read/" +
-                        Y.Wegas.Facade.Game.get('currentPlayerId') + "/" + choice.get("id"),
-                    cfg: {
-                        method: "PUT"
-                    }
-                });
+            if (Y.fire("playerAction", {})) {
+                if (choiceInstance.get("unread")) {
+                    choiceInstance.set("unread", false); // avoid sync hell
+                    Y.Wegas.Facade.Variable.sendRequest({
+                        request: "/QuestionDescriptor/Read/" +
+                            Y.Wegas.Facade.Game.get('currentPlayerId') + "/" + choice.get("id"),
+                        cfg: {
+                            method: "PUT",
+                            updateEvent: false,
+                            responseEvent: false
+                        }
+                    });
+                }
             }
 
             if (noFeedbacks) {
@@ -845,7 +933,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                 var question = this.get("variable.evaluated"), updatedInstance;
 
                 if (e.entity instanceof Y.Wegas.persistence.ChoiceInstance) {
-                    updatedInstance = Y.Wegas.Facade.Variable.cache.findParentDescriptor(e.entity.getDescriptor()).getInstance();
+                    updatedInstance = Y.Wegas.Facade.Variable.cache.findParentDescriptor(e.entity.getDescriptor())
+                        .getInstance();
                 } else {
                     updatedInstance = e.entity;
                 }
@@ -865,7 +954,8 @@ YUI.add('wegas-mcq-view', function(Y) {
                 ".answerable.cbx.checkbox.maximumReached:not(.locked) .hasReplies .mcqchoice__submit"  // unselect checkboxes even if maximum reached
                 , this);
 
-            this.get("boundingBox").delegate("click", this.validateQuestion, ".answerable:not(.locked) .mcq-view__submit span", this);
+            this.get("boundingBox")
+                .delegate("click", this.validateQuestion, ".answerable:not(.locked) .mcq-view__submit span", this);
         },
         beforeRequest: function() {
             this.lockable.lock();
@@ -877,155 +967,97 @@ YUI.add('wegas-mcq-view', function(Y) {
             this.lockable.unlock();
         },
         selectChoice: function(e) {
-            if (this.get("disabled")) {
-                return;
-            }
-            var choiceWidget = Y.Widget.getByNode(e.target.ancestor(".wegas-mcqchoice")),
-                choice = choiceWidget.get("choice.evaluated"),
-                question = choiceWidget.get("question.evaluated");
-            if (question.get("cbx")) {
-                //select or cancel ?
-                var replies = choice.getInstance().get("replies");
-                if (replies.length > 0) {
-                    for (var i in replies) {
-                        this.beforeRequest();
-                        Y.Wegas.Facade.Variable.sendRequest({
-                            request: "/QuestionDescriptor/CancelReply/" + replies[i].get('id')
-                                + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
-                            cfg: {
-                                method: "GET"
-                            },
-                            on: {
-                                success: Y.bind(this.onSuccess, this),
-                                failure: Y.bind(this.onFailure, this)
-                            }
-                        });
-                    }
-                } else {
-                    this.beforeRequest();
-                    Y.Wegas.Facade.Variable.sendRequest({
-                        request: "/QuestionDescriptor/SelectChoice/" + choice.get('id')
-                            + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
-                            + "/StartTime/0",
-                        cfg: {
-                            method: "GET" // initially: POST
-                        },
-                        on: {
-                            success: Y.bind(this.onSuccess, this),
-                            failure: Y.bind(this.onFailure, this)
-                        }
-                    });
-                }
-            } else if (this.getEffectiveDisplayMode() === "dialogue") {
-                //select or cancel ?
-                var replies = choice.getInstance().get("replies"),
-                    pendingReplies = [],
-                    validatedReplies = [];
-
-                for (var i in replies) {
-                    if (replies[i].get("validated")) {
-                        validatedReplies.push(replies[i]);
-                    } else {
-                        pendingReplies.push(replies[i]);
-                    }
-                }
-
-                if (pendingReplies.length) {
-                    for (var i in pendingReplies) {
-                        this.beforeRequest();
-                        Y.Wegas.Facade.Variable.sendRequest({
-                            request: "/QuestionDescriptor/QuietCancelReply/" + pendingReplies[i].get('id')
-                                + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
-                            cfg: {
-                                method: "GET"
-                            },
-                            on: {
-                                success: Y.bind(this.onSuccess, this),
-                                failure: Y.bind(this.onFailure, this)
-                            }
-                        });
-                    }
-                } else {
-                    this.beforeRequest();
-                    Y.Wegas.Facade.Variable.sendRequest({
-                        request: "/QuestionDescriptor/DeselectOthersAndSelectChoice/" + choice.get('id')
-                            + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
-                            + "/StartTime/0",
-                        cfg: {
-                            method: "GET" // initially: POST
-                        },
-                        on: {
-                            success: Y.bind(this.onSuccess, this),
-                            failure: Y.bind(this.onFailure, this)
-                        }
-                    });
-                }
-            } else {
-                this.beforeRequest();
-                Y.Wegas.Facade.Variable.sendRequest({
-                    request: "/QuestionDescriptor/SelectAndValidateChoice/" + choice.get('id') + "/Player/" +
-                        Wegas.Facade.Game.get('currentPlayerId'),
-                    cfg: {
-                        method: "POST"
-                    },
-                    on: {
-                        success: Y.bind(this.onSuccess, this),
-                        failure: Y.bind(this.onFailure, this)
-                    }
-                });
-            }
-        },
-        validateQuestion: function(e) {
-            if (this.get("disabled")) {
-                return;
-            }
-            var questionDescriptor = this.get("variable.evaluated"),
-                questionInstance = questionDescriptor.getInstance(),
-                minQ, maxQ;
-
-            if (questionDescriptor.get("cbx")) { // doublecheck
-                // Prevent validation of questions with too few replies
-                if (Y.Lang.isNumber(questionDescriptor.get("minReplies"))) {
-                    minQ = questionDescriptor.get("minReplies");
-                } else {
-                    minQ = 1;
-                }
-                if (questionInstance.get("replies").length < minQ) {
-                    this.onFailure();
-                    if (minQ === 1) {
-                        Wegas.Alerts.showMessage("warn", Y.Wegas.I18n.t('mcq.noReply'));
-                    } else {
-                        Wegas.Alerts.showMessage("warn", Y.Wegas.I18n.t('mcq.notEnoughReply', {min: minQ}));
-                    }
+            Y.Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                if (this.get("disabled")) {
                     return;
                 }
-
-                this.beforeRequest();
-                Y.Wegas.Facade.Variable.sendRequest({
-                    request: "/QuestionDescriptor/ValidateQuestion/" + questionInstance.get('id')
-                        + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
-                    cfg: {
-                        method: "POST"
-                    },
-                    on: {
-                        success: Y.bind(this.onSuccess, this),
-                        failure: Y.bind(this.onFailure, this)
+                var choiceWidget = Y.Widget.getByNode(e.target.ancestor(".wegas-mcqchoice")),
+                    choice = choiceWidget.get("choice.evaluated"),
+                    question = choiceWidget.get("question.evaluated");
+                if (question.get("cbx")) {
+                    //select or cancel ?
+                    var replies = choice.getInstance().get("replies");
+                    if (replies.length > 0) {
+                        for (var i in replies) {
+                            this.beforeRequest();
+                            Y.Wegas.Facade.Variable.sendRequest({
+                                request: "/QuestionDescriptor/CancelReply/" + replies[i].get('id')
+                                    + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
+                                cfg: {
+                                    method: "GET"
+                                },
+                                on: {
+                                    success: Y.bind(this.onSuccess, this),
+                                    failure: Y.bind(this.onFailure, this)
+                                }
+                            });
+                        }
+                    } else {
+                        this.beforeRequest();
+                        Y.Wegas.Facade.Variable.sendRequest({
+                            request: "/QuestionDescriptor/SelectChoice/" + choice.get('id')
+                                + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
+                                + "/StartTime/0",
+                            cfg: {
+                                method: "GET" // initially: POST
+                            },
+                            on: {
+                                success: Y.bind(this.onSuccess, this),
+                                failure: Y.bind(this.onFailure, this)
+                            }
+                        });
                     }
-                });
-            } else if (this.getEffectiveDisplayMode() === "dialogue") {
-                // validate all pendings replies (usually only one...)
-                var replies = Y.Array.filter(questionInstance.get("replies"), function(reply) {
-                    return !reply.get("validated");
-                }, this);
+                } else if (this.getEffectiveDisplayMode() === "dialogue") {
+                    //select or cancel ?
+                    var replies = choice.getInstance().get("replies"),
+                        pendingReplies = [],
+                        validatedReplies = [];
 
-                for (var i in replies) {
-                    var reply = replies[i];
+                    for (var i in replies) {
+                        if (replies[i].get("validated")) {
+                            validatedReplies.push(replies[i]);
+                        } else {
+                            pendingReplies.push(replies[i]);
+                        }
+                    }
+
+                    if (pendingReplies.length) {
+                        for (var i in pendingReplies) {
+                            this.beforeRequest();
+                            Y.Wegas.Facade.Variable.sendRequest({
+                                request: "/QuestionDescriptor/QuietCancelReply/" + pendingReplies[i].get('id')
+                                    + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
+                                cfg: {
+                                    method: "GET"
+                                },
+                                on: {
+                                    success: Y.bind(this.onSuccess, this),
+                                    failure: Y.bind(this.onFailure, this)
+                                }
+                            });
+                        }
+                    } else {
+                        this.beforeRequest();
+                        Y.Wegas.Facade.Variable.sendRequest({
+                            request: "/QuestionDescriptor/DeselectOthersAndSelectChoice/" + choice.get('id')
+                                + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
+                                + "/StartTime/0",
+                            cfg: {
+                                method: "GET" // initially: POST
+                            },
+                            on: {
+                                success: Y.bind(this.onSuccess, this),
+                                failure: Y.bind(this.onFailure, this)
+                            }
+                        });
+                    }
+                } else {
                     this.beforeRequest();
                     Y.Wegas.Facade.Variable.sendRequest({
-                        request: "/QuestionDescriptor/ValidateReply/" + reply.get("id")
-                            + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
+                        request: "/QuestionDescriptor/SelectAndValidateChoice/" + choice.get('id') + "/Player/" +
+                            Wegas.Facade.Game.get('currentPlayerId'),
                         cfg: {
-                            method: "GET" // initially: POST
+                            method: "POST"
                         },
                         on: {
                             success: Y.bind(this.onSuccess, this),
@@ -1033,7 +1065,69 @@ YUI.add('wegas-mcq-view', function(Y) {
                         }
                     });
                 }
-            }
+            }, this));
+        },
+        validateQuestion: function(e) {
+            Y.Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                if (this.get("disabled")) {
+                    return;
+                }
+                var questionDescriptor = this.get("variable.evaluated"),
+                    questionInstance = questionDescriptor.getInstance(),
+                    minQ, maxQ;
+
+                if (questionDescriptor.get("cbx")) { // doublecheck
+                    // Prevent validation of questions with too few replies
+                    if (Y.Lang.isNumber(questionDescriptor.get("minReplies"))) {
+                        minQ = questionDescriptor.get("minReplies");
+                    } else {
+                        minQ = 1;
+                    }
+                    if (questionInstance.get("replies").length < minQ) {
+                        this.onFailure();
+                        if (minQ === 1) {
+                            Wegas.Alerts.showMessage("warn", Y.Wegas.I18n.t('mcq.noReply'));
+                        } else {
+                            Wegas.Alerts.showMessage("warn", Y.Wegas.I18n.t('mcq.notEnoughReply', {min: minQ}));
+                        }
+                        return;
+                    }
+
+                    this.beforeRequest();
+                    Y.Wegas.Facade.Variable.sendRequest({
+                        request: "/QuestionDescriptor/ValidateQuestion/" + questionInstance.get('id')
+                            + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
+                        cfg: {
+                            method: "POST"
+                        },
+                        on: {
+                            success: Y.bind(this.onSuccess, this),
+                            failure: Y.bind(this.onFailure, this)
+                        }
+                    });
+                } else if (this.getEffectiveDisplayMode() === "dialogue") {
+                    // validate all pendings replies (usually only one...)
+                    var replies = Y.Array.filter(questionInstance.get("replies"), function(reply) {
+                        return !reply.get("validated");
+                    }, this);
+
+                    for (var i in replies) {
+                        var reply = replies[i];
+                        this.beforeRequest();
+                        Y.Wegas.Facade.Variable.sendRequest({
+                            request: "/QuestionDescriptor/ValidateReply/" + reply.get("id")
+                                + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
+                            cfg: {
+                                method: "GET" // initially: POST
+                            },
+                            on: {
+                                success: Y.bind(this.onSuccess, this),
+                                failure: Y.bind(this.onFailure, this)
+                            }
+                        });
+                    }
+                }
+            }, this));
         },
         isCbx: function() {
             return this.get("variable.evaluated").get("cbx");
@@ -1145,29 +1239,55 @@ YUI.add('wegas-mcq-view', function(Y) {
                     delete this.choices[id];
                 }
 
-                if (questionInstance.get("unread")) {
-                    questionInstance.set("unread", false); // avoid sync hell
-                    Y.Wegas.Facade.Variable.sendRequest({
-                        request: "/QuestionDescriptor/Read/" +
-                            Wegas.Facade.Game.get('currentPlayerId') + "/" + questionDescriptor.get("id"),
-                        cfg: {
-                            method: "PUT"
-                        }
-                    });
+                if (Y.fire("playerAction", {})) {
+                    if (questionInstance.get("unread")) {
+                        questionInstance.set("unread", false); // avoid sync hell
+                        Y.Wegas.Facade.Variable.sendRequest({
+                            request: "/QuestionDescriptor/Read/" +
+                                Wegas.Facade.Game.get('currentPlayerId') + "/" + questionDescriptor.get("id"),
+                            cfg: {
+                                method: "PUT",
+                                responseEvent: false
+                            }
+                        });
+                    }
                 }
 
                 var noFeedbacks = true;
 
+                var repliesAtBottom = [];
+
                 if (validatedReplies.length && (
-                    (effectiveDisplayResult === "bottom"
+                    (
+                        effectiveDisplayResult === "bottom"
                         || effectiveDisplayResult === "newBottom"
                         || effectiveDisplayResult === "dialogue")
-                    && (!cbx || questionInstance.get("validated")))
-                    || (cbx && questionInstance.get("validated") && questionDescriptor.get("tabular"))) {
-                    this.resultTitle.set("content", validatedReplies.length > 1 ? Y.Wegas.I18n.t('mcq.results').capitalize() : Y.Wegas.I18n.t('mcq.result').capitalize());
+                    && (
+                        !cbx
+                        || questionInstance.get("validated")
+                        )
+                    )
+                    || (
+                        cbx
+                        && questionInstance.get("validated")
+                        && questionDescriptor.get("tabular")
+                        )
+                    ) {
+                    repliesAtBottom = validatedReplies;
+                } else if (effectiveDisplayResult === "inline") {
+
+                    for (i in validatedReplies) {
+                        if (!validatedReplies[i].getChoiceDescriptor().getInstance().get("active")) {
+                            repliesAtBottom.push(replies[i]);
+                        }
+                    }
+                }
+
+                if (repliesAtBottom.length) {
+                    this.resultTitle.set("content", repliesAtBottom.length > 1 ? I18n.tCap('mcq.results') : I18n.tCap('mcq.result'));
                     this.resultTitle.syncUI();
                     if (cbx) {
-                        validatedReplies = [];
+                        repliesAtBottom = [];
                         // select replies according to order of choices
                         for (i = 0; i < choices.length; i += 1) {
                             var choiceD = choices[i],
@@ -1176,13 +1296,13 @@ YUI.add('wegas-mcq-view', function(Y) {
 
                             // skip inactive choices or choices without replies
                             if (choiceI.get("active") && cReplies && cReplies.length > 0 && cReplies[0].get("validated")) {
-                                validatedReplies.push(cReplies[0]);
+                                repliesAtBottom.push(cReplies[0]);
                             }
                         }
                     }
                     var repliesIds = {};
-                    for (var i in validatedReplies) {
-                        var reply = validatedReplies[i];
+                    for (var i in repliesAtBottom) {
+                        var reply = repliesAtBottom[i];
                         repliesIds[reply.get("id")] = true;
                         if (this.results[reply.get("id")]) {
                             noFeedbacks = false;
@@ -1224,7 +1344,7 @@ YUI.add('wegas-mcq-view', function(Y) {
                                             '<div class="mcq-reply-content">' + toDisplay + '</div>' +
                                             '</div>'
                                     });
-                                    Y.later(1500, this, function(reply){
+                                    Y.later(1500, this, function(reply) {
                                         reply.get("boundingBox").removeClass("typing");
                                         this.scrollToBottom();
                                     }, this.results[reply.get("id")]);
@@ -1249,7 +1369,8 @@ YUI.add('wegas-mcq-view', function(Y) {
 
                     if (!this.resync) {
                         // if there is no validated replies or pendings, show possible choices
-                        this.get("contentBox").toggleClass("show_choices", this.resultList.isEmpty() || pendingReplies.length);
+                        this.get("contentBox")
+                            .toggleClass("show_choices", this.resultList.isEmpty() || pendingReplies.length);
                     }
 
                     this.pendings.destroyAll();
@@ -1315,8 +1436,10 @@ YUI.add('wegas-mcq-view', function(Y) {
         },
         scrollToBottom: function() {
             // last feedback
-            var histDom = this.history.get("boundingBox").getDOMNode();
-            histDom.scrollTop = histDom.scrollHeight - histDom.clientHeight;
+            if (this.history) {
+                var histDom = this.history.get("boundingBox").getDOMNode();
+                histDom.scrollTop = histDom.scrollHeight - histDom.clientHeight;
+            }
         },
         isTextEmpty: function(text) {
             return !text || text === "<p></p>";

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -113,16 +113,14 @@ YUI.add('wegas-layout-list', function(Y) {
 
         }
     }, {
-        EDITORNAME: "Flex layout",
+        EDITORNAME: "List layout",
         // Redefine visibility and default value of some inherited attributes:
         ATTRS: {
             name: {
-                value: "Flex List",
+                value: "List",
                 type: "string",
                 view: {
                     label: "Layout name",
-                    // Hide in case this is a page:
-                    className: "wegas-advanced-feature"
                 }
             },
             direction: {
@@ -132,8 +130,6 @@ YUI.add('wegas-layout-list', function(Y) {
                     label: "Direction",
                     type: 'select',
                     choices: ['vertical', 'horizontal'],
-                    // Hide in case this is a page:
-                    className: "wegas-advanced-feature"
                 }
             }
         }

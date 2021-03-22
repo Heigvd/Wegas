@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -16,14 +16,13 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
+import java.util.Collection;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.script.ScriptContext;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang3.ArrayUtils;
-
-import javax.ejb.EJB;
-import javax.enterprise.context.RequestScoped;
-import java.util.Collection;
-import javax.script.ScriptContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +49,7 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
     /**
      *
      */
-    @EJB
+    @Inject
     private ScriptFacade scriptFacace;
 
     /**
@@ -254,6 +253,7 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
          *
          */
         public EmptyObject() {
+            // empty constructor of empty object: design 2 dot zero
         }
     }
 }

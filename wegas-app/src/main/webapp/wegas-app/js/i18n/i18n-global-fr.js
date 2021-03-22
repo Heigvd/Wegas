@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -29,16 +29,21 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
             logout: "déconnexion",
             statistics: "Statistiques",
             peerReview: "Eval. croisées",
+            surveys: "Questionnaires",
             backToMenu: "retour au menu",
             mcqBackToMenu: "retour à la liste de questions",
             ok: "OK",
-            cancel: "Annuler"
+            cancel: "Annuler",
+            yes: "oui",
+            no: "non",
+            submit: "valider"
         },
         i18n:{
             manager: {
                 title: "Gestionnaire de langue"
             },
-            languages: "Langues"
+            languages: "Langues",
+            availables: "Langues à disposition des joueurs"
         },
         errors: {
             conflict: "Votre requête ne peut pas être traitée car un conflit s'est produit durant son éxecution. Cela signifie probablement que vous avez tentez de modifier un élément en même temps qu'un autre utilisateur.",
@@ -54,6 +59,9 @@ YUI.add("wegas-i18n-global-fr", function(Y) {
             deleteEmailConfirmation: "Êtes-vous sûr de vouloir supprimer le message {{subject}} de manière définitive ?",
             noMessages: "Vous n'avez pas de messages",
             noMessageSelected: "Sélectionnez un message sur la gauche"
+        },
+        spreadsheet: {
+            empty: "Aucun tableur disponible actuellement"
         }
     }, {base: {
             prefix: "",

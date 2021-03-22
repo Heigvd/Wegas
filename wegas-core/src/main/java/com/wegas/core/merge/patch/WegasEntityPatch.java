@@ -1,26 +1,29 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.merge.patch;
 
+import ch.albasim.wegas.annotations.EmptyCallback;
+import ch.albasim.wegas.annotations.ProtectionLevel;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.client.WegasRuntimeException;
+import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.merge.utils.DefaultWegasFactory;
-import com.wegas.core.merge.utils.EmptyCallback;
 import com.wegas.core.merge.utils.LifecycleCollector;
 import com.wegas.core.merge.utils.LifecycleCollector.CollectedEntity;
 import com.wegas.core.merge.utils.LifecycleCollector.OrphanContainer;
 import com.wegas.core.merge.utils.MergeHelper;
-import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.merge.utils.WegasEntitiesHelper;
 import com.wegas.core.merge.utils.WegasEntityFields;
 import com.wegas.core.merge.utils.WegasFactory;
@@ -28,15 +31,18 @@ import com.wegas.core.merge.utils.WegasFieldProperties;
 import static com.wegas.core.merge.utils.WegasFieldProperties.FieldType.CHILD;
 import static com.wegas.core.merge.utils.WegasFieldProperties.FieldType.CHILDREN;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -68,8 +74,7 @@ public final class WegasEntityPatch extends WegasPatch {
     private WegasFactory factory;
 
     /**
-     * Get the factory to use.
-     * This method may initialise the factory to a default one.
+     * Get the factory to use. This method may initialise the factory to a default one.
      *
      * @return the factory to use to create new instances
      */
@@ -112,11 +117,11 @@ public final class WegasEntityPatch extends WegasPatch {
      * @param recursive
      *
      */
-    WegasEntityPatch(Object identifier, int order,
-            WegasCallback userCallback, Method getter, Method setter,
-            Mergeable from, Mergeable to, boolean recursive,
-            boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
-            ProtectionLevel protectionLevel) {
+    /* package */ WegasEntityPatch(Object identifier, int order,
+        WegasCallback userCallback, Method getter, Method setter,
+        Mergeable from, Mergeable to, boolean recursive,
+        boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
+        ProtectionLevel protectionLevel) {
 
         super(identifier, order, getter, setter, userCallback, ignoreNull, sameEntityOnly, initOnly, recursive, protectionLevel);
 
@@ -146,7 +151,7 @@ public final class WegasEntityPatch extends WegasPatch {
 
                 // process @WegasEntityProperty fields
                 for (WegasFieldProperties fieldProperties : entityIterator.getFields()) {
-                    // Get field info 
+                    // Get field info
                     Field field = fieldProperties.getField();
                     WegasEntityProperty wegasProperty = fieldProperties.getAnnotation();
 
@@ -182,26 +187,26 @@ public final class WegasEntityPatch extends WegasPatch {
 
                                 // primitive or primitive related property (eg. Boolean, List<Double>, Map<String, String>, etc)
                                 patches.add(new WegasPrimitivePatch(fieldName, wegasProperty.order(),
-                                        userFieldCallback, to,
-                                        fGetter, fSetter, fromValue, toValue,
-                                        wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), propertyProtectionLevel));
+                                    userFieldCallback, to,
+                                    fGetter, fSetter, fromValue, toValue,
+                                    wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), propertyProtectionLevel));
                                 break;
                             case CHILD:
                                 // the property is an abstract entity -> register patch
                                 patches.add(new WegasEntityPatch(fieldName, wegasProperty.order(),
-                                        userFieldCallback,
-                                        fGetter, fSetter,
-                                        (Mergeable) fromValue, (Mergeable) toValue,
-                                        recursive, wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), propertyProtectionLevel));
+                                    userFieldCallback,
+                                    fGetter, fSetter,
+                                    (Mergeable) fromValue, (Mergeable) toValue,
+                                    recursive, wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), propertyProtectionLevel));
 
                                 break;
                             case CHILDREN:
                                 // current property is a list or a map of abstract entities
                                 patches.add(new WegasChildrenPatch(fieldName, wegasProperty.order(),
-                                        userFieldCallback, to,
-                                        fGetter, fSetter,
-                                        fromValue, toValue,
-                                        recursive, wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), propertyProtectionLevel));
+                                    userFieldCallback, to,
+                                    fGetter, fSetter,
+                                    fromValue, toValue,
+                                    recursive, wegasProperty.ignoreNull(), wegasProperty.sameEntityOnly(), wegasProperty.initOnly(), propertyProtectionLevel));
                                 break;
                         }
                     }
@@ -213,18 +218,16 @@ public final class WegasEntityPatch extends WegasPatch {
             if (cause instanceof WegasRuntimeException) {
                 throw (WegasRuntimeException) cause;
             } else {
-                throw new RuntimeException(cause != null ? cause : ex);
+                throw new WegasWrappedException(cause != null ? cause : ex);
             }
         }
     }
 
     @Override
     public LifecycleCollector apply(GameModel targetGameModel, Deque<Mergeable> ancestors, Object targetObject, WegasCallback callback, PatchMode parentMode,
-            Visibility inheritedVisibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
+        Visibility inheritedVisibility, LifecycleCollector collector, Integer numPass, boolean bypassVisibility) {
         /**
-         * Two pass patch
-         * First pass update and delete
-         * Second create/move entities
+         * Two pass patch First pass update and delete Second create/move entities
          */
         boolean rootPatch = false;
         boolean processCollectedData = false;
@@ -272,6 +275,64 @@ public final class WegasEntityPatch extends WegasPatch {
                                 ownVisibility = ((ModelScoped) toEntity).getVisibility();
                                 visibility = ownVisibility;
                             }
+
+                            if (toEntity instanceof Translation && Helper.isProtected(protectionLevel, inheritedVisibility)) {
+                                // hit a protected translation
+                                try {
+                                    TranslatableContent trc = null;
+                                    Translation tTranslation = null;
+                                    GameModel gameModel = null;
+
+                                    if (target == null && fromEntity == null) {
+                                        // creating a brand new translation
+                                        // only toEntity is set
+                                        tTranslation = (Translation) toEntity;
+                                        trc = (TranslatableContent) ancestors.peekFirst();
+                                        gameModel = trc.getParentGameModel();
+                                    } else if (target instanceof Translation && fromEntity instanceof Translation) {
+                                        // patching an existing translation
+                                        tTranslation = (Translation) target; // the target to update
+                                        trc = (TranslatableContent) ((Translation) fromEntity).getMergeableParent();
+                                        gameModel = target.getParentGameModel();
+                                    }
+
+                                    if (gameModel != null && trc != null && tTranslation != null) {
+                                        // Protected translation hack
+                                        // Translation is protected, but current language is privately owned
+                                        String code = tTranslation.getLang();
+
+                                        GameModelLanguage language = gameModel.getLanguageByCode(code);
+
+                                        if (language != null && language.getVisibility() == Visibility.PRIVATE) {
+                                            // current languages is private to this scenario
+                                            final GameModel gm = gameModel;
+
+                                            boolean anyNonEmptyTrFromSuperLanguage = trc.getRawTranslations()
+                                                .stream()
+                                                .filter(t -> !Helper.isNullOrEmpty(t.getTranslation()))
+                                                .anyMatch(t -> {
+                                                    GameModelLanguage l = gm.getLanguageByCode(t.getLang());
+                                                    return l != null && l.getVisibility() != Visibility.PRIVATE;
+                                                });
+
+                                            //String tr = ((Translation) toEntity).getTranslation();
+                                            if (anyNonEmptyTrFromSuperLanguage) {
+                                                // protected but model provides at least some content
+                                                // -> seems like mis configuration of visibility
+                                                // open edition to scenarist
+                                                inheritedVisibility = Visibility.PRIVATE;
+                                            } else {
+                                                // The model does not privide any content
+                                                // should erase user content
+                                                tTranslation.setTranslation("");
+                                            }
+                                        }
+                                    }
+                                } catch (WegasNotFoundException ex) {
+                                    // skip
+                                }
+                            }
+
                             PatchMode myMode = this.getPatchMode(target, fromEntity, toEntity, parentMode, inheritedVisibility, ownVisibility, bypassVisibility);
 
                             if (visibility == null) {
@@ -415,7 +476,7 @@ public final class WegasEntityPatch extends WegasPatch {
                         logger.debug("REJECT PATCH : IGNORE NULL");
                     }
                 } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException | SecurityException | NoSuchMethodException ex) {
-                    throw new RuntimeException(ex);
+                    throw new WegasWrappedException(ex);
                 } finally {
                     logger.unindent();
                 }
@@ -438,8 +499,8 @@ public final class WegasEntityPatch extends WegasPatch {
             /**
              * Move orphans to root level.
              * <p>
-             * To keep orphan in the Entitymanager context
-             * It prevents entityManager flush to remove those orphans
+             * To keep orphan in the Entitymanager context It prevents entityManager flush to remove
+             * those orphans
              */
             for (Entry<Mergeable, Map<Object, OrphanContainer>> entry : orphans.entrySet()) {
                 Mergeable orphanParent = entry.getKey();
@@ -498,7 +559,6 @@ public final class WegasEntityPatch extends WegasPatch {
                             VariableDescriptor p = (VariableDescriptor) orphanParent;
                             if (deleted.containsKey(p.getRefId())) {
                                 // should restore p
-                                p.getName();
                                 DescriptorListI grandparent = p.getParent();
                                 try {
 
@@ -524,8 +584,8 @@ public final class WegasEntityPatch extends WegasPatch {
                                      */
                                     for (CollectedEntity candidate : deleted.values()) {
                                         if (candidate.getEntity() instanceof TranslatableContent
-                                                && candidate.getIdentifier().equals("label")
-                                                && candidate.getParent().equals(p)) {
+                                            && candidate.getIdentifier().equals("label")
+                                            && candidate.getParent().equals(p)) {
                                             TranslatableContent label = (TranslatableContent) candidate.getEntity();
 
                                             p.setLabel(label);
@@ -538,7 +598,7 @@ public final class WegasEntityPatch extends WegasPatch {
                                      */
                                     for (CollectedEntity candidate : deleted.values()) {
                                         if (candidate.getEntity() instanceof Translation
-                                                && candidate.getParent().equals(p.getLabel())) {
+                                            && candidate.getParent().equals(p.getLabel())) {
                                             p.getLabel().getRawTranslations().add((Translation) candidate.getEntity());
                                             break;
                                         }
@@ -623,7 +683,7 @@ public final class WegasEntityPatch extends WegasPatch {
         return collector;
     }
 
-    private static final class PatchOrderComparator implements Comparator<WegasPatch> {
+    private static final class PatchOrderComparator implements Comparator<WegasPatch>, Serializable {
 
         @Override
         public int compare(WegasPatch o1, WegasPatch o2) {
@@ -637,7 +697,7 @@ public final class WegasEntityPatch extends WegasPatch {
         ident++;
         newLine(sb, ident);
         sb.append("ToEntity ").append(toEntity);
-        if (entityCallbacks.size() > 0) {
+        if (!entityCallbacks.isEmpty()) {
             newLine(sb, ident);
             sb.append("EntityCallback:");
             for (WegasCallback wc : entityCallbacks) {
@@ -649,6 +709,69 @@ public final class WegasEntityPatch extends WegasPatch {
             sb.append(patch.print(ident));
         }
         return sb;
+    }
+
+    private String getPrettyTitle() {
+        String title = null;
+        if (this.toEntity instanceof VariableDescriptor) {
+            title = ((VariableDescriptor) toEntity).getEditorLabel();
+        }
+
+        if (title == null && this.toEntity instanceof LabelledEntity) {
+            title = ((LabelledEntity) this.toEntity).getLabel().toString();
+        }
+
+        if (title == null && this.toEntity instanceof NamedEntity) {
+            title = ((NamedEntity) this.toEntity).getName();
+        }
+
+        if (title == null) {
+            title = this.identifier.toString();
+        }
+        return title;
+    }
+
+    @Override
+    protected PatchDiff buildDiff(boolean bypassVisibility) {
+
+        if (this.toEntity instanceof ModelScoped
+            && !bypassVisibility
+            && ((ModelScoped) this.toEntity).getVisibility().equals(ModelScoped.Visibility.PRIVATE)) {
+            return null;
+        }
+
+        List<PatchDiff> subs = new ArrayList<>();
+
+        for (WegasPatch patch : patches) {
+            PatchDiff sub = patch.buildDiff(bypassVisibility);
+            if (sub != null) {
+                subs.add(sub);
+            }
+        }
+        if (!subs.isEmpty()) {
+            return new DiffCollection(this.getPrettyTitle(), subs);
+        } else {
+            return null;
+        }
+    }
+
+    public static class DiffCollection extends PatchDiff {
+
+        private final String title;
+        private final List<PatchDiff> diffs;
+
+        public DiffCollection(String title, List<PatchDiff> diffs) {
+            this.title = title;
+            this.diffs = diffs;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public List<PatchDiff> getDiffs() {
+            return diffs;
+        }
     }
 
     private static class OrphanCollector implements WegasCallback {

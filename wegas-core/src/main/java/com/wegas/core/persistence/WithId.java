@@ -1,16 +1,16 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
 
-import com.wegas.core.persistence.annotations.WegasExtraProperty;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
-import com.wegas.editor.View.ReadOnlyNumber;
-import com.wegas.editor.View.View;
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
+import com.wegas.editor.view.NumberView;
 
 /**
  *
@@ -19,11 +19,11 @@ import com.wegas.editor.View.View;
 public interface WithId {
 
     @WegasExtraProperty(nullable = false,
-            view = @View(value = ReadOnlyNumber.class,
+            view = @View(value = NumberView.class,
                     label = "id",
                     featureLevel = ADVANCED,
                     index = -1000
             )
     )
-    public Long getId();
+    Long getId();
 }

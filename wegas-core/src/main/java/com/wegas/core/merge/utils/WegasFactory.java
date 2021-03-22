@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.merge.utils;
@@ -18,8 +18,22 @@ import java.lang.reflect.InvocationTargetException;
  */
 public interface WegasFactory {
 
-    public <T> T newInstance(GameModel gameModel, T originalObject) throws
-            InstantiationException, IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException,
-            NoSuchMethodException, SecurityException;
+    /**
+     *
+     * @param <T>
+     * @param gameModel
+     * @param originalObject
+     *
+     * @return
+     *
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws NoSuchMethodException
+     * @throws SecurityException
+     */
+    <T> T newInstance(GameModel gameModel, T originalObject) throws
+        InstantiationException, IllegalAccessException,
+        InvocationTargetException, NoSuchMethodException;
 }

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.api;
@@ -54,8 +54,20 @@ public interface QuestionDescriptorFacadeI {
     Reply selectAndValidateChoice(Long choiceId, Long playerId);
 
     /**
-     * {@link #selectChoice(java.lang.Long, java.lang.Long, java.lang.Long) selectChoice}
-     * with startTime = 0
+     *
+     * {@link #selectChoice(java.lang.Long, com.wegas.core.persistence.game.Player, java.lang.Long)  selectChoice} + {@link #validateReply(com.wegas.core.persistence.game.Player, java.lang.Long)  validateReply}
+     * in one shot
+     *
+     * @param choiceName selected choice name
+     * @param self       the player who select the choice
+     *
+     * @return the new validated reply
+     */
+    Reply selectAndValidateChoiceName(String choiceName, Player self);
+
+    /**
+     * {@link #selectChoice(java.lang.Long, java.lang.Long, java.lang.Long) selectChoice} with
+     * startTime = 0
      *
      * @param choiceId
      * @param playerId
@@ -79,7 +91,8 @@ public interface QuestionDescriptorFacadeI {
      * @param choiceId  selected choice
      * @param player    player who select the choice
      * @param startTime time the player select the choice
-     * @param quiet     a quiet selectChoice do not send any lock to others users and do not fire any replySelect event
+     * @param quiet     a quiet selectChoice do not send any lock to others users and do not fire
+     *                  any replySelect event
      *
      * @return the new reply
      */
@@ -130,9 +143,8 @@ public interface QuestionDescriptorFacadeI {
     void validateQuestion(Long questionInstanceId, Player player);
 
     /**
-     * Validates a question that's marked as checkbox type: sequentially
-     * validates all replies (i.e. selected choices) and processes all other
-     * choices as "ignored".
+     * Validates a question that's marked as checkbox type: sequentially validates all replies (i.e.
+     * selected choices) and processes all other choices as "ignored".
      *
      * @param validateQuestion
      * @param player
@@ -157,7 +169,7 @@ public interface QuestionDescriptorFacadeI {
      *
      * @return the validated reply
      */
-    public Reply validateReply(Long playerId, Long replyVariableInstanceId);
+    Reply validateReply(Long playerId, Long replyVariableInstanceId);
 
     /**
      * @param player

@@ -1,15 +1,18 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.annotations;
 
-import com.wegas.editor.ValueGenerators.Undefined;
-import com.wegas.editor.ValueGenerators.ValueGenerator;
-import com.wegas.editor.View.View;
+import ch.albasim.wegas.annotations.JSONSchema;
+import ch.albasim.wegas.annotations.Scriptable;
+import ch.albasim.wegas.annotations.UndefinedSchema;
+import ch.albasim.wegas.annotations.ValueGenerator;
+import ch.albasim.wegas.annotations.ValueGenerator.Undefined;
+import ch.albasim.wegas.annotations.View;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -23,6 +26,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Retention(value = RetentionPolicy.RUNTIME)
 public @interface Param {
+
+    Class<? extends JSONSchema> schema() default UndefinedSchema.class;
 
     View view() default @View(label = "");
 

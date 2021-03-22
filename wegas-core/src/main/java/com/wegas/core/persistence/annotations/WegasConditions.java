@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.annotations;
@@ -10,17 +10,19 @@ package com.wegas.core.persistence.annotations;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.annotations.WegasRefs.Ref;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 import org.apache.commons.lang3.Validate;
 
 /**
- * Some conditional statements to be included within {@link Errored} and {@link Validate} annotations.
+ * Some conditional statements to be included within {@link Errored} and {@link Validate}
+ * annotations.
  */
 public final class WegasConditions {
 
     /**
-     * Abstract condition.
-     * To rule them all
+     * Abstract condition. To rule them all
      */
     public static abstract class Condition {
 
@@ -39,7 +41,7 @@ public final class WegasConditions {
         }
 
         public Condition[] getAnd() {
-            return conditions;
+            return Arrays.copyOf(conditions, conditions.length);
         }
 
         @Override
@@ -65,7 +67,7 @@ public final class WegasConditions {
         }
 
         public Condition[] getOr() {
-            return conditions;
+            return Arrays.copyOf(conditions, conditions.length);
         }
 
         @Override
@@ -173,8 +175,33 @@ public final class WegasConditions {
     }
 
     /**
-     * Is the resolved boolean true?
-     * Throw error is ref is not resolved to a boolean.
+     * true if the refs is resolvable to a collection and if this collection is empty
+     */
+    public static class IsEmpty extends Condition {
+
+        private final Ref a;
+
+        public IsEmpty(Ref a) {
+            this.a = a;
+        }
+
+        public Ref getIsEmpty() {
+            return a;
+        }
+
+        @Override
+        public boolean eval(Object self, Mergeable object) {
+            try {
+                Collection resolve = a.resolveAsCollection(self, object);
+                return resolve != null && resolve.isEmpty();
+            } catch (Exception ex) {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * Is the resolved boolean true? Throw error is ref is not resolved to a boolean.
      */
     public static class IsTrue extends Condition {
 
@@ -199,8 +226,7 @@ public final class WegasConditions {
     }
 
     /**
-     * Is the resolved boolean false?
-     * Throw error is ref is not resolved to a boolean.
+     * Is the resolved boolean false? Throw error is ref is not resolved to a boolean.
      */
     public static class IsFalse extends Condition {
 
@@ -225,8 +251,8 @@ public final class WegasConditions {
     }
 
     /**
-     * Is the first ref less than the second one ?
-     * Throw WegasErrorMessage is any of the ref is not resolvable
+     * Is the first ref less than the second one ? Throw WegasErrorMessage is any of the ref is not
+     * resolvable
      */
     public static class LessThan extends Condition {
 
@@ -247,7 +273,7 @@ public final class WegasConditions {
             Double a = this.a.resolveAsDouble(self, object);
             Double b = this.b.resolveAsDouble(self, object);
 
-            if ((a == null || b == null)) {
+            if (a == null || b == null) {
                 throw WegasErrorMessage.error("LessThan operands can not be null");
             }
 
@@ -256,8 +282,8 @@ public final class WegasConditions {
     }
 
     /**
-     * Is the first ref less or equals than the second one ?
-     * Throw WegasErrorMessage is any of the ref is not resolvable
+     * Is the first ref less or equals than the second one ? Throw WegasErrorMessage is any of the
+     * ref is not resolvable
      */
     public static class LessThanOrEquals extends Condition {
 
@@ -316,8 +342,8 @@ public final class WegasConditions {
     }
 
     /**
-     * Is the first ref less or equals than the second one ?
-     * Throw WegasErrorMessage is any of the ref is not resolvable
+     * Is the first ref less or equals than the second one ? Throw WegasErrorMessage is any of the
+     * ref is not resolvable
      */
     public static class GreaterThanOrEquals extends Condition {
 

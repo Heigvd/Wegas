@@ -1,22 +1,24 @@
-interface Item<T> {
-  value: string;
-  items?: T[];
-}
-interface SearchableTreeSelectProps<I extends Item<I>> {
-  items: I[];
+import { TreeSelectItem } from '../FormView/TreeVariableSelect';
+
+interface SearchableTreeSelectProps<T> {
+  items: TreeSelectItem<T>[];
   search: string;
-  match?: (item: I, search: string) => boolean;
+  match?: (item: TreeSelectItem<T>, search: string) => boolean;
   render: (props: { items: any[] }) => JSX.Element;
 }
-function defaultSearchFn<I extends Item<I>>(item: I, search: string) {
-  return item.value.toLowerCase().indexOf(search.toLowerCase()) > -1;
+function defaultSearchFn<T>(item: TreeSelectItem<T>, search: string) {
+  return (
+    JSON.stringify(item.value)
+      .toLowerCase()
+      .indexOf(search.toLowerCase()) > -1
+  );
 }
 
-function filterChildren<I extends Item<I>>(
-  items: I[],
+function filterChildren<T>(
+  items: TreeSelectItem<T>[],
   search: string,
-  match: (item: I, search: string) => boolean,
-): I[] {
+  match: (item: TreeSelectItem<T>, search: string) => boolean,
+): TreeSelectItem<T>[] {
   return items
     .map(i => {
       if (i.items) {
@@ -35,7 +37,7 @@ function filterChildren<I extends Item<I>>(
     })
     .filter(i => i.match || (i.items && i.items.length));
 }
-export function SearchableItems<I extends Item<I>>(props: SearchableTreeSelectProps<I>) {
+export function SearchableItems<T>(props: SearchableTreeSelectProps<T>) {
   const { items, search, match = defaultSearchFn, render } = props;
   return render({
     items: search.trim() ? filterChildren(items, search.trim(), match) : items,

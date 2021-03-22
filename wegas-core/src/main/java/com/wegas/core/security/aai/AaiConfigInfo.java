@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.aai;
@@ -11,16 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.Helper;
 
 /**
- * Wegas
- * http://wegas.albasim.ch
- *
- * This singleton class is for exporting configuration data taken from *.properties files
- *
- * Copyright (c) AlbaSim, School of Business and Engineering of Western Switzerland
- * Licensed under the MIT License
- * Created by jarle.hulaas@heig-vd.ch on 22.03.2017.
+ * @author jarle.hulaas@heig-vd.ch on 22.03.2017.
  */
-
 public final class AaiConfigInfo {
 
     private boolean enabled;
@@ -46,7 +38,7 @@ public final class AaiConfigInfo {
         }
     }
 
-    public final static AaiConfigInfo getInstance() {
+    public static AaiConfigInfo getInstance() {
         if (AaiConfigInfo.instance == null) {
             setInstance();
         }

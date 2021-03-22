@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.18.1 (build f7e7bcb)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -139,6 +139,7 @@ available.
 
             // bind the specified additional modules for this instance
             if (!l) {
+                Y._afterConfig();
                 Y._setup();
             }
         }
@@ -152,6 +153,7 @@ available.
                 Y.applyConfig(args[i]);
             }
 
+            Y._afterConfig();
             Y._setup();
         }
 
@@ -163,7 +165,7 @@ available.
 (function() {
 
     var proto, prop,
-        VERSION = '3.17.2',
+        VERSION = '3.18.1',
         PERIOD = '.',
         BASE = 'http://yui.yahooapis.com/',
         /*
@@ -206,7 +208,7 @@ available.
             YUI.Env.DOMReady = true;
             if (hasWin) {
                 remove(doc, 'DOMContentLoaded', handleReady);
-            }        
+            }
         },
         handleLoad = function() {
             YUI.Env.windowLoaded = true;
@@ -356,7 +358,7 @@ proto = {
                 mods: {}, // flat module map
                 versions: {}, // version module map
                 base: BASE,
-                cdn: BASE + VERSION + '/build/',
+                cdn: BASE + VERSION + '/',
                 // bootstrapped: false,
                 _idx: 0,
                 _used: {},
@@ -483,8 +485,7 @@ proto = {
             throwFail: true,
             useBrowserConsole: true,
             useNativeES5: true,
-            win: win,
-            global: Function('return this')()
+            win: win
         };
 
         //Register the CSS stamp element
@@ -503,7 +504,9 @@ proto = {
 
         Y.config.lang = Y.config.lang || 'en-US';
 
-        Y.config.base = YUI.config.base || Y.Env.getBase(Y.Env._BASE_RE);
+        Y.config.base = YUI.config.base ||
+                (YUI.config.defaultBase && YUI.config.root && YUI.config.defaultBase + YUI.config.root) ||
+                Y.Env.getBase(Y.Env._BASE_RE);
 
         if (!filter || (!('mindebug').indexOf(filter))) {
             filter = 'min';
@@ -511,6 +514,25 @@ proto = {
         filter = (filter) ? '-' + filter : filter;
         Y.config.loaderPath = YUI.config.loaderPath || 'loader/loader' + filter + '.js';
 
+    },
+
+    /**
+    This method is called after all other configuration has been applied to
+    the YUI instance.
+
+    @method _afterConfig
+    @private
+    **/
+    _afterConfig: function () {
+        var Y = this;
+
+        // We need to set up Y.config.global after the rest of the configuration
+        // so that setting it in user configuration prevents the library from
+        // using eval(). This is critical for Content Security Policy enabled
+        // sites and other environments like Chrome extensions
+        if (!Y.config.hasOwnProperty('global')) {
+            Y.config.global = Function('return this')();
+        }
     },
 
     /**
@@ -524,8 +546,9 @@ proto = {
         var i, Y = this,
             core = [],
             mods = YUI.Env.mods,
-            extras = Y.config.core || [].concat(YUI.Env.core); //Clone it..
-
+            extendedCore = Y.config.extendedCore || [],
+            extras = Y.config.core || [].concat(YUI.Env.core).concat(extendedCore); //Clone it..
+   
         for (i = 0; i < extras.length; i++) {
             if (mods[extras[i]]) {
                 core.push(extras[i]);
@@ -2246,14 +2269,14 @@ L.now = Date.now || function () {
 };
 
 /**
- * Performs `{placeholder}` substitution on a string. The object passed as the 
+ * Performs `{placeholder}` substitution on a string. The object passed as the
  * second parameter provides values to replace the `{placeholder}`s.
  * `{placeholder}` token names must match property names of the object. For example,
- * 
+ *
  *`var greeting = Y.Lang.sub("Hello, {who}!", { who: "World" });`
  *
- * `{placeholder}` tokens that are undefined on the object map will be left 
- * in tact (leaving unsightly `{placeholder}`'s in the output string). 
+ * `{placeholder}` tokens that are undefined on the object map will be left
+ * in tact (leaving unsightly `{placeholder}`'s in the output string).
  *
  * @method sub
  * @param {string} s String to be modified.
@@ -2263,8 +2286,40 @@ L.now = Date.now || function () {
  * @since 3.2.0
  */
 L.sub = function(s, o) {
+
+    /**
+    Finds the value of `key` in given object.
+    If the key has a 'dot' notation e.g. 'foo.bar.baz', the function will
+    try to resolve this path if it doesn't exist as a property
+    @example
+        value({ 'a.b': 1, a: { b: 2 } }, 'a.b'); // 1
+        value({ a: { b: 2 } }          , 'a.b'); // 2
+    @param {Object} obj A key/value pairs object
+    @param {String} key
+    @return {Any}
+    @private
+    **/
+    function value(obj, key) {
+
+        var subkey;
+
+        if ( typeof obj[key] !== 'undefined' ) {
+            return obj[key];
+        }
+
+        key    = key.split('.');         // given 'a.b.c'
+        subkey = key.slice(1).join('.'); // 'b.c'
+        key    = key[0];                 // 'a'
+
+        // special case for null as typeof returns object and we don't want that.
+        if ( subkey && typeof obj[key] === 'object' && obj[key] !== null ) {
+            return value(obj[key], subkey);
+        }
+    }
+
     return s.replace ? s.replace(SUBREGEX, function (match, key) {
-        return L.isUndefined(o[key]) ? match : o[key];
+        var val = key.indexOf('.')>-1 ? value(o, key) : o[key];
+        return typeof val === 'undefined' ? match : val;
     }) : s;
 };
 
@@ -3608,7 +3663,10 @@ YUI.Env.parseUA = function(subUA) {
         secure: false,
 
         /**
-         * The operating system.  Currently only detecting windows or macintosh
+         * The operating system.
+         *
+         * Possible values are `windows`, `macintosh`, `android`, `symbos`, `linux`, `rhino` and `ios`.
+         *
          * @property os
          * @type string
          * @default null
@@ -3728,9 +3786,7 @@ YUI.Env.parseUA = function(subUA) {
                     }
                 }
                 if (/ Android/.test(ua)) {
-                    if (/Mobile/.test(ua)) {
-                        o.mobile = 'Android';
-                    }
+                    o.mobile = 'Android';
                     m = ua.match(/Android ([^\s]*);/);
                     if (m && m[1]) {
                         o.android = numberify(m[1]);
@@ -3952,6 +4008,7 @@ YUI.Env.aliases = {
     "io": ["io-base","io-xdr","io-form","io-upload-iframe","io-queue"],
     "json": ["json-parse","json-stringify"],
     "loader": ["loader-base","loader-rollup","loader-yui3"],
+    "loader-pathogen-encoder": ["loader-base","loader-rollup","loader-yui3","loader-pathogen-combohandler"],
     "node": ["node-base","node-event-delegate","node-pluginhost","node-screen","node-style"],
     "pluginhost": ["pluginhost-base","pluginhost-config"],
     "querystring": ["querystring-parse","querystring-stringify"],
@@ -3964,7 +4021,7 @@ YUI.Env.aliases = {
 };
 
 
-}, '3.17.2', {
+}, '3.18.1', {
     "use": [
         "yui-base",
         "get",
@@ -4167,7 +4224,7 @@ YUI.add('get', function (Y, NAME) {
 
 
 
-}, '3.17.2');
+}, '3.18.1');
 YUI.add('features', function (Y, NAME) {
 
 var feature_tests = {};
@@ -4404,7 +4461,7 @@ add('load', '8', {
         useSVG = !Y.config.defaultGraphicEngine || Y.config.defaultGraphicEngine != "canvas",
 		canvas = DOCUMENT && DOCUMENT.createElement("canvas"),
         svg = (DOCUMENT && DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1"));
-    
+
     return svg && (useSVG || !canvas);
 },
     "trigger": "graphics"
@@ -4417,7 +4474,7 @@ add('load', '9', {
         useSVG = !Y.config.defaultGraphicEngine || Y.config.defaultGraphicEngine != "canvas",
 		canvas = DOCUMENT && DOCUMENT.createElement("canvas"),
         svg = (DOCUMENT && DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1"));
-    
+
     return svg && (useSVG || !canvas);
 },
     "trigger": "graphics"
@@ -4470,7 +4527,7 @@ add('load', '14', {
     function workingNative( k, v ) {
         return k === "ok" ? true : v;
     }
-    
+
     // Double check basic functionality.  This is mainly to catch early broken
     // implementations of the JSON API in Firefox 3.1 beta1 and beta2
     if ( nativeSupport ) {
@@ -4572,7 +4629,7 @@ add('load', '22', {
     "ua": "winjs"
 });
 
-}, '3.17.2', {"requires": ["yui-base"]});
+}, '3.18.1', {"requires": ["yui-base"]});
 YUI.add('intl-base', function (Y, NAME) {
 
 /**
@@ -4660,7 +4717,7 @@ Y.mix(Y.namespace('Intl'), {
 });
 
 
-}, '3.17.2', {"requires": ["yui-base"]});
+}, '3.18.1', {"requires": ["yui-base"]});
 YUI.add('yui-log', function (Y, NAME) {
 
 /**
@@ -4785,7 +4842,7 @@ INSTANCE.message = function() {
 };
 
 
-}, '3.17.2', {"requires": ["yui-base"]});
+}, '3.18.1', {"requires": ["yui-base"]});
 YUI.add('yui-log-nodejs', function (Y, NAME) {
 
 var sys = require(process.binding('natives').util ? 'util' : 'sys'),
@@ -4866,7 +4923,7 @@ if (!Y.config.logFn) {
 
 
 
-}, '3.17.2');
+}, '3.18.1');
 YUI.add('yui-later', function (Y, NAME) {
 
 /**
@@ -4944,7 +5001,7 @@ Y.Lang.later = Y.later;
 
 
 
-}, '3.17.2', {"requires": ["yui-base"]});
+}, '3.18.1', {"requires": ["yui-base"]});
 YUI.add('loader-base', function (Y, NAME) {
 
 /**
@@ -4958,7 +5015,7 @@ YUI.add('loader-base', function (Y, NAME) {
         BUILD = '/build/',
         ROOT = VERSION + '/',
         CDN_BASE = Y.Env.base,
-        GALLERY_VERSION = 'gallery-2014.05.29-15-46',
+        GALLERY_VERSION = 'gallery-2014.07.31-18-26',
         TNT = '2in3',
         TNT_VERSION = '4',
         YUI2_VERSION = '2.9.0',
@@ -6062,11 +6119,17 @@ Y.Loader.prototype = {
      */
     addGroup: function(o, name) {
         var mods = o.modules,
-            self = this, i, v;
+            self = this,
+            defaultBase = o.defaultBase || Y.config.defaultBase,
+            i, v;
 
         name = name || o.name;
         o.name = name;
         self.groups[name] = o;
+
+        if (!o.base && defaultBase && o.root) {
+            o.base = defaultBase + o.root;
+        }
 
         if (o.patterns) {
             for (i in o.patterns) {
@@ -7075,7 +7138,7 @@ Y.Loader.prototype = {
                         test: void 0,
                         temp: true
                     }), mname);
-                    if (found.configFn) {
+                    if (m && found.configFn) {
                         m.configFn = found.configFn;
                     }
                 }
@@ -7616,7 +7679,8 @@ Y.Loader.prototype = {
     resolve: function(calc, sorted) {
         var self     = this,
             resolved = { js: [], jsMods: [], css: [], cssMods: [] },
-            addSingle;
+            addSingle,
+            usePathogen = Y.config.comboLoader && Y.config.customComboBase;
 
         if (self.skin.overrides || self.skin.defaultSkin !== DEFAULT_SKIN || self.ignoreRegistered) {
             self._resetModules();
@@ -7658,7 +7722,7 @@ Y.Loader.prototype = {
 
         /*jslint vars: true */
         var inserted     = (self.ignoreRegistered) ? {} : self.inserted,
-            comboSources = {},
+            comboSources,
             maxURLLength,
             comboMeta,
             comboBase,
@@ -7666,7 +7730,9 @@ Y.Loader.prototype = {
             group,
             mod,
             len,
-            i;
+            i,
+            hasComboModule = false;
+
         /*jslint vars: false */
 
         for (i = 0, len = sorted.length; i < len; i++) {
@@ -7706,7 +7772,8 @@ Y.Loader.prototype = {
                 addSingle(mod);
                 continue;
             }
-
+            hasComboModule = true;
+            comboSources = comboSources || {};
             comboSources[comboBase] = comboSources[comboBase] ||
                 { js: [], jsMods: [], css: [], cssMods: [] };
 
@@ -7716,19 +7783,46 @@ Y.Loader.prototype = {
             comboMeta.maxURLLength  = maxURLLength || self.maxURLLength;
 
             comboMeta[mod.type + 'Mods'].push(mod);
+            if (mod.type === JS || mod.type === CSS) {
+                resolved[mod.type + 'Mods'].push(mod);
+            }
         }
+        //only encode if we have something to encode
+        if (hasComboModule) {
+            if (usePathogen) {
+                resolved = this._pathogenEncodeComboSources(resolved);
+            } else {
+                resolved = this._encodeComboSources(resolved, comboSources);
+            }
+        }
+        return resolved;
+    },
 
-        // TODO: Refactor the encoding logic below into its own method.
-
-        /*jslint vars: true */
+    /**
+     * Encodes combo sources and appends them to an object hash of arrays from `loader.resolve`.
+     *
+     * @method _encodeComboSources
+     * @param {Object} resolved The object hash of arrays in which to attach the encoded combo sources.
+     * @param {Object} comboSources An object containing relevant data about modules.
+     * @return Object
+     * @private
+     */
+    _encodeComboSources: function(resolved, comboSources) {
         var fragSubset,
             modules,
             tmpBase,
             baseLen,
             frags,
             frag,
-            type;
-        /*jslint vars: false */
+            type,
+            mod,
+            maxURLLength,
+            comboBase,
+            comboMeta,
+            comboSep,
+            i,
+            len,
+            self = this;
 
         for (comboBase in comboSources) {
             if (comboSources.hasOwnProperty(comboBase)) {
@@ -7777,12 +7871,10 @@ Y.Loader.prototype = {
                                 resolved[type].push(self._filter(tmpBase, null, comboMeta.group));
                             }
                         }
-                        resolved[type + 'Mods'] = resolved[type + 'Mods'].concat(modules);
                     }
                 }
             }
         }
-
         return resolved;
     },
 
@@ -7824,8 +7916,7 @@ Y.Loader.prototype = {
 };
 
 
-
-}, '3.17.2', {"requires": ["get", "features"]});
+}, '3.18.1', {"requires": ["get", "features"]});
 YUI.add('loader-rollup', function (Y, NAME) {
 
 /**
@@ -7924,7 +8015,7 @@ Y.Loader.prototype._rollup = function() {
 };
 
 
-}, '3.17.2', {"requires": ["loader-base"]});
+}, '3.18.1', {"requires": ["loader-base"]});
 YUI.add('loader-yui3', function (Y, NAME) {
 
 /* This file is auto-generated by (yogi.js loader --mix --yes) */
@@ -9094,7 +9185,8 @@ Y.mix(YUI.Env[Y.version].modules, {
     },
     "dd-drag": {
         "requires": [
-            "dd-ddm-base"
+            "dd-ddm-base",
+            "selector-css2"
         ]
     },
     "dd-drop": {
@@ -9565,7 +9657,7 @@ Y.mix(YUI.Env[Y.version].modules, {
         useSVG = !Y.config.defaultGraphicEngine || Y.config.defaultGraphicEngine != "canvas",
 		canvas = DOCUMENT && DOCUMENT.createElement("canvas"),
         svg = (DOCUMENT && DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1"));
-    
+
     return svg && (useSVG || !canvas);
 },
             "trigger": "graphics"
@@ -9582,7 +9674,7 @@ Y.mix(YUI.Env[Y.version].modules, {
         useSVG = !Y.config.defaultGraphicEngine || Y.config.defaultGraphicEngine != "canvas",
 		canvas = DOCUMENT && DOCUMENT.createElement("canvas"),
         svg = (DOCUMENT && DOCUMENT.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1"));
-    
+
     return svg && (useSVG || !canvas);
 },
             "trigger": "graphics"
@@ -9784,7 +9876,7 @@ Y.mix(YUI.Env[Y.version].modules, {
     function workingNative( k, v ) {
         return k === "ok" ? true : v;
     }
-    
+
     // Double check basic functionality.  This is mainly to catch early broken
     // implementations of the JSON API in Firefox 3.1 beta1 and beta2
     if ( nativeSupport ) {
@@ -9863,6 +9955,15 @@ Y.mix(YUI.Env[Y.version].modules, {
         "requires": [
             "get",
             "features"
+        ]
+    },
+    "loader-pathogen-combohandler": {},
+    "loader-pathogen-encoder": {
+        "use": [
+            "loader-base",
+            "loader-rollup",
+            "loader-yui3",
+            "loader-pathogen-combohandler"
         ]
     },
     "loader-rollup": {
@@ -10906,11 +11007,11 @@ Y.mix(YUI.Env[Y.version].modules, {
         ]
     }
 });
-YUI.Env[Y.version].md5 = '45357bb11eddf7fd0a89c0b756599df2';
+YUI.Env[Y.version].md5 = '2fd2be6b12ee9f999b4367499ae61aae';
 
 
-}, '3.17.2', {"requires": ["loader-base"]});
-YUI.add('yui', function (Y, NAME) {}, '3.17.2', {
+}, '3.18.1', {"requires": ["loader-base"]});
+YUI.add('yui', function (Y, NAME) {}, '3.18.1', {
     "use": [
         "get",
         "features",

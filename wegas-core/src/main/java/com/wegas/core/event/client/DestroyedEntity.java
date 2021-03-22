@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.event.client;
@@ -25,16 +25,24 @@ public class DestroyedEntity extends AbstractEntity {
 
     private final Long id;
 
+    private final String className;
+
     private final String effectiveClass;
 
     public DestroyedEntity(AbstractEntity entity) {
         this.id = entity.getId();
         this.effectiveClass = entity.getJSONClassName();
+        this.className = entity.getClass().getName();
     }
 
     @Override
     public Long getId() {
         return id;
+    }
+
+    @JsonIgnore
+    public String getClassName() {
+        return className;
     }
 
     @JsonProperty("@class")

@@ -27,7 +27,8 @@
                     }).render(".wegas-button-toolbar .wegas-flexlist-content");
 
                     editButton.on("click", function() {
-                        window.open("game-play.html?gameModelId=" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id"), "_blank");
+                        window.open("game-play.html?gameModelId=" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
+                            .get("id"), "_blank");
                     }, this);
                 });
 
@@ -43,7 +44,8 @@
                             }).render(".wegas-button-toolbar .wegas-flexlist-content");
 
                             editButton.on("click", function() {
-                                window.open("edit.html?gameModelId=" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("basedOnId"), "_blank");
+                                window.open("edit.html?gameModelId=" + Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
+                                    .get("basedOnId"), "_blank");
                             }, this);
                         });
                     }
@@ -69,19 +71,20 @@
                     }
                 }
 
-                //]]><ui:fragment rendered = "#{editorGameController.gameId != null}"><![CDATA[
-                Y.one("body").addClass("wegas-editmode-game");
-                // Handle switch from host to edit mode
-                Y.use("wegas-button", function() {
-                    var editButton = new Y.Wegas.Button({
-                        label: "<i class=\"wegas-font wegas-teacher\" title=\"Back to game\"></i>",
-                        cssClass: "host-switchmode"
-                    }).render(".wegas-button-toolbar .wegas-flexlist-content");
-                    editButton.on("click", function() {
-                        window.location.replace(window.location.toString().replace("edit.", "host."));
-                    }, this);
-                });
-                //]]></ui:fragment><![CDATA[
+
+                // Handle switch from edit to host mode
+                if (gameModel.get("type") === "PLAY") {
+                    Y.one("body").addClass("wegas-editmode-game");
+                    Y.use("wegas-button", function() {
+                        var editButton = new Y.Wegas.Button({
+                            label: "<i class=\"wegas-font wegas-teacher\" title=\"Back to game\"></i>",
+                            cssClass: "host-switchmode"
+                        }).render(".wegas-button-toolbar .wegas-flexlist-content");
+                        editButton.on("click", function() {
+                            window.location.replace(window.location.toString().replace("edit.", "host."));
+                        }, this);
+                    });
+                }
             });
             //]]></ui:define></script>
 

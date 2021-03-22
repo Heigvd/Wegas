@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019 School of Business and Engineering Vaud, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -10,6 +10,7 @@ package com.wegas.core.ejb;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.i18n.ejb.I18nFacade;
 import com.wegas.core.i18n.persistence.TranslatableContent;
@@ -28,7 +29,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
-import com.wegas.core.persistence.variable.ModelScoped;
+import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import static com.wegas.core.persistence.variable.ModelScoped.Visibility.PRIVATE;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -53,7 +54,6 @@ import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.naming.NamingException;
 import javax.ws.rs.core.MediaType;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.reflections.Reflections;
@@ -100,7 +100,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         vdLevel = Helper.setLoggerLevel(VariableDescriptor.class, Level.DEBUG);
     }
 
-    @AfterClass
+    //@AfterClass
     public static void rollbackLevels() {
         Helper.setLoggerLevel(ModelFacade.class, mfLevel);
         Helper.setLoggerLevel(WegasPatch.class, wpLevel);
@@ -156,6 +156,15 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
             Assert.assertEquals(strA, strB);
 
+        }
+    }
+
+    private void assertTranslationEquals(TranslatableContent t, String code, String value) {
+        Translation translation = t.getTranslation(code);
+        if (translation == null) {
+            Assert.assertNull("Translation for " + code + " should not be null", value);
+        } else {
+            Assert.assertEquals("Translation for " + code + " does not match", translation.getTranslation(), value);
         }
     }
 
@@ -262,31 +271,31 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         GameModelContent css = new GameModelContent();
         css.setContent(".model_rule { color: red}");
         css.setContentType("text/css");
-        css.setVisibility(ModelScoped.Visibility.INTERNAL);
+        css.setVisibility(Visibility.INTERNAL);
         cssLibrary.put("modelCss", css);
 
         css = new GameModelContent();
         css.setContent(".protected_rule { color: red}");
         css.setContentType("text/css");
-        css.setVisibility(ModelScoped.Visibility.PROTECTED);
+        css.setVisibility(Visibility.PROTECTED);
         cssLibrary.put("protectedCss", css);
 
         css = new GameModelContent();
         css.setContent(".inherited_rule { color: red}");
         css.setContentType("text/css");
-        css.setVisibility(ModelScoped.Visibility.INHERITED);
+        css.setVisibility(Visibility.INHERITED);
         cssLibrary.put("inheritedCss", css);
 
         css = new GameModelContent();
         css.setContent(".private_rule { color: red}");
         css.setContentType("text/css");
-        css.setVisibility(ModelScoped.Visibility.PRIVATE);
+        css.setVisibility(Visibility.PRIVATE);
         cssLibrary.put("privateCss", css);
 
         css = new GameModelContent();
         css.setContent(".private_rule { color: red}");
         css.setContentType("text/css");
-        css.setVisibility(ModelScoped.Visibility.PRIVATE);
+        css.setVisibility(Visibility.PRIVATE);
         cssLibrary.put("privateCss" + uniqueToken, css);
 
         theModel.setCssLibrary(cssLibrary);
@@ -372,8 +381,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Assert.assertEquals(this.getStringifiedPages(model), this.getStringifiedPages(gameModel1));
         Assert.assertNotEquals(this.getStringifiedPages(model), this.getStringifiedPages(gameModel2));
 
-        Assert.assertEquals(2, pageFacade.getPageIndex(model).size());
-        Assert.assertEquals(3, pageFacade.getPageIndex(gameModel2).size());
+        Assert.assertEquals(2,
+            pageFacade.getPageIndex(model).getRoot().getItems().size());
+        Assert.assertEquals(3,
+            pageFacade.getPageIndex(gameModel2).getRoot().getItems().size());
 
         modelFacade.propagateModel(model.getId());
 
@@ -381,17 +392,20 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-        Assert.assertEquals(this.getStringifiedPages(model), this.getStringifiedPages(gameModel1));
-        Assert.assertEquals(this.getStringifiedPages(model), this.getStringifiedPages(gameModel2));
+        Assert.assertEquals(this.getStringifiedPages(model),
+            this.getStringifiedPages(gameModel1));
+        Assert.assertEquals(this.getStringifiedPages(model),
+            this.getStringifiedPages(gameModel2));
 
-        Assert.assertEquals(2, pageFacade.getPageIndex(model).size());
+        Assert.assertEquals(2,
+            pageFacade.getPageIndex(model).getRoot().getItems().size());
 
         /**
          * Update pages
          */
         this.setPagesFromStrings(model, "{\"type\": \"List\", \"direction\": \"horizontal\", \"children\": []}",
-                "{\"type\": \"AbsoluteLayout\", \"children\": []}",
-                "{\"type\": \"FlexList\", \"direction\": \"horizontal\", \"children\": []}");
+            "{\"type\": \"AbsoluteLayout\", \"children\": []}",
+            "{\"type\": \"FlexList\", \"direction\": \"horizontal\", \"children\": []}");
         model = gameModelFacade.merge(model);
 
         /**
@@ -403,10 +417,13 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
 
-        Assert.assertEquals(this.getStringifiedPages(model), this.getStringifiedPages(gameModel1));
-        Assert.assertEquals(this.getStringifiedPages(model), this.getStringifiedPages(gameModel2));
+        Assert.assertEquals(this.getStringifiedPages(model),
+            this.getStringifiedPages(gameModel1));
+        Assert.assertEquals(this.getStringifiedPages(model),
+            this.getStringifiedPages(gameModel2));
 
-        Assert.assertEquals(3, pageFacade.getPageIndex(model).size());
+        Assert.assertEquals(3, pageFacade.getPageIndex(model).getRoot()
+            .getItems().size());
     }
 
     @Test
@@ -441,16 +458,16 @@ public class ModelFacadeTest extends AbstractArquillianTest {
             GameModelContent value = entry.getValue();
             switch (key) {
                 case "modelCss":
-                    value.setVisibility(ModelScoped.Visibility.INTERNAL);
+                    value.setVisibility(Visibility.INTERNAL);
                     break;
                 case "protectedCss":
-                    value.setVisibility(ModelScoped.Visibility.PROTECTED);
+                    value.setVisibility(Visibility.PROTECTED);
                     break;
                 case "inheritedCss":
-                    value.setVisibility(ModelScoped.Visibility.INHERITED);
+                    value.setVisibility(Visibility.INHERITED);
                     break;
                 default:
-                    value.setVisibility(ModelScoped.Visibility.PRIVATE);
+                    value.setVisibility(Visibility.PRIVATE);
                     break;
             }
         }
@@ -559,15 +576,15 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel2.setName("gamemodel #2");
         gameModelFacade.createWithDebugGame(gameModel2);
 
-        wegasFactory.createObjectDescriptor(gameModel1, null, "aSet", "My Set", ModelScoped.Visibility.PRIVATE, "value0", "value1");
+        wegasFactory.createObjectDescriptor(gameModel1, null, "aSet", "My Set", Visibility.PRIVATE, "value0", "value1");
         wegasFactory.createString(gameModel1, null, "aString", "My String", "v1", "v1", "v10");
-        wegasFactory.createNumberDescriptor(gameModel1, null, "aNumber", "MyNumber", ModelScoped.Visibility.PRIVATE, null, null, 1.0, 1.1, 1.2, 1.3);
-        wegasFactory.createNumberDescriptor(gameModel1, null, "anOtherNumber", "My2ndNumber", ModelScoped.Visibility.PRIVATE, null, null, 1.0, 1.1, 1.2, 1.3);
+        wegasFactory.createNumberDescriptor(gameModel1, null, "aNumber", "MyNumber", Visibility.PRIVATE, null, null, 1.0, 1.1, 1.2, 1.3);
+        wegasFactory.createNumberDescriptor(gameModel1, null, "anOtherNumber", "My2ndNumber", Visibility.PRIVATE, null, null, 1.0, 1.1, 1.2, 1.3);
 
-        wegasFactory.createObjectDescriptor(gameModel2, null, "aSet", "My Set", ModelScoped.Visibility.PRIVATE, "value0", "value1");
+        wegasFactory.createObjectDescriptor(gameModel2, null, "aSet", "My Set", Visibility.PRIVATE, "value0", "value1");
         wegasFactory.createString(gameModel2, null, "aString", "My String", "v1", "v1", "v10");
-        wegasFactory.createNumberDescriptor(gameModel2, null, "aNumber", "MyNumber", ModelScoped.Visibility.PRIVATE, null, null, 1.0, 1.1, 1.2, 1.3);
-        wegasFactory.createNumberDescriptor(gameModel2, null, "anOtherNumber", "My2ndNumber", ModelScoped.Visibility.PRIVATE, null, null, 1.0, 5.3, 32.14);
+        wegasFactory.createNumberDescriptor(gameModel2, null, "aNumber", "MyNumber", Visibility.PRIVATE, null, null, 1.0, 1.1, 1.2, 1.3);
+        wegasFactory.createNumberDescriptor(gameModel2, null, "anOtherNumber", "My2ndNumber", Visibility.PRIVATE, null, null, 1.0, 5.3, 32.14);
 
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
@@ -582,7 +599,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         VariableDescriptor descriptor = getDescriptor(model, "anOtherNumber");
 
-        descriptor.setVisibility(ModelScoped.Visibility.INTERNAL);
+        descriptor.setVisibility(Visibility.INTERNAL);
         variableDescriptorFacade.update(descriptor.getId(), descriptor);
 
         model = modelFacade.propagateModel(model.getId());
@@ -592,8 +609,8 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
 
         logger.info("anOtherNumberHistory : {} {}",
-                ((NumberDescriptor) getDescriptor(gameModel1, "anOtherNumber")).getDefaultInstance().getHistory(),
-                ((NumberDescriptor) getDescriptor(gameModel2, "anOtherNumber")).getDefaultInstance().getHistory());
+            ((NumberDescriptor) getDescriptor(gameModel1, "anOtherNumber")).getDefaultInstance().getHistory(),
+            ((NumberDescriptor) getDescriptor(gameModel2, "anOtherNumber")).getDefaultInstance().getHistory());
 
         ObjectDescriptor om1 = (ObjectDescriptor) getDescriptor(model, "aSet");
         om1.setProperty("prop1", "value1.0");
@@ -657,13 +674,16 @@ public class ModelFacadeTest extends AbstractArquillianTest {
          */
         modelFacade.propagateModel(model.getId());
 
+        gameModelFacade.reset(gameModel1.getId());
+        gameModelFacade.reset(gameModel2.getId());
+
         logger.debug(Helper.printGameModel(gameModelFacade.find(model.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
 
         logger.info("aNumberHistory : {} {}",
-                ((NumberDescriptor) getDescriptor(gameModel1, "aNumber")).getDefaultInstance().getHistory(),
-                ((NumberDescriptor) getDescriptor(gameModel2, "aNumber")).getDefaultInstance().getHistory());
+            ((NumberDescriptor) getDescriptor(gameModel1, "aNumber")).getDefaultInstance().getHistory(),
+            ((NumberDescriptor) getDescriptor(gameModel2, "aNumber")).getDefaultInstance().getHistory());
 
         List<EnumItem> allowedValues1 = ((StringDescriptor) getDescriptor(gameModel1, "aString")).getAllowedValues();
         List<EnumItem> allowedValues2 = ((StringDescriptor) getDescriptor(gameModel2, "aString")).getAllowedValues();
@@ -716,10 +736,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         ListDescriptor list1_1 = wegasFactory.createList(gameModel1, null, "myFirstFolder", "My First Folder");
         //                                           N,   L,  Min, Max,   Def, History...
-        wegasFactory.createNumberDescriptor(gameModel1, list1_1, "x", "X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        wegasFactory.createNumberDescriptor(gameModel1, list1_1, "x", "X", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
 
         ListDescriptor list1_2 = wegasFactory.createList(gameModel2, null, "myFirstFolder", "My First Folder");
-        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
 
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
@@ -736,11 +756,11 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         /*
          * Add y to gameModel2 list1_2
          */
-        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "y", "LABEL Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 2.0, 2.0, 2.1);
+        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "y", "LABEL Y", Visibility.PRIVATE, 0.0, 100.0, 2.0, 2.0, 2.1);
 
         logger.info("MyFirstFolder becomes INTERNAL");
         VariableDescriptor modelList = getDescriptor(model, "myFirstFolder");
-        modelList.setVisibility(ModelScoped.Visibility.INTERNAL);
+        modelList.setVisibility(Visibility.INTERNAL);
         variableDescriptorFacade.update(modelList.getId(), modelList);
 
         model = modelFacade.propagateModel(model.getId());
@@ -759,7 +779,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         logger.info("MyFirstFolder becomes PRIVATE");
         modelList = getDescriptor(model, "myFirstFolder");
-        modelList.setVisibility(ModelScoped.Visibility.PRIVATE);
+        modelList.setVisibility(Visibility.PRIVATE);
         variableDescriptorFacade.update(modelList.getId(), modelList);
 
         model = modelFacade.propagateModel(model.getId());
@@ -800,23 +820,23 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         model = modelFacade.propagateModel(model.getId());
 
         // x in model
-        NumberDescriptor xModel = wegasFactory.createNumberDescriptor(model, null, "x", "LABEL X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        NumberDescriptor xModel = wegasFactory.createNumberDescriptor(model, null, "x", "LABEL X", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
         Assert.assertEquals("XModel name does not match", "x", xModel.getName());
 
         // x in scenarios -> renamed
-        NumberDescriptor x1 = wegasFactory.createNumberDescriptor(gameModel1, null, "x", "X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
-        NumberDescriptor x2 = wegasFactory.createNumberDescriptor(gameModel2, null, "x", "X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        NumberDescriptor x1 = wegasFactory.createNumberDescriptor(gameModel1, null, "x", "X", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        NumberDescriptor x2 = wegasFactory.createNumberDescriptor(gameModel2, null, "x", "X", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
         Assert.assertNotEquals("X1 name does not match", "x", x1.getName());
         Assert.assertNotEquals("X2 name does not match", "x", x2.getName());
 
         // y in scenarios
-        NumberDescriptor y1 = wegasFactory.createNumberDescriptor(gameModel1, null, "y", "Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
-        NumberDescriptor y2 = wegasFactory.createNumberDescriptor(gameModel2, null, "y", "Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        NumberDescriptor y1 = wegasFactory.createNumberDescriptor(gameModel1, null, "y", "Y", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        NumberDescriptor y2 = wegasFactory.createNumberDescriptor(gameModel2, null, "y", "Y", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
         Assert.assertEquals("Y1 name does not match", "y", y1.getName());
         Assert.assertEquals("Y2 name does not match", "y", y2.getName());
 
         // y in model -> renamed
-        NumberDescriptor yModel = wegasFactory.createNumberDescriptor(model, null, "y", "Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        NumberDescriptor yModel = wegasFactory.createNumberDescriptor(model, null, "y", "Y", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
         Assert.assertNotEquals("YModel name does not match", "y", yModel.getName());
     }
 
@@ -831,10 +851,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModelFacade.createWithDebugGame(gameModel2);
 
         ListDescriptor list1_1 = wegasFactory.createList(gameModel1, null, "aFolder", "a folder");
-        wegasFactory.createNumberDescriptor(gameModel1, list1_1, "x", "X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        wegasFactory.createNumberDescriptor(gameModel1, list1_1, "x", "X", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
 
         ListDescriptor list1_2 = wegasFactory.createList(gameModel2, null, "aFolder", "a folder");
-        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
 
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
@@ -852,40 +872,43 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         modelFacade.propagateModel(model.getId());
 
         VariableDescriptor x2Model = variableDescriptorFacade.duplicate(xModel.getId());
+        String x2Name = x2Model.getName();
         Assert.assertNotEquals("X and X2 have same refid", xModel.getRefId(), x2Model.getRefId());
 
         // propagate x2 to scenarios
         modelFacade.propagateModel(model.getId());
 
-        Assert.assertNotNull("X2 does not exist in the model", getDescriptor(model, "x_2"));
-        Assert.assertNotNull("X2 does not exist in scenario1", getDescriptor(gameModel1, "x_2"));
-        Assert.assertNotNull("X2 does not exist in scenario2", getDescriptor(gameModel2, "x_2"));
+        Assert.assertNotNull("X2 does not exist in the model", getDescriptor(model, x2Name));
+        Assert.assertNotNull("X2 does not exist in scenario1", getDescriptor(gameModel1, x2Name));
+        Assert.assertNotNull("X2 does not exist in scenario2", getDescriptor(gameModel2, x2Name));
 
-        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(model, "x_2").getVisibility());
-        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(gameModel1, "x_2").getVisibility());
-        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(gameModel2, "x_2").getVisibility());
+        Assert.assertEquals(Visibility.INHERITED, getDescriptor(model, x2Name).getVisibility());
+        Assert.assertEquals(Visibility.INHERITED, getDescriptor(gameModel1, x2Name).getVisibility());
+        Assert.assertEquals(Visibility.INHERITED, getDescriptor(gameModel2, x2Name).getVisibility());
 
-        // duplcate X in model -> x_3
-        variableDescriptorFacade.duplicate(xModel.getId());
+        // duplcate X in model -> numberDescriptor_??????
+        VariableDescriptor x3 = variableDescriptorFacade.duplicate(xModel.getId());
+        String x3Name = x3.getName();
 
-        Assert.assertNotNull("X3 does not exist in the model", getDescriptor(model, "x_3"));
-        Assert.assertNull("X3 already exists in scenario1", getDescriptor(gameModel1, "x_3"));
-        Assert.assertNull("X3 already exists in scenario2", getDescriptor(gameModel2, "x_3"));
+        Assert.assertNotNull("X3 does not exist in the model", getDescriptor(model, x3Name));
+        Assert.assertNull("X3 already exists in scenario1", getDescriptor(gameModel1, x3Name));
+        Assert.assertNull("X3 already exists in scenario2", getDescriptor(gameModel2, x3Name));
 
-        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(model, "x_3").getVisibility());
+        Assert.assertEquals(Visibility.INHERITED, getDescriptor(model, x3Name).getVisibility());
 
-        // duplcate X in gm1 -> x_4
-        variableDescriptorFacade.duplicate(getDescriptor(gameModel1, "x").getId());
-        Assert.assertNotNull("X4 does not exist in scenario1", getDescriptor(gameModel1, "x_4"));
-        Assert.assertEquals(ModelScoped.Visibility.PRIVATE, getDescriptor(gameModel1, "x_4").getVisibility());
+        // duplcate X in gm1 -> numberDescriptor_??????
+        VariableDescriptor x4 = variableDescriptorFacade.duplicate(getDescriptor(gameModel1, "x").getId());
+        String x4Name = x4.getName();
+        Assert.assertNotNull("X4 does not exist in scenario1", getDescriptor(gameModel1, x4Name));
+        Assert.assertEquals(Visibility.PRIVATE, getDescriptor(gameModel1, x4Name).getVisibility());
 
         modelFacade.propagateModel(model.getId());
-        Assert.assertNotNull("X3 does not exist in the model", getDescriptor(model, "x_3"));
-        Assert.assertNotNull("X3 does not exist in scenario1", getDescriptor(gameModel1, "x_3"));
-        Assert.assertNotNull("X3 does not exist in scenario3", getDescriptor(gameModel2, "x_3"));
+        Assert.assertNotNull("X3 does not exist in the model", getDescriptor(model, x3Name));
+        Assert.assertNotNull("X3 does not exist in scenario1", getDescriptor(gameModel1, x3Name));
+        Assert.assertNotNull("X3 does not exist in scenario3", getDescriptor(gameModel2, x3Name));
 
-        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(gameModel1, "x_3").getVisibility());
-        Assert.assertEquals(ModelScoped.Visibility.INHERITED, getDescriptor(gameModel2, "x_3").getVisibility());
+        Assert.assertEquals(Visibility.INHERITED, getDescriptor(gameModel1, x3Name).getVisibility());
+        Assert.assertEquals(Visibility.INHERITED, getDescriptor(gameModel2, x3Name).getVisibility());
     }
 
     @Test
@@ -900,10 +923,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         ListDescriptor list1_1 = wegasFactory.createList(gameModel1, null, "myFirstFolder", "My First Folder");
         //                                           N,   L,  Min, Max,   Def, History...
-        wegasFactory.createNumberDescriptor(gameModel1, list1_1, "x", "X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        wegasFactory.createNumberDescriptor(gameModel1, list1_1, "x", "X", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
 
         ListDescriptor list1_2 = wegasFactory.createList(gameModel2, null, "myFirstFolder", "My First Folder");
-        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
 
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
@@ -918,7 +941,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         modelFacade.propagateModel(model.getId());
 
         ListDescriptor modelList = (ListDescriptor) getDescriptor(model, "myFirstFolder");
-        wegasFactory.createNumberDescriptor(model, modelList, "yMod", "LABEL Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        wegasFactory.createNumberDescriptor(model, modelList, "yMod", "LABEL Y", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
 
         // Model: list: x y
         // Gm1&2: list/x
@@ -939,7 +962,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         // new scenario based on a scenario (should include src scenario private content)
         ListDescriptor gm1List = (ListDescriptor) getDescriptor(gameModel1, "myFirstFolder");
-        wegasFactory.createNumberDescriptor(gameModel1, gm1List, "yGm1", "LABEL Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        wegasFactory.createNumberDescriptor(gameModel1, gm1List, "yGm1", "LABEL Y", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
 
         GameModel newScenario_scen = gameModelFacade.createScenario(gameModel1.getId());
         Assert.assertNotNull("MyFirstFolder does not exist in the new model", getDescriptor(newScenario_scen, "myFirstFolder"));
@@ -960,10 +983,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         ListDescriptor list1_1 = wegasFactory.createList(gameModel1, null, "myFirstFolder", "My First Folder");
         //                                           N,   L,  Min, Max,   Def, History...
-        wegasFactory.createNumberDescriptor(gameModel1, list1_1, "x", "X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        wegasFactory.createNumberDescriptor(gameModel1, list1_1, "x", "X", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
 
         ListDescriptor list1_2 = wegasFactory.createList(gameModel2, null, "myFirstFolder", "My First Folder");
-        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
 
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
@@ -980,7 +1003,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         /*
          * Add y to gameModel2 list1_2
          */
-        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "y", "LABEL Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 2.0, 2.0, 2.1);
+        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "y", "LABEL Y", Visibility.PRIVATE, 0.0, 100.0, 2.0, 2.0, 2.1);
 
         logger.info("DeleteMyFirstFolder");
         variableDescriptorFacade.remove(variableDescriptorFacade.find(model, "myFirstFolder").getId());
@@ -1021,21 +1044,21 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         ListDescriptor list1_1 = wegasFactory.createList(gameModel1, null, "MyFirstFolder", "My First Folder");
         //                                           N,   L,  Min, Max,   Def, History...
-        wegasFactory.createNumberDescriptor(gameModel1, list1_1, "x", "X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
-        wegasFactory.createNumberDescriptor(gameModel1, list1_1, "y", "Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 2.0, 2.0, 2.1);
-        wegasFactory.createNumberDescriptor(gameModel1, list1_1, "z", "Z", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 3.0, 3.0, 3.1);
-        wegasFactory.createNumberDescriptor(gameModel1, list1_1, "t", "T", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 4.0, 4.0, 4.1);
+        wegasFactory.createNumberDescriptor(gameModel1, list1_1, "x", "X", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        wegasFactory.createNumberDescriptor(gameModel1, list1_1, "y", "Y", Visibility.PRIVATE, 0.0, 100.0, 2.0, 2.0, 2.1);
+        wegasFactory.createNumberDescriptor(gameModel1, list1_1, "z", "Z", Visibility.PRIVATE, 0.0, 100.0, 3.0, 3.0, 3.1);
+        wegasFactory.createNumberDescriptor(gameModel1, list1_1, "t", "T", Visibility.PRIVATE, 0.0, 100.0, 4.0, 4.0, 4.1);
 
         ListDescriptor list1_2 = wegasFactory.createList(gameModel2, null, "MyFirstFolder", "My First Folder");
-        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
-        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "y", "LABEL Y", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 2.0, 2.0, 2.1);
-        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "z", "LABEL Z", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 3.0, 3.0, 3.1);
-        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "t", "LABEL T", ModelScoped.Visibility.PRIVATE, 0.0, 100.0, 4.0, 4.0, 4.1);
+        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "x", "LABEL X", Visibility.PRIVATE, 0.0, 100.0, 1.0, 1.0, 1.1);
+        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "y", "LABEL Y", Visibility.PRIVATE, 0.0, 100.0, 2.0, 2.0, 2.1);
+        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "z", "LABEL Z", Visibility.PRIVATE, 0.0, 100.0, 3.0, 3.0, 3.1);
+        wegasFactory.createNumberDescriptor(gameModel2, list1_2, "t", "LABEL T", Visibility.PRIVATE, 0.0, 100.0, 4.0, 4.0, 4.1);
 
-        wegasFactory.createNumberDescriptor(gameModel3, null, "x", "LBL X", ModelScoped.Visibility.PRIVATE, -100.0, 100.0, 1.5, 1.1, 1.2);
-        wegasFactory.createNumberDescriptor(gameModel3, null, "y", "LBL Y", ModelScoped.Visibility.PRIVATE, -100.0, 100.0, 2.5, 2.1, 2.2);
-        wegasFactory.createNumberDescriptor(gameModel3, null, "z", "LBL Z", ModelScoped.Visibility.PRIVATE, -100.0, 100.0, 3.5, 3.1, 3.2);
-        wegasFactory.createNumberDescriptor(gameModel3, null, "t", "LBL T", ModelScoped.Visibility.PRIVATE, -100.0, 100.0, 4.5, 4.1, 4.2);
+        wegasFactory.createNumberDescriptor(gameModel3, null, "x", "LBL X", Visibility.PRIVATE, -100.0, 100.0, 1.5, 1.1, 1.2);
+        wegasFactory.createNumberDescriptor(gameModel3, null, "y", "LBL Y", Visibility.PRIVATE, -100.0, 100.0, 2.5, 2.1, 2.2);
+        wegasFactory.createNumberDescriptor(gameModel3, null, "z", "LBL Z", Visibility.PRIVATE, -100.0, 100.0, 3.5, 3.1, 3.2);
+        wegasFactory.createNumberDescriptor(gameModel3, null, "t", "LBL T", Visibility.PRIVATE, -100.0, 100.0, 4.5, 4.1, 4.2);
 
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
@@ -1059,19 +1082,19 @@ public class ModelFacadeTest extends AbstractArquillianTest {
             VariableDescriptor vd = children.remove(0);
             switch (vd.getName()) {
                 case "x":
-                    vd.setVisibility(ModelScoped.Visibility.INTERNAL);
+                    vd.setVisibility(Visibility.INTERNAL);
                     break;
                 case "y":
-                    vd.setVisibility(ModelScoped.Visibility.PROTECTED);
+                    vd.setVisibility(Visibility.PROTECTED);
                     break;
                 case "z":
-                    vd.setVisibility(ModelScoped.Visibility.INHERITED);
+                    vd.setVisibility(Visibility.INHERITED);
                     break;
                 case "t":
-                    vd.setVisibility(ModelScoped.Visibility.PRIVATE);
+                    vd.setVisibility(Visibility.PRIVATE);
                     break;
                 default:
-                    vd.setVisibility(ModelScoped.Visibility.INHERITED);
+                    vd.setVisibility(Visibility.INHERITED);
             }
 
             variableDescriptorFacade.update(vd.getId(), vd);
@@ -1084,6 +1107,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         logger.info("Initial Model Propagation");
         model = modelFacade.propagateModel(model.getId());
+        gameModelFacade.reset(gameModel1.getId());
+        gameModelFacade.reset(gameModel2.getId());
+        gameModelFacade.reset(gameModel3.getId());
 
         logger.debug(Helper.printGameModel(model));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
@@ -1163,6 +1189,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.info("Propagate Model Update");
         modelFacade.propagateModel(model.getId());
 
+        gameModelFacade.reset(gameModel1.getId());
+        gameModelFacade.reset(gameModel2.getId());
+        gameModelFacade.reset(gameModel3.getId());
+
         /*
          * X: Model override scenarios
          */
@@ -1215,8 +1245,8 @@ public class ModelFacadeTest extends AbstractArquillianTest {
          * Create new descriptors in model
          */
         ListDescriptor folder = (ListDescriptor) getDescriptor(model, "myFirstFolder");
-        wegasFactory.createNumberDescriptor(model, folder, "alpha", "α", ModelScoped.Visibility.PROTECTED, -1.0, +1.0, 0.666, 0.0, 0.333);
-        wegasFactory.createNumberDescriptor(model, null, "pi", "π", ModelScoped.Visibility.INHERITED, null, null, 3.14);
+        wegasFactory.createNumberDescriptor(model, folder, "alpha", "α", Visibility.PROTECTED, -1.0, +1.0, 0.666, 0.0, 0.333);
+        wegasFactory.createNumberDescriptor(model, null, "pi", "π", Visibility.INHERITED, null, null, 3.14);
 
         /**
          * Switch to 2D and move x to root level
@@ -1226,6 +1256,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         logger.info("Propagate Model: Create Alpha &Pi; Remove Z and move X");
         modelFacade.propagateModel(model.getId());
+
+        gameModelFacade.reset(gameModel1.getId());
+        gameModelFacade.reset(gameModel2.getId());
+        gameModelFacade.reset(gameModel3.getId());
 
         /**
          * Assert new descriptor stand in the correct folder
@@ -1263,6 +1297,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         logger.info("Propagate Model: Remove X");
         modelFacade.propagateModel(model.getId());
 
+        gameModelFacade.reset(gameModel1.getId());
+        gameModelFacade.reset(gameModel2.getId());
+        gameModelFacade.reset(gameModel3.getId());
+
         /**
          * Assert x no longer exists
          */
@@ -1276,7 +1314,6 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         /**
          * Change Y default value and move to root
-         * <p>
          */
         NumberDescriptor y1 = (NumberDescriptor) getDescriptor(model, "y");
 
@@ -1287,6 +1324,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         logger.info("Propagate Model: Update Y.value; move Y to Root");
         modelFacade.propagateModel(model.getId());
+
+        gameModelFacade.reset(gameModel1.getId());
+        gameModelFacade.reset(gameModel2.getId());
+        gameModelFacade.reset(gameModel3.getId());
 
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel1.getId())));
         logger.debug(Helper.printGameModel(gameModelFacade.find(gameModel2.getId())));
@@ -1352,6 +1393,54 @@ public class ModelFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
+    public void testItemsOrder() throws RepositoryException, WegasNoResultException, CloneNotSupportedException {
+        GameModel model = new GameModel();
+
+        model.setName("The Model");
+        model.setType(GameModel.GmType.MODEL);
+        gameModelFacade.createWithDebugGame(model);
+
+        ListDescriptor folder = wegasFactory.createList(model, model, "aFolder", "");
+        folder.setVisibility(Visibility.INHERITED);
+        variableDescriptorFacade.update(folder.getId(), folder);
+
+        NumberDescriptor third = wegasFactory.createNumberDescriptor(model, folder, "third", "third", Visibility.INHERITED, null, null, 3.0);
+
+        modelFacade.propagateModel(model.getId());
+
+        GameModel scenario = gameModelFacade.createScenarioWithDebugGame(model.getId());
+
+        ListDescriptor folder_gm1 = (ListDescriptor) scenario.getChildVariableDescriptors().get(0);
+        folder_gm1.getItems();
+
+        Assert.assertEquals(1, folder_gm1.getItems().size());
+
+        NumberDescriptor second = wegasFactory.createNumberDescriptor(model, folder, "second", "second", Visibility.INHERITED, null, null, 2.0);
+        NumberDescriptor first = wegasFactory.createNumberDescriptor(model, folder, "first", "first", Visibility.INHERITED, null, null, 1.0);
+
+        variableDescriptorFacade.move(second.getId(), folder.getId(), 0);
+        variableDescriptorFacade.move(first.getId(), folder.getId(), 0);
+
+        modelFacade.propagateModel(model.getId());
+
+        folder_gm1 = (ListDescriptor) variableDescriptorFacade.find(folder_gm1.getId());
+        Assert.assertEquals(3, folder_gm1.getItems().size());
+
+        Assert.assertEquals("first", folder_gm1.getItems().get(0).getName());
+        Assert.assertEquals("second", folder_gm1.getItems().get(1).getName());
+        Assert.assertEquals("third", folder_gm1.getItems().get(2).getName());
+
+        jpaCacheHelper.clearCacheLocal();
+
+        folder_gm1 = (ListDescriptor) variableDescriptorFacade.find(folder_gm1.getId());
+        Assert.assertEquals(3, folder_gm1.getItems().size());
+
+        Assert.assertEquals("first", folder_gm1.getItems().get(0).getName());
+        Assert.assertEquals("second", folder_gm1.getItems().get(1).getName());
+        Assert.assertEquals("third", folder_gm1.getItems().get(2).getName());
+    }
+
+    @Test
     public void testProtectedNumberDescriptorChange() throws RepositoryException, WegasNoResultException {
         GameModel gameModel1 = new GameModel();
         gameModel1.setName("gamemodel #1");
@@ -1377,9 +1466,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         Double initialMax = 10.0;
         Double initialValue = 1.0;
 
-        NumberDescriptor x = wegasFactory.createNumberDescriptor(model, null, "x", "X", ModelScoped.Visibility.INTERNAL, initialMin, initialMax, initialValue);
-        NumberDescriptor y = wegasFactory.createNumberDescriptor(model, null, "y", "Y", ModelScoped.Visibility.PROTECTED, initialMin, initialMax, initialValue);
-        NumberDescriptor z = wegasFactory.createNumberDescriptor(model, null, "z", "Z", ModelScoped.Visibility.INHERITED, initialMin, initialMax, initialValue);
+        NumberDescriptor x = wegasFactory.createNumberDescriptor(model, null, "x", "X", Visibility.INTERNAL, initialMin, initialMax, initialValue);
+        NumberDescriptor y = wegasFactory.createNumberDescriptor(model, null, "y", "Y", Visibility.PROTECTED, initialMin, initialMax, initialValue);
+        NumberDescriptor z = wegasFactory.createNumberDescriptor(model, null, "z", "Z", Visibility.INHERITED, initialMin, initialMax, initialValue);
 
         checkNumber(model, x, initialMin, initialMax, initialValue);
         checkNumber(model, y, initialMin, initialMax, initialValue);
@@ -1410,7 +1499,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
 
         /* create private t in gameModel2 */
-        NumberDescriptor t = wegasFactory.createNumberDescriptor(gameModel1, null, "t", "T", ModelScoped.Visibility.PRIVATE, initialMin, initialMax, initialValue);
+        NumberDescriptor t = wegasFactory.createNumberDescriptor(gameModel1, null, "t", "T", Visibility.PRIVATE, initialMin, initialMax, initialValue);
 
         checkNumber(gameModel1, x, initialMin, initialMax, initialValue);
         checkNumber(gameModel1, y, initialMin, initialMax, initialValue);
@@ -1528,10 +1617,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         ls.visitGameModelFiles(gameModel2);
 
         Assert.assertArrayEquals(update,
-                jcrFacade.getFileBytes(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
+            jcrFacade.getFileBytes(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
 
         Assert.assertArrayEquals(update,
-                jcrFacade.getFileBytes(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
+            jcrFacade.getFileBytes(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
 
         logger.info("update gm1 /dir/1/binFile1 to -1 -2 -3 2 10");
         byte[] update1 = {-1, -2, -3, 2, 10};
@@ -1548,10 +1637,10 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         ls.visitGameModelFiles(gameModel2);
 
         Assert.assertArrayEquals(update1,
-                jcrFacade.getFileBytes(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
+            jcrFacade.getFileBytes(gameModel1.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
 
         Assert.assertArrayEquals(update,
-                jcrFacade.getFileBytes(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
+            jcrFacade.getFileBytes(gameModel2.getId(), ContentConnector.WorkspaceType.FILES, "/dir1/binFile1"));
 
     }
 
@@ -1561,19 +1650,92 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
     private void assertStringValueEquals(GameModel gm1, GameModel gm2, String variable) {
         this.assertTranslatableEquals(
-                ((StringInstance) getDescriptor(gm1, variable).getDefaultInstance()).getTrValue(),
-                ((StringInstance) getDescriptor(gm2, variable).getDefaultInstance()).getTrValue());
+            ((StringInstance) getDescriptor(gm1, variable).getDefaultInstance()).getTrValue(),
+            ((StringInstance) getDescriptor(gm2, variable).getDefaultInstance()).getTrValue());
     }
 
     private void testLabel(GameModel gm1, GameModel gm2, String variable, String lang, boolean equals) {
         this.assertTranslation(getDescriptor(gm1, variable).getLabel(),
-                getDescriptor(gm2, variable).getLabel(),
-                lang, equals);
+            getDescriptor(gm2, variable).getLabel(),
+            lang, equals);
     }
 
     private void testStringValue(GameModel gm1, GameModel gm2, String variable, String lang, boolean equals) {
         this.assertTranslation(((StringInstance) getDescriptor(gm1, variable).getDefaultInstance()).getTrValue(),
-                ((StringInstance) getDescriptor(gm2, variable).getDefaultInstance()).getTrValue(), lang, equals);
+            ((StringInstance) getDescriptor(gm2, variable).getDefaultInstance()).getTrValue(), lang, equals);
+    }
+
+    @Test(expected = WegasErrorMessage.class)
+    public void testModelise_LanguagesNameConflict() throws RepositoryException, IOException, IOException, WegasNoResultException {
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
+        i18nFacade.createLanguage(gameModel1, "en", "English");
+        gameModelFacade.createWithDebugGame(gameModel1);
+
+        GameModel gameModel2 = new GameModel();
+        gameModel2.setName("gamemodel #2");
+        i18nFacade.createLanguage(gameModel2, "en", "English");
+        gameModelFacade.createWithDebugGame(gameModel2);
+
+        GameModel gameModel3 = new GameModel();
+        gameModel3.setName("gamemodel #3");
+        i18nFacade.createLanguage(gameModel3, "en", "French");
+        gameModelFacade.createWithDebugGame(gameModel3);
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+        gameModel3 = gameModelFacade.find(gameModel3.getId());
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+        scenarios.add(gameModel2);
+        scenarios.add(gameModel3);
+
+        logger.info("Create Model");
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+    }
+
+    @Test(expected = WegasErrorMessage.class)
+    public void testModelise_LanguagesIntegration() throws RepositoryException, IOException, IOException, WegasNoResultException {
+        GameModel gameModel1 = new GameModel();
+        gameModel1.setName("gamemodel #1");
+        i18nFacade.createLanguage(gameModel1, "en", "English");
+        gameModelFacade.createWithDebugGame(gameModel1);
+
+        GameModel gameModel2 = new GameModel();
+        gameModel2.setName("gamemodel #2");
+        i18nFacade.createLanguage(gameModel2, "en", "English");
+        gameModelFacade.createWithDebugGame(gameModel2);
+
+        gameModel1 = gameModelFacade.find(gameModel1.getId());
+        gameModel2 = gameModelFacade.find(gameModel2.getId());
+
+        wegasFactory.createString(gameModel1, null, "str", "a string", "a value");
+        wegasFactory.createString(gameModel2, null, "str", "a string", "a value");
+
+        List<GameModel> scenarios = new ArrayList<>();
+
+        scenarios.add(gameModel1);
+        scenarios.add(gameModel2);
+
+        logger.info("Create Model");
+        GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
+
+        modelFacade.propagateModel(model.getId());
+
+        GameModel gameModel3 = new GameModel();
+        gameModel3.setName("gamemodel #3");
+
+        i18nFacade.createLanguage(gameModel3, "def", "English");
+        gameModelFacade.createWithDebugGame(gameModel3);
+        wegasFactory.createString(gameModel3, null, "str", "a string", "a value");
+
+        gameModel3 = gameModelFacade.find(gameModel3.getId());
+
+        scenarios.clear();
+        scenarios.add(gameModel3);
+        modelFacade.integrateScenario(model, scenarios);
     }
 
     @Test
@@ -1597,9 +1759,9 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         wegasFactory.createInbox(gameModel2, null, "inbox", "Ma boite aux lettres");
         wegasFactory.createInbox(gameModel3, null, "inbox", "My mailbox");
 
-        wegasFactory.createTriggerDescriptor(gameModel1, null, "trigger", "aTrigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"inbox\").sendMessage(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"John\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"Today\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"Hello\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"<p>Hi there</p>\"}}, \"\", []);");
-        wegasFactory.createTriggerDescriptor(gameModel2, null, "trigger", "un Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"inbox\").sendMessage(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"Jean\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"Aujourd'hui\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"Pour dire bonjour\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"<p>Bonjour chez vous!</p>\"}}, \"\", []);");
-        wegasFactory.createTriggerDescriptor(gameModel3, null, "trigger", "aTrigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"inbox\").sendMessage(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"John\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"Today\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"Good Marning\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"<p>Hi there</p>\"}}, \"\", []);");
+        wegasFactory.createTriggerDescriptor(gameModel1, null, "trigger", "aTrigger", Visibility.INHERITED, "false", "Variable.find(gameModel, \"inbox\").sendMessage(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"John\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"Today\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"Hello\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"<p>Hi there</p>\"}}, \"\", []);");
+        wegasFactory.createTriggerDescriptor(gameModel2, null, "trigger", "un Trigger", Visibility.INHERITED, "false", "Variable.find(gameModel, \"inbox\").sendMessage(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"Jean\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"Aujourd'hui\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"Pour dire bonjour\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"<p>Bonjour chez vous!</p>\"}}, \"\", []);");
+        wegasFactory.createTriggerDescriptor(gameModel3, null, "trigger", "aTrigger", Visibility.INHERITED, "false", "Variable.find(gameModel, \"inbox\").sendMessage(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"John\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"Today\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"Good Marning\"}}, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"<p>Hi there</p>\"}}, \"\", []);");
 
         wegasFactory.createString(gameModel1, null, "strModel", "internal string", "internal value");
         wegasFactory.createString(gameModel2, null, "strModel", "chaîne de caractère interne", "valeur interne");
@@ -1613,17 +1775,17 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         wegasFactory.createString(gameModel2, null, "strInherited", "chaîne de caractère héritée", "valeur héritée");
         wegasFactory.createString(gameModel3, null, "strInherited", "my inherited string", "my inherited value");
 
-        wegasFactory.createTriggerDescriptor(gameModel1, null, "setStrModel", "strModel Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strModel\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"new internal string value\"}});");
-        wegasFactory.createTriggerDescriptor(gameModel2, null, "setStrModel", "strModel Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strModel\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"nouvelle valeur de chaîne de caractère interne \"}});");
-        wegasFactory.createTriggerDescriptor(gameModel3, null, "setStrModel", "strModel Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strModel\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"my new internal string value\"}});");
+        wegasFactory.createTriggerDescriptor(gameModel1, null, "setStrModel", "strModel Trigger", Visibility.INHERITED, "false", "Variable.find(gameModel, \"strModel\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"new internal string value\"}});");
+        wegasFactory.createTriggerDescriptor(gameModel2, null, "setStrModel", "strModel Trigger", Visibility.INHERITED, "false", "Variable.find(gameModel, \"strModel\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"nouvelle valeur de chaîne de caractère interne \"}});");
+        wegasFactory.createTriggerDescriptor(gameModel3, null, "setStrModel", "strModel Trigger", Visibility.INHERITED, "false", "Variable.find(gameModel, \"strModel\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"my new internal string value\"}});");
 
-        wegasFactory.createTriggerDescriptor(gameModel1, null, "setStrProtected", "strProtected Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strProtected\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"new protected string value\"}});");
-        wegasFactory.createTriggerDescriptor(gameModel2, null, "setStrProtected", "strProtected Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strProtected\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"nouvelle valeur de chaîne de caractère protegée\"}});");
-        wegasFactory.createTriggerDescriptor(gameModel3, null, "setStrProtected", "strProtected Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strProtected\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"my new protected string value\"}});");
+        wegasFactory.createTriggerDescriptor(gameModel1, null, "setStrProtected", "strProtected Trigger", Visibility.INHERITED, "false", "Variable.find(gameModel, \"strProtected\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"new protected string value\"}});");
+        wegasFactory.createTriggerDescriptor(gameModel2, null, "setStrProtected", "strProtected Trigger", Visibility.INHERITED, "false", "Variable.find(gameModel, \"strProtected\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"nouvelle valeur de chaîne de caractère protegée\"}});");
+        wegasFactory.createTriggerDescriptor(gameModel3, null, "setStrProtected", "strProtected Trigger", Visibility.INHERITED, "false", "Variable.find(gameModel, \"strProtected\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"my new protected string value\"}});");
 
-        wegasFactory.createTriggerDescriptor(gameModel1, null, "setStrInherited", "strInherited Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strInherited\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"new inherited string value\"}});");
-        wegasFactory.createTriggerDescriptor(gameModel2, null, "setStrInherited", "strInherited Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strInherited\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"nouvelle valeur de chaîne de caractère héritée\"}});");
-        wegasFactory.createTriggerDescriptor(gameModel3, null, "setStrInherited", "strInherited Trigger", ModelScoped.Visibility.INHERITED, "false", "Variable.find(gameModel, \"strInherited\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"my new inherited string value\"}});");
+        wegasFactory.createTriggerDescriptor(gameModel1, null, "setStrInherited", "strInherited Trigger", Visibility.INHERITED, "false", "Variable.find(gameModel, \"strInherited\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"new inherited string value\"}});");
+        wegasFactory.createTriggerDescriptor(gameModel2, null, "setStrInherited", "strInherited Trigger", Visibility.INHERITED, "false", "Variable.find(gameModel, \"strInherited\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"fr\":\"nouvelle valeur de chaîne de caractère héritée\"}});");
+        wegasFactory.createTriggerDescriptor(gameModel3, null, "setStrInherited", "strInherited Trigger", Visibility.INHERITED, "false", "Variable.find(gameModel, \"strInherited\").setTrValue(self, {\"@class\":\"TranslatableContent\",\"translations\":{\"en\":\"my new inherited string value\"}});");
 
         gameModel1 = gameModelFacade.find(gameModel1.getId());
         gameModel2 = gameModelFacade.find(gameModel2.getId());
@@ -1638,20 +1800,19 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         //i18nFacade.printTranslations(gameModel1.getId(), "en", "fr");
         //i18nFacade.printTranslations(gameModel2.getId(), "en", "fr");
         //i18nFacade.printTranslations(gameModel3.getId(), "en", "fr");
-
         logger.info("Create Model");
         GameModel model = modelFacade.createModelFromCommonContent("model", scenarios);
 
-        Assert.assertNotNull("French is missing in model", model.getLanguageByCode("fr"));
         Assert.assertNotNull("English is missing in model", model.getLanguageByCode("en"));
+        Assert.assertNull("French should not exist in model", model.getLanguageByCode("fr"));
 
-        setDescriptorVisibility(model, "strModel", ModelScoped.Visibility.INTERNAL);
-        setDescriptorVisibility(model, "strProtected", ModelScoped.Visibility.PROTECTED);
-        setDescriptorVisibility(model, "strInherited", ModelScoped.Visibility.INHERITED);
+        setDescriptorVisibility(model, "strModel", Visibility.INTERNAL);
+        setDescriptorVisibility(model, "strProtected", Visibility.PROTECTED);
+        setDescriptorVisibility(model, "strInherited", Visibility.INHERITED);
 
-        setDescriptorVisibility(model, "setStrModel", ModelScoped.Visibility.INTERNAL);
-        setDescriptorVisibility(model, "setStrProtected", ModelScoped.Visibility.PROTECTED);
-        setDescriptorVisibility(model, "setStrInherited", ModelScoped.Visibility.INHERITED);
+        setDescriptorVisibility(model, "setStrModel", Visibility.INTERNAL);
+        setDescriptorVisibility(model, "setStrProtected", Visibility.PROTECTED);
+        setDescriptorVisibility(model, "setStrInherited", Visibility.INHERITED);
 
         modelFacade.propagateModel(model.getId());
 
@@ -1660,76 +1821,102 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel3 = gameModelFacade.find(gameModel3.getId());
 
         //i18nFacade.printTranslations(model, "en", "fr");
-
         //i18nFacade.printTranslations(gameModel1.getId(), "en", "fr");
         //i18nFacade.printTranslations(gameModel2.getId(), "en", "fr");
         //i18nFacade.printTranslations(gameModel3.getId(), "en", "fr");
-
-        Assert.assertNotNull("French is missing in gameModel1", gameModel1.getLanguageByCode("fr"));
+        Assert.assertNull("French is missing in gameModel1", gameModel1.getLanguageByCode("fr"));
         Assert.assertNotNull("English is missing in gameModel1", gameModel1.getLanguageByCode("en"));
 
         Assert.assertNotNull("French is missing in gameModel2", gameModel2.getLanguageByCode("fr"));
         Assert.assertNotNull("English is missing in gameModel2", gameModel2.getLanguageByCode("en"));
 
-        Assert.assertNotNull("French is missing in gameModel3", gameModel3.getLanguageByCode("fr"));
+        Assert.assertNull("French is missing in gameModel3", gameModel3.getLanguageByCode("fr"));
         Assert.assertNotNull("English is missing in gameModel3", gameModel3.getLanguageByCode("en"));
 
         // assert internal translations have been overriden by model ones
-        this.assertLabelEquals(model, gameModel1, "strModel");
-        this.assertLabelEquals(model, gameModel2, "strModel");
-        this.assertLabelEquals(model, gameModel3, "strModel");
+        this.assertLabelEquals(model, gameModel1, "strModel"); // all the same
+        this.testLabel(model, gameModel2, "strModel", "en", true); // en is the same
+        this.assertTranslationEquals(getDescriptor(gameModel2, "strModel").getLabel(), "fr", "chaîne de caractère interne"); // but g2 contains its french label
+        this.assertLabelEquals(model, gameModel3, "strModel"); // all the same
 
         this.assertStringValueEquals(model, gameModel1, "strModel");
-        this.assertStringValueEquals(model, gameModel2, "strModel");
+        this.testStringValue(model, gameModel2, "strModel", "en", true);
+        this.testStringValue(model, gameModel2, "strModel", "fr", false);
         this.assertStringValueEquals(model, gameModel3, "strModel");
 
         // assert protected translations
         this.assertLabelEquals(model, gameModel1, "strProtected");
-        this.assertLabelEquals(model, gameModel2, "strProtected");
+        this.testLabel(model, gameModel2, "strProtected", "en", true); // en is the same
+        this.assertTranslationEquals(getDescriptor(gameModel2, "strProtected").getLabel(), "fr", "chaîne de caractère protected"); // but g2 contains its french label
         this.assertLabelEquals(model, gameModel3, "strProtected");
 
         this.assertStringValueEquals(model, gameModel1, "strProtected");
-        this.assertStringValueEquals(model, gameModel2, "strProtected");
+
+        this.testStringValue(model, gameModel2, "strProtected", "en", true); //same english value
+        this.testStringValue(model, gameModel2, "strProtected", "fr", false); // gm2 has a french one
 
         // gm3 should have its own english value
-        testStringValue(model, gameModel3, "strProtected", "fr", true);
         testStringValue(model, gameModel3, "strProtected", "en", false);
 
         // assert inherited
         this.assertLabelEquals(model, gameModel1, "strInherited");
-        this.assertLabelEquals(model, gameModel2, "strInherited");
-        // gm3 should have its own english label
-        testLabel(model, gameModel3, "strInherited", "fr", true);
+
+        this.testLabel(model, gameModel2, "strInherited", "en", true); // en is the same
+        this.assertTranslationEquals(getDescriptor(gameModel2, "strInherited").getLabel(), "fr", "chaîne de caractère héritée"); // but g2 contains its french label
+
         testLabel(model, gameModel3, "strInherited", "en", false);
 
         this.assertStringValueEquals(model, gameModel1, "strInherited");
-        this.assertStringValueEquals(model, gameModel2, "strInherited");
+
+        this.testStringValue(model, gameModel2, "strInherited", "en", true);
+        this.testStringValue(model, gameModel2, "strInherited", "fr", false);
 
         // gm3 should have its english value
-        testStringValue(model, gameModel3, "strInherited", "fr", true);
+        //testStringValue(model, gameModel3, "strInherited", "fr", true);
         testStringValue(model, gameModel3, "strInherited", "en", false);
 
-        // create german
+        /**
+         * create german in the model * * * * * * * * * * * * * * Will be propagated to all
+         * implementations
+         */
         i18nFacade.createLanguage(model.getId(), "de", "Deutsch");
 
         model = gameModelFacade.find(model.getId());
 
         Assert.assertNotNull("German is missing in model", model.getLanguageByCode("de"));
 
-        // update some english and german translations
+        /**
+         * update some english and german translations
+         */
         VariableDescriptor descriptor = getDescriptor(model, "strModel");
         descriptor.getLabel().updateTranslation("de", "modelung");
+        ((StringInstance) descriptor.getDefaultInstance()).getTrValue().updateTranslation("de", "das neues internal value");
         descriptor.getLabel().updateTranslation("en", "the Model string");
+        ((StringInstance) descriptor.getDefaultInstance()).getTrValue().updateTranslation("en", "the new internal value");
         variableDescriptorFacade.update(descriptor.getId(), descriptor);
 
         descriptor = getDescriptor(model, "strProtected");
         descriptor.getLabel().updateTranslation("de", "protecterung");
+        ((StringInstance) descriptor.getDefaultInstance()).getTrValue().updateTranslation("de", "das neues protecterung value");
         descriptor.getLabel().updateTranslation("en", "the protected string");
+        ((StringInstance) descriptor.getDefaultInstance()).getTrValue().updateTranslation("en", "the new protected value");
         variableDescriptorFacade.update(descriptor.getId(), descriptor);
 
         descriptor = getDescriptor(model, "strInherited");
         descriptor.getLabel().updateTranslation("de", "inheriterung");
+        ((StringInstance) descriptor.getDefaultInstance()).getTrValue().updateTranslation("de", "das neues inhetiterung value");
         descriptor.getLabel().updateTranslation("en", "the inherited string");
+        ((StringInstance) descriptor.getDefaultInstance()).getTrValue().updateTranslation("en", "the new inherited value");
+        variableDescriptorFacade.update(descriptor.getId(), descriptor);
+
+        /**
+         * Update value in gm2
+         */
+        descriptor = getDescriptor(gameModel2, "strInherited");
+        descriptor.getLabel().updateTranslation("en", "New label for inherited string");
+        descriptor.getLabel().updateTranslation("fr", "Nouveau label chaîne hérité");
+        ((StringInstance) descriptor.getDefaultInstance()).getTrValue().updateTranslation("en", "new inherited value");
+        ((StringInstance) descriptor.getDefaultInstance()).getTrValue().updateTranslation("fr", "nouvelle valeur héritée");
         variableDescriptorFacade.update(descriptor.getId(), descriptor);
 
         modelFacade.propagateModel(model.getId());
@@ -1739,58 +1926,63 @@ public class ModelFacadeTest extends AbstractArquillianTest {
         gameModel3 = gameModelFacade.find(gameModel3.getId());
 
         //i18nFacade.printTranslations(model.getId(), "en", "fr", "de");
-
         //i18nFacade.printTranslations(gameModel1.getId(), "en", "fr", "de");
         //i18nFacade.printTranslations(gameModel2.getId(), "en", "fr", "de");
         //i18nFacade.printTranslations(gameModel3.getId(), "en", "fr", "de");
-
         Assert.assertNotNull("German is missing in model", model.getLanguageByCode("de"));
         Assert.assertNotNull("German is missing in gameModel1", gameModel1.getLanguageByCode("de"));
         Assert.assertNotNull("German is missing in gameModel3", gameModel3.getLanguageByCode("de"));
         Assert.assertNotNull("German is missing in gameModel3", gameModel3.getLanguageByCode("de"));
 
-        // assert internal translations have been overriden by model ones
-        this.assertLabelEquals(model, gameModel1, "strModel");
-        this.assertLabelEquals(model, gameModel2, "strModel");
-        this.assertLabelEquals(model, gameModel3, "strModel");
+        // assert INTERNAL German and English translations have been overriden by model ones
+        this.testLabel(model, gameModel1, "strModel", "en", true);
+        this.testLabel(model, gameModel2, "strModel", "en", true);
+        this.testLabel(model, gameModel3, "strModel", "en", true);
+        this.testLabel(model, gameModel1, "strModel", "de", true);
+        this.testLabel(model, gameModel2, "strModel", "de", true);
+        this.testLabel(model, gameModel3, "strModel", "de", true);
 
-        this.assertStringValueEquals(model, gameModel1, "strModel");
-        this.assertStringValueEquals(model, gameModel2, "strModel");
-        this.assertStringValueEquals(model, gameModel3, "strModel");
+        this.testStringValue(model, gameModel1, "strModel", "en", true);
+        this.testStringValue(model, gameModel2, "strModel", "en", true);
+        this.testStringValue(model, gameModel2, "strModel", "en", true);
+        this.testStringValue(model, gameModel1, "strModel", "de", true);
+        this.testStringValue(model, gameModel2, "strModel", "de", true);
+        this.testStringValue(model, gameModel2, "strModel", "de", true);
 
         // assert protected translations
-        this.assertLabelEquals(model, gameModel1, "strProtected");
-        this.assertLabelEquals(model, gameModel2, "strProtected");
-        this.assertLabelEquals(model, gameModel3, "strProtected");
+        this.testLabel(model, gameModel1, "strProtected", "en", true);
+        this.testLabel(model, gameModel2, "strProtected", "en", true);
+        this.testLabel(model, gameModel3, "strProtected", "en", true);
+        this.testLabel(model, gameModel1, "strProtected", "de", true);
+        this.testLabel(model, gameModel2, "strProtected", "de", true);
+        this.testLabel(model, gameModel3, "strProtected", "de", true);
 
-        this.assertStringValueEquals(model, gameModel1, "strProtected");
-        this.assertStringValueEquals(model, gameModel2, "strProtected");
-
-        // gm3 should have its own english value
-        testStringValue(model, gameModel3, "strProtected", "fr", true);
-        testStringValue(model, gameModel3, "strProtected", "en", false);
-        testStringValue(model, gameModel3, "strProtected", "de", true);
+        this.testStringValue(model, gameModel1, "strProtected", "en", true);
+        this.testStringValue(model, gameModel2, "strProtected", "en", true);
+        this.testStringValue(model, gameModel3, "strProtected", "en", false);
+        this.testStringValue(model, gameModel1, "strProtected", "de", true);
+        this.testStringValue(model, gameModel2, "strProtected", "de", true);
+        this.testStringValue(model, gameModel3, "strProtected", "de", true);
 
         // assert inherited
-        this.assertLabelEquals(model, gameModel1, "strInherited");
-        this.assertLabelEquals(model, gameModel2, "strInherited");
-        // gm3 should have its own english label
-        testLabel(model, gameModel3, "strInherited", "fr", true);
-        testLabel(model, gameModel3, "strInherited", "en", false);
-        testLabel(model, gameModel3, "strInherited", "de", true);
+        this.testLabel(model, gameModel1, "strInherited", "en", true);
+        this.testLabel(model, gameModel2, "strInherited", "en", false);
+        this.testLabel(model, gameModel3, "strInherited", "en", false);
+        this.testLabel(model, gameModel1, "strInherited", "de", true);
+        this.testLabel(model, gameModel2, "strInherited", "de", true);
+        this.testLabel(model, gameModel3, "strInherited", "de", true);
 
-        this.assertStringValueEquals(model, gameModel1, "strInherited");
-        this.assertStringValueEquals(model, gameModel2, "strInherited");
-
-        // gm3 should have its english value
-        testStringValue(model, gameModel3, "strInherited", "fr", true);
-        testStringValue(model, gameModel3, "strInherited", "en", false);
-        testStringValue(model, gameModel3, "strInherited", "de", true);
+        this.testStringValue(model, gameModel1, "strInherited", "en", true);
+        this.testStringValue(model, gameModel2, "strInherited", "en", false);
+        this.testStringValue(model, gameModel3, "strInherited", "en", false);
+        this.testStringValue(model, gameModel1, "strInherited", "de", true);
+        this.testStringValue(model, gameModel2, "strInherited", "de", true);
+        this.testStringValue(model, gameModel3, "strInherited", "de", true);
 
         logger.info("Model created");
     }
 
-    private void setDescriptorVisibility(GameModel gameModel, String variableName, ModelScoped.Visibility visibility) throws WegasNoResultException {
+    private void setDescriptorVisibility(GameModel gameModel, String variableName, Visibility visibility) throws WegasNoResultException {
         VariableDescriptor descriptor = variableDescriptorFacade.find(gameModel, variableName);
         descriptor.setVisibility(visibility);
         variableDescriptorFacade.update(descriptor.getId(), descriptor);
@@ -1827,7 +2019,7 @@ public class ModelFacadeTest extends AbstractArquillianTest {
 
         for (int i = 0; i < nbVariable; i++) {
             start = System.currentTimeMillis();
-            wegasFactory.createNumberDescriptor(bigGameModel, null, "Number #" + i, "#" + i, ModelScoped.Visibility.INHERITED, 0.0, 100.0, 0.0);
+            wegasFactory.createNumberDescriptor(bigGameModel, null, "Number #" + i, "#" + i, Visibility.INHERITED, 0.0, 100.0, 0.0);
             logger.error("Create Variable # {} in {}", i, (System.currentTimeMillis() - start));
         }
 

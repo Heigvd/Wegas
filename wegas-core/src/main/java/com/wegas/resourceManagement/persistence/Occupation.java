@@ -1,28 +1,34 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
 
+import static ch.albasim.wegas.annotations.CommonView.LAYOUT.shortInline;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
-import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.True;
-import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.View;
 import java.util.Collection;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  *
@@ -32,6 +38,7 @@ import javax.persistence.*;
 @Table(indexes = {
     @Index(columnList = "resourceinstance_id")
 })
+@JsonIgnoreProperties({"description"})
 public class Occupation extends AbstractEntity implements NamedEntity {
 
     private static final long serialVersionUID = 5183770682755470296L;
@@ -57,16 +64,6 @@ public class Occupation extends AbstractEntity implements NamedEntity {
             optional = false, nullable = false, proposal = True.class,
             view = @View(label = "Editable (?!?)", layout = shortInline))
     private Boolean editable = true;
-    /**
-     *
-     */
-    @Lob
-    @Basic(fetch = FetchType.EAGER) // CARE, lazy fetch on Basics has some trouble.
-    @JsonView(Views.ExtendedI.class)
-    @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Description (!?!)", value = Hidden.class))
-    private String description = "";
 
     /**
      *
@@ -81,6 +78,7 @@ public class Occupation extends AbstractEntity implements NamedEntity {
      *
      */
     public Occupation() {
+        // useless but ensure there is an empty constructor
     }
 
     /**
@@ -169,20 +167,6 @@ public class Occupation extends AbstractEntity implements NamedEntity {
      */
     public void setEditable(boolean editable) {
         this.editable = editable;
-    }
-
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     @Override

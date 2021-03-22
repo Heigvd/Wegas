@@ -1,36 +1,34 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.GameModelLanguage;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.utils.StringInstanceCustomizer;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
-import com.wegas.editor.View.I18nStringView;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.I18nStringView;
 import java.io.IOException;
+import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import jdk.nashorn.api.scripting.JSObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import javax.persistence.Entity;
-import java.util.List;
 import org.eclipse.persistence.annotations.Customizer;
 
 /**
@@ -45,15 +43,13 @@ public class StringInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = LoggerFactory.getLogger(StringInstance.class);
-
     /**
      *
      */
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyI18n.class,
-            view = @View(label = "Value", value = I18nStringView.class))
+        optional = false, nullable = false, proposal = EmptyI18n.class,
+        view = @View(label = "Value", value = I18nStringView.class))
     private TranslatableContent trValue;
 
     /**
@@ -97,12 +93,11 @@ public class StringInstance extends VariableInstance {
     /**
      * Value can be a string "as-is", or JSON array of string.
      * <p>
-     * If the StringDescriptor defines some allowed values, the as-is value or
-     * each string in the array must equal one of the allowed values. Otherwise,
-     * a WegasErrorMessage is therown.
+     * If the StringDescriptor defines some allowed values, the as-is value or each string in the
+     * array must equal one of the allowed values. Otherwise, a WegasErrorMessage is therown.
      * <p>
-     * since no language is given, the first one defined in the game model will be used.
-     * This will erase all other translations.
+     * since no language is given, the first one defined in the game model will be used. This will
+     * erase all other translations.
      *
      * @param value the value to set
      */
@@ -124,9 +119,8 @@ public class StringInstance extends VariableInstance {
     /**
      * Value can be a string "as-is", or JSON array of string.
      * <p>
-     * If the StringDescriptor defines some allowed values, the as-is value or
-     * each string in the array must equal one of the allowed values. Otherwise,
-     * a WegasErrorMessage is therown.
+     * If the StringDescriptor defines some allowed values, the as-is value or each string in the
+     * array must equal one of the allowed values. Otherwise, a WegasErrorMessage is therown.
      * <p>
      * This will set the value for the given language. All other translations will be erased.
      *

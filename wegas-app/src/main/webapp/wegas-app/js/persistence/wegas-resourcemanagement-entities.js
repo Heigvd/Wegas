@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -224,7 +224,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             }
                         },
                         view: {
-                            className: 'wegas-advanced-feature editor-resources-occupations',
+                            className: 'editor-resources-occupations',
                             label: "Unavailabilities",
                             description: "[periods]"
                         }
@@ -363,12 +363,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         value: false,
                         view: {
                             label: "Editable",
-                            type: HIDDEN
-                        }
-                    }, {
-                        type: STRING,
-                        view: {
-                            label: "Description",
                             type: HIDDEN
                         }
                     }
@@ -525,24 +519,36 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }, this);
             return data;
         },
-        getEditorLabel: function() {
-            var trLabel = this.getLabel(),
+        getLabelWithIndex: function() {
+            var trLabel = this.getLabel() || "",
                 index = this.get("index");
             if (index) {
-                index += ". ";
+                return index + ". " + trLabel
             } else {
-                index = "";
+                return trLabel;
             }
+        },
+        getEditorLabel: function() {
+            var trLabel = this.getLabelWithIndex();
+            var toDisplay;
 
             if (!this.get("editorTag") && !trLabel) {
-                return this.get("name");
+                toDisplay = this.get("name");
             } else if (!this.get("editorTag")) {
-                return index + trLabel;
+                toDisplay = trLabel;
             } else if (!trLabel) {
-                return this.get("editorTag");
+                toDisplay = this.get("editorTag");
             } else {
-                return this.get("editorTag") + " - " + index + trLabel;
+                toDisplay = this.get("editorTag") + " - " + trLabel;
             }
+
+            if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("type") === "MODEL"
+                && this.get("visibility") === "PRIVATE") {
+                toDisplay = "<i class='private-in-model'>" + toDisplay + "</i>";
+            }
+
+            return toDisplay;
+
         },
         getIconCss: function() {
             return "fa fa-list";
@@ -950,15 +956,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             "@class": {
                 value: "BurndownDescriptor"
             },
-            description: {
-                type: STRING,
-                optional: true,
-                index: -1,
-                view: {
-                    label: "Description",
-                    type: HTML
-                }
-            },
             defaultInstance: {
                 properties: {
                     '@class': {
@@ -1001,8 +998,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 type: ARRAY,
                 setter: function(v) {
                     v.sort(function(a, b) {
-                        // TODO natural sort
-                        return a.get("name").localeCompare(b.get("name"));
+                        // older first
+                        return a.get("createdTime") - b.get("createdTime");
                     });
                     return v;
                 },
@@ -1018,67 +1015,116 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }
             return taskDs;
         },
+        containsTask: function(taskDescriptor) {
+            var needle = taskDescriptor.get("name");
+            return !!this.get("taskNames").find(function(taskName) {
+                return taskName === needle;
+            });
+        },
+        /**
+         * Get active tasks
+         * @returns {Array} Active tasks only
+         */
         getTaskInstances: function() {
-            var names = this.get("taskNames"), i, taskIs = [];
-            for (i = 0; i < names.length; i += 1) {
-                taskIs.push(Y.Wegas.Facade.Variable.cache.find("name", names[i]).getInstance());
-            }
-            return taskIs;
+            return this.getTaskDescriptors()
+                .map(function(taskD) {
+                    return taskD.getInstance();
+                })
+                .filter(function(taskI) {
+                    return taskI.get("active");
+                });
         },
         getRemainingWorkload: function() {
+            var taskI, taskIs, i,
+                sum = 0,
+                workload;
+            taskIs = this.getTaskInstances();
+            for (i = 0; i < taskIs.length; i += 1) {
+                taskI = taskIs[i];
+
+                workload = taskI.get("properties.duration") * taskI.get("requirements").reduce(function(acc, current) {
+                    return acc + current.get("quantity");
+                }, 0);
+
+                sum += (workload * (100 - taskI.get("properties.completeness")) / 100);
+            }
+            return sum;
+        },
+        getDeltaSum: function() {
+            var period, periods, i, sum = 0;
+            periods = this.get("periods");
+            for (i = 0; i < periods.length; i += 1) {
+                period = periods[i];
+                sum += periods.get("deltaAtStart");
+            }
+            return sum;
+        },
+        getTotalWorkload: function() {
             var taskI, taskIs, i, workload = 0;
             taskIs = this.getTaskInstances();
             for (i = 0; i < taskIs.length; i += 1) {
                 taskI = taskIs[i];
-                if (taskI.get("properties.completeness") < 100) {
-                    workload += taskI.get("properties.duration") * Y.Array.reduce(taskI.get("requirements"), 0, function(previous, current) {
-                        return previous + current.get("quantity") * (100 - current.get("completeness")) / 100;
-                    });
-                }
+
+                workload = taskI.get("properties.duration") * taskI.get("requirements").reduce(function(acc, current) {
+                    return acc + current.get("quantity");
+                }, 0);
             }
             return workload;
         },
-        getTotalWorkload: function() {
-            var taskI, taskIs, i, workload = 0;
-            if (this.hasBegun()) {
-                return this.get("totalWorkload");
-            } else {
-                taskIs = this.getTaskInstances();
-                for (i = 0; i < taskIs.length; i += 1) {
-                    taskI = taskIs[i];
-                    workload += taskI.get("properties.duration") * Y.Array.reduce(taskI.get("requirements"), 0, function(previous, current) {
-                        return previous + current.get("quantity");
-                    });
+        getTotalAc: function() {
+            var taskI, taskIs, i,
+                total = 0;
+            taskIs = this.getTaskInstances();
+            for (i = 0; i < taskIs.length; i += 1) {
+                taskI = taskIs[i];
+                var completeness = taskI.get("properties.completeness");
+                if (completeness > 0) {
+                    total += +taskI.get("properties.wages") + +taskI.get("properties.fixedCosts") + +taskI.get("properties.unworkedHoursCosts");
                 }
-                return workload;
             }
+            return total;
         },
-        getStatus: function() {
-            /*
-             var tasks = this.getTaskInstances(),
-             i, taskI, started = false, completed = tasks.length > 0,
-             completeness;
-             
-             //started = Y.Wegas.PMGHelper.getCurrentPhaseNumber() > 3 || (Y.Wegas.PMGHelper.getCurrentPhaseNumber() === 3 && Y.Wegas.PMGHelper.getCurrentPeriodNumber() > this.get("beginAt"));
-             
-             for (i = 0; i < tasks.length; i += 1) {
-             taskI = tasks[i];
-             completeness = taskI.get("properties.completeness");
-             if (completeness < 100) {
-             completed = false;
-             }
-             if (completeness > 0) {
-             started = true;
-             }
-             }
-             if (completed) {
-             return "COMPLETED";
-             } else if (started) {
-             return "STARTED";
-             } else {
-             return "NOT_STARTED";
-             }*/
-            return this.get("status");
+        getTotalEv: function() {
+            var taskI, taskIs, i,
+                total = 0;
+            taskIs = this.getTaskInstances();
+            for (i = 0; i < taskIs.length; i += 1) {
+                taskI = taskIs[i];
+                total += taskI.get("properties.completeness") / 100 * taskI.get("properties.bac");
+            }
+            return total;
+        },
+        getStatus: function(currentPeriod) {
+            var tasks = this.getTaskInstances(),
+                i, taskI, started = false, completed = tasks.length > 0,
+                completeness;
+
+            //started = Y.Wegas.PMGHelper.getCurrentPhaseNumber() > 3 || (Y.Wegas.PMGHelper.getCurrentPhaseNumber() === 3 && Y.Wegas.PMGHelper.getCurrentPeriodNumber() > this.get("beginAt"));
+
+            for (i = 0; i < tasks.length; i += 1) {
+                taskI = tasks[i];
+                completeness = taskI.get("properties.completeness");
+                if (completeness < 100) {
+                    completed = false;
+                }
+                if (completeness > 0) {
+                    started = true;
+                }
+            }
+            if (completed) {
+                return "COMPLETED";
+            } else if (started) {
+                return "STARTED";
+            } else {
+
+                if (currentPeriod > this.get("beginAt") || this.get("periods").find(function(period) {
+                    return period.get("ew") > 0;
+                })) {
+                    // some work has already be done, but the related task has been removed from the iteration
+                    return "STARTED";
+                }
+                return "NOT_STARTED";
+            }
         },
         hasBegun: function() {
             return this.getStatus() !== "NOT_STARTED";
@@ -1091,41 +1137,168 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             name: {
                 type: STRING
             },
-            status: {
-                type: STRING
-            },
             beginAt: {
-                type: NUMBER
-            },
-            wages: {
                 type: NUMBER
             },
             cpi: {
                 type: NUMBER
             },
-            wpi: {
+            wspi: {
                 type: NUMBER
-            },
-            spi: {
-                type: NUMBER
-            },
-            totalWorkload: {
-                type: NUMBER
-            },
-            plannedWorkloads: {
-                type: ARRAY
-            },
-            replannedWorkloads: {
-                type: ARRAY
-            },
-            workloads: {
-                type: ARRAY
             },
             taskNames: {
                 type: ARRAY
             },
             createdTime: {
                 transient: true
+            },
+            periods: {
+                type: ARRAY
+            }
+        }
+    });
+    persistence.IterationPeriod = Y.Base.create("IterationPeriod", persistence.Entity, [], {
+    }, {
+        ATTRS: {
+            periodNumber: {
+                "type": "number",
+                "view": {
+                    "label": "Period number",
+                    readOnly: true
+                }
+            },
+            deltaAtStart: {
+                "type": "number",
+                "view": {
+                    "label": "Delta workload"
+                }
+            },
+            deltaAc: {
+                "type": "number",
+                "view": {
+                    "label": "Delta AC"
+                }
+            },
+            deltaEv: {
+                "type": "number",
+                "view": {
+                    "label": "Delta EV"
+                }
+            },
+            planned: {
+                "type": "number",
+                "view": {
+                    "label": "Initial Planned Team Size"
+                }
+            },
+            replanned: {
+                "type": "number",
+                "view": {
+                    "label": "Re-Planned Team Size"
+                }
+            },
+            ac: {
+                "type": "number",
+                "view": {
+                    "label": "Actual Cost (AC)"
+                }
+            },
+            ev: {
+                "type": "number",
+                "view": {
+                    "label": "Earned Value (EV)"
+                }
+            },
+            aw: {
+                "type": "number",
+                "view": {
+                    "label": "Actual Workload Spent during the period(AW)"
+                }
+            },
+            ew: {
+                "type": "number",
+                "view": {
+                    "label": "Earned Workload (EW) from iteration start"
+                }
+            },
+            pw: {
+                "type": "number",
+                "view": {
+                    "label": "Planned Workload (PW) from iteration start"
+                }
+            },
+            lastWorkedStep: {
+                "type": "number",
+                "view": {
+                    "label": "Last worked step",
+                    readOnly: true
+                }
+            },
+            iterationEvents: {
+                "type": "array",
+                "value": [],
+                "items": {
+                    type: "object",
+                    properties: {
+                        "data": {
+                            "view": {
+                                "label": "Data"
+                            }
+                        },
+                        "eventType": {
+                            "type": "string",
+                            "view": {
+                                "label": "Event Type"
+                            }
+
+                        },
+                        "step": {
+                            "type": "number",
+                            "view": {
+                                "label": "Step"
+                            }
+                        },
+                        "taskName": {
+                            "type": "string",
+                            "view": {
+                                "label": "Task name"
+                            }
+                        }
+                    }
+
+                },
+                "view": {
+                    "label": "Events"
+                }
+            }
+        }
+    });
+    persistence.IterationEvent = Y.Base.create("IterationEvent", persistence.Entity, [], {
+    }, {
+        ATTRS: {
+            "data": {
+                "view": {
+                    "label": "Data"
+                }
+            },
+            "eventType": {
+                "type": "string",
+                "view": {
+                    "label": "Event Type"
+                }
+
+            },
+            "step": {
+                "type": "number",
+                "view": {
+                    "label": "Step"
+                }
+            },
+            "taskName": {
+                "type": "string",
+                "view": {
+                    "label": "Task name"
+                }
             }
         }
     });

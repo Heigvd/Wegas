@@ -1,31 +1,31 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;
 
+import static ch.albasim.wegas.annotations.CommonView.LAYOUT.shortInline;
+import ch.albasim.wegas.annotations.Scriptable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.VariableProperty;
 import com.wegas.core.persistence.annotations.Param;
-import com.wegas.core.persistence.annotations.Scriptable;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.Propertable;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.editor.JSONSchema.ListOfTasksSchema;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.EmptyMap;
-import com.wegas.editor.View.I18nHtmlView;
-import com.wegas.editor.View.View;
-import com.wegas.resourceManagement.ejb.IterationFacade;
+import com.wegas.editor.view.HashListView;
+import com.wegas.editor.jsonschema.ListOfTasksSchema;
+import com.wegas.editor.view.I18nHtmlView;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -43,7 +43,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static com.wegas.editor.View.CommonView.LAYOUT.shortInline;
 
 /**
  *
@@ -85,7 +84,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     @JsonIgnore
     @WegasEntityProperty(
             optional = false, nullable = false, proposal = EmptyMap.class,
-            view = @View(label = "Descriptor properties"))
+            view = @View(label = "Descriptor properties", value = HashListView.class))
     private List<VariableProperty> properties = new ArrayList<>();
     /**
      *
@@ -269,6 +268,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     public void setInstanceProperty(Player p,
             @Param(view = @View(label = "Key")) String key,
             @Param(view = @View(label = "Value")) String value) {
+        // TODO: fire property change
         this.getInstance(p).setProperty(key, value);
     }
 
@@ -285,9 +285,11 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
         try {
             TaskInstance instance = this.getInstance(p);
             double oldValue = instance.getPropertyD(key);
-            double newValue = oldValue + Double.parseDouble(value);
-            instance.setProperty(key, "" + newValue);
+            Double newValue = oldValue + Double.parseDouble(value);
+            // TODO: fire property change
+            instance.setProperty(key, newValue.toString());
         } catch (NumberFormatException e) {
+            logger.error("addNumberToProperty: {}", e);
             // do nothing...
         }
     }
@@ -437,31 +439,24 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     @Override
     public void updateCacheOnDelete(Beanjection beans) {
         VariableDescriptorFacade vdf = beans.getVariableDescriptorFacade();
-        IterationFacade iteF = beans.getIterationFacade();
 
         for (TaskDescriptor theTask : this.dependencies) {
-            theTask = (TaskDescriptor) vdf.find(theTask.getId());
-            if (theTask != null) {
-                theTask.removePredecessor(this);
+            VariableDescriptor desc = vdf.find(theTask.getId());
+            if (desc instanceof TaskDescriptor) {
+                ((TaskDescriptor) desc).removePredecessor(this);
             }
         }
         this.dependencies = new ArrayList<>();
 
         for (TaskDescriptor theTask : this.predecessors) {
-            theTask = (TaskDescriptor) vdf.find(theTask.getId());
-            if (theTask != null) {
-                theTask.removeDependency(this);
+            VariableDescriptor desc = vdf.find(theTask.getId());
+            if (desc instanceof TaskDescriptor) {
+                ((TaskDescriptor) desc).removeDependency(this);
             }
         }
         this.setPredecessors(new ArrayList<>());
 
         super.updateCacheOnDelete(beans);
-    }
-
-    @Override
-    public void revive(GameModel gameModel, Beanjection beans) {
-        super.revive(gameModel, beans);
-        beans.getResourceFacade().reviveTaskDescriptor(this);
     }
 
 
@@ -481,10 +476,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> implements 
     }
 
     public void setActivities(List<Activity> iterations) {
-
+        // backward compatibility
     }
 
     public void setAssignments(List<Assignment> iterations) {
-
+        // backward compatibility
     }
 }

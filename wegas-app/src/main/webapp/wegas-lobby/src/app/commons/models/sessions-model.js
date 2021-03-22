@@ -292,7 +292,7 @@ angular.module('wegas.models.sessions', [])
             if (!token.match(/^([a-zA-Z0-9_-]|\.(?!\.))*$/)) {
                 token = "";
             }
-            $http.get(ServiceURL + "rest/Editor/GameModel/Game/FindByToken/" + token, {
+            $http.get(ServiceURL + "rest/Extended/GameModel/Game/FindByToken/" + token, {
                 ignoreLoadingBar: true
             }).success(function(data) {
                 if (data) {
@@ -402,7 +402,7 @@ angular.module('wegas.models.sessions', [])
         /* Call the backend for new session values */
         model.refreshSession = function(status, sessionToRefresh) {
             var deferred = $q.defer(),
-                url = "rest/GameModel/Game/" + sessionToRefresh.id + "?view=Editor", // Editor view to include teams
+                url = "rest/Editor/GameModel/Game/" + sessionToRefresh.id, // Editor view to include teams
                 cachedSession = null;
             $http
                 .get(ServiceURL + url)
@@ -441,11 +441,12 @@ angular.module('wegas.models.sessions', [])
                         "name": sessionName
                     };
                     $http.post(ServiceURL + "rest/GameModel/" + newSession.gameModelId + "/Game?view=Lobby", newSession).success(function(data) {
-                        cacheSession("LIVE", data)
+                        cacheSession("LIVE", data);
                         $translate('COMMONS-SESSIONS-CREATE-SUCCESS').then(function(message) {
                             deferred.resolve(Responses.success(message, data));
                         });
                     }).error(function(data) {
+                        console.error(data);
                         $translate('COMMONS-SESSIONS-CREATE-ERROR').then(function(message) {
                             deferred.resolve(Responses.danger(message, false));
                         });
@@ -492,7 +493,7 @@ angular.module('wegas.models.sessions', [])
             return deferred.promise;
         };
 
-        /* Update the comment of a session. */
+        /* Update the access status of a session. */
         model.updateAccessSession = function(sessionToSet) {
             var deferred = $q.defer(),
                 sessionBeforeChange = sessions.findSession("LIVE", sessionToSet.id);
@@ -517,6 +518,28 @@ angular.module('wegas.models.sessions', [])
                     $translate('COMMONS-SESSIONS-EDIT-ACCESS-ERROR').then(function(message) {
                         deferred.resolve(Responses.danger(message, false));
                     });
+                });
+            }
+            return deferred.promise;
+        };
+
+        /* Update the access token of a session. */
+        model.updateSessionToken = function(sessionToSet) {
+            var deferred = $q.defer(),
+                sessionBeforeChange = sessions.findSession("LIVE", sessionToSet.id);
+            if (sessionBeforeChange) {
+                sessionBeforeChange.token = sessionToSet.token;
+                $http.put(ServiceURL + "rest/GameModel/Game/" + sessionToSet.id, sessionBeforeChange, {
+                    ignoreLoadingBar: true
+                }).success(function(data) {
+                    $translate(
+                        'COMMONS-SESSIONS-EDIT-TOKEN-SUCCESS'
+                    ).then(function(message) {
+                        deferred.resolve(Responses.success(message, data));
+                    });
+                }).error(function(WegasException) {
+                    var message = WegasException.messageId ? $translate.instant(WegasException.messageId) : WegasException.message;
+                    deferred.resolve(Responses.danger(message, false));
                 });
             }
             return deferred.promise;

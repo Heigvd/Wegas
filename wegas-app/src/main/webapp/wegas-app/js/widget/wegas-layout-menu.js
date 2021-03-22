@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2019  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global I18n */
@@ -235,12 +235,7 @@ YUI.add('wegas-layout-menu', function(Y) {
         },
         getLabel: function() {
             if (this.get("label")) {
-                var labelDesc = this.get("label.evaluated");
-                if (labelDesc instanceof Y.Wegas.persistence.ListDescriptor) {
-                    return I18n.t(labelDesc.getLabel());
-                } else {
-                    return labelDesc.getInstance().get("value");
-                }
+                return I18n.tVar(this.get("label.evaluated"));
             } else {
                 return this.get("name");
             }
@@ -275,6 +270,7 @@ YUI.add('wegas-layout-menu', function(Y) {
                     type: 'variableselect',
                     label: 'Label',
                     classFilter: [
+                        "StaticTextDescriptor", "StringDescriptor", // use the text
                         "TextDescriptor", "StringDescriptor", // use the value
                         "ListDescriptor" // use the label
                     ]
@@ -359,7 +355,7 @@ YUI.add('wegas-layout-menu', function(Y) {
             for (var i in languages) {
                 var item = languages[i];
                 var btn = new Y.Wegas.Text({
-                    content: (I18n.getCode() === item.get("code").toUpperCase() ? "<b>" + item.get("lang") + "</b>" : item.get("lang")),
+                    content: (I18n.getCode() === item.get("code").toUpperCase() ? "<b>" + I18n.capitalize(item.get("lang")) + "</b>" : I18n.capitalize(item.get("lang"))),
                 });
                 btn.plug(Y.Plugin.ExecuteLocalScriptAction, {
                     "targetEvent": "click",

@@ -1,13 +1,14 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.persistence;
 
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.variable.Beanjection;
@@ -15,8 +16,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.ReviewingNotStarted;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -148,11 +148,6 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
     }
 
     @Override
-    public void revive(Beanjection beans) {
-        beans.getReviewingFacade().revivePeerReviewInstance(this);
-    }
-
-    @Override
     public Collection<WegasPermission> getRequieredReadPermission() {
         Collection<WegasPermission> ps = super.getRequieredReadPermission();
 
@@ -175,7 +170,7 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
      * Skip this {@link #getRequieredUpdatePermission() } implementation.
      * call super one.
      */
-    private Collection<WegasPermission> super_getRequieredUpdatePermission() {
+    private Collection<WegasPermission> getSuperRequieredUpdatePermission() {
         return super.getRequieredUpdatePermission();
     }
 
@@ -185,13 +180,13 @@ public class PeerReviewInstance extends VariableInstance implements AcceptInject
         for (Review r : getReviewed()) {
             // when they'er reviewing, reviewers also have right to write (optmisticlock = cascade on variableinstance !)
             if (r.getInitialReviewState().equals(Review.ReviewState.DISPATCHED)) {
-                ps.addAll(r.getReviewer().super_getRequieredUpdatePermission()); // avoid infinite loop
+                ps.addAll(r.getReviewer().getSuperRequieredUpdatePermission()); // avoid infinite loop
             }
         }
         for (Review r : getToReview()) {
             // when they'er commenting the feedback, authors also have right to write (optmisticlock = cascade on variableinstance !)
             if (r.getInitialReviewState().equals(Review.ReviewState.NOTIFIED)) {
-                ps.addAll(r.getAuthor().super_getRequieredUpdatePermission()); // avoid infinite loop
+                ps.addAll(r.getAuthor().getSuperRequieredUpdatePermission()); // avoid infinite loop
             }
         }
         return ps;

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.jcr.content;
@@ -20,6 +20,7 @@ import org.xml.sax.*;
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
+@Deprecated(forRemoval = true)
 public class XMLSerializer implements ContentHandler {
 
     private ContentHandler ch;
@@ -67,10 +68,12 @@ public class XMLSerializer implements ContentHandler {
 
                 @Override
                 public void parse(InputSource input) {
+                    // noop
                 }
 
                 @Override
                 public void parse(String systemId) {
+                    // noop
                 }
 
                 @Override
@@ -80,22 +83,27 @@ public class XMLSerializer implements ContentHandler {
 
                 @Override
                 public void setDTDHandler(DTDHandler handler) {
+                    // noop
                 }
 
                 @Override
                 public void setEntityResolver(EntityResolver resolver) {
+                    // noop
                 }
 
                 @Override
                 public void setErrorHandler(ErrorHandler handler) {
+                    // noop
                 }
 
                 @Override
                 public void setFeature(String name, boolean value) {
+                    // noop
                 }
 
                 @Override
                 public void setProperty(String name, Object value) {
+                    // noop
                 }
             }, new InputSource()), new StreamResult(os));
         } catch (TransformerException e) {

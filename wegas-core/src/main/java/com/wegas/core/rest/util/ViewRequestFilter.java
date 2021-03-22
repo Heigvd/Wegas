@@ -1,31 +1,30 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.jaxrs.cfg.EndpointConfigBase;
-import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
-import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.security.ejb.UserFacade;
-import io.prometheus.client.Counter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
-import javax.ejb.EJB;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.cfg.EndpointConfigBase;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.cfg.ObjectWriterInjector;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.cfg.ObjectWriterModifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,19 +40,14 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @PreMatching
+@RequestScoped // payara 3994 workaround (fixed in 193)
 public class ViewRequestFilter implements ContainerRequestFilter {
 
-    @EJB
-    RequestIdentifierGenerator idGenerator;
+    @Inject
+    private RequestIdentifierGenerator idGenerator;
 
-    @EJB
-    UserFacade userFacade;
-
-    @EJB
-    RequestFacade requestFacade;
-
-    private static final Counter requests = Counter.build()
-            .name("requests_total").help("Total requests.").register();
+    @Inject
+    private RequestFacade requestFacade;
 
     private final static Logger logger = LoggerFactory.getLogger(ViewRequestFilter.class);
 
@@ -68,7 +62,6 @@ public class ViewRequestFilter implements ContainerRequestFilter {
 
         requestManager.setSocketId(cr.getHeaderString("socketId"));
 
-        requests.inc();
         requestManager.setRequestId(idGenerator.getUniqueIdentifier());
         requestManager.setMethod(cr.getMethod());
         requestManager.setPath(cr.getUriInfo().getPath());
@@ -96,6 +89,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             case "Editor":
             case "Lobby":
             case "Instance":
+            case "Shadow":
                 //rmf.setView(this.stringToView(firstPathSeg));
                 view = Views.stringToView(firstPathSeg);
                 newUri = newUri.replace(firstPathSeg + "/", "");
@@ -121,13 +115,15 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             view = Views.stringToView(cr.getUriInfo().getQueryParameters().get("view").get(0));
         }
 
+        requestFacade.setView(view);
+
         // Propadate new view to ObjectWriter
         ObjectWriterInjector.set(new JsonViewModifier(view));
     }
 
     private static class JsonViewModifier extends ObjectWriterModifier {
 
-        Class<?> view;
+        private Class<?> view;
 
         public JsonViewModifier(Class<?> view) {
             this.view = view;

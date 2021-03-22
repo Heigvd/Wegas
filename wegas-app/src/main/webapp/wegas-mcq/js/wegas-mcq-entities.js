@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -60,7 +60,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     return false;
                 } else {
                     var qReplies = qInstance.getValidatedReplies();
-
                     if (qReplies) {
                         if (this.get('maxReplies')) {
                             // is maximum reached?
@@ -569,6 +568,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                 type: "entityarrayfieldselect",
                                 returnAttr: "name",
                                 field: "results",
+                                layout: "shortInline"
                             }
                         }]
                 },
@@ -1169,7 +1169,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
             },
             description: Y.Wegas.Helper.getTranslationAttr({
                 label: "Description",
-                index: 12,
+                index: 10,
                 type: HTML
             }),
             defaultInstance: {
@@ -1209,9 +1209,14 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         view: {
                             type: HIDDEN
                         }
-                    }
+                    },
+                    feedback: Y.Wegas.Helper.getTranslationAttr({
+                        label: "Feedback",
+                        index: 10,
+                        type: HTML
+                    })
                 },
-                index: 3
+                index: 20
             }
         },
         EDITMENU: {
@@ -1252,7 +1257,46 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                                     targetClass: "StringDescriptor"
                                                 }
                                             }]
+                                    }, {
+                                        type: BUTTON,
+                                        label: '<span class="fa fa-toggle-on"></span> Boolean',
+                                        plugins: [{
+                                                fn: "AddEntityChildAction",
+                                                cfg: {
+                                                    targetClass: "BooleanDescriptor"
+                                                }
+                                            }]
+                                    }, {
+                                        type: BUTTON,
+                                        label: '<span class="fa fa-commenting-o"></span> Static Text',
+                                        plugins: [{
+                                                fn: "AddEntityChildAction",
+                                                cfg: {
+                                                    targetClass: "StaticTextDescriptor"
+                                                }
+                                            }]
+                                    },
+                                    {
+                                        type: BUTTON,
+                                        label: '<span class="fa fa-folder"></span> Section',
+                                        plugins: [{
+                                                fn: "AddEntityChildAction",
+                                                cfg: {
+                                                    targetClass: "ListDescriptor",
+                                                    cfg: {
+                                                        allowedTypes: [
+                                                            "NumberDescriptor",
+                                                            "TextDescriptor",
+                                                            "StringDescriptor",
+                                                            "BooleanDescriptor",
+                                                            "StaticTextDescriptor"
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        ]
                                     }
+
                                 ]
                             }
                         }
@@ -1289,6 +1333,22 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 label: "is active",
                 returns: BOOLEAN,
                 arguments: [SELFARG]
+            },
+            setFeedback: {
+                label: 'set feedback',
+                className: 'wegas-method-returnline',
+                arguments: [
+                    SELFARG,
+                    Y.Wegas.Helper.getTranslationAttr({type: HTML})
+                ]
+            },
+            getFeedback: {
+                label: "feedback",
+                returns: STRING,
+                arguments: [SELFARG],
+                localEval: function(player) {
+                    return I18n.t(this.getInstance(player).get("feedback"));
+                }
             }
         }
     });
@@ -1313,7 +1373,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
             unread: {
                 value: true,
                 type: BOOLEAN
-            }
+            },
+            feedback: Y.Wegas.Helper.getTranslationAttr({
+                label: "Feedback",
+                index: 10,
+                type: HTML
+            })
         }
     });
 });

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
@@ -206,7 +206,7 @@ var ReviewHelper = (function() {
 
     function summarize(peerReviewDescriptorName) {
         var prd = Variable.find(gameModel, peerReviewDescriptorName),
-            game = self.getGame(), teams = game.getTeams(), t, teamId, team,
+            game = self.getGame(), teams = game.getLiveTeams(), t, teamId, team,
             pris, pri, reviews, review, evs, ev, evK, i, j, k,
             entry, nbRDone, nbRTot, nbRCom, nbRComClosed, nbRComTotal,
             evaluationsR, evaluationsC, evaluationsAll, evaluationsValues = {}, evDescriptor,
@@ -464,7 +464,7 @@ var ReviewHelper = (function() {
         }
 
         if (maxNumberOfValue === 0) {
-            if (game.getClass().getSimpleName() === "DebugGame") {
+            if (game instanceof com.wegas.core.persistence.game.DebugGame) {
                 maxNumberOfValue = 1;
             } else {
                 // evict test teams...

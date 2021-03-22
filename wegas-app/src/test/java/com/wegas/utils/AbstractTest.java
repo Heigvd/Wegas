@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.utils;
@@ -16,9 +16,10 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.rest.ScriptController;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.test.TestHelper;
 import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
 import java.io.IOException;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ public abstract class AbstractTest extends AbstractArquillianTestMinimal {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractTest.class);
 
-    @EJB
+    @Inject
     protected ScriptController scriptController;
 
     private GameModel gameModel;

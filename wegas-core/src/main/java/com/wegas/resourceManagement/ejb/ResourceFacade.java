@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.ejb;
@@ -29,7 +29,6 @@ import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
 import java.util.Collection;
 import java.util.Set;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -51,22 +50,17 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
     /**
      *
      */
-    public ResourceFacade() {
-    }
-    /**
-     *
-     */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableInstanceFacade variableInstanceFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
     /**
      *
@@ -117,15 +111,14 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
      * @param resourceId     resourceInstance id
      * @param taskInstanceId taskInstance id
      *
-     * @return the assignment id resource is assigned to the task, null
-     *         otherwise
+     * @return the assignment id resource is assigned to the task, null otherwise
      */
     @Override
     public Assignment findAssignment(Long resourceId, Long taskInstanceId) {
         EntityManager em = getEntityManager();
         TypedQuery<Assignment> query = em.createNamedQuery("Assignment.findByResourceInstanceIdAndTaskInstanceId", Assignment.class).
-                setParameter("resourceInstanceId", resourceId).
-                setParameter("taskInstanceId", taskInstanceId);
+            setParameter("resourceInstanceId", resourceId).
+            setParameter("taskInstanceId", taskInstanceId);
         return query.getSingleResult();
     }
 
@@ -173,6 +166,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
         final Assignment assignment = this.findAssignment(assignmentId);
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(assignment.getResourceInstance().getId());
         resourceInstance.moveAssignment(assignment, index);
+        requestManager.addUpdatedEntity(resourceInstance);
         return resourceInstance;
     }
 
@@ -181,8 +175,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
      *
      * @param assignmentId
      *
-     * @return the resource instance who was assigned, with the updated list of
-     *         assignments
+     * @return the resource instance who was assigned, with the updated list of assignments
      */
     @Override
     public ResourceInstance removeAssignment(final Long assignmentId) {
@@ -195,8 +188,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
      *
      * @param assignment
      *
-     * @return the resource instance who was assigned, with the updated list of
-     *         assignments
+     * @return the resource instance who was assigned, with the updated list of assignments
      */
     @Override
     public ResourceInstance removeAssignment(Assignment assignment) {
@@ -212,8 +204,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
     }
 
     /**
-     * Create an Activity (ie. a resourceInstance worked on a specific
-     * taskInstance)
+     * Create an Activity (ie. a resourceInstance worked on a specific taskInstance)
      *
      * @param resourceInstanceId
      * @param taskInstanceId
@@ -233,11 +224,10 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
     }
 
     /**
-     * Change activity sub requirements. If a resource continue to work on the
-     * same task, but on a different requirements,
+     * Change activity sub requirements. If a resource continue to work on the same task, but on a
+     * different requirements,
      * <p>
-     * THIS BEHAVIOUR SHOULD NOT EXIST. IMO, different req means different
-     * activity
+     * THIS BEHAVIOUR SHOULD NOT EXIST. IMO, different req means different activity
      *
      * @param activity
      * @param newReq
@@ -286,8 +276,8 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
      */
     @Override
     public Occupation addOccupation(Long resourceInstanceId,
-            Boolean editable,
-            Integer time) {
+        Boolean editable,
+        Integer time) {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
         Occupation newOccupation = new Occupation(time);
         newOccupation.setEditable(editable);
@@ -330,6 +320,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
         } catch (WegasScriptException ex) {
             logger.error("EventListener error (\"addTaskPlannification\")", ex);
         }
+        // requestManager.commit(player);
         return ti;
     }
 
@@ -366,6 +357,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
         } catch (WegasScriptException ex) {
             logger.error("EventListener error (\"removePlannification\")", ex);
         }
+//        requestManager.commit(player);
         return ti;
     }
 
@@ -397,8 +389,8 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
         }
 
         /**
-         * Transform task name into real TaskDescriptor
-         * New predecessor's names : be sure they're registered
+         * Transform task name into real TaskDescriptor New predecessor's names : be sure they're
+         * registered
          */
         if (task.getImportedPredecessorNames() != null) {
             Set<String> predecessorNames = task.getImportedPredecessorNames();
@@ -418,13 +410,11 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
                 }
             }
             /**
-             * Old predecessor's names : make sure to remove oldies
-             * for (String predecessorName : task.getPredecessorNames()) {
-             * TaskDescriptor predecessor = (TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName);
-             * if (!task.getImportedPredecessorNames().contains(predecessorName)) {
-             * task.removePredecessor(predecessor);
-             * }
-             * }
+             * Old predecessor's names : make sure to remove oldies for (String predecessorName :
+             * task.getPredecessorNames()) { TaskDescriptor predecessor = (TaskDescriptor)
+             * variableDescriptorFacade.find(task.getGameModel(), predecessorName); if
+             * (!task.getImportedPredecessorNames().contains(predecessorName)) {
+             * task.removePredecessor(predecessor); } }
              */
         }
         //this.setPredecessors(ListUtils.updateList(this.getPredecessors(), other.getPredecessors()));
@@ -432,7 +422,7 @@ public class ResourceFacade extends WegasAbstractFacade implements ResourceFacad
 
     public void reviveResourceInstance(ResourceInstance resourceInstance) {
         if ((resourceInstance.getAssignments() != null && resourceInstance.getAssignments().size() > 0)
-                || (resourceInstance.getActivities() != null && resourceInstance.getActivities().size() > 0)) {
+            || (resourceInstance.getActivities() != null && resourceInstance.getActivities().size() > 0)) {
             ResourceDescriptor rd = (ResourceDescriptor) resourceInstance.findDescriptor();
             GameModel gm = rd.getGameModel();
 

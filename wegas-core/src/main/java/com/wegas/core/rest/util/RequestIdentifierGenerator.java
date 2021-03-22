@@ -1,13 +1,16 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
 
 import javax.ejb.Singleton;
+import javax.inject.Inject;
+import org.eclipse.microprofile.metrics.Counter;
+import org.eclipse.microprofile.metrics.annotation.Metric;
 
 /**
  *
@@ -16,12 +19,14 @@ import javax.ejb.Singleton;
 @Singleton
 public class RequestIdentifierGenerator {
 
-    private long counter = 0;
+    //private long counter = 0;
 
-    public RequestIdentifierGenerator() {
-    }
+    @Inject
+    @Metric(name = "requests_total", description = "Total requests", absolute = true)
+    private Counter requests;
 
     public String getUniqueIdentifier(){
-        return Long.toString(counter++, 10);
+        requests.inc();
+        return Long.toString(requests.getCount(), 10);
     }
 }

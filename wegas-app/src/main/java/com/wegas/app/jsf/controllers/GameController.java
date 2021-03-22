@@ -1,12 +1,14 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.app.jsf.controllers;
 
+import com.wegas.app.jsf.controllers.utils.HttpParam;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
@@ -20,13 +22,11 @@ import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import javax.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
-@ManagedBean(name = "gameController")
+@Named("gameController")
 @RequestScoped
 public class GameController extends AbstractGameController {
 
@@ -47,22 +47,24 @@ public class GameController extends AbstractGameController {
     /**
      *
      */
-    @ManagedProperty("#{param.gameId}")
+    @Inject
+    @HttpParam
     private Long gameId;
     /**
      *
      */
-    @ManagedProperty("#{param.gameModelId}")
+    @Inject
+    @HttpParam
     private Long gameModelId;
     /**
      *
      */
-    @EJB
+    @Inject
     private PlayerFacade playerFacade;
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
     /**
      *
@@ -120,22 +122,15 @@ public class GameController extends AbstractGameController {
         if (this.gameModelId != null) {
             GameModel gameModel = gameModelFacade.find(this.gameModelId);
             if (gameModel != null) {
-                if (gameModel.isScenario() || gameModel.isModel()){
+                if (gameModel.isScenario() || gameModel.isModel()) {
                     // use the debug player from the debug game
-                    currentPlayer = gameModel.getAnyLivePlayer();
+                    currentPlayer = gameModel.getTestPlayer();
                 } else {
                     currentPlayer = playerFacade.findPlayerInGameModel(this.gameModelId, currentUserId);
 
                     if (currentPlayer == null) {
                         // fallback: use a test player
-                        for (Game g : gameModel.getGames()) {
-                            for (Team t : g.getTeams()) {
-                                if (t instanceof DebugTeam) {
-                                    currentPlayer = t.getAnyLivePlayer();
-                                    break;
-                                }
-                            }
-                        }
+                        currentPlayer = gameModel.getTestPlayer();
                     }
                 }
             }
@@ -143,13 +138,16 @@ public class GameController extends AbstractGameController {
 
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
             errorController.gameNotFound();
+        } else if (currentPlayer.getStatus().equals(Status.SURVEY)) {
+            errorController.accessForSurveyOnly();
         } else if (!currentPlayer.getStatus().equals(Status.LIVE)) {
             try {
                 externalContext.dispatch("/wegas-app/jsf/error/waiting.xhtml");
             } catch (IOException ex) {
                 logger.error("Dispatch error: {}", ex);
             }
-        } else if (!currentPlayer.getGame().getStatus().equals(Game.Status.LIVE)) {
+        } else if (currentPlayer.getGame().getStatus().equals(Game.Status.DELETE)
+            || currentPlayer.getGame().getStatus().equals(Game.Status.SUPPRESSED)) {
             currentPlayer = null;
             errorController.gameDeleted();
         } else if (!requestManager.hasPlayerRight(currentPlayer)) {

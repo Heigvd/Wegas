@@ -1,3 +1,5 @@
+import { IVariableDescriptor, IVariableInstance, IGameModel, IGame, IPlayer, ITeam, IAbstractEntity } from "wegas-ts-api/typings/WegasEntities";
+
 export interface NormalizedData {
   variableDescriptors: {
     [id: string]: IVariableDescriptor;
@@ -19,8 +21,10 @@ export interface NormalizedData {
   };
 }
 
-type RootType = NormalizedData[keyof NormalizedData][0]
-export const discriminant = (input: { '@class': string }): keyof NormalizedData => {
+type RootType = NormalizedData[keyof NormalizedData][0];
+export const discriminant = (input: {
+  '@class': string;
+}): keyof NormalizedData => {
   const cls: string = input['@class'];
   if (cls === 'GameModel') {
     return 'gameModels';
@@ -43,9 +47,7 @@ export const discriminant = (input: { '@class': string }): keyof NormalizedData 
   throw Error(`${cls} not handled`);
 };
 
-export function normalizeDatas(
-  data: IAbstractEntity[] = [],
-): NormalizedData {
+export function normalizeDatas(data: IAbstractEntity[] = []): NormalizedData {
   return data.reduce(
     (prev, variable) => {
       prev[discriminant(variable)][variable.id!] = variable as RootType;

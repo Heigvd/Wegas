@@ -1,114 +1,156 @@
 import * as React from 'react';
-import { SizedDiv } from './SizedDiv';
-import { primaryDark, primaryLight, primary } from './Theme';
 import { css, cx } from 'emotion';
+import { deepDifferent } from './Hooks/storeHookFactory';
+import {
+  flex,
+  flexColumn,
+  flexRow,
+  grow,
+  halfOpacity,
+  justifyCenter,
+} from '../css/classes';
+import { themeVar } from './Style/ThemeVars';
+import { classNameOrEmpty } from '../Helper/className';
 
-const INLINE_SIZE_BREAKPOINT = 600;
-
-const cursorStyle = css({ cursor: 'pointer' });
-const itemStyle = css({
-  border: '1px solid',
-  lineHeight: '2',
-});
-const listStyle = css({
-  minWidth: '15em',
-});
-const flexStyle = css({
-  display: 'flex',
-  flexDirection: 'row',
-});
-const displayStyle = css({
-  flex: '1 1 auto',
+const entityChooser = css({
+  width: '100%',
 });
 
-interface EntityChooserProps<E extends IAbstractEntity> {
-  entities: E[];
-  children: React.ComponentType<{
-    entity: E;
-  }>;
-  entityLabel: (entity: E) => React.ReactNode;
-}
-export class EntityChooser<E extends IAbstractEntity> extends React.Component<
-  EntityChooserProps<E>,
+const labelList = css({
+  minWidth: '180px',
+  maxWidth: '180px',
+  padding: '10px',
+});
+
+const labelStyle = (disabled?: boolean) =>
+  cx(
+    css({
+      backgroundColor: themeVar.Common.colors.PrimaryColor,
+      padding: '10px',
+      boxShadow: `2px 2px 6px rgba(0, 0, 0, 0.2)`,
+      color: themeVar.Common.colors.LightTextColor,
+      borderRadius: themeVar.Common.dimensions.BorderRadius,
+      border: '2px solid transparent',
+      ...(!disabled
+        ? {
+            '&:hover': {
+              backgroundColor: themeVar.Common.colors.ActiveColor,
+              cursor: 'pointer',
+            },
+          }
+        : {}),
+    }),
+    grow,
+  );
+/* const labelArrow = css({
+  borderTop: '20px solid transparent',
+  borderBottom: '20px solid transparent',
+  borderLeft: `20px solid ${themeVar.Common.colors.HeaderColor}`,
+}); */
+
+const labelContainer = css({
+  marginBottom: '10px',
+  /* [`&>.${labelArrow}`]: {
+      borderLeft: `20px solid ${themeVar.Common.colors.DisabledColor}`,
+    }, */
+});
+
+const activeLabel = css(
   {
-    entity?: E;
-  }
-> {
-  static getDerivedStateFromProps(
-    nextProps: EntityChooserProps<IAbstractEntity>,
-    state: { entity?: IAbstractEntity },
-  ) {
-    if (state.entity == null) {
-      return null;
-    }
-    const id = state.entity.id;
-    const cls = state.entity['@class'];
-    const newEntity = nextProps.entities.find(
-      e => e['@class'] === cls && e.id === id,
-    );
-    return { entity: newEntity };
-  }
+    backgroundColor: themeVar.Common.colors.ActiveColor,
+    color: themeVar.Common.colors.LightTextColor,
+    boxShadow: 'none',
+    border: '2px solid ' + themeVar.Common.colors.ActiveColor,
+  },
+  /*
+    borderLeft: `20px solid ${themeVar.Common.colors.PrimaryColor}`,
+ */
+  /*
+      borderLeft: `20px solid ${themeVar.Common.colors.ActiveColor}`,
+  */
+);
 
-  state: { entity?: E } = { entity: this.props.entities[0] };
+const entityContainer = css({
+  padding: '10px',
+  width: '80%',
+});
 
-  render() {
-    const { entity } = this.state;
-    return (
-      <SizedDiv>
-        {size => {
-          let i: number | undefined;
-          const elements = this.props.entities.map((e, index) => {
-            if (e === entity) {
-              i = index;
-            }
-            return (
-              <div
-                className={cx(
-                  {
-                    [primaryDark]: e === entity,
-                    [primaryLight]: e !== entity,
-                  },
-                  itemStyle,
-                  cursorStyle,
-                )}
-                key={e.id}
-                onClick={() => this.setState({ entity: e })}
-              >
-                {this.props.entityLabel(e)}
-              </div>
-            );
-          });
-          if (size === undefined || size.width > INLINE_SIZE_BREAKPOINT) {
-            return (
-              <div className={flexStyle}>
-                <div className={listStyle}>{elements}</div>
-                <div className={displayStyle}>
-                  {entity != null && (
-                    <div className={cx(itemStyle, primary)}>
-                      {this.props.entityLabel(entity)}
-                    </div>
-                  )}
-                  {entity != null && <this.props.children entity={entity} />}
-                </div>
-              </div>
-            );
-          }
-          if (i !== undefined) {
-            elements.splice(
-              i + 1,
-              0,
-              <div key="display" className={displayStyle}>
-                {entity != null && <this.props.children entity={entity} />}
-              </div>,
-            );
-          }
-          return (
-            <div>
-              <div className={listStyle}>{elements}</div>
+interface EntityChooserProps<E extends IAbstractEntity>
+  extends DisabledReadonly {
+  entities: E[];
+  children: React.FunctionComponent<{ entity: E } & DisabledReadonly>;
+  entityLabel: (entity: E) => React.ReactNode;
+  customLabelStyle?: (entity: E) => string | undefined;
+  autoOpenFirst?: boolean;
+}
+
+export function EntityChooser<E extends IAbstractEntity>({
+  entities,
+  children: Children,
+  entityLabel,
+  customLabelStyle,
+  autoOpenFirst,
+  disabled,
+  readOnly,
+}: EntityChooserProps<E>) {
+  const [entity, setEntity] = React.useState<E>();
+
+  React.useEffect(() => {
+    setEntity(oldEntity => {
+      if (
+        autoOpenFirst &&
+        (oldEntity == null || !entities.map(e => e.id).includes(oldEntity.id))
+      ) {
+        return entities[0];
+      } else {
+        return oldEntity;
+      }
+    });
+  }, [autoOpenFirst, entities]);
+
+  return (
+    <div
+      className={cx(flex, flexRow, entityChooser, {
+        [halfOpacity]: disabled,
+      })}
+    >
+      <div className={cx(flex, flexColumn, labelList)}>
+        {entities.map(e => (
+          <div
+            key={e.id}
+            className={cx(flex, flexRow, labelContainer)}
+            onClick={() => {
+              if (!disabled) {
+                setEntity(oldEntity => {
+                  if (deepDifferent(e, oldEntity)) {
+                    return e;
+                  } else {
+                    return oldEntity;
+                  }
+                });
+              }
+            }}
+          >
+            <div
+              className={cx(
+                labelStyle(disabled),
+                classNameOrEmpty(customLabelStyle && customLabelStyle(e)),
+                {
+                  [activeLabel]: entity?.id === e.id,
+                },
+              )}
+            >
+              {entityLabel(e)}
             </div>
-          );
-        }}
-      </SizedDiv>
-    );
-  }
+            {/* <div className={labelArrow} /> */}
+          </div>
+        ))}
+      </div>
+      {entity != null && (
+        <div className={cx(flex, entityContainer, grow, justifyCenter)}>
+          {<Children entity={entity} disabled={disabled} readOnly={readOnly} />}
+        </div>
+      )}
+    </div>
+  );
 }

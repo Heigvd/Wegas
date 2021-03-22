@@ -1,54 +1,85 @@
 import * as React from 'react';
 import { css } from 'emotion';
 import Header from './Header';
-import TreeView from './Variable/VariableTree';
-import Editor from './EntityEditor';
-import PageDisplay from './Page/PageDisplay';
-import { TabLayout } from '../../Components/Tabs';
-import StateMachineEditor from './StateMachineEditor';
+import { DndLinearLayout } from './LinearTabLayout/LinearLayout';
+import { useStore } from '../../data/Stores/store';
+import { visitIndex } from '../../Helper/pages';
+import { PageLoader } from './Page/PageLoader';
+import { ComponentMap } from './LinearTabLayout/DnDTabLayout';
+import { themeVar } from '../../Components/Style/ThemeVars';
+import { State } from '../../data/Reducer/reducers';
+
+const StateMachineEditor = React.lazy(() => import('./StateMachineEditor'));
+const PageEditor = React.lazy(() => import('./Page/PageEditor'));
+const TreeView = React.lazy(() => import('./Variable/VariableTree'));
+const EntityEditor = React.lazy(() => import('./EntityEditor'));
+const FileBrowserWithMeta = React.lazy(
+  () => import('./FileBrowser/FileBrowser'),
+);
+const LibraryEditor = React.lazy(() => import('./ScriptEditors/LibraryEditor'));
+const LanguageEditor = React.lazy(() => import('./LanguageEditor'));
+const PlayLocal = React.lazy(() => import('./PlayLocal'));
+const PlayServer = React.lazy(() => import('./PlayServer'));
+const InstancesEditor = React.lazy(
+  () => import('./Variable/InstanceProperties'),
+);
+const ThemeEditor = React.lazy(
+  () => import('../../Components/Style/ThemeEditor'),
+);
+// const Tester = React.lazy(() => import('../../Testers/FlowchartTester'));
 
 const layout = css({
-  display: 'grid',
-  gridTemplateRows: 'auto 1fr',
-  height: '100%',
-  gridTemplateColumns: 'auto 1fr auto',
-  '& > div': {
-    boxSizing: 'border-box',
-    borderRight: '1px solid',
-  },
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100vh',
 });
 
-const fullWidth = css({ gridColumnEnd: 'span 3' });
+export const availableLayoutTabs = {
+  // Tester: <Tester />,
+  Variables: <TreeView />,
+  'State Machine': <StateMachineEditor />,
+  'Variable Properties': <EntityEditor />,
+  Files: <FileBrowserWithMeta />,
+  Scripts: <LibraryEditor />,
+  'Language Editor': <LanguageEditor />,
+  'Client Console': <PlayLocal />,
+  'Server Console': <PlayServer />,
+  'Instances Editor': <InstancesEditor />,
+  'Theme Editor': <ThemeEditor />,
+  'Page Editor': <PageEditor />,
+} as const;
 
-export default class AppLayout extends React.Component<
-  {},
-  { editable: boolean }
-> {
-  constructor(props: {}) {
-    super(props);
-    this.state = {
-      editable: false,
-    };
-  }
-  render() {
-    return (
-      <div className={layout}>
-        <div className={fullWidth}>
-          <Header />
-        </div>
-        <div>
-          <TreeView />
-        </div>
-        <div>
-          <TabLayout tabs={['Page', 'StateMachine']}>
-            <PageDisplay />
-            <StateMachineEditor />
-          </TabLayout>
-        </div>
-        <div>
-          <Editor />
-        </div>
-      </div>
-    );
-  }
+export type AvailableLayoutTab = keyof typeof availableLayoutTabs;
+
+export const mainLayoutId = 'MainEditorLayout';
+
+function scenaristPagesSelector(s: State) {
+  return s.pages.index
+    ? visitIndex(s.pages.index.root, item => item).filter(
+        item => item.scenaristPage,
+      )
+    : [];
+}
+
+export default function Layout() {
+  const scenaristPages: ComponentMap = useStore(scenaristPagesSelector).reduce(
+    (o, i) => ({ ...o, [i.name]: <PageLoader selectedPageId={i.id} /> }),
+    {},
+  );
+
+  return (
+    <div
+      className={
+        layout + ' ' + css({ fontFamily: themeVar.Common.others.TextFont2 })
+      }
+      id="WegasLayout"
+    >
+      <Header />
+      <DndLinearLayout
+        tabs={{ ...availableLayoutTabs, ...scenaristPages }}
+        initialLayout={[['Variables', 'Files'], ['Page Editor']]}
+        layoutId={mainLayoutId}
+      />
+    </div>
+  );
 }

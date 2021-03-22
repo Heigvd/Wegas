@@ -644,13 +644,11 @@
         display: block;
         position: relative;
         text-align: left;
-        margin: 32px 16px;
-        height: 64px;
-        padding: 8px 0px;
-        padding-left: 80px;
+        margin: 32px 40px 16px 40px;
+        height: 58px;
         background-image: URL('../images/logo_wegas.png');
         background-repeat: no-repeat;
-        background-size: 64px;
+        background-size: contain;
         color: $white;
     }
 
@@ -733,6 +731,10 @@
         max-width: 380px;
         border-radius: 6px;
         padding: 12px 32px;
+
+        #login.hidden {
+            display: none;
+        }
     }
     .view__password-form.form {
         padding: 16px;

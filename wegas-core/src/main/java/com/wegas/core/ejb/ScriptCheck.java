@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -14,11 +14,11 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.annotation.Resource;
-import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import javax.inject.Inject;
 import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
@@ -38,9 +38,9 @@ public class ScriptCheck {
     private static final Logger logger = LoggerFactory.getLogger(ScriptCheck.class);
     @Resource
     private UserTransaction utx;
-    @EJB
+    @Inject
     private RequestFacade requestFacade;
-    @EJB
+    @Inject
     private ScriptFacade scriptFacade;
     //private ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
 

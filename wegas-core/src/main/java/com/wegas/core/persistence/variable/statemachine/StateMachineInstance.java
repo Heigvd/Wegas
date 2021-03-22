@@ -1,38 +1,47 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.statemachine;
 
-import javax.persistence.*;
+import static ch.albasim.wegas.annotations.CommonView.FEATURE_LEVEL.ADVANCED;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.wegas.core.Helper;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.One;
 import com.wegas.editor.ValueGenerators.True;
-import static com.wegas.editor.View.CommonView.FEATURE_LEVEL.ADVANCED;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.ReadOnlyNumber;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.NumberView;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 
 /**
  *
  * @author Cyril Junod (cyril.junod at gmail.com)
  */
 @Entity
-@Table(name = "FSMinstance"/*, 
+@Table(name = "FSMinstance"/*,
         indexes = {
             @Index(columnList = "transitionHistory.statemachineinstance_id")
         }*/
@@ -43,6 +52,7 @@ import java.util.Map;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "TriggerInstance", value = StateMachineInstance.class)
 })
+@JsonIgnoreProperties("currentState")
 public class StateMachineInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
@@ -57,7 +67,8 @@ public class StateMachineInstance extends VariableInstance {
             view = @View(
                     label = "Current State id",
                     featureLevel = ADVANCED,
-                    value = ReadOnlyNumber.class
+                    readOnly = true,
+                    value = NumberView.class
             ))
     private Long currentStateId;
     /**
@@ -86,8 +97,7 @@ public class StateMachineInstance extends VariableInstance {
      */
     @JsonIgnore
     public AbstractState getCurrentState() {
-        final Map<Long, AbstractState> states = ((AbstractStateMachineDescriptor) this.findDescriptor()).getStates();
-        return states.get(this.currentStateId);
+        return ((AbstractStateMachineDescriptor) this.findDescriptor()).getState(this.currentStateId);
     }
 
     /**

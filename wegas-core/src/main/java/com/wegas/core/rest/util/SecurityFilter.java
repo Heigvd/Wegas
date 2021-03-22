@@ -1,18 +1,21 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
 
+import com.wegas.core.Helper;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ResourceInfo;
@@ -31,12 +34,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * Assert current user has all sufficient right to use the targeted REST
- * resource
+ * Assert current user has all sufficient right to use the targeted REST resource
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
 @Provider
+@RequestScoped // payara 3994 workaround (fixed in 193)
 public class SecurityFilter implements ContainerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityFilter.class);
@@ -70,15 +73,13 @@ public class SecurityFilter implements ContainerRequestFilter {
          */
         RequiresAuthentication authRequired = this.getAnnotation(RequiresAuthentication.class, runtimeClass, method);
 
-        if (authRequired != null) {
-            // Annotation found, assert subject is authenticated
-            if (!subject.isAuthenticated() && !subject.isRemembered()) {
-                logger.error("Access denied for non-authenticted users");
-                crc.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity("Subject is not logged in").build());
-            }
+        // if Annotation found, assert subject is authenticated
+        if (authRequired != null && !Helper.isLoggedIn(subject)) {
+            logger.error("Access denied for non-authenticted users");
+            crc.abortWith(Response.status(Response.Status.UNAUTHORIZED).entity("Subject is not logged in").build());
         }
-        /* 
-         * Check if specific roles are required 
+        /*
+         * Check if specific roles are required
          */
         RequiresRoles requiredRoles = this.getAnnotation(RequiresRoles.class, runtimeClass, method);
 
@@ -96,7 +97,7 @@ public class SecurityFilter implements ContainerRequestFilter {
             }
             if (!roleVerified) {
                 String msg = "Access denied. User doesn't have enough privilege Roles:"
-                        + listOfRoles + " to access this page.";
+                    + listOfRoles + " to access this page.";
                 logger.error("Access denied missing roles");
                 crc.abortWith(Response.status(Response.Status.FORBIDDEN).entity(msg).build());
             }
@@ -123,7 +124,7 @@ public class SecurityFilter implements ContainerRequestFilter {
             }
             if (!permitted) {
                 String msg = "Access denied. User doesn't have enough privilege Permissions:"
-                        + listOfPermissions + " to access this page.";
+                    + listOfPermissions + " to access this page.";
                 logger.error("Access denied: missing permissions");
                 crc.abortWith(Response.status(Response.Status.FORBIDDEN).entity(msg).build());
             }

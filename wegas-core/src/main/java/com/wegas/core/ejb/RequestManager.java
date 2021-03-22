@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -17,9 +17,17 @@ import com.wegas.core.exception.client.WegasAccessDenied;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.Broadcastable;
 import com.wegas.core.persistence.InstanceOwner;
 import com.wegas.core.persistence.WithPermission;
-import com.wegas.core.persistence.game.*;
+import com.wegas.core.persistence.game.DebugGame;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelContent;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiRealm;
 import com.wegas.core.security.ejb.AccountFacade;
@@ -30,21 +38,29 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.ActAsPlayer;
+import com.wegas.core.security.util.Sudoer;
 import com.wegas.core.security.util.WegasEntityPermission;
+import com.wegas.core.security.util.WegasIsTeamMate;
+import com.wegas.core.security.util.WegasIsTrainerForUser;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
-import jdk.nashorn.api.scripting.ScriptUtils;
-import jdk.nashorn.internal.runtime.ScriptObject;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.UnavailableSecurityManagerException;
-import org.apache.shiro.mgt.DefaultSecurityManager;
-import org.apache.shiro.realm.Realm;
-import org.apache.shiro.subject.SimplePrincipalCollection;
-import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.ThreadContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.RequestScoped;
@@ -53,13 +69,23 @@ import javax.inject.Named;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.script.ScriptContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import jdk.nashorn.api.scripting.ScriptUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.UnavailableSecurityManagerException;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.apache.shiro.realm.Realm;
+import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.ThreadContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -108,11 +134,10 @@ public class RequestManager implements RequestManagerI {
     }
 
     /*
-    @Resource
-    private TransactionSynchronizationRegistry txReg;
+     * @Resource private TransactionSynchronizationRegistry txReg;
      */
     @Inject
-    ConcurrentHelper concurrentHelper;
+    private ConcurrentHelper concurrentHelper;
 
     /**
      * GameModelFacde instance
@@ -150,15 +175,20 @@ public class RequestManager implements RequestManagerI {
     @Inject
     private AccountFacade accountFacade;
 
+    @Inject
+    private HttpServletRequest request;
+
     /**
      * RequestFacade instance
      */
     @Inject
     private RequestFacade requestFacade;
 
-
     @Inject
     private WebsocketFacade websocketFacade;
+
+    @Inject
+    private JPACacheHelper jpaCacheHelper;
 
     /**
      * SL4j Logger
@@ -176,9 +206,25 @@ public class RequestManager implements RequestManagerI {
     private Class view = Views.Public.class;
 
     /**
+     * Indicates whether the currentUser is a degraded admin
+     * <p>
+     * A degraded admin is an admin who execute request as a specific player. In that case, admin
+     * rights are degraded to players'trainer ones.
+     */
+    private boolean wasAdmin = false;
+
+    private ActAsPlayer actAsPlayer;
+
+    /**
      * The current player
      */
     private Player currentPlayer;
+
+    /**
+     * The current team
+     */
+    private Team currentTeam;
+
     /**
      * The current user
      */
@@ -187,6 +233,8 @@ public class RequestManager implements RequestManagerI {
      * Current shiro principal (i.e. accountId)
      */
     private Long currentPrincipal;
+
+    private Deque<Subject> previousSubjects = new LinkedList<>();
 
     /**
      * Request identifier
@@ -243,16 +291,20 @@ public class RequestManager implements RequestManagerI {
     private Long exceptionCounter = 0L;
 
     /**
+     * List of all updated gameModelContent
+     */
+    private List<GameModelContent> updatedGameModelContent = new ArrayList<>();
+
+    /**
      * Contains all updated entities
      */
-    private final Map<String, List<AbstractEntity>> updatedEntities = new HashMap<>();
-
-    private final Map<String, List<AbstractEntity>> justUpdatedEntities = new HashMap<>();
+    private final Set<AbstractEntity> updatedEntities = new HashSet<>();
+    private final Set<AbstractEntity> justUpdatedEntities = new HashSet<>();
 
     /**
      * List of entities which have been deleted during the request
      */
-    private final Map<String, List<AbstractEntity>> destroyedEntities = new HashMap<>();
+    private final Set<AbstractEntity> destroyedEntities = new HashSet<>();
 
     /**
      * Contains all permission already granted to the current user during the request
@@ -263,6 +315,11 @@ public class RequestManager implements RequestManagerI {
      * List of shiro permissions current user has at the begining of the request
      */
     private Collection<String> effectiveDBPermissions;
+
+    /**
+     * List of shiro permissions current user has at the begining of the request
+     */
+    private Collection<String> degradedDBPermissions;
 
     /**
      * List of roles current user is member of
@@ -289,14 +346,16 @@ public class RequestManager implements RequestManagerI {
      */
     private ScriptContext currentScriptContext = null;
 
+    private boolean clearCacheOnDestroy = false;
+
     /**
      * Internal value to pretty print logs
      */
     private static int logIndent = 0;
 
     /**
-     * Internal method to pretty print logs. Call logger.trace(msg), but add
-     * whitespaces at the begining of the line, according to current logLevel
+     * Internal method to pretty print logs. Call logger.trace(msg), but add whitespaces at the
+     * begining of the line, according to current logLevel
      *
      * @param msg  message to display
      * @param args message arguments
@@ -316,6 +375,12 @@ public class RequestManager implements RequestManagerI {
      * To count how many events have been thrown and how many have bean consumed
      */
     private final StateMachineCounter fsmCounter = new StateMachineCounter();
+
+    @Override
+    public String getBaseUrl() {
+        HttpServletRequest req = (HttpServletRequest) request;
+        return req.getRequestURL().toString().replace(req.getRequestURI(), req.getContextPath());
+    }
 
     /**
      * Get the current execution environment
@@ -348,8 +413,12 @@ public class RequestManager implements RequestManagerI {
      *
      * @param entities entities to register
      */
-    public void addUpdatedEntities(Map<String, List<AbstractEntity>> entities) {
+    public void addUpdatedEntities(Set<AbstractEntity> entities) {
         this.addEntities(entities, justUpdatedEntities);
+    }
+
+    public void addUpdatedEntity(AbstractEntity entity) {
+        this.addEntity(entity, updatedEntities);
     }
 
     /**
@@ -357,8 +426,18 @@ public class RequestManager implements RequestManagerI {
      *
      * @param entities the entities which have been destroyed
      */
-    public void addDestroyedEntities(Map<String, List<AbstractEntity>> entities) {
+    public void addDestroyedEntities(Set<AbstractEntity> entities) {
         this.addEntities(entities, destroyedEntities);
+    }
+
+    /**
+     *
+     * Register an entity as destroyed entity
+     *
+     * @param entity the entity which have been destroyed
+     */
+    public void addDestroyedEntity(AbstractEntity entity) {
+        this.addEntity(entity, destroyedEntities);
     }
 
     /**
@@ -367,45 +446,12 @@ public class RequestManager implements RequestManagerI {
      * @param entities  entities list mapped by their audience
      * @param container entities destination
      */
-    private void addEntities(Map<String, List<AbstractEntity>> entities,
-            Map<String, List<AbstractEntity>> container) {
+    private void addEntities(Set<AbstractEntity> entities, Set<AbstractEntity> container) {
         if (entities != null) {
-            for (Map.Entry<String, List<AbstractEntity>> entry : entities.entrySet()) {
-                this.addEntities(entry.getKey(), entry.getValue(), container);
+            for (AbstractEntity entity : entities) {
+                this.addEntity(entity, container);
             }
         }
-    }
-
-    /**
-     * Add entities to the container, using audience as container map key
-     *
-     * @param audience  entities audiences
-     * @param entities  entities to register
-     * @param container the container
-     */
-    private void addEntities(String audience, List<AbstractEntity> entities,
-            Map<String, List<AbstractEntity>> container) {
-        for (AbstractEntity entity : entities) {
-            this.addEntity(audience, entity, container);
-        }
-    }
-
-    /**
-     * Does the container contains the given entity?
-     *
-     * @param container the container to search in
-     * @param entity    the needle
-     *
-     * @return true if the entity has been found within the container
-     */
-    public boolean contains(Map<String, List<AbstractEntity>> container,
-            AbstractEntity entity) {
-        for (List<AbstractEntity> entities : container.values()) {
-            if (entities.contains(entity)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -414,53 +460,41 @@ public class RequestManager implements RequestManagerI {
      * @param container the container to remove the entity from
      * @param entity    entity to remove
      */
-    private void removeEntityFromContainer(Map<String, List<AbstractEntity>> container, AbstractEntity entity) {
-        for (List<AbstractEntity> entities : container.values()) {
-            if (entities.contains(entity)) {
-                logger.debug("remove {}", entity);
-                entities.remove(entity);
-            }
+    private void removeEntityFromContainer(Set<AbstractEntity> container, AbstractEntity entity) {
+        if (container.contains(entity)) {
+            logger.debug("remove {}", entity);
+            container.remove(entity);
         }
     }
 
     /**
      * Add entity within container, mapping entity with audience.
-     * <b>GENUINE HACK INSIDE</b>. make sure entity in not in both updated and
-     * destroyed containers:
+     * <b>GENUINE HACK INSIDE</b>. make sure entity in not in both updated and destroyed containers:
      * <ul>
-     * <li>When registering entity as a destroyed one, this method ensure entity
-     * is not registered as an updated one by removing it from updatedEntities
-     * container.</li>
-     * <li>This method don't do anything when registering an entity within
-     * updated container if this entity has already been registered
-     * in the destroyed one</li>
+     * <li>When registering entity as a destroyed one, this method ensure entity is not registered
+     * as an updated one by removing it from updatedEntities container.</li>
+     * <li>This method don't do anything when registering an entity within updated container if this
+     * entity has already been registered in the destroyed one</li>
      * </ul>
      *
-     * @param audience  entity audience
      * @param entity    the entity to register
      * @param container the container to register the entity in
      */
-    public void addEntity(String audience, AbstractEntity entity, Map<String, List<AbstractEntity>> container) {
+    public void addEntity(AbstractEntity entity, Set<AbstractEntity> container) {
 
         boolean add = true;
         if (container == destroyedEntities) {
             removeEntityFromContainer(updatedEntities, entity);
-        } else if (container == updatedEntities) {
-            if (contains(destroyedEntities, entity)) {
-                add = false;
-            }
+        } else if (container == updatedEntities && destroyedEntities.contains(entity)) {
+            add = false;
         }
 
         if (add) {
-            if (!container.containsKey(audience)) {
-                container.put(audience, new ArrayList<>());
-            }
             // make sure to add up to date entity
-            List<AbstractEntity> entities = container.get(audience);
-            if (entities.contains(entity)) {
-                entities.remove(entity);
+            if (container.contains(entity)) {
+                container.remove(entity);
             }
-            entities.add(entity);
+            container.add(entity);
         }
     }
 
@@ -473,20 +507,19 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Get the currentUser, based one the shiro login state.
-     * If shiro current principal does not equals {@link #currentPrincipal},
-     * reset all transient permissions
+     * Get the currentUser, based one the shiro login state. If shiro current principal does not
+     * equals {@link #currentPrincipal}, reset all transient permissions
      *
      * @return the user which is currently logged in
      */
     @Override
     public User getCurrentUser() {
-        final Subject subject = SecurityUtils.getSubject();
-        Long principal = (Long) subject.getPrincipal();
-        if (this.currentUser == null || currentPrincipal == null || !currentPrincipal.equals(principal)) {
+        if (this.currentUser == null || currentPrincipal == null) {
+            final Subject subject = SecurityUtils.getSubject();
+            Long principal = (Long) subject.getPrincipal();
             this.clearPermissions();
             try {
-                if (subject.isRemembered() || subject.isAuthenticated()) {
+                if (Helper.isLoggedIn(subject)) {
                     AbstractAccount account = accountFacade.find(principal);
                     if (account != null) {
                         this.currentUser = account.getUser();
@@ -507,7 +540,8 @@ public class RequestManager implements RequestManagerI {
                     this.currentUser = userFacade.find(this.currentUser.getId());
                     this.clearEffectivePermisssions();
                 }
-            } catch (NullPointerException npe) {
+            } catch (NullPointerException npe) {// NOPMD We don't know where NPE came from.
+                logger.warn("NPE in getCurrnetUser()");
                 // thrown when ran withoud EJBcontext
             }
             return this.currentUser;
@@ -520,9 +554,29 @@ public class RequestManager implements RequestManagerI {
         return this.currentUser;
     }
 
+    public ActAsPlayer actAsPlayer(Player player) {
+        if (actAsPlayer != null) {
+            if (actAsPlayer.getPlayer().equals(player)) {
+                actAsPlayer.inc();
+            } else {
+                throw WegasErrorMessage.error("One should not nest actAsPlayer");
+            }
+        } else {
+            this.actAsPlayer = new ActAsPlayer(this, player);
+            if (player != null) {
+                websocketFacade.touchOnlineUser(currentUser.getId(), player.getId());
+            }
+        }
+        return actAsPlayer;
+    }
+
+    public void releaseActAsPlayer() {
+        this.actAsPlayer = null;
+    }
+
     /**
-     * Set the currentPlayer. Reset the {@link #currentScriptContext} if the
-     * new currentPlayer is null or if it doesn't equal the previous one
+     * Set the currentPlayer. Reset the {@link #currentScriptContext} if the new currentPlayer is
+     * null or if it doesn't equal the previous one
      *
      * @param currentPlayer the currentPlayer to set
      */
@@ -531,6 +585,119 @@ public class RequestManager implements RequestManagerI {
             this.setCurrentScriptContext(null);
         }
         this.currentPlayer = currentPlayer != null ? (currentPlayer.getId() != null ? playerFacade.find(currentPlayer.getId()) : currentPlayer) : null;
+
+        /*
+         * When running requests as a player, one should never have more permissions than it needs
+         * Hence, we have to degrade permission to keep only those that are relevant to the player
+         * context
+         */
+        if (currentPlayer != null) {
+            if (wasAdmin || hasRole("Administrator")) {
+                // currentUser is an administrator
+                // drop all permissions and grant game model edit right only
+                this.wasAdmin = true;
+                Collection<String> roles = this.getEffectiveRoles();
+                roles.remove("Administrator");
+                if (!roles.contains("Scenarist")) {
+                    roles.add("Scenarist");
+                }
+                if (!roles.contains("Trainer")) {
+                    roles.add("Trainer");
+                }
+                //WegasPermission gmWriteRight = currentPlayer.getGameModel().getAssociatedWritePermission();
+                HashSet<String> degradedPerms = new HashSet<>();
+                degradedPerms.add("GameModel:*:gm" + currentPlayer.getGameModelId());
+                degradedPerms.add("Game:*:g" + currentPlayer.getGameId());
+
+                WegasPermission gmPerm = currentPlayer.getGameModel().getAssociatedWritePermission();
+                WegasPermission gPerm = currentPlayer.getGame().getAssociatedWritePermission();
+
+                // set & clear permissions in one shot:
+                this.degradedDBPermissions = degradedPerms;
+                this.grantedPermissions.clear();
+
+                this.grant(gmPerm);
+                this.grant(gPerm);
+            } else {
+                // filter effective DBpermissions
+
+                // currentUser is not an administrator
+                // filter all permission but ones related to the player context
+                String gId = "g" + currentPlayer.getGame().getId();
+                String gmId = "gm" + currentPlayer.getGameModel().getId();
+
+                if (this.effectiveDBPermissions == null) {
+                    this.degradedDBPermissions = null;
+                    getEffectiveDBPermissions();
+                }
+                // set & clear permissions in one shot:
+                this.degradedDBPermissions = this.effectiveDBPermissions.stream().filter(p -> {
+                    return p.endsWith(gId) || p.endsWith(gmId);
+                }).collect(Collectors.toSet());
+                this.grantedPermissions.clear();
+            }
+            // And make sure to set the current team
+            this.setCurrentTeam(currentPlayer.getTeam());
+            this.assertUpdateRight(currentPlayer);
+        } else {
+            this.setCurrentTeam(null);
+
+            // do not degrade permission any longer
+            if (this.degradedDBPermissions != null) {
+                this.degradedDBPermissions.clear();
+                this.degradedDBPermissions = null;
+            }
+
+            if (this.wasAdmin) {
+                // give admin membership back
+                this.wasAdmin = false;
+                this.getEffectiveRoles().add("Administrator");
+            }
+        }
+    }
+
+    /**
+     * Get the current team. When a currentPlayer is available, the currentTeam always equals the
+     * currentPlayer.getTeam().
+     * <p>
+     * There is at least one case a currentTeam is set without any currentPlayer : on team creation
+     *
+     * @return
+     */
+    public Team getCurrentTeam() {
+        return this.currentTeam;
+    }
+
+    /**
+     * set the current team.
+     *
+     * @param team
+     */
+    public void setCurrentTeam(Team team) {
+        if (team != null) {
+            User user = getCurrentUser();
+
+            // if currentPlayer is set, make sure it is member of the new current team.
+            // set to null otherwise
+            if (currentPlayer != null && !team.equals(currentPlayer.getTeam())) {
+                // current player is not a member of the current team
+                this.setPlayer(null);
+                // warning: setPlayer(null) will also set currentTeam to null
+            }
+
+            // if no current user, try to find one
+            if (currentPlayer == null) {
+                Player newPlayer = playerFacade.findPlayerInTeam(team.getId(), user.getId());
+                this.setPlayer(newPlayer);
+            }
+
+        }
+        this.currentTeam = team;
+
+        if (this.currentTeam != null) {
+            // if current Team is defined, make sure current user has edit right
+            this.assertUpdateRight(team);
+        }
     }
 
     /**
@@ -581,6 +748,80 @@ public class RequestManager implements RequestManagerI {
         this.updatedEntities.clear();
     }
 
+    private void removeAll(Map<String, List<AbstractEntity>> container,
+        Map<String, List<AbstractEntity>> toRemove) {
+        if (toRemove != null) {
+            for (Entry<String, List<AbstractEntity>> entry : toRemove.entrySet()) {
+                String audience = entry.getKey();
+
+                List<AbstractEntity> get = container.get(audience);
+
+                if (get != null) {
+                    get.removeAll(entry.getValue());
+                }
+            }
+        }
+    }
+
+    private void addAll(Map<String, List<AbstractEntity>> container,
+        Map<String, List<AbstractEntity>> toAdd) {
+        if (toAdd != null) {
+            for (Entry<String, List<AbstractEntity>> entry : toAdd.entrySet()) {
+                String audience = entry.getKey();
+                if (!container.containsKey(audience)) {
+                    container.put(audience, new LinkedList<>());
+                }
+                container.get(audience).addAll(entry.getValue());
+            }
+        }
+    }
+
+    private Map<String, List<AbstractEntity>> mapEntities(Set<AbstractEntity> entities) {
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+
+        for (AbstractEntity entity : entities) {
+            if (entity instanceof Broadcastable) {
+                addAll(map, ((Broadcastable) entity).getEntities());
+            }
+        }
+
+        for (AbstractEntity entity : destroyedEntities) {
+            if (entity instanceof Broadcastable && (entity instanceof VariableDescriptor
+                || entity instanceof VariableInstance
+                || entity instanceof GameModel
+                || entity instanceof Game
+                || entity instanceof Player
+                || entity instanceof Team)) {
+                removeAll(map, ((Broadcastable) entity).getEntities());
+            }
+        }
+        return map;
+
+    }
+
+    public Map<String, List<AbstractEntity>> getMappedJustUpdatedEntities() {
+        return mapEntities(justUpdatedEntities);
+    }
+
+    public Map<String, List<AbstractEntity>> getMappedUpdatedEntities() {
+        return mapEntities(updatedEntities);
+    }
+
+    public Map<String, List<AbstractEntity>> getMappedDestroyedEntities() {
+        Map<String, List<AbstractEntity>> map = new HashMap<>();
+
+        for (AbstractEntity entity : destroyedEntities) {
+            if (entity instanceof Broadcastable
+                && (entity instanceof VariableDescriptor
+                || entity instanceof VariableInstance
+                || entity instanceof Game
+                || entity instanceof GameModel)) {
+                addAll(map, ((Broadcastable) entity).getEntities());
+            }
+        }
+        return map;
+    }
+
     /**
      *
      */
@@ -590,17 +831,27 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * @return entities which have just been updated, mapped by their owner
+     * @return entities which have just been updated
      */
-    public Map<String, List<AbstractEntity>> getUpdatedEntities() {
+    public Set<AbstractEntity> getUpdatedEntities() {
         return updatedEntities;
+    }
+
+    public void addUpdatedGameModelContent(GameModelContent gmContent) {
+        if (gmContent != null && !updatedGameModelContent.contains(gmContent)) {
+            updatedGameModelContent.add(gmContent);
+        }
+    }
+
+    public List<GameModelContent> getUpdatedGameModelContent() {
+        return updatedGameModelContent;
     }
 
     /**
      * @return
      */
-    public Map<String, List<AbstractEntity>> getAllUpdatedEntities() {
-        Map<String, List<AbstractEntity>> all = new HashMap<>();
+    public Set<AbstractEntity> getAllUpdatedEntities() {
+        Set<AbstractEntity> all = new HashSet<>();
         this.addEntities(updatedEntities, all);
         this.addEntities(justUpdatedEntities, all);
         return all;
@@ -609,7 +860,7 @@ public class RequestManager implements RequestManagerI {
     /**
      * @return
      */
-    public Map<String, List<AbstractEntity>> getJustUpdatedEntities() {
+    public Set<AbstractEntity> getJustUpdatedEntities() {
         return justUpdatedEntities;
     }
 
@@ -626,7 +877,7 @@ public class RequestManager implements RequestManagerI {
      *
      * @return the destroyedEntites container
      */
-    public Map<String, List<AbstractEntity>> getDestroyedEntities() {
+    public Set<AbstractEntity> getDestroyedEntities() {
         return destroyedEntities;
     }
 
@@ -670,7 +921,7 @@ public class RequestManager implements RequestManagerI {
     public void sendCustomEvent(String type, Object payload) {
         // @hack check payload type against "jdk.nashorn.internal"
         if (payload.getClass().getName().startsWith("jdk.nashorn.internal")) {
-            this.addEvent(new CustomEvent(type, ScriptUtils.wrap((ScriptObject) payload)));
+            this.addEvent(new CustomEvent(type, ScriptUtils.wrap(payload)));
         } else {
             this.addEvent(new CustomEvent(type, payload));
         }
@@ -682,9 +933,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * how many exception have been registered ?
-     * it number of event within {@link #events} which are instanceof
-     * ExceptionEvent
+     * how many exception have been registered ? it number of event within {@link #events} which are
+     * instanceof ExceptionEvent
      *
      * @return exception count
      */
@@ -765,8 +1015,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Return effective audience to use. It means using "internal" if the given
-     * audien is null or empty
+     * Return effective audience to use. It means using "internal" if the given audien is null or
+     * empty
      *
      * @param audience audience
      *
@@ -996,12 +1246,23 @@ public class RequestManager implements RequestManagerI {
             currentTeam = currentPlayer.getTeam();
         }
 
-        String info = "[" + (currentUser != null ? currentUser.getId() : "anonymous") + "::"
-                + (currentPlayer != null ? currentPlayer.getId() : "n/a") + "::"
-                + (currentTeam != null ? currentTeam.getId() : "n/a") + "]";
+        String info = "[u:" + (currentUser != null ? currentUser.getId() : "anonymous") + "::p:"
+            + (currentPlayer != null ? currentPlayer.getId() : "n/a") + "::t:"
+            + (currentTeam != null ? currentTeam.getId() : "n/a") + "]";
 
-        RequestManager.logger.info("Request [{}] \"{} {}\" for {} processed in {} ms ( processing: {}; management: {}, propagation: {}, serialisation: {}) => {}",
-                this.requestId, this.getMethod(), this.getPath(), info, totalDuration, processingDuration, managementDuration, propagationDuration, serialisationDuration, this.status);
+        Level level = Level.INFO;
+        if (this.status != null && this.status.getStatusCode() >= 400) {
+            level = Level.ERROR;
+        }
+        if (requestId == null) {
+            Helper.log(logger, level, "Internal Request for {} processed in {} ms ", info, totalDuration);
+        } else {
+            Helper.log(logger, level,
+                "Request [{}] \"{} {}\" for {} processed in {} ms ( processing: {}; management: {}, propagation: {}, serialisation: {}) => {}",
+                this.requestId, this.getMethod(), this.getPath(), info,
+                totalDuration, processingDuration, managementDuration, propagationDuration, serialisationDuration,
+                this.status);
+        }
     }
 
     /**
@@ -1020,8 +1281,40 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Lifecycle callback. Release all locks after the request and log the
-     * request summary
+     * flush all pending changes in db
+     */
+    public void flush() {
+        this.getEntityManager().flush();
+    }
+
+    /**
+     *
+     */
+    public void flushAndClearCaches() {
+        // flush all changes in db, but do not update the 2nd level cache
+        this.getEntityManager().flush();
+        // clear the first level cache
+        this.getEntityManager().clear();
+
+        /**
+         * At this point, just flushed entities are outdated in the 2nd level cache We MUST evict
+         * them all
+         */
+        jpaCacheHelper.evictUpdatedEntitiesLocalOnly();
+
+        /**
+         * Moreover, cache synchronisation will fail and others instances 2nd level cache will be
+         * outdated too Ask to requestManager to clear them too at the end of the request
+         */
+        this.pleaseClearCacheAtCompletion();
+    }
+
+    private void pleaseClearCacheAtCompletion() {
+        this.clearCacheOnDestroy = true;
+    }
+
+    /**
+     * Lifecycle callback. Release all locks after the request and log the request summary
      */
     @PreDestroy
     public void preDestroy() {
@@ -1035,7 +1328,8 @@ public class RequestManager implements RequestManagerI {
         }
 
         if (currentUser != null) {
-            websocketFacade.touchOnlineUser(currentUser.getId());
+            websocketFacade.touchOnlineUser(currentUser.getId(),
+                currentPlayer != null ? currentPlayer.getId() : null);
         }
 
         if (this.currentScriptContext != null) {
@@ -1046,6 +1340,11 @@ public class RequestManager implements RequestManagerI {
         this.logRequest();
 
         //this.getEntityManager().flush();
+        if (clearCacheOnDestroy) {
+            // ask each instances to clear 2nd level cache
+            jpaCacheHelper.evictUpdatedEntities();
+        }
+
         this.clear();
     }
 
@@ -1083,9 +1382,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /*
-     ---------------------------------------------------------------------------
-     | Security
-     ---------------------------------------------------------------------------
+     * --------------------------------------------------------------------------- | Security
+     * ---------------------------------------------------------------------------
      */
     /**
      * Clear all granted wegas permissions and clear effective roles/DBPermissions
@@ -1095,6 +1393,22 @@ public class RequestManager implements RequestManagerI {
         log("*********************************************************");
         this.grantedPermissions.clear();
         this.clearEffectivePermisssions();
+    }
+
+    public void logout() {
+        this.logout(SecurityUtils.getSubject());
+    }
+
+    public void logout(Subject subject) {
+        subject.logout();
+        this.setPlayer(null);
+        this.clearCurrents();
+    }
+
+    public void clearCurrents() {
+        this.currentUser = null;
+        this.currentPrincipal = null;
+        this.clearPermissions();
     }
 
     /**
@@ -1111,6 +1425,11 @@ public class RequestManager implements RequestManagerI {
             this.effectiveDBPermissions.clear();
             this.effectiveDBPermissions = null;
         }
+
+        if (this.degradedDBPermissions != null) {
+            this.degradedDBPermissions.clear();
+            this.degradedDBPermissions = null;
+        }
     }
 
     /**
@@ -1122,7 +1441,7 @@ public class RequestManager implements RequestManagerI {
         if (this.effectiveRoles == null) {
             User user = this.getCurrentUser();
             effectiveRoles = new HashSet<>();
-            //for (String p : userFacade.findRoles_native(user)) {
+            //for (String p : userFacade.findRolesNative(user)) {
             if (user != null) {
                 for (Role p : userFacade.findRolesTransactional(user.getId())) {
                     effectiveRoles.add(p.getName());
@@ -1134,29 +1453,35 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * get all shiro permission which were associated to the currentUser before the beginning of this request
+     * get all shiro permission which were associated to the currentUser before the beginning of
+     * this request
      *
      * @return list of permission the user has for sure (fully persisted ones)
      */
     public Collection<String> getEffectiveDBPermissions() {
-        if (this.effectiveDBPermissions == null) {
-            User user = this.getCurrentUser();
-            effectiveDBPermissions = new HashSet<>();
-            if (user != null) {
-                for (Permission p : userFacade.findAllUserPermissionsTransactional(user.getId())) {
-                    effectiveDBPermissions.add(p.getValue());
+        if (this.degradedDBPermissions != null) {
+            return degradedDBPermissions;
+        } else {
+            if (this.effectiveDBPermissions == null) {
+                User user = this.getCurrentUser();
+                effectiveDBPermissions = new HashSet<>();
+                if (user != null) {
+                    for (Permission p : userFacade.findAllUserPermissionsTransactional(user.getId())) {
+                        effectiveDBPermissions.add(p.getValue());
+                    }
                 }
             }
-        }
 
-        return effectiveDBPermissions;
+            return effectiveDBPermissions;
+        }
     }
 
     /**
      * {@inheritDoc }
      */
     @Override
-    public boolean hasRole(String roleName) {
+    public boolean hasRole(String roleName
+    ) {
         return this.getEffectiveRoles().contains(roleName);
     }
 
@@ -1172,8 +1497,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * Replacement method for {@link Subject#isPermitted(java.lang.String)}
-     * This method is much faster than shiro one...
+     * Replacement method for {@link Subject#isPermitted(java.lang.String)} This method is much
+     * faster than shiro one...
      *
      * @param permission
      *
@@ -1187,12 +1512,12 @@ public class RequestManager implements RequestManagerI {
 
             for (String p : perms) {
                 String[] split = p.split(":");
-                if (split.length == 3) {
-                    if (split[0].equals(pSplit[0])
-                            && (split[1].equals("*") || split[1].contains(pSplit[1])) // Not so happy with "contains" -> DO a f*ckin good regex to handle all cases
-                            && (split[2].equals("*") || split[2].equals(pSplit[2]))) {
-                        return true;
-                    }
+                if (split.length == 3
+                    // todo: Not so happy with those "contains" -> DO a f*ckin good regex to handle all cases
+                    && split[0].equals(pSplit[0])
+                    && (split[1].equals("*") || split[1].contains(pSplit[1]))
+                    && (split[2].equals("*") || split[2].equals(pSplit[2]))) {
+                    return true;
 
                 }
             }
@@ -1254,28 +1579,31 @@ public class RequestManager implements RequestManagerI {
             }
         } else {
             return !(game.isPersisted() || gameFacade.isPersisted(game.getId())) // game is a new one (only exists wihin this very transaction)
-                    || this.hasDirectGameEditPermission(game) //has edit right on  the game
-                    || this.hasDirectGameModelEditPermission(game.getGameModel()) // or edit right on the game model
-                    || (!superPermission
-                    && ( // OR if no super permission is required. either: 
-                    game.getAccess().equals(Game.GameAccess.OPEN) // the game is open and hence, must be readable to everyone
-                    || playerFacade.isInGame(game.getId(), this.getCurrentUser().getId()) // current user owns one player in the game
-                    ));
+                || this.hasDirectGameEditPermission(game) //has edit right on  the game
+                || this.hasDirectGameModelEditPermission(game.getGameModel()) // or edit right on the game model
+                || (!superPermission
+                && ( // OR if no super permission is required. either:
+                game.getAccess().equals(Game.GameAccess.OPEN) // the game is open and hence, must be readable to everyone
+                || playerFacade.isInGame(game.getId(), this.getCurrentUser().getId()) // current user owns one player in the game
+                ));
         }
     }
 
     /**
-     * Check if the currentUser has permission to read or write the given gameModel.
-     * A superPermission (write) is permitted if <ul>
+     * Check if the currentUser has permission to read or write the given gameModel. A
+     * superPermission (write) is permitted if <ul>
      * <li>The game model is not yet persisted</li>
      * <li>OR shiro EDIT permission on the gameModel is permitted</li>
-     * <li>OR the gameModel is a {@link GameModel.Status#PLAY} one and currentUser has superPermission on the underlying game</li>
+     * <li>OR the gameModel is a {@link GameModel.Status#PLAY} one and currentUser has
+     * superPermission on the underlying game</li>
      * </ul>
      * <p/>
      * A "normal" (readonly) permission is permitted if <ul>
      * <li>any of the superPermission condition</li>
-     * <li>OR the gameModel is a {@link GameModel.Status#PLAY} one and currentUser has read on the underlying game</li>
-     * <li>OR the currentUser is a trainer/scenarist and has shiro Instantiate or Duplicate permission</li>
+     * <li>OR the gameModel is a {@link GameModel.Status#PLAY} one and currentUser has read on the
+     * underlying game</li>
+     * <li>OR the currentUser is a trainer/scenarist and has shiro Instantiate or Duplicate
+     * permission</li>
      * <li>OR the currentUser has shiro View permission</li>
      * </ul>
      *
@@ -1286,7 +1614,9 @@ public class RequestManager implements RequestManagerI {
      */
     private boolean hasGameModelPermission(GameModel gameModel, WegasEntityPermission thePerm) {
         if (!(gameModel.isPersisted() || gameModelFacade.isPersisted(gameModel.getId())) // not yet persisted means the gameModel is being created right kown
-                || hasDirectGameModelEditPermission(gameModel)) {
+            || hasDirectGameModelEditPermission(gameModel)) {
+            return true;
+        } else if (gameModel.isReference() && hasGameModelPermission(gameModel.getBasedOn(), thePerm)) {
             return true;
         } else if (gameModel.isPlay()) {
             /**
@@ -1294,7 +1624,9 @@ public class RequestManager implements RequestManagerI {
              */
             for (Game game : gameModel.getGames()) {
                 // has permission to at least on game of the game model ?
-                if (this.hasGamePermission(game, thePerm.getLevel() == WegasEntityPermission.Level.READ ? false : true)) {
+                if (game instanceof DebugGame == false
+                    && // very old gamemodel owns several games : in this case ignore debug one
+                    this.hasGamePermission(game, (thePerm.getLevel() != WegasEntityPermission.Level.READ))) {
                     return true;
                 }
             }
@@ -1306,9 +1638,9 @@ public class RequestManager implements RequestManagerI {
             long id = gameModel.getId();
             if (thePerm.getLevel() == WegasEntityPermission.Level.READ) {
                 if ((this.hasRole("Trainer") || this.hasRole("Scenarist"))
-                        && (this.isPermitted("GameModel:Instantiate:gm" + id)
-                        || this.isPermitted("GameModel:Duplicate:gm" + id)
-                        || this.isPermitted("GameModel:Translate-:gm" + id))) {
+                    && (this.isPermitted("GameModel:Instantiate:gm" + id)
+                    || this.isPermitted("GameModel:Duplicate:gm" + id)
+                    || this.isPermitted("GameModel:Translate-:gm" + id))) {
                     //For scenarist and trainer, instantiate and duplicate means read
                     return true;
                 }
@@ -1316,7 +1648,7 @@ public class RequestManager implements RequestManagerI {
                 return this.isPermitted("GameModel:View:gm" + id);
             } else if (thePerm.getLevel() == WegasEntityPermission.Level.TRANSLATE) {
                 if ((this.hasRole("Trainer") || this.hasRole("Scenarist"))
-                        && (this.isPermitted("GameModel:Translate-" + thePerm.getPayload() + ":gm" + id))) {
+                    && (this.isPermitted("GameModel:Translate-" + thePerm.getPayload() + ":gm" + id))) {
                     return true;
                 }
                 return false;
@@ -1343,21 +1675,21 @@ public class RequestManager implements RequestManagerI {
                 return this.hasGameModelPermission(gameModel, perm);
             case GAME:
                 Game game = gameFacade.find(perm.getId());
-                return this.hasGamePermission(game, perm.getLevel() == WegasEntityPermission.Level.WRITE) 
-                        || this.hasGameModelTranslateRight(game.getGameModel());
+                return this.hasGamePermission(game, perm.getLevel() == WegasEntityPermission.Level.WRITE)
+                    || this.hasGameModelTranslateRight(game.getGameModel());
             case TEAM:
                 Team team = teamFacade.find(perm.getId());
                 return team != null && ((currentUser != null && (playerFacade.isInTeam(team.getId(), currentUser.getId()) // Current logged User is linked to a player who's member of the team
-                        || currentUser.equals(team.getCreatedBy()) // or current user is the team creator
-                        )
-                        || this.hasGamePermission(team.getGame(), perm.getLevel() == WegasEntityPermission.Level.WRITE)) // or read (or write for superP) right one the game
-                        || this.hasGameModelTranslateRight(team.getParentGameModel()));
+                    || currentUser.equals(team.getCreatedBy()) // or current user is the team creator
+                    )
+                    || this.hasGamePermission(team.getGame(), perm.getLevel() == WegasEntityPermission.Level.WRITE)) // or read (or write for superP) right one the game
+                    || this.hasGameModelTranslateRight(team.getParentGameModel()));
             case PLAYER:
                 Player player = playerFacade.find(perm.getId());
                 // Current player belongs to current user || current user is the teacher or scenarist (test user)
                 return player != null && ((currentUser != null && currentUser.equals(player.getUser()))
-                        || this.hasGamePermission(player.getGame(), perm.getLevel() == WegasEntityPermission.Level.WRITE)
-                        || this.hasGameModelTranslateRight(player.getGameModel()));
+                    || this.hasGamePermission(player.getGame(), perm.getLevel() == WegasEntityPermission.Level.WRITE)
+                    || this.hasGameModelTranslateRight(player.getGameModel()));
             case USER:
                 User find = userFacade.find(perm.getId());
                 return currentUser != null && currentUser.equals(find);
@@ -1378,6 +1710,89 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
+     * Whether the current user has already been granted a Game Write permission for any game in
+     * which the given user act as player
+     *
+     * @param userId
+     *
+     * @return
+     */
+    private boolean hasAlreadyGrantedGameWritePermissionForUser(Long userId) {
+        TypedQuery<Long> query = getEntityManager().createNamedQuery("Player.findGameIds", Long.class);
+        query.setParameter("userId", userId);
+
+        return query.getResultList().stream()
+            .map(gameId -> Game.getAssociatedWritePermission(gameId))
+            .filter(p -> grantedPermissions.contains(p))
+            .findFirst().isPresent();
+    }
+
+    /**
+     *
+     * @param wegasIsTeamMate
+     *
+     * @return
+     */
+    private boolean isTeamMate(WegasIsTeamMate wegasIsTeamMate) {
+        Long mateId = wegasIsTeamMate.getUserId();
+
+        Player self = getPlayer();
+        if (getPlayer() != null) {
+
+            if (wasAdmin) {
+                // wasAdmin indicates current context is based on degraded permissions
+                // in that case, the default Player.IsUserTeamMateOfPlayer will fail
+                // a custom check must be done
+                return hasAlreadyGrantedGameWritePermissionForUser(wegasIsTeamMate.getUserId());
+            }
+
+            Query query = getEntityManager().createNamedQuery("Player.isUserTeamMateOfPlayer");
+
+            query.setParameter(1, self.getId());
+            query.setParameter(2, mateId);
+
+            List results = query.getResultList();
+
+            return !results.isEmpty();
+        } else {
+            logger.error("NO CURRENT PLAYER IN CONTEXT!");
+            return false;
+        }
+    }
+
+    /**
+     * Is the given user member of a game leads by the currentUser ?
+     *
+     * @param perm permission to check
+     *
+     * @return true is the currentUser has access to the user
+     */
+    private boolean isTrainerForUser(WegasIsTrainerForUser perm) {
+        User self = this.getCurrentUser();
+        if (self != null) {
+            if (wasAdmin) {
+                // wasAdmin indicates current context is based on degraded permissions
+                // in that case, the default Player.IsTrainerForUser will fail
+                // a custom check must be done
+                return hasAlreadyGrantedGameWritePermissionForUser(perm.getUserId());
+            }
+
+            Long userId = perm.getUserId();
+
+            Query query = getEntityManager().createNamedQuery("Player.IsTrainerForUser");
+
+            query.setParameter(1, userId);
+            query.setParameter(2, self.getId());
+
+            List results = query.getResultList();
+
+            return !results.isEmpty();
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Returns {@code true} if the currentUser owns the permission
      *
      * @param permission permission to check
@@ -1393,8 +1808,11 @@ public class RequestManager implements RequestManagerI {
             } else {
 
                 this.getCurrentUser();
-                if (hasRole("Administrator") || permission instanceof WegasMembership && this.isMemberOf((WegasMembership) permission)
-                        || permission instanceof WegasEntityPermission && this.hasEntityPermission((WegasEntityPermission) permission)) {
+                if ((currentPlayer == null && hasRole("Administrator"))
+                    || permission instanceof WegasMembership && this.isMemberOf((WegasMembership) permission)
+                    || permission instanceof WegasIsTeamMate && this.isTeamMate((WegasIsTeamMate) permission)
+                    || permission instanceof WegasIsTrainerForUser && isTrainerForUser((WegasIsTrainerForUser) permission)
+                    || permission instanceof WegasEntityPermission && this.hasEntityPermission((WegasEntityPermission) permission)) {
                     log(" >>> GRANT: {}", permission);
                     this.grant(permission);
                     return true;
@@ -1407,14 +1825,15 @@ public class RequestManager implements RequestManagerI {
         }
     }
 
-    /* private */ public void grant(WegasPermission perm) {
+    /* package */ public void grant(WegasPermission perm) {
         this.grantedPermissions.add(perm);
     }
 
     /**
      * check if currentUser has at least one of the permission in permissions.
      *
-     * @param permissions list of permissions, null means no permission required, empty list means forbidden
+     * @param permissions list of permissions, null means no permission required, empty list means
+     *                    forbidden
      *
      * @return truc if at least one permission from the list is permitted
      */
@@ -1422,8 +1841,8 @@ public class RequestManager implements RequestManagerI {
         // null means no permission required
         if (permissions != null) {
             /*
-             * not null value means at least one permission from the list.
-             * Hence, empty string "" means forbidden, even for admin
+             * not null value means at least one permission from the list. Hence, empty string ""
+             * means forbidden, even for admin
              */
             for (WegasPermission perm : permissions) {
                 if (this.hasPermission(perm)) {
@@ -1439,18 +1858,20 @@ public class RequestManager implements RequestManagerI {
     /**
      * Assert currentUser has at least one of the permission in permissions.
      *
-     * @param permissions list of permissions, null means no permission required, empty list means forbidden
+     * @param permissions list of permissions, null means no permission required, empty list means
+     *                    forbidden
      * @param type        some string for logging purpose
      * @param entity      entity permissions are relatred to (logging purpose only)
      *
-     * @throws WegasAccessDenied permissions is not null and no permission in permissions is permitted
+     * @throws WegasAccessDenied permissions is not null and no permission in permissions is
+     *                           permitted
      */
-    private void assertUserHasPermission(Collection<WegasPermission> permissions, String type, WithPermission entity) throws WegasAccessDenied {
+    public void assertUserHasPermission(Collection<WegasPermission> permissions, String type, WithPermission entity) throws WegasAccessDenied {
         log("HAS  PERMISSION: {} / {} / {}", type, permissions, entity);
         logIndent++;
         if (!hasAnyPermission(permissions)) {
             String msg = type + " Permission Denied (" + permissions + ") for user " + this.getCurrentUser() + " on entity " + entity;
-            Helper.printWegasStackTrace(new Exception(msg));
+            //Helper.printWegasStackTrace(new Exception(msg));
             log(msg);
             throw new WegasAccessDenied(entity, type, msg, this.getCurrentUser());
         }
@@ -1591,9 +2012,9 @@ public class RequestManager implements RequestManagerI {
     public boolean canRestoreGameModel(final GameModel gameModel) {
         String id = "gm" + gameModel.getId();
         return this.isPermitted("GameModel:View:" + id)
-                || this.isPermitted("GameModel:Edit" + id)
-                || this.isPermitted("GameModel:Instantiate:" + id)
-                || this.isPermitted("GameModel:Duplicate:" + id);
+            || this.isPermitted("GameModel:Edit" + id)
+            || this.isPermitted("GameModel:Instantiate:" + id)
+            || this.isPermitted("GameModel:Duplicate:" + id);
     }
 
     /**
@@ -1633,7 +2054,8 @@ public class RequestManager implements RequestManagerI {
     }
 
     /**
-     * has the currentUser the right to delete (ie move to BIN, empty from the bin) the given gameModel
+     * has the currentUser the right to delete (ie move to BIN, empty from the bin) the given
+     * gameModel
      *
      * @param gameModel the gameModel the user want to move to the bin
      *
@@ -1653,19 +2075,19 @@ public class RequestManager implements RequestManagerI {
      */
     public boolean hasChannelPermission(String channel) {
         if (channel != null) {
-            Pattern p = Pattern.compile("^(private-)*([a-zA-Z]*)-([a-zA-Z0-9]*)$");
+            Pattern p = Pattern.compile("^((presence|private)-)([a-zA-Z]*)-([a-zA-Z0-9]*)$");
 
             Matcher m = p.matcher(channel);
             if (m.find()) {
-                if (m.group(2).equals("Role")) {
+                if (m.group(3).equals("Role")) {
                     // e.g. private-Role-Administrator
-                    return this.isMemberOf(new WegasMembership(m.group(3)));
+                    return this.isMemberOf(new WegasMembership(m.group(4)));
                 } else {
                     return this.hasEntityPermission(
-                            new WegasEntityPermission(
-                                    Long.parseLong(m.group(3)),
-                                    WegasEntityPermission.Level.READ,
-                                    WegasEntityPermission.EntityType.valueOf(m.group(2).toUpperCase())));
+                        new WegasEntityPermission(
+                            Long.parseLong(m.group(4)),
+                            WegasEntityPermission.Level.READ,
+                            WegasEntityPermission.EntityType.valueOf(m.group(3).toUpperCase())));
                 }
             }
         }
@@ -1675,7 +2097,7 @@ public class RequestManager implements RequestManagerI {
 
     /*
      * Assert the current user have write right on the game
-
+     *
      * @throw WegasAccessDenied
      */
     public void assertGameTrainer(final Game game) {
@@ -1728,54 +2150,95 @@ public class RequestManager implements RequestManagerI {
         return this.su(1l);
     }
 
-    /**
-     * Log-in with a different account
-     *
-     * @param accountId account id to login as
-     *
-     * @return new currentUser
-     */
-    public User su(Long accountId) {
-        try {
-            Subject subject = SecurityUtils.getSubject();
+    public Sudoer sudoer() {
+        return new Sudoer(this);
+    }
 
-            if (subject.getPrincipal() != null) {
-                logger.info("SU: User {} SU to {}", subject.getPrincipal(), accountId);
-                //if (this.isAdmin()) {
+    /**
+     * Current subject runAs another user. Effect is platform wide. It will impact all requests made
+     * by the first subject until it explicitly logout.
+     *
+     * @see #su(java.lang.Long) for a request scope version
+     * @return
+     */
+    public User runAs(Long accountId) {
+        Subject subject = SecurityUtils.getSubject();
+
+        if (subject.getPrincipal() != null) {
+            logger.info("RunAs: User {} RunAs {}", subject.getPrincipal(), accountId);
+            if (this.isAdmin()) {
                 // The subject exists and is an authenticated admin
                 // -> Shiro runAs
                 //subject.checkRole("Administrator");
                 if (subject.isRunAs()) {
                     subject.releaseRunAs();
                 }
+
                 SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
+
                 subject.runAs(newSubject);
-                return this.getCurrentUser();
-                //} else {
-                //    throw WegasErrorMessage.error("Su is forbidden !");
-                //}
+                this.clearCurrents();
             }
-        } catch (UnavailableSecurityManagerException | IllegalStateException | NullPointerException ex) {
-            // runAs faild
-            Helper.printWegasStackTrace(ex);
+        }
+        return this.getCurrentUser();
+    }
+
+    public User releaseRunAs() {
+        Subject subject = SecurityUtils.getSubject();
+
+        if (subject.isRunAs()) {
+            logger.info("RunAs-Release: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
+            subject.releaseRunAs();
+            this.clearCurrents();
         }
 
-        // The subject does not exists -> create from strach and bind
-        Collection<Realm> realms = new ArrayList<>();
-        realms.add(new JpaRealm());
-        realms.add(new AaiRealm());
-        realms.add(new GuestRealm());
+        return this.getCurrentUser();
+    }
 
-        SecurityUtils.setSecurityManager(new DefaultSecurityManager(realms));
+    /**
+     * Switch to another account. This is scoped to the current request only.
+     *
+     * @see #runAs(java.lang.Long)
+     *
+     * @param accountId account id to login as
+     *
+     * @return new currentUser
+     */
+    public User su(Long accountId) {
+        Subject previous = null;
+
+        try {
+            Subject subject = SecurityUtils.getSubject();
+            previous = subject;
+        } catch (UnavailableSecurityManagerException | IllegalStateException | NullPointerException ex) { // NOPMD We don't know where NPE came from.
+            // No security manager yet (startup actions)
+            // craft one
+            Helper.printWegasStackTrace(ex);
+
+            // The subject does not exists -> create from strach and bind
+            Collection<Realm> realms = new ArrayList<>();
+            realms.add(new JpaRealm());
+            realms.add(new AaiRealm());
+            realms.add(new GuestRealm());
+
+            SecurityUtils.setSecurityManager(new DefaultSecurityManager(realms));
+        }
+
+        this.previousSubjects.add(previous);
 
         Subject.Builder b = new Subject.Builder();
         SimplePrincipalCollection newSubject = new SimplePrincipalCollection(accountId, "jpaRealm");
         b.authenticated(true).principals(newSubject);
 
         Subject buildSubject = b.buildSubject();
-        logger.info("SU: No-User SU to {}, {}", buildSubject.getPrincipal(), Thread.currentThread());
+
+        logger.info("SU: User {} SU to {}, {}",
+            previous != null ? previous.getPrincipal() : "No-User",
+            buildSubject.getPrincipal(), Thread.currentThread());
 
         ThreadContext.bind(buildSubject);
+
+        this.clearCurrents();
 
         return this.getCurrentUser();
     }
@@ -1786,22 +2249,42 @@ public class RequestManager implements RequestManagerI {
     public void releaseSu() {
         try {
             Subject subject = SecurityUtils.getSubject();
-            if (subject.isRunAs()) {
-                logger.info("Su-Exit: User {} releases {}", subject.getPreviousPrincipals().toString(), subject.getPrincipal());
-                subject.releaseRunAs();
-            } else {
-                logger.info("Su-Exit LOGOUT");
-                subject.logout();
+            Subject previous = null;
+
+            this.logout(subject);
+
+            if (!this.previousSubjects.isEmpty()) {
+                previous = this.previousSubjects.removeLast();
+                ThreadContext.bind(previous);
             }
+
+            logger.info("Su-Exit -> {}",
+                previous != null ? previous.getPrincipal() : "LOGOUT");
+
+            this.clearCurrents();
+
             this.getCurrentUser();
         } catch (Exception ex) {
             logger.error("EX: ", ex);
         }
     }
 
+    public Subject login(AuthenticationToken token) {
+        return this.login(SecurityUtils.getSubject(), token);
+    }
+
+    public Subject login(Subject subject, AuthenticationToken token) {
+        if (Helper.isLoggedIn(subject)) {
+            throw WegasErrorMessage.error("You are already logged in! Please logout first");
+        }
+        subject.login(token);
+        // clear current info
+        this.clearCurrents();
+        return subject;
+    }
+
     /**
-     * CDI Lookup
-     * Used by GameModel#can{Edit,View,Instantiate,Duplicate} pieces of shit
+     * CDI Lookup Used by GameModel#can{Edit,View,Instantiate,Duplicate} pieces of shit
      *
      * @return
      */

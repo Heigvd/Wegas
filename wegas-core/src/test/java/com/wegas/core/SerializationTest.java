@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core;
@@ -42,10 +42,10 @@ import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.ManagedResponse;
 import com.wegas.core.rest.util.Views;
-import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
+import com.wegas.core.security.persistence.AccountDetails;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
@@ -214,23 +214,18 @@ public class SerializationTest {
         team1.setGame(game);
         game.addTeam(team1);
 
-        FacebookAccount fbAccount = new FacebookAccount();
         GuestJpaAccount guAccount = new GuestJpaAccount();
         JpaAccount jpaAccount = new JpaAccount();
 
-        User fbUser = new User(fbAccount);
         User guUser = new User(guAccount);
         User jpaUser = new User(jpaAccount);
 
-        Player fbPlayer = new Player("Facebook Player");
-        Player guPlayer = new Player("Guest Player");
-        Player jpaPlayer = new Player("JPA Player");
+        Player guPlayer = new Player();
+        Player jpaPlayer = new Player();
 
-        team1.addPlayer(fbPlayer);
         team1.addPlayer(guPlayer);
         team1.addPlayer(jpaPlayer);
 
-        fbUser.getPlayers().add(fbPlayer);
         guUser.getPlayers().add(guPlayer);
         jpaUser.getPlayers().add(jpaPlayer);
 
@@ -242,7 +237,6 @@ public class SerializationTest {
                 "@class", "Game");
         assertPropertyEquals(mapper.writeValueAsString(team1), "@class", "Team");
 
-        assertPropertyEquals(mapper.writeValueAsString(fbAccount), "@class", "FacebookAccount");
         assertPropertyEquals(mapper.writeValueAsString(guAccount), "@class", "GuestJpaAccount");
         assertPropertyEquals(mapper.writeValueAsString(jpaAccount), "@class", "JpaAccount");
 
@@ -354,8 +348,8 @@ public class SerializationTest {
         TaskInstance readTaskI = mapper.readValue(strTaskI, TaskInstance.class);
         TaskDescriptor readTaskD = mapper.readValue(strTaskD, TaskDescriptor.class);
 
-        assertEquals(propertyValue, readTaskI.getProperty("instanceProperty"));
-        assertEquals(propertyValue, readTaskD.getProperty("descriptorProperty"));
+        assertEquals("instance propertes does not match", propertyValue, readTaskI.getProperty("instanceProperty"));
+        assertEquals("desc property does not match", propertyValue, readTaskD.getProperty("descriptorProperty"));
 
         ResourceDescriptor resourceD = new ResourceDescriptor();
         resourceD.setName("resourceD");
@@ -404,7 +398,7 @@ public class SerializationTest {
         nd.getDefaultInstance().setValue(-10);
 
         String json = mapper.writeValueAsString(new WegasOutOfBoundException(nd.getMinValue(), nd.getMaxValue(), ns.getValue(), nd.getName(), nd.getLabel().translateOrEmpty(nd.getGameModel())));
-        System.out.println("WOOB: " + json);
+        logger.info("WOOB: {}", json);
         assertPropertyEquals(json, "@class", "WegasOutOfBoundException");
 
         json = mapper.writeValueAsString(WegasErrorMessage.error("This is an error"));
@@ -447,8 +441,7 @@ public class SerializationTest {
 
         String json = mapper.writeValueAsString(managedResponse);
 
-        System.out.println("JSON: " + json);
-
+        logger.info("JSON: {}", json);
     }
 
     @Test
@@ -456,7 +449,8 @@ public class SerializationTest {
         JpaAccount ja = new JpaAccount();
         ja.setFirstname("Alan");
         ja.setLastname("Smithee");
-        ja.setEmail("alan@local");
+        ja.setDetails(new AccountDetails());
+        ja.getDetails().setEmail("alan@local");
         ja.setUsername("alan@local");
 
         String strJa = mapper.writeValueAsString(ja);

@@ -1,33 +1,21 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import ch.albasim.wegas.annotations.CommonView;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.NumberListener;
-import com.wegas.core.persistence.variable.Beanjection;
-import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.rest.util.Views;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.Transient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.annotations.WegasConditions.And;
 import com.wegas.core.persistence.annotations.WegasConditions.GreaterThan;
@@ -35,9 +23,17 @@ import com.wegas.core.persistence.annotations.WegasConditions.IsDefined;
 import com.wegas.core.persistence.annotations.WegasConditions.LessThan;
 import com.wegas.core.persistence.annotations.WegasRefs.Field;
 import com.wegas.core.persistence.annotations.WegasRefs.Self;
+import com.wegas.core.persistence.variable.Beanjection;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
-import com.wegas.editor.View.CommonView;
-import com.wegas.editor.View.View;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Transient;
 
 /**
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
@@ -51,8 +47,6 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = LoggerFactory.getLogger(NumberInstance.class);
-
     @JsonIgnore
     @Transient
     private Beanjection beans;
@@ -62,8 +56,8 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
      */
     @Column(name = "val")
     @WegasEntityProperty(
-            optional = false, nullable = false,
-            view = @View(label = "Value"))
+        optional = false, nullable = false,
+        view = @View(label = "Value"))
     @Errored(ValueLessThanMin.class)
     @Errored(ValueGreaterThanMax.class)
     private double value;
@@ -72,14 +66,14 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
      *
      */
     @ElementCollection
-    @JsonView(Views.ExtendedI.class)
+    //@JsonView(Views.ExtendedI.class)
     //@OrderColumn
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(
             label = "History",
             featureLevel = CommonView.FEATURE_LEVEL.ADVANCED
-    ))
+        ))
     @Errored(ValueLessThanMin.class)
     private List<NumberHistoryEntry> history = new ArrayList<>();
 
@@ -87,6 +81,7 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
      *
      */
     public NumberInstance() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -127,7 +122,7 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
             // change detected
             this.value = value;
 
-            if (beans != null) {
+            if (!this.isDefaultInstance() && beans != null) {
                 beans.getVariableInstanceFacade().fireNumberChange(this, pVal);
             }
         }
@@ -192,7 +187,7 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
 
         public ValueGreaterThanMax() {
             super(new IsDefined(new Field(NumberDescriptor.class, "maxValue")),
-                    new GreaterThan(new Self(), new Field(NumberDescriptor.class, "maxValue"))
+                new GreaterThan(new Self(), new Field(NumberDescriptor.class, "maxValue"))
             );
         }
     }
@@ -201,7 +196,7 @@ public class NumberInstance extends VariableInstance implements AcceptInjection 
 
         public ValueLessThanMin() {
             super(new IsDefined(new Field(NumberDescriptor.class, "minValue")),
-                    new LessThan(new Self(), new Field(NumberDescriptor.class, "minValue"))
+                new LessThan(new Self(), new Field(NumberDescriptor.class, "minValue"))
             );
         }
     }

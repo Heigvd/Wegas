@@ -1,14 +1,15 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable.scope;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
@@ -25,7 +26,16 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.WegasPermission;
 import java.util.Collection;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +56,16 @@ import org.slf4j.LoggerFactory;
 })
 abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEntity implements AcceptInjection {
 
+    /**
+     * Convenient way to represent scope types as strings (in database or in REST paths)
+     */
+    @JsonDeserialize(using = ScopeTypeDeserialiser.class)
+    public enum ScopeType {
+        PlayerScope,
+        TeamScope,
+        GameModelScope
+    };
+
     private static final Logger logger = LoggerFactory.getLogger(AbstractScope.class);
 
     private static final long serialVersionUID = 1L;
@@ -53,14 +73,13 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     /**
      * HACK
      * <p>
-     * Links from VariableDescriptor to Instances has been cut to avoid using
-     * time-consuming HashMap. Thereby, a new way to getInstances(player) is
-     * required. It's done by using specific named-queries through
-     * VariableInstanceFacade.
+     * Links from VariableDescriptor to Instances has been cut to avoid using time-consuming
+     * HashMap. Thereby, a new way to getInstances(player) is required. It's done by using specific
+     * named-queries through VariableInstanceFacade.
      * <p>
-     * Injecting VariableInstanceFacade here don't bring business logic within
-     * data because the very only functionality that is being used here aims to
-     * replace JPA OneToMany relationship management
+     * Injecting VariableInstanceFacade here don't bring business logic within data because the very
+     * only functionality that is being used here aims to replace JPA OneToMany relationship
+     * management
      * <p>
      */
     @JsonIgnore
@@ -89,15 +108,25 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      *
      */
     //@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-    private String broadcastScope = PlayerScope.class.getSimpleName();
+    @Column(length = 255)
+    @Enumerated(value = EnumType.STRING)
+    private ScopeType broadcastScope = ScopeType.PlayerScope;
 
-    public static AbstractScope build(String atClass, String broadcastScope) {
+    /**
+     * Instantiate a new scope
+     *
+     * @param atClass        scopeType
+     * @param broadcastScope broadcast type
+     *
+     * @return the new scope
+     */
+    public static AbstractScope build(ScopeType atClass, ScopeType broadcastScope) {
         AbstractScope scope;
         switch (atClass) {
-            case "PlayerScope":
+            case PlayerScope:
                 scope = new PlayerScope();
                 break;
-            case "GameModelScope":
+            case GameModelScope:
                 scope = new GameModelScope();
                 break;
             default:
@@ -106,6 +135,13 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
         scope.setBroadcastScope(broadcastScope);
         return scope;
     }
+
+    /**
+     * get serialisable type
+     *
+     * @return
+     */
+    public abstract ScopeType getScopeType();
 
     /**
      * @param key
@@ -123,8 +159,8 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     /**
      * return the first variableInstance which is accessible by the team.
      * <p>
-     * here stands the behaviour for playeScoped instance,
-     * see overridden methods for other scope behaviour
+     * here stands the behaviour for playeScoped instance, see overridden methods for other scope
+     * behaviour
      *
      * @param team
      *
@@ -132,7 +168,10 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      */
     public VariableInstance getVariableInstance(Team team) {
         for (Player p : team.getPlayers()) {
-            return this.getVariableInstance(p);
+            VariableInstance variableInstance = this.getVariableInstance(p);
+            if (variableInstance !=null){
+                return variableInstance;
+            }
         }
         return null;
     }
@@ -140,8 +179,8 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     /**
      * return the first variableInstance which is accessible by the game
      * <p>
-     * here stands the behaviour for playeScoped instance,
-     * see overridden methods for other scope behaviour
+     * here stands the behaviour for playeScoped instance, see overridden methods for other scope
+     * behaviour
      *
      * @param game
      *
@@ -149,7 +188,10 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      */
     public VariableInstance getVariableInstance(Game game) {
         for (Team t : game.getTeams()) {
-            return this.getVariableInstance(t);
+            VariableInstance vi = this.getVariableInstance(t);
+            if (vi != null){
+                return vi;
+            }
         }
         return null;
     }
@@ -157,8 +199,8 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     /**
      * return the first variableInstance which is accessible by the gameModel
      * <p>
-     * here stands the behaviour for playeScoped instance,
-     * see overridden methods for other scope behaviour
+     * here stands the behaviour for playeScoped instance, see overridden methods for other scope
+     * behaviour
      *
      * @param gm
      *
@@ -166,7 +208,10 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      */
     public VariableInstance getVariableInstance(GameModel gm) {
         for (Game g : gm.getGames()) {
-            return this.getVariableInstance(g);
+            VariableInstance vi = this.getVariableInstance(g);
+            if (vi != null){
+                return vi;
+            }
         }
         return null;
     }
@@ -189,7 +234,8 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
      * @param p      instance owner
      * @param create create new instance or update existing one ?
      */
-    protected void propagate(Player p, boolean create) {
+    protected void propagate(Player p, boolean create){
+        // default behaviour is to do nothng, maybe a bad design...
     }
 
     /**
@@ -237,8 +283,8 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     /**
      * Propagate default instance for given context
      *
-     * @param context instance (GameModel, Game, Team, Player) to propagate
-     *                instances to (null means propagate to everybody)
+     * @param context instance (GameModel, Game, Team, Player) to propagate instances to (null means
+     *                propagate to everybody)
      * @param create
      */
     abstract public void propagateDefaultInstance(InstanceOwner context, boolean create);
@@ -273,14 +319,14 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     /**
      * @return the broadcastScope
      */
-    public String getBroadcastScope() {
+    public AbstractScope.ScopeType getBroadcastScope() {
         return broadcastScope;
     }
 
     /**
      * @param broadcastScope the broadcastScope to set
      */
-    public void setBroadcastScope(String broadcastScope) {
+    public void setBroadcastScope(AbstractScope.ScopeType broadcastScope) {
         this.broadcastScope = broadcastScope;
     }
 
@@ -290,10 +336,9 @@ abstract public class AbstractScope<T extends InstanceOwner> extends AbstractEnt
     }
 
     /**
-     * Since the @ManyToMany HashMap from scope to instances is not effiient,
-     * it has been cut and replace by JPA queries. Those queries stands within
-     * VariableInstanceFacade so we need something to fetch it...
-     * It's not so nice...
+     * Since the @ManyToMany HashMap from scope to instances is not effiient, it has been cut and
+     * replace by JPA queries. Those queries stands within VariableInstanceFacade so we need
+     * something to fetch it... It's not so nice...
      *
      * @return VariableInstanceFacade instance
      */

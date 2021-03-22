@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global I18n */
@@ -93,16 +93,19 @@ YUI.add('wegas-app', function(Y) {
             var ds, dsClass, widgetCfg, totalRequests,
                 dataSources = this.get('dataSources'), // Data sources cfg objects
                 events = [], event,
-                requestCounter = 0, //                                          // Request counter 
+                requestCounter = 0, //                                          // Request counter
                 onRequest = function() { // When a response to initial requests is received
                     var playerCode, playerLanguage;
                     requestCounter -= 1;
-                    Y.one(".wegas-loading-app-current").setAttribute("style", "width:" + ((1 - requestCounter / totalRequests) * 100) + "%");
+                    Y.one(".wegas-loading-app-current")
+                        .setAttribute("style", "width:" + ((1 - requestCounter / totalRequests) * 100) + "%");
 
                     if (requestCounter === 0) { // If all initial request are completed,
                         while ((event = events.shift()) !== undefined) {
                             event.detach();
                         }
+                        this.plug(Y.Plugin.SurveyListener);
+
                         this.plug(Y.Plugin.LockManager);
                         this.plug(Y.Plugin.IdleMonitor);
                         this.idlemonitor.on("idle", Y.bind(this.goIdle, this));
@@ -113,7 +116,7 @@ YUI.add('wegas-app', function(Y) {
                         this.idlemonitor.set("timeout", 1800000);  // 30 minutes
                         //this.idlemonitor.set("timeout", 2700000);  // 45 minutes
                         //this.idlemonitor.set("timeout", 3600000);  // 1 hour
-                        
+
                         this.idlemonitor.set("resolution", 60000); // check each minute
                         //this.idlemonitor.set("resolution", 300000); // check each five minutes
 
@@ -127,8 +130,8 @@ YUI.add('wegas-app', function(Y) {
                             I18n.setCode(playerCode);
 
                             Y.later(10, this, function() { // Let the loading div update
-                                    this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
-                                        .render(); // and render it
+                                this.widget = Wegas.Widget.create(widgetCfg) // Instantiate the root widget
+                                    .render(); // and render it
                                 this.fire("render"); // Fire a render event for some post processing
                                 this.fire("ready"); // Fire a ready event for some eventual post processing
                                 Y.log("Ready");
@@ -157,7 +160,7 @@ YUI.add('wegas-app', function(Y) {
 
             // Send data sources initial requests
             Wegas.use(Y.Object.values(dataSources), Y.bind(function(Y) { // Retrieve data sources dependencies (e.g. Pusher)
-                Y.Object.each(dataSources, function(cfg, name) { // For each data source,       
+                Y.Object.each(dataSources, function(cfg, name) { // For each data source,
                     cfg.source = this.get("base") + (cfg.source || ""); // Set up datasource path
                     dsClass = Wegas[cfg.type] || Wegas.DataSource; // Determine which class to use (default is Y.Wegas.DataSource)
                     ds = new dsClass(cfg); // Instantiate the datasource
@@ -196,40 +199,104 @@ YUI.add('wegas-app', function(Y) {
                 }, this);
 
                 if (extraTabs) {
-                    if (gm.get("properties").logID) {
-                        extraTabs._addTab({
-                            label: I18n.t("global.statistics"),
-                            children: [{
-                                    type: "Statistics"
-                                }]
-                        });
-                    }
 
-                    Y.Array.each(Y.Wegas.Facade.Variable.cache.findAll("@class", "PeerReviewDescriptor"),
-                        function(prd) {
+                    Y.Wegas.Facade.Page.cache.getIndex(function(index) {
+                        var items = [index.root];
+
+                        while (items.length) {
+                            var item = items.shift();
+
+                            if (item["@class"] === "Folder") {
+                                items = items.concat(item.items);
+                            } else if (item["@class"] === "Page") {
+                                var target = [];
+                                if (item.trainerPage) {
+                                    target.push("host");
+                                }
+
+                                if (item.scenaristPage) {
+                                    target.push("edit");
+                                }
+                                if (target.length) {
+
+                                    extraTabs._addTab({
+                                        label: item.name,
+                                        targetMode: target,
+                                        children: [{
+                                                type: "PageLoader",
+                                                pageLoaderId: "extraTab_" + item.id,
+                                                defaultPageId: item.id
+                                            }]
+                                    });
+                                }
+                            }
+                        }
+
+                        if (gm.get("properties").get("val").logID) {
                             extraTabs._addTab({
-                                label: I18n.t("global.peerReview"),
+                                label: I18n.t("global.statistics"),
                                 children: [{
-                                        "type": "ReviewOrchestrator",
-                                        "variable": {
-                                            "@class": "Script",
-                                            "content": "Variable.find(gameModel, \"" + prd.get("name") + "\");\n"
-                                        }
+                                        type: "Statistics"
                                     }]
                             });
+                        }
 
-                        }, this);
+                        Y.Array.each(Y.Wegas.Facade.Variable.cache.findAll("@class", "PeerReviewDescriptor"),
+                            function(prd) {
+                                extraTabs._addTab({
+                                    label: I18n.t("global.peerReview"),
+                                    children: [{
+                                            "type": "ReviewOrchestrator",
+                                            "variable": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"" + prd.get("name") + "\");\n"
+                                            }
+                                        }]
+                                });
+
+                            }, this);
+                        // @TODO Until all survey concepts are agreed upon,
+                        // restrict the survey tab to admins or games already containing a survey:
+                        var isCurrentUserAdmin = !!Y.Wegas.Facade.User.cache.get("currentUser").get("roles").find(function(role) {
+                            return role.get("name") === "Administrator";
+                        });
+                        if (isCurrentUserAdmin || Y.Wegas.Facade.Variable.cache.find("@class", "SurveyDescriptor")) {
+                            extraTabs._addTab({
+                                label: I18n.t("global.surveys"),
+                                // This widget automatically updates the server script path
+                                targetMode: ["host"],
+                                cssClass: "survey-orchestrator-parent",
+                                children: [{
+                                        "type": "SurveyOrchestrator"
+                                    }]
+                            });
+                        }
+
+                    });
                 }
 
-                Y.one("body").on("key", function(e) { // Add shortcut to activate developper mode on key '§' pressed
-                    e.currentTarget.toggleClass("wegas-stdmode") // Toggle stdmode class on body (hides any wegas-advancedfeature)
-                        .toggleClass("wegas-advancedmode");
-                    Y.config.win.Y = Y; // Allow access to Y instance
-                }, "167", this);
+                Y.one("body").on("key", function(e) { // detect ctrl+§ key
+                    // top left key only
+                    if (e._event.code === "Backquote") {
+                        if (e.ctrlKey || e.metaKey) {
+                            var body = e.currentTarget;
+                            if (e.altKey) {
+                                body.toggleClass("wegas-internalmode");
+                                //Toggle stdmode class on body (hides any wegas-advancedfeature)
+                            } else {
+                                body.toggleClass("wegas-advancedmode");
+                            }
 
-                Y.one("body").on("key", function(e) { // Add shortcut to activate internal mode on key '°' pressed
-                    e.currentTarget.toggleClass("wegas-internalmode");
-                }, "176", this);
+                            if (body.hasClass("wegas-internalmode") || body.hasClass("wegas-advancedmode")) {
+                                body.removeClass("wegas-stdmode");
+                                Y.config.win.Y = Y; // Allow access to Y instance
+                            } else {
+                                body.addClass("wegas-stdmode");
+                                Y.config.win.Y = undefined; // remove acces to Y instance
+                            }
+                        }
+                    }
+                }, "down:", this);
             });
         },
         resume: function() {
@@ -245,7 +312,8 @@ YUI.add('wegas-app', function(Y) {
                             delete tIds[response.tId];
                             counter++;
                             if (showLoader) {
-                                Y.one(".wegas-loading-app-current").setAttribute("style", "width:" + ((counter / totalRequests) * 100) + "%");
+                                Y.one(".wegas-loading-app-current")
+                                    .setAttribute("style", "width:" + ((counter / totalRequests) * 100) + "%");
                             }
                             var event;
                             if (Object.keys(tIds).length === 0) {
@@ -276,7 +344,8 @@ YUI.add('wegas-app', function(Y) {
                 Y.one("body").toggleClass("idle", false);
                 if (showLoader) {
                     // but show loader
-                    Y.one("body").prepend("<div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>");
+                    Y.one("body")
+                        .prepend("<div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>");
                 }
                 // listen to pusher
                 this.dataSources.Pusher.resume();
@@ -322,7 +391,7 @@ YUI.add('wegas-app', function(Y) {
         },
         // ** Private methods ** //
         /**
-         * 
+         *
          * @param {type} tId
          * @param {type} req
          * @param {type} e

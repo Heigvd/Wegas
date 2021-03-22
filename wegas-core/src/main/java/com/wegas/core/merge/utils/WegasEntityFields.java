@@ -1,15 +1,18 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.merge.utils;
 
-import com.wegas.core.persistence.annotations.WegasEntity;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.EmptyCallback;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.Mergeable;
+import com.wegas.core.persistence.annotations.WegasEntity;
 import java.beans.IntrospectionException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -107,7 +110,7 @@ public class WegasEntityFields {
             }
 
         } catch (IntrospectionException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
-            throw new RuntimeException(ex);
+            throw WegasErrorMessage.error("Introspection failed");
         }
     }
 

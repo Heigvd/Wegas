@@ -1,32 +1,47 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.Helper.EmailAttributes;
+import com.wegas.core.XlsxSpreadsheet;
 import com.wegas.core.async.PopulatorFacade;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.core.persistence.game.*;
+import com.wegas.core.persistence.game.DebugGame;
+import com.wegas.core.persistence.game.DebugTeam;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelLanguage;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable.Status;
+import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.persistence.token.SurveyToken;
+import com.wegas.survey.persistence.SurveyDescriptor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import javax.ejb.EJB;
+import java.util.stream.Collectors;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -36,6 +51,14 @@ import javax.inject.Inject;
 import javax.naming.NamingException;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import javax.servlet.http.HttpServletRequest;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -63,13 +86,13 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      *
      */
-    @EJB
+    @Inject
     private GameModelFacade gameModelFacade;
 
     /**
      *
      */
-    @EJB
+    @Inject
     private TeamFacade teamFacade;
 
     @Inject
@@ -78,8 +101,11 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      *
      */
-    @EJB
+    @Inject
     private UserFacade userFacade;
+
+    @Inject
+    private AccountFacade accountFacade;
 
     @Inject
     private PopulatorScheduler populatorScheduler;
@@ -88,7 +114,13 @@ public class GameFacade extends BaseFacade<Game> {
     private PopulatorFacade populatorFacade;
 
     @Inject
+    private VariableDescriptorFacade variableDescriptorFacade;
+
+    @Inject
     private StateMachineFacade stateMachineFacade;
+
+    @Inject
+    private ScriptFacade scriptFacade;
 
     /**
      *
@@ -108,12 +140,12 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Create (persist) a new game base on a gameModel identified by gameModelId.
-     * This gameModel will first been duplicated (to freeze it against original gameModel update)
-     * Then, the game will be attached to this duplicate.
+     * Create (persist) a new game base on a gameModel identified by gameModelId. This gameModel
+     * will first been duplicated (to freeze it against original gameModel update) Then, the game
+     * will be attached to this duplicate.
      * <p>
-     * The game will contains a DebugTeam, which contains itself a test player.
-     * This team/testPlayer will be immediately usable since theirs variableInstance are create synchronously.
+     * The game will contains a DebugTeam, which contains itself a test player. This team/testPlayer
+     * will be immediately usable since theirs variableInstance are create synchronously.
      *
      * @param gameModelId id of the gameModel to create a new game for
      * @param game        the game to persist
@@ -148,8 +180,8 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      * Persist a new game within the given gameModel
      * <p>
-     * The game will contains a DebugTeam, which contains itself a test player.
-     * This team/testPlayer will be immediately usable since theirs variableInstance are create synchronously.
+     * The game will contains a DebugTeam, which contains itself a test player. This team/testPlayer
+     * will be immediately usable since theirs variableInstance are create synchronously.
      *
      * @param gameModel the gameModel to add the game in
      * @param game      the game to persist within the gameModel
@@ -161,12 +193,15 @@ public class GameFacade extends BaseFacade<Game> {
 
         if (game.getToken() == null) {
             game.setToken(this.createUniqueToken(game));
-        } else if (this.findByToken(game.getToken()) != null) {
-            throw WegasErrorMessage.error("This access key is already in use", "COMMONS-SESSIONS-TAKEN-TOKEN-ERROR");
+        } else if (this.findLiveOrBinByToken(game.getToken()) != null) {
+            throw WegasErrorMessage.error("This access key is already in use",
+                "COMMONS-SESSIONS-TAKEN-TOKEN-ERROR");
         }
         getEntityManager().persist(game);
 
-        game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
+        // @hack @fixme, guest are not stored in the db so link wont work
+        // well, I don't think a guest can create games...
+        game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null);
         gameModel.addGame(game);
 
         /*
@@ -177,7 +212,7 @@ public class GameFacade extends BaseFacade<Game> {
         gameModelFacade.propagateAndReviveDefaultInstances(gameModel, game, true); // at this step the game is empty (no teams; no players), hence, only Game[Model]Scoped are propagated
 
         this.addDebugTeam(game);
-        stateMachineFacade.runStateMachines(gameModel);
+        stateMachineFacade.runStateMachines(game);
 
         gameCreatedEvent.fire(new EntityCreated<>(game));
     }
@@ -197,7 +232,7 @@ public class GameFacade extends BaseFacade<Game> {
             testPlayer.setStatus(Status.LIVE);
 
             List<GameModelLanguage> languages = game.getGameModel().getLanguages();
-            if (languages !=null && !languages.isEmpty()){
+            if (languages != null && !languages.isEmpty()) {
                 testPlayer.setLang(languages.get(0).getCode());
             }
 
@@ -233,7 +268,7 @@ public class GameFacade extends BaseFacade<Game> {
             String genLetter = Helper.genRandomLetters(length);
             key = prefixKey + "-" + genLetter;
 
-            Game foundGameByToken = this.findByToken(key);
+            Game foundGameByToken = this.findLiveOrBinByToken(key);
             if (foundGameByToken == null) {
                 foundUniqueKey = true;
             }
@@ -252,7 +287,7 @@ public class GameFacade extends BaseFacade<Game> {
             throw WegasErrorMessage.error("Access key cannot be empty", "COMMONS-SESSIONS-EMPTY-TOKEN-ERROR");
         }
 
-        Game theGame = this.findByToken(entity.getToken());
+        Game theGame = this.findLiveOrBinByToken(entity.getToken());
 
         if (theGame != null && !theGame.getId().equals(entity.getId())) {
             throw WegasErrorMessage.error("This access key is already in use", "COMMONS-SESSIONS-TAKEN-TOKEN-ERROR");
@@ -269,7 +304,7 @@ public class GameFacade extends BaseFacade<Game> {
 
         // This is for retrocompatibility w/ game models that do not habe DebugGame
         if (entity.getGameModel().getGames().size() <= 1
-                && !(entity.getGameModel().getGames().get(0) instanceof DebugGame)) {// This is for retrocompatibility w/ game models that do not habe DebugGame
+            && !(entity.getGameModel().getGames().get(0) instanceof DebugGame)) {// This is for retrocompatibility w/ game models that do not habe DebugGame
             gameModelFacade.remove(entity.getGameModel());
         } else {
             getEntityManager().remove(entity);
@@ -290,14 +325,29 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Search for a game with token
+     * Search for a LIVE game with token
      *
      * @param token
      *
      * @return first game found or null
      */
     public Game findByToken(final String token) {
-        final TypedQuery<Game> tq = getEntityManager().createNamedQuery("Game.findByToken", Game.class).setParameter("token", token).setParameter("status", Game.Status.LIVE);
+        return findByStatusAndToken(token, Game.Status.LIVE);
+    }
+
+    public Game findLiveOrBinByToken(final String token) {
+        Game game = findByStatusAndToken(token, Game.Status.LIVE);
+        if (game == null) {
+            game = findByStatusAndToken(token, Game.Status.BIN);
+        }
+        return game;
+    }
+
+    public Game findByStatusAndToken(final String token, Game.Status status) {
+        final TypedQuery<Game> tq = getEntityManager()
+            .createNamedQuery("Game.findByToken", Game.class)
+            .setParameter("token", token)
+            .setParameter("status", status);
         try {
             return tq.getSingleResult();
         } catch (NoResultException ex) {
@@ -320,14 +370,14 @@ public class GameFacade extends BaseFacade<Game> {
      * @param gameModelId
      * @param orderBy     not used...
      *
-     * @return all games belonging to the gameModel identified by gameModelId
-     *         but DebugGames, ordered by creation time
+     * @return all games belonging to the gameModel identified by gameModelId but DebugGames,
+     *         ordered by creation time
      */
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
         return getEntityManager().createQuery("SELECT g FROM Game g "
-                + "WHERE TYPE(g) != DebugGame AND g.gameModel.id = :gameModelId ORDER BY g.createdTime DESC", Game.class)
-                .setParameter("gameModelId", gameModelId)
-                .getResultList();
+            + "WHERE TYPE(g) != DebugGame AND g.gameModel.id = :gameModelId ORDER BY g.createdTime DESC", Game.class)
+            .setParameter("gameModelId", gameModelId)
+            .getResultList();
     }
 
     /**
@@ -336,7 +386,20 @@ public class GameFacade extends BaseFacade<Game> {
      * @return all games which match the given status
      */
     public List<Game> findAll(final Game.Status status) {
-        return getEntityManager().createNamedQuery("Game.findByStatus", Game.class).setParameter("status", status).getResultList();
+        return getEntityManager().createNamedQuery("Game.findByStatus", Game.class)
+            .setParameter("status", status).getResultList();
+    }
+
+    /**
+     * Find all game by status.
+     *
+     * @param statuses statuses to search
+     *
+     * @return all games which match any of the given status
+     */
+    public List<Game> findAll(final List<Game.Status> statuses) {
+        return getEntityManager().createNamedQuery("Game.findByStatuses", Game.class)
+            .setParameter("statuses", statuses).getResultList();
     }
 
     /**
@@ -368,22 +431,12 @@ public class GameFacade extends BaseFacade<Game> {
      * @return the list of all games which given status the current use has access to
      */
     public Collection<Game> findByStatusAndUser(Game.Status status) {
+        List<Game.Status> gStatuses = new ArrayList<>();
+        gStatuses.add(status);
+
+        Map<Long, List<String>> gMatrix = this.getPermissionMatrix(gStatuses);
+
         ArrayList<Game> games = new ArrayList<>();
-        Map<Long, List<String>> gMatrix = new HashMap<>();
-        Map<Long, List<String>> gmMatrix = new HashMap<>();
-
-        // Previous behaviour was to fetch all games from DB and then filter against user permissions
-        // it was time consuming
-        // New way is to fetch permissions first and extract games from this list
-        String roleQuery = "SELECT p FROM Permission p WHERE "
-                + "(p.role.id in "
-                + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
-                + ")";
-
-        String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId";
-
-        gameModelFacade.processQuery(userQuery, gmMatrix, gMatrix, GameModel.GmType.PLAY, GameModel.Status.LIVE, status);
-        gameModelFacade.processQuery(roleQuery, gmMatrix, gMatrix, GameModel.GmType.PLAY, GameModel.Status.LIVE, status);
 
         for (Map.Entry<Long, List<String>> entry : gMatrix.entrySet()) {
             Long id = entry.getKey();
@@ -401,35 +454,271 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Create a new player within a team for the user identified by userId
+     * Fetch all game ids that current user has access to which match any of the given statuses.
      *
-     * @param teamId
-     * @param userId
-     * @param languages
+     * @param statuses statuses of game to look for
      *
-     * @return a new player, linked to user, who just joined the team
+     * @return list of gameId mapped to the permission the user has
      */
-    public Player joinTeam(Long teamId, Long userId, List<Locale> languages) {
-        return this.joinTeam(teamId, userId, null, languages);
+    public Map<Long, List<String>> getPermissionMatrix(List<Game.Status> statuses) {
+        Map<Long, List<String>> gMatrix = new HashMap<>();
+
+        // Previous behaviour was to fetch all games from DB and then filter against user permissions
+        // it was time consuming
+        // New way is to fetch permissions first and extract games from this list
+        String roleQuery = "SELECT p FROM Permission p WHERE "
+            + "(p.role.id in "
+            + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
+            + ")";
+
+        String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId";
+
+        gameModelFacade.processQuery(userQuery, null, gMatrix, null, null, statuses);
+        gameModelFacade.processQuery(roleQuery, null, gMatrix, null, null, statuses);
+
+        return gMatrix;
+    }
+
+    /**
+     * Join the game individually. It means creating a brand new team, named after user's name, and
+     * joining that very team. The game does not need to be in freeForAll mode to use this method.
+     *
+     * @param game      the game to join
+     * @param languages list of user preferred languages
+     *
+     * @return the brand new player
+     */
+    public Player joinIndividually(Game game, List<Locale> languages) {
+        User currentUser = userFacade.getCurrentUser();
+
+        Team team = new Team(teamFacade.findUniqueNameForTeam(game, currentUser.getName()), 1);
+        teamFacade.create(game.getId(), team); // return managed team
+        team = teamFacade.find(team.getId());
+        return this.joinTeam(team.getId(), currentUser.getId(), languages);
+    }
+
+    /**
+     * Join the game to participate in surveys. It means creating a brand new team, named after
+     * user's name, and joining that very team. The game does not need to be in freeForAll mode to
+     * use this method. A survey player will only have a subset of the variable initialised
+     *
+     * @param game      the game to join
+     * @param languages list of user preferred languages
+     *
+     * @return the brand new player
+     */
+    public Player joinForSurvey(Game game, List<Locale> languages) {
+        User currentUser = userFacade.getCurrentUser();
+
+        Team team = new Team(teamFacade.findUniqueNameForTeam(game, currentUser.getName()), 1);
+        team.setGame(game);
+
+        team.setStatus(Status.SURVEY);
+
+        Player player = new Player();
+        player.setStatus(Status.SURVEY);
+        player.setUser(currentUser);
+
+
+        GameModelLanguage lang = playerFacade.findPreferredLanguages(game.getGameModel(), languages);
+
+        player.setLang(lang.getCode());
+
+        team.addPlayer(player);
+
+        teamFacade.createForSurvey(team);
+
+        return player;
+    }
+
+    /**
+     * Return all accounts with valid email address linked to LIVE players of the given game.
+     *
+     * @param game
+     *
+     * @return
+     */
+    private List<AbstractAccount> getPlayerAccountsWithEmail(Game game) {
+        return game.getLivePlayers().stream()
+            .map(p -> p.getUser())
+            .filter(u -> u != null)
+            .map(u -> u.getMainAccount())
+            .filter(account -> account != null && !Helper.isNullOrEmpty(account.getEmail()))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Get the one game from a list of surveys.
+     *
+     * @param surveys
+     *
+     * @return the game
+     *
+     * @throws WegasErrorMessage surveys belong to different games or no game found
+     */
+    public Game getGameFromSurveys(List<SurveyDescriptor> surveys) {
+        GameModel gm = SurveyToken.getUniqueGameModel(surveys);
+
+        if (gm != null) {
+            if (!gm.getGames().isEmpty()) {
+                return gm.getGames().get(0);
+            } else {
+                throw WegasErrorMessage.error("No game in the gameModel");
+            }
+        } else {
+            throw WegasErrorMessage.error("Surveys belong to different gamemodels");
+        }
+    }
+
+    /**
+     * Send invitation to participate in a survey. An invitation will be sent to all LIVE players
+     * which have a valid email address. Invitation will force users to log-in with their very own
+     * account.
+     * <p>
+     * Such survey is made of several SurveyDescriptor. All SurveyDescriptor must belong to the same
+     * gameModel.
+     *
+     * @param surveys surveys
+     * @param request need request to generate the link
+     * @param email structure with attributes recipients (ignored here), sender, subject and body.
+     * 
+     * @return list of emails to which an invitation has been sent
+     *
+     * @throws WegasErrorMessage if 1) surveys belong to different GameModels; 2) no game; 3) no
+     *                           account
+     */
+    public List<String> sendSurveysInvitation(List<SurveyDescriptor> surveys,
+        EmailAttributes email,
+        HttpServletRequest request) {
+        Game game = getGameFromSurveys(surveys);
+        List<AbstractAccount> accounts = getPlayerAccountsWithEmail(game);
+        List<String> invitedEmails = new ArrayList<>();
+        if (!accounts.isEmpty()) {
+            for (AbstractAccount account : accounts) {
+                String currEmail = account.getEmail();
+                email.setRecipient(currEmail);
+                invitedEmails.add(currEmail);
+                accountFacade.sendSurveyToken(account, email, surveys, request);
+            }
+            return invitedEmails;
+        } else {
+            throw WegasErrorMessage.error("Unable to find accounts with email addresses", "WEGAS-INVITE-SURVEY-NO-EMAIL");
+        }
+    }
+
+    private List<SurveyDescriptor> loadSurveys(String ids) {
+        return Arrays.stream(ids.split(","))
+            .map(sId -> (SurveyDescriptor) variableDescriptorFacade.find(Long.parseLong(sId.trim())))
+            .collect(Collectors.toList());
+    }
+
+    public List<String> sendSurveysInvitationToPlayers(HttpServletRequest request,
+        String surveyIds, EmailAttributes email) {
+
+        List<SurveyDescriptor> surveys = this.loadSurveys(surveyIds);
+
+        return this.sendSurveysInvitation(surveys, email, request);
+    }
+
+    public List<String> sendSurveysInvitationAnonymouslyToPlayers(HttpServletRequest request,
+        String surveyIds, EmailAttributes email) {
+
+        List<SurveyDescriptor> surveys = this.loadSurveys(surveyIds);
+
+        return this.sendSurveysInvitationAnonymouslyToPlayers(surveys, email, request);
+    }
+
+    /**
+     * Send invitation to participate in a survey. An invitation will be sent to all LIVE players
+     * which have a valid email address. Invitation will force users to log-in with brand new
+     * anonymous guest accounts.
+     * <p>
+     * Such survey is made of several SurveyDescriptor. All SurveyDescriptor must belong to the same
+     * gameModel. must belongs to the same game model.
+     *
+     * @param surveys surveys
+     * @param email structure with attributes recipients (ignored here), sender, subject and body.
+     * @param request need request to generate the link
+     *
+     * @return list of emails to which an invitation has been sent
+     * 
+     * @throws WegasErrorMessage if 1) surveys belong to different GameModel; 2) no game; 3) no
+     *                           account
+     */
+    public List<String> sendSurveysInvitationAnonymouslyToPlayers(List<SurveyDescriptor> surveys,
+        EmailAttributes email,
+        HttpServletRequest request
+    ) {
+        Game game = getGameFromSurveys(surveys);
+        List<AbstractAccount> accounts = getPlayerAccountsWithEmail(game);
+        List<String> recipients = new ArrayList<>();
+        if (!accounts.isEmpty()) {
+            for (AbstractAccount account : accounts) {
+                recipients.add(account.getEmail());
+            }
+            email.setRecipients(recipients);
+            accountFacade.sendSurveyAnonymousTokens(email, surveys, request);
+        } else {
+            throw WegasErrorMessage.error("Unable to find accounts with email addresses", "WEGAS-INVITE-SURVEY-NO-EMAIL");
+        }
+        return recipients;
+    }
+
+    public void sendSurveysInvitationAnonymouslyToList(HttpServletRequest request,
+        String surveyIds,
+        EmailAttributes email) {
+
+        List<SurveyDescriptor> surveys = this.loadSurveys(surveyIds);
+
+        this.sendSurveysInvitationAnonymouslyToList(surveys, email, request);
+    }
+
+    /**
+     * Send invitation to participate in a survey. 
+     * One invitation will be sent to each recipient address. 
+     * Such survey is made of several SurveyDescriptor. 
+     * Every SurveyDescriptor must belong to the same gameModel.
+     *
+     * @param surveys   surveys
+     * @param email     structure with attributes recipients, sender, subject and body.
+     * @param request   need request to generate the link
+     *
+     * @throws WegasErrorMessage if 1) surveys belong to different GameModel; 2) no game; 3) no
+     *                           account
+     */
+    public void sendSurveysInvitationAnonymouslyToList(List<SurveyDescriptor> surveys,
+        EmailAttributes email,
+        HttpServletRequest request) {
+
+        if (!email.getRecipients().isEmpty()) {
+            accountFacade.sendSurveyAnonymousTokens(email, surveys, request);
+        } else {
+            throw WegasErrorMessage.error("Unable to find accounts with email addresses", "WEGAS-INVITE-SURVEY-NO-EMAIL");
+        }
     }
 
     /**
      * Create a new player within a team for the user identified by userId
      *
-     * @param teamId     id of the team to join
-     * @param userId     id of the user to create a player for, may be null to create an anonymous player
-     * @param playerName common name of the player
+     * @param teamId    id of the team to join
+     * @param userId    id of the user to create a player for, may be null to create an anonymous
+     *                  player
      * @param languages
      *
      * @return a new player, linked to a user, who just joined the team
      */
-    public Player joinTeam(Long teamId, Long userId, String playerName, List<Locale> languages) {
-        Long playerId = playerFacade.joinTeamAndCommit(teamId, userId, playerName, languages);
+    public Player joinTeam(Long teamId, Long userId, List<Locale> languages) {
+        Long playerId = playerFacade.joinTeamAndCommit(teamId, userId, languages);
         Player player = playerFacade.find(playerId);
         populatorScheduler.scheduleCreation();
+
+        Team team = player.getTeam();
+
         playerFacade.detach(player);
+        teamFacade.detach(team);;
+
         player = playerFacade.find(player.getId());
-        int indexOf = populatorFacade.getQueue().indexOf(player);
+        int indexOf = populatorFacade.getPositionInQueue(player);
         player.setQueueSize(indexOf + 1);
         return player;
     }
@@ -438,15 +727,14 @@ public class GameFacade extends BaseFacade<Game> {
      * Same as {@link #joinTeam(java.lang.Long, java.lang.Long, java.lang.String)} but anonymously.
      * (for testing purpose)
      *
-     * @param teamId     id of the team to join
-     * @param playerName common name of the player
+     * @param teamId id of the team to join
      *
      * @return a new player anonymous player who just joined the team
      */
-    public Player joinTeam(Long teamId, String playerName, List<Locale> languages) {
+    public Player joinTeam(Long teamId, List<Locale> languages) {
         Long id = requestManager.getCurrentUser().getId();
         logger.info("Adding user {} to team {}", id, teamId);
-        return this.joinTeam(teamId, id, playerName, languages);
+        return this.joinTeam(teamId, id, languages);
     }
 
     /**
@@ -511,8 +799,7 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * Since the team create is done in two step, we have to ensure the team is
-     * scheduled
+     * Since the team create is done in two step, we have to ensure the team is scheduled
      *
      * @param gameId
      * @param t
@@ -530,11 +817,168 @@ public class GameFacade extends BaseFacade<Game> {
         }
 
         g.addTeam(t);
-        g = this.find(gameId);
+        //g = this.find(gameId);
         t.setCreatedBy(userFacade.getCurrentUser());
         //this.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
         getEntityManager().persist(t);
 
         return t.getId();
+    }
+
+    public XlsxSpreadsheet getXlsxOverview(Long gameId) {
+        Game game = this.find(gameId);
+        boolean includeTestPlayer = !game.getGameModel().isPlay();
+
+        XlsxSpreadsheet xlsx = new XlsxSpreadsheet();
+        xlsx.addSheet("players details");
+
+        CellStyle headerStyle = xlsx.createHeaderStyle();
+        xlsx.addValue("Team Name", headerStyle);
+        xlsx.addValue("Team Notes", headerStyle);
+        xlsx.addValue("Team Creation Date", headerStyle);
+        xlsx.addValue("Team Status", headerStyle);
+        xlsx.addValue("Player Name", headerStyle);
+        xlsx.addValue("Player E-Mail", headerStyle);
+        xlsx.addValue("Email verified", headerStyle);
+        xlsx.addValue("Player Join Time", headerStyle);
+        xlsx.addValue("Player Language", headerStyle);
+        xlsx.addValue("Player Status", headerStyle);
+
+        for (Team t : game.getTeams()) {
+            if (t instanceof DebugTeam == false || includeTestPlayer) {
+                for (Player p : t.getPlayers()) {
+                    xlsx.newRow();
+                    xlsx.addValue(t.getName());
+                    xlsx.addValue(t.getNotes());
+
+                    xlsx.addValue(t.getCreatedTime());
+                    xlsx.addValue(t.getStatus().name());
+
+                    xlsx.addValue(p.getName());
+                    if (p.getUser() != null) {
+                        xlsx.addValue(p.getUser().getMainAccount().getDetails().getEmail());
+                        xlsx.addValue(Boolean.TRUE.equals(p.getUser().getMainAccount().isVerified()) ? "yes" : "no");
+                    } else {
+                        xlsx.skipCell();
+                        xlsx.skipCell();
+                    }
+                    xlsx.addValue(p.getJoinTime());
+                    xlsx.addValue(game.getGameModel().getLanguageByCode(p.getLang()).getLang());
+                    xlsx.addValue(p.getStatus().name());
+                }
+            }
+        }
+
+        xlsx.autoWidth();
+        loadOverviews(xlsx, game, includeTestPlayer);
+
+        return xlsx;
+    }
+
+    private void loadOverviews(XlsxSpreadsheet xlsx, Game game, boolean includeTestPlayer) {
+        Player p = game.getTestPlayer();
+        String script
+            = "var result= [];"
+            + "if (WegasDashboard){"
+            + "  result = WegasDashboard.getAllOverviews(true);"
+            + "}"
+            + "result;";
+
+        CellStyle titleStyle = xlsx.createHeaderStyle();
+        titleStyle.setAlignment(HorizontalAlignment.CENTER);
+
+        CellStyle subtitleStyle = xlsx.createSmallerHeaderStyle();
+
+        ScriptObjectMirror overviews = (ScriptObjectMirror) scriptFacade.eval(p, new Script(script), null);
+
+        for (Object oSheet : overviews.values()) {
+            ScriptObjectMirror sheetData = (ScriptObjectMirror) oSheet;
+
+            String name = (String) sheetData.get("name"); // aka sheetName
+            Sheet sheet = xlsx.addSheet(name);
+
+            ScriptObjectMirror overview = (ScriptObjectMirror) sheetData.get("overview");
+
+            ScriptObjectMirror structure = (ScriptObjectMirror) overview.get("structure");
+
+            Collection<Object> groups = structure.values();
+            // create first row : groups'
+
+            Map<String, Integer> index = new HashMap<>(); // item name to col number
+            Map<String, String> kinds = new HashMap<>(); // item name to item kind
+
+            Row firstRow = xlsx.getCurrentRow();
+            Row secondRow = xlsx.newRow();
+
+            Cell teamName = secondRow.createCell(0);
+            teamName.setCellValue("Team Name");
+            teamName.setCellStyle(subtitleStyle);
+
+            int currentCol = 1;
+
+            for (Object oGroup : groups) {
+                ScriptObjectMirror group = (ScriptObjectMirror) oGroup;
+                String title = (String) group.get("title");
+
+                int startGroupCol = currentCol;
+
+                Collection<Object> items = (Collection<Object>) (((ScriptObjectMirror) group.get("items")).values());
+                for (Object oItem : items) {
+                    ScriptObjectMirror item = (ScriptObjectMirror) oItem;
+                    if (item.hasMember("kind")) {
+                        // skip action/method
+                        String itemLabel = (String) item.get("label");
+                        String itemId = (String) item.get("id");
+
+                        Cell itemTitle = secondRow.createCell(currentCol);
+                        itemTitle.setCellStyle(subtitleStyle);
+                        itemTitle.setCellValue(itemLabel);
+
+                        index.put(itemId, currentCol);
+                        kinds.put(itemId, (String) item.get("kind"));
+
+                        currentCol++;
+                    }
+                }
+                if (currentCol > startGroupCol) {
+                    Cell groupName = firstRow.createCell(startGroupCol);
+                    groupName.setCellValue(title);
+                    groupName.setCellStyle(titleStyle);
+
+                    sheet.addMergedRegion(new CellRangeAddress(0, 0, startGroupCol, currentCol - 1));
+                }
+            }
+            xlsx.setCurrentRowNumber(1); // focus second row
+
+            ScriptObjectMirror data = (ScriptObjectMirror) overview.get("data");
+            for (String teamId : data.keySet()) {
+                Team team = teamFacade.find(Long.parseLong(teamId));
+                if (team instanceof DebugTeam == false || includeTestPlayer) {
+                    xlsx.newRow();
+                    String tName = team.getName();
+                    xlsx.addValue(tName);
+
+                    ScriptObjectMirror teamData = (ScriptObjectMirror) data.get(teamId);
+                    for (String itemId : teamData.keySet()) {
+                        Integer itemCol = index.get(itemId);
+                        if (itemCol != null) {
+                            String kind = kinds.get(itemId);
+
+                            Object value = teamData.get(itemId);
+
+                            if (kind.equals("inbox") || kind.equals("text")) {
+                                value = ((ScriptObjectMirror) value).getMember("body");
+                            }
+
+                            xlsx.setCurrentColumnNumber(itemCol);
+                            xlsx.addValue(value);
+                        }
+                    }
+                }
+            }
+
+            xlsx.autoWidth();
+
+        }
     }
 }

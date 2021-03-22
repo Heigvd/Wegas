@@ -25,7 +25,8 @@
             <meta name="distribution" content="Global" />
             <meta name="revisit-after" content="30 days" />
 
-            <link rel="icon" type="image/ico" href="#{request.contextPath}/favicon.ico" />
+            <link rel="icon" href="#{request.contextPath}/${requestController.favicon}.ico" />
+            <link rel="icon" type="image/png" href="#{request.contextPath}/${requestController.favicon}.png" />
 
             <meta id="customstyles" />
 
@@ -61,6 +62,7 @@
                         mode="#{request.getParameter('mode')}"
                         title="#{request.getParameter('title')}"
                         defaultValues="#{request.getParameter('defaultValues')}"
+                        inactive="#{request.getParameter('inactive')}"
                         displayPath="#{request.getParameter('displayPath')}" 
                         />
                 </div>

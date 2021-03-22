@@ -1,34 +1,32 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.reviewing.persistence;
 
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.Scriptable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.persistence.annotations.WegasEntity;
-import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.Helper;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.persistence.annotations.Scriptable;
-import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.annotations.WegasEntity;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.editor.ValueGenerators.EmptyEvaluationContainer;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.ValueGenerators.Three;
-import com.wegas.editor.View.FlatVariableSelectView.TextOrNumberSelector;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.I18nHtmlView;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.FlatVariableSelectView.TextOrNumberSelector;
+import com.wegas.editor.view.Hidden;
+import com.wegas.editor.view.I18nHtmlView;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
 import javax.persistence.CascadeType;
@@ -350,16 +348,10 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
         this.includeEvicted = includeEvicted;
     }
 
-    @Override
-    public void revive(GameModel gameModel, Beanjection beans) {
-        super.revive(gameModel, beans);
-        beans.getReviewingFacade().revivePeerReviewDescriptor(this);
-    }
-
     public static class PRDCallback implements WegasCallback {
 
         @Override
-        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
+        public void postUpdate(IMergeable entity, Object ref, Object identifier) {
             if (entity instanceof PeerReviewDescriptor) {
                 PeerReviewDescriptor prd = (PeerReviewDescriptor) entity;
 

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -97,7 +97,7 @@ public class GameModelFacadeTest extends AbstractArquillianTestMinimal {
         teamFacade.create(g.getId(), t);
         Assert.assertNotNull(t.getId());
 
-        Player p = gameFacade.joinTeam(t.getId(), "John A. Player", null);
+        Player p = gameFacade.joinTeam(t.getId(), null);
 
         Assert.assertNotNull(p.getId());
 

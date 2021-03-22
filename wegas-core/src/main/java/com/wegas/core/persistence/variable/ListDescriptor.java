@@ -1,31 +1,41 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
 
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.Scriptable;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasCallback;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.persistence.EntityComparators;
 import com.wegas.core.persistence.annotations.WegasEntity;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
-import com.wegas.core.merge.utils.WegasCallback;
-import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.Views;
+import com.wegas.editor.jsonschema.JSONArray;
+import com.wegas.editor.jsonschema.JSONString;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.EmptyString;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.ListChildrenTypeNullView;
+import com.wegas.editor.view.ListChildrenTypeView;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -33,18 +43,16 @@ import org.slf4j.LoggerFactory;
  */
 @Entity
 @NamedQuery(name = "ListDescriptor.findDistinctChildrenLabels",
-        query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList.id = :containerId")
+    query = "SELECT DISTINCT(child.label) FROM VariableDescriptor child WHERE child.parentList.id = :containerId")
 @WegasEntity(callback = ListDescriptor.ValidateAllowedItemsCallback.class)
 public class ListDescriptor extends VariableDescriptor<ListInstance> implements DescriptorListI<VariableDescriptor> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(ListDescriptor.class);
     /**
      *
      */
     //@BatchFetch(BatchFetchType.IN)
     @OneToMany(mappedBy = "parentList", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-    @OrderColumn(name = "ld_items_order")
     @WegasEntityProperty(includeByDefault = false, notSerialized = true)
     private List<VariableDescriptor> items = new ArrayList<>();
 
@@ -53,15 +61,16 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
      */
     @ElementCollection
     @WegasEntityProperty(view = @View(label = "Allowed types"),
-            optional = false, nullable = false, proposal = EmptyArray.class)
+        schema = JSONArrayOfChildrenType.class,
+        optional = false, nullable = false, proposal = EmptyArray.class)
     private Set<String> allowedTypes = new HashSet<>();
 
     /**
      * shortcut to show within (+) treeview button, must match allowedTypes
      */
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyString.class,
-            view = @View(label = "Default child type"))
+        optional = false, nullable = false, proposal = EmptyString.class,
+        view = @View(label = "Default child type", value = ListChildrenTypeNullView.class))
     private String addShortcut = "";
 
     /**
@@ -109,8 +118,15 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
      */
     @Override
     @JsonView(Views.ExportI.class)
+    @Scriptable(label = "getItems", wysiwyg = false)
     public List<VariableDescriptor> getItems() {
-        return this.items;
+        return Helper.copyAndSortModifiable(this.items, new EntityComparators.OrderComparator<>());
+    }
+
+    @Override
+    @JsonIgnore
+    public List<VariableDescriptor> getRawItems() {
+        return items;
     }
 
     @Override
@@ -181,6 +197,15 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
         return acc;
     }
 
+    public static class JSONArrayOfChildrenType extends JSONArray {
+
+        public JSONArrayOfChildrenType() {
+            JSONString aValues = new JSONString(false);
+            aValues.setView(new ListChildrenTypeView());
+            this.setItems(aValues);
+        }
+    }
+
     /*@PrePersist
     public void prePersist_cleanDefaultInstance() {
         VariableInstance defaultInstance = this.getDefaultInstance();
@@ -191,7 +216,7 @@ public class ListDescriptor extends VariableDescriptor<ListInstance> implements 
     public static class ValidateAllowedItemsCallback implements WegasCallback {
 
         @Override
-        public void postUpdate(Mergeable entity, Object ref, Object identifier) {
+        public void postUpdate(IMergeable entity, Object ref, Object identifier) {
             if (entity instanceof ListDescriptor) {
                 ListDescriptor listDescriptor = (ListDescriptor) entity;
                 String shortcut = listDescriptor.getAddShortcut();

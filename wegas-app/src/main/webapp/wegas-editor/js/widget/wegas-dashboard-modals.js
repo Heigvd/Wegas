@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -21,7 +21,7 @@ YUI.add('wegas-dashboard-modals', function(Y) {
                 gameLevel = team.get("@class") === "Game",
                 actions;
 
-            // Return one live player for each team which have such a live player
+            // Return one live player for each team which has such a live player
             // (in Team mode, we assume impacted variables are shared among team members)
             function getOnePlayerPerTeam(game) {
                 var gamePlayers = [], player,
@@ -36,7 +36,27 @@ YUI.add('wegas-dashboard-modals', function(Y) {
                         }
                     }
                 }
+                return gamePlayers;
+            }
 
+            function getAllPlayers(game) {
+                var gamePlayers = [], player,
+                    i, t, teams = game.get("teams"),
+                    nbTeams = teams.length,
+                    players, nbPlayers, j;
+                for (i = 0; i < nbTeams; i++) {
+                    t = teams[i];
+                    players = t.get("players");
+                    nbPlayers = players.length;
+                    if (t.get("@class") !== "DebugTeam" && nbPlayers) {
+                        for (j = 0; j < nbPlayers; j++) {
+                            player = players[j];
+                            if (player !== null && player.get("status") === 'LIVE') {
+                                gamePlayers.push(player);
+                            }
+                        }
+                    }
+                }
                 return gamePlayers;
             }
 
@@ -62,7 +82,11 @@ YUI.add('wegas-dashboard-modals', function(Y) {
                     "Impact player \"" + team.get("players")[0].get("name") + "\"" :
                     "Impact team \"" + team.get("name") + "\"");
                 this.add(new Y.Wegas.CustomConsole({
-                    player: gameLevel ? getOnePlayerPerTeam(game) : team.get("players")[0],
+                    player: gameLevel ?
+                        (this.get("scopeType") === "TeamScope" ?
+                            getOnePlayerPerTeam(game) :
+                            getAllPlayers(game)) :
+                        team.get("players")[0],
                     statusNode: Y.Node.create("<span></span>"),
                     customImpacts: this.get("customImpacts"),
                     showAdvancedImpacts: this.get("showAdvancedImpacts")
@@ -78,6 +102,10 @@ YUI.add('wegas-dashboard-modals', function(Y) {
                 value: true
             },
             customImpacts: {
+            },
+            scopeType: {
+                type: "string",
+                value: "TeamScope"
             }
         }
     });

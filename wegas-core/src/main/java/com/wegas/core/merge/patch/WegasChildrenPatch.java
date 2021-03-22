@@ -1,20 +1,23 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2017 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.merge.patch;
 
+import ch.albasim.wegas.annotations.IMergeable;
+import ch.albasim.wegas.annotations.ProtectionLevel;
+import ch.albasim.wegas.annotations.WegasCallback;
+import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
+import com.wegas.core.exception.client.WegasWrappedException;
 import com.wegas.core.merge.utils.LifecycleCollector;
-import com.wegas.core.merge.utils.WegasCallback;
 import com.wegas.core.persistence.Mergeable;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -39,12 +42,12 @@ public final class WegasChildrenPatch extends WegasPatch {
 
     private List<WegasPatch> patches;
 
-    WegasChildrenPatch(Object identifier, int order,
-            WegasCallback userCallback, Mergeable referenceEntity,
-            Method getter, Method setter,
-            Object from, Object to,
-            boolean recursive, boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
-            ProtectionLevel protectionLevel) {
+    /* package */ WegasChildrenPatch(Object identifier, int order,
+        WegasCallback userCallback, Mergeable referenceEntity,
+        Method getter, Method setter,
+        Object from, Object to,
+        boolean recursive, boolean ignoreNull, boolean sameEntityOnly, boolean initOnly,
+        ProtectionLevel protectionLevel) {
 
         super(identifier, order, getter, setter, userCallback, ignoreNull, sameEntityOnly, initOnly, recursive, protectionLevel);
         this.patches = new ArrayList<>();
@@ -70,9 +73,9 @@ public final class WegasChildrenPatch extends WegasPatch {
                     patches.add(new WegasPrimitivePatch(key, 0, null, referenceEntity, null, null, fromEntity, toEntity, false, false, false, this.protectionLevel));
                 } else {
                     patches.add(new WegasEntityPatch(key, 0, null, null, null,
-                            (Mergeable) fromEntity,
-                            (Mergeable) toEntity, // null -> DELETE ; not null -> UPDATE
-                            recursive, false, false, false, this.protectionLevel));
+                        (Mergeable) fromEntity,
+                        (Mergeable) toEntity, // null -> DELETE ; not null -> UPDATE
+                        recursive, false, false, false, this.protectionLevel));
                 }
 
                 if (to != null) {
@@ -95,8 +98,8 @@ public final class WegasChildrenPatch extends WegasPatch {
                     patches.add(new WegasPrimitivePatch(key, 0, null, referenceEntity, null, null, null, toEntity, false, false, false, this.protectionLevel));
                 } else {
                     patches.add(new WegasEntityPatch(key, 0, userCallback, null, null,
-                            null, (Mergeable) toEntity, // from null to no null  -> CREATE
-                            recursive, false, false, false, this.protectionLevel));
+                        null, (Mergeable) toEntity, // from null to no null  -> CREATE
+                        recursive, false, false, false, this.protectionLevel));
                 }
 
             } else {
@@ -108,9 +111,8 @@ public final class WegasChildrenPatch extends WegasPatch {
     }
 
     /**
-     * return a new Map which contains all children
-     * If children is a map, return map is a copy of children.
-     * If children is a list, returned map contains all children indexed by their refId
+     * return a new Map which contains all children If children is a map, return map is a copy of
+     * children. If children is a list, returned map contains all children indexed by their refId
      *
      * @param children List or Map which contains children
      *
@@ -128,10 +130,18 @@ public final class WegasChildrenPatch extends WegasPatch {
                         primitive = !Mergeable.class.isAssignableFrom(get.getClass());
                     }
                     if (primitive) {
-                        theMap.put("" + i + ":" + get, get);
+                        theMap.put(Integer.toString(i) + ":" + get, get);
                         // theMap.put(i, get);
                     } else {
-                        theMap.put(((Mergeable) get).getRefId(), get);
+                        Mergeable m = (Mergeable) get;
+                        if (Helper.isNullOrEmpty(m.getRefId())) {
+                            // no refiId means new object, set it
+                            m.setRefId(m.getClass().getSimpleName() + ":#" + i + ":" + Helper.genToken(6));
+                        }
+                        if (theMap.containsKey(m.getRefId())) {
+                            throw WegasErrorMessage.error("RefId " + m.getRefId() + " already exists in " + this);
+                        }
+                        theMap.put(m.getRefId(), get);
                     }
                 }
             }
@@ -144,7 +154,11 @@ public final class WegasChildrenPatch extends WegasPatch {
                     if (primitive) {
                         theMap.put(get, get);
                     } else {
-                        theMap.put(((Mergeable) get).getRefId(), get);
+                        String key = ((Mergeable) get).getRefId();
+                        if (theMap.containsKey(key)) {
+                            throw WegasErrorMessage.error("RefId " + key + " already exists in " + this);
+                        }
+                        theMap.put(key, get);
                     }
                 }
             }
@@ -210,11 +224,11 @@ public final class WegasChildrenPatch extends WegasPatch {
 
                             WegasCallback registerChild = new WegasCallback() {
                                 @Override
-                                public void add(Object child, Mergeable container, Object identifier) {
+                                public void add(Object child, IMergeable container, Object identifier) {
 
                                     if (childrenList != null) {
                                         logger.info("Add child {}", child);
-                                        if (identifier != null && identifier instanceof Integer) {
+                                        if (identifier instanceof Integer) {
                                             childrenList.add((Integer) identifier, child);
                                         } else {
                                             childrenList.add(child);
@@ -231,7 +245,7 @@ public final class WegasChildrenPatch extends WegasPatch {
                                 }
 
                                 @Override
-                                public Object remove(Object child, Mergeable container, Object identifier) {
+                                public Object remove(Object child, IMergeable container, Object identifier) {
                                     Object key = null;
                                     if (childrenList != null) {
                                         logger.info("remove child {}", child);
@@ -315,8 +329,8 @@ public final class WegasChildrenPatch extends WegasPatch {
                                         Object childB = toList.get(j);
 
                                         if ((childA.equals(childB))
-                                                || (childA instanceof Mergeable && childB instanceof Mergeable
-                                                && (((Mergeable) childA).getRefId() != null && ((Mergeable) childA).getRefId().equals(((Mergeable) childB).getRefId())))) {
+                                            || (childA instanceof Mergeable && childB instanceof Mergeable
+                                            && (((Mergeable) childA).getRefId() != null && ((Mergeable) childA).getRefId().equals(((Mergeable) childB).getRefId())))) {
                                             break;
                                         }
                                     }
@@ -336,9 +350,9 @@ public final class WegasChildrenPatch extends WegasPatch {
                             }
 
                             if (parentMode == PatchMode.DELETE
-                                    && ((childrenList != null && childrenList.size() > 0)
-                                    || (childrenMap != null && childrenMap.size() > 0)
-                                    || (childrenSet != null && childrenSet.size() > 0))) {
+                                && ((childrenList != null && !childrenList.isEmpty())
+                                || (childrenMap != null && !childrenMap.isEmpty())
+                                || (childrenSet != null && !childrenSet.isEmpty()))) {
                                 // children
                                 logger.info("orphans: {}", children);
 
@@ -370,7 +384,7 @@ public final class WegasChildrenPatch extends WegasPatch {
             if (cause instanceof WegasRuntimeException) {
                 throw (WegasRuntimeException) cause;
             } else {
-                throw new RuntimeException(cause != null ? cause : ex);
+                throw new WegasWrappedException(cause != null ? cause : ex);
             }
         } finally {
             logger.unindent();
@@ -381,12 +395,27 @@ public final class WegasChildrenPatch extends WegasPatch {
     }
 
     @Override
-    protected StringBuilder print(int ident) {
-        StringBuilder sb = super.print(ident);
+    protected StringBuilder print(int indent) {
+        StringBuilder sb = super.print(indent);
         for (WegasPatch patch : patches) {
-            sb.append(patch.print(ident + 1));
+            sb.append(patch.print(indent + 1));
         }
         return sb;
     }
 
+    protected PatchDiff buildDiff(boolean bypassVisibility) {
+        List<PatchDiff> subs = new ArrayList<>();
+
+        for (WegasPatch patch : patches) {
+            PatchDiff sub = patch.buildDiff(bypassVisibility);
+            if (sub != null) {
+                subs.add(sub);
+            }
+        }
+        if (!subs.isEmpty()) {
+            return new WegasEntityPatch.DiffCollection(null, subs);
+        } else {
+            return null;
+        }
+    }
 }

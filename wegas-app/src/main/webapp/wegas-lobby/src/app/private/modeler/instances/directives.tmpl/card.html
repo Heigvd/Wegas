@@ -21,7 +21,7 @@
     <span class="button__label">{{'MODELER-INSTANCES-RELEASE-BTN' | translate}}</span>
   </a>
 
-  <a class="button button--small button--round button--default button--label-off button--scenarist action--button" title="{{'SCENARIST-CARD-EDIT-BTN' | translate}}" href="{{ServiceURL}}edit.html?gameModelId={{scenario.id}}" target="_blank">
+  <a class="button button--small button--round button--default button--label-off button--scenarist action--button" title="{{'SCENARIST-CARD-EDIT-BTN' | translate}}" href="{{ServiceURL}}{{scenario.uiversion > 1 ? scenario.uiversion + '/': ''}}edit.html?gameModelId={{scenario.id}}" target="_blank">
     <span class="button__label">{{'SCENARIST-CARD-EDIT-BTN' | translate}}</span>
   </a>
 </div>

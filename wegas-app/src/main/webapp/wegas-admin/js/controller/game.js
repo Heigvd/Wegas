@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
@@ -99,10 +99,14 @@ define(["ember"], function(Ember) {
             return this.get('model').get('id') + 'charged';
         }.property("gameId"),
         declaredSize: function() {
-            var count=0;
+            var count = 0;
             var teams = this.get("teams");
-            for (var i=0; i<teams.length; i++){
-                count += teams[i].declaredSize;
+            if (teams) {
+                for (var i = 0; i < teams.length; i++) {
+                    count += teams[i].declaredSize;
+                }
+            } else {
+                count = "n/a";
             }
             return count;
         }.property("declaredSize")

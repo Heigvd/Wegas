@@ -1,15 +1,19 @@
 import * as React from 'react';
-import { IconButton } from '../../Components/Button/IconButton';
 import { Modal } from '../../Components/Modal';
 import { Actions } from '../../data';
-import { editorLabel } from '../../data/methods/VariableDescriptor';
+import { editorLabel } from '../../data/methods/VariableDescriptorMethods';
 import { State } from '../../data/Reducer/reducers';
 import { VariableDescriptor } from '../../data/selectors';
-import { StoreConsumer, StoreDispatch } from '../../data/store';
+import { StoreConsumer, StoreDispatch } from '../../data/Stores/store';
 import { getEntityActions, getIcon } from '../editionConfig';
 import { asyncSFC } from '../../Components/HOC/asyncSFC';
-import { FontAwesome, withDefault } from './Views/FontAwesome';
+import { withDefault, IconComp } from './Views/FontAwesome';
 import { css } from 'emotion';
+import { entityIs } from '../../data/entities';
+import { mainLayoutId } from './Layout';
+import { IVariableDescriptor } from 'wegas-ts-api';
+import { Button } from '../../Components/Inputs/Buttons/Button';
+import { focusTab } from './LinearTabLayout/LinearLayout';
 
 interface SearchPanelProps {
   search: State['global']['search'];
@@ -19,6 +23,36 @@ const resultStyle = css({
   listStyle: 'none',
   cursor: 'pointer',
 });
+
+function SearchResult({
+  vId,
+  onClick,
+  variable,
+}: {
+  vId: number;
+  onClick: () => void;
+  variable: IVariableDescriptor;
+}) {
+  const Title = asyncSFC(async () => (
+    <IconComp icon={withDefault(getIcon(variable!), 'question')} />
+  ));
+  return (
+    <li
+      key={vId}
+      className={resultStyle}
+      onClick={() => {
+        if (entityIs(variable, 'AbstractStateMachineDescriptor')) {
+          focusTab(mainLayoutId, 'State Machine');
+        }
+        onClick();
+      }}
+    >
+      <Title />
+      {editorLabel(variable)}
+    </li>
+  );
+}
+
 class SearchPanel extends React.Component<
   SearchPanelProps,
   { show: boolean; searchField: string }
@@ -80,14 +114,10 @@ class SearchPanel extends React.Component<
           </li>
         );
       }
-      const Title = asyncSFC(async () => {
-        const icon = await getIcon(variable!);
-        return <FontAwesome icon={withDefault(icon, 'question')} fixedWidth />;
-      });
       return (
-        <li
+        <SearchResult
           key={vId}
-          className={resultStyle}
+          vId={vId}
           onClick={() =>
             this.setState({ show: false }, () =>
               getEntityActions(variable).then(({ edit }) =>
@@ -95,10 +125,8 @@ class SearchPanel extends React.Component<
               ),
             )
           }
-        >
-          <Title />
-          {editorLabel(variable)}
-        </li>
+          variable={variable}
+        />
       );
     });
   }
@@ -117,7 +145,7 @@ class SearchPanel extends React.Component<
                 value={this.state.searchField}
                 onChange={this.searchChange}
               />
-              <IconButton
+              <Button
                 tooltip="Submit"
                 icon="check"
                 type="submit"
@@ -130,7 +158,7 @@ class SearchPanel extends React.Component<
             </>
           )}
           {search.type !== 'NONE' && (
-            <IconButton
+            <Button
               tooltip="Reset search"
               icon="eraser"
               onClick={() =>
@@ -148,9 +176,8 @@ class SearchPanel extends React.Component<
   render() {
     return (
       <>
-        <IconButton
-          icon="search"
-          mask="cloud"
+        <Button
+          icon={{ icon: 'search', mask: 'cloud' }}
           tooltip="Cloud search"
           onClick={this.togglePanel}
         />

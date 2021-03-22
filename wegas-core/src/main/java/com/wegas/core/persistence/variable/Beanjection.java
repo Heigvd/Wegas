@@ -1,15 +1,18 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.variable;
 
+import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.resourceManagement.ejb.IterationFacade;
@@ -38,11 +41,16 @@ public class Beanjection implements Serializable {
 
     private UserFacade userFacade;
 
+    private AccountFacade accountFacade;
+
     private TeamFacade teamFacade;
 
     private QuestionDescriptorFacade questionDescriptorFacade;
 
+    private GameFacade gameFacade;
+
     public Beanjection() {
+        // ensure to have an empty constructor
     }
 
     public Beanjection(VariableInstanceFacade variableInstanceFacade) {
@@ -50,21 +58,25 @@ public class Beanjection implements Serializable {
     }
 
     public Beanjection(VariableInstanceFacade variableInstanceFacade,
-            VariableDescriptorFacade variableDescriptorFacade,
-            ResourceFacade resourceFacade,
-            IterationFacade iterationFacade,
-            ReviewingFacade reviewingFacade,
-            UserFacade userFacade,
-            TeamFacade teamFacade,
-            QuestionDescriptorFacade questionDescriptorFacade) {
+        VariableDescriptorFacade variableDescriptorFacade,
+        ResourceFacade resourceFacade,
+        IterationFacade iterationFacade,
+        ReviewingFacade reviewingFacade,
+        UserFacade userFacade,
+        AccountFacade accountFacade,
+        TeamFacade teamFacade,
+        QuestionDescriptorFacade questionDescriptorFacade, 
+        GameFacade gameFacade) {
         this.variableInstanceFacade = variableInstanceFacade;
         this.variableDescriptorFacade = variableDescriptorFacade;
         this.resourceFacade = resourceFacade;
         this.iterationFacade = iterationFacade;
         this.reviewingFacade = reviewingFacade;
         this.userFacade = userFacade;
+        this.accountFacade = accountFacade;
         this.teamFacade = teamFacade;
         this.questionDescriptorFacade = questionDescriptorFacade;
+        this.gameFacade = gameFacade;
     }
 
     public VariableInstanceFacade getVariableInstanceFacade() {
@@ -129,5 +141,21 @@ public class Beanjection implements Serializable {
 
     public void setResourceFacade(ResourceFacade resourceFacade) {
         this.resourceFacade = resourceFacade;
+    }
+
+    public AccountFacade getAccountFacade() {
+        return accountFacade;
+    }
+
+    public void setAccountFacade(AccountFacade accountFacade) {
+        this.accountFacade = accountFacade;
+    }
+
+    public void setGameFacade(GameFacade gameFacade) {
+        this.gameFacade = gameFacade;
+    }
+
+    public GameFacade getGameFacade() {
+        return gameFacade;
     }
 }

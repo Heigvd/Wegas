@@ -1,29 +1,28 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
 
+import ch.albasim.wegas.annotations.ProtectionLevel;
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.Orderable;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
-import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.False;
-import com.wegas.editor.View.ReadOnlyString;
-import com.wegas.editor.View.View;
-import com.wegas.editor.View.VisibilitySelectView;
+import com.wegas.editor.view.StringView;
+import com.wegas.editor.view.VisibilitySelectView;
 import java.util.Collection;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -61,7 +60,7 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
      */
     @Id
     @GeneratedValue
-    @JsonView(Views.IndexI.class)
+    @JsonView({Views.IndexI.class, Views.LobbyI.class})
     private Long id;
 
     /**
@@ -72,7 +71,8 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
             optional = false, nullable = false,
             view = @View(
                     label = "Language code",
-                    value = ReadOnlyString.class
+                    readOnly = true,
+                    value = StringView.class
             ))
     private String code;
 
@@ -83,7 +83,10 @@ public class GameModelLanguage extends AbstractEntity implements Orderable, Name
     /**
      * Language name to display
      */
-    @WegasEntityProperty(optional = false, nullable = false)
+    @WegasEntityProperty(optional = false, nullable = false,
+            view = @View(
+            label = "Language name"
+    ))
     private String lang;
 
     @Enumerated(value = EnumType.STRING)

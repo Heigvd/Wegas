@@ -1,15 +1,12 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest.util;
 
-import com.fasterxml.jackson.jaxrs.base.JsonMappingExceptionMapper;
-import com.fasterxml.jackson.jaxrs.base.JsonParseExceptionMapper;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
@@ -18,6 +15,9 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.internal.InternalProperties;
 import org.glassfish.jersey.internal.util.PropertiesHelper;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.base.JsonMappingExceptionMapper;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.base.JsonParseExceptionMapper;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJsonProvider;
 
 
 /**

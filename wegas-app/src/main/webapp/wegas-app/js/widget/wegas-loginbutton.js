@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global I18n */
@@ -62,7 +62,9 @@ YUI.add("wegas-loginbutton", function(Y) {
                                     children:
                                         languages.map(function(item) {
                                             return {
-                                                label: (I18n.getCode() === item.get("code").toUpperCase() ? "<b>" + item.get("lang") + "</b>" : item.get("lang")),
+                                                label: (I18n.getCode() === item.get("code")
+                                                    .toUpperCase() ? "<b>" + I18n.capitalize(item.get("lang")) + "</b>"
+                                                    : I18n.capitalize(item.get("lang"))),
                                                 on: {
                                                     click: function() {
                                                         I18n.setCurrentPlayerCode(item.get("code"));
@@ -77,7 +79,7 @@ YUI.add("wegas-loginbutton", function(Y) {
             this.menu.add([
                 {
                     type: "Button",
-                    label: Y.Wegas.I18n.t('global.logout').capitalize(),
+                    label: I18n.tCap('global.logout'),
                     plugins: [{
                             fn: "OpenUrlAction",
                             cfg: {
@@ -97,7 +99,6 @@ YUI.add("wegas-loginbutton", function(Y) {
             Wegas.LoginButton.superclass.syncUI.apply(this, arguments);
 
             var cUser = Wegas.Facade.User.cache.get("currentUser"),
-                cPlayer = Wegas.Facade.Game.cache.getCurrentPlayer(),
                 cTeam = Wegas.Facade.Game.cache.getCurrentTeam(),
                 mainAccount = cUser.getMainAccount(),
                 gameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel();
@@ -109,10 +110,11 @@ YUI.add("wegas-loginbutton", function(Y) {
             if (this.get("forcedLabel")) {
                 this.set("label", this.get("forcedLabel"));
             } else {
-                if (cTeam && !(gameModel && gameModel.get("properties.freeForAll"))) {
-                    this.set("label", cTeam.get("name") + " : " + cPlayer.get("name"));
+                
+                if (cTeam && !(gameModel && gameModel.get("properties").get("val").freeForAll)) {
+                    this.set("label", cTeam.get("name") + " : " + mainAccount.get("name"));
                 } else {
-                    this.set("label", cPlayer.get("name") || "Undefined");
+                    this.set("label", mainAccount.get("name") || "Undefined");
                 }
             }
         },
@@ -294,7 +296,7 @@ YUI.add("wegas-loginbutton", function(Y) {
                         }]
                 }, {
                     type: "Button",
-                    label: Y.Wegas.I18n.t('global.logout').capitalize(),
+                    label: I18n.tCap('global.logout'),
                     plugins: [{
                             fn: "OpenUrlAction",
                             cfg: {

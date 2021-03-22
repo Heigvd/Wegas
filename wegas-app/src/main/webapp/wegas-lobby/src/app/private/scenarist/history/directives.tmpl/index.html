@@ -6,6 +6,9 @@
   </a>
 </div>
 
-<div class="modal__content modal__content--nav-off" scenarist-history-list></div>
+<div ng-if="!diff" class="modal__content modal__content--nav-off" scenarist-history-list></div>
+
+<div ng-if='diff' class="modal__content modal__content--nav-off" ng-bind-html="diff">
+</div>
 
 <div class="modal__tools flex" scenarist-history-actions scenario="scenaristHistoryIndexCtrl.scenario"></div>

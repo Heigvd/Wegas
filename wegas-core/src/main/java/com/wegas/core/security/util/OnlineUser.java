@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.util;
@@ -27,6 +27,7 @@ public class OnlineUser implements Serializable {
     private final Long userId;
     private final Long mainAccountId;
     private final Long highestRole;
+    private Long playerId;
 
     public OnlineUser(User user, long highestRole) {
         this.fullname = user.getName();
@@ -37,6 +38,7 @@ public class OnlineUser implements Serializable {
         this.userId = user.getId();
         this.mainAccountId = user.getMainAccount().getId();
         this.highestRole = highestRole;
+        this.playerId = null;
     }
 
     public String getFullname() {
@@ -61,9 +63,13 @@ public class OnlineUser implements Serializable {
 
     /**
      * set last activity date to now
+     * @param playerId optional playerId
      */
-    public void touch(){
+    public void touch(Long playerId) {
         this.lastActivityDate = new Date();
+        if (playerId != null) {
+            this.setPlayerId(playerId);
+        }
     }
 
     public Long getUserId() {
@@ -74,7 +80,15 @@ public class OnlineUser implements Serializable {
         return mainAccountId;
     }
 
-    public Long getHighestRole(){
+    public Long getHighestRole() {
         return highestRole;
+    }
+
+    public Long getPlayerId() {
+        return playerId;
+    }
+
+    private void setPlayerId(Long playerId) {
+        this.playerId = playerId;
     }
 }

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.test.arquillian;
@@ -11,7 +11,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.ejb.HelperBean;
+import com.wegas.core.ejb.JPACacheHelper;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.RequestManager;
@@ -25,20 +25,23 @@ import com.wegas.core.jcr.SessionManager;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.guest.GuestToken;
 import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.persistence.AccountDetails;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.AuthenticationInformation;
+import com.wegas.core.security.util.AuthenticationMethod;
+import com.wegas.core.security.util.HashMethod;
+import com.wegas.core.security.util.JpaAuthentication;
 import com.wegas.test.TestHelper;
 import com.wegas.test.WegasFactory;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.logging.Level;
-import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.mail.internet.AddressException;
@@ -47,8 +50,10 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.config.Ini;
 import org.apache.shiro.config.IniSecurityManagerFactory;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.env.IniWebEnvironment;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -74,40 +79,40 @@ public abstract class AbstractArquillianTestMinimal {
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractArquillianTestMinimal.class);
 
-    @EJB
+    @Inject
     protected GameModelFacade gameModelFacade;
 
-    @EJB
+    @Inject
     protected GameFacade gameFacade;
 
-    @EJB
+    @Inject
     protected TeamFacade teamFacade;
 
-    @EJB
+    @Inject
     protected RoleFacade roleFacade;
 
-    @EJB
+    @Inject
     protected UserFacade userFacade;
 
-    @EJB
+    @Inject
     protected AccountFacade accountFacade;
 
-    @EJB
+    @Inject
     protected PlayerFacade playerFacade;
 
-    @EJB
+    @Inject
     protected VariableDescriptorFacade variableDescriptorFacade;
 
-    @EJB
+    @Inject
     protected VariableInstanceFacade variableInstanceFacade;
 
-    @EJB
+    @Inject
     protected ScriptFacade scriptFacade;
 
     @Inject
-    protected HelperBean helperBean;
+    protected JPACacheHelper jpaCacheHelper;
 
-    @EJB
+    @Inject
     protected RequestFacade requestFacade;
 
     @Inject
@@ -141,8 +146,8 @@ public abstract class AbstractArquillianTestMinimal {
     @Deployment
     public static JavaArchive createDeployement() {
         JavaArchive war = ShrinkWrap.create(JavaArchive.class).
-                as(ExplodedImporter.class).importDirectory(new File("../wegas-core/target/embed-classes/")).
-                as(JavaArchive.class);
+            as(ExplodedImporter.class).importDirectory(new File("../wegas-core/target/embed-classes/")).
+            as(JavaArchive.class);
 
         //war.addPackages(true, "com.wegas");
         //war.addAsDirectory("target/embed-classes/");
@@ -177,19 +182,26 @@ public abstract class AbstractArquillianTestMinimal {
      */
     @Before
     public void init() {
+        logger.info("Start TEST {}", testName.getMethodName());
+
         this.startTime = System.currentTimeMillis();
+
+        Ini ini = Ini.fromResourcePath("classpath:shiro.ini");
+        IniWebEnvironment env = new IniWebEnvironment();
+        env.setIni(ini);
+        env.init();
+
+        //SecurityUtils.setSecurityManager(env.getSecurityManager());
         SecurityUtils.setSecurityManager(new IniSecurityManagerFactory("classpath:shiro.ini").getInstance());
         TestHelper.emptyDBTables();
 
-        requestManager.setPlayer(null);
         requestManager.clearEntities();
-        helperBean.wipeCache();
+        this.wipeEmCache();
 
         this.setSynchronous();
 
         this.startTime = System.currentTimeMillis();
         this.wipeEmCache();
-        requestFacade.setPlayer(null);
 
         requestFacade.clearEntities();
 
@@ -204,45 +216,47 @@ public abstract class AbstractArquillianTestMinimal {
         }
 
         try (Connection connection = ds.getConnection("user", "1234");
-                Statement statement = connection.createStatement()) {
+            Statement statement = connection.createStatement()) {
             String setupQuery = ""
-                    + "INSERT INTO roles (id, name, description) VALUES (1, 'Administrator', '');"
-                    + "INSERT INTO roles (id, name, description) VALUES (2, 'Scenarist', '');"
-                    + "INSERT INTO roles (id, name, description) VALUES (3, 'Trainer', '');"
-                    + "INSERT INTO permission (id, permissions, role_id) VALUES (1, 'GameModel:*:*', 1);"
-                    + "INSERT INTO permission (id, permissions, role_id) VALUES (2, 'Game:*:*', 1);"
-                    + "INSERT INTO permission (id, permissions, role_id) VALUES (3, 'User:*:*', 1);"
-                    + "INSERT INTO users (id) VALUES (1);"
-                    + "INSERT INTO abstractaccount (id, username, email, dtype, user_id, passwordhex, salt) VALUES (1, 'root', 'root@local', 'JpaAccount', '1', 'eb86410aa029d4f7b85c1b4c3c0a25736f9ae4806bd75d456a333d83b648f2ee', '69066d73c2d03f85c5a8d3e39a2f184f');"
-                    + "INSERT INTO users_roles (user_id, role_id) VALUES (1, 1);"
-                    + "UPDATE sequence SET seq_count=seq_count+50 WHERE seq_name = 'SEQ_GEN';"
-                    + "CREATE INDEX IF NOT EXISTS index_abstractaccount_email ON abstractaccount (email) WHERE (dtype = 'JpaAccount' AND email IS NOT NULL AND email NOT LIKE '');"
-                    + "CREATE INDEX IF NOT EXISTS index_abstractaccount_username ON abstractaccount (username) WHERE (dtype = 'JpaAccount' AND username IS NOT NULL AND username NOT LIKE '');"
-                    + "CREATE INDEX IF NOT EXISTS index_abstractaccount_persistentid ON abstractaccount (persistentid) WHERE (dtype = 'AaiAccount');"
-                    + "CREATE INDEX IF NOT EXISTS index_listDesc_allowedType ON listdescriptor_allowedtypes (listdescriptor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_numberinstance_history_numberinstance_id ON numberinstance_history (numberinstance_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_objectdescriptor_properties_objectdescriptor_id ON objectdescriptor_properties (objectdescriptor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_objectinstance_properties_objectinstance_id ON objectinstance_properties (objectinstance_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_resourcedescriptor_properties_resourcedescriptor_id ON resourcedescriptor_properties (resourcedescriptor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_resourceinstance_properties_resourceinstance_id ON resourceinstance_properties (resourceinstance_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_pred ON taskdescriptor_taskdescriptor (predecessor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_task ON taskdescriptor_taskdescriptor (taskdescriptor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_users_roles_role_id ON users_roles (role_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_users_roles_user_id ON users_roles (user_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_taskinstance_plannification_taskinstance_id ON taskinstance_plannification (taskinstance_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_taskinstance_properties_taskinstance_id ON taskinstance_properties (taskinstance_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_properties_taskdescriptor_id ON taskdescriptor_properties (taskdescriptor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_transitionhistory_statemachineinstance_id ON transitionhistory (statemachineinstance_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_iteration_plannedworkloads_iteration_id on iteration_plannedworkloads (iteration_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_iteration_replannedworkloads_iteration on iteration_replannedworkloads (iteration_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_iteration_id on iteration_taskinstance (iteration_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_id on iteration_taskinstance (taskinstance_id);"
-
-                    + "CREATE INDEX IF NOT EXISTS index_mcqresult_name_choicedescriptor_id on mcqresult (name,choicedescriptor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_questiondescriptor_pictures_questiondescriptor_id on questiondescriptor_pictures (questiondescriptor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_result_files_result_id on result_files (result_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_taskdescriptor_id_predecessor_id on taskdescriptor_taskdescriptor (taskdescriptor_id,predecessor_id);"
-                    + "CREATE INDEX IF NOT EXISTS index_users_roles_roles_id_user_id on users_roles (role_id,user_id);";
+                + "INSERT INTO roles (id, name, description) VALUES (1, 'Administrator', '');"
+                + "INSERT INTO roles (id, name, description) VALUES (2, 'Scenarist', '');"
+                + "INSERT INTO roles (id, name, description) VALUES (3, 'Trainer', '');"
+                + "INSERT INTO permission (id, permissions, role_id) VALUES (1, 'GameModel:*:*', 1);"
+                + "INSERT INTO permission (id, permissions, role_id) VALUES (2, 'Game:*:*', 1);"
+                + "INSERT INTO permission (id, permissions, role_id) VALUES (3, 'User:*:*', 1);"
+                + "INSERT INTO users (id) VALUES (1);"
+                + "INSERT INTO accountdetails (id, email, checkuniqueness) VALUES (1, 'root@localhost', true);"
+                + "INSERT INTO shadow (id, hashmethod, passwordhex, salt) VALUES (1, 'SHA_256', 'eb86410aa029d4f7b85c1b4c3c0a25736f9ae4806bd75d456a333d83b648f2ee', '69066d73c2d03f85c5a8d3e39a2f184f');"
+                + "INSERT INTO abstractaccount (id, username, emaildomain, currentauth, dtype, user_id, shadow_id, details_id) VALUES (1, 'root', 'localhost', 'PLAIN', 'JpaAccount', 1, 1, 1);"
+                + "INSERT INTO users_roles (user_id, role_id) VALUES (1, 1);"
+                + "UPDATE sequence SET seq_count=seq_count+50 WHERE seq_name = 'SEQ_GEN';"
+                + "CREATE INDEX IF NOT EXISTS index_accountdetails_email ON accountdetails (email) WHERE (checkuniqueness AND email IS NOT NULL AND email NOT LIKE '');"
+                + "CREATE INDEX IF NOT EXISTS index_abstractaccount_username ON abstractaccount (username) WHERE (dtype = 'JpaAccount' AND username IS NOT NULL AND username NOT LIKE '');"
+                + "CREATE INDEX IF NOT EXISTS index_abstractaccount_persistentid ON abstractaccount (persistentid) WHERE (dtype = 'AaiAccount');"
+                + "CREATE INDEX IF NOT EXISTS index_listDesc_allowedType ON listdescriptor_allowedtypes (listdescriptor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_numberinstance_history_numberinstance_id ON numberinstance_history (numberinstance_id);"
+                + "CREATE INDEX IF NOT EXISTS index_objectdescriptor_properties_objectdescriptor_id ON objectdescriptor_properties (objectdescriptor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_objectinstance_properties_objectinstance_id ON objectinstance_properties (objectinstance_id);"
+                + "CREATE INDEX IF NOT EXISTS index_resourcedescriptor_properties_resourcedescriptor_id ON resourcedescriptor_properties (resourcedescriptor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_resourceinstance_properties_resourceinstance_id ON resourceinstance_properties (resourceinstance_id);"
+                + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_pred ON taskdescriptor_taskdescriptor (predecessor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_task ON taskdescriptor_taskdescriptor (taskdescriptor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_users_roles_role_id ON users_roles (role_id);"
+                + "CREATE INDEX IF NOT EXISTS index_users_roles_user_id ON users_roles (user_id);"
+                + "CREATE INDEX IF NOT EXISTS index_taskinstance_plannification_taskinstance_id ON taskinstance_plannification (taskinstance_id);"
+                + "CREATE INDEX IF NOT EXISTS index_taskinstance_properties_taskinstance_id ON taskinstance_properties (taskinstance_id);"
+                + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_properties_taskdescriptor_id ON taskdescriptor_properties (taskdescriptor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_transitionhistory_statemachineinstance_id ON transitionhistory (statemachineinstance_id);"
+                + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_iteration_id on iteration_taskinstance (iteration_id);"
+                + "CREATE INDEX IF NOT EXISTS index_iteration_taskinstance_id on iteration_taskinstance (taskinstance_id);"
+                + "CREATE INDEX IF NOT EXISTS index_mcqresult_name_choicedescriptor_id on mcqresult (name,choicedescriptor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_questiondescriptor_pictures_questiondescriptor_id on questiondescriptor_pictures (questiondescriptor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_result_files_result_id on result_files (result_id);"
+                + "CREATE INDEX IF NOT EXISTS index_taskdescriptor_taskdescriptor_taskdescriptor_id_predecessor_id on taskdescriptor_taskdescriptor (taskdescriptor_id,predecessor_id);"
+                + "CREATE INDEX IF NOT EXISTS index_users_roles_roles_id_user_id on users_roles (role_id,user_id);"
+                + "CREATE INDEX IF NOT EXISTS index_game_toen ON game (token) WHERE (status = 'LIVE' OR status = 'BIN');"
+                + "CREATE INDEX IF NOT EXISTS index_surveydescriptor_token_surveys_id on surveydescriptor_token (surveys_id);"
+                + "CREATE INDEX IF NOT EXISTS index_surveydescriptor_token_tokens_id on surveydescriptor_token (tokens_id);";
 
             statement.execute(setupQuery);
         } catch (SQLException ex) {
@@ -269,18 +283,18 @@ public abstract class AbstractArquillianTestMinimal {
     public void clean() {
         long now = System.currentTimeMillis();
         logger.info("TEST {} DURATION: total: {} ms; init: {} ms; test: {} ms",
-                testName.getMethodName(),
-                now - this.startTime,
-                this.initTime - this.startTime,
-                now - this.initTime);
+            testName.getMethodName(),
+            now - this.startTime,
+            this.initTime - this.startTime,
+            now - this.initTime);
 
-        requestManager.setPlayer(null);
         requestManager.clearEntities();
-        helperBean.wipeCache();
+
+        this.wipeEmCache();
     }
 
     protected void wipeEmCache() {
-        this.helperBean.wipeCache();
+        this.jpaCacheHelper.requestClearCache();
     }
 
     public void logout() {
@@ -289,19 +303,49 @@ public abstract class AbstractArquillianTestMinimal {
 
     public void login(WegasUser user) {
         Subject subject = SecurityUtils.getSubject();
-        userFacade.logout();
-        if (user.getUser().getMainAccount() instanceof GuestJpaAccount) {
-            subject.login(new GuestToken(user.getUser().getMainAccount().getId()));
+        if (user.isGuest()) {
+            GuestToken guestToken = new GuestToken(user.getUser().getMainAccount().getId());
+            userFacade.logout();
+            requestManager.login(subject, guestToken);
         } else {
-            AuthenticationInformation info = new AuthenticationInformation();
-            info.setAgreed(Boolean.TRUE);
-            info.setLogin(user.getUsername());
-            info.setPassword(user.getPassword());
-            info.setRemember(true);
+            userFacade.logout();
 
-            userFacade.authenticate(info);
+            List<AuthenticationMethod> authMethods = userFacade.getAuthMethods(user.getUsername());
+            JpaAuthentication jpaAuth = null;
+            for (AuthenticationMethod m : authMethods) {
+                if (m instanceof JpaAuthentication) {
+                    jpaAuth = (JpaAuthentication) m;
+                    break;
+                }
+            }
+            if (jpaAuth != null) {
 
-            subject.login(new UsernamePasswordToken(user.getUsername(), user.getPassword()));
+                AuthenticationInformation info = new AuthenticationInformation();
+                info.setAgreed(Boolean.TRUE);
+                info.setLogin(user.getUsername());
+
+                info.addHash(jpaAuth.getMandatoryMethod(), user.getPassword(),
+                    Helper.coalesce(jpaAuth.getSalt()));
+
+                info.addHash(jpaAuth.getOptionalMethod(), user.getPassword(),
+                    Helper.coalesce(jpaAuth.getNewSalt(), jpaAuth.getSalt()));
+
+                info.setRemember(true);
+
+                userFacade.authenticate(info);
+
+                // is that really useful to login again ?
+                /*String hash = info.getHashes().get(
+                    jpaAuth.getOptionalMethod() != null
+                    ? jpaAuth.getOptionalMethod() : jpaAuth.getMandatoryMethod()
+                );
+                requestManager.login(subject, new UsernamePasswordToken(user.getUsername(),
+                    info.getHashes().get(hash)));
+                 */
+                requestManager.setPlayer(null);
+            } else {
+                throw WegasErrorMessage.error("Not a JPA Account");
+            }
         }
 
         User currentUser = userFacade.getCurrentUser();
@@ -313,15 +357,21 @@ public abstract class AbstractArquillianTestMinimal {
     public User login(String username, String password) {
         Subject subject = SecurityUtils.getSubject();
         userFacade.logout();
-        subject.login(new UsernamePasswordToken(username, password));
+        requestManager.login(subject, new UsernamePasswordToken(username, password));
         return userFacade.getCurrentUser();
     }
 
     public WegasUser signup(String email, String password) {
         logout();
+        JpaAuthentication authMethod = userFacade.getDefaultAuthMethod();
+
+        String hash = authMethod.getMandatoryMethod().hash(password,
+            Helper.coalesce(authMethod.getSalt()));
+
         JpaAccount ja = new JpaAccount();
         ja.setEmail(email);
-        ja.setPassword(password);
+        ja.setSalt(authMethod.getSalt());
+        ja.setPassword(hash);
         try {
             User signup = userFacade.signup(ja);
             return new WegasUser(signup, email, password);
@@ -337,7 +387,9 @@ public abstract class AbstractArquillianTestMinimal {
     public WegasUser guestLogin() {
         /*AuthenticationInformation authInfo = new AuthenticationInformation();
         authInfo.setRemember(true);*/
-        return new WegasUser(userFacade.guestLogin(), null, null);
+
+        userFacade.logout();
+        return WegasUser.createGuest(userFacade);
     }
 
     public WegasUser addRoles(WegasUser user, Role... roles) {
@@ -352,9 +404,16 @@ public abstract class AbstractArquillianTestMinimal {
 
     public static class WegasUser {
 
-        User user;
-        String username;
-        String password;
+        public static WegasUser createGuest(UserFacade userFacade) {
+            WegasUser guest = new WegasUser(userFacade.guestLogin(), null, null);
+            guest.guest = true;
+            return guest;
+        }
+
+        private User user;
+        private String username;
+        private String password;
+        boolean guest;
 
         public WegasUser(User user, String username, String password) {
             this.user = user;
@@ -380,6 +439,10 @@ public abstract class AbstractArquillianTestMinimal {
 
         public void setUser(User user) {
             this.user = user;
+        }
+
+        public boolean isGuest() {
+            return guest;
         }
     }
 

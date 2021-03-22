@@ -3,7 +3,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -18,7 +18,7 @@ YUI.add("wegas-i18n-mcq-en", function(Y) {
             result: "Result",
             results: "Results",
             noQuestionSelected: "Select an item on the left",
-            empty: "No questions available yet",
+            empty: "No questions available at this time",
             submit: "submit",
             answered : "answered",
             unanswered : "",    // Customizable per scenario

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -44,7 +44,7 @@ public class GameModelCheck {
     private GameController gameController;
 
     @Inject
-    private HelperBean helperBean;
+    private JPACacheHelper jpaCacheHelper;
 
     public Exception validate(GameModel gameModel) {
         return this.createGameAndRollback(gameModel);
@@ -62,9 +62,9 @@ public class GameModelCheck {
                 logger.error("Fail to create a game based on {} ({})", gameModel, ex);
                 return ex;
             } finally {
-                requestManager.setPlayer(null);
+                //requestManager.setPlayer(null);
                 utx.rollback();
-                helperBean.wipeCache();
+                jpaCacheHelper.requestClearCache();
             }
         } catch (NotSupportedException | SystemException ex) {
             logger.error("Transaction failed", ex);

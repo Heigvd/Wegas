@@ -1,34 +1,30 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence;
 
+import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.jcr.jta.JCRClient;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.ModelScoped;
-import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.reviewing.ejb.ReviewingFacade;
-import java.util.List;
-import java.util.Map;
 import javax.inject.Inject;
 import javax.persistence.PostLoad;
 import javax.persistence.PostPersist;
@@ -67,6 +63,9 @@ public class EntityListener {
     private UserFacade userFacade;
 
     @Inject
+    private AccountFacade accountFacade;
+
+    @Inject
     private ReviewingFacade reviewingFacade;
 
     @Inject
@@ -75,12 +74,18 @@ public class EntityListener {
     @Inject
     private TeamFacade teamFacade;
 
+    @Inject
+    private GameFacade gameFacade;
+
     private Beanjection getBeansjection() {
-        return new Beanjection(variableInstanceFacade, variableDescriptorFacade, resourceFacade, iterationFacade, reviewingFacade, userFacade, teamFacade, questionDescriptorFacade);
+        return new Beanjection(variableInstanceFacade, variableDescriptorFacade, resourceFacade,
+            iterationFacade, reviewingFacade, userFacade, accountFacade,
+            teamFacade, questionDescriptorFacade, gameFacade);
     }
 
     @PrePersist
     void onPrePersist(Object o) {
+        logger.trace("PrePersist {}", o);
         if (o instanceof JCRClient) {
             this.injectJTABean((JCRClient) o);
         }
@@ -88,60 +93,61 @@ public class EntityListener {
 
     @PostPersist
     void onPostPersist(Object o) {
+        logger.trace("PostPersist {}", o);
 
         if (o instanceof Mergeable) {
             Mergeable m = (Mergeable) o;
             // new entities in a protected gameModel and an INTERNAL visibility scope is prohibited
             if (m.belongsToProtectedGameModel() && m.getInheritedVisibility() == ModelScoped.Visibility.INTERNAL) {
-                throw WegasErrorMessage.error("Not authorized to create " + o);
+                // but creating translation is allowed
+                if (o instanceof Translation == false) {
+                    throw WegasErrorMessage.error("Not authorized to create " + o);
+                }
             }
         }
 
         if (o instanceof WithPermission) {
-            logger.debug("PostPersist {}", o);
             if (requestManager != null) {
                 requestManager.assertCreateRight((WithPermission) o);
             } else {
                 logger.error("PostPersist NO SECURITY FACADE");
             }
         }
+        if (o instanceof AbstractEntity) {
+            logger.debug("PropagateNew: {} :: {}", o.getClass().getSimpleName(), ((AbstractEntity) o).getId());
+            requestManager.addUpdatedEntity((AbstractEntity) o);
+        }
 
-        if (o instanceof Broadcastable) {
-            Broadcastable b = (Broadcastable) o;
-            Map<String, List<AbstractEntity>> entities = b.getEntities();
-            if (b instanceof Team || b instanceof Player || b instanceof VariableInstance || b instanceof VariableDescriptor) {
-                logger.debug("PropagateNew: {} :: {}", b.getClass().getSimpleName(), ((AbstractEntity) b).getId());
-                requestManager.addUpdatedEntities(entities);
-            } else {
-                logger.debug("Unhandled new broadcastable entity: {}", b);
-            }
+        if (o instanceof GameModelContent) {
+            requestManager.addUpdatedGameModelContent((GameModelContent) o);
         }
     }
 
     @PostUpdate
     void onPostUpdate(Object o) {
+        logger.trace("PostUpdate {}", o);
 
         if (o instanceof WithPermission) {
-            logger.debug("PostUpdate {}", o);
             if (requestManager != null) {
-                requestManager.assertUpdateRight((WithPermission)o);
+                requestManager.assertUpdateRight((WithPermission) o);
             } else {
                 logger.error("PostUpdate NO SECURITY FACADE");
             }
         }
 
-        if (o instanceof Broadcastable) {
-            Broadcastable b = (Broadcastable) o;
-            if (b instanceof AbstractEntity) {
-                logger.debug("PropagateUpdate: {} :: {}", b.getClass().getSimpleName(), ((AbstractEntity) b).getId());
-                Map<String, List<AbstractEntity>> entities = b.getEntities();
-                requestManager.addUpdatedEntities(entities);
-            }
+        if (o instanceof AbstractEntity) {
+            logger.debug("PropagateUpdate: {} :: {}", o.getClass().getSimpleName(), ((AbstractEntity) o).getId());
+            requestManager.addUpdatedEntity((AbstractEntity) o);
+        }
+
+        if (o instanceof GameModelContent) {
+            requestManager.addUpdatedGameModelContent((GameModelContent) o);
         }
     }
 
     @PreRemove
     void onPreRemove(Object o) {
+        logger.trace("PreRemove {}", o);
         if (o instanceof WithPermission) {
             WithPermission ae = (WithPermission) o;
             if (requestManager != null) {
@@ -151,38 +157,22 @@ public class EntityListener {
             }
         }
 
-        if (o instanceof Broadcastable) {
-            Broadcastable b = (Broadcastable) o;
-            Map<String, List<AbstractEntity>> entities = b.getEntities();
-            if (entities != null) {
-                logger.debug("PreRemove {}", o);
-                if (b instanceof VariableDescriptor || b instanceof VariableInstance || b instanceof Game || b instanceof GameModel) {
-                    logger.debug("PropagateDestroy (#: {}): {} :: {}", entities.size(), b.getClass().getSimpleName(), ((AbstractEntity) b).getId());
-                    requestManager.addDestroyedEntities(entities);
-                } else if (b instanceof Team || b instanceof Player) {
-                    logger.debug("PropagateUpdateOnDestroy (#: {}): {} :: {}", entities.size(), b.getClass().getSimpleName(), ((AbstractEntity) b).getId());
-                    requestManager.addUpdatedEntities(entities);
-                } else {
-                    logger.debug("Unhandled destroyed broadcastable entity: {}", b);
-                }
-            }
-        }
-
         if (o instanceof AbstractEntity) {
             AbstractEntity ae = (AbstractEntity) o;
+            requestManager.addDestroyedEntity(ae);
             ae.updateCacheOnDelete(getBeansjection());
         }
     }
 
     @PostLoad
     void onPostLoad(Object o) {
+        logger.trace("PostLoad {}", o);
         if (o instanceof AcceptInjection) {
             AcceptInjection id = (AcceptInjection) o;
             id.setBeanjection(getBeansjection());
         }
 
         if (o instanceof AbstractEntity) {
-            logger.debug("PostLoad {}", o);
             ((AbstractEntity) o).setPersisted(true);
         }
 

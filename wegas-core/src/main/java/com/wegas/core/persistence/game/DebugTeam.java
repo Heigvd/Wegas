@@ -1,13 +1,13 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
 
 /**
  *
@@ -23,7 +23,7 @@ public class DebugTeam extends Team {
      */
     public DebugTeam() {
         this.setName("Test team");
-        this.addPlayer(new Player("Test player"));
+        this.addPlayer(new Player());
     }
 
     /**
@@ -32,6 +32,6 @@ public class DebugTeam extends Team {
      */
     public DebugTeam(String name) {
         super(name);
-        this.addPlayer(new Player("Animator 1"));
+        this.addPlayer(new Player());
     }
 }

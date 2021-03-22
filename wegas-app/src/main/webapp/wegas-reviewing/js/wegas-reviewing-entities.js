@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /* global I18n */
@@ -42,8 +42,9 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      * PeerReviewescriptor mapper
      */
     persistence.PeerReviewDescriptor = Y.Base.create("PeerReviewDescriptor", persistence.VariableDescriptor, [], {
-        helloWorld: function() {
-            return "hello, world!\n";
+        hasReviews: function() {
+            var instance = this.getInstance();
+            return instance.get("reviewed").length > 0 || instance.get("toReview").length > 0;
         },
         getIconCss: function() {
             return 'fa fa-users fa-1';
@@ -392,6 +393,23 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 }
             });
         },
+        getContainer: function() {
+            var evalContainerId = this.get("parentId");
+            var parent;
+            Y.Wegas.Facade.Variable.cache.findByFn(function(item) {
+                if (item instanceof Y.Wegas.persistence.PeerReviewDescriptor) {
+                    if (item.get("feedback") && item.get("feedback").get("id") === evalContainerId) {
+                        parent = item.get("feedback");
+                        return true;
+                    }
+                    if (item.get("fbComments") && item.get("fbComments").get("id") === evalContainerId) {
+                        parent = item.get("fbComments");
+                        return true;
+                    }
+                }
+            });
+            return parent;
+        },
         getEditorLabel: function() {
             return I18n.t(this.get("label"));
         }
@@ -414,23 +432,10 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 description: "Displayed to players",
                 type: STRING
             }),
-            index: {
-                type: NUMBER,
-                view: {label: "Index"}
-            },
             description: Y.Wegas.Helper.getTranslationAttr({
                 label: "Description",
                 type: HTML
-            }),
-            description: {
-                type: NULLSTRING,
-                optional: true,
-                view: {
-                    type: HTML,
-                    label: "Description",
-                    height: '50px'
-                }
-            }
+            })
         },
         EDITMENU: {
             editBtn: {

@@ -1,14 +1,18 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core;
 
+import ch.albasim.wegas.annotations.ProtectionLevel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hazelcast.core.Cluster;
 import com.hazelcast.core.Member;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.persistence.AbstractEntity;
@@ -16,7 +20,6 @@ import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
-import com.wegas.core.persistence.variable.ModelScoped.ProtectionLevel;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.EnumItem;
@@ -42,6 +45,10 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.shiro.crypto.RandomNumberGenerator;
+import org.apache.shiro.crypto.SecureRandomNumberGenerator;
+import org.apache.shiro.subject.Subject;
+import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
@@ -66,6 +73,10 @@ public class Helper {
     public static final String TEAM_CHANNEL_PREFIX = "private-Team-";
     public static final String GAME_CHANNEL_PREFIX = "private-Game-";
     public static final String GAMEMODEL_CHANNEL_PREFIX = "private-GameModel-";
+
+    private Helper() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
 
     /**
      * @param <T>
@@ -121,19 +132,17 @@ public class Helper {
         return lookupBy(new InitialContext(), type, type);
     }
 
-    /*
-    public static HazelcastInstance getHazelcastInstance() {
-        HazelcastInstance instance;
-        try {
-            Context ctx = new InitialContext();
-            instance = (HazelcastInstance) ctx.lookup("payara/Hazelcast");
-            return instance;
-        } catch (NamingException ex) {
-            logger.error("No Hazelcast instance", ex);
-            return null;
-        }
-    }
-     */
+//    public static HazelcastInstance getHazelcastInstance() {
+//        HazelcastInstance instance;
+//        try {
+//            Context ctx = new InitialContext();
+//            instance = (HazelcastInstance) ctx.lookup("payara/Hazelcast");
+//            return instance;
+//        } catch (NamingException ex) {
+//            logger.error("No Hazelcast instance", ex);
+//            return null;
+//        }
+//    }
     /**
      * Copy and sort the given list
      *
@@ -174,11 +183,41 @@ public class Helper {
     }
 
     /**
-     * Given a list of names and a name, generate a new name that is not already
-     * used (ie not in usedNames).
+     * Return the first non-null and non-empty args
+     *
+     * @param args
+     *
+     * @return first non-empty arguments or empty string
+     */
+    public static String coalesce(String... args) {
+        for (String arg : args) {
+            if (!Helper.isNullOrEmpty(arg)) {
+                return arg;
+            }
+        }
+        return "";
+    }
+
+    /**
+     * How to generate new name
+     */
+    public enum NewNameStrategy {
+        /**
+         * Add incremented suffix
+         */
+        ORDINAL,
+        /**
+         * Generate brand new random name
+         */
+        HASH
+    };
+
+    /**
+     * Given a list of names and a name, generate a new name that is not already used (ie not in
+     * usedNames).
      * <p>
-     * If the initial name is already in use, it will be suffixes with an
-     * ordinal. Pattern must be used to detect the name baseName.
+     * If the initial name is already in use, it will be suffixes with an ordinal. Pattern must be
+     * used to detect the name baseName.
      *
      * @param name      initial name
      * @param usedNames names already in use
@@ -188,25 +227,42 @@ public class Helper {
      *
      * @return name to use in place on initial one
      */
-    private static String findUniqueName(final String name, List<String> usedNames, String pattern, String preSuff, String postSuff) {
+    private static String findUniqueName(final String name, List<String> usedNames,
+        String preSuff, String postSuff,
+        NewNameStrategy strategy) {
+
+        StringBuilder patternB = new StringBuilder();
+        patternB.append("(.+)").append(Pattern.quote(preSuff));
+
+        switch (strategy) {
+            case HASH:
+                patternB.append("(\\p{Alnum}+)");
+                break;
+            case ORDINAL:
+            default:
+                patternB.append("(\\d+)");
+                break;
+        }
+        patternB.append(Pattern.quote(postSuff));
+
         if (usedNames != null) {
-            Pattern p = Pattern.compile(pattern);
+            Pattern p = Pattern.compile(patternB.toString());
             Matcher matcher = p.matcher(name);
 
-            int suff;
+            String suff;
             final String baseName;
             if (matcher.matches()) {
                 baseName = matcher.group(1);
-                suff = Integer.parseInt(matcher.group(2)) + 1;
+                suff = matcher.group(2);
             } else {
                 baseName = name;
-                suff = 2;
+                suff = "1";
             }
 
             String newName = name;
             while (usedNames.contains(newName)) {
+                suff = genNewSuffix(suff, strategy);
                 newName = baseName + preSuff + suff + postSuff;
-                suff++;
             }
 
             return newName;
@@ -215,10 +271,17 @@ public class Helper {
         }
     }
 
+    private static String genNewSuffix(String suffix, NewNameStrategy strategy) {
+        if (NewNameStrategy.ORDINAL.equals(strategy)) {
+            return Integer.toString(Integer.parseInt(suffix, 10) + 1, 10);
+        } else {
+            return Helper.genToken(6);
+        }
+    }
+
     /**
-     * Generate a unique name (within usedNames) based on name. If the initial
-     * name is contained in usedNames, it will be suffix with the first
-     * available ordinal, like in this example:
+     * Generate a unique name (within usedNames) based on name. If the initial name is contained in
+     * usedNames, it will be suffix with the first available ordinal, like in this example:
      * <ul>
      * <li>Name: "myName" </li>
      * <li>UsedName: "myName", "myName_1", "myName_3" </li>
@@ -231,13 +294,12 @@ public class Helper {
      * @return new unique name to use in place of initial one
      */
     public static String findUniqueName(final String name, List<String> usedNames) {
-        return findUniqueName(name, usedNames, "(.*)_(\\d+)", "_", "");
+        return findUniqueName(name, usedNames, "_", "", NewNameStrategy.HASH);
     }
 
     /**
-     * Generate a unique label (within usedLabels) based on label. If the
-     * initial label is contained in usedLabel, it will be suffix with the first
-     * available ordinal, like in this example:
+     * Generate a unique label (within usedLabels) based on label. If the initial label is contained
+     * in usedLabel, it will be suffix with the first available ordinal, like in this example:
      * <ul>
      * <li>Label: "My Label" </li>
      * <li>UsedLabel: "My Label", "Ma Label (1)", "My Label (3)" </li>
@@ -250,7 +312,7 @@ public class Helper {
      * @return new unique label to use in place of initial one
      */
     public static String findUniqueLabel(final String label, List<String> usedLabels) {
-        return findUniqueName(label, usedLabels, "(.*) \\((\\d+)\\)", " (", ")");
+        return findUniqueName(label, usedLabels, " (", ")", NewNameStrategy.ORDINAL);
     }
 
     /**
@@ -303,7 +365,7 @@ public class Helper {
      * @param defaultLabel label to set if entity one is unset
      */
     public static void setUniqueLabel(final LabelledEntity entity,
-            List<TranslatableContent> usedLabels, String defaultLabel) {
+        List<TranslatableContent> usedLabels, String defaultLabel) {
 
         // make sure the label exists
         TranslatableContent theLabel = entity.getLabel();
@@ -324,8 +386,9 @@ public class Helper {
         }
 
         Map<String, Translation> translations = theLabel.getTranslations();
-        for (String code : translations.keySet()) {
-            Translation currentLabel = translations.get(code);
+        for (Entry<String, Translation> entry : translations.entrySet()) {
+            String code = entry.getKey();
+            Translation currentLabel = entry.getValue();
             if (!Helper.isNullOrEmpty(currentLabel.getTranslation())) {
                 theLabel.updateTranslation(code, findUniqueLabel(currentLabel.getTranslation(), mapUsedlabels.get(code)));
             }
@@ -346,8 +409,8 @@ public class Helper {
      * @param gameModel
      */
     public static void setNameAndLabelForLabelledEntity(LabelledEntity le,
-            List<String> usedNames, List<TranslatableContent> usedLabels,
-            String base, GameModel gameModel) {
+        List<String> usedNames, List<TranslatableContent> usedLabels,
+        String base, GameModel gameModel) {
 
         String baseName = le.getName();
         String baseLabel = baseName;
@@ -383,13 +446,28 @@ public class Helper {
      * @param vd
      * @param usedNames
      * @param gameModel
+     * @param forceReset true to reset names to default names
+     *
+     * @return map oldName to newName
      */
-    public static void setUniqueName(final VariableDescriptor vd, List<String> usedNames, GameModel gameModel) {
+    public static Map<String, String> setUniqueName(final VariableDescriptor vd, List<String> usedNames,
+        GameModel gameModel, Boolean forceReset) {
+        Map<String, String> map = new HashMap<>();
+        String oldName = vd.getName();
+        if (forceReset) {
+            vd.setName(vd.getClass().getSimpleName());
+        }
+
         setUniqueNameForEntity(vd, usedNames);
+
+        if (!Helper.isNullOrEmpty(oldName)) {
+            map.put(oldName, vd.getName());
+        }
+
         if (vd instanceof DescriptorListI) {
             // Recursively find unique names for children
             for (Object child : ((DescriptorListI) vd).getItems()) {
-                setUniqueName((VariableDescriptor) child, usedNames, gameModel);
+                map.putAll(setUniqueName((VariableDescriptor) child, usedNames, gameModel, forceReset));
             }
         } else if (vd instanceof ChoiceDescriptor) {
             ChoiceDescriptor cd = (ChoiceDescriptor) vd;
@@ -413,6 +491,8 @@ public class Helper {
                 }
             }
         }
+
+        return map;
     }
 
     public static void setNameAndLabelForLabelledEntityList(List<? extends LabelledEntity> items, String defaultName, GameModel gameModel) {
@@ -456,6 +536,13 @@ public class Helper {
         return replaceSpecialCharacters(camelCasify(s));
     }
 
+    /**
+     * Remove all common diacritic marks.
+     *
+     * @param s the string to clean
+     *
+     * @return the cleaned string
+     */
     public static String replaceSpecialCharacters(String s) {
         s = s.replaceAll(" ", "_");
 
@@ -483,7 +570,7 @@ public class Helper {
      */
     public static String camelCasify(String name) {
         if (name.isEmpty()) {
-            throw new NullPointerException("Name is empty");
+            throw WegasErrorMessage.error("Name is empty");
         }
         StringBuilder sb = new StringBuilder();
         StringTokenizer st = new StringTokenizer(name);
@@ -506,10 +593,10 @@ public class Helper {
     /**
      * Convert camelCase to human readable string.
      * <ul>
-     * <li>PDFFile -> PDF file</li>
-     * <li>99Files -> 99 files</li>
-     * <li>SomeFiles -> some files</li>
-     * <li>SomePDFFiles -> some PDF files</li>
+     * <li>PDFFile -&gt; PDF file</li>
+     * <li>99Files -&gt; 99 files</li>
+     * <li>SomeFiles -&gt; some files</li>
+     * <li>SomePDFFiles -&gt; some PDF files</li>
      * </ul>
      *
      * @param camelCased
@@ -518,9 +605,9 @@ public class Helper {
      */
     public static String humanize(String camelCased) {
         Pattern p = Pattern.compile(
-                "(?<=[A-Z]|^)([A-Z])(?=[a-z])" + "|"
-                + "(?<=[^A-Z])([A-Z])" + "|"
-                + "(?<=[A-Za-z])([^A-Za-z])"
+            "(?<=[A-Z]|^)([A-Z])(?=[a-z])" + "|"
+            + "(?<=[^A-Z])([A-Z])" + "|"
+            + "(?<=[A-Za-z])([^A-Za-z])"
         );
         Matcher matcher = p.matcher(camelCased);
         StringBuffer sb = new StringBuffer();
@@ -597,16 +684,20 @@ public class Helper {
         //return random.ints(length, 48, 110) // 48-57 [0-9] 58-83 -> 65-90 [A-Z] 84-109 -> 97-122 [a-z]
         //        .map(i -> (i < 58 ? i : (i > 83 ? i + 13 : i + 7)))
         return random.ints(48, 123) // 48-57 [0-9] 65-90 [A-Z] 97-122 [a-z]
-                .filter(i -> (i < 58) || (i > 64 && i < 91) || (i > 96))
-                .limit(length)
-                .collect(StringBuilder::new, (sb, i) -> sb.append((char) i), StringBuilder::append)
-                .toString();
+            .filter(i -> (i < 58) || (i > 64 && i < 91) || (i > 96))
+            .limit(length)
+            .collect(StringBuilder::new, (sb, i) -> sb.append((char) i), StringBuilder::append)
+            .toString();
+    }
+
+    public static String generateSalt() {
+        RandomNumberGenerator rng = new SecureRandomNumberGenerator();
+        return rng.nextBytes().toHex();
     }
 
     /**
      * Return a wegas property from java properties or from wegas-override.properties or from
-     * wegas.properties if wegas-override or it's respective property is
-     * missing.
+     * wegas.properties if wegas-override or it's respective property is missing.
      *
      * @param propertyName the property to read
      *
@@ -626,14 +717,13 @@ public class Helper {
     }
 
     /**
-     * Like {@link #getWegasProperty(java.lang.String) getWegasProperty()} but
-     * return the given default value if the property does not exists
+     * Like {@link #getWegasProperty(java.lang.String) getWegasProperty()} but return the given
+     * default value if the property does not exists
      *
      * @param propertyName
      * @param defaultValue
      *
-     * @return the wegasProperty or the defaultValue if the property does not
-     *         exists
+     * @return the wegasProperty or the defaultValue if the property does not exists
      */
     public static String getWegasProperty(String propertyName, String defaultValue) {
         try {
@@ -654,7 +744,7 @@ public class Helper {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < array.length; ++i) {
             sb.append(Integer.toHexString((array[i]
-                    & 0xFF) | 0x100).substring(1, 3));
+                & 0xFF) | 0x100).substring(1, 3));
         }
         return sb.toString();
     }
@@ -666,12 +756,14 @@ public class Helper {
      *
      * @return the MD5 digest or null if the system does not support MD5 digest
      */
+    @Deprecated
     public static String md5Hex(String message) {
         try {
             MessageDigest md
-                    = MessageDigest.getInstance("MD5");
+                = MessageDigest.getInstance("MD5");
             return hex(md.digest(message.getBytes("CP1252")));
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            logger.error("No Such Algorithm");
         }
         return null;
     }
@@ -695,12 +787,11 @@ public class Helper {
     /**
      * Unescapes a string that contains standard Java escape sequences.
      * <ul>
-     * <li><strong>&#92;b &#92;f &#92;n &#92;r &#92;t &#92;" &#92;'</strong> :
-     * BS, FF, NL, CR, TAB, double and single quote.</li>
-     * <li><strong>&#92;X &#92;XX &#92;XXX</strong> : Octal character
-     * specification (0 - 377, 0x00 - 0xFF).</li>
-     * <li><strong>&#92;uXXXX</strong> : Hexadecimal based Unicode
-     * character.</li>
+     * <li><strong>&#92;b &#92;f &#92;n &#92;r &#92;t &#92;" &#92;'</strong> : BS, FF, NL, CR, TAB,
+     * double and single quote.</li>
+     * <li><strong>&#92;X &#92;XX &#92;XXX</strong> : Octal character specification (0 - 377, 0x00 -
+     * 0xFF).</li>
+     * <li><strong>&#92;uXXXX</strong> : Hexadecimal based Unicode character.</li>
      * </ul>
      * https://gist.github.com/uklimaschewski/6741769
      *
@@ -743,17 +834,21 @@ public class Helper {
      */
     public static void recursiveDelete(File file) throws IOException {
         if (file.isDirectory()) {
-            if (file.list().length == 0) {
+            String[] files = file.list();
+            if (files == null || files.length == 0) {
                 if (!file.delete()) {
                     logger.warn("Failed to delete file {}", file.getName());
                 }
             } else {
-                String files[] = file.list();
-                for (String f : files) {
-                    File fileToDel = new File(file, f);
-                    recursiveDelete(fileToDel);
+                files = file.list();
+                if (files != null) {
+                    for (String f : files) {
+                        File fileToDel = new File(file, f);
+                        recursiveDelete(fileToDel);
+                    }
                 }
-                if (file.list().length == 0) {
+                files = file.list();
+                if (files == null || files.length == 0) {
                     if (!file.delete()) {
                         logger.warn("Failed to delete file {}", file.getName());
                     }
@@ -862,12 +957,15 @@ public class Helper {
     public static String genRandomLetters(int length) {
         final String tokenElements = "abcdefghijklmnopqrstuvwxyz";
         final int digits = tokenElements.length();
-        length = Math.min(50, length); // max 50 length;
+
+        int count = Math.min(50, length); // max 50 length;
+
         StringBuilder sb = new StringBuilder();
-        int random = (int) (Math.random() * digits);
-        sb.append(tokenElements.charAt(random));
-        if (length > 1) {
-            sb.append(genRandomLetters(length - 1));
+        SecureRandom sr = new SecureRandom();
+
+        while (count > 0) {
+            count--;
+            sb.append(tokenElements.charAt(sr.nextInt(digits)));
         }
         return sb.toString();
     }
@@ -877,7 +975,7 @@ public class Helper {
         sb.append(" - ").append(t.getMessage());
         for (StackTraceElement elem : t.getStackTrace()) {
             if (elem.getClassName().startsWith("com.wegas")
-                    || elem.getClassName().startsWith("jdk.nashorn")) {
+                || elem.getClassName().startsWith("jdk.nashorn")) {
                 sb.append("\n\tat ");
                 sb.append(elem);
             }
@@ -919,8 +1017,13 @@ public class Helper {
          * @param cacheSize Max size the cache should have
          */
         public LRUCache(int cacheSize) {
-            super(16, 0.75f, true); // default values
+            super(cacheSize * (4 / 3) + 10, 0.75f, true);
             this.cacheSize = cacheSize;
+        }
+
+        public synchronized V putIfAbsentAndGet(K key, V value) {
+            super.putIfAbsent(key, value);
+            return this.get(key);
         }
 
         @Override
@@ -947,14 +1050,14 @@ public class Helper {
     }
 
     private static void newLine(StringBuilder sb, int ident) {
-        sb.append("\n");
+        sb.append('\n');
         Helper.indent(sb, ident);
     }
 
     private static void printDescriptors(GameModel gameModel, List<VariableDescriptor> list, StringBuilder sb, int level) {
         for (VariableDescriptor vd : list) {
             newLine(sb, level);
-            sb.append(vd).append("(").append(gameModel.getVariableDescriptors().contains(vd)).append(" -> ").append(vd.getDefaultInstance());
+            sb.append(vd).append('(').append(gameModel.getVariableDescriptors().contains(vd)).append(" -> ").append(vd.getDefaultInstance());
             if (vd instanceof DescriptorListI) {
                 printDescriptors(gameModel, ((DescriptorListI) vd).getItems(), sb, level + 1);
             }
@@ -975,6 +1078,26 @@ public class Helper {
 
     public static Level setLoggerLevel(Class klass, Level level) {
         return Helper.setLoggerLevel(LoggerFactory.getLogger(klass), level);
+    }
+
+    public static void log(Logger logger, Level level, String format, Object... argArray) {
+        switch (level) {
+            case ERROR:
+                logger.error(format, argArray);
+                break;
+            case INFO:
+                logger.info(format, argArray);
+                break;
+            case DEBUG:
+                logger.debug(format, argArray);
+                break;
+            case TRACE:
+                logger.trace(format, argArray);
+                break;
+            case WARN:
+                logger.warn(format, argArray);
+                break;
+        }
     }
 
     /**
@@ -1002,8 +1125,9 @@ public class Helper {
     }
 
     /**
-     * Returns the IP address of the requesting host by looking first at headers provided by (reverse) proxies.
-     * Depending on local config, it may be necessary to check additional headers.
+     * Returns the IP address of the requesting host by looking first at headers provided by
+     * (reverse) proxies. Depending on local config, it may be necessary to check additional
+     * headers.
      *
      * @param request
      *
@@ -1025,7 +1149,8 @@ public class Helper {
     }
 
     /**
-     * Check if current visibility imply read only access for scenarist under given protection level.
+     * Check if current visibility imply read only access for scenarist under given protection
+     * level.
      *
      * @param level      protection level
      * @param visibility visibility to check
@@ -1040,12 +1165,111 @@ public class Helper {
         // private     t        f         f
 
         return (level == ProtectionLevel.ALL
-                || visibility == Visibility.INTERNAL
-                || (level == ProtectionLevel.PROTECTED && visibility == Visibility.PROTECTED)
-                || (level == ProtectionLevel.INHERITED && (visibility == Visibility.PROTECTED || visibility == Visibility.INHERITED)));
+            || visibility == Visibility.INTERNAL
+            || (level == ProtectionLevel.PROTECTED && visibility == Visibility.PROTECTED)
+            || (level == ProtectionLevel.INHERITED && (visibility == Visibility.PROTECTED || visibility == Visibility.INHERITED)));
     }
 
     public static String anonymizeEmail(String email) {
-        return email.replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2");
+        return email.replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1••••$2");
+    }
+
+    public static String getDomainFromEmailAddress(String email) {
+        return email.replaceFirst("([^@]{1,4})[^@]*@(.*)", "$2");
+    }
+
+    /**
+     * Class for conveniently passing email attributes by parameter.
+     */
+    public static final class EmailAttributes {
+
+        private List<String> recipients = new ArrayList<>();
+        private String sender = "";
+        private String subject = "";
+        private String body = "";
+
+        public EmailAttributes() {
+            // Default constructur required for deserialisation
+        }
+
+        // Get recipient with the hypothesis that there is only one recipient in the list
+        @JsonIgnore
+        public String getRecipient() {
+            if (recipients.size() != 1) {
+                throw WegasErrorMessage.error("There should be only one recipient in the email list.");
+            }
+
+            return recipients.get(0);
+        }
+
+        // Set recipient with the hypothesis that there is only one recipient in the list
+        @JsonIgnore
+        public void setRecipient(String recipient) {
+            if (recipients.size() > 1) {
+                throw WegasErrorMessage.error("There should be only one recipient in the email list.");
+            }
+            if (recipients.isEmpty()) {
+                this.recipients.add(recipient);
+            } else {
+                this.recipients.set(0, recipient);
+            }
+        }
+
+        public List<String> getRecipients() {
+            return recipients;
+        }
+
+        public void setRecipients(List<String> recipients) {
+            this.recipients = recipients;
+        }
+
+        public String getSender() {
+            return sender;
+        }
+
+        public void setSender(String sender) {
+            this.sender = sender;
+        }
+
+        public String getSubject() {
+            return subject;
+        }
+
+        public void setSubject(String subject) {
+            this.subject = subject;
+        }
+
+        public String getBody() {
+            return body;
+        }
+
+        public void setBody(String body) {
+            this.body = body;
+        }
+
+    }
+
+    /**
+     * Is the subject authenticated or remembered?
+     *
+     * @param subject
+     *
+     * @return true if subject identity can be trusted
+     */
+    public static boolean isLoggedIn(Subject subject) {
+        return subject.isAuthenticated() || subject.isRemembered();
+    }
+
+    public static String prettyPrintPSQLException(PSQLException ex) {
+        String message = ex.getMessage();
+
+        Pattern p = Pattern.compile("ERROR: duplicate key value violates unique constraint \".*\"\\s+Detail: Key \\((.*)\\)=\\((.*)\\) already exists\\.");
+        Matcher m = p.matcher(message);
+
+        if (m !=null && m.matches()){
+            return m.group(1) + " " + m.group(2) + " already exists";
+        } else {
+            return message;
+        }
     }
 }

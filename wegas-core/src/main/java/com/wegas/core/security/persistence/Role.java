@@ -1,22 +1,23 @@
-/*
+
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.security.persistence;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;
-import com.wegas.editor.View.Textarea;
-import com.wegas.editor.View.View;
+import com.wegas.editor.view.Textarea;
 import java.util.*;
 import javax.persistence.Basic;
 import javax.persistence.Cacheable;
@@ -26,9 +27,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.QueryHint;
@@ -45,16 +44,12 @@ import org.eclipse.persistence.config.QueryHints;
     @UniqueConstraint(columnNames = "name")
 })
 @Cacheable(true)
-@NamedQueries({
-    @NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name"),
-    @NamedQuery(name = "Roles.findByUser", query = "SELECT r FROM Role r JOIN r.users u WHERE u.id = :userId",
-            hints = {
-                @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
-            })
-})
-@NamedNativeQueries({
-    @NamedNativeQuery(name = "Roles.findByUser_native", query = "SELECT roles.name FROM roles JOIN users_roles on users_roles.roles_id = roles.id WHERE users_roles.users_id = ?1")
-})
+@NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name")
+@NamedQuery(name = "Roles.findByUser", query = "SELECT r FROM Role r JOIN r.users u WHERE u.id = :userId",
+    hints = {
+        @QueryHint(name = QueryHints.CACHE_USAGE, value = CacheUsage.DoNotCheckCache)
+    })
+@NamedNativeQuery(name = "Roles.findByUser_native", query = "SELECT roles.name FROM roles JOIN users_roles on users_roles.roles_id = roles.id WHERE users_roles.users_id = ?1")
 public class Role extends AbstractEntity implements PermissionOwner {
 
     private static final long serialVersionUID = 1L;
@@ -72,8 +67,8 @@ public class Role extends AbstractEntity implements PermissionOwner {
     @Basic(optional = false)
     @Column(length = 100)
     @WegasEntityProperty(
-            optional = false, nullable = false,
-            view = @View(label = "Name"))
+        optional = false, nullable = false,
+        view = @View(label = "Name"))
     private String name;
 
     /**
@@ -82,8 +77,8 @@ public class Role extends AbstractEntity implements PermissionOwner {
     @Basic(optional = false)
     @Column(length = 255)
     @WegasEntityProperty(
-            optional = false, nullable = false,
-            view = @View(label = "Description", value = Textarea.class))
+        optional = false, nullable = false,
+        view = @View(label = "Description", value = Textarea.class))
     private String description;
 
     /**
@@ -92,8 +87,8 @@ public class Role extends AbstractEntity implements PermissionOwner {
     //@ElementCollection(fetch = FetchType.EAGER)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "role")
     @WegasEntityProperty(
-            optional = false, nullable = false, proposal = EmptyArray.class,
-            view = @View(label = "Permissions"))
+        optional = false, nullable = false, proposal = EmptyArray.class,
+        view = @View(label = "Permissions"))
     private List<Permission> permissions = new ArrayList<>();
 
     /**
@@ -110,6 +105,7 @@ public class Role extends AbstractEntity implements PermissionOwner {
      *
      */
     protected Role() {
+        // ensure there is a default constructor
     }
 
     /**
@@ -228,7 +224,13 @@ public class Role extends AbstractEntity implements PermissionOwner {
      * @param users list of member
      */
     public void setUsers(Collection<User> users) {
-        this.users = users;
+        this.users = new ArrayList<>();
+        if (users != null) {
+            for (User user : users) {
+                this.addUser(user);
+                user.addRole(this);
+            }
+        }
     }
 
     /**
@@ -237,7 +239,9 @@ public class Role extends AbstractEntity implements PermissionOwner {
      * @param user
      */
     public void addUser(User user) {
-        this.users.add(user);
+        if (!this.users.contains(id)) {
+            this.users.add(user);
+        }
     }
 
     /**
@@ -246,7 +250,9 @@ public class Role extends AbstractEntity implements PermissionOwner {
      * @param user user to remove
      */
     public void removeUser(User user) {
-        this.users.remove(user);
+        if (this.users.contains(user)) {
+            this.users.remove(user);
+        }
     }
 
     @Override

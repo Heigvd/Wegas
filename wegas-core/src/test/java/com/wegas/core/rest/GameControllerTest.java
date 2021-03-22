@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -10,10 +10,10 @@ package com.wegas.core.rest;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
+import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,10 +22,10 @@ import org.junit.Test;
  */
 public class GameControllerTest extends AbstractArquillianTest {
 
-    @EJB
+    @Inject
     private GameController gameController;
 
-    @EJB
+    @Inject
     private PlayerController playerController;
 
     @Test

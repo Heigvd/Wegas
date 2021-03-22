@@ -6,6 +6,8 @@ wegas-runtime/target/
 wegas-runtime/derby.log
 wegas-resources/target
 wenerator-maven-plugin/target
+build-tools/target
+wegas-annotations/target/
 doc/Wegas.uml~
 #!target/site*
 #!target/Wegas.war
@@ -21,6 +23,7 @@ doc/Wegas.uml~
 
 # NetBean Files #
 #################
+**/nbproject
 faces-config.NavData
 nb-configuration.xml
 #nbactions.xml
@@ -46,3 +49,10 @@ Icon?
 Thumbs.db
 
 .vscode
+/wegas-ts-api/target/
+/wegas-app/src/main/webapp/wegas-lobby/bower_components/
+
+/wegas-ts-api/src/main/webapp/src/generated/
+/wegas-ts-api/src/main/webapp/typings/
+
+node_modules/

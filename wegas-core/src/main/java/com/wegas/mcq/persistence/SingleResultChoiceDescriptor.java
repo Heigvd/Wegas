@@ -1,24 +1,23 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.persistence;
 
+import ch.albasim.wegas.annotations.View;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.editor.Schema;
+import com.wegas.editor.jsonschema.JSONArray;
+import com.wegas.editor.view.ArrayView;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
-
-import com.wegas.editor.Schema;
-import com.wegas.editor.JSONSchema.JSONArray;
-import com.wegas.editor.View.ArrayView;
-import com.wegas.editor.View.View;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -30,6 +29,8 @@ import java.util.List;
         value = SingleResultChoiceDescriptor.SingleResultProp.class,
         view = @View(label = "Result", value = ArrayView.Default.class))
 public class SingleResultChoiceDescriptor extends ChoiceDescriptor {
+
+    private static final long serialVersionUID = 1L;
 
     public static class SingleResultProp extends JSONArray {
 
@@ -53,10 +54,9 @@ public class SingleResultChoiceDescriptor extends ChoiceDescriptor {
 
             results.add(result);
             this.setValue(results);
+            this.setIndex(1000);
         }
     }
-
-    private static final long serialVersionUID = 1L;
 
     /**
      * When a choice is created, automatically add a result.

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI/MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI/MEI
  * Licensed under the MIT License
  */
 /**
@@ -77,7 +77,7 @@ YUI.add('wegas-alerts', function(Y) {
             var iconCss = cfg && cfg.iconCss;
 
             var notif = notificationArea.appendChild("<div class=\"wegas-notification\">"
-                + (cfg.iconCss ? "<span class=\"wegas-notification-icon " + iconCss + "\"></span>" : "")
+                + (iconCss ? "<span class=\"wegas-notification-icon " + iconCss + "\"></span>" : "")
                 + "<span class=\"wegas-notification-message\">" + message + "</span></div>");
 
             if (timeout && timeout > 0) {

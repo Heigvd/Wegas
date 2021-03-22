@@ -1,36 +1,41 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.mcq.persistence;
 
+import ch.albasim.wegas.annotations.View;
+import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.persistence.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.ListUtils;
-import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.ValueGenerators.True;
-import com.wegas.editor.View.EntityArrayFiledSelect;
-import com.wegas.editor.View.Hidden;
-import com.wegas.editor.View.View;
 import com.wegas.editor.Visible;
+import com.wegas.editor.view.EntityArrayFiledSelect;
+import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -40,14 +45,11 @@ import org.slf4j.LoggerFactory;
 @Table(indexes = {
     @Index(columnList = "currentresult_id")
 })
-@NamedQueries({
-    @NamedQuery(name = "ChoiceInstance.findByResultId", query = "SELECT ci FROM ChoiceInstance ci WHERE ci.currentResult.id = :resultId")
-})
+@NamedQuery(name = "ChoiceInstance.findByResultId", query = "SELECT ci FROM ChoiceInstance ci WHERE ci.currentResult.id = :resultId")
 public class ChoiceInstance extends VariableInstance implements ReadableInstance {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Logger logger = LoggerFactory.getLogger(ChoiceInstance.class);
 
     /**
      *
@@ -102,6 +104,7 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
     private Integer currentResultIndex = null;
 
     public ChoiceInstance() {
+        // useless but ensure there is an empty constructor
     }
 
     /**
@@ -258,7 +261,7 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
         this.setReplies(ListUtils.cloneAdd(this.getReplies(), reply));
     }
 
-    void removeReply(Reply reply) {
+    /* package */ void removeReply(Reply reply) {
         this.replies.remove(reply);
     }
 
@@ -332,8 +335,4 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
 
         super.updateCacheOnDelete(beans);
     }*/
-    @Override
-    public void revive(Beanjection beans) {
-        beans.getQuestionDescriptorFacade().reviveChoiceInstance(this);
-    }
 }

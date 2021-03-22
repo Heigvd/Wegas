@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -267,12 +267,10 @@ YUI.add('wegas-tooltip', function(Y) {
                     eventHandles.delegate.detach();
                     eventHandles.delegate = null;
                 }
-                eventHandles.delegate = Y.delegate(
-                    'mouseenter',
-                    Y.bind(this._onNodeMouseEnter, this),
-                    this.get('delegate'),
-                    this.get('delegateSelect')
-                    );
+
+                eventHandles.delegate = Y.Wegas.Widget.wegasDelegate(
+                    this.get('delegate'), 'mouseover',
+                    this._onNodeMouseEnter, this.get('delegateSelect'), this);
             },
             /*
              * Default mouse enter DOM event listener.
@@ -377,7 +375,7 @@ YUI.add('wegas-tooltip', function(Y) {
                 this.fire('tooltipShow', {
                     node: node
                 });
-                
+
                 var x = this._currTrigger.mouseX, y = this._currTrigger.mouseY;
 
                 this.move(x + Tooltip.OFFSET_X, y + Tooltip.OFFSET_Y);

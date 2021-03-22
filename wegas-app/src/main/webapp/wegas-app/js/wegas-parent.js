@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -217,6 +217,16 @@ YUI.add("wegas-parent", function(Y) {
                                                                 }]
                                                         }, {
                                                             type: BUTTON,
+                                                            label: "File Upload",
+                                                            className: "wegas-advanced-feature",
+                                                            plugins: [{
+                                                                    fn: "AddChildWidgetAction",
+                                                                    cfg: {
+                                                                        childType: "FileUploader"
+                                                                    }
+                                                                }]
+                                                        }, {
+                                                            type: BUTTON,
                                                             label: "Number",
                                                             plugins: [{
                                                                     fn: "WidgetMenu",
@@ -402,6 +412,17 @@ YUI.add("wegas-parent", function(Y) {
                                                         },
                                                         {
                                                             type: BUTTON,
+                                                            label: "Spreadsheet",
+                                                            cssClass: "wegas-advanced-feature",
+                                                            plugins: [{
+                                                                    fn: "AddChildWidgetAction",
+                                                                    cfg: {
+                                                                        childType: "Spreadsheet"
+                                                                    }
+                                                                }]
+                                                        },
+                                                        {
+                                                            type: BUTTON,
                                                             label: "Review",
                                                             cssClass: "wegas-advanced-feature",
                                                             plugins: [{
@@ -440,6 +461,15 @@ YUI.add("wegas-parent", function(Y) {
                                                                                     }]
                                                                             }
                                                                         ]
+                                                                    }
+                                                                }]
+                                                        }, {
+                                                            type: BUTTON,
+                                                            label: "Survey",
+                                                            plugins: [{
+                                                                    fn: "AddChildWidgetAction",
+                                                                    cfg: {
+                                                                        childType: "SurveyWidget"
                                                                     }
                                                                 }]
                                                         }

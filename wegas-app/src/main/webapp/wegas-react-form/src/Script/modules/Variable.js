@@ -72,6 +72,9 @@ export const build = v =>
         b.memberExpression(b.identifier('Variable'), b.identifier('find')),
         [b.identifier('gameModel'), b.literal(v)]
     );
+
+export const buildExpression = v => b.expressionStatement(build(v));
+
 export const schema = optView => ({
     type: 'string',
     required: 'true',

@@ -1,8 +1,8 @@
-/*
+/**
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018 School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 package com.wegas.test.arquillian;
@@ -14,7 +14,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.rest.UserController;
 import java.sql.SQLException;
-import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.naming.NamingException;
 import org.junit.Before;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestMinim
 
     protected static final Logger logger = LoggerFactory.getLogger(AbstractArquillianTest.class);
 
-    @EJB
+    @Inject
     private UserController userController;
 
     /**
@@ -106,7 +106,6 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestMinim
         player = gameFacade.joinTeam(team.getId(), user.getId(), null);
 
         login(admin);
-        requestFacade.setPlayer(player.getId());
         this.initTime = System.currentTimeMillis();
         requestManager.clearEntities();
     }
@@ -132,7 +131,6 @@ public abstract class AbstractArquillianTest extends AbstractArquillianTestMinim
         player22 = gameFacade.joinTeam(team2.getId(), user22.getId(), null);
 
         login(admin);
-        requestFacade.setPlayer(player.getId());
     }
 
     public void reseAndSetUpDB() throws SQLException, NamingException, WegasNoResultException, CloneNotSupportedException {

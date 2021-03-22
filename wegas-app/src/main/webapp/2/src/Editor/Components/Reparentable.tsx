@@ -52,6 +52,8 @@ export function ReparentableRoot({ children }: { children: React.ReactNode }) {
 export function Reparentable({
   id,
   children,
+  innerClassName,
+  outerClassName,
 }: {
   /**
    * Identifies a Reparentable Component relatively to it's enclosing `ReparentableRoot`.
@@ -59,6 +61,8 @@ export function Reparentable({
    */
   id: string;
   children: React.ReactNode;
+  innerClassName?: string;
+  outerClassName?: string;
 }) {
   const getNode = React.useContext(ctx);
   const n = React.useRef() as React.MutableRefObject<HTMLInputElement>;
@@ -71,11 +75,14 @@ export function Reparentable({
   React.useLayoutEffect(() => {
     const container = n.current;
     if (container) {
+      node.className = innerClassName ? innerClassName : '';
       container.appendChild(node);
       return () => {
-        container.removeChild(node);
+        if (node.parentNode === container) {
+          container.removeChild(node);
+        }
       };
     }
-  }, [n, node]);
-  return <div ref={n} />;
+  }, [n, node, innerClassName]);
+  return <div ref={n} className={outerClassName} />;
 }

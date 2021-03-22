@@ -108,6 +108,7 @@ YUI.add('wegas-react-form', Y => {
                                     return {
                                         code: l.get('code'),
                                         label: l.get('lang'),
+                                        visibility: l.get('visibility'),
                                     };
                                 })}
                         >
@@ -125,7 +126,12 @@ YUI.add('wegas-react-form', Y => {
                                                 ? (value as any).id
                                                 : undefined
                                         }
-                                        formRef={form => this.set(FORM, form)}
+                                        formRef={form => {
+                                            this.set(FORM, form);
+                                            if (form){
+                                                this.validate();
+                                            }
+                                        }}
                                         schema={schema}
                                         value={value}
                                         onChange={boundFire}

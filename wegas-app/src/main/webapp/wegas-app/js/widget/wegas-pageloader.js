@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2018  School of Business and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2021  School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 /**
@@ -122,7 +122,9 @@ YUI.add("wegas-pageloader", function(Y) {
             Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });
-            delete PAGE_LOADER_INSTANCES[this.get("pageLoaderId")];
+            if (PAGE_LOADER_INSTANCES[this.get("pageLoaderId")] === this) {
+                delete PAGE_LOADER_INSTANCES[this.get("pageLoaderId")];
+            }
         },
         /**
          * reload current page from cache
@@ -211,6 +213,7 @@ YUI.add("wegas-pageloader", function(Y) {
                     if (!arguments.length || val === this._pageId || this.ancestorWithPage(val)) { // If the widget is currently being loaded,
                         return val; // do not continue
                     }
+                    var oldPageId = this._pageId;
                     this._pageId = val;
                     Y.log("Getting page: " + val + ", pageLoaderId: " + this.get("pageLoaderId"),
                         "log",
@@ -219,7 +222,7 @@ YUI.add("wegas-pageloader", function(Y) {
                     Wegas.Facade.Page.cache.getPage(val, Y.bind(function(widgetCfg) { // Retrieve page
                         this.showOverlay();
 
-                        Y.log("Destroy previous widget", "log", "Wegas.PageLoader");
+                        Y.log("Destroy previous widget (page " + (oldPageId ? oldPageId : "N/A") + ")", "log", "Wegas.PageLoader");
                         this.set(WIDGET, null);
                         if (!widgetCfg) {
                             this.get(CONTENTBOX).setContent("<center class=" + pageloaderErrorMessageClass +
@@ -232,16 +235,13 @@ YUI.add("wegas-pageloader", function(Y) {
 
                         Wegas.Widget.use(widgetCfg, Y.bind(function() { // Load the sub-widget dependencies
                             try {
-                                Y.log("Rendering new widget", "log", "Wegas.PageLoader");
+                                Y.log("Rendering new widget (page " + val + ")", "log", "Wegas.PageLoader");
                                 this.get(CONTENTBOX).all("." + pageloaderErrorMessageClass).remove(true);
                                 widgetCfg.editable = true;
                                 var widget = Wegas.Widget.create(widgetCfg); // Render the sub-widget
                                 widget.render(this.get(CONTENTBOX));
                                 widget["@pageId"] = widgetCfg["@pageId"]; // @HACK set up a reference to the page
                                 this.set(WIDGET, widget);
-                                this.set("pageId", widget["@pageId"], {
-                                    noquery: true
-                                });
                             } catch (e) {
                                 this.set("widgetCfg", widgetCfg);
                                 this.get(CONTENTBOX).setContent("<center class=" + pageloaderErrorMessageClass +
@@ -250,6 +250,10 @@ YUI.add("wegas-pageloader", function(Y) {
                                     "error",
                                     "Wegas.PageLoader");
                             } finally {
+                                //pay attention :default page
+                                this.set("pageId", widgetCfg["@pageId"], {
+                                    noquery: true
+                                });
                                 this.hideOverlay();
                                 this.fire("contentUpdated", {
                                     page: val
