@@ -60,6 +60,7 @@ public class ValueGenerators {
 
     public static class True implements ValueGenerator {
 
+        @Override
         public Boolean getValue() {
             return Boolean.TRUE;
         }
@@ -67,6 +68,7 @@ public class ValueGenerators {
 
     public static class False implements ValueGenerator {
 
+        @Override
         public Boolean getValue() {
             return Boolean.FALSE;
         }
@@ -74,6 +76,7 @@ public class ValueGenerators {
 
     public static class EmptyMap implements ValueGenerator {
 
+        @Override
         public Map getValue() {
             return new HashMap();
         }
@@ -81,6 +84,7 @@ public class ValueGenerators {
 
     public static class EmptyArray implements ValueGenerator {
 
+        @Override
         public List<Object> getValue() {
             return new ArrayList<>();
         }
@@ -88,6 +92,7 @@ public class ValueGenerators {
 
     public static class EmptyString implements ValueGenerator {
 
+        @Override
         public String getValue() {
             return "";
         }
@@ -95,6 +100,7 @@ public class ValueGenerators {
 
     public static class TeamScopeVal implements ValueGenerator {
 
+        @Override
         public String getValue() {
             return "TeamScope";
         }
@@ -102,6 +108,7 @@ public class ValueGenerators {
 
     public static class EmptyScript implements ValueGenerator {
 
+        @Override
         public Script getValue() {
             return new Script();
         }
@@ -109,6 +116,7 @@ public class ValueGenerators {
 
     public static class EmptyI18n implements ValueGenerator {
 
+        @Override
         public TranslatableContent getValue() {
             TranslatableContent tr = new TranslatableContent();
             tr.setVersion(0l);
@@ -118,6 +126,7 @@ public class ValueGenerators {
 
     public static class Open implements ValueGenerator {
 
+        @Override
         public Game.GameAccess getValue() {
             return Game.GameAccess.OPEN;
         }
@@ -125,6 +134,7 @@ public class ValueGenerators {
 
     public static class GmProperties implements ValueGenerator {
 
+        @Override
         public GameModelProperties getValue() {
             return new GameModelProperties();
         }

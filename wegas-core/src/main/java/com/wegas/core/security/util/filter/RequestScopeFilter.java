@@ -7,9 +7,7 @@
  */
 package com.wegas.core.security.util.filter;
 
-import com.wegas.core.security.util.*;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
