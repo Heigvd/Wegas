@@ -537,8 +537,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                 filesStream = IOUtils.toBufferedInputStream(zip);
             } else {
                 throw new WegasIncompatibleType("Invalid zip entry " + entry.getName());
-            }
         }
+    }
 
         if (gameModelStream != null && filesStream != null) {
             gameModel = JacksonMapperProvider.getMapper().readValue(gameModelStream, GameModel.class);
@@ -1078,7 +1078,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @return
      */
     public Collection<GameModel> findByTypeStatusAndUser(GmType type,
-        GameModel.Status status) {
+            GameModel.Status status) {
         ArrayList<GameModel> gameModels = new ArrayList<>();
 
         Map<Long, List<String>> pMatrix = this.getPermissionMatrix(type, status);
@@ -1103,7 +1103,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
      * @return list of gameModel id mapped with the permission the user has
      */
     public Map<Long, List<String>> getPermissionMatrix(GmType type,
-        GameModel.Status status) {
+            GameModel.Status status) {
 
         List<GmType> gmTypes = new ArrayList<>();
         List<GameModel.Status> gmStatuses = new ArrayList<>();
@@ -1127,9 +1127,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         Map<Long, List<String>> pMatrix = new HashMap<>();
 
         String roleQuery = "SELECT p FROM Permission p WHERE "
-            + "(p.role.id in "
-            + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
-            + ")";
+                + "(p.role.id in "
+                + "    (SELECT r.id FROM User u JOIN u.roles r WHERE u.id = :userId)"
+                + ")";
 
         String userQuery = "SELECT p FROM Permission p WHERE p.user.id = :userId ";
 
@@ -1248,28 +1248,28 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
             @Override
             public void visitProperty(Object target, ProtectionLevel protectionLevel, int level, WegasFieldProperties field, Deque<Mergeable> ancestors, Object key, Object[] references) {
                 if (field != null && field.getAnnotation() != null && field.getAnnotation().searchable()) {
-                    VariableDescriptor vd = null;
-                    for (Mergeable ancestor : ancestors) {
-                        if (ancestor instanceof VariableDescriptor) {
-                            vd = (VariableDescriptor) ancestor;
-                            break;
+                            VariableDescriptor vd = null;
+                            for (Mergeable ancestor : ancestors) {
+                                if (ancestor instanceof VariableDescriptor) {
+                                    vd = (VariableDescriptor) ancestor;
+                                    break;
+                                }
+                            }
+                            if (vd != null && !matches.contains(vd.getId())) {
+                                String text = null;
+
+                                if (target instanceof Translation) {
+                                    text = ((Translation) target).getTranslation();
+                                } else if (target != null) {
+                                    text = target.toString();
+                                }
+
+                                if (text != null && Helper.insensitiveContainsAll(text, criterias)) {
+                                    matches.add(vd.getId());
+                                }
+                            }
                         }
                     }
-                    if (vd != null && !matches.contains(vd.getId())) {
-                        String text = null;
-
-                        if (target instanceof Translation) {
-                            text = ((Translation) target).getTranslation();
-                        } else if (target != null) {
-                            text = target.toString();
-                        }
-
-                        if (text != null && Helper.insensitiveContainsAll(text, criterias)) {
-                            matches.add(vd.getId());
-                        }
-                    }
-                }
-            }
         });
 
         return matches;
@@ -1310,8 +1310,8 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
                     }
                 }
             } else {
-                MergeHelper.visitMergeable(mergeable, Boolean.TRUE, replacer);
-            }
+            MergeHelper.visitMergeable(mergeable, Boolean.TRUE, replacer);
+        }
         }
 
         if (payload.getProcessPages()) {
@@ -1336,7 +1336,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
     public Set<String> findAllFiredEvents(Long gameModelId) {
         return this.findAllFiredEvents(this.find(gameModelId));
-    }
+            }
 
     public Set<String> findAllFiredEvents(GameModel gameModel) {
         FindAndReplacePayload payload = new FindAndReplacePayload();
@@ -1359,9 +1359,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         for (List<String> line : process) {
             events.addAll(line);
-        }
+                                            }
         return events;
-    }
+                                        }
 
     public Set<String> findAllRefToFiles(Long gameModelId, Long vdId) {
         GameModel gm = this.find(gameModelId);
@@ -1369,18 +1369,18 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
 
         if (vdId != null) {
             variable = variableDescriptorFacade.find(vdId);
-        }
+            }
         return this.findAllRefToFiles(gm, variable);
-    }
+        }
 
-    /**
+        /**
      * Go through the givenGameModel variables and fetch each references to internal files
      *
      * @param gameModel the gamemodel to search for reference in
      * @param root      Optional variable to search in, if null, search the whole gameModel
      *
      * @return
-     */
+         */
     public Set<String> findAllRefToFiles(GameModel gameModel,
         VariableDescriptor root) {
         FindAndReplacePayload payload = new FindAndReplacePayload();

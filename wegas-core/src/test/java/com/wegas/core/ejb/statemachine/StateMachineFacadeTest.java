@@ -73,7 +73,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            variableInstanceFacade.update(numberI.getId(), numberI);
+        variableInstanceFacade.update(numberI.getId(), numberI);
         }
 
         // Test
@@ -82,6 +82,28 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         // Clean up
         variableDescriptorFacade.remove(number.getId());
+        variableDescriptorFacade.remove(trigger.getId());
+    }
+
+    /**
+     * Test of entityUpdateListener method, of class StateMachineFacade.
+     *
+     * @throws javax.naming.NamingException
+     */
+    @Test
+    public void testErroneousCondition() throws NamingException {
+        // Create a trigger
+        TriggerDescriptor trigger = new TriggerDescriptor();
+        trigger.setDefaultInstance(new StateMachineInstance());
+        // trigger.setTriggerEvent(new Script("\"I'm kind of erroneous condition'\""));
+        trigger.setTriggerEvent(new Script("true"));
+        trigger.setPostTriggerEvent(new Script(""));
+        variableDescriptorFacade.create(gameModel.getId(), trigger);
+
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
+        requestFacade.commit();
+
+        // Clean up
         variableDescriptorFacade.remove(trigger.getId());
     }
 
@@ -108,15 +130,17 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(
-            new Script("Variable.find(" + number.getId() + ").setValue(self, " + FINALVALUE + " )"));
+                new Script("Variable.find(" + number.getId() + ").setValue(self, " + FINALVALUE + " )"));
         variableDescriptorFacade.create(scenario.getId(), trigger);
+
+        requestManager.clearUpdatedEntities();
 
         // Do an update
         NumberInstance numberI = number.getInstance(player);
         numberI.setValue(INTERMEDIATEVALUE);
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            variableInstanceFacade.update(numberI.getId(), numberI);
+        variableInstanceFacade.update(numberI.getId(), numberI);
         }
 
         // Test
@@ -265,16 +289,16 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         /* player fire event twice */
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event')"), null);
-            requestFacade.commit();
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event')"), null);
+        requestFacade.commit();
         }
         assertEquals(INITIALVALUE + 5 + 10, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
         /* player22 fire event only once */
         try (ActAsPlayer a = requestManager.actAsPlayer(player22)) {
             a.setFlushOnExit(false);
-            scriptFacade.eval(player22, new Script("JavaScript", "Event.fire('event');"), null);
-            requestFacade.commit();
+        scriptFacade.eval(player22, new Script("JavaScript", "Event.fire('event');"), null);
+        requestFacade.commit();
         }
         assertEquals(INITIALVALUE + 5, ((NumberInstance) variableInstanceFacade.find(number.getId(), player22)).getValue(), .1);
         // Clean up
@@ -332,8 +356,8 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         /* player fire event  -> NO MOVE */
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
-            requestFacade.commit();
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
+        requestFacade.commit();
         }
         assertEquals(0, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
@@ -342,8 +366,8 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         /* player fire event and event2 */
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event');"), null);
-            requestFacade.commit();
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event');"), null);
+        requestFacade.commit();
         }
         assertEquals(1, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
@@ -352,9 +376,9 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            /* player fire event twice and event2 */
-            scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event'); Event.fire('event');"), null);
-            requestFacade.commit();
+        /* player fire event twice and event2 */
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event'); Event.fire('event');"), null);
+        requestFacade.commit();
         }
         assertEquals(11, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
@@ -422,9 +446,9 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            /* player fire event  -> NO MOVE */
-            scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
-            requestFacade.commit();
+        /* player fire event  -> NO MOVE */
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
+        requestFacade.commit();
         }
         assertEquals(0, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
@@ -433,9 +457,9 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            /* player fire event and event2 */
-            scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event2');"), null);
-            requestFacade.commit();
+        /* player fire event and event2 */
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event2');"), null);
+        requestFacade.commit();
         }
         assertEquals(1, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
@@ -443,9 +467,9 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         requestFacade.getRequestManager().getEventCounter().clear();
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            /* player fire event twice and event2 */
-            scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event'); Event.fire('event2');"), null);
-            requestFacade.commit();
+        /* player fire event twice and event2 */
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event'); Event.fire('event2');"), null);
+        requestFacade.commit();
         }
         assertEquals(11, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
@@ -455,8 +479,8 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event2'); Event.fire('event2');"), null);
-            requestFacade.commit();
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event'); Event.fire('event2'); Event.fire('event2');"), null);
+        requestFacade.commit();
         }
         assertEquals(101, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
@@ -483,13 +507,13 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         State state1 = new State();
 
         State state2 = new State();
-        state2.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 1)"));
+        state2.setOnEnterEvent(new Script("print('+1');Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 1)"));
 
         State state3 = new State();
-        state3.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 10)"));
+        state3.setOnEnterEvent(new Script("print('+10');Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 10)"));
 
         State state4 = new State();
-        state4.setOnEnterEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 100)"));
+        state4.setOnEnterEvent(new Script("print('+100');Variable.find(gameModel, 'testnumber').setValue(self, Variable.find(gameModel, 'testnumber').getValue(self) + 100)"));
 
         sm.setStates(toMap(toList(1L, 2L, 3L, 4L), toList(state1, state2, state3, state4)));
 
@@ -522,9 +546,9 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            /* player fire event  -> NO MOVE */
-            scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
-            requestFacade.commit();
+        /* player fire event  -> NO MOVE */
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');"), null);
+        requestFacade.commit();
         }
         assertEquals(1, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
@@ -532,9 +556,9 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         requestFacade.getRequestManager().getEventCounter().clear();
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            /* player fire event and event2 */
-            scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event2');"), null);
-            requestFacade.commit();
+        /* player fire event and event2 */
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event2');"), null);
+        requestFacade.commit();
         }
         assertEquals(1, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
@@ -543,9 +567,9 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            /* player fire event and event2 */
-            scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event');"), null);
-            requestFacade.commit();
+        /* player fire event and event2 */
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event');"), null);
+        requestFacade.commit();
         }
         assertEquals(11, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 
@@ -554,9 +578,9 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
-            /* player fire event and event2 */
-            scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event2');"), null);
-            requestFacade.commit();
+        /* player fire event and event2 */
+        scriptFacade.eval(player, new Script("JavaScript", "Event.fire('event');Event.fire('event2');"), null);
+        requestFacade.commit();
         }
         assertEquals(101, ((NumberInstance) variableInstanceFacade.find(number.getId(), player)).getValue(), .1);
 

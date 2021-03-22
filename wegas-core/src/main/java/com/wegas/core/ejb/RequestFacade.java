@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -113,6 +112,10 @@ public class RequestFacade {
         }
     }
 
+    public ScriptEventFacade getScriptEventFacade() {
+        return scriptEvent;
+    }
+
     /**
      *
      * @param player
@@ -120,20 +123,20 @@ public class RequestFacade {
     public void commit(Player player) {
         if (!requestManager.isTestEnv()) {
             try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
-                /*
+            /*
              * Flush is required to triggered EntityListener's lifecycles events which populate
              * requestManager touched (deleted, updated and so on) entities
-                 */
-                EntityManager em = requestManager.getEntityManager();
+             */
+            EntityManager em = requestManager.getEntityManager();
 
-                requestManager.getEntityManager().flush();
+            requestManager.getEntityManager().flush();
 
-                if (requestManager.getUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
-                    stateMachineFacade.runStateMachines(player);
-                    em.flush();
-                }
+        if (requestManager.getJustUpdatedEntities().size() > 0 || scriptEvent.isEventFired()) {
+                stateMachineFacade.runStateMachines(player);
+                em.flush();
             }
         }
+    }
     }
 
     /**
@@ -180,7 +183,7 @@ public class RequestFacade {
      * @return all entities which were updated during the transaction
      */
     public Set<AbstractEntity> getUpdatedEntities() {
-        return requestManager.getUpdatedEntities();
+        return requestManager.getAllUpdatedEntities();
     }
 
     /*

@@ -7,8 +7,8 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.ejb.statemachine.StateMachineCounter;
 import com.wegas.core.api.ScriptEventFacadeI;
-import com.wegas.core.ejb.statemachine.StateMachineEventCounter;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
@@ -209,7 +209,7 @@ public class ScriptEventFacade extends WegasAbstractFacade implements ScriptEven
             if (currentDescriptor instanceof StateMachineDescriptor) {
                 int count;
                 StateMachineInstance smi = ((StateMachineDescriptor) currentDescriptor).getInstance(requestManager.getPlayer());
-                StateMachineEventCounter eventCounter = this.requestManager.getEventCounter();
+                StateMachineCounter eventCounter = this.requestManager.getEventCounter();
                 count = eventCounter.count(smi, eventName);
                 count += eventCounter.countCurrent(eventName);
 

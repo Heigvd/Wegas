@@ -68,6 +68,24 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
     }
 
     @Test
+    public void testGlobalVar() throws NamingException, WegasScriptException {
+        final NumberDescriptor numberDescriptor = new NumberDescriptor("gv");
+        numberDescriptor.setDefaultInstance(new NumberInstance(1));
+        variableDescriptorFacade.create(gameModel.getId(), numberDescriptor);
+
+        String script = "gv = {value : 'hello, world!'}; print (gv.value);";
+
+        scriptFacade.eval(player, new Script("JavaScript", script), null);
+
+        scriptFacade.eval(player, new Script("JavaScript", "print('1g: ' + gv.value);"), null);
+
+        scriptFacade.eval(player21, new Script("JavaScript", "print('2: ' + gv.value);"), null);
+
+        //rf.getRequestManager().setCurrentScriptContext(null);
+        scriptFacade.eval(player22, new Script("JavaScript", "print('3: ' + gv.value);"), null);
+    }
+
+    @Test
     public void testBypassRandom() throws NamingException, WegasScriptException, ScriptException {
         Script rnd100 = new Script("JavaScript", "var sum = 0, i; for (i=0;i<100;i++){sum+= Math.random();} sum;");
 
@@ -97,7 +115,6 @@ public class ScriptFacadeTest extends AbstractArquillianTest {
 
         System.out.println("R1: " + result);
         System.out.println("Ex: " + ex);
-
     }
 
     //@Test

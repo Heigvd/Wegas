@@ -1,4 +1,3 @@
-
 /**
  * Wegas
  * http://wegas.albasim.ch
@@ -60,6 +59,13 @@ public class StateMachineITest extends AbstractArquillianTest {
         trigger.setOneShot(Boolean.TRUE);
         trigger.setDisableSelf(Boolean.FALSE);
 
+        TriggerDescriptor countPlayer = new TriggerDescriptor();
+        countPlayer.setDefaultInstance(new StateMachineInstance());
+        countPlayer.setTriggerEvent(new Script("1===1"));
+        countPlayer.setPostTriggerEvent(new Script("Variable.find(gameModel, \"nbPlayer\").getInstance(self).value += 1;"));
+        countPlayer.setOneShot(Boolean.TRUE);
+        countPlayer.setDisableSelf(Boolean.FALSE);
+
         TriggerDescriptor trigger2 = new TriggerDescriptor();
         trigger2.setDefaultInstance(new StateMachineInstance());
         trigger2.setTriggerEvent(new Script("true"));
@@ -72,6 +78,9 @@ public class StateMachineITest extends AbstractArquillianTest {
         variableDescriptorFacade.create(scenario.getId(), trigger);
         variableDescriptorFacade.create(scenario.getId(), trigger2);
 
+        /*
+         * Team: player Team2: player21, player22
+         */
         Team team3 = new Team("test-team3");
         Team team4 = new Team("test-team4");
 
@@ -81,18 +90,27 @@ public class StateMachineITest extends AbstractArquillianTest {
 
         WegasUser user31 = this.signup("user31@local");
         login(user31);
+        logger.error(" * * * *  * * * * * * * * * * * * CREATE TEAM3");
         teamFacade.create(game.getId(), team3);
 
         WegasUser user41 = this.signup("user41@local");
         login(user41);
+        logger.error(" * * * *  * * * * * * * * * * * * CREATE TEAM4");
         teamFacade.create(game.getId(), team4);
 
+        logger.error(" * * * *  * * * * * * * * * * * * CREATE testPlayer11");
         WegasUser user11 = this.signup("user11@local");
         login(user11);
+        /*
+         * Team: player, testPlayer11 Team2: player21, player22 team3: team4:
+         */
         Player testPlayer11 = gameFacade.joinTeam(team.getId(), null);
-        logger.error("Player 11: {}", testPlayer11);
 
+        logger.error(" * * * *  * * * * * * * * * * * * CREATE testPlayer41");
         login(user41);
+        /*
+         * Team: player, testPlayer0 Team2: player21, player22 team3: team4: testPlayer41
+         */
         Player testPlayer41 = gameFacade.joinTeam(team4.getId(), null);
         logger.error("Player 41: {}", testPlayer41);
 
@@ -110,19 +128,27 @@ public class StateMachineITest extends AbstractArquillianTest {
         /*
          * Player created before variable -> state machines don't execute
          */
-        Assert.assertEquals(0.0, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player21)).getValue(), 0.0);
+        Assert.assertEquals(1.0, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player21)).getValue(), 0.0);
         /*
-         * Game Scope trigger increase for each player added after trigger creation
+         * trigger2 is triggered 3 times, one time for each non-empty team. Since we're simulation
+         * one big request, walking through the same transition twice is forbidden Three non-empty
+         * teams -> number2 = 3
          */
-        Assert.assertEquals(2, ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
+        Assert.assertEquals(3, ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
         /*
          * add a player in not empty team then Reset, trigger will execute
          */
         WegasUser user42 = this.signup("user42@local");
         login(user42);
+        logger.error(" * * * *  * * * * * * * * * * * * CREATE testPlayer42");
+        /*
+         * Team: player, testPlayer11 Team2: player21, player22 team3: team4: testPlayer41,
+         * testPlayer42
+         */
         Player testPlayer42 = gameFacade.joinTeam(team4.getId(), null);
 
         login(trainer);
+        logger.error(" * * * *  * * * * * * * * * * * * RESET");
         gameModelFacade.reset(scenario.getId());
 
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer11)).getValue(), 0.0);
@@ -130,8 +156,8 @@ public class StateMachineITest extends AbstractArquillianTest {
         Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), player21)).getValue(), 0.0);
 
         /*
-         * trigger2 will execute numberOfPlayers times after a reset -> increment testNumber2 by the same amount.
-         * For each player
+         * trigger2 will execute numberOfNonEmptyTeam times after a reset -> increment testNumber2
+         * by the same amount.
          */
         Assert.assertEquals(playerFacade.find(testPlayer11.getId()).getGame().getPlayers().size(), ((NumberInstance) variableInstanceFacade.find(testNumber2.getId(), testPlayer11)).getValue(), 0.0);
 
@@ -179,7 +205,7 @@ public class StateMachineITest extends AbstractArquillianTest {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new StateMachineInstance());
         trigger.setTriggerEvent(new Script("1===1"));
-        trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, \"numberTest\").setValue(self, " + FINAL_VALUE + ");"));
+        trigger.setPostTriggerEvent(new Script("print('hit');Variable.find(gameModel, \"numberTest\").setValue(self, " + FINAL_VALUE + ");"));
         trigger.setOneShot(Boolean.FALSE);
         trigger.setDisableSelf(Boolean.FALSE);
         variableDescriptorFacade.create(scenario.getId(), trigger);
@@ -189,11 +215,18 @@ public class StateMachineITest extends AbstractArquillianTest {
         Player testPlayer = gameFacade.joinTeam(team.getId(), null);
 
         NumberInstance p0Instance = null;
-        try (ActAsPlayer actAsPlayer = requestManager.actAsPlayer(testPlayer)) {
+        try ( ActAsPlayer actAsPlayer = requestManager.actAsPlayer(testPlayer)) {
             actAsPlayer.setFlushOnExit(false);
             Assert.assertEquals(FINAL_VALUE, ((NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer)).getValue(), 0.0);
             p0Instance = (NumberInstance) variableInstanceFacade.find(testNumber.getId(), testPlayer);
             p0Instance.setValue(50);
+
+            /*
+             * Simulate new request, otherwise, trigger will not be retriggered
+             */
+            requestManager.clearFsmData();
+            requestManager.setPlayer(null);
+            logger.error("CLEAR");
         }
 
         variableInstanceFacade.update(p0Instance.getId(), p0Instance); // Triggers rf.commit -> StateMachine check
@@ -226,7 +259,7 @@ public class StateMachineITest extends AbstractArquillianTest {
 
         Assert.assertEquals(0, ((NumberInstance) variableInstanceFacade.find(highScore.getId(), player.getId())).getValue(), 0);
 
-        try (ActAsPlayer actAsPlayer = requestManager.actAsPlayer(player)) {
+        try ( ActAsPlayer actAsPlayer = requestManager.actAsPlayer(player)) {
             actAsPlayer.setFlushOnExit(false);
             scriptFacade.eval(player.getId(), new Script("Variable.find(gameModel, 'personalScore').getInstance(self).value = 10"), null);
             requestFacade.commit();
@@ -252,7 +285,7 @@ public class StateMachineITest extends AbstractArquillianTest {
         trigger.setPostTriggerEvent(new Script("Variable.find(gameModel, 'testnumber').setValue(self, " + ENDVAL + ");"));
         variableDescriptorFacade.create(scenario.getId(), trigger);
 
-        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+        try ( ActAsPlayer a = requestManager.actAsPlayer(player)) {
             a.setFlushOnExit(false);
             scriptFacade.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){print('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"), null);
             requestFacade.commit();

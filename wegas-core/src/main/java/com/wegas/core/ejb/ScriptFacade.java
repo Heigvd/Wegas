@@ -45,6 +45,7 @@ import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.resourceManagement.ejb.IterationFacade;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.reviewing.ejb.ReviewingFacade;
+import javax.script.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -57,6 +58,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.Map.Entry;
+import javax.naming.NamingException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Resource;
@@ -64,7 +66,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.inject.Inject;
-import javax.script.*;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -221,84 +222,60 @@ public class ScriptFacade extends WegasAbstractFacade {
     private ManagedExecutorService timeoutExecutorService;
 
     public ScriptContext instantiateScriptContext(Player player, String language) {
-        final ScriptContext currentContext = requestManager.getCurrentScriptContext();
+        ScriptContext currentContext = requestManager.getCurrentScriptContext();
+
         if (currentContext == null) {
-            final ScriptContext scriptContext = this.populate(player);
-            requestManager.setCurrentScriptContext(scriptContext);
-            return scriptContext;
+            currentContext = this.populate(player);
+            requestManager.setCurrentScriptContext(currentContext);
+        } else {
+            Bindings eBindings = currentContext.getBindings(ScriptContext.ENGINE_SCOPE);
+            GameModel gameModel = (GameModel) eBindings.get("gameModel");
+
+            if (gameModel.equals(player.getGameModel())) {
+                Player self = (Player) eBindings.get("self");
+
+                if (!player.equals(self)) {
+                    this.injectPlayer(currentContext, player);
+
+                    /*
+                     * To create EngineScope bindings for new user / Bindings newB =
+                     * engine.createBindings(); newB.put("Variable", eBindings.get("Variable"));
+                     * newB.put("gameModel", gameModel);
+                     *
+                     * currentContext.setBindings(newB, ScriptContext.ENGINE_SCOPE);
+                     * this.injectPlayer(currentContext, player);
+                     *
+                     * this.injectNoSuchPropertyResolver(newB); // */
+                }
+            } else {
+                //GameModel change, rebuild all
+                currentContext = this.populate(player);
+                requestManager.setCurrentScriptContext(currentContext);
+            }
         }
         return currentContext;
-
     }
 
-    private <T> void putBinding(Bindings bindings, String name, Class<T> klass, T object) {
-        bindings.put(name, JavaObjectInvocationHandler.wrap(object, klass));
-    }
-
-    private ScriptContext populate(Player player) {
-        final Bindings bindings = engine.createBindings();
-        if (player == null) {
-            throw WegasErrorMessage.error("ScriptFacade.populate requires a player !!!");
-        }
-
-        if (player.getStatus() != Populatable.Status.LIVE
-            && player.getStatus() != Populatable.Status.INITIALIZING
-            && player.getStatus() != Populatable.Status.SURVEY) {
-            throw WegasErrorMessage.error("ScriptFacade.populate requires a LIVE player !!!");
-        }
-
-        bindings.put("self", player);                           // Inject current player
-        bindings.put("gameModel", player.getGameModel());       // Inject current gameModel
-
-        putBinding(bindings, "GameModelFacade", GameModelFacadeI.class, gameModelFacade);
-        putBinding(bindings, "I18nFacade", I18nFacadeI.class, i18nFacade);
-
-        putBinding(bindings, "Variable", VariableDescriptorFacadeI.class, variableDescriptorFacade);
-        putBinding(bindings, "VariableDescriptorFacade", VariableDescriptorFacadeI.class, variableDescriptorFacade);
-
-        putBinding(bindings, "Instance", VariableInstanceFacadeI.class, variableInstanceFacade);
-
-        putBinding(bindings, "ResourceFacade", ResourceFacadeI.class, resourceFacade);
-        putBinding(bindings, "IterationFacade", IterationFacadeI.class, iterationFacade);
-
-        putBinding(bindings, "QuestionFacade", QuestionDescriptorFacadeI.class, questionDescriptorFacade);
-        putBinding(bindings, "StateMachineFacade", StateMachineFacadeI.class, stateMachineFacade);
-        putBinding(bindings, "ReviewingFacade", ReviewingFacadeI.class, reviewingFacade);
-
-        putBinding(bindings, "RequestManager", RequestManagerI.class, requestManager);
-        putBinding(bindings, "Event", ScriptEventFacadeI.class, event);
-        putBinding(bindings, "DelayedEvent", DelayedScriptEventFacadeI.class, delayedEvent);
-        putBinding(bindings, "xapi", XapiI.class, xapi);
-
-        bindings.put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
-
-        bindings.remove("exit");
-        bindings.remove("quit");
-        bindings.remove("loadWithNewGlobal");
-
+    private void injectPlayer(ScriptContext ctx, Player player) {
+        Bindings eBindings = ctx.getBindings(ScriptContext.ENGINE_SCOPE);
+        eBindings.put("self", player);
         event.detachAll();
-        ScriptContext ctx = new SimpleScriptContext();
-        ctx.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
+    }
 
-        try {
-            noSuchProperty.eval(bindings);
-        } catch (ScriptException e) {
-            logger.error("noSuchProperty injection", e);
-        }
+    private void injectGameModel(ScriptContext ctx, GameModel gameModel) {
+        Bindings eBindings = ctx.getBindings(ScriptContext.ENGINE_SCOPE);
 
-        /**
-         * Inject hard server scripts first
-         */
-        this.injectStaticScript(ctx, player.getGameModel());
+        eBindings.put("gameModel", gameModel);       // Inject current gameModel
+        this.injectStaticScript(ctx, gameModel);
 
         /**
          * Then inject soft ones. It means a soft script may override methods defined in a hard
          * coded one
          */
-        for (GameModelContent script : player.getGameModel().getScriptLibraryList()) {
+        for (GameModelContent script : gameModel.getScriptLibraryList()) {
             ctx.setAttribute(ScriptEngine.FILENAME, "Server script " + script.getContentKey(), ScriptContext.ENGINE_SCOPE);
 
-            String cacheFileName = "soft:" + player.getGameModel().getId() + ":" + script.getContentKey();
+            String cacheFileName = "soft:" + gameModel.getId() + ":" + script.getContentKey();
             String version = script.getVersion().toString();
 
             CachedScript cached = getCachedScript(cacheFileName, version, script.getContent());
@@ -311,7 +288,6 @@ public class ScriptFacade extends WegasAbstractFacade {
                 throw new WegasScriptException("Server script " + script.getContentKey(), ex.getMessage());
             }
         }
-        return ctx;
     }
 
     private CachedScript getCachedScript(String name, String version, String script) {
@@ -336,8 +312,87 @@ public class ScriptFacade extends WegasAbstractFacade {
             cached.script = compile;
             cached.version = version;
         }
-
         return cached;
+    }
+
+    private void injectNoSuchPropertyResolver(Bindings bindings) {
+        try {
+            noSuchProperty.eval(bindings);
+        } catch (ScriptException e) {
+            logger.error("noSuchProperty injection", e);
+        }
+    }
+
+    private <T> void putBinding(Bindings bindings, String name, Class<T> klass, T object) {
+        bindings.put(name, JavaObjectInvocationHandler.wrap(object, klass));
+    }
+
+    private ScriptContext populate(Player player) {
+        if (player == null) {
+            throw WegasErrorMessage.error("ScriptFacade.populate requires a player !!!");
+        }
+
+        if (player.getStatus() != Populatable.Status.LIVE
+            && player.getStatus() != Populatable.Status.INITIALIZING
+            && player.getStatus() != Populatable.Status.SURVEY) {
+            throw WegasErrorMessage.error("ScriptFacade.populate requires a LIVE player !!!");
+        }
+
+        final Bindings gBindings = engine.createBindings();
+        final Bindings eBindings = engine.createBindings();
+
+        ScriptContext ctx = new SimpleScriptContext();
+
+        ctx.setBindings(gBindings, ScriptContext.GLOBAL_SCOPE);
+        ctx.setBindings(eBindings, ScriptContext.ENGINE_SCOPE);
+
+        this.injectPlayer(ctx, player);
+
+        putBinding(eBindings, "GameModelFacade", GameModelFacadeI.class, gameModelFacade);
+        putBinding(eBindings, "I18nFacade", I18nFacadeI.class, i18nFacade);
+
+        putBinding(eBindings, "Variable", VariableDescriptorFacadeI.class, variableDescriptorFacade);
+        putBinding(eBindings, "VariableDescriptorFacade", VariableDescriptorFacadeI.class, variableDescriptorFacade);
+
+        putBinding(eBindings, "Instance", VariableInstanceFacadeI.class, variableInstanceFacade);
+
+        putBinding(eBindings, "ResourceFacade", ResourceFacadeI.class, resourceFacade);
+        putBinding(eBindings, "IterationFacade", IterationFacadeI.class, iterationFacade);
+
+        putBinding(eBindings, "QuestionFacade", QuestionDescriptorFacadeI.class, questionDescriptorFacade);
+        putBinding(eBindings, "StateMachineFacade", StateMachineFacadeI.class, stateMachineFacade);
+        putBinding(eBindings, "ReviewingFacade", ReviewingFacadeI.class, reviewingFacade);
+
+        putBinding(eBindings, "RequestManager", RequestManagerI.class, requestManager);
+        putBinding(eBindings, "Event", ScriptEventFacadeI.class, event);
+        putBinding(eBindings, "DelayedEvent", DelayedScriptEventFacadeI.class, delayedEvent);
+        putBinding(eBindings, "xapi", XapiI.class, xapi);
+
+        eBindings.put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
+
+        eBindings.remove("exit");
+        eBindings.remove("quit");
+        eBindings.remove("loadWithNewGlobal");
+
+        this.injectNoSuchPropertyResolver(eBindings);
+
+        this.injectGameModel(ctx, player.getGameModel());
+
+        /*
+         * Switch context to set all "static" bindings global / ScriptContext effectiveCtx = new
+         * SimpleScriptContext(); effectiveCtx.setBindings(eBindings, ScriptContext.GLOBAL_SCOPE);
+         * Bindings newEBindings = engine.createBindings();
+         *
+         * // NoSuchProperty method needs Variable, self and gameModel to resolve // undefined
+         * properties newEBindings.put("self", player); newEBindings.put("Variable",
+         * variableDescriptorFacade); newEBindings.put("gameModel", player.getGameModel());
+         *
+         * effectiveCtx.setBindings(newEBindings, ScriptContext.ENGINE_SCOPE);
+         *
+         * this.injectNoSuchPropertyResolver(newEBindings);
+         *
+         * ctx = effectiveCtx; // */
+        return ctx;
     }
 
     /**
@@ -425,7 +480,7 @@ public class ScriptFacade extends WegasAbstractFacade {
                     || !cached.version.equals(version)
                     || cached.script == null) {
 
-                    try (BufferedReader reader = Files.newBufferedReader(path)) {
+                    try ( BufferedReader reader = Files.newBufferedReader(path)) {
                         cached.script = this.compile(reader);
                         cached.version = version;
                     } catch (ScriptException ex) {
@@ -577,7 +632,7 @@ public class ScriptFacade extends WegasAbstractFacade {
             Path current = queue.remove(0);
             if (!Files.isSymbolicLink(current) && Files.isReadable(current)) {
                 if (Files.isDirectory(current)) {
-                    try (Stream<Path> children = Files.list(current)) {
+                    try ( Stream<Path> children = Files.list(current)) {
                         // queue children
                         children.collect(Collectors.toCollection(() -> queue));
                     }
@@ -624,7 +679,7 @@ public class ScriptFacade extends WegasAbstractFacade {
     public Object timeoutEval(Long playerId, Script script) throws WegasScriptException {
         final Player player = playerFacade.find(playerId);
 
-        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+        try ( ActAsPlayer a = requestManager.actAsPlayer(player)) {
 
             final ScriptContext scriptContext = this.instantiateScriptContext(player, script.getLanguage());
 
@@ -633,7 +688,7 @@ public class ScriptFacade extends WegasAbstractFacade {
             scriptCopy.setLanguage(script.getLanguage());
             scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put(JSTool.JS_TOOL_INSTANCE_NAME,
                 new JSTool.JSToolInstance());
-            try (Delay delay = new Delay(SCRIPT_DELAY, timeoutExecutorService)) {
+            try ( Delay delay = new Delay(SCRIPT_DELAY, timeoutExecutorService)) {
                 scriptContext.getBindings(ScriptContext.ENGINE_SCOPE).put("$$internal$delay", delay);
                 return this.eval(scriptCopy, new HashMap<>());
             } catch (WegasScriptException e) {
@@ -685,7 +740,7 @@ public class ScriptFacade extends WegasAbstractFacade {
 
     @Deprecated
     private Object eval(Player player, CachedScript s, Map<String, Object> arguments) throws WegasScriptException {
-        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+        try ( ActAsPlayer a = requestManager.actAsPlayer(player)) {
             return this.eval(s, arguments);
         }
     }
@@ -711,7 +766,7 @@ public class ScriptFacade extends WegasAbstractFacade {
      * @return eval result
      */
     private Object eval(Player player, Script s, Map<String, Object> arguments) throws WegasScriptException {
-        try (ActAsPlayer a = requestManager.actAsPlayer(player)) {
+        try ( ActAsPlayer a = requestManager.actAsPlayer(player)) {
             return this.eval(s, arguments);
         }
     }
@@ -729,6 +784,20 @@ public class ScriptFacade extends WegasAbstractFacade {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put(ScriptFacade.CONTEXT, context);
         return this.eval(playerFacade.find(playerId), s, arguments);
+    }
+
+    /**
+     *
+     * @return Looked-up EJB
+     */
+    public static ScriptFacade lookup() {
+        //REALLY ???
+        try {
+            return Helper.lookupBy(ScriptFacade.class);
+        } catch (NamingException ex) {
+            logger.error("Error retrieving requestmanager", ex);
+            return null;
+        }
     }
 
     /**
