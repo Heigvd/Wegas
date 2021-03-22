@@ -30,6 +30,7 @@ public class WegasAccessDenied extends WegasRuntimeException {
         this.user = user;
     }
 
+    @Override
     public String toString() {
         return (mode != null ? mode : "[n/a]")
             + "Permission Denied for user "

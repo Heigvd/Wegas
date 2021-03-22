@@ -664,6 +664,7 @@ public class GameModel extends AbstractEntity implements DescriptorListI<Variabl
      * @return testPlayer
      */
     @JsonIgnore
+    @Override
     public Player getTestPlayer() {
         for (Game game : this.getGames()) {
             Player testPlayer = game.getTestPlayer();

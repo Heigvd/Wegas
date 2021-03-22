@@ -1013,6 +1013,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     /**
      * @param gameModelId
      */
+    @Override
     public void reset(final Long gameModelId) {
         this.reset(this.find(gameModelId));
     }
@@ -1020,6 +1021,7 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
     /**
      * @param gameModel
      */
+    @Override
     public void reset(final GameModel gameModel) {
         // Need to flush so prepersit events will be thrown (for example Game will add default teams)
         ///getEntityManager().flush();

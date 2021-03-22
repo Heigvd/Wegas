@@ -8,7 +8,6 @@
  */
 package com.wegas.core.security.persistence;
 
-import com.wegas.core.security.persistence.token.Token;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;
@@ -26,6 +25,7 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.persistence.token.Token;
 import com.wegas.core.security.util.AuthenticationMethod;
 import com.wegas.core.security.util.WegasMembership;
 import com.wegas.core.security.util.WegasPermission;

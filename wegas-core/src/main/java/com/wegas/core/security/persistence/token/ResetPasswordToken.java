@@ -9,7 +9,6 @@
 package com.wegas.core.security.persistence.token;
 
 import com.wegas.core.security.ejb.AccountFacade;
-import com.wegas.core.security.persistence.token.Token;
 import javax.persistence.Entity;
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,6 +24,7 @@ public class ResetPasswordToken extends Token {
      *
      * @return user profile edition page location
      */
+    @Override
     public String getRedirectTo() {
         // the lobby location
         return "/#/user-profile";
