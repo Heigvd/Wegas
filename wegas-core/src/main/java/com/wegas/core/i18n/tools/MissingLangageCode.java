@@ -57,6 +57,7 @@ public class MissingLangageCode extends FishedTranslation {
     /**
      * @return "Not Translated Lang: translations location: start:end"
      */
+    @Override
     public String toString() {
         return "Not Translated Lang: translations location: " + translationsStartPosition + ":" + translationsEndPosition;
     }

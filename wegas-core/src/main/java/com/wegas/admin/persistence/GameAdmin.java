@@ -8,10 +8,10 @@
  */
 package com.wegas.admin.persistence;
 
-import com.wegas.admin.persistence.data.GameAdminTeam;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.wegas.admin.persistence.data.GameAdminTeam;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;

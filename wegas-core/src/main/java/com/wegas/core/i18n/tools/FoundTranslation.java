@@ -131,6 +131,7 @@ public class FoundTranslation extends FishedTranslation {
      * @return "Translation CODE (codeStart:end) status =%gt;THE_STATUS&lt;= translation
      *         =%gt;THE_TRANSLATION&lt;= location: start:end
      */
+    @Override
     public String toString() {
         return "Translation "
             + langCode + " (" + langCodeStartPosition + ":" + langCodeEndPosition + ")"

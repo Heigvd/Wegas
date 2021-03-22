@@ -21,6 +21,7 @@ import org.apache.shiro.util.ByteSource;
  */
 public class JpaCredentialsMatcher extends SimpleCredentialsMatcher {
 
+    @Override
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
         if (info instanceof JpaAuthenticationInfo) {
             JpaAuthenticationInfo jpaInfo = (JpaAuthenticationInfo) info;

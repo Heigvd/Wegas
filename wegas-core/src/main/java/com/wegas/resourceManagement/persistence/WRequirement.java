@@ -168,6 +168,7 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
      *
      * @return get requirement unique name
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -176,6 +177,7 @@ public class WRequirement extends AbstractEntity implements NamedEntity {
      *
      * @param name
      */
+    @Override
     public void setName(String name) {
         this.name = name;
     }

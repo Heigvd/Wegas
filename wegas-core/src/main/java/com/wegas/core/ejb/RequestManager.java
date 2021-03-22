@@ -1005,6 +1005,7 @@ public class RequestManager implements RequestManagerI {
     /**
      * {@inheritDoc }
      */
+    @Override
     public boolean tryLock(String token, InstanceOwner target) {
         String audience = getAudienceToLock(target);
         logger.debug("TryLock \"{}\" for \"{}\"", token, audience);

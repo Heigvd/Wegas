@@ -242,6 +242,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      * @return value of player p instance
      */
     @Scriptable(label = "value")
+    @Override
     public Double getValue(Player p) {
         return this.getInstance(p).getValue();
     }
