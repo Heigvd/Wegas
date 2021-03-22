@@ -66,15 +66,14 @@ function deleteTransition<T extends IFSMDescriptor | IDialogueDescriptor>(
   stateMachine: Immutable<T>,
   stateId: number,
   transitionId: number,
+  dispatch: typeof store.dispatch,
 ) {
   const newStateMachine = produce((stateMachine: T) => {
     const transitions = stateMachine.states[stateId].transitions;
     transitions.splice(transitionId, 1);
   })(stateMachine);
 
-  store.dispatch(
-    Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
-  );
+  dispatch(Actions.VariableDescriptorActions.updateDescriptor(newStateMachine));
 }
 
 export interface TransitionFlowLine extends FlowLine {
@@ -111,6 +110,14 @@ export function StateMachineEditor<
   type TTransition = TState['transitions'][0];
 
   const { lang } = React.useContext(languagesCTX);
+
+  const dispatch = React.useMemo(
+    () =>
+      localDispatch != null && forceLocalDispatch
+        ? localDispatch!
+        : store.dispatch,
+    [forceLocalDispatch, localDispatch],
+  );
 
   const processes: StateProcess[] = React.useMemo(
     () =>
@@ -193,11 +200,11 @@ export function StateMachineEditor<
         (source.transitions as IAbstractTransition[]).push(newTransition);
       })(stateMachine);
 
-      store.dispatch(
+      dispatch(
         Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
       );
     },
-    [createTransition, stateMachine],
+    [createTransition, dispatch, stateMachine],
   );
 
   const updateStatePosition = React.useCallback(
@@ -209,14 +216,14 @@ export function StateMachineEditor<
           position.y >= 10 ? position.y : 10;
       })(stateMachine);
 
-      store.dispatch(
+      dispatch(
         Actions.VariableDescriptorActions.updateDescriptor(
           newStateMachine,
           false,
         ),
       );
     },
-    [stateMachine],
+    [dispatch, stateMachine],
   );
 
   const createState = React.useCallback(
@@ -271,17 +278,17 @@ export function StateMachineEditor<
         }
       })(stateMachine);
 
-      store.dispatch(
+      dispatch(
         Actions.EditorActions.editStateMachine(stateMachine, [
           'states',
           String(newStateId),
         ]),
       );
-      store.dispatch(
+      dispatch(
         Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
       );
     },
-    [createTransition, lang, stateMachine],
+    [createTransition, dispatch, lang, stateMachine],
   );
 
   const onStateClick = React.useCallback(
@@ -307,8 +314,8 @@ export function StateMachineEditor<
       const dispatchLocal =
         (e.ctrlKey === true || forceLocalDispatch === true) &&
         localDispatch != null;
-      const dispatch = dispatchLocal ? localDispatch! : store.dispatch;
-      dispatch(
+
+      (dispatchLocal ? dispatch! : store.dispatch)(
         Actions.EditorActions.editStateMachine(stateMachine, [
           'states',
           state.id,
@@ -318,7 +325,7 @@ export function StateMachineEditor<
         focusTab(mainLayoutId, 'Variable Properties');
       }
     },
-    [forceLocalDispatch, localDispatch, stateMachine],
+    [dispatch, forceLocalDispatch, localDispatch, stateMachine],
   );
 
   const onFlowlineClick = React.useCallback(
@@ -338,7 +345,7 @@ export function StateMachineEditor<
           path?: (string | number)[],
         ) => {
           if (path != null && path?.length === 4) {
-            deleteTransition(sm, Number(path[1]), Number(path[3]));
+            deleteTransition(sm, Number(path[1]), Number(path[3]), dispatch);
           }
         },
       };
